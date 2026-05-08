@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { authService } from '../../../services/authService'
 
+
+
 /**
  * Patrón Template Method — custom hook.
  * Encapsula toda la lógica del formulario de registro:
