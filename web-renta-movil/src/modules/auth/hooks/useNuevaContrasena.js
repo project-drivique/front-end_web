@@ -1,8 +1,6 @@
 import { useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { authService } from '../../../services/authService'
 
-// Mismas reglas de seguridad que RegistroPage
 const REGLAS = [
   { id: 'longitud',  label: 'Mínimo 8 caracteres',          test: (v) => v.length >= 8 },
   { id: 'mayuscula', label: 'Al menos una mayúscula',        test: (v) => /[A-Z]/.test(v) },
@@ -18,6 +16,7 @@ export function useNuevaContrasena() {
   const [contrasena, setContrasena]   = useState('')
   const [confirmar, setConfirmar]     = useState('')
   const [mostrarPass, setMostrarPass] = useState(false)
+  const [mostrarConf, setMostrarConf] = useState(false)
   const [cargando, setCargando]       = useState(false)
   const [exito, setExito]             = useState(false)
   const [error, setError]             = useState('')
@@ -43,7 +42,19 @@ export function useNuevaContrasena() {
     }
 
     setCargando(true)
+
+    // ── Si es token simulado no llama al backend ──
+    if (token === 'SIMULADO-TOKEN-DEMO') {
+      setTimeout(() => {
+        setCargando(false)
+        setExito(true)
+      }, 1500)
+      return
+    }
+
+    // ── Producción: llamada real al backend ──
     try {
+      const { authService } = await import('../../../services/authService')
       await authService.nuevaContrasena(token, contrasena)
       setExito(true)
     } catch (err) {
@@ -62,9 +73,10 @@ export function useNuevaContrasena() {
     contrasena, setContrasena,
     confirmar, setConfirmar,
     mostrarPass, setMostrarPass,
+    mostrarConf, setMostrarConf,
     cargando, exito, error,
     fortaleza, esValida,
     navigate,
-    handleSubmit, // ✅ faltaba esto
+    handleSubmit,
   }
 }
