@@ -28,7 +28,7 @@ export default function LoginPage() {
         <div style={{ position: 'absolute', bottom: '33%', right: '40px', width: '160px', height: '160px', borderRadius: '50%', border: '1px solid rgba(255,255,255,0.05)', background: 'rgba(255,255,255,0.03)' }} />
 
         <div style={{ position: 'relative', zIndex: 1, flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '56px', textAlign: 'center', gap: '32px' }}>
-          <img src={logo} alt="RentaMovil" style={{ height: '60px', filter: 'brightness(0) invert(1)', filter: 'drop-shadow(0 4px 16px rgba(0,0,0,0.3)) brightness(0) invert(1)' }} />
+          <img src={logo} alt="RentaMovil" style={{ height: '60px', filter: 'drop-shadow(0 4px 16px rgba(0,0,0,0.3)) brightness(0) invert(1)' }} />
 
           <div>
             <h2 style={{ color: '#fff', fontSize: '1.75rem', fontWeight: 900, margin: '0 0 10px', lineHeight: 1.2 }}>Bienvenido de vuelta</h2>
@@ -81,6 +81,7 @@ export default function LoginPage() {
               <p style={{ color: '#15803d', fontSize: '14px', fontWeight: 500, margin: 0 }}>{exito}</p>
             </div>
           )}
+
           {errores.general && (
             <div style={{ marginBottom: '20px', padding: '14px 16px', borderRadius: '12px', background: '#fef2f2', border: '1px solid #fecaca', display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
               <svg style={{ width: '18px', height: '18px', color: '#dc2626', flexShrink: 0, marginTop: '1px' }} fill="currentColor" viewBox="0 0 20 20">
@@ -89,6 +90,7 @@ export default function LoginPage() {
               <p style={{ color: '#dc2626', fontSize: '14px', margin: 0 }}>{errores.general}</p>
             </div>
           )}
+
           {intentos > 0 && !bloqueado && (
             <div style={{ marginBottom: '20px', padding: '14px 16px', borderRadius: '12px', background: '#fffbeb', border: '1px solid #fde68a', display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
               <svg style={{ width: '18px', height: '18px', color: '#d97706', flexShrink: 0, marginTop: '1px' }} fill="currentColor" viewBox="0 0 20 20">
@@ -152,8 +154,9 @@ export default function LoginPage() {
               {errores.contrasena && <p style={{ color: '#ef4444', fontSize: '12px', marginTop: '6px' }}>{errores.contrasena}</p>}
             </div>
 
+            {/* ✅ ÚNICO CAMBIO: /forgot-password → /recuperar */}
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <Link to="/forgot-password" style={{ fontSize: '13px', color: '#1e3a8a', fontWeight: 700, textDecoration: 'none' }}>
+              <Link to="/recuperar" style={{ fontSize: '13px', color: '#1e3a8a', fontWeight: 700, textDecoration: 'none' }}>
                 ¿Olvidaste tu contraseña?
               </Link>
             </div>

@@ -28,4 +28,9 @@ export const authService = {
     const { data } = await api.post('/auth/recuperar', { correo })
     return data
   },
+
+  nuevaContrasena: async (token, contrasena) => {
+    const { data } = await api.post('/auth/nueva-contrasena', { token, contrasena })
+    return data
+  },
 }
