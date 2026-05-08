@@ -21,9 +21,15 @@ export function useRecuperar() {
     setCargando(true)
     setError('')
 
-    // ── Simulación: espera 1.5s y muestra éxito siempre ──
+    // ── Simulación frontend: correos "no registrados" ──
+    const correosRegistrados = ['usuario@correo.com', 'admin@rentamovil.com', 'prueba@test.com']
+
     setTimeout(() => {
       setCargando(false)
+      if (!correosRegistrados.includes(correo.toLowerCase())) {
+        setError('Este correo no está registrado en la plataforma.')
+        return
+      }
       setEnviado(true)
     }, 1500)
   }

@@ -1,6 +1,30 @@
-import { Link } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { useRecuperar } from '../hooks/useRecuperar'
 import logo from '@/assets/logo/logo.png'
+
+function Redireccion() {
+  const navigate = useNavigate()
+  const [segundos, setSegundos] = useState(4)
+
+  useEffect(() => {
+    if (segundos === 0) {
+      navigate('/nueva-contrasena?token=SIMULADO-TOKEN-DEMO')
+      return
+    }
+    const t = setTimeout(() => setSegundos(s => s - 1), 1000)
+    return () => clearTimeout(t)
+  }, [segundos, navigate])
+
+  return (
+    <div style={{ padding: '12px 16px', borderRadius: '12px', background: '#f0fdf4', border: '1px solid #bbf7d0', marginTop: '12px' }}>
+      <p style={{ color: '#15803d', fontSize: '13px', margin: 0, textAlign: 'center' }}>
+        Redirigiendo al formulario en <strong>{segundos}s</strong>...{' '}
+        <span style={{ color: '#64748b' }}>(simulación)</span>
+      </p>
+    </div>
+  )
+}
 
 export default function RecuperarContrasenaPage() {
   const { correo, setCorreo, cargando, enviado, error, handleSubmit } = useRecuperar()
@@ -46,7 +70,6 @@ export default function RecuperarContrasenaPage() {
             </>
           ) : (
             <>
-            
               <div>
                 <h2 style={{ color: '#fff', fontSize: '1.75rem', fontWeight: 900, margin: '0 0 10px', lineHeight: 1.2 }}>
                   ¡Correo enviado!
@@ -92,7 +115,7 @@ export default function RecuperarContrasenaPage() {
             </p>
           </div>
 
-          {/* ── Alerta éxito (ahora azul) ── */}
+          {/* ── Alerta éxito ── */}
           {enviado && (
             <div style={{ marginBottom: '20px', padding: '14px 16px', borderRadius: '12px', background: '#eff6ff', border: '1px solid #bfdbfe', display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
               <svg style={{ width: '18px', height: '18px', color: '#1d4ed8', flexShrink: 0, marginTop: '1px' }} fill="currentColor" viewBox="0 0 20 20">
@@ -159,6 +182,9 @@ export default function RecuperarContrasenaPage() {
               }
             </button>
           </form>
+
+          {/* ── Contador de redirección (solo cuando enviado) ── */}
+          {enviado && <Redireccion correo={correo} />}
 
           <p style={{ textAlign: 'center', fontSize: '14px', color: '#64748b', marginTop: '24px' }}>
             <Link to="/login" style={{ color: '#1e3a8a', fontWeight: 700, textDecoration: 'none' }}>
