@@ -48,7 +48,6 @@ const pasos = [
 ]
 
 const S = {
-  // reutilizables
   section: (bg) => ({ padding: '80px 0', background: bg }),
   inner:   { maxWidth: '1280px', margin: '0 auto', padding: '0 48px' },
   badge:   {
@@ -69,6 +68,11 @@ const S = {
   sectionSub: { color: '#64748b', fontSize: '15px', margin: 0 },
 }
 
+const linkNavStyle = {
+  fontSize: '13px', color: '#475569', fontWeight: 600,
+  textDecoration: 'none', whiteSpace: 'nowrap', cursor: 'pointer',
+}
+
 export default function LandingPage() {
   return (
     <div style={{ minHeight: '100vh', background: '#fff', display: 'flex', flexDirection: 'column', overflowX: 'hidden' }}>
@@ -84,17 +88,25 @@ export default function LandingPage() {
           <img src={logo} alt="RentaMovil" style={{ height: '40px', flexShrink: 0 }} />
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '32px', flex: 1, justifyContent: 'center' }}>
+
+            {/* ── Vehículos → /catalogo ── */}
+            <Link
+              to="/catalogo"
+              style={linkNavStyle}
+              onMouseEnter={e => e.currentTarget.style.color = '#1e3a8a'}
+              onMouseLeave={e => e.currentTarget.style.color = '#475569'}
+            >
+              Vehículos
+            </Link>
+
+            {/* ── Resto del menú (anclas) ── */}
             {[
-              { label: 'Vehículos',  href: '#vehiculos' },
-              { label: 'Sucursales', href: '#sucursales' },
+              { label: 'Sucursales', href: '#sucursales'    },
               { label: 'Servicios',  href: '#como-funciona' },
-              { label: 'Tarifas',    href: '#tarifas' },
-              { label: 'Soporte',    href: '#soporte' },
+              { label: 'Tarifas',    href: '#tarifas'       },
+              { label: 'Soporte',    href: '#soporte'       },
             ].map(({ label, href }) => (
-              <a key={label} href={href} style={{
-                fontSize: '13px', color: '#475569', fontWeight: 600,
-                textDecoration: 'none', whiteSpace: 'nowrap', cursor: 'pointer',
-              }}
+              <a key={label} href={href} style={linkNavStyle}
                 onMouseEnter={e => e.currentTarget.style.color = '#1e3a8a'}
                 onMouseLeave={e => e.currentTarget.style.color = '#475569'}
               >{label}</a>
@@ -134,7 +146,6 @@ export default function LandingPage() {
 
         <div style={{ position: 'relative', width: '100%', maxWidth: '1280px', margin: '0 auto', padding: '80px 48px', display: 'flex', alignItems: 'center', gap: '64px', flexWrap: 'wrap' }}>
 
-          {/* Texto */}
           <div style={{ flex: '1 1 400px', minWidth: '300px' }}>
             <span style={S.badge}>
               <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#1e3a8a' }} />
@@ -194,7 +205,7 @@ export default function LandingPage() {
               {[
                 { modelo: 'Sedan Económico', nombre: 'Toyota Corolla 2024', precio: '$85k/día' },
                 { modelo: 'SUV Premium',     nombre: 'Mazda CX-5 2024',     precio: '$145k/día' },
-                { modelo: 'Deportivo',        nombre: 'Mustang GT 2023',      precio: '$220k/día' },
+                { modelo: 'Deportivo',       nombre: 'Mustang GT 2023',      precio: '$220k/día' },
               ].map((car) => (
                 <div key={car.nombre} style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '14px', borderRadius: '16px', background: '#f8fafc', marginBottom: '10px', cursor: 'pointer' }}
                   onMouseEnter={e => e.currentTarget.style.background = '#eff6ff'}
@@ -210,7 +221,9 @@ export default function LandingPage() {
                   <span style={{ fontSize: '15px', fontWeight: 900, color: '#1e3a8a', whiteSpace: 'nowrap' }}>{car.precio}</span>
                 </div>
               ))}
-              <Link to="/registro" style={{
+
+              {/* ── Ver toda la flota → /catalogo ── */}
+              <Link to="/catalogo" style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
                 width: '100%', marginTop: '16px', padding: '14px', borderRadius: '16px',
                 background: 'linear-gradient(90deg,#1e3a8a,#2563eb)', color: '#fff',
