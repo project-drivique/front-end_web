@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { loginUsuario } from '../services/authService'
+import { authService } from '../../../services/authService'
+
 
 const MAX_INTENTOS = 3
 
@@ -38,7 +39,10 @@ export function useLogin() {
     setExito('')
 
     if (bloqueado) {
-      setErrores(prev => ({ ...prev, general: 'Cuenta bloqueada. Usa ¿Olvidaste tu contraseña?' }))
+      setErrores(prev => ({
+        ...prev,
+        general: 'Cuenta bloqueada. Usa ¿Olvidaste tu contraseña?'
+      }))
       return
     }
 
@@ -48,26 +52,41 @@ export function useLogin() {
     setErrores({ correo: '', contrasena: '', general: '' })
 
     try {
-      const datos = await loginUsuario({ correo, contrasena })
+      // 🔥 AQUÍ ESTABA EL ERROR
+      const datos = await authService.login(correo, contrasena)
+
       localStorage.setItem('renta_token', datos.token)
-      localStorage.setItem('renta_user', JSON.stringify({ correo, nombre: datos.nombre, rol: datos.rol }))
+      localStorage.setItem('renta_user', JSON.stringify({
+        correo,
+        nombre: datos.nombre,
+        rol: datos.rol
+      }))
+
       setExito('¡Acceso exitoso! Redirigiendo...')
+
       setTimeout(() => {
         if (datos.rol === 'administrador') navigate('/admin')
         else navigate('/home')
       }, 1000)
-    } catch (error) {
+
+    // eslint-disable-next-line no-unused-vars
+    } catch (_error) {
       const nuevosIntentos = intentos + 1
       setIntentos(nuevosIntentos)
+
       if (nuevosIntentos >= MAX_INTENTOS) {
         setBloqueado(true)
-        setErrores(prev => ({ ...prev, general: `Cuenta bloqueada tras ${MAX_INTENTOS} intentos fallidos.` }))
+        setErrores(prev => ({
+          ...prev,
+          general: `Cuenta bloqueada tras ${MAX_INTENTOS} intentos fallidos.`
+        }))
       } else {
         setErrores(prev => ({
           ...prev,
-          general: `${error.message}. Intentos restantes: ${MAX_INTENTOS - nuevosIntentos}`,
+          general: `Error al iniciar sesión. Intentos restantes: ${MAX_INTENTOS - nuevosIntentos}`
         }))
       }
+
     } finally {
       setCargando(false)
     }
@@ -75,14 +94,27 @@ export function useLogin() {
 
   const handleCorreoChange = (valor) => {
     setCorreo(valor)
-    if (errores.correo) setErrores(prev => ({ ...prev, correo: validarCorreo(valor) }))
+    if (errores.correo) {
+      setErrores(prev => ({
+        ...prev,
+        correo: validarCorreo(valor)
+      }))
+    }
   }
 
   return {
-    correo, contrasena, mostrarPass, cargando,
-    intentos, bloqueado, errores, exito,
-    setContrasena, setMostrarPass,
-    handleCorreoChange, handleSubmit,
+    correo,
+    contrasena,
+    mostrarPass,
+    cargando,
+    intentos,
+    bloqueado,
+    errores,
+    exito,
+    setContrasena,
+    setMostrarPass,
+    handleCorreoChange,
+    handleSubmit,
     MAX_INTENTOS,
   }
 }
