@@ -46,7 +46,7 @@ export default function RecuperarContrasenaPage() {
             </>
           ) : (
             <>
-              <div style={{ fontSize: '64px' }}>✅</div>
+            
               <div>
                 <h2 style={{ color: '#fff', fontSize: '1.75rem', fontWeight: 900, margin: '0 0 10px', lineHeight: 1.2 }}>
                   ¡Correo enviado!
@@ -83,90 +83,82 @@ export default function RecuperarContrasenaPage() {
 
         <div style={{ width: '100%', maxWidth: '400px', background: '#fff', borderRadius: '24px', boxShadow: '0 8px 40px rgba(0,0,0,0.08)', border: '1px solid #f1f5f9', padding: '40px' }}>
 
-          {!enviado ? (
-            <>
-              <div style={{ marginBottom: '28px' }}>
-                <h1 style={{ fontSize: '1.6rem', fontWeight: 900, color: '#0f172a', margin: '0 0 6px' }}>
-                  Recuperar contraseña
-                </h1>
-                <p style={{ color: '#64748b', fontSize: '14px', margin: 0 }}>
-                  Ingresa tu correo y te enviaremos un enlace de recuperación
-                </p>
-              </div>
+          <div style={{ marginBottom: '28px' }}>
+            <h1 style={{ fontSize: '1.6rem', fontWeight: 900, color: '#0f172a', margin: '0 0 6px' }}>
+              Recuperar contraseña
+            </h1>
+            <p style={{ color: '#64748b', fontSize: '14px', margin: 0 }}>
+              Ingresa tu correo y te enviaremos un enlace de recuperación
+            </p>
+          </div>
 
-              {error && (
-                <div style={{ marginBottom: '20px', padding: '14px 16px', borderRadius: '12px', background: '#fef2f2', border: '1px solid #fecaca', display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
-                  <svg style={{ width: '18px', height: '18px', color: '#dc2626', flexShrink: 0, marginTop: '1px' }} fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                  </svg>
-                  <p style={{ color: '#dc2626', fontSize: '14px', margin: 0 }}>{error}</p>
-                </div>
-              )}
-
-              <form onSubmit={handleSubmit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: '#374151', marginBottom: '8px' }}>
-                    Correo electrónico
-                  </label>
-                  <input
-                    type="email"
-                    value={correo}
-                    onChange={(e) => setCorreo(e.target.value)}
-                    disabled={cargando}
-                    placeholder="ejemplo@correo.com"
-                    autoComplete="email"
-                    style={{
-                      width: '100%', padding: '12px 16px', borderRadius: '12px',
-                      border: error ? '1.5px solid #f87171' : '1.5px solid #e2e8f0',
-                      background: error ? '#fef2f2' : '#fff',
-                      fontSize: '14px', color: '#1e293b', outline: 'none',
-                      boxSizing: 'border-box', transition: 'border-color 150ms',
-                    }}
-                    onFocus={e => e.target.style.borderColor = '#1e3a8a'}
-                    onBlur={e => e.target.style.borderColor = error ? '#f87171' : '#e2e8f0'}
-                  />
-                </div>
-
-                <button type="submit" disabled={cargando}
-                  style={{
-                    width: '100%', padding: '14px', borderRadius: '12px',
-                    background: 'linear-gradient(90deg,#1e3a8a,#2563eb)', color: '#fff',
-                    fontWeight: 700, fontSize: '14px', border: 'none',
-                    cursor: cargando ? 'not-allowed' : 'pointer',
-                    opacity: cargando ? 0.55 : 1,
-                    boxShadow: '0 4px 16px rgba(30,58,138,0.25)', transition: 'opacity 150ms',
-                  }}>
-                  {cargando
-                    ? <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
-                        <span style={{ width: '16px', height: '16px', border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#fff', borderRadius: '50%', animation: 'spin 0.7s linear infinite', display: 'inline-block' }} />
-                        Enviando...
-                      </span>
-                    : 'Enviar enlace de recuperación'
-                  }
-                </button>
-              </form>
-            </>
-          ) : (
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: '#f0fdf4', border: '2px solid #bbf7d0', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', fontSize: '28px' }}>
-                ✅
-              </div>
-              <h2 style={{ fontSize: '1.4rem', fontWeight: 900, color: '#0f172a', margin: '0 0 8px' }}>
-                Enlace de recuperación enviado
-              </h2>
-              <p style={{ color: '#64748b', fontSize: '14px', margin: '0 0 4px' }}>
-                Hemos enviado un enlace para restablecer tu contraseña a
+          {/* ── Alerta éxito (ahora azul) ── */}
+          {enviado && (
+            <div style={{ marginBottom: '20px', padding: '14px 16px', borderRadius: '12px', background: '#eff6ff', border: '1px solid #bfdbfe', display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
+              <svg style={{ width: '18px', height: '18px', color: '#1d4ed8', flexShrink: 0, marginTop: '1px' }} fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              </svg>
+              <p style={{ color: '#1d4ed8', fontSize: '14px', fontWeight: 500, margin: 0 }}>
+                ¡Enlace enviado exitosamente! Revisa tu bandeja de entrada.
               </p>
-              <p style={{ color: '#1e3a8a', fontSize: '14px', fontWeight: 700, margin: '0 0 20px' }}>
-                {correo}
-              </p>
-              <div style={{ padding: '14px 16px', borderRadius: '12px', background: '#eff6ff', border: '1px solid #bfdbfe' }}>
-                <p style={{ color: '#1e40af', fontSize: '13px', margin: 0 }}>
-                  El enlace expira en <strong>30 minutos</strong>. Si no lo ves en tu bandeja principal, revisa el spam.
-                </p>
-              </div>
             </div>
           )}
+
+          {/* ── Alerta error ── */}
+          {error && (
+            <div style={{ marginBottom: '20px', padding: '14px 16px', borderRadius: '12px', background: '#fef2f2', border: '1px solid #fecaca', display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
+              <svg style={{ width: '18px', height: '18px', color: '#dc2626', flexShrink: 0, marginTop: '1px' }} fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+              </svg>
+              <p style={{ color: '#dc2626', fontSize: '14px', margin: 0 }}>{error}</p>
+            </div>
+          )}
+
+          {/* ── Formulario ── */}
+          <form onSubmit={handleSubmit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <div>
+              <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: '#374151', marginBottom: '8px' }}>
+                Correo electrónico
+              </label>
+              <input
+                type="email"
+                value={correo}
+                onChange={(e) => setCorreo(e.target.value)}
+                disabled={cargando || enviado}
+                placeholder="ejemplo@correo.com"
+                autoComplete="email"
+                style={{
+                  width: '100%', padding: '12px 16px', borderRadius: '12px',
+                  border: error ? '1.5px solid #f87171' : enviado ? '1.5px solid #bfdbfe' : '1.5px solid #e2e8f0',
+                  background: error ? '#fef2f2' : enviado ? '#eff6ff' : '#fff',
+                  fontSize: '14px', color: '#1e293b', outline: 'none',
+                  boxSizing: 'border-box', transition: 'border-color 150ms',
+                }}
+                onFocus={e => { if (!enviado) e.target.style.borderColor = '#1e3a8a' }}
+                onBlur={e => { if (!enviado) e.target.style.borderColor = error ? '#f87171' : '#e2e8f0' }}
+              />
+            </div>
+
+            <button type="submit" disabled={cargando || enviado}
+              style={{
+                width: '100%', padding: '14px', borderRadius: '12px',
+                background: enviado
+                  ? 'linear-gradient(90deg,#1e3a8a,#1d4ed8)'
+                  : 'linear-gradient(90deg,#1e3a8a,#2563eb)',
+                color: '#fff', fontWeight: 700, fontSize: '14px', border: 'none',
+                cursor: cargando || enviado ? 'not-allowed' : 'pointer',
+                opacity: cargando ? 0.55 : 1,
+                boxShadow: '0 4px 16px rgba(30,58,138,0.25)', transition: 'all 300ms',
+              }}>
+              {cargando
+                ? <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
+                    <span style={{ width: '16px', height: '16px', border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#fff', borderRadius: '50%', animation: 'spin 0.7s linear infinite', display: 'inline-block' }} />
+                    Enviando...
+                  </span>
+                : enviado ? '✓ Enlace enviado' : 'Enviar enlace de recuperación'
+              }
+            </button>
+          </form>
 
           <p style={{ textAlign: 'center', fontSize: '14px', color: '#64748b', marginTop: '24px' }}>
             <Link to="/login" style={{ color: '#1e3a8a', fontWeight: 700, textDecoration: 'none' }}>
