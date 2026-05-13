@@ -21,3 +21,43 @@ body {
   min-height: 100vh;
   max-width: 100%;
 }
+
+/* ── Modo claro (defecto) ── */
+:root {
+  --bg-page:       #ffffff;
+  --bg-nav:        rgba(255,255,255,0.98);
+  --bg-seccion1:   #f8fafc;
+  --bg-seccion2:   #ffffff;
+  --bg-tarjeta:    #ffffff;
+  --bg-item:       #f8fafc;
+  --bg-item-hover: #eff6ff;
+  --texto-primary: #0f172a;
+  --texto-second:  #64748b;
+  --texto-nav:     #475569;
+  --borde:         #f1f5f9;
+  --sombra-nav:    0 1px 8px rgba(0,0,0,0.06);
+  --sombra-tarjeta:0 20px 60px rgba(30,58,138,0.13);
+  --hero-fondo:    linear-gradient(135deg,#eff6ff 0%,#dbeafe 50%,#fff 100%);
+  --hero-orb1:     rgba(191,219,254,0.5);
+  --hero-orb2:     rgba(199,210,254,0.35);
+}
+
+/* ── Modo oscuro ── */
+html.dark {
+  --bg-page:       #0f172a;
+  --bg-nav:        rgba(15,23,42,0.98);
+  --bg-seccion1:   #1e293b;
+  --bg-seccion2:   #0f172a;
+  --bg-tarjeta:    #1e293b;
+  --bg-item:       #0f172a;
+  --bg-item-hover: #1e3a5f;
+  --texto-primary: #f1f5f9;
+  --texto-second:  #94a3b8;
+  --texto-nav:     #cbd5e1;
+  --borde:         #334155;
+  --sombra-nav:    0 1px 8px rgba(0,0,0,0.4);
+  --sombra-tarjeta:0 20px 60px rgba(0,0,0,0.4);
+  --hero-fondo:    linear-gradient(135deg,#0f172a 0%,#1e293b 50%,#0f172a 100%);
+  --hero-orb1:     rgba(30,58,138,0.2);
+  --hero-orb2:     rgba(30,58,138,0.15);
+}
