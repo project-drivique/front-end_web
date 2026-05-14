@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { useNuevaContrasena } from '../hooks/useNuevaContrasena'
 import logo from '@/assets/logo/logo.png'
 
@@ -81,7 +82,7 @@ export default function NuevaContrasenaPage() {
         </div>
 
         <div style={{ position: 'relative', zIndex: 1, padding: '16px 56px', borderTop: '1px solid rgba(255,255,255,0.08)', textAlign: 'center' }}>
-          <p style={{ color: 'rgba(147,197,253,0.35)', fontSize: '12px', margin: 0 }}>RentaMóvil © 2026 · Ficha 3145555 — SENA CIES</p>
+          <p style={{ color: 'rgba(147,197,253,0.35)', fontSize: '12px', margin: 0 }}>RentaMóvil © 2026</p>
         </div>
       </div>
 
@@ -92,6 +93,23 @@ export default function NuevaContrasenaPage() {
           <style>{`@media(min-width:1024px){.logo-mobile{display:none}}`}</style>
           <img src={logo} alt="RentaMovil" style={{ height: '48px', display: 'block', margin: '0 auto' }} />
         </div>
+
+        {/* Botón volver al login */}
+        {!exito && (
+          <div style={{ width: '100%', maxWidth: '400px', marginBottom: '12px' }}>
+            <Link
+              to="/login"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: '#64748b', textDecoration: 'none', fontWeight: 600 }}
+              onMouseEnter={e => e.currentTarget.style.color = '#1e3a8a'}
+              onMouseLeave={e => e.currentTarget.style.color = '#64748b'}
+            >
+              <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+              </svg>
+              Volver al inicio de sesión
+            </Link>
+          </div>
+        )}
 
         <div style={{ width: '100%', maxWidth: '400px', background: '#fff', borderRadius: '24px', boxShadow: '0 8px 40px rgba(0,0,0,0.08)', border: '1px solid #f1f5f9', padding: '40px' }}>
 
@@ -194,6 +212,9 @@ export default function NuevaContrasenaPage() {
                   {confirmar && confirmar !== contrasena && (
                     <p style={{ color: '#ef4444', fontSize: '12px', marginTop: '6px' }}>Las contraseñas no coinciden</p>
                   )}
+                  {confirmar && confirmar === contrasena && fortaleza.every(r => r.cumple) && (
+                    <p style={{ color: '#16a34a', fontSize: '12px', marginTop: '6px' }}>✓ Las contraseñas coinciden</p>
+                  )}
                 </div>
 
                 <button
@@ -227,8 +248,8 @@ export default function NuevaContrasenaPage() {
               <h2 style={{ fontSize: '1.4rem', fontWeight: 900, color: '#0f172a', margin: '0 0 8px' }}>
                 ¡Contraseña actualizada!
               </h2>
-              <p style={{ color: '#64748b', fontSize: '14px', margin: '0 0 20px' }}>
-                Tu contraseña fue cambiada correctamente. Ya puedes iniciar sesión.
+              <p style={{ color: '#64748b', fontSize: '14px', margin: '0 0 24px' }}>
+                Tu contraseña fue cambiada correctamente. Ya puedes iniciar sesión con tu nueva contraseña.
               </p>
               <button
                 onClick={() => navigate('/login')}
