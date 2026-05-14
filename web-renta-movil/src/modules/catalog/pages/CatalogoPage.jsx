@@ -347,10 +347,9 @@ export default function CatalogoPage() {
                     📍 {busquedaAplicada.lugarRecogida} → {busquedaAplicada.mismoLugar ? busquedaAplicada.lugarRecogida : busquedaAplicada.lugarDevolucion || '—'}
                   </span>
                   <button
-                    onClick={limpiar}
-                    style={{ fontSize: '12px', color: '#dc2626', fontWeight: 700, background: 'none', border: 'none', cursor: 'pointer', padding: '3px 8px', borderRadius: '9999px', background: '#fef2f2' }}
-                  >
-                    ✕ Limpiar búsqueda
+                  onClick={limpiar}
+                  style={{ fontSize: '12px', color: '#dc2626', fontWeight: 700, border: 'none', cursor: 'pointer', padding: '3px 8px', borderRadius: '9999px', background: '#fef2f2' }}
+                  > ✕ Limpiar búsqueda
                   </button>
                 </div>
               )}
