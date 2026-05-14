@@ -34,6 +34,9 @@ export function useLogin() {
     return !nuevos.correo && !nuevos.contrasena
   }
 
+  // 🔑 Credencial quemada para pruebas de frontend
+  const USUARIO_PRUEBA = { correo: 'demo@rentamovil.com', contrasena: 'Demo1234', rol: 'cliente', nombre: 'Usuario Demo' }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setExito('')
@@ -52,7 +55,16 @@ export function useLogin() {
     setErrores({ correo: '', contrasena: '', general: '' })
 
     try {
-      // 🔥 AQUÍ ESTABA EL ERROR
+      // Credencial quemada: simula login sin backend
+      if (correo === USUARIO_PRUEBA.correo && contrasena === USUARIO_PRUEBA.contrasena) {
+        await new Promise(r => setTimeout(r, 800))
+        localStorage.setItem('renta_token', 'token-demo-123')
+        localStorage.setItem('renta_user', JSON.stringify({ correo, nombre: USUARIO_PRUEBA.nombre, rol: USUARIO_PRUEBA.rol }))
+        setExito('¡Acceso exitoso! Redirigiendo...')
+        setTimeout(() => navigate('/home'), 1000)
+        return
+      }
+
       const datos = await authService.login(correo, contrasena)
 
       localStorage.setItem('renta_token', datos.token)

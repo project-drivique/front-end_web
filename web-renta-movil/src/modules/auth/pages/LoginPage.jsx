@@ -54,7 +54,7 @@ export default function LoginPage() {
         </div>
 
         <div style={{ position: 'relative', zIndex: 1, padding: '16px 56px', borderTop: '1px solid rgba(255,255,255,0.08)', textAlign: 'center' }}>
-          <p style={{ color: 'rgba(147,197,253,0.35)', fontSize: '12px', margin: 0 }}>RentaMóvil © 2026 · Ficha 3145555 — SENA CIES</p>
+          <p style={{ color: 'rgba(147,197,253,0.35)', fontSize: '12px', margin: 0 }}>RentaMóvil © 2026</p>
         </div>
       </div>
 
@@ -64,6 +64,20 @@ export default function LoginPage() {
         <div style={{ marginBottom: '32px' }} className="logo-mobile">
           <style>{`@media(min-width:1024px){.logo-mobile{display:none}}`}</style>
           <img src={logo} alt="RentaMovil" style={{ height: '48px', display: 'block', margin: '0 auto' }} />
+        </div>
+
+        <div style={{ width: '100%', maxWidth: '400px', marginBottom: '12px' }}>
+          <Link
+            to="/"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: '#64748b', textDecoration: 'none', fontWeight: 600 }}
+            onMouseEnter={e => e.currentTarget.style.color = '#1e3a8a'}
+            onMouseLeave={e => e.currentTarget.style.color = '#64748b'}
+          >
+            <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+            Volver al inicio
+          </Link>
         </div>
 
         <div style={{ width: '100%', maxWidth: '400px', background: '#fff', borderRadius: '24px', boxShadow: '0 8px 40px rgba(0,0,0,0.08)', border: '1px solid #f1f5f9', padding: '40px' }}>
