@@ -47,13 +47,13 @@ const VEHICULOS_MOCK = [
       { autor: 'Andrés R.',  calificacion: 5, texto: 'Lo recomiendo totalmente, volveré a alquilar.',           fecha: '2026-03-05' },
     ],
   },
-  { id: 2, nombre: 'Mazda CX-5 2024',     categoria: 'SUV',       transmision: 'Automática', combustible: 'Gasolina', precio: 145000, calificacion: 4.9, disponible: true,  imagen: null, puertas: 5, pasajeros: 5, maletero: 442, cilindraje: '2.5L',        color: 'Soul Red Crystal', año: 2024, placa: 'DEF-456', tarifas: { kmLimitado: { km: 250, precio: 145000, excedente: 1000 }, kmIlimitado: { precio: 175000 } }, seguros: [{ nombre: 'Protección obligatoria', precio: 29000 }, { nombre: 'Protección total', precio: 67090 }], servicios: [{ nombre: 'GPS', precio: 15000 }, { nombre: 'Silla bebé', precio: 20000 }], sucursal: 'Aeropuerto Neiva',        imagenes: [null,null,null], disponibilidad: { ocupados: ['2026-05-15','2026-05-16'] },              comentarios: [{ autor: 'María F.',     calificacion: 5, texto: 'Increíble SUV, perfecto para carretera.',           fecha: '2026-04-18' }] },
-  { id: 3, nombre: 'Chevrolet Spark 2023', categoria: 'Económico', transmision: 'Manual',     combustible: 'Gasolina', precio: 60000,  calificacion: 4.5, disponible: true,  imagen: null, puertas: 4, pasajeros: 4, maletero: 170, cilindraje: '1.0L',        color: 'Rojo Passion',     año: 2023, placa: 'GHI-789', tarifas: { kmLimitado: { km: 150, precio: 60000,  excedente: 600  }, kmIlimitado: { precio: 75000  } }, seguros: [{ nombre: 'Protección obligatoria', precio: 29000 }, { nombre: 'Protección total', precio: 67090 }], servicios: [{ nombre: 'GPS', precio: 15000 }], sucursal: 'Terminal de Transportes', imagenes: [null,null,null], disponibilidad: { ocupados: [] },                                      comentarios: [{ autor: 'Jorge L.',     calificacion: 4, texto: 'Económico y fácil de conducir en ciudad.',         fecha: '2026-04-01' }] },
-  { id: 4, nombre: 'Ford Mustang GT 2023', categoria: 'Deportivo', transmision: 'Automática', combustible: 'Gasolina', precio: 220000, calificacion: 4.7, disponible: false, imagen: null, puertas: 2, pasajeros: 4, maletero: 382, cilindraje: '5.0L V8',     color: 'Race Red',         año: 2023, placa: 'JKL-012', tarifas: { kmLimitado: { km: 300, precio: 220000, excedente: 1500 }, kmIlimitado: { precio: 260000 } }, seguros: [{ nombre: 'Protección obligatoria', precio: 29000 }, { nombre: 'Protección total', precio: 67090 }], servicios: [{ nombre: 'GPS', precio: 15000 }, { nombre: 'Conductor adicional', precio: 30000 }], sucursal: 'Centro Neiva',            imagenes: [null,null,null], disponibilidad: { ocupados: [] },                                      comentarios: [] },
-  { id: 5, nombre: 'Toyota Prado 2024',    categoria: 'SUV',       transmision: 'Automática', combustible: 'Diesel',   precio: 180000, calificacion: 4.6, disponible: true,  imagen: null, puertas: 5, pasajeros: 8, maletero: 390, cilindraje: '2.8L Diesel',  color: 'Super White',      año: 2024, placa: 'MNO-345', tarifas: { kmLimitado: { km: 300, precio: 180000, excedente: 1200 }, kmIlimitado: { precio: 215000 } }, seguros: [{ nombre: 'Protección obligatoria', precio: 29000 }, { nombre: 'Protección total', precio: 67090 }], servicios: [{ nombre: 'GPS', precio: 15000 }, { nombre: 'Silla bebé', precio: 20000 }, { nombre: 'Conductor adicional', precio: 30000 }], sucursal: 'Norte Neiva', imagenes: [null,null,null], disponibilidad: { ocupados: ['2026-05-25','2026-05-26','2026-05-27'] }, comentarios: [{ autor: 'Sandra V.', calificacion: 5, texto: 'Perfecto para viajes largos con familia.', fecha: '2026-04-20' }] },
-  { id: 6, nombre: 'Renault Sandero 2023', categoria: 'Económico', transmision: 'Manual',     combustible: 'Gasolina', precio: 55000,  calificacion: 4.3, disponible: true,  imagen: null, puertas: 5, pasajeros: 5, maletero: 320, cilindraje: '1.6L',        color: 'Gris Highland',    año: 2023, placa: 'PQR-678', tarifas: { kmLimitado: { km: 150, precio: 55000,  excedente: 550  }, kmIlimitado: { precio: 68000  } }, seguros: [{ nombre: 'Protección obligatoria', precio: 29000 }, { nombre: 'Protección total', precio: 67090 }], servicios: [{ nombre: 'GPS', precio: 15000 }], sucursal: 'Sur Neiva',               imagenes: [null,null,null], disponibilidad: { ocupados: [] },                                      comentarios: [] },
-  { id: 7, nombre: 'Hyundai Tucson 2024',  categoria: 'SUV',       transmision: 'Automática', combustible: 'Híbrido',  precio: 160000, calificacion: 4.8, disponible: true,  imagen: null, puertas: 5, pasajeros: 5, maletero: 513, cilindraje: '1.6L Híbrido', color: 'Phantom Black',    año: 2024, placa: 'STU-901', tarifas: { kmLimitado: { km: 250, precio: 160000, excedente: 1100 }, kmIlimitado: { precio: 192000 } }, seguros: [{ nombre: 'Protección obligatoria', precio: 29000 }, { nombre: 'Protección total', precio: 67090 }], servicios: [{ nombre: 'GPS', precio: 15000 }, { nombre: 'Silla bebé', precio: 20000 }], sucursal: 'Aeropuerto Neiva',        imagenes: [null,null,null], disponibilidad: { ocupados: ['2026-05-30','2026-05-31'] },             comentarios: [{ autor: 'Valentina C.', calificacion: 5, texto: 'El híbrido es increíble, muy eficiente en combustible.', fecha: '2026-05-01' }] },
-  { id: 8, nombre: 'Kia Cerato 2024',      categoria: 'Sedan',     transmision: 'Automática', combustible: 'Gasolina', precio: 95000,  calificacion: 4.4, disponible: true,  imagen: null, puertas: 4, pasajeros: 5, maletero: 502, cilindraje: '2.0L',        color: 'Snow White Pearl', año: 2024, placa: 'VWX-234', tarifas: { kmLimitado: { km: 200, precio: 95000,  excedente: 900  }, kmIlimitado: { precio: 115000 } }, seguros: [{ nombre: 'Protección obligatoria', precio: 29000 }, { nombre: 'Protección total', precio: 67090 }], servicios: [{ nombre: 'GPS', precio: 15000 }, { nombre: 'Conductor adicional', precio: 30000 }], sucursal: 'Centro Neiva',            imagenes: [null,null,null], disponibilidad: { ocupados: [] },                                      comentarios: [{ autor: 'Ricardo T.', calificacion: 4, texto: 'Buen espacio interior, cómodo para la ciudad.', fecha: '2026-04-15' }] },
+  { id: 2, nombre: 'Mazda CX-5 2024',     categoria: 'SUV',       transmision: 'Automática', combustible: 'Gasolina', precio: 145000, calificacion: 4.9, disponible: true,  puertas: 5, pasajeros: 5, maletero: 442, cilindraje: '2.5L',        color: 'Soul Red Crystal', año: 2024, placa: 'DEF-456', tarifas: { kmLimitado: { km: 250, precio: 145000, excedente: 1000 }, kmIlimitado: { precio: 175000 } }, seguros: [{ nombre: 'Protección Obligatoria', precio: 29000 }, { nombre: 'Protección Total', precio: 67000 }], servicios: [{ nombre: 'GPS', precio: 15000 }, { nombre: 'Silla bebé', precio: 20000 }], sucursal: 'Aeropuerto Neiva', imagenes: [null, null, null], disponibilidad: { ocupados: [] }, comentarios: [] },
+  { id: 3, nombre: 'Chevrolet Spark 2023', categoria: 'Económico', transmision: 'Manual',     combustible: 'Gasolina', precio: 60000,  calificacion: 4.5, disponible: true,  puertas: 4, pasajeros: 4, maletero: 170, cilindraje: '1.0L',        color: 'Rojo Passion',     año: 2023, placa: 'GHI-789', tarifas: { kmLimitado: { km: 150, precio: 60000,  excedente: 600  }, kmIlimitado: { precio: 75000  } }, seguros: [{ nombre: 'Protección Obligatoria', precio: 29000 }, { nombre: 'Protección Total', precio: 67000 }], servicios: [{ nombre: 'GPS', precio: 15000 }], sucursal: 'Terminal de Transportes', imagenes: ['/ChevroletSpark.webp', null, null], disponibilidad: { ocupados: [] }, comentarios: [] },
+  { id: 4, nombre: 'Ford Mustang GT 2023', categoria: 'Deportivo', transmision: 'Automática', combustible: 'Gasolina', precio: 220000, calificacion: 4.7, disponible: false, puertas: 2, pasajeros: 4, maletero: 382, cilindraje: '5.0L V8',     color: 'Race Red',         año: 2023, placa: 'JKL-012', tarifas: { kmLimitado: { km: 300, precio: 220000, excedente: 1500 }, kmIlimitado: { precio: 260000 } }, seguros: [{ nombre: 'Protección Obligatoria', precio: 29000 }, { nombre: 'Protección Total', precio: 67000 }], servicios: [{ nombre: 'GPS', precio: 15000 }], sucursal: 'Centro Neiva',            imagenes: ['/FordMustang.webp', null, null], disponibilidad: { ocupados: [] }, comentarios: [] },
+  { id: 5, nombre: 'Toyota Prado 2024',    categoria: 'SUV',       transmision: 'Automática', combustible: 'Diesel',   precio: 180000, calificacion: 4.6, disponible: true,  puertas: 5, pasajeros: 8, maletero: 390, cilindraje: '2.8L Diesel',  color: 'Super White',      año: 2024, placa: 'MNO-345', tarifas: { kmLimitado: { km: 300, precio: 180000, excedente: 1200 }, kmIlimitado: { precio: 215000 } }, seguros: [{ nombre: 'Protección Obligatoria', precio: 29000 }, { nombre: 'Protección Total', precio: 67000 }], servicios: [{ nombre: 'GPS', precio: 15000 }, { nombre: 'Silla bebé', precio: 20000 }, { nombre: 'Conductor adicional', precio: 30000 }], sucursal: 'Norte Neiva', imagenes: [null, null, null], disponibilidad: { ocupados: [] }, comentarios: [] },
+  { id: 6, nombre: 'Renault Sandero 2023', categoria: 'Económico', transmision: 'Manual',     combustible: 'Gasolina', precio: 55000,  calificacion: 4.3, disponible: true,  puertas: 5, pasajeros: 5, maletero: 320, cilindraje: '1.6L',        color: 'Gris Highland',    año: 2023, placa: 'PQR-678', tarifas: { kmLimitado: { km: 150, precio: 55000,  excedente: 550  }, kmIlimitado: { precio: 68000  } }, seguros: [{ nombre: 'Protección Obligatoria', precio: 29000 }, { nombre: 'Protección Total', precio: 67000 }], servicios: [{ nombre: 'GPS', precio: 15000 }], sucursal: 'Sur Neiva',               imagenes: ['/RenaultSandero.webp', null, null], disponibilidad: { ocupados: [] }, comentarios: [] },
+  { id: 7, nombre: 'Hyundai Tucson 2024',  categoria: 'SUV',       transmision: 'Automática', combustible: 'Híbrido',  precio: 160000, calificacion: 4.8, disponible: true,  puertas: 5, pasajeros: 5, maletero: 513, cilindraje: '1.6L Híbrido', color: 'Phantom Black',    año: 2024, placa: 'STU-901', tarifas: { kmLimitado: { km: 250, precio: 160000, excedente: 1100 }, kmIlimitado: { precio: 192000 } }, seguros: [{ nombre: 'Protección Obligatoria', precio: 29000 }, { nombre: 'Protección Total', precio: 67000 }], servicios: [{ nombre: 'GPS', precio: 15000 }, { nombre: 'Silla bebé', precio: 20000 }], sucursal: 'Aeropuerto Neiva', imagenes: [null, null, null], disponibilidad: { ocupados: [] }, comentarios: [] },
+  { id: 8, nombre: 'Kia Cerato 2024',      categoria: 'Sedan',     transmision: 'Automática', combustible: 'Gasolina', precio: 95000,  calificacion: 4.4, disponible: true,  puertas: 4, pasajeros: 5, maletero: 502, cilindraje: '2.0L',        color: 'Snow White Pearl', año: 2024, placa: 'VWX-234', tarifas: { kmLimitado: { km: 200, precio: 95000,  excedente: 900  }, kmIlimitado: { precio: 115000 } }, seguros: [{ nombre: 'Protección Obligatoria', precio: 29000 }, { nombre: 'Protección Total', precio: 67000 }], servicios: [{ nombre: 'GPS', precio: 15000 }, { nombre: 'Conductor adicional', precio: 30000 }], sucursal: 'Centro Neiva', imagenes: [null, null, null], disponibilidad: { ocupados: [] }, comentarios: [] },
 ]
 
 const CATEGORIAS    = ['Todos', 'Sedan', 'SUV', 'Económico', 'Deportivo']
@@ -339,13 +339,10 @@ function TarjetaVehiculo({ vehiculo, esFavorito, onFavorito, dias }) {
 
   const estrellas = Array.from({ length: 5 }, (_, i) => i < Math.round(vehiculo.calificacion))
 
-  const handleReservar = () => {
-    if (!usuario) {
-      navigate('/login', { state: { from: `/catalogo/${vehiculo.id}`, mensaje: 'Inicia sesión para reservar este vehículo.' } })
-      return
-    }
-    navigate('/reserva', { state: { vehiculoId: vehiculo.id } })
-  }
+  // ✅ LÍNEA CORREGIDA: redirige a /catalogo/:id en lugar de /reserva
+ const handleReservar = () => {
+  navigate(`/catalogo/${vehiculo.id}`)
+}
 
   const caracteristicas = [
     { icono: '❄️', label: 'Aire acondicionado'             },
@@ -402,7 +399,7 @@ function TarjetaVehiculo({ vehiculo, esFavorito, onFavorito, dias }) {
         )}
       </div>
 
-      {/* ── CONTENEDOR FIJO: las dos vistas se intercambian aquí ── */}
+      {/* ── CONTENEDOR FIJO ── */}
       <div style={{ position: 'relative', height: '300px', overflow: 'hidden' }}>
 
         {/* ════ VISTA PRINCIPAL ════ */}
@@ -461,14 +458,11 @@ function TarjetaVehiculo({ vehiculo, esFavorito, onFavorito, dias }) {
           transition: 'opacity 220ms ease, transform 220ms ease',
           pointerEvents: verDetalles ? 'all' : 'none',
         }}>
-          {/* Botón ocultar */}
           <div style={{ textAlign: 'center', flexShrink: 0 }}>
             <button onClick={() => setVerDetalles(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '13px', fontWeight: 700, color: '#1e3a8a', textDecoration: 'underline', padding: 0 }}>
               Ocultar detalles
             </button>
           </div>
-
-          {/* Grid características */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px', flexShrink: 0 }}>
             {caracteristicas.map((c, i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#f8fafc', borderRadius: '8px', padding: '7px 8px', border: '1px solid #f1f5f9' }}>
@@ -477,8 +471,6 @@ function TarjetaVehiculo({ vehiculo, esFavorito, onFavorito, dias }) {
               </div>
             ))}
           </div>
-
-          {/* Tarifas */}
           <div style={{ background: '#f0fdf4', borderRadius: '8px', padding: '8px 10px', border: '1px solid #bbf7d0', flexShrink: 0 }}>
             <div style={{ fontSize: '10px', fontWeight: 700, color: '#059669', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '5px' }}>💰 Tarifas</div>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#334155', marginBottom: '3px' }}>
@@ -490,8 +482,6 @@ function TarjetaVehiculo({ vehiculo, esFavorito, onFavorito, dias }) {
               <span style={{ fontWeight: 800 }}>${vehiculo.tarifas?.kmIlimitado?.precio?.toLocaleString('es-CO')}</span>
             </div>
           </div>
-
-          {/* Seguros */}
           <div style={{ background: '#eff6ff', borderRadius: '8px', padding: '8px 10px', border: '1px solid #bfdbfe', flexShrink: 0 }}>
             <div style={{ fontSize: '10px', fontWeight: 700, color: '#1e3a8a', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '5px' }}>🛡️ Seguros</div>
             {vehiculo.seguros?.map((seg, i) => (
