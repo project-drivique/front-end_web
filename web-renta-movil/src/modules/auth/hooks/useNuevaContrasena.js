@@ -22,7 +22,7 @@ export function useNuevaContrasena() {
   const [error, setError]             = useState('')
 
   const fortaleza = REGLAS.map((r) => ({ ...r, cumple: r.test(contrasena) }))
-  const esValida  = fortaleza.every((r) => r.cumple)
+  const esValida  = fortaleza.every((r) => r.cumple) && contrasena === confirmar && confirmar !== ''
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -32,7 +32,7 @@ export function useNuevaContrasena() {
       setError('El enlace de recuperación no es válido. Solicita uno nuevo.')
       return
     }
-    if (!esValida) {
+    if (!fortaleza.every(r => r.cumple)) {
       setError('La contraseña no cumple los requisitos de seguridad.')
       return
     }
@@ -43,7 +43,7 @@ export function useNuevaContrasena() {
 
     setCargando(true)
 
-    // ── Si es token simulado no llama al backend ──
+    // ── Token simulado: no llama al backend ──
     if (token === 'SIMULADO-TOKEN-DEMO') {
       setTimeout(() => {
         setCargando(false)

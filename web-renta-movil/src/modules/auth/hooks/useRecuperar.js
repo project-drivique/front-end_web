@@ -21,8 +21,14 @@ export function useRecuperar() {
     setCargando(true)
     setError('')
 
-    // ── Simulación frontend: correos "no registrados" ──
-    const correosRegistrados = ['usuario@correo.com', 'admin@rentamovil.com', 'prueba@test.com']
+    // ── Correos registrados para simulación frontend ──
+    // 'demo@rentamovil.com' es el dato quemado principal (mismo del login)
+    const correosRegistrados = [
+      'demo@rentamovil.com',
+      'usuario@correo.com',
+      'admin@rentamovil.com',
+      'prueba@test.com',
+    ]
 
     setTimeout(() => {
       setCargando(false)
