@@ -9,16 +9,11 @@ function BarraFortaleza({ fortaleza }) {
   if (cumplidos === 0) return null
   const color = COLORES_BARRA[cumplidos - 1] ?? '#22c55e'
   const textos = ['Muy débil', 'Débil', 'Regular', 'Segura']
-
   return (
     <div style={{ marginTop: '10px' }}>
       <div style={{ display: 'flex', gap: '4px' }}>
         {fortaleza.map((_, i) => (
-          <div key={i} style={{
-            flex: 1, height: '5px', borderRadius: '9999px',
-            background: i < cumplidos ? color : '#e2e8f0',
-            transition: 'background 300ms',
-          }} />
+          <div key={i} style={{ flex: 1, height: '5px', borderRadius: '9999px', background: i < cumplidos ? color : '#e2e8f0', transition: 'background 300ms' }} />
         ))}
       </div>
       <p style={{ fontSize: '11px', marginTop: '4px', fontWeight: 700, color }}>{textos[cumplidos - 1]}</p>
@@ -39,6 +34,7 @@ export default function NuevaContrasenaPage() {
     mostrarPass, setMostrarPass,
     mostrarConf, setMostrarConf,
     cargando, exito, error,
+    tokenInvalido,
     fortaleza, esValida,
     navigate,
     handleSubmit,
@@ -71,11 +67,7 @@ export default function NuevaContrasenaPage() {
             </p>
           </div>
           <div style={{ width: '100%', maxWidth: '280px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            {[
-              '✓  Tu información no se perderá',
-              '✓  El cambio es inmediato',
-              '✓  Tus reservas siguen activas',
-            ].map(t => (
+            {['✓  Tu información no se perderá', '✓  El cambio es inmediato', '✓  Tus reservas siguen activas'].map(t => (
               <p key={t} style={{ color: 'rgba(147,197,253,0.65)', fontSize: '14px', margin: 0, textAlign: 'left' }}>{t}</p>
             ))}
           </div>
@@ -94,8 +86,7 @@ export default function NuevaContrasenaPage() {
           <img src={logo} alt="RentaMovil" style={{ height: '48px', display: 'block', margin: '0 auto' }} />
         </div>
 
-        {/* Botón volver al login */}
-        {!exito && (
+        {!exito && !tokenInvalido && (
           <div style={{ width: '100%', maxWidth: '400px', marginBottom: '12px' }}>
             <Link
               to="/login"
@@ -113,7 +104,35 @@ export default function NuevaContrasenaPage() {
 
         <div style={{ width: '100%', maxWidth: '400px', background: '#fff', borderRadius: '24px', boxShadow: '0 8px 40px rgba(0,0,0,0.08)', border: '1px solid #f1f5f9', padding: '40px' }}>
 
-          {!exito ? (
+          {/* ── Token inválido o expirado ── */}
+          {tokenInvalido && (
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ width: '72px', height: '72px', borderRadius: '50%', background: '#fef2f2', border: '2px solid #fecaca', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
+                <svg width="36" height="36" fill="none" stroke="#dc2626" strokeWidth="2.5" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                </svg>
+              </div>
+              <h2 style={{ fontSize: '1.4rem', fontWeight: 900, color: '#0f172a', margin: '0 0 8px' }}>
+                Enlace inválido o expirado
+              </h2>
+              <p style={{ color: '#64748b', fontSize: '14px', margin: '0 0 28px' }}>
+                Este enlace ya fue usado o expiró. Los enlaces de recuperación son válidos por 30 minutos y de un solo uso.
+              </p>
+              <Link
+                to="/recuperar"
+                style={{
+                  display: 'block', width: '100%', padding: '14px', borderRadius: '12px',
+                  background: 'linear-gradient(90deg,#1e3a8a,#2563eb)', color: '#fff',
+                  fontWeight: 700, fontSize: '14px', textDecoration: 'none', textAlign: 'center',
+                  boxShadow: '0 4px 16px rgba(30,58,138,0.25)',
+                }}>
+                Solicitar nuevo enlace
+              </Link>
+            </div>
+          )}
+
+          {/* ── Formulario ── */}
+          {!tokenInvalido && !exito && (
             <>
               <div style={{ marginBottom: '28px' }}>
                 <h1 style={{ fontSize: '1.6rem', fontWeight: 900, color: '#0f172a', margin: '0 0 6px' }}>
@@ -168,11 +187,7 @@ export default function NuevaContrasenaPage() {
                     <div style={{ marginTop: '10px', display: 'flex', flexDirection: 'column', gap: '5px' }}>
                       {fortaleza.map(r => (
                         <div key={r.id} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <div style={{
-                            width: '6px', height: '6px', borderRadius: '50%', flexShrink: 0,
-                            background: r.cumple ? '#22c55e' : '#d1d5db',
-                            transition: 'background 250ms',
-                          }} />
+                          <div style={{ width: '6px', height: '6px', borderRadius: '50%', flexShrink: 0, background: r.cumple ? '#22c55e' : '#d1d5db', transition: 'background 250ms' }} />
                           <span style={{ fontSize: '12px', color: r.cumple ? '#16a34a' : '#64748b', transition: 'color 250ms' }}>
                             {r.label}
                           </span>
@@ -238,7 +253,10 @@ export default function NuevaContrasenaPage() {
                 </button>
               </form>
             </>
-          ) : (
+          )}
+
+          {/* ── Éxito ── */}
+          {exito && (
             <div style={{ textAlign: 'center' }}>
               <div style={{ width: '72px', height: '72px', borderRadius: '50%', background: '#f0fdf4', border: '2px solid #bbf7d0', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
                 <svg width="36" height="36" fill="none" stroke="#16a34a" strokeWidth="2.5" viewBox="0 0 24 24">
@@ -248,7 +266,7 @@ export default function NuevaContrasenaPage() {
               <h2 style={{ fontSize: '1.4rem', fontWeight: 900, color: '#0f172a', margin: '0 0 8px' }}>
                 ¡Contraseña actualizada!
               </h2>
-              <p style={{ color: '#64748b', fontSize: '14px', margin: '0 0 24px' }}>
+              <p style={{ color: '#64748b', fontSize: '14px', margin: '0 0 28px' }}>
                 Tu contraseña fue cambiada correctamente. Ya puedes iniciar sesión con tu nueva contraseña.
               </p>
               <button
@@ -263,6 +281,7 @@ export default function NuevaContrasenaPage() {
               </button>
             </div>
           )}
+
         </div>
       </div>
 

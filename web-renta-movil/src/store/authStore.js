@@ -1,26 +1,35 @@
 import { create } from 'zustand'
 
-/**
- * Patrón Observer — Zustand.
- * Almacena la sesión del usuario autenticado.
- * Compatible con la app web (localStorage) y
- * preparado para compartir lógica con la app móvil (Expo SecureStore).
- */
-export const useAuthStore = create((set) => ({
-  token:   localStorage.getItem('token')   || null,
-  usuario: JSON.parse(localStorage.getItem('usuario') || 'null'),
+export const AUTH_KEYS = {
+  token:   'renta_token',
+  usuario: 'renta_user',
+}
 
-  // Llamado tras login exitoso
+export const useAuthStore = create((set) => ({
+  token:          localStorage.getItem(AUTH_KEYS.token) || null,
+  usuario:        JSON.parse(localStorage.getItem(AUTH_KEYS.usuario) || 'null'),
+  sesion2FA:      null, // token temporal mientras se verifica el 2FA
+  requiere2FA:    false,
+
   login: (token, usuario) => {
-    localStorage.setItem('token',   token)
-    localStorage.setItem('usuario', JSON.stringify(usuario))
-    set({ token, usuario })
+    localStorage.setItem(AUTH_KEYS.token,   token)
+    localStorage.setItem(AUTH_KEYS.usuario, JSON.stringify(usuario))
+    set({ token, usuario, sesion2FA: null, requiere2FA: false })
   },
 
-  // Llamado al cerrar sesión
+  // Se llama cuando el backend responde que necesita 2FA
+  iniciar2FA: (sesionTemporal) => {
+    set({ sesion2FA: sesionTemporal, requiere2FA: true })
+  },
+
+  // Limpia el estado 2FA sin hacer login (cancelación o error)
+  cancelar2FA: () => {
+    set({ sesion2FA: null, requiere2FA: false })
+  },
+
   logout: () => {
-    localStorage.removeItem('token')
-    localStorage.removeItem('usuario')
-    set({ token: null, usuario: null })
+    localStorage.removeItem(AUTH_KEYS.token)
+    localStorage.removeItem(AUTH_KEYS.usuario)
+    set({ token: null, usuario: null, sesion2FA: null, requiere2FA: false })
   },
 }))

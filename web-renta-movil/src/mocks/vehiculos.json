@@ -1,0 +1,277 @@
+[
+  {
+    "id": 1,
+    "nombre": "Toyota Corolla 2024",
+    "categoria": "Sedan",
+    "transmision": "Automática",
+    "combustible": "Gasolina",
+    "precio": 85000,
+    "calificacion": 4.8,
+    "disponible": true,
+    "destacado": true,
+    "puertas": 4,
+    "pasajeros": 5,
+    "maletero": 470,
+    "cilindraje": "1.8L",
+    "color": "Blanco Perla",
+    "año": 2024,
+    "placa": "ABC-123",
+    "sucursal": "Centro Neiva",
+    "tarifas": {
+      "kmLimitado":  { "km": 200, "precio": 85000,  "excedente": 800  },
+      "kmIlimitado": { "precio": 105000 }
+    },
+    "seguros": [
+      { "nombre": "Protección Obligatoria", "precio": 29000 },
+      { "nombre": "Protección Total",       "precio": 67000 }
+    ],
+    "servicios": [
+      { "nombre": "GPS",                 "precio": 15000 },
+      { "nombre": "Silla bebé",          "precio": 20000 },
+      { "nombre": "Conductor adicional", "precio": 30000 }
+    ],
+    "imagenes": [null, null, null],
+    "disponibilidad": { "ocupados": ["2026-05-20","2026-05-21","2026-05-22","2026-05-28","2026-05-29"] },
+    "comentarios": [
+      { "autor": "Carlos M.",  "calificacion": 5, "texto": "Excelente vehículo, muy cómodo y puntual en la entrega.", "fecha": "2026-04-10" },
+      { "autor": "Laura P.",   "calificacion": 4, "texto": "Buen servicio, el carro en perfectas condiciones.",       "fecha": "2026-03-22" },
+      { "autor": "Andrés R.",  "calificacion": 5, "texto": "Lo recomiendo totalmente, volveré a alquilar.",           "fecha": "2026-03-05" }
+    ]
+  },
+  {
+    "id": 2,
+    "nombre": "Mazda CX-5 2024",
+    "categoria": "SUV",
+    "transmision": "Automática",
+    "combustible": "Gasolina",
+    "precio": 145000,
+    "calificacion": 4.9,
+    "disponible": true,
+    "destacado": true,
+    "puertas": 5,
+    "pasajeros": 5,
+    "maletero": 442,
+    "cilindraje": "2.5L",
+    "color": "Soul Red Crystal",
+    "año": 2024,
+    "placa": "DEF-456",
+    "sucursal": "Aeropuerto Neiva",
+    "tarifas": {
+      "kmLimitado":  { "km": 250, "precio": 145000, "excedente": 1000 },
+      "kmIlimitado": { "precio": 175000 }
+    },
+    "seguros": [
+      { "nombre": "Protección Obligatoria", "precio": 29000 },
+      { "nombre": "Protección Total",       "precio": 67000 }
+    ],
+    "servicios": [
+      { "nombre": "GPS",        "precio": 15000 },
+      { "nombre": "Silla bebé", "precio": 20000 }
+    ],
+    "imagenes": [null, null, null],
+    "disponibilidad": { "ocupados": [] },
+    "comentarios": []
+  },
+  {
+    "id": 3,
+    "nombre": "Chevrolet Spark 2023",
+    "categoria": "Económico",
+    "transmision": "Manual",
+    "combustible": "Gasolina",
+    "precio": 60000,
+    "calificacion": 4.5,
+    "disponible": true,
+    "destacado": true,
+    "puertas": 4,
+    "pasajeros": 4,
+    "maletero": 170,
+    "cilindraje": "1.0L",
+    "color": "Rojo Passion",
+    "año": 2023,
+    "placa": "GHI-789",
+    "sucursal": "Terminal de Transportes",
+    "tarifas": {
+      "kmLimitado":  { "km": 150, "precio": 60000, "excedente": 600 },
+      "kmIlimitado": { "precio": 75000 }
+    },
+    "seguros": [
+      { "nombre": "Protección Obligatoria", "precio": 29000 },
+      { "nombre": "Protección Total",       "precio": 67000 }
+    ],
+    "servicios": [
+      { "nombre": "GPS", "precio": 15000 }
+    ],
+    "imagenes": ["/ChevroletSpark.webp", null, null],
+    "disponibilidad": { "ocupados": [] },
+    "comentarios": []
+  },
+  {
+    "id": 4,
+    "nombre": "Ford Mustang GT 2023",
+    "categoria": "Deportivo",
+    "transmision": "Automática",
+    "combustible": "Gasolina",
+    "precio": 220000,
+    "calificacion": 4.7,
+    "disponible": false,
+    "destacado": false,
+    "puertas": 2,
+    "pasajeros": 4,
+    "maletero": 382,
+    "cilindraje": "5.0L V8",
+    "color": "Race Red",
+    "año": 2023,
+    "placa": "JKL-012",
+    "sucursal": "Centro Neiva",
+    "tarifas": {
+      "kmLimitado":  { "km": 300, "precio": 220000, "excedente": 1500 },
+      "kmIlimitado": { "precio": 260000 }
+    },
+    "seguros": [
+      { "nombre": "Protección Obligatoria", "precio": 29000 },
+      { "nombre": "Protección Total",       "precio": 67000 }
+    ],
+    "servicios": [
+      { "nombre": "GPS", "precio": 15000 }
+    ],
+    "imagenes": ["/FordMustang.webp", null, null],
+    "disponibilidad": { "ocupados": [] },
+    "comentarios": []
+  },
+  {
+    "id": 5,
+    "nombre": "Toyota Prado 2024",
+    "categoria": "SUV",
+    "transmision": "Automática",
+    "combustible": "Diesel",
+    "precio": 180000,
+    "calificacion": 4.6,
+    "disponible": true,
+    "destacado": false,
+    "puertas": 5,
+    "pasajeros": 8,
+    "maletero": 390,
+    "cilindraje": "2.8L Diesel",
+    "color": "Super White",
+    "año": 2024,
+    "placa": "MNO-345",
+    "sucursal": "Norte Neiva",
+    "tarifas": {
+      "kmLimitado":  { "km": 300, "precio": 180000, "excedente": 1200 },
+      "kmIlimitado": { "precio": 215000 }
+    },
+    "seguros": [
+      { "nombre": "Protección Obligatoria", "precio": 29000 },
+      { "nombre": "Protección Total",       "precio": 67000 }
+    ],
+    "servicios": [
+      { "nombre": "GPS",                 "precio": 15000 },
+      { "nombre": "Silla bebé",          "precio": 20000 },
+      { "nombre": "Conductor adicional", "precio": 30000 }
+    ],
+    "imagenes": [null, null, null],
+    "disponibilidad": { "ocupados": [] },
+    "comentarios": []
+  },
+  {
+    "id": 6,
+    "nombre": "Renault Sandero 2023",
+    "categoria": "Económico",
+    "transmision": "Manual",
+    "combustible": "Gasolina",
+    "precio": 55000,
+    "calificacion": 4.3,
+    "disponible": true,
+    "destacado": false,
+    "puertas": 5,
+    "pasajeros": 5,
+    "maletero": 320,
+    "cilindraje": "1.6L",
+    "color": "Gris Highland",
+    "año": 2023,
+    "placa": "PQR-678",
+    "sucursal": "Sur Neiva",
+    "tarifas": {
+      "kmLimitado":  { "km": 150, "precio": 55000, "excedente": 550 },
+      "kmIlimitado": { "precio": 68000 }
+    },
+    "seguros": [
+      { "nombre": "Protección Obligatoria", "precio": 29000 },
+      { "nombre": "Protección Total",       "precio": 67000 }
+    ],
+    "servicios": [
+      { "nombre": "GPS", "precio": 15000 }
+    ],
+    "imagenes": ["/RenaultSandero.webp", null, null],
+    "disponibilidad": { "ocupados": [] },
+    "comentarios": []
+  },
+  {
+    "id": 7,
+    "nombre": "Hyundai Tucson 2024",
+    "categoria": "SUV",
+    "transmision": "Automática",
+    "combustible": "Híbrido",
+    "precio": 160000,
+    "calificacion": 4.8,
+    "disponible": true,
+    "destacado": false,
+    "puertas": 5,
+    "pasajeros": 5,
+    "maletero": 513,
+    "cilindraje": "1.6L Híbrido",
+    "color": "Phantom Black",
+    "año": 2024,
+    "placa": "STU-901",
+    "sucursal": "Aeropuerto Neiva",
+    "tarifas": {
+      "kmLimitado":  { "km": 250, "precio": 160000, "excedente": 1100 },
+      "kmIlimitado": { "precio": 192000 }
+    },
+    "seguros": [
+      { "nombre": "Protección Obligatoria", "precio": 29000 },
+      { "nombre": "Protección Total",       "precio": 67000 }
+    ],
+    "servicios": [
+      { "nombre": "GPS",        "precio": 15000 },
+      { "nombre": "Silla bebé", "precio": 20000 }
+    ],
+    "imagenes": [null, null, null],
+    "disponibilidad": { "ocupados": [] },
+    "comentarios": []
+  },
+  {
+    "id": 8,
+    "nombre": "Kia Cerato 2024",
+    "categoria": "Sedan",
+    "transmision": "Automática",
+    "combustible": "Gasolina",
+    "precio": 95000,
+    "calificacion": 4.4,
+    "disponible": true,
+    "destacado": false,
+    "puertas": 4,
+    "pasajeros": 5,
+    "maletero": 502,
+    "cilindraje": "2.0L",
+    "color": "Snow White Pearl",
+    "año": 2024,
+    "placa": "VWX-234",
+    "sucursal": "Centro Neiva",
+    "tarifas": {
+      "kmLimitado":  { "km": 200, "precio": 95000, "excedente": 900 },
+      "kmIlimitado": { "precio": 115000 }
+    },
+    "seguros": [
+      { "nombre": "Protección Obligatoria", "precio": 29000 },
+      { "nombre": "Protección Total",       "precio": 67000 }
+    ],
+    "servicios": [
+      { "nombre": "GPS",                 "precio": 15000 },
+      { "nombre": "Conductor adicional", "precio": 30000 }
+    ],
+    "imagenes": [null, null, null],
+    "disponibilidad": { "ocupados": [] },
+    "comentarios": []
+  }
+]

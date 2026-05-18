@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import logo from '@/assets/logo/logo.png'
 import { useLanding } from './LandingContext'
 import traducciones, { IDIOMAS } from './traducciones'
+import { catalogoService } from '../../services/catalogoService'
 
 /* ─────────── Iconos SVG ─────────── */
 const IconoAuto = () => (
@@ -55,8 +56,6 @@ function MenuConfiguracion({ tx }) {
 
   return (
     <div ref={contenedorRef} style={{ position: 'relative' }}>
-
-      {/* Botón engranaje */}
       <button
         onClick={() => setAbierto(a => !a)}
         title={tx.nav.config}
@@ -72,7 +71,6 @@ function MenuConfiguracion({ tx }) {
         <IconoEngranaje />
       </button>
 
-      {/* Panel desplegable */}
       {abierto && (
         <div style={{
           position: 'absolute', top: 'calc(100% + 10px)', right: 0,
@@ -80,8 +78,6 @@ function MenuConfiguracion({ tx }) {
           borderRadius: 16, boxShadow: '0 8px 32px rgba(0,0,0,0.18)',
           padding: 16, minWidth: 228, zIndex: 200,
         }}>
-
-          {/* ── Sección Tema ── */}
           <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--texto-second)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 8px' }}>
             {tx.nav.tema}
           </p>
@@ -104,7 +100,6 @@ function MenuConfiguracion({ tx }) {
             ))}
           </div>
 
-          {/* ── Sección Idioma ── */}
           <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--texto-second)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 8px' }}>
             {tx.nav.idioma}
           </p>
@@ -141,17 +136,17 @@ export default function LandingPage() {
   const tx = traducciones[idioma] ?? traducciones.es
   const esModoOscuro = tema === 'oscuro'
 
+  const [autos, setAutos] = useState([])
+
+  useEffect(() => {
+    catalogoService.getVehiculosDestacados().then(data => setAutos(data)).catch(() => {})
+  }, [])
+
   const estiloEnlaceNav = {
     fontSize: 13, color: 'var(--texto-nav)', fontWeight: 600,
     textDecoration: 'none', whiteSpace: 'nowrap', cursor: 'pointer',
     transition: 'color 150ms',
   }
-
-  const autos = [
-    { modelo: 'Sedan Económico', nombre: 'Toyota Corolla 2024', precio: '$85k/día' },
-    { modelo: 'SUV Premium',     nombre: 'Mazda CX-5 2024',     precio: '$145k/día' },
-    { modelo: 'Deportivo',       nombre: 'Mustang GT 2023',      precio: '$220k/día' },
-  ]
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg-page)', display: 'flex', flexDirection: 'column', overflowX: 'hidden' }}>
@@ -166,7 +161,6 @@ export default function LandingPage() {
         <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 48px', height: '100%', display: 'flex', alignItems: 'center', gap: 32 }}>
           <img src={logo} alt="RentaMovil" style={{ height: 40, flexShrink: 0 }} />
 
-          {/* Links de navegación */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 32, flex: 1, justifyContent: 'center' }}>
             <Link to="/catalogo" style={estiloEnlaceNav}
               onMouseEnter={e => e.currentTarget.style.color = '#1e3a8a'}
@@ -185,7 +179,6 @@ export default function LandingPage() {
             ))}
           </div>
 
-          {/* Botones derecha */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
             <MenuConfiguracion tx={tx} />
             <Link to="/login" style={{
@@ -290,7 +283,7 @@ export default function LandingPage() {
               </div>
 
               {autos.map(auto => (
-                <div key={auto.nombre} style={{ display: 'flex', alignItems: 'center', gap: 16, padding: 14, borderRadius: 16, background: 'var(--bg-item)', marginBottom: 10, cursor: 'pointer', transition: 'background 150ms' }}
+                <div key={auto.id} style={{ display: 'flex', alignItems: 'center', gap: 16, padding: 14, borderRadius: 16, background: 'var(--bg-item)', marginBottom: 10, cursor: 'pointer', transition: 'background 150ms' }}
                   onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-item-hover)'}
                   onMouseLeave={e => e.currentTarget.style.background = 'var(--bg-item)'}
                 >
@@ -298,10 +291,12 @@ export default function LandingPage() {
                     <IconoAuto />
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--texto-primary)', margin: 0 }}>{auto.modelo}</p>
+                    <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--texto-primary)', margin: 0 }}>{auto.categoria}</p>
                     <p style={{ fontSize: 12, color: 'var(--texto-second)', margin: '2px 0 0' }}>{auto.nombre}</p>
                   </div>
-                  <span style={{ fontSize: 15, fontWeight: 900, color: '#1e3a8a', whiteSpace: 'nowrap' }}>{auto.precio}</span>
+                  <span style={{ fontSize: 15, fontWeight: 900, color: '#1e3a8a', whiteSpace: 'nowrap' }}>
+                    ${auto.precio.toLocaleString('es-CO')}/día
+                  </span>
                 </div>
               ))}
 

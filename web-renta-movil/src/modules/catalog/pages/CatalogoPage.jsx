@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../../../store/authStore'
+import { catalogoService } from '../../../services/catalogoService'
 import logo from '@/assets/logo/logo.png'
 
 /* ─────────── ÍCONOS ─────────── */
@@ -17,45 +18,7 @@ const IconoCalendario = () => (
   </svg>
 )
 
-/* ─────────── DATOS MOCK ─────────── */
-const VEHICULOS_MOCK = [
-  {
-    id: 1, nombre: 'Toyota Corolla 2024', categoria: 'Sedan',
-    transmision: 'Automática', combustible: 'Gasolina', precio: 85000,
-    calificacion: 4.8, disponible: true, imagen: null,
-    puertas: 4, pasajeros: 5, maletero: 470, cilindraje: '1.8L',
-    color: 'Blanco Perla', año: 2024, placa: 'ABC-123',
-    tarifas: {
-      kmLimitado:  { km: 200, precio: 85000,  excedente: 800  },
-      kmIlimitado: { precio: 105000 },
-    },
-    seguros: [
-      { nombre: 'Protección obligatoria', precio: 29000 },
-      { nombre: 'Protección total',       precio: 67090 },
-    ],
-    servicios: [
-      { nombre: 'GPS',                 precio: 15000 },
-      { nombre: 'Silla bebé',          precio: 20000 },
-      { nombre: 'Conductor adicional', precio: 30000 },
-    ],
-    sucursal: 'Centro Neiva',
-    imagenes: [null, null, null],
-    disponibilidad: { ocupados: ['2026-05-20','2026-05-21','2026-05-22','2026-05-28','2026-05-29'] },
-    comentarios: [
-      { autor: 'Carlos M.',  calificacion: 5, texto: 'Excelente vehículo, muy cómodo y puntual en la entrega.', fecha: '2026-04-10' },
-      { autor: 'Laura P.',   calificacion: 4, texto: 'Buen servicio, el carro en perfectas condiciones.',       fecha: '2026-03-22' },
-      { autor: 'Andrés R.',  calificacion: 5, texto: 'Lo recomiendo totalmente, volveré a alquilar.',           fecha: '2026-03-05' },
-    ],
-  },
-  { id: 2, nombre: 'Mazda CX-5 2024',     categoria: 'SUV',       transmision: 'Automática', combustible: 'Gasolina', precio: 145000, calificacion: 4.9, disponible: true,  puertas: 5, pasajeros: 5, maletero: 442, cilindraje: '2.5L',        color: 'Soul Red Crystal', año: 2024, placa: 'DEF-456', tarifas: { kmLimitado: { km: 250, precio: 145000, excedente: 1000 }, kmIlimitado: { precio: 175000 } }, seguros: [{ nombre: 'Protección Obligatoria', precio: 29000 }, { nombre: 'Protección Total', precio: 67000 }], servicios: [{ nombre: 'GPS', precio: 15000 }, { nombre: 'Silla bebé', precio: 20000 }], sucursal: 'Aeropuerto Neiva', imagenes: [null, null, null], disponibilidad: { ocupados: [] }, comentarios: [] },
-  { id: 3, nombre: 'Chevrolet Spark 2023', categoria: 'Económico', transmision: 'Manual',     combustible: 'Gasolina', precio: 60000,  calificacion: 4.5, disponible: true,  puertas: 4, pasajeros: 4, maletero: 170, cilindraje: '1.0L',        color: 'Rojo Passion',     año: 2023, placa: 'GHI-789', tarifas: { kmLimitado: { km: 150, precio: 60000,  excedente: 600  }, kmIlimitado: { precio: 75000  } }, seguros: [{ nombre: 'Protección Obligatoria', precio: 29000 }, { nombre: 'Protección Total', precio: 67000 }], servicios: [{ nombre: 'GPS', precio: 15000 }], sucursal: 'Terminal de Transportes', imagenes: ['/ChevroletSpark.webp', null, null], disponibilidad: { ocupados: [] }, comentarios: [] },
-  { id: 4, nombre: 'Ford Mustang GT 2023', categoria: 'Deportivo', transmision: 'Automática', combustible: 'Gasolina', precio: 220000, calificacion: 4.7, disponible: false, puertas: 2, pasajeros: 4, maletero: 382, cilindraje: '5.0L V8',     color: 'Race Red',         año: 2023, placa: 'JKL-012', tarifas: { kmLimitado: { km: 300, precio: 220000, excedente: 1500 }, kmIlimitado: { precio: 260000 } }, seguros: [{ nombre: 'Protección Obligatoria', precio: 29000 }, { nombre: 'Protección Total', precio: 67000 }], servicios: [{ nombre: 'GPS', precio: 15000 }], sucursal: 'Centro Neiva',            imagenes: ['/FordMustang.webp', null, null], disponibilidad: { ocupados: [] }, comentarios: [] },
-  { id: 5, nombre: 'Toyota Prado 2024',    categoria: 'SUV',       transmision: 'Automática', combustible: 'Diesel',   precio: 180000, calificacion: 4.6, disponible: true,  puertas: 5, pasajeros: 8, maletero: 390, cilindraje: '2.8L Diesel',  color: 'Super White',      año: 2024, placa: 'MNO-345', tarifas: { kmLimitado: { km: 300, precio: 180000, excedente: 1200 }, kmIlimitado: { precio: 215000 } }, seguros: [{ nombre: 'Protección Obligatoria', precio: 29000 }, { nombre: 'Protección Total', precio: 67000 }], servicios: [{ nombre: 'GPS', precio: 15000 }, { nombre: 'Silla bebé', precio: 20000 }, { nombre: 'Conductor adicional', precio: 30000 }], sucursal: 'Norte Neiva', imagenes: [null, null, null], disponibilidad: { ocupados: [] }, comentarios: [] },
-  { id: 6, nombre: 'Renault Sandero 2023', categoria: 'Económico', transmision: 'Manual',     combustible: 'Gasolina', precio: 55000,  calificacion: 4.3, disponible: true,  puertas: 5, pasajeros: 5, maletero: 320, cilindraje: '1.6L',        color: 'Gris Highland',    año: 2023, placa: 'PQR-678', tarifas: { kmLimitado: { km: 150, precio: 55000,  excedente: 550  }, kmIlimitado: { precio: 68000  } }, seguros: [{ nombre: 'Protección Obligatoria', precio: 29000 }, { nombre: 'Protección Total', precio: 67000 }], servicios: [{ nombre: 'GPS', precio: 15000 }], sucursal: 'Sur Neiva',               imagenes: ['/RenaultSandero.webp', null, null], disponibilidad: { ocupados: [] }, comentarios: [] },
-  { id: 7, nombre: 'Hyundai Tucson 2024',  categoria: 'SUV',       transmision: 'Automática', combustible: 'Híbrido',  precio: 160000, calificacion: 4.8, disponible: true,  puertas: 5, pasajeros: 5, maletero: 513, cilindraje: '1.6L Híbrido', color: 'Phantom Black',    año: 2024, placa: 'STU-901', tarifas: { kmLimitado: { km: 250, precio: 160000, excedente: 1100 }, kmIlimitado: { precio: 192000 } }, seguros: [{ nombre: 'Protección Obligatoria', precio: 29000 }, { nombre: 'Protección Total', precio: 67000 }], servicios: [{ nombre: 'GPS', precio: 15000 }, { nombre: 'Silla bebé', precio: 20000 }], sucursal: 'Aeropuerto Neiva', imagenes: [null, null, null], disponibilidad: { ocupados: [] }, comentarios: [] },
-  { id: 8, nombre: 'Kia Cerato 2024',      categoria: 'Sedan',     transmision: 'Automática', combustible: 'Gasolina', precio: 95000,  calificacion: 4.4, disponible: true,  puertas: 4, pasajeros: 5, maletero: 502, cilindraje: '2.0L',        color: 'Snow White Pearl', año: 2024, placa: 'VWX-234', tarifas: { kmLimitado: { km: 200, precio: 95000,  excedente: 900  }, kmIlimitado: { precio: 115000 } }, seguros: [{ nombre: 'Protección Obligatoria', precio: 29000 }, { nombre: 'Protección Total', precio: 67000 }], servicios: [{ nombre: 'GPS', precio: 15000 }, { nombre: 'Conductor adicional', precio: 30000 }], sucursal: 'Centro Neiva', imagenes: [null, null, null], disponibilidad: { ocupados: [] }, comentarios: [] },
-]
-
+/* ─────────── CONSTANTES UI ─────────── */
 const CATEGORIAS    = ['Todos', 'Sedan', 'SUV', 'Económico', 'Deportivo']
 const TRANSMISIONES = ['Todas', 'Automática', 'Manual']
 const COMBUSTIBLES  = ['Todos', 'Gasolina', 'Diesel', 'Híbrido', 'Eléctrico']
@@ -67,6 +30,19 @@ const BUSQUEDA_INICIAL = { fechaInicio: '', fechaFin: '', lugarRecogida: '', mis
 export default function CatalogoPage() {
   const { usuario } = useAuthStore()
 
+  /* ── Datos del servicio ── */
+  const [todosVehiculos,    setTodosVehiculos]    = useState([])
+  const [cargandoVehiculos, setCargandoVehiculos] = useState(true)
+  const [errorVehiculos,    setErrorVehiculos]    = useState(null)
+
+  useEffect(() => {
+    catalogoService.getVehiculos()
+      .then(data => setTodosVehiculos(data))
+      .catch(() => setErrorVehiculos('No se pudo cargar el catálogo. Intenta de nuevo.'))
+      .finally(() => setCargandoVehiculos(false))
+  }, [])
+
+  /* ── Filtros y búsqueda ── */
   const [filtros, setFiltros] = useState({
     categoria: 'Todos', precioMin: '', precioMax: '',
     transmision: 'Todas', combustible: 'Todos', orden: 'precio_asc',
@@ -94,7 +70,8 @@ export default function CatalogoPage() {
     ? Math.ceil((new Date(busquedaAplicada.fechaFin) - new Date(busquedaAplicada.fechaInicio)) / 86400000)
     : 0
 
-  const resultado = VEHICULOS_MOCK
+  /* ── Filtrado client-side ── */
+  const resultado = todosVehiculos
     .filter(v => {
       if (filtros.categoria   !== 'Todos' && v.categoria   !== filtros.categoria)   return false
       if (filtros.transmision !== 'Todas' && v.transmision !== filtros.transmision) return false
@@ -147,7 +124,7 @@ export default function CatalogoPage() {
         </div>
       </nav>
 
-      {/* ── TOAST ── */}
+      {/* ── TOAST FAVORITO ── */}
       {mensajeFavorito && (
         <div style={{ position: 'fixed', top: '84px', left: '50%', transform: 'translateX(-50%)', zIndex: 100, background: '#1e3a8a', color: '#fff', padding: '12px 24px', borderRadius: '12px', fontSize: '14px', fontWeight: 600, boxShadow: '0 8px 24px rgba(30,58,138,0.30)' }}>
           🔒 Inicia sesión para guardar favoritos
@@ -165,7 +142,11 @@ export default function CatalogoPage() {
                 <h1 style={{ fontSize: 'clamp(1.4rem,3vw,2rem)', fontWeight: 900, color: '#0f172a', margin: 0 }}>Catálogo de vehículos</h1>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 600 }}>{resultado.length} vehículo{resultado.length !== 1 ? 's' : ''} encontrado{resultado.length !== 1 ? 's' : ''}</span>
+                {!cargandoVehiculos && (
+                  <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 600 }}>
+                    {resultado.length} vehículo{resultado.length !== 1 ? 's' : ''} encontrado{resultado.length !== 1 ? 's' : ''}
+                  </span>
+                )}
                 <Link to="/" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '13px', color: '#1e3a8a', fontWeight: 700, textDecoration: 'none', padding: '6px 14px', borderRadius: '9999px', background: 'rgba(30,58,138,0.08)', border: '1px solid rgba(30,58,138,0.15)', whiteSpace: 'nowrap' }}>
                   <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" /></svg>
                   Volver al inicio
@@ -270,13 +251,44 @@ export default function CatalogoPage() {
               </div>
             </div>
 
-            {resultado.length === 0 ? (
+            {/* Estado de carga */}
+            {cargandoVehiculos && (
+              <div style={{ textAlign: 'center', padding: '80px 24px' }}>
+                <div style={{ width: '40px', height: '40px', border: '3px solid #e2e8f0', borderTopColor: '#1e3a8a', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 16px' }} />
+                <p style={{ fontSize: '14px', color: '#64748b', fontWeight: 600 }}>Cargando vehículos...</p>
+              </div>
+            )}
+
+            {/* Estado de error */}
+            {!cargandoVehiculos && errorVehiculos && (
+              <div style={{ textAlign: 'center', padding: '80px 24px', background: '#fff', borderRadius: '20px', border: '1px solid #fecaca' }}>
+                <p style={{ fontSize: '16px', color: '#dc2626', fontWeight: 700, margin: '0 0 12px' }}>⚠️ {errorVehiculos}</p>
+                <button
+                  onClick={() => {
+                    setCargandoVehiculos(true)
+                    setErrorVehiculos(null)
+                    catalogoService.getVehiculos()
+                      .then(data => setTodosVehiculos(data))
+                      .catch(() => setErrorVehiculos('No se pudo cargar el catálogo. Intenta de nuevo.'))
+                      .finally(() => setCargandoVehiculos(false))
+                  }}
+                  style={{ padding: '10px 24px', borderRadius: '9999px', background: '#1e3a8a', color: '#fff', border: 'none', fontWeight: 700, fontSize: '13px', cursor: 'pointer' }}>
+                  Reintentar
+                </button>
+              </div>
+            )}
+
+            {/* Sin resultados */}
+            {!cargandoVehiculos && !errorVehiculos && resultado.length === 0 && (
               <div style={{ textAlign: 'center', padding: '80px 24px', background: '#fff', borderRadius: '20px', border: '1px solid #f1f5f9' }}>
                 <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#0f172a', margin: '0 0 8px' }}>Sin resultados</h3>
                 <p style={{ fontSize: '14px', color: '#64748b', margin: '0 0 20px' }}>No encontramos vehículos con los filtros seleccionados.</p>
                 <button onClick={limpiar} style={{ padding: '10px 24px', borderRadius: '9999px', background: '#1e3a8a', color: '#fff', border: 'none', fontWeight: 700, fontSize: '13px', cursor: 'pointer' }}>Limpiar filtros</button>
               </div>
-            ) : (
+            )}
+
+            {/* Grid de vehículos */}
+            {!cargandoVehiculos && !errorVehiculos && resultado.length > 0 && (
               <>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(270px, 1fr))', gap: '20px', alignItems: 'start' }}>
                   {vehiculosPagina.map(vehiculo => (
@@ -306,6 +318,7 @@ export default function CatalogoPage() {
 
       <style>{`
         @media (max-width: 768px) { .filtros-panel { display: none !important; } }
+        @keyframes spin { to { transform: rotate(360deg); } }
       `}</style>
     </div>
   )
@@ -332,17 +345,13 @@ function Chip({ activo, onClick, children }) {
 /* ─────────── TARJETA VEHÍCULO ─────────── */
 function TarjetaVehiculo({ vehiculo, esFavorito, onFavorito, dias }) {
   const navigate                      = useNavigate()
-  const { usuario }                   = useAuthStore()
   const [hover, setHover]             = useState(false)
   const [verDetalles, setVerDetalles] = useState(false)
   const [fotoActiva, setFotoActiva]   = useState(0)
 
   const estrellas = Array.from({ length: 5 }, (_, i) => i < Math.round(vehiculo.calificacion))
 
-  // ✅ LÍNEA CORREGIDA: redirige a /catalogo/:id en lugar de /reserva
- const handleReservar = () => {
-  navigate(`/catalogo/${vehiculo.id}`)
-}
+  const handleReservar = () => navigate(`/catalogo/${vehiculo.id}`)
 
   const caracteristicas = [
     { icono: '❄️', label: 'Aire acondicionado'             },
@@ -402,7 +411,7 @@ function TarjetaVehiculo({ vehiculo, esFavorito, onFavorito, dias }) {
       {/* ── CONTENEDOR FIJO ── */}
       <div style={{ position: 'relative', height: '300px', overflow: 'hidden' }}>
 
-        {/* ════ VISTA PRINCIPAL ════ */}
+        {/* VISTA PRINCIPAL */}
         <div style={{
           position: 'absolute', inset: 0, padding: '16px',
           display: 'flex', flexDirection: 'column',
@@ -448,7 +457,7 @@ function TarjetaVehiculo({ vehiculo, esFavorito, onFavorito, dias }) {
           </div>
         </div>
 
-        {/* ════ VISTA DETALLES ════ */}
+        {/* VISTA DETALLES */}
         <div style={{
           position: 'absolute', inset: 0, padding: '14px 16px',
           display: 'flex', flexDirection: 'column', gap: '7px',

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
+import { authService } from '../../../services/authService'
 
 const REGLAS = [
   { id: 'longitud',  label: 'Mínimo 8 caracteres',          test: (v) => v.length >= 8 },
@@ -13,13 +14,14 @@ export function useNuevaContrasena() {
   const [searchParams] = useSearchParams()
   const token = searchParams.get('token')
 
-  const [contrasena, setContrasena]   = useState('')
-  const [confirmar, setConfirmar]     = useState('')
-  const [mostrarPass, setMostrarPass] = useState(false)
-  const [mostrarConf, setMostrarConf] = useState(false)
-  const [cargando, setCargando]       = useState(false)
-  const [exito, setExito]             = useState(false)
-  const [error, setError]             = useState('')
+  const [contrasena,   setContrasena]   = useState('')
+  const [confirmar,    setConfirmar]    = useState('')
+  const [mostrarPass,  setMostrarPass]  = useState(false)
+  const [mostrarConf,  setMostrarConf]  = useState(false)
+  const [cargando,     setCargando]     = useState(false)
+  const [exito,        setExito]        = useState(false)
+  const [error,        setError]        = useState('')
+  const [tokenInvalido, setTokenInvalido] = useState(!token)
 
   const fortaleza = REGLAS.map((r) => ({ ...r, cumple: r.test(contrasena) }))
   const esValida  = fortaleza.every((r) => r.cumple) && contrasena === confirmar && confirmar !== ''
@@ -29,7 +31,7 @@ export function useNuevaContrasena() {
     setError('')
 
     if (!token) {
-      setError('El enlace de recuperación no es válido. Solicita uno nuevo.')
+      setTokenInvalido(true)
       return
     }
     if (!fortaleza.every(r => r.cumple)) {
@@ -43,24 +45,13 @@ export function useNuevaContrasena() {
 
     setCargando(true)
 
-    // ── Token simulado: no llama al backend ──
-    if (token === 'SIMULADO-TOKEN-DEMO') {
-      setTimeout(() => {
-        setCargando(false)
-        setExito(true)
-      }, 1500)
-      return
-    }
-
-    // ── Producción: llamada real al backend ──
     try {
-      const { authService } = await import('../../../services/authService')
-      await authService.nuevaContrasena(token, contrasena)
+      await authService.resetearContrasena(token, contrasena)
       setExito(true)
     } catch (err) {
-      const msg = err.response?.data?.mensaje || ''
+      const msg = err?.response?.data?.mensaje || ''
       if (msg.toLowerCase().includes('expir') || msg.toLowerCase().includes('inválido')) {
-        setError('Este enlace ha expirado. Solicita uno nuevo.')
+        setTokenInvalido(true)
       } else {
         setError(msg || 'Ocurrió un error. Intenta de nuevo.')
       }
@@ -71,10 +62,11 @@ export function useNuevaContrasena() {
 
   return {
     contrasena, setContrasena,
-    confirmar, setConfirmar,
+    confirmar,  setConfirmar,
     mostrarPass, setMostrarPass,
     mostrarConf, setMostrarConf,
     cargando, exito, error,
+    tokenInvalido,
     fortaleza, esValida,
     navigate,
     handleSubmit,

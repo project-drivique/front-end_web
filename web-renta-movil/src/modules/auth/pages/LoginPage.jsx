@@ -1,8 +1,18 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useLogin } from '../hooks/useLogin'
+import { useRegistroSocial } from '../hooks/useRegistroSocial'
 import logo from "@/assets/logo/logo.png"
 
+/* ── Spinner ── */
+function SpinnerBtn() {
+  return (
+    <span style={{ width: '16px', height: '16px', border: '2px solid #e2e8f0', borderTopColor: '#64748b', borderRadius: '50%', animation: 'spin 0.7s linear infinite', display: 'inline-block', flexShrink: 0 }} />
+  )
+}
+
 export default function LoginPage() {
+  const navigate = useNavigate()
+
   const {
     correo, contrasena, mostrarPass, cargando,
     intentos, bloqueado, errores, exito,
@@ -10,6 +20,17 @@ export default function LoginPage() {
     handleCorreoChange, handleSubmit,
     MAX_INTENTOS,
   } = useLogin()
+
+  const {
+    cargandoGoogle, cargandoFacebook, errorSocial,
+    proveedorExito, iniciarGoogle, iniciarFacebook,
+  } = useRegistroSocial({
+    onExito: () => {
+      navigate('/catalogo')
+    },
+  })
+
+  const exitoFinal = !!proveedorExito
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex' }}>
@@ -29,14 +50,12 @@ export default function LoginPage() {
 
         <div style={{ position: 'relative', zIndex: 1, flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '56px', textAlign: 'center', gap: '32px' }}>
           <img src={logo} alt="RentaMovil" style={{ height: '60px', filter: 'drop-shadow(0 4px 16px rgba(0,0,0,0.3)) brightness(0) invert(1)' }} />
-
           <div>
             <h2 style={{ color: '#fff', fontSize: '1.75rem', fontWeight: 900, margin: '0 0 10px', lineHeight: 1.2 }}>Bienvenido de vuelta</h2>
             <p style={{ color: 'rgba(191,219,254,0.75)', fontSize: '15px', lineHeight: 1.7, maxWidth: '260px', margin: '0 auto' }}>
               Gestiona tus reservas, pagos y contratos desde un solo lugar.
             </p>
           </div>
-
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '12px', width: '100%', maxWidth: '280px' }}>
             {[{ label: 'Reservas', icon: '🗓️' }, { label: 'Pagos', icon: '💳' }, { label: 'Contratos', icon: '📄' }].map(({ label, icon }) => (
               <div key={label} style={{ background: 'rgba(255,255,255,0.08)', borderRadius: '16px', padding: '16px 8px', border: '1px solid rgba(255,255,255,0.08)', textAlign: 'center' }}>
@@ -45,7 +64,6 @@ export default function LoginPage() {
               </div>
             ))}
           </div>
-
           <div style={{ width: '100%', maxWidth: '280px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
             {['✓  Reserva en minutos', '✓  Paga con Nequi o PSE', '✓  Contrato digital inmediato'].map(t => (
               <p key={t} style={{ color: 'rgba(147,197,253,0.65)', fontSize: '14px', margin: 0, textAlign: 'left' }}>{t}</p>
@@ -87,6 +105,7 @@ export default function LoginPage() {
             <p style={{ color: '#64748b', fontSize: '14px', margin: 0 }}>Ingresa tus credenciales para continuar</p>
           </div>
 
+          {/* Éxito correo */}
           {exito && (
             <div style={{ marginBottom: '20px', padding: '14px 16px', borderRadius: '12px', background: '#f0fdf4', border: '1px solid #bbf7d0', display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
               <svg style={{ width: '18px', height: '18px', color: '#16a34a', flexShrink: 0, marginTop: '1px' }} fill="currentColor" viewBox="0 0 20 20">
@@ -96,6 +115,29 @@ export default function LoginPage() {
             </div>
           )}
 
+          {/* Éxito social */}
+          {exitoFinal && (
+            <div style={{ marginBottom: '20px', padding: '14px 16px', borderRadius: '12px', background: '#f0fdf4', border: '1px solid #bbf7d0', display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
+              <svg style={{ width: '18px', height: '18px', color: '#16a34a', flexShrink: 0, marginTop: '1px' }} fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              </svg>
+              <p style={{ color: '#15803d', fontSize: '14px', fontWeight: 500, margin: 0 }}>
+                Sesión iniciada con {proveedorExito === 'google' ? 'Google' : 'Facebook'}. Redirigiendo…
+              </p>
+            </div>
+          )}
+
+          {/* Error social */}
+          {errorSocial && !exitoFinal && (
+            <div style={{ marginBottom: '20px', padding: '14px 16px', borderRadius: '12px', background: '#fef2f2', border: '1px solid #fecaca', display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
+              <svg style={{ width: '18px', height: '18px', color: '#dc2626', flexShrink: 0, marginTop: '1px' }} fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+              </svg>
+              <p style={{ color: '#dc2626', fontSize: '14px', margin: 0 }}>{errorSocial}</p>
+            </div>
+          )}
+
+          {/* Error general */}
           {errores.general && (
             <div style={{ marginBottom: '20px', padding: '14px 16px', borderRadius: '12px', background: '#fef2f2', border: '1px solid #fecaca', display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
               <svg style={{ width: '18px', height: '18px', color: '#dc2626', flexShrink: 0, marginTop: '1px' }} fill="currentColor" viewBox="0 0 20 20">
@@ -105,6 +147,7 @@ export default function LoginPage() {
             </div>
           )}
 
+          {/* Advertencia intentos */}
           {intentos > 0 && !bloqueado && (
             <div style={{ marginBottom: '20px', padding: '14px 16px', borderRadius: '12px', background: '#fffbeb', border: '1px solid #fde68a', display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
               <svg style={{ width: '18px', height: '18px', color: '#d97706', flexShrink: 0, marginTop: '1px' }} fill="currentColor" viewBox="0 0 20 20">
@@ -116,6 +159,7 @@ export default function LoginPage() {
 
           <form onSubmit={handleSubmit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
 
+            {/* Correo */}
             <div>
               <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: '#374151', marginBottom: '8px' }}>Correo electrónico</label>
               <input
@@ -137,6 +181,7 @@ export default function LoginPage() {
               {errores.correo && <p style={{ color: '#ef4444', fontSize: '12px', marginTop: '6px' }}>{errores.correo}</p>}
             </div>
 
+            {/* Contraseña */}
             <div>
               <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: '#374151', marginBottom: '8px' }}>Contraseña</label>
               <div style={{ position: 'relative' }}>
@@ -168,19 +213,21 @@ export default function LoginPage() {
               {errores.contrasena && <p style={{ color: '#ef4444', fontSize: '12px', marginTop: '6px' }}>{errores.contrasena}</p>}
             </div>
 
-            {/* ✅ ÚNICO CAMBIO: /forgot-password → /recuperar */}
+            {/* Olvidaste contraseña */}
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
               <Link to="/recuperar" style={{ fontSize: '13px', color: '#1e3a8a', fontWeight: 700, textDecoration: 'none' }}>
                 ¿Olvidaste tu contraseña?
               </Link>
             </div>
 
-            <button type="submit" disabled={bloqueado || cargando}
+            {/* Botón iniciar sesión */}
+            <button type="submit" disabled={bloqueado || cargando || exitoFinal}
               style={{
                 width: '100%', padding: '14px', borderRadius: '12px',
                 background: 'linear-gradient(90deg,#1e3a8a,#2563eb)', color: '#fff',
-                fontWeight: 700, fontSize: '14px', border: 'none', cursor: cargando || bloqueado ? 'not-allowed' : 'pointer',
-                opacity: bloqueado || cargando ? 0.55 : 1,
+                fontWeight: 700, fontSize: '14px', border: 'none',
+                cursor: cargando || bloqueado || exitoFinal ? 'not-allowed' : 'pointer',
+                opacity: bloqueado || cargando || exitoFinal ? 0.55 : 1,
                 boxShadow: '0 4px 16px rgba(30,58,138,0.25)', transition: 'opacity 150ms',
               }}>
               {cargando
@@ -191,9 +238,64 @@ export default function LoginPage() {
                 : 'Iniciar sesión'
               }
             </button>
+
+            {/* ── Botón Google ── */}
+            <button
+              type="button"
+              onClick={iniciarGoogle}
+              disabled={bloqueado || cargandoGoogle || cargandoFacebook || exitoFinal}
+              style={{
+                width: '100%', padding: '12px 16px', borderRadius: '12px',
+                border: '1.5px solid #e2e8f0', background: '#fff',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
+                fontWeight: 600, fontSize: '13px',
+                cursor: (bloqueado || cargandoGoogle || cargandoFacebook || exitoFinal) ? 'not-allowed' : 'pointer',
+                transition: 'all 150ms', color: '#1e293b',
+                opacity: (bloqueado || cargandoGoogle || cargandoFacebook || exitoFinal) ? 0.6 : 1,
+              }}
+              onMouseEnter={e => { if (!bloqueado && !exitoFinal) { e.currentTarget.style.borderColor = '#cbd5e1'; e.currentTarget.style.background = '#f8fafc' }}}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.background = '#fff' }}
+            >
+              {cargandoGoogle ? <SpinnerBtn /> : (
+                <svg width="18" height="18" viewBox="0 0 48 48" style={{ flexShrink: 0 }}>
+                  <path fill="#EA4335" d="M24 9.5c3.14 0 5.95 1.08 8.17 2.85l6.09-6.09C34.46 3.09 29.53 1 24 1 14.82 1 7.07 6.48 3.64 14.18l7.09 5.51C12.4 13.67 17.74 9.5 24 9.5z"/>
+                  <path fill="#4285F4" d="M46.15 24.5c0-1.56-.14-3.06-.4-4.5H24v8.51h12.44c-.54 2.9-2.18 5.36-4.64 7.01l7.19 5.59C43.16 37.13 46.15 31.29 46.15 24.5z"/>
+                  <path fill="#FBBC05" d="M10.73 28.31A14.6 14.6 0 019.5 24c0-1.49.26-2.93.73-4.31L3.14 14.18A22.94 22.94 0 001 24c0 3.57.85 6.95 2.36 9.95l7.37-5.64z"/>
+                  <path fill="#34A853" d="M24 47c5.53 0 10.17-1.83 13.56-4.97l-7.19-5.59c-1.84 1.24-4.2 1.97-6.37 1.97-6.26 0-11.6-4.17-13.27-9.78l-7.37 5.64C7.07 41.52 14.82 47 24 47z"/>
+                </svg>
+              )}
+              {cargandoGoogle ? 'Conectando con Google…' : 'Continuar con Google'}
+            </button>
+
+            {/* ── Botón Facebook ── */}
+            <button
+              type="button"
+              onClick={iniciarFacebook}
+              disabled={bloqueado || cargandoGoogle || cargandoFacebook || exitoFinal}
+              style={{
+                width: '100%', padding: '12px 16px', borderRadius: '12px',
+                border: '1.5px solid #e2e8f0', background: '#fff',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
+                fontWeight: 600, fontSize: '13px',
+                cursor: (bloqueado || cargandoGoogle || cargandoFacebook || exitoFinal) ? 'not-allowed' : 'pointer',
+                transition: 'all 150ms', color: '#1e293b',
+                opacity: (bloqueado || cargandoGoogle || cargandoFacebook || exitoFinal) ? 0.6 : 1,
+              }}
+              onMouseEnter={e => { if (!bloqueado && !exitoFinal) { e.currentTarget.style.borderColor = '#cbd5e1'; e.currentTarget.style.background = '#f8fafc' }}}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.background = '#fff' }}
+            >
+              {cargandoFacebook ? <SpinnerBtn /> : (
+                <svg width="18" height="18" viewBox="0 0 48 48" style={{ flexShrink: 0 }}>
+                  <path fill="#1877F2" d="M48 24C48 10.745 37.255 0 24 0S0 10.745 0 24c0 11.979 8.776 21.908 20.25 23.708V30.938h-6.094V24h6.094v-5.288c0-6.014 3.583-9.337 9.065-9.337 2.625 0 5.372.469 5.372.469v5.906h-3.026c-2.981 0-3.911 1.85-3.911 3.75V24h6.656l-1.064 6.938H27.75v16.77C39.224 45.908 48 35.979 48 24z"/>
+                  <path fill="#fff" d="M33.342 30.938 34.406 24H27.75v-4.5c0-1.899.93-3.75 3.911-3.75h3.026V9.844s-2.747-.469-5.372-.469c-5.482 0-9.065 3.323-9.065 9.337V24h-6.094v6.938h6.094v16.77a24.18 24.18 0 007.5 0V30.938h5.592z"/>
+                </svg>
+              )}
+              {cargandoFacebook ? 'Conectando con Facebook…' : 'Continuar con Facebook'}
+            </button>
+
           </form>
 
-          <p style={{ textAlign: 'center', fontSize: '14px', color: '#64748b', marginTop: '24px' }}>
+          <p style={{ textAlign: 'center', fontSize: '14px', color: '#64748b', marginTop: '24px', marginBottom: 0 }}>
             ¿No tienes cuenta?{' '}
             <Link to="/registro" style={{ color: '#1e3a8a', fontWeight: 700, textDecoration: 'none' }}>Regístrate aquí</Link>
           </p>
