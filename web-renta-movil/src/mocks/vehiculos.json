@@ -18,24 +18,28 @@
     "placa": "ABC-123",
     "sucursal": "Centro Neiva",
     "tarifas": {
-      "kmLimitado":  { "km": 200, "precio": 85000,  "excedente": 800  },
+      "kmLimitado": { "km": 200, "precio": 85000, "excedente": 800 },
       "kmIlimitado": { "precio": 105000 }
     },
     "seguros": [
       { "nombre": "Protección Obligatoria", "precio": 29000 },
-      { "nombre": "Protección Total",       "precio": 67000 }
+      { "nombre": "Protección Total", "precio": 67000 }
     ],
     "servicios": [
-      { "nombre": "GPS",                 "precio": 15000 },
-      { "nombre": "Silla bebé",          "precio": 20000 },
+      { "nombre": "GPS", "precio": 15000 },
+      { "nombre": "Silla bebé", "precio": 20000 },
       { "nombre": "Conductor adicional", "precio": 30000 }
     ],
-    "imagenes": [null, null, null],
+    "imagenes": [
+      "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/a2cb0b378c25efdb1e116246f84149744c2f4081.jpg",
+      "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/1c6e90229d22ae38444b4c27a5ecedbc3aaa7739.jpg",
+      "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/5c55d73935760e36ac2c84a6f676e75136c75d1f.jpg"
+    ],
     "disponibilidad": { "ocupados": ["2026-05-20","2026-05-21","2026-05-22","2026-05-28","2026-05-29"] },
     "comentarios": [
-      { "autor": "Carlos M.",  "calificacion": 5, "texto": "Excelente vehículo, muy cómodo y puntual en la entrega.", "fecha": "2026-04-10" },
-      { "autor": "Laura P.",   "calificacion": 4, "texto": "Buen servicio, el carro en perfectas condiciones.",       "fecha": "2026-03-22" },
-      { "autor": "Andrés R.",  "calificacion": 5, "texto": "Lo recomiendo totalmente, volveré a alquilar.",           "fecha": "2026-03-05" }
+      { "autor": "Carlos M.", "calificacion": 5, "texto": "Excelente vehículo, muy cómodo y puntual en la entrega.", "fecha": "2026-04-10" },
+      { "autor": "Laura P.", "calificacion": 4, "texto": "Buen servicio, el carro en perfectas condiciones.", "fecha": "2026-03-22" },
+      { "autor": "Andrés R.", "calificacion": 5, "texto": "Lo recomiendo totalmente, volveré a alquilar.", "fecha": "2026-03-05" }
     ]
   },
   {
@@ -57,18 +61,22 @@
     "placa": "DEF-456",
     "sucursal": "Aeropuerto Neiva",
     "tarifas": {
-      "kmLimitado":  { "km": 250, "precio": 145000, "excedente": 1000 },
+      "kmLimitado": { "km": 250, "precio": 145000, "excedente": 1000 },
       "kmIlimitado": { "precio": 175000 }
     },
     "seguros": [
       { "nombre": "Protección Obligatoria", "precio": 29000 },
-      { "nombre": "Protección Total",       "precio": 67000 }
+      { "nombre": "Protección Total", "precio": 67000 }
     ],
     "servicios": [
-      { "nombre": "GPS",        "precio": 15000 },
+      { "nombre": "GPS", "precio": 15000 },
       { "nombre": "Silla bebé", "precio": 20000 }
     ],
-    "imagenes": [null, null, null],
+    "imagenes": [
+      "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/5acb88622cc00284455f7d6c6e19fd2f5b11a6cd.jpg",
+      "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/3660959c1dc9ad6069d89d42723db9cda29afeba.jpg",
+      "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/ec7412fd3f8148ee85aeb9d7c9a05577be7409d6.jpg"
+    ],
     "disponibilidad": { "ocupados": [] },
     "comentarios": []
   },
@@ -91,12 +99,12 @@
     "placa": "GHI-789",
     "sucursal": "Terminal de Transportes",
     "tarifas": {
-      "kmLimitado":  { "km": 150, "precio": 60000, "excedente": 600 },
+      "kmLimitado": { "km": 150, "precio": 60000, "excedente": 600 },
       "kmIlimitado": { "precio": 75000 }
     },
     "seguros": [
       { "nombre": "Protección Obligatoria", "precio": 29000 },
-      { "nombre": "Protección Total",       "precio": 67000 }
+      { "nombre": "Protección Total", "precio": 67000 }
     ],
     "servicios": [
       { "nombre": "GPS", "precio": 15000 }
@@ -124,12 +132,12 @@
     "placa": "JKL-012",
     "sucursal": "Centro Neiva",
     "tarifas": {
-      "kmLimitado":  { "km": 300, "precio": 220000, "excedente": 1500 },
+      "kmLimitado": { "km": 300, "precio": 220000, "excedente": 1500 },
       "kmIlimitado": { "precio": 260000 }
     },
     "seguros": [
       { "nombre": "Protección Obligatoria", "precio": 29000 },
-      { "nombre": "Protección Total",       "precio": 67000 }
+      { "nombre": "Protección Total", "precio": 67000 }
     ],
     "servicios": [
       { "nombre": "GPS", "precio": 15000 }
@@ -157,19 +165,23 @@
     "placa": "MNO-345",
     "sucursal": "Norte Neiva",
     "tarifas": {
-      "kmLimitado":  { "km": 300, "precio": 180000, "excedente": 1200 },
+      "kmLimitado": { "km": 300, "precio": 180000, "excedente": 1200 },
       "kmIlimitado": { "precio": 215000 }
     },
     "seguros": [
       { "nombre": "Protección Obligatoria", "precio": 29000 },
-      { "nombre": "Protección Total",       "precio": 67000 }
+      { "nombre": "Protección Total", "precio": 67000 }
     ],
     "servicios": [
-      { "nombre": "GPS",                 "precio": 15000 },
-      { "nombre": "Silla bebé",          "precio": 20000 },
+      { "nombre": "GPS", "precio": 15000 },
+      { "nombre": "Silla bebé", "precio": 20000 },
       { "nombre": "Conductor adicional", "precio": 30000 }
     ],
-    "imagenes": [null, null, null],
+    "imagenes": [
+      "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/4d34066b6e9e1a29c93d7d0edeb2f415058411d3.jpg",
+      "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/64be097eae7f8698be22c3646647d73c234e60a0.jpg",
+      "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/ef353e43a859b12a67c8bd45cb5f5265beddef2a.jpg"
+    ],
     "disponibilidad": { "ocupados": [] },
     "comentarios": []
   },
@@ -192,12 +204,12 @@
     "placa": "PQR-678",
     "sucursal": "Sur Neiva",
     "tarifas": {
-      "kmLimitado":  { "km": 150, "precio": 55000, "excedente": 550 },
+      "kmLimitado": { "km": 150, "precio": 55000, "excedente": 550 },
       "kmIlimitado": { "precio": 68000 }
     },
     "seguros": [
       { "nombre": "Protección Obligatoria", "precio": 29000 },
-      { "nombre": "Protección Total",       "precio": 67000 }
+      { "nombre": "Protección Total", "precio": 67000 }
     ],
     "servicios": [
       { "nombre": "GPS", "precio": 15000 }
@@ -225,18 +237,22 @@
     "placa": "STU-901",
     "sucursal": "Aeropuerto Neiva",
     "tarifas": {
-      "kmLimitado":  { "km": 250, "precio": 160000, "excedente": 1100 },
+      "kmLimitado": { "km": 250, "precio": 160000, "excedente": 1100 },
       "kmIlimitado": { "precio": 192000 }
     },
     "seguros": [
       { "nombre": "Protección Obligatoria", "precio": 29000 },
-      { "nombre": "Protección Total",       "precio": 67000 }
+      { "nombre": "Protección Total", "precio": 67000 }
     ],
     "servicios": [
-      { "nombre": "GPS",        "precio": 15000 },
+      { "nombre": "GPS", "precio": 15000 },
       { "nombre": "Silla bebé", "precio": 20000 }
     ],
-    "imagenes": [null, null, null],
+    "imagenes": [
+      "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/c86e9f8dd37048853c7c2fce700fb4bb5b1e062c.jpg",
+      "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/8631ecb31093479ab34a56263b478b44fb2d74f6.jpg",
+      "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/aa041a9462ecf25c4c543ea284f7af255338df95.jpg"
+    ],
     "disponibilidad": { "ocupados": [] },
     "comentarios": []
   },
@@ -259,18 +275,22 @@
     "placa": "VWX-234",
     "sucursal": "Centro Neiva",
     "tarifas": {
-      "kmLimitado":  { "km": 200, "precio": 95000, "excedente": 900 },
+      "kmLimitado": { "km": 200, "precio": 95000, "excedente": 900 },
       "kmIlimitado": { "precio": 115000 }
     },
     "seguros": [
       { "nombre": "Protección Obligatoria", "precio": 29000 },
-      { "nombre": "Protección Total",       "precio": 67000 }
+      { "nombre": "Protección Total", "precio": 67000 }
     ],
     "servicios": [
-      { "nombre": "GPS",                 "precio": 15000 },
+      { "nombre": "GPS", "precio": 15000 },
       { "nombre": "Conductor adicional", "precio": 30000 }
     ],
-    "imagenes": [null, null, null],
+    "imagenes": [
+      "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/7718dbfc25ce3e387cb976f4ded742dc8d8c7582.jpg",
+      "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/1e686f124bd42a21481a43969615adc261e39251.jpg",
+      "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/de7fef41a3ee96557b1600b7e91494dd78a5e7b1.jpg"
+    ],
     "disponibilidad": { "ocupados": [] },
     "comentarios": []
   }
