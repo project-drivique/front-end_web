@@ -1,9 +1,9 @@
 import vehiculosMock from '../mocks/vehiculos.json'
 
-// Cambia a true cuando el backend esté listo
 const USAR_MOCK = import.meta.env.VITE_USAR_MOCK === 'true' || !import.meta.env.VITE_API_URL
 
 let apiInstance = null
+
 async function getApi() {
   if (!apiInstance) {
     const { api } = await import('./authService')
@@ -15,14 +15,14 @@ async function getApi() {
 function filtrarMock(vehiculos, filtros = {}) {
   let resultado = [...vehiculos]
 
-  if (filtros.categoria   && filtros.categoria   !== 'Todos')  resultado = resultado.filter(v => v.categoria   === filtros.categoria)
-  if (filtros.transmision && filtros.transmision !== 'Todas')  resultado = resultado.filter(v => v.transmision === filtros.transmision)
-  if (filtros.combustible && filtros.combustible !== 'Todos')  resultado = resultado.filter(v => v.combustible === filtros.combustible)
-  if (filtros.precioMin)  resultado = resultado.filter(v => v.precio >= Number(filtros.precioMin))
-  if (filtros.precioMax)  resultado = resultado.filter(v => v.precio <= Number(filtros.precioMax))
+  if (filtros.categoria && filtros.categoria !== 'Todos') resultado = resultado.filter(v => v.categoria === filtros.categoria)
+  if (filtros.transmision && filtros.transmision !== 'Todas') resultado = resultado.filter(v => v.transmision === filtros.transmision)
+  if (filtros.combustible && filtros.combustible !== 'Todos') resultado = resultado.filter(v => v.combustible === filtros.combustible)
+  if (filtros.precioMin) resultado = resultado.filter(v => v.precio >= Number(filtros.precioMin))
+  if (filtros.precioMax) resultado = resultado.filter(v => v.precio <= Number(filtros.precioMax))
   if (filtros.soloDisponibles) resultado = resultado.filter(v => v.disponible)
 
-  if (filtros.orden === 'precio_desc')       resultado.sort((a, b) => b.precio - a.precio)
+  if (filtros.orden === 'precio_desc') resultado.sort((a, b) => b.precio - a.precio)
   else if (filtros.orden === 'calificacion') resultado.sort((a, b) => b.calificacion - a.calificacion)
   else resultado.sort((a, b) => a.precio - b.precio)
 
@@ -48,12 +48,8 @@ export const catalogoService = {
     return data
   },
 
-  // Para la tarjeta de la landing: trae los vehículos con destacado:true
-  // Cuando el backend esté listo, cambia el endpoint a /vehiculos/destacados
   getVehiculosDestacados: async () => {
-    if (USAR_MOCK) {
-      return vehiculosMock.filter(v => v.destacado)
-    }
+    if (USAR_MOCK) return vehiculosMock.filter(v => v.destacado)
     const api = await getApi()
     const { data } = await api.get('/vehiculos/destacados')
     return data.vehiculos ?? data

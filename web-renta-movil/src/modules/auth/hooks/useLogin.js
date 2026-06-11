@@ -75,7 +75,7 @@ export function useLogin() {
       setExito('¡Acceso exitoso! Redirigiendo...')
 
       setTimeout(() => {
-        navigate(datos.rol === 'administrador' ? '/admin' : '/catalogo')
+        navigate(datos.rol === 'administrador' ? '/admin' : '/home')
       }, 1000)
     } catch (error) {
       const nuevosIntentos = intentos + 1

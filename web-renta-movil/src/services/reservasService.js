@@ -1,4 +1,4 @@
-import { api } from './authService'
+import api from './api'
 
 export const reservasService = {
   getReservas: async () => {
