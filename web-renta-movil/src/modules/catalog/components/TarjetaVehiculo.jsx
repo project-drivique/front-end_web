@@ -3,262 +3,401 @@ import { useNavigate } from 'react-router-dom'
 import {
   FaHeart,
   FaRegHeart,
-  FaMoneyBillWave,
-  FaShieldAlt,
   FaSnowflake,
-  FaWindowRestore,
+  FaBolt,
   FaLock,
-  FaCarSide,
-  FaCog,
+  FaSuitcase,
+  FaCogs,
   FaGasPump,
   FaUsers,
-  FaWrench,
+  FaCar,
+  FaShieldAlt,
+  FaMoneyBillWave,
+  FaStar,
 } from 'react-icons/fa'
 
-const iconMap = {
-  aire_acondicionado: FaSnowflake,
-  eleva_vidrios: FaWindowRestore,
-  cierre_centralizado: FaLock,
-  maletero: FaCarSide,
-  transmision: FaCog,
-  combustible: FaGasPump,
-  personas: FaUsers,
-}
-
-const getItemIcon = (item) => {
-  if (item.icono) return item.icono
-  if (item.tipo && iconMap[item.tipo]) return iconMap[item.tipo]
-  return FaWrench
-}
-
-export default function TarjetaVehiculo({ vehiculo, esFavorito, onFavorito, c, invitado = false }) {
-  const [verDetalles, setVerDetalles] = useState(false)
-  const navigate = useNavigate()
-
-  const imagenSrc = vehiculo.imagen || vehiculo.imagenes?.[0] || ''
-  const caracteristicas = vehiculo.caracteristicas || vehiculo.detalles || []
-  const tarifas = vehiculo.tarifas || null
-  const seguros = vehiculo.seguros || []
-
-  const handleReservar = () => {
-    navigate(`/catalogo/${vehiculo.id}`)
+// MODIFICADO: Si el vehículo no tiene un set de fotos secundarias, 
+// le inyectamos 3 imágenes reales para simular el desplazamiento real en el catálogo.
+function getSafeImages(vehiculo) {
+  const imgs = vehiculo.imagenes || vehiculo.fotos || [];
+  const arrayFiltrado = Array.isArray(imgs) ? imgs.filter(Boolean) : [];
+  
+  // Si la tarjeta ya viene con un listado de fotos único (como la tercera), lo usamos
+  if (arrayFiltrado.length > 1) {
+    return arrayFiltrado.slice(0, 3);
   }
+  
+  // Si es una de las tarjetas principales que solo tiene una foto, 
+  // le creamos una galería de 3 fotos para que tenga desplazamiento real
+  const fotoBase = arrayFiltrado[0] || vehiculo.imagen || vehiculo.foto;
+  
+  if (fotoBase) {
+    // Si es un Spark o carro similar, inyectamos fotos variantes de stock para el carrusel
+    return [
+      fotoBase,
+      "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=600&q=80"
+    ];
+  }
+  
+  // Fallback si no hay absolutamente ninguna foto
+  return [''];
+}
+
+function getCarIcon(item) {
+  return item.icono || FaCogs
+}
+
+function normalizeCaracteristicas(vehiculo) {
+  if (Array.isArray(vehiculo.caracteristicas) && vehiculo.caracteristicas.length > 0) return vehiculo.caracteristicas
+  if (Array.isArray(vehiculo.detalles) && vehiculo.detalles.length > 0) return vehiculo.detalles
+  return [
+    { icono: FaSnowflake, label: 'Aire acondicionado' },
+    { icono: FaBolt, label: 'Eleva vidrios eléctrico' },
+    { icono: FaLock, label: 'Cierre centralizado' },
+    { icono: FaSuitcase, label: `${vehiculo.maletero ?? 0}L maletero` },
+    { icono: FaCogs, label: vehiculo.transmision || 'Manual' },
+    { icono: FaGasPump, label: vehiculo.combustible || 'Gasolina' },
+    { icono: FaUsers, label: `${vehiculo.pasajeros ?? 4} personas` },
+  ]
+}
+
+function normalizeTarifas(vehiculo) {
+  const t = vehiculo.tarifas || {}
+  return {
+    kmLimitado: {
+      km: t.kmLimitado?.km ?? 150,
+      precio: t.kmLimitado?.precio ?? 0,
+    },
+    kmIlimitado: {
+      precio: t.kmIlimitado?.precio ?? 0,
+    },
+  }
+}
+
+function normalizeSeguros(vehiculo) {
+  if (Array.isArray(vehiculo.seguros) && vehiculo.seguros.length > 0) return vehiculo.seguros
+  return []
+}
+
+function normalizeRating(vehiculo) {
+  const r = Number(vehiculo.calificacion ?? vehiculo.rating ?? 0)
+  return Number.isFinite(r) ? r : 0
+}
+
+export default function TarjetaVehiculo({ vehiculo, esFavorito, onFavorito, dias = 0, c }) {
+  const navigate = useNavigate()
+  const [hover, setHover] = useState(false)
+  const [verDetalles, setVerDetalles] = useState(false)
+  const [fotoActiva, setFotoActiva] = useState(0)
+
+  const imagenes = getSafeImages(vehiculo)
+  const caracteristicas = normalizeCaracteristicas(vehiculo)
+  const tarifas = normalizeTarifas(vehiculo)
+  const seguros = normalizeSeguros(vehiculo)
+  const rating = normalizeRating(vehiculo)
+  const estadoDisponible = vehiculo.disponible !== false
+  const handleReservar = () => navigate(`/catalogo/${vehiculo.id}`)
+
+  const estrellas = Array.from({ length: 5 }, (_, i) => i < Math.round(rating))
+  const imagenActual = imagenes[fotoActiva] || ''
 
   return (
     <div
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
       style={{
         background: c.panelBg,
-        borderRadius: '18px',
-        border: `1px solid ${c.cardBorder}`,
+        borderRadius: '20px',
+        border: `1.5px solid ${hover ? c.cardBorderHover : c.cardBorder}`,
+        boxShadow: hover ? c.cardShadowHover : c.cardShadow,
         overflow: 'hidden',
-        boxShadow: c.cardShadow,
+        transform: hover ? 'translateY(-4px)' : 'translateY(0)',
+        transition: 'box-shadow 200ms ease, border-color 200ms ease, transform 200ms ease',
+        display: 'flex',
+        flexDirection: 'column',
+        alignSelf: 'flex-start',
+        width: '100%',
+        maxWidth: '350px',
       }}
     >
-      <div style={{ position: 'relative' }}>
-        <img
-          src={imagenSrc}
-          alt={vehiculo.nombre}
-          style={{ width: '100%', height: '180px', objectFit: 'cover', display: 'block' }}
-        />
+      {/* SECCIÓN SUPERIOR: FOTO Y CONTROLES */}
+      <div style={{ position: 'relative', height: '180px', background: c.imageFallbackBg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+        {imagenActual ? (
+          <img src={imagenActual} alt={vehiculo.nombre} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        ) : (
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <FaCar size={42} color={c.imageFallbackIcon} />
+          </div>
+        )}
 
+        {/* INDICADOR DISPONIBLE / NO DISPONIBLE */}
+        <span
+          style={{
+            position: 'absolute',
+            top: '12px',
+            left: '12px',
+            fontSize: '11px',
+            fontWeight: 700,
+            padding: '5px 12px',
+            borderRadius: '9999px',
+            background: estadoDisponible ? '#e6f4ea' : '#fce8e6',
+            color: estadoDisponible ? '#137333' : '#c5221f',
+            border: `1px solid ${estadoDisponible ? '#ceead6' : '#fad2cf'}`,
+          }}
+        >
+          {estadoDisponible ? 'Disponible' : 'No disponible'}
+        </span>
+
+        {/* BOTÓN FAVORITO */}
         <button
-          type="button"
-          onClick={onFavorito}
+          onClick={e => {
+            e.stopPropagation()
+            onFavorito()
+          }}
           style={{
             position: 'absolute',
             top: '10px',
             right: '10px',
-            width: '34px',
-            height: '34px',
+            width: '36px',
+            height: '36px',
             borderRadius: '50%',
+            background: '#ffffff',
             border: 'none',
-            background: c.favoriteBtnBg,
-            boxShadow: c.favoriteBtnShadow,
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            padding: 0,
-            lineHeight: 0,
+            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
           }}
         >
-          {esFavorito ? <FaHeart color={c.favoriteOn} size={15} /> : <FaRegHeart color={c.favoriteOff} size={15} />}
-        </button>
-      </div>
-
-      <div style={{ padding: '14px' }}>
-        <div style={{ fontSize: '12px', color: c.textSecondary, fontWeight: 700 }}>
-          {vehiculo.categoria}
-        </div>
-
-        <h3 style={{ margin: '6px 0', fontSize: '16px', fontWeight: 800, color: c.textPrimary }}>
-          {vehiculo.nombre}
-        </h3>
-
-        <div style={{ fontSize: '12px', color: c.textMuted, marginBottom: '10px' }}>
-          {vehiculo.transmision} · {vehiculo.combustible}
-        </div>
-
-        <div style={{ fontSize: '18px', fontWeight: 900, color: c.accentText, marginBottom: '14px' }}>
-          ${Number(vehiculo.precio).toLocaleString('es-CO')} <span style={{ fontSize: '12px', fontWeight: 600 }}>/día</span>
-        </div>
-
-        <button
-          type="button"
-          onClick={handleReservar}
-          style={{
-            width: '100%',
-            padding: '12px',
-            borderRadius: '10px',
-            border: 'none',
-            background: c.accentGradient,
-            color: '#fff',
-            fontWeight: 800,
-            cursor: 'pointer',
-            marginBottom: '8px',
-          }}
-        >
-          Reservar ahora
+          {esFavorito ? <FaHeart color="#e11d48" size={18} /> : <FaRegHeart color="#9ca3af" size={18} />}
         </button>
 
-        <button
-          type="button"
-          onClick={() => setVerDetalles(v => !v)}
-          style={{
-            width: '100%',
-            background: 'transparent',
-            border: 'none',
-            color: c.accentText,
-            fontWeight: 700,
-            fontSize: '13px',
-            cursor: 'pointer',
-            textAlign: 'center',
-            padding: '4px 0 0',
-          }}
-        >
-          {verDetalles ? 'Ocultar detalles' : 'Ver detalles'}
-        </button>
-
-        {verDetalles && (
-          <div style={{ marginTop: '12px' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '6px', marginBottom: '10px' }}>
-              {caracteristicas.map((item, i) => {
-                const Icono = getItemIcon(item)
-                return (
-                  <div
-                    key={i}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '6px',
-                      background: c.panelBgSoft,
-                      borderRadius: '8px',
-                      padding: '7px 8px',
-                      border: `1px solid ${c.panelBorder}`,
-                    }}
-                  >
-                    <span style={{ fontSize: '14px', flexShrink: 0, color: c.textMuted, display: 'flex', alignItems: 'center' }}>
-                      <Icono />
-                    </span>
-                    <span style={{ fontSize: '11px', fontWeight: 600, color: c.textMuted, lineHeight: 1.3 }}>
-                      {item.label}
-                    </span>
-                  </div>
-                )
-              })}
-            </div>
-
-            {tarifas && (
-              <div
+        {/* PUNTITOS DE DESPLAZAMIENTO (AHORA ACTIVO EN TODOS LOS AUTOS) */}
+        {imagenes.length > 1 && (
+          <div style={{ position: 'absolute', bottom: '12px', left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: '6px', background: 'rgba(0,0,0,0.25)', padding: '4px 8px', borderRadius: '9999px' }}>
+            {imagenes.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setFotoActiva(i)}
                 style={{
-                  background: c.tariffBg,
-                  borderRadius: '8px',
-                  padding: '8px 10px',
-                  border: `1px solid ${c.tariffBorder}`,
-                  marginBottom: '10px',
+                  width: i === fotoActiva ? '16px' : '6px',
+                  height: '6px',
+                  borderRadius: '9999px',
+                  border: 'none',
+                  cursor: 'pointer',
+                  background: i === fotoActiva ? '#3b82f6' : '#e5e7eb',
+                  padding: 0,
+                  transition: 'all 200ms',
                 }}
-              >
-                <div
-                  style={{
-                    fontSize: '10px',
-                    fontWeight: 700,
-                    color: c.successText,
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.05em',
-                    marginBottom: '5px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '5px',
-                  }}
-                >
-                  <FaMoneyBillWave />
-                  Tarifas
-                </div>
-
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: c.textMuted, marginBottom: '3px', gap: '8px' }}>
-                  <span>Km limitado ({tarifas.kmLimitado?.km ?? 150} km/día)</span>
-                  <span style={{ fontWeight: 800 }}>
-                    ${Number(tarifas.kmLimitado?.precio ?? tarifas.kmLimitado ?? 0).toLocaleString('es-CO')}
-                  </span>
-                </div>
-
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: c.textMuted, gap: '8px' }}>
-                  <span>Km ilimitado</span>
-                  <span style={{ fontWeight: 800 }}>
-                    ${Number(tarifas.kmIlimitado?.precio ?? tarifas.kmIlimitado ?? 0).toLocaleString('es-CO')}
-                  </span>
-                </div>
-              </div>
-            )}
-
-            {seguros.length > 0 && (
-              <div
-                style={{
-                  background: c.insuranceBg,
-                  borderRadius: '8px',
-                  padding: '8px 10px',
-                  border: `1px solid ${c.insuranceBorder}`,
-                }}
-              >
-                <div
-                  style={{
-                    fontSize: '10px',
-                    fontWeight: 700,
-                    color: c.accentText,
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.05em',
-                    marginBottom: '5px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '5px',
-                  }}
-                >
-                  <FaShieldAlt />
-                  Seguros
-                </div>
-
-                {seguros.map((seg, i) => (
-                  <div
-                    key={i}
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      fontSize: '11px',
-                      color: c.textMuted,
-                      marginBottom: i < seguros.length - 1 ? '4px' : 0,
-                    }}
-                  >
-                    <span style={{ fontWeight: 600 }}>{seg.nombre}</span>
-                    <span style={{ fontWeight: 800, color: c.accentText, whiteSpace: 'nowrap', marginLeft: '6px' }}>
-                      COP {Number(seg.precio).toLocaleString('es-CO', { minimumFractionDigits: 2 })}/día
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
+              />
+            ))}
           </div>
         )}
+      </div>
+
+      {/* SECCIÓN INFERIOR: INFORMACIÓN Y DETALLES */}
+      <div style={{ position: 'relative', height: '340px', overflow: 'hidden' }}>
+        
+        {/* VISTA PRINCIPAL */}
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            padding: '16px',
+            display: 'flex',
+            flexDirection: 'column',
+            opacity: verDetalles ? 0 : 1,
+            transform: verDetalles ? 'translateX(-24px)' : 'translateX(0)',
+            transition: 'opacity 220ms ease, transform 220ms ease',
+            pointerEvents: verDetalles ? 'none' : 'all',
+          }}
+        >
+          <div style={{ marginBottom: '8px' }}>
+            <span style={{ fontSize: '11px', fontWeight: 700, color: '#1e40af', background: '#eff6ff', padding: '4px 10px', borderRadius: '9999px', border: '1px solid #bfdbfe' }}>
+              {vehiculo.categoria || 'Económico'}
+            </span>
+          </div>
+
+          <h3 style={{ fontSize: '16px', fontWeight: 800, color: c.textPrimary, margin: '0 0 6px', lineHeight: 1.3 }}>
+            {vehiculo.nombre}
+          </h3>
+
+          <div style={{ display: 'flex', gap: '12px', marginBottom: '6px', flexWrap: 'wrap' }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', color: c.textSecondary }}>
+              <FaCogs style={{ color: c.textMuted }} />
+              {vehiculo.transmision}
+            </span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', color: c.textSecondary }}>
+              <FaGasPump style={{ color: c.textMuted }} />
+              {vehiculo.combustible}
+            </span>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '3px', marginBottom: '10px' }}>
+            {estrellas.map((llena, i) => (
+              <FaStar key={i} size={13} color={llena ? '#f59e0b' : '#d1d5db'} />
+            ))}
+            <span style={{ fontSize: '12px', color: c.textSecondary, marginLeft: '4px', fontWeight: 600 }}>{rating.toFixed(1)}</span>
+          </div>
+
+          <div style={{ marginBottom: '14px' }}>
+            <span style={{ fontSize: '24px', fontWeight: 900, color: '#1e3a8a' }}>${Number(vehiculo.precio || 60000).toLocaleString('es-CO')}</span>
+            <span style={{ fontSize: '12px', color: c.textSoft, marginLeft: '4px' }}>/día</span>
+          </div>
+
+          <div style={{ marginTop: 'auto' }}>
+            <button
+              onClick={handleReservar}
+              disabled={!estadoDisponible}
+              style={{
+                width: '100%',
+                padding: '12px',
+                borderRadius: '12px',
+                fontSize: '13px',
+                fontWeight: 800,
+                border: 'none',
+                letterSpacing: '0.04em',
+                textTransform: 'uppercase',
+                cursor: estadoDisponible ? 'pointer' : 'not-allowed',
+                background: estadoDisponible ? '#2563eb' : '#d1d5db',
+                color: '#fff',
+                boxShadow: estadoDisponible ? '0 4px 14px rgba(37,99,235,0.25)' : 'none',
+                marginBottom: '10px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+              }}
+            >
+              <FaCar />
+              RESERVAR AHORA
+            </button>
+
+            <div style={{ textAlign: 'center' }}>
+              <button
+                onClick={() => setVerDetalles(true)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontSize: '13px',
+                  fontWeight: 700,
+                  color: '#2563eb',
+                  textDecoration: 'underline',
+                  padding: 0,
+                }}
+              >
+                Ver detalles
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* VISTA DESPLEGADA */}
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            padding: '14px 16px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '8px',
+            overflowY: 'auto',
+            opacity: verDetalles ? 1 : 0,
+            transform: verDetalles ? 'translateX(0)' : 'translateX(24px)',
+            transition: 'opacity 220ms ease, transform 220ms ease',
+            pointerEvents: verDetalles ? 'all' : 'none',
+          }}
+        >
+          <div style={{ textAlign: 'center', flexShrink: 0, marginBottom: '4px' }}>
+            <button
+              onClick={() => setVerDetalles(false)}
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                fontSize: '13px',
+                fontWeight: 700,
+                color: '#2563eb',
+                textDecoration: 'underline',
+                padding: 0,
+              }}
+            >
+              Ocultar detalles
+            </button>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px', flexShrink: 0 }}>
+            {caracteristicas.map((item, i) => {
+              const Icono = getCarIcon(item)
+              return (
+                <div
+                  key={i}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    background: '#f8fafc',
+                    borderRadius: '8px',
+                    padding: '7px 8px',
+                    border: '1px solid #e2e8f0',
+                  }}
+                >
+                  <span style={{ fontSize: '14px', flexShrink: 0, color: '#64748b', display: 'flex', alignItems: 'center' }}>
+                    <Icono />
+                  </span>
+                  <span style={{ fontSize: '11px', fontWeight: 600, color: '#334155', lineHeight: 1.3 }}>{item.label}</span>
+                </div>
+              )
+            })}
+          </div>
+
+          <div style={{ background: '#f4fbf7', borderRadius: '8px', padding: '10px', border: '1px solid #ccf1dc', flexShrink: 0 }}>
+            <div style={{ fontSize: '11px', fontWeight: 800, color: '#137333', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '5px' }}>
+              <FaMoneyBillWave />
+              TARIFAS
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: '#334155', marginBottom: '4px' }}>
+              <span>Km limitado ({tarifas.kmLimitado.km} km/día)</span>
+              <span style={{ fontWeight: 800 }}>${Number(tarifas.kmLimitado.precio || 55000).toLocaleString('es-CO')}</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: '#334155' }}>
+              <span>Km ilimitado</span>
+              <span style={{ fontWeight: 800 }}>${Number(tarifas.kmIlimitado.precio || 68000).toLocaleString('es-CO')}</span>
+            </div>
+          </div>
+
+          <div style={{ background: '#f0f4ff', borderRadius: '8px', padding: '10px', border: '1px solid #ccd9ff', flexShrink: 0 }}>
+            <div style={{ fontSize: '11px', fontWeight: 800, color: '#1e40af', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '5px' }}>
+              <FaShieldAlt />
+              SEGUROS
+            </div>
+            {seguros.length > 0 ? (
+              seguros.map((seg, i) => (
+                <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '11px', color: '#334155', marginBottom: i < seguros.length - 1 ? '4px' : 0 }}>
+                  <span style={{ fontWeight: 600 }}>{seg.nombre}</span>
+                  <span style={{ fontWeight: 800, color: '#1e3a8a' }}>
+                    COP {Number(seg.precio).toLocaleString('es-CO', { minimumFractionDigits: 2 })}/día
+                  </span>
+                </div>
+              ))
+            ) : (
+              <>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '11px', color: '#334155', marginBottom: '4px' }}>
+                  <span style={{ fontWeight: 600 }}>Protección Obligatoria</span>
+                  <span style={{ fontWeight: 800, color: '#1e3a8a' }}>COP 29.000,00/día</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '11px', color: '#334155' }}>
+                  <span style={{ fontWeight: 600 }}>Protección Total</span>
+                  <span style={{ fontWeight: 800, color: '#1e3a8a' }}>COP 67.000,00/día</span>
+                </div>
+              </>
+            )}
+          </div>
+
+        </div>
       </div>
     </div>
   )
