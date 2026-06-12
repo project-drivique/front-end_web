@@ -16,32 +16,25 @@ import {
   FaStar,
 } from 'react-icons/fa'
 
-// MODIFICADO: Si el vehículo no tiene un set de fotos secundarias, 
-// le inyectamos 3 imágenes reales para simular el desplazamiento real en el catálogo.
 function getSafeImages(vehiculo) {
-  const imgs = vehiculo.imagenes || vehiculo.fotos || [];
-  const arrayFiltrado = Array.isArray(imgs) ? imgs.filter(Boolean) : [];
-  
-  // Si la tarjeta ya viene con un listado de fotos único (como la tercera), lo usamos
+  const imgs = vehiculo.imagenes || vehiculo.fotos || []
+  const arrayFiltrado = Array.isArray(imgs) ? imgs.filter(Boolean) : []
+
   if (arrayFiltrado.length > 1) {
-    return arrayFiltrado.slice(0, 3);
+    return arrayFiltrado.slice(0, 3)
   }
-  
-  // Si es una de las tarjetas principales que solo tiene una foto, 
-  // le creamos una galería de 3 fotos para que tenga desplazamiento real
-  const fotoBase = arrayFiltrado[0] || vehiculo.imagen || vehiculo.foto;
-  
+
+  const fotoBase = arrayFiltrado[0] || vehiculo.imagen || vehiculo.foto
+
   if (fotoBase) {
-    // Si es un Spark o carro similar, inyectamos fotos variantes de stock para el carrusel
     return [
       fotoBase,
-      "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=600&q=80",
-      "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=600&q=80"
-    ];
+      'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=600&q=80',
+      'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=600&q=80',
+    ]
   }
-  
-  // Fallback si no hay absolutamente ninguna foto
-  return [''];
+
+  return ['']
 }
 
 function getCarIcon(item) {
@@ -85,7 +78,14 @@ function normalizeRating(vehiculo) {
   return Number.isFinite(r) ? r : 0
 }
 
-export default function TarjetaVehiculo({ vehiculo, esFavorito, onFavorito, dias = 0, c }) {
+export default function TarjetaVehiculo({
+  vehiculo,
+  esFavorito = false,
+  onFavorito = () => {},
+  dias = 0,
+  c,
+  invitado = false,
+}) {
   const navigate = useNavigate()
   const [hover, setHover] = useState(false)
   const [verDetalles, setVerDetalles] = useState(false)
@@ -121,7 +121,6 @@ export default function TarjetaVehiculo({ vehiculo, esFavorito, onFavorito, dias
         maxWidth: '350px',
       }}
     >
-      {/* SECCIÓN SUPERIOR: FOTO Y CONTROLES */}
       <div style={{ position: 'relative', height: '180px', background: c.imageFallbackBg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
         {imagenActual ? (
           <img src={imagenActual} alt={vehiculo.nombre} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -131,7 +130,6 @@ export default function TarjetaVehiculo({ vehiculo, esFavorito, onFavorito, dias
           </div>
         )}
 
-        {/* INDICADOR DISPONIBLE / NO DISPONIBLE */}
         <span
           style={{
             position: 'absolute',
@@ -149,37 +147,40 @@ export default function TarjetaVehiculo({ vehiculo, esFavorito, onFavorito, dias
           {estadoDisponible ? 'Disponible' : 'No disponible'}
         </span>
 
-        {/* BOTÓN FAVORITO */}
-        <button
-          onClick={e => {
-            e.stopPropagation()
-            onFavorito()
-          }}
-          style={{
-            position: 'absolute',
-            top: '10px',
-            right: '10px',
-            width: '36px',
-            height: '36px',
-            borderRadius: '50%',
-            background: '#ffffff',
-            border: 'none',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-          }}
-        >
-          {esFavorito ? <FaHeart color="#e11d48" size={18} /> : <FaRegHeart color="#9ca3af" size={18} />}
-        </button>
+        {!invitado && (
+          <button
+            type="button"
+            onClick={e => {
+              e.stopPropagation()
+              onFavorito()
+            }}
+            style={{
+              position: 'absolute',
+              top: '10px',
+              right: '10px',
+              width: '36px',
+              height: '36px',
+              borderRadius: '50%',
+              background: '#ffffff',
+              border: 'none',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+            }}
+            aria-label={esFavorito ? 'Quitar de favoritos' : 'Agregar a favoritos'}
+          >
+            {esFavorito ? <FaHeart color="#e11d48" size={18} /> : <FaRegHeart color="#9ca3af" size={18} />}
+          </button>
+        )}
 
-        {/* PUNTITOS DE DESPLAZAMIENTO (AHORA ACTIVO EN TODOS LOS AUTOS) */}
         {imagenes.length > 1 && (
           <div style={{ position: 'absolute', bottom: '12px', left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: '6px', background: 'rgba(0,0,0,0.25)', padding: '4px 8px', borderRadius: '9999px' }}>
             {imagenes.map((_, i) => (
               <button
                 key={i}
+                type="button"
                 onClick={() => setFotoActiva(i)}
                 style={{
                   width: i === fotoActiva ? '16px' : '6px',
@@ -197,10 +198,7 @@ export default function TarjetaVehiculo({ vehiculo, esFavorito, onFavorito, dias
         )}
       </div>
 
-      {/* SECCIÓN INFERIOR: INFORMACIÓN Y DETALLES */}
       <div style={{ position: 'relative', height: '340px', overflow: 'hidden' }}>
-        
-        {/* VISTA PRINCIPAL */}
         <div
           style={{
             position: 'absolute',
@@ -215,7 +213,7 @@ export default function TarjetaVehiculo({ vehiculo, esFavorito, onFavorito, dias
           }}
         >
           <div style={{ marginBottom: '8px' }}>
-            <span style={{ fontSize: '11px', fontWeight: 700, color: '#1e40af', background: '#eff6ff', padding: '4px 10px', borderRadius: '9999px', border: '1px solid #bfdbfe' }}>
+            <span style={{ fontSize: '12px', fontWeight: 700, color: '#1e40af', background: '#eff6ff', padding: '4px 10px', borderRadius: '9999px', border: '1px solid #bfdbfe' }}>
               {vehiculo.categoria || 'Económico'}
             </span>
           </div>
@@ -242,38 +240,40 @@ export default function TarjetaVehiculo({ vehiculo, esFavorito, onFavorito, dias
             <span style={{ fontSize: '12px', color: c.textSecondary, marginLeft: '4px', fontWeight: 600 }}>{rating.toFixed(1)}</span>
           </div>
 
-          <div style={{ marginBottom: '14px' }}>
-            <span style={{ fontSize: '24px', fontWeight: 900, color: '#1e3a8a' }}>${Number(vehiculo.precio || 60000).toLocaleString('es-CO')}</span>
-            <span style={{ fontSize: '12px', color: c.textSoft, marginLeft: '4px' }}>/día</span>
-          </div>
+         <div style={{ marginBottom: '8px' }}>
+  <span style={{ fontSize: '24px', fontWeight: 900, color: '#1e3a8a' }}>
+    ${Number(vehiculo.precio || 60000).toLocaleString('es-CO')}
+  </span>
+  <span style={{ fontSize: '12px', color: c.textSoft, marginLeft: '4px' }}>/día</span>
+</div>
 
-          <div style={{ marginTop: 'auto' }}>
-            <button
-              onClick={handleReservar}
-              disabled={!estadoDisponible}
-              style={{
-                width: '100%',
-                padding: '12px',
-                borderRadius: '12px',
-                fontSize: '13px',
-                fontWeight: 800,
-                border: 'none',
-                letterSpacing: '0.04em',
-                textTransform: 'uppercase',
-                cursor: estadoDisponible ? 'pointer' : 'not-allowed',
-                background: estadoDisponible ? '#2563eb' : '#d1d5db',
-                color: '#fff',
-                boxShadow: estadoDisponible ? '0 4px 14px rgba(37,99,235,0.25)' : 'none',
-                marginBottom: '10px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px',
-              }}
-            >
-              <FaCar />
-              RESERVAR AHORA
-            </button>
+<div style={{ marginTop: 'auto' }}>
+  <button
+    onClick={handleReservar}
+    disabled={!estadoDisponible}
+    style={{
+      width: '100%',
+      padding: '12px',
+      borderRadius: '12px',
+      fontSize: '13px',
+      fontWeight: 800,
+      border: 'none',
+      letterSpacing: '0.04em',
+      textTransform: 'uppercase',
+      cursor: estadoDisponible ? 'pointer' : 'not-allowed',
+      background: estadoDisponible ? '#2563eb' : '#d1d5db',
+      color: '#fff',
+      boxShadow: estadoDisponible ? '0 4px 14px rgba(37,99,235,0.25)' : 'none',
+      marginBottom: '8px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: '8px',
+    }}
+  >
+    <FaCar />
+    RESERVAR AHORA
+  </button>
 
             <div style={{ textAlign: 'center' }}>
               <button
@@ -286,6 +286,7 @@ export default function TarjetaVehiculo({ vehiculo, esFavorito, onFavorito, dias
                   fontWeight: 700,
                   color: '#2563eb',
                   textDecoration: 'underline',
+                  marginBottom: '30px',
                   padding: 0,
                 }}
               >
@@ -295,7 +296,6 @@ export default function TarjetaVehiculo({ vehiculo, esFavorito, onFavorito, dias
           </div>
         </div>
 
-        {/* VISTA DESPLEGADA */}
         <div
           style={{
             position: 'absolute',
@@ -396,7 +396,6 @@ export default function TarjetaVehiculo({ vehiculo, esFavorito, onFavorito, dias
               </>
             )}
           </div>
-
         </div>
       </div>
     </div>

@@ -1,3 +1,4 @@
+import { useEffect, useMemo, useState } from 'react'
 import { useAuthStore } from '../../../store/authStore'
 import { useLanding } from '../../landing/LandingContext'
 import { COLOR_MARCA } from '../constants'
@@ -80,7 +81,32 @@ export default function CatalogoUsuarioPage() {
     reintentar,
   } = useCatalogo()
 
-  const { esFavorito, toggleFavorito } = useFavoritos()
+  const favoritosKey = useMemo(() => {
+    if (!usuario?.id) return 'favoritosVehiculos'
+    return `favoritosVehiculos_${usuario.id}`
+  }, [usuario?.id])
+
+  const { esFavorito, toggleFavorito } = useFavoritos(favoritosKey)
+  const [soloFavoritos, setSoloFavoritos] = useState(false)
+
+  useEffect(() => {
+    setSoloFavoritos(false)
+    setPagina(1)
+  }, [usuario?.id])
+
+  useEffect(() => {
+    setPagina(1)
+  }, [soloFavoritos, filtros, busquedaForm])
+
+  const resultadoVisible = useMemo(() => {
+    if (!soloFavoritos) return resultado
+    return resultado.filter(v => esFavorito(v.id))
+  }, [resultado, soloFavoritos, esFavorito])
+
+  const vehiculosPaginaVisible = useMemo(() => {
+    if (!soloFavoritos) return vehiculosPagina
+    return vehiculosPagina.filter(v => esFavorito(v.id))
+  }, [vehiculosPagina, soloFavoritos, esFavorito])
 
   const inputStyle = {
     width: '100%',
@@ -104,6 +130,17 @@ export default function CatalogoUsuarioPage() {
     letterSpacing: '0.06em',
   }
 
+  const limpiarTodo = () => {
+    setSoloFavoritos(false)
+    limpiar()
+  }
+
+  const mensajeVacio = soloFavoritos
+    ? 'No tienes vehículos marcados como favoritos.'
+    : 'No encontramos vehículos con los filtros seleccionados.'
+
+  const tituloVacio = soloFavoritos ? 'Sin favoritos' : 'Sin resultados'
+
   return (
     <div style={{ minHeight: '100vh', background: c.pageBg, display: 'flex', flexDirection: 'column' }}>
       <HeaderCatalogo c={c} usuario={usuario} withLinks />
@@ -112,7 +149,7 @@ export default function CatalogoUsuarioPage() {
         <HeroBusqueda
           c={c}
           cargando={cargando}
-          resultado={resultado}
+          resultado={resultadoVisible}
           inputStyle={inputStyle}
           labelStyle={labelStyle}
           busquedaForm={busquedaForm}
@@ -133,9 +170,12 @@ export default function CatalogoUsuarioPage() {
             setForm={setForm}
             errorBusqueda={errorBusqueda}
             handleBuscar={handleBuscar}
-            limpiar={limpiar}
+            limpiar={limpiarTodo}
             invitado={false}
             showHero={false}
+            soloFavoritos={soloFavoritos}
+            setSoloFavoritos={setSoloFavoritos}
+            mostrarFavoritos={Boolean(usuario?.id)}
           />
 
           <div style={{ flex: 1, minWidth: 0 }}>
@@ -150,15 +190,18 @@ export default function CatalogoUsuarioPage() {
 
             {cargando && <EstadoCarga c={c} />}
             {!cargando && error && <EstadoError c={c} error={error} onRetry={reintentar} />}
-            {!cargando && !error && resultado.length === 0 && <EstadoVacio c={c} onLimpiar={limpiar} />}
+            {!cargando && !error && resultadoVisible.length === 0 && (
+              <EstadoVacio c={c} onLimpiar={limpiarTodo} titulo={tituloVacio} mensaje={mensajeVacio} textoBoton={soloFavoritos ? 'Ver todos' : 'Limpiar filtros'} />
+            )}
 
-            {!cargando && !error && resultado.length > 0 && (
+            {!cargando && !error && resultadoVisible.length > 0 && (
               <>
                 <GridVehiculos
-                  vehiculosPagina={vehiculosPagina}
+                  vehiculosPagina={vehiculosPaginaVisible}
                   esFavorito={esFavorito}
                   toggleFavorito={toggleFavorito}
                   c={c}
+                  invitado={false}
                 />
 
                 <PaginacionCatalogo
