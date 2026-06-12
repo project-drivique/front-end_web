@@ -21,9 +21,9 @@ const MOCK_USERS = [
     rol: 'administrador',
   },
   {
-    correo: 'cliente@rentamovil.com',
+    correo: 'marlon@rentamovil.com',
     contrasena: 'Cliente123*',
-    nombre: 'Cliente',
+    nombre: '',
     rol: 'usuario',
   },
 ]
@@ -53,8 +53,21 @@ export const authService = {
   },
 
   registro: async (datosUsuario) => {
-    const { data } = await api.post('/auth/registro', datosUsuario)
-    return data
+    const usuario = MOCK_USERS.find(
+      (u) => u.correo === datosUsuario.correo && u.contrasena === datosUsuario.contrasena
+    )
+
+    if (usuario) {
+      return {
+        token: generateMockToken(),
+        nombre: usuario.nombre,
+        rol: usuario.rol,
+      }
+    }
+
+    const error = new Error('No existe una cuenta con estas credenciales. Usa admin@rentamovil.com o cliente@rentamovil.com con la contraseña correspondiente.')
+    error.response = { status: 400 }
+    throw error
   },
 
   solicitarRecuperacion: async (correo) => {

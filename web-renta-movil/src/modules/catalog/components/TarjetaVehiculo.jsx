@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import Swal from 'sweetalert2'
 import {
   FaHeart,
   FaRegHeart,
@@ -82,7 +83,6 @@ export default function TarjetaVehiculo({
   vehiculo,
   esFavorito = false,
   onFavorito = () => {},
-  dias = 0,
   c,
   invitado = false,
 }) {
@@ -97,7 +97,41 @@ export default function TarjetaVehiculo({
   const seguros = normalizeSeguros(vehiculo)
   const rating = normalizeRating(vehiculo)
   const estadoDisponible = vehiculo.disponible !== false
-  const handleReservar = () => navigate(`/catalogo/${vehiculo.id}`)
+
+  const handleReservar = () => {
+    if (invitado) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Registro requerido',
+        text: 'Debes iniciar sesión o registrarte antes de reservar un vehículo.',
+        confirmButtonText: 'Ir a iniciar sesión',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate('/login')
+        }
+      })
+      return
+    }
+    navigate(`/catalogo/${vehiculo.id}`)
+  }
+
+  const handleFavoritoClick = (e) => {
+    e.stopPropagation()
+    if (invitado) {
+      Swal.fire({
+        icon: 'info',
+        title: 'Favoritos solo para usuarios',
+        text: 'Inicia sesión o regístrate para guardar vehículos en favoritos.',
+        confirmButtonText: 'Ir a iniciar sesión',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate('/login')
+        }
+      })
+      return
+    }
+    onFavorito()
+  }
 
   const estrellas = Array.from({ length: 5 }, (_, i) => i < Math.round(rating))
   const imagenActual = imagenes[fotoActiva] || ''
@@ -147,33 +181,28 @@ export default function TarjetaVehiculo({
           {estadoDisponible ? 'Disponible' : 'No disponible'}
         </span>
 
-        {!invitado && (
-          <button
-            type="button"
-            onClick={e => {
-              e.stopPropagation()
-              onFavorito()
-            }}
-            style={{
-              position: 'absolute',
-              top: '10px',
-              right: '10px',
-              width: '36px',
-              height: '36px',
-              borderRadius: '50%',
-              background: '#ffffff',
-              border: 'none',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-            }}
-            aria-label={esFavorito ? 'Quitar de favoritos' : 'Agregar a favoritos'}
-          >
-            {esFavorito ? <FaHeart color="#e11d48" size={18} /> : <FaRegHeart color="#9ca3af" size={18} />}
-          </button>
-        )}
+        <button
+          type="button"
+          onClick={handleFavoritoClick}
+          style={{
+            position: 'absolute',
+            top: '10px',
+            right: '10px',
+            width: '36px',
+            height: '36px',
+            borderRadius: '50%',
+            background: '#ffffff',
+            border: 'none',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+          }}
+          aria-label={esFavorito ? 'Quitar de favoritos' : 'Agregar a favoritos'}
+        >
+          {esFavorito ? <FaHeart color="#e11d48" size={18} /> : <FaRegHeart color="#9ca3af" size={18} />}
+        </button>
 
         {imagenes.length > 1 && (
           <div style={{ position: 'absolute', bottom: '12px', left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: '6px', background: 'rgba(0,0,0,0.25)', padding: '4px 8px', borderRadius: '9999px' }}>
@@ -261,7 +290,7 @@ export default function TarjetaVehiculo({
       letterSpacing: '0.04em',
       textTransform: 'uppercase',
       cursor: estadoDisponible ? 'pointer' : 'not-allowed',
-      background: estadoDisponible ? '#2563eb' : '#d1d5db',
+      background: estadoDisponible ? c.accentGradient : c.paginationDisabledBg,
       color: '#fff',
       boxShadow: estadoDisponible ? '0 4px 14px rgba(37,99,235,0.25)' : 'none',
       marginBottom: '8px',

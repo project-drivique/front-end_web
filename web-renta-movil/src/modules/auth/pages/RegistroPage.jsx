@@ -1,8 +1,9 @@
 // src/modules/auth/pages/RegistroPage.jsx
-import { useState, useEffect, useRef } from 'react'
+import { useState, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useRegistro } from '../hooks/useRegistro'
 import { useRegistroSocial } from '../hooks/useRegistroSocial'
+import { useAuthStore } from '../../../store/authStore'
 import { useLanding } from '@/modules/landing/LandingContext'
 import logo from '@/assets/logo/logo.png'
 import {
@@ -15,7 +16,6 @@ import {
 } from 'react-icons/fa'
 
 const COLOR_MARCA = '#1e3a8a'
-const COLOR_MARCA_HOVER = '#162d6e'
 
 const coloresRegistro = (esModoOscuro) => ({
   pageBg: esModoOscuro ? '#0f172a' : '#f8fafc',
@@ -348,6 +348,7 @@ export default function RegistroPage() {
   const c = coloresRegistro(esModoOscuro)
 
   const { registrar, cargando, exito, error } = useRegistro()
+  const storeLogin = useAuthStore((s) => s.login)
 
   const [correo, setCorreo] = useState('')
   const [password, setPassword] = useState('')
@@ -362,21 +363,14 @@ export default function RegistroPage() {
     cargandoGoogle, cargandoFacebook, errorSocial,
     proveedorExito, iniciarGoogle, iniciarFacebook,
   } = useRegistroSocial({
-    onExito: () => {
+    onExito: (_, data) => {
       exitoRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-      setTimeout(() => navigate('/home'), 2000)
+      const rol = data?.usuario?.rol
+      setTimeout(() => navigate(rol === 'administrador' ? '/admin' : '/home'), 2000)
     },
   })
 
   const exitoFinal = exito || !!proveedorExito
-
-  useEffect(() => {
-    if (exito) {
-      exitoRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-      const t = setTimeout(() => navigate('/login'), 3000)
-      return () => clearTimeout(t)
-    }
-  }, [exito, navigate])
 
   const validar = () => {
     const e = {}
@@ -399,7 +393,19 @@ export default function RegistroPage() {
       return
     }
     setErrores({})
-    await registrar({ correo, contrasena: password })
+
+    const datosAcceso = await registrar({ correo, contrasena: password })
+    if (datosAcceso?.token) {
+      storeLogin(datosAcceso.token, {
+        correo,
+        nombre: datosAcceso.nombre,
+        rol: datosAcceso.rol,
+      })
+
+      setTimeout(() => {
+        navigate(datosAcceso.rol === 'administrador' ? '/admin' : '/home')
+      }, 1000)
+    }
   }
 
   return (

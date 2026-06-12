@@ -10,13 +10,16 @@ export function useRegistro() {
     setCargando(true)
     setError('')
     try {
-      await authService.registro(datos)
+      const respuesta = await authService.registro(datos)
       setExito(true)
+      return respuesta
     } catch (err) {
       const msg = err?.response?.data?.mensaje
         || err?.response?.data?.message
+        || err?.message
         || 'No se pudo completar el registro. Intente nuevamente.'
       setError(msg)
+      return null
     } finally {
       setCargando(false)
     }

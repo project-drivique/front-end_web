@@ -3,6 +3,7 @@ import { Link, useParams, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../../../store/authStore'
 import { catalogoService } from '../../../services/catalogoService'
 import { useLanding } from '@/modules/landing/LandingContext'
+import Swal from 'sweetalert2'
 import logo from '@/assets/logo/logo.png'
 import {
   FaCar,
@@ -130,7 +131,16 @@ export default function VehiculoDetallePage() {
 
   const handleReservar = () => {
     if (!usuario) {
-      navigate('/login')
+      Swal.fire({
+        icon: 'warning',
+        title: 'Necesitas iniciar sesión',
+        text: 'Inicia sesión o regístrate para reservar este vehículo.',
+        confirmButtonText: 'Ir a iniciar sesión',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate('/login')
+        }
+      })
       return
     }
     navigate(`/reservations/${vehiculo.id}`)

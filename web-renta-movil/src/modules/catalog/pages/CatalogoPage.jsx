@@ -168,7 +168,6 @@ export default function CatalogoPage() {
   const [busquedaAplicada, setBusquedaAplicada] = useState(BUSQUEDA_INICIAL)
   const [busquedaRealizada, setBusquedaRealizada] = useState(false)
   const [favoritos, setFavoritos] = useState([])
-  const [mensajeFavorito, setMensajeFavorito] = useState(false)
   const [errorBusqueda, setErrorBusqueda] = useState('')
   const [pagina, setPagina] = useState(1)
 
@@ -211,11 +210,6 @@ export default function CatalogoPage() {
   const vehiculosPagina = resultado.slice((pagina - 1) * POR_PAGINA, pagina * POR_PAGINA)
 
   const handleFavorito = (id) => {
-    if (!usuario) {
-      setMensajeFavorito(true)
-      setTimeout(() => setMensajeFavorito(false), 3000)
-      return
-    }
     setFavoritos(prev => prev.includes(id) ? prev.filter(f => f !== id) : [...prev, id])
   }
 
@@ -264,56 +258,31 @@ export default function CatalogoPage() {
         <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 24px', height: '100%', display: 'flex', alignItems: 'center', gap: '24px' }}>
           <Link to="/"><img src={logo} alt="RentaMovil" style={{ height: '40px', flexShrink: 0 }} /></Link>
           <div style={{ flex: 1 }} />
-          {usuario ? (
-            <span style={{ fontSize: '13px', color: c.navText, fontWeight: 600 }}>Hola, {usuario.nombre?.split(' ')[0]}</span>
-          ) : (
-            <div style={{ display: 'flex', gap: '10px' }}>
-              <Link
-                to="/login"
-                style={{
-                  padding: '8px 20px',
-                  borderRadius: '9999px',
-                  border: `2px solid ${c.loginBorder}`,
-                  color: c.loginText,
-                  fontSize: '13px',
-                  fontWeight: 700,
-                  textDecoration: 'none',
-                  background: 'transparent',
-                }}
-                onMouseEnter={e => e.currentTarget.style.background = c.loginHoverBg}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
-                Iniciar sesión
-              </Link>
-              <Link to="/registro" style={{ padding: '8px 20px', borderRadius: '9999px', background: COLOR_MARCA, color: '#fff', fontSize: '13px', fontWeight: 700, textDecoration: 'none' }}>
-                Registrarse
-              </Link>
-            </div>
-          )}
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <Link
+              to="/login"
+              style={{
+                padding: '8px 20px',
+                borderRadius: '9999px',
+                border: `2px solid ${c.loginBorder}`,
+                color: c.loginText,
+                fontSize: '13px',
+                fontWeight: 700,
+                textDecoration: 'none',
+                background: 'transparent',
+              }}
+              onMouseEnter={e => e.currentTarget.style.background = c.loginHoverBg}
+              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+            >
+              Iniciar sesión
+            </Link>
+            <Link to="/registro" style={{ padding: '8px 20px', borderRadius: '9999px', background: COLOR_MARCA, color: '#fff', fontSize: '13px', fontWeight: 700, textDecoration: 'none' }}>
+              Registrarse
+            </Link>
+          </div>
         </div>
       </nav>
 
-      {mensajeFavorito && (
-        <div style={{
-          position: 'fixed',
-          top: '84px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          zIndex: 100,
-          background: COLOR_MARCA,
-          color: '#fff',
-          padding: '12px 24px',
-          borderRadius: '12px',
-          fontSize: '14px',
-          fontWeight: 600,
-          boxShadow: '0 8px 24px rgba(30,58,138,0.30)'
-        }}>
-          <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <FaLock />
-            Inicia sesión para guardar favoritos
-          </span>
-        </div>
-      )}
 
       <div style={{ paddingTop: '68px', flex: 1 }}>
         <div style={{ background: c.heroBg, padding: '32px 24px' }}>
@@ -590,6 +559,7 @@ export default function CatalogoPage() {
                       onFavorito={() => handleFavorito(vehiculo.id)}
                       dias={dias}
                       c={c}
+                      invitado={!usuario}
                     />
                   ))}
                 </div>

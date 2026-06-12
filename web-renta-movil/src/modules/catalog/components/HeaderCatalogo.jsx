@@ -8,7 +8,7 @@ function inicial(nombre = '') {
 }
 
 export default function HeaderCatalogo({ c, usuario, withLinks = false }) {
-  const nombre = usuario?.nombre || 'Cliente'
+  const nombre = usuario?.nombre || usuario?.correo || ''
   const letra = inicial(nombre)
 
   return (
@@ -36,9 +36,11 @@ export default function HeaderCatalogo({ c, usuario, withLinks = false }) {
 
         <div style={{ flex: 1 }} />
 
-        <span style={{ fontSize: '13px', color: c.navText, fontWeight: 600 }}>
-          Hola, {nombre}
-        </span>
+        {usuario && (
+          <span style={{ fontSize: '13px', color: c.navText, fontWeight: 600 }}>
+            Hola, {nombre}
+          </span>
+        )}
 
         {withLinks ? (
           <div style={{
