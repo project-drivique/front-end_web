@@ -3,7 +3,7 @@ import { Link, useParams, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../../../store/authStore'
 import { catalogoService } from '../../../services/catalogoService'
 import { useLanding } from '@/modules/landing/LandingContext'
-import Swal from 'sweetalert2'
+import { showAlert } from '@/utils/swalConfig'
 import logo from '@/assets/logo/logo.png'
 import {
   FaCar,
@@ -131,7 +131,7 @@ export default function VehiculoDetallePage() {
 
   const handleReservar = () => {
     if (!usuario) {
-      Swal.fire({
+      showAlert({
         icon: 'warning',
         title: 'Necesitas iniciar sesión',
         text: 'Inicia sesión o regístrate para reservar este vehículo.',

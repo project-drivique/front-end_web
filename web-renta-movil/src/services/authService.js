@@ -21,7 +21,7 @@ const MOCK_USERS = [
     rol: 'administrador',
   },
   {
-    correo: 'marlon@rentamovil.com',
+    correo: 'cliente@rentamovil.com',
     contrasena: 'Cliente123*',
     nombre: '',
     rol: 'usuario',

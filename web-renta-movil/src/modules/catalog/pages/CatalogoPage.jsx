@@ -560,6 +560,7 @@ export default function CatalogoPage() {
                       dias={dias}
                       c={c}
                       invitado={!usuario}
+                      destacado={vehiculosPagina.indexOf(vehiculo) < 2}
                     />
                   ))}
                 </div>

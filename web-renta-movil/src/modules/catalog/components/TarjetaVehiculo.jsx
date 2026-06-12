@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import Swal from 'sweetalert2'
+import { showAlert } from '@/utils/swalConfig'
 import {
   FaHeart,
   FaRegHeart,
@@ -85,6 +85,7 @@ export default function TarjetaVehiculo({
   onFavorito = () => {},
   c,
   invitado = false,
+  destacado = false,
 }) {
   const navigate = useNavigate()
   const [hover, setHover] = useState(false)
@@ -100,7 +101,7 @@ export default function TarjetaVehiculo({
 
   const handleReservar = () => {
     if (invitado) {
-      Swal.fire({
+      showAlert({
         icon: 'warning',
         title: 'Registro requerido',
         text: 'Debes iniciar sesión o registrarte antes de reservar un vehículo.',
@@ -118,7 +119,7 @@ export default function TarjetaVehiculo({
   const handleFavoritoClick = (e) => {
     e.stopPropagation()
     if (invitado) {
-      Swal.fire({
+      showAlert({
         icon: 'info',
         title: 'Favoritos solo para usuarios',
         text: 'Inicia sesión o regístrate para guardar vehículos en favoritos.',
@@ -144,7 +145,7 @@ export default function TarjetaVehiculo({
         background: c.panelBg,
         borderRadius: '20px',
         border: `1.5px solid ${hover ? c.cardBorderHover : c.cardBorder}`,
-        boxShadow: hover ? c.cardShadowHover : c.cardShadow,
+        boxShadow: destacado ? (hover ? '0 16px 40px rgba(37,99,235,0.24)' : '0 10px 26px rgba(37,99,235,0.16)') : (hover ? c.cardShadowHover : c.cardShadow),
         overflow: 'hidden',
         transform: hover ? 'translateY(-4px)' : 'translateY(0)',
         transition: 'box-shadow 200ms ease, border-color 200ms ease, transform 200ms ease',
@@ -241,7 +242,7 @@ export default function TarjetaVehiculo({
             pointerEvents: verDetalles ? 'none' : 'all',
           }}
         >
-          <div style={{ marginBottom: '8px' }}>
+          <div style={{ marginBottom: '8px', display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
             <span style={{ fontSize: '12px', fontWeight: 700, color: '#1e40af', background: '#eff6ff', padding: '4px 10px', borderRadius: '9999px', border: '1px solid #bfdbfe' }}>
               {vehiculo.categoria || 'Económico'}
             </span>
@@ -269,40 +270,40 @@ export default function TarjetaVehiculo({
             <span style={{ fontSize: '12px', color: c.textSecondary, marginLeft: '4px', fontWeight: 600 }}>{rating.toFixed(1)}</span>
           </div>
 
-         <div style={{ marginBottom: '8px' }}>
-  <span style={{ fontSize: '24px', fontWeight: 900, color: '#1e3a8a' }}>
-    ${Number(vehiculo.precio || 60000).toLocaleString('es-CO')}
-  </span>
-  <span style={{ fontSize: '12px', color: c.textSoft, marginLeft: '4px' }}>/día</span>
-</div>
+          <div style={{ marginBottom: '8px' }}>
+            <span style={{ fontSize: '24px', fontWeight: 900, color: '#1e3a8a' }}>
+              ${Number(vehiculo.precio || 60000).toLocaleString('es-CO')}
+            </span>
+            <span style={{ fontSize: '12px', color: c.textSoft, marginLeft: '4px' }}>/día</span>
+          </div>
 
-<div style={{ marginTop: 'auto' }}>
-  <button
-    onClick={handleReservar}
-    disabled={!estadoDisponible}
-    style={{
-      width: '100%',
-      padding: '12px',
-      borderRadius: '12px',
-      fontSize: '13px',
-      fontWeight: 800,
-      border: 'none',
-      letterSpacing: '0.04em',
-      textTransform: 'uppercase',
-      cursor: estadoDisponible ? 'pointer' : 'not-allowed',
-      background: estadoDisponible ? c.accentGradient : c.paginationDisabledBg,
-      color: '#fff',
-      boxShadow: estadoDisponible ? '0 4px 14px rgba(37,99,235,0.25)' : 'none',
-      marginBottom: '8px',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      gap: '8px',
-    }}
-  >
-    <FaCar />
-    RESERVAR AHORA
-  </button>
+          <div style={{ marginTop: 'auto' }}>
+            <button
+              onClick={handleReservar}
+              disabled={!estadoDisponible}
+              style={{
+                width: '100%',
+                padding: '12px',
+                borderRadius: '12px',
+                fontSize: '13px',
+                fontWeight: 800,
+                border: 'none',
+                letterSpacing: '0.04em',
+                textTransform: 'uppercase',
+                cursor: estadoDisponible ? 'pointer' : 'not-allowed',
+                background: estadoDisponible ? c.accentGradient : c.paginationDisabledBg,
+                color: '#fff',
+                boxShadow: estadoDisponible ? '0 4px 14px rgba(37,99,235,0.25)' : 'none',
+                marginBottom: '8px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+              }}
+            >
+              <FaCar />
+              RESERVAR AHORA
+            </button>
 
             <div style={{ textAlign: 'center' }}>
               <button

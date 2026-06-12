@@ -17,7 +17,7 @@ export default function GridVehiculos({
         alignItems: 'start',
       }}
     >
-      {vehiculosPagina.map(vehiculo => (
+      {vehiculosPagina.map((vehiculo, index) => (
         <TarjetaVehiculo
           key={vehiculo.id}
           vehiculo={vehiculo}
@@ -26,6 +26,7 @@ export default function GridVehiculos({
           c={c}
           dias={dias}
           invitado={invitado}
+          destacado={index < 2}
         />
       ))}
     </div>

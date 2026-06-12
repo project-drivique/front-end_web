@@ -5,7 +5,7 @@ import { useLogin } from '../hooks/useLogin'
 import { useRegistroSocial } from '../hooks/useRegistroSocial'
 import { useLanding } from '../../landing/LandingContext'
 import logo from '@/assets/logo/logo.png'
-import Swal from 'sweetalert2'
+import { showAlert } from '@/utils/swalConfig'
 
 import { coloresLogin, loginTokens } from '../styles/loginStyles'
 import SpinnerBtn from '../components/SpinnerBtn'
@@ -73,14 +73,8 @@ export default function LoginPage() {
     handleCorreoChange, handleSubmit,
   } = useLogin()
 
-  const showLoginAlert = ({ icon, title, text, confirmButtonText = 'Aceptar' }) => {
-    Swal.fire({
-      icon,
-      title,
-      text,
-      confirmButtonText,
-    })
-  }
+  const showLoginAlert = ({ icon, title, text, confirmButtonText = 'Aceptar' }) =>
+    showAlert({ icon, title, text, confirmButtonText })
 
   const {
     cargandoGoogle, cargandoFacebook, errorSocial,

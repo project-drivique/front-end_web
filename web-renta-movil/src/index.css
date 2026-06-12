@@ -60,4 +60,44 @@ html.dark {
   --hero-fondo:    linear-gradient(135deg,#0f172a 0%,#1e293b 50%,#0f172a 100%);
   --hero-orb1:     rgba(30,58,138,0.2);
   --hero-orb2:     rgba(30,58,138,0.15);
+}/* -- Estilos personalizados SweetAlert2 del proyecto -- */
+.swal2-project-popup {
+  background: #f8fafc !important;
+  color: #0f172a !important;
+  border-radius: 22px !important;
+  border: 1px solid rgba(30,58,138,0.18) !important;
+  box-shadow: 0 32px 80px rgba(15,23,42,0.12) !important;
+}
+.swal2-project-title {
+  color: #0f172a !important;
+  font-weight: 800 !important;
+  font-size: 1.35rem !important;
+}
+.swal2-project-text {
+  color: #475569 !important;
+  font-size: 1rem !important;
+  line-height: 1.6 !important;
+}
+.swal2-project-confirm {
+  background: #1e3a8a !important;
+  color: #ffffff !important;
+  border-radius: 9999px !important;
+  padding: 12px 24px !important;
+  border: none !important;
+  font-weight: 700 !important;
+  box-shadow: 0 12px 28px rgba(30,58,138,0.24) !important;
+}
+.swal2-project-cancel {
+  background: #e2e8f0 !important;
+  color: #1e3a8a !important;
+  border-radius: 9999px !important;
+  padding: 12px 24px !important;
+  border: none !important;
+  font-weight: 700 !important;
+}
+.swal2-icon.swal2-warning,
+.swal2-icon.swal2-error,
+.swal2-icon.swal2-info,
+.swal2-icon.swal2-success {
+  color: #1e3a8a !important;
 }
