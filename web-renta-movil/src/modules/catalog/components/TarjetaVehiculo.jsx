@@ -101,16 +101,7 @@ export default function TarjetaVehiculo({
 
   const handleReservar = () => {
     if (invitado) {
-      showAlert({
-        icon: 'warning',
-        title: 'Registro requerido',
-        text: 'Debes iniciar sesión o registrarte antes de reservar un vehículo.',
-        confirmButtonText: 'Ir a iniciar sesión',
-      }).then((result) => {
-        if (result.isConfirmed) {
-          navigate('/login')
-        }
-      })
+      navigate('/registro')
       return
     }
     navigate(`/catalogo/${vehiculo.id}`)

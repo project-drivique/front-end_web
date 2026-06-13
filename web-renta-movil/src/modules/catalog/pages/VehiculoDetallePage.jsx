@@ -1,338 +1,20 @@
-// src/modules/catalog/pages/VehiculoDetallePage.jsx
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../../../store/authStore'
 import logo from '@/assets/logo/logo.png'
+import VEHICULOS_MOCK from '@/mocks/vehiculos.json'
 
-/* ─────────── DATOS MOCK (idénticos al catálogo) ─────────── */
-const VEHICULOS_MOCK = [
-  {
-    id: 1, 
-    nombre: 'Toyota Corolla 2024', 
-    categoria: 'Sedan',
-    transmision: 'Automática', 
-    combustible: 'Gasolina', 
-    precio: 85000,
-    calificacion: 4.8, 
-    disponible: true,
-    puertas: 4, 
-    pasajeros: 5, 
-    maletero: 470, 
-    cilindraje: '1.8L',
-    color: 'Blanco Perla', 
-    año: 2024, 
-    placa: 'ABC-123',
-    tarifas: {
-      kmLimitado:  { km: 200, precio: 85000, excedente: 800  },
-      kmIlimitado: { precio: 105000 },
-    },
-    seguros: [
-      { nombre: 'Protección Obligatoria', precio: 29000 },
-      { nombre: 'Protección Total',       precio: 67000 },
-    ],
-    servicios: [
-      { nombre: 'GPS',                precio: 15000 },
-      { nombre: 'Silla bebé',         precio: 20000 },
-      { nombre: 'Conductor adicional', precio: 30000 },
-    ],
-    sucursal: 'Centro Neiva',
-    imagenes: [
-      'https://pplx-res.cloudinary.com/image/upload/pplx_search_images/dc50a39d6c4ccbee44b122dd9513a28edef1a567.jpg',
-      'https://pplx-res.cloudinary.com/image/upload/pplx_search_images/c2469e68e1322ec2ef1ef1e0b36e5d04c9069175.jpg',
-      'https://pplx-res.cloudinary.com/image/upload/pplx_search_images/a2cb0b378c25efdb1e116246f84149744c2f4081.jpg'
-    ],
-    disponibilidad: { ocupados: ['2026-05-20','2026-05-21','2026-05-22'] },
-    comentarios: [
-      { autor: 'Carlos M.',  calificacion: 5, texto: 'Excelente vehículo, muy cómodo y puntual en la entrega.', fecha: '2026-04-10' },
-      { autor: 'Laura P.',   calificacion: 4, texto: 'Buen servicio, el carro en perfectas condiciones.',       fecha: '2026-03-22' },
-    ],
-  },
-  { 
-    id: 2, 
-    nombre: 'Mazda CX-5 2024',     
-    categoria: 'SUV',       
-    transmision: 'Automática', 
-    combustible: 'Gasolina', 
-    precio: 145000, 
-    calificacion: 4.9, 
-    disponible: true,  
-    puertas: 5, 
-    pasajeros: 5, 
-    maletero: 442, 
-    cilindraje: '2.5L',       
-    color: 'Soul Red Crystal', 
-    año: 2024, 
-    placa: 'DEF-456', 
-    tarifas: { 
-      kmLimitado: { km: 250, precio: 145000, excedente: 1000 }, 
-      kmIlimitado: { precio: 175000 } 
-    }, 
-    seguros: [
-      { nombre: 'Protección Obligatoria', precio: 29000 }, 
-      { nombre: 'Protección Total', precio: 67000 }
-    ], 
-    servicios: [
-      { nombre: 'GPS', precio: 15000 }, 
-      { nombre: 'Silla bebé', precio: 20000 }
-    ], 
-    sucursal: 'Aeropuerto Neiva', 
-    imagenes: [
-      'https://tse3.mm.bing.net/th/id/OIP.xos2VZ8u5oDt-_dwl1i_xgHaE8?r=0&w=1024&h=683&rs=1&pid=ImgDetMain&o=7&rm=3',
-      'https://globalautoshop.com/images/accessories/mazda_grill/mazda_cx5_front_lower_chrome_grill_strips_before.jpg',
-      'https://pplx-res.cloudinary.com/image/upload/pplx_search_images/f48e0296ed0f41f00c1c1a0e3a213038764ae8b7.jpg'
-    ], 
-    disponibilidad: { ocupados: [] }, 
-    comentarios: [] 
-  },
-  { 
-    id: 3, 
-    nombre: 'Chevrolet Spark 2023', 
-    categoria: 'Económico', 
-    transmision: 'Manual',     
-    combustible: 'Gasolina', 
-    precio: 60000,  
-    calificacion: 4.5, 
-    disponible: true,  
-    puertas: 4, 
-    pasajeros: 4, 
-    maletero: 170, 
-    cilindraje: '1.0L',       
-    color: 'Rojo Passion',     
-    año: 2023, 
-    placa: 'GHI-789', 
-    tarifas: { 
-      kmLimitado: { km: 150, precio: 60000, excedente: 600 }, 
-      kmIlimitado: { precio: 75000 } 
-    }, 
-    seguros: [
-      { nombre: 'Protección Obligatoria', precio: 29000 }, 
-      { nombre: 'Protección Total', precio: 67000 }
-    ], 
-    servicios: [{ nombre: 'GPS', precio: 15000 }], 
-    sucursal: 'Terminal de Transportes', 
-    imagenes: [
-      '/ChevroletSpark.webp',
-      'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1580273916550-e323be2ed5d6?w=800&h=600&fit=crop'
-    ], 
-    disponibilidad: { ocupados: [] }, 
-    comentarios: [] 
-  },
-  { 
-    id: 4, 
-    nombre: 'Ford Mustang GT 2023', 
-    categoria: 'Deportivo', 
-    transmision: 'Automática', 
-    combustible: 'Gasolina', 
-    precio: 220000, 
-    calificacion: 4.7, 
-    disponible: false, 
-    puertas: 2, 
-    pasajeros: 4, 
-    maletero: 382, 
-    cilindraje: '5.0L V8',     
-    color: 'Race Red',         
-    año: 2023, 
-    placa: 'JKL-012', 
-    tarifas: { 
-      kmLimitado: { km: 300, precio: 220000, excedente: 1500 }, 
-      kmIlimitado: { precio: 260000 } 
-    }, 
-    seguros: [
-      { nombre: 'Protección Obligatoria', precio: 29000 }, 
-      { nombre: 'Protección Total', precio: 67000 }
-    ], 
-    servicios: [{ nombre: 'GPS', precio: 15000 }], 
-    sucursal: 'Centro Neiva',               
-    imagenes: [
-      '/FordMustang.webp',
-      'https://images.unsplash.com/photo-1584345604476-8ec5e12e42dd?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=800&h=600&fit=crop'
-    ], 
-    disponibilidad: { ocupados: [] }, 
-    comentarios: [] 
-  },
-  { 
-    id: 5, 
-    nombre: 'Toyota Prado 2024',    
-    categoria: 'SUV',       
-    transmision: 'Automática', 
-    combustible: 'Diesel',   
-    precio: 180000, 
-    calificacion: 4.6, 
-    disponible: true,  
-    puertas: 5, 
-    pasajeros: 8, 
-    maletero: 390, 
-    cilindraje: '2.8L Diesel', 
-    color: 'Super White',     
-    año: 2024, 
-    placa: 'MNO-345', 
-    tarifas: { 
-      kmLimitado: { km: 300, precio: 180000, excedente: 1200 }, 
-      kmIlimitado: { precio: 215000 } 
-    }, 
-    seguros: [
-      { nombre: 'Protección Obligatoria', precio: 29000 }, 
-      { nombre: 'Protección Total', precio: 67000 }
-    ], 
-    servicios: [
-      { nombre: 'GPS', precio: 15000 }, 
-      { nombre: 'Silla bebé', precio: 20000 }, 
-      { nombre: 'Conductor adicional', precio: 30000 }
-    ], 
-    sucursal: 'Norte Neiva', 
-    imagenes: [
-      'https://pplx-res.cloudinary.com/image/upload/pplx_search_images/2fb77ccfd062b6677b2651a79314e4fa9e3206d4.jpg',
-      'https://pplx-res.cloudinary.com/image/upload/pplx_search_images/b3700a4522cd05f08b0e9bdc696d0a8ea9bc6018.jpg',
-      'https://pplx-res.cloudinary.com/image/upload/pplx_search_images/3e37cb92c682f657308cd776d410cc7825c3239a.jpg'
-    ], 
-    disponibilidad: { ocupados: [] }, 
-    comentarios: [] 
-  },
-  { 
-    id: 6, 
-    nombre: 'Renault Sandero 2023', 
-    categoria: 'Económico', 
-    transmision: 'Manual',     
-    combustible: 'Gasolina', 
-    precio: 55000,  
-    calificacion: 4.3, 
-    disponible: true,  
-    puertas: 5, 
-    pasajeros: 5, 
-    maletero: 320, 
-    cilindraje: '1.6L',       
-    color: 'Gris Highland',   
-    año: 2023, 
-    placa: 'PQR-678', 
-    tarifas: { 
-      kmLimitado: { km: 150, precio: 55000, excedente: 550 }, 
-      kmIlimitado: { precio: 68000 } 
-    }, 
-    seguros: [
-      { nombre: 'Protección Obligatoria', precio: 29000 }, 
-      { nombre: 'Protección Total', precio: 67000 }
-    ], 
-    servicios: [{ nombre: 'GPS', precio: 15000 }], 
-    sucursal: 'Sur Neiva',                 
-    imagenes: [
-      '/RenaultSandero.webp',
-      'https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1502877338535-766e1452684a?w=800&h=600&fit=crop'
-    ], 
-    disponibilidad: { ocupados: [] }, 
-    comentarios: [] 
-  },
-  { 
-    id: 7, 
-    nombre: 'Hyundai Tucson 2024',  
-    categoria: 'SUV',       
-    transmision: 'Automática', 
-    combustible: 'Híbrido', 
-    precio: 160000, 
-    calificacion: 4.8, 
-    disponible: true,  
-    puertas: 5, 
-    pasajeros: 5, 
-    maletero: 513, 
-    cilindraje: '1.6L Híbrido', 
-    color: 'Phantom Black',   
-    año: 2024, 
-    placa: 'STU-901', 
-    tarifas: { 
-      kmLimitado: { km: 250, precio: 160000, excedente: 1100 }, 
-      kmIlimitado: { precio: 192000 } 
-    }, 
-    seguros: [
-      { nombre: 'Protección Obligatoria', precio: 29000 }, 
-      { nombre: 'Protección Total', precio: 67000 }
-    ], 
-    servicios: [
-      { nombre: 'GPS', precio: 15000 }, 
-      { nombre: 'Silla bebé', precio: 20000 }
-    ], 
-    sucursal: 'Aeropuerto Neiva', 
-    imagenes: [
-      'https://images.unsplash.com/photo-1619767886558-efdc259cde1a?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1506015391300-4802dc74de2e?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1551830820-330a71b99659?w=800&h=600&fit=crop'
-    ], 
-    disponibilidad: { ocupados: [] }, 
-    comentarios: [] 
-  },
-  { 
-    id: 8, 
-    nombre: 'Kia Cerato 2024',      
-    categoria: 'Sedan',     
-    transmision: 'Automática', 
-    combustible: 'Gasolina', 
-    precio: 95000,  
-    calificacion: 4.4, 
-    disponible: true,  
-    puertas: 4, 
-    pasajeros: 5, 
-    maletero: 502, 
-    cilindraje: '2.0L',       
-    color: 'Snow White Pearl', 
-    año: 2024, 
-    placa: 'VWX-234', 
-    tarifas: { 
-      kmLimitado: { km: 200, precio: 95000, excedente: 900 }, 
-      kmIlimitado: { precio: 115000 } 
-    }, 
-    seguros: [
-      { nombre: 'Protección Obligatoria', precio: 29000 }, 
-      { nombre: 'Protección Total', precio: 67000 }
-    ], 
-    servicios: [
-      { nombre: 'GPS', precio: 15000 }, 
-      { nombre: 'Conductor adicional', precio: 30000 }
-    ], 
-    sucursal: 'Centro Neiva', 
-    imagenes: [
-      'https://images.unsplash.com/photo-1550355291-bbee04a92027?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1542362567-b07e54358753?w=800&h=600&fit=crop'
-    ], 
-    disponibilidad: { ocupados: [] }, 
-    comentarios: [] 
-  },
-]
+import GaleriaImagenes from '../components/detalle/GaleriaImagenes'
+import InfoVehiculo from '../components/detalle/InfoVehiculo'
+import PlanesProteccion from '../components/detalle/PlanesProteccion'
+import ResumenLateral from '../components/detalle/ResumenLateral'
+import DatosPersonales from '../components/detalle/DatosPersonales'
+import ModalEditarReserva from '../components/detalle/ModalEditarReserva'
 
-const SUCURSALES = ['Centro Neiva','Aeropuerto Neiva','Terminal de Transportes','Norte Neiva','Sur Neiva']
-const cop = n => `$${Number(n).toLocaleString('es-CO')}`
-const fmt = d => {
-  if (!d) return '—'
-  const [y,m,day] = d.split('-')
-  const M = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic']
-  return `${parseInt(day)} de ${M[parseInt(m)-1]} de ${y}`
-}
-
-/* ─── ÍCONOS ─── */
+// ICONOS
 const IcoCheck = ({ color = '#16a34a', sz = 15 }) => (
   <svg width={sz} height={sz} fill="none" stroke={color} strokeWidth="2.8" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
-  </svg>
-)
-const IcoWarn = () => (
-  <svg width="15" height="15" fill="none" stroke="#d97706" strokeWidth="2" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/>
-  </svg>
-)
-const IcoX = ({ sz = 15, color = '#dc2626' }) => (
-  <svg width={sz} height={sz} fill="none" stroke={color} strokeWidth="2.8" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/>
-  </svg>
-)
-const IcoEdit = () => (
-  <svg width="13" height="13" fill="none" stroke="#1e3a8a" strokeWidth="2.2" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125"/>
-  </svg>
-)
-const IcoArrow = () => (
-  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
   </svg>
 )
 const IcoBack = () => (
@@ -340,549 +22,12 @@ const IcoBack = () => (
     <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/>
   </svg>
 )
-
-/* ─── RESUMEN LATERAL ─── */
-function ResumenLateral({ vehiculo, reserva, seguroIdx, onEditar }) {
-  const precio = reserva.tipoKm === 'ilimitado'
-    ? vehiculo.tarifas.kmIlimitado.precio
-    : vehiculo.tarifas.kmLimitado.precio
-
-  const dias = reserva.fechaInicio && reserva.fechaFin
-    ? Math.max(1, Math.ceil((new Date(reserva.fechaFin) - new Date(reserva.fechaInicio)) / 86400000))
-    : 1
-
-  const precioSeguro    = seguroIdx !== null ? (vehiculo.seguros[seguroIdx]?.precio ?? 0) : 0
-  const subtotalDiario = precio * dias
-  const subtotalSeguro = precioSeguro * dias
-  const cargosAdmin     = Math.round((subtotalDiario + subtotalSeguro) * 0.10)
-  const total           = subtotalDiario + subtotalSeguro + cargosAdmin
-
-  return (
-    <aside style={{
-      width: 300, flexShrink: 0,
-      background: 'var(--bg-tarjeta)', borderRadius: 20,
-      border: '1px solid var(--borde)',
-      boxShadow: 'var(--sombra-tarjeta)',
-      overflow: 'hidden',
-      position: 'sticky', top: 88,
-      alignSelf: 'flex-start',
-    }}>
-      <div style={{ background: '#1e3a8a', padding: '14px 20px' }}>
-        <p style={{ color: '#93c5fd', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.09em', margin: '0 0 3px' }}>Resumen de la reserva</p>
-        <p style={{ color: '#fff', fontSize: 15, fontWeight: 800, margin: 0 }}>{vehiculo.nombre}</p>
-      </div>
-
-      <div style={{ padding: '0 18px 18px' }}>
-        <div style={{ padding: '12px 0', borderBottom: '1px solid var(--borde)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-            <span style={{ fontSize: 10, fontWeight: 700, color: '#1e3a8a', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Lugar de Retiro</span>
-            <button onClick={() => onEditar('retiro')} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 3, fontSize: 11, color: '#1e3a8a', fontWeight: 700, padding: 0 }}>
-              <IcoEdit /> Para editar
-            </button>
-          </div>
-          <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--texto-primary)', margin: '0 0 2px' }}>
-            {reserva.fechaInicio ? `${fmt(reserva.fechaInicio)} a las ${reserva.horaInicio || '07:30'}` : '—'}
-          </p>
-          <p style={{ fontSize: 11, color: 'var(--texto-second)', margin: 0 }}>{reserva.sucursalRetiro || vehiculo.sucursal}</p>
-        </div>
-
-        <div style={{ padding: '12px 0', borderBottom: '1px solid var(--borde)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-            <span style={{ fontSize: 10, fontWeight: 700, color: '#1e3a8a', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Devolución</span>
-            <button onClick={() => onEditar('devolucion')} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 3, fontSize: 11, color: '#1e3a8a', fontWeight: 700, padding: 0 }}>
-              <IcoEdit /> Para editar
-            </button>
-          </div>
-          <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--texto-primary)', margin: '0 0 2px' }}>
-            {reserva.fechaFin ? `${fmt(reserva.fechaFin)} a las ${reserva.horaFin || '07:30'}` : '—'}
-          </p>
-          <p style={{ fontSize: 11, color: 'var(--texto-second)', margin: 0 }}>{reserva.sucursalDevolucion || reserva.sucursalRetiro || vehiculo.sucursal}</p>
-        </div>
-
-        <div style={{ padding: '12px 0', borderBottom: '1px solid var(--borde)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-            <span style={{ fontSize: 10, fontWeight: 700, color: '#1e3a8a', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Grupo</span>
-            <button onClick={() => onEditar('km')} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 3, fontSize: 11, color: '#1e3a8a', fontWeight: 700, padding: 0 }}>
-              <IcoEdit /> Para editar
-            </button>
-          </div>
-          <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--texto-primary)', margin: '0 0 2px' }}>{vehiculo.categoria} — {vehiculo.transmision}</p>
-          <p style={{ fontSize: 11, color: 'var(--texto-second)', margin: '0 0 6px' }}>{vehiculo.nombre}</p>
-          <span style={{
-            display: 'inline-block', fontSize: 10, fontWeight: 700,
-            padding: '3px 10px', borderRadius: 9999,
-            background: reserva.tipoKm === 'ilimitado' ? '#ecfdf5' : '#eff6ff',
-            color: reserva.tipoKm === 'ilimitado' ? '#059669' : '#1e3a8a',
-            border: `1px solid ${reserva.tipoKm === 'ilimitado' ? '#bbf7d0' : '#bfdbfe'}`,
-          }}>
-            {reserva.tipoKm === 'ilimitado' ? '∞ Km ilimitado' : `${vehiculo.tarifas.kmLimitado.km} km/día limitado`}
-          </span>
-        </div>
-
-        <div style={{ paddingTop: 12 }}>
-          <p style={{ fontSize: 10, fontWeight: 800, color: 'var(--texto-primary)', textTransform: 'uppercase', letterSpacing: '0.07em', margin: '0 0 10px' }}>Oferta Standard</p>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, fontWeight: 700, color: 'var(--texto-second)', marginBottom: 4 }}>
-            <span>Diarias</span><span>Total</span>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, marginBottom: 10 }}>
-            <span style={{ color: 'var(--texto-primary)' }}>{dias} días × {cop(precio)}</span>
-            <span style={{ fontWeight: 700, color: 'var(--texto-primary)' }}>{cop(subtotalDiario)}</span>
-          </div>
-          {seguroIdx !== null && (
-            <>
-              <p style={{ fontSize: 10, fontWeight: 700, color: 'var(--texto-second)', margin: '0 0 4px' }}>Protecciones</p>
-              <div style={{ fontSize: 11, color: 'var(--texto-primary)', marginBottom: 4 }}>{vehiculo.seguros[seguroIdx]?.nombre}</div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, marginBottom: 10 }}>
-                <span style={{ color: 'var(--texto-primary)' }}>{dias} días × {cop(precioSeguro)}</span>
-                <span style={{ fontWeight: 700, color: 'var(--texto-primary)' }}>{cop(subtotalSeguro)}</span>
-              </div>
-            </>
-          )}
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, paddingBottom: 12, borderBottom: '1px solid var(--borde)', marginBottom: 12 }}>
-            <span style={{ color: 'var(--texto-primary)' }}>Cargos Administrativos (10%)</span>
-            <span style={{ fontWeight: 700, color: 'var(--texto-primary)' }}>{cop(cargosAdmin)}</span>
-          </div>
-          <div style={{ background: '#1e3a8a', borderRadius: 12, padding: '12px 14px' }}>
-            <p style={{ fontSize: 9, fontWeight: 700, color: '#93c5fd', textTransform: 'uppercase', letterSpacing: '0.09em', margin: '0 0 3px' }}>Valor total esperado</p>
-            <p style={{ fontSize: 20, fontWeight: 900, color: '#fff', margin: 0 }}>COP {Number(total).toLocaleString('es-CO')},00</p>
-            <p style={{ fontSize: 9, color: '#93c5fd', margin: '3px 0 0' }}>*Valor total incluye impuestos</p>
-          </div>
-        </div>
-      </div>
-    </aside>
-  )
-}
-
-/* ─── MODAL EDITAR RESERVA ─── */
-function ModalEditar({ tipo, reserva, vehiculo, onGuardar, onCerrar }) {
-  const [form, setForm] = useState({ ...reserva })
-  const s = (k, v) => setForm(p => ({ ...p, [k]: v }))
-
-  const inp = { width: '100%', padding: '11px 13px', borderRadius: 10, border: '1.5px solid var(--borde)', fontSize: 13, color: 'var(--texto-primary)', outline: 'none', boxSizing: 'border-box', background: 'var(--bg-item)' }
-  const lbl = { display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--texto-second)', marginBottom: 5, textTransform: 'uppercase', letterSpacing: '0.06em' }
-
-  return (
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.52)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
-      <div style={{ background: 'var(--bg-tarjeta)', borderRadius: 20, padding: 28, width: '100%', maxWidth: 420, boxShadow: 'var(--sombra-tarjeta)' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 22 }}>
-          <h3 style={{ fontSize: 17, fontWeight: 800, color: 'var(--texto-primary)', margin: 0 }}>
-            {tipo === 'retiro' ? 'Editar retiro' : tipo === 'devolucion' ? 'Editar devolución' : 'Tipo de kilómetros'}
-          </h3>
-          <button onClick={onCerrar} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--texto-second)' }}>
-            <IcoX sz={18} color="#94a3b8"/>
-          </button>
-        </div>
-
-        {tipo === 'km' ? (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {[
-              { val: 'limitado',  label: `Km limitado (${vehiculo.tarifas.kmLimitado.km} km/día)`, precio: vehiculo.tarifas.kmLimitado.precio },
-              { val: 'ilimitado', label: 'Km ilimitado',                                         precio: vehiculo.tarifas.kmIlimitado.precio },
-            ].map(op => (
-              <button key={op.val} onClick={() => s('tipoKm', op.val)} style={{
-                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                padding: '13px 16px', borderRadius: 12, cursor: 'pointer',
-                border: `2px solid ${form.tipoKm === op.val ? '#1e3a8a' : 'var(--borde)'}`,
-                background: form.tipoKm === op.val ? '#eff6ff' : 'var(--bg-item)',
-                transition: 'all 150ms',
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <div style={{ width: 16, height: 16, borderRadius: '50%', border: `2px solid ${form.tipoKm === op.val ? '#1e3a8a' : '#cbd5e1'}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    {form.tipoKm === op.val && <div style={{ width: 7, height: 7, borderRadius: '50%', background: '#1e3a8a' }} />}
-                  </div>
-                  <span style={{ fontSize: 13, fontWeight: 700, color: form.tipoKm === op.val ? '#1e3a8a' : 'var(--texto-primary)' }}>{op.label}</span>
-                </div>
-                <span style={{ fontSize: 13, fontWeight: 900, color: '#1e3a8a' }}>{cop(op.precio)}/día</span>
-              </button>
-            ))}
-          </div>
-        ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-            <div>
-              <label style={lbl}>{tipo === 'retiro' ? 'Sucursal de retiro' : 'Sucursal de devolución'}</label>
-              <select value={tipo === 'retiro' ? form.sucursalRetiro : form.sucursalDevolucion} onChange={e => s(tipo === 'retiro' ? 'sucursalRetiro' : 'sucursalDevolucion', e.target.value)} style={{ ...inp, cursor: 'pointer' }}>
-                <option value="">Selecciona sucursal</option>
-                {SUCURSALES.map(sc => <option key={sc} value={sc}>{sc}</option>)}
-              </select>
-            </div>
-            <div>
-              <label style={lbl}>Fecha</label>
-              <input type="date" value={tipo === 'retiro' ? form.fechaInicio : form.fechaFin} min={tipo === 'retiro' ? new Date().toISOString().split('T')[0] : (form.fechaInicio || new Date().toISOString().split('T')[0])} onChange={e => s(tipo === 'retiro' ? 'fechaInicio' : 'fechaFin', e.target.value)} style={inp} />
-            </div>
-            <div>
-              <label style={lbl}>Hora</label>
-              <input type="time" value={tipo === 'retiro' ? form.horaInicio : form.horaFin} onChange={e => s(tipo === 'retiro' ? 'horaInicio' : 'horaFin', e.target.value)} style={inp} />
-            </div>
-          </div>
-        )}
-
-        <button onClick={() => { onGuardar(form); onCerrar() }} style={{ width: '100%', marginTop: 20, padding: 13, borderRadius: 12, background: 'linear-gradient(90deg,#1e3a8a,#2563eb)', color: '#fff', fontWeight: 700, fontSize: 13, border: 'none', cursor: 'pointer', boxShadow: '0 4px 14px rgba(30,58,138,0.25)' }}>
-          Guardar cambios
-        </button>
-      </div>
-    </div>
-  )
-}
-
-/* ─── PANTALLA 1: PROTECCIÓN ─── */
-import { FaShieldAlt, FaRegHeart, FaCar, FaBolt, FaSuitcase, FaPalette, FaCalendarAlt, FaSnowflake } from "react-icons/fa";
-
-function PantallaProteccion({ vehiculo, reserva, seguroIdx, onSeleccionar, onEditar }) {
-  const planes = [
-    {
-      nombre: 'Protección Obligatoria',
-      precio: 29000,
-      icono: [FaShieldAlt, FaRegHeart, FaRegHeart],
-      items: [
-        { tipo: 'check', texto: 'Asistencia durante tu viaje. *No incluidas en Alquiler Ligero' },
-        { tipo: 'check', texto: 'Responsabilidad Civil Extracontractual (hasta $840 millones)' },
-        { tipo: 'check', texto: 'Cobertura básica del vehículo (no incluye daños graves ni robo)' },
-        { tipo: 'warn',  texto: 'En caso de siniestro, deberás asumir un pago adicional llamado Participación obligatoria, que puede llegar hasta $4.760.000 dependiendo del tipo de vehículo' },
-        { tipo: 'x',     texto: 'No cubre uso indebido del vehículo' },
-      ],
-    },
-    {
-      nombre: 'Protección Total',
-      precio: 67000,
-      icono: [FaShieldAlt, FaShieldAlt, FaShieldAlt],
-      items: [
-        { tipo: 'check', texto: 'Asistencia completa durante tu viaje' },
-        { tipo: 'check', texto: 'Responsabilidad Civil Extracontractual (hasta $840M)' },
-        { tipo: 'check', texto: 'Cobertura total del vehículo (incluye daños graves y robo)' },
-        { tipo: 'check', texto: 'Sin pago de la participación obligatoria en caso de siniestro' },
-        { tipo: 'x',     texto: 'No cubre uso indebido del vehículo' },
-      ],
-    },
-  ]
-    return (
-    <div style={{ display: 'flex', gap: 28, alignItems: 'flex-start' }}>
-      <div style={{ flex: 1, minWidth: 0 }}>
-
-        {/* Tarjeta del vehículo */}
-        <div style={{ background: 'var(--bg-tarjeta)', borderRadius: 20, border: '1px solid var(--borde)', overflow: 'hidden', marginBottom: 28, boxShadow: 'var(--sombra-tarjeta)' }}>
-
-          <div style={{ background: 'linear-gradient(135deg,#eff6ff,#dbeafe)', height: 350, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden' }}>
-            {vehiculo.imagenes?.[0]
-              ? <img src={vehiculo.imagenes[0]} alt={vehiculo.nombre} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              : <svg width="68" height="68" fill="none" stroke="#94a3b8" strokeWidth="1.2" viewBox="0 0 24 24" style={{ opacity: 0.6 }}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12"/>
-                </svg>
-            }
-            <span style={{ position: 'absolute', top: 12, left: 12, fontSize: 11, fontWeight: 600, padding: '4px 10px', borderRadius: 9999, background: '#ecfdf5', color: '#059669', border: '1px solid #bbf7d0' }}>● Disponible</span>
-          </div>
-
-          <div style={{ padding: '18px 22px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 10 }}>
-              <div>
-                <span style={{ fontSize: 11, fontWeight: 600, color: '#1e3a8a', background: '#eff6ff', padding: '3px 9px', borderRadius: 6, marginBottom: 6, display: 'inline-block' }}>{vehiculo.categoria}</span>
-                <h2 style={{ fontSize: 20, fontWeight: 700, color: 'var(--texto-primary)', margin: '4px 0 6px' }}>{vehiculo.nombre}</h2>
-                <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
-                  <span style={{ fontSize: 12, color: 'var(--texto-primary)' }}><FaCar style={{ verticalAlign: 'middle', marginRight: 4, color: 'var(--texto-second)' }} /> {vehiculo.transmision}</span>
-                  <span style={{ fontSize: 12, color: 'var(--texto-primary)' }}><FaBolt style={{ verticalAlign: 'middle', marginRight: 4, color: 'var(--texto-second)' }} /> {vehiculo.combustible}</span>
-                  <span style={{ fontSize: 12, color: 'var(--texto-primary)' }}><FaRegHeart style={{ verticalAlign: 'middle', marginRight: 4, color: 'var(--texto-second)' }} /> {vehiculo.pasajeros} personas</span>
-                </div>
-              </div>
-              <div style={{ textAlign: 'right' }}>
-                <span style={{ fontSize: 26, fontWeight: 700, color: 'var(--texto-primary)' }}>{cop(vehiculo.precio)}</span>
-                <span style={{ fontSize: 12, color: 'var(--texto-second)' }}>/día</span>
-              </div>
-            </div>
-            <div style={{ marginTop: 14, display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(110px,1fr))', gap: 7 }}>
-              {[
-                { Icono: FaCar, l: `${vehiculo.puertas} puertas` },
-                { Icono: FaSuitcase, l: `${vehiculo.maletero}L maletero` },
-                { Icono: FaBolt, l: vehiculo.cilindraje },
-                { Icono: FaPalette, l: vehiculo.color },
-                { Icono: FaCalendarAlt, l: `Año ${vehiculo.año}` },
-                { Icono: FaSnowflake, l: 'Aire acond.' },
-              ].map((c,i) => (
-                <div key={i} style={{ background: 'var(--bg-item)', borderRadius: 8, padding: '8px 10px', border: '1px solid var(--borde)', display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span style={{ fontSize: 14, color: 'var(--texto-second)' }}>
-                    <c.Icono />
-                  </span>
-                  <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--texto-primary)' }}>{c.l}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-       {/* Planes de seguro */}
-<h3 style={{ fontSize: 17, fontWeight: 700, color: 'var(--texto-primary)', margin: '0 0 16px' }}>Elige tu protección</h3>
-<div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(270px,1fr))', gap: 18, marginBottom: 32 }}>
-  {planes.map((plan, idx) => {
-    const sel = seguroIdx === idx
-    return (
-      <div key={idx} style={{ borderRadius: 20, border: `2px solid ${sel ? '#1e3a8a' : 'var(--borde)'}`, background: sel ? '#fff' : 'var(--bg-tarjeta)', boxShadow: sel ? '0 4px 20px rgba(30,58,138,0.12)' : 'var(--sombra-tarjeta)', overflow: 'hidden', transition: 'all 200ms' }}>
-        <div style={{ padding: '18px 22px 0' }}>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: 4, marginBottom: 8 }}>
-            {plan.icono.map((Icono, i) => (
-              <span key={i} style={{ fontSize: 15, color: 'var(--texto-second)' }}>
-                <Icono />
-              </span>
-            ))}
-          </div>
-          <h4 style={{ fontSize: 17, fontWeight: 700, color: 'var(--texto-primary)', textAlign: 'center', margin: '0 0 4px' }}>{plan.nombre}</h4>
-          <p style={{ fontSize: 18, fontWeight: 700, color: '#059669', textAlign: 'center', margin: '0 0 14px' }}>
-            COP {plan.precio.toLocaleString('es-CO')},00 <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--texto-second)' }}>/ por día</span>
-          </p>
-          <hr style={{ border: 'none', borderTop: '1px solid var(--borde)', margin: '0 0 14px' }} />
-        </div>
-        <div style={{ padding: '0 22px' }}>
-          {plan.items.map((item, i) => (
-            <div key={i} style={{ display: 'flex', gap: 9, alignItems: 'flex-start', marginBottom: 9 }}>
-              <div style={{ flexShrink: 0, marginTop: 2 }}>
-                {item.tipo === 'check' && <IcoCheck />}
-                {item.tipo === 'warn'  && <IcoWarn />}
-                {item.tipo === 'x'     && <IcoX sz={14} color="#dc2626" />}
-              </div>
-              <span style={{ 
-                fontSize: 12, 
-                color: sel ? '#1e3a8a' : (item.tipo === 'x' ? 'var(--texto-second)' : 'var(--texto-primary)'), 
-                lineHeight: 1.5, 
-                textDecoration: item.tipo === 'x' ? 'line-through' : 'none' 
-              }}>
-                {item.texto}
-              </span>
-            </div>
-          ))}
-        </div>
-        <div style={{ padding: '18px 22px' }}>
-          <button onClick={() => onSeleccionar(idx)} style={{
-            width: '100%', padding: 12, borderRadius: 12, fontWeight: 600, fontSize: 13,
-            cursor: 'pointer', transition: 'all 200ms',
-            background: sel ? 'linear-gradient(90deg,#1e3a8a,#2563eb)' : idx === 1 ? '#fff' : 'var(--bg-item)',
-            color: sel ? '#fff' : idx === 1 ? '#000' : 'var(--texto-second)',
-            border: idx === 1 && !sel ? '2px solid #1e3a8a' : 'none',
-            boxShadow: sel ? '0 4px 14px rgba(30,58,138,0.25)' : 'none',
-          }}>
-            {sel ? '✓ Seleccionado' : 'Elegir plan'}
-          </button>
-        </div>
-      </div>
-    )
-  })}
-</div>
-</div>
-
-
-<ResumenLateral vehiculo={vehiculo} reserva={reserva} seguroIdx={seguroIdx} onEditar={onEditar} />
-</div>
+const IcoArrow = () => (
+  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
+  </svg>
 )
-}
-/* ─── PANTALLA 2: DATOS PERSONALES ─── */
 
-/* ─────────── TERMINOS Y CONDICIONES (texto completo) ─────────── */
-const TERMINOS_TXT = `
-1. DURACIÓN DEL CONTRATO
-   La duración de la renta será la indicada en la reserva, desde la fecha y hora de inicio hasta la fecha y hora de finalizar.
-
-
-2. PAGOS Y TARIFAS
-   - El precio incluye la renta del vehículo, impuestos y cargos administrativos.
-   - Se requiere un pago total o parcial al momento de confirmar la reserva.
-
-
-3. KILOMETRAJE
-   - Opción limitado: Incluye km por día. Si se supera el límite, se cobrará un adicional por cada kilómetro extra ($1.500 COP/km).
-   - Opción ilimitado: No hay límite de kilómetros durante el periodo de renta.
-
-
-4. EXCESO DE KILOMETRAJE (solo para opción limitado)
-   - Se cobrará un valor por kilómetro adicional ($1.500 COP/km) por cada km que supere el límite pactado.
-   - El exceso se calcula al momento de la devolución del vehículo.
-
-
-5. CANCELACIONES Y REEMBOLSOS
-   - RentaMóvil NO realiza devoluciones del dinero bajo ninguna circunstancia una vez confirmada la reserva.
-   - No se aplican reembolsos por cancelaciones, cambios de planes, no presentación ni por ningún otro motivo.
-
-
-6. DOCUMENTACIÓN REQUERIDA
-   - El usuario debe presentar documento de identidad válido (CC, CE o Pasaporte).
-   - Debe cumplir con los requisitos de edad y licencia de conducción según normativa vigente.
-
-
-7. USO DEL VEHÍCULO
-   - El vehículo debe ser usado únicamente en territorio colombiano.
-   - No se permite subarriendo, uso comercial no autorizado, ni transporte de carga prohibida.
-
-
-8. DAÑOS Y RESPONSABILIDAD
-   - El usuario es responsable por daños causados al vehículo durante el periodo de renta, excepto los cubiertos por el seguro contratado.
-   - En caso de accidente, se deberá notificar inmediatamente a RentaMóvil y a las autoridades correspondientes.
-
-
-9. MODIFICACIONES AL CONTRATO
-   - Cualquier cambio en fechas, horas, sucursal o tipo de kilometraje debe ser acordado previamente con RentaMóvil.
-   - Los cambios pueden implicar ajustes en el precio total.
-
-
-10. LEGISLACIÓN APLICABLE
-    Este contrato se rige por las leyes de la República de Colombia.
-`;
-
-/* ─────────── PANTALLA DATOS PERSONALES ─────────── */
-function PantallaDatos({ vehiculo, reserva, seguroIdx, datosForm, onCambio, onReservar, errores }) {
-  const [verTyC, setVerTyC] = useState(false);
-
-  const precio = reserva.tipoKm === 'ilimitado'
-    ? vehiculo.tarifas.kmIlimitado.precio
-    : vehiculo.tarifas.kmLimitado.precio;
-
-  const dias = reserva.fechaInicio && reserva.fechaFin
-    ? Math.max(1, Math.ceil((new Date(reserva.fechaFin) - new Date(reserva.fechaInicio)) / 86400000))
-    : 1;
-
-  const precioSeg    = seguroIdx !== null ? (vehiculo.seguros[seguroIdx]?.precio ?? 0) : 0;
-  const subtotal     = precio * dias;
-  const subtotalSeg  = precioSeg * dias;
-  const cargos       = Math.round((subtotal + subtotalSeg) * 0.10);
-  const total        = subtotal + subtotalSeg + cargos;
-
-  const inp = (err) => ({
-    width: '100%', padding: '11px 13px', borderRadius: 10, boxSizing: 'border-box',
-    border: `1.5px solid ${err ? '#fca5a5' : 'var(--borde)'}`,
-    background: err ? '#fef2f2' : 'var(--bg-item)',
-    fontSize: 13, color: 'var(--texto-primary)', outline: 'none',
-  });
-
-  const lbl = { display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--texto-primary)', marginBottom: 5, textTransform: 'uppercase', letterSpacing: '0.06em' };
-
-  return (
-    <div style={{ display: 'flex', gap: 28, alignItems: 'flex-start' }}>
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <h3 style={{ fontSize: 20, fontWeight: 900, color: 'var(--texto-primary)', margin: '0 0 4px' }}>Datos Personales</h3>
-        <p style={{ fontSize: 13, color: 'var(--texto-second)', margin: '0 0 6px' }}>Informa tus datos para que podamos realizar tu reserva.</p>
-        <p style={{ fontSize: 12, color: '#ef4444', fontStyle: 'italic', margin: '0 0 22px' }}>Los campos marcados con asterisco (*) son obligatorios.</p>
-
-        <div style={{ background: 'var(--bg-tarjeta)', borderRadius: 20, border: '1px solid var(--borde)', padding: '24px 26px', marginBottom: 18, boxShadow: 'var(--sombra-tarjeta)' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '18px 22px' }}>
-            <div>
-              <label style={lbl}>Nombre Completo *</label>
-              <input value={datosForm.nombre} onChange={e => onCambio('nombre', e.target.value)} placeholder="Ej: Juan Pérez García" style={inp(errores.nombre)} />
-              {errores.nombre && <p style={{ color: '#ef4444', fontSize: 11, margin: '4px 0 0' }}>{errores.nombre}</p>}
-            </div>
-            <div>
-              <label style={lbl}>Nacionalidad *</label>
-              <select value={datosForm.nacionalidad} onChange={e => onCambio('nacionalidad', e.target.value)} style={{ ...inp(false), cursor: 'pointer' }}>
-                <option value="Colombia">Colombia</option>
-                <option value="Venezuela">Venezuela</option>
-                <option value="Ecuador">Ecuador</option>
-                <option value="Perú">Perú</option>
-                <option value="México">México</option>
-                <option value="Otro">Otro</option>
-              </select>
-            </div>
-            <div>
-              <label style={lbl}>Correo Electrónico *</label>
-              <input type="email" value={datosForm.correo} onChange={e => onCambio('correo', e.target.value)} placeholder="ejemplo@correo.com" style={inp(errores.correo)} />
-              {errores.correo && <p style={{ color: '#ef4444', fontSize: 11, margin: '4px 0 0' }}>{errores.correo}</p>}
-            </div>
-            <div>
-              <label style={lbl}>Número de Celular *</label>
-              <div style={{ display: 'flex', gap: 7 }}>
-                <div style={{ background: 'var(--bg-item)', border: '1.5px solid var(--borde)', borderRadius: 10, padding: '11px 10px', fontSize: 13, color: 'var(--texto-second)', fontWeight: 700, whiteSpace: 'nowrap' }}>+57</div>
-                <input type="tel" value={datosForm.celular} onChange={e => onCambio('celular', e.target.value.replace(/\D/g,''))} placeholder="3001234567" style={{ ...inp(errores.celular), flex: 1 }} />
-              </div>
-              {errores.celular && <p style={{ color: '#ef4444', fontSize: 11, margin: '4px 0 0' }}>{errores.celular}</p>}
-            </div>
-            <div>
-              <label style={lbl}>Tipo de Documento *</label>
-              <select value={datosForm.tipoDoc} onChange={e => onCambio('tipoDoc', e.target.value)} style={{ ...inp(false), cursor: 'pointer' }}>
-                <option value="CC">Cédula de Ciudadanía (CC)</option>
-                <option value="CE">Cédula de Extranjería (CE)</option>
-                <option value="PA">Pasaporte (PA)</option>
-              </select>
-            </div>
-            <div>
-              <label style={lbl}>Número de Documento *</label>
-              <input value={datosForm.numDoc} onChange={e => onCambio('numDoc', e.target.value)} placeholder="123456789" style={inp(errores.numDoc)} />
-              {errores.numDoc && <p style={{ color: '#ef4444', fontSize: 11, margin: '4px 0 0' }}>{errores.numDoc}</p>}
-            </div>
-          </div>
-
-          {/* AVISO INFORMATIVO DEL KILOMETRAJE */}
-          <div
-            style={{
-              background: reserva.tipoKm === 'limitado' ? '#fef2f2' : '#f0fdf4',
-              padding: 16,
-              borderRadius: 12,
-              border: `1px solid ${reserva.tipoKm === 'limitado' ? '#fecaca' : '#bbf7d0'}`,
-              marginTop: 18,
-            }}
-          >
-            {reserva.tipoKm === 'limitado' && (
-              <p style={{ fontSize: 12, color: '#7f1d1d', margin: 0 }}>
-                <strong>Plan de kilometraje limitado:</strong> Incluye{' '}
-                <strong>{vehiculo.tarifas.kmLimitado.km} km por día</strong>.{' '}
-                <strong>Si superas el límite,</strong> se cobrará un adicional de{' '}
-                <strong>$1.500 COP por km extra</strong> al devolver el vehículo.
-              </p>
-            )}
-            {reserva.tipoKm === 'ilimitado' && (
-              <p style={{ fontSize: 12, color: '#166534', margin: 0 }}>
-                <strong>Plan de kilometraje ilimitado:</strong> No hay límite de kilómetros.{' '}
-                Puedes manejar sin restricciones durante todo el periodo de renta.
-              </p>
-            )}
-          </div>
-        </div>
-
-        <div style={{ background: 'var(--bg-tarjeta)', borderRadius: 16, border: '1px solid var(--borde)', padding: '18px 22px', marginBottom: 18 }}>
-          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 9, marginBottom: errores.terminos ? 6 : 12 }}>
-            <input type="checkbox" id="tyc" checked={datosForm.terminos} onChange={e => onCambio('terminos', e.target.checked)} style={{ width: 15, height: 15, cursor: 'pointer', marginTop: 2, flexShrink: 0 }} />
-            <label htmlFor="tyc" style={{ fontSize: 13, color: 'var(--texto-primary)', cursor: 'pointer', lineHeight: 1.5 }}>
-              Autorizo el tratamiento de mis datos personales conforme a la <span style={{ color: '#1e3a8a', fontWeight: 700 }}>política de privacidad</span> *
-            </label>
-          </div>
-          {errores.terminos && <p style={{ color: '#ef4444', fontSize: 11, margin: '0 0 10px 24px' }}>{errores.terminos}</p>}
-
-          <button onClick={() => setVerTyC(v => !v)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#1e3a8a', fontSize: 12, fontWeight: 700, padding: '0 0 0 24px', textDecoration: 'underline' }}>
-            » {verTyC ? 'Ocultar' : 'Ver'} términos y condiciones
-          </button>
-
-          {verTyC && (
-            <div style={{ marginTop: 12, borderRadius: 12, overflow: 'hidden' }}>
-              <div style={{ background: '#1e3a8a', border: '1px solid #93c5fd', borderRadius: '12px 12px 0 0', padding: '12px 16px', display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-                <span style={{ fontSize: 18, flexShrink: 0 }}></span>
-                <div>
-                  <p style={{ fontSize: 12, fontWeight: 800, color: '#93c5fd', margin: '0 0 3px' }}>POLÍTICA DE NO REEMBOLSO</p>
-                  <p style={{ fontSize: 12, color: '#ffffff', margin: 0, lineHeight: 1.5 }}>
-                    <strong>RentaMóvil NO realiza devoluciones del dinero</strong> bajo ninguna circunstancia una vez confirmada la reserva. No se aplican reembolsos por cancelaciones, cambios de planes, no presentación ni por ningún otro motivo.
-                  </p>
-                </div>
-              </div>
-              <div style={{ background: 'var(--bg-item)', border: '1px solid #1e3a8a', borderTop: 'none', borderRadius: '0 0 12px 12px', padding: 14 }}>
-                <pre style={{ fontSize: 11, color: 'var(--texto-second)', lineHeight: 1.7, whiteSpace: 'pre-wrap', margin: 0, fontFamily: 'inherit' }}>{TERMINOS_TXT}</pre>
-              </div>
-            </div>
-          )}
-        </div>
-
-        <div style={{ background: 'linear-gradient(135deg,#0f1a3d,#1e3a8a)', borderRadius: 18, padding: '20px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 20, flexWrap: 'wrap' }}>
-          <div>
-            <p style={{ fontSize: 11, color: '#93c5fd', fontWeight: 600, margin: '0 0 3px' }}>Total a pagar</p>
-            <p style={{ fontSize: 26, fontWeight: 900, color: '#fff', margin: 0 }}>COP {Number(total).toLocaleString('es-CO')},00</p>
-            <p style={{ fontSize: 10, color: '#93c5fd', margin: '3px 0 0' }}>*Incluye impuestos y cargos administrativos</p>
-          </div>
-          <button
-            onClick={onReservar}
-            style={{ padding: '14px 36px', borderRadius: 13, background: '#fff', color: '#1e3a8a', fontWeight: 800, fontSize: 15, border: 'none', cursor: 'pointer', boxShadow: '0 8px 24px rgba(0,0,0,0.18)', whiteSpace: 'nowrap', transition: 'transform 150ms' }}
-            onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.04)'}
-            onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
-          >
-            Reservar →
-          </button>
-        </div>
-      </div>
-
-      <ResumenLateral vehiculo={vehiculo} reserva={reserva} seguroIdx={seguroIdx} onEditar={() => {}} />
-    </div>
-  );
-}
-
-/* ─────────── PÁGINA PRINCIPAL ─────────── */
 export default function VehiculoDetallePage() {
   const { id }       = useParams();
   const navigate     = useNavigate();
@@ -908,6 +53,14 @@ export default function VehiculoDetallePage() {
   const [errores,  setErrores]  = useState({});
   const [exito,    setExito]    = useState(false);
 
+  useEffect(() => {
+    // Si no está autenticado, opcionalmente podrías redirigir o mostrar un advertencia
+    // Esto ya se previene desde el botón "Reservar", pero si entran por URL:
+    if (!usuario) {
+      // navigate('/registro'); // <- Descomentar si requieres protección fuerte aquí
+    }
+  }, [usuario, navigate]);
+
   if (!vehiculo) return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 14 }}>
       <p style={{ fontSize: 20, fontWeight: 800, color: 'var(--texto-primary)' }}>Vehículo no encontrado</p>
@@ -922,8 +75,10 @@ export default function VehiculoDetallePage() {
     if (!datosForm.celular.trim() || datosForm.celular.length < 10)                   e.celular  = 'Número inválido (10 dígitos)';
     if (!datosForm.numDoc.trim())                                                     e.numDoc   = 'El número de documento es obligatorio';
     if (!datosForm.terminos)                                                          e.terminos = 'Debes aceptar los términos y condiciones';
+    
     setErrores(e);
     if (Object.keys(e).length > 0) return;
+    
     setExito(true);
     setTimeout(() => navigate('/catalogo'), 3500);
   };
@@ -931,110 +86,124 @@ export default function VehiculoDetallePage() {
   if (exito) return (
     <div style={{ minHeight: '100vh', background: 'var(--bg-page)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
       <div style={{ textAlign: 'center', maxWidth: 460 }}>
-        <div style={{ width: 76, height: 76, borderRadius: '50%', background: 'linear-gradient(135deg,#1e3a8a,#2563eb)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 22px', boxShadow: '0 12px 32px rgba(30,58,138,0.28)' }}>
-          <IcoCheck color="#fff" sz={34} />
+        <div style={{ width: 80, height: 80, borderRadius: '50%', background: 'linear-gradient(135deg,#1e3a8a,#2563eb)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px', boxShadow: '0 12px 32px rgba(30,58,138,0.28)' }}>
+          <IcoCheck color="#fff" sz={36} />
         </div>
-        <h2 style={{ fontSize: 26, fontWeight: 900, color: 'var(--texto-primary)', margin: '0 0 10px' }}>¡Reserva confirmada!</h2>
-        <p style={{ fontSize: 15, color: 'var(--texto-second)', margin: '0 0 6px' }}>Tu reserva del <strong>{vehiculo.nombre}</strong> ha sido registrada.</p>
-        <p style={{ fontSize: 13, color: 'var(--texto-second)' }}>Recibirás un correo de confirmación. Redirigiendo...</p>
+        <h2 style={{ fontSize: 28, fontWeight: 900, color: 'var(--texto-primary)', margin: '0 0 12px' }}>¡Reserva confirmada!</h2>
+        <p style={{ fontSize: 16, color: 'var(--texto-second)', margin: '0 0 8px' }}>Tu reserva del <strong>{vehiculo.nombre}</strong> ha sido registrada exitosamente.</p>
+        <p style={{ fontSize: 14, color: 'var(--texto-second)' }}>Recibirás un correo con todos los detalles. Redirigiendo...</p>
       </div>
     </div>
   );
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg-page)' }}>
-      <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50, background: 'var(--bg-tarjeta)', backdropFilter: 'blur(12px)', borderBottom: '1px solid var(--borde)', boxShadow: 'var(--sombra-nav)', height: 68 }}>
+      <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50, background: 'var(--bg-tarjeta)', backdropFilter: 'blur(12px)', borderBottom: '1px solid var(--borde)', boxShadow: '0 4px 20px rgba(0,0,0,0.04)', height: 72 }}>
         <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px', height: '100%', display: 'flex', alignItems: 'center', gap: 20 }}>
-          <Link to="/"><img src={logo} alt="RentaMovil" style={{ height: 40 }} /></Link>
+          <Link to="/"><img src={logo} alt="RentaMovil" style={{ height: 42 }} /></Link>
           <div style={{ flex: 1 }} />
           {usuario
-            ? <span style={{ fontSize: 13, color: 'var(--texto-second)', fontWeight: 600 }}>Hola, {usuario.nombre?.split(' ')[0]} 👋</span>
+            ? <span style={{ fontSize: 14, color: 'var(--texto-second)', fontWeight: 700 }}>Hola, {usuario.nombre?.split(' ')[0]} 👋</span>
             : (
-              <div style={{ display: 'flex', gap: 10 }}>
-                <Link to="/login"    style={{ padding: '8px 18px', borderRadius: 9999, border: '2px solid rgba(30,58,138,0.25)', color: '#1e3a8a', fontSize: 13, fontWeight: 700, textDecoration: 'none' }}>Iniciar sesión</Link>
-                <Link to="/registro" style={{ padding: '8px 18px', borderRadius: 9999, background: '#1e3a8a', color: '#fff', fontSize: 13, fontWeight: 700, textDecoration: 'none' }}>Registrarse</Link>
+              <div style={{ display: 'flex', gap: 12 }}>
+                <Link to="/login"    style={{ padding: '10px 20px', borderRadius: 9999, border: '2px solid #bfdbfe', color: '#1e3a8a', fontSize: 14, fontWeight: 700, textDecoration: 'none', transition: 'all 200ms ease' }}>Iniciar sesión</Link>
+                <Link to="/registro" style={{ padding: '10px 20px', borderRadius: 9999, background: '#1e3a8a', color: '#fff', fontSize: 14, fontWeight: 700, textDecoration: 'none', transition: 'all 200ms ease' }}>Registrarse</Link>
               </div>
             )
           }
         </div>
       </nav>
 
-      <div style={{ paddingTop: 68 }}>
-        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '30px 24px' }}>
+      <div style={{ paddingTop: 72 }}>
+        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '32px 24px' }}>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 28 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 32 }}>
             <button
               onClick={() => pantalla === 1 ? navigate('/catalogo') : setPantalla(1)}
-              style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: '#1e3a8a', fontWeight: 700, background: 'rgba(30,58,138,0.07)', border: '1px solid rgba(30,58,138,0.15)', borderRadius: 9999, padding: '7px 15px', cursor: 'pointer' }}
+              style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 14, color: '#1e3a8a', fontWeight: 700, background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 9999, padding: '8px 18px', cursor: 'pointer', transition: 'all 200ms ease' }}
+              onMouseEnter={e => e.currentTarget.style.background = '#dbeafe'}
+              onMouseLeave={e => e.currentTarget.style.background = '#eff6ff'}
             >
               <IcoBack /> {pantalla === 1 ? 'Volver al catálogo' : 'Volver a protección'}
             </button>
-            <h1 style={{ fontSize: 20, fontWeight: 900, color: 'var(--texto-primary)', margin: 0 }}>Reservar — {vehiculo.nombre}</h1>
+            <h1 style={{ fontSize: 24, fontWeight: 900, color: 'var(--texto-primary)', margin: 0 }}>Reservar — {vehiculo.nombre}</h1>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0, marginBottom: 32 }}>
-            {['Protección', 'Datos personales'].map((label, i) => {
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0, marginBottom: 36 }}>
+            {['Protección y Novedades', 'Datos Personales'].map((label, i) => {
               const num = i + 1;
               const activo      = pantalla === num;
               const completado  = pantalla > num;
               return (
                 <div key={i} style={{ display: 'flex', alignItems: 'center' }}>
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5 }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
                     <div style={{
-                      width: 34, height: 34, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontWeight: 800, fontSize: 13,
+                      width: 40, height: 40, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontWeight: 800, fontSize: 15,
                       background: completado ? '#1e3a8a' : activo ? 'linear-gradient(135deg,#1e3a8a,#2563eb)' : 'var(--bg-item)',
                       color: completado || activo ? '#fff' : 'var(--texto-second)',
-                      boxShadow: activo ? '0 4px 12px rgba(30,58,138,0.32)' : 'none',
+                      boxShadow: activo ? '0 8px 24px rgba(37,99,235,0.25)' : 'none',
+                      transition: 'all 300ms ease'
                     }}>
-                      {completado ? <IcoCheck color="#fff" sz={14} /> : num}
+                      {completado ? <IcoCheck color="#fff" sz={18} /> : num}
                     </div>
-                    <span style={{ fontSize: 11, fontWeight: activo ? 700 : 500, color: activo ? '#1e3a8a' : 'var(--texto-second)', whiteSpace: 'nowrap' }}>{label}</span>
+                    <span style={{ fontSize: 13, fontWeight: activo ? 800 : 600, color: activo ? '#1e3a8a' : 'var(--texto-second)', whiteSpace: 'nowrap' }}>{label}</span>
                   </div>
-                  {i < 1 && <div style={{ width: 80, height: 2, background: pantalla > 1 ? '#1e3a8a' : 'var(--borde)', margin: '0 8px', marginBottom: 18, transition: 'background 300ms' }} />}
+                  {i < 1 && <div style={{ width: 100, height: 3, background: pantalla > 1 ? '#1e3a8a' : 'var(--borde)', margin: '0 12px', marginBottom: 20, transition: 'background 400ms ease' }} />}
                 </div>
               );
             })}
           </div>
 
-          {pantalla === 1 && (
-            <PantallaProteccion
-              vehiculo={vehiculo}
-              reserva={reserva}
-              seguroIdx={seguroIdx}
-              onSeleccionar={setSeguroIdx}
-              onEditar={tipo => setModalEditar(tipo)}
-            />
-          )}
-          {pantalla === 2 && (
-            <PantallaDatos
-              vehiculo={vehiculo}
-              reserva={reserva}
-              seguroIdx={seguroIdx}
-              datosForm={datosForm}
-              onCambio={(k, v) => setDatosForm(p => ({ ...p, [k]: v }))}
-              onReservar={handleReservar}
-              errores={errores}
-            />
-          )}
+          <div style={{ display: 'flex', gap: 32, alignItems: 'flex-start' }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              
+              {pantalla === 1 && (
+                <>
+                  <GaleriaImagenes imagenes={vehiculo.imagenes} nombreVehiculo={vehiculo.nombre} />
+                  <InfoVehiculo vehiculo={vehiculo} />
+                  <PlanesProteccion seguroIdx={seguroIdx} onSeleccionar={setSeguroIdx} />
 
-          {pantalla === 1 && (
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 28 }}>
-              <button
-                onClick={() => { setPantalla(2); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
-                style={{ display: 'flex', alignItems: 'center', gap: 9, padding: '14px 36px', borderRadius: 13, background: 'linear-gradient(90deg,#1e3a8a,#2563eb)', color: '#fff', fontWeight: 800, fontSize: 14, border: 'none', cursor: 'pointer', boxShadow: '0 6px 20px rgba(30,58,138,0.28)', transition: 'opacity 150ms' }}
-                onMouseEnter={e => e.currentTarget.style.opacity = '0.9'}
-                onMouseLeave={e => e.currentTarget.style.opacity = '1'}
-              >
-                Continuar con mis datos <IcoArrow />
-              </button>
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 32 }}>
+                    <button
+                      onClick={() => { setPantalla(2); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
+                      style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '16px 40px', borderRadius: 16, background: 'linear-gradient(90deg,#1e3a8a,#2563eb)', color: '#fff', fontWeight: 900, fontSize: 15, border: 'none', cursor: 'pointer', boxShadow: '0 8px 24px rgba(37,99,235,0.28)', transition: 'transform 200ms ease' }}
+                      onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
+                      onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
+                    >
+                      Continuar con mis datos <IcoArrow />
+                    </button>
+                  </div>
+                </>
+              )}
+
+              {pantalla === 2 && (
+                <DatosPersonales
+                  vehiculo={vehiculo}
+                  reserva={reserva}
+                  seguroIdx={seguroIdx}
+                  datosForm={datosForm}
+                  onCambio={(k, v) => setDatosForm(p => ({ ...p, [k]: v }))}
+                  onReservar={handleReservar}
+                  errores={errores}
+                />
+              )}
+
             </div>
-          )}
+
+            <ResumenLateral 
+              vehiculo={vehiculo} 
+              reserva={reserva} 
+              seguroIdx={seguroIdx} 
+              onEditar={tipo => setModalEditar(tipo)} 
+            />
+          </div>
+
         </div>
       </div>
 
       {modalEditar && (
-        <ModalEditar
+        <ModalEditarReserva
           tipo={modalEditar}
           reserva={reserva}
           vehiculo={vehiculo}
