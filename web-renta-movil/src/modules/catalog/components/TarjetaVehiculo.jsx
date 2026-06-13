@@ -15,6 +15,7 @@ import {
   FaShieldAlt,
   FaMoneyBillWave,
   FaStar,
+  FaMapMarkerAlt,
 } from 'react-icons/fa'
 
 function getSafeImages(vehiculo) {
@@ -101,7 +102,18 @@ export default function TarjetaVehiculo({
 
   const handleReservar = () => {
     if (invitado) {
-      navigate('/registro')
+      showAlert({
+        icon: 'info',
+        title: 'Registro Requerido',
+        text: 'Para realizar o continuar con una reserva, necesitas tener una cuenta. Regístrate o inicia sesión.',
+        confirmButtonText: 'Ir a registro',
+        showCancelButton: true,
+        cancelButtonText: 'Cancelar'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate('/registro')
+        }
+      })
       return
     }
     navigate(`/catalogo/${vehiculo.id}`)
@@ -236,6 +248,9 @@ export default function TarjetaVehiculo({
           <div style={{ marginBottom: '8px', display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
             <span style={{ fontSize: '12px', fontWeight: 700, color: '#1e40af', background: '#eff6ff', padding: '4px 10px', borderRadius: '9999px', border: '1px solid #bfdbfe' }}>
               {vehiculo.categoria || 'Económico'}
+            </span>
+            <span style={{ fontSize: '11px', fontWeight: 700, color: '#059669', background: '#ecfdf5', padding: '4px 10px', borderRadius: '9999px', border: '1px solid #bbf7d0', display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <FaMapMarkerAlt /> {vehiculo.sucursal || 'Centro Neiva'}
             </span>
           </div>
 

@@ -76,6 +76,7 @@ export default function FiltrosCatalogo({
     precioMax = '',
     transmision = 'Todas',
     combustible = 'Todos',
+    sucursal = 'Todas',
   } = filtros
 
   const {
@@ -215,16 +216,27 @@ export default function FiltrosCatalogo({
         </div>
 
         {mostrarFavoritos && (
-          <Seccion label="Favoritos" ultimo={false} c={c}>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-              <Chip activo={!soloFavoritos} onClick={() => setSoloFavoritos(false)} c={c}>
+          <div style={{ background: c.accentBgSoft, padding: '16px', borderRadius: '12px', border: `1px solid ${c.accentBorder}`, marginBottom: '16px' }}>
+            <span style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: c.accentText, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '10px' }}>
+              Filtro Especial
+            </span>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <button 
+                type="button"
+                onClick={() => setSoloFavoritos(false)} 
+                style={{ flex: 1, padding: '8px', fontSize: '12px', fontWeight: 700, borderRadius: '8px', border: 'none', cursor: 'pointer', background: !soloFavoritos ? c.chipActiveBg : c.chipBg, color: !soloFavoritos ? c.chipActiveText : c.chipText, transition: 'all 200ms' }}
+              >
                 Todos
-              </Chip>
-              <Chip activo={soloFavoritos} onClick={() => setSoloFavoritos(true)} c={c}>
-                Solo favoritos
-              </Chip>
+              </button>
+              <button 
+                type="button"
+                onClick={() => setSoloFavoritos(true)} 
+                style={{ flex: 1, padding: '8px', fontSize: '12px', fontWeight: 700, borderRadius: '8px', border: 'none', cursor: 'pointer', background: soloFavoritos ? '#ef4444' : c.chipBg, color: soloFavoritos ? '#fff' : c.chipText, transition: 'all 200ms', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+              >
+                ⭐ Favoritos
+              </button>
             </div>
-          </Seccion>
+          </div>
         )}
 
         <Seccion label="Categoría" ultimo={false} c={c}>
@@ -235,6 +247,13 @@ export default function FiltrosCatalogo({
               </Chip>
             ))}
           </div>
+        </Seccion>
+
+        <Seccion label="Sucursal" ultimo={false} c={c}>
+          <select value={sucursal} onChange={e => setFiltro('sucursal', e.target.value)} style={{ ...inputStyle, cursor: 'pointer' }}>
+            <option value="Todas">Todas las sucursales</option>
+            {SUCURSALES.map(s => <option key={s} value={s}>{s}</option>)}
+          </select>
         </Seccion>
 
         <Seccion label="Precio por día ($COP)" ultimo={false} c={c}>

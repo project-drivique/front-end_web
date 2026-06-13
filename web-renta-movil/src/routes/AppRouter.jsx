@@ -12,6 +12,7 @@ import CatalogoUsuarioPage from '../modules/catalog/pages/CatalogoUsuarioPage'
 import VehiculoDetallePage from '../modules/catalog/pages/VehiculoDetallePage'
 import ReservasPage from '../modules/reservations/pages/ReservasPage'
 import AdminPage from '../modules/admin/pages/AdminPage'
+import SucursalesPage from '../modules/catalog/pages/SucursalesPage'
 
 function RutaPrivada({ children }) {
   const token = useAuthStore((s) => s.token)
@@ -39,6 +40,7 @@ export default function AppRouter() {
         <Route path="/admin" element={<RutaPrivada><AdminPage /></RutaPrivada>} />
         <Route path="/catalogo" element={<CatalogoPage />} />
         <Route path="/catalogo/:id" element={<VehiculoDetallePage />} />
+        <Route path="/sucursales" element={<SucursalesPage />} />
         <Route path="/reservas" element={<RutaPrivada><ReservasPage /></RutaPrivada>} />
 
         <Route path="*" element={<Navigate to="/" replace />} />

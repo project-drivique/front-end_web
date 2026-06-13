@@ -7,10 +7,11 @@ const FILTROS_BASE = {
   precioMax: '',
   transmision: 'Todas',
   combustible: 'Todos',
+  sucursal: 'Todas',
   orden: 'precio_asc',
 }
 
-export function useCatalogo() {
+export function useCatalogo({ esFavorito = () => false } = {}) {
   const [vehiculos, setVehiculos] = useState([])
   const [cargando, setCargando] = useState(false)
   const [error, setError] = useState(null)
@@ -33,6 +34,7 @@ export function useCatalogo() {
   const [busquedaRealizada, setBusquedaRealizada] = useState(false)
   const [errorBusqueda, setErrorBusqueda] = useState('')
   const [pagina, setPagina] = useState(1)
+  const [soloFavoritos, setSoloFavoritos] = useState(false)
 
   const cargarVehiculos = useCallback(async () => {
     setCargando(true)
@@ -96,6 +98,7 @@ export function useCatalogo() {
     setBusquedaRealizada(false)
     setErrorBusqueda('')
     setPagina(1)
+    setSoloFavoritos(false)
   }
 
   const reintentar = () => cargarVehiculos()
@@ -113,6 +116,7 @@ export function useCatalogo() {
     if (filtros.categoria !== 'Todos') arr = arr.filter(v => v.categoria === filtros.categoria)
     if (filtros.transmision !== 'Todas') arr = arr.filter(v => v.transmision === filtros.transmision)
     if (filtros.combustible !== 'Todos') arr = arr.filter(v => v.combustible === filtros.combustible)
+    if (filtros.sucursal !== 'Todas') arr = arr.filter(v => v.sucursal === filtros.sucursal)
 
     const min = filtros.precioMin ? Number(filtros.precioMin) : null
     const max = filtros.precioMax ? Number(filtros.precioMax) : null
@@ -123,8 +127,10 @@ export function useCatalogo() {
     if (filtros.orden === 'precio_desc') arr.sort((a, b) => Number(b.precio) - Number(a.precio))
     if (filtros.orden === 'calificacion') arr.sort((a, b) => Number(b.calificacion ?? 0) - Number(a.calificacion ?? 0))
 
+    if (soloFavoritos) arr = arr.filter(v => esFavorito(v.id))
+
     return arr
-  }, [vehiculos, filtros])
+  }, [vehiculos, filtros, soloFavoritos, esFavorito])
 
   const totalPaginas = Math.max(1, Math.ceil(resultado.length / 6))
   const vehiculosPagina = useMemo(() => {
@@ -152,5 +158,7 @@ export function useCatalogo() {
     handleBuscar,
     limpiar,
     reintentar,
+    soloFavoritos,
+    setSoloFavoritos
   }
 }

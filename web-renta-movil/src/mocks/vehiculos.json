@@ -16,7 +16,7 @@
     "color": "Blanco Perla",
     "año": 2024,
     "placa": "ABC-123",
-    "sucursal": "Centro Neiva",
+    "sucursal": "Localiza (El Dorado)",
     "tarifas": {
       "kmLimitado": { "km": 200, "precio": 85000, "excedente": 800 },
       "kmIlimitado": { "precio": 105000 }
@@ -59,7 +59,7 @@
     "color": "Soul Red Crystal",
     "año": 2024,
     "placa": "DEF-456",
-    "sucursal": "Aeropuerto Neiva",
+    "sucursal": "Tu Roll (El Poblado)",
     "tarifas": {
       "kmLimitado": { "km": 250, "precio": 145000, "excedente": 1000 },
       "kmIlimitado": { "precio": 175000 }
@@ -97,7 +97,7 @@
     "color": "Rojo Passion",
     "año": 2023,
     "placa": "GHI-789",
-    "sucursal": "Terminal de Transportes",
+    "sucursal": "Europcar (El Dorado)",
     "tarifas": {
       "kmLimitado": { "km": 150, "precio": 60000, "excedente": 600 },
       "kmIlimitado": { "precio": 75000 }
@@ -134,7 +134,7 @@
     "color": "Race Red",
     "año": 2023,
     "placa": "JKL-012",
-    "sucursal": "Centro Neiva",
+    "sucursal": "Enterprise (El Dorado)",
     "tarifas": {
       "kmLimitado": { "km": 300, "precio": 220000, "excedente": 1500 },
       "kmIlimitado": { "precio": 260000 }
@@ -171,7 +171,7 @@
     "color": "Super White",
     "año": 2024,
     "placa": "MNO-345",
-    "sucursal": "Norte Neiva",
+    "sucursal": "Sixt (JMC)",
     "tarifas": {
       "kmLimitado": { "km": 300, "precio": 180000, "excedente": 1200 },
       "kmIlimitado": { "precio": 215000 }
@@ -210,7 +210,7 @@
     "color": "Gris Highland",
     "año": 2023,
     "placa": "PQR-678",
-    "sucursal": "Sur Neiva",
+    "sucursal": "Alamo (El Dorado)",
     "tarifas": {
       "kmLimitado": { "km": 150, "precio": 55000, "excedente": 550 },
       "kmIlimitado": { "precio": 68000 }
@@ -247,7 +247,7 @@
     "color": "Phantom Black",
     "año": 2024,
     "placa": "STU-901",
-    "sucursal": "Aeropuerto Neiva",
+    "sucursal": "Localiza (El Dorado)",
     "tarifas": {
       "kmLimitado": { "km": 250, "precio": 160000, "excedente": 1100 },
       "kmIlimitado": { "precio": 192000 }
@@ -285,7 +285,7 @@
     "color": "Snow White Pearl",
     "año": 2024,
     "placa": "VWX-234",
-    "sucursal": "Centro Neiva",
+    "sucursal": "Tu Roll (El Poblado)",
     "tarifas": {
       "kmLimitado": { "km": 200, "precio": 95000, "excedente": 900 },
       "kmIlimitado": { "precio": 115000 }
@@ -302,6 +302,44 @@
       "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/7718dbfc25ce3e387cb976f4ded742dc8d8c7582.jpg",
       "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/1e686f124bd42a21481a43969615adc261e39251.jpg",
       "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/de7fef41a3ee96557b1600b7e91494dd78a5e7b1.jpg"
+    ],
+    "disponibilidad": { "ocupados": [] },
+    "comentarios": []
+  },
+  {
+    "id": 9,
+    "nombre": "Nissan Qashqai 2024",
+    "categoria": "SUV",
+    "transmision": "Automática",
+    "combustible": "Híbrido",
+    "precio": 140000,
+    "calificacion": 4.9,
+    "disponible": true,
+    "destacado": true,
+    "puertas": 5,
+    "pasajeros": 5,
+    "maletero": 504,
+    "cilindraje": "1.3L Turbo MHEV",
+    "color": "Magnetic Blue",
+    "año": 2024,
+    "placa": "YZA-567",
+    "sucursal": "Europcar (El Dorado)",
+    "tarifas": {
+      "kmLimitado": { "km": 250, "precio": 140000, "excedente": 1000 },
+      "kmIlimitado": { "precio": 170000 }
+    },
+    "seguros": [
+      { "nombre": "Protección Obligatoria", "precio": 29000 },
+      { "nombre": "Protección Total", "precio": 67000 }
+    ],
+    "servicios": [
+      { "nombre": "GPS", "precio": 15000 },
+      { "nombre": "Silla bebé", "precio": 20000 }
+    ],
+    "imagenes": [
+      "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/5acb88622cc00284455f7d6c6e19fd2f5b11a6cd.jpg",
+      "https://th.bing.com/th/id/OIP.fXE8mmnIQyu_3aOZ3jDciAHaE0?w=277&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+      "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/8631ecb31093479ab34a56263b478b44fb2d74f6.jpg"
     ],
     "disponibilidad": { "ocupados": [] },
     "comentarios": []

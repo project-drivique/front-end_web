@@ -63,6 +63,13 @@ export default function CatalogoUsuarioPage() {
   const esModoOscuro = tema === 'oscuro'
   const c = coloresTema(esModoOscuro)
 
+  const favoritosKey = useMemo(() => {
+    if (!usuario?.id) return 'favoritosVehiculos'
+    return `favoritosVehiculos_${usuario.id}`
+  }, [usuario?.id])
+
+  const { esFavorito, toggleFavorito } = useFavoritos(favoritosKey)
+
   const {
     cargando,
     error,
@@ -79,34 +86,18 @@ export default function CatalogoUsuarioPage() {
     handleBuscar,
     limpiar,
     reintentar,
-  } = useCatalogo()
-
-  const favoritosKey = useMemo(() => {
-    if (!usuario?.id) return 'favoritosVehiculos'
-    return `favoritosVehiculos_${usuario.id}`
-  }, [usuario?.id])
-
-  const { esFavorito, toggleFavorito } = useFavoritos(favoritosKey)
-  const [soloFavoritos, setSoloFavoritos] = useState(false)
+    soloFavoritos,
+    setSoloFavoritos
+  } = useCatalogo({ esFavorito })
 
   useEffect(() => {
     setSoloFavoritos(false)
     setPagina(1)
-  }, [usuario?.id])
+  }, [usuario?.id, setSoloFavoritos, setPagina])
 
   useEffect(() => {
     setPagina(1)
-  }, [soloFavoritos, filtros, busquedaForm])
-
-  const resultadoVisible = useMemo(() => {
-    if (!soloFavoritos) return resultado
-    return resultado.filter(v => esFavorito(v.id))
-  }, [resultado, soloFavoritos, esFavorito])
-
-  const vehiculosPaginaVisible = useMemo(() => {
-    if (!soloFavoritos) return vehiculosPagina
-    return vehiculosPagina.filter(v => esFavorito(v.id))
-  }, [vehiculosPagina, soloFavoritos, esFavorito])
+  }, [soloFavoritos, filtros, busquedaForm, setPagina])
 
   const inputStyle = {
     width: '100%',
@@ -149,7 +140,7 @@ export default function CatalogoUsuarioPage() {
         <HeroBusqueda
           c={c}
           cargando={cargando}
-          resultado={resultadoVisible}
+          resultado={resultado}
           inputStyle={inputStyle}
           labelStyle={labelStyle}
           busquedaForm={busquedaForm}
@@ -190,14 +181,14 @@ export default function CatalogoUsuarioPage() {
 
             {cargando && <EstadoCarga c={c} />}
             {!cargando && error && <EstadoError c={c} error={error} onRetry={reintentar} />}
-            {!cargando && !error && resultadoVisible.length === 0 && (
+            {!cargando && !error && resultado.length === 0 && (
               <EstadoVacio c={c} onLimpiar={limpiarTodo} titulo={tituloVacio} mensaje={mensajeVacio} textoBoton={soloFavoritos ? 'Ver todos' : 'Limpiar filtros'} />
             )}
 
-            {!cargando && !error && resultadoVisible.length > 0 && (
+            {!cargando && !error && resultado.length > 0 && (
               <>
                 <GridVehiculos
-                  vehiculosPagina={vehiculosPaginaVisible}
+                  vehiculosPagina={vehiculosPagina}
                   esFavorito={esFavorito}
                   toggleFavorito={toggleFavorito}
                   c={c}
