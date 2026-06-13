@@ -1,12 +1,13 @@
 // src/modules/auth/pages/LoginPage.jsx
+import { useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useLogin } from '../hooks/useLogin'
 import { useRegistroSocial } from '../hooks/useRegistroSocial'
 import { useLanding } from '../../landing/LandingContext'
 import logo from '@/assets/logo/logo.png'
+import { showAlert } from '@/utils/swalConfig'
 
 import { coloresLogin, loginTokens } from '../styles/loginStyles'
-import AlertaBanner from '../components/AlertaBanner'
 import SpinnerBtn from '../components/SpinnerBtn'
 import PanelIzquierdo from '../components/PanelIzquierdo'
 
@@ -67,18 +68,53 @@ export default function LoginPage() {
 
   const {
     correo, contrasena, mostrarPass, cargando,
-    intentos, bloqueado, errores, exito,
+    bloqueado, errores, exito,
     setContrasena, setMostrarPass,
     handleCorreoChange, handleSubmit,
-    MAX_INTENTOS,
   } = useLogin()
+
+  const showLoginAlert = ({ icon, title, text, confirmButtonText = 'Aceptar' }) =>
+    showAlert({ icon, title, text, confirmButtonText })
 
   const {
     cargandoGoogle, cargandoFacebook, errorSocial,
     proveedorExito, iniciarGoogle, iniciarFacebook,
-  } = useRegistroSocial({ onExito: () => navigate('/catalogo') })
+  } = useRegistroSocial({ onExito: (_, data) => {
+    const rol = data?.usuario?.rol
+    navigate(rol === 'administrador' ? '/admin' : '/home')
+  } })
 
   const exitoFinal = !!proveedorExito
+
+  useEffect(() => {
+    if (errorSocial) {
+      showLoginAlert({
+        icon: 'error',
+        title: 'Error de inicio social',
+        text: errorSocial,
+      })
+    }
+  }, [errorSocial])
+
+  useEffect(() => {
+    if (errores.general) {
+      showLoginAlert({
+        icon: bloqueado ? 'error' : 'warning',
+        title: bloqueado ? 'Cuenta bloqueada' : 'Error de inicio de sesión',
+        text: errores.general,
+      })
+    }
+  }, [errores.general, bloqueado])
+
+  useEffect(() => {
+    if (exito) {
+      showLoginAlert({
+        icon: 'success',
+        title: 'Bienvenido',
+        text: exito,
+      })
+    }
+  }, [exito])
 
   // Mapa acción → handler (JSON-driven para BOTONES_SOCIALES)
   const accionesSocial = { google: iniciarGoogle, facebook: iniciarFacebook }
@@ -152,13 +188,7 @@ export default function LoginPage() {
           </div>
 
           {/* ── Alertas ── */}
-          <AlertaBanner variante="success" mensaje={exito} c={c} />
-          <AlertaBanner variante="success" mensaje={exitoFinal ? `Sesión iniciada con ${proveedorExito === 'google' ? 'Google' : 'Facebook'}. Redirigiendo…` : null} c={c} />
-          {!exitoFinal && <AlertaBanner variante="error" mensaje={errorSocial} c={c} />}
-          <AlertaBanner variante="error" mensaje={errores.general} c={c} />
-          {intentos > 0 && !bloqueado && (
-            <AlertaBanner variante="warn" mensaje={`Intento ${intentos} de ${MAX_INTENTOS}`} c={c} />
-          )}
+          {/* Auth feedback is now shown via SweetAlert2 modals. */}
 
           <form onSubmit={handleSubmit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
             {/* Campo correo */}

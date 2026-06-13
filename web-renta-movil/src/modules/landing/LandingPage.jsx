@@ -240,8 +240,16 @@ export default function LandingPage() {
               {tx.nav.vehiculos}
             </Link>
 
+            <Link
+              to="/sucursales"
+              style={estiloEnlaceNav}
+              onMouseEnter={e => e.currentTarget.style.color = c.acentoTexto}
+              onMouseLeave={e => e.currentTarget.style.color = 'var(--texto-nav)'}
+            >
+              {tx.nav.sucursales}
+            </Link>
+
             {[
-              [tx.nav.sucursales, '#sucursales'],
               [tx.nav.servicios, '#como-funciona'],
               [tx.nav.tarifas, '#tarifas'],
               [tx.nav.soporte, '#soporte'],

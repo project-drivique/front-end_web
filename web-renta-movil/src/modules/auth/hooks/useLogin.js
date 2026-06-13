@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { authService } from '../../../services/authService'
+import { adminService } from '../../../services/adminService'
 import { useAuthStore } from '../../../store/authStore'
 
 const MAX_INTENTOS = 3
@@ -55,10 +56,8 @@ export function useLogin() {
     setErrores({ correo: '', contrasena: '', general: '' })
 
     try {
-      const datos = await authService.login({
-        correo,
-        contrasena,
-      })
+      const servicio = correo.trim().toLowerCase() === 'admin@rentamovil.com' ? adminService.login : authService.login
+      const datos = await servicio({ correo, contrasena })
 
       if (datos.requiere2FA) {
         iniciar2FA(datos.sesionTemporal)
@@ -75,7 +74,7 @@ export function useLogin() {
       setExito('¡Acceso exitoso! Redirigiendo...')
 
       setTimeout(() => {
-        navigate(datos.rol === 'administrador' ? '/admin' : '/catalogo')
+        navigate(datos.rol === 'administrador' ? '/admin' : '/home')
       }, 1000)
     } catch (error) {
       const nuevosIntentos = intentos + 1

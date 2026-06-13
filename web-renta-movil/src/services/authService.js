@@ -13,38 +13,61 @@ api.interceptors.request.use((config) => {
   return config
 })
 
-// ─── MOCK LOGIN CREDENTIALS (Temporal) ─────────────────────────────────────────
-const MOCK_CREDENTIALS = {
-  correo: 'admin@rentamovil.com',
-  contrasena: 'Admin123*',
-}
+const MOCK_USERS = [
+  {
+    correo: 'admin@rentamovil.com',
+    contrasena: 'Admin123*',
+    nombre: 'Administrador',
+    rol: 'administrador',
+  },
+  {
+    correo: 'cliente@rentamovil.com',
+    contrasena: 'Cliente123*',
+    nombre: '',
+    rol: 'usuario',
+  },
+]
 
 const generateMockToken = () => {
   return 'mock_token_' + Math.random().toString(36).substring(2) + Date.now()
 }
 
-// ─────────────────────────────────────────────────────────────────────────────────
 export const authService = {
   login: async ({ correo, contrasena }) => {
-    // Validar credenciales contra el mock
-    if (correo === MOCK_CREDENTIALS.correo && contrasena === MOCK_CREDENTIALS.contrasena) {
+    const usuario = MOCK_USERS.find(
+      (u) => u.correo === correo && u.contrasena === contrasena
+    )
+
+    if (usuario) {
       return {
         token: generateMockToken(),
-        nombre: 'Administrador',
-        rol: 'administrador',
+        nombre: usuario.nombre,
+        rol: usuario.rol,
         requiere2FA: false,
       }
     }
 
-    // Si no coinciden, lanzar error
     const error = new Error('Credenciales incorrectas')
     error.response = { status: 401 }
     throw error
   },
 
   registro: async (datosUsuario) => {
-    const { data } = await api.post('/auth/registro', datosUsuario)
-    return data
+    const usuario = MOCK_USERS.find(
+      (u) => u.correo === datosUsuario.correo && u.contrasena === datosUsuario.contrasena
+    )
+
+    if (usuario) {
+      return {
+        token: generateMockToken(),
+        nombre: usuario.nombre,
+        rol: usuario.rol,
+      }
+    }
+
+    const error = new Error('No existe una cuenta con estas credenciales. Usa admin@rentamovil.com o cliente@rentamovil.com con la contraseña correspondiente.')
+    error.response = { status: 400 }
+    throw error
   },
 
   solicitarRecuperacion: async (correo) => {

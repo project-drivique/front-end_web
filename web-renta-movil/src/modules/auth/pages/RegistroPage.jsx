@@ -1,10 +1,12 @@
 // src/modules/auth/pages/RegistroPage.jsx
-import { useState, useEffect, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useRegistro } from '../hooks/useRegistro'
 import { useRegistroSocial } from '../hooks/useRegistroSocial'
+import { useAuthStore } from '../../../store/authStore'
 import { useLanding } from '@/modules/landing/LandingContext'
 import logo from '@/assets/logo/logo.png'
+import { showAlert } from '@/utils/swalConfig'
 import {
   FaTimes,
   FaCheck,
@@ -15,7 +17,6 @@ import {
 } from 'react-icons/fa'
 
 const COLOR_MARCA = '#1e3a8a'
-const COLOR_MARCA_HOVER = '#162d6e'
 
 const coloresRegistro = (esModoOscuro) => ({
   pageBg: esModoOscuro ? '#0f172a' : '#f8fafc',
@@ -348,6 +349,7 @@ export default function RegistroPage() {
   const c = coloresRegistro(esModoOscuro)
 
   const { registrar, cargando, exito, error } = useRegistro()
+  const storeLogin = useAuthStore((s) => s.login)
 
   const [correo, setCorreo] = useState('')
   const [password, setPassword] = useState('')
@@ -362,21 +364,29 @@ export default function RegistroPage() {
     cargandoGoogle, cargandoFacebook, errorSocial,
     proveedorExito, iniciarGoogle, iniciarFacebook,
   } = useRegistroSocial({
-    onExito: () => {
+    onExito: (_, data) => {
       exitoRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-      setTimeout(() => navigate('/home'), 2000)
+      showAlert({
+        icon: 'success',
+        title: 'Registro exitoso',
+        text: 'Se ha vinculado su cuenta social correctamente. Será redirigido en breve.',
+      })
+      const rol = data?.usuario?.rol
+      setTimeout(() => navigate(rol === 'administrador' ? '/admin' : '/home'), 2000)
     },
   })
 
   const exitoFinal = exito || !!proveedorExito
 
   useEffect(() => {
-    if (exito) {
-      exitoRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-      const t = setTimeout(() => navigate('/login'), 3000)
-      return () => clearTimeout(t)
+    if (errorSocial) {
+      showAlert({
+        icon: 'error',
+        title: 'Error de registro social',
+        text: errorSocial,
+      })
     }
-  }, [exito, navigate])
+  }, [errorSocial])
 
   const validar = () => {
     const e = {}
@@ -396,10 +406,43 @@ export default function RegistroPage() {
     const found = validar()
     if (Object.keys(found).length > 0) {
       setErrores(found)
+      const primerError = Object.values(found)[0]
+      showAlert({
+        icon: 'warning',
+        title: 'Verifica los datos',
+        text: primerError,
+      })
       return
     }
     setErrores({})
-    await registrar({ correo, contrasena: password })
+
+    const datosAcceso = await registrar({ correo, contrasena: password })
+    if (!datosAcceso) {
+      if (error) {
+        showAlert({
+          icon: 'error',
+          title: 'Registro fallido',
+          text: error,
+        })
+      }
+      return
+    }
+
+    storeLogin(datosAcceso.token, {
+      correo,
+      nombre: datosAcceso.nombre,
+      rol: datosAcceso.rol,
+    })
+
+    showAlert({
+      icon: 'success',
+      title: 'Cuenta creada',
+      text: 'Su registro fue exitoso. Redirigiendo al catálogo...',
+    })
+
+    setTimeout(() => {
+      navigate(datosAcceso.rol === 'administrador' ? '/admin' : '/home')
+    }, 1000)
   }
 
   return (
