@@ -28,10 +28,7 @@ export default function HeaderCatalogo({ c, usuario, withLinks = false }) {
         <Link to="/"><img src={logo} alt="RentaMovil" style={{ height: '40px' }} /></Link>
 
         {withLinks && (
-          <>
-            <Link to="/sucursales" style={{ fontSize: '13px', color: c.navText, textDecoration: 'none', fontWeight: 600 }}>Sucursales</Link>
-            <Link to="/reservas" style={{ fontSize: '13px', color: c.navText, textDecoration: 'none', fontWeight: 600 }}>Mis reservas</Link>
-          </>
+          <Link to="/reservas" style={{ fontSize: '13px', color: c.navText, textDecoration: 'none', fontWeight: 600 }}>Mis reservas</Link>
         )}
 
         <div style={{ flex: 1 }} />

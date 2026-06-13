@@ -2,11 +2,11 @@ import { useState } from 'react';
 
 const IcoX = ({ sz = 15, color = '#dc2626' }) => (
   <svg width={sz} height={sz} fill="none" stroke={color} strokeWidth="2.8" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
   </svg>
 )
 
-const SUCURSALES = ['Centro Neiva','Aeropuerto Neiva','Terminal de Transportes','Norte Neiva','Sur Neiva'];
+const SUCURSALES = ['Centro Neiva', 'Aeropuerto Neiva', 'Terminal de Transportes', 'Norte Neiva', 'Sur Neiva'];
 const cop = n => `$${Number(n).toLocaleString('es-CO')}`;
 
 export default function ModalEditarReserva({ tipo, reserva, vehiculo, onGuardar, onCerrar }) {
@@ -28,15 +28,15 @@ export default function ModalEditarReserva({ tipo, reserva, vehiculo, onGuardar,
             {tipo === 'retiro' ? 'Editar Retiro' : tipo === 'devolucion' ? 'Editar Devolución' : 'Tipo de Kilómetros'}
           </h3>
           <button onClick={onCerrar} style={{ background: 'var(--bg-item)', border: 'none', cursor: 'pointer', width: 36, height: 36, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 200ms ease' }} onMouseEnter={e => e.currentTarget.style.background = '#e2e8f0'} onMouseLeave={e => e.currentTarget.style.background = 'var(--bg-item)'}>
-            <IcoX sz={18} color="#64748b"/>
+            <IcoX sz={18} color="#64748b" />
           </button>
         </div>
 
         {tipo === 'km' ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             {[
-              { val: 'limitado',  label: `Km limitado (${kmLimit.km} km/día)`, precio: kmLimit.precio },
-              { val: 'ilimitado', label: 'Km ilimitado',                         precio: kmIlimit.precio },
+              { val: 'limitado', label: `Km limitado (${kmLimit.km} km/día)`, precio: kmLimit.precio },
+              { val: 'ilimitado', label: 'Km ilimitado', precio: kmIlimit.precio },
             ].map(op => (
               <button key={op.val} onClick={() => s('tipoKm', op.val)} style={{
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
@@ -56,24 +56,21 @@ export default function ModalEditarReserva({ tipo, reserva, vehiculo, onGuardar,
             ))}
           </div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-            <div>
-              <label style={lbl}>{tipo === 'retiro' ? 'Sucursal de retiro' : 'Sucursal de devolución'}</label>
-              <select value={tipo === 'retiro' ? form.sucursalRetiro : form.sucursalDevolucion} onChange={e => s(tipo === 'retiro' ? 'sucursalRetiro' : 'sucursalDevolucion', e.target.value)} style={{ ...inp, cursor: 'pointer' }}>
-                <option value="">Selecciona sucursal</option>
-                {SUCURSALES.map(sc => <option key={sc} value={sc}>{sc}</option>)}
-              </select>
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-              <div>
-                <label style={lbl}>Fecha</label>
-                <input type="date" value={tipo === 'retiro' ? form.fechaInicio : form.fechaFin} min={tipo === 'retiro' ? new Date().toISOString().split('T')[0] : (form.fechaInicio || new Date().toISOString().split('T')[0])} onChange={e => s(tipo === 'retiro' ? 'fechaInicio' : 'fechaFin', e.target.value)} style={inp} />
-              </div>
-              <div>
-                <label style={lbl}>Hora</label>
-                <input type="time" value={tipo === 'retiro' ? form.horaInicio : form.horaFin} onChange={e => s(tipo === 'retiro' ? 'horaInicio' : 'horaFin', e.target.value)} style={inp} />
-              </div>
-            </div>
+          <div>
+            <label style={lbl}>{tipo === 'retiro' ? 'Lugar de retiro' : 'Lugar de devolución'}</label>
+            <select
+              value={tipo === 'retiro' ? form.sucursalRetiro : form.sucursalDevolucion}
+              onChange={e => s(tipo === 'retiro' ? 'sucursalRetiro' : 'sucursalDevolucion', e.target.value)}
+              style={{ ...inp, cursor: 'pointer' }}
+            >
+              <option value="">Selecciona Lugar</option>
+              {/* Cambiamos SUCURSALES por el arreglo de puntos */}
+              {['Centro', 'Norte', 'Sur', 'Occidente'].map(puntos => (
+                <option key={puntos} value={puntos}>
+                  {puntos}
+                </option>
+              ))}
+            </select>
           </div>
         )}
 
