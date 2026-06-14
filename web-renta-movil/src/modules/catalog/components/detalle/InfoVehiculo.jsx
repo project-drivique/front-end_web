@@ -1,0 +1,50 @@
+import { FaCar, FaSuitcase, FaBolt, FaPalette, FaCalendarAlt, FaSnowflake, FaRegHeart } from 'react-icons/fa';
+
+export default function InfoVehiculo({ vehiculo }) {
+  const cop = n => `$${Number(n).toLocaleString('es-CO')}`;
+
+  return (
+    <div style={{ background: 'var(--bg-tarjeta)', borderRadius: 20, border: '1px solid var(--borde)', overflow: 'hidden', marginBottom: 28, boxShadow: 'var(--sombra-tarjeta)' }}>
+      <div style={{ padding: '18px 22px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 10 }}>
+          <div>
+            <span style={{ fontSize: 11, fontWeight: 600, color: '#1e3a8a', background: '#eff6ff', padding: '3px 9px', borderRadius: 6, marginBottom: 6, display: 'inline-block' }}>
+              {vehiculo.categoria}
+            </span>
+            <h2 style={{ fontSize: 22, fontWeight: 800, color: 'var(--texto-primary)', margin: '4px 0 6px' }}>
+              {vehiculo.nombre}
+            </h2>
+            <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
+              <span style={{ fontSize: 12, color: 'var(--texto-primary)' }}><FaCar style={{ verticalAlign: 'middle', marginRight: 4, color: 'var(--texto-second)' }} /> {vehiculo.transmision}</span>
+              <span style={{ fontSize: 12, color: 'var(--texto-primary)' }}><FaBolt style={{ verticalAlign: 'middle', marginRight: 4, color: 'var(--texto-second)' }} /> {vehiculo.combustible}</span>
+              <span style={{ fontSize: 12, color: 'var(--texto-primary)' }}><FaRegHeart style={{ verticalAlign: 'middle', marginRight: 4, color: 'var(--texto-second)' }} /> {vehiculo.pasajeros} personas</span>
+            </div>
+          </div>
+          <div style={{ textAlign: 'right' }}>
+            <span style={{ fontSize: 26, fontWeight: 800, color: 'var(--texto-primary)' }}>{cop(vehiculo.precio)}</span>
+            <span style={{ fontSize: 12, color: 'var(--texto-second)' }}>/día</span>
+          </div>
+        </div>
+        
+        {/* Características en cuadrícula */}
+        <div style={{ marginTop: 20, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(110px, 1fr))', gap: 10 }}>
+          {[
+            { Icono: FaCar, l: `${vehiculo.puertas} puertas` },
+            { Icono: FaSuitcase, l: `${vehiculo.maletero}L maletero` },
+            { Icono: FaBolt, l: vehiculo.cilindraje },
+            { Icono: FaPalette, l: vehiculo.color },
+            { Icono: FaCalendarAlt, l: `Año ${vehiculo.año}` },
+            { Icono: FaSnowflake, l: 'Aire acond.' },
+          ].map((c, i) => (
+            <div key={i} style={{ background: 'var(--bg-item)', borderRadius: 10, padding: '10px', border: '1px solid var(--borde)', display: 'flex', alignItems: 'center', gap: 6, transition: 'background 200ms ease' }}>
+              <span style={{ fontSize: 16, color: '#2563eb' }}>
+                <c.Icono />
+              </span>
+              <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--texto-primary)' }}>{c.l}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
