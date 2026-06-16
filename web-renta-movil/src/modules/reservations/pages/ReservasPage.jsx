@@ -7,7 +7,8 @@ import { catalogoService } from '../../../services/catalogoService'
 import logo from '@/assets/logo/logo.png'
 
 const SUCURSALES = ['Centro Neiva','Aeropuerto Neiva','Terminal de Transportes','Norte Neiva','Sur Neiva']
-const cop = n => `$${Number(n).toLocaleString('es-CO')}`
+import { useLanding } from '../../../landing/LandingContext'
+import { formatCurrency } from '@/utils/monedaUtils'
 const fmt = d => {
   if (!d) return '—'
   const [y,m,day] = d.split('-')
@@ -49,6 +50,7 @@ const IcoBack = () => (
 
 /* ─── RESUMEN LATERAL ─── */
 function ResumenLateral({ vehiculo, reserva, seguroIdx, onEditar }) {
+  const { moneda } = useLanding()
   const precio = reserva.tipoKm === 'ilimitado'
     ? vehiculo.tarifas.kmIlimitado.precio
     : vehiculo.tarifas.kmLimitado.precio
@@ -109,26 +111,26 @@ function ResumenLateral({ vehiculo, reserva, seguroIdx, onEditar }) {
           <p style={{ fontSize: 10, fontWeight: 800, color: '#0f172a', textTransform: 'uppercase', letterSpacing: '0.07em', margin: '0 0 10px' }}>Oferta Standard</p>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, fontWeight: 700, color: '#64748b', marginBottom: 4 }}><span>Diarias</span><span>Total</span></div>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, marginBottom: 10 }}>
-            <span style={{ color: '#475569' }}>{dias} días × {cop(precio)}</span>
-            <span style={{ fontWeight: 700, color: '#0f172a' }}>{cop(subtotalDiario)}</span>
+            <span style={{ color: '#475569' }}>{dias} días × {formatCurrency(precio, moneda)}</span>
+            <span style={{ fontWeight: 700, color: '#0f172a' }}>{formatCurrency(subtotalDiario, moneda)}</span>
           </div>
           {seguroIdx !== null && (
             <>
               <p style={{ fontSize: 10, fontWeight: 700, color: '#64748b', margin: '0 0 4px' }}>Protecciones</p>
               <div style={{ fontSize: 11, color: '#475569', marginBottom: 4 }}>{vehiculo.seguros[seguroIdx]?.nombre}</div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, marginBottom: 10 }}>
-                <span style={{ color: '#475569' }}>{dias} días × {cop(precioSeguro)}</span>
-                <span style={{ fontWeight: 700, color: '#0f172a' }}>{cop(subtotalSeguro)}</span>
+                <span style={{ color: '#475569' }}>{dias} días × {formatCurrency(precioSeguro, moneda)}</span>
+                <span style={{ fontWeight: 700, color: '#0f172a' }}>{formatCurrency(subtotalSeguro, moneda)}</span>
               </div>
             </>
           )}
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, paddingBottom: 12, borderBottom: '1px solid #f1f5f9', marginBottom: 12 }}>
             <span style={{ color: '#475569' }}>Cargos Administrativos (10%)</span>
-            <span style={{ fontWeight: 700, color: '#0f172a' }}>{cop(cargosAdmin)}</span>
+            <span style={{ fontWeight: 700, color: '#0f172a' }}>{formatCurrency(cargosAdmin, moneda)}</span>
           </div>
           <div style={{ background: '#1e3a8a', borderRadius: 12, padding: '12px 14px' }}>
             <p style={{ fontSize: 9, fontWeight: 700, color: '#93c5fd', textTransform: 'uppercase', letterSpacing: '0.09em', margin: '0 0 3px' }}>Valor total esperado</p>
-            <p style={{ fontSize: 20, fontWeight: 900, color: '#fff', margin: 0 }}>COP {Number(total).toLocaleString('es-CO')},00</p>
+            <p style={{ fontSize: 20, fontWeight: 900, color: '#fff', margin: 0 }}>{formatCurrency(total, moneda)}</p>
             <p style={{ fontSize: 9, color: '#93c5fd', margin: '3px 0 0' }}>*Valor total incluye impuestos</p>
           </div>
         </div>
@@ -139,6 +141,7 @@ function ResumenLateral({ vehiculo, reserva, seguroIdx, onEditar }) {
 
 /* ─── MODAL EDITAR ─── */
 function ModalEditar({ tipo, reserva, vehiculo, onGuardar, onCerrar }) {
+  const { moneda } = useLanding()
   const [form, setForm] = useState({ ...reserva })
   const s = (k, v) => setForm(p => ({ ...p, [k]: v }))
   const inp = { width: '100%', padding: '11px 13px', borderRadius: 10, border: '1.5px solid #e2e8f0', fontSize: 13, color: '#1e293b', outline: 'none', boxSizing: 'border-box' }
@@ -166,7 +169,7 @@ function ModalEditar({ tipo, reserva, vehiculo, onGuardar, onCerrar }) {
                   </div>
                   <span style={{ fontSize: 13, fontWeight: 700, color: form.tipoKm === op.val ? '#1e3a8a' : '#334155' }}>{op.label}</span>
                 </div>
-                <span style={{ fontSize: 13, fontWeight: 900, color: '#1e3a8a' }}>{cop(op.precio)}/día</span>
+                <span style={{ fontSize: 13, fontWeight: 900, color: '#1e3a8a' }}>{formatCurrency(op.precio, moneda)}/día</span>
               </button>
             ))}
           </div>
@@ -220,6 +223,7 @@ const ITEMS_PLANES = [
 ]
 
 function PantallaProteccion({ vehiculo, reserva, seguroIdx, onSeleccionar, onEditar }) {
+  const { moneda } = useLanding()
   return (
     <div style={{ display: 'flex', gap: 28, alignItems: 'flex-start' }}>
       <div style={{ flex: 1, minWidth: 0 }}>
@@ -243,7 +247,7 @@ function PantallaProteccion({ vehiculo, reserva, seguroIdx, onSeleccionar, onEdi
                 </div>
               </div>
               <div style={{ textAlign: 'right' }}>
-                <span style={{ fontSize: 26, fontWeight: 900, color: '#1e3a8a' }}>{cop(vehiculo.precio)}</span>
+                <span style={{ fontSize: 26, fontWeight: 900, color: '#1e3a8a' }}>{formatCurrency(vehiculo.precio, moneda)}</span>
                 <span style={{ fontSize: 12, color: '#94a3b8' }}>/día</span>
               </div>
             </div>
@@ -277,7 +281,7 @@ function PantallaProteccion({ vehiculo, reserva, seguroIdx, onSeleccionar, onEdi
                   <div style={{ display: 'flex', justifyContent: 'center', gap: 4, marginBottom: 8 }}>{iconos.map((ic, i) => <span key={i} style={{ fontSize: 15 }}>{ic}</span>)}</div>
                   <h4 style={{ fontSize: 17, fontWeight: 900, color: '#1e3a8a', textAlign: 'center', margin: '0 0 4px' }}>{seguro.nombre}</h4>
                   <p style={{ fontSize: 18, fontWeight: 900, color: '#059669', textAlign: 'center', margin: '0 0 14px' }}>
-                    COP {seguro.precio.toLocaleString('es-CO')},00 <span style={{ fontSize: 12, fontWeight: 500, color: '#64748b' }}>/ por día</span>
+                    {formatCurrency(seguro.precio, moneda)} <span style={{ fontSize: 12, fontWeight: 500, color: '#64748b' }}>/ por día</span>
                   </p>
                   <hr style={{ border: 'none', borderTop: '1px solid #e2e8f0', margin: '0 0 14px' }} />
                 </div>
@@ -330,6 +334,7 @@ Para reservas en línea: Visa o MasterCard. No está habilitado el pago con Amer
 Al confirmar la reserva aceptas expresamente estos términos. Dicha aceptación queda registrada en el sistema.`
 
 function PantallaDatos({ vehiculo, reserva, seguroIdx, datosForm, onCambio, onReservar, errores }) {
+  const { moneda } = useLanding()
   const [verTyC, setVerTyC] = useState(false)
   const precio = reserva.tipoKm === 'ilimitado' ? vehiculo.tarifas.kmIlimitado.precio : vehiculo.tarifas.kmLimitado.precio
   const dias = reserva.fechaInicio && reserva.fechaFin ? Math.max(1, Math.ceil((new Date(reserva.fechaFin) - new Date(reserva.fechaInicio)) / 86400000)) : 1
@@ -432,7 +437,7 @@ function PantallaDatos({ vehiculo, reserva, seguroIdx, datosForm, onCambio, onRe
         <div style={{ background: 'linear-gradient(135deg,#0f1a3d,#1e3a8a)', borderRadius: 18, padding: '20px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 20, flexWrap: 'wrap' }}>
           <div>
             <p style={{ fontSize: 11, color: '#93c5fd', fontWeight: 600, margin: '0 0 3px' }}>Total a pagar</p>
-            <p style={{ fontSize: 26, fontWeight: 900, color: '#fff', margin: 0 }}>COP {Number(total).toLocaleString('es-CO')},00</p>
+            <p style={{ fontSize: 26, fontWeight: 900, color: '#fff', margin: 0 }}>{formatCurrency(total, moneda)}</p>
             <p style={{ fontSize: 10, color: '#93c5fd', margin: '3px 0 0' }}>*Incluye impuestos y cargos administrativos</p>
           </div>
           <button onClick={onReservar} style={{ padding: '14px 36px', borderRadius: 13, background: '#fff', color: '#1e3a8a', fontWeight: 800, fontSize: 15, border: 'none', cursor: 'pointer', boxShadow: '0 8px 24px rgba(0,0,0,0.18)', whiteSpace: 'nowrap' }}

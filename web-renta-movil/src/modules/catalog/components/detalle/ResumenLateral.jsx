@@ -1,10 +1,11 @@
+import { useLanding } from '../../../landing/LandingContext'
+import { formatCurrency } from '@/utils/monedaUtils'
+
 const IcoEdit = () => (
   <svg width="13" height="13" fill="none" stroke="#1e3a8a" strokeWidth="2.2" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125"/>
   </svg>
 )
-
-const cop = n => `$${Number(n).toLocaleString('es-CO')}`;
 
 const fmt = d => {
   if (!d) return '—';
@@ -14,6 +15,7 @@ const fmt = d => {
 };
 
 export default function ResumenLateral({ vehiculo, reserva, seguroIdx, onEditar }) {
+  const { moneda } = useLanding();
   if (!vehiculo) return null;
 
   const tarifas = vehiculo.tarifas || {};
@@ -99,26 +101,26 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, onEditar 
             <span>Diarias</span><span>Total</span>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, marginBottom: 12 }}>
-            <span style={{ color: 'var(--texto-primary)' }}>{dias} días × {cop(precio)}</span>
-            <span style={{ fontWeight: 800, color: 'var(--texto-primary)' }}>{cop(subtotalDiario)}</span>
+            <span style={{ color: 'var(--texto-primary)' }}>{dias} días × {formatCurrency(precio, moneda)}</span>
+            <span style={{ fontWeight: 800, color: 'var(--texto-primary)' }}>{formatCurrency(subtotalDiario, moneda)}</span>
           </div>
           {seguroIdx !== null && (
             <>
               <p style={{ fontSize: 11, fontWeight: 800, color: 'var(--texto-second)', margin: '0 0 4px' }}>Protecciones</p>
               <div style={{ fontSize: 12, color: 'var(--texto-primary)', marginBottom: 4 }}>{vehiculo.seguros[seguroIdx]?.nombre}</div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, marginBottom: 12 }}>
-                <span style={{ color: 'var(--texto-primary)' }}>{dias} días × {cop(precioSeguro)}</span>
-                <span style={{ fontWeight: 800, color: 'var(--texto-primary)' }}>{cop(subtotalSeguro)}</span>
+                <span style={{ color: 'var(--texto-primary)' }}>{dias} días × {formatCurrency(precioSeguro, moneda)}</span>
+                <span style={{ fontWeight: 800, color: 'var(--texto-primary)' }}>{formatCurrency(subtotalSeguro, moneda)}</span>
               </div>
             </>
           )}
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, paddingBottom: 14, borderBottom: '1px solid var(--borde)', marginBottom: 14 }}>
             <span style={{ color: 'var(--texto-primary)' }}>Cargos Administrativos (10%)</span>
-            <span style={{ fontWeight: 800, color: 'var(--texto-primary)' }}>{cop(cargosAdmin)}</span>
+            <span style={{ fontWeight: 800, color: 'var(--texto-primary)' }}>{formatCurrency(cargosAdmin, moneda)}</span>
           </div>
           <div style={{ background: '#f8fafc', borderRadius: 16, padding: '16px', border: '1px solid #e2e8f0' }}>
             <p style={{ fontSize: 11, fontWeight: 800, color: '#1e3a8a', textTransform: 'uppercase', letterSpacing: '0.09em', margin: '0 0 4px' }}>Valor total esperado</p>
-            <p style={{ fontSize: 24, fontWeight: 900, color: '#1e3a8a', margin: 0 }}>COP {Number(total).toLocaleString('es-CO')}</p>
+            <p style={{ fontSize: 24, fontWeight: 900, color: '#1e3a8a', margin: 0 }}>{formatCurrency(total, moneda)}</p>
             <p style={{ fontSize: 10, color: 'var(--texto-second)', margin: '6px 0 0' }}>*Valor total incluye impuestos</p>
           </div>
         </div>

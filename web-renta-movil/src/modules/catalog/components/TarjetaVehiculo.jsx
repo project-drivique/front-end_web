@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { showAlert } from '@/utils/swalConfig'
+import { useLanding } from '../../landing/LandingContext'
+import { formatCurrency } from '@/utils/monedaUtils'
 import {
   FaHeart,
   FaRegHeart,
@@ -89,6 +91,7 @@ export default function TarjetaVehiculo({
   destacado = false,
 }) {
   const navigate = useNavigate()
+  const { moneda } = useLanding()
   const [hover, setHover] = useState(false)
   const [verDetalles, setVerDetalles] = useState(false)
   const [fotoActiva, setFotoActiva] = useState(0)
@@ -278,7 +281,7 @@ export default function TarjetaVehiculo({
 
           <div style={{ marginBottom: '8px' }}>
             <span style={{ fontSize: '24px', fontWeight: 900, color: '#1e3a8a' }}>
-              ${Number(vehiculo.precio || 60000).toLocaleString('es-CO')}
+              {formatCurrency(vehiculo.precio || 60000, moneda)}
             </span>
             <span style={{ fontSize: '12px', color: c.textSoft, marginLeft: '4px' }}>/día</span>
           </div>
@@ -397,11 +400,11 @@ export default function TarjetaVehiculo({
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: '#334155', marginBottom: '4px' }}>
               <span>Km limitado ({tarifas.kmLimitado.km} km/día)</span>
-              <span style={{ fontWeight: 800 }}>${Number(tarifas.kmLimitado.precio || 55000).toLocaleString('es-CO')}</span>
+              <span style={{ fontWeight: 800 }}>{formatCurrency(tarifas.kmLimitado.precio || 55000, moneda)}</span>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: '#334155' }}>
               <span>Km ilimitado</span>
-              <span style={{ fontWeight: 800 }}>${Number(tarifas.kmIlimitado.precio || 68000).toLocaleString('es-CO')}</span>
+              <span style={{ fontWeight: 800 }}>{formatCurrency(tarifas.kmIlimitado.precio || 68000, moneda)}</span>
             </div>
           </div>
 
@@ -415,7 +418,7 @@ export default function TarjetaVehiculo({
                 <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '11px', color: '#334155', marginBottom: i < seguros.length - 1 ? '4px' : 0 }}>
                   <span style={{ fontWeight: 600 }}>{seg.nombre}</span>
                   <span style={{ fontWeight: 800, color: '#1e3a8a' }}>
-                    COP {Number(seg.precio).toLocaleString('es-CO', { minimumFractionDigits: 2 })}/día
+                    {formatCurrency(seg.precio, moneda)}/día
                   </span>
                 </div>
               ))
@@ -423,11 +426,11 @@ export default function TarjetaVehiculo({
               <>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '11px', color: '#334155', marginBottom: '4px' }}>
                   <span style={{ fontWeight: 600 }}>Protección Obligatoria</span>
-                  <span style={{ fontWeight: 800, color: '#1e3a8a' }}>COP 29.000,00/día</span>
+                  <span style={{ fontWeight: 800, color: '#1e3a8a' }}>{formatCurrency(29000, moneda)}/día</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '11px', color: '#334155' }}>
                   <span style={{ fontWeight: 600 }}>Protección Total</span>
-                  <span style={{ fontWeight: 800, color: '#1e3a8a' }}>COP 67.000,00/día</span>
+                  <span style={{ fontWeight: 800, color: '#1e3a8a' }}>{formatCurrency(67000, moneda)}/día</span>
                 </div>
               </>
             )}

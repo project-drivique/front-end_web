@@ -218,7 +218,7 @@ export default function FiltrosCatalogo({
         {mostrarFavoritos && (
           <div style={{ background: c.accentBgSoft, padding: '16px', borderRadius: '12px', border: `1px solid ${c.accentBorder}`, marginBottom: '16px' }}>
             <span style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: c.accentText, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '10px' }}>
-              Filtro Especial
+              Filtros por favoritos
             </span>
             <div style={{ display: 'flex', gap: '8px' }}>
               <button 

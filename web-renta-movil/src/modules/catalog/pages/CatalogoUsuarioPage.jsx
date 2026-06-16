@@ -166,7 +166,7 @@ export default function CatalogoUsuarioPage() {
             showHero={false}
             soloFavoritos={soloFavoritos}
             setSoloFavoritos={setSoloFavoritos}
-            mostrarFavoritos={Boolean(usuario?.id)}
+            mostrarFavoritos={Boolean(usuario)}
           />
 
           <div style={{ flex: 1, minWidth: 0 }}>

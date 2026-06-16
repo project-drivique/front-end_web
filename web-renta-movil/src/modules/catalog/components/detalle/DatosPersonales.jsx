@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { useLanding } from '../../../landing/LandingContext';
+import { formatCurrency } from '@/utils/monedaUtils';
 
 const TERMINOS_TXT = `
 1. DURACIÓN DEL CONTRATO
@@ -41,6 +43,7 @@ const TERMINOS_TXT = `
 `;
 
 export default function DatosPersonales({ vehiculo, reserva, seguroIdx, datosForm, onCambio, onReservar, errores }) {
+  const { moneda } = useLanding();
   const [verTyC, setVerTyC] = useState(false);
 
   const tarifas = vehiculo.tarifas || {};
@@ -133,7 +136,7 @@ export default function DatosPersonales({ vehiculo, reserva, seguroIdx, datosFor
               <strong>Plan de kilometraje limitado:</strong> Incluye{' '}
               <strong>{kmLimit.km} km por día</strong>.{' '}
               <strong>Si superas el límite,</strong> se cobrará un adicional de{' '}
-              <strong>$1.500 COP por km extra</strong> al devolver el vehículo.
+              <strong>{formatCurrency(1500, moneda)} por km extra</strong> al devolver el vehículo.
             </p>
           )}
           {reserva.tipoKm === 'ilimitado' && (
@@ -178,7 +181,7 @@ export default function DatosPersonales({ vehiculo, reserva, seguroIdx, datosFor
       <div style={{ background: 'linear-gradient(135deg,#0f1a3d,#1e3a8a)', borderRadius: 24, padding: '24px 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 24, flexWrap: 'wrap', boxShadow: '0 12px 32px rgba(30,58,138,0.25)' }}>
         <div>
           <p style={{ fontSize: 13, color: '#bfdbfe', fontWeight: 700, margin: '0 0 4px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Total a pagar</p>
-          <p style={{ fontSize: 32, fontWeight: 900, color: '#fff', margin: 0 }}>COP {Number(total).toLocaleString('es-CO')}</p>
+          <p style={{ fontSize: 32, fontWeight: 900, color: '#fff', margin: 0 }}>{formatCurrency(total, moneda)}</p>
           <p style={{ fontSize: 11, color: '#bfdbfe', margin: '6px 0 0' }}>*Incluye impuestos y cargos administrativos</p>
         </div>
         <button

@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { useLanding } from '../../../landing/LandingContext';
+import { formatCurrency } from '@/utils/monedaUtils';
 
 const IcoX = ({ sz = 15, color = '#dc2626' }) => (
   <svg width={sz} height={sz} fill="none" stroke={color} strokeWidth="2.8" viewBox="0 0 24 24">
@@ -7,9 +9,9 @@ const IcoX = ({ sz = 15, color = '#dc2626' }) => (
 )
 
 const SUCURSALES = ['Centro Neiva', 'Aeropuerto Neiva', 'Terminal de Transportes', 'Norte Neiva', 'Sur Neiva'];
-const cop = n => `$${Number(n).toLocaleString('es-CO')}`;
 
 export default function ModalEditarReserva({ tipo, reserva, vehiculo, onGuardar, onCerrar }) {
+  const { moneda } = useLanding();
   const [form, setForm] = useState({ ...reserva });
   const s = (k, v) => setForm(p => ({ ...p, [k]: v }));
 
@@ -51,7 +53,7 @@ export default function ModalEditarReserva({ tipo, reserva, vehiculo, onGuardar,
                   </div>
                   <span style={{ fontSize: 15, fontWeight: 800, color: form.tipoKm === op.val ? '#1e3a8a' : 'var(--texto-primary)' }}>{op.label}</span>
                 </div>
-                <span style={{ fontSize: 15, fontWeight: 900, color: '#1e3a8a' }}>{cop(op.precio)}/día</span>
+                <span style={{ fontSize: 15, fontWeight: 900, color: '#1e3a8a' }}>{formatCurrency(op.precio, moneda)}/día</span>
               </button>
             ))}
           </div>

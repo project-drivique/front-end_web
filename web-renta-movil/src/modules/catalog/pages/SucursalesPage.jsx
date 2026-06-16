@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useLanding } from '../../landing/LandingContext'
+import { formatCurrency } from '@/utils/monedaUtils'
 import { useCatalogo } from '../hooks/useCatalogo'
 import logo from '@/assets/logo/logo.png'
 import GridVehiculos from '../components/GridVehiculos'
@@ -22,7 +23,7 @@ const coloresTema = (esModoOscuro) => ({
   navBorder: esModoOscuro ? '#1e293b' : '#f1f5f9',
   navShadow: esModoOscuro ? '0 1px 8px rgba(0,0,0,0.35)' : '0 1px 8px rgba(0,0,0,0.06)',
   navText: esModoOscuro ? '#cbd5e1' : '#475569',
-  heroBg: esModoOscuro ? 'linear-gradient(135deg,#020617 0%,#0f172a 100%)' : 'linear-gradient(135deg,#e0e7ff 0%,#eff6ff 100%)',
+  heroBg: esModoOscuro ? '#020617' : '#f8fafc',
   panelBg: esModoOscuro ? '#0f172a' : '#ffffff',
   panelBorder: esModoOscuro ? '#1e293b' : '#e2e8f0',
   panelShadow: esModoOscuro ? '0 10px 40px rgba(0,0,0,0.5)' : '0 10px 40px rgba(148,163,184,0.15)',
@@ -35,6 +36,16 @@ const coloresTema = (esModoOscuro) => ({
   loginHoverBg: esModoOscuro ? 'rgba(148,163,184,0.08)' : 'rgba(30,58,138,0.05)',
   badgeBg: esModoOscuro ? '#1e293b' : '#f1f5f9',
   itemBg: esModoOscuro ? '#1e293b' : '#f8fafc',
+  cardBorder: esModoOscuro ? '#334155' : '#f1f5f9',
+  cardBorderHover: esModoOscuro ? '#475569' : '#dbeafe',
+  cardShadow: esModoOscuro ? '0 4px 18px rgba(0,0,0,0.24)' : '0 2px 8px rgba(0,0,0,0.05)',
+  cardShadowHover: esModoOscuro ? '0 8px 32px rgba(0,0,0,0.35)' : '0 8px 24px rgba(37,99,235,0.12)',
+  imageFallbackBg: esModoOscuro ? '#1e293b' : '#f1f5f9',
+  imageFallbackIcon: esModoOscuro ? '#334155' : '#cbd5e1',
+  textSoft: esModoOscuro ? '#64748b' : '#94a3b8',
+  textMuted: esModoOscuro ? '#475569' : '#cbd5e1',
+  paginationDisabledBg: esModoOscuro ? '#0f172a' : '#f1f5f9',
+  accentGradient: `linear-gradient(90deg,${COLOR_MARCA},#2563eb)`,
 })
 
 
@@ -47,7 +58,7 @@ const SUCURSALES_DATA = [
     horarios: 'Lun-Vie 7:00-22:00; Sáb-Dom-Fest 8:00-20:00',
     flota: '6.000+ vehículos (Renault, Chevrolet, Nissan)',
     puntuacion: '5/5 (Líder Nacional)',
-    precio: '$166.569/día',
+    precioBase: 166569,
     porQue: 'Empresa líder en Colombia, con más de 15 años de experiencia y la flota más grande del país.',
     logoUrl: 'https://veraabogados.com/wp-content/uploads/2023/05/logo-localiza-2022.jpg',
   },
@@ -59,7 +70,8 @@ const SUCURSALES_DATA = [
     horarios: 'Abierto 24/7',
     flota: '14 tipos (Económico, Sedán, Lujo, Camionetas)',
     puntuacion: '9.1/10 (Mejor Rating Nacional)',
-    precio: 'Desde $116.673/día',
+    preTextoPrecio: 'Desde ',
+    precioBase: 116673,
     porQue: 'Destacado por su insuperable servicio al cliente, disponibilidad 24/7 y precios altamente competitivos.',
     logoUrl: 'https://tse2.mm.bing.net/th/id/OIP.QA95ECBXmhUyak_VTBWQfAHaHa?r=0&rs=1&pid=ImgDetMain&o=7&rm=3',
   },
@@ -115,7 +127,7 @@ const SUCURSALES_DATA = [
 
 
 export default function SucursalesPage() {
-  const { tema } = useLanding()
+  const { tema, moneda } = useLanding()
   const navigate = useNavigate()
   const esModoOscuro = tema === 'oscuro'
   const c = coloresTema(esModoOscuro)
@@ -181,8 +193,32 @@ export default function SucursalesPage() {
 
 
       <div style={{ paddingTop: '68px', flex: 1 }}>
-        <div style={{ background: c.heroBg, padding: '60px 24px 40px', textAlign: 'center', borderBottom: `1px solid ${c.navBorder}` }}>
-          <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+        <div style={{ padding: '40px 24px 20px', textAlign: 'center' }}>
+          <div style={{ maxWidth: '800px', margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <Link
+              to="/"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                fontSize: '13px',
+                color: c.accentText,
+                fontWeight: 700,
+                textDecoration: 'none',
+                padding: '8px 16px',
+                borderRadius: '9999px',
+                background: c.accentBgSoft,
+                border: `1px solid ${c.panelBorder}`,
+                whiteSpace: 'nowrap',
+                marginBottom: '16px',
+                transition: 'transform 200ms ease'
+              }}
+              onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
+              onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
+            >
+              ← Volver al inicio
+            </Link>
+
             <span style={{ display: 'inline-block', padding: '6px 16px', borderRadius: '9999px', background: c.accentBgSoft, color: c.accentText, fontSize: '12px', fontWeight: 800, textTransform: 'uppercase', marginBottom: '12px' }}>
               Red Oficial de Agencias
             </span>
@@ -260,7 +296,10 @@ export default function SucursalesPage() {
                       <FaStar size={13} color={COLOR_DORADO} /> <span style={{ fontWeight: 600, color: c.textPrimary }}>{suc.puntuacion.split(' ')[0]}</span>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: c.textSecondary }}>
-                      <FaMoneyBillWave size={13} color={COLOR_ICONO_GRIS} /> <span style={{ fontWeight: 700, color: c.textPrimary }}>{suc.precio}</span>
+                      <FaMoneyBillWave size={13} color={COLOR_ICONO_GRIS} /> 
+                      <span style={{ fontWeight: 700, color: c.textPrimary }}>
+                        {suc.precioBase ? `${suc.preTextoPrecio || ''}${formatCurrency(suc.precioBase, moneda)}/día` : suc.precio}
+                      </span>
                     </div>
                   </div>
                 </div>
