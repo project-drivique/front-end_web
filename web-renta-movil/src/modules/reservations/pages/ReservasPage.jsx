@@ -6,60 +6,66 @@ import { useReservas } from '../hooks/useReservas'
 import { catalogoService } from '../../../services/catalogoService'
 import logo from '@/assets/logo/logo.png'
 
-const SUCURSALES = ['Centro Neiva','Aeropuerto Neiva','Terminal de Transportes','Norte Neiva','Sur Neiva']
-const cop = n => `$${Number(n).toLocaleString('es-CO')}`
+const SUCURSALES = ['Centro', 'Sur', 'Occidente', 'Norte']
+const HORAS = Array.from({ length: 24 }, (_, i) => {
+  const h = i.toString().padStart(2, '0');
+  return [`${h}:00`, `${h}:30`]
+}).flat();
+import { useLanding } from '../../landing/LandingContext'
+import { formatCurrency } from '@/utils/monedaUtils'
 const fmt = d => {
   if (!d) return '—'
-  const [y,m,day] = d.split('-')
-  const M = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic']
-  return `${parseInt(day)} de ${M[parseInt(m)-1]} de ${y}`
+  const [y, m, day] = d.split('-')
+  const M = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic']
+  return `${parseInt(day)} de ${M[parseInt(m) - 1]} de ${y}`
 }
 
 /* ─── ÍCONOS ─── */
 const IcoCheck = ({ color = '#16a34a', sz = 15 }) => (
   <svg width={sz} height={sz} fill="none" stroke={color} strokeWidth="2.8" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
   </svg>
 )
 const IcoWarn = () => (
   <svg width="15" height="15" fill="none" stroke="#d97706" strokeWidth="2" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
   </svg>
 )
 const IcoX = ({ sz = 15, color = '#dc2626' }) => (
   <svg width={sz} height={sz} fill="none" stroke={color} strokeWidth="2.8" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
   </svg>
 )
 const IcoEdit = () => (
   <svg width="13" height="13" fill="none" stroke="#1e3a8a" strokeWidth="2.2" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125"/>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125" />
   </svg>
 )
 const IcoArrow = () => (
   <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
   </svg>
 )
 const IcoBack = () => (
   <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
   </svg>
 )
 
 /* ─── RESUMEN LATERAL ─── */
-function ResumenLateral({ vehiculo, reserva, seguroIdx, onEditar }) {
+function ResumenLateral({ vehiculo, reserva, seguroIdx, onEditar, onGuardar }) {
+  const { moneda } = useLanding()
   const precio = reserva.tipoKm === 'ilimitado'
     ? vehiculo.tarifas.kmIlimitado.precio
     : vehiculo.tarifas.kmLimitado.precio
   const dias = reserva.fechaInicio && reserva.fechaFin
     ? Math.max(1, Math.ceil((new Date(reserva.fechaFin) - new Date(reserva.fechaInicio)) / 86400000))
     : 1
-  const precioSeguro   = seguroIdx !== null ? (vehiculo.seguros[seguroIdx]?.precio ?? 0) : 0
+  const precioSeguro = seguroIdx !== null ? (vehiculo.seguros[seguroIdx]?.precio ?? 0) : 0
   const subtotalDiario = precio * dias
   const subtotalSeguro = precioSeguro * dias
-  const cargosAdmin    = Math.round((subtotalDiario + subtotalSeguro) * 0.10)
-  const total          = subtotalDiario + subtotalSeguro + cargosAdmin
+  const cargosAdmin = Math.round((subtotalDiario + subtotalSeguro) * 0.10)
+  const total = subtotalDiario + subtotalSeguro + cargosAdmin
 
   return (
     <aside style={{ width: 300, flexShrink: 0, background: '#fff', borderRadius: 20, border: '1px solid #e2e8f0', boxShadow: '0 4px 24px rgba(0,0,0,0.07)', overflow: 'hidden', position: 'sticky', top: 88, alignSelf: 'flex-start' }}>
@@ -75,10 +81,20 @@ function ResumenLateral({ vehiculo, reserva, seguroIdx, onEditar }) {
               <IcoEdit /> Para editar
             </button>
           </div>
-          <p style={{ fontSize: 12, fontWeight: 700, color: '#0f172a', margin: '0 0 2px' }}>
-            {reserva.fechaInicio ? `${fmt(reserva.fechaInicio)} a las ${reserva.horaInicio || '07:30'}` : '—'}
+          <p style={{ fontSize: 12, fontWeight: 700, color: '#0f172a', margin: '0 0 6px' }}>
+            {reserva.fechaInicio ? `${fmt(reserva.fechaInicio)}` : 'Fecha no seleccionada'}
           </p>
-          <p style={{ fontSize: 11, color: '#64748b', margin: 0 }}>{reserva.sucursalRetiro || vehiculo.sucursal}</p>
+          <p style={{ fontSize: 11, color: '#64748b', margin: '0 0 6px' }}>{reserva.sucursalRetiro || 'Centro'}</p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+            <span style={{ fontSize: 11, fontWeight: 700, color: '#1e3a8a' }}>Hora:</span>
+            <select
+              value={reserva.horaInicio || '09:00'}
+              onChange={e => onGuardar({ ...reserva, horaInicio: e.target.value })}
+              style={{ flex: 1, padding: '5px', fontSize: 11, borderRadius: 6, border: '1px solid #cbd5e1', color: '#475569', outline: 'none', cursor: 'pointer' }}
+            >
+              {HORAS.map(h => <option key={h} value={h}>{h}</option>)}
+            </select>
+          </div>
         </div>
         <div style={{ padding: '12px 0', borderBottom: '1px solid #f1f5f9' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
@@ -87,10 +103,20 @@ function ResumenLateral({ vehiculo, reserva, seguroIdx, onEditar }) {
               <IcoEdit /> Para editar
             </button>
           </div>
-          <p style={{ fontSize: 12, fontWeight: 700, color: '#0f172a', margin: '0 0 2px' }}>
-            {reserva.fechaFin ? `${fmt(reserva.fechaFin)} a las ${reserva.horaFin || '07:30'}` : '—'}
+          <p style={{ fontSize: 12, fontWeight: 700, color: '#0f172a', margin: '0 0 6px' }}>
+            {reserva.fechaFin ? `${fmt(reserva.fechaFin)}` : 'Fecha no seleccionada'}
           </p>
-          <p style={{ fontSize: 11, color: '#64748b', margin: 0 }}>{reserva.sucursalDevolucion || reserva.sucursalRetiro || vehiculo.sucursal}</p>
+          <p style={{ fontSize: 11, color: '#64748b', margin: '0 0 6px' }}>{reserva.sucursalDevolucion || 'Centro'}</p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+            <span style={{ fontSize: 11, fontWeight: 700, color: '#1e3a8a' }}>Hora:</span>
+            <select
+              value={reserva.horaFin || '09:00'}
+              onChange={e => onGuardar({ ...reserva, horaFin: e.target.value })}
+              style={{ flex: 1, padding: '5px', fontSize: 11, borderRadius: 6, border: '1px solid #cbd5e1', color: '#475569', outline: 'none', cursor: 'pointer' }}
+            >
+              {HORAS.map(h => <option key={h} value={h}>{h}</option>)}
+            </select>
+          </div>
         </div>
         <div style={{ padding: '12px 0', borderBottom: '1px solid #f1f5f9' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
@@ -109,26 +135,26 @@ function ResumenLateral({ vehiculo, reserva, seguroIdx, onEditar }) {
           <p style={{ fontSize: 10, fontWeight: 800, color: '#0f172a', textTransform: 'uppercase', letterSpacing: '0.07em', margin: '0 0 10px' }}>Oferta Standard</p>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, fontWeight: 700, color: '#64748b', marginBottom: 4 }}><span>Diarias</span><span>Total</span></div>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, marginBottom: 10 }}>
-            <span style={{ color: '#475569' }}>{dias} días × {cop(precio)}</span>
-            <span style={{ fontWeight: 700, color: '#0f172a' }}>{cop(subtotalDiario)}</span>
+            <span style={{ color: '#475569' }}>{dias} días × {formatCurrency(precio, moneda)}</span>
+            <span style={{ fontWeight: 700, color: '#0f172a' }}>{formatCurrency(subtotalDiario, moneda)}</span>
           </div>
           {seguroIdx !== null && (
             <>
               <p style={{ fontSize: 10, fontWeight: 700, color: '#64748b', margin: '0 0 4px' }}>Protecciones</p>
               <div style={{ fontSize: 11, color: '#475569', marginBottom: 4 }}>{vehiculo.seguros[seguroIdx]?.nombre}</div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, marginBottom: 10 }}>
-                <span style={{ color: '#475569' }}>{dias} días × {cop(precioSeguro)}</span>
-                <span style={{ fontWeight: 700, color: '#0f172a' }}>{cop(subtotalSeguro)}</span>
+                <span style={{ color: '#475569' }}>{dias} días × {formatCurrency(precioSeguro, moneda)}</span>
+                <span style={{ fontWeight: 700, color: '#0f172a' }}>{formatCurrency(subtotalSeguro, moneda)}</span>
               </div>
             </>
           )}
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, paddingBottom: 12, borderBottom: '1px solid #f1f5f9', marginBottom: 12 }}>
             <span style={{ color: '#475569' }}>Cargos Administrativos (10%)</span>
-            <span style={{ fontWeight: 700, color: '#0f172a' }}>{cop(cargosAdmin)}</span>
+            <span style={{ fontWeight: 700, color: '#0f172a' }}>{formatCurrency(cargosAdmin, moneda)}</span>
           </div>
           <div style={{ background: '#1e3a8a', borderRadius: 12, padding: '12px 14px' }}>
             <p style={{ fontSize: 9, fontWeight: 700, color: '#93c5fd', textTransform: 'uppercase', letterSpacing: '0.09em', margin: '0 0 3px' }}>Valor total esperado</p>
-            <p style={{ fontSize: 20, fontWeight: 900, color: '#fff', margin: 0 }}>COP {Number(total).toLocaleString('es-CO')},00</p>
+            <p style={{ fontSize: 20, fontWeight: 900, color: '#fff', margin: 0 }}>{formatCurrency(total, moneda)}</p>
             <p style={{ fontSize: 9, color: '#93c5fd', margin: '3px 0 0' }}>*Valor total incluye impuestos</p>
           </div>
         </div>
@@ -139,6 +165,7 @@ function ResumenLateral({ vehiculo, reserva, seguroIdx, onEditar }) {
 
 /* ─── MODAL EDITAR ─── */
 function ModalEditar({ tipo, reserva, vehiculo, onGuardar, onCerrar }) {
+  const { moneda } = useLanding()
   const [form, setForm] = useState({ ...reserva })
   const s = (k, v) => setForm(p => ({ ...p, [k]: v }))
   const inp = { width: '100%', padding: '11px 13px', borderRadius: 10, border: '1.5px solid #e2e8f0', fontSize: 13, color: '#1e293b', outline: 'none', boxSizing: 'border-box' }
@@ -151,12 +178,12 @@ function ModalEditar({ tipo, reserva, vehiculo, onGuardar, onCerrar }) {
           <h3 style={{ fontSize: 17, fontWeight: 800, color: '#0f172a', margin: 0 }}>
             {tipo === 'retiro' ? 'Editar retiro' : tipo === 'devolucion' ? 'Editar devolución' : 'Tipo de kilómetros'}
           </h3>
-          <button onClick={onCerrar} style={{ background: 'none', border: 'none', cursor: 'pointer' }}><IcoX sz={18} color="#94a3b8"/></button>
+          <button onClick={onCerrar} style={{ background: 'none', border: 'none', cursor: 'pointer' }}><IcoX sz={18} color="#94a3b8" /></button>
         </div>
         {tipo === 'km' ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {[
-              { val: 'limitado',  label: `Km limitado (${vehiculo.tarifas.kmLimitado.km} km/día)`, precio: vehiculo.tarifas.kmLimitado.precio },
+              { val: 'limitado', label: `Km limitado (${vehiculo.tarifas.kmLimitado.km} km/día)`, precio: vehiculo.tarifas.kmLimitado.precio },
               { val: 'ilimitado', label: 'Km ilimitado', precio: vehiculo.tarifas.kmIlimitado.precio },
             ].map(op => (
               <button key={op.val} onClick={() => s('tipoKm', op.val)} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '13px 16px', borderRadius: 12, cursor: 'pointer', border: `2px solid ${form.tipoKm === op.val ? '#1e3a8a' : '#e2e8f0'}`, background: form.tipoKm === op.val ? '#eff6ff' : '#fff', transition: 'all 150ms' }}>
@@ -166,7 +193,7 @@ function ModalEditar({ tipo, reserva, vehiculo, onGuardar, onCerrar }) {
                   </div>
                   <span style={{ fontSize: 13, fontWeight: 700, color: form.tipoKm === op.val ? '#1e3a8a' : '#334155' }}>{op.label}</span>
                 </div>
-                <span style={{ fontSize: 13, fontWeight: 900, color: '#1e3a8a' }}>{cop(op.precio)}/día</span>
+                <span style={{ fontSize: 13, fontWeight: 900, color: '#1e3a8a' }}>{formatCurrency(op.precio, moneda)}/día</span>
               </button>
             ))}
           </div>
@@ -185,7 +212,9 @@ function ModalEditar({ tipo, reserva, vehiculo, onGuardar, onCerrar }) {
             </div>
             <div>
               <label style={lbl}>Hora</label>
-              <input type="time" value={tipo === 'retiro' ? form.horaInicio : form.horaFin} onChange={e => s(tipo === 'retiro' ? 'horaInicio' : 'horaFin', e.target.value)} style={inp} />
+              <select value={tipo === 'retiro' ? form.horaInicio : form.horaFin} onChange={e => s(tipo === 'retiro' ? 'horaInicio' : 'horaFin', e.target.value)} style={{ ...inp, cursor: 'pointer' }}>
+                {HORAS.map(h => <option key={h} value={h}>{h}</option>)}
+              </select>
             </div>
           </div>
         )}
@@ -199,27 +228,28 @@ function ModalEditar({ tipo, reserva, vehiculo, onGuardar, onCerrar }) {
 
 /* ─── PANTALLA 1: PROTECCIÓN ─── */
 const ICONOS_PLANES = [
-  ['🛡️','🤍','🤍'],
-  ['🛡️','🛡️','🛡️'],
+  ['🛡️', '🤍', '🤍'],
+  ['🛡️', '🛡️', '🛡️'],
 ]
 const ITEMS_PLANES = [
   [
     { tipo: 'check', texto: 'Asistencia durante tu viaje. *No incluidas en Alquiler Ligero' },
     { tipo: 'check', texto: 'Responsabilidad Civil Extracontractual (hasta $840 millones)' },
     { tipo: 'check', texto: 'Cobertura básica del vehículo (no incluye daños graves ni robo)' },
-    { tipo: 'warn',  texto: 'En caso de siniestro, deberás asumir un pago adicional llamado Participación obligatoria, que puede llegar hasta $4.760.000 dependiendo del tipo de vehículo' },
-    { tipo: 'x',     texto: 'No cubre uso indebido del vehículo' },
+    { tipo: 'warn', texto: 'En caso de siniestro, deberás asumir un pago adicional llamado Participación obligatoria, que puede llegar hasta $4.760.000 dependiendo del tipo de vehículo' },
+    { tipo: 'x', texto: 'No cubre uso indebido del vehículo' },
   ],
   [
     { tipo: 'check', texto: 'Asistencia completa durante tu viaje' },
     { tipo: 'check', texto: 'Responsabilidad Civil Extracontractual (hasta $840M)' },
     { tipo: 'check', texto: 'Cobertura total del vehículo (incluye daños graves y robo)' },
     { tipo: 'check', texto: 'Sin pago de la participación obligatoria en caso de siniestro' },
-    { tipo: 'x',     texto: 'No cubre uso indebido del vehículo' },
+    { tipo: 'x', texto: 'No cubre uso indebido del vehículo' },
   ],
 ]
 
-function PantallaProteccion({ vehiculo, reserva, seguroIdx, onSeleccionar, onEditar }) {
+function PantallaProteccion({ vehiculo, reserva, seguroIdx, onSeleccionar, onEditar, onGuardar }) {
+  const { moneda } = useLanding()
   return (
     <div style={{ display: 'flex', gap: 28, alignItems: 'flex-start' }}>
       <div style={{ flex: 1, minWidth: 0 }}>
@@ -227,7 +257,7 @@ function PantallaProteccion({ vehiculo, reserva, seguroIdx, onSeleccionar, onEdi
           <div style={{ background: 'linear-gradient(135deg,#eff6ff,#dbeafe)', height: 160, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
             {vehiculo.imagenes?.[0]
               ? <img src={vehiculo.imagenes[0]} alt={vehiculo.nombre} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              : <svg width="68" height="68" fill="none" stroke="#1e3a8a" strokeWidth="1.2" viewBox="0 0 24 24" style={{ opacity: 0.3 }}><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12"/></svg>
+              : <svg width="68" height="68" fill="none" stroke="#1e3a8a" strokeWidth="1.2" viewBox="0 0 24 24" style={{ opacity: 0.3 }}><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" /></svg>
             }
             <span style={{ position: 'absolute', top: 12, left: 12, fontSize: 11, fontWeight: 700, padding: '4px 10px', borderRadius: 9999, background: '#ecfdf5', color: '#059669', border: '1px solid #bbf7d0' }}>● Disponible</span>
           </div>
@@ -243,7 +273,7 @@ function PantallaProteccion({ vehiculo, reserva, seguroIdx, onSeleccionar, onEdi
                 </div>
               </div>
               <div style={{ textAlign: 'right' }}>
-                <span style={{ fontSize: 26, fontWeight: 900, color: '#1e3a8a' }}>{cop(vehiculo.precio)}</span>
+                <span style={{ fontSize: 26, fontWeight: 900, color: '#1e3a8a' }}>{formatCurrency(vehiculo.precio, moneda)}</span>
                 <span style={{ fontSize: 12, color: '#94a3b8' }}>/día</span>
               </div>
             </div>
@@ -255,7 +285,7 @@ function PantallaProteccion({ vehiculo, reserva, seguroIdx, onSeleccionar, onEdi
                 { i: '🎨', l: vehiculo.color },
                 { i: '📅', l: `Año ${vehiculo.año}` },
                 { i: '❄️', l: 'Aire acond.' },
-              ].map((c,i) => (
+              ].map((c, i) => (
                 <div key={i} style={{ background: '#f8fafc', borderRadius: 8, padding: '8px 10px', border: '1px solid #f1f5f9', display: 'flex', alignItems: 'center', gap: 6 }}>
                   <span style={{ fontSize: 14 }}>{c.i}</span>
                   <span style={{ fontSize: 11, fontWeight: 600, color: '#334155' }}>{c.l}</span>
@@ -270,14 +300,14 @@ function PantallaProteccion({ vehiculo, reserva, seguroIdx, onSeleccionar, onEdi
           {vehiculo.seguros.map((seguro, idx) => {
             const sel = seguroIdx === idx
             const iconos = ICONOS_PLANES[idx] ?? ['🛡️']
-            const items  = ITEMS_PLANES[idx]  ?? []
+            const items = ITEMS_PLANES[idx] ?? []
             return (
               <div key={idx} style={{ borderRadius: 20, border: `2px solid ${sel ? '#1e3a8a' : '#e2e8f0'}`, background: sel ? '#f0f6ff' : '#fff', boxShadow: sel ? '0 4px 20px rgba(30,58,138,0.12)' : '0 2px 8px rgba(0,0,0,0.05)', overflow: 'hidden', transition: 'all 200ms' }}>
                 <div style={{ padding: '18px 22px 0' }}>
                   <div style={{ display: 'flex', justifyContent: 'center', gap: 4, marginBottom: 8 }}>{iconos.map((ic, i) => <span key={i} style={{ fontSize: 15 }}>{ic}</span>)}</div>
                   <h4 style={{ fontSize: 17, fontWeight: 900, color: '#1e3a8a', textAlign: 'center', margin: '0 0 4px' }}>{seguro.nombre}</h4>
                   <p style={{ fontSize: 18, fontWeight: 900, color: '#059669', textAlign: 'center', margin: '0 0 14px' }}>
-                    COP {seguro.precio.toLocaleString('es-CO')},00 <span style={{ fontSize: 12, fontWeight: 500, color: '#64748b' }}>/ por día</span>
+                    {formatCurrency(seguro.precio, moneda)} <span style={{ fontSize: 12, fontWeight: 500, color: '#64748b' }}>/ por día</span>
                   </p>
                   <hr style={{ border: 'none', borderTop: '1px solid #e2e8f0', margin: '0 0 14px' }} />
                 </div>
@@ -286,8 +316,8 @@ function PantallaProteccion({ vehiculo, reserva, seguroIdx, onSeleccionar, onEdi
                     <div key={i} style={{ display: 'flex', gap: 9, alignItems: 'flex-start', marginBottom: 9 }}>
                       <div style={{ flexShrink: 0, marginTop: 2 }}>
                         {item.tipo === 'check' && <IcoCheck />}
-                        {item.tipo === 'warn'  && <IcoWarn />}
-                        {item.tipo === 'x'     && <IcoX sz={14} color="#dc2626" />}
+                        {item.tipo === 'warn' && <IcoWarn />}
+                        {item.tipo === 'x' && <IcoX sz={14} color="#dc2626" />}
                       </div>
                       <span style={{ fontSize: 12, color: item.tipo === 'x' ? '#94a3b8' : '#334155', lineHeight: 1.5, textDecoration: item.tipo === 'x' ? 'line-through' : 'none' }}>{item.texto}</span>
                     </div>
@@ -303,7 +333,7 @@ function PantallaProteccion({ vehiculo, reserva, seguroIdx, onSeleccionar, onEdi
           })}
         </div>
       </div>
-      <ResumenLateral vehiculo={vehiculo} reserva={reserva} seguroIdx={seguroIdx} onEditar={onEditar} />
+      <ResumenLateral vehiculo={vehiculo} reserva={reserva} seguroIdx={seguroIdx} onEditar={onEditar} onGuardar={onGuardar} />
     </div>
   )
 }
@@ -329,15 +359,16 @@ Para reservas en línea: Visa o MasterCard. No está habilitado el pago con Amer
 6. CONSENTIMIENTO DIGITAL
 Al confirmar la reserva aceptas expresamente estos términos. Dicha aceptación queda registrada en el sistema.`
 
-function PantallaDatos({ vehiculo, reserva, seguroIdx, datosForm, onCambio, onReservar, errores }) {
+function PantallaDatos({ vehiculo, reserva, seguroIdx, datosForm, onCambio, onReservar, errores, onGuardar }) {
+  const { moneda } = useLanding()
   const [verTyC, setVerTyC] = useState(false)
   const precio = reserva.tipoKm === 'ilimitado' ? vehiculo.tarifas.kmIlimitado.precio : vehiculo.tarifas.kmLimitado.precio
   const dias = reserva.fechaInicio && reserva.fechaFin ? Math.max(1, Math.ceil((new Date(reserva.fechaFin) - new Date(reserva.fechaInicio)) / 86400000)) : 1
-  const precioSeg   = seguroIdx !== null ? (vehiculo.seguros[seguroIdx]?.precio ?? 0) : 0
-  const subtotal    = precio * dias
+  const precioSeg = seguroIdx !== null ? (vehiculo.seguros[seguroIdx]?.precio ?? 0) : 0
+  const subtotal = precio * dias
   const subtotalSeg = precioSeg * dias
-  const cargos      = Math.round((subtotal + subtotalSeg) * 0.10)
-  const total       = subtotal + subtotalSeg + cargos
+  const cargos = Math.round((subtotal + subtotalSeg) * 0.10)
+  const total = subtotal + subtotalSeg + cargos
   const inp = (err) => ({ width: '100%', padding: '11px 13px', borderRadius: 10, boxSizing: 'border-box', border: `1.5px solid ${err ? '#fca5a5' : '#e2e8f0'}`, background: err ? '#fef2f2' : '#fff', fontSize: 13, color: '#1e293b', outline: 'none' })
   const lbl = { display: 'block', fontSize: 11, fontWeight: 700, color: '#374151', marginBottom: 5, textTransform: 'uppercase', letterSpacing: '0.06em' }
 
@@ -374,7 +405,7 @@ function PantallaDatos({ vehiculo, reserva, seguroIdx, datosForm, onCambio, onRe
               <label style={lbl}>Número de Celular *</label>
               <div style={{ display: 'flex', gap: 7 }}>
                 <div style={{ background: '#f8fafc', border: '1.5px solid #e2e8f0', borderRadius: 10, padding: '11px 10px', fontSize: 13, color: '#475569', fontWeight: 700, whiteSpace: 'nowrap' }}>+57</div>
-                <input type="tel" value={datosForm.celular} onChange={e => onCambio('celular', e.target.value.replace(/\D/g,''))} placeholder="3001234567" style={{ ...inp(errores.celular), flex: 1 }} />
+                <input type="tel" value={datosForm.celular} onChange={e => onCambio('celular', e.target.value.replace(/\D/g, ''))} placeholder="3001234567" style={{ ...inp(errores.celular), flex: 1 }} />
               </div>
               {errores.celular && <p style={{ color: '#ef4444', fontSize: 11, margin: '4px 0 0' }}>{errores.celular}</p>}
             </div>
@@ -432,7 +463,7 @@ function PantallaDatos({ vehiculo, reserva, seguroIdx, datosForm, onCambio, onRe
         <div style={{ background: 'linear-gradient(135deg,#0f1a3d,#1e3a8a)', borderRadius: 18, padding: '20px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 20, flexWrap: 'wrap' }}>
           <div>
             <p style={{ fontSize: 11, color: '#93c5fd', fontWeight: 600, margin: '0 0 3px' }}>Total a pagar</p>
-            <p style={{ fontSize: 26, fontWeight: 900, color: '#fff', margin: 0 }}>COP {Number(total).toLocaleString('es-CO')},00</p>
+            <p style={{ fontSize: 26, fontWeight: 900, color: '#fff', margin: 0 }}>{formatCurrency(total, moneda)}</p>
             <p style={{ fontSize: 10, color: '#93c5fd', margin: '3px 0 0' }}>*Incluye impuestos y cargos administrativos</p>
           </div>
           <button onClick={onReservar} style={{ padding: '14px 36px', borderRadius: 13, background: '#fff', color: '#1e3a8a', fontWeight: 800, fontSize: 15, border: 'none', cursor: 'pointer', boxShadow: '0 8px 24px rgba(0,0,0,0.18)', whiteSpace: 'nowrap' }}
@@ -443,19 +474,19 @@ function PantallaDatos({ vehiculo, reserva, seguroIdx, datosForm, onCambio, onRe
           </button>
         </div>
       </div>
-      <ResumenLateral vehiculo={vehiculo} reserva={reserva} seguroIdx={seguroIdx} onEditar={() => {}} />
+      <ResumenLateral vehiculo={vehiculo} reserva={reserva} seguroIdx={seguroIdx} onEditar={() => { }} onGuardar={onGuardar} />
     </div>
   )
 }
 
 /* ─────────── PÁGINA PRINCIPAL ─────────── */
 export default function ReservasPage() {
-  const { id }      = useParams()
+  const { id } = useParams()
   const { usuario } = useAuthStore()
 
-  const [vehiculo,  setVehiculo]  = useState(null)
-  const [cargando,  setCargando]  = useState(true)
-  const [errorVeh,  setErrorVeh]  = useState(null)
+  const [vehiculo, setVehiculo] = useState(null)
+  const [cargando, setCargando] = useState(true)
+  const [errorVeh, setErrorVeh] = useState(null)
 
   // ✅ función async dentro del efecto — evita setState síncrono
   useEffect(() => {
@@ -526,7 +557,7 @@ export default function ReservasPage() {
             ? <span style={{ fontSize: 13, color: '#475569', fontWeight: 600 }}>Hola, {usuario.nombre?.split(' ')[0]} 👋</span>
             : (
               <div style={{ display: 'flex', gap: 10 }}>
-                <Link to="/login"    style={{ padding: '8px 18px', borderRadius: 9999, border: '2px solid rgba(30,58,138,0.25)', color: '#1e3a8a', fontSize: 13, fontWeight: 700, textDecoration: 'none' }}>Iniciar sesión</Link>
+                <Link to="/login" style={{ padding: '8px 18px', borderRadius: 9999, border: '2px solid rgba(30,58,138,0.25)', color: '#1e3a8a', fontSize: 13, fontWeight: 700, textDecoration: 'none' }}>Iniciar sesión</Link>
                 <Link to="/registro" style={{ padding: '8px 18px', borderRadius: 9999, background: '#1e3a8a', color: '#fff', fontSize: 13, fontWeight: 700, textDecoration: 'none' }}>Registrarse</Link>
               </div>
             )
@@ -546,7 +577,7 @@ export default function ReservasPage() {
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0, marginBottom: 32 }}>
             {['Protección', 'Datos personales'].map((label, i) => {
               const num = i + 1
-              const activo     = pantalla === num
+              const activo = pantalla === num
               const completado = pantalla > num
               return (
                 <div key={i} style={{ display: 'flex', alignItems: 'center' }}>
@@ -569,6 +600,7 @@ export default function ReservasPage() {
               seguroIdx={seguroIdx}
               onSeleccionar={setSeguroIdx}
               onEditar={tipo => setModalEditar(tipo)}
+              onGuardar={handleGuardarReserva}
             />
           )}
           {pantalla === 2 && (
@@ -580,11 +612,13 @@ export default function ReservasPage() {
               onCambio={handleCambioDato}
               onReservar={handleReservar}
               errores={errores}
+              onGuardar={handleGuardarReserva}
             />
           )}
 
           {pantalla === 1 && (
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 28 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', marginTop: 28 }}>
+              {errores.fechas && <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '10px', padding: '12px', marginBottom: '14px', width: 'auto' }}><p style={{ color: '#ef4444', fontSize: '13px', margin: 0, fontWeight: '700' }}>⚠️ {errores.fechas}</p></div>}
               <button onClick={irPantalla2} style={{ display: 'flex', alignItems: 'center', gap: 9, padding: '14px 36px', borderRadius: 13, background: 'linear-gradient(90deg,#1e3a8a,#2563eb)', color: '#fff', fontWeight: 800, fontSize: 14, border: 'none', cursor: 'pointer', boxShadow: '0 6px 20px rgba(30,58,138,0.28)' }}
                 onMouseEnter={e => e.currentTarget.style.opacity = '0.9'}
                 onMouseLeave={e => e.currentTarget.style.opacity = '1'}
