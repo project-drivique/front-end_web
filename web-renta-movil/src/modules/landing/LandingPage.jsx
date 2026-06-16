@@ -5,6 +5,7 @@ import logo from '@/assets/logo/logo.png'
 import { useLanding } from './LandingContext'
 import traducciones, { IDIOMAS } from './traducciones'
 import { catalogoService } from '../../services/catalogoService'
+import { formatCurrency } from '@/utils/monedaUtils'
 
 const COLOR_MARCA = '#1e3a8a'
 const COLOR_MARCA_HOVER = '#162d6e'
@@ -69,7 +70,7 @@ const ICONOS_FEATURES = [
 ]
 
 function MenuConfiguracion({ tx }) {
-  const { tema, toggleTema, idioma, setIdioma } = useLanding()
+  const { tema, toggleTema, idioma, setIdioma, moneda, setMoneda } = useLanding()
   const [abierto, setAbierto] = useState(false)
   const contenedorRef = useRef(null)
   const esModoOscuro = tema === 'oscuro'
@@ -154,6 +155,39 @@ function MenuConfiguracion({ tx }) {
           </div>
 
           <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--texto-second)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 8px' }}>
+            Moneda
+          </p>
+
+          <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+            {[
+              { valor: 'COP', etiqueta: 'COP ($)' },
+              { valor: 'USD', etiqueta: 'USD ($)' },
+            ].map(({ valor, etiqueta }) => {
+              const activo = moneda === valor
+              return (
+                <button
+                  key={valor}
+                  onClick={() => { if (moneda !== valor) setMoneda(valor) }}
+                  style={{
+                    flex: 1,
+                    padding: '8px 4px',
+                    borderRadius: 10,
+                    cursor: 'pointer',
+                    fontSize: 12,
+                    fontWeight: 600,
+                    transition: 'all 150ms',
+                    border: activo ? `2px solid ${c.acentoTexto}` : '2px solid var(--borde)',
+                    background: activo ? c.acentoFondoSuave : 'transparent',
+                    color: activo ? c.acentoTexto : 'var(--texto-second)',
+                  }}
+                >
+                  {etiqueta}
+                </button>
+              )
+            })}
+          </div>
+
+          <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--texto-second)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 8px' }}>
             {tx.nav.idioma}
           </p>
 
@@ -199,7 +233,7 @@ function MenuConfiguracion({ tx }) {
 }
 
 export default function LandingPage() {
-  const { tema, idioma } = useLanding()
+  const { tema, idioma, moneda } = useLanding()
   const tx = traducciones[idioma] ?? traducciones.es
   const esModoOscuro = tema === 'oscuro'
   const c = coloresTema(esModoOscuro)
@@ -460,7 +494,7 @@ export default function LandingPage() {
                   </div>
 
                   <span style={{ fontSize: 15, fontWeight: 900, color: c.acentoTexto, whiteSpace: 'nowrap' }}>
-                    ${auto.precio.toLocaleString('es-CO')}/día
+                    {formatCurrency(auto.precio, moneda)}/día
                   </span>
                 </div>
               ))}
