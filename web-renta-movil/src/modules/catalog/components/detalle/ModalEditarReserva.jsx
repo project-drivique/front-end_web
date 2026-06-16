@@ -9,6 +9,10 @@ const IcoX = ({ sz = 15, color = '#dc2626' }) => (
 )
 
 const SUCURSALES = ['Centro Neiva', 'Aeropuerto Neiva', 'Terminal de Transportes', 'Norte Neiva', 'Sur Neiva'];
+const HORAS = Array.from({length: 24}, (_, i) => {
+  const h = i.toString().padStart(2, '0');
+  return [`${h}:00`, `${h}:30`]
+}).flat();
 
 export default function ModalEditarReserva({ tipo, reserva, vehiculo, onGuardar, onCerrar }) {
   const { moneda } = useLanding();
@@ -58,21 +62,32 @@ export default function ModalEditarReserva({ tipo, reserva, vehiculo, onGuardar,
             ))}
           </div>
         ) : (
-          <div>
-            <label style={lbl}>{tipo === 'retiro' ? 'Lugar de retiro' : 'Lugar de devolución'}</label>
-            <select
-              value={tipo === 'retiro' ? form.sucursalRetiro : form.sucursalDevolucion}
-              onChange={e => s(tipo === 'retiro' ? 'sucursalRetiro' : 'sucursalDevolucion', e.target.value)}
-              style={{ ...inp, cursor: 'pointer' }}
-            >
-              <option value="">Selecciona Lugar</option>
-              {/* Cambiamos SUCURSALES por el arreglo de puntos */}
-              {['Centro', 'Norte', 'Sur', 'Occidente'].map(puntos => (
-                <option key={puntos} value={puntos}>
-                  {puntos}
-                </option>
-              ))}
-            </select>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <div>
+              <label style={lbl}>{tipo === 'retiro' ? 'Lugar de retiro' : 'Lugar de devolución'}</label>
+              <select
+                value={tipo === 'retiro' ? form.sucursalRetiro : form.sucursalDevolucion}
+                onChange={e => s(tipo === 'retiro' ? 'sucursalRetiro' : 'sucursalDevolucion', e.target.value)}
+                style={{ ...inp, cursor: 'pointer' }}
+              >
+                <option value="">Selecciona Lugar</option>
+                {['Centro', 'Norte', 'Sur', 'Occidente'].map(puntos => (
+                  <option key={puntos} value={puntos}>
+                    {puntos}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label style={lbl}>Hora predominada</label>
+              <select
+                value={tipo === 'retiro' ? form.horaInicio : form.horaFin}
+                onChange={e => s(tipo === 'retiro' ? 'horaInicio' : 'horaFin', e.target.value)}
+                style={{ ...inp, cursor: 'pointer' }}
+              >
+                {HORAS.map(h => <option key={h} value={h}>{h}</option>)}
+              </select>
+            </div>
           </div>
         )}
 

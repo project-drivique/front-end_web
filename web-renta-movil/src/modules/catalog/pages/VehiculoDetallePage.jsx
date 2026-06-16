@@ -39,9 +39,9 @@ export default function VehiculoDetallePage() {
   const [seguroIdx,   setSeguroIdx]  = useState(0);
   const [reserva,     setReserva]    = useState({
        fechaInicio: '', fechaFin: '',
-    horaInicio: '07:30', horaFin: '07:30',
-    sucursalRetiro: vehiculo?.sucursal || '',
-    sucursalDevolucion: '',
+    horaInicio: '09:00', horaFin: '09:00',
+    sucursalRetiro: 'Centro',
+    sucursalDevolucion: 'Centro',
     tipoKm: 'limitado',
   });
   const [modalEditar, setModalEditar] = useState(null);

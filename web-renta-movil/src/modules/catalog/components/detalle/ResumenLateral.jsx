@@ -58,9 +58,11 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, onEditar 
             </button>
           </div>
           <p style={{ fontSize: 14, fontWeight: 800, color: 'var(--texto-primary)', margin: '0 0 4px' }}>
-            {reserva.fechaInicio ? `${fmt(reserva.fechaInicio)} a las ${reserva.horaInicio || '07:30'}` : '—'}
+            {reserva.fechaInicio ? `${fmt(reserva.fechaInicio)}` : 'Fecha no seleccionada'}
           </p>
-          <p style={{ fontSize: 12, color: 'var(--texto-second)', margin: 0 }}>{reserva.sucursalRetiro || vehiculo.sucursal}</p>
+          <p style={{ fontSize: 12, color: 'var(--texto-second)', margin: 0 }}>
+            {reserva.sucursalRetiro || 'Centro'} — {reserva.horaInicio || '09:00'}
+          </p>
         </div>
 
         <div style={{ padding: '16px 0', borderBottom: '1px solid var(--borde)' }}>
@@ -71,9 +73,11 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, onEditar 
             </button>
           </div>
           <p style={{ fontSize: 14, fontWeight: 800, color: 'var(--texto-primary)', margin: '0 0 4px' }}>
-            {reserva.fechaFin ? `${fmt(reserva.fechaFin)} a las ${reserva.horaFin || '07:30'}` : '—'}
+            {reserva.fechaFin ? `${fmt(reserva.fechaFin)}` : 'Fecha no seleccionada'}
           </p>
-          <p style={{ fontSize: 12, color: 'var(--texto-second)', margin: 0 }}>{reserva.sucursalDevolucion || reserva.sucursalRetiro || vehiculo.sucursal}</p>
+          <p style={{ fontSize: 12, color: 'var(--texto-second)', margin: 0 }}>
+            {reserva.sucursalDevolucion || 'Centro'} — {reserva.horaFin || '09:00'}
+          </p>
         </div>
 
         <div style={{ padding: '16px 0', borderBottom: '1px solid var(--borde)' }}>
