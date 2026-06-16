@@ -1,4 +1,6 @@
 import { FaShieldAlt, FaRegHeart } from "react-icons/fa";
+import { formatCurrency } from '@/utils/monedaUtils';
+import { useLanding } from '../../../landing/LandingContext';
 
 const IcoCheck = ({ color = '#16a34a', sz = 15 }) => (
   <svg width={sz} height={sz} fill="none" stroke={color} strokeWidth="2.8" viewBox="0 0 24 24">
@@ -17,6 +19,7 @@ const IcoX = ({ sz = 15, color = '#dc2626' }) => (
 )
 
 export default function PlanesProteccion({ seguroIdx, onSeleccionar }) {
+  const { moneda } = useLanding();
   const planes = [
     {
       nombre: 'Protección Obligatoria',
@@ -69,7 +72,7 @@ export default function PlanesProteccion({ seguroIdx, onSeleccionar }) {
                 </div>
                 <h4 style={{ fontSize: 18, fontWeight: 800, color: 'var(--texto-primary)', textAlign: 'center', margin: '0 0 4px' }}>{plan.nombre}</h4>
                 <p style={{ fontSize: 18, fontWeight: 800, color: '#059669', textAlign: 'center', margin: '0 0 16px' }}>
-                  COP {plan.precio.toLocaleString('es-CO')},00 <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--texto-second)' }}>/ por día</span>
+                  {formatCurrency(plan.precio, moneda)} <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--texto-second)' }}>/ por día</span>
                 </p>
                 <hr style={{ border: 'none', borderTop: '1px solid var(--borde)', margin: '0 0 16px' }} />
               </div>

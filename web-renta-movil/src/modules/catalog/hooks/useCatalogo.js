@@ -34,7 +34,13 @@ export function useCatalogo({ esFavorito = () => false } = {}) {
   const [busquedaRealizada, setBusquedaRealizada] = useState(false)
   const [errorBusqueda, setErrorBusqueda] = useState('')
   const [pagina, setPagina] = useState(1)
-  const [soloFavoritos, setSoloFavoritos] = useState(false)
+  const [soloFavoritos, setSoloFavoritos] = useState(() => {
+    return sessionStorage.getItem('rentamovil_soloFavoritos') === 'true'
+  })
+
+  useEffect(() => {
+    sessionStorage.setItem('rentamovil_soloFavoritos', soloFavoritos)
+  }, [soloFavoritos])
 
   const cargarVehiculos = useCallback(async () => {
     setCargando(true)

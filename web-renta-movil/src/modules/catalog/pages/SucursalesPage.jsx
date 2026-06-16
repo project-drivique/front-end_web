@@ -1,20 +1,26 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useLanding } from '../../landing/LandingContext'
+import { formatCurrency } from '@/utils/monedaUtils'
 import { useCatalogo } from '../hooks/useCatalogo'
 import logo from '@/assets/logo/logo.png'
 import GridVehiculos from '../components/GridVehiculos'
 import EstadoCarga from '../components/EstadoCarga'
 import EstadoError from '../components/EstadoError'
 import { showAlert } from '@/utils/swalConfig'
-import { FaMapMarkerAlt, FaClock, FaPhoneAlt, FaCar, FaStar, FaMoneyBillWave, FaCheckCircle } from 'react-icons/fa'
-
+import {
+  FaMapMarkerAlt,
+  FaClock,
+  FaCar,
+  FaStar,
+  FaMoneyBillWave,
+  FaCheckCircle
+} from 'react-icons/fa'
 
 const COLOR_MARCA = '#1e3a8a'
 const COLOR_ICONO_GRIS = '#475569'
 const COLOR_DORADO = '#ffd700'
-const COLOR_BOTON_AZUL = '#2563eb'
-
+const COLOR_BOTON_AZUL = 'linear-gradient(90deg, #1e3a8a, #2563eb)'
 
 const coloresTema = (esModoOscuro) => ({
   pageBg: esModoOscuro ? '#020617' : '#f8fafc',
@@ -22,7 +28,7 @@ const coloresTema = (esModoOscuro) => ({
   navBorder: esModoOscuro ? '#1e293b' : '#f1f5f9',
   navShadow: esModoOscuro ? '0 1px 8px rgba(0,0,0,0.35)' : '0 1px 8px rgba(0,0,0,0.06)',
   navText: esModoOscuro ? '#cbd5e1' : '#475569',
-  heroBg: esModoOscuro ? 'linear-gradient(135deg,#020617 0%,#0f172a 100%)' : 'linear-gradient(135deg,#e0e7ff 0%,#eff6ff 100%)',
+  heroBg: esModoOscuro ? '#020617' : '#f8fafc',
   panelBg: esModoOscuro ? '#0f172a' : '#ffffff',
   panelBorder: esModoOscuro ? '#1e293b' : '#e2e8f0',
   panelShadow: esModoOscuro ? '0 10px 40px rgba(0,0,0,0.5)' : '0 10px 40px rgba(148,163,184,0.15)',
@@ -35,8 +41,17 @@ const coloresTema = (esModoOscuro) => ({
   loginHoverBg: esModoOscuro ? 'rgba(148,163,184,0.08)' : 'rgba(30,58,138,0.05)',
   badgeBg: esModoOscuro ? '#1e293b' : '#f1f5f9',
   itemBg: esModoOscuro ? '#1e293b' : '#f8fafc',
+  cardBorder: esModoOscuro ? '#334155' : '#f1f5f9',
+  cardBorderHover: esModoOscuro ? '#475569' : '#dbeafe',
+  cardShadow: esModoOscuro ? '0 4px 18px rgba(0,0,0,0.24)' : '0 2px 8px rgba(0,0,0,0.05)',
+  cardShadowHover: esModoOscuro ? '0 8px 32px rgba(0,0,0,0.35)' : '0 8px 24px rgba(37,99,235,0.12)',
+  imageFallbackBg: esModoOscuro ? '#1e293b' : '#f1f5f9',
+  imageFallbackIcon: esModoOscuro ? '#334155' : '#cbd5e1',
+  textSoft: esModoOscuro ? '#64748b' : '#94a3b8',
+  textMuted: esModoOscuro ? '#475569' : '#cbd5e1',
+  paginationDisabledBg: esModoOscuro ? '#0f172a' : '#f1f5f9',
+  accentGradient: 'linear-gradient(90deg, #1e3a8a, #2563eb)',
 })
-
 
 const SUCURSALES_DATA = [
   {
@@ -47,7 +62,8 @@ const SUCURSALES_DATA = [
     horarios: 'Lun-Vie 7:00-22:00; Sáb-Dom-Fest 8:00-20:00',
     flota: '6.000+ vehículos (Renault, Chevrolet, Nissan)',
     puntuacion: '5/5 (Líder Nacional)',
-    precio: '$166.569/día',
+    precioBase: 166569,
+    preTextoPrecio: 'Desde ',
     porQue: 'Empresa líder en Colombia, con más de 15 años de experiencia y la flota más grande del país.',
     logoUrl: 'https://veraabogados.com/wp-content/uploads/2023/05/logo-localiza-2022.jpg',
   },
@@ -59,7 +75,8 @@ const SUCURSALES_DATA = [
     horarios: 'Abierto 24/7',
     flota: '14 tipos (Económico, Sedán, Lujo, Camionetas)',
     puntuacion: '9.1/10 (Mejor Rating Nacional)',
-    precio: 'Desde $116.673/día',
+    precioBase: 116673,
+    preTextoPrecio: 'Desde ',
     porQue: 'Destacado por su insuperable servicio al cliente, disponibilidad 24/7 y precios altamente competitivos.',
     logoUrl: 'https://tse2.mm.bing.net/th/id/OIP.QA95ECBXmhUyak_VTBWQfAHaHa?r=0&rs=1&pid=ImgDetMain&o=7&rm=3',
   },
@@ -83,7 +100,7 @@ const SUCURSALES_DATA = [
     horarios: 'Lun-Vie 5:00-23:00; Sáb-Dom-Fest 6:00-18:00',
     flota: '34 tipos de vehículos',
     puntuacion: 'Servicio Top Tier Internacional',
-    precio: 'Competititvo',
+    precio: 'Competitivo',
     porQue: 'Mayor cobertura en terminales aéreas, servicio premium avalado por su sede central en EE.UU.',
     logoUrl: 'https://th.bing.com/th/id/OIP.bR65CPuhaiKEMCLFjOkg2QHaD-?w=325&h=180&c=7&r=0&o=7&dpr=1.1&pid=1.7&rm=3',
   },
@@ -113,19 +130,14 @@ const SUCURSALES_DATA = [
   }
 ]
 
-
 export default function SucursalesPage() {
-  const { tema } = useLanding()
+  const { tema, moneda } = useLanding()
   const navigate = useNavigate()
   const esModoOscuro = tema === 'oscuro'
   const c = coloresTema(esModoOscuro)
-
-
   const [sucursalActiva, setSucursalActiva] = useState(null)
-
-
+  const resultadosRef = useRef(null)
   const { vehiculos, cargando, error, reintentar } = useCatalogo()
-
 
   const handleBuscarInvitado = () => {
     showAlert({
@@ -140,22 +152,26 @@ export default function SucursalesPage() {
     })
   }
 
-
   const vehiculosSucursalCache = useMemo(() => {
     const map = {}
-    SUCURSALES_DATA.forEach(s => map[s.alias] = [])
+    SUCURSALES_DATA.forEach(s => { map[s.alias] = [] })
     vehiculos.forEach(v => {
       if (map[v.sucursal]) map[v.sucursal].push(v)
     })
     return map
   }, [vehiculos])
 
-
   const flotaFiltrada = useMemo(() => {
     if (!sucursalActiva) return []
     return vehiculosSucursalCache[sucursalActiva.alias] || []
   }, [sucursalActiva, vehiculosSucursalCache])
 
+  const verCarrosSucursal = (suc) => {
+    setSucursalActiva(suc)
+    setTimeout(() => {
+      resultadosRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }, 120)
+  }
 
   return (
     <div style={{ minHeight: '100vh', background: c.pageBg, display: 'flex', flexDirection: 'column', overflowX: 'hidden' }}>
@@ -179,10 +195,31 @@ export default function SucursalesPage() {
         </div>
       </nav>
 
-
       <div style={{ paddingTop: '68px', flex: 1 }}>
-        <div style={{ background: c.heroBg, padding: '60px 24px 40px', textAlign: 'center', borderBottom: `1px solid ${c.navBorder}` }}>
-          <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+        <div style={{ padding: '40px 24px 20px', textAlign: 'center', position: 'relative' }}>
+          <div style={{ position: 'absolute', top: '18px', left: '24px' }}>
+            <Link
+              to="/"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                fontSize: '13px',
+                color: c.accentText,
+                fontWeight: 700,
+                textDecoration: 'none',
+                padding: '8px 16px',
+                borderRadius: '9999px',
+                background: c.accentBgSoft,
+                border: `1px solid ${c.panelBorder}`,
+                whiteSpace: 'nowrap'
+              }}
+            >
+              ← Volver al inicio
+            </Link>
+          </div>
+
+          <div style={{ maxWidth: '800px', margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <span style={{ display: 'inline-block', padding: '6px 16px', borderRadius: '9999px', background: c.accentBgSoft, color: c.accentText, fontSize: '12px', fontWeight: 800, textTransform: 'uppercase', marginBottom: '12px' }}>
               Red Oficial de Agencias
             </span>
@@ -190,78 +227,110 @@ export default function SucursalesPage() {
               Vehículos por Agencia
             </h1>
             <p style={{ fontSize: '16px', color: c.textSecondary, margin: 0 }}>
-              Selecciona una compañía para filtrar instantáneamente el catálogo de vehículos disponibles.
+              Selecciona una compañía y mira solo los carros disponibles para esa sucursal.
             </p>
           </div>
         </div>
 
-
         <div style={{ maxWidth: '1280px', margin: '30px auto 0', padding: '0 24px' }}>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))',
-            gap: '16px'
-          }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '20px' }}>
             {SUCURSALES_DATA.map((suc) => {
               const esActivo = sucursalActiva?.alias === suc.alias
+
               return (
                 <div
                   key={suc.alias}
-                  onClick={() => setSucursalActiva(suc)}
                   style={{
                     background: c.panelBg,
-                    borderRadius: '16px',
-                    border: `2px solid ${esActivo ? COLOR_MARCA : c.panelBorder}`,
-                    boxShadow: esActivo ? '0 8px 24px rgba(30,58,138,0.12)' : 'none',
-                    padding: '20px',
-                    cursor: 'pointer',
-                    transition: 'all 200ms ease',
+                    borderRadius: '22px',
+                    border: `1px solid ${esActivo ? COLOR_MARCA : c.panelBorder}`,
+                    boxShadow: esActivo ? '0 12px 30px rgba(37,99,235,0.15)' : '0 6px 18px rgba(15,23,42,0.06)',
+                    padding: '18px',
                     display: 'flex',
                     flexDirection: 'column',
-                    gap: '12px',
+                    gap: '14px',
+                    transition: 'transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease',
+                    cursor: 'default'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-4px)'
+                    e.currentTarget.style.boxShadow = '0 14px 34px rgba(15,23,42,0.10)'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)'
+                    e.currentTarget.style.boxShadow = esActivo
+                      ? '0 12px 30px rgba(37,99,235,0.15)'
+                      : '0 6px 18px rgba(15,23,42,0.06)'
                   }}
                 >
-                  <div style={{ display: 'flex', gap: '14px', alignItems: 'center' }}>
-                    <div style={{ width: '48px', height: '48px', borderRadius: '10px', overflow: 'hidden', flexShrink: 0, border: `1px solid ${c.panelBorder}` }}>
-                      <img src={suc.logoUrl} alt="logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <div
+                    style={{
+                      height: '210px',
+                      borderRadius: '18px',
+                      background: `linear-gradient(180deg, ${c.accentBgSoft}, transparent)`,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      overflow: 'hidden',
+                      border: `1px solid ${c.panelBorder}`,
+                      padding: '10px'
+                    }}
+                  >
+                    <img
+                      src={suc.logoUrl}
+                      alt={suc.alias}
+                      style={{
+                        width: '92%',
+                        height: '92%',
+                        objectFit: 'contain'
+                      }}
+                    />
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', textAlign: 'left' }}>
+                    <h2 style={{ margin: 0, fontSize: '18px', fontWeight: 900, color: c.textPrimary }}>
+                      {suc.alias}
+                    </h2>
+                    <p style={{ margin: 0, fontSize: '13px', color: c.textSecondary, lineHeight: 1.4 }}>
+                      {suc.ubicacion}
+                    </p>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', fontSize: '12px' }}>
+                    <div style={{ background: c.itemBg, borderRadius: '12px', padding: '10px', textAlign: 'left' }}>
+                      <div style={{ color: c.textSecondary }}>Horario</div>
+                      <div style={{ fontWeight: 700, color: c.textPrimary }}>{suc.horarios.split(';')[0]}</div>
                     </div>
-                    <div style={{ flex: 1, minWidth: '0' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', marginBottom: '2px' }}>
-                        <h2 style={{ fontSize: '16px', fontWeight: 800, color: c.textPrimary, margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                          {suc.alias}
-                        </h2>
-                        {suc.puntuacion.includes('Líder') || suc.puntuacion.includes('Rating') ? (
-                          <span style={{ fontSize: '9px', background: '#fef3c7', color: '#d97706', padding: '1px 5px', borderRadius: '4px', fontWeight: 800 }}>TOP</span>
-                        ) : null}
-                      </div>
-                      <p style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', color: c.textSecondary, margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                        <FaMapMarkerAlt color={COLOR_ICONO_GRIS} /> {suc.ubicacion}
-                      </p>
+                    <div style={{ background: c.itemBg, borderRadius: '12px', padding: '10px', textAlign: 'left' }}>
+                      <div style={{ color: c.textSecondary }}>Flota</div>
+                      <div style={{ fontWeight: 700, color: c.textPrimary }}>{suc.flota}</div>
                     </div>
                   </div>
 
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
+                    <div style={{ textAlign: 'left' }}>
+                      <div style={{ fontSize: '12px', color: c.textSecondary }}>Desde</div>
+                      <div style={{ fontSize: '18px', fontWeight: 900, color: COLOR_MARCA }}>
+                        {suc.precioBase ? `${suc.preTextoPrecio || ''}${formatCurrency(suc.precioBase, moneda)}/día` : suc.precio}
+                      </div>
+                    </div>
 
-                  <div style={{
-                    display: 'grid',
-                    gridTemplateColumns: '1fr 1fr',
-                    gap: '8px',
-                    paddingTop: '10px',
-                    borderTop: `1px solid ${c.panelBorder}`,
-                    fontSize: '12px'
-                  }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: c.textSecondary }}>
-                      <FaClock size={13} color={COLOR_ICONO_GRIS} /> <span>{suc.horarios.split(';')[0]}</span>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: c.textSecondary }}>
-                      <FaCar size={13} color={COLOR_ICONO_GRIS} /> <span>{suc.flota.split(' ')[0]} Vehículos</span>
-                    </div>
-                    {/* ESTRELLITA EN COLOR DORADO */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: c.textSecondary }}>
-                      <FaStar size={13} color={COLOR_DORADO} /> <span style={{ fontWeight: 600, color: c.textPrimary }}>{suc.puntuacion.split(' ')[0]}</span>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: c.textSecondary }}>
-                      <FaMoneyBillWave size={13} color={COLOR_ICONO_GRIS} /> <span style={{ fontWeight: 700, color: c.textPrimary }}>{suc.precio}</span>
-                    </div>
+                    <button
+                      onClick={() => verCarrosSucursal(suc)}
+                      style={{
+                        background: COLOR_BOTON_AZUL,
+                        color: '#fff',
+                        border: 'none',
+                        borderRadius: '9999px',
+                        padding: '10px 16px',
+                        fontWeight: 800,
+                        fontSize: '13px',
+                        cursor: 'pointer',
+                        whiteSpace: 'nowrap'
+                      }}
+                    >
+                      Ver carros
+                    </button>
                   </div>
                 </div>
               )
@@ -269,9 +338,8 @@ export default function SucursalesPage() {
           </div>
         </div>
 
-
         {sucursalActiva && (
-          <div style={{ maxWidth: '1280px', margin: '40px auto 80px', padding: '0 24px', animation: 'fadeInTab 350ms ease-in-out' }}>
+          <div ref={resultadosRef} style={{ maxWidth: '1280px', margin: '40px auto 80px', padding: '0 24px', animation: 'fadeInTab 350ms ease-in-out' }}>
             <div style={{
               background: c.panelBg,
               borderRadius: '24px',
@@ -291,13 +359,12 @@ export default function SucursalesPage() {
               }}>
                 <div>
                   <h3 style={{ fontSize: '20px', fontWeight: 900, color: c.textPrimary, margin: '0 0 4px' }}>
-                    Autos Disponibles en <span style={{ color: COLOR_MARCA }}>{sucursalActiva.alias}</span>
+                    Autos disponibles en <span style={{ color: COLOR_MARCA }}>{sucursalActiva.alias}</span>
                   </h3>
                   <p style={{ margin: 0, fontSize: '13px', color: c.textSecondary }}>
                     Mostrando {flotaFiltrada.length} resultados listos para reservar
                   </p>
                 </div>
-
 
                 <div style={{ background: c.accentBgSoft, padding: '10px 16px', borderRadius: '12px', maxWidth: '500px' }}>
                   <p style={{ display: 'flex', gap: '8px', fontSize: '12px', color: c.textPrimary, margin: 0, lineHeight: 1.4 }}>
@@ -307,10 +374,8 @@ export default function SucursalesPage() {
                 </div>
               </div>
 
-
               {cargando && <EstadoCarga c={c} />}
               {!cargando && error && <EstadoError c={c} error={error} onRetry={reintentar} />}
-
 
               {!cargando && !error && flotaFiltrada.length === 0 && (
                 <div style={{ textAlign: 'center', padding: '60px 20px', border: `1px dashed ${c.panelBorder}`, borderRadius: '16px' }}>
@@ -319,7 +384,6 @@ export default function SucursalesPage() {
                   <p style={{ margin: 0, fontSize: '13px', color: c.textSecondary }}>Estamos actualizando el inventario en tiempo real para esta sucursal.</p>
                 </div>
               )}
-
 
               {!cargando && !error && flotaFiltrada.length > 0 && (
                 <GridVehiculos
@@ -334,7 +398,6 @@ export default function SucursalesPage() {
           </div>
         )}
       </div>
-
 
       <style>{`
         @keyframes fadeInTab {
