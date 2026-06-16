@@ -7,7 +7,7 @@ import { catalogoService } from '../../../services/catalogoService'
 import logo from '@/assets/logo/logo.png'
 
 const SUCURSALES = ['Centro Neiva','Aeropuerto Neiva','Terminal de Transportes','Norte Neiva','Sur Neiva']
-import { useLanding } from '../../../landing/LandingContext'
+import { useLanding } from '../../landing/LandingContext'
 import { formatCurrency } from '@/utils/monedaUtils'
 const fmt = d => {
   if (!d) return '—'
