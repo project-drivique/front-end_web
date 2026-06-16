@@ -6,7 +6,11 @@ import { useReservas } from '../hooks/useReservas'
 import { catalogoService } from '../../../services/catalogoService'
 import logo from '@/assets/logo/logo.png'
 
-const SUCURSALES = ['Centro Neiva','Aeropuerto Neiva','Terminal de Transportes','Norte Neiva','Sur Neiva']
+const SUCURSALES = ['Centro', 'Sur', 'Occidente', 'Norte']
+const HORAS = Array.from({length: 24}, (_, i) => {
+  const h = i.toString().padStart(2, '0');
+  return [`${h}:00`, `${h}:30`]
+}).flat();
 import { useLanding } from '../../landing/LandingContext'
 import { formatCurrency } from '@/utils/monedaUtils'
 const fmt = d => {
@@ -78,9 +82,9 @@ function ResumenLateral({ vehiculo, reserva, seguroIdx, onEditar }) {
             </button>
           </div>
           <p style={{ fontSize: 12, fontWeight: 700, color: '#0f172a', margin: '0 0 2px' }}>
-            {reserva.fechaInicio ? `${fmt(reserva.fechaInicio)} a las ${reserva.horaInicio || '07:30'}` : '—'}
+            {reserva.fechaInicio ? `${fmt(reserva.fechaInicio)}` : 'Fecha no seleccionada'}
           </p>
-          <p style={{ fontSize: 11, color: '#64748b', margin: 0 }}>{reserva.sucursalRetiro || vehiculo.sucursal}</p>
+          <p style={{ fontSize: 11, color: '#64748b', margin: 0 }}>{reserva.sucursalRetiro || 'Centro'} — {reserva.horaInicio || '09:00'}</p>
         </div>
         <div style={{ padding: '12px 0', borderBottom: '1px solid #f1f5f9' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
@@ -90,9 +94,9 @@ function ResumenLateral({ vehiculo, reserva, seguroIdx, onEditar }) {
             </button>
           </div>
           <p style={{ fontSize: 12, fontWeight: 700, color: '#0f172a', margin: '0 0 2px' }}>
-            {reserva.fechaFin ? `${fmt(reserva.fechaFin)} a las ${reserva.horaFin || '07:30'}` : '—'}
+            {reserva.fechaFin ? `${fmt(reserva.fechaFin)}` : 'Fecha no seleccionada'}
           </p>
-          <p style={{ fontSize: 11, color: '#64748b', margin: 0 }}>{reserva.sucursalDevolucion || reserva.sucursalRetiro || vehiculo.sucursal}</p>
+          <p style={{ fontSize: 11, color: '#64748b', margin: 0 }}>{reserva.sucursalDevolucion || 'Centro'} — {reserva.horaFin || '09:00'}</p>
         </div>
         <div style={{ padding: '12px 0', borderBottom: '1px solid #f1f5f9' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
@@ -188,7 +192,9 @@ function ModalEditar({ tipo, reserva, vehiculo, onGuardar, onCerrar }) {
             </div>
             <div>
               <label style={lbl}>Hora</label>
-              <input type="time" value={tipo === 'retiro' ? form.horaInicio : form.horaFin} onChange={e => s(tipo === 'retiro' ? 'horaInicio' : 'horaFin', e.target.value)} style={inp} />
+              <select value={tipo === 'retiro' ? form.horaInicio : form.horaFin} onChange={e => s(tipo === 'retiro' ? 'horaInicio' : 'horaFin', e.target.value)} style={{ ...inp, cursor: 'pointer' }}>
+                {HORAS.map(h => <option key={h} value={h}>{h}</option>)}
+              </select>
             </div>
           </div>
         )}
@@ -589,7 +595,8 @@ export default function ReservasPage() {
           )}
 
           {pantalla === 1 && (
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 28 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', marginTop: 28 }}>
+              {errores.fechas && <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '10px', padding: '12px', marginBottom: '14px', width: 'auto' }}><p style={{ color: '#ef4444', fontSize: '13px', margin: 0, fontWeight: '700' }}>⚠️ {errores.fechas}</p></div>}
               <button onClick={irPantalla2} style={{ display: 'flex', alignItems: 'center', gap: 9, padding: '14px 36px', borderRadius: 13, background: 'linear-gradient(90deg,#1e3a8a,#2563eb)', color: '#fff', fontWeight: 800, fontSize: 14, border: 'none', cursor: 'pointer', boxShadow: '0 6px 20px rgba(30,58,138,0.28)' }}
                 onMouseEnter={e => e.currentTarget.style.opacity = '0.9'}
                 onMouseLeave={e => e.currentTarget.style.opacity = '1'}

@@ -91,9 +91,8 @@ export default function CatalogoUsuarioPage() {
   } = useCatalogo({ esFavorito })
 
   useEffect(() => {
-    setSoloFavoritos(false)
     setPagina(1)
-  }, [usuario?.id, setSoloFavoritos, setPagina])
+  }, [usuario?.id, setPagina])
 
   useEffect(() => {
     setPagina(1)
