@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { useLanding } from '../../../landing/LandingContext';
+import { formatCurrency } from '@/utils/monedaUtils';
 
 const IcoX = ({ sz = 15, color = '#dc2626' }) => (
   <svg width={sz} height={sz} fill="none" stroke={color} strokeWidth="2.8" viewBox="0 0 24 24">
@@ -7,9 +9,13 @@ const IcoX = ({ sz = 15, color = '#dc2626' }) => (
 )
 
 const SUCURSALES = ['Centro Neiva', 'Aeropuerto Neiva', 'Terminal de Transportes', 'Norte Neiva', 'Sur Neiva'];
-const cop = n => `$${Number(n).toLocaleString('es-CO')}`;
+const HORAS = Array.from({length: 24}, (_, i) => {
+  const h = i.toString().padStart(2, '0');
+  return [`${h}:00`, `${h}:30`]
+}).flat();
 
 export default function ModalEditarReserva({ tipo, reserva, vehiculo, onGuardar, onCerrar }) {
+  const { moneda } = useLanding();
   const [form, setForm] = useState({ ...reserva });
   const s = (k, v) => setForm(p => ({ ...p, [k]: v }));
 
@@ -51,26 +57,37 @@ export default function ModalEditarReserva({ tipo, reserva, vehiculo, onGuardar,
                   </div>
                   <span style={{ fontSize: 15, fontWeight: 800, color: form.tipoKm === op.val ? '#1e3a8a' : 'var(--texto-primary)' }}>{op.label}</span>
                 </div>
-                <span style={{ fontSize: 15, fontWeight: 900, color: '#1e3a8a' }}>{cop(op.precio)}/día</span>
+                <span style={{ fontSize: 15, fontWeight: 900, color: '#1e3a8a' }}>{formatCurrency(op.precio, moneda)}/día</span>
               </button>
             ))}
           </div>
         ) : (
-          <div>
-            <label style={lbl}>{tipo === 'retiro' ? 'Lugar de retiro' : 'Lugar de devolución'}</label>
-            <select
-              value={tipo === 'retiro' ? form.sucursalRetiro : form.sucursalDevolucion}
-              onChange={e => s(tipo === 'retiro' ? 'sucursalRetiro' : 'sucursalDevolucion', e.target.value)}
-              style={{ ...inp, cursor: 'pointer' }}
-            >
-              <option value="">Selecciona Lugar</option>
-              {/* Cambiamos SUCURSALES por el arreglo de puntos */}
-              {['Centro', 'Norte', 'Sur', 'Occidente'].map(puntos => (
-                <option key={puntos} value={puntos}>
-                  {puntos}
-                </option>
-              ))}
-            </select>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <div>
+              <label style={lbl}>{tipo === 'retiro' ? 'Lugar de retiro' : 'Lugar de devolución'}</label>
+              <select
+                value={tipo === 'retiro' ? form.sucursalRetiro : form.sucursalDevolucion}
+                onChange={e => s(tipo === 'retiro' ? 'sucursalRetiro' : 'sucursalDevolucion', e.target.value)}
+                style={{ ...inp, cursor: 'pointer' }}
+              >
+                <option value="">Selecciona Lugar</option>
+                {['Centro', 'Norte', 'Sur', 'Occidente'].map(puntos => (
+                  <option key={puntos} value={puntos}>
+                    {puntos}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label style={lbl}>Hora predominada</label>
+              <select
+                value={tipo === 'retiro' ? form.horaInicio : form.horaFin}
+                onChange={e => s(tipo === 'retiro' ? 'horaInicio' : 'horaFin', e.target.value)}
+                style={{ ...inp, cursor: 'pointer' }}
+              >
+                {HORAS.map(h => <option key={h} value={h}>{h}</option>)}
+              </select>
+            </div>
           </div>
         )}
 

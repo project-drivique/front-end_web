@@ -12,10 +12,10 @@ export function useReservas(vehiculo) {
   const [reserva,     setReserva]    = useState({
     fechaInicio:        '',
     fechaFin:           '',
-    horaInicio:         '07:30',
-    horaFin:            '07:30',
-    sucursalRetiro:     vehiculo?.sucursal || '',
-    sucursalDevolucion: '',
+    horaInicio:         '09:00',
+    horaFin:            '09:00',
+    sucursalRetiro:     'Centro',
+    sucursalDevolucion: 'Centro',
     tipoKm:             'limitado',
   })
   const [modalEditar, setModalEditar] = useState(null)
@@ -60,6 +60,20 @@ export function useReservas(vehiculo) {
   }
 
   const irPantalla2 = () => {
+    const e = {}
+    if (!reserva.fechaInicio || !reserva.fechaFin) {
+        e.fechas = 'Debes seleccionar las fechas de retiro y devolución.'
+    } else if (reserva.fechaFin < reserva.fechaInicio) {
+        e.fechas = 'La fecha de devolución no puede ser anterior a la de recogida.'
+    } else if (reserva.fechaInicio === reserva.fechaFin && reserva.horaFin < reserva.horaInicio) {
+        e.fechas = 'La hora de devolución no puede ser anterior a la hora de recogida el mismo día.'
+    }
+    
+    if (e.fechas) {
+       setErrores({ ...errores, ...e })
+       return
+    }
+    setErrores({ ...errores, fechas: null })
     setPantalla(2)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
