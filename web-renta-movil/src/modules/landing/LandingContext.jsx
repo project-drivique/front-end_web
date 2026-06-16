@@ -10,6 +10,9 @@ export function LandingProvider({ children }) {
   const [idioma, setIdioma] = useState(
     () => sessionStorage.getItem('rm_idioma') || 'es'
   )
+  const [moneda, setMoneda] = useState(
+    () => localStorage.getItem('rm_moneda') || 'COP'
+  )
 
   // Aplica clase "dark" en <html> y guarda en sesión
   useEffect(() => {
@@ -21,10 +24,14 @@ export function LandingProvider({ children }) {
     sessionStorage.setItem('rm_idioma', idioma)
   }, [idioma])
 
+  useEffect(() => {
+    localStorage.setItem('rm_moneda', moneda)
+  }, [moneda])
+
   const toggleTema = () => setTema(prev => prev === 'claro' ? 'oscuro' : 'claro')
 
   return (
-    <LandingContext.Provider value={{ tema, toggleTema, idioma, setIdioma }}>
+    <LandingContext.Provider value={{ tema, toggleTema, idioma, setIdioma, moneda, setMoneda }}>
       {children}
     </LandingContext.Provider>
   )

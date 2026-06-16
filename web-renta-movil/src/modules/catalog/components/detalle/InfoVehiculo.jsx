@@ -1,7 +1,9 @@
 import { FaCar, FaSuitcase, FaBolt, FaPalette, FaCalendarAlt, FaSnowflake, FaRegHeart } from 'react-icons/fa';
+import { useLanding } from '../../../landing/LandingContext';
+import { formatCurrency } from '@/utils/monedaUtils';
 
 export default function InfoVehiculo({ vehiculo }) {
-  const cop = n => `$${Number(n).toLocaleString('es-CO')}`;
+  const { moneda } = useLanding();
 
   return (
     <div style={{ background: 'var(--bg-tarjeta)', borderRadius: 20, border: '1px solid var(--borde)', overflow: 'hidden', marginBottom: 28, boxShadow: 'var(--sombra-tarjeta)' }}>
@@ -21,7 +23,7 @@ export default function InfoVehiculo({ vehiculo }) {
             </div>
           </div>
           <div style={{ textAlign: 'right' }}>
-            <span style={{ fontSize: 26, fontWeight: 800, color: 'var(--texto-primary)' }}>{cop(vehiculo.precio)}</span>
+            <span style={{ fontSize: 26, fontWeight: 800, color: 'var(--texto-primary)' }}>{formatCurrency(vehiculo.precio, moneda)}</span>
             <span style={{ fontSize: 12, color: 'var(--texto-second)' }}>/día</span>
           </div>
         </div>
