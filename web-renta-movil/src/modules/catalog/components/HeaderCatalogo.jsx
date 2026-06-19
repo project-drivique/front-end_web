@@ -39,8 +39,10 @@ export default function HeaderCatalogo({ c, usuario, withLinks = false }) {
           </span>
         )}
 
-        {withLinks ? (
-          <div style={{
+        <Link
+          to="/perfil"
+          title="Mi perfil"
+          style={{
             width: '36px',
             height: '36px',
             borderRadius: '50%',
@@ -50,26 +52,13 @@ export default function HeaderCatalogo({ c, usuario, withLinks = false }) {
             alignItems: 'center',
             justifyContent: 'center',
             fontWeight: 800,
-            fontSize: '14px'
-          }}>
-            {letra}
-          </div>
-        ) : (
-          <div style={{
-            width: '36px',
-            height: '36px',
-            borderRadius: '50%',
-            background: c.accentText,
-            color: '#fff',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontWeight: 800,
-            fontSize: '14px'
-          }}>
-            {letra}
-          </div>
-        )}
+            fontSize: '14px',
+            textDecoration: 'none',
+            flexShrink: 0,
+          }}
+        >
+          {letra}
+        </Link>
       </div>
     </nav>
   )
