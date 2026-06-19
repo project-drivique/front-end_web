@@ -53,36 +53,13 @@ export const userService = {
     } catch (err) {
       if (err?.response?.status === 401 || err?.response?.status === 400) throw err
       const usuario = getUsuarioGuardado()
-      const correo = usuario?.correo?.toLowerCase()
-      const guardadas = JSON.parse(localStorage.getItem('renta_passwords') || '{}')
-      const passwordCorrecta = guardadas[correo] ?? MOCK_PASSWORDS[correo]
+      const passwordCorrecta = MOCK_PASSWORDS[usuario?.correo?.toLowerCase()]
       if (passwordCorrecta && contrasena === passwordCorrecta) {
         return { valida: true }
       }
       const error = new Error('Contraseña incorrecta')
       error.response = { status: 401, data: { mensaje: 'Contraseña incorrecta' } }
       throw error
-    }
-  },
-
-  cambiarContrasena: async (contrasenaActual, contrasenaNueva) => {
-    try {
-      const { data } = await api.post('/usuario/cambiar-contrasena', { contrasenaActual, contrasenaNueva })
-      return data
-    } catch (err) {
-      if (err?.response?.status === 401 || err?.response?.status === 400) throw err
-      const usuario = getUsuarioGuardado()
-      const correo = usuario?.correo?.toLowerCase()
-      const guardadas = JSON.parse(localStorage.getItem('renta_passwords') || '{}')
-      const passwordCorrecta = guardadas[correo] ?? MOCK_PASSWORDS[correo]
-      if (!passwordCorrecta || contrasenaActual !== passwordCorrecta) {
-        const error = new Error('Contraseña actual incorrecta')
-        error.response = { status: 401, data: { mensaje: 'Contraseña actual incorrecta' } }
-        throw error
-      }
-      const nuevas = { ...guardadas, [correo]: contrasenaNueva }
-      localStorage.setItem('renta_passwords', JSON.stringify(nuevas))
-      return { mensaje: 'Contraseña actualizada correctamente' }
     }
   },
 }

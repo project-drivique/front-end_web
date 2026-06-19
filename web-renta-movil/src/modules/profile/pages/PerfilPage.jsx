@@ -4,7 +4,6 @@ import { usePerfil } from '../hooks/usePerfil'
 import { useAuthStore } from '@/store/authStore'
 import { showAlert } from '@/utils/swalConfig'
 import ModalVerificacionContrasena from '../components/ModalVerificacionContrasena'
-import CambiarContrasena from '../components/CambiarContrasena'
 import { FaEdit, FaCheck, FaTimes, FaUser, FaEnvelope, FaPhone, FaIdCard, FaBirthdayCake, FaLock } from 'react-icons/fa'
 
 const colores = (dark) => ({
@@ -366,9 +365,6 @@ export default function PerfilPage() {
             </div>
           </div>
         </div>
-
-        {/* Seguridad y Contraseña */}
-        <CambiarContrasena c={c} />
 
         {/* Botones cuando está en modo edición */}
         {modoEdicion && (
