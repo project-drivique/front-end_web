@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../../../store/authStore'
 import logo from '@/assets/logo/logo.png'
@@ -46,20 +46,27 @@ export default function VehiculoDetallePage() {
   });
   const [modalEditar, setModalEditar] = useState(null);
   const [datosForm,   setDatosForm]   = useState({
-    nombre: '', correo: usuario?.correo || '', celular: '',
+    nombre: '', correo: '', celular: '',
     nacionalidad: 'Colombia', tipoDoc: 'CC', numDoc: '',
     vuelo: false, numVuelo: '', terminos: false,
   });
   const [errores,  setErrores]  = useState({});
   const [exito,    setExito]    = useState(false);
+  const prellenado = useRef(false);
 
   useEffect(() => {
-    // Si no está autenticado, opcionalmente podrías redirigir o mostrar un advertencia
-    // Esto ya se previene desde el botón "Reservar", pero si entran por URL:
-    if (!usuario) {
-      // navigate('/registro'); // <- Descomentar si requieres protección fuerte aquí
-    }
-  }, [usuario, navigate]);
+    if (!usuario || prellenado.current) return
+    prellenado.current = true
+    const tel = (usuario.telefono || '').replace(/\D/g, '')
+    const celular = tel.startsWith('57') && tel.length > 10 ? tel.slice(2) : tel
+    setDatosForm(prev => ({
+      ...prev,
+      nombre:  [usuario.nombre, usuario.apellido].filter(Boolean).join(' '),
+      correo:  usuario.correo  || '',
+      celular,
+      numDoc:  usuario.cedula  || '',
+    }))
+  }, [usuario]);
 
   if (!vehiculo) return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 14 }}>
@@ -102,15 +109,12 @@ export default function VehiculoDetallePage() {
         <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px', height: '100%', display: 'flex', alignItems: 'center', gap: 20 }}>
           <Link to="/"><img src={logo} alt="RentaMovil" style={{ height: 42 }} /></Link>
           <div style={{ flex: 1 }} />
-          {usuario
-            ? <span style={{ fontSize: 14, color: 'var(--texto-second)', fontWeight: 700 }}>Hola, {usuario.nombre?.split(' ')[0]} 👋</span>
-            : (
-              <div style={{ display: 'flex', gap: 12 }}>
-                <Link to="/login"    style={{ padding: '10px 20px', borderRadius: 9999, border: '2px solid #bfdbfe', color: '#1e3a8a', fontSize: 14, fontWeight: 700, textDecoration: 'none', transition: 'all 200ms ease' }}>Iniciar sesión</Link>
-                <Link to="/registro" style={{ padding: '10px 20px', borderRadius: 9999, background: '#1e3a8a', color: '#fff', fontSize: 14, fontWeight: 700, textDecoration: 'none', transition: 'all 200ms ease' }}>Registrarse</Link>
-              </div>
-            )
-          }
+          {!usuario && (
+            <div style={{ display: 'flex', gap: 12 }}>
+              <Link to="/login"    style={{ padding: '10px 20px', borderRadius: 9999, border: '2px solid #bfdbfe', color: '#1e3a8a', fontSize: 14, fontWeight: 700, textDecoration: 'none', transition: 'all 200ms ease' }}>Iniciar sesión</Link>
+              <Link to="/registro" style={{ padding: '10px 20px', borderRadius: 9999, background: '#1e3a8a', color: '#fff', fontSize: 14, fontWeight: 700, textDecoration: 'none', transition: 'all 200ms ease' }}>Registrarse</Link>
+            </div>
+          )}
         </div>
       </nav>
 

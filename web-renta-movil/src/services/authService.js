@@ -18,13 +18,21 @@ const MOCK_USERS = [
     correo: 'admin@rentamovil.com',
     contrasena: 'Admin123*',
     nombre: 'Administrador',
+    apellido: 'RentaMovil',
     rol: 'administrador',
+    telefono: '+573001234567',
+    cedula: '1234567890',
+    fechaNacimiento: '1990-05-15',
   },
   {
     correo: 'cliente@rentamovil.com',
     contrasena: 'Cliente123*',
-    nombre: '',
+    nombre: 'Juan',
+    apellido: 'Pérez',
     rol: 'usuario',
+    telefono: '+573109876543',
+    cedula: '9876543210',
+    fechaNacimiento: '1995-03-20',
   },
 ]
 
@@ -41,8 +49,13 @@ export const authService = {
     if (usuario) {
       return {
         token: generateMockToken(),
+        correo: usuario.correo,
         nombre: usuario.nombre,
+        apellido: usuario.apellido,
         rol: usuario.rol,
+        telefono: usuario.telefono,
+        cedula: usuario.cedula,
+        fechaNacimiento: usuario.fechaNacimiento,
         requiere2FA: false,
       }
     }
@@ -60,8 +73,13 @@ export const authService = {
     if (usuario) {
       return {
         token: generateMockToken(),
+        correo: usuario.correo,
         nombre: usuario.nombre,
+        apellido: usuario.apellido,
         rol: usuario.rol,
+        telefono: usuario.telefono,
+        cedula: usuario.cedula,
+        fechaNacimiento: usuario.fechaNacimiento,
       }
     }
 
@@ -100,3 +118,4 @@ export const authService = {
     return data
   },
 }
+

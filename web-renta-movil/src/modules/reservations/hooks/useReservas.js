@@ -1,11 +1,17 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../../../store/authStore'
+
+const limpiarTelefono = (tel = '') => {
+  const solo = tel.replace(/\D/g, '')
+  return solo.startsWith('57') && solo.length > 10 ? solo.slice(2) : solo
+}
 
 // ── Lógica de reserva extraída de VehiculoDetallePage ──
 export function useReservas(vehiculo) {
   const navigate    = useNavigate()
   const { usuario } = useAuthStore()
+  const prellenado  = useRef(false)
 
   const [pantalla,    setPantalla]   = useState(1)
   const [seguroIdx,   setSeguroIdx]  = useState(0)
@@ -21,7 +27,7 @@ export function useReservas(vehiculo) {
   const [modalEditar, setModalEditar] = useState(null)
   const [datosForm,   setDatosForm]   = useState({
     nombre:       '',
-    correo:       usuario?.correo || '',
+    correo:       '',
     celular:      '',
     nacionalidad: 'Colombia',
     tipoDoc:      'CC',
@@ -32,6 +38,18 @@ export function useReservas(vehiculo) {
   })
   const [errores, setErrores] = useState({})
   const [exito,   setExito]   = useState(false)
+
+  useEffect(() => {
+    if (!usuario || prellenado.current) return
+    prellenado.current = true
+    setDatosForm(prev => ({
+      ...prev,
+      nombre:  [usuario.nombre, usuario.apellido].filter(Boolean).join(' '),
+      correo:  usuario.correo  || '',
+      celular: limpiarTelefono(usuario.telefono),
+      numDoc:  usuario.cedula  || '',
+    }))
+  }, [usuario])
 
   const handleCambioDato = (campo, valor) =>
     setDatosForm(prev => ({ ...prev, [campo]: valor }))

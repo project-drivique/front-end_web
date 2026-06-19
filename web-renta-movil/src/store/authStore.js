@@ -6,6 +6,8 @@ export const AUTH_KEYS = {
   usuario: 'renta_user',
 }
 
+let isRehydrating = true
+
 export const useAuthStore = create(
   persist(
     (set) => ({
@@ -16,6 +18,12 @@ export const useAuthStore = create(
 
       login: (token, usuario) => {
         set({ token, usuario, sesion2FA: null, requiere2FA: false })
+      },
+
+      actualizarUsuario: (datosActualizados) => {
+        set((state) => ({
+          usuario: { ...state.usuario, ...datosActualizados },
+        }))
       },
 
       iniciar2FA: (sesionTemporal) => {
@@ -37,6 +45,11 @@ export const useAuthStore = create(
         token: state.token,
         usuario: state.usuario,
       }),
+      onRehydrateStorage: () => (state) => {
+        isRehydrating = false
+      },
     }
   )
 )
+
+export const getIsRehydrating = () => isRehydrating
