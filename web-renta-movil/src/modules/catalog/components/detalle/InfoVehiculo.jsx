@@ -1,8 +1,10 @@
+import { useTranslation } from 'react-i18next';
 import { FaCar, FaSuitcase, FaBolt, FaPalette, FaCalendarAlt, FaSnowflake, FaRegHeart } from 'react-icons/fa';
 import { useLanding } from '../../../landing/LandingContext';
 import { formatCurrency } from '@/utils/monedaUtils';
 
 export default function InfoVehiculo({ vehiculo }) {
+  const { t } = useTranslation()
   const { moneda } = useLanding();
 
   return (
@@ -19,24 +21,23 @@ export default function InfoVehiculo({ vehiculo }) {
             <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
               <span style={{ fontSize: 12, color: 'var(--texto-primary)' }}><FaCar style={{ verticalAlign: 'middle', marginRight: 4, color: 'var(--texto-second)' }} /> {vehiculo.transmision}</span>
               <span style={{ fontSize: 12, color: 'var(--texto-primary)' }}><FaBolt style={{ verticalAlign: 'middle', marginRight: 4, color: 'var(--texto-second)' }} /> {vehiculo.combustible}</span>
-              <span style={{ fontSize: 12, color: 'var(--texto-primary)' }}><FaRegHeart style={{ verticalAlign: 'middle', marginRight: 4, color: 'var(--texto-second)' }} /> {vehiculo.pasajeros} personas</span>
+              <span style={{ fontSize: 12, color: 'var(--texto-primary)' }}><FaRegHeart style={{ verticalAlign: 'middle', marginRight: 4, color: 'var(--texto-second)' }} /> {vehiculo.pasajeros} {t('vehiculo.passengers')}</span>
             </div>
           </div>
           <div style={{ textAlign: 'right' }}>
             <span style={{ fontSize: 26, fontWeight: 800, color: 'var(--texto-primary)' }}>{formatCurrency(vehiculo.precio, moneda)}</span>
-            <span style={{ fontSize: 12, color: 'var(--texto-second)' }}>/día</span>
+            <span style={{ fontSize: 12, color: 'var(--texto-second)' }}>/{t('catalogo.day')}</span>
           </div>
         </div>
-        
-        {/* Características en cuadrícula */}
+
         <div style={{ marginTop: 20, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(110px, 1fr))', gap: 10 }}>
           {[
-            { Icono: FaCar, l: `${vehiculo.puertas} puertas` },
-            { Icono: FaSuitcase, l: `${vehiculo.maletero}L maletero` },
+            { Icono: FaCar, l: `${vehiculo.puertas} ${t('vehiculo.doors')}` },
+            { Icono: FaSuitcase, l: `${vehiculo.maletero}L ${t('vehiculo.trunk')}` },
             { Icono: FaBolt, l: vehiculo.cilindraje },
             { Icono: FaPalette, l: vehiculo.color },
-            { Icono: FaCalendarAlt, l: `Año ${vehiculo.año}` },
-            { Icono: FaSnowflake, l: 'Aire acond.' },
+            { Icono: FaCalendarAlt, l: `${t('vehiculo.year')} ${vehiculo.año}` },
+            { Icono: FaSnowflake, l: t('vehiculo.airConditioning') },
           ].map((c, i) => (
             <div key={i} style={{ background: 'var(--bg-item)', borderRadius: 10, padding: '10px', border: '1px solid var(--borde)', display: 'flex', alignItems: 'center', gap: 6, transition: 'background 200ms ease' }}>
               <span style={{ fontSize: 16, color: '#2563eb' }}>

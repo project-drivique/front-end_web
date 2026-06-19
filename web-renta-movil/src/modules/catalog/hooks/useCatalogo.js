@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useCallback } from 'react'
+﻿import { useEffect, useMemo, useState, useCallback } from 'react'
 import { catalogoService } from '../../../services/catalogoService'
 
 const FILTROS_BASE = {
@@ -35,11 +35,11 @@ export function useCatalogo({ esFavorito = () => false } = {}) {
   const [errorBusqueda, setErrorBusqueda] = useState('')
   const [pagina, setPagina] = useState(1)
   const [soloFavoritos, setSoloFavoritos] = useState(() => {
-    return sessionStorage.getItem('rentamovil_soloFavoritos') === 'true'
+    return sessionStorage.getItem('Drivique_soloFavoritos') === 'true'
   })
 
   useEffect(() => {
-    sessionStorage.setItem('rentamovil_soloFavoritos', soloFavoritos)
+    sessionStorage.setItem('Drivique_soloFavoritos', soloFavoritos)
   }, [soloFavoritos])
 
   const cargarVehiculos = useCallback(async () => {

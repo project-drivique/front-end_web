@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { authService } from '../../../services/authService'
 import { adminService } from '../../../services/adminService'
@@ -56,7 +56,7 @@ export function useLogin() {
     setErrores({ correo: '', contrasena: '', general: '' })
 
     try {
-      const servicio = correo.trim().toLowerCase() === 'admin@rentamovil.com' ? adminService.login : authService.login
+      const servicio = correo.trim().toLowerCase() === 'admin@drivique.com' ? adminService.login : authService.login
       const datos = await servicio({ correo, contrasena })
 
       if (datos.requiere2FA) {
