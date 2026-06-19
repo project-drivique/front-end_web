@@ -66,9 +66,13 @@ export function useLogin() {
       }
 
       storeLogin(datos.token, {
-        correo,
+        correo: datos.correo || correo,
         nombre: datos.nombre,
+        apellido: datos.apellido,
         rol: datos.rol,
+        telefono: datos.telefono,
+        cedula: datos.cedula,
+        fechaNacimiento: datos.fechaNacimiento,
       })
 
       setExito('¡Acceso exitoso! Redirigiendo...')
