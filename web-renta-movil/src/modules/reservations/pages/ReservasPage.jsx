@@ -553,15 +553,12 @@ export default function ReservasPage() {
         <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px', height: '100%', display: 'flex', alignItems: 'center', gap: 20 }}>
           <Link to="/"><img src={logo} alt="RentaMovil" style={{ height: 40 }} /></Link>
           <div style={{ flex: 1 }} />
-          {usuario
-            ? <span style={{ fontSize: 13, color: '#475569', fontWeight: 600 }}>Hola, {usuario.nombre?.split(' ')[0]} 👋</span>
-            : (
-              <div style={{ display: 'flex', gap: 10 }}>
-                <Link to="/login" style={{ padding: '8px 18px', borderRadius: 9999, border: '2px solid rgba(30,58,138,0.25)', color: '#1e3a8a', fontSize: 13, fontWeight: 700, textDecoration: 'none' }}>Iniciar sesión</Link>
-                <Link to="/registro" style={{ padding: '8px 18px', borderRadius: 9999, background: '#1e3a8a', color: '#fff', fontSize: 13, fontWeight: 700, textDecoration: 'none' }}>Registrarse</Link>
-              </div>
-            )
-          }
+          {!usuario && (
+            <div style={{ display: 'flex', gap: 10 }}>
+              <Link to="/login" style={{ padding: '8px 18px', borderRadius: 9999, border: '2px solid rgba(30,58,138,0.25)', color: '#1e3a8a', fontSize: 13, fontWeight: 700, textDecoration: 'none' }}>Iniciar sesión</Link>
+              <Link to="/registro" style={{ padding: '8px 18px', borderRadius: 9999, background: '#1e3a8a', color: '#fff', fontSize: 13, fontWeight: 700, textDecoration: 'none' }}>Registrarse</Link>
+            </div>
+          )}
         </div>
       </nav>
 
