@@ -1,8 +1,10 @@
-import { Link } from 'react-router-dom'
+﻿import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useRecuperar } from '../hooks/useRecuperar'
-import logo from '@/assets/logo/logo.png'
+import logo from '@/assets/logo.png'
 
 export default function RecuperarContrasenaPage() {
+  const { t } = useTranslation()
   const { correo, setCorreo, cargando, enviado, error, handleSubmit } = useRecuperar()
 
   return (
@@ -22,7 +24,7 @@ export default function RecuperarContrasenaPage() {
         <div style={{ position: 'absolute', bottom: '33%', right: '40px', width: '160px', height: '160px', borderRadius: '50%', border: '1px solid rgba(255,255,255,0.05)', background: 'rgba(255,255,255,0.03)' }} />
 
         <div style={{ position: 'relative', zIndex: 1, flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '56px', textAlign: 'center', gap: '32px' }}>
-          <img src={logo} alt="RentaMovil" style={{ height: '60px', filter: 'drop-shadow(0 4px 16px rgba(0,0,0,0.3)) brightness(0) invert(1)' }} />
+          <img src={logo} alt="Drivique" style={{ height: '60px', filter: 'drop-shadow(0 4px 16px rgba(0,0,0,0.3)) brightness(0) invert(1)' }} />
 
           {!enviado ? (
             <>
@@ -35,8 +37,8 @@ export default function RecuperarContrasenaPage() {
                 </p>
               </div>
               <div style={{ width: '100%', maxWidth: '280px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                {['✓  Enlace válido por 30 minutos', '✓  Revisa tu bandeja de entrada', '✓  Sin perder tus datos ni reservas'].map(t => (
-                  <p key={t} style={{ color: 'rgba(147,197,253,0.65)', fontSize: '14px', margin: 0, textAlign: 'left' }}>{t}</p>
+                {['✓  Enlace válido por 30 minutos', '✓  Revisa tu bandeja de entrada', '✓  Sin perder tus datos ni reservas'].map(item => (
+                  <p key={item} style={{ color: 'rgba(147,197,253,0.65)', fontSize: '14px', margin: 0, textAlign: 'left' }}>{item}</p>
                 ))}
               </div>
             </>
@@ -51,8 +53,8 @@ export default function RecuperarContrasenaPage() {
                 </p>
               </div>
               <div style={{ width: '100%', maxWidth: '280px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                {['✓  Enlace válido por 30 minutos', '✓  Revisa también tu carpeta de spam', '✓  Tu cuenta sigue protegida'].map(t => (
-                  <p key={t} style={{ color: 'rgba(147,197,253,0.65)', fontSize: '14px', margin: 0, textAlign: 'left' }}>{t}</p>
+                {['✓  Enlace válido por 30 minutos', '✓  Revisa también tu carpeta de spam', '✓  Tu cuenta sigue protegida'].map(item => (
+                  <p key={item} style={{ color: 'rgba(147,197,253,0.65)', fontSize: '14px', margin: 0, textAlign: 'left' }}>{item}</p>
                 ))}
               </div>
             </>
@@ -60,7 +62,7 @@ export default function RecuperarContrasenaPage() {
         </div>
 
         <div style={{ position: 'relative', zIndex: 1, padding: '16px 56px', borderTop: '1px solid rgba(255,255,255,0.08)', textAlign: 'center' }}>
-          <p style={{ color: 'rgba(147,197,253,0.35)', fontSize: '12px', margin: 0 }}>RentaMóvil © 2026</p>
+          <p style={{ color: 'rgba(147,197,253,0.35)', fontSize: '12px', margin: 0 }}>Drivique © 2026</p>
         </div>
       </div>
 
@@ -69,7 +71,7 @@ export default function RecuperarContrasenaPage() {
 
         <div style={{ marginBottom: '32px' }} className="logo-mobile">
           <style>{`@media(min-width:1024px){.logo-mobile{display:none}}`}</style>
-          <img src={logo} alt="RentaMovil" style={{ height: '48px', display: 'block', margin: '0 auto' }} />
+          <img src={logo} alt="Drivique" style={{ height: '48px', display: 'block', margin: '0 auto' }} />
         </div>
 
         <div style={{ width: '100%', maxWidth: '400px', marginBottom: '12px' }}>
@@ -82,7 +84,7 @@ export default function RecuperarContrasenaPage() {
             <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
             </svg>
-            Volver al inicio de sesión
+            {t('recuperar.backToLogin')}
           </Link>
         </div>
 
@@ -92,10 +94,10 @@ export default function RecuperarContrasenaPage() {
             <>
               <div style={{ marginBottom: '28px' }}>
                 <h1 style={{ fontSize: '1.6rem', fontWeight: 900, color: '#0f172a', margin: '0 0 6px' }}>
-                  Recuperar contraseña
+                  {t('recuperar.title')}
                 </h1>
                 <p style={{ color: '#64748b', fontSize: '14px', margin: 0 }}>
-                  Ingresa tu correo y te enviaremos un enlace de recuperación
+                  {t('recuperar.subtitle')}
                 </p>
               </div>
 
@@ -111,14 +113,14 @@ export default function RecuperarContrasenaPage() {
               <form onSubmit={handleSubmit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                 <div>
                   <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: '#374151', marginBottom: '8px' }}>
-                    Correo electrónico
+                    {t('recuperar.email')}
                   </label>
                   <input
                     type="email"
                     value={correo}
                     onChange={(e) => setCorreo(e.target.value)}
                     disabled={cargando}
-                    placeholder="ejemplo@correo.com"
+                    placeholder={t('recuperar.emailPlaceholder')}
                     autoComplete="email"
                     style={{
                       width: '100%', padding: '12px 16px', borderRadius: '12px',
@@ -144,9 +146,9 @@ export default function RecuperarContrasenaPage() {
                   {cargando
                     ? <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
                         <span style={{ width: '16px', height: '16px', border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#fff', borderRadius: '50%', animation: 'spin 0.7s linear infinite', display: 'inline-block' }} />
-                        Enviando...
+                        {t('recuperar.sending')}
                       </span>
-                    : 'Enviar enlace de recuperación'
+                    : t('recuperar.submit')
                   }
                 </button>
               </form>
@@ -160,7 +162,7 @@ export default function RecuperarContrasenaPage() {
                 </svg>
               </div>
               <h2 style={{ fontSize: '1.4rem', fontWeight: 900, color: '#0f172a', margin: '0 0 8px' }}>
-                Revisa tu correo
+                {t('recuperar.successTitle')}
               </h2>
               <p style={{ color: '#64748b', fontSize: '14px', margin: '0 0 6px' }}>
                 Si <strong style={{ color: '#1e293b' }}>{correo}</strong> está registrado, recibirás un enlace en los próximos minutos.
@@ -176,7 +178,7 @@ export default function RecuperarContrasenaPage() {
                   fontWeight: 700, fontSize: '14px', textDecoration: 'none', textAlign: 'center',
                   boxShadow: '0 4px 16px rgba(30,58,138,0.25)',
                 }}>
-                Volver al inicio de sesión
+                {t('recuperar.backToLogin')}
               </Link>
             </div>
           )}

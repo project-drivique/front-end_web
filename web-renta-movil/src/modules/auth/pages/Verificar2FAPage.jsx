@@ -1,7 +1,9 @@
+﻿import { useTranslation } from 'react-i18next'
 import { useVerificar2FA } from '../hooks/useVerificar2FA'
-import logo from '@/assets/logo/logo.png'
+import logo from '@/assets/logo.png'
 
 export default function Verificar2FAPage() {
+  const { t } = useTranslation()
   const {
     codigo, cargando, error, exito,
     segundos, reenviando,
@@ -28,7 +30,7 @@ export default function Verificar2FAPage() {
         <div style={{ position: 'absolute', bottom: '33%', right: '40px', width: '160px', height: '160px', borderRadius: '50%', border: '1px solid rgba(255,255,255,0.05)', background: 'rgba(255,255,255,0.03)' }} />
 
         <div style={{ position: 'relative', zIndex: 1, flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '56px', textAlign: 'center', gap: '32px' }}>
-          <img src={logo} alt="RentaMovil" style={{ height: '60px', filter: 'drop-shadow(0 4px 16px rgba(0,0,0,0.3)) brightness(0) invert(1)' }} />
+          <img src={logo} alt="Drivique" style={{ height: '60px', filter: 'drop-shadow(0 4px 16px rgba(0,0,0,0.3)) brightness(0) invert(1)' }} />
           <div>
             <h2 style={{ color: '#fff', fontSize: '1.75rem', fontWeight: 900, margin: '0 0 10px', lineHeight: 1.2 }}>
               Verificación en dos pasos
@@ -42,14 +44,14 @@ export default function Verificar2FAPage() {
               '✓  Código válido por 10 minutos',
               '✓  Revisa tu correo o app autenticadora',
               '✓  Nunca compartás tu código',
-            ].map(t => (
-              <p key={t} style={{ color: 'rgba(147,197,253,0.65)', fontSize: '14px', margin: 0, textAlign: 'left' }}>{t}</p>
+            ].map(item => (
+              <p key={item} style={{ color: 'rgba(147,197,253,0.65)', fontSize: '14px', margin: 0, textAlign: 'left' }}>{item}</p>
             ))}
           </div>
         </div>
 
         <div style={{ position: 'relative', zIndex: 1, padding: '16px 56px', borderTop: '1px solid rgba(255,255,255,0.08)', textAlign: 'center' }}>
-          <p style={{ color: 'rgba(147,197,253,0.35)', fontSize: '12px', margin: 0 }}>RentaMóvil © 2026</p>
+          <p style={{ color: 'rgba(147,197,253,0.35)', fontSize: '12px', margin: 0 }}>Drivique © 2026</p>
         </div>
       </div>
 
@@ -59,7 +61,7 @@ export default function Verificar2FAPage() {
         {/* Logo mobile */}
         <div style={{ marginBottom: '32px' }} className="logo-mobile">
           <style>{`@media(min-width:1024px){.logo-mobile{display:none}}`}</style>
-          <img src={logo} alt="RentaMovil" style={{ height: '48px', display: 'block', margin: '0 auto' }} />
+          <img src={logo} alt="Drivique" style={{ height: '48px', display: 'block', margin: '0 auto' }} />
         </div>
 
         {/* Volver */}
@@ -75,7 +77,7 @@ export default function Verificar2FAPage() {
               <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
               </svg>
-              Volver al inicio de sesión
+              {t('verificar2fa.backToLogin')}
             </button>
           </div>
         )}
@@ -91,10 +93,10 @@ export default function Verificar2FAPage() {
                 </svg>
               </div>
               <h2 style={{ fontSize: '1.4rem', fontWeight: 900, color: '#0f172a', margin: '0 0 8px' }}>
-                ¡Identidad verificada!
+                {t('verificar2fa.successTitle')}
               </h2>
               <p style={{ color: '#64748b', fontSize: '14px', margin: 0 }}>
-                Acceso concedido. Redirigiendo…
+                {t('common.loading')}
               </p>
             </div>
 
@@ -108,10 +110,10 @@ export default function Verificar2FAPage() {
                   </svg>
                 </div>
                 <h1 style={{ fontSize: '1.5rem', fontWeight: 900, color: '#0f172a', margin: '0 0 6px' }}>
-                  Verificación en dos pasos
+                  {t('verificar2fa.title')}
                 </h1>
                 <p style={{ color: '#64748b', fontSize: '14px', margin: 0 }}>
-                  Ingresa el código de 6 dígitos enviado a tu correo o generado por tu app autenticadora
+                  {t('verificar2fa.subtitle')}
                 </p>
               </div>
 
@@ -170,16 +172,16 @@ export default function Verificar2FAPage() {
                   {cargando
                     ? <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
                         <span style={{ width: '16px', height: '16px', border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#fff', borderRadius: '50%', animation: 'spin 0.7s linear infinite', display: 'inline-block' }} />
-                        Verificando...
+                        {t('verificar2fa.verifying')}
                       </span>
-                    : 'Verificar código'
+                    : t('verificar2fa.submit')
                   }
                 </button>
 
                 {/* Reenviar código */}
                 <div style={{ textAlign: 'center' }}>
                   <p style={{ fontSize: '13px', color: '#64748b', margin: '0 0 6px' }}>
-                    ¿No recibiste el código?
+                    {t('verificar2fa.codeLabel')}
                   </p>
                   {segundos > 0 ? (
                     <p style={{ fontSize: '13px', color: '#94a3b8', margin: 0 }}>
@@ -192,7 +194,7 @@ export default function Verificar2FAPage() {
                       disabled={reenviando}
                       style={{ background: 'none', border: 'none', cursor: reenviando ? 'not-allowed' : 'pointer', color: '#1e3a8a', fontSize: '13px', fontWeight: 700, padding: 0, opacity: reenviando ? 0.6 : 1 }}
                     >
-                      {reenviando ? 'Reenviando…' : 'Reenviar código'}
+                      {reenviando ? t('verificar2fa.resending') : t('verificar2fa.resend')}
                     </button>
                   )}
                 </div>

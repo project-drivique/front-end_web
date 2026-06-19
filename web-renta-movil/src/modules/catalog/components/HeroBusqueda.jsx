@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next'
+
 export default function HeroBusqueda({
   c,
   cargando,
@@ -11,6 +13,7 @@ export default function HeroBusqueda({
   onBuscarInvitado = () => {},
   invitado = false,
 }) {
+  const { t } = useTranslation()
   const buscar = invitado ? onBuscarInvitado : handleBuscar
 
   return (
@@ -19,17 +22,17 @@ export default function HeroBusqueda({
         <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '14px', flexWrap: 'wrap', gap: '8px' }}>
           <div>
             <span style={{ display: 'inline-block', fontSize: '11px', fontWeight: 700, color: c.accentText, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '4px' }}>
-              Flota disponible
+              {t('catalogo.fleet')}
             </span>
             <h1 style={{ fontSize: 'clamp(1.4rem,3vw,2rem)', fontWeight: 900, color: c.textPrimary, margin: 0 }}>
-              Catálogo de vehículos
+              {t('catalogo.title')}
             </h1>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             {!cargando && (
               <span style={{ fontSize: '13px', color: c.textSecondary, fontWeight: 600 }}>
-                {resultado.length} vehículo{resultado.length !== 1 ? 's' : ''} encontrado{resultado.length !== 1 ? 's' : ''}
+                {resultado.length} {resultado.length !== 1 ? t('catalogo.noResults') : t('catalogo.available')}
               </span>
             )}
 
@@ -50,7 +53,7 @@ export default function HeroBusqueda({
                 whiteSpace: 'nowrap'
               }}
             >
-              ← Volver al inicio
+              ← {t('common.backToHome')}
             </a>
           </div>
         </div>
@@ -58,15 +61,15 @@ export default function HeroBusqueda({
         <div style={{ background: c.heroCardBg, borderRadius: '16px', border: `1px solid ${c.heroCardBorder}`, boxShadow: c.heroCardShadow, padding: '16px 16px' }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, minmax(0, 1fr))', gap: '14px', alignItems: 'end' }}>
             <div>
-              <label style={{ ...labelStyle, display: 'block' }}>Lugar de recogida</label>
+              <label style={{ ...labelStyle, display: 'block' }}>{t('catalogo.pickupPlace')}</label>
               <select value={busquedaForm.lugarRecogida || ''} onChange={e => setForm('lugarRecogida', e.target.value)} style={inputStyle}>
-                <option value="">Selecciona punto</option>
+                <option value="">{t('catalogo.selectPoint')}</option>
                 {['Centro', 'Norte', 'Sur', 'Occidente'].map(s => <option key={s} value={s}>{s}</option>)}
               </select>
             </div>
 
             <div>
-              <label style={{ ...labelStyle, display: 'block' }}>Lugar de devolución</label>
+              <label style={{ ...labelStyle, display: 'block' }}>{t('catalogo.returnPlace')}</label>
               <select
                 value={busquedaForm.mismoLugar ? '__mismo__' : (busquedaForm.lugarDevolucion || '')}
                 onChange={e => {
@@ -80,18 +83,18 @@ export default function HeroBusqueda({
                 }}
                 style={inputStyle}
               >
-                <option value="__mismo__">Selecciona punto</option>
+                <option value="__mismo__">{t('catalogo.selectPoint')}</option>
                 {['Centro', 'Norte', 'Sur', 'Occidente'].map(s => <option key={s} value={s}>{s}</option>)}
               </select>
             </div>
 
             <div>
-              <label style={{ ...labelStyle, display: 'block' }}>Fecha de recogida</label>
+              <label style={{ ...labelStyle, display: 'block' }}>{t('vehiculo.pickupDate')}</label>
               <input type="date" value={busquedaForm.fechaInicio || ''} onChange={e => setForm('fechaInicio', e.target.value)} style={inputStyle} />
             </div>
 
             <div>
-              <label style={{ ...labelStyle, display: 'block' }}>Fecha de devolución</label>
+              <label style={{ ...labelStyle, display: 'block' }}>{t('vehiculo.returnDate')}</label>
               <input type="date" value={busquedaForm.fechaFin || ''} onChange={e => setForm('fechaFin', e.target.value)} style={inputStyle} />
             </div>
 
@@ -111,7 +114,7 @@ export default function HeroBusqueda({
                   boxShadow: '0 4px 14px rgba(30,58,138,0.25)'
                 }}
               >
-                Buscar
+                {t('catalogo.searchBtn')}
               </button>
             </div>
           </div>
