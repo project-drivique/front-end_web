@@ -1,4 +1,4 @@
-// src/modules/landing/traducciones.js
+﻿// src/modules/landing/traducciones.js
 
 export const IDIOMAS = {
   es: { label: 'Español',             flag: '🇪🇸' },
@@ -48,7 +48,7 @@ const traducciones = {
     },
     cta: {
       titulo: '¿Listo para manejar sin complicaciones?',
-      sub: 'Únete a cientos de conductores que ya confían en RentaMovil.',
+      sub: 'Únete a cientos de conductores que ya confían en Drivique.',
       btn1: 'Crear cuenta gratis', btn2: 'Ya tengo cuenta',
     },
     footer: {
@@ -58,7 +58,7 @@ const traducciones = {
         { title: 'Soporte',    links: ['Preguntas frecuentes', 'Contacto', 'Quejas y sugerencias', 'WhatsApp 24/7'] },
         { title: 'Legal',      links: ['Términos y condiciones', 'Política de privacidad', 'Ley 1581 de 2012', 'OWASP Top 10'] },
       ],
-      copy: '© 2025 RentaMovil. Todos los derechos reservados. Ficha 3145555 — SENA CIES.',
+      copy: '© 2025 Drivique. Todos los derechos reservados. Ficha 3145555 — SENA CIES.',
     },
   },
 
@@ -101,7 +101,7 @@ const traducciones = {
     },
     cta: {
       titulo: 'Ready to drive without complications?',
-      sub: 'Join hundreds of drivers who already trust RentaMovil.',
+      sub: 'Join hundreds of drivers who already trust Drivique.',
       btn1: 'Create free account', btn2: 'I already have an account',
     },
     footer: {
@@ -111,7 +111,7 @@ const traducciones = {
         { title: 'Support',  links: ['FAQ', 'Contact', 'Complaints & suggestions', 'WhatsApp 24/7'] },
         { title: 'Legal',    links: ['Terms & conditions', 'Privacy policy', 'Law 1581 of 2012', 'OWASP Top 10'] },
       ],
-      copy: '© 2025 RentaMovil. All rights reserved. File 3145555 — SENA CIES.',
+      copy: '© 2025 Drivique. All rights reserved. File 3145555 — SENA CIES.',
     },
   },
 
@@ -154,7 +154,7 @@ const traducciones = {
     },
     cta: {
       titulo: 'Prêt à conduire sans complications ?',
-      sub: 'Rejoignez des centaines de conducteurs qui font confiance à RentaMovil.',
+      sub: 'Rejoignez des centaines de conducteurs qui font confiance à Drivique.',
       btn1: 'Créer un compte gratuit', btn2: "J'ai déjà un compte",
     },
     footer: {
@@ -164,7 +164,7 @@ const traducciones = {
         { title: 'Support',    links: ['FAQ', 'Contact', 'Plaintes et suggestions', 'WhatsApp 24/7'] },
         { title: 'Légal',      links: ['Conditions générales', 'Politique de confidentialité', 'Loi 1581 de 2012', 'OWASP Top 10'] },
       ],
-      copy: '© 2025 RentaMovil. Tous droits réservés. Dossier 3145555 — SENA CIES.',
+      copy: '© 2025 Drivique. Tous droits réservés. Dossier 3145555 — SENA CIES.',
     },
   },
 
@@ -207,7 +207,7 @@ const traducciones = {
     },
     cta: {
       titulo: 'Pronto para conduzir sem complicações?',
-      sub: 'Junte-se a centenas de condutores que já confiam na RentaMovil.',
+      sub: 'Junte-se a centenas de condutores que já confiam na Drivique.',
       btn1: 'Criar conta grátis', btn2: 'Já tenho conta',
     },
     footer: {
@@ -217,7 +217,7 @@ const traducciones = {
         { title: 'Suporte',    links: ['Perguntas frequentes', 'Contacto', 'Reclamações e sugestões', 'WhatsApp 24/7'] },
         { title: 'Legal',      links: ['Termos e condições', 'Política de privacidade', 'Lei 1581 de 2012', 'OWASP Top 10'] },
       ],
-      copy: '© 2025 RentaMovil. Todos os direitos reservados. Ficha 3145555 — SENA CIES.',
+      copy: '© 2025 Drivique. Todos os direitos reservados. Ficha 3145555 — SENA CIES.',
     },
   },
 
@@ -260,7 +260,7 @@ const traducciones = {
     },
     cta: {
       titulo: 'Pronto para dirigir sem complicações?',
-      sub: 'Junte-se a centenas de motoristas que já confiam na RentaMovil.',
+      sub: 'Junte-se a centenas de motoristas que já confiam na Drivique.',
       btn1: 'Criar conta grátis', btn2: 'Já tenho conta',
     },
     footer: {
@@ -270,7 +270,7 @@ const traducciones = {
         { title: 'Suporte',    links: ['Perguntas frequentes', 'Contato', 'Reclamações e sugestões', 'WhatsApp 24/7'] },
         { title: 'Legal',      links: ['Termos e condições', 'Política de privacidade', 'Lei 1581 de 2012', 'OWASP Top 10'] },
       ],
-      copy: '© 2025 RentaMovil. Todos os direitos reservados. Ficha 3145555 — SENA CIES.',
+      copy: '© 2025 Drivique. Todos os direitos reservados. Ficha 3145555 — SENA CIES.',
     },
   },
 }

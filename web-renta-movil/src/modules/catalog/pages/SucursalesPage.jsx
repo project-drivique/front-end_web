@@ -1,9 +1,10 @@
-import { useState, useMemo, useRef } from 'react'
+﻿import { useState, useMemo, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useLanding } from '../../landing/LandingContext'
 import { formatCurrency } from '@/utils/monedaUtils'
 import { useCatalogo } from '../hooks/useCatalogo'
-import logo from '@/assets/logo/logo.png'
+import logo from '@/assets/logo.png'
 import GridVehiculos from '../components/GridVehiculos'
 import EstadoCarga from '../components/EstadoCarga'
 import EstadoError from '../components/EstadoError'
@@ -131,6 +132,7 @@ const SUCURSALES_DATA = [
 ]
 
 export default function SucursalesPage() {
+  const { t } = useTranslation()
   const { tema, moneda } = useLanding()
   const navigate = useNavigate()
   const esModoOscuro = tema === 'oscuro'
@@ -142,11 +144,11 @@ export default function SucursalesPage() {
   const handleBuscarInvitado = () => {
     showAlert({
       icon: 'info',
-      title: 'Registro Requerido',
-      text: 'Para consultar o reservar vehículos de esta sucursal es necesario acceder a tu cuenta.',
-      confirmButtonText: 'Ir a registro',
+      title: t('catalogo.registrationRequired'),
+      text: t('catalogo.registrationRequiredText'),
+      confirmButtonText: t('catalogo.goToRegister'),
       showCancelButton: true,
-      cancelButtonText: 'Cancelar'
+      cancelButtonText: t('common.cancel')
     }).then((result) => {
       if (result.isConfirmed) navigate('/registro')
     })
@@ -182,14 +184,14 @@ export default function SucursalesPage() {
         height: '68px'
       }}>
         <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 24px', height: '100%', display: 'flex', alignItems: 'center', gap: '24px' }}>
-          <Link to="/"><img src={logo} alt="RentaMovil" style={{ height: '40px', flexShrink: 0 }} /></Link>
+          <Link to="/"><img src={logo} alt="Drivique" style={{ height: '40px', flexShrink: 0 }} /></Link>
           <div style={{ flex: 1 }} />
           <div style={{ display: 'flex', gap: '10px' }}>
             <Link to="/login" style={{ padding: '8px 20px', borderRadius: '9999px', border: `2px solid ${c.loginBorder}`, color: c.loginText, fontSize: '13px', fontWeight: 700, textDecoration: 'none' }}>
-              Iniciar sesión
+              {t('catalogo.signIn')}
             </Link>
             <Link to="/registro" style={{ padding: '8px 20px', borderRadius: '9999px', background: COLOR_MARCA, color: '#fff', fontSize: '13px', fontWeight: 700, textDecoration: 'none' }}>
-              Registrarse
+              {t('catalogo.signUp')}
             </Link>
           </div>
         </div>
@@ -215,19 +217,19 @@ export default function SucursalesPage() {
                 whiteSpace: 'nowrap'
               }}
             >
-              ← Volver al inicio
+              ← {t('common.backToHome')}
             </Link>
           </div>
 
           <div style={{ maxWidth: '800px', margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <span style={{ display: 'inline-block', padding: '6px 16px', borderRadius: '9999px', background: c.accentBgSoft, color: c.accentText, fontSize: '12px', fontWeight: 800, textTransform: 'uppercase', marginBottom: '12px' }}>
-              Red Oficial de Agencias
+              {t('sucursales.officialNetwork')}
             </span>
             <h1 style={{ fontSize: '2.5rem', fontWeight: 900, color: c.textPrimary, margin: '0 0 10px', letterSpacing: '-0.02em' }}>
-              Vehículos por Agencia
+              {t('sucursales.byAgency')}
             </h1>
             <p style={{ fontSize: '16px', color: c.textSecondary, margin: 0 }}>
-              Selecciona una compañía y mira solo los carros disponibles para esa sucursal.
+              {t('sucursales.byAgencySubtitle')}
             </p>
           </div>
         </div>
@@ -298,20 +300,20 @@ export default function SucursalesPage() {
 
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', fontSize: '12px' }}>
                     <div style={{ background: c.itemBg, borderRadius: '12px', padding: '10px', textAlign: 'left' }}>
-                      <div style={{ color: c.textSecondary }}>Horario</div>
+                      <div style={{ color: c.textSecondary }}>{t('sucursales.schedule')}</div>
                       <div style={{ fontWeight: 700, color: c.textPrimary }}>{suc.horarios.split(';')[0]}</div>
                     </div>
                     <div style={{ background: c.itemBg, borderRadius: '12px', padding: '10px', textAlign: 'left' }}>
-                      <div style={{ color: c.textSecondary }}>Flota</div>
+                      <div style={{ color: c.textSecondary }}>{t('sucursales.fleet')}</div>
                       <div style={{ fontWeight: 700, color: c.textPrimary }}>{suc.flota}</div>
                     </div>
                   </div>
 
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
                     <div style={{ textAlign: 'left' }}>
-                      <div style={{ fontSize: '12px', color: c.textSecondary }}>Desde</div>
+                      <div style={{ fontSize: '12px', color: c.textSecondary }}>{t('sucursales.from')}</div>
                       <div style={{ fontSize: '18px', fontWeight: 900, color: COLOR_MARCA }}>
-                        {suc.precioBase ? `${suc.preTextoPrecio || ''}${formatCurrency(suc.precioBase, moneda)}/día` : suc.precio}
+                        {suc.precioBase ? `${formatCurrency(suc.precioBase, moneda)}/${t('common.day')}` : suc.precio}
                       </div>
                     </div>
 
@@ -329,7 +331,7 @@ export default function SucursalesPage() {
                         whiteSpace: 'nowrap'
                       }}
                     >
-                      Ver carros
+                      {t('sucursales.viewCars')}
                     </button>
                   </div>
                 </div>
@@ -359,17 +361,17 @@ export default function SucursalesPage() {
               }}>
                 <div>
                   <h3 style={{ fontSize: '20px', fontWeight: 900, color: c.textPrimary, margin: '0 0 4px' }}>
-                    Autos disponibles en <span style={{ color: COLOR_MARCA }}>{sucursalActiva.alias}</span>
+                    {t('sucursales.availableCars', { name: sucursalActiva.alias })}
                   </h3>
                   <p style={{ margin: 0, fontSize: '13px', color: c.textSecondary }}>
-                    Mostrando {flotaFiltrada.length} resultados listos para reservar
+                    {t('sucursales.resultsCount', { count: flotaFiltrada.length })}
                   </p>
                 </div>
 
                 <div style={{ background: c.accentBgSoft, padding: '10px 16px', borderRadius: '12px', maxWidth: '500px' }}>
                   <p style={{ display: 'flex', gap: '8px', fontSize: '12px', color: c.textPrimary, margin: 0, lineHeight: 1.4 }}>
                     <FaCheckCircle color={COLOR_ICONO_GRIS} size={14} style={{ flexShrink: 0, marginTop: '2px' }} />
-                    <span><strong>Garantía {sucursalActiva.alias}:</strong> {sucursalActiva.porQue}</span>
+                    <span><strong>{t('sucursales.guarantee', { name: sucursalActiva.alias })}</strong> {sucursalActiva.porQue}</span>
                   </p>
                 </div>
               </div>
@@ -380,8 +382,8 @@ export default function SucursalesPage() {
               {!cargando && !error && flotaFiltrada.length === 0 && (
                 <div style={{ textAlign: 'center', padding: '60px 20px', border: `1px dashed ${c.panelBorder}`, borderRadius: '16px' }}>
                   <FaCar size={40} color={c.textSecondary} style={{ marginBottom: '16px', opacity: 0.4 }} />
-                  <p style={{ margin: '0 0 4px', fontSize: '15px', color: c.textPrimary, fontWeight: 700 }}>Sin vehículos asignados</p>
-                  <p style={{ margin: 0, fontSize: '13px', color: c.textSecondary }}>Estamos actualizando el inventario en tiempo real para esta sucursal.</p>
+                  <p style={{ margin: '0 0 4px', fontSize: '15px', color: c.textPrimary, fontWeight: 700 }}>{t('sucursales.noVehicles')}</p>
+                  <p style={{ margin: 0, fontSize: '13px', color: c.textSecondary }}>{t('sucursales.noVehiclesSubtitle')}</p>
                 </div>
               )}
 

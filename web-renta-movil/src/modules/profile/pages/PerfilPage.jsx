@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useLanding } from '@/modules/landing/LandingContext'
 import { usePerfil } from '../hooks/usePerfil'
 import { useAuthStore } from '@/store/authStore'
@@ -50,6 +51,7 @@ function iniciales(nombre = '', apellido = '') {
 }
 
 export default function PerfilPage() {
+  const { t } = useTranslation()
   const { usuario } = useAuthStore()
   const { tema } = useLanding()
   const dark = tema === 'oscuro'
@@ -76,21 +78,17 @@ export default function PerfilPage() {
     if (exito) {
       showAlert({
         icon: 'success',
-        title: 'Perfil actualizado',
-        text: 'Tus datos se han actualizado correctamente',
+        title: t('perfil.profileUpdated'),
+        text: t('perfil.profileUpdatedText'),
       })
     }
-  }, [exito])
+  }, [exito, t])
 
   useEffect(() => {
     if (error) {
-      showAlert({
-        icon: 'error',
-        title: 'Error',
-        text: error,
-      })
+      showAlert({ icon: 'error', title: t('perfil.errorUpdating'), text: error })
     }
-  }, [error])
+  }, [error, t])
 
   if (!usuario) {
     return (
@@ -134,8 +132,7 @@ export default function PerfilPage() {
     fontWeight: 700,
     color: c.labelText,
     marginBottom: '7px',
-    textTransform: 'uppercase',
-    letterSpacing: '0.06em',
+    letterSpacing: '0.04em',
   }
 
   return (
@@ -205,7 +202,7 @@ export default function PerfilPage() {
               onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.25)'}
               onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.15)'}
             >
-              <FaEdit /> Editar perfil
+              <FaEdit /> {t('perfil.edit')}
             </button>
           )}
         </div>
@@ -219,7 +216,7 @@ export default function PerfilPage() {
           <div style={{ padding: '20px 24px', borderBottom: `1px solid ${c.divider}`, display: 'flex', alignItems: 'center', gap: '10px' }}>
             <FaUser style={{ color: c.sectionTitle, fontSize: '15px' }} />
             <h2 style={{ fontSize: '16px', fontWeight: 700, color: c.title, margin: 0 }}>
-              Información Personal
+              {t('perfil.personalInfo')}
             </h2>
           </div>
 
@@ -227,7 +224,7 @@ export default function PerfilPage() {
             {/* Nombre */}
             <div>
               <label style={labelStyle}>
-                <FaUser style={{ fontSize: '10px' }} /> Nombre
+                <FaUser style={{ fontSize: '10px' }} /> {t('perfil.firstName')}
               </label>
               {modoEdicion ? (
                 <>
@@ -250,7 +247,7 @@ export default function PerfilPage() {
             {/* Apellido */}
             <div>
               <label style={labelStyle}>
-                <FaUser style={{ fontSize: '10px' }} /> Apellido
+                <FaUser style={{ fontSize: '10px' }} /> {t('perfil.lastName')}
               </label>
               {modoEdicion ? (
                 <>
@@ -273,7 +270,7 @@ export default function PerfilPage() {
             {/* Cédula (solo lectura) */}
             <div>
               <label style={labelStyle}>
-                <FaIdCard style={{ fontSize: '10px' }} /> Cédula
+                <FaIdCard style={{ fontSize: '10px' }} /> {t('perfil.docNumber')}
               </label>
               <input type="text" value={formData.cedula || '—'} readOnly style={readonlyStyle} />
             </div>
@@ -281,7 +278,7 @@ export default function PerfilPage() {
             {/* Fecha de Nacimiento */}
             <div>
               <label style={labelStyle}>
-                <FaBirthdayCake style={{ fontSize: '10px' }} /> Fecha de Nacimiento
+                <FaBirthdayCake style={{ fontSize: '10px' }} /> {t('perfil.birthDate')}
               </label>
               {modoEdicion ? (
                 <>
@@ -309,7 +306,7 @@ export default function PerfilPage() {
           <div style={{ padding: '20px 24px', borderBottom: `1px solid ${c.divider}`, display: 'flex', alignItems: 'center', gap: '10px' }}>
             <FaEnvelope style={{ color: c.sectionTitle, fontSize: '15px' }} />
             <h2 style={{ fontSize: '16px', fontWeight: 700, color: c.title, margin: 0 }}>
-              Datos de Contacto
+              {t('perfil.contactData')}
             </h2>
           </div>
 
@@ -317,7 +314,7 @@ export default function PerfilPage() {
             {/* Correo */}
             <div>
               <label style={labelStyle}>
-                <FaEnvelope style={{ fontSize: '10px' }} /> Correo Electrónico
+                <FaEnvelope style={{ fontSize: '10px' }} /> {t('perfil.email')}
               </label>
               {modoEdicion ? (
                 <>
@@ -345,7 +342,7 @@ export default function PerfilPage() {
             {/* Teléfono */}
             <div>
               <label style={labelStyle}>
-                <FaPhone style={{ fontSize: '10px' }} /> Teléfono
+                <FaPhone style={{ fontSize: '10px' }} /> {t('perfil.phone')}
               </label>
               {modoEdicion ? (
                 <>
@@ -392,7 +389,7 @@ export default function PerfilPage() {
                 transition: 'all 150ms',
               }}
             >
-              <FaTimes /> Cancelar
+              <FaTimes /> {t('perfil.cancel')}
             </button>
             <button
               onClick={handleGuardar}
@@ -418,10 +415,10 @@ export default function PerfilPage() {
               {cargando ? (
                 <>
                   <span style={{ width: 14, height: 14, border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#fff', borderRadius: '50%', animation: 'spin 0.7s linear infinite', display: 'inline-block' }} />
-                  Guardando...
+                  {t('perfil.saving')}
                 </>
               ) : (
-                <><FaCheck /> Guardar cambios</>
+                <><FaCheck /> {t('perfil.save')}</>
               )}
             </button>
           </div>

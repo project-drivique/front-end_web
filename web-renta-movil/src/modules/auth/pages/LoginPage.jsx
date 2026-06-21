@@ -1,10 +1,11 @@
-// src/modules/auth/pages/LoginPage.jsx
+﻿// src/modules/auth/pages/LoginPage.jsx
 import { useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useLogin } from '../hooks/useLogin'
 import { useRegistroSocial } from '../hooks/useRegistroSocial'
 import { useLanding } from '../../landing/LandingContext'
-import logo from '@/assets/logo/logo.png'
+import logo from '@/assets/logo.png'
 import { showAlert } from '@/utils/swalConfig'
 
 import { coloresLogin, loginTokens } from '../styles/loginStyles'
@@ -42,29 +43,19 @@ const IconoFacebook = () => (
   </svg>
 )
 
-// ─── Datos de botones sociales (JSON-driven) ───────────────────────────────────
-const BOTONES_SOCIALES = [
-  {
-    id: 'google',
-    label: 'Continuar con Google',
-    labelCargando: 'Conectando con Google…',
-    Icono: IconoGoogle,
-  },
-  {
-    id: 'facebook',
-    label: 'Continuar con Facebook',
-    labelCargando: 'Conectando con Facebook…',
-    Icono: IconoFacebook,
-  },
-]
-
 // ─── Componente principal ──────────────────────────────────────────────────────
 export default function LoginPage() {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const { tema } = useLanding()
   const esModoOscuro = tema === 'oscuro'
   const c = coloresLogin(esModoOscuro)
-  const t = loginTokens
+  const tok = loginTokens
+
+  const BOTONES_SOCIALES = [
+    { id: 'google',   label: t('login.googleBtn'),   labelCargando: t('login.connectingGoogle'),   Icono: IconoGoogle },
+    { id: 'facebook', label: t('login.facebookBtn'), labelCargando: t('login.connectingFacebook'), Icono: IconoFacebook },
+  ]
 
   const {
     correo, contrasena, mostrarPass, cargando,
@@ -88,33 +79,25 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (errorSocial) {
-      showLoginAlert({
-        icon: 'error',
-        title: 'Error de inicio social',
-        text: errorSocial,
-      })
+      showLoginAlert({ icon: 'error', title: t('login.socialError'), text: errorSocial })
     }
-  }, [errorSocial])
+  }, [errorSocial, t])
 
   useEffect(() => {
     if (errores.general) {
       showLoginAlert({
         icon: bloqueado ? 'error' : 'warning',
-        title: bloqueado ? 'Cuenta bloqueada' : 'Error de inicio de sesión',
+        title: bloqueado ? t('login.blocked') : t('login.loginError'),
         text: errores.general,
       })
     }
-  }, [errores.general, bloqueado])
+  }, [errores.general, bloqueado, t])
 
   useEffect(() => {
     if (exito) {
-      showLoginAlert({
-        icon: 'success',
-        title: 'Bienvenido',
-        text: exito,
-      })
+      showLoginAlert({ icon: 'success', title: t('login.welcome'), text: exito })
     }
-  }, [exito])
+  }, [exito, t])
 
   // Mapa acción → handler (JSON-driven para BOTONES_SOCIALES)
   const accionesSocial = { google: iniciarGoogle, facebook: iniciarFacebook }
@@ -124,10 +107,10 @@ export default function LoginPage() {
   const estiloInput = (conError) => ({
     width: '100%',
     padding: '12px 16px',
-    borderRadius: t.borderRadius.input,
+    borderRadius: tok.borderRadius.input,
     border: conError ? `1.5px solid ${c.inputErrorBorder}` : `1.5px solid ${c.inputBorder}`,
     background: conError ? c.inputErrorBg : c.inputBg,
-    fontSize: t.fontSize.input,
+    fontSize: tok.fontSize.input,
     color: c.inputText,
     outline: 'none',
     boxSizing: 'border-box',
@@ -137,7 +120,7 @@ export default function LoginPage() {
   const estiloBotonSocial = (deshabilitado) => ({
     width: '100%',
     padding: '12px 16px',
-    borderRadius: t.borderRadius.input,
+    borderRadius: tok.borderRadius.input,
     border: `1.5px solid ${c.socialBorder}`,
     background: c.socialBg,
     display: 'flex',
@@ -145,7 +128,7 @@ export default function LoginPage() {
     justifyContent: 'center',
     gap: 10,
     fontWeight: 600,
-    fontSize: t.fontSize.label,
+    fontSize: tok.fontSize.label,
     cursor: deshabilitado ? 'not-allowed' : 'pointer',
     transition: 'all 150ms',
     color: c.socialText,
@@ -162,58 +145,55 @@ export default function LoginPage() {
         {/* Logo mobile */}
         <div style={{ marginBottom: 32 }} className="logo-mobile">
           <style>{`@media(min-width:1024px){.logo-mobile{display:none}}`}</style>
-          <img src={logo} alt="RentaMovil" style={{ height: 48, display: 'block', margin: '0 auto', ...(esModoOscuro ? { filter: 'brightness(0) invert(1)' } : {}) }} />
+          <img src={logo} alt="Drivique" style={{ height: 48, display: 'block', margin: '0 auto' }} />
         </div>
 
         {/* Botón volver */}
         <div style={{ width: '100%', maxWidth: 400, marginBottom: 12 }}>
           <Link
             to="/"
-            style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: t.fontSize.label, color: c.backLink, textDecoration: 'none', fontWeight: 600 }}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: tok.fontSize.label, color: c.backLink, textDecoration: 'none', fontWeight: 600 }}
             onMouseEnter={e => e.currentTarget.style.color = c.backLinkHover}
             onMouseLeave={e => e.currentTarget.style.color = c.backLink}
           >
             <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
             </svg>
-            Volver al inicio
+            {t('common.backToHome')}
           </Link>
         </div>
 
         {/* Card */}
-        <div style={{ width: '100%', maxWidth: 400, background: c.cardBg, borderRadius: t.borderRadius.card, boxShadow: c.cardShadow, border: `1px solid ${c.cardBorder}`, padding: 40 }}>
+        <div style={{ width: '100%', maxWidth: 400, background: c.cardBg, borderRadius: tok.borderRadius.card, boxShadow: c.cardShadow, border: `1px solid ${c.cardBorder}`, padding: 40 }}>
           <div style={{ marginBottom: 28 }}>
-            <h1 style={{ fontSize: t.fontSize.title, fontWeight: 900, color: c.title, margin: '0 0 6px' }}>Iniciar sesión</h1>
-            <p style={{ color: c.text, fontSize: t.fontSize.body, margin: 0 }}>Ingresa tus credenciales para continuar</p>
+            <h1 style={{ fontSize: tok.fontSize.title, fontWeight: 900, color: c.title, margin: '0 0 6px' }}>{t('login.title')}</h1>
+            <p style={{ color: c.text, fontSize: tok.fontSize.body, margin: 0 }}>{t('login.subtitle')}</p>
           </div>
-
-          {/* ── Alertas ── */}
-          {/* Auth feedback is now shown via SweetAlert2 modals. */}
 
           <form onSubmit={handleSubmit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
             {/* Campo correo */}
             <div>
-              <label style={{ display: 'block', fontSize: t.fontSize.label, fontWeight: 700, color: c.label, marginBottom: 8 }}>
-                Correo electrónico
+              <label style={{ display: 'block', fontSize: tok.fontSize.label, fontWeight: 700, color: c.label, marginBottom: 8 }}>
+                {t('login.email')}
               </label>
               <input
                 type="email"
                 value={correo}
                 onChange={e => handleCorreoChange(e.target.value)}
                 disabled={bloqueado || cargando}
-                placeholder="ejemplo@correo.com"
+                placeholder={t('login.emailPlaceholder')}
                 autoComplete="email"
                 style={estiloInput(!!errores.correo)}
                 onFocus={e => e.target.style.borderColor = c.inputBorderHover}
                 onBlur={e => e.target.style.borderColor = errores.correo ? c.inputErrorBorder : c.inputBorder}
               />
-              {errores.correo && <p style={{ color: c.helperError, fontSize: t.fontSize.helper, marginTop: 6 }}>{errores.correo}</p>}
+              {errores.correo && <p style={{ color: c.helperError, fontSize: tok.fontSize.helper, marginTop: 6 }}>{errores.correo}</p>}
             </div>
 
             {/* Campo contraseña */}
             <div>
-              <label style={{ display: 'block', fontSize: t.fontSize.label, fontWeight: 700, color: c.label, marginBottom: 8 }}>
-                Contraseña
+              <label style={{ display: 'block', fontSize: tok.fontSize.label, fontWeight: 700, color: c.label, marginBottom: 8 }}>
+                {t('login.password')}
               </label>
               <div style={{ position: 'relative' }}>
                 <input
@@ -235,13 +215,13 @@ export default function LoginPage() {
                   {mostrarPass ? <IconoOjoCerrado /> : <IconoOjoAbierto />}
                 </button>
               </div>
-              {errores.contrasena && <p style={{ color: c.helperError, fontSize: t.fontSize.helper, marginTop: 6 }}>{errores.contrasena}</p>}
+              {errores.contrasena && <p style={{ color: c.helperError, fontSize: tok.fontSize.helper, marginTop: 6 }}>{errores.contrasena}</p>}
             </div>
 
             {/* Olvidé contraseña */}
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <Link to="/recuperar" style={{ fontSize: t.fontSize.label, color: c.forgot, fontWeight: 700, textDecoration: 'none' }}>
-                ¿Olvidaste tu contraseña?
+              <Link to="/recuperar" style={{ fontSize: tok.fontSize.label, color: c.forgot, fontWeight: 700, textDecoration: 'none' }}>
+                {t('login.forgotPassword')}
               </Link>
             </div>
 
@@ -250,20 +230,20 @@ export default function LoginPage() {
               type="submit"
               disabled={bloqueado || cargando || exitoFinal}
               style={{
-                width: '100%', padding: 14, borderRadius: t.borderRadius.input,
+                width: '100%', padding: 14, borderRadius: tok.borderRadius.input,
                 background: 'linear-gradient(90deg,#1e3a8a,#2563eb)',
-                color: '#fff', fontWeight: 700, fontSize: t.fontSize.body,
+                color: '#fff', fontWeight: 700, fontSize: tok.fontSize.body,
                 border: 'none', cursor: (cargando || bloqueado || exitoFinal) ? 'not-allowed' : 'pointer',
                 opacity: (bloqueado || cargando || exitoFinal) ? 0.55 : 1,
-                boxShadow: t.shadow.btn, transition: 'opacity 150ms',
+                boxShadow: tok.shadow.btn, transition: 'opacity 150ms',
               }}
             >
               {cargando
                 ? <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
                     <span style={{ width: 16, height: 16, border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#fff', borderRadius: '50%', animation: 'spin 0.7s linear infinite', display: 'inline-block' }} />
-                    Verificando...
+                    {t('login.verifying')}
                   </span>
-                : 'Iniciar sesión'
+                : t('login.submit')
               }
             </button>
 
@@ -288,10 +268,10 @@ export default function LoginPage() {
             })}
           </form>
 
-          <p style={{ textAlign: 'center', fontSize: t.fontSize.body, color: c.footerText, marginTop: 24, marginBottom: 0 }}>
-            ¿No tienes cuenta?{' '}
+          <p style={{ textAlign: 'center', fontSize: tok.fontSize.body, color: c.footerText, marginTop: 24, marginBottom: 0 }}>
+            {t('login.noAccount')}{' '}
             <Link to="/registro" style={{ color: c.registerLink, fontWeight: 700, textDecoration: 'none' }}>
-              Regístrate aquí
+              {t('login.registerLink')}
             </Link>
           </p>
         </div>
