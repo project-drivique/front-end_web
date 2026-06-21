@@ -1,5 +1,6 @@
 ﻿import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { authService } from '../../../services/authService'
 import { adminService } from '../../../services/adminService'
 import { useAuthStore } from '../../../store/authStore'
@@ -7,6 +8,7 @@ import { useAuthStore } from '../../../store/authStore'
 const MAX_INTENTOS = 3
 
 export function useLogin() {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const storeLogin = useAuthStore((s) => s.login)
   const iniciar2FA = useAuthStore((s) => s.iniciar2FA)
@@ -22,15 +24,15 @@ export function useLogin() {
 
   const validarCorreo = (valor) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!valor) return 'El correo es obligatorio'
-    if (!regex.test(valor)) return 'Formato de correo inválido'
+    if (!valor) return t('login.errors.emailRequired')
+    if (!regex.test(valor)) return t('login.errors.emailInvalid')
     return ''
   }
 
   const validarFormulario = () => {
     const nuevos = {
       correo: validarCorreo(correo),
-      contrasena: !contrasena ? 'La contraseña es obligatoria' : '',
+      contrasena: !contrasena ? t('login.errors.passwordRequired') : '',
       general: '',
     }
 
@@ -45,7 +47,7 @@ export function useLogin() {
     if (bloqueado) {
       setErrores((prev) => ({
         ...prev,
-        general: 'Cuenta bloqueada. Usa ¿Olvidaste tu contraseña?',
+        general: t('login.errors.accountLocked'),
       }))
       return
     }
@@ -75,12 +77,12 @@ export function useLogin() {
         fechaNacimiento: datos.fechaNacimiento,
       })
 
-      setExito('¡Acceso exitoso! Redirigiendo...')
+      setExito(t('login.successRedirecting'))
 
       setTimeout(() => {
         navigate(datos.rol === 'administrador' ? '/admin' : '/home')
       }, 1000)
-    } catch (error) {
+    } catch {
       const nuevosIntentos = intentos + 1
       setIntentos(nuevosIntentos)
 
@@ -88,12 +90,12 @@ export function useLogin() {
         setBloqueado(true)
         setErrores((prev) => ({
           ...prev,
-          general: `Cuenta bloqueada tras ${MAX_INTENTOS} intentos fallidos.`,
+          general: t('login.errors.maxAttemptsReached', { max: MAX_INTENTOS }),
         }))
       } else {
         setErrores((prev) => ({
           ...prev,
-          general: `Credenciales incorrectas. Intentos restantes: ${MAX_INTENTOS - nuevosIntentos}`,
+          general: t('login.errors.invalidCredentials', { remaining: MAX_INTENTOS - nuevosIntentos }),
         }))
       }
     } finally {

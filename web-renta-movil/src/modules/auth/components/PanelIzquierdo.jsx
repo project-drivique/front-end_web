@@ -1,15 +1,15 @@
-﻿// src/modules/auth/components/PanelIzquierdo.jsx
+﻿import { useTranslation } from 'react-i18next'
 import { FaCalendarAlt, FaCreditCard, FaFileAlt, FaCheck } from 'react-icons/fa'
 
 const BADGES = [
-  { label: 'Reservas', icon: FaCalendarAlt },
-  { label: 'Pagos',    icon: FaCreditCard  },
-  { label: 'Contratos',icon: FaFileAlt     },
+  { key: 'catalogo.myReservations', icon: FaCalendarAlt },
+  { key: 'pagos.title',             icon: FaCreditCard  },
+  { key: 'contratos.title',         icon: FaFileAlt     },
 ]
 
-const CHECKS = ['Reserva en minutos', 'Paga con Nequi o PSE', 'Contrato digital inmediato']
-
 export default function PanelIzquierdo() {
+  const { t } = useTranslation()
+  const checks = [t('panel.check1'), t('panel.check2'), t('panel.check3')]
   return (
     <div
       style={{
@@ -50,38 +50,38 @@ export default function PanelIzquierdo() {
             <rect x="12" y="96" width="210" height="2" rx="1" fill="rgba(255,255,255,0.3)" />
           </svg>
           <div style={{ color: '#fff', fontWeight: 800, fontSize: '1.05rem', letterSpacing: 2 }}>Drivique</div>
-          <div style={{ color: 'rgba(255,255,255,0.55)', fontSize: '0.65rem', marginTop: 2, letterSpacing: 0.5 }}>Alquila fácil, conduce libre</div>
+          <div style={{ color: 'rgba(255,255,255,0.55)', fontSize: '0.65rem', marginTop: 2, letterSpacing: 0.5 }}>{t('panel.tagline')}</div>
         </div>
 
         <div>
-          <h2 style={{ color: '#fff', fontSize: '1.75rem', fontWeight: 900, margin: '0 0 10px', lineHeight: 1.2 }}>Bienvenido de vuelta</h2>
+          <h2 style={{ color: '#fff', fontSize: '1.75rem', fontWeight: 900, margin: '0 0 10px', lineHeight: 1.2 }}>{t('panel.welcome')}</h2>
           <p style={{ color: 'rgba(191,219,254,0.75)', fontSize: 15, lineHeight: 1.7, maxWidth: 260, margin: '0 auto' }}>
-            Gestiona tus reservas, pagos y contratos desde un solo lugar.
+            {t('panel.subtitle')}
           </p>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 12, width: '100%', maxWidth: 280 }}>
-          {BADGES.map(({ label, icon: Icono }) => (
-            <div key={label} style={{ background: 'rgba(255,255,255,0.08)', borderRadius: 16, padding: '16px 8px', border: '1px solid rgba(255,255,255,0.08)', textAlign: 'center' }}>
+          {BADGES.map(({ key, icon: Icono }) => (
+            <div key={key} style={{ background: 'rgba(255,255,255,0.08)', borderRadius: 16, padding: '16px 8px', border: '1px solid rgba(255,255,255,0.08)', textAlign: 'center' }}>
               <div style={{ fontSize: 24, marginBottom: 8, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Icono />
               </div>
-              <p style={{ color: '#fff', fontSize: 12, fontWeight: 700, margin: 0 }}>{label}</p>
+              <p style={{ color: '#fff', fontSize: 12, fontWeight: 700, margin: 0 }}>{t(key)}</p>
             </div>
           ))}
         </div>
 
         <div style={{ width: '100%', maxWidth: 280, display: 'flex', flexDirection: 'column', gap: 10 }}>
-          {CHECKS.map(t => (
-            <p key={t} style={{ color: 'rgba(147,197,253,0.75)', fontSize: 14, margin: 0, textAlign: 'left', display: 'flex', alignItems: 'center', gap: 8 }}>
-              <FaCheck /> {t}
+          {checks.map(item => (
+            <p key={item} style={{ color: 'rgba(147,197,253,0.75)', fontSize: 14, margin: 0, textAlign: 'left', display: 'flex', alignItems: 'center', gap: 8 }}>
+              <FaCheck /> {item}
             </p>
           ))}
         </div>
       </div>
 
       <div style={{ position: 'relative', zIndex: 1, padding: '16px 56px', borderTop: '1px solid rgba(255,255,255,0.08)', textAlign: 'center' }}>
-        <p style={{ color: 'rgba(147,197,253,0.35)', fontSize: 12, margin: 0 }}>Drivique © 2026</p>
+        <p style={{ color: 'rgba(147,197,253,0.35)', fontSize: 12, margin: 0 }}>{t('panel.copyright')}</p>
       </div>
     </div>
   )

@@ -39,9 +39,14 @@
     "blocked": "Conta bloqueada",
     "loginError": "Erro de login",
     "welcome": "Bem-vindo",
+    "successRedirecting": "Acesso bem-sucedido! Redirecionando...",
     "errors": {
       "emailRequired": "O endereço de e-mail é obrigatório",
-      "passwordRequired": "A senha é obrigatória"
+      "passwordRequired": "A senha é obrigatória",
+      "emailInvalid": "Formato de e-mail inválido",
+      "accountLocked": "Conta bloqueada. Use Esqueceu sua senha?",
+      "invalidCredentials": "Credenciais incorretas. Tentativas restantes: {{remaining}}",
+      "maxAttemptsReached": "Conta bloqueada após {{max}} tentativas falhas."
     }
   },
   "registro": {
@@ -121,7 +126,20 @@
     "errors": {
       "emailRequired": "O endereço de e-mail é obrigatório",
       "emailInvalid": "Formato de e-mail inválido"
-    }
+    },
+    "panelTitle": "Esqueceu sua senha?",
+    "panelSubtitle": "Enviaremos um link seguro para redefinir seu acesso.",
+    "panelCheck1": "✓  Link válido por 30 minutos",
+    "panelCheck2": "✓  Verifique sua caixa de entrada",
+    "panelCheck3": "✓  Sem perder seus dados nem reservas",
+    "successPanelTitle": "Verifique seu e-mail!",
+    "successPanelSubtitle": "Se o e-mail estiver cadastrado, você receberá um link para recuperar sua conta.",
+    "successPanelCheck1": "✓  Link válido por 30 minutos",
+    "successPanelCheck2": "✓  Verifique também a pasta de spam",
+    "successPanelCheck3": "✓  Sua conta continua protegida",
+    "successEmailSent": "Se {{email}} estiver cadastrado, você receberá um link nos próximos minutos.",
+    "successSpam": "Verifique também a pasta de spam. O link expira em 30 minutos.",
+    "copyright": "Drivique © 2026"
   },
   "nuevaContrasena": {
     "title": "Nova senha",
@@ -140,11 +158,18 @@
     "invalidToken": "Link inválido ou expirado",
     "invalidTokenText": "Este link já foi usado ou expirou. Os links de recuperação são válidos por 30 minutos.",
     "requestNew": "Solicitar novo link",
+    "checklist": {
+      "min8": "Mínimo 8 caracteres",
+      "uppercase": "Pelo menos uma letra maiúscula",
+      "number": "Pelo menos um número",
+      "special": "Pelo menos um caractere especial"
+    },
     "errors": {
       "passwordRequired": "A senha é obrigatória",
       "passwordWeak": "A senha não atende aos requisitos",
       "confirmRequired": "Por favor confirme sua senha",
-      "confirmMismatch": "As senhas não coincidem"
+      "confirmMismatch": "As senhas não coincidem",
+      "genericError": "Ocorreu um erro. Tente novamente."
     }
   },
   "verificar2fa": {
@@ -159,9 +184,19 @@
     "backToLogin": "Voltar ao login",
     "successTitle": "Verificação bem-sucedida",
     "errorTitle": "Código inválido",
+    "resendCountdown": "Reenviar em {{seconds}}s",
+    "panelTitle": "Verificação em duas etapas",
+    "panelSubtitle": "Sua conta está protegida com uma camada extra de segurança.",
+    "panelCheck1": "✓  Código válido por 10 minutos",
+    "panelCheck2": "✓  Verifique seu e-mail ou app autenticador",
+    "panelCheck3": "✓  Nunca compartilhe seu código",
+    "copyright": "Drivique © 2026",
     "errors": {
       "codeRequired": "Insira o código de verificação",
-      "codeInvalid": "O código inserido não é válido"
+      "codeInvalid": "O código inserido não é válido",
+      "codeExpired": "O código expirou. Solicite um novo.",
+      "verifyError": "Erro ao verificar. Tente novamente.",
+      "resendError": "Não foi possível reenviar o código. Tente novamente."
     }
   },
   "catalogo": {
@@ -485,6 +520,15 @@
     "guarantee": "Garantia {{name}}:",
     "noVehicles": "Sem veículos atribuídos",
     "noVehiclesSubtitle": "Estamos atualizando o inventário em tempo real para esta filial."
+  },
+  "panel": {
+    "welcome": "Bem-vindo de volta",
+    "subtitle": "Gerencie suas reservas, pagamentos e contratos em um só lugar.",
+    "tagline": "Alugue fácil, dirija livre",
+    "check1": "Reserve em minutos",
+    "check2": "Pague com Nequi ou PSE",
+    "check3": "Contrato digital imediato",
+    "copyright": "Drivique © 2026"
   },
   "admin": {
     "title": "Painel administrativo",

@@ -39,9 +39,14 @@
     "blocked": "Compte bloqué",
     "loginError": "Erreur de connexion",
     "welcome": "Bienvenue",
+    "successRedirecting": "Accès réussi ! Redirection...",
     "errors": {
       "emailRequired": "L'adresse e-mail est obligatoire",
-      "passwordRequired": "Le mot de passe est obligatoire"
+      "passwordRequired": "Le mot de passe est obligatoire",
+      "emailInvalid": "Format d'e-mail invalide",
+      "accountLocked": "Compte bloqué. Utilisez Mot de passe oublié ?",
+      "invalidCredentials": "Identifiants incorrects. Tentatives restantes : {{remaining}}",
+      "maxAttemptsReached": "Compte bloqué après {{max}} tentatives échouées."
     }
   },
   "registro": {
@@ -121,7 +126,20 @@
     "errors": {
       "emailRequired": "L'adresse e-mail est obligatoire",
       "emailInvalid": "Format d'e-mail invalide"
-    }
+    },
+    "panelTitle": "Mot de passe oublié ?",
+    "panelSubtitle": "Nous vous enverrons un lien sécurisé pour réinitialiser votre accès.",
+    "panelCheck1": "✓  Lien valide 30 minutes",
+    "panelCheck2": "✓  Vérifiez votre boîte de réception",
+    "panelCheck3": "✓  Sans perdre vos données ni réservations",
+    "successPanelTitle": "Vérifiez votre e-mail !",
+    "successPanelSubtitle": "Si l'e-mail est enregistré, vous recevrez un lien pour récupérer votre compte.",
+    "successPanelCheck1": "✓  Lien valide 30 minutes",
+    "successPanelCheck2": "✓  Vérifiez aussi votre dossier spam",
+    "successPanelCheck3": "✓  Votre compte reste protégé",
+    "successEmailSent": "Si {{email}} est enregistré, vous recevrez un lien dans les prochaines minutes.",
+    "successSpam": "Vérifiez aussi votre dossier spam. Le lien expire dans 30 minutes.",
+    "copyright": "Drivique © 2026"
   },
   "nuevaContrasena": {
     "title": "Nouveau mot de passe",
@@ -140,11 +158,18 @@
     "invalidToken": "Lien invalide ou expiré",
     "invalidTokenText": "Ce lien a déjà été utilisé ou a expiré. Les liens de récupération sont valables 30 minutes.",
     "requestNew": "Demander un nouveau lien",
+    "checklist": {
+      "min8": "Minimum 8 caractères",
+      "uppercase": "Au moins une lettre majuscule",
+      "number": "Au moins un chiffre",
+      "special": "Au moins un caractère spécial"
+    },
     "errors": {
       "passwordRequired": "Le mot de passe est obligatoire",
       "passwordWeak": "Le mot de passe ne répond pas aux exigences",
       "confirmRequired": "Veuillez confirmer votre mot de passe",
-      "confirmMismatch": "Les mots de passe ne correspondent pas"
+      "confirmMismatch": "Les mots de passe ne correspondent pas",
+      "genericError": "Une erreur s'est produite. Réessayez."
     }
   },
   "verificar2fa": {
@@ -159,9 +184,19 @@
     "backToLogin": "Retour à la connexion",
     "successTitle": "Vérification réussie",
     "errorTitle": "Code invalide",
+    "resendCountdown": "Renvoyer dans {{seconds}}s",
+    "panelTitle": "Vérification en deux étapes",
+    "panelSubtitle": "Votre compte est protégé par une couche de sécurité supplémentaire.",
+    "panelCheck1": "✓  Code valide 10 minutes",
+    "panelCheck2": "✓  Vérifiez votre e-mail ou app d'authentification",
+    "panelCheck3": "✓  Ne partagez jamais votre code",
+    "copyright": "Drivique © 2026",
     "errors": {
       "codeRequired": "Entrez le code de vérification",
-      "codeInvalid": "Le code saisi n'est pas valide"
+      "codeInvalid": "Le code saisi n'est pas valide",
+      "codeExpired": "Le code a expiré. Demandez-en un nouveau.",
+      "verifyError": "Erreur de vérification. Réessayez.",
+      "resendError": "Impossible de renvoyer le code. Réessayez."
     }
   },
   "catalogo": {
@@ -485,6 +520,15 @@
     "guarantee": "Garantie {{name}} :",
     "noVehicles": "Aucun véhicule assigné",
     "noVehiclesSubtitle": "Nous mettons à jour l'inventaire en temps réel pour cette agence."
+  },
+  "panel": {
+    "welcome": "Bienvenue à nouveau",
+    "subtitle": "Gérez vos réservations, paiements et contrats depuis un seul endroit.",
+    "tagline": "Louez facile, conduisez libre",
+    "check1": "Réservez en quelques minutes",
+    "check2": "Payez avec Nequi ou PSE",
+    "check3": "Contrat numérique instantané",
+    "copyright": "Drivique © 2026"
   },
   "admin": {
     "title": "Panneau d'administration",
