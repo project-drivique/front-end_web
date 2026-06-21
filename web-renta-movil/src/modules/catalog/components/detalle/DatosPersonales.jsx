@@ -87,7 +87,7 @@ export default function DatosPersonales({ vehiculo, reserva, seguroIdx, datosFor
   });
 
 
-  const lbl = { display: 'block', fontSize: 12, fontWeight: 800, color: 'var(--texto-primary)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.06em' };
+  const lbl = { display: 'block', fontSize: 12, fontWeight: 800, color: 'var(--texto-primary)', marginBottom: 6, letterSpacing: '0.04em' };
 
 
   return (

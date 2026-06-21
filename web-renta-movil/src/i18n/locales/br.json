@@ -256,6 +256,10 @@
     "goToLogin": "Ir para entrar",
     "reserveNow": "Reservar agora",
     "day": "dia",
+    "searchPickupLocation": "Selecione o local de retirada.",
+    "searchPickupDate": "Selecione a data de retirada.",
+    "searchReturnDate": "Selecione a data de devolução.",
+    "searchReturnAfter": "A data de devolução deve ser posterior.",
     "clearFilters": "Limpar filtros",
     "viewAll": "Ver todos",
     "favorites": "Favoritos",
@@ -366,7 +370,9 @@
     "noImages": "Sem imagens",
     "inGallery": "Na galeria",
     "passengers": "passageiros",
-    "airConditioning": "Ar cond.",
+    "airConditioning": "Ar condicionado",
+    "windowsElec": "Vidros elétricos",
+    "centralLock": "Travas centralizadas",
     "doors": "portas",
     "trunk": "porta-malas",
     "plan1Item1": "Assistência durante sua viagem. *Não incluída no Aluguel Leve",
@@ -469,7 +475,15 @@
       "passwordWeak": "A senha não atende a todos os requisitos",
       "confirmRequired": "Confirme sua nova senha",
       "confirmMismatch": "As senhas não coincidem",
-      "currentPasswordWrong": "Senha atual incorreta"
+      "currentPasswordWrong": "Senha atual incorreta",
+      "nameRequired": "O nome é obrigatório",
+      "nameTooLong": "O nome não pode exceder 100 caracteres",
+      "lastnameRequired": "O sobrenome é obrigatório",
+      "lastnameTooLong": "O sobrenome não pode exceder 100 caracteres",
+      "phoneInvalid": "O telefone deve ter entre 7 e 15 dígitos",
+      "emailInvalid": "Formato de e-mail inválido",
+      "emailTaken": "Este e-mail já está cadastrado",
+      "updateFailed": "Não foi possível atualizar o perfil"
     }
   },
   "pagos": {

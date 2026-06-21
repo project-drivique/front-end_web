@@ -256,6 +256,10 @@
     "goToLogin": "Go to sign in",
     "reserveNow": "Reserve now",
     "day": "day",
+    "searchPickupLocation": "Select pickup location.",
+    "searchPickupDate": "Select pickup date.",
+    "searchReturnDate": "Select return date.",
+    "searchReturnAfter": "Return date must be after pickup date.",
     "clearFilters": "Clear filters",
     "viewAll": "View all",
     "favorites": "Favorites",
@@ -366,7 +370,9 @@
     "noImages": "No images",
     "inGallery": "In gallery",
     "passengers": "passengers",
-    "airConditioning": "Air cond.",
+    "airConditioning": "Air conditioning",
+    "windowsElec": "Electric windows",
+    "centralLock": "Central locking",
     "doors": "doors",
     "trunk": "trunk",
     "plan1Item1": "Roadside assistance during your trip. *Not included in Light Rental",
@@ -469,7 +475,15 @@
       "passwordWeak": "Password does not meet all requirements",
       "confirmRequired": "Confirm your new password",
       "confirmMismatch": "Passwords do not match",
-      "currentPasswordWrong": "Current password is incorrect"
+      "currentPasswordWrong": "Current password is incorrect",
+      "nameRequired": "First name is required",
+      "nameTooLong": "Name cannot exceed 100 characters",
+      "lastnameRequired": "Last name is required",
+      "lastnameTooLong": "Last name cannot exceed 100 characters",
+      "phoneInvalid": "Phone must have between 7 and 15 digits",
+      "emailInvalid": "Invalid email format",
+      "emailTaken": "This email is already registered",
+      "updateFailed": "Could not update profile"
     }
   },
   "pagos": {

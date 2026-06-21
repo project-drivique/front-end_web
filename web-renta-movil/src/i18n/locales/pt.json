@@ -256,6 +256,10 @@
     "goToLogin": "Ir para iniciar sessão",
     "reserveNow": "Reservar agora",
     "day": "dia",
+    "searchPickupLocation": "Selecione o local de recolha.",
+    "searchPickupDate": "Selecione a data de recolha.",
+    "searchReturnDate": "Selecione a data de devolução.",
+    "searchReturnAfter": "A data de devolução deve ser posterior.",
     "clearFilters": "Limpar filtros",
     "viewAll": "Ver todos",
     "favorites": "Favoritos",
@@ -366,7 +370,9 @@
     "noImages": "Sem imagens",
     "inGallery": "Na galeria",
     "passengers": "passageiros",
-    "airConditioning": "Ar cond.",
+    "airConditioning": "Ar condicionado",
+    "windowsElec": "Vidros elétricos",
+    "centralLock": "Fecho centralizado",
     "doors": "portas",
     "trunk": "mala",
     "plan1Item1": "Assistência durante a sua viagem. *Não incluída no Aluguer Ligeiro",
@@ -469,7 +475,15 @@
       "passwordWeak": "A palavra-passe não cumpre todos os requisitos",
       "confirmRequired": "Confirme a sua nova palavra-passe",
       "confirmMismatch": "As palavras-passe não coincidem",
-      "currentPasswordWrong": "A palavra-passe atual está incorreta"
+      "currentPasswordWrong": "A palavra-passe atual está incorreta",
+      "nameRequired": "O nome é obrigatório",
+      "nameTooLong": "O nome não pode exceder 100 caracteres",
+      "lastnameRequired": "O apelido é obrigatório",
+      "lastnameTooLong": "O apelido não pode exceder 100 caracteres",
+      "phoneInvalid": "O telefone deve ter entre 7 e 15 dígitos",
+      "emailInvalid": "Formato de e-mail inválido",
+      "emailTaken": "Este e-mail já está registado",
+      "updateFailed": "Não foi possível atualizar o perfil"
     }
   },
   "pagos": {

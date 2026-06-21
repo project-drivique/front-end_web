@@ -132,8 +132,7 @@ export default function PerfilPage() {
     fontWeight: 700,
     color: c.labelText,
     marginBottom: '7px',
-    textTransform: 'uppercase',
-    letterSpacing: '0.06em',
+    letterSpacing: '0.04em',
   }
 
   return (

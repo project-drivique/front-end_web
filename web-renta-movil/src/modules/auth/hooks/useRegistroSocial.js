@@ -1,5 +1,6 @@
 // src/modules/auth/hooks/useRegistroSocial.js
 import { useState, useEffect, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import { authService } from '@/services/authService'
 import { useAuthStore } from '@/store/authStore'
 
@@ -42,6 +43,7 @@ function cargarFacebookSDK() {
 }
 
 export function useRegistroSocial({ onExito } = {}) {
+  const { t } = useTranslation()
   const { login: storeLogin } = useAuthStore()
 
   const [cargandoGoogle,   setCargandoGoogle]   = useState(false)
@@ -96,7 +98,7 @@ export function useRegistroSocial({ onExito } = {}) {
     } catch (err) {
       // El usuario cerró la ventana → error silencioso
       if (err?.type === 'popup_closed' || err?.message?.includes('popup_closed')) return
-      setErrorSocial(err?.message || 'No se pudo completar el registro con Google. Intenta nuevamente.')
+      setErrorSocial(err?.message || t('registro.errors.googleError'))
     } finally {
       setCargandoGoogle(false)
     }
@@ -132,7 +134,7 @@ export function useRegistroSocial({ onExito } = {}) {
     } catch (err) {
       // null = el usuario canceló → error silencioso
       if (!err) return
-      setErrorSocial(err?.message || 'No se pudo completar el registro con Facebook. Intenta nuevamente.')
+      setErrorSocial(err?.message || t('registro.errors.facebookError'))
     } finally {
       setCargandoFacebook(false)
     }

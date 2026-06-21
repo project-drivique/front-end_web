@@ -256,6 +256,10 @@
     "goToLogin": "Aller à la connexion",
     "reserveNow": "Réserver maintenant",
     "day": "jour",
+    "searchPickupLocation": "Sélectionnez le lieu de prise en charge.",
+    "searchPickupDate": "Sélectionnez la date de prise en charge.",
+    "searchReturnDate": "Sélectionnez la date de restitution.",
+    "searchReturnAfter": "La date de restitution doit être postérieure.",
     "clearFilters": "Effacer les filtres",
     "viewAll": "Voir tous",
     "favorites": "Favoris",
@@ -366,7 +370,9 @@
     "noImages": "Pas d'images",
     "inGallery": "En galerie",
     "passengers": "passagers",
-    "airConditioning": "Clim.",
+    "airConditioning": "Climatisation",
+    "windowsElec": "Vitres électriques",
+    "centralLock": "Verrouillage centralisé",
     "doors": "portes",
     "trunk": "coffre",
     "plan1Item1": "Assistance pendant votre trajet. *Non incluse dans la Location Légère",
@@ -469,7 +475,15 @@
       "passwordWeak": "Le mot de passe ne répond pas à toutes les exigences",
       "confirmRequired": "Confirmez votre nouveau mot de passe",
       "confirmMismatch": "Les mots de passe ne correspondent pas",
-      "currentPasswordWrong": "Le mot de passe actuel est incorrect"
+      "currentPasswordWrong": "Le mot de passe actuel est incorrect",
+      "nameRequired": "Le prénom est obligatoire",
+      "nameTooLong": "Le prénom ne peut pas dépasser 100 caractères",
+      "lastnameRequired": "Le nom est obligatoire",
+      "lastnameTooLong": "Le nom ne peut pas dépasser 100 caractères",
+      "phoneInvalid": "Le téléphone doit avoir entre 7 et 15 chiffres",
+      "emailInvalid": "Format d'e-mail invalide",
+      "emailTaken": "Cet e-mail est déjà enregistré",
+      "updateFailed": "Impossible de mettre à jour le profil"
     }
   },
   "pagos": {

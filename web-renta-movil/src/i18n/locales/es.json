@@ -261,6 +261,10 @@
     "goToLogin": "Ir a iniciar sesión",
     "reserveNow": "Reservar ahora",
     "day": "día",
+    "searchPickupLocation": "Selecciona lugar de recogida.",
+    "searchPickupDate": "Selecciona fecha de recogida.",
+    "searchReturnDate": "Selecciona fecha de devolución.",
+    "searchReturnAfter": "La fecha de devolución debe ser posterior.",
     "clearFilters": "Limpiar filtros",
     "viewAll": "Ver todos",
     "favorites": "Favoritos",
@@ -371,7 +375,9 @@
     "noImages": "Sin imágenes",
     "inGallery": "En galería",
     "passengers": "personas",
-    "airConditioning": "Aire acond.",
+    "airConditioning": "Aire acondicionado",
+    "windowsElec": "Eleva vidrios eléctrico",
+    "centralLock": "Cierre centralizado",
     "doors": "puertas",
     "trunk": "maletero",
     "plan1Item1": "Asistencia durante tu viaje. *No incluidas en Alquiler Ligero",
@@ -474,7 +480,15 @@
       "passwordWeak": "La contraseña no cumple todos los requisitos",
       "confirmRequired": "Confirma tu nueva contraseña",
       "confirmMismatch": "Las contraseñas no coinciden",
-      "currentPasswordWrong": "Contraseña actual incorrecta"
+      "currentPasswordWrong": "Contraseña actual incorrecta",
+      "nameRequired": "El nombre es obligatorio",
+      "nameTooLong": "El nombre no puede exceder 100 caracteres",
+      "lastnameRequired": "El apellido es obligatorio",
+      "lastnameTooLong": "El apellido no puede exceder 100 caracteres",
+      "phoneInvalid": "El teléfono debe tener entre 7 y 15 dígitos",
+      "emailInvalid": "Formato de correo inválido",
+      "emailTaken": "Este correo ya está registrado",
+      "updateFailed": "No se pudo actualizar el perfil"
     }
   },
   "pagos": {
