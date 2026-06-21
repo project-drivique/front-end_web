@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '../../../store/authStore'
 import { useLanding } from '../../landing/LandingContext'
 import { COLOR_MARCA } from '../constants'
@@ -58,6 +59,7 @@ const coloresTema = (esModoOscuro) => ({
 })
 
 export default function CatalogoUsuarioPage() {
+  const { t } = useTranslation()
   const { usuario } = useAuthStore()
   const { tema } = useLanding()
   const esModoOscuro = tema === 'oscuro'
@@ -126,10 +128,10 @@ export default function CatalogoUsuarioPage() {
   }
 
   const mensajeVacio = soloFavoritos
-    ? 'No tienes vehículos marcados como favoritos.'
-    : 'No encontramos vehículos con los filtros seleccionados.'
+    ? t('catalogo.favoritesText')
+    : t('catalogo.noResultsSubtitle')
 
-  const tituloVacio = soloFavoritos ? 'Sin favoritos' : 'Sin resultados'
+  const tituloVacio = soloFavoritos ? t('catalogo.favoritesTitle') : t('catalogo.noResults')
 
   return (
     <div style={{ minHeight: '100vh', background: c.pageBg, display: 'flex', flexDirection: 'column' }}>
@@ -170,18 +172,18 @@ export default function CatalogoUsuarioPage() {
 
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-              <span style={{ fontSize: '13px', color: c.textSecondary, fontWeight: 600 }}>Ordenar por:</span>
+              <span style={{ fontSize: '13px', color: c.textSecondary, fontWeight: 600 }}>{t('catalogo.sort')}:</span>
               <select value={filtros.orden} onChange={e => setFiltro('orden', e.target.value)} style={{ ...inputStyle, width: 'auto', padding: '8px 12px' }}>
-                <option value="precio_asc">Precio: menor a mayor</option>
-                <option value="precio_desc">Precio: mayor a menor</option>
-                <option value="calificacion">Mejor calificación</option>
+                <option value="precio_asc">{t('catalogo.sortPriceAsc')}</option>
+                <option value="precio_desc">{t('catalogo.sortPriceDesc')}</option>
+                <option value="calificacion">{t('catalogo.sortRating')}</option>
               </select>
             </div>
 
             {cargando && <EstadoCarga c={c} />}
             {!cargando && error && <EstadoError c={c} error={error} onRetry={reintentar} />}
             {!cargando && !error && resultado.length === 0 && (
-              <EstadoVacio c={c} onLimpiar={limpiarTodo} titulo={tituloVacio} mensaje={mensajeVacio} textoBoton={soloFavoritos ? 'Ver todos' : 'Limpiar filtros'} />
+              <EstadoVacio c={c} onLimpiar={limpiarTodo} titulo={tituloVacio} mensaje={mensajeVacio} textoBoton={soloFavoritos ? t('catalogo.viewAll') : t('catalogo.clearFilters')} />
             )}
 
             {!cargando && !error && resultado.length > 0 && (

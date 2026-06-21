@@ -1,14 +1,21 @@
-import { Link } from 'react-router-dom'
+﻿import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useNuevaContrasena } from '../hooks/useNuevaContrasena'
-import logo from '@/assets/logo/logo.png'
+import logo from '@/assets/logo.png'
 
 const COLORES_BARRA = ['#ef4444', '#f97316', '#eab308', '#22c55e']
 
 function BarraFortaleza({ fortaleza }) {
+  const { t } = useTranslation()
   const cumplidos = fortaleza.filter(r => r.cumple).length
   if (cumplidos === 0) return null
   const color = COLORES_BARRA[cumplidos - 1] ?? '#22c55e'
-  const textos = ['Muy débil', 'Débil', 'Regular', 'Segura']
+  const textos = [
+    t('perfil.strength.veryWeak'),
+    t('perfil.strength.weak'),
+    t('perfil.strength.regular'),
+    t('perfil.strength.strong'),
+  ]
   return (
     <div style={{ marginTop: '10px' }}>
       <div style={{ display: 'flex', gap: '4px' }}>
@@ -28,6 +35,7 @@ function EyeIcon({ visible }) {
 }
 
 export default function NuevaContrasenaPage() {
+  const { t } = useTranslation()
   const {
     contrasena, setContrasena,
     confirmar,  setConfirmar,
@@ -57,24 +65,19 @@ export default function NuevaContrasenaPage() {
         <div style={{ position: 'absolute', bottom: '33%', right: '40px', width: '160px', height: '160px', borderRadius: '50%', border: '1px solid rgba(255,255,255,0.05)', background: 'rgba(255,255,255,0.03)' }} />
 
         <div style={{ position: 'relative', zIndex: 1, flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '56px', textAlign: 'center', gap: '32px' }}>
-          <img src={logo} alt="RentaMovil" style={{ height: '60px', filter: 'drop-shadow(0 4px 16px rgba(0,0,0,0.3)) brightness(0) invert(1)' }} />
+          <img src={logo} alt="Drivique" style={{ height: '60px', filter: 'drop-shadow(0 4px 16px rgba(0,0,0,0.3)) brightness(0) invert(1)' }} />
           <div>
             <h2 style={{ color: '#fff', fontSize: '1.75rem', fontWeight: 900, margin: '0 0 10px', lineHeight: 1.2 }}>
-              Nueva contraseña
+              {t('nuevaContrasena.title')}
             </h2>
             <p style={{ color: 'rgba(191,219,254,0.75)', fontSize: '15px', lineHeight: 1.7, maxWidth: '260px', margin: '0 auto' }}>
-              Crea una contraseña segura para proteger tu cuenta.
+              {t('nuevaContrasena.subtitle')}
             </p>
-          </div>
-          <div style={{ width: '100%', maxWidth: '280px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            {['✓  Tu información no se perderá', '✓  El cambio es inmediato', '✓  Tus reservas siguen activas'].map(t => (
-              <p key={t} style={{ color: 'rgba(147,197,253,0.65)', fontSize: '14px', margin: 0, textAlign: 'left' }}>{t}</p>
-            ))}
           </div>
         </div>
 
         <div style={{ position: 'relative', zIndex: 1, padding: '16px 56px', borderTop: '1px solid rgba(255,255,255,0.08)', textAlign: 'center' }}>
-          <p style={{ color: 'rgba(147,197,253,0.35)', fontSize: '12px', margin: 0 }}>RentaMóvil © 2026</p>
+          <p style={{ color: 'rgba(147,197,253,0.35)', fontSize: '12px', margin: 0 }}>{t('panel.copyright')}</p>
         </div>
       </div>
 
@@ -83,7 +86,7 @@ export default function NuevaContrasenaPage() {
 
         <div style={{ marginBottom: '32px' }} className="logo-mobile">
           <style>{`@media(min-width:1024px){.logo-mobile{display:none}}`}</style>
-          <img src={logo} alt="RentaMovil" style={{ height: '48px', display: 'block', margin: '0 auto' }} />
+          <img src={logo} alt="Drivique" style={{ height: '48px', display: 'block', margin: '0 auto' }} />
         </div>
 
         {!exito && !tokenInvalido && (
@@ -97,7 +100,7 @@ export default function NuevaContrasenaPage() {
               <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
               </svg>
-              Volver al inicio de sesión
+              {t('recuperar.backToLogin')}
             </Link>
           </div>
         )}
@@ -113,10 +116,10 @@ export default function NuevaContrasenaPage() {
                 </svg>
               </div>
               <h2 style={{ fontSize: '1.4rem', fontWeight: 900, color: '#0f172a', margin: '0 0 8px' }}>
-                Enlace inválido o expirado
+                {t('nuevaContrasena.invalidToken')}
               </h2>
               <p style={{ color: '#64748b', fontSize: '14px', margin: '0 0 28px' }}>
-                Este enlace ya fue usado o expiró. Los enlaces de recuperación son válidos por 30 minutos y de un solo uso.
+                {t('nuevaContrasena.invalidTokenText')}
               </p>
               <Link
                 to="/recuperar"
@@ -126,7 +129,7 @@ export default function NuevaContrasenaPage() {
                   fontWeight: 700, fontSize: '14px', textDecoration: 'none', textAlign: 'center',
                   boxShadow: '0 4px 16px rgba(30,58,138,0.25)',
                 }}>
-                Solicitar nuevo enlace
+                {t('nuevaContrasena.requestNew')}
               </Link>
             </div>
           )}
@@ -136,10 +139,10 @@ export default function NuevaContrasenaPage() {
             <>
               <div style={{ marginBottom: '28px' }}>
                 <h1 style={{ fontSize: '1.6rem', fontWeight: 900, color: '#0f172a', margin: '0 0 6px' }}>
-                  Crear nueva contraseña
+                  {t('nuevaContrasena.formTitle')}
                 </h1>
                 <p style={{ color: '#64748b', fontSize: '14px', margin: 0 }}>
-                  Elige una contraseña segura para recuperar tu acceso
+                  {t('nuevaContrasena.formSubtitle')}
                 </p>
               </div>
 
@@ -156,7 +159,7 @@ export default function NuevaContrasenaPage() {
 
                 <div>
                   <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: '#374151', marginBottom: '8px' }}>
-                    Nueva contraseña
+                    {t('nuevaContrasena.password')}
                   </label>
                   <div style={{ position: 'relative' }}>
                     <input
@@ -199,7 +202,7 @@ export default function NuevaContrasenaPage() {
 
                 <div>
                   <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: '#374151', marginBottom: '8px' }}>
-                    Confirmar contraseña
+                    {t('nuevaContrasena.confirmPassword')}
                   </label>
                   <div style={{ position: 'relative' }}>
                     <input
@@ -225,10 +228,10 @@ export default function NuevaContrasenaPage() {
                     </button>
                   </div>
                   {confirmar && confirmar !== contrasena && (
-                    <p style={{ color: '#ef4444', fontSize: '12px', marginTop: '6px' }}>Las contraseñas no coinciden</p>
+                    <p style={{ color: '#ef4444', fontSize: '12px', marginTop: '6px' }}>{t('nuevaContrasena.errors.confirmMismatch')}</p>
                   )}
                   {confirmar && confirmar === contrasena && fortaleza.every(r => r.cumple) && (
-                    <p style={{ color: '#16a34a', fontSize: '12px', marginTop: '6px' }}>✓ Las contraseñas coinciden</p>
+                    <p style={{ color: '#16a34a', fontSize: '12px', marginTop: '6px' }}>✓ {t('perfil.passwordMatch')}</p>
                   )}
                 </div>
 
@@ -246,9 +249,9 @@ export default function NuevaContrasenaPage() {
                   {cargando
                     ? <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
                         <span style={{ width: '16px', height: '16px', border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#fff', borderRadius: '50%', animation: 'spin 0.7s linear infinite', display: 'inline-block' }} />
-                        Guardando...
+                        {t('perfil.saving')}
                       </span>
-                    : 'Cambiar contraseña'
+                    : t('nuevaContrasena.submit')
                   }
                 </button>
               </form>
@@ -264,10 +267,10 @@ export default function NuevaContrasenaPage() {
                 </svg>
               </div>
               <h2 style={{ fontSize: '1.4rem', fontWeight: 900, color: '#0f172a', margin: '0 0 8px' }}>
-                ¡Contraseña actualizada!
+                {t('nuevaContrasena.successTitle')}
               </h2>
               <p style={{ color: '#64748b', fontSize: '14px', margin: '0 0 28px' }}>
-                Tu contraseña fue cambiada correctamente. Ya puedes iniciar sesión con tu nueva contraseña.
+                {t('nuevaContrasena.successText')}
               </p>
               <button
                 onClick={() => navigate('/login')}
@@ -277,7 +280,7 @@ export default function NuevaContrasenaPage() {
                   fontWeight: 700, fontSize: '14px', border: 'none', cursor: 'pointer',
                   boxShadow: '0 4px 16px rgba(30,58,138,0.25)',
                 }}>
-                Ir al inicio de sesión
+                {t('nuevaContrasena.goToLogin')}
               </button>
             </div>
           )}

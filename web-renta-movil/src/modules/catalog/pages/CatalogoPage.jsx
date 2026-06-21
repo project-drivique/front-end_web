@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useState } from 'react'
+﻿import { useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../../../store/authStore'
 import { useLanding } from '../../landing/LandingContext'
 import { COLOR_MARCA } from '../constants'
 import { useCatalogo } from '../hooks/useCatalogo'
-import logo from '@/assets/logo/logo.png'
+import logo from '@/assets/logo.png'
 import HeroBusqueda from '../components/HeroBusqueda'
 import FiltrosCatalogo from '../components/FiltrosCatalogo'
 import GridVehiculos from '../components/GridVehiculos'
@@ -57,6 +58,7 @@ const coloresTema = (esModoOscuro) => ({
 })
 
 export default function CatalogoPage() {
+  const { t } = useTranslation()
   const { tema } = useLanding()
   const navigate = useNavigate()
   const esModoOscuro = tema === 'oscuro'
@@ -107,11 +109,11 @@ export default function CatalogoPage() {
   const handleBuscarInvitado = () => {
     showAlert({
       icon: 'info',
-      title: 'Modo Invitado',
-      text: 'Para buscar y reservar vehículos con fechas específicas, necesitas tener una cuenta.',
-      confirmButtonText: 'Ir a registro',
+      title: t('catalogo.guestMode'),
+      text: t('catalogo.guestModeText'),
+      confirmButtonText: t('catalogo.goToRegister'),
       showCancelButton: true,
-      cancelButtonText: 'Cancelar'
+      cancelButtonText: t('common.cancel')
     }).then((result) => {
       if (result.isConfirmed) navigate('/registro')
     })
@@ -128,7 +130,7 @@ export default function CatalogoPage() {
         height: '68px'
       }}>
         <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 24px', height: '100%', display: 'flex', alignItems: 'center', gap: '24px' }}>
-          <Link to="/"><img src={logo} alt="RentaMovil" style={{ height: '40px', flexShrink: 0 }} /></Link>
+          <Link to="/"><img src={logo} alt="Drivique" style={{ height: '40px', flexShrink: 0 }} /></Link>
           <div style={{ flex: 1 }} />
           <div style={{ display: 'flex', gap: '10px' }}>
             <Link
@@ -146,10 +148,10 @@ export default function CatalogoPage() {
               onMouseEnter={e => e.currentTarget.style.background = c.loginHoverBg}
               onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
             >
-              Iniciar sesión
+              {t('catalogo.signIn')}
             </Link>
             <Link to="/registro" style={{ padding: '8px 20px', borderRadius: '9999px', background: COLOR_MARCA, color: '#fff', fontSize: '13px', fontWeight: 700, textDecoration: 'none' }}>
-              Registrarse
+              {t('catalogo.signUp')}
             </Link>
           </div>
         </div>
@@ -189,18 +191,18 @@ export default function CatalogoPage() {
 
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-              <span style={{ fontSize: '13px', color: c.textSecondary, fontWeight: 600 }}>Ordenar por:</span>
+              <span style={{ fontSize: '13px', color: c.textSecondary, fontWeight: 600 }}>{t('catalogo.sort')}:</span>
               <select value={filtros.orden} onChange={e => setFiltro('orden', e.target.value)} style={{ ...inputStyle, width: 'auto', padding: '8px 12px' }}>
-                <option value="precio_asc">Precio: menor a mayor</option>
-                <option value="precio_desc">Precio: mayor a menor</option>
-                <option value="calificacion">Mejor calificación</option>
+                <option value="precio_asc">{t('catalogo.sortPriceAsc')}</option>
+                <option value="precio_desc">{t('catalogo.sortPriceDesc')}</option>
+                <option value="calificacion">{t('catalogo.sortRating')}</option>
               </select>
             </div>
 
             {cargando && <EstadoCarga c={c} />}
             {!cargando && error && <EstadoError c={c} error={error} onRetry={reintentar} />}
             {!cargando && !error && resultado.length === 0 && (
-              <EstadoVacio c={c} onLimpiar={limpiar} titulo="Sin resultados" mensaje="No encontramos vehículos con los filtros seleccionados." textoBoton="Limpiar filtros" />
+              <EstadoVacio c={c} onLimpiar={limpiar} titulo={t('catalogo.noResults')} mensaje={t('catalogo.noResultsSubtitle')} textoBoton={t('catalogo.clearFilters')} />
             )}
 
             {!cargando && !error && resultado.length > 0 && (

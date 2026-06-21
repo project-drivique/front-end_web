@@ -1,10 +1,11 @@
-// src/modules/reservations/pages/ReservasPage.jsx
+﻿// src/modules/reservations/pages/ReservasPage.jsx
 import { useState, useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '../../../store/authStore'
 import { useReservas } from '../hooks/useReservas'
 import { catalogoService } from '../../../services/catalogoService'
-import logo from '@/assets/logo/logo.png'
+import logo from '@/assets/logo.png'
 
 const SUCURSALES = ['Centro', 'Sur', 'Occidente', 'Norte']
 const HORAS = Array.from({ length: 24 }, (_, i) => {
@@ -54,6 +55,7 @@ const IcoBack = () => (
 
 /* ─── RESUMEN LATERAL ─── */
 function ResumenLateral({ vehiculo, reserva, seguroIdx, onEditar, onGuardar }) {
+  const { t } = useTranslation()
   const { moneda } = useLanding()
   const precio = reserva.tipoKm === 'ilimitado'
     ? vehiculo.tarifas.kmIlimitado.precio
@@ -70,23 +72,23 @@ function ResumenLateral({ vehiculo, reserva, seguroIdx, onEditar, onGuardar }) {
   return (
     <aside style={{ width: 300, flexShrink: 0, background: '#fff', borderRadius: 20, border: '1px solid #e2e8f0', boxShadow: '0 4px 24px rgba(0,0,0,0.07)', overflow: 'hidden', position: 'sticky', top: 88, alignSelf: 'flex-start' }}>
       <div style={{ background: '#1e3a8a', padding: '14px 20px' }}>
-        <p style={{ color: '#93c5fd', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.09em', margin: '0 0 3px' }}>Resumen de la reserva</p>
+        <p style={{ color: '#93c5fd', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.09em', margin: '0 0 3px' }}>{t('vehiculo.reserveSummary')}</p>
         <p style={{ color: '#fff', fontSize: 15, fontWeight: 800, margin: 0 }}>{vehiculo.nombre}</p>
       </div>
       <div style={{ padding: '0 18px 18px' }}>
         <div style={{ padding: '12px 0', borderBottom: '1px solid #f1f5f9' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-            <span style={{ fontSize: 10, fontWeight: 700, color: '#1e3a8a', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Lugar de Retiro</span>
+            <span style={{ fontSize: 10, fontWeight: 700, color: '#1e3a8a', textTransform: 'uppercase', letterSpacing: '0.07em' }}>{t('vehiculo.pickupLocation')}</span>
             <button onClick={() => onEditar('retiro')} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 3, fontSize: 11, color: '#1e3a8a', fontWeight: 700, padding: 0 }}>
-              <IcoEdit /> Para editar
+              <IcoEdit /> {t('common.edit')}
             </button>
           </div>
           <p style={{ fontSize: 12, fontWeight: 700, color: '#0f172a', margin: '0 0 6px' }}>
-            {reserva.fechaInicio ? `${fmt(reserva.fechaInicio)}` : 'Fecha no seleccionada'}
+            {reserva.fechaInicio ? `${fmt(reserva.fechaInicio)}` : t('vehiculo.dateNotSelected')}
           </p>
           <p style={{ fontSize: 11, color: '#64748b', margin: '0 0 6px' }}>{reserva.sucursalRetiro || 'Centro'}</p>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-            <span style={{ fontSize: 11, fontWeight: 700, color: '#1e3a8a' }}>Hora:</span>
+            <span style={{ fontSize: 11, fontWeight: 700, color: '#1e3a8a' }}>{t('common.time')}:</span>
             <select
               value={reserva.horaInicio || '09:00'}
               onChange={e => onGuardar({ ...reserva, horaInicio: e.target.value })}
@@ -98,17 +100,17 @@ function ResumenLateral({ vehiculo, reserva, seguroIdx, onEditar, onGuardar }) {
         </div>
         <div style={{ padding: '12px 0', borderBottom: '1px solid #f1f5f9' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-            <span style={{ fontSize: 10, fontWeight: 700, color: '#1e3a8a', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Devolución</span>
+            <span style={{ fontSize: 10, fontWeight: 700, color: '#1e3a8a', textTransform: 'uppercase', letterSpacing: '0.07em' }}>{t('vehiculo.returnSummary')}</span>
             <button onClick={() => onEditar('devolucion')} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 3, fontSize: 11, color: '#1e3a8a', fontWeight: 700, padding: 0 }}>
-              <IcoEdit /> Para editar
+              <IcoEdit /> {t('common.edit')}
             </button>
           </div>
           <p style={{ fontSize: 12, fontWeight: 700, color: '#0f172a', margin: '0 0 6px' }}>
-            {reserva.fechaFin ? `${fmt(reserva.fechaFin)}` : 'Fecha no seleccionada'}
+            {reserva.fechaFin ? `${fmt(reserva.fechaFin)}` : t('vehiculo.dateNotSelected')}
           </p>
           <p style={{ fontSize: 11, color: '#64748b', margin: '0 0 6px' }}>{reserva.sucursalDevolucion || 'Centro'}</p>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-            <span style={{ fontSize: 11, fontWeight: 700, color: '#1e3a8a' }}>Hora:</span>
+            <span style={{ fontSize: 11, fontWeight: 700, color: '#1e3a8a' }}>{t('common.time')}:</span>
             <select
               value={reserva.horaFin || '09:00'}
               onChange={e => onGuardar({ ...reserva, horaFin: e.target.value })}
@@ -120,42 +122,45 @@ function ResumenLateral({ vehiculo, reserva, seguroIdx, onEditar, onGuardar }) {
         </div>
         <div style={{ padding: '12px 0', borderBottom: '1px solid #f1f5f9' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-            <span style={{ fontSize: 10, fontWeight: 700, color: '#1e3a8a', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Grupo</span>
+            <span style={{ fontSize: 10, fontWeight: 700, color: '#1e3a8a', textTransform: 'uppercase', letterSpacing: '0.07em' }}>{t('vehiculo.group')}</span>
             <button onClick={() => onEditar('km')} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 3, fontSize: 11, color: '#1e3a8a', fontWeight: 700, padding: 0 }}>
-              <IcoEdit /> Para editar
+              <IcoEdit /> {t('common.edit')}
             </button>
           </div>
           <p style={{ fontSize: 12, fontWeight: 700, color: '#0f172a', margin: '0 0 2px' }}>{vehiculo.categoria} — {vehiculo.transmision}</p>
           <p style={{ fontSize: 11, color: '#64748b', margin: '0 0 6px' }}>{vehiculo.nombre}</p>
           <span style={{ display: 'inline-block', fontSize: 10, fontWeight: 700, padding: '3px 10px', borderRadius: 9999, background: reserva.tipoKm === 'ilimitado' ? '#ecfdf5' : '#eff6ff', color: reserva.tipoKm === 'ilimitado' ? '#059669' : '#1e3a8a', border: `1px solid ${reserva.tipoKm === 'ilimitado' ? '#bbf7d0' : '#bfdbfe'}` }}>
-            {reserva.tipoKm === 'ilimitado' ? '∞ Km ilimitado' : `${vehiculo.tarifas.kmLimitado.km} km/día limitado`}
+            {reserva.tipoKm === 'ilimitado' ? `∞ ${t('catalogo.unlimitedKm')}` : `${vehiculo.tarifas.kmLimitado.km} km/${t('common.day')} ${t('catalogo.limitedKm')}`}
           </span>
         </div>
         <div style={{ paddingTop: 12 }}>
-          <p style={{ fontSize: 10, fontWeight: 800, color: '#0f172a', textTransform: 'uppercase', letterSpacing: '0.07em', margin: '0 0 10px' }}>Oferta Standard</p>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, fontWeight: 700, color: '#64748b', marginBottom: 4 }}><span>Diarias</span><span>Total</span></div>
+          <p style={{ fontSize: 10, fontWeight: 800, color: '#0f172a', textTransform: 'uppercase', letterSpacing: '0.07em', margin: '0 0 10px' }}>{t('vehiculo.standardOffer')}</p>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, fontWeight: 700, color: '#64748b', marginBottom: 4 }}>
+            <span>{t('vehiculo.dailyLabel')}</span>
+            <span>{t('vehiculo.total')}</span>
+          </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, marginBottom: 10 }}>
-            <span style={{ color: '#475569' }}>{dias} días × {formatCurrency(precio, moneda)}</span>
+            <span style={{ color: '#475569' }}>{dias} {t('vehiculo.daysCount')} × {formatCurrency(precio, moneda)}</span>
             <span style={{ fontWeight: 700, color: '#0f172a' }}>{formatCurrency(subtotalDiario, moneda)}</span>
           </div>
           {seguroIdx !== null && (
             <>
-              <p style={{ fontSize: 10, fontWeight: 700, color: '#64748b', margin: '0 0 4px' }}>Protecciones</p>
+              <p style={{ fontSize: 10, fontWeight: 700, color: '#64748b', margin: '0 0 4px' }}>{t('vehiculo.protectionsLabel')}</p>
               <div style={{ fontSize: 11, color: '#475569', marginBottom: 4 }}>{vehiculo.seguros[seguroIdx]?.nombre}</div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, marginBottom: 10 }}>
-                <span style={{ color: '#475569' }}>{dias} días × {formatCurrency(precioSeguro, moneda)}</span>
+                <span style={{ color: '#475569' }}>{dias} {t('vehiculo.daysCount')} × {formatCurrency(precioSeguro, moneda)}</span>
                 <span style={{ fontWeight: 700, color: '#0f172a' }}>{formatCurrency(subtotalSeguro, moneda)}</span>
               </div>
             </>
           )}
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, paddingBottom: 12, borderBottom: '1px solid #f1f5f9', marginBottom: 12 }}>
-            <span style={{ color: '#475569' }}>Cargos Administrativos (10%)</span>
+            <span style={{ color: '#475569' }}>{t('vehiculo.adminChargesLabel')}</span>
             <span style={{ fontWeight: 700, color: '#0f172a' }}>{formatCurrency(cargosAdmin, moneda)}</span>
           </div>
           <div style={{ background: '#1e3a8a', borderRadius: 12, padding: '12px 14px' }}>
-            <p style={{ fontSize: 9, fontWeight: 700, color: '#93c5fd', textTransform: 'uppercase', letterSpacing: '0.09em', margin: '0 0 3px' }}>Valor total esperado</p>
+            <p style={{ fontSize: 9, fontWeight: 700, color: '#93c5fd', textTransform: 'uppercase', letterSpacing: '0.09em', margin: '0 0 3px' }}>{t('vehiculo.expectedTotal')}</p>
             <p style={{ fontSize: 20, fontWeight: 900, color: '#fff', margin: 0 }}>{formatCurrency(total, moneda)}</p>
-            <p style={{ fontSize: 9, color: '#93c5fd', margin: '3px 0 0' }}>*Valor total incluye impuestos</p>
+            <p style={{ fontSize: 9, color: '#93c5fd', margin: '3px 0 0' }}>{t('vehiculo.totalIncludesTaxes')}</p>
           </div>
         </div>
       </div>
@@ -165,6 +170,7 @@ function ResumenLateral({ vehiculo, reserva, seguroIdx, onEditar, onGuardar }) {
 
 /* ─── MODAL EDITAR ─── */
 function ModalEditar({ tipo, reserva, vehiculo, onGuardar, onCerrar }) {
+  const { t } = useTranslation()
   const { moneda } = useLanding()
   const [form, setForm] = useState({ ...reserva })
   const s = (k, v) => setForm(p => ({ ...p, [k]: v }))
@@ -176,15 +182,15 @@ function ModalEditar({ tipo, reserva, vehiculo, onGuardar, onCerrar }) {
       <div style={{ background: '#fff', borderRadius: 20, padding: 28, width: '100%', maxWidth: 420, boxShadow: '0 24px 64px rgba(0,0,0,0.18)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 22 }}>
           <h3 style={{ fontSize: 17, fontWeight: 800, color: '#0f172a', margin: 0 }}>
-            {tipo === 'retiro' ? 'Editar retiro' : tipo === 'devolucion' ? 'Editar devolución' : 'Tipo de kilómetros'}
+            {tipo === 'retiro' ? t('vehiculo.editPickup') : tipo === 'devolucion' ? t('vehiculo.editReturn') : t('vehiculo.kmTypeTitle')}
           </h3>
           <button onClick={onCerrar} style={{ background: 'none', border: 'none', cursor: 'pointer' }}><IcoX sz={18} color="#94a3b8" /></button>
         </div>
         {tipo === 'km' ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {[
-              { val: 'limitado', label: `Km limitado (${vehiculo.tarifas.kmLimitado.km} km/día)`, precio: vehiculo.tarifas.kmLimitado.precio },
-              { val: 'ilimitado', label: 'Km ilimitado', precio: vehiculo.tarifas.kmIlimitado.precio },
+              { val: 'limitado', label: `${t('catalogo.limitedKm')} (${vehiculo.tarifas.kmLimitado.km} km/${t('common.day')})`, precio: vehiculo.tarifas.kmLimitado.precio },
+              { val: 'ilimitado', label: t('catalogo.unlimitedKm'), precio: vehiculo.tarifas.kmIlimitado.precio },
             ].map(op => (
               <button key={op.val} onClick={() => s('tipoKm', op.val)} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '13px 16px', borderRadius: 12, cursor: 'pointer', border: `2px solid ${form.tipoKm === op.val ? '#1e3a8a' : '#e2e8f0'}`, background: form.tipoKm === op.val ? '#eff6ff' : '#fff', transition: 'all 150ms' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -193,25 +199,25 @@ function ModalEditar({ tipo, reserva, vehiculo, onGuardar, onCerrar }) {
                   </div>
                   <span style={{ fontSize: 13, fontWeight: 700, color: form.tipoKm === op.val ? '#1e3a8a' : '#334155' }}>{op.label}</span>
                 </div>
-                <span style={{ fontSize: 13, fontWeight: 900, color: '#1e3a8a' }}>{formatCurrency(op.precio, moneda)}/día</span>
+                <span style={{ fontSize: 13, fontWeight: 900, color: '#1e3a8a' }}>{formatCurrency(op.precio, moneda)}/{t('common.day')}</span>
               </button>
             ))}
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
             <div>
-              <label style={lbl}>{tipo === 'retiro' ? 'Sucursal de retiro' : 'Sucursal de devolución'}</label>
+              <label style={lbl}>{tipo === 'retiro' ? t('vehiculo.pickupLocationLabel') : t('vehiculo.returnLocationLabel')}</label>
               <select value={tipo === 'retiro' ? form.sucursalRetiro : form.sucursalDevolucion} onChange={e => s(tipo === 'retiro' ? 'sucursalRetiro' : 'sucursalDevolucion', e.target.value)} style={{ ...inp, cursor: 'pointer' }}>
-                <option value="">Selecciona sucursal</option>
+                <option value="">{t('vehiculo.selectLocation')}</option>
                 {SUCURSALES.map(sc => <option key={sc} value={sc}>{sc}</option>)}
               </select>
             </div>
             <div>
-              <label style={lbl}>Fecha</label>
+              <label style={lbl}>{t('common.date')}</label>
               <input type="date" value={tipo === 'retiro' ? form.fechaInicio : form.fechaFin} min={tipo === 'retiro' ? new Date().toISOString().split('T')[0] : (form.fechaInicio || new Date().toISOString().split('T')[0])} onChange={e => s(tipo === 'retiro' ? 'fechaInicio' : 'fechaFin', e.target.value)} style={inp} />
             </div>
             <div>
-              <label style={lbl}>Hora</label>
+              <label style={lbl}>{t('common.time')}</label>
               <select value={tipo === 'retiro' ? form.horaInicio : form.horaFin} onChange={e => s(tipo === 'retiro' ? 'horaInicio' : 'horaFin', e.target.value)} style={{ ...inp, cursor: 'pointer' }}>
                 {HORAS.map(h => <option key={h} value={h}>{h}</option>)}
               </select>
@@ -219,7 +225,7 @@ function ModalEditar({ tipo, reserva, vehiculo, onGuardar, onCerrar }) {
           </div>
         )}
         <button onClick={() => { onGuardar(form); onCerrar() }} style={{ width: '100%', marginTop: 20, padding: 13, borderRadius: 12, background: 'linear-gradient(90deg,#1e3a8a,#2563eb)', color: '#fff', fontWeight: 700, fontSize: 13, border: 'none', cursor: 'pointer' }}>
-          Guardar cambios
+          {t('vehiculo.saveChanges')}
         </button>
       </div>
     </div>
@@ -231,25 +237,28 @@ const ICONOS_PLANES = [
   ['🛡️', '🤍', '🤍'],
   ['🛡️', '🛡️', '🛡️'],
 ]
-const ITEMS_PLANES = [
-  [
-    { tipo: 'check', texto: 'Asistencia durante tu viaje. *No incluidas en Alquiler Ligero' },
-    { tipo: 'check', texto: 'Responsabilidad Civil Extracontractual (hasta $840 millones)' },
-    { tipo: 'check', texto: 'Cobertura básica del vehículo (no incluye daños graves ni robo)' },
-    { tipo: 'warn', texto: 'En caso de siniestro, deberás asumir un pago adicional llamado Participación obligatoria, que puede llegar hasta $4.760.000 dependiendo del tipo de vehículo' },
-    { tipo: 'x', texto: 'No cubre uso indebido del vehículo' },
-  ],
-  [
-    { tipo: 'check', texto: 'Asistencia completa durante tu viaje' },
-    { tipo: 'check', texto: 'Responsabilidad Civil Extracontractual (hasta $840M)' },
-    { tipo: 'check', texto: 'Cobertura total del vehículo (incluye daños graves y robo)' },
-    { tipo: 'check', texto: 'Sin pago de la participación obligatoria en caso de siniestro' },
-    { tipo: 'x', texto: 'No cubre uso indebido del vehículo' },
-  ],
-]
 
 function PantallaProteccion({ vehiculo, reserva, seguroIdx, onSeleccionar, onEditar, onGuardar }) {
+  const { t } = useTranslation()
   const { moneda } = useLanding()
+
+  const ITEMS_PLANES = [
+    [
+      { tipo: 'check', texto: t('vehiculo.plan1Item1') },
+      { tipo: 'check', texto: t('vehiculo.plan1Item2') },
+      { tipo: 'check', texto: t('vehiculo.plan1Item3') },
+      { tipo: 'warn',  texto: t('vehiculo.plan1Item4') },
+      { tipo: 'x',    texto: t('vehiculo.plan1Item5') },
+    ],
+    [
+      { tipo: 'check', texto: t('vehiculo.plan2Item1') },
+      { tipo: 'check', texto: t('vehiculo.plan2Item2') },
+      { tipo: 'check', texto: t('vehiculo.plan2Item3') },
+      { tipo: 'check', texto: t('vehiculo.plan2Item4') },
+      { tipo: 'x',    texto: t('vehiculo.plan2Item5') },
+    ],
+  ]
+
   return (
     <div style={{ display: 'flex', gap: 28, alignItems: 'flex-start' }}>
       <div style={{ flex: 1, minWidth: 0 }}>
@@ -259,7 +268,7 @@ function PantallaProteccion({ vehiculo, reserva, seguroIdx, onSeleccionar, onEdi
               ? <img src={vehiculo.imagenes[0]} alt={vehiculo.nombre} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               : <svg width="68" height="68" fill="none" stroke="#1e3a8a" strokeWidth="1.2" viewBox="0 0 24 24" style={{ opacity: 0.3 }}><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" /></svg>
             }
-            <span style={{ position: 'absolute', top: 12, left: 12, fontSize: 11, fontWeight: 700, padding: '4px 10px', borderRadius: 9999, background: '#ecfdf5', color: '#059669', border: '1px solid #bbf7d0' }}>● Disponible</span>
+            <span style={{ position: 'absolute', top: 12, left: 12, fontSize: 11, fontWeight: 700, padding: '4px 10px', borderRadius: 9999, background: '#ecfdf5', color: '#059669', border: '1px solid #bbf7d0' }}>● {t('vehiculo.available')}</span>
           </div>
           <div style={{ padding: '18px 22px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 10 }}>
@@ -269,22 +278,22 @@ function PantallaProteccion({ vehiculo, reserva, seguroIdx, onSeleccionar, onEdi
                 <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
                   <span style={{ fontSize: 12, color: '#64748b' }}>⚙️ {vehiculo.transmision}</span>
                   <span style={{ fontSize: 12, color: '#64748b' }}>⛽ {vehiculo.combustible}</span>
-                  <span style={{ fontSize: 12, color: '#64748b' }}>👥 {vehiculo.pasajeros} personas</span>
+                  <span style={{ fontSize: 12, color: '#64748b' }}>👥 {vehiculo.pasajeros} {t('vehiculo.passengers')}</span>
                 </div>
               </div>
               <div style={{ textAlign: 'right' }}>
                 <span style={{ fontSize: 26, fontWeight: 900, color: '#1e3a8a' }}>{formatCurrency(vehiculo.precio, moneda)}</span>
-                <span style={{ fontSize: 12, color: '#94a3b8' }}>/día</span>
+                <span style={{ fontSize: 12, color: '#94a3b8' }}>/{t('common.day')}</span>
               </div>
             </div>
             <div style={{ marginTop: 14, display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(110px,1fr))', gap: 7 }}>
               {[
-                { i: '🚪', l: `${vehiculo.puertas} puertas` },
-                { i: '🧳', l: `${vehiculo.maletero}L maletero` },
+                { i: '🚪', l: `${vehiculo.puertas} ${t('vehiculo.doors')}` },
+                { i: '🧳', l: `${vehiculo.maletero}L ${t('vehiculo.trunk')}` },
                 { i: '⚡', l: vehiculo.cilindraje },
                 { i: '🎨', l: vehiculo.color },
-                { i: '📅', l: `Año ${vehiculo.año}` },
-                { i: '❄️', l: 'Aire acond.' },
+                { i: '📅', l: `${t('vehiculo.year')} ${vehiculo.año}` },
+                { i: '❄️', l: t('vehiculo.airConditioning') },
               ].map((c, i) => (
                 <div key={i} style={{ background: '#f8fafc', borderRadius: 8, padding: '8px 10px', border: '1px solid #f1f5f9', display: 'flex', alignItems: 'center', gap: 6 }}>
                   <span style={{ fontSize: 14 }}>{c.i}</span>
@@ -295,7 +304,7 @@ function PantallaProteccion({ vehiculo, reserva, seguroIdx, onSeleccionar, onEdi
           </div>
         </div>
 
-        <h3 style={{ fontSize: 17, fontWeight: 800, color: '#0f172a', margin: '0 0 16px' }}>Elige tu protección</h3>
+        <h3 style={{ fontSize: 17, fontWeight: 800, color: '#0f172a', margin: '0 0 16px' }}>{t('vehiculo.chooseProtection')}</h3>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(270px,1fr))', gap: 18, marginBottom: 32 }}>
           {vehiculo.seguros.map((seguro, idx) => {
             const sel = seguroIdx === idx
@@ -307,7 +316,7 @@ function PantallaProteccion({ vehiculo, reserva, seguroIdx, onSeleccionar, onEdi
                   <div style={{ display: 'flex', justifyContent: 'center', gap: 4, marginBottom: 8 }}>{iconos.map((ic, i) => <span key={i} style={{ fontSize: 15 }}>{ic}</span>)}</div>
                   <h4 style={{ fontSize: 17, fontWeight: 900, color: '#1e3a8a', textAlign: 'center', margin: '0 0 4px' }}>{seguro.nombre}</h4>
                   <p style={{ fontSize: 18, fontWeight: 900, color: '#059669', textAlign: 'center', margin: '0 0 14px' }}>
-                    {formatCurrency(seguro.precio, moneda)} <span style={{ fontSize: 12, fontWeight: 500, color: '#64748b' }}>/ por día</span>
+                    {formatCurrency(seguro.precio, moneda)} <span style={{ fontSize: 12, fontWeight: 500, color: '#64748b' }}>/ {t('common.day')}</span>
                   </p>
                   <hr style={{ border: 'none', borderTop: '1px solid #e2e8f0', margin: '0 0 14px' }} />
                 </div>
@@ -325,7 +334,7 @@ function PantallaProteccion({ vehiculo, reserva, seguroIdx, onSeleccionar, onEdi
                 </div>
                 <div style={{ padding: '18px 22px' }}>
                   <button onClick={() => onSeleccionar(idx)} style={{ width: '100%', padding: 12, borderRadius: 12, fontWeight: 800, fontSize: 13, cursor: 'pointer', transition: 'all 200ms', background: sel ? 'linear-gradient(90deg,#1e3a8a,#2563eb)' : idx === 1 ? 'transparent' : '#e2e8f0', color: sel ? '#fff' : idx === 1 ? '#1e3a8a' : '#64748b', border: idx === 1 && !sel ? '2px solid #1e3a8a' : 'none', boxShadow: sel ? '0 4px 14px rgba(30,58,138,0.25)' : 'none' }}>
-                    {sel ? '✓ Seleccionado' : 'Elegir plan'}
+                    {sel ? t('vehiculo.planSelected') : t('vehiculo.choosePlan')}
                   </button>
                 </div>
               </div>
@@ -339,13 +348,13 @@ function PantallaProteccion({ vehiculo, reserva, seguroIdx, onSeleccionar, onEdi
 }
 
 /* ─── PANTALLA 2: DATOS PERSONALES ─── */
-const TERMINOS_TXT = `TÉRMINOS Y CONDICIONES — RENTAMÓVIL
+const TERMINOS_TXT = `TÉRMINOS Y CONDICIONES — Drivique
 
 1. REQUISITOS PARA RETIRAR EL VEHÍCULO
 Presentar documento de identificación original (cédula, extranjería o pasaporte). Licencia de conducción vigente. El vehículo será entregado únicamente al titular de la reserva.
 
 2. ⚠️ POLÍTICA DE NO REEMBOLSO
-RentaMóvil NO realiza devoluciones del dinero bajo ninguna circunstancia una vez confirmada la reserva. No hay reembolsos por cancelaciones, cambios, no presentación ni por ningún otro motivo.
+Drivique NO realiza devoluciones del dinero bajo ninguna circunstancia una vez confirmada la reserva. No hay reembolsos por cancelaciones, cambios, no presentación ni por ningún otro motivo.
 
 3. NO PRESENTACIÓN (NO SHOW)
 Si no retiras el vehículo en la hora programada ni dentro de los 60 minutos siguientes, la reserva se cancela sin derecho a devolución.
@@ -360,6 +369,7 @@ Para reservas en línea: Visa o MasterCard. No está habilitado el pago con Amer
 Al confirmar la reserva aceptas expresamente estos términos. Dicha aceptación queda registrada en el sistema.`
 
 function PantallaDatos({ vehiculo, reserva, seguroIdx, datosForm, onCambio, onReservar, errores, onGuardar }) {
+  const { t } = useTranslation()
   const { moneda } = useLanding()
   const [verTyC, setVerTyC] = useState(false)
   const precio = reserva.tipoKm === 'ilimitado' ? vehiculo.tarifas.kmIlimitado.precio : vehiculo.tarifas.kmLimitado.precio
@@ -375,18 +385,18 @@ function PantallaDatos({ vehiculo, reserva, seguroIdx, datosForm, onCambio, onRe
   return (
     <div style={{ display: 'flex', gap: 28, alignItems: 'flex-start' }}>
       <div style={{ flex: 1, minWidth: 0 }}>
-        <h3 style={{ fontSize: 20, fontWeight: 900, color: '#0f172a', margin: '0 0 4px' }}>Datos Personales</h3>
-        <p style={{ fontSize: 13, color: '#64748b', margin: '0 0 6px' }}>Informa tus datos para que podamos realizar tu reserva.</p>
-        <p style={{ fontSize: 12, color: '#ef4444', fontStyle: 'italic', margin: '0 0 22px' }}>Los campos marcados con asterisco (*) son obligatorios.</p>
+        <h3 style={{ fontSize: 20, fontWeight: 900, color: '#0f172a', margin: '0 0 4px' }}>{t('vehiculo.personalData')}</h3>
+        <p style={{ fontSize: 13, color: '#64748b', margin: '0 0 6px' }}>{t('vehiculo.personalDataSubtitle')}</p>
+        <p style={{ fontSize: 12, color: '#ef4444', fontStyle: 'italic', margin: '0 0 22px' }}>{t('vehiculo.requiredFields')}</p>
         <div style={{ background: '#fff', borderRadius: 20, border: '1px solid #e2e8f0', padding: '24px 26px', marginBottom: 18, boxShadow: '0 2px 12px rgba(0,0,0,0.05)' }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '18px 22px' }}>
             <div>
-              <label style={lbl}>Nombre Completo *</label>
+              <label style={lbl}>{t('vehiculo.name')} *</label>
               <input value={datosForm.nombre} onChange={e => onCambio('nombre', e.target.value)} placeholder="Ej: Juan Pérez García" style={inp(errores.nombre)} />
               {errores.nombre && <p style={{ color: '#ef4444', fontSize: 11, margin: '4px 0 0' }}>{errores.nombre}</p>}
             </div>
             <div>
-              <label style={lbl}>Nacionalidad *</label>
+              <label style={lbl}>{t('vehiculo.nationality')} *</label>
               <select value={datosForm.nacionalidad} onChange={e => onCambio('nacionalidad', e.target.value)} style={{ ...inp(false), cursor: 'pointer' }}>
                 <option value="Colombia">Colombia</option>
                 <option value="Venezuela">Venezuela</option>
@@ -397,12 +407,12 @@ function PantallaDatos({ vehiculo, reserva, seguroIdx, datosForm, onCambio, onRe
               </select>
             </div>
             <div>
-              <label style={lbl}>Correo Electrónico *</label>
+              <label style={lbl}>{t('vehiculo.email')} *</label>
               <input type="email" value={datosForm.correo} onChange={e => onCambio('correo', e.target.value)} placeholder="ejemplo@correo.com" style={inp(errores.correo)} />
               {errores.correo && <p style={{ color: '#ef4444', fontSize: 11, margin: '4px 0 0' }}>{errores.correo}</p>}
             </div>
             <div>
-              <label style={lbl}>Número de Celular *</label>
+              <label style={lbl}>{t('vehiculo.phoneNumber')} *</label>
               <div style={{ display: 'flex', gap: 7 }}>
                 <div style={{ background: '#f8fafc', border: '1.5px solid #e2e8f0', borderRadius: 10, padding: '11px 10px', fontSize: 13, color: '#475569', fontWeight: 700, whiteSpace: 'nowrap' }}>+57</div>
                 <input type="tel" value={datosForm.celular} onChange={e => onCambio('celular', e.target.value.replace(/\D/g, ''))} placeholder="3001234567" style={{ ...inp(errores.celular), flex: 1 }} />
@@ -410,7 +420,7 @@ function PantallaDatos({ vehiculo, reserva, seguroIdx, datosForm, onCambio, onRe
               {errores.celular && <p style={{ color: '#ef4444', fontSize: 11, margin: '4px 0 0' }}>{errores.celular}</p>}
             </div>
             <div>
-              <label style={lbl}>Tipo de Documento *</label>
+              <label style={lbl}>{t('vehiculo.docType')} *</label>
               <select value={datosForm.tipoDoc} onChange={e => onCambio('tipoDoc', e.target.value)} style={{ ...inp(false), cursor: 'pointer' }}>
                 <option value="CC">Cédula de Ciudadanía (CC)</option>
                 <option value="CE">Cédula de Extranjería (CE)</option>
@@ -418,18 +428,18 @@ function PantallaDatos({ vehiculo, reserva, seguroIdx, datosForm, onCambio, onRe
               </select>
             </div>
             <div>
-              <label style={lbl}>Número de Documento *</label>
+              <label style={lbl}>{t('vehiculo.docNumber')} *</label>
               <input value={datosForm.numDoc} onChange={e => onCambio('numDoc', e.target.value)} placeholder="123456789" style={inp(errores.numDoc)} />
               {errores.numDoc && <p style={{ color: '#ef4444', fontSize: 11, margin: '4px 0 0' }}>{errores.numDoc}</p>}
             </div>
           </div>
           <div style={{ marginTop: 18, display: 'flex', alignItems: 'center', gap: 9 }}>
             <input type="checkbox" id="vuelo" checked={datosForm.vuelo} onChange={e => onCambio('vuelo', e.target.checked)} style={{ width: 15, height: 15, cursor: 'pointer' }} />
-            <label htmlFor="vuelo" style={{ fontSize: 13, color: '#475569', cursor: 'pointer' }}>Voy a llegar por vuelo (opcional)</label>
+            <label htmlFor="vuelo" style={{ fontSize: 13, color: '#475569', cursor: 'pointer' }}>{t('vehiculo.flightOptional')}</label>
           </div>
           {datosForm.vuelo && (
             <div style={{ marginTop: 12 }}>
-              <label style={lbl}>Número de vuelo</label>
+              <label style={lbl}>{t('vehiculo.flightNumber')}</label>
               <input value={datosForm.numVuelo} onChange={e => onCambio('numVuelo', e.target.value)} placeholder="Ej: AV1234" style={inp(false)} />
             </div>
           )}
@@ -438,20 +448,20 @@ function PantallaDatos({ vehiculo, reserva, seguroIdx, datosForm, onCambio, onRe
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: 9, marginBottom: errores.terminos ? 6 : 12 }}>
             <input type="checkbox" id="tyc" checked={datosForm.terminos} onChange={e => onCambio('terminos', e.target.checked)} style={{ width: 15, height: 15, cursor: 'pointer', marginTop: 2, flexShrink: 0 }} />
             <label htmlFor="tyc" style={{ fontSize: 13, color: '#475569', cursor: 'pointer', lineHeight: 1.5 }}>
-              Autorizo el tratamiento de mis datos personales conforme a la <span style={{ color: '#1e3a8a', fontWeight: 700 }}>política de privacidad</span> *
+              {t('vehiculo.termsConsent')} <span style={{ color: '#1e3a8a', fontWeight: 700 }}>{t('vehiculo.privacyPolicy')}</span> *
             </label>
           </div>
           {errores.terminos && <p style={{ color: '#ef4444', fontSize: 11, margin: '0 0 10px 24px' }}>{errores.terminos}</p>}
           <button onClick={() => setVerTyC(v => !v)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#1e3a8a', fontSize: 12, fontWeight: 700, padding: '0 0 0 24px', textDecoration: 'underline' }}>
-            » {verTyC ? 'Ocultar' : 'Ver'} términos y condiciones
+            » {verTyC ? t('vehiculo.hideTerms') : t('vehiculo.readTerms')}
           </button>
           {verTyC && (
             <div style={{ marginTop: 12, borderRadius: 12, overflow: 'hidden' }}>
               <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '12px 12px 0 0', padding: '12px 16px', display: 'flex', gap: 10, alignItems: 'flex-start' }}>
                 <span style={{ fontSize: 18, flexShrink: 0 }}>🚫</span>
                 <div>
-                  <p style={{ fontSize: 12, fontWeight: 800, color: '#dc2626', margin: '0 0 3px' }}>POLÍTICA DE NO REEMBOLSO</p>
-                  <p style={{ fontSize: 12, color: '#7f1d1d', margin: 0, lineHeight: 1.5 }}><strong>RentaMóvil NO realiza devoluciones del dinero</strong> bajo ninguna circunstancia una vez confirmada la reserva.</p>
+                  <p style={{ fontSize: 12, fontWeight: 800, color: '#dc2626', margin: '0 0 3px' }}>{t('vehiculo.importantPolicies')}</p>
+                  <p style={{ fontSize: 12, color: '#7f1d1d', margin: 0, lineHeight: 1.5 }}>{t('vehiculo.noRefundPolicy')}</p>
                 </div>
               </div>
               <div style={{ background: '#fffbeb', border: '1px solid #fde68a', borderTop: 'none', borderRadius: '0 0 12px 12px', padding: 14 }}>
@@ -462,15 +472,15 @@ function PantallaDatos({ vehiculo, reserva, seguroIdx, datosForm, onCambio, onRe
         </div>
         <div style={{ background: 'linear-gradient(135deg,#0f1a3d,#1e3a8a)', borderRadius: 18, padding: '20px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 20, flexWrap: 'wrap' }}>
           <div>
-            <p style={{ fontSize: 11, color: '#93c5fd', fontWeight: 600, margin: '0 0 3px' }}>Total a pagar</p>
+            <p style={{ fontSize: 11, color: '#93c5fd', fontWeight: 600, margin: '0 0 3px' }}>{t('vehiculo.totalToPay')}</p>
             <p style={{ fontSize: 26, fontWeight: 900, color: '#fff', margin: 0 }}>{formatCurrency(total, moneda)}</p>
-            <p style={{ fontSize: 10, color: '#93c5fd', margin: '3px 0 0' }}>*Incluye impuestos y cargos administrativos</p>
+            <p style={{ fontSize: 10, color: '#93c5fd', margin: '3px 0 0' }}>{t('vehiculo.taxesIncluded')}</p>
           </div>
           <button onClick={onReservar} style={{ padding: '14px 36px', borderRadius: 13, background: '#fff', color: '#1e3a8a', fontWeight: 800, fontSize: 15, border: 'none', cursor: 'pointer', boxShadow: '0 8px 24px rgba(0,0,0,0.18)', whiteSpace: 'nowrap' }}
             onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.04)'}
             onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
           >
-            Reservar →
+            {t('vehiculo.confirmReserve')} →
           </button>
         </div>
       </div>
@@ -481,6 +491,7 @@ function PantallaDatos({ vehiculo, reserva, seguroIdx, datosForm, onCambio, onRe
 
 /* ─────────── PÁGINA PRINCIPAL ─────────── */
 export default function ReservasPage() {
+  const { t } = useTranslation()
   const { id } = useParams()
   const { usuario } = useAuthStore()
 
@@ -488,7 +499,6 @@ export default function ReservasPage() {
   const [cargando, setCargando] = useState(true)
   const [errorVeh, setErrorVeh] = useState(null)
 
-  // ✅ función async dentro del efecto — evita setState síncrono
   useEffect(() => {
     let activo = true
 
@@ -501,7 +511,7 @@ export default function ReservasPage() {
           setErrorVeh(null)
         }
       } catch {
-        if (activo) setErrorVeh('Vehículo no encontrado')
+        if (activo) setErrorVeh(true)
       } finally {
         if (activo) setCargando(false)
       }
@@ -529,8 +539,8 @@ export default function ReservasPage() {
 
   if (errorVeh || !vehiculo) return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 14 }}>
-      <p style={{ fontSize: 20, fontWeight: 800, color: '#0f172a' }}>Vehículo no encontrado</p>
-      <Link to="/catalogo" style={{ color: '#1e3a8a', fontWeight: 700, fontSize: 14 }}>← Volver al catálogo</Link>
+      <p style={{ fontSize: 20, fontWeight: 800, color: '#0f172a' }}>{t('vehiculo.notFound')}</p>
+      <Link to="/catalogo" style={{ color: '#1e3a8a', fontWeight: 700, fontSize: 14 }}>← {t('vehiculo.backToCatalog')}</Link>
     </div>
   )
 
@@ -540,9 +550,9 @@ export default function ReservasPage() {
         <div style={{ width: 76, height: 76, borderRadius: '50%', background: 'linear-gradient(135deg,#1e3a8a,#2563eb)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 22px', boxShadow: '0 12px 32px rgba(30,58,138,0.28)' }}>
           <IcoCheck color="#fff" sz={34} />
         </div>
-        <h2 style={{ fontSize: 26, fontWeight: 900, color: '#0f172a', margin: '0 0 10px' }}>¡Reserva confirmada!</h2>
-        <p style={{ fontSize: 15, color: '#64748b', margin: '0 0 6px' }}>Tu reserva del <strong>{vehiculo.nombre}</strong> ha sido registrada.</p>
-        <p style={{ fontSize: 13, color: '#94a3b8' }}>Recibirás un correo de confirmación. Redirigiendo...</p>
+        <h2 style={{ fontSize: 26, fontWeight: 900, color: '#0f172a', margin: '0 0 10px' }}>{t('vehiculo.successTitle')}</h2>
+        <p style={{ fontSize: 15, color: '#64748b', margin: '0 0 6px' }}>{t('vehiculo.successVehicle', { nombre: vehiculo.nombre })}</p>
+        <p style={{ fontSize: 13, color: '#94a3b8' }}>{t('vehiculo.successRedirecting')}</p>
       </div>
     </div>
   )
@@ -551,12 +561,12 @@ export default function ReservasPage() {
     <div style={{ minHeight: '100vh', background: '#f8fafc' }}>
       <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50, background: 'rgba(255,255,255,0.98)', backdropFilter: 'blur(12px)', borderBottom: '1px solid #f1f5f9', boxShadow: '0 1px 8px rgba(0,0,0,0.06)', height: 68 }}>
         <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px', height: '100%', display: 'flex', alignItems: 'center', gap: 20 }}>
-          <Link to="/"><img src={logo} alt="RentaMovil" style={{ height: 40 }} /></Link>
+          <Link to="/"><img src={logo} alt="Drivique" style={{ height: 40 }} /></Link>
           <div style={{ flex: 1 }} />
           {!usuario && (
             <div style={{ display: 'flex', gap: 10 }}>
-              <Link to="/login" style={{ padding: '8px 18px', borderRadius: 9999, border: '2px solid rgba(30,58,138,0.25)', color: '#1e3a8a', fontSize: 13, fontWeight: 700, textDecoration: 'none' }}>Iniciar sesión</Link>
-              <Link to="/registro" style={{ padding: '8px 18px', borderRadius: 9999, background: '#1e3a8a', color: '#fff', fontSize: 13, fontWeight: 700, textDecoration: 'none' }}>Registrarse</Link>
+              <Link to="/login" style={{ padding: '8px 18px', borderRadius: 9999, border: '2px solid rgba(30,58,138,0.25)', color: '#1e3a8a', fontSize: 13, fontWeight: 700, textDecoration: 'none' }}>{t('catalogo.signIn')}</Link>
+              <Link to="/registro" style={{ padding: '8px 18px', borderRadius: 9999, background: '#1e3a8a', color: '#fff', fontSize: 13, fontWeight: 700, textDecoration: 'none' }}>{t('catalogo.signUp')}</Link>
             </div>
           )}
         </div>
@@ -566,13 +576,13 @@ export default function ReservasPage() {
         <div style={{ maxWidth: 1280, margin: '0 auto', padding: '30px 24px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 28 }}>
             <button onClick={volverAtras} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: '#1e3a8a', fontWeight: 700, background: 'rgba(30,58,138,0.07)', border: '1px solid rgba(30,58,138,0.15)', borderRadius: 9999, padding: '7px 15px', cursor: 'pointer' }}>
-              <IcoBack /> {pantalla === 1 ? 'Volver al catálogo' : 'Volver a protección'}
+              <IcoBack /> {pantalla === 1 ? t('vehiculo.backToCatalog') : t('vehiculo.backToProtection')}
             </button>
-            <h1 style={{ fontSize: 20, fontWeight: 900, color: '#0f172a', margin: 0 }}>Reservar — {vehiculo.nombre}</h1>
+            <h1 style={{ fontSize: 20, fontWeight: 900, color: '#0f172a', margin: 0 }}>{t('vehiculo.bookTitle')} — {vehiculo.nombre}</h1>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0, marginBottom: 32 }}>
-            {['Protección', 'Datos personales'].map((label, i) => {
+            {[t('vehiculo.stepProtection'), t('vehiculo.personalData')].map((label, i) => {
               const num = i + 1
               const activo = pantalla === num
               const completado = pantalla > num
@@ -620,7 +630,7 @@ export default function ReservasPage() {
                 onMouseEnter={e => e.currentTarget.style.opacity = '0.9'}
                 onMouseLeave={e => e.currentTarget.style.opacity = '1'}
               >
-                Continuar con mis datos <IcoArrow />
+                {t('vehiculo.continueData')} <IcoArrow />
               </button>
             </div>
           )}

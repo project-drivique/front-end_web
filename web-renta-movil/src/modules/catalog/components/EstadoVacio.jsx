@@ -1,4 +1,11 @@
-export default function EstadoVacio({ c, onLimpiar, titulo = 'Sin resultados', mensaje = 'No encontramos vehículos con los filtros seleccionados.', textoBoton = 'Limpiar filtros' }) {
+import { useTranslation } from 'react-i18next'
+
+export default function EstadoVacio({ c, onLimpiar, titulo, mensaje, textoBoton }) {
+  const { t } = useTranslation()
+  const tituloFinal = titulo ?? t('catalogo.noResults')
+  const mensajeFinal = mensaje ?? t('catalogo.noResultsSubtitle')
+  const textoBtnFinal = textoBoton ?? t('catalogo.clearFilters')
+
   return (
     <div
       style={{
@@ -10,10 +17,10 @@ export default function EstadoVacio({ c, onLimpiar, titulo = 'Sin resultados', m
       }}
     >
       <h3 style={{ fontSize: '18px', fontWeight: 800, color: c.textPrimary, margin: '0 0 8px' }}>
-        {titulo}
+        {tituloFinal}
       </h3>
       <p style={{ fontSize: '14px', color: c.textSecondary, margin: '0 0 20px' }}>
-        {mensaje}
+        {mensajeFinal}
       </p>
       <button
         type="button"
@@ -27,7 +34,7 @@ export default function EstadoVacio({ c, onLimpiar, titulo = 'Sin resultados', m
           fontWeight: 700,
         }}
       >
-        {textoBoton}
+        {textoBtnFinal}
       </button>
     </div>
   )

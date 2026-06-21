@@ -1,15 +1,17 @@
 import { useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { authService } from '../../../services/authService'
 
-const REGLAS = [
-  { id: 'longitud',  label: 'Mínimo 8 caracteres',          test: (v) => v.length >= 8 },
-  { id: 'mayuscula', label: 'Al menos una mayúscula',        test: (v) => /[A-Z]/.test(v) },
-  { id: 'numero',    label: 'Al menos un número',            test: (v) => /[0-9]/.test(v) },
-  { id: 'especial',  label: 'Al menos un carácter especial', test: (v) => /[^A-Za-z0-9]/.test(v) },
+const REGLAS_BASE = [
+  { id: 'longitud',  key: 'nuevaContrasena.checklist.min8',     test: (v) => v.length >= 8 },
+  { id: 'mayuscula', key: 'nuevaContrasena.checklist.uppercase', test: (v) => /[A-Z]/.test(v) },
+  { id: 'numero',    key: 'nuevaContrasena.checklist.number',    test: (v) => /[0-9]/.test(v) },
+  { id: 'especial',  key: 'nuevaContrasena.checklist.special',   test: (v) => /[^A-Za-z0-9]/.test(v) },
 ]
 
 export function useNuevaContrasena() {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const token = searchParams.get('token')
@@ -23,7 +25,7 @@ export function useNuevaContrasena() {
   const [error,        setError]        = useState('')
   const [tokenInvalido, setTokenInvalido] = useState(!token)
 
-  const fortaleza = REGLAS.map((r) => ({ ...r, cumple: r.test(contrasena) }))
+  const fortaleza = REGLAS_BASE.map((r) => ({ ...r, label: t(r.key), cumple: r.test(contrasena) }))
   const esValida  = fortaleza.every((r) => r.cumple) && contrasena === confirmar && confirmar !== ''
 
   const handleSubmit = async (e) => {
@@ -35,11 +37,11 @@ export function useNuevaContrasena() {
       return
     }
     if (!fortaleza.every(r => r.cumple)) {
-      setError('La contraseña no cumple los requisitos de seguridad.')
+      setError(t('nuevaContrasena.errors.passwordWeak'))
       return
     }
     if (contrasena !== confirmar) {
-      setError('Las contraseñas no coinciden.')
+      setError(t('nuevaContrasena.errors.confirmMismatch'))
       return
     }
 
@@ -53,7 +55,7 @@ export function useNuevaContrasena() {
       if (msg.toLowerCase().includes('expir') || msg.toLowerCase().includes('inválido')) {
         setTokenInvalido(true)
       } else {
-        setError(msg || 'Ocurrió un error. Intenta de nuevo.')
+        setError(msg || t('nuevaContrasena.errors.genericError'))
       }
     } finally {
       setCargando(false)

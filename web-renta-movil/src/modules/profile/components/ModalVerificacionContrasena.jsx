@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { FaTimes } from 'react-icons/fa'
+import { useTranslation } from 'react-i18next'
 
 export default function ModalVerificacionContrasena({
   onVerificar,
@@ -8,6 +9,7 @@ export default function ModalVerificacionContrasena({
   error,
   c,
 }) {
+  const { t } = useTranslation()
   const [contrasena, setContrasena] = useState('')
   const [mostrarPass, setMostrarPass] = useState(false)
 
@@ -60,7 +62,7 @@ export default function ModalVerificacionContrasena({
           justifyContent: 'space-between',
         }}>
           <h2 style={{ color: '#fff', fontSize: '16px', fontWeight: 700, margin: 0 }}>
-            Verificar contraseña
+            {t('perfil.verifyEmailTitle')}
           </h2>
           <button
             onClick={onCancelar}
@@ -83,7 +85,7 @@ export default function ModalVerificacionContrasena({
 
         <div style={{ padding: '24px' }}>
           <p style={{ color: c.text, fontSize: '13px', marginBottom: '16px', margin: 0 }}>
-            Por seguridad, ingresa tu contraseña actual para cambiar tu correo electrónico.
+            {t('perfil.verifyEmailSubtitle')}
           </p>
 
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -95,7 +97,7 @@ export default function ModalVerificacionContrasena({
                 color: c.text,
                 marginBottom: '6px',
               }}>
-                Contraseña
+                {t('login.password')}
               </label>
               <div style={{ position: 'relative' }}>
                 <input
@@ -166,7 +168,7 @@ export default function ModalVerificacionContrasena({
                   opacity: cargando ? 0.6 : 1,
                 }}
               >
-                Cancelar
+                {t('common.cancel')}
               </button>
               <button
                 type="submit"
@@ -184,7 +186,7 @@ export default function ModalVerificacionContrasena({
                   opacity: (!contrasena.trim() || cargando) ? 0.6 : 1,
                 }}
               >
-                {cargando ? 'Verificando...' : 'Verificar'}
+                {cargando ? t('login.verifying') : t('common.verify')}
               </button>
             </div>
           </form>
