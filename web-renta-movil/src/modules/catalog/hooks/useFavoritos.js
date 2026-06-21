@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState } from 'react'
+﻿import { useEffect, useMemo, useState } from 'react'
 
-const DEFAULT_STORAGE_KEY = 'rentaMovil_favoritos'
+const DEFAULT_STORAGE_KEY = 'Drivique_favoritos'
 
 export function useFavoritos(storageKey = DEFAULT_STORAGE_KEY) {
   const key = useMemo(() => storageKey || DEFAULT_STORAGE_KEY, [storageKey])

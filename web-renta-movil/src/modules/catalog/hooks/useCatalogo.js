@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState, useCallback } from 'react'
+﻿import { useEffect, useMemo, useState, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 import { catalogoService } from '../../../services/catalogoService'
 
 const FILTROS_BASE = {
@@ -12,6 +13,7 @@ const FILTROS_BASE = {
 }
 
 export function useCatalogo({ esFavorito = () => false } = {}) {
+  const { t } = useTranslation()
   const [vehiculos, setVehiculos] = useState([])
   const [cargando, setCargando] = useState(false)
   const [error, setError] = useState(null)
@@ -35,11 +37,11 @@ export function useCatalogo({ esFavorito = () => false } = {}) {
   const [errorBusqueda, setErrorBusqueda] = useState('')
   const [pagina, setPagina] = useState(1)
   const [soloFavoritos, setSoloFavoritos] = useState(() => {
-    return sessionStorage.getItem('rentamovil_soloFavoritos') === 'true'
+    return sessionStorage.getItem('Drivique_soloFavoritos') === 'true'
   })
 
   useEffect(() => {
-    sessionStorage.setItem('rentamovil_soloFavoritos', soloFavoritos)
+    sessionStorage.setItem('Drivique_soloFavoritos', soloFavoritos)
   }, [soloFavoritos])
 
   const cargarVehiculos = useCallback(async () => {
@@ -50,7 +52,7 @@ export function useCatalogo({ esFavorito = () => false } = {}) {
       const lista = Array.isArray(data) ? data : (data?.vehiculos ?? [])
       setVehiculos(lista)
     } catch {
-      setError('No se pudo cargar el catálogo.')
+      setError(t('catalogo.error'))
       setVehiculos([])
     } finally {
       setCargando(false)
@@ -72,11 +74,11 @@ export function useCatalogo({ esFavorito = () => false } = {}) {
   }
 
   const handleBuscar = () => {
-    if (!busquedaForm.lugarRecogida) return setErrorBusqueda('Selecciona lugar de recogida.')
-    if (!busquedaForm.fechaInicio) return setErrorBusqueda('Selecciona fecha de recogida.')
-    if (!busquedaForm.fechaFin) return setErrorBusqueda('Selecciona fecha de devolución.')
+    if (!busquedaForm.lugarRecogida) return setErrorBusqueda(t('catalogo.searchPickupLocation'))
+    if (!busquedaForm.fechaInicio) return setErrorBusqueda(t('catalogo.searchPickupDate'))
+    if (!busquedaForm.fechaFin) return setErrorBusqueda(t('catalogo.searchReturnDate'))
     if (busquedaForm.fechaFin <= busquedaForm.fechaInicio) {
-      return setErrorBusqueda('La fecha de devolución debe ser posterior.')
+      return setErrorBusqueda(t('catalogo.searchReturnAfter'))
     }
 
     setBusquedaAplicada({ ...busquedaForm })

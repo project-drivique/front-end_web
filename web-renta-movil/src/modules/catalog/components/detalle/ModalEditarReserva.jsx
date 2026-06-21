@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useLanding } from '../../../landing/LandingContext';
 import { formatCurrency } from '@/utils/monedaUtils';
 
@@ -8,13 +9,13 @@ const IcoX = ({ sz = 15, color = '#dc2626' }) => (
   </svg>
 )
 
-const SUCURSALES = ['Centro Neiva', 'Aeropuerto Neiva', 'Terminal de Transportes', 'Norte Neiva', 'Sur Neiva'];
 const HORAS = Array.from({length: 24}, (_, i) => {
   const h = i.toString().padStart(2, '0');
   return [`${h}:00`, `${h}:30`]
 }).flat();
 
 export default function ModalEditarReserva({ tipo, reserva, vehiculo, onGuardar, onCerrar }) {
+  const { t } = useTranslation()
   const { moneda } = useLanding();
   const [form, setForm] = useState({ ...reserva });
   const s = (k, v) => setForm(p => ({ ...p, [k]: v }));
@@ -22,6 +23,12 @@ export default function ModalEditarReserva({ tipo, reserva, vehiculo, onGuardar,
   const tarifas = vehiculo.tarifas || {};
   const kmLimit = tarifas.kmLimitado || { precio: 0, km: 0 };
   const kmIlimit = tarifas.kmIlimitado || { precio: 0 };
+
+  const modalTitle = tipo === 'retiro'
+    ? t('vehiculo.editPickup')
+    : tipo === 'devolucion'
+    ? t('vehiculo.editReturn')
+    : t('vehiculo.kmTypeTitle');
 
   const inp = { width: '100%', padding: '14px 16px', borderRadius: 12, border: '2px solid var(--borde)', fontSize: 14, color: 'var(--texto-primary)', outline: 'none', boxSizing: 'border-box', background: 'var(--bg-item)' };
   const lbl = { display: 'block', fontSize: 12, fontWeight: 800, color: 'var(--texto-primary)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.06em' };
@@ -31,7 +38,7 @@ export default function ModalEditarReserva({ tipo, reserva, vehiculo, onGuardar,
       <div style={{ background: 'var(--bg-tarjeta)', borderRadius: 24, padding: 32, width: '100%', maxWidth: 460, boxShadow: '0 24px 48px rgba(0,0,0,0.12)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28 }}>
           <h3 style={{ fontSize: 20, fontWeight: 900, color: 'var(--texto-primary)', margin: 0 }}>
-            {tipo === 'retiro' ? 'Editar Retiro' : tipo === 'devolucion' ? 'Editar Devolución' : 'Tipo de Kilómetros'}
+            {modalTitle}
           </h3>
           <button onClick={onCerrar} style={{ background: 'var(--bg-item)', border: 'none', cursor: 'pointer', width: 36, height: 36, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 200ms ease' }} onMouseEnter={e => e.currentTarget.style.background = '#e2e8f0'} onMouseLeave={e => e.currentTarget.style.background = 'var(--bg-item)'}>
             <IcoX sz={18} color="#64748b" />
@@ -41,8 +48,8 @@ export default function ModalEditarReserva({ tipo, reserva, vehiculo, onGuardar,
         {tipo === 'km' ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             {[
-              { val: 'limitado', label: `Km limitado (${kmLimit.km} km/día)`, precio: kmLimit.precio },
-              { val: 'ilimitado', label: 'Km ilimitado', precio: kmIlimit.precio },
+              { val: 'limitado', label: `${t('catalogo.limitedKm')} (${kmLimit.km} km/día)`, precio: kmLimit.precio },
+              { val: 'ilimitado', label: t('catalogo.unlimitedKm'), precio: kmIlimit.precio },
             ].map(op => (
               <button key={op.val} onClick={() => s('tipoKm', op.val)} style={{
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
@@ -57,20 +64,20 @@ export default function ModalEditarReserva({ tipo, reserva, vehiculo, onGuardar,
                   </div>
                   <span style={{ fontSize: 15, fontWeight: 800, color: form.tipoKm === op.val ? '#1e3a8a' : 'var(--texto-primary)' }}>{op.label}</span>
                 </div>
-                <span style={{ fontSize: 15, fontWeight: 900, color: '#1e3a8a' }}>{formatCurrency(op.precio, moneda)}/día</span>
+                <span style={{ fontSize: 15, fontWeight: 900, color: '#1e3a8a' }}>{formatCurrency(op.precio, moneda)}/{t('catalogo.day')}</span>
               </button>
             ))}
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             <div>
-              <label style={lbl}>{tipo === 'retiro' ? 'Lugar de retiro' : 'Lugar de devolución'}</label>
+              <label style={lbl}>{tipo === 'retiro' ? t('vehiculo.pickupLocationLabel') : t('vehiculo.returnLocationLabel')}</label>
               <select
                 value={tipo === 'retiro' ? form.sucursalRetiro : form.sucursalDevolucion}
                 onChange={e => s(tipo === 'retiro' ? 'sucursalRetiro' : 'sucursalDevolucion', e.target.value)}
                 style={{ ...inp, cursor: 'pointer' }}
               >
-                <option value="">Selecciona Lugar</option>
+                <option value="">{t('vehiculo.selectLocation')}</option>
                 {['Centro', 'Norte', 'Sur', 'Occidente'].map(puntos => (
                   <option key={puntos} value={puntos}>
                     {puntos}
@@ -79,7 +86,7 @@ export default function ModalEditarReserva({ tipo, reserva, vehiculo, onGuardar,
               </select>
             </div>
             <div>
-              <label style={lbl}>Hora predominada</label>
+              <label style={lbl}>{t('vehiculo.timeLabel')}</label>
               <select
                 value={tipo === 'retiro' ? form.horaInicio : form.horaFin}
                 onChange={e => s(tipo === 'retiro' ? 'horaInicio' : 'horaFin', e.target.value)}
@@ -92,7 +99,7 @@ export default function ModalEditarReserva({ tipo, reserva, vehiculo, onGuardar,
         )}
 
         <button onClick={() => { onGuardar(form); onCerrar() }} style={{ width: '100%', marginTop: 28, padding: '16px', borderRadius: 12, background: 'linear-gradient(135deg,#1e3a8a,#2563eb)', color: '#fff', fontWeight: 800, fontSize: 15, border: 'none', cursor: 'pointer', boxShadow: '0 8px 24px rgba(37,99,235,0.25)', transition: 'transform 200ms ease' }} onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'} onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}>
-          Guardar Cambios
+          {t('vehiculo.saveChanges')}
         </button>
       </div>
     </div>

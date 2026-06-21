@@ -1,5 +1,6 @@
 // src/modules/landing/LandingContext.jsx
 import { createContext, useContext, useState, useEffect } from 'react'
+import i18n from '../../i18n/index.js'
 
 const LandingContext = createContext(null)
 
@@ -22,6 +23,7 @@ export function LandingProvider({ children }) {
 
   useEffect(() => {
     sessionStorage.setItem('rm_idioma', idioma)
+    i18n.changeLanguage(idioma)
   }, [idioma])
 
   useEffect(() => {

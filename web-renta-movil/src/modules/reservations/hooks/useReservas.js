@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '../../../store/authStore'
 
 const limpiarTelefono = (tel = '') => {
@@ -7,8 +8,8 @@ const limpiarTelefono = (tel = '') => {
   return solo.startsWith('57') && solo.length > 10 ? solo.slice(2) : solo
 }
 
-// ── Lógica de reserva extraída de VehiculoDetallePage ──
 export function useReservas(vehiculo) {
+  const { t } = useTranslation()
   const navigate    = useNavigate()
   const { usuario } = useAuthStore()
   const prellenado  = useRef(false)
@@ -60,15 +61,15 @@ export function useReservas(vehiculo) {
   const handleReservar = () => {
     const e = {}
     if (!datosForm.nombre.trim())
-      e.nombre = 'El nombre es obligatorio'
+      e.nombre = t('vehiculo.errors.nameRequired')
     if (!datosForm.correo.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(datosForm.correo))
-      e.correo = 'Correo inválido'
+      e.correo = t('vehiculo.errors.emailInvalid')
     if (!datosForm.celular.trim() || datosForm.celular.length < 10)
-      e.celular = 'Número inválido (10 dígitos)'
+      e.celular = t('vehiculo.errors.phoneInvalid')
     if (!datosForm.numDoc.trim())
-      e.numDoc = 'El número de documento es obligatorio'
+      e.numDoc = t('vehiculo.errors.docRequired')
     if (!datosForm.terminos)
-      e.terminos = 'Debes aceptar los términos y condiciones'
+      e.terminos = t('vehiculo.errors.termsRequired')
 
     setErrores(e)
     if (Object.keys(e).length > 0) return
@@ -80,16 +81,16 @@ export function useReservas(vehiculo) {
   const irPantalla2 = () => {
     const e = {}
     if (!reserva.fechaInicio || !reserva.fechaFin) {
-        e.fechas = 'Debes seleccionar las fechas de retiro y devolución.'
+      e.fechas = t('vehiculo.errors.datesRequired')
     } else if (reserva.fechaFin < reserva.fechaInicio) {
-        e.fechas = 'La fecha de devolución no puede ser anterior a la de recogida.'
+      e.fechas = t('vehiculo.errors.datesOrder')
     } else if (reserva.fechaInicio === reserva.fechaFin && reserva.horaFin < reserva.horaInicio) {
-        e.fechas = 'La hora de devolución no puede ser anterior a la hora de recogida el mismo día.'
+      e.fechas = t('vehiculo.errors.hoursOrder')
     }
-    
+
     if (e.fechas) {
-       setErrores({ ...errores, ...e })
-       return
+      setErrores({ ...errores, ...e })
+      return
     }
     setErrores({ ...errores, fechas: null })
     setPantalla(2)
@@ -119,8 +120,8 @@ export function useReservas(vehiculo) {
   }
 }
 
-// ── Historial de reservas (para ReservasPage) ──
 export function useHistorialReservas() {
+  const { t } = useTranslation()
   const [reservas,  setReservas]  = useState([])
   const [cargando,  setCargando]  = useState(false)
   const [error,     setError]     = useState(null)
@@ -129,10 +130,9 @@ export function useHistorialReservas() {
     setCargando(true)
     setError(null)
     try {
-      // TODO: conectar con reservasService cuando esté el backend
       setReservas([])
     } catch {
-      setError('No se pudieron cargar las reservas.')
+      setError(t('reservas.error'))
     } finally {
       setCargando(false)
     }

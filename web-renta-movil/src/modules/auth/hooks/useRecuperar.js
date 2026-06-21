@@ -1,7 +1,9 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { authService } from '../../../services/authService'
 
 export function useRecuperar() {
+  const { t } = useTranslation()
   const [correo,   setCorreo]   = useState('')
   const [cargando, setCargando] = useState(false)
   const [enviado,  setEnviado]  = useState(false)
@@ -9,8 +11,8 @@ export function useRecuperar() {
 
   const validarCorreo = (valor) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!valor)             return 'El correo es obligatorio'
-    if (!regex.test(valor)) return 'Formato de correo inválido'
+    if (!valor)             return t('recuperar.errors.emailRequired')
+    if (!regex.test(valor)) return t('recuperar.errors.emailInvalid')
     return ''
   }
 

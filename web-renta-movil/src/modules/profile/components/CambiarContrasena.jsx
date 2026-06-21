@@ -1,18 +1,11 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { FaLock, FaEye, FaEyeSlash, FaCheck, FaTimes, FaShieldAlt } from 'react-icons/fa'
-import { useCambiarContrasena, REGLAS } from '../hooks/useCambiarContrasena'
+import { useCambiarContrasena } from '../hooks/useCambiarContrasena'
 import { showAlert } from '@/utils/swalConfig'
-import { useEffect } from 'react'
-
-const FORTALEZA_CONFIG = [
-  { label: 'Muy débil',  color: '#ef4444' },
-  { label: 'Débil',      color: '#f97316' },
-  { label: 'Regular',    color: '#eab308' },
-  { label: 'Buena',      color: '#22c55e' },
-  { label: 'Fuerte',     color: '#16a34a' },
-]
 
 export default function CambiarContrasena({ c }) {
+  const { t } = useTranslation()
   const {
     form, errores, cargando, exito,
     modoEdicion, setModoEdicion,
@@ -23,11 +16,26 @@ export default function CambiarContrasena({ c }) {
   const [ver, setVer] = useState({ actual: false, nueva: false, confirmar: false })
   const toggleVer = (campo) => setVer(prev => ({ ...prev, [campo]: !prev[campo] }))
 
+  const FORTALEZA_CONFIG = [
+    { label: t('perfil.strength.veryWeak'), color: '#ef4444' },
+    { label: t('perfil.strength.weak'),     color: '#f97316' },
+    { label: t('perfil.strength.regular'),  color: '#eab308' },
+    { label: t('perfil.strength.good'),     color: '#22c55e' },
+    { label: t('perfil.strength.strong'),   color: '#16a34a' },
+  ]
+
+  const RULE_LABELS = {
+    len:     t('perfil.rules.min8'),
+    upper:   t('perfil.rules.uppercase'),
+    num:     t('perfil.rules.number'),
+    special: t('perfil.rules.special'),
+  }
+
   useEffect(() => {
     if (exito) {
-      showAlert({ icon: 'success', title: '¡Contraseña actualizada!', text: 'Tu contraseña se cambió correctamente.' })
+      showAlert({ icon: 'success', title: t('perfil.passwordUpdated'), text: t('perfil.passwordUpdatedText') })
     }
-  }, [exito])
+  }, [exito, t])
 
   const fortalezaInfo = FORTALEZA_CONFIG[fortaleza] ?? FORTALEZA_CONFIG[0]
 
@@ -63,7 +71,7 @@ export default function CambiarContrasena({ c }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <FaShieldAlt style={{ color: c.sectionTitle, fontSize: '15px' }} />
           <h2 style={{ fontSize: '16px', fontWeight: 700, color: c.title, margin: 0 }}>
-            Seguridad y Contraseña
+            {t('perfil.security')}
           </h2>
         </div>
         {!modoEdicion && (
@@ -83,7 +91,7 @@ export default function CambiarContrasena({ c }) {
               gap: '7px',
             }}
           >
-            <FaLock style={{ fontSize: '11px' }} /> Cambiar contraseña
+            <FaLock style={{ fontSize: '11px' }} /> {t('perfil.changePassword')}
           </button>
         )}
       </div>
@@ -95,26 +103,22 @@ export default function CambiarContrasena({ c }) {
             <FaLock style={{ color: c.sectionTitle, fontSize: '16px' }} />
           </div>
           <div>
-            <p style={{ fontSize: '14px', fontWeight: 600, color: c.text, margin: '0 0 2px' }}>Contraseña establecida</p>
-            <p style={{ fontSize: '12px', color: c.textMuted, margin: 0 }}>Haz clic en "Cambiar contraseña" para actualizarla</p>
+            <p style={{ fontSize: '14px', fontWeight: 600, color: c.text, margin: '0 0 2px' }}>{t('perfil.passwordSet')}</p>
+            <p style={{ fontSize: '12px', color: c.textMuted, margin: 0 }}>{t('perfil.passwordSetHint')}</p>
           </div>
         </div>
       ) : (
         <div style={{ padding: '24px' }}>
-          <p style={{ fontSize: '13px', color: c.textMuted, margin: '0 0 20px' }}>
-            Actualiza tu contraseña para mantener tu cuenta segura.
-          </p>
-
           <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
             {/* Contraseña actual */}
             <div>
-              <label style={labelStyle}><FaLock style={{ fontSize: '10px' }} /> Contraseña Actual *</label>
+              <label style={labelStyle}><FaLock style={{ fontSize: '10px' }} /> {t('perfil.currentPassword')} *</label>
               <div style={{ position: 'relative' }}>
                 <input
                   type={ver.actual ? 'text' : 'password'}
                   value={form.actual}
                   onChange={e => actualizarCampo('actual', e.target.value)}
-                  placeholder="Tu contraseña actual"
+                  placeholder={t('perfil.currentPasswordPlaceholder')}
                   style={inputStyle(!!errores.actual)}
                   onFocus={e => e.target.style.borderColor = c.inputBorderFocus}
                   onBlur={e => e.target.style.borderColor = errores.actual ? '#f87171' : c.inputBorder}
@@ -128,13 +132,13 @@ export default function CambiarContrasena({ c }) {
 
             {/* Nueva contraseña */}
             <div>
-              <label style={labelStyle}><FaLock style={{ fontSize: '10px' }} /> Nueva Contraseña *</label>
+              <label style={labelStyle}><FaLock style={{ fontSize: '10px' }} /> {t('perfil.newPassword')} *</label>
               <div style={{ position: 'relative' }}>
                 <input
                   type={ver.nueva ? 'text' : 'password'}
                   value={form.nueva}
                   onChange={e => actualizarCampo('nueva', e.target.value)}
-                  placeholder="Tu nueva contraseña"
+                  placeholder={t('perfil.newPasswordPlaceholder')}
                   style={inputStyle(!!errores.nueva)}
                   onFocus={e => e.target.style.borderColor = c.inputBorderFocus}
                   onBlur={e => e.target.style.borderColor = errores.nueva ? '#f87171' : c.inputBorder}
@@ -175,7 +179,7 @@ export default function CambiarContrasena({ c }) {
                       <FaCheck style={{ fontSize: '8px', color: r.ok ? '#fff' : 'transparent' }} />
                     </div>
                     <span style={{ fontSize: '12px', color: r.ok ? '#22c55e' : c.textMuted, fontWeight: r.ok ? 600 : 400 }}>
-                      {r.label}
+                      {RULE_LABELS[r.id] ?? r.label}
                     </span>
                   </div>
                 ))}
@@ -185,13 +189,13 @@ export default function CambiarContrasena({ c }) {
 
             {/* Confirmar contraseña */}
             <div>
-              <label style={labelStyle}><FaLock style={{ fontSize: '10px' }} /> Confirmar Nueva Contraseña *</label>
+              <label style={labelStyle}><FaLock style={{ fontSize: '10px' }} /> {t('perfil.confirmPassword')} *</label>
               <div style={{ position: 'relative' }}>
                 <input
                   type={ver.confirmar ? 'text' : 'password'}
                   value={form.confirmar}
                   onChange={e => actualizarCampo('confirmar', e.target.value)}
-                  placeholder="Repite tu nueva contraseña"
+                  placeholder={t('perfil.confirmPasswordPlaceholder')}
                   style={inputStyle(!!errores.confirmar)}
                   onFocus={e => e.target.style.borderColor = c.inputBorderFocus}
                   onBlur={e => e.target.style.borderColor = errores.confirmar ? '#f87171' : c.inputBorder}
@@ -200,10 +204,9 @@ export default function CambiarContrasena({ c }) {
                   {ver.confirmar ? <FaEyeSlash /> : <FaEye />}
                 </button>
               </div>
-              {/* Indicador coincidencia en tiempo real */}
               {form.confirmar && (
                 <p style={{ fontSize: '12px', margin: '5px 0 0', color: form.nueva === form.confirmar ? '#22c55e' : '#ef4444', fontWeight: 600 }}>
-                  {form.nueva === form.confirmar ? '✓ Las contraseñas coinciden' : '✗ Las contraseñas no coinciden'}
+                  {form.nueva === form.confirmar ? `✓ ${t('perfil.passwordMatch')}` : `✗ ${t('perfil.passwordNoMatch')}`}
                 </p>
               )}
               {errores.confirmar && !form.confirmar && <p style={{ color: c.errorText, fontSize: '12px', margin: '5px 0 0' }}>{errores.confirmar}</p>}
@@ -217,7 +220,7 @@ export default function CambiarContrasena({ c }) {
               disabled={cargando}
               style={{ padding: '11px 24px', borderRadius: '10px', background: c.btnSecBg, border: `1.5px solid ${c.btnSecBorder}`, color: c.btnSecText, fontWeight: 600, fontSize: '14px', cursor: cargando ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: '8px', opacity: cargando ? 0.5 : 1 }}
             >
-              <FaTimes /> Cancelar
+              <FaTimes /> {t('perfil.cancel')}
             </button>
             <button
               onClick={handleGuardar}
@@ -225,9 +228,9 @@ export default function CambiarContrasena({ c }) {
               style={{ padding: '11px 28px', borderRadius: '10px', background: c.btnPrimary, color: '#fff', border: 'none', fontWeight: 700, fontSize: '14px', cursor: cargando ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: '8px', opacity: cargando ? 0.7 : 1 }}
             >
               {cargando ? (
-                <><span style={{ width: 14, height: 14, border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#fff', borderRadius: '50%', animation: 'spin 0.7s linear infinite', display: 'inline-block' }} /> Guardando...</>
+                <><span style={{ width: 14, height: 14, border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#fff', borderRadius: '50%', animation: 'spin 0.7s linear infinite', display: 'inline-block' }} /> {t('perfil.saving')}</>
               ) : (
-                <><FaCheck /> Actualizar contraseña</>
+                <><FaCheck /> {t('perfil.updatePassword')}</>
               )}
             </button>
           </div>

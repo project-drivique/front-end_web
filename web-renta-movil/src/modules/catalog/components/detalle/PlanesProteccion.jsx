@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { FaShieldAlt, FaRegHeart } from "react-icons/fa";
 import { formatCurrency } from '@/utils/monedaUtils';
 import { useLanding } from '../../../landing/LandingContext';
@@ -19,48 +20,50 @@ const IcoX = ({ sz = 15, color = '#dc2626' }) => (
 )
 
 export default function PlanesProteccion({ seguroIdx, onSeleccionar }) {
+  const { t } = useTranslation()
   const { moneda } = useLanding();
+
   const planes = [
     {
-      nombre: 'Protección Obligatoria',
+      nombre: t('catalogo.basicProtection'),
       precio: 29000,
       icono: [FaShieldAlt, FaRegHeart, FaRegHeart],
       items: [
-        { tipo: 'check', texto: 'Asistencia durante tu viaje. *No incluidas en Alquiler Ligero' },
-        { tipo: 'check', texto: 'Responsabilidad Civil Extracontractual (hasta $840 millones)' },
-        { tipo: 'check', texto: 'Cobertura básica del vehículo (no incluye daños graves ni robo)' },
-        { tipo: 'warn',  texto: 'En caso de siniestro, deberás asumir un pago adicional llamado Participación obligatoria, que puede llegar hasta $4.760.000 dependiendo del tipo de vehículo' },
-        { tipo: 'x',     texto: 'No cubre uso indebido del vehículo' },
+        { tipo: 'check', texto: t('vehiculo.plan1Item1') },
+        { tipo: 'check', texto: t('vehiculo.plan1Item2') },
+        { tipo: 'check', texto: t('vehiculo.plan1Item3') },
+        { tipo: 'warn',  texto: t('vehiculo.plan1Item4') },
+        { tipo: 'x',     texto: t('vehiculo.plan1Item5') },
       ],
     },
     {
-      nombre: 'Protección Total',
+      nombre: t('catalogo.fullProtection'),
       precio: 67000,
       icono: [FaShieldAlt, FaShieldAlt, FaShieldAlt],
       items: [
-        { tipo: 'check', texto: 'Asistencia completa durante tu viaje' },
-        { tipo: 'check', texto: 'Responsabilidad Civil Extracontractual (hasta $840M)' },
-        { tipo: 'check', texto: 'Cobertura total del vehículo (incluye daños graves y robo)' },
-        { tipo: 'check', texto: 'Sin pago de la participación obligatoria en caso de siniestro' },
-        { tipo: 'x',     texto: 'No cubre uso indebido del vehículo' },
+        { tipo: 'check', texto: t('vehiculo.plan2Item1') },
+        { tipo: 'check', texto: t('vehiculo.plan2Item2') },
+        { tipo: 'check', texto: t('vehiculo.plan2Item3') },
+        { tipo: 'check', texto: t('vehiculo.plan2Item4') },
+        { tipo: 'x',     texto: t('vehiculo.plan2Item5') },
       ],
     },
   ];
 
   return (
     <div>
-      <h3 style={{ fontSize: 18, fontWeight: 800, color: 'var(--texto-primary)', margin: '0 0 16px' }}>Elige tu protección</h3>
+      <h3 style={{ fontSize: 18, fontWeight: 800, color: 'var(--texto-primary)', margin: '0 0 16px' }}>{t('vehiculo.chooseProtection')}</h3>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(270px, 1fr))', gap: 18, marginBottom: 32 }}>
         {planes.map((plan, idx) => {
           const sel = seguroIdx === idx;
           return (
-            <div key={idx} style={{ 
-              borderRadius: 20, 
-              border: `2px solid ${sel ? '#2563eb' : 'var(--borde)'}`, 
-              background: sel ? '#f8fafc' : 'var(--bg-tarjeta)', 
-              boxShadow: sel ? '0 6px 24px rgba(37,99,235,0.15)' : 'var(--sombra-tarjeta)', 
-              overflow: 'hidden', 
-              transition: 'all 250ms ease' 
+            <div key={idx} style={{
+              borderRadius: 20,
+              border: `2px solid ${sel ? '#2563eb' : 'var(--borde)'}`,
+              background: sel ? '#f8fafc' : 'var(--bg-tarjeta)',
+              boxShadow: sel ? '0 6px 24px rgba(37,99,235,0.15)' : 'var(--sombra-tarjeta)',
+              overflow: 'hidden',
+              transition: 'all 250ms ease'
             }}>
               <div style={{ padding: '20px 24px 0' }}>
                 <div style={{ display: 'flex', justifyContent: 'center', gap: 6, marginBottom: 10 }}>
@@ -72,7 +75,7 @@ export default function PlanesProteccion({ seguroIdx, onSeleccionar }) {
                 </div>
                 <h4 style={{ fontSize: 18, fontWeight: 800, color: 'var(--texto-primary)', textAlign: 'center', margin: '0 0 4px' }}>{plan.nombre}</h4>
                 <p style={{ fontSize: 18, fontWeight: 800, color: '#059669', textAlign: 'center', margin: '0 0 16px' }}>
-                  {formatCurrency(plan.precio, moneda)} <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--texto-second)' }}>/ por día</span>
+                  {formatCurrency(plan.precio, moneda)} <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--texto-second)' }}>/ {t('catalogo.day')}</span>
                 </p>
                 <hr style={{ border: 'none', borderTop: '1px solid var(--borde)', margin: '0 0 16px' }} />
               </div>
@@ -84,11 +87,11 @@ export default function PlanesProteccion({ seguroIdx, onSeleccionar }) {
                       {item.tipo === 'warn'  && <IcoWarn />}
                       {item.tipo === 'x'     && <IcoX sz={14} color="#dc2626" />}
                     </div>
-                    <span style={{ 
-                      fontSize: 13, 
-                      color: sel ? '#1e3a8a' : (item.tipo === 'x' ? 'var(--texto-second)' : 'var(--texto-primary)'), 
-                      lineHeight: 1.5, 
-                      textDecoration: item.tipo === 'x' ? 'line-through' : 'none' 
+                    <span style={{
+                      fontSize: 13,
+                      color: sel ? '#1e3a8a' : (item.tipo === 'x' ? 'var(--texto-second)' : 'var(--texto-primary)'),
+                      lineHeight: 1.5,
+                      textDecoration: item.tipo === 'x' ? 'line-through' : 'none'
                     }}>
                       {item.texto}
                     </span>
@@ -104,7 +107,7 @@ export default function PlanesProteccion({ seguroIdx, onSeleccionar }) {
                   border: idx === 1 && !sel ? '2px solid #1e3a8a' : 'none',
                   boxShadow: sel ? '0 4px 14px rgba(30,58,138,0.25)' : 'none',
                 }}>
-                  {sel ? '✓ Seleccionado' : 'Elegir plan'}
+                  {sel ? t('vehiculo.planSelected') : t('vehiculo.choosePlan')}
                 </button>
               </div>
             </div>
