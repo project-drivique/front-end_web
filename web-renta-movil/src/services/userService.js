@@ -1,8 +1,8 @@
-import { api } from './authService'
+﻿import { api } from './authService'
 
 const MOCK_PASSWORDS = {
-  'admin@rentamovil.com': 'Admin123*',
-  'cliente@rentamovil.com': 'Cliente123*',
+  'admin@drivique.com': 'Admin123*',
+  'cliente@drivique.com': 'Cliente123*',
 }
 
 const MOCK_EMAILS = Object.keys(MOCK_PASSWORDS)

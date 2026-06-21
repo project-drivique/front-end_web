@@ -1,8 +1,10 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '../../../store/authStore'
 import { userService } from '../../../services/userService'
 
 export function usePerfil() {
+  const { t } = useTranslation()
   const { usuario, token, actualizarUsuario } = useAuthStore()
   const [cargando, setCargando] = useState(false)
   const [exito, setExito] = useState(false)
@@ -39,26 +41,26 @@ export function usePerfil() {
     const e = {}
 
     if (!formData.nombre.trim()) {
-      e.nombre = 'El nombre es obligatorio'
+      e.nombre = t('perfil.errors.nameRequired')
     } else if (formData.nombre.trim().length > 100) {
-      e.nombre = 'El nombre no puede exceder 100 caracteres'
+      e.nombre = t('perfil.errors.nameTooLong')
     }
 
     if (!formData.apellido.trim()) {
-      e.apellido = 'El apellido es obligatorio'
+      e.apellido = t('perfil.errors.lastnameRequired')
     } else if (formData.apellido.trim().length > 100) {
-      e.apellido = 'El apellido no puede exceder 100 caracteres'
+      e.apellido = t('perfil.errors.lastnameTooLong')
     }
 
     if (formData.telefono && !/^\d{7,15}$/.test(formData.telefono.replace(/\D/g, ''))) {
-      e.telefono = 'El teléfono debe tener entre 7 y 15 dígitos'
+      e.telefono = t('perfil.errors.phoneInvalid')
     }
 
     const correoNuevo = formData.correo.toLowerCase()
     if (correoNuevo !== correoAnterior.toLowerCase()) {
       const rxCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
       if (!rxCorreo.test(correoNuevo)) {
-        e.correo = 'Formato de correo inválido'
+        e.correo = t('perfil.errors.emailInvalid')
       }
     }
 
@@ -76,7 +78,7 @@ export function usePerfil() {
       const msg = err?.response?.data?.mensaje
         || err?.response?.data?.message
         || err?.message
-        || 'Contraseña incorrecta'
+        || t('perfil.errors.currentPasswordWrong')
       setErrorVerificacion(msg)
     } finally {
       setCargandoVerificacion(false)
@@ -108,7 +110,7 @@ export function usePerfil() {
       const msg = err?.response?.data?.mensaje
         || err?.response?.data?.message
         || err?.message
-        || 'No se pudo actualizar el perfil'
+        || t('perfil.errors.updateFailed')
       setError(msg)
     } finally {
       setCargando(false)
@@ -129,7 +131,7 @@ export function usePerfil() {
         await userService.verificarCorreoDisponible(correoNuevo)
       } catch (err) {
         if (err?.response?.status === 409) {
-          setErrores({ correo: 'Este correo ya está registrado' })
+          setErrores({ correo: t('perfil.errors.emailTaken') })
           return
         }
       }

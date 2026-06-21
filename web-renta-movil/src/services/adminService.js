@@ -1,8 +1,8 @@
-import { authService } from './authService'
+﻿import { authService } from './authService'
 
 export const adminService = {
   login: async ({ correo, contrasena }) => {
-    if (correo.trim().toLowerCase() !== 'admin@rentamovil.com') {
+    if (correo.trim().toLowerCase() !== 'admin@drivique.com') {
       const error = new Error('Acceso exclusivo para administradores')
       error.response = { status: 403 }
       throw error

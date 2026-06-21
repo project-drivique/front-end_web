@@ -1,4 +1,4 @@
-import axios from 'axios'
+﻿import axios from 'axios'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
 
@@ -15,17 +15,17 @@ api.interceptors.request.use((config) => {
 
 const MOCK_USERS = [
   {
-    correo: 'admin@rentamovil.com',
+    correo: 'admin@Drivique.com',
     contrasena: 'Admin123*',
     nombre: 'Administrador',
-    apellido: 'RentaMovil',
+    apellido: 'Drivique',
     rol: 'administrador',
     telefono: '+573001234567',
     cedula: '1234567890',
     fechaNacimiento: '1990-05-15',
   },
   {
-    correo: 'cliente@rentamovil.com',
+    correo: 'cliente@Drivique.com',
     contrasena: 'Cliente123*',
     nombre: 'Juan',
     apellido: 'Pérez',
@@ -43,7 +43,7 @@ const generateMockToken = () => {
 export const authService = {
   login: async ({ correo, contrasena }) => {
     const usuario = MOCK_USERS.find(
-      (u) => u.correo === correo && u.contrasena === contrasena
+      (u) => u.correo.toLowerCase() === correo.toLowerCase() && u.contrasena === contrasena
     )
 
     if (usuario) {
@@ -83,7 +83,7 @@ export const authService = {
       }
     }
 
-    const error = new Error('No existe una cuenta con estas credenciales. Usa admin@rentamovil.com o cliente@rentamovil.com con la contraseña correspondiente.')
+    const error = new Error('No existe una cuenta con estas credenciales. Usa admin@Drivique.com o cliente@Drivique.com con la contraseña correspondiente.')
     error.response = { status: 400 }
     throw error
   },

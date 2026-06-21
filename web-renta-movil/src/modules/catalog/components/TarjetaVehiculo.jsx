@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { showAlert } from '@/utils/swalConfig'
 import { useLanding } from '../../landing/LandingContext'
 import { formatCurrency } from '@/utils/monedaUtils'
@@ -45,18 +46,19 @@ function getCarIcon(item) {
   return item.icono || FaCogs
 }
 
-function normalizeCaracteristicas(vehiculo) {
-  if (Array.isArray(vehiculo.caracteristicas) && vehiculo.caracteristicas.length > 0) return vehiculo.caracteristicas
-  if (Array.isArray(vehiculo.detalles) && vehiculo.detalles.length > 0) return vehiculo.detalles
-  return [
-    { icono: FaSnowflake, label: 'Aire acondicionado' },
-    { icono: FaBolt, label: 'Eleva vidrios eléctrico' },
-    { icono: FaLock, label: 'Cierre centralizado' },
-    { icono: FaSuitcase, label: `${vehiculo.maletero ?? 0}L maletero` },
-    { icono: FaCogs, label: vehiculo.transmision || 'Manual' },
-    { icono: FaGasPump, label: vehiculo.combustible || 'Gasolina' },
-    { icono: FaUsers, label: `${vehiculo.pasajeros ?? 4} personas` },
-  ]
+const TRANS_KEYS = {
+  'Automática': 'catalogo.transAuto',
+  'Manual':     'catalogo.transManual',
+}
+const FUEL_KEYS = {
+  'Gasolina':  'catalogo.fuelGas',
+  'Diesel':    'catalogo.fuelDiesel',
+  'Híbrido':   'catalogo.fuelHybrid',
+  'Eléctrico': 'catalogo.fuelElec',
+}
+const SEGURO_KEYS = {
+  'Protección Obligatoria': 'catalogo.basicProtection',
+  'Protección Total':       'catalogo.fullProtection',
 }
 
 function normalizeTarifas(vehiculo) {
@@ -90,11 +92,28 @@ export default function TarjetaVehiculo({
   invitado = false,
   destacado = false,
 }) {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const { moneda } = useLanding()
   const [hover, setHover] = useState(false)
   const [verDetalles, setVerDetalles] = useState(false)
   const [fotoActiva, setFotoActiva] = useState(0)
+
+  const normalizeCaracteristicas = (v) => {
+    if (Array.isArray(v.caracteristicas) && v.caracteristicas.length > 0) return v.caracteristicas
+    if (Array.isArray(v.detalles) && v.detalles.length > 0) return v.detalles
+    const transKey = TRANS_KEYS[v.transmision]
+    const fuelKey  = FUEL_KEYS[v.combustible]
+    return [
+      { icono: FaSnowflake, label: t('vehiculo.airConditioning') },
+      { icono: FaBolt,      label: t('vehiculo.windowsElec') },
+      { icono: FaLock,      label: t('vehiculo.centralLock') },
+      { icono: FaSuitcase,  label: `${v.maletero ?? 0}L ${t('vehiculo.trunk')}` },
+      { icono: FaCogs,      label: transKey ? t(transKey) : v.transmision || t('catalogo.transManual') },
+      { icono: FaGasPump,   label: fuelKey  ? t(fuelKey)  : v.combustible || t('catalogo.fuelGas') },
+      { icono: FaUsers,     label: `${v.pasajeros ?? 4} ${t('vehiculo.passengers')}` },
+    ]
+  }
 
   const imagenes = getSafeImages(vehiculo)
   const caracteristicas = normalizeCaracteristicas(vehiculo)
@@ -107,11 +126,11 @@ export default function TarjetaVehiculo({
     if (invitado) {
       showAlert({
         icon: 'info',
-        title: 'Registro Requerido',
-        text: 'Para realizar o continuar con una reserva, necesitas tener una cuenta. Regístrate o inicia sesión.',
-        confirmButtonText: 'Ir a registro',
+        title: t('catalogo.registrationRequired'),
+        text: t('catalogo.registrationRequiredText'),
+        confirmButtonText: t('catalogo.goToRegister'),
         showCancelButton: true,
-        cancelButtonText: 'Cancelar'
+        cancelButtonText: t('common.cancel')
       }).then((result) => {
         if (result.isConfirmed) {
           navigate('/registro')
@@ -127,9 +146,9 @@ export default function TarjetaVehiculo({
     if (invitado) {
       showAlert({
         icon: 'info',
-        title: 'Favoritos solo para usuarios',
-        text: 'Inicia sesión o regístrate para guardar vehículos en favoritos.',
-        confirmButtonText: 'Ir a iniciar sesión',
+        title: t('catalogo.favoritesTitle'),
+        text: t('catalogo.favoritesText'),
+        confirmButtonText: t('catalogo.goToLogin'),
       }).then((result) => {
         if (result.isConfirmed) {
           navigate('/login')
@@ -185,7 +204,7 @@ export default function TarjetaVehiculo({
             border: `1px solid ${estadoDisponible ? '#ceead6' : '#fad2cf'}`,
           }}
         >
-          {estadoDisponible ? 'Disponible' : 'No disponible'}
+          {estadoDisponible ? t('catalogo.available') : t('catalogo.unavailable')}
         </span>
 
         <button
@@ -264,11 +283,11 @@ export default function TarjetaVehiculo({
           <div style={{ display: 'flex', gap: '12px', marginBottom: '6px', flexWrap: 'wrap' }}>
             <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', color: c.textSecondary }}>
               <FaCogs style={{ color: c.textMuted }} />
-              {vehiculo.transmision}
+              {TRANS_KEYS[vehiculo.transmision] ? t(TRANS_KEYS[vehiculo.transmision]) : vehiculo.transmision}
             </span>
             <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', color: c.textSecondary }}>
               <FaGasPump style={{ color: c.textMuted }} />
-              {vehiculo.combustible}
+              {FUEL_KEYS[vehiculo.combustible] ? t(FUEL_KEYS[vehiculo.combustible]) : vehiculo.combustible}
             </span>
           </div>
 
@@ -283,7 +302,7 @@ export default function TarjetaVehiculo({
             <span style={{ fontSize: '24px', fontWeight: 900, color: '#1e3a8a' }}>
               {formatCurrency(vehiculo.precio || 60000, moneda)}
             </span>
-            <span style={{ fontSize: '12px', color: c.textSoft, marginLeft: '4px' }}>/día</span>
+            <span style={{ fontSize: '12px', color: c.textSoft, marginLeft: '4px' }}>/{t('catalogo.day')}</span>
           </div>
 
           <div style={{ marginTop: 'auto' }}>
@@ -311,7 +330,7 @@ export default function TarjetaVehiculo({
               }}
             >
               <FaCar />
-              RESERVAR AHORA
+              {t('catalogo.reserveNow').toUpperCase()}
             </button>
 
             <div style={{ textAlign: 'center' }}>
@@ -329,7 +348,7 @@ export default function TarjetaVehiculo({
                   padding: 0,
                 }}
               >
-                Ver detalles
+                {t('catalogo.details')}
               </button>
             </div>
           </div>
@@ -364,7 +383,7 @@ export default function TarjetaVehiculo({
                 padding: 0,
               }}
             >
-              Ocultar detalles
+              {t('catalogo.hideDetails')}
             </button>
           </div>
 
@@ -396,14 +415,14 @@ export default function TarjetaVehiculo({
           <div style={{ background: '#f4fbf7', borderRadius: '8px', padding: '10px', border: '1px solid #ccf1dc', flexShrink: 0 }}>
             <div style={{ fontSize: '11px', fontWeight: 800, color: '#137333', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '5px' }}>
               <FaMoneyBillWave />
-              TARIFAS
+              {t('catalogo.rates').toUpperCase()}
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: '#334155', marginBottom: '4px' }}>
-              <span>Km limitado ({tarifas.kmLimitado.km} km/día)</span>
+              <span>{t('catalogo.limitedKm')} ({tarifas.kmLimitado.km} km/{t('catalogo.day')})</span>
               <span style={{ fontWeight: 800 }}>{formatCurrency(tarifas.kmLimitado.precio || 55000, moneda)}</span>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: '#334155' }}>
-              <span>Km ilimitado</span>
+              <span>{t('catalogo.unlimitedKm')}</span>
               <span style={{ fontWeight: 800 }}>{formatCurrency(tarifas.kmIlimitado.precio || 68000, moneda)}</span>
             </div>
           </div>
@@ -411,26 +430,26 @@ export default function TarjetaVehiculo({
           <div style={{ background: '#f0f4ff', borderRadius: '8px', padding: '10px', border: '1px solid #ccd9ff', flexShrink: 0 }}>
             <div style={{ fontSize: '11px', fontWeight: 800, color: '#1e40af', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '5px' }}>
               <FaShieldAlt />
-              SEGUROS
+              {t('catalogo.insurance').toUpperCase()}
             </div>
             {seguros.length > 0 ? (
               seguros.map((seg, i) => (
                 <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '11px', color: '#334155', marginBottom: i < seguros.length - 1 ? '4px' : 0 }}>
-                  <span style={{ fontWeight: 600 }}>{seg.nombre}</span>
+                  <span style={{ fontWeight: 600 }}>{SEGURO_KEYS[seg.nombre] ? t(SEGURO_KEYS[seg.nombre]) : seg.nombre}</span>
                   <span style={{ fontWeight: 800, color: '#1e3a8a' }}>
-                    {formatCurrency(seg.precio, moneda)}/día
+                    {formatCurrency(seg.precio, moneda)}/{t('catalogo.day')}
                   </span>
                 </div>
               ))
             ) : (
               <>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '11px', color: '#334155', marginBottom: '4px' }}>
-                  <span style={{ fontWeight: 600 }}>Protección Obligatoria</span>
-                  <span style={{ fontWeight: 800, color: '#1e3a8a' }}>{formatCurrency(29000, moneda)}/día</span>
+                  <span style={{ fontWeight: 600 }}>{t('catalogo.basicProtection')}</span>
+                  <span style={{ fontWeight: 800, color: '#1e3a8a' }}>{formatCurrency(29000, moneda)}/{t('catalogo.day')}</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '11px', color: '#334155' }}>
-                  <span style={{ fontWeight: 600 }}>Protección Total</span>
-                  <span style={{ fontWeight: 800, color: '#1e3a8a' }}>{formatCurrency(67000, moneda)}/día</span>
+                  <span style={{ fontWeight: 600 }}>{t('catalogo.fullProtection')}</span>
+                  <span style={{ fontWeight: 800, color: '#1e3a8a' }}>{formatCurrency(67000, moneda)}/{t('catalogo.day')}</span>
                 </div>
               </>
             )}

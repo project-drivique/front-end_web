@@ -1,7 +1,7 @@
-// src/modules/landing/LandingPage.jsx
+﻿// src/modules/landing/LandingPage.jsx
 import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
-import logo from '@/assets/logo/logo.png'
+import logo from '@/assets/logo.png'
 import { useLanding } from './LandingContext'
 import traducciones, { IDIOMAS } from './traducciones'
 import { catalogoService } from '../../services/catalogoService'
@@ -262,7 +262,7 @@ export default function LandingPage() {
         borderBottom: '1px solid var(--borde)', boxShadow: 'var(--sombra-nav)', height: 68,
       }}>
         <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 48px', height: '100%', display: 'flex', alignItems: 'center', gap: 32 }}>
-          <img src={logo} alt="RentaMovil" style={{ height: 40, flexShrink: 0 }} />
+          <img src={logo} alt="Drivique" style={{ height: 40, flexShrink: 0 }} />
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 32, flex: 1, justifyContent: 'center' }}>
             <Link
@@ -636,7 +636,7 @@ export default function LandingPage() {
         <div style={{ maxWidth: 1280, margin: '0 auto' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', gap: 48, flexWrap: 'wrap', marginBottom: 40 }}>
             <div style={{ maxWidth: 280 }}>
-              <img src={logo} alt="RentaMovil" style={{ height: 40, marginBottom: 16, filter: 'brightness(0) invert(1)', opacity: 0.85 }} />
+              <img src={logo} alt="Drivique" style={{ height: 40, marginBottom: 16, filter: 'brightness(0) invert(1)', opacity: 0.85 }} />
               <p style={{ fontSize: 14, lineHeight: 1.7, color: c.footerMuted, margin: 0 }}>{tx.footer.desc}</p>
             </div>
 

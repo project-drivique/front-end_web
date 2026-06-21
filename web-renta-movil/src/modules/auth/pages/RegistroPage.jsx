@@ -1,11 +1,12 @@
-// src/modules/auth/pages/RegistroPage.jsx
+﻿// src/modules/auth/pages/RegistroPage.jsx
 import { useState, useRef, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Link, useNavigate } from 'react-router-dom'
 import { useRegistro } from '../hooks/useRegistro'
 import { useRegistroSocial } from '../hooks/useRegistroSocial'
 import { useAuthStore } from '../../../store/authStore'
 import { useLanding } from '@/modules/landing/LandingContext'
-import logo from '@/assets/logo/logo.png'
+import logo from '@/assets/logo.png'
 import { showAlert } from '@/utils/swalConfig'
 import {
   FaTimes,
@@ -113,13 +114,14 @@ const errorStyle = (c) => ({ color: c.errorInline, fontSize: '12px', margin: '4p
 const fieldWrap = { display: 'flex', flexDirection: 'column', gap: '5px' }
 
 function ModalTerminos({ onCerrar, onAceptar, c }) {
+  const { t } = useTranslation()
   const clausulas = [
-    { num: '1', titulo: 'Objeto', texto: 'RentaMóvil presta el servicio de arrendamiento de vehículos a personas naturales mayores de 18 años con licencia de conducción vigente. La relación contractual se perfecciona mediante la aceptación electrónica de estos términos, conforme al artículo 14 de la Ley 527 de 1999 (comercio electrónico).' },
-    { num: '2', titulo: 'Tratamiento de datos personales — Ley 1581 de 2012', texto: 'En cumplimiento de la Ley Estatutaria 1581 de 2012 y el Decreto Reglamentario 1377 de 2013, RentaMóvil, identificada con NIT 900.XXX.XXX-X, actúa como Responsable del Tratamiento de sus datos personales. Los datos recolectados (correo electrónico) se utilizarán exclusivamente para: (i) prestación del servicio de arrendamiento, (ii) envío de confirmaciones y notificaciones, (iii) cumplimiento de obligaciones legales. No se transferirán a terceros sin su autorización previa, salvo mandato judicial o legal. Puede ejercer sus derechos de acceso, corrección, supresión y revocación escribiendo a privacidad@rentamovil.com.' },
-    { num: '3', titulo: 'Veracidad de la información y responsabilidad del usuario', texto: 'El usuario declara bajo juramento que la información suministrada es verídica y actual. El suministro de datos falsos constituye una conducta punible conforme al artículo 286 del Código Penal colombiano (falsedad en documento privado, pena de 1 a 6 años de prisión). RentaMóvil queda exonerada de toda responsabilidad civil y penal derivada de información falsa o suplantación de identidad, al tenor del artículo 1604 del Código Civil.' },
-    { num: '4', titulo: 'Seguridad de la cuenta', texto: 'El usuario es el único responsable de la custodia de sus credenciales de acceso (correo y contraseña). Cualquier actividad realizada con dichas credenciales se presumirá efectuada por el titular de la cuenta. En caso de compromiso de seguridad, el usuario deberá notificarlo de inmediato a soporte@rentamovil.com.' },
+    { num: '1', titulo: 'Objeto', texto: 'Drivique presta el servicio de arrendamiento de vehículos a personas naturales mayores de 18 años con licencia de conducción vigente. La relación contractual se perfecciona mediante la aceptación electrónica de estos términos, conforme al artículo 14 de la Ley 527 de 1999 (comercio electrónico).' },
+    { num: '2', titulo: 'Tratamiento de datos personales — Ley 1581 de 2012', texto: 'En cumplimiento de la Ley Estatutaria 1581 de 2012 y el Decreto Reglamentario 1377 de 2013, Drivique, identificada con NIT 900.XXX.XXX-X, actúa como Responsable del Tratamiento de sus datos personales. Los datos recolectados (correo electrónico) se utilizarán exclusivamente para: (i) prestación del servicio de arrendamiento, (ii) envío de confirmaciones y notificaciones, (iii) cumplimiento de obligaciones legales. No se transferirán a terceros sin su autorización previa, salvo mandato judicial o legal. Puede ejercer sus derechos de acceso, corrección, supresión y revocación escribiendo a privacidad@Drivique.com.' },
+    { num: '3', titulo: 'Veracidad de la información y responsabilidad del usuario', texto: 'El usuario declara bajo juramento que la información suministrada es verídica y actual. El suministro de datos falsos constituye una conducta punible conforme al artículo 286 del Código Penal colombiano (falsedad en documento privado, pena de 1 a 6 años de prisión). Drivique queda exonerada de toda responsabilidad civil y penal derivada de información falsa o suplantación de identidad, al tenor del artículo 1604 del Código Civil.' },
+    { num: '4', titulo: 'Seguridad de la cuenta', texto: 'El usuario es el único responsable de la custodia de sus credenciales de acceso (correo y contraseña). Cualquier actividad realizada con dichas credenciales se presumirá efectuada por el titular de la cuenta. En caso de compromiso de seguridad, el usuario deberá notificarlo de inmediato a soporte@Drivique.com.' },
     { num: '5', titulo: 'Validez de la aceptación electrónica', texto: 'La marcación del casillero "Acepto los términos y condiciones" constituye una firma electrónica válida con plena eficacia jurídica, de conformidad con los artículos 7 y 14 de la Ley 527 de 1999. Esta aceptación queda registrada con fecha, hora y dirección IP para efectos probatorios.' },
-    { num: '6', titulo: 'Modificaciones', texto: 'RentaMóvil podrá modificar estos términos notificando al correo registrado con al menos 15 días de antelación. El uso continuado de la plataforma tras dicho plazo implica la aceptación de los cambios.' },
+    { num: '6', titulo: 'Modificaciones', texto: 'Drivique podrá modificar estos términos notificando al correo registrado con al menos 15 días de antelación. El uso continuado de la plataforma tras dicho plazo implica la aceptación de los cambios.' },
     { num: '7', titulo: 'Ley aplicable y jurisdicción', texto: 'El presente acuerdo se rige por las leyes de la República de Colombia. Cualquier controversia será resuelta ante los jueces competentes de la ciudad de Bogotá D.C., con renuncia expresa a cualquier otro fuero.' },
   ]
 
@@ -128,8 +130,8 @@ function ModalTerminos({ onCerrar, onAceptar, c }) {
       <div style={{ background: c.modalBg, borderRadius: '20px', width: '100%', maxWidth: '620px', maxHeight: '88vh', display: 'flex', flexDirection: 'column', boxShadow: '0 24px 64px rgba(0,0,0,0.35)', overflow: 'hidden', border: `1px solid ${c.modalDivider}` }}>
         <div style={{ padding: '22px 28px', background: 'linear-gradient(135deg,#0f1a3d,#1e3a8a)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px' }}>
           <div>
-            <h2 style={{ color: '#fff', fontSize: '1rem', fontWeight: 800, margin: '0 0 3px' }}>Términos y Condiciones — RentaMóvil</h2>
-            <p style={{ color: 'rgba(191,219,254,0.82)', fontSize: '12px', margin: 0 }}>Lea detenidamente antes de aceptar · Ley 1581/2012 · Ley 527/1999</p>
+            <h2 style={{ color: '#fff', fontSize: '1rem', fontWeight: 800, margin: '0 0 3px' }}>{t('registro.modal.title')}</h2>
+            <p style={{ color: 'rgba(191,219,254,0.82)', fontSize: '12px', margin: 0 }}>{t('registro.modal.subtitle')}</p>
           </div>
           <button onClick={onCerrar} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', cursor: 'pointer', color: '#fff', borderRadius: '8px', padding: '6px 10px', fontSize: '18px', lineHeight: 1, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <FaTimes />
@@ -145,7 +147,7 @@ function ModalTerminos({ onCerrar, onAceptar, c }) {
           ))}
 
           <p style={{ fontSize: '12px', color: c.modalLegal, lineHeight: 1.6, margin: 0 }}>
-            Al aceptar, declara haber leído y comprendido estos términos en su totalidad. Esta aceptación tiene plena validez legal conforme a la <strong style={{ color: c.modalLegalStrong }}>Ley 527 de 1999</strong> y la <strong style={{ color: c.modalLegalStrong }}>Ley 1581 de 2012</strong>.
+            {t('registro.modal.legalNote')}
           </p>
         </div>
 
@@ -163,7 +165,7 @@ function ModalTerminos({ onCerrar, onAceptar, c }) {
               cursor: 'pointer'
             }}
           >
-            Cerrar
+            {t('registro.modal.close')}
           </button>
 
           <button
@@ -180,7 +182,7 @@ function ModalTerminos({ onCerrar, onAceptar, c }) {
               boxShadow: '0 4px 12px rgba(30,58,138,0.25)'
             }}
           >
-            Acepto los términos
+            {t('registro.modal.accept')}
           </button>
         </div>
       </div>
@@ -189,20 +191,21 @@ function ModalTerminos({ onCerrar, onAceptar, c }) {
 }
 
 function ChecklistPassword({ password, c }) {
+  const { t } = useTranslation()
   if (!password) return null
 
   const reglas = [
-    { id: 'len', label: 'Mínimo 8 caracteres', ok: password.length >= 8 },
-    { id: 'may', label: 'Al menos una mayúscula (A-Z)', ok: /[A-Z]/.test(password) },
-    { id: 'min', label: 'Al menos una minúscula (a-z)', ok: /[a-z]/.test(password) },
-    { id: 'num', label: 'Al menos un número (0-9)', ok: /\d/.test(password) },
-    { id: 'esp', label: 'Al menos un símbolo (!@#…)', ok: /[^a-zA-Z\d]/.test(password) },
+    { id: 'len', label: t('registro.checklist.min8'),      ok: password.length >= 8 },
+    { id: 'may', label: t('registro.checklist.uppercase'), ok: /[A-Z]/.test(password) },
+    { id: 'min', label: t('registro.checklist.lowercase'), ok: /[a-z]/.test(password) },
+    { id: 'num', label: t('registro.checklist.number'),    ok: /\d/.test(password) },
+    { id: 'esp', label: t('registro.checklist.symbol'),    ok: /[^a-zA-Z\d]/.test(password) },
   ]
 
   const cumplidas = reglas.filter(r => r.ok).length
   const colores = ['#e2e8f0', '#ef4444', '#f97316', '#eab308', '#84cc16', '#22c55e']
   const coloresDark = ['#334155', '#f87171', '#fb923c', '#facc15', '#a3e635', '#4ade80']
-  const textos = ['', 'Muy débil', 'Débil', 'Regular', 'Buena', 'Segura']
+  const textos = ['', t('registro.checklist.veryWeak'), t('registro.checklist.weak'), t('registro.checklist.regular'), t('registro.checklist.good'), t('registro.checklist.strong')]
   const color = c.pageBg === '#0f172a' ? coloresDark[cumplidas] : colores[cumplidas]
 
   return (
@@ -282,6 +285,7 @@ function SpinnerBtn({ c }) {
 }
 
 function BotonesSocial({ onGoogle, onFacebook, cargandoGoogle, cargandoFacebook, deshabilitado, c }) {
+  const { t } = useTranslation()
   const bloqueado = deshabilitado || cargandoGoogle || cargandoFacebook
   const baseBtn = {
     flex: 1,
@@ -318,7 +322,7 @@ function BotonesSocial({ onGoogle, onFacebook, cargandoGoogle, cargandoFacebook,
             <path fill="#34A853" d="M24 47c5.53 0 10.17-1.83 13.56-4.97l-7.19-5.59c-1.84 1.24-4.2 1.97-6.37 1.97-6.26 0-11.6-4.17-13.27-9.78l-7.37 5.64C7.07 41.52 14.82 47 24 47z"/>
           </svg>
         )}
-        {cargandoGoogle ? 'Conectando…' : 'Google'}
+        {cargandoGoogle ? t('registro.connecting') : t('registro.google')}
       </button>
 
       <button
@@ -335,13 +339,14 @@ function BotonesSocial({ onGoogle, onFacebook, cargandoGoogle, cargandoFacebook,
             <path fill="#fff" d="M33.342 30.938 34.406 24H27.75v-4.5c0-1.899.93-3.75 3.911-3.75h3.026V9.844s-2.747-.469-5.372-.469c-5.482 0-9.065 3.323-9.065 9.337V24h-6.094v6.938h6.094v16.77a24.18 24.18 0 007.5 0V30.938h5.592z"/>
           </svg>
         )}
-        {cargandoFacebook ? 'Conectando…' : 'Facebook'}
+        {cargandoFacebook ? t('registro.connecting') : t('registro.facebook')}
       </button>
     </div>
   )
 }
 
 export default function RegistroPage() {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const exitoRef = useRef(null)
   const { tema } = useLanding()
@@ -368,8 +373,8 @@ export default function RegistroPage() {
       exitoRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
       showAlert({
         icon: 'success',
-        title: 'Registro exitoso',
-        text: 'Se ha vinculado su cuenta social correctamente. Será redirigido en breve.',
+        title: t('registro.socialSuccessTitle'),
+        text: t('registro.successText'),
       })
       const rol = data?.usuario?.rol
       setTimeout(() => navigate(rol === 'administrador' ? '/admin' : '/home'), 2000)
@@ -382,22 +387,22 @@ export default function RegistroPage() {
     if (errorSocial) {
       showAlert({
         icon: 'error',
-        title: 'Error de registro social',
+        title: t('registro.socialError'),
         text: errorSocial,
       })
     }
-  }, [errorSocial])
+  }, [errorSocial, t])
 
   const validar = () => {
     const e = {}
     const rxCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!correo.trim()) e.correo = 'El correo electrónico es obligatorio'
-    else if (!rxCorreo.test(correo)) e.correo = 'Formato de correo inválido'
-    if (!password) e.password = 'La contraseña es obligatoria'
-    else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z\d]).{8,}$/.test(password)) e.password = 'La contraseña no cumple los requisitos de seguridad'
-    if (!confirmar) e.confirmar = 'Confirme su contraseña'
-    else if (password !== confirmar) e.confirmar = 'Las contraseñas no coinciden'
-    if (!terminos) e.terminos = 'Debe aceptar los términos y condiciones para continuar'
+    if (!correo.trim()) e.correo = t('registro.modal.errors.emailRequired')
+    else if (!rxCorreo.test(correo)) e.correo = t('registro.modal.errors.emailInvalid')
+    if (!password) e.password = t('registro.modal.errors.passwordRequired')
+    else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z\d]).{8,}$/.test(password)) e.password = t('registro.modal.errors.passwordWeak')
+    if (!confirmar) e.confirmar = t('registro.modal.errors.confirmRequired')
+    else if (password !== confirmar) e.confirmar = t('registro.modal.errors.confirmMismatch')
+    if (!terminos) e.terminos = t('registro.modal.errors.termsRequired')
     return e
   }
 
@@ -409,7 +414,7 @@ export default function RegistroPage() {
       const primerError = Object.values(found)[0]
       showAlert({
         icon: 'warning',
-        title: 'Verifica los datos',
+        title: t('registro.verifyData'),
         text: primerError,
       })
       return
@@ -421,7 +426,7 @@ export default function RegistroPage() {
       if (error) {
         showAlert({
           icon: 'error',
-          title: 'Registro fallido',
+          title: t('registro.failTitle'),
           text: error,
         })
       }
@@ -436,8 +441,8 @@ export default function RegistroPage() {
 
     showAlert({
       icon: 'success',
-      title: 'Cuenta creada',
-      text: 'Su registro fue exitoso. Redirigiendo al catálogo...',
+      title: t('registro.successTitle'),
+      text: t('registro.completed'),
     })
 
     setTimeout(() => {
@@ -466,11 +471,11 @@ export default function RegistroPage() {
           <div style={{ position: 'absolute', bottom: '-80px', right: '-80px', width: '340px', height: '340px', borderRadius: '50%', background: 'rgba(99,102,241,0.08)' }} />
 
           <div style={{ position: 'relative', zIndex: 1, flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 36px', textAlign: 'center', gap: '24px' }}>
-            <img src={logo} alt="RentaMóvil" style={{ height: '52px', filter: 'brightness(0) invert(1)' }} />
+            <img src={logo} alt="Drivique" style={{ height: '52px', filter: 'brightness(0) invert(1)' }} />
             <div>
-              <h2 style={{ color: '#fff', fontSize: '1.4rem', fontWeight: 900, margin: '0 0 8px' }}>Únete a RentaMóvil</h2>
+              <h2 style={{ color: '#fff', fontSize: '1.4rem', fontWeight: 900, margin: '0 0 8px' }}>{t('registro.leftPanel.title')}</h2>
               <p style={{ color: 'rgba(191,219,254,0.7)', fontSize: '13px', lineHeight: 1.6, maxWidth: '240px', margin: '0 auto' }}>
-                Crea tu cuenta en minutos y empieza a reservar el vehículo que necesitas.
+                {t('registro.leftPanel.subtitle')}
               </p>
             </div>
 
@@ -478,10 +483,10 @@ export default function RegistroPage() {
 
             <div style={{ width: '80%', display: 'flex', flexDirection: 'column', gap: '8px' }}>
               {[
-                { icon: FaCheckCircle, text: 'Registro rápido y seguro' },
-                { icon: FaCreditCard, text: 'PSE, Nequi y tarjetas' },
-                { icon: FaFileAlt, text: 'Contratos digitales al instante' },
-                { icon: FaHeadset, text: 'Soporte 24/7' },
+                { icon: FaCheckCircle, text: t('registro.leftPanel.feature1') },
+                { icon: FaCreditCard, text: t('registro.leftPanel.feature2') },
+                { icon: FaFileAlt, text: t('registro.leftPanel.feature3') },
+                { icon: FaHeadset, text: t('registro.leftPanel.feature4') },
               ].map(({ icon: Icono, text }) => (
                 <div key={text} style={{ display: 'flex', alignItems: 'center', gap: '10px', background: c.leftPanelCardBg, borderRadius: '10px', padding: '10px 14px', border: `1px solid ${c.leftPanelCardBorder}` }}>
                   <span style={{ fontSize: '16px', flexShrink: 0, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -494,7 +499,7 @@ export default function RegistroPage() {
           </div>
 
           <div style={{ position: 'relative', zIndex: 1, padding: '12px 36px', borderTop: '1px solid rgba(255,255,255,0.08)', textAlign: 'center' }}>
-            <p style={{ color: 'rgba(147,197,253,0.35)', fontSize: '11px', margin: 0 }}>RentaMóvil © 2026</p>
+            <p style={{ color: 'rgba(147,197,253,0.35)', fontSize: '11px', margin: 0 }}>Drivique © 2026</p>
           </div>
         </div>
 
@@ -502,7 +507,7 @@ export default function RegistroPage() {
           <div style={{ minHeight: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '32px 24px' }}>
             <div className="logo-mob" style={{ marginBottom: '20px' }}>
               <style>{`@media(min-width:1024px){.logo-mob{display:none}}`}</style>
-              <img src={logo} alt="RentaMóvil" style={{ height: '44px', display: 'block', margin: '0 auto' }} />
+              <img src={logo} alt="Drivique" style={{ height: '44px', display: 'block', margin: '0 auto' }} />
             </div>
 
             <div style={{ width: '100%', maxWidth: '460px', marginBottom: '10px' }}>
@@ -516,14 +521,14 @@ export default function RegistroPage() {
                 <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
                 </svg>
-                Volver al inicio
+                {t('common.backToHome')}
               </button>
             </div>
 
             <div style={{ width: '100%', maxWidth: '460px', background: c.panelCard, borderRadius: '24px', boxShadow: c.panelCardShadow, border: `1px solid ${c.panelCardBorder}`, padding: '36px' }}>
               <div style={{ marginBottom: '24px' }}>
-                <h1 style={{ fontSize: '1.5rem', fontWeight: 900, color: c.title, margin: '0 0 6px' }}>Crear cuenta</h1>
-                <p style={{ fontSize: '13px', color: c.textMuted, margin: 0 }}>Complete los campos para registrarse</p>
+                <h1 style={{ fontSize: '1.5rem', fontWeight: 900, color: c.title, margin: '0 0 6px' }}>{t('registro.title')}</h1>
+                <p style={{ fontSize: '13px', color: c.textMuted, margin: 0 }}>{t('registro.subtitle')}</p>
               </div>
 
               {exitoFinal && (
@@ -532,7 +537,7 @@ export default function RegistroPage() {
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                   </svg>
                   <div>
-                    <p style={{ color: c.successTitle, fontSize: '14px', fontWeight: 700, margin: '0 0 2px' }}>¡Registro exitoso!</p>
+                    <p style={{ color: c.successTitle, fontSize: '14px', fontWeight: 700, margin: '0 0 2px' }}>{t('registro.successTitle')}</p>
                     <p style={{ color: c.successText, fontSize: '13px', margin: 0 }}>
                       {proveedorExito
                         ? `Cuenta vinculada con ${proveedorExito === 'google' ? 'Google' : 'Facebook'} correctamente. Será redirigido en unos segundos.`
@@ -549,7 +554,7 @@ export default function RegistroPage() {
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                   </svg>
                   <div>
-                    <p style={{ color: c.errorTitle, fontSize: '14px', fontWeight: 700, margin: '0 0 2px' }}>Registro fallido</p>
+                    <p style={{ color: c.errorTitle, fontSize: '14px', fontWeight: 700, margin: '0 0 2px' }}>{t('registro.failTitle')}</p>
                     <p style={{ color: c.errorText, fontSize: '13px', margin: 0 }}>{error || errorSocial}</p>
                   </div>
                 </div>
@@ -557,20 +562,20 @@ export default function RegistroPage() {
 
               <form onSubmit={handleSubmit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 <div style={fieldWrap}>
-                  <label htmlFor="correo" style={labelStyle(c)}>Correo electrónico <span style={{ color: c.accent }}>*</span></label>
+                  <label htmlFor="correo" style={labelStyle(c)}>{t('registro.email')} <span style={{ color: c.accent }}>*</span></label>
                   <input
                     id="correo"
                     type="email"
                     value={correo}
                     onChange={e => { setCorreo(e.target.value); setErrores(p => ({ ...p, correo: '' })) }}
-                    placeholder="ejemplo@correo.com"
+                    placeholder={t('registro.emailPlaceholder')}
                     style={inputStyle(!!errores.correo, c)}
                   />
                   {errores.correo && <p style={errorStyle(c)}>{errores.correo}</p>}
                 </div>
 
                 <div style={fieldWrap}>
-                  <label htmlFor="password" style={labelStyle(c)}>Contraseña <span style={{ color: c.accent }}>*</span></label>
+                  <label htmlFor="password" style={labelStyle(c)}>{t('registro.password')} <span style={{ color: c.accent }}>*</span></label>
                   <PassInput
                     id="password"
                     value={password}
@@ -578,7 +583,7 @@ export default function RegistroPage() {
                     ver={verPass}
                     setVer={setVerPass}
                     hasError={!!errores.password}
-                    placeholder="Mínimo 8 caracteres"
+                    placeholder={t('registro.passwordPlaceholder')}
                     c={c}
                   />
                   {errores.password && <p style={errorStyle(c)}>{errores.password}</p>}
@@ -586,7 +591,7 @@ export default function RegistroPage() {
                 </div>
 
                 <div style={fieldWrap}>
-                  <label htmlFor="confirmar" style={labelStyle(c)}>Confirmar contraseña <span style={{ color: c.accent }}>*</span></label>
+                  <label htmlFor="confirmar" style={labelStyle(c)}>{t('registro.confirmPassword')} <span style={{ color: c.accent }}>*</span></label>
                   <PassInput
                     id="confirmar"
                     value={confirmar}
@@ -594,7 +599,7 @@ export default function RegistroPage() {
                     ver={verConfirmar}
                     setVer={setVerConfirmar}
                     hasError={!!errores.confirmar}
-                    placeholder="Repita su contraseña"
+                    placeholder={t('registro.confirmPlaceholder')}
                     c={c}
                   />
                   {errores.confirmar && <p style={errorStyle(c)}>{errores.confirmar}</p>}
@@ -610,15 +615,15 @@ export default function RegistroPage() {
                   />
                   <div style={{ flex: 1 }}>
                     <label htmlFor="terminos" style={{ fontSize: '13px', color: c.termsText, lineHeight: 1.6, cursor: 'pointer', display: 'block' }}>
-                      Acepto los{' '}
+                      {t('registro.termsPrefix')}{' '}
                       <span
                         onClick={e => { e.preventDefault(); setModalAbierto(true) }}
                         style={{ color: c.accent, fontWeight: 700, textDecoration: 'underline', cursor: 'pointer' }}
                       >
-                        términos y condiciones
+                        {t('registro.termsLink')}
                       </span>
-                      {' '}y el tratamiento de mis datos personales según la{' '}
-                      <span style={{ fontWeight: 600 }}>Ley 1581 de 2012</span>.
+                      {' '}{t('registro.termsSuffix')}{' '}
+                      <span style={{ fontWeight: 600 }}>{t('registro.termsLaw')}</span>.
                     </label>
                     {errores.terminos && <p style={errorStyle(c)}>{errores.terminos}</p>}
                   </div>
@@ -645,14 +650,14 @@ export default function RegistroPage() {
                   {cargando
                     ? <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
                         <span style={{ width: '16px', height: '16px', border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#fff', borderRadius: '50%', animation: 'spin 0.7s linear infinite', display: 'inline-block' }} />
-                        Procesando…
+                        {t('registro.processing')}
                       </span>
                     : exitoFinal ? (
                       <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
                         <FaCheck />
-                        Registro completado
+                        {t('registro.completed')}
                       </span>
-                    ) : 'Crear mi cuenta'
+                    ) : t('registro.submit')
                   }
                 </button>
 
@@ -667,8 +672,8 @@ export default function RegistroPage() {
 
                 <div style={{ borderTop: `1px solid ${c.divider}`, paddingTop: '14px' }}>
                   <p style={{ textAlign: 'center', fontSize: '13px', color: c.textMuted, margin: 0 }}>
-                    ¿Ya tiene una cuenta?{' '}
-                    <Link to="/login" style={{ color: c.accent, fontWeight: 700, textDecoration: 'none' }}>Inicie sesión aquí</Link>
+                    {t('registro.hasAccount')}{' '}
+                    <Link to="/login" style={{ color: c.accent, fontWeight: 700, textDecoration: 'none' }}>{t('registro.loginLink')}</Link>
                   </p>
                 </div>
               </form>
