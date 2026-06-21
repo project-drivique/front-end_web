@@ -33,25 +33,21 @@ export default function Verificar2FAPage() {
           <img src={logo} alt="Drivique" style={{ height: '60px', filter: 'drop-shadow(0 4px 16px rgba(0,0,0,0.3)) brightness(0) invert(1)' }} />
           <div>
             <h2 style={{ color: '#fff', fontSize: '1.75rem', fontWeight: 900, margin: '0 0 10px', lineHeight: 1.2 }}>
-              Verificación en dos pasos
+              {t('verificar2fa.panelTitle')}
             </h2>
             <p style={{ color: 'rgba(191,219,254,0.75)', fontSize: '15px', lineHeight: 1.7, maxWidth: '260px', margin: '0 auto' }}>
-              Tu cuenta está protegida con una capa extra de seguridad.
+              {t('verificar2fa.panelSubtitle')}
             </p>
           </div>
           <div style={{ width: '100%', maxWidth: '280px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            {[
-              '✓  Código válido por 10 minutos',
-              '✓  Revisa tu correo o app autenticadora',
-              '✓  Nunca compartás tu código',
-            ].map(item => (
+            {[t('verificar2fa.panelCheck1'), t('verificar2fa.panelCheck2'), t('verificar2fa.panelCheck3')].map(item => (
               <p key={item} style={{ color: 'rgba(147,197,253,0.65)', fontSize: '14px', margin: 0, textAlign: 'left' }}>{item}</p>
             ))}
           </div>
         </div>
 
         <div style={{ position: 'relative', zIndex: 1, padding: '16px 56px', borderTop: '1px solid rgba(255,255,255,0.08)', textAlign: 'center' }}>
-          <p style={{ color: 'rgba(147,197,253,0.35)', fontSize: '12px', margin: 0 }}>Drivique © 2026</p>
+          <p style={{ color: 'rgba(147,197,253,0.35)', fontSize: '12px', margin: 0 }}>{t('verificar2fa.copyright')}</p>
         </div>
       </div>
 
@@ -185,7 +181,7 @@ export default function Verificar2FAPage() {
                   </p>
                   {segundos > 0 ? (
                     <p style={{ fontSize: '13px', color: '#94a3b8', margin: 0 }}>
-                      Reenviar en <strong style={{ color: '#475569' }}>{segundos}s</strong>
+                      {t('verificar2fa.resendCountdown', { seconds: segundos })}
                     </p>
                   ) : (
                     <button

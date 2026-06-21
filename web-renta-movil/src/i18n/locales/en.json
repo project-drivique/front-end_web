@@ -39,9 +39,14 @@
     "blocked": "Account blocked",
     "loginError": "Login error",
     "welcome": "Welcome",
+    "successRedirecting": "Access successful! Redirecting...",
     "errors": {
       "emailRequired": "Email address is required",
-      "passwordRequired": "Password is required"
+      "passwordRequired": "Password is required",
+      "emailInvalid": "Invalid email format",
+      "accountLocked": "Account locked. Use Forgot your password?",
+      "invalidCredentials": "Invalid credentials. Remaining attempts: {{remaining}}",
+      "maxAttemptsReached": "Account locked after {{max}} failed attempts."
     }
   },
   "registro": {
@@ -121,7 +126,20 @@
     "errors": {
       "emailRequired": "Email address is required",
       "emailInvalid": "Invalid email format"
-    }
+    },
+    "panelTitle": "Forgot your password?",
+    "panelSubtitle": "We will send you a secure link to reset your access.",
+    "panelCheck1": "✓  Link valid for 30 minutes",
+    "panelCheck2": "✓  Check your inbox",
+    "panelCheck3": "✓  Without losing your data or reservations",
+    "successPanelTitle": "Check your email!",
+    "successPanelSubtitle": "If the email is registered, you will receive a link to recover your account.",
+    "successPanelCheck1": "✓  Link valid for 30 minutes",
+    "successPanelCheck2": "✓  Check your spam folder too",
+    "successPanelCheck3": "✓  Your account remains protected",
+    "successEmailSent": "If {{email}} is registered, you will receive a link in the next few minutes.",
+    "successSpam": "Check your spam folder too. The link expires in 30 minutes.",
+    "copyright": "Drivique © 2026"
   },
   "nuevaContrasena": {
     "title": "New password",
@@ -140,11 +158,18 @@
     "invalidToken": "Invalid or expired link",
     "invalidTokenText": "This link has already been used or has expired. Recovery links are valid for 30 minutes.",
     "requestNew": "Request new link",
+    "checklist": {
+      "min8": "Minimum 8 characters",
+      "uppercase": "At least one uppercase letter",
+      "number": "At least one number",
+      "special": "At least one special character"
+    },
     "errors": {
       "passwordRequired": "Password is required",
       "passwordWeak": "Password does not meet requirements",
       "confirmRequired": "Please confirm your password",
-      "confirmMismatch": "Passwords do not match"
+      "confirmMismatch": "Passwords do not match",
+      "genericError": "An error occurred. Try again."
     }
   },
   "verificar2fa": {
@@ -159,9 +184,19 @@
     "backToLogin": "Back to sign in",
     "successTitle": "Verification successful",
     "errorTitle": "Invalid code",
+    "resendCountdown": "Resend in {{seconds}}s",
+    "panelTitle": "Two-step verification",
+    "panelSubtitle": "Your account is protected with an extra layer of security.",
+    "panelCheck1": "✓  Code valid for 10 minutes",
+    "panelCheck2": "✓  Check your email or authenticator app",
+    "panelCheck3": "✓  Never share your code",
+    "copyright": "Drivique © 2026",
     "errors": {
       "codeRequired": "Enter the verification code",
-      "codeInvalid": "The code entered is not valid"
+      "codeInvalid": "The code entered is not valid",
+      "codeExpired": "The code has expired. Request a new one.",
+      "verifyError": "Error verifying. Try again.",
+      "resendError": "Could not resend the code. Try again."
     }
   },
   "catalogo": {
@@ -221,6 +256,10 @@
     "goToLogin": "Go to sign in",
     "reserveNow": "Reserve now",
     "day": "day",
+    "searchPickupLocation": "Select pickup location.",
+    "searchPickupDate": "Select pickup date.",
+    "searchReturnDate": "Select return date.",
+    "searchReturnAfter": "Return date must be after pickup date.",
     "clearFilters": "Clear filters",
     "viewAll": "View all",
     "favorites": "Favorites",
@@ -331,7 +370,9 @@
     "noImages": "No images",
     "inGallery": "In gallery",
     "passengers": "passengers",
-    "airConditioning": "Air cond.",
+    "airConditioning": "Air conditioning",
+    "windowsElec": "Electric windows",
+    "centralLock": "Central locking",
     "doors": "doors",
     "trunk": "trunk",
     "plan1Item1": "Roadside assistance during your trip. *Not included in Light Rental",
@@ -434,7 +475,15 @@
       "passwordWeak": "Password does not meet all requirements",
       "confirmRequired": "Confirm your new password",
       "confirmMismatch": "Passwords do not match",
-      "currentPasswordWrong": "Current password is incorrect"
+      "currentPasswordWrong": "Current password is incorrect",
+      "nameRequired": "First name is required",
+      "nameTooLong": "Name cannot exceed 100 characters",
+      "lastnameRequired": "Last name is required",
+      "lastnameTooLong": "Last name cannot exceed 100 characters",
+      "phoneInvalid": "Phone must have between 7 and 15 digits",
+      "emailInvalid": "Invalid email format",
+      "emailTaken": "This email is already registered",
+      "updateFailed": "Could not update profile"
     }
   },
   "pagos": {
@@ -485,6 +534,15 @@
     "guarantee": "{{name}} Guarantee:",
     "noVehicles": "No vehicles assigned",
     "noVehiclesSubtitle": "We are updating the inventory in real time for this branch."
+  },
+  "panel": {
+    "welcome": "Welcome back",
+    "subtitle": "Manage your reservations, payments and contracts from one place.",
+    "tagline": "Rent easy, drive free",
+    "check1": "Book in minutes",
+    "check2": "Pay with Nequi or PSE",
+    "check3": "Instant digital contract",
+    "copyright": "Drivique © 2026"
   },
   "admin": {
     "title": "Admin panel",

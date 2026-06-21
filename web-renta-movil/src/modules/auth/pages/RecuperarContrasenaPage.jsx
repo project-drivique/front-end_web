@@ -30,14 +30,14 @@ export default function RecuperarContrasenaPage() {
             <>
               <div>
                 <h2 style={{ color: '#fff', fontSize: '1.75rem', fontWeight: 900, margin: '0 0 10px', lineHeight: 1.2 }}>
-                  ¿Olvidaste tu contraseña?
+                  {t('recuperar.panelTitle')}
                 </h2>
                 <p style={{ color: 'rgba(191,219,254,0.75)', fontSize: '15px', lineHeight: 1.7, maxWidth: '260px', margin: '0 auto' }}>
-                  Te enviaremos un enlace seguro para restablecer tu acceso.
+                  {t('recuperar.panelSubtitle')}
                 </p>
               </div>
               <div style={{ width: '100%', maxWidth: '280px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                {['✓  Enlace válido por 30 minutos', '✓  Revisa tu bandeja de entrada', '✓  Sin perder tus datos ni reservas'].map(item => (
+                {[t('recuperar.panelCheck1'), t('recuperar.panelCheck2'), t('recuperar.panelCheck3')].map(item => (
                   <p key={item} style={{ color: 'rgba(147,197,253,0.65)', fontSize: '14px', margin: 0, textAlign: 'left' }}>{item}</p>
                 ))}
               </div>
@@ -46,14 +46,14 @@ export default function RecuperarContrasenaPage() {
             <>
               <div>
                 <h2 style={{ color: '#fff', fontSize: '1.75rem', fontWeight: 900, margin: '0 0 10px', lineHeight: 1.2 }}>
-                  ¡Revisa tu correo!
+                  {t('recuperar.successPanelTitle')}
                 </h2>
                 <p style={{ color: 'rgba(191,219,254,0.75)', fontSize: '15px', lineHeight: 1.7, maxWidth: '260px', margin: '0 auto' }}>
-                  Si el correo está registrado, recibirás un enlace para recuperar tu cuenta.
+                  {t('recuperar.successPanelSubtitle')}
                 </p>
               </div>
               <div style={{ width: '100%', maxWidth: '280px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                {['✓  Enlace válido por 30 minutos', '✓  Revisa también tu carpeta de spam', '✓  Tu cuenta sigue protegida'].map(item => (
+                {[t('recuperar.successPanelCheck1'), t('recuperar.successPanelCheck2'), t('recuperar.successPanelCheck3')].map(item => (
                   <p key={item} style={{ color: 'rgba(147,197,253,0.65)', fontSize: '14px', margin: 0, textAlign: 'left' }}>{item}</p>
                 ))}
               </div>
@@ -62,7 +62,7 @@ export default function RecuperarContrasenaPage() {
         </div>
 
         <div style={{ position: 'relative', zIndex: 1, padding: '16px 56px', borderTop: '1px solid rgba(255,255,255,0.08)', textAlign: 'center' }}>
-          <p style={{ color: 'rgba(147,197,253,0.35)', fontSize: '12px', margin: 0 }}>Drivique © 2026</p>
+          <p style={{ color: 'rgba(147,197,253,0.35)', fontSize: '12px', margin: 0 }}>{t('recuperar.copyright')}</p>
         </div>
       </div>
 
@@ -165,10 +165,10 @@ export default function RecuperarContrasenaPage() {
                 {t('recuperar.successTitle')}
               </h2>
               <p style={{ color: '#64748b', fontSize: '14px', margin: '0 0 6px' }}>
-                Si <strong style={{ color: '#1e293b' }}>{correo}</strong> está registrado, recibirás un enlace en los próximos minutos.
+                {t('recuperar.successEmailSent', { email: correo })}
               </p>
               <p style={{ color: '#94a3b8', fontSize: '13px', margin: '0 0 28px' }}>
-                Revisa también tu carpeta de spam. El enlace expira en 30 minutos.
+                {t('recuperar.successSpam')}
               </p>
               <Link
                 to="/login"

@@ -8,16 +8,16 @@ const IcoEdit = () => (
   </svg>
 )
 
-const fmt = d => {
-  if (!d) return '—';
-  const [y, m, day] = d.split('-');
-  const M = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
-  return `${parseInt(day)} de ${M[parseInt(m)-1]} de ${y}`;
-};
-
 export default function ResumenLateral({ vehiculo, reserva, seguroIdx, onEditar }) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { moneda } = useLanding();
+
+  const fmt = d => {
+    if (!d) return '—';
+    const [y, m, day] = d.split('-');
+    const fecha = new Date(parseInt(y), parseInt(m) - 1, parseInt(day));
+    return fecha.toLocaleDateString(i18n.language, { day: 'numeric', month: 'short', year: 'numeric' });
+  };
   if (!vehiculo) return null;
 
   const tarifas = vehiculo.tarifas || {};
