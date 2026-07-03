@@ -1,5 +1,6 @@
-﻿import { useTranslation } from 'react-i18next'
+import { useTranslation } from 'react-i18next'
 import { FaCalendarAlt, FaCreditCard, FaFileAlt, FaCheck } from 'react-icons/fa'
+import logo from '@/assets/logo.png'
 
 const BADGES = [
   { key: 'catalogo.myReservations', icon: FaCalendarAlt },
@@ -33,24 +34,7 @@ export default function PanelIzquierdo() {
 
       <div style={{ position: 'relative', zIndex: 1, flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '56px', textAlign: 'center', gap: '32px' }}>
         <div style={{ textAlign: 'center' }}>
-          <svg viewBox="0 0 240 100" width="130" height="54" fill="white" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block', margin: '0 auto 8px' }}>
-            {/* Carrocería sedán */}
-            <path d="M15,78 L15,64 Q17,54 28,46 L58,26 Q70,18 96,17 L152,17 Q174,17 188,30 L208,52 Q216,62 217,70 L217,78 Z" />
-            {/* Parabrisas + ventana trasera */}
-            <path d="M76,46 L88,19 L150,19 L164,46 Z" fill="rgba(6,14,46,0.72)" />
-            {/* Pilar B */}
-            <rect x="120" y="19" width="3" height="27" fill="rgba(6,14,46,0.72)" />
-            {/* Faro delantero */}
-            <ellipse cx="210" cy="62" rx="5" ry="7" fill="rgba(6,14,46,0.5)" />
-            {/* Llanta delantera */}
-            <path d="M175,78 m-20,0 a20,20 0 1,0 40,0 a20,20 0 1,0 -40,0 Z M175,78 m-10,0 a10,10 0 1,0 20,0 a10,10 0 1,0 -20,0 Z" fillRule="evenodd" />
-            {/* Llanta trasera */}
-            <path d="M57,78 m-20,0 a20,20 0 1,0 40,0 a20,20 0 1,0 -40,0 Z M57,78 m-10,0 a10,10 0 1,0 20,0 a10,10 0 1,0 -20,0 Z" fillRule="evenodd" />
-            {/* Línea de suelo */}
-            <rect x="12" y="96" width="210" height="2" rx="1" fill="rgba(255,255,255,0.3)" />
-          </svg>
-          <div style={{ color: '#fff', fontWeight: 800, fontSize: '1.05rem', letterSpacing: 2 }}>Drivique</div>
-          <div style={{ color: 'rgba(255,255,255,0.55)', fontSize: '0.65rem', marginTop: 2, letterSpacing: 0.5 }}>{t('panel.tagline')}</div>
+          <img src={logo} alt="Drivique" style={{ height: '160px', display: 'block', margin: '0 auto 8px', filter: 'brightness(0) invert(1)' }} />
         </div>
 
         <div>

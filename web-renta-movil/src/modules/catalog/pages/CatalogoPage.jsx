@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../../../store/authStore'
@@ -127,10 +127,10 @@ export default function CatalogoPage() {
         backdropFilter: 'blur(12px)',
         borderBottom: `1px solid ${c.navBorder}`,
         boxShadow: c.navShadow,
-        height: '68px'
+        height: '96px'
       }}>
         <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 24px', height: '100%', display: 'flex', alignItems: 'center', gap: '24px' }}>
-          <Link to="/"><img src={logo} alt="Drivique" style={{ height: '40px', flexShrink: 0 }} /></Link>
+          <Link to="/"><img src={logo} alt="Drivique" style={{ height: '80px', flexShrink: 0 }} /></Link>
           <div style={{ flex: 1 }} />
           <div style={{ display: 'flex', gap: '10px' }}>
             <Link
@@ -157,7 +157,7 @@ export default function CatalogoPage() {
         </div>
       </nav>
 
-      <div style={{ paddingTop: '68px', flex: 1 }}>
+      <div style={{ paddingTop: '96px', flex: 1 }}>
         <HeroBusqueda
           c={c}
           cargando={cargando}
