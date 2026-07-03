@@ -1,4 +1,4 @@
-﻿// src/modules/auth/pages/LoginPage.jsx
+// src/modules/auth/pages/LoginPage.jsx
 import { useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -145,7 +145,7 @@ export default function LoginPage() {
         {/* Logo mobile */}
         <div style={{ marginBottom: 32 }} className="logo-mobile">
           <style>{`@media(min-width:1024px){.logo-mobile{display:none}}`}</style>
-          <img src={logo} alt="Drivique" style={{ height: 48, display: 'block', margin: '0 auto' }} />
+          <img src={logo} alt="Drivique" style={{ height: 110, display: 'block', margin: '0 auto' }} />
         </div>
 
         {/* Botón volver */}

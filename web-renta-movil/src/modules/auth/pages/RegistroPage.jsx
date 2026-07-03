@@ -1,4 +1,4 @@
-﻿// src/modules/auth/pages/RegistroPage.jsx
+// src/modules/auth/pages/RegistroPage.jsx
 import { useState, useRef, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, useNavigate } from 'react-router-dom'
@@ -471,7 +471,7 @@ export default function RegistroPage() {
           <div style={{ position: 'absolute', bottom: '-80px', right: '-80px', width: '340px', height: '340px', borderRadius: '50%', background: 'rgba(99,102,241,0.08)' }} />
 
           <div style={{ position: 'relative', zIndex: 1, flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 36px', textAlign: 'center', gap: '24px' }}>
-            <img src={logo} alt="Drivique" style={{ height: '52px', filter: 'brightness(0) invert(1)' }} />
+            <img src={logo} alt="Drivique" style={{ height: '160px', filter: 'brightness(0) invert(1)' }} />
             <div>
               <h2 style={{ color: '#fff', fontSize: '1.4rem', fontWeight: 900, margin: '0 0 8px' }}>{t('registro.leftPanel.title')}</h2>
               <p style={{ color: 'rgba(191,219,254,0.7)', fontSize: '13px', lineHeight: 1.6, maxWidth: '240px', margin: '0 auto' }}>
@@ -507,7 +507,7 @@ export default function RegistroPage() {
           <div style={{ minHeight: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '32px 24px' }}>
             <div className="logo-mob" style={{ marginBottom: '20px' }}>
               <style>{`@media(min-width:1024px){.logo-mob{display:none}}`}</style>
-              <img src={logo} alt="Drivique" style={{ height: '44px', display: 'block', margin: '0 auto' }} />
+              <img src={logo} alt="Drivique" style={{ height: '110px', display: 'block', margin: '0 auto' }} />
             </div>
 
             <div style={{ width: '100%', maxWidth: '460px', marginBottom: '10px' }}>

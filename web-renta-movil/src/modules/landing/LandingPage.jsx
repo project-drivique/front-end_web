@@ -1,4 +1,4 @@
-﻿// src/modules/landing/LandingPage.jsx
+// src/modules/landing/LandingPage.jsx
 import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import logo from '@/assets/logo.png'
@@ -259,10 +259,10 @@ export default function LandingPage() {
       <nav style={{
         position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50,
         background: 'var(--bg-nav)', backdropFilter: 'blur(12px)',
-        borderBottom: '1px solid var(--borde)', boxShadow: 'var(--sombra-nav)', height: 68,
+        borderBottom: '1px solid var(--borde)', boxShadow: 'var(--sombra-nav)', height: 96,
       }}>
         <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 48px', height: '100%', display: 'flex', alignItems: 'center', gap: 32 }}>
-          <img src={logo} alt="Drivique" style={{ height: 40, flexShrink: 0 }} />
+          <img src={logo} alt="Drivique" style={{ height: 80, flexShrink: 0 }} />
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 32, flex: 1, justifyContent: 'center' }}>
             <Link
@@ -346,7 +346,7 @@ export default function LandingPage() {
 
       <section style={{
         position: 'relative',
-        paddingTop: 68,
+        paddingTop: 96,
         minHeight: '100vh',
         background: 'var(--hero-fondo)',
         display: 'flex',
@@ -636,7 +636,7 @@ export default function LandingPage() {
         <div style={{ maxWidth: 1280, margin: '0 auto' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', gap: 48, flexWrap: 'wrap', marginBottom: 40 }}>
             <div style={{ maxWidth: 280 }}>
-              <img src={logo} alt="Drivique" style={{ height: 40, marginBottom: 16, filter: 'brightness(0) invert(1)', opacity: 0.85 }} />
+              <img src={logo} alt="Drivique" style={{ height: 64, marginBottom: 16, filter: 'brightness(0) invert(1)', opacity: 0.85 }} />
               <p style={{ fontSize: 14, lineHeight: 1.7, color: c.footerMuted, margin: 0 }}>{tx.footer.desc}</p>
             </div>
 
