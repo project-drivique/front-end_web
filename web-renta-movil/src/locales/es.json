@@ -1,0 +1,54 @@
+{
+  "landing": {
+    "nav": {
+      "vehiculos": "Vehículos", "sucursales": "Sucursales", "servicios": "Servicios",
+      "tarifas": "Tarifas", "soporte": "Soporte", "login": "Iniciar sesión",
+      "registro": "Registrarse", "config": "Configuración",
+      "tema": "Tema", "claro": "☀️ Claro", "oscuro": "🌙 Oscuro", "idioma": "Idioma"
+    },
+    "hero": {
+      "badge": "Disponible en Colombia 🇨🇴",
+      "h1a": "Alquila fácil,", "h1b": "conduce libre",
+      "sub": "La plataforma digital que moderniza el alquiler de vehículos en Colombia. Reserva en minutos, paga seguro y maneja sin complicaciones.",
+      "cta1": "Comenzar ahora", "cta2": "Iniciar sesión",
+      "stat1": "Vehículos", "stat2": "Soporte", "stat3": "Digital",
+      "cardTitle": "Disponibles ahora", "cardOnline": "En línea", "verFlota": "Ver toda la flota"
+    },
+    "como": {
+      "label": "Proceso simple", "titulo": "¿Cómo funciona?",
+      "sub": "En 4 pasos tienes tu vehículo listo para manejar",
+      "pasos": [
+        { "num": "01", "titulo": "Crea tu cuenta",    "desc": "Regístrate en minutos y sube tu licencia de conducir para verificación." },
+        { "num": "02", "titulo": "Elige tu vehículo", "desc": "Explora la flota, filtra por categoría, precio y disponibilidad." },
+        { "num": "03", "titulo": "Reserva y paga",    "desc": "Selecciona fechas, sucursal y método de pago. Recibe tu contrato digital." },
+        { "num": "04", "titulo": "Conduce libre",     "desc": "Recoge tu vehículo, disfruta el viaje y califica tu experiencia." }
+      ]
+    },
+    "features": {
+      "label": "Todo incluido", "titulo": "Por qué elegirnos",
+      "sub": "Una plataforma completa diseñada para tu comodidad",
+      "items": [
+        { "titulo": "Flota premium",         "desc": "Más de 50 vehículos disponibles: SUVs, sedanes, económicos y deportivos para cada necesidad." },
+        { "titulo": "Pagos 100% seguros",    "desc": "PSE, Nequi, tarjetas crédito/débito a través de Wompi con cifrado SSL/TLS." },
+        { "titulo": "Contratos digitales",   "desc": "Firma tu contrato en línea con validez legal. Sin papeleos, sin filas, sin complicaciones." },
+        { "titulo": "Múltiples sucursales",  "desc": "Recoge y devuelve tu vehículo en la sucursal más cercana con disponibilidad en tiempo real." },
+        { "titulo": "App móvil PWA",         "desc": "Reserva desde tu celular Android. Interfaz adaptada para una experiencia fluida en cualquier dispositivo." },
+        { "titulo": "Calificaciones reales", "desc": "Lee reseñas verificadas de otros conductores y califica tu experiencia al finalizar cada viaje." }
+      ]
+    },
+    "cta": {
+      "titulo": "¿Listo para manejar sin complicaciones?",
+      "sub": "Únete a cientos de conductores que ya confían en RentaMovil.",
+      "btn1": "Crear cuenta gratis", "btn2": "Ya tengo cuenta"
+    },
+    "footer": {
+      "desc": "Plataforma digital de alquiler de vehículos desarrollada en Colombia. Segura, eficiente y accesible.",
+      "cols": [
+        { "title": "Plataforma", "links": ["Catálogo de vehículos", "Reservas", "Pagos en línea", "Contratos digitales"] },
+        { "title": "Soporte",    "links": ["Preguntas frecuentes", "Contacto", "Quejas y sugerencias", "WhatsApp 24/7"] },
+        { "title": "Legal",      "links": ["Términos y condiciones", "Política de privacidad", "Ley 1581 de 2012", "OWASP Top 10"] }
+      ],
+      "copy": "© 2025 RentaMovil. Todos los derechos reservados. Ficha 3145555 — SENA CIES."
+    }
+  }
+}

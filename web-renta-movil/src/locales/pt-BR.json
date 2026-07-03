@@ -1,0 +1,53 @@
+{
+  "landing": {
+    "nav": {
+      "vehiculos": "Veículos", "sucursales": "Filiais", "servicios": "Serviços",
+      "tarifas": "Tarifas", "soporte": "Suporte", "login": "Entrar",
+      "registro": "Cadastrar", "config": "Configurações",
+      "tema": "Tema", "claro": "☀️ Claro", "oscuro": "🌙 Escuro", "idioma": "Idioma"
+    },
+    "hero": {
+      "badge": "Disponível na Colômbia 🇨🇴",
+      "h1a": "Alugue fácil,", "h1b": "dirija livre",
+      "sub": "A plataforma digital que moderniza o aluguel de veículos na Colômbia.",
+      "cta1": "Começar agora", "cta2": "Entrar",
+      "stat1": "Veículos", "stat2": "Suporte", "stat3": "Digital",
+      "cardTitle": "Disponíveis agora", "cardOnline": "Online", "verFlota": "Ver toda a frota"
+    },
+    "como": {
+      "label": "Processo simples", "titulo": "Como funciona?",
+      "sub": "Em 4 passos seu veículo está pronto para dirigir",
+      "pasos": [
+        { "num": "01", "titulo": "Crie sua conta", "desc": "Cadastre-se em minutos e envie sua CNH para verificação." },
+        { "num": "02", "titulo": "Escolha o veículo", "desc": "Explore a frota, filtre por categoria e disponibilidade." },
+        { "num": "03", "titulo": "Reserve e pague", "desc": "Selecione datas, filial e forma de pagamento." },
+        { "num": "04", "titulo": "Dirija livre", "desc": "Retire seu veículo e aproveite a viagem." }
+      ]
+    },
+    "features": {
+      "label": "Tudo incluído", "titulo": "Por que nos escolher",
+      "sub": "Uma plataforma completa projetada para o seu conforto",
+      "items": [
+        { "titulo": "Frota premium", "desc": "Mais de 50 veículos: SUVs, sedãs, econômicos e esportivos." },
+        { "titulo": "Pagamentos 100% seguros", "desc": "PSE, Nequi, cartões de crédito/débito via Wompi." },
+        { "titulo": "Contratos digitais", "desc": "Assine seu contrato online com validade legal." },
+        { "titulo": "Várias filiais", "desc": "Retire e devolva seu veículo na filial mais próxima." },
+        { "titulo": "App móvel PWA", "desc": "Reserve pelo seu celular Android. Interface adaptada." }
+      ]
+    },
+    "cta": {
+      "titulo": "Pronto para dirigir sem complicações?",
+      "sub": "Junte-se a centenas de motoristas que já confiam na RentaMovil.",
+      "btn1": "Criar conta grátis", "btn2": "Já tenho conta"
+    },
+    "footer": {
+      "desc": "Plataforma digital de aluguel de veículos desenvolvida na Colômbia. Segura, eficiente e acessível.",
+      "cols": [
+        { "title": "Plataforma", "links": ["Catálogo de veículos", "Reservas", "Pagamentos online", "Contratos digitais"] },
+        { "title": "Suporte", "links": ["Perguntas frequentes", "Contato", "Reclamações e sugestões", "WhatsApp 24/7"] },
+        { "title": "Legal", "links": ["Termos e condições", "Política de privacidade", "Lei 1581 de 2012"] }
+      ],
+      "copy": "© 2025 RentaMovil. Todos os direitos reservados. Ficha 3145555 — SENA CIES."
+    }
+  }
+}
