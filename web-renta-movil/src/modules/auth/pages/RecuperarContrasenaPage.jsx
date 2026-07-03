@@ -1,4 +1,4 @@
-﻿import { Link } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useRecuperar } from '../hooks/useRecuperar'
 import logo from '@/assets/logo.png'
@@ -24,7 +24,7 @@ export default function RecuperarContrasenaPage() {
         <div style={{ position: 'absolute', bottom: '33%', right: '40px', width: '160px', height: '160px', borderRadius: '50%', border: '1px solid rgba(255,255,255,0.05)', background: 'rgba(255,255,255,0.03)' }} />
 
         <div style={{ position: 'relative', zIndex: 1, flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '56px', textAlign: 'center', gap: '32px' }}>
-          <img src={logo} alt="Drivique" style={{ height: '60px', filter: 'drop-shadow(0 4px 16px rgba(0,0,0,0.3)) brightness(0) invert(1)' }} />
+          <img src={logo} alt="Drivique" style={{ height: '100px', filter: 'drop-shadow(0 4px 16px rgba(0,0,0,0.3)) brightness(0) invert(1)' }} />
 
           {!enviado ? (
             <>
@@ -71,7 +71,7 @@ export default function RecuperarContrasenaPage() {
 
         <div style={{ marginBottom: '32px' }} className="logo-mobile">
           <style>{`@media(min-width:1024px){.logo-mobile{display:none}}`}</style>
-          <img src={logo} alt="Drivique" style={{ height: '48px', display: 'block', margin: '0 auto' }} />
+          <img src={logo} alt="Drivique" style={{ height: '80px', display: 'block', margin: '0 auto' }} />
         </div>
 
         <div style={{ width: '100%', maxWidth: '400px', marginBottom: '12px' }}>

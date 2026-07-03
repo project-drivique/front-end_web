@@ -1,0 +1,54 @@
+{
+  "landing": {
+    "nav": {
+      "vehiculos": "Vehicles", "sucursales": "Branches", "servicios": "Services",
+      "tarifas": "Rates", "soporte": "Support", "login": "Log in",
+      "registro": "Sign up", "config": "Settings",
+      "tema": "Theme", "claro": "☀️ Light", "oscuro": "🌙 Dark", "idioma": "Language"
+    },
+    "hero": {
+      "badge": "Available in Colombia 🇨🇴",
+      "h1a": "Rent easy,", "h1b": "drive free",
+      "sub": "The digital platform modernizing vehicle rental in Colombia. Book in minutes, pay safely and drive without hassle.",
+      "cta1": "Get started", "cta2": "Log in",
+      "stat1": "Vehicles", "stat2": "Support", "stat3": "Digital",
+      "cardTitle": "Available now", "cardOnline": "Online", "verFlota": "View full fleet"
+    },
+    "como": {
+      "label": "Simple process", "titulo": "How does it work?",
+      "sub": "In 4 steps your vehicle is ready to drive",
+      "pasos": [
+        { "num": "01", "titulo": "Create your account", "desc": "Register in minutes and upload your driver's license for verification." },
+        { "num": "02", "titulo": "Choose your vehicle",  "desc": "Browse the fleet, filter by category, price and availability." },
+        { "num": "03", "titulo": "Book and pay",          "desc": "Select dates, branch and payment method. Receive your digital contract." },
+        { "num": "04", "titulo": "Drive free",            "desc": "Pick up your vehicle, enjoy the ride and rate your experience." }
+      ]
+    },
+    "features": {
+      "label": "All included", "titulo": "Why choose us",
+      "sub": "A complete platform designed for your convenience",
+      "items": [
+        { "titulo": "Premium fleet",          "desc": "More than 50 vehicles: SUVs, sedans, economy and sports cars for every need." },
+        { "titulo": "100% secure payments",   "desc": "PSE, Nequi, credit/debit cards through Wompi with SSL/TLS encryption." },
+        { "titulo": "Digital contracts",      "desc": "Sign your contract online with legal validity. No paperwork, no queues." },
+        { "titulo": "Multiple branches",      "desc": "Pick up and return your vehicle at the nearest branch with real-time availability." },
+        { "titulo": "PWA mobile app",         "desc": "Book from your Android phone. Adapted interface for a smooth experience on any device." },
+        { "titulo": "Real ratings",           "desc": "Read verified reviews from other drivers and rate your experience after each trip." }
+      ]
+    },
+    "cta": {
+      "titulo": "Ready to drive without complications?",
+      "sub": "Join hundreds of drivers who already trust RentaMovil.",
+      "btn1": "Create free account", "btn2": "I already have an account"
+    },
+    "footer": {
+      "desc": "Digital vehicle rental platform developed in Colombia. Safe, efficient and accessible.",
+      "cols": [
+        { "title": "Platform", "links": ["Vehicle catalog", "Bookings", "Online payments", "Digital contracts"] },
+        { "title": "Support",  "links": ["FAQ", "Contact", "Complaints & suggestions", "WhatsApp 24/7"] },
+        { "title": "Legal",    "links": ["Terms & conditions", "Privacy policy", "Law 1581 of 2012", "OWASP Top 10"] }
+      ],
+      "copy": "© 2025 RentaMovil. All rights reserved. File 3145555 — SENA CIES."
+    }
+  }
+}

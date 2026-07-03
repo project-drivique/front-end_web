@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '../../../store/authStore'
@@ -106,9 +106,9 @@ export default function VehiculoDetallePage() {
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg-page)' }}>
-      <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50, background: 'var(--bg-tarjeta)', backdropFilter: 'blur(12px)', borderBottom: '1px solid var(--borde)', boxShadow: '0 4px 20px rgba(0,0,0,0.04)', height: 72 }}>
+      <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50, background: 'var(--bg-tarjeta)', backdropFilter: 'blur(12px)', borderBottom: '1px solid var(--borde)', boxShadow: '0 4px 20px rgba(0,0,0,0.04)', height: 96 }}>
         <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px', height: '100%', display: 'flex', alignItems: 'center', gap: 20 }}>
-          <Link to="/"><img src={logo} alt="Drivique" style={{ height: 42 }} /></Link>
+          <Link to="/"><img src={logo} alt="Drivique" style={{ height: 80 }} /></Link>
           <div style={{ flex: 1 }} />
           {!usuario && (
             <div style={{ display: 'flex', gap: 12 }}>
@@ -119,7 +119,7 @@ export default function VehiculoDetallePage() {
         </div>
       </nav>
 
-      <div style={{ paddingTop: 72 }}>
+      <div style={{ paddingTop: 96 }}>
         <div style={{ maxWidth: 1280, margin: '0 auto', padding: '32px 24px' }}>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 32 }}>

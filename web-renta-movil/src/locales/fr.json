@@ -1,0 +1,53 @@
+{
+  "landing": {
+    "nav": {
+      "vehiculos": "Véhicules", "sucursales": "Agences", "servicios": "Services",
+      "tarifas": "Tarifs", "soporte": "Support", "login": "Se connecter",
+      "registro": "S'inscrire", "config": "Paramètres",
+      "tema": "Thème", "claro": "☀️ Clair", "oscuro": "🌙 Sombre", "idioma": "Langue"
+    },
+    "hero": {
+      "badge": "Disponible en Colombie 🇨🇴",
+      "h1a": "Louez facile,", "h1b": "conduisez libre",
+      "sub": "La plateforme numérique qui modernise la location de véhicules en Colombie. Réservez en minutes, payez en sécurité.",
+      "cta1": "Commencer", "cta2": "Se connecter",
+      "stat1": "Véhicules", "stat2": "Support", "stat3": "Numérique",
+      "cardTitle": "Disponibles maintenant", "cardOnline": "En ligne", "verFlota": "Voir toute la flotte"
+    },
+    "como": {
+      "label": "Processus simple", "titulo": "Comment ça marche ?",
+      "sub": "En 4 étapes votre véhicule est prêt à conduire",
+      "pasos": [
+        { "num": "01", "titulo": "Créez votre compte", "desc": "Inscrivez-vous en minutes et téléchargez votre permis de conduire." },
+        { "num": "02", "titulo": "Choisissez un véhicule", "desc": "Parcourez la flotte, filtrez par catégorie, prix et disponibilité." },
+        { "num": "03", "titulo": "Réservez et payez", "desc": "Sélectionnez les dates, l'agence et le mode de paiement." },
+        { "num": "04", "titulo": "Conduisez libre", "desc": "Récupérez votre véhicule, profitez du voyage et évaluez votre expérience." }
+      ]
+    },
+    "features": {
+      "label": "Tout inclus", "titulo": "Pourquoi nous choisir",
+      "sub": "Une plateforme complète conçue pour votre confort",
+      "items": [
+        { "titulo": "Flotte premium", "desc": "Plus de 50 véhicules : SUV, berlines, économiques et sportifs." },
+        { "titulo": "Paiements 100% sécurisés", "desc": "PSE, Nequi, cartes crédit/débit via Wompi avec chiffrement SSL/TLS." },
+        { "titulo": "Contrats numériques", "desc": "Signez votre contrat en ligne avec valeur légale. Sans paperasse." },
+        { "titulo": "Plusieurs agences", "desc": "Récupérez et retournez votre véhicule à l'agence la plus proche." },
+        { "titulo": "Application mobile PWA", "desc": "Réservez depuis votre téléphone Android." }
+      ]
+    },
+    "cta": {
+      "titulo": "Prêt à conduire sans complications ?",
+      "sub": "Rejoignez des centaines de conducteurs qui font confiance à RentaMovil.",
+      "btn1": "Créer un compte gratuit", "btn2": "J'ai déjà un compte"
+    },
+    "footer": {
+      "desc": "Plateforme numérique de location de véhicules développée en Colombie.",
+      "cols": [
+        { "title": "Plateforme", "links": ["Catalogue de véhicules", "Réservations", "Paiements en ligne", "Contrats numériques"] },
+        { "title": "Support", "links": ["FAQ", "Contact", "Plaintes et suggestions", "WhatsApp 24/7"] },
+        { "title": "Légal", "links": ["Conditions générales", "Politique de confidentialité", "Loi 1581 de 2012"] }
+      ],
+      "copy": "© 2025 RentaMovil. Tous droits réservés."
+    }
+  }
+}

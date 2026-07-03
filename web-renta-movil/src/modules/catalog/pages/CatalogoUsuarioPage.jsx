@@ -137,7 +137,7 @@ export default function CatalogoUsuarioPage() {
     <div style={{ minHeight: '100vh', background: c.pageBg, display: 'flex', flexDirection: 'column' }}>
       <HeaderCatalogo c={c} usuario={usuario} withLinks />
 
-      <div style={{ paddingTop: '68px', flex: 1 }}>
+      <div style={{ paddingTop: '96px', flex: 1 }}>
         <HeroBusqueda
           c={c}
           cargando={cargando}
