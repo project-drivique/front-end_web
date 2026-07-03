@@ -1,46 +1,59 @@
-import React, { useMemo } from 'react';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import { parseISO, eachDayOfInterval } from 'date-fns';
-import reservationsMock from '../../mocks/reservationsMock.json';
-import { useTranslation } from 'react-i18next';
+import React, { useMemo } from 'react'; // Importa React y useMemo para memorizar cálculos y evitar recomputarlos en cada render.
+import DatePicker from 'react-datepicker'; // Importa el calendario visual listo para usar.
+import 'react-datepicker/dist/react-datepicker.css'; // Carga los estilos base del DatePicker.
+import { parseISO, eachDayOfInterval } from 'date-fns'; // parseISO convierte strings a Date; eachDayOfInterval genera todos los días entre dos fechas.
+import reservationsMock from '../../mocks/reservationsMock.json'; // Importa reservas de ejemplo desde un JSON.
+import { useTranslation } from 'react-i18next'; // Hook para mostrar textos traducidos según el idioma.
 
-export default function DatePickerCustom({ selectedDate, onChange, placeholder, minDate, excludeVehicleId }) {
-  const { t } = useTranslation();
+export default function DatePickerCustom({
+  selectedDate, // Fecha actualmente seleccionada.
+  onChange, // Función que se ejecuta cuando el usuario cambia la fecha.
+  placeholder, // Texto opcional del placeholder.
+  minDate, // Fecha mínima permitida para seleccionar.
+  excludeVehicleId // ID del vehículo que quieres excluir o filtrar en reservas.
+}) {
+  const { t } = useTranslation(); // Función t para traducir textos.
 
-  // Filtrar reservaciones para bloquear días.
-  // Si excludeVehicleId está presente, podríamos filtrar las reservas de ese vehículo.
+  // Bloquea los días que ya están reservados.
   const blockedDates = useMemo(() => {
-    let dates = [];
-    const filteredReservations = excludeVehicleId 
+    let dates = []; // Aquí se guardarán todas las fechas bloqueadas.
+
+    // Si existe excludeVehicleId, filtra solo las reservas de ese vehículo.
+    const filteredReservations = excludeVehicleId
       ? reservationsMock.filter(r => r.roomId === excludeVehicleId)
       : reservationsMock;
 
+    // Recorre cada reserva filtrada.
     filteredReservations.forEach(reservation => {
+      // Verifica que existan fecha inicio y fecha fin.
       if (reservation.startDate && reservation.endDate) {
+        // Convierte las fechas string a objetos Date y obtiene todos los días del intervalo.
         const interval = eachDayOfInterval({
           start: parseISO(reservation.startDate),
           end: parseISO(reservation.endDate)
         });
+
+        // Agrega ese rango de días al arreglo total.
         dates = [...dates, ...interval];
       }
     });
-    return dates;
-  }, [excludeVehicleId]);
+
+    return dates; // Devuelve todas las fechas bloqueadas.
+  }, [excludeVehicleId]); // Solo se recalcula si cambia excludeVehicleId.
 
   return (
-    <div className="relative w-full">
+    <div className="relative w-full"> {/* Contenedor principal del componente */}
       <DatePicker
-        selected={selectedDate}
-        onChange={onChange}
-        minDate={minDate || new Date()}
-        excludeDates={blockedDates}
-        placeholderText={placeholder || t('calendar.startDate', 'Seleccionar fecha')}
-        className="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-red-500 focus:ring-4 focus:ring-red-500/20 transition-all outline-none text-gray-700 bg-white shadow-sm hover:border-gray-300 cursor-pointer"
-        dayClassName={(date) => 
-          blockedDates.some(bd => bd.getTime() === date.getTime()) 
-            ? "line-through text-red-500 bg-red-50 hover:bg-red-100 font-semibold" 
-            : undefined
+        selected={selectedDate} // Fecha seleccionada actualmente.
+        onChange={onChange} // Función que se llama al elegir una fecha.
+        minDate={minDate || new Date()} // Si no llega minDate, usa la fecha actual.
+        excludeDates={blockedDates} // Fechas que no se pueden seleccionar.
+        placeholderText={placeholder || t('calendar.startDate', 'Seleccionar fecha')} // Placeholder traducido o personalizado.
+        className="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-red-500 focus:ring-4 focus:ring-red-500/20 transition-all outline-none text-gray-700 bg-white shadow-sm hover:border-gray-300 cursor-pointer" // Estilos del input.
+        dayClassName={(date) =>
+          blockedDates.some(bd => bd.getTime() === date.getTime()) // Compara si el día actual está bloqueado.
+            ? "line-through text-red-500 bg-red-50 hover:bg-red-100 font-semibold" // Estilo para días bloqueados.
+            : undefined // Si no está bloqueado, no aplica clase extra.
         }
       />
     </div>

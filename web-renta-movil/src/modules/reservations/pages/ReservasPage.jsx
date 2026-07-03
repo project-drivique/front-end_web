@@ -1,4 +1,4 @@
-﻿// src/modules/reservations/pages/ReservasPage.jsx
+// src/modules/reservations/pages/ReservasPage.jsx
 import { useState, useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -559,9 +559,9 @@ export default function ReservasPage() {
 
   return (
     <div style={{ minHeight: '100vh', background: '#f8fafc' }}>
-      <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50, background: 'rgba(255,255,255,0.98)', backdropFilter: 'blur(12px)', borderBottom: '1px solid #f1f5f9', boxShadow: '0 1px 8px rgba(0,0,0,0.06)', height: 68 }}>
+      <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50, background: 'rgba(255,255,255,0.98)', backdropFilter: 'blur(12px)', borderBottom: '1px solid #f1f5f9', boxShadow: '0 1px 8px rgba(0,0,0,0.06)', height: 96 }}>
         <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px', height: '100%', display: 'flex', alignItems: 'center', gap: 20 }}>
-          <Link to="/"><img src={logo} alt="Drivique" style={{ height: 40 }} /></Link>
+          <Link to="/"><img src={logo} alt="Drivique" style={{ height: 80 }} /></Link>
           <div style={{ flex: 1 }} />
           {!usuario && (
             <div style={{ display: 'flex', gap: 10 }}>
@@ -572,7 +572,7 @@ export default function ReservasPage() {
         </div>
       </nav>
 
-      <div style={{ paddingTop: 68 }}>
+      <div style={{ paddingTop: 96 }}>
         <div style={{ maxWidth: 1280, margin: '0 auto', padding: '30px 24px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 28 }}>
             <button onClick={volverAtras} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: '#1e3a8a', fontWeight: 700, background: 'rgba(30,58,138,0.07)', border: '1px solid rgba(30,58,138,0.15)', borderRadius: 9999, padding: '7px 15px', cursor: 'pointer' }}>
