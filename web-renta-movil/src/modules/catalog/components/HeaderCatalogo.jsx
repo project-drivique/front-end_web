@@ -1,4 +1,4 @@
-﻿import { Link } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import logo from '@/assets/logo.png'
 
@@ -20,14 +20,14 @@ export default function HeaderCatalogo({ c, usuario, withLinks = false }) {
       left: 0,
       right: 0,
       zIndex: 50,
-      height: '68px',
+      height: '96px',
       background: c.navBg,
       backdropFilter: 'blur(12px)',
       borderBottom: `1px solid ${c.navBorder}`,
       boxShadow: c.navShadow
     }}>
       <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 24px', height: '100%', display: 'flex', alignItems: 'center', gap: '18px' }}>
-        <Link to="/"><img src={logo} alt="Drivique" style={{ height: '40px' }} /></Link>
+        <Link to="/"><img src={logo} alt="Drivique" style={{ height: '80px' }} /></Link>
 
         {withLinks && (
           <Link to="/reservas" style={{ fontSize: '13px', color: c.navText, textDecoration: 'none', fontWeight: 600 }}>{t('catalogo.myReservations')}</Link>

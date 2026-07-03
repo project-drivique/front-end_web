@@ -1,4 +1,4 @@
-﻿import { useState, useMemo, useRef } from 'react'
+import { useState, useMemo, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useLanding } from '../../landing/LandingContext'
@@ -176,15 +176,18 @@ export default function SucursalesPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: c.pageBg, display: 'flex', flexDirection: 'column', overflowX: 'hidden' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--hero-fondo)', position: 'relative', display: 'flex', flexDirection: 'column', overflowX: 'hidden' }}>
+      <div style={{ position: 'absolute', top: -80, right: -80, width: 500, height: 500, borderRadius: '50%', background: 'var(--hero-orb1)', pointerEvents: 'none', zIndex: 0 }} />
+      <div style={{ position: 'absolute', bottom: -60, left: -60, width: 350, height: 350, borderRadius: '50%', background: 'var(--hero-orb2)', pointerEvents: 'none', zIndex: 0 }} />
+
       <nav style={{
         position: 'fixed', top: 0, left: 0, right: 0, zIndex: 60,
         background: c.navBg, backdropFilter: 'blur(12px)',
         borderBottom: `1px solid ${c.navBorder}`, boxShadow: c.navShadow,
-        height: '68px'
+        height: '96px'
       }}>
         <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 24px', height: '100%', display: 'flex', alignItems: 'center', gap: '24px' }}>
-          <Link to="/"><img src={logo} alt="Drivique" style={{ height: '40px', flexShrink: 0 }} /></Link>
+          <Link to="/"><img src={logo} alt="Drivique" style={{ height: '80px', flexShrink: 0 }} /></Link>
           <div style={{ flex: 1 }} />
           <div style={{ display: 'flex', gap: '10px' }}>
             <Link to="/login" style={{ padding: '8px 20px', borderRadius: '9999px', border: `2px solid ${c.loginBorder}`, color: c.loginText, fontSize: '13px', fontWeight: 700, textDecoration: 'none' }}>
@@ -197,7 +200,7 @@ export default function SucursalesPage() {
         </div>
       </nav>
 
-      <div style={{ paddingTop: '68px', flex: 1 }}>
+      <div style={{ paddingTop: '96px', flex: 1, position: 'relative', zIndex: 1 }}>
         <div style={{ padding: '40px 24px 20px', textAlign: 'center', position: 'relative' }}>
           <div style={{ position: 'absolute', top: '18px', left: '24px' }}>
             <Link
@@ -275,16 +278,16 @@ export default function SucursalesPage() {
                       justifyContent: 'center',
                       overflow: 'hidden',
                       border: `1px solid ${c.panelBorder}`,
-                      padding: '10px'
+                      padding: '0'
                     }}
                   >
                     <img
                       src={suc.logoUrl}
                       alt={suc.alias}
                       style={{
-                        width: '92%',
-                        height: '92%',
-                        objectFit: 'contain'
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover'
                       }}
                     />
                   </div>
