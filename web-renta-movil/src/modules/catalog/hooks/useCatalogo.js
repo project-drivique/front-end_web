@@ -2,6 +2,17 @@
 import { useTranslation } from 'react-i18next'
 import { catalogoService } from '../../../services/catalogoService'
 
+const estaDisponibleEnRango = (vehiculo, fechaInicio, fechaFin) => {
+  const ocupados = vehiculo.disponibilidad?.ocupados ?? []
+  if (ocupados.length === 0) return true
+  const inicio = new Date(fechaInicio)
+  const fin = new Date(fechaFin)
+  return !ocupados.some(fecha => {
+    const d = new Date(fecha)
+    return d >= inicio && d < fin
+  })
+}
+
 const FILTROS_BASE = {
   categoria: 'Todos',
   precioMin: '',
@@ -131,6 +142,14 @@ export function useCatalogo({ esFavorito = () => false } = {}) {
     if (min !== null) arr = arr.filter(v => Number(v.precio) >= min)
     if (max !== null) arr = arr.filter(v => Number(v.precio) <= max)
 
+    if (busquedaRealizada && busquedaAplicada.lugarRecogida) {
+      arr = arr.filter(v => v.sucursal === busquedaAplicada.lugarRecogida)
+    }
+
+    if (busquedaRealizada && busquedaAplicada.fechaInicio && busquedaAplicada.fechaFin) {
+      arr = arr.filter(v => estaDisponibleEnRango(v, busquedaAplicada.fechaInicio, busquedaAplicada.fechaFin))
+    }
+
     if (filtros.orden === 'precio_asc') arr.sort((a, b) => Number(a.precio) - Number(b.precio))
     if (filtros.orden === 'precio_desc') arr.sort((a, b) => Number(b.precio) - Number(a.precio))
     if (filtros.orden === 'calificacion') arr.sort((a, b) => Number(b.calificacion ?? 0) - Number(a.calificacion ?? 0))
@@ -138,7 +157,7 @@ export function useCatalogo({ esFavorito = () => false } = {}) {
     if (soloFavoritos) arr = arr.filter(v => esFavorito(v.id))
 
     return arr
-  }, [vehiculos, filtros, soloFavoritos, esFavorito])
+  }, [vehiculos, filtros, soloFavoritos, esFavorito, busquedaRealizada, busquedaAplicada])
 
   const totalPaginas = Math.max(1, Math.ceil(resultado.length / 6))
   const vehiculosPagina = useMemo(() => {
