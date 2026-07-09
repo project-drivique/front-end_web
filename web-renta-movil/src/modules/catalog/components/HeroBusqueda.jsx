@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next'
+import { SUCURSALES } from '../constants'
 
 export default function HeroBusqueda({
   c,
@@ -64,7 +65,7 @@ export default function HeroBusqueda({
               <label style={{ ...labelStyle, display: 'block' }}>{t('catalogo.pickupPlace')}</label>
               <select value={busquedaForm.lugarRecogida || ''} onChange={e => setForm('lugarRecogida', e.target.value)} style={inputStyle}>
                 <option value="">{t('catalogo.selectPoint')}</option>
-                {['Centro', 'Norte', 'Sur', 'Occidente'].map(s => <option key={s} value={s}>{s}</option>)}
+                {SUCURSALES.map(s => <option key={s} value={s}>{s}</option>)}
               </select>
             </div>
 
@@ -84,7 +85,7 @@ export default function HeroBusqueda({
                 style={inputStyle}
               >
                 <option value="__mismo__">{t('catalogo.selectPoint')}</option>
-                {['Centro', 'Norte', 'Sur', 'Occidente'].map(s => <option key={s} value={s}>{s}</option>)}
+                {SUCURSALES.map(s => <option key={s} value={s}>{s}</option>)}
               </select>
             </div>
 
