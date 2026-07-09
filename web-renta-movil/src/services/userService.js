@@ -1,4 +1,5 @@
 ﻿import { api } from './authService'
+import { useAuthStore } from '../store/authStore'
 
 const MOCK_PASSWORDS = {
   'admin@drivique.com': 'Admin123*',
@@ -7,14 +8,7 @@ const MOCK_PASSWORDS = {
 
 const MOCK_EMAILS = Object.keys(MOCK_PASSWORDS)
 
-const getUsuarioGuardado = () => {
-  try {
-    const raw = localStorage.getItem('renta_token')
-    return raw ? JSON.parse(raw)?.state?.usuario : null
-  } catch {
-    return null
-  }
-}
+const getUsuarioGuardado = () => useAuthStore.getState().usuario
 
 export const userService = {
   actualizarPerfil: async (datosActualizados) => {
