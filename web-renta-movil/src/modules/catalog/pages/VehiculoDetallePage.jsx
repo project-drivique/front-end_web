@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '../../../store/authStore'
+import { showAlert } from '@/utils/swalConfig'
 import logo from '@/assets/logo.png'
 import VEHICULOS_MOCK from '@/mocks/vehiculos.json'
 
@@ -72,11 +73,25 @@ export default function VehiculoDetallePage() {
   if (!vehiculo) return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 14 }}>
       <p style={{ fontSize: 20, fontWeight: 800, color: 'var(--texto-primary)' }}>{t('vehiculo.notFound')}</p>
-      <Link to="/catalogo" style={{ color: '#1e3a8a', fontWeight: 700, fontSize: 14 }}>← {t('vehiculo.backToCatalog')}</Link>
+      <Link to={usuario ? '/home' : '/catalogo'} style={{ color: '#1e3a8a', fontWeight: 700, fontSize: 14 }}>← {t('vehiculo.backToCatalog')}</Link>
     </div>
   );
 
   const handleReservar = () => {
+    if (!usuario) {
+      showAlert({
+        icon: 'info',
+        title: t('catalogo.guestMode'),
+        text: t('catalogo.guestModeText'),
+        confirmButtonText: t('catalogo.goToRegister'),
+        showCancelButton: true,
+        cancelButtonText: t('common.cancel'),
+      }).then((result) => {
+        if (result.isConfirmed) navigate('/registro')
+      })
+      return;
+    }
+
     const e = {};
     if (!datosForm.nombre.trim())                                                     e.nombre   = t('vehiculo.errors.nameRequired');
     if (!datosForm.correo.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(datosForm.correo)) e.correo   = t('vehiculo.errors.emailInvalid');
@@ -88,7 +103,7 @@ export default function VehiculoDetallePage() {
     if (Object.keys(e).length > 0) return;
 
     setExito(true);
-    setTimeout(() => navigate('/catalogo'), 3500);
+    setTimeout(() => navigate('/home'), 3500);
   };
 
   if (exito) return (
@@ -124,7 +139,7 @@ export default function VehiculoDetallePage() {
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 32 }}>
             <button
-              onClick={() => pantalla === 1 ? navigate('/catalogo') : setPantalla(1)}
+              onClick={() => pantalla === 1 ? navigate(usuario ? '/home' : '/catalogo') : setPantalla(1)}
               style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 14, color: '#1e3a8a', fontWeight: 700, background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 9999, padding: '8px 18px', cursor: 'pointer', transition: 'all 200ms ease' }}
               onMouseEnter={e => e.currentTarget.style.background = '#dbeafe'}
               onMouseLeave={e => e.currentTarget.style.background = '#eff6ff'}

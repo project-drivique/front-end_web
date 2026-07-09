@@ -540,7 +540,7 @@ export default function ReservasPage() {
   if (errorVeh || !vehiculo) return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 14 }}>
       <p style={{ fontSize: 20, fontWeight: 800, color: '#0f172a' }}>{t('vehiculo.notFound')}</p>
-      <Link to="/catalogo" style={{ color: '#1e3a8a', fontWeight: 700, fontSize: 14 }}>← {t('vehiculo.backToCatalog')}</Link>
+      <Link to="/home" style={{ color: '#1e3a8a', fontWeight: 700, fontSize: 14 }}>← {t('vehiculo.backToCatalog')}</Link>
     </div>
   )
 
