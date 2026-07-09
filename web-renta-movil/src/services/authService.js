@@ -1,5 +1,7 @@
 ﻿import axios from 'axios'
 // Importa Axios, una librería para hacer peticiones HTTP a una API.
+import { useAuthStore } from '../store/authStore'
+// Store de Zustand: fuente de verdad del token en memoria.
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
 // Define la URL base de la API.
@@ -18,8 +20,8 @@ export const api = axios.create({
 api.interceptors.request.use((config) => {
   // Interceptor que se ejecuta antes de cada petición.
 
-  const token = localStorage.getItem('renta_token')
-  // Lee del localStorage el token guardado por el login.
+  const token = useAuthStore.getState().token
+  // Lee el token directo del store (ya rehidratado, siempre el JWT plano).
 
   if (token) config.headers.Authorization = `Bearer ${token}`
   // Si existe token, lo agrega al header Authorization

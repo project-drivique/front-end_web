@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import { useState, useEffect } from 'react'
 import { useAuthStore } from '../store/authStore'
+import { useHydration } from '../hooks/useHydration'
 
 import LandingPage from '../modules/landing/LandingPage'
 import LoginPage from '../modules/auth/pages/LoginPage'
@@ -16,26 +16,16 @@ import AdminPage from '../modules/admin/pages/AdminPage'
 import SucursalesPage from '../modules/catalog/pages/SucursalesPage'
 import PerfilPage from '../modules/profile/pages/PerfilPage'
 
-function useHydrated() {
-  const [hydrated, setHydrated] = useState(useAuthStore.persist.hasHydrated())
-  useEffect(() => {
-    if (hydrated) return
-    const unsub = useAuthStore.persist.onFinishHydration(() => setHydrated(true))
-    return unsub
-  }, [hydrated])
-  return hydrated
-}
-
 function RutaPrivada({ children }) {
   const token    = useAuthStore((s) => s.token)
-  const hydrated = useHydrated()
+  const hydrated = useHydration()
   if (!hydrated) return null
   return token ? children : <Navigate to="/login" replace />
 }
 
 function Ruta2FA({ children }) {
   const sesion2FA = useAuthStore((s) => s.sesion2FA)
-  const hydrated  = useHydrated()
+  const hydrated  = useHydration()
   if (!hydrated) return null
   return sesion2FA ? children : <Navigate to="/login" replace />
 }
