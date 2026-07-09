@@ -2,6 +2,7 @@ import { useState, useMemo, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useLanding } from '../../landing/LandingContext'
+import { useAuthStore } from '../../../store/authStore'
 import { formatCurrency } from '@/utils/monedaUtils'
 import { useCatalogo } from '../hooks/useCatalogo'
 import logo from '@/assets/logo.png'
@@ -135,6 +136,7 @@ export default function SucursalesPage() {
   const { t } = useTranslation()
   const { tema, moneda } = useLanding()
   const navigate = useNavigate()
+  const { usuario } = useAuthStore()
   const esModoOscuro = tema === 'oscuro'
   const c = coloresTema(esModoOscuro)
   const [sucursalActiva, setSucursalActiva] = useState(null)
@@ -189,14 +191,16 @@ export default function SucursalesPage() {
         <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 24px', height: '100%', display: 'flex', alignItems: 'center', gap: '24px' }}>
           <Link to="/"><img src={logo} alt="Drivique" style={{ height: '80px', flexShrink: 0 }} /></Link>
           <div style={{ flex: 1 }} />
-          <div style={{ display: 'flex', gap: '10px' }}>
-            <Link to="/login" style={{ padding: '8px 20px', borderRadius: '9999px', border: `2px solid ${c.loginBorder}`, color: c.loginText, fontSize: '13px', fontWeight: 700, textDecoration: 'none' }}>
-              {t('catalogo.signIn')}
-            </Link>
-            <Link to="/registro" style={{ padding: '8px 20px', borderRadius: '9999px', background: COLOR_MARCA, color: '#fff', fontSize: '13px', fontWeight: 700, textDecoration: 'none' }}>
-              {t('catalogo.signUp')}
-            </Link>
-          </div>
+          {!usuario && (
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <Link to="/login" style={{ padding: '8px 20px', borderRadius: '9999px', border: `2px solid ${c.loginBorder}`, color: c.loginText, fontSize: '13px', fontWeight: 700, textDecoration: 'none' }}>
+                {t('catalogo.signIn')}
+              </Link>
+              <Link to="/registro" style={{ padding: '8px 20px', borderRadius: '9999px', background: COLOR_MARCA, color: '#fff', fontSize: '13px', fontWeight: 700, textDecoration: 'none' }}>
+                {t('catalogo.signUp')}
+              </Link>
+            </div>
+          )}
         </div>
       </nav>
 
