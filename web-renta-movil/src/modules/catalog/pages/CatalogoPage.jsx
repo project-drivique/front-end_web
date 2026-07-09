@@ -61,6 +61,7 @@ export default function CatalogoPage() {
   const { t } = useTranslation()
   const { tema } = useLanding()
   const navigate = useNavigate()
+  const { usuario } = useAuthStore()
   const esModoOscuro = tema === 'oscuro'
   const c = coloresTema(esModoOscuro)
 
@@ -132,28 +133,30 @@ export default function CatalogoPage() {
         <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 24px', height: '100%', display: 'flex', alignItems: 'center', gap: '24px' }}>
           <Link to="/"><img src={logo} alt="Drivique" style={{ height: '80px', flexShrink: 0 }} /></Link>
           <div style={{ flex: 1 }} />
-          <div style={{ display: 'flex', gap: '10px' }}>
-            <Link
-              to="/login"
-              style={{
-                padding: '8px 20px',
-                borderRadius: '9999px',
-                border: `2px solid ${c.loginBorder}`,
-                color: c.loginText,
-                fontSize: '13px',
-                fontWeight: 700,
-                textDecoration: 'none',
-                background: 'transparent',
-              }}
-              onMouseEnter={e => e.currentTarget.style.background = c.loginHoverBg}
-              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-            >
-              {t('catalogo.signIn')}
-            </Link>
-            <Link to="/registro" style={{ padding: '8px 20px', borderRadius: '9999px', background: COLOR_MARCA, color: '#fff', fontSize: '13px', fontWeight: 700, textDecoration: 'none' }}>
-              {t('catalogo.signUp')}
-            </Link>
-          </div>
+          {!usuario && (
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <Link
+                to="/login"
+                style={{
+                  padding: '8px 20px',
+                  borderRadius: '9999px',
+                  border: `2px solid ${c.loginBorder}`,
+                  color: c.loginText,
+                  fontSize: '13px',
+                  fontWeight: 700,
+                  textDecoration: 'none',
+                  background: 'transparent',
+                }}
+                onMouseEnter={e => e.currentTarget.style.background = c.loginHoverBg}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+              >
+                {t('catalogo.signIn')}
+              </Link>
+              <Link to="/registro" style={{ padding: '8px 20px', borderRadius: '9999px', background: COLOR_MARCA, color: '#fff', fontSize: '13px', fontWeight: 700, textDecoration: 'none' }}>
+                {t('catalogo.signUp')}
+              </Link>
+            </div>
+          )}
         </div>
       </nav>
 
