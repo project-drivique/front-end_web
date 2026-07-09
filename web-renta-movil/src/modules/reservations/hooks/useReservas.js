@@ -75,7 +75,7 @@ export function useReservas(vehiculo) {
     if (Object.keys(e).length > 0) return
 
     setExito(true)
-    setTimeout(() => navigate('/catalogo'), 3500)
+    setTimeout(() => navigate('/home'), 3500)
   }
 
   const irPantalla2 = () => {
@@ -98,7 +98,7 @@ export function useReservas(vehiculo) {
   }
 
   const volverAtras = () => {
-    if (pantalla === 1) navigate('/catalogo')
+    if (pantalla === 1) navigate('/home')
     else setPantalla(1)
   }
 
