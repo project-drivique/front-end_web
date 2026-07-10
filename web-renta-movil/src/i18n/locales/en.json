@@ -68,6 +68,7 @@
     "submit": "Create my account",
     "processing": "Processing…",
     "completed": "Registration complete",
+    "checkEmail": "Account created. Continue to verify your email...",
     "hasAccount": "Already have an account?",
     "loginLink": "Sign in here",
     "google": "Google",
@@ -201,6 +202,24 @@
       "verifyError": "Error verifying. Try again.",
       "resendError": "Could not resend the code. Try again."
     }
+  },
+  "verificarCorreo": {
+    "sendTitle": "Email authentication",
+    "sendSubtitle": "We will send a verification code to",
+    "sendButton": "Send me the code",
+    "sending": "Sending...",
+    "title": "Verify your email",
+    "subtitle": "Enter the 6-digit code we sent to",
+    "submit": "Verify account",
+    "verifying": "Verifying...",
+    "resend": "Resend code",
+    "resending": "Resending...",
+    "resendCountdown": "Resend in {{seconds}}s",
+    "expiresIn": "Code expires in {{time}}",
+    "expired": "The code expired. Request a new one.",
+    "backToRegistro": "Back to registration",
+    "successTitle": "Email verified!",
+    "successSubtitle": "Redirecting..."
   },
   "catalogo": {
     "title": "Vehicle catalog",
