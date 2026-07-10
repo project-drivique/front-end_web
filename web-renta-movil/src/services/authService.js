@@ -8,6 +8,11 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
 // Primero intenta leer la variable de entorno VITE_API_URL.
 // Si no existe, usa la URL local por defecto.
 
+const USAR_MOCK =
+  import.meta.env.VITE_USAR_MOCK === 'true' || !import.meta.env.VITE_API_URL
+// Mismo patrón que catalogoService.js / reservasService.js:
+// usa mock si VITE_USAR_MOCK es 'true' o si no hay VITE_API_URL configurada.
+
 export const api = axios.create({
   baseURL: API_URL,
   // Todas las peticiones hechas con esta instancia usarán esta URL base.
@@ -41,6 +46,7 @@ const MOCK_USERS = [
     telefono: '+573001234567',
     cedula: '1234567890',
     fechaNacimiento: '1990-05-15',
+    emailVerificado: true,
   },
   {
     correo: 'cliente@Drivique.com',
@@ -51,6 +57,7 @@ const MOCK_USERS = [
     telefono: '+573109876543',
     cedula: '9876543210',
     fechaNacimiento: '1995-03-20',
+    emailVerificado: true,
   },
 ]
 // Lista de usuarios simulados.
@@ -61,6 +68,18 @@ const generateMockToken = () => {
 }
 // Genera un token falso para simular autenticación.
 // Usa texto fijo + parte aleatoria + timestamp actual.
+
+export const DURACION_CODIGO_VERIFICACION_MS = 5 * 60 * 1000
+// Cuánto dura vigente un código de verificación de correo (5 minutos).
+// Se exporta para que el hook de verificación use el mismo valor
+// en su cuenta regresiva local, sin duplicar el número mágico.
+
+const CODIGOS_VERIFICACION_MOCK = new Map()
+// Guarda en memoria { correo -> { codigo, expiraEn } } mientras se usa el mock.
+// Al no existir backend, este Map hace las veces de "base de datos" temporal.
+
+const generarCodigoMock = () => Math.floor(100000 + Math.random() * 900000).toString()
+// Genera un código numérico de 6 dígitos.
 
 export const authService = {
   login: async ({ correo, contrasena }) => {
@@ -84,6 +103,7 @@ export const authService = {
         telefono: usuario.telefono,
         cedula: usuario.cedula,
         fechaNacimiento: usuario.fechaNacimiento,
+        emailVerificado: usuario.emailVerificado ?? false,
         requiere2FA: false,
         // Devuelve los datos del usuario y una bandera que indica que no requiere 2FA.
       }
@@ -118,6 +138,9 @@ export const authService = {
         telefono: usuario.telefono,
         cedula: usuario.cedula,
         fechaNacimiento: usuario.fechaNacimiento,
+        emailVerificado: false,
+        // Toda cuenta recién registrada empieza sin verificar,
+        // aunque la cuenta mock de base ya esté marcada como verificada.
       }
       // Si lo encuentra, devuelve un objeto similar al login exitoso.
     }
@@ -176,6 +199,56 @@ export const authService = {
     // Reenvía el código de verificación 2FA.
 
     const { data } = await api.post('/auth/2fa/reenviar', { sesionTemporal })
+    return data
+  },
+
+  enviarCodigoVerificacion: async (correo) => {
+    // Envía (o reenvía) el código de verificación de correo tras el registro.
+
+    if (USAR_MOCK) {
+      const codigo = generarCodigoMock()
+      CODIGOS_VERIFICACION_MOCK.set(correo, {
+        codigo,
+        expiraEn: Date.now() + DURACION_CODIGO_VERIFICACION_MS,
+      })
+      console.info(`[MOCK] Código de verificación para ${correo}: ${codigo}`)
+      return { enviado: true }
+    }
+
+    const { data } = await api.post('/auth/registro/enviar-codigo', { correo })
+    return data
+  },
+
+  verificarCodigoRegistro: async (correo, codigo) => {
+    // Valida el código de verificación de correo ingresado por el usuario.
+
+    if (USAR_MOCK) {
+      const registro = CODIGOS_VERIFICACION_MOCK.get(correo)
+
+      if (!registro) {
+        const error = new Error('No hay un código pendiente para este correo. Solicita uno nuevo.')
+        error.response = { status: 400, data: { mensaje: error.message } }
+        throw error
+      }
+
+      if (Date.now() > registro.expiraEn) {
+        CODIGOS_VERIFICACION_MOCK.delete(correo)
+        const error = new Error('El código ha expirado. Solicita uno nuevo.')
+        error.response = { status: 410, data: { mensaje: error.message } }
+        throw error
+      }
+
+      if (registro.codigo !== codigo) {
+        const error = new Error('Código incorrecto. Verifica e intenta de nuevo.')
+        error.response = { status: 400, data: { mensaje: error.message } }
+        throw error
+      }
+
+      CODIGOS_VERIFICACION_MOCK.delete(correo)
+      return { verificado: true }
+    }
+
+    const { data } = await api.post('/auth/registro/verificar-codigo', { correo, codigo })
     return data
   },
 }
