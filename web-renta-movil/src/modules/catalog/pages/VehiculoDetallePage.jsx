@@ -8,10 +8,12 @@ import VEHICULOS_MOCK from '@/mocks/vehiculos.json'
 
 import GaleriaImagenes from '../components/detalle/GaleriaImagenes'
 import InfoVehiculo from '../components/detalle/InfoVehiculo'
+import PasoFechas from '../components/detalle/PasoFechas'
 import PlanesProteccion from '../components/detalle/PlanesProteccion'
+import TipoKilometraje from '../components/detalle/TipoKilometraje'
+import ServiciosAdicionales from '../components/detalle/ServiciosAdicionales'
 import ResumenLateral from '../components/detalle/ResumenLateral'
 import DatosPersonales from '../components/detalle/DatosPersonales'
-import ModalEditarReserva from '../components/detalle/ModalEditarReserva'
 
 const IcoCheck = ({ color = '#16a34a', sz = 15 }) => (
   <svg width={sz} height={sz} fill="none" stroke={color} strokeWidth="2.8" viewBox="0 0 24 24">
@@ -29,6 +31,8 @@ const IcoArrow = () => (
   </svg>
 )
 
+const TOTAL_PASOS = 3
+
 export default function VehiculoDetallePage() {
   const { t } = useTranslation()
   const { id }       = useParams();
@@ -39,14 +43,23 @@ export default function VehiculoDetallePage() {
 
   const [pantalla,    setPantalla]   = useState(1);
   const [seguroIdx,   setSeguroIdx]  = useState(0);
+  const [serviciosSeleccionados, setServiciosSeleccionados] = useState([]);
+  const toggleServicio = (nombre) => setServiciosSeleccionados(prev =>
+    prev.includes(nombre) ? prev.filter(n => n !== nombre) : [...prev, nombre]
+  );
   const [reserva,     setReserva]    = useState({
-       fechaInicio: '', fechaFin: '',
+    fechaInicio: '', fechaFin: '',
     horaInicio: '09:00', horaFin: '09:00',
-    sucursalRetiro: 'Centro',
-    sucursalDevolucion: 'Centro',
+    sucursalRetiro: '',
+    sucursalDevolucion: '',
     tipoKm: 'limitado',
   });
-  const [modalEditar, setModalEditar] = useState(null);
+  const cambiarReserva = (campo, valor) => {
+    setReserva(prev => ({ ...prev, [campo]: valor }))
+    setErrorPaso1('')
+  }
+
+  const [errorPaso1, setErrorPaso1] = useState('');
   const [datosForm,   setDatosForm]   = useState({
     nombre: '', correo: '', celular: '',
     nacionalidad: 'Colombia', tipoDoc: 'CC', numDoc: '',
@@ -76,6 +89,55 @@ export default function VehiculoDetallePage() {
       <Link to={usuario ? '/home' : '/catalogo'} style={{ color: '#1e3a8a', fontWeight: 700, fontSize: 14 }}>← {t('vehiculo.backToCatalog')}</Link>
     </div>
   );
+
+  const irSiguiente = () => {
+    if (pantalla === 1) {
+      if (!reserva.sucursalRetiro || !reserva.sucursalDevolucion) {
+        setErrorPaso1(t('vehiculo.selectLocation'))
+        return
+      }
+      if (!reserva.fechaInicio || !reserva.fechaFin) {
+        setErrorPaso1(t('vehiculo.errors.datesRequired'))
+        return
+      }
+    }
+    setErrorPaso1('')
+    setPantalla(p => Math.min(TOTAL_PASOS, p + 1))
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  const irAtras = () => {
+    if (pantalla === 1) {
+      navigate(usuario ? '/home' : '/catalogo')
+      return
+    }
+    setPantalla(p => p - 1)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  const DESTINOS_EDITAR = {
+    retiro: { paso: 1, id: 'campo-lugar-retiro' },
+    devolucion: { paso: 1, id: 'campo-lugar-devolucion' },
+    grupo: { paso: 2, id: 'campo-grupo' },
+    servicios: { paso: 2, id: 'campo-servicios' },
+  }
+
+  const irAEditar = (destino) => {
+    const { paso, id } = DESTINOS_EDITAR[destino]
+    const enfocarCampo = () => {
+      const el = document.getElementById(id)
+      if (!el) return
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      if (typeof el.focus === 'function') el.focus({ preventScroll: true })
+    }
+
+    if (pantalla === paso) {
+      enfocarCampo()
+    } else {
+      setPantalla(paso)
+      setTimeout(enfocarCampo, 60)
+    }
+  }
 
   const handleReservar = () => {
     if (!usuario) {
@@ -119,6 +181,8 @@ export default function VehiculoDetallePage() {
     </div>
   );
 
+  const pasos = [t('vehiculo.stepDates'), t('vehiculo.stepProtection'), t('vehiculo.personalData')]
+
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg-page)' }}>
       <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50, background: 'var(--bg-tarjeta)', backdropFilter: 'blur(12px)', borderBottom: '1px solid var(--borde)', boxShadow: '0 4px 20px rgba(0,0,0,0.04)', height: 96 }}>
@@ -139,18 +203,18 @@ export default function VehiculoDetallePage() {
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 32 }}>
             <button
-              onClick={() => pantalla === 1 ? navigate(usuario ? '/home' : '/catalogo') : setPantalla(1)}
+              onClick={irAtras}
               style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 14, color: '#1e3a8a', fontWeight: 700, background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 9999, padding: '8px 18px', cursor: 'pointer', transition: 'all 200ms ease' }}
               onMouseEnter={e => e.currentTarget.style.background = '#dbeafe'}
               onMouseLeave={e => e.currentTarget.style.background = '#eff6ff'}
             >
-              <IcoBack /> {pantalla === 1 ? t('vehiculo.backToCatalog') : t('vehiculo.backToProtection')}
+              <IcoBack /> {pantalla === 1 ? t('vehiculo.backToCatalog') : t('common.goBack')}
             </button>
             <h1 style={{ fontSize: 24, fontWeight: 900, color: 'var(--texto-primary)', margin: 0 }}>{t('vehiculo.reserve')} — {vehiculo.nombre}</h1>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0, marginBottom: 36 }}>
-            {[t('vehiculo.stepProtection'), t('vehiculo.personalData')].map((label, i) => {
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0, marginBottom: 36, flexWrap: 'wrap' }}>
+            {pasos.map((label, i) => {
               const num = i + 1;
               const activo      = pantalla === num;
               const completado  = pantalla > num;
@@ -158,18 +222,19 @@ export default function VehiculoDetallePage() {
                 <div key={i} style={{ display: 'flex', alignItems: 'center' }}>
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
                     <div style={{
-                      width: 40, height: 40, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontWeight: 800, fontSize: 15,
+                      width: 36, height: 36, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontWeight: 800, fontSize: 14,
                       background: completado ? '#1e3a8a' : activo ? 'linear-gradient(135deg,#1e3a8a,#2563eb)' : 'var(--bg-item)',
                       color: completado || activo ? '#fff' : 'var(--texto-second)',
                       boxShadow: activo ? '0 8px 24px rgba(37,99,235,0.25)' : 'none',
-                      transition: 'all 300ms ease'
+                      transition: 'all 300ms ease',
+                      flexShrink: 0,
                     }}>
-                      {completado ? <IcoCheck color="#fff" sz={18} /> : num}
+                      {completado ? <IcoCheck color="#fff" sz={16} /> : num}
                     </div>
-                    <span style={{ fontSize: 13, fontWeight: activo ? 800 : 600, color: activo ? '#1e3a8a' : 'var(--texto-second)', whiteSpace: 'nowrap' }}>{label}</span>
+                    <span style={{ fontSize: 12, fontWeight: activo ? 800 : 600, color: activo ? '#1e3a8a' : 'var(--texto-second)', whiteSpace: 'nowrap' }}>{label}</span>
                   </div>
-                  {i < 1 && <div style={{ width: 100, height: 3, background: pantalla > 1 ? '#1e3a8a' : 'var(--borde)', margin: '0 12px', marginBottom: 20, transition: 'background 400ms ease' }} />}
+                  {i < pasos.length - 1 && <div style={{ width: 56, height: 3, background: pantalla > num ? '#1e3a8a' : 'var(--borde)', margin: '0 8px', marginBottom: 20, transition: 'background 400ms ease' }} />}
                 </div>
               );
             })}
@@ -182,26 +247,34 @@ export default function VehiculoDetallePage() {
                 <>
                   <GaleriaImagenes imagenes={vehiculo.imagenes} nombreVehiculo={vehiculo.nombre} />
                   <InfoVehiculo vehiculo={vehiculo} />
-                  <PlanesProteccion seguroIdx={seguroIdx} onSeleccionar={setSeguroIdx} />
-
-                  <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 32 }}>
-                    <button
-                      onClick={() => { setPantalla(2); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
-                      style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '16px 40px', borderRadius: 16, background: 'linear-gradient(90deg,#1e3a8a,#2563eb)', color: '#fff', fontWeight: 900, fontSize: 15, border: 'none', cursor: 'pointer', boxShadow: '0 8px 24px rgba(37,99,235,0.28)', transition: 'transform 200ms ease' }}
-                      onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
-                      onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
-                    >
-                      {t('vehiculo.continueData')} <IcoArrow />
-                    </button>
+                  <div style={{ marginTop: 32 }}>
+                    <PasoFechas vehiculo={vehiculo} reserva={reserva} onCambio={cambiarReserva} />
                   </div>
                 </>
               )}
 
               {pantalla === 2 && (
+                <>
+                  <div id="campo-grupo">
+                    <PlanesProteccion seguroIdx={seguroIdx} onSeleccionar={setSeguroIdx} />
+                    <TipoKilometraje vehiculo={vehiculo} tipoKm={reserva.tipoKm} onSeleccionar={val => cambiarReserva('tipoKm', val)} />
+                  </div>
+                  <div id="campo-servicios" style={{ marginTop: 32 }}>
+                    <ServiciosAdicionales
+                      servicios={vehiculo.servicios}
+                      seleccionados={serviciosSeleccionados}
+                      onToggle={toggleServicio}
+                    />
+                  </div>
+                </>
+              )}
+
+              {pantalla === 3 && (
                 <DatosPersonales
                   vehiculo={vehiculo}
                   reserva={reserva}
                   seguroIdx={seguroIdx}
+                  serviciosSeleccionados={serviciosSeleccionados}
                   datosForm={datosForm}
                   onCambio={(k, v) => setDatosForm(p => ({ ...p, [k]: v }))}
                   onReservar={handleReservar}
@@ -209,28 +282,36 @@ export default function VehiculoDetallePage() {
                 />
               )}
 
+              {pantalla < 3 && (
+                <div style={{ marginTop: 32 }}>
+                  {errorPaso1 && (
+                    <p style={{ color: '#dc2626', fontSize: 13, fontWeight: 700, marginBottom: 12, textAlign: 'right' }}>{errorPaso1}</p>
+                  )}
+                  <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                    <button
+                      onClick={irSiguiente}
+                      style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '16px 40px', borderRadius: 16, background: 'linear-gradient(90deg,#1e3a8a,#2563eb)', color: '#fff', fontWeight: 900, fontSize: 15, border: 'none', cursor: 'pointer', boxShadow: '0 8px 24px rgba(37,99,235,0.28)', transition: 'transform 200ms ease' }}
+                      onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
+                      onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
+                    >
+                      {pantalla === 2 ? t('vehiculo.continueData') : t('common.continue')} <IcoArrow />
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
 
             <ResumenLateral
               vehiculo={vehiculo}
               reserva={reserva}
               seguroIdx={seguroIdx}
-              onEditar={tipo => setModalEditar(tipo)}
+              serviciosSeleccionados={serviciosSeleccionados}
+              onEditar={irAEditar}
             />
           </div>
 
         </div>
       </div>
-
-      {modalEditar && (
-        <ModalEditarReserva
-          tipo={modalEditar}
-          reserva={reserva}
-          vehiculo={vehiculo}
-          onGuardar={nuevoEstado => setReserva(nuevoEstado)}
-          onCerrar={() => setModalEditar(null)}
-        />
-      )}
     </div>
   );
 }
