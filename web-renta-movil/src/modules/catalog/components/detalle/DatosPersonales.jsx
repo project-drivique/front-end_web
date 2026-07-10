@@ -54,7 +54,7 @@ const TERMINOS_TXT = `
 `;
 
 
-export default function DatosPersonales({ vehiculo, reserva, seguroIdx, datosForm, onCambio, onReservar, errores }) {
+export default function DatosPersonales({ vehiculo, reserva, seguroIdx, serviciosSeleccionados = [], datosForm, onCambio, onReservar, errores }) {
   const { t } = useTranslation()
   const { moneda } = useLanding();
   const [verTyC, setVerTyC] = useState(false);
@@ -72,10 +72,15 @@ export default function DatosPersonales({ vehiculo, reserva, seguroIdx, datosFor
 
 
   const precioSeg = seguroIdx !== null ? (vehiculo.seguros[seguroIdx]?.precio ?? 0) : 0;
+  const precioServicios = (vehiculo.servicios || [])
+    .filter(s => serviciosSeleccionados.includes(s.nombre))
+    .reduce((suma, s) => suma + s.precio, 0);
+
   const subtotal = precio * dias;
   const subtotalSeg = precioSeg * dias;
-  const cargos = Math.round((subtotal + subtotalSeg) * 0.10);
-  const total = subtotal + subtotalSeg + cargos;
+  const subtotalServicios = precioServicios * dias;
+  const cargos = Math.round((subtotal + subtotalSeg + subtotalServicios) * 0.10);
+  const total = subtotal + subtotalSeg + subtotalServicios + cargos;
 
 
   const inp = (err) => ({
