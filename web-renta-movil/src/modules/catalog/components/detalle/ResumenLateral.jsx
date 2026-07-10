@@ -8,7 +8,7 @@ const IcoEdit = () => (
   </svg>
 )
 
-export default function ResumenLateral({ vehiculo, reserva, seguroIdx, onEditar }) {
+export default function ResumenLateral({ vehiculo, reserva, seguroIdx, serviciosSeleccionados = [], onEditar }) {
   const { t, i18n } = useTranslation()
   const { moneda } = useLanding();
 
@@ -31,10 +31,14 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, onEditar 
     : 1;
 
   const precioSeguro = seguroIdx !== null ? (vehiculo.seguros[seguroIdx]?.precio ?? 0) : 0;
+  const serviciosElegidos = (vehiculo.servicios || []).filter(s => serviciosSeleccionados.includes(s.nombre));
+  const precioServicios = serviciosElegidos.reduce((suma, s) => suma + s.precio, 0);
+
   const subtotalDiario = precio * dias;
   const subtotalSeguro = precioSeguro * dias;
-  const cargosAdmin = Math.round((subtotalDiario + subtotalSeguro) * 0.10);
-  const total = subtotalDiario + subtotalSeguro + cargosAdmin;
+  const subtotalServicios = precioServicios * dias;
+  const cargosAdmin = Math.round((subtotalDiario + subtotalSeguro + subtotalServicios) * 0.10);
+  const total = subtotalDiario + subtotalSeguro + subtotalServicios + cargosAdmin;
 
   return (
     <aside style={{
@@ -56,14 +60,14 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, onEditar 
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
             <span style={{ fontSize: 11, fontWeight: 800, color: '#1e3a8a', textTransform: 'uppercase', letterSpacing: '0.07em' }}>{t('vehiculo.pickupLocation')}</span>
             <button onClick={() => onEditar('retiro')} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#2563eb', fontWeight: 700, padding: 0 }}>
-              <IcoEdit /> {t('common.edit')}
+              <IcoEdit /> {reserva.fechaInicio ? t('common.edit') : t('common.select')}
             </button>
           </div>
           <p style={{ fontSize: 14, fontWeight: 800, color: 'var(--texto-primary)', margin: '0 0 4px' }}>
             {reserva.fechaInicio ? `${fmt(reserva.fechaInicio)}` : t('vehiculo.dateNotSelected')}
           </p>
           <p style={{ fontSize: 12, color: 'var(--texto-second)', margin: 0 }}>
-            {reserva.sucursalRetiro || 'Centro'} — {reserva.horaInicio || '09:00'}
+            {reserva.sucursalRetiro || t('vehiculo.selectLocation')} — {reserva.horaInicio || '09:00'}
           </p>
         </div>
 
@@ -71,21 +75,21 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, onEditar 
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
             <span style={{ fontSize: 11, fontWeight: 800, color: '#1e3a8a', textTransform: 'uppercase', letterSpacing: '0.07em' }}>{t('vehiculo.returnSummary')}</span>
             <button onClick={() => onEditar('devolucion')} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#2563eb', fontWeight: 700, padding: 0 }}>
-              <IcoEdit /> {t('common.edit')}
+              <IcoEdit /> {reserva.fechaFin ? t('common.edit') : t('common.select')}
             </button>
           </div>
           <p style={{ fontSize: 14, fontWeight: 800, color: 'var(--texto-primary)', margin: '0 0 4px' }}>
             {reserva.fechaFin ? `${fmt(reserva.fechaFin)}` : t('vehiculo.dateNotSelected')}
           </p>
           <p style={{ fontSize: 12, color: 'var(--texto-second)', margin: 0 }}>
-            {reserva.sucursalDevolucion || 'Centro'} — {reserva.horaFin || '09:00'}
+            {reserva.sucursalDevolucion || t('vehiculo.selectLocation')} — {reserva.horaFin || '09:00'}
           </p>
         </div>
 
         <div style={{ padding: '16px 0', borderBottom: '1px solid var(--borde)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
             <span style={{ fontSize: 11, fontWeight: 800, color: '#1e3a8a', textTransform: 'uppercase', letterSpacing: '0.07em' }}>{t('vehiculo.group')}</span>
-            <button onClick={() => onEditar('km')} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#2563eb', fontWeight: 700, padding: 0 }}>
+            <button onClick={() => onEditar('grupo')} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#2563eb', fontWeight: 700, padding: 0 }}>
               <IcoEdit /> {t('common.edit')}
             </button>
           </div>
@@ -117,6 +121,21 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, onEditar 
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, marginBottom: 12 }}>
                 <span style={{ color: 'var(--texto-primary)' }}>{dias} {t('vehiculo.daysCount')} × {formatCurrency(precioSeguro, moneda)}</span>
                 <span style={{ fontWeight: 800, color: 'var(--texto-primary)' }}>{formatCurrency(subtotalSeguro, moneda)}</span>
+              </div>
+            </>
+          )}
+          {serviciosElegidos.length > 0 && (
+            <>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+                <p style={{ fontSize: 11, fontWeight: 800, color: 'var(--texto-second)', margin: 0 }}>{t('vehiculo.extraServices')}</p>
+                <button onClick={() => onEditar('servicios')} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#2563eb', fontWeight: 700, padding: 0 }}>
+                  <IcoEdit /> {t('common.edit')}
+                </button>
+              </div>
+              <div style={{ fontSize: 12, color: 'var(--texto-primary)', marginBottom: 4 }}>{serviciosElegidos.map(s => s.nombre).join(', ')}</div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, marginBottom: 12 }}>
+                <span style={{ color: 'var(--texto-primary)' }}>{dias} {t('vehiculo.daysCount')} × {formatCurrency(precioServicios, moneda)}</span>
+                <span style={{ fontWeight: 800, color: 'var(--texto-primary)' }}>{formatCurrency(subtotalServicios, moneda)}</span>
               </div>
             </>
           )}
