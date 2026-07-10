@@ -354,7 +354,7 @@ export default function RegistroPage() {
   const c = coloresRegistro(esModoOscuro)
 
   const { registrar, cargando, exito, error } = useRegistro()
-  const storeLogin = useAuthStore((s) => s.login)
+  const iniciarVerificacionCorreo = useAuthStore((s) => s.iniciarVerificacionCorreo)
 
   const [correo, setCorreo] = useState('')
   const [password, setPassword] = useState('')
@@ -433,21 +433,19 @@ export default function RegistroPage() {
       return
     }
 
-    storeLogin(datosAcceso.token, {
-      correo,
-      nombre: datosAcceso.nombre,
-      rol: datosAcceso.rol,
-    })
+    iniciarVerificacionCorreo(correo, datosAcceso)
 
     showAlert({
       icon: 'success',
       title: t('registro.successTitle'),
-      text: t('registro.completed'),
+      text: t('registro.checkEmail'),
+      timer: 1400,
+      showConfirmButton: false,
     })
 
     setTimeout(() => {
-      navigate(datosAcceso.rol === 'administrador' ? '/admin' : '/home')
-    }, 1000)
+      navigate('/verificar-correo')
+    }, 1400)
   }
 
   return (
@@ -541,7 +539,7 @@ export default function RegistroPage() {
                     <p style={{ color: c.successText, fontSize: '13px', margin: 0 }}>
                       {proveedorExito
                         ? `Cuenta vinculada con ${proveedorExito === 'google' ? 'Google' : 'Facebook'} correctamente. Será redirigido en unos segundos.`
-                        : 'Su cuenta fue creada correctamente. Será redirigido al inicio de sesión en unos segundos.'
+                        : t('registro.checkEmail')
                       }
                     </p>
                   </div>
