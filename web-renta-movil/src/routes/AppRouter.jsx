@@ -8,6 +8,7 @@ import RegistroPage from '../modules/auth/pages/RegistroPage'
 import RecuperarContrasenaPage from '../modules/auth/pages/RecuperarContrasenaPage'
 import NuevaContrasenaPage from '../modules/auth/pages/NuevaContrasenaPage'
 import Verificar2FAPage from '../modules/auth/pages/Verificar2FAPage'
+import VerificarCorreoPage from '../modules/auth/pages/VerificarCorreoPage'
 import CatalogoPage from '../modules/catalog/pages/CatalogoPage'
 import CatalogoUsuarioPage from '../modules/catalog/pages/CatalogoUsuarioPage'
 import VehiculoDetallePage from '../modules/catalog/pages/VehiculoDetallePage'
@@ -30,6 +31,13 @@ function Ruta2FA({ children }) {
   return sesion2FA ? children : <Navigate to="/login" replace />
 }
 
+function RutaVerificacionCorreo({ children }) {
+  const verificacionCorreo = useAuthStore((s) => s.verificacionCorreo)
+  const hydrated = useHydration()
+  if (!hydrated) return null
+  return verificacionCorreo ? children : <Navigate to="/registro" replace />
+}
+
 export default function AppRouter() {
   return (
     <BrowserRouter>
@@ -41,6 +49,7 @@ export default function AppRouter() {
         <Route path="/recuperar" element={<RecuperarContrasenaPage />} />
         <Route path="/nueva-contrasena" element={<NuevaContrasenaPage />} />
         <Route path="/verificar-2fa" element={<Ruta2FA><Verificar2FAPage /></Ruta2FA>} />
+        <Route path="/verificar-correo" element={<RutaVerificacionCorreo><VerificarCorreoPage /></RutaVerificacionCorreo>} />
 
         <Route path="/home" element={<RutaPrivada><CatalogoUsuarioPage /></RutaPrivada>} />
         <Route path="/admin" element={<RutaPrivada><AdminPage /></RutaPrivada>} />
