@@ -49,9 +49,10 @@ export const useAuthStore = create(
       usuario: null,
       sesion2FA: null,
       requiere2FA: false,
+      verificacionCorreo: null,
 
       login: (token, usuario) => {
-        set({ token, usuario, sesion2FA: null, requiere2FA: false })
+        set({ token, usuario, sesion2FA: null, requiere2FA: false, verificacionCorreo: null })
       },
 
       actualizarUsuario: (datosActualizados) => {
@@ -68,8 +69,16 @@ export const useAuthStore = create(
         set({ sesion2FA: null, requiere2FA: false })
       },
 
+      iniciarVerificacionCorreo: (correo, datosAcceso) => {
+        set({ verificacionCorreo: { correo, datosAcceso } })
+      },
+
+      cancelarVerificacionCorreo: () => {
+        set({ verificacionCorreo: null })
+      },
+
       logout: () => {
-        set({ token: null, usuario: null, sesion2FA: null, requiere2FA: false })
+        set({ token: null, usuario: null, sesion2FA: null, requiere2FA: false, verificacionCorreo: null })
         localStorage.removeItem(AUTH_KEYS.token)
         localStorage.removeItem(AUTH_KEYS.usuario)
       },
