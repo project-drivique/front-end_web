@@ -68,6 +68,7 @@
     "submit": "Créer mon compte",
     "processing": "Traitement…",
     "completed": "Inscription terminée",
+    "checkEmail": "Compte créé. Continuez pour vérifier votre e-mail...",
     "hasAccount": "Vous avez déjà un compte ?",
     "loginLink": "Connectez-vous ici",
     "google": "Google",
@@ -201,6 +202,24 @@
       "verifyError": "Erreur de vérification. Réessayez.",
       "resendError": "Impossible de renvoyer le code. Réessayez."
     }
+  },
+  "verificarCorreo": {
+    "sendTitle": "Authentification par e-mail",
+    "sendSubtitle": "Nous enverrons un code de vérification à",
+    "sendButton": "Envoyer le code",
+    "sending": "Envoi en cours...",
+    "title": "Vérifiez votre e-mail",
+    "subtitle": "Entrez le code à 6 chiffres envoyé à",
+    "submit": "Vérifier le compte",
+    "verifying": "Vérification...",
+    "resend": "Renvoyer le code",
+    "resending": "Envoi en cours...",
+    "resendCountdown": "Renvoyer dans {{seconds}}s",
+    "expiresIn": "Le code expire dans {{time}}",
+    "expired": "Le code a expiré. Demandez-en un nouveau.",
+    "backToRegistro": "Retour à l'inscription",
+    "successTitle": "E-mail vérifié !",
+    "successSubtitle": "Redirection..."
   },
   "catalogo": {
     "title": "Catalogue de véhicules",

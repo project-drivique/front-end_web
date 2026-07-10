@@ -68,6 +68,7 @@
     "submit": "Crear mi cuenta",
     "processing": "Procesando…",
     "completed": "Registro completado",
+    "checkEmail": "Cuenta creada. Continúa para verificar tu correo...",
     "hasAccount": "¿Ya tiene una cuenta?",
     "loginLink": "Inicie sesión aquí",
     "google": "Google",
@@ -206,6 +207,24 @@
     "panelCheck2": "✓  Revisa tu correo o app autenticadora",
     "panelCheck3": "✓  Nunca compartas tu código",
     "copyright": "Drivique © 2026"
+  },
+  "verificarCorreo": {
+    "sendTitle": "Autenticación por correo",
+    "sendSubtitle": "Enviaremos un código de verificación a",
+    "sendButton": "Enviarme el código",
+    "sending": "Enviando...",
+    "title": "Verifica tu correo",
+    "subtitle": "Ingresa el código de 6 dígitos que enviamos a",
+    "submit": "Verificar cuenta",
+    "verifying": "Verificando...",
+    "resend": "Reenviar código",
+    "resending": "Reenviando...",
+    "resendCountdown": "Reenviar en {{seconds}}s",
+    "expiresIn": "El código expira en {{time}}",
+    "expired": "El código expiró. Solicita uno nuevo.",
+    "backToRegistro": "Volver al registro",
+    "successTitle": "¡Correo verificado!",
+    "successSubtitle": "Redirigiendo..."
   },
   "catalogo": {
     "title": "Catálogo de vehículos",
