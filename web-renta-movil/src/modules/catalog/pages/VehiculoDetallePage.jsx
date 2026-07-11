@@ -5,6 +5,9 @@ import { useAuthStore } from '../../../store/authStore'
 import { showAlert } from '@/utils/swalConfig'
 import logo from '@/assets/logo.png'
 import VEHICULOS_MOCK from '@/mocks/vehiculos.json'
+import { reservaService } from '@/services/reservaService'
+import { generarReferenciaUnica, aCentavos, wompiConfig } from '@/services/wompiService'
+import WompiCheckoutButton from '../../payments/components/WompiCheckoutButton'
 
 import GaleriaImagenes from '../components/detalle/GaleriaImagenes'
 import InfoVehiculo from '../components/detalle/InfoVehiculo'
@@ -17,17 +20,17 @@ import DatosPersonales from '../components/detalle/DatosPersonales'
 
 const IcoCheck = ({ color = '#16a34a', sz = 15 }) => (
   <svg width={sz} height={sz} fill="none" stroke={color} strokeWidth="2.8" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
   </svg>
 )
 const IcoBack = () => (
   <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
   </svg>
 )
 const IcoArrow = () => (
   <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
   </svg>
 )
 
@@ -35,19 +38,19 @@ const TOTAL_PASOS = 3
 
 export default function VehiculoDetallePage() {
   const { t } = useTranslation()
-  const { id }       = useParams();
-  const navigate     = useNavigate();
-  const { usuario }  = useAuthStore();
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const { usuario } = useAuthStore();
 
   const vehiculo = VEHICULOS_MOCK.find(v => v.id === Number(id));
 
-  const [pantalla,    setPantalla]   = useState(1);
-  const [seguroIdx,   setSeguroIdx]  = useState(0);
+  const [pantalla, setPantalla] = useState(1);
+  const [seguroIdx, setSeguroIdx] = useState(0);
   const [serviciosSeleccionados, setServiciosSeleccionados] = useState([]);
   const toggleServicio = (nombre) => setServiciosSeleccionados(prev =>
     prev.includes(nombre) ? prev.filter(n => n !== nombre) : [...prev, nombre]
   );
-  const [reserva,     setReserva]    = useState({
+  const [reserva, setReserva] = useState({
     fechaInicio: '', fechaFin: '',
     horaInicio: '09:00', horaFin: '09:00',
     sucursalRetiro: '',
@@ -60,13 +63,14 @@ export default function VehiculoDetallePage() {
   }
 
   const [errorPaso1, setErrorPaso1] = useState('');
-  const [datosForm,   setDatosForm]   = useState({
+  const [datosForm, setDatosForm] = useState({
     nombre: '', correo: '', celular: '',
     nacionalidad: 'Colombia', tipoDoc: 'CC', numDoc: '',
     vuelo: false, numVuelo: '', terminos: false,
   });
-  const [errores,  setErrores]  = useState({});
-  const [exito,    setExito]    = useState(false);
+  const [errores, setErrores] = useState({});
+  const [exito, setExito] = useState(false);
+  const [datosPago, setDatosPago] = useState(null); // { referencia, amountInCents }
   const prellenado = useRef(false);
 
   useEffect(() => {
@@ -76,10 +80,10 @@ export default function VehiculoDetallePage() {
     const celular = tel.startsWith('57') && tel.length > 10 ? tel.slice(2) : tel
     setDatosForm(prev => ({
       ...prev,
-      nombre:  [usuario.nombre, usuario.apellido].filter(Boolean).join(' '),
-      correo:  usuario.correo  || '',
+      nombre: [usuario.nombre, usuario.apellido].filter(Boolean).join(' '),
+      correo: usuario.correo || '',
       celular,
-      numDoc:  usuario.cedula  || '',
+      numDoc: usuario.cedula || '',
     }))
   }, [usuario]);
 
@@ -155,28 +159,71 @@ export default function VehiculoDetallePage() {
     }
 
     const e = {};
-    if (!datosForm.nombre.trim())                                                     e.nombre   = t('vehiculo.errors.nameRequired');
-    if (!datosForm.correo.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(datosForm.correo)) e.correo   = t('vehiculo.errors.emailInvalid');
-    if (!datosForm.celular.trim() || datosForm.celular.length < 10)                   e.celular  = t('vehiculo.errors.phoneInvalid');
-    if (!datosForm.numDoc.trim())                                                     e.numDoc   = t('vehiculo.errors.docRequired');
-    if (!datosForm.terminos)                                                          e.terminos = t('vehiculo.errors.termsRequired');
+    if (!datosForm.nombre.trim()) e.nombre = t('vehiculo.errors.nameRequired');
+    if (!datosForm.correo.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(datosForm.correo)) e.correo = t('vehiculo.errors.emailInvalid');
+    if (!datosForm.celular.trim() || datosForm.celular.length < 10) e.celular = t('vehiculo.errors.phoneInvalid');
+    if (!datosForm.numDoc.trim()) e.numDoc = t('vehiculo.errors.docRequired');
+    if (!datosForm.terminos) e.terminos = t('vehiculo.errors.termsRequired');
 
     setErrores(e);
     if (Object.keys(e).length > 0) return;
 
+    // Calcular total original en COP (siempre localmente es en pesos antes del render)
+    const tarifas = vehiculo.tarifas || {};
+    const precioKm = reserva.tipoKm === 'ilimitado' ? (tarifas.kmIlimitado?.precio || 0) : (tarifas.kmLimitado?.precio || 0);
+    const dias = (reserva.fechaInicio && reserva.fechaFin) ? Math.max(1, Math.ceil((new Date(reserva.fechaFin) - new Date(reserva.fechaInicio)) / 86400000)) : 1;
+    const precioSeguro = seguroIdx !== null ? (vehiculo.seguros[seguroIdx]?.precio ?? 0) : 0;
+    const serviciosElegidos = (vehiculo.servicios || []).filter(s => serviciosSeleccionados.includes(s.nombre));
+    const precioServicios = serviciosElegidos.reduce((suma, s) => suma + s.precio, 0);
+
+    const subtotal = (precioKm + precioSeguro + precioServicios) * dias;
+    const cargosAdmin = Math.round(subtotal * 0.10);
+    const totalCop = subtotal + cargosAdmin;
+
+    // Crear la referencia única para Wompi Checkout
+    const referencia = generarReferenciaUnica();
+
+    // Guardar temporalmente en localStorage (estado simulado)
+    reservaService.guardarReserva({
+      referencia,
+      vehiculoId: vehiculo.id,
+      vehiculoNombre: vehiculo.nombre,
+      estado: 'PENDIENTE',
+      fechaReserva: new Date().toISOString(),
+      datosForm,
+      reservaDetalles: reserva,
+      total: totalCop
+    });
+
+    // Guardamos la referencia para que RespuestaPagoPage la recupere al volver de Wompi
+    sessionStorage.setItem('current_wompi_reference', referencia);
+
+    setDatosPago({ referencia, amountInCents: aCentavos(totalCop) });
     setExito(true);
-    setTimeout(() => navigate('/home'), 3500);
   };
 
   if (exito) return (
     <div style={{ minHeight: '100vh', background: 'var(--bg-page)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
-      <div style={{ textAlign: 'center', maxWidth: 460 }}>
+      <div style={{ textAlign: 'center', maxWidth: 460, width: '100%' }}>
         <div style={{ width: 80, height: 80, borderRadius: '50%', background: 'linear-gradient(135deg,#1e3a8a,#2563eb)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px', boxShadow: '0 12px 32px rgba(30,58,138,0.28)' }}>
-          <IcoCheck color="#fff" sz={36} />
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+          </svg>
         </div>
-        <h2 style={{ fontSize: 28, fontWeight: 900, color: 'var(--texto-primary)', margin: '0 0 12px' }}>{t('vehiculo.successTitle')}</h2>
-        <p style={{ fontSize: 16, color: 'var(--texto-second)', margin: '0 0 8px' }}>{t('vehiculo.successVehicle', { nombre: vehiculo.nombre })}</p>
-        <p style={{ fontSize: 14, color: 'var(--texto-second)' }}>{t('vehiculo.successRedirecting')}</p>
+        <h2 style={{ fontSize: 28, fontWeight: 900, color: 'var(--texto-primary)', margin: '0 0 12px' }}>Reserva Registrada</h2>
+        <p style={{ fontSize: 16, color: 'var(--texto-second)', margin: '0 0 8px' }}>Tu reserva quedó guardada como pendiente. Para confirmarla, completa el pago (Sandbox) con Wompi:</p>
+        <p style={{ fontSize: 13, color: '#2563eb', fontWeight: 700, marginBottom: 24 }}>Se abrirá el checkout oficial de Wompi en una ventana emergente.</p>
+
+        {datosPago && (
+          <WompiCheckoutButton
+            publicKey={wompiConfig.publicKey}
+            currency={wompiConfig.currency}
+            amountInCents={datosPago.amountInCents}
+            reference={datosPago.referencia}
+            redirectUrl={`${window.location.origin}/respuesta`}
+            style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}
+          />
+        )}
       </div>
     </div>
   );
@@ -191,7 +238,7 @@ export default function VehiculoDetallePage() {
           <div style={{ flex: 1 }} />
           {!usuario && (
             <div style={{ display: 'flex', gap: 12 }}>
-              <Link to="/login"    style={{ padding: '10px 20px', borderRadius: 9999, border: '2px solid #bfdbfe', color: '#1e3a8a', fontSize: 14, fontWeight: 700, textDecoration: 'none', transition: 'all 200ms ease' }}>{t('catalogo.signIn')}</Link>
+              <Link to="/login" style={{ padding: '10px 20px', borderRadius: 9999, border: '2px solid #bfdbfe', color: '#1e3a8a', fontSize: 14, fontWeight: 700, textDecoration: 'none', transition: 'all 200ms ease' }}>{t('catalogo.signIn')}</Link>
               <Link to="/registro" style={{ padding: '10px 20px', borderRadius: 9999, background: '#1e3a8a', color: '#fff', fontSize: 14, fontWeight: 700, textDecoration: 'none', transition: 'all 200ms ease' }}>{t('catalogo.signUp')}</Link>
             </div>
           )}
@@ -216,8 +263,8 @@ export default function VehiculoDetallePage() {
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0, marginBottom: 36, flexWrap: 'wrap' }}>
             {pasos.map((label, i) => {
               const num = i + 1;
-              const activo      = pantalla === num;
-              const completado  = pantalla > num;
+              const activo = pantalla === num;
+              const completado = pantalla > num;
               return (
                 <div key={i} style={{ display: 'flex', alignItems: 'center' }}>
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
