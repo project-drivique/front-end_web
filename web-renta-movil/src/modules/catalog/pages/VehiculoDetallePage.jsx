@@ -6,8 +6,7 @@ import { showAlert } from '@/utils/swalConfig'
 import logo from '@/assets/logo.png'
 import VEHICULOS_MOCK from '@/mocks/vehiculos.json'
 import { reservaService } from '@/services/reservaService'
-import { generarReferenciaUnica, aCentavos, wompiConfig } from '@/services/wompiService'
-import WompiCheckoutButton from '../../payments/components/WompiCheckoutButton'
+import { generarReferenciaUnica, aCentavos, construirUrlCheckout } from '@/services/wompiService'
 
 import GaleriaImagenes from '../components/detalle/GaleriaImagenes'
 import InfoVehiculo from '../components/detalle/InfoVehiculo'
@@ -71,6 +70,8 @@ export default function VehiculoDetallePage() {
   const [errores, setErrores] = useState({});
   const [exito, setExito] = useState(false);
   const [datosPago, setDatosPago] = useState(null); // { referencia, amountInCents }
+  const [redirigiendoPago, setRedirigiendoPago] = useState(false);
+  const [errorPago, setErrorPago] = useState('');
   const prellenado = useRef(false);
 
   useEffect(() => {
@@ -202,6 +203,24 @@ export default function VehiculoDetallePage() {
     setExito(true);
   };
 
+  const handlePagarConWompi = async () => {
+    if (!datosPago) return;
+    setErrorPago('');
+    setRedirigiendoPago(true);
+    try {
+      const url = await construirUrlCheckout({
+        reference: datosPago.referencia,
+        amountInCents: datosPago.amountInCents,
+        redirectUrl: `${window.location.origin}/respuesta`,
+      });
+      window.location.href = url;
+    } catch (err) {
+      console.error('[Wompi] Error construyendo el checkout:', err);
+      setErrorPago('No se pudo iniciar el pago. Intenta de nuevo.');
+      setRedirigiendoPago(false);
+    }
+  };
+
   if (exito) return (
     <div style={{ minHeight: '100vh', background: 'var(--bg-page)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
       <div style={{ textAlign: 'center', maxWidth: 460, width: '100%' }}>
@@ -212,17 +231,27 @@ export default function VehiculoDetallePage() {
         </div>
         <h2 style={{ fontSize: 28, fontWeight: 900, color: 'var(--texto-primary)', margin: '0 0 12px' }}>Reserva Registrada</h2>
         <p style={{ fontSize: 16, color: 'var(--texto-second)', margin: '0 0 8px' }}>Tu reserva quedó guardada como pendiente. Para confirmarla, completa el pago (Sandbox) con Wompi:</p>
-        <p style={{ fontSize: 13, color: '#2563eb', fontWeight: 700, marginBottom: 24 }}>Se abrirá el checkout oficial de Wompi en una ventana emergente.</p>
+        <p style={{ fontSize: 13, color: '#2563eb', fontWeight: 700, marginBottom: 24 }}>Serás redirigido al checkout oficial de Wompi.</p>
 
         {datosPago && (
-          <WompiCheckoutButton
-            publicKey={wompiConfig.publicKey}
-            currency={wompiConfig.currency}
-            amountInCents={datosPago.amountInCents}
-            reference={datosPago.referencia}
-            redirectUrl={`${window.location.origin}/respuesta`}
-            style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}
-          />
+          <button
+            onClick={handlePagarConWompi}
+            disabled={redirigiendoPago}
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 10,
+              padding: '16px 40px', borderRadius: 16,
+              background: redirigiendoPago ? '#94a3b8' : 'linear-gradient(90deg,#1e3a8a,#2563eb)',
+              color: '#fff', fontWeight: 900, fontSize: 15, border: 'none',
+              cursor: redirigiendoPago ? 'default' : 'pointer',
+              boxShadow: '0 8px 24px rgba(37,99,235,0.28)',
+            }}
+          >
+            {redirigiendoPago ? 'Redirigiendo…' : 'Pagar con Wompi'}
+          </button>
+        )}
+
+        {errorPago && (
+          <p style={{ color: '#dc2626', fontSize: 13, fontWeight: 700, marginTop: 16 }}>{errorPago}</p>
         )}
       </div>
     </div>
