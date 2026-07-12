@@ -1,6 +1,7 @@
-﻿import { useEffect, useMemo, useState, useCallback } from 'react'
+import { useEffect, useMemo, useState, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { catalogoService } from '../../../services/catalogoService'
+import { SUCURSALES } from '../constants'
 
 const estaDisponibleEnRango = (vehiculo, fechaInicio, fechaFin) => {
   const ocupados = vehiculo.disponibilidad?.ocupados ?? []
@@ -14,6 +15,7 @@ const estaDisponibleEnRango = (vehiculo, fechaInicio, fechaFin) => {
 }
 
 const FILTROS_BASE = {
+  ciudad: 'Todas',
   categoria: 'Todos',
   precioMin: '',
   precioMax: '',
@@ -31,18 +33,16 @@ export function useCatalogo({ esFavorito = () => false } = {}) {
 
   const [filtros, setFiltros] = useState(FILTROS_BASE)
   const [busquedaForm, setBusquedaForm] = useState({
-    lugarRecogida: '',
-    lugarDevolucion: '',
+    ciudad: '',
+    sucursal: '',
     fechaInicio: '',
     fechaFin: '',
-    mismoLugar: true,
   })
   const [busquedaAplicada, setBusquedaAplicada] = useState({
-    lugarRecogida: '',
-    lugarDevolucion: '',
+    ciudad: '',
+    sucursal: '',
     fechaInicio: '',
     fechaFin: '',
-    mismoLugar: true,
   })
   const [busquedaRealizada, setBusquedaRealizada] = useState(false)
   const [errorBusqueda, setErrorBusqueda] = useState('')
@@ -85,7 +85,8 @@ export function useCatalogo({ esFavorito = () => false } = {}) {
   }
 
   const handleBuscar = () => {
-    if (!busquedaForm.lugarRecogida) return setErrorBusqueda(t('catalogo.searchPickupLocation'))
+    if (!busquedaForm.ciudad) return setErrorBusqueda(t('catalogo.selectCity') || 'Selecciona una ciudad')
+    if (!busquedaForm.sucursal) return setErrorBusqueda(t('catalogo.selectBranch') || 'Selecciona una sucursal')
     if (!busquedaForm.fechaInicio) return setErrorBusqueda(t('catalogo.searchPickupDate'))
     if (!busquedaForm.fechaFin) return setErrorBusqueda(t('catalogo.searchReturnDate'))
     if (busquedaForm.fechaFin <= busquedaForm.fechaInicio) {
@@ -101,18 +102,16 @@ export function useCatalogo({ esFavorito = () => false } = {}) {
   const limpiar = () => {
     setFiltros(FILTROS_BASE)
     setBusquedaForm({
-      lugarRecogida: '',
-      lugarDevolucion: '',
+      ciudad: '',
+      sucursal: '',
       fechaInicio: '',
       fechaFin: '',
-      mismoLugar: true,
     })
     setBusquedaAplicada({
-      lugarRecogida: '',
-      lugarDevolucion: '',
+      ciudad: '',
+      sucursal: '',
       fechaInicio: '',
       fechaFin: '',
-      mismoLugar: true,
     })
     setBusquedaRealizada(false)
     setErrorBusqueda('')
@@ -132,18 +131,28 @@ export function useCatalogo({ esFavorito = () => false } = {}) {
   const resultado = useMemo(() => {
     let arr = [...vehiculos]
 
+    if (filtros.ciudad !== 'Todas') {
+      arr = arr.filter(v => {
+        const suc = SUCURSALES.find(s => s.nombre === v.sucursal)
+        return suc && suc.ciudad === filtros.ciudad
+      })
+    }
+
     if (filtros.categoria !== 'Todos') arr = arr.filter(v => v.categoria === filtros.categoria)
     if (filtros.transmision !== 'Todas') arr = arr.filter(v => v.transmision === filtros.transmision)
     if (filtros.combustible !== 'Todos') arr = arr.filter(v => v.combustible === filtros.combustible)
-    if (filtros.sucursal !== 'Todas') arr = arr.filter(v => v.sucursal === filtros.sucursal)
+    
+    if (filtros.sucursal !== 'Todas') {
+      arr = arr.filter(v => v.sucursal === filtros.sucursal)
+    }
 
     const min = filtros.precioMin ? Number(filtros.precioMin) : null
     const max = filtros.precioMax ? Number(filtros.precioMax) : null
     if (min !== null) arr = arr.filter(v => Number(v.precio) >= min)
     if (max !== null) arr = arr.filter(v => Number(v.precio) <= max)
 
-    if (busquedaRealizada && busquedaAplicada.lugarRecogida) {
-      arr = arr.filter(v => v.sucursal === busquedaAplicada.lugarRecogida)
+    if (busquedaRealizada && busquedaAplicada.sucursal) {
+      arr = arr.filter(v => v.sucursal === busquedaAplicada.sucursal)
     }
 
     if (busquedaRealizada && busquedaAplicada.fechaInicio && busquedaAplicada.fechaFin) {
