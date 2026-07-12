@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '../../../store/authStore'
 import { showAlert } from '@/utils/swalConfig'
 import logo from '@/assets/logo.png'
+import { FaMoneyBillWave } from 'react-icons/fa'
 import VEHICULOS_MOCK from '@/mocks/vehiculos.json'
 import { reservaService } from '@/services/reservaService'
 import { generarReferenciaUnica, aCentavos, construirUrlCheckout } from '@/services/wompiService'
@@ -221,33 +222,62 @@ export default function VehiculoDetallePage() {
     }
   };
 
+  // TODO: implementar el flujo real de pago en efectivo (p. ej. generar comprobante /
+  // código de pago en punto físico, actualizar estado de la reserva a
+  // 'PENDIENTE_EFECTIVO', etc.). Por ahora el botón solo deja el handler listo.
+  const handlePagoEfectivo = () => {
+    if (!datosPago) return;
+    console.log('[Pago en efectivo] Pendiente de implementar. Referencia:', datosPago.referencia);
+  };
+
   if (exito) return (
     <div style={{ minHeight: '100vh', background: 'var(--bg-page)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
       <div style={{ textAlign: 'center', maxWidth: 460, width: '100%' }}>
-        <div style={{ width: 80, height: 80, borderRadius: '50%', background: 'linear-gradient(135deg,#1e3a8a,#2563eb)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px', boxShadow: '0 12px 32px rgba(30,58,138,0.28)' }}>
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-          </svg>
-        </div>
+        <img
+          src={logo}
+          alt="Drivique – pagos"
+          style={{
+            width: 72, height: 72, borderRadius: 18, objectFit: 'contain',
+            background: '#fff', padding: 10, margin: '0 auto 24px',
+            boxShadow: '0 12px 32px rgba(30,58,138,0.28)', border: '1px solid var(--borde)',
+          }}
+        />
         <h2 style={{ fontSize: 28, fontWeight: 900, color: 'var(--texto-primary)', margin: '0 0 12px' }}>Reserva Registrada</h2>
-        <p style={{ fontSize: 16, color: 'var(--texto-second)', margin: '0 0 8px' }}>Tu reserva quedó guardada como pendiente. Para confirmarla, completa el pago (Sandbox) con Wompi:</p>
+        <p style={{ fontSize: 16, color: 'var(--texto-second)', margin: '0 0 8px', lineHeight: 1.5 }}>Tu reserva quedó guardada como pendiente. Para confirmarla, completa el pago (Sandbox) con Wompi, o elige pagar en efectivo:</p>
         <p style={{ fontSize: 13, color: '#2563eb', fontWeight: 700, marginBottom: 24 }}>Serás redirigido al checkout oficial de Wompi.</p>
 
         {datosPago && (
-          <button
-            onClick={handlePagarConWompi}
-            disabled={redirigiendoPago}
-            style={{
-              display: 'inline-flex', alignItems: 'center', gap: 10,
-              padding: '16px 40px', borderRadius: 16,
-              background: redirigiendoPago ? '#94a3b8' : 'linear-gradient(90deg,#1e3a8a,#2563eb)',
-              color: '#fff', fontWeight: 900, fontSize: 15, border: 'none',
-              cursor: redirigiendoPago ? 'default' : 'pointer',
-              boxShadow: '0 8px 24px rgba(37,99,235,0.28)',
-            }}
-          >
-            {redirigiendoPago ? 'Redirigiendo…' : 'Pagar con Wompi'}
-          </button>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'stretch' }}>
+            <button
+              className="btn"
+              onClick={handlePagarConWompi}
+              disabled={redirigiendoPago}
+              style={{
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+                padding: '16px 40px', borderRadius: 16,
+                background: redirigiendoPago ? '#94a3b8' : 'linear-gradient(90deg,#1e3a8a,#2563eb)',
+                color: '#fff', fontWeight: 900, fontSize: 15, border: 'none',
+                cursor: redirigiendoPago ? 'default' : 'pointer',
+                boxShadow: '0 8px 24px rgba(37,99,235,0.28)',
+              }}
+            >
+              {redirigiendoPago ? 'Redirigiendo…' : 'Pagar con Wompi'}
+            </button>
+
+            <button
+              className="btn"
+              onClick={handlePagoEfectivo}
+              style={{
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+                padding: '16px 40px', borderRadius: 16,
+                background: '#fff', color: '#1e3a8a', fontWeight: 900, fontSize: 15,
+                border: '2px solid #bfdbfe', cursor: 'pointer',
+              }}
+            >
+              <FaMoneyBillWave size={16} />
+              Pago en efectivo
+            </button>
+          </div>
         )}
 
         {errorPago && (
