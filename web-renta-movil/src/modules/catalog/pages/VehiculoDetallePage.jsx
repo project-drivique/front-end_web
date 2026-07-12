@@ -4,7 +4,10 @@ import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '../../../store/authStore'
 import { showAlert } from '@/utils/swalConfig'
 import logo from '@/assets/logo.png'
+import { FaMoneyBillWave, FaCreditCard } from 'react-icons/fa'
 import VEHICULOS_MOCK from '@/mocks/vehiculos.json'
+import { reservaService } from '@/services/reservaService'
+import { generarReferenciaUnica, aCentavos, construirUrlCheckout } from '@/services/wompiService'
 
 import GaleriaImagenes from '../components/detalle/GaleriaImagenes'
 import InfoVehiculo from '../components/detalle/InfoVehiculo'
@@ -17,17 +20,17 @@ import DatosPersonales from '../components/detalle/DatosPersonales'
 
 const IcoCheck = ({ color = '#16a34a', sz = 15 }) => (
   <svg width={sz} height={sz} fill="none" stroke={color} strokeWidth="2.8" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
   </svg>
 )
 const IcoBack = () => (
   <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
   </svg>
 )
 const IcoArrow = () => (
   <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
   </svg>
 )
 
@@ -35,19 +38,19 @@ const TOTAL_PASOS = 3
 
 export default function VehiculoDetallePage() {
   const { t } = useTranslation()
-  const { id }       = useParams();
-  const navigate     = useNavigate();
-  const { usuario }  = useAuthStore();
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const { usuario } = useAuthStore();
 
   const vehiculo = VEHICULOS_MOCK.find(v => v.id === Number(id));
 
-  const [pantalla,    setPantalla]   = useState(1);
-  const [seguroIdx,   setSeguroIdx]  = useState(0);
+  const [pantalla, setPantalla] = useState(1);
+  const [seguroIdx, setSeguroIdx] = useState(0);
   const [serviciosSeleccionados, setServiciosSeleccionados] = useState([]);
   const toggleServicio = (nombre) => setServiciosSeleccionados(prev =>
     prev.includes(nombre) ? prev.filter(n => n !== nombre) : [...prev, nombre]
   );
-  const [reserva,     setReserva]    = useState({
+  const [reserva, setReserva] = useState({
     fechaInicio: '', fechaFin: '',
     horaInicio: '09:00', horaFin: '09:00',
     sucursalRetiro: '',
@@ -60,13 +63,18 @@ export default function VehiculoDetallePage() {
   }
 
   const [errorPaso1, setErrorPaso1] = useState('');
-  const [datosForm,   setDatosForm]   = useState({
+  const [datosForm, setDatosForm] = useState({
     nombre: '', correo: '', celular: '',
     nacionalidad: 'Colombia', tipoDoc: 'CC', numDoc: '',
     vuelo: false, numVuelo: '', terminos: false,
   });
-  const [errores,  setErrores]  = useState({});
-  const [exito,    setExito]    = useState(false);
+  const [errores, setErrores] = useState({});
+  const [exito, setExito] = useState(false);
+  const [datosPago, setDatosPago] = useState(null); // { referencia, amountInCents }
+  const [redirigiendoPago, setRedirigiendoPago] = useState(false);
+  const [errorPago, setErrorPago] = useState('');
+  const [hoverWompi, setHoverWompi] = useState(false);
+  const [hoverEfectivo, setHoverEfectivo] = useState(false);
   const prellenado = useRef(false);
 
   useEffect(() => {
@@ -76,10 +84,10 @@ export default function VehiculoDetallePage() {
     const celular = tel.startsWith('57') && tel.length > 10 ? tel.slice(2) : tel
     setDatosForm(prev => ({
       ...prev,
-      nombre:  [usuario.nombre, usuario.apellido].filter(Boolean).join(' '),
-      correo:  usuario.correo  || '',
+      nombre: [usuario.nombre, usuario.apellido].filter(Boolean).join(' '),
+      correo: usuario.correo || '',
       celular,
-      numDoc:  usuario.cedula  || '',
+      numDoc: usuario.cedula || '',
     }))
   }, [usuario]);
 
@@ -155,28 +163,168 @@ export default function VehiculoDetallePage() {
     }
 
     const e = {};
-    if (!datosForm.nombre.trim())                                                     e.nombre   = t('vehiculo.errors.nameRequired');
-    if (!datosForm.correo.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(datosForm.correo)) e.correo   = t('vehiculo.errors.emailInvalid');
-    if (!datosForm.celular.trim() || datosForm.celular.length < 10)                   e.celular  = t('vehiculo.errors.phoneInvalid');
-    if (!datosForm.numDoc.trim())                                                     e.numDoc   = t('vehiculo.errors.docRequired');
-    if (!datosForm.terminos)                                                          e.terminos = t('vehiculo.errors.termsRequired');
+    if (!datosForm.nombre.trim()) e.nombre = t('vehiculo.errors.nameRequired');
+    if (!datosForm.correo.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(datosForm.correo)) e.correo = t('vehiculo.errors.emailInvalid');
+    if (!datosForm.celular.trim() || datosForm.celular.length < 10) e.celular = t('vehiculo.errors.phoneInvalid');
+    if (!datosForm.numDoc.trim()) e.numDoc = t('vehiculo.errors.docRequired');
+    if (!datosForm.terminos) e.terminos = t('vehiculo.errors.termsRequired');
 
     setErrores(e);
     if (Object.keys(e).length > 0) return;
 
+    // Calcular total original en COP (siempre localmente es en pesos antes del render)
+    const tarifas = vehiculo.tarifas || {};
+    const precioKm = reserva.tipoKm === 'ilimitado' ? (tarifas.kmIlimitado?.precio || 0) : (tarifas.kmLimitado?.precio || 0);
+    const dias = (reserva.fechaInicio && reserva.fechaFin) ? Math.max(1, Math.ceil((new Date(reserva.fechaFin) - new Date(reserva.fechaInicio)) / 86400000)) : 1;
+    const precioSeguro = seguroIdx !== null ? (vehiculo.seguros[seguroIdx]?.precio ?? 0) : 0;
+    const serviciosElegidos = (vehiculo.servicios || []).filter(s => serviciosSeleccionados.includes(s.nombre));
+    const precioServicios = serviciosElegidos.reduce((suma, s) => suma + s.precio, 0);
+
+    const subtotal = (precioKm + precioSeguro + precioServicios) * dias;
+    const cargosAdmin = Math.round(subtotal * 0.10);
+    const totalCop = subtotal + cargosAdmin;
+
+    // Crear la referencia única para Wompi Checkout
+    const referencia = generarReferenciaUnica();
+
+    // Guardar temporalmente en localStorage (estado simulado)
+    reservaService.guardarReserva({
+      referencia,
+      vehiculoId: vehiculo.id,
+      vehiculoNombre: vehiculo.nombre,
+      estado: 'PENDIENTE',
+      fechaReserva: new Date().toISOString(),
+      datosForm,
+      reservaDetalles: reserva,
+      total: totalCop
+    });
+
+    // Guardamos la referencia para que RespuestaPagoPage la recupere al volver de Wompi
+    sessionStorage.setItem('current_wompi_reference', referencia);
+
+    setDatosPago({ referencia, amountInCents: aCentavos(totalCop) });
     setExito(true);
-    setTimeout(() => navigate('/home'), 3500);
+  };
+
+  const handlePagarConWompi = async () => {
+    if (!datosPago) return;
+    setErrorPago('');
+    setRedirigiendoPago(true);
+    try {
+      const url = await construirUrlCheckout({
+        reference: datosPago.referencia,
+        amountInCents: datosPago.amountInCents,
+        redirectUrl: `${window.location.origin}/respuesta`,
+      });
+      window.location.href = url;
+    } catch (err) {
+      console.error('[Wompi] Error construyendo el checkout:', err);
+      setErrorPago('No se pudo iniciar el pago. Intenta de nuevo.');
+      setRedirigiendoPago(false);
+    }
+  };
+
+  // TODO: implementar el flujo real de pago en efectivo (p. ej. generar comprobante /
+  // código de pago en punto físico, actualizar estado de la reserva a
+  // 'PENDIENTE_EFECTIVO', etc.). Por ahora el botón solo deja el handler listo.
+  const handlePagoEfectivo = () => {
+    if (!datosPago) return;
+    console.log('[Pago en efectivo] Pendiente de implementar. Referencia:', datosPago.referencia);
   };
 
   if (exito) return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg-page)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
-      <div style={{ textAlign: 'center', maxWidth: 460 }}>
-        <div style={{ width: 80, height: 80, borderRadius: '50%', background: 'linear-gradient(135deg,#1e3a8a,#2563eb)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px', boxShadow: '0 12px 32px rgba(30,58,138,0.28)' }}>
-          <IcoCheck color="#fff" sz={36} />
+    <div style={{
+      minHeight: '100vh', background: 'var(--hero-fondo)', position: 'relative',
+      overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24,
+    }}>
+      <div style={{ position: 'absolute', top: -80, right: -80, width: 500, height: 500, borderRadius: '50%', background: 'var(--hero-orb1)', pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', bottom: -60, left: -60, width: 350, height: 350, borderRadius: '50%', background: 'var(--hero-orb2)', pointerEvents: 'none' }} />
+
+      <div style={{
+        position: 'relative', textAlign: 'center', maxWidth: 560, width: '100%',
+        background: 'var(--bg-tarjeta)', borderRadius: 28, boxShadow: '0 24px 70px rgba(15,23,42,0.16)',
+        border: '1px solid var(--borde)', padding: '48px 40px',
+      }}>
+        <img
+          src={logo}
+          alt="Drivique – pagos"
+          style={{
+            width: 116, height: 116, borderRadius: '50%', objectFit: 'contain',
+            background: '#fff', padding: 16, margin: '0 auto 28px',
+            boxShadow: '0 14px 34px rgba(30,58,138,0.24)', border: '1px solid var(--borde)',
+          }}
+        />
+
+        <h2 style={{ fontSize: 30, fontWeight: 900, color: 'var(--texto-primary)', margin: '0 0 14px', letterSpacing: '-0.02em' }}>
+          Reserva Registrada
+        </h2>
+
+        <p style={{ fontSize: 16, color: 'var(--texto-second)', lineHeight: 1.6, margin: '0 0 20px' }}>
+          Tu reserva quedó guardada como pendiente. Para confirmarla, completa el pago (Sandbox) con Wompi, o elige pagar en efectivo.
+        </p>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 32 }}>
+          <p style={{ fontSize: 13, color: '#2563eb', fontWeight: 700, margin: 0 }}>
+            Serás redirigido al checkout oficial de Wompi.
+          </p>
+          <p style={{ fontSize: 13, color: 'var(--texto-second)', fontWeight: 600, margin: 0 }}>
+            Recibirás la confirmación de tu reserva cuando el pago sea exitoso.
+          </p>
         </div>
-        <h2 style={{ fontSize: 28, fontWeight: 900, color: 'var(--texto-primary)', margin: '0 0 12px' }}>{t('vehiculo.successTitle')}</h2>
-        <p style={{ fontSize: 16, color: 'var(--texto-second)', margin: '0 0 8px' }}>{t('vehiculo.successVehicle', { nombre: vehiculo.nombre })}</p>
-        <p style={{ fontSize: 14, color: 'var(--texto-second)' }}>{t('vehiculo.successRedirecting')}</p>
+
+        {datosPago && (
+          <div className="flex flex-col sm:flex-row" style={{ gap: 16, alignItems: 'stretch' }}>
+            <button
+              onClick={handlePagarConWompi}
+              onMouseEnter={() => setHoverWompi(true)}
+              onMouseLeave={() => setHoverWompi(false)}
+              disabled={redirigiendoPago}
+              style={{
+                flex: 1, minWidth: 0,
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 12,
+                padding: '18px 24px', borderRadius: 16,
+                background: redirigiendoPago
+                  ? '#94a3b8'
+                  : hoverWompi
+                    ? 'linear-gradient(90deg,#162d6e,#1d4fd8)'
+                    : 'linear-gradient(90deg,#1e3a8a,#2563eb)',
+                color: '#fff', fontWeight: 900, fontSize: 15, border: 'none',
+                cursor: redirigiendoPago ? 'default' : 'pointer',
+                boxShadow: hoverWompi && !redirigiendoPago ? '0 16px 34px rgba(37,99,235,0.42)' : '0 8px 24px rgba(37,99,235,0.28)',
+                transform: hoverWompi && !redirigiendoPago ? 'translateY(-2px)' : 'translateY(0)',
+                transition: 'all 200ms ease',
+              }}
+            >
+              <FaCreditCard size={20} />
+              <span>{redirigiendoPago ? 'Redirigiendo…' : 'Pagar con Wompi'}</span>
+            </button>
+
+            <button
+              onClick={handlePagoEfectivo}
+              onMouseEnter={() => setHoverEfectivo(true)}
+              onMouseLeave={() => setHoverEfectivo(false)}
+              style={{
+                flex: 1, minWidth: 0,
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 12,
+                padding: '18px 24px', borderRadius: 16,
+                background: hoverEfectivo ? '#eff6ff' : '#fff',
+                color: '#1e3a8a', fontWeight: 900, fontSize: 15,
+                border: `2px solid ${hoverEfectivo ? '#1e3a8a' : '#bfdbfe'}`,
+                cursor: 'pointer',
+                boxShadow: hoverEfectivo ? '0 10px 24px rgba(30,58,138,0.14)' : 'none',
+                transform: hoverEfectivo ? 'translateY(-2px)' : 'translateY(0)',
+                transition: 'all 200ms ease',
+              }}
+            >
+              <FaMoneyBillWave size={20} />
+              <span>Pago en efectivo</span>
+            </button>
+          </div>
+        )}
+
+        {errorPago && (
+          <p style={{ color: '#dc2626', fontSize: 13, fontWeight: 700, marginTop: 16 }}>{errorPago}</p>
+        )}
       </div>
     </div>
   );
@@ -191,7 +339,7 @@ export default function VehiculoDetallePage() {
           <div style={{ flex: 1 }} />
           {!usuario && (
             <div style={{ display: 'flex', gap: 12 }}>
-              <Link to="/login"    style={{ padding: '10px 20px', borderRadius: 9999, border: '2px solid #bfdbfe', color: '#1e3a8a', fontSize: 14, fontWeight: 700, textDecoration: 'none', transition: 'all 200ms ease' }}>{t('catalogo.signIn')}</Link>
+              <Link to="/login" style={{ padding: '10px 20px', borderRadius: 9999, border: '2px solid #bfdbfe', color: '#1e3a8a', fontSize: 14, fontWeight: 700, textDecoration: 'none', transition: 'all 200ms ease' }}>{t('catalogo.signIn')}</Link>
               <Link to="/registro" style={{ padding: '10px 20px', borderRadius: 9999, background: '#1e3a8a', color: '#fff', fontSize: 14, fontWeight: 700, textDecoration: 'none', transition: 'all 200ms ease' }}>{t('catalogo.signUp')}</Link>
             </div>
           )}
@@ -216,8 +364,8 @@ export default function VehiculoDetallePage() {
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0, marginBottom: 36, flexWrap: 'wrap' }}>
             {pasos.map((label, i) => {
               const num = i + 1;
-              const activo      = pantalla === num;
-              const completado  = pantalla > num;
+              const activo = pantalla === num;
+              const completado = pantalla > num;
               return (
                 <div key={i} style={{ display: 'flex', alignItems: 'center' }}>
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
