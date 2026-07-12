@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { useLanding } from '../../../landing/LandingContext'
 import { formatCurrency } from '@/utils/monedaUtils'
+import { RECARGOS_LOGISTICOS } from '../../constants'
 
 const IcoEdit = () => (
   <svg width="13" height="13" fill="none" stroke="#1e3a8a" strokeWidth="2.2" viewBox="0 0 24 24">
@@ -38,7 +39,13 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, servicios
   const subtotalSeguro = precioSeguro * dias;
   const subtotalServicios = precioServicios * dias;
   const cargosAdmin = Math.round((subtotalDiario + subtotalSeguro + subtotalServicios) * 0.10);
-  const total = subtotalDiario + subtotalSeguro + subtotalServicios + cargosAdmin;
+  
+  const recargoRetiro = RECARGOS_LOGISTICOS[reserva.sucursalRetiro] || 0;
+  const recargoDevolucion = RECARGOS_LOGISTICOS[reserva.sucursalDevolucion] || 0;
+  const recargoLogistico = recargoRetiro + recargoDevolucion;
+
+  const subtotalReserva = subtotalDiario + subtotalSeguro + subtotalServicios + cargosAdmin;
+  const total = subtotalReserva + recargoLogistico;
 
   return (
     <aside style={{
@@ -139,12 +146,29 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, servicios
               </div>
             </>
           )}
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, paddingBottom: 14, borderBottom: '1px solid var(--borde)', marginBottom: 14 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, paddingBottom: 10 }}>
             <span style={{ color: 'var(--texto-primary)' }}>{t('vehiculo.adminChargesLabel')}</span>
             <span style={{ fontWeight: 800, color: 'var(--texto-primary)' }}>{formatCurrency(cargosAdmin, moneda)}</span>
           </div>
+          
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, paddingBottom: 10 }}>
+            <span style={{ color: 'var(--texto-primary)' }}>Subtotal Reserva</span>
+            <span style={{ fontWeight: 800, color: 'var(--texto-primary)' }}>{formatCurrency(subtotalReserva, moneda)}</span>
+          </div>
+
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, paddingBottom: 14, borderBottom: '1px solid var(--borde)', marginBottom: 14, flexWrap: 'wrap', gap: 4 }}>
+            <span style={{ color: 'var(--texto-primary)' }}>Recargo Logístico</span>
+            <span style={{ fontWeight: 800, color: 'var(--texto-primary)' }}>{formatCurrency(recargoLogistico, moneda)}</span>
+            {recargoLogistico > 0 && (
+              <span style={{ fontSize: 10, color: 'var(--texto-second)', width: '100%', display: 'block', textAlign: 'left' }}>
+                ({reserva.sucursalRetiro === 'domicilio' || reserva.sucursalRetiro === 'aeropuerto' || reserva.sucursalRetiro === 'terminal' ? `${reserva.sucursalRetiro}: ${formatCurrency(recargoRetiro, moneda)}` : ''} 
+                {recargoDevolucion > 0 ? ` + devoluc. ${reserva.sucursalDevolucion}: ${formatCurrency(recargoDevolucion, moneda)}` : ''})
+              </span>
+            )}
+          </div>
+
           <div style={{ background: '#f8fafc', borderRadius: 16, padding: '16px', border: '1px solid #e2e8f0' }}>
-            <p style={{ fontSize: 11, fontWeight: 800, color: '#1e3a8a', textTransform: 'uppercase', letterSpacing: '0.09em', margin: '0 0 4px' }}>{t('vehiculo.expectedTotal')}</p>
+            <p style={{ fontSize: 11, fontWeight: 800, color: '#1e3a8a', textTransform: 'uppercase', letterSpacing: '0.09em', margin: '0 0 4px' }}>Total Final</p>
             <p style={{ fontSize: 24, fontWeight: 900, color: '#1e3a8a', margin: 0 }}>{formatCurrency(total, moneda)}</p>
             <p style={{ fontSize: 10, color: 'var(--texto-second)', margin: '6px 0 0' }}>{t('vehiculo.totalIncludesTaxes')}</p>
           </div>

@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
-import { FaMapMarkerAlt, FaClock } from 'react-icons/fa'
-import { SUCURSALES } from '../../constants'
+import { FaMapMarkerAlt, FaClock, FaCalendarAlt } from 'react-icons/fa'
+import { SUCURSALES, CIUDADES } from '../../constants'
 import CalendarioReservas from './CalendarioReservas'
 
 const HORAS = Array.from({ length: 24 }, (_, i) => {
@@ -10,63 +10,179 @@ const HORAS = Array.from({ length: 24 }, (_, i) => {
 
 function Campo({ icono: Icono, label, children }) {
   return (
-    <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3">
-      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-800">
-        <Icono size={15} />
+    <div className="flex min-h-[96px] w-full items-center gap-4 rounded-2xl border border-slate-200 bg-white pl-8 pr-6 py-5 shadow-sm hover:border-slate-300 hover:shadow-md transition-all">
+      <span className="ml-2 flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-800">
+        <Icono size={19} />
       </span>
       <div className="min-w-0 flex-1">
-        <span className="block text-[10px] font-bold uppercase tracking-wide text-slate-400">{label}</span>
+        <span className="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">{label}</span>
         {children}
       </div>
     </div>
   )
 }
 
-const selectCls = 'w-full bg-transparent text-sm font-bold text-slate-800 outline-none cursor-pointer'
+// Texto un poco más pequeño y truncado con "..." para que las opciones
+// largas (p. ej. "Recoger en Sucursal (Alquiler Neiva - Centro)") entren
+// bien sin romper el layout del select. El `title` en el <select> muestra
+// el texto completo al pasar el mouse.
+const selectCls = 'block w-full truncate bg-transparent text-sm sm:text-[15px] font-extrabold text-slate-800 outline-none cursor-pointer py-1.5'
 
 export default function PasoFechas({ vehiculo, reserva, onCambio }) {
   const { t } = useTranslation()
 
-  return (
-    <div>
-      <h3 className="mb-1 text-lg font-extrabold text-[var(--texto-primary)]">{t('vehiculo.stepDates')}</h3>
-      <p className="mb-6 text-sm text-[var(--texto-second)]">{t('vehiculo.stepDatesSubtitle')}</p>
+  const carBranch = vehiculo.sucursal;
+  const branchObj = SUCURSALES.find(s => s.nombre === carBranch);
+  const cityObj = branchObj ? CIUDADES.find(c => c.nombre === branchObj.ciudad) : null;
 
-      <div className="mx-auto max-w-xl">
-        <div className="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <Campo icono={FaMapMarkerAlt} label={t('vehiculo.pickupLocationLabel')}>
-            <select id="campo-lugar-retiro" className={selectCls} value={reserva.sucursalRetiro} onChange={e => onCambio('sucursalRetiro', e.target.value)}>
-              <option value="">{t('vehiculo.selectLocation')}</option>
-              {SUCURSALES.map(s => <option key={s} value={s}>{s}</option>)}
-            </select>
-          </Campo>
-          <Campo icono={FaMapMarkerAlt} label={t('vehiculo.returnLocationLabel')}>
-            <select id="campo-lugar-devolucion" className={selectCls} value={reserva.sucursalDevolucion} onChange={e => onCambio('sucursalDevolucion', e.target.value)}>
-              <option value="">{t('vehiculo.selectLocation')}</option>
-              {SUCURSALES.map(s => <option key={s} value={s}>{s}</option>)}
-            </select>
-          </Campo>
-          <Campo icono={FaClock} label={`${t('vehiculo.pickupDate')} — ${t('vehiculo.timeLabel')}`}>
-            <select className={selectCls} value={reserva.horaInicio} onChange={e => onCambio('horaInicio', e.target.value)}>
-              {HORAS.map(h => <option key={h} value={h}>{h}</option>)}
-            </select>
-          </Campo>
-          <Campo icono={FaClock} label={`${t('vehiculo.returnDate')} — ${t('vehiculo.timeLabel')}`}>
-            <select className={selectCls} value={reserva.horaFin} onChange={e => onCambio('horaFin', e.target.value)}>
-              {HORAS.map(h => <option key={h} value={h}>{h}</option>)}
-            </select>
-          </Campo>
+  const opcionesEntrega = [
+    { value: carBranch, label: `Recoger en Sucursal (${carBranch})` }
+  ];
+
+  if (reserva.metodoPago !== 'efectivo') {
+    opcionesEntrega.push({ value: 'domicilio', label: 'Entrega a domicilio' });
+    if (cityObj?.tieneAeropuerto) {
+      opcionesEntrega.push({ value: 'aeropuerto', label: 'Entrega en Aeropuerto' });
+    }
+    if (cityObj?.tieneTerminal) {
+      opcionesEntrega.push({ value: 'terminal', label: 'Entrega en Terminal' });
+    }
+  }
+
+  const opcionesDevolucion = [
+    { value: carBranch, label: `Devolver en Sucursal (${carBranch})` }
+  ];
+
+  if (reserva.metodoPago !== 'efectivo') {
+    opcionesDevolucion.push({ value: 'domicilio', label: 'Devolución a domicilio' });
+    if (cityObj?.tieneAeropuerto) {
+      opcionesDevolucion.push({ value: 'aeropuerto', label: 'Devolución en Aeropuerto' });
+    }
+    if (cityObj?.tieneTerminal) {
+      opcionesDevolucion.push({ value: 'terminal', label: 'Devolución en Terminal' });
+    }
+  }
+
+  return (
+    <div className="w-full space-y-10">
+
+      {/* Título y subtítulo de la sección, con más aire entre ellos y respecto al resto */}
+      <div className="mb-2">
+        <h3 className="mb-3 text-3xl font-black tracking-tight text-[var(--texto-primary)]">{t('vehiculo.stepDates')}</h3>
+        <p className="text-base text-[var(--texto-second)]">{t('vehiculo.stepDatesSubtitle')}</p>
+      </div>
+      <br></br>
+      <div className="w-full space-y-14">
+        {/* Selector de Método de Pago */}
+        <div className="w-full">
+          <span className="block text-xs font-extrabold uppercase tracking-widest text-slate-400 mb-6">
+            Método de Pago Preferido
+          </span>
+          <br></br>
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+            <label className={`flex min-h-[112px] items-start gap-4 rounded-2xl border p-6 cursor-pointer transition-all duration-200 ${reserva.metodoPago !== 'efectivo' ? 'border-blue-600 bg-blue-50/40 shadow-sm' : 'border-slate-200 hover:bg-slate-50'}`}>
+              <input
+                type="radio"
+                name="metodoPago"
+                value="wompi"
+                checked={reserva.metodoPago !== 'efectivo'}
+                onChange={() => onCambio('metodoPago', 'wompi')}
+                className="h-5 w-5 shrink-0 text-blue-600 accent-blue-600 mt-1"
+              />
+              <div className="min-w-0 flex-1">
+                <span className="block text-lg font-extrabold text-slate-800 leading-snug">Pago Virtual con Wompi</span>
+                <span className="block text-sm text-slate-500 mt-2 leading-relaxed">Habilita entregas a domicilio, aeropuerto o terminal.</span>
+              </div>
+            </label>
+
+            <label className={`flex min-h-[112px] items-start gap-4 rounded-2xl border p-6 cursor-pointer transition-all duration-200 ${reserva.metodoPago === 'efectivo' ? 'border-blue-600 bg-blue-50/40 shadow-sm' : 'border-slate-200 hover:bg-slate-50'}`}>
+              <input
+                type="radio"
+                name="metodoPago"
+                value="efectivo"
+                checked={reserva.metodoPago === 'efectivo'}
+                onChange={() => onCambio('metodoPago', 'efectivo')}
+                className="h-5 w-5 shrink-0 text-blue-600 accent-blue-600 mt-1"
+              />
+              <div className="min-w-0 flex-1">
+                <span className="block text-lg font-extrabold text-slate-800 leading-snug">Pago en Efectivo</span>
+                <span className="block text-sm text-slate-500 mt-2 leading-relaxed">Obligatorio retirar y pagar directamente en sucursal.</span>
+              </div>
+            </label>
+          </div>
         </div>
 
-        <CalendarioReservas
-          vehiculoId={vehiculo.id}
-          fechaInicio={reserva.fechaInicio}
-          fechaFin={reserva.fechaFin}
-          onCambiarFechas={({ fechaInicio, fechaFin }) => {
-            onCambio('fechaInicio', fechaInicio)
-            onCambio('fechaFin', fechaFin)
-          }}
-        />
+        {/* Inputs de Ubicación y Hora */}
+        <div className="w-full">
+          <br></br>
+          <span className="block text-xs font-extrabold uppercase tracking-widest text-slate-400 mb-6">
+            Lugar y Hora de Entrega/Devolución
+          </span>
+          {/* En pantallas medianas se apila a 1 columna para que cada select
+              tenga suficiente ancho para textos largos; a partir de lg pasa a 2 columnas. */}
+          <div className="grid w-full grid-cols-1 gap-5 lg:grid-cols-2">
+            <Campo icono={FaMapMarkerAlt} label={t('vehiculo.pickupLocationLabel')}>
+              <select
+                id="campo-lugar-retiro"
+                className={selectCls}
+                title={opcionesEntrega.find(o => o.value === reserva.sucursalRetiro)?.label}
+                value={reserva.sucursalRetiro}
+                onChange={e => onCambio('sucursalRetiro', e.target.value)}
+              >
+                {opcionesEntrega.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+              </select>
+            </Campo>
+
+            <Campo icono={FaMapMarkerAlt} label={t('vehiculo.returnLocationLabel')}>
+              <select
+                id="campo-lugar-devolucion"
+                className={selectCls}
+                title={opcionesDevolucion.find(o => o.value === reserva.sucursalDevolucion)?.label}
+                value={reserva.sucursalDevolucion}
+                onChange={e => onCambio('sucursalDevolucion', e.target.value)}
+              >
+                {opcionesDevolucion.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+              </select>
+            </Campo>
+
+            <Campo icono={FaClock} label={`${t('vehiculo.pickupDate')} — ${t('vehiculo.timeLabel')}`}>
+              <select className={selectCls} value={reserva.horaInicio} onChange={e => onCambio('horaInicio', e.target.value)}>
+                {HORAS.map(h => <option key={h} value={h}>{h}</option>)}
+              </select>
+            </Campo>
+
+            <Campo icono={FaClock} label={`${t('vehiculo.returnDate')} — ${t('vehiculo.timeLabel')}`}>
+              <select className={selectCls} value={reserva.horaFin} onChange={e => onCambio('horaFin', e.target.value)}>
+                {HORAS.map(h => <option key={h} value={h}>{h}</option>)}
+              </select>
+            </Campo>
+          </div>
+        </div>
+        <br></br>
+        {/* Separación y Calendario */}
+        <div className="w-full pt-2">
+          <div className="mb-6 flex items-center gap-3">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-800">
+              <FaCalendarAlt size={15} />
+            </span>
+
+            <span className="block text-xs font-extrabold uppercase tracking-widest text-slate-400">
+              Selecciona el Rango de Fechas
+            </span>
+          </div>
+          {/* El calendario ahora ocupa el 100% del ancho de este contenedor */}
+          <div className="w-full bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm">
+            <CalendarioReservas
+              vehiculoId={vehiculo.id}
+              fechaInicio={reserva.fechaInicio}
+              fechaFin={reserva.fechaFin}
+              onCambiarFechas={({ fechaInicio, fechaFin }) => {
+                onCambio('fechaInicio', fechaInicio)
+                onCambio('fechaFin', fechaFin)
+              }}
+            />
+          </div>
+        </div>
       </div>
     </div>
   )

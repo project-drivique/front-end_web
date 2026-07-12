@@ -5,22 +5,71 @@
 
 const STORAGE_KEY = 'drivique_reservas';
 
+// Tiempo que tiene el usuario para acercarse a la sucursal a pagar en
+// efectivo antes de que la reserva se cancele automáticamente.
+export const HORAS_LIMITE_PAGO_EFECTIVO = 4;
+
+function calcularFechaLimitePago() {
+  return new Date(Date.now() + HORAS_LIMITE_PAGO_EFECTIVO * 60 * 60 * 1000).toISOString();
+}
+
+/**
+ * Recorre las reservas y cancela automáticamente (en la lógica local/mock)
+ * aquellas que quedaron en estado PENDIENTE_EFECTIVO cuyo plazo de pago ya
+ * venció sin haberse marcado como pagadas.
+ */
+function vencerReservasEfectivo(reservas) {
+  const ahora = Date.now();
+  let cambiaron = false;
+
+  const actualizadas = reservas.map((r) => {
+    if (r.estado === 'PENDIENTE_EFECTIVO' && r.fechaLimitePago && new Date(r.fechaLimitePago).getTime() < ahora) {
+      cambiaron = true;
+      return { ...r, estado: 'CANCELADA_POR_TIEMPO' };
+    }
+    return r;
+  });
+
+  return { actualizadas, cambiaron };
+}
+
 export const reservaService = {
   getReservas: () => {
     try {
       const data = localStorage.getItem(STORAGE_KEY);
-      return data ? JSON.parse(data) : [];
+      const reservas = data ? JSON.parse(data) : [];
+      const { actualizadas, cambiaron } = vencerReservasEfectivo(reservas);
+      if (cambiaron) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(actualizadas));
+      }
+      return actualizadas;
     } catch (error) {
       console.error("Error leyendo reservas", error);
       return [];
     }
   },
 
+  /**
+   * Guarda una reserva nueva. Si el método de pago es 'efectivo', calcula y
+   * asigna automáticamente el plazo límite para pagar en sucursal
+   * (fechaLimitePago) y deja el estado en PENDIENTE_EFECTIVO.
+   */
   guardarReserva: (reserva) => {
     const reservas = reservaService.getReservas();
-    reservas.push(reserva);
+
+    const esEfectivo = reserva.reservaDetalles?.metodoPago === 'efectivo';
+    const reservaFinal = esEfectivo
+      ? {
+          ...reserva,
+          estado: 'PENDIENTE_EFECTIVO',
+          fechaLimitePago: calcularFechaLimitePago(),
+          horasLimitePago: HORAS_LIMITE_PAGO_EFECTIVO,
+        }
+      : reserva;
+
+    reservas.push(reservaFinal);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(reservas));
-    return reserva;
+    return reservaFinal;
   },
 
   obtenerPorReferencia: (referencia) => {
