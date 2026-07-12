@@ -1,4 +1,5 @@
 import reservasMock from '../mocks/reservas.json'
+import { reservaService } from './reservaService'
 
 const USAR_MOCK =
   import.meta.env.VITE_USAR_MOCK === 'true' || !import.meta.env.VITE_API_URL
@@ -13,9 +14,33 @@ async function getApi() {
   return apiInstance
 }
 
+/**
+ * Convierte una reserva guardada localmente (creada desde el flujo de
+ * reserva, con pago Wompi o en efectivo) al formato que usa el historial de
+ * reservas de la app.
+ */
+function mapearReservaLocal(r) {
+  return {
+    id: r.referencia,
+    vehiculoId: r.vehiculoId,
+    fechaInicio: r.reservaDetalles?.fechaInicio,
+    fechaFin: r.reservaDetalles?.fechaFin,
+    estado: r.estado,
+    total: r.total,
+    fechaLimitePago: r.fechaLimitePago || null,
+    horasLimitePago: r.horasLimitePago || null,
+    metodoPago: r.reservaDetalles?.metodoPago || null,
+    esLocal: true,
+  }
+}
+
 export const reservasService = {
   getReservas: async () => {
-    if (USAR_MOCK) return reservasMock
+    if (USAR_MOCK) {
+      const locales = reservaService.getReservas().map(mapearReservaLocal)
+      // Las reservas reales creadas en esta sesión/navegador van primero.
+      return [...locales, ...reservasMock]
+    }
 
     const api = await getApi()
     const { data } = await api.get('/reservas')
@@ -53,7 +78,14 @@ export const reservasService = {
   },
 
   cancelarReserva: async (id) => {
-    if (USAR_MOCK) return { id, cancelada: true }
+    if (USAR_MOCK) {
+      // Las reservas locales tienen como id su referencia (string), a
+      // diferencia de las del mock que usan un id numérico.
+      if (typeof id === 'string') {
+        reservaService.actualizarEstado(id, 'CANCELADA')
+      }
+      return { id, cancelada: true }
+    }
 
     const api = await getApi()
     const { data } = await api.patch(`/reservas/${id}/cancelar`)

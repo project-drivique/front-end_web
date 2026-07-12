@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { FaSearch, FaExclamationTriangle, FaCalendarAlt, FaMapMarkerAlt } from 'react-icons/fa'
-import { CATEGORIAS, TRANSMISIONES, COMBUSTIBLES, SUCURSALES } from '../constants'
+import { CATEGORIAS, TRANSMISIONES, COMBUSTIBLES, SUCURSALES, CIUDADES } from '../constants'
 
 function Seccion({ label, children, ultimo, c }) {
   return (
@@ -260,10 +260,30 @@ export default function FiltrosCatalogo({
           </div>
         </Seccion>
 
+        <Seccion label="Ciudad" ultimo={false} c={c}>
+          <select
+            value={filtros.ciudad || 'Todas'}
+            onChange={e => {
+              setFiltro('ciudad', e.target.value)
+              setFiltro('sucursal', 'Todas')
+            }}
+            style={{ ...inputStyle, cursor: 'pointer' }}
+          >
+            <option value="Todas">Todas las ciudades</option>
+            {CIUDADES.map(ciud => (
+              <option key={ciud.id} value={ciud.nombre}>
+                {ciud.nombre}
+              </option>
+            ))}
+          </select>
+        </Seccion>
+
         <Seccion label={t('catalogo.branch')} ultimo={false} c={c}>
           <select value={sucursal} onChange={e => setFiltro('sucursal', e.target.value)} style={{ ...inputStyle, cursor: 'pointer' }}>
             <option value="Todas">{t('catalogo.allBranches')}</option>
-            {SUCURSALES.map(s => <option key={s} value={s}>{s}</option>)}
+            {SUCURSALES
+              .filter(s => filtros.ciudad === 'Todas' || s.ciudad === filtros.ciudad)
+              .map(s => <option key={s.nombre} value={s.nombre}>{s.nombre}</option>)}
           </select>
         </Seccion>
 

@@ -53,8 +53,8 @@ export default function CalendarioReservas({ vehiculoId, fechaInicio, fechaFin, 
   }, [fechaInicio, fechaFin, esPasado, estaOcupado, hayConflictoEnRango, onCambiarFechas, t])
 
   return (
-    <div className="mx-auto w-full max-w-xl">
-      <div className="rounded-3xl border border-slate-100 bg-white p-7 shadow-sm">
+    <div className="w-full">
+      <div className="w-full">
         <div className="mb-6 flex items-center justify-between">
           <button
             type="button"
@@ -86,7 +86,7 @@ export default function CalendarioReservas({ vehiculoId, fechaInicio, fechaFin, 
           </button>
         </div>
 
-        <div className="grid grid-cols-7">
+        <div className="grid w-full grid-cols-7">
           {DIAS_SEMANA.map(d => (
             <div key={d} className="pb-3 text-center text-xs font-bold uppercase tracking-wide text-slate-400">
               {d}
@@ -94,7 +94,7 @@ export default function CalendarioReservas({ vehiculoId, fechaInicio, fechaFin, 
           ))}
         </div>
 
-        <div className="grid grid-cols-7">
+        <div className="grid w-full grid-cols-7">
           {dias.map(dia => {
             const fechaISO = format(dia, 'yyyy-MM-dd')
             const fueraDeMes = !isSameMonth(dia, mesActual)
@@ -111,7 +111,7 @@ export default function CalendarioReservas({ vehiculoId, fechaInicio, fechaFin, 
               <div
                 key={fechaISO}
                 className={[
-                  'py-1',
+                  'w-full py-1',
                   dentroDelRango ? 'bg-blue-50' : '',
                   dentroDelRango && esInicio ? 'rounded-l-full' : '',
                   dentroDelRango && esFin ? 'rounded-r-full' : '',
@@ -122,7 +122,7 @@ export default function CalendarioReservas({ vehiculoId, fechaInicio, fechaFin, 
                   disabled={!clicable}
                   onClick={() => handleClickDia(dia)}
                   className={[
-                    'relative mx-auto flex h-12 w-12 items-center justify-center rounded-full text-[15px] font-semibold transition-colors',
+                    'relative mx-auto flex aspect-square w-full max-w-14 items-center justify-center rounded-full text-[15px] sm:text-base font-semibold transition-colors',
                     fueraDeMes ? 'text-transparent pointer-events-none' :
                     seleccionado ? 'bg-blue-600 text-white shadow-md shadow-blue-200' :
                     pasado ? 'text-slate-300 cursor-not-allowed' :
@@ -144,7 +144,7 @@ export default function CalendarioReservas({ vehiculoId, fechaInicio, fechaFin, 
           })}
         </div>
 
-        <div className="mt-6 flex items-center justify-center gap-5 border-t border-slate-100 pt-5 text-xs font-semibold text-slate-500">
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-5 border-t border-slate-100 pt-5 text-xs font-semibold text-slate-500">
           <span className="flex items-center gap-1.5">
             <span className="h-2 w-2 rounded-full bg-emerald-500" /> {t('vehiculo.calendarAvailable')}
           </span>
