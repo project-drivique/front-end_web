@@ -142,7 +142,7 @@ export default function CatalogoPage() {
                   borderRadius: '9999px',
                   border: `2px solid ${c.loginBorder}`,
                   color: c.loginText,
-                  fontSize: '13px',
+                  fontSize: '15px',
                   fontWeight: 700,
                   textDecoration: 'none',
                   background: 'transparent',
@@ -152,7 +152,7 @@ export default function CatalogoPage() {
               >
                 {t('catalogo.signIn')}
               </Link>
-              <Link to="/registro" style={{ padding: '8px 20px', borderRadius: '9999px', background: COLOR_MARCA, color: '#fff', fontSize: '13px', fontWeight: 700, textDecoration: 'none' }}>
+              <Link to="/registro" style={{ padding: '8px 20px', borderRadius: '9999px', background: COLOR_MARCA, color: '#fff', fontSize: '15px', fontWeight: 700, textDecoration: 'none' }}>
                 {t('catalogo.signUp')}
               </Link>
             </div>
