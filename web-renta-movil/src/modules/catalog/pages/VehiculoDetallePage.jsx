@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '../../../store/authStore'
 import { showAlert } from '@/utils/swalConfig'
 import logo from '@/assets/logo.png'
-import { FaMoneyBillWave } from 'react-icons/fa'
+import { FaMoneyBillWave, FaCreditCard } from 'react-icons/fa'
 import VEHICULOS_MOCK from '@/mocks/vehiculos.json'
 import { reservaService } from '@/services/reservaService'
 import { generarReferenciaUnica, aCentavos, construirUrlCheckout } from '@/services/wompiService'
@@ -73,6 +73,8 @@ export default function VehiculoDetallePage() {
   const [datosPago, setDatosPago] = useState(null); // { referencia, amountInCents }
   const [redirigiendoPago, setRedirigiendoPago] = useState(false);
   const [errorPago, setErrorPago] = useState('');
+  const [hoverWompi, setHoverWompi] = useState(false);
+  const [hoverEfectivo, setHoverEfectivo] = useState(false);
   const prellenado = useRef(false);
 
   useEffect(() => {
@@ -231,51 +233,91 @@ export default function VehiculoDetallePage() {
   };
 
   if (exito) return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg-page)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
-      <div style={{ textAlign: 'center', maxWidth: 460, width: '100%' }}>
+    <div style={{
+      minHeight: '100vh', background: 'var(--hero-fondo)', position: 'relative',
+      overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24,
+    }}>
+      <div style={{ position: 'absolute', top: -80, right: -80, width: 500, height: 500, borderRadius: '50%', background: 'var(--hero-orb1)', pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', bottom: -60, left: -60, width: 350, height: 350, borderRadius: '50%', background: 'var(--hero-orb2)', pointerEvents: 'none' }} />
+
+      <div style={{
+        position: 'relative', textAlign: 'center', maxWidth: 560, width: '100%',
+        background: 'var(--bg-tarjeta)', borderRadius: 28, boxShadow: '0 24px 70px rgba(15,23,42,0.16)',
+        border: '1px solid var(--borde)', padding: '48px 40px',
+      }}>
         <img
           src={logo}
           alt="Drivique – pagos"
           style={{
-            width: 72, height: 72, borderRadius: 18, objectFit: 'contain',
-            background: '#fff', padding: 10, margin: '0 auto 24px',
-            boxShadow: '0 12px 32px rgba(30,58,138,0.28)', border: '1px solid var(--borde)',
+            width: 116, height: 116, borderRadius: '50%', objectFit: 'contain',
+            background: '#fff', padding: 16, margin: '0 auto 28px',
+            boxShadow: '0 14px 34px rgba(30,58,138,0.24)', border: '1px solid var(--borde)',
           }}
         />
-        <h2 style={{ fontSize: 28, fontWeight: 900, color: 'var(--texto-primary)', margin: '0 0 12px' }}>Reserva Registrada</h2>
-        <p style={{ fontSize: 16, color: 'var(--texto-second)', margin: '0 0 8px', lineHeight: 1.5 }}>Tu reserva quedó guardada como pendiente. Para confirmarla, completa el pago (Sandbox) con Wompi, o elige pagar en efectivo:</p>
-        <p style={{ fontSize: 13, color: '#2563eb', fontWeight: 700, marginBottom: 24 }}>Serás redirigido al checkout oficial de Wompi.</p>
+
+        <h2 style={{ fontSize: 30, fontWeight: 900, color: 'var(--texto-primary)', margin: '0 0 14px', letterSpacing: '-0.02em' }}>
+          Reserva Registrada
+        </h2>
+
+        <p style={{ fontSize: 16, color: 'var(--texto-second)', lineHeight: 1.6, margin: '0 0 20px' }}>
+          Tu reserva quedó guardada como pendiente. Para confirmarla, completa el pago (Sandbox) con Wompi, o elige pagar en efectivo.
+        </p>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 32 }}>
+          <p style={{ fontSize: 13, color: '#2563eb', fontWeight: 700, margin: 0 }}>
+            Serás redirigido al checkout oficial de Wompi.
+          </p>
+          <p style={{ fontSize: 13, color: 'var(--texto-second)', fontWeight: 600, margin: 0 }}>
+            Recibirás la confirmación de tu reserva cuando el pago sea exitoso.
+          </p>
+        </div>
 
         {datosPago && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'stretch' }}>
+          <div className="flex flex-col sm:flex-row" style={{ gap: 16, alignItems: 'stretch' }}>
             <button
-              className="btn"
               onClick={handlePagarConWompi}
+              onMouseEnter={() => setHoverWompi(true)}
+              onMouseLeave={() => setHoverWompi(false)}
               disabled={redirigiendoPago}
               style={{
-                display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 10,
-                padding: '16px 40px', borderRadius: 16,
-                background: redirigiendoPago ? '#94a3b8' : 'linear-gradient(90deg,#1e3a8a,#2563eb)',
+                flex: 1, minWidth: 0,
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 12,
+                padding: '18px 24px', borderRadius: 16,
+                background: redirigiendoPago
+                  ? '#94a3b8'
+                  : hoverWompi
+                    ? 'linear-gradient(90deg,#162d6e,#1d4fd8)'
+                    : 'linear-gradient(90deg,#1e3a8a,#2563eb)',
                 color: '#fff', fontWeight: 900, fontSize: 15, border: 'none',
                 cursor: redirigiendoPago ? 'default' : 'pointer',
-                boxShadow: '0 8px 24px rgba(37,99,235,0.28)',
+                boxShadow: hoverWompi && !redirigiendoPago ? '0 16px 34px rgba(37,99,235,0.42)' : '0 8px 24px rgba(37,99,235,0.28)',
+                transform: hoverWompi && !redirigiendoPago ? 'translateY(-2px)' : 'translateY(0)',
+                transition: 'all 200ms ease',
               }}
             >
-              {redirigiendoPago ? 'Redirigiendo…' : 'Pagar con Wompi'}
+              <FaCreditCard size={20} />
+              <span>{redirigiendoPago ? 'Redirigiendo…' : 'Pagar con Wompi'}</span>
             </button>
 
             <button
-              className="btn"
               onClick={handlePagoEfectivo}
+              onMouseEnter={() => setHoverEfectivo(true)}
+              onMouseLeave={() => setHoverEfectivo(false)}
               style={{
-                display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 10,
-                padding: '16px 40px', borderRadius: 16,
-                background: '#fff', color: '#1e3a8a', fontWeight: 900, fontSize: 15,
-                border: '2px solid #bfdbfe', cursor: 'pointer',
+                flex: 1, minWidth: 0,
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 12,
+                padding: '18px 24px', borderRadius: 16,
+                background: hoverEfectivo ? '#eff6ff' : '#fff',
+                color: '#1e3a8a', fontWeight: 900, fontSize: 15,
+                border: `2px solid ${hoverEfectivo ? '#1e3a8a' : '#bfdbfe'}`,
+                cursor: 'pointer',
+                boxShadow: hoverEfectivo ? '0 10px 24px rgba(30,58,138,0.14)' : 'none',
+                transform: hoverEfectivo ? 'translateY(-2px)' : 'translateY(0)',
+                transition: 'all 200ms ease',
               }}
             >
-              <FaMoneyBillWave size={16} />
-              Pago en efectivo
+              <FaMoneyBillWave size={20} />
+              <span>Pago en efectivo</span>
             </button>
           </div>
         )}
