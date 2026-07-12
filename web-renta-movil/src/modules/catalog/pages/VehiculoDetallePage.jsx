@@ -8,6 +8,7 @@ import { FaMoneyBillWave, FaCreditCard } from 'react-icons/fa'
 import VEHICULOS_MOCK from '@/mocks/vehiculos.json'
 import { reservaService } from '@/services/reservaService'
 import { generarReferenciaUnica, aCentavos, construirUrlCheckout } from '@/services/wompiService'
+import { RECARGOS_LOGISTICOS } from '../constants'
 
 import GaleriaImagenes from '../components/detalle/GaleriaImagenes'
 import InfoVehiculo from '../components/detalle/InfoVehiculo'
@@ -53,13 +54,21 @@ export default function VehiculoDetallePage() {
   const [reserva, setReserva] = useState({
     fechaInicio: '', fechaFin: '',
     horaInicio: '09:00', horaFin: '09:00',
-    sucursalRetiro: '',
-    sucursalDevolucion: '',
+    sucursalRetiro: vehiculo ? vehiculo.sucursal : '',
+    sucursalDevolucion: vehiculo ? vehiculo.sucursal : '',
     tipoKm: 'limitado',
+    metodoPago: 'wompi',
   });
   const cambiarReserva = (campo, valor) => {
-    setReserva(prev => ({ ...prev, [campo]: valor }))
-    setErrorPaso1('')
+    setReserva(prev => {
+      const act = { ...prev, [campo]: valor };
+      if (campo === 'metodoPago' && valor === 'efectivo') {
+        act.sucursalRetiro = vehiculo ? vehiculo.sucursal : '';
+        act.sucursalDevolucion = vehiculo ? vehiculo.sucursal : '';
+      }
+      return act;
+    });
+    setErrorPaso1('');
   }
 
   const [errorPaso1, setErrorPaso1] = useState('');
@@ -67,6 +76,8 @@ export default function VehiculoDetallePage() {
     nombre: '', correo: '', celular: '',
     nacionalidad: 'Colombia', tipoDoc: 'CC', numDoc: '',
     vuelo: false, numVuelo: '', terminos: false,
+    cedulaPdf: null,
+    licenciaPdf: null,
   });
   const [errores, setErrores] = useState({});
   const [exito, setExito] = useState(false);
@@ -167,6 +178,8 @@ export default function VehiculoDetallePage() {
     if (!datosForm.correo.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(datosForm.correo)) e.correo = t('vehiculo.errors.emailInvalid');
     if (!datosForm.celular.trim() || datosForm.celular.length < 10) e.celular = t('vehiculo.errors.phoneInvalid');
     if (!datosForm.numDoc.trim()) e.numDoc = t('vehiculo.errors.docRequired');
+    if (!datosForm.cedulaPdf) e.cedulaPdf = "Debes subir tu cédula en formato PDF.";
+    if (!datosForm.licenciaPdf) e.licenciaPdf = "Debes subir tu licencia de conducción en formato PDF.";
     if (!datosForm.terminos) e.terminos = t('vehiculo.errors.termsRequired');
 
     setErrores(e);
@@ -182,7 +195,12 @@ export default function VehiculoDetallePage() {
 
     const subtotal = (precioKm + precioSeguro + precioServicios) * dias;
     const cargosAdmin = Math.round(subtotal * 0.10);
-    const totalCop = subtotal + cargosAdmin;
+    
+    const recargoRetiro = RECARGOS_LOGISTICOS[reserva.sucursalRetiro] || 0;
+    const recargoDevolucion = RECARGOS_LOGISTICOS[reserva.sucursalDevolucion] || 0;
+    const recargoLogistico = recargoRetiro + recargoDevolucion;
+    
+    const totalCop = subtotal + cargosAdmin + recargoLogistico;
 
     // Crear la referencia única para Wompi Checkout
     const referencia = generarReferenciaUnica();
@@ -259,67 +277,86 @@ export default function VehiculoDetallePage() {
           Reserva Registrada
         </h2>
 
-        <p style={{ fontSize: 16, color: 'var(--texto-second)', lineHeight: 1.6, margin: '0 0 20px' }}>
-          Tu reserva quedó guardada como pendiente. Para confirmarla, completa el pago (Sandbox) con Wompi, o elige pagar en efectivo.
-        </p>
+        {reserva.metodoPago === 'efectivo' ? (
+          <>
+            <p style={{ fontSize: 16, color: 'var(--texto-second)', lineHeight: 1.6, margin: '0 0 20px' }}>
+              Tu reserva quedó registrada. Para confirmarla, debes acercarte a la sucursal de <strong>{vehiculo.sucursal}</strong> para realizar el pago en efectivo y retirar el vehículo.
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 32 }}>
+              <p style={{ fontSize: 13, color: '#16a34a', fontWeight: 700, margin: 0 }}>
+                Recuerda llevar tu cédula y licencia física para la verificación manual.
+              </p>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <button
+                onClick={() => {
+                  showAlert({
+                    icon: 'success',
+                    title: '¡Reserva Completada!',
+                    text: 'Tu reserva presencial ha sido registrada. Te esperamos en la sucursal.',
+                    confirmButtonText: 'Aceptar'
+                  }).then(() => navigate('/reservas'));
+                }}
+                style={{
+                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 12,
+                  padding: '18px 36px', borderRadius: 16,
+                  background: 'linear-gradient(90deg,#1e3a8a,#2563eb)',
+                  color: '#fff', fontWeight: 900, fontSize: 15, border: 'none',
+                  cursor: 'pointer',
+                  boxShadow: '0 8px 24px rgba(37,99,235,0.28)',
+                  transition: 'all 200ms ease',
+                }}
+              >
+                <FaMoneyBillWave size={20} />
+                <span>Confirmar y Ver Mis Reservas</span>
+              </button>
+            </div>
+          </>
+        ) : (
+          <>
+            <p style={{ fontSize: 16, color: 'var(--texto-second)', lineHeight: 1.6, margin: '0 0 20px' }}>
+              Tu reserva quedó guardada como pendiente. Para confirmarla, completa el pago digital seguro con Wompi (Pruebas).
+            </p>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 32 }}>
-          <p style={{ fontSize: 13, color: '#2563eb', fontWeight: 700, margin: 0 }}>
-            Serás redirigido al checkout oficial de Wompi.
-          </p>
-          <p style={{ fontSize: 13, color: 'var(--texto-second)', fontWeight: 600, margin: 0 }}>
-            Recibirás la confirmación de tu reserva cuando el pago sea exitoso.
-          </p>
-        </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 32 }}>
+              <p style={{ fontSize: 13, color: '#2563eb', fontWeight: 700, margin: 0 }}>
+                Serás redirigido al checkout oficial de Wompi.
+              </p>
+              <p style={{ fontSize: 13, color: 'var(--texto-second)', fontWeight: 600, margin: 0 }}>
+                Recibirás la confirmación de tu reserva cuando el pago sea exitoso.
+              </p>
+            </div>
 
-        {datosPago && (
-          <div className="flex flex-col sm:flex-row" style={{ gap: 16, alignItems: 'stretch' }}>
-            <button
-              onClick={handlePagarConWompi}
-              onMouseEnter={() => setHoverWompi(true)}
-              onMouseLeave={() => setHoverWompi(false)}
-              disabled={redirigiendoPago}
-              style={{
-                flex: 1, minWidth: 0,
-                display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 12,
-                padding: '18px 24px', borderRadius: 16,
-                background: redirigiendoPago
-                  ? '#94a3b8'
-                  : hoverWompi
-                    ? 'linear-gradient(90deg,#162d6e,#1d4fd8)'
-                    : 'linear-gradient(90deg,#1e3a8a,#2563eb)',
-                color: '#fff', fontWeight: 900, fontSize: 15, border: 'none',
-                cursor: redirigiendoPago ? 'default' : 'pointer',
-                boxShadow: hoverWompi && !redirigiendoPago ? '0 16px 34px rgba(37,99,235,0.42)' : '0 8px 24px rgba(37,99,235,0.28)',
-                transform: hoverWompi && !redirigiendoPago ? 'translateY(-2px)' : 'translateY(0)',
-                transition: 'all 200ms ease',
-              }}
-            >
-              <FaCreditCard size={20} />
-              <span>{redirigiendoPago ? 'Redirigiendo…' : 'Pagar con Wompi'}</span>
-            </button>
-
-            <button
-              onClick={handlePagoEfectivo}
-              onMouseEnter={() => setHoverEfectivo(true)}
-              onMouseLeave={() => setHoverEfectivo(false)}
-              style={{
-                flex: 1, minWidth: 0,
-                display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 12,
-                padding: '18px 24px', borderRadius: 16,
-                background: hoverEfectivo ? '#eff6ff' : '#fff',
-                color: '#1e3a8a', fontWeight: 900, fontSize: 15,
-                border: `2px solid ${hoverEfectivo ? '#1e3a8a' : '#bfdbfe'}`,
-                cursor: 'pointer',
-                boxShadow: hoverEfectivo ? '0 10px 24px rgba(30,58,138,0.14)' : 'none',
-                transform: hoverEfectivo ? 'translateY(-2px)' : 'translateY(0)',
-                transition: 'all 200ms ease',
-              }}
-            >
-              <FaMoneyBillWave size={20} />
-              <span>Pago en efectivo</span>
-            </button>
-          </div>
+            {datosPago && (
+              <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <button
+                  onClick={handlePagarConWompi}
+                  onMouseEnter={() => setHoverWompi(true)}
+                  onMouseLeave={() => setHoverWompi(false)}
+                  disabled={redirigiendoPago}
+                  style={{
+                    display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 12,
+                    padding: '18px 40px', borderRadius: 16,
+                    background: redirigiendoPago
+                      ? '#94a3b8'
+                      : hoverWompi
+                        ? 'linear-gradient(90deg,#162d6e,#1d4fd8)'
+                        : 'linear-gradient(90deg,#1e3a8a,#2563eb)',
+                    color: '#fff', fontWeight: 900, fontSize: 15, border: 'none',
+                    cursor: redirigiendoPago ? 'default' : 'pointer',
+                    boxShadow: hoverWompi && !redirigiendoPago ? '0 16px 34px rgba(37,99,235,0.42)' : '0 8px 24px rgba(37,99,235,0.28)',
+                    transform: hoverWompi && !redirigiendoPago ? 'translateY(-2px)' : 'translateY(0)',
+                    transition: 'all 200ms ease',
+                    width: '100%',
+                    maxWidth: 320
+                  }}
+                >
+                  <FaCreditCard size={20} />
+                  <span>{redirigiendoPago ? 'Redirigiendo…' : 'Pagar con Wompi'}</span>
+                </button>
+              </div>
+            )}
+          </>
         )}
 
         {errorPago && (
@@ -339,8 +376,8 @@ export default function VehiculoDetallePage() {
           <div style={{ flex: 1 }} />
           {!usuario && (
             <div style={{ display: 'flex', gap: 12 }}>
-              <Link to="/login" style={{ padding: '10px 20px', borderRadius: 9999, border: '2px solid #bfdbfe', color: '#1e3a8a', fontSize: 14, fontWeight: 700, textDecoration: 'none', transition: 'all 200ms ease' }}>{t('catalogo.signIn')}</Link>
-              <Link to="/registro" style={{ padding: '10px 20px', borderRadius: 9999, background: '#1e3a8a', color: '#fff', fontSize: 14, fontWeight: 700, textDecoration: 'none', transition: 'all 200ms ease' }}>{t('catalogo.signUp')}</Link>
+              <Link to="/login" style={{ padding: '10px 20px', borderRadius: 9999, border: '2px solid #bfdbfe', color: '#1e3a8a', fontSize: 15, fontWeight: 700, textDecoration: 'none', transition: 'all 200ms ease' }}>{t('catalogo.signIn')}</Link>
+              <Link to="/registro" style={{ padding: '10px 20px', borderRadius: 9999, background: '#1e3a8a', color: '#fff', fontSize: 15, fontWeight: 700, textDecoration: 'none', transition: 'all 200ms ease' }}>{t('catalogo.signUp')}</Link>
             </div>
           )}
         </div>

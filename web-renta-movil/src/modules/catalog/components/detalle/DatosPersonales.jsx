@@ -1,7 +1,8 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLanding } from '../../../landing/LandingContext';
 import { formatCurrency } from '@/utils/monedaUtils';
+import { RECARGOS_LOGISTICOS } from '../../constants';
 
 
 const TERMINOS_TXT = `
@@ -54,10 +55,161 @@ const TERMINOS_TXT = `
 `;
 
 
-export default function DatosPersonales({ vehiculo, reserva, seguroIdx, serviciosSeleccionados = [], datosForm, onCambio, onReservar, errores }) {
+const DocumentUploader = ({ label, helpText, error, file, loading, onUpload, onClear }) => {
+  return (
+    <div style={{
+      border: `2px dashed ${error ? '#fca5a5' : 'var(--borde)'}`,
+      borderRadius: 16,
+      padding: '24px 20px',
+      textAlign: 'center',
+      background: error ? '#fef2f2' : 'var(--bg-item)',
+      transition: 'all 200ms ease',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 12,
+      position: 'relative'
+    }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+        <span style={{ fontSize: 14, fontWeight: 800, color: 'var(--texto-primary)' }}>{label} *</span>
+        <span style={{ fontSize: 11, color: 'var(--texto-second)', maxWidth: '240px', lineHeight: 1.4 }}>{helpText}</span>
+      </div>
+
+      {loading ? (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: '#2563eb', fontWeight: 700 }}>
+          <svg className="animate-spin" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+          </svg>
+          <span>Subiendo archivo...</span>
+        </div>
+      ) : file ? (
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 12,
+          background: '#f0fdf4',
+          border: '1px solid #bbf7d0',
+          padding: '10px 16px',
+          borderRadius: 12,
+          width: '100%',
+          boxSizing: 'border-box'
+        }}>
+          <svg width="24" height="24" fill="none" stroke="#16a34a" strokeWidth="2.5" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
+          </svg>
+          <div style={{ flex: 1, minWidth: 0, textAlign: 'left' }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: '#166534', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {file.name}
+            </div>
+            <div style={{ fontSize: 11, color: '#15803d' }}>
+              {(file.size / 1024 / 1024).toFixed(2)} MB
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={onClear}
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              color: '#dc2626',
+              padding: 4,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
+            <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+            </svg>
+          </button>
+        </div>
+      ) : (
+        <label style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 8,
+          padding: '12px 24px',
+          background: '#fff',
+          border: '2px solid var(--borde)',
+          borderRadius: 12,
+          fontSize: 13,
+          fontWeight: 700,
+          color: '#1e3a8a',
+          cursor: 'pointer',
+          boxShadow: '0 2px 6px rgba(0,0,0,0.03)',
+          transition: 'all 150ms ease'
+        }}>
+          <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+          </svg>
+          <span>Subir PDF</span>
+          <input
+            type="file"
+            accept=".pdf"
+            onChange={onUpload}
+            style={{ display: 'none' }}
+          />
+        </label>
+      )}
+
+      {error && (
+        <p style={{ color: '#ef4444', fontSize: 12, margin: '6px 0 0', fontWeight: 600 }}>{error}</p>
+      )}
+    </div>
+  )
+}
+
+export default function DatosPersonales({ vehiculo, reserva, seguroIdx, serviciosSeleccionados = [], datosForm, onCambio, onReservar, errores, docsVerificados }) {
   const { t } = useTranslation()
   const { moneda } = useLanding();
   const [verTyC, setVerTyC] = useState(false);
+
+  const [cedulaError, setCedulaError] = useState('');
+  const [licenciaError, setLicenciaError] = useState('');
+  const [cedulaCargando, setCedulaCargando] = useState(false);
+  const [licenciaCargando, setLicenciaCargando] = useState(false);
+
+  const handleUpload = (tipo, e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.type !== 'application/pdf') {
+      if (tipo === 'cedula') {
+        setCedulaError('El archivo debe ser en formato PDF.');
+      } else {
+        setLicenciaError('El archivo debe ser en formato PDF.');
+      }
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      if (tipo === 'cedula') {
+        setCedulaError('El archivo supera el peso máximo de 5MB.');
+      } else {
+        setLicenciaError('El archivo supera el peso máximo de 5MB.');
+      }
+      return;
+    }
+
+    if (tipo === 'cedula') {
+      setCedulaError('');
+      setCedulaCargando(true);
+      setTimeout(() => {
+        onCambio('cedulaPdf', file);
+        setCedulaCargando(false);
+      }, 800);
+    } else {
+      setLicenciaError('');
+      setLicenciaCargando(true);
+      setTimeout(() => {
+        onCambio('licenciaPdf', file);
+        setLicenciaCargando(false);
+      }, 800);
+    }
+  };
 
 
   const tarifas = vehiculo.tarifas || {};
@@ -80,7 +232,12 @@ export default function DatosPersonales({ vehiculo, reserva, seguroIdx, servicio
   const subtotalSeg = precioSeg * dias;
   const subtotalServicios = precioServicios * dias;
   const cargos = Math.round((subtotal + subtotalSeg + subtotalServicios) * 0.10);
-  const total = subtotal + subtotalSeg + subtotalServicios + cargos;
+  
+  const recargoRetiro = RECARGOS_LOGISTICOS[reserva.sucursalRetiro] || 0;
+  const recargoDevolucion = RECARGOS_LOGISTICOS[reserva.sucursalDevolucion] || 0;
+  const recargoLogistico = recargoRetiro + recargoDevolucion;
+  
+  const total = subtotal + subtotalSeg + subtotalServicios + cargos + recargoLogistico;
 
 
   const inp = (err) => ({
@@ -184,6 +341,69 @@ export default function DatosPersonales({ vehiculo, reserva, seguroIdx, servicio
               {t('vehiculo.unlimitedKmText')}
             </p>
           )}
+        </div>
+      </div>
+
+
+      {/* Contenedor de subida de documentos */}
+      <div style={{
+        background: 'var(--bg-tarjeta)',
+        borderRadius: 24,
+        border: '1px solid var(--borde)',
+        padding: '28px',
+        marginBottom: 20,
+        boxShadow: 'var(--sombra-tarjeta)'
+      }}>
+        <h4 style={{ fontSize: 16, fontWeight: 900, color: 'var(--texto-primary)', marginBottom: 6 }}>
+          Verificación Documental Obligatoria
+        </h4>
+        <p style={{ fontSize: 13, color: 'var(--texto-second)', marginBottom: 20 }}>
+          Sube los siguientes documentos en formato PDF. Estos serán revisados manualmente por el personal de la sucursal para validar y entregar tu vehículo.
+        </p>
+
+        {docsVerificados && (
+          <div style={{
+            display: 'flex', gap: 10, background: '#f0fdf4', border: '1px solid #bbf7d0',
+            borderRadius: 12, padding: 14, marginBottom: 20
+          }}>
+            <svg width="20" height="20" fill="none" stroke="#16a34a" strokeWidth="2.5" viewBox="0 0 24 24" style={{ flexShrink: 0, marginTop: 2 }}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
+            </svg>
+            <span style={{ fontSize: 13, color: '#166534', lineHeight: 1.5, fontWeight: 700, textAlign: 'left' }}>
+              Documentos ya registrados: Ya has subido tu cédula y licencia de conducción anteriormente. No es obligatorio volver a cargarlos, pero si lo deseas puedes reemplazarlos subiendo nuevos archivos PDF.
+            </span>
+          </div>
+        )}
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 24, marginBottom: 12 }}>
+          <DocumentUploader
+            label="Cédula de Ciudadanía"
+            helpText="Sube tu documento de identidad en un solo archivo PDF (ambos lados incluidos, máx 5MB)"
+            error={errores.cedulaPdf || cedulaError}
+            file={datosForm.cedulaPdf}
+            loading={cedulaCargando}
+            onUpload={(e) => handleUpload('cedula', e)}
+            onClear={() => onCambio('cedulaPdf', null)}
+          />
+
+          <DocumentUploader
+            label="Licencia de Conducción"
+            helpText="Sube tu licencia de conducción vigente y legible en formato PDF (máx 5MB)"
+            error={errores.licenciaPdf || licenciaError}
+            file={datosForm.licenciaPdf}
+            loading={licenciaCargando}
+            onUpload={(e) => handleUpload('licencia', e)}
+            onClear={() => onCambio('licenciaPdf', null)}
+          />
+        </div>
+
+        <div style={{ display: 'flex', gap: 10, background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 12, padding: 14, marginTop: 16 }}>
+          <svg width="20" height="20" fill="none" stroke="#1e3a8a" strokeWidth="2.5" viewBox="0 0 24 24" style={{ shrink: 0, marginTop: 2 }}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 111.083.87l-.417.834M12 18.75h.007V19h-.007v-.025zM21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span style={{ fontSize: 12, color: '#1e3a8a', lineHeight: 1.5, fontWeight: 600 }}>
+            Nota: La verificación de tus documentos será realizada de forma manual por el personal de la sucursal al momento de la entrega del carro. Asegúrate de que las fotos/escaneos dentro del PDF sean nítidos.
+          </span>
         </div>
       </div>
 
