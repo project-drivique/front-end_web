@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Prueba aislada Wompi Widget (Sandbox)</title>
+</head>
+<body>
+  <h1>Prueba aislada — Wompi Widget (Sandbox)</h1>
+  <p>
+    Esta página NO usa React ni Vite bundling: es HTML puro, casi idéntico al
+    ejemplo oficial de Wompi. Sirve para descartar si el 403 de CloudFront es
+    causado por la app React o si ocurre incluso en el caso más simple posible.
+  </p>
+
+  <!--
+    Firma precalculada para esta prueba puntual (referencia, monto y moneda
+    fijos, calculados una sola vez con Node fuera del navegador):
+      referencia = "WOMPI-TEST-0001"
+      amount-in-cents = 1000000   (10.000 COP)
+      currency = "COP"
+      signature:integrity = sha256(referencia + amount-in-cents + currency + integrityKey)
+  -->
+  <form>
+    <script
+      src="https://checkout.wompi.co/widget.js"
+      data-render="button"
+      data-public-key="pub_test_Q5yDA9xoKdePzhSGeZaAWGJC0IGlN981"
+      data-currency="COP"
+      data-amount-in-cents="1000000"
+      data-reference="WOMPI-TEST-0001"
+      data-signature:integrity="633fa0e97dabd26cfd00c83ea5edf9afa170b2f2b80e94432faecfb0dd260a2c"
+      data-redirect-url="http://localhost:5173/respuesta"
+    >
+    </script>
+  </form>
+
+  <hr />
+  <p>
+    Pasos para usarla:
+    1) <code>npm run dev</code>.
+    2) Abre <code>http://localhost:5173/wompi-test.html</code> directo (no dentro de la SPA de React).
+    3) Haz clic en el botón que Wompi renderiza.
+    4) Si este caso también da 403 de CloudFront ("Request blocked"), el problema
+       es externo al código React (ver conclusión en la respuesta del asistente).
+  </p>
+</body>
+</html>
