@@ -23,10 +23,15 @@ const CLAVES_ESTADO = {
 function TarjetaReserva({ reserva, onCancelar }) {
   const { t } = useTranslation()
   const { moneda } = useLanding()
-  const { vehiculo, fechaInicio, fechaFin, estado } = reserva
+  const { vehiculo, fechaInicio, fechaFin, estado, estadoRaw, fechaLimitePago } = reserva
 
   const dias = Math.max(1, Math.ceil((new Date(fechaFin) - new Date(fechaInicio)) / 86400000))
   const total = reserva.total ?? (vehiculo ? Math.round(vehiculo.precio * dias * 1.10) : 0)
+
+  const pendientePagoEfectivo = estadoRaw === 'PENDIENTE_EFECTIVO' && fechaLimitePago
+  const horasRestantes = pendientePagoEfectivo
+    ? Math.max(0, (new Date(fechaLimitePago).getTime() - Date.now()) / 3600000)
+    : null
 
   return (
     <div className="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:flex-row sm:items-center">
@@ -49,6 +54,17 @@ function TarjetaReserva({ reserva, onCancelar }) {
           <span><span className="font-semibold text-slate-700">{t('reservas.to')}:</span> {fechaFin}</span>
           <span><span className="font-semibold text-slate-700">{t('reservas.total')}:</span> {formatCurrency(total, moneda)}</span>
         </div>
+
+        {pendientePagoEfectivo && (
+          <p className="mt-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-700">
+            Tienes {horasRestantes < 1 ? 'menos de 1 hora' : `~${Math.floor(horasRestantes)} h`} para pagar en sucursal antes de que la reserva se cancele automáticamente.
+          </p>
+        )}
+        {estadoRaw === 'CANCELADA_POR_TIEMPO' && (
+          <p className="mt-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-500">
+            Se canceló automáticamente por no completarse el pago en efectivo dentro del plazo.
+          </p>
+        )}
       </div>
 
       {estado !== 'completada' && estado !== 'cancelada' && (

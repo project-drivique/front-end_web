@@ -41,6 +41,7 @@ export function useHistorialReservas() {
             fechaInicio,
             fechaFin,
             vehiculo,
+            estadoRaw: r.estado || null,
             estado: estadoReserva(r)
           }
         })
