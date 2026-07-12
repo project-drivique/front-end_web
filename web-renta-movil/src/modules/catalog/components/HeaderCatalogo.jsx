@@ -30,13 +30,13 @@ export default function HeaderCatalogo({ c, usuario, withLinks = false }) {
         <Link to="/"><img src={logo} alt="Drivique" style={{ height: '80px' }} /></Link>
 
         {withLinks && (
-          <Link to="/reservas" style={{ fontSize: '13px', color: c.navText, textDecoration: 'none', fontWeight: 600 }}>{t('catalogo.myReservations')}</Link>
+          <Link to="/reservas" style={{ fontSize: '15px', color: c.navText, textDecoration: 'none', fontWeight: 600 }}>{t('catalogo.myReservations')}</Link>
         )}
 
         <div style={{ flex: 1 }} />
 
         {usuario && (
-          <span style={{ fontSize: '13px', color: c.navText, fontWeight: 600 }}>
+          <span style={{ fontSize: '15px', color: c.navText, fontWeight: 600 }}>
             {t('catalogo.greeting')}, {nombre}
           </span>
         )}
@@ -54,7 +54,7 @@ export default function HeaderCatalogo({ c, usuario, withLinks = false }) {
             alignItems: 'center',
             justifyContent: 'center',
             fontWeight: 800,
-            fontSize: '14px',
+            fontSize: '15px',
             textDecoration: 'none',
             flexShrink: 0,
           }}
