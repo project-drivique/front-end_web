@@ -16,7 +16,7 @@
     "color": "Blanco Perla",
     "año": 2024,
     "placa": "ABC-123",
-    "sucursal": "Localiza (El Dorado)",
+    "sucursal": "Alamo Bogotá - Aeropuerto",
     "tarifas": {
       "kmLimitado": { "km": 200, "precio": 85000, "excedente": 800 },
       "kmIlimitado": { "precio": 105000 }
@@ -59,7 +59,7 @@
     "color": "Soul Red Crystal",
     "año": 2024,
     "placa": "DEF-456",
-    "sucursal": "Tu Roll (El Poblado)",
+    "sucursal": "Alamo Medellín Poblado",
     "tarifas": {
       "kmLimitado": { "km": 250, "precio": 145000, "excedente": 1000 },
       "kmIlimitado": { "precio": 175000 }
@@ -97,7 +97,7 @@
     "color": "Rojo Passion",
     "año": 2023,
     "placa": "GHI-789",
-    "sucursal": "Europcar (El Dorado)",
+    "sucursal": "National Downtown Barranquilla",
     "tarifas": {
       "kmLimitado": { "km": 150, "precio": 60000, "excedente": 600 },
       "kmIlimitado": { "precio": 75000 }
@@ -134,7 +134,7 @@
     "color": "Race Red",
     "año": 2023,
     "placa": "JKL-012",
-    "sucursal": "Enterprise (El Dorado)",
+    "sucursal": "Alamo Cartagena - Aeropuerto",
     "tarifas": {
       "kmLimitado": { "km": 300, "precio": 220000, "excedente": 1500 },
       "kmIlimitado": { "precio": 260000 }
@@ -171,7 +171,7 @@
     "color": "Super White",
     "año": 2024,
     "placa": "MNO-345",
-    "sucursal": "Sixt (JMC)",
+    "sucursal": "Alamo Cali - Aeropuerto",
     "tarifas": {
       "kmLimitado": { "km": 300, "precio": 180000, "excedente": 1200 },
       "kmIlimitado": { "precio": 215000 }
@@ -210,7 +210,7 @@
     "color": "Gris Highland",
     "año": 2023,
     "placa": "PQR-678",
-    "sucursal": "Alamo (El Dorado)",
+    "sucursal": "Alquiler Neiva - Centro",
     "tarifas": {
       "kmLimitado": { "km": 150, "precio": 55000, "excedente": 550 },
       "kmIlimitado": { "precio": 68000 }
@@ -247,7 +247,7 @@
     "color": "Phantom Black",
     "año": 2024,
     "placa": "STU-901",
-    "sucursal": "Localiza (El Dorado)",
+    "sucursal": "Alamo Bucaramanga - Aeropuerto",
     "tarifas": {
       "kmLimitado": { "km": 250, "precio": 160000, "excedente": 1100 },
       "kmIlimitado": { "precio": 192000 }
@@ -285,7 +285,7 @@
     "color": "Snow White Pearl",
     "año": 2024,
     "placa": "VWX-234",
-    "sucursal": "Tu Roll (El Poblado)",
+    "sucursal": "Alamo Pereira - Aeropuerto",
     "tarifas": {
       "kmLimitado": { "km": 200, "precio": 95000, "excedente": 900 },
       "kmIlimitado": { "precio": 115000 }
@@ -323,7 +323,7 @@
     "color": "Magnetic Blue",
     "año": 2024,
     "placa": "YZA-567",
-    "sucursal": "Europcar (El Dorado)",
+    "sucursal": "Localiza Cúcuta Aeropuerto Camilo Daza",
     "tarifas": {
       "kmLimitado": { "km": 250, "precio": 140000, "excedente": 1000 },
       "kmIlimitado": { "precio": 170000 }
