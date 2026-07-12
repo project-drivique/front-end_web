@@ -245,7 +245,7 @@ export default function LandingPage() {
   }, [])
 
   const estiloEnlaceNav = {
-    fontSize: 13,
+    fontSize: 15,
     color: 'var(--texto-nav)',
     fontWeight: 600,
     textDecoration: 'none',
@@ -310,7 +310,7 @@ export default function LandingPage() {
                 borderRadius: 9999,
                 border: `2px solid ${c.loginBorder}`,
                 color: c.loginText,
-                fontSize: 13,
+                fontSize: 15,
                 fontWeight: 700,
                 textDecoration: 'none',
                 whiteSpace: 'nowrap',

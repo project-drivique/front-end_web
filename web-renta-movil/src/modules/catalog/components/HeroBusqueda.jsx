@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { SUCURSALES } from '../constants'
+import { SUCURSALES, CIUDADES } from '../constants'
 
 export default function HeroBusqueda({
   c,
@@ -62,30 +62,40 @@ export default function HeroBusqueda({
         <div style={{ background: c.heroCardBg, borderRadius: '16px', border: `1px solid ${c.heroCardBorder}`, boxShadow: c.heroCardShadow, padding: '16px 16px' }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, minmax(0, 1fr))', gap: '14px', alignItems: 'end' }}>
             <div>
-              <label style={{ ...labelStyle, display: 'block' }}>{t('catalogo.pickupPlace')}</label>
-              <select value={busquedaForm.lugarRecogida || ''} onChange={e => setForm('lugarRecogida', e.target.value)} style={inputStyle}>
-                <option value="">{t('catalogo.selectPoint')}</option>
-                {SUCURSALES.map(s => <option key={s} value={s}>{s}</option>)}
+              <label style={{ ...labelStyle, display: 'block' }}>Ciudad</label>
+              <select
+                value={busquedaForm.ciudad || ''}
+                onChange={e => {
+                  setForm('ciudad', e.target.value)
+                  setForm('sucursal', '')
+                }}
+                style={inputStyle}
+              >
+                <option value="">Selecciona Ciudad</option>
+                {CIUDADES.map(c => (
+                  <option key={c.id} value={c.nombre}>
+                    {c.nombre}
+                  </option>
+                ))}
               </select>
             </div>
 
             <div>
-              <label style={{ ...labelStyle, display: 'block' }}>{t('catalogo.returnPlace')}</label>
+              <label style={{ ...labelStyle, display: 'block' }}>Sucursal</label>
               <select
-                value={busquedaForm.mismoLugar ? '__mismo__' : (busquedaForm.lugarDevolucion || '')}
-                onChange={e => {
-                  if (e.target.value === '__mismo__') {
-                    setForm('mismoLugar', true)
-                    setForm('lugarDevolucion', '')
-                  } else {
-                    setForm('mismoLugar', false)
-                    setForm('lugarDevolucion', e.target.value)
-                  }
-                }}
+                value={busquedaForm.sucursal || ''}
+                onChange={e => setForm('sucursal', e.target.value)}
                 style={inputStyle}
+                disabled={!busquedaForm.ciudad}
               >
-                <option value="__mismo__">{t('catalogo.selectPoint')}</option>
-                {SUCURSALES.map(s => <option key={s} value={s}>{s}</option>)}
+                <option value="">Selecciona Sucursal</option>
+                {SUCURSALES
+                  .filter(s => s.ciudad === busquedaForm.ciudad)
+                  .map(s => (
+                    <option key={s.nombre} value={s.nombre}>
+                      {s.nombre}
+                    </option>
+                  ))}
               </select>
             </div>
 
