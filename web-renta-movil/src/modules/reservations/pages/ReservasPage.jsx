@@ -26,7 +26,7 @@ function TarjetaReserva({ reserva, onCancelar }) {
   const { vehiculo, fechaInicio, fechaFin, estado } = reserva
 
   const dias = Math.max(1, Math.ceil((new Date(fechaFin) - new Date(fechaInicio)) / 86400000))
-  const total = vehiculo ? vehiculo.precio * dias : 0
+  const total = reserva.total ?? (vehiculo ? Math.round(vehiculo.precio * dias * 1.10) : 0)
 
   return (
     <div className="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:flex-row sm:items-center">

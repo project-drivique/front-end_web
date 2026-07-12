@@ -3,10 +3,20 @@ import { useTranslation } from 'react-i18next'
 import { reservasService } from '../../../services/reservasService'
 import { catalogoService } from '../../../services/catalogoService'
 
-const estadoReserva = (fechaInicio, fechaFin) => {
+const estadoReserva = (r) => {
+  if (r.estado) {
+    const est = r.estado.toLowerCase()
+    if (est.includes('cancel')) return 'cancelada'
+    if (est.includes('completa')) return 'completada'
+    if (est.includes('pendiente') || est.includes('validacion')) return 'pendiente'
+    if (est.includes('activ')) return 'activa'
+    return est
+  }
   const hoy = new Date().toISOString().split('T')[0]
-  if (fechaFin < hoy) return 'completada'
-  if (fechaInicio <= hoy && hoy <= fechaFin) return 'activa'
+  const inicio = r.fechaInicio || r.reservaDetalles?.fechaInicio
+  const fin = r.fechaFin || r.reservaDetalles?.fechaFin
+  if (fin < hoy) return 'completada'
+  if (inicio <= hoy && hoy <= fin) return 'activa'
   return 'pendiente'
 }
 
@@ -24,7 +34,15 @@ export function useHistorialReservas() {
       const conVehiculo = await Promise.all(
         data.map(async (r) => {
           const vehiculo = await catalogoService.getVehiculoById(r.vehiculoId).catch(() => null)
-          return { ...r, vehiculo, estado: estadoReserva(r.fechaInicio, r.fechaFin) }
+          const fechaInicio = r.fechaInicio || r.reservaDetalles?.fechaInicio
+          const fechaFin = r.fechaFin || r.reservaDetalles?.fechaFin
+          return {
+            ...r,
+            fechaInicio,
+            fechaFin,
+            vehiculo,
+            estado: estadoReserva(r)
+          }
         })
       )
       setReservas(conVehiculo)
