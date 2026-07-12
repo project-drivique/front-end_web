@@ -6,7 +6,8 @@ import { showAlert } from '@/utils/swalConfig'
 import logo from '@/assets/logo.png'
 import { FaMoneyBillWave, FaCreditCard } from 'react-icons/fa'
 import VEHICULOS_MOCK from '@/mocks/vehiculos.json'
-import { reservaService } from '@/services/reservaService'
+import { reservaService, HORAS_LIMITE_PAGO_EFECTIVO } from '@/services/reservaService'
+import { documentosService } from '@/services/documentosService'
 import { generarReferenciaUnica, aCentavos, construirUrlCheckout } from '@/services/wompiService'
 import { RECARGOS_LOGISTICOS } from '../constants'
 
@@ -86,7 +87,11 @@ export default function VehiculoDetallePage() {
   const [errorPago, setErrorPago] = useState('');
   const [hoverWompi, setHoverWompi] = useState(false);
   const [hoverEfectivo, setHoverEfectivo] = useState(false);
+  const [fechaLimitePago, setFechaLimitePago] = useState(null);
   const prellenado = useRef(false);
+
+  const idUsuarioDocs = usuario?.id || usuario?.correo || null;
+  const docsVerificados = documentosService.tieneDocumentos(idUsuarioDocs);
 
   useEffect(() => {
     if (!usuario || prellenado.current) return
@@ -178,8 +183,8 @@ export default function VehiculoDetallePage() {
     if (!datosForm.correo.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(datosForm.correo)) e.correo = t('vehiculo.errors.emailInvalid');
     if (!datosForm.celular.trim() || datosForm.celular.length < 10) e.celular = t('vehiculo.errors.phoneInvalid');
     if (!datosForm.numDoc.trim()) e.numDoc = t('vehiculo.errors.docRequired');
-    if (!datosForm.cedulaPdf) e.cedulaPdf = "Debes subir tu cédula en formato PDF.";
-    if (!datosForm.licenciaPdf) e.licenciaPdf = "Debes subir tu licencia de conducción en formato PDF.";
+    if (!docsVerificados && !datosForm.cedulaPdf) e.cedulaPdf = "Debes subir tu cédula en formato PDF.";
+    if (!docsVerificados && !datosForm.licenciaPdf) e.licenciaPdf = "Debes subir tu licencia de conducción en formato PDF.";
     if (!datosForm.terminos) e.terminos = t('vehiculo.errors.termsRequired');
 
     setErrores(e);
@@ -205,8 +210,19 @@ export default function VehiculoDetallePage() {
     // Crear la referencia única para Wompi Checkout
     const referencia = generarReferenciaUnica();
 
-    // Guardar temporalmente en localStorage (estado simulado)
-    reservaService.guardarReserva({
+    // Si el usuario subió documentos nuevos (o no tenía aún), los dejamos
+    // registrados para no volver a pedírselos en su próxima reserva.
+    if (idUsuarioDocs && (datosForm.cedulaPdf || datosForm.licenciaPdf || !docsVerificados)) {
+      documentosService.guardarDocumentos(idUsuarioDocs, {
+        cedulaPdf: datosForm.cedulaPdf,
+        licenciaPdf: datosForm.licenciaPdf,
+      });
+    }
+
+    // Guardar temporalmente en localStorage (estado simulado). Si el pago es
+    // en efectivo, reservaService calcula automáticamente el plazo límite
+    // para pagar en sucursal y deja el estado en PENDIENTE_EFECTIVO.
+    const reservaGuardada = reservaService.guardarReserva({
       referencia,
       vehiculoId: vehiculo.id,
       vehiculoNombre: vehiculo.nombre,
@@ -216,6 +232,10 @@ export default function VehiculoDetallePage() {
       reservaDetalles: reserva,
       total: totalCop
     });
+
+    if (reservaGuardada.fechaLimitePago) {
+      setFechaLimitePago(reservaGuardada.fechaLimitePago);
+    }
 
     // Guardamos la referencia para que RespuestaPagoPage la recupere al volver de Wompi
     sessionStorage.setItem('current_wompi_reference', referencia);
@@ -282,6 +302,22 @@ export default function VehiculoDetallePage() {
             <p style={{ fontSize: 16, color: 'var(--texto-second)', lineHeight: 1.6, margin: '0 0 20px' }}>
               Tu reserva quedó registrada. Para confirmarla, debes acercarte a la sucursal de <strong>{vehiculo.sucursal}</strong> para realizar el pago en efectivo y retirar el vehículo.
             </p>
+
+            <div style={{
+              background: '#fffbeb', border: '1px solid #fde68a', borderRadius: 16,
+              padding: '16px 20px', marginBottom: 20, textAlign: 'left',
+            }}>
+              <p style={{ fontSize: 13, fontWeight: 900, color: '#92400e', margin: '0 0 4px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                Plazo para pagar
+              </p>
+              <p style={{ fontSize: 14, color: '#92400e', margin: 0, lineHeight: 1.5 }}>
+                Tienes <strong>{HORAS_LIMITE_PAGO_EFECTIVO} horas</strong> desde ahora para acercarte a la sucursal y pagar
+                {fechaLimitePago && (
+                  <> (hasta las <strong>{new Date(fechaLimitePago).toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })}</strong>)</>
+                )}. Si no pagas dentro de este plazo, la reserva se cancelará automáticamente.
+              </p>
+            </div>
+
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 32 }}>
               <p style={{ fontSize: 13, color: '#16a34a', fontWeight: 700, margin: 0 }}>
                 Recuerda llevar tu cédula y licencia física para la verificación manual.
@@ -464,6 +500,7 @@ export default function VehiculoDetallePage() {
                   onCambio={(k, v) => setDatosForm(p => ({ ...p, [k]: v }))}
                   onReservar={handleReservar}
                   errores={errores}
+                  docsVerificados={docsVerificados}
                 />
               )}
 

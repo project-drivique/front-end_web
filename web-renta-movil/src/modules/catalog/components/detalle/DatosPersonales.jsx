@@ -55,7 +55,7 @@ const TERMINOS_TXT = `
 `;
 
 
-const DocumentUploader = ({ label, helpText, error, file, loading, onUpload, onClear }) => {
+const DocumentUploader = ({ label, helpText, error, file, loading, onUpload, onClear, required = true }) => {
   return (
     <div style={{
       border: `2px dashed ${error ? '#fca5a5' : 'var(--borde)'}`,
@@ -72,7 +72,7 @@ const DocumentUploader = ({ label, helpText, error, file, loading, onUpload, onC
       position: 'relative'
     }}>
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
-        <span style={{ fontSize: 14, fontWeight: 800, color: 'var(--texto-primary)' }}>{label} *</span>
+        <span style={{ fontSize: 14, fontWeight: 800, color: 'var(--texto-primary)' }}>{label}{required ? ' *' : ''}</span>
         <span style={{ fontSize: 11, color: 'var(--texto-second)', maxWidth: '240px', lineHeight: 1.4 }}>{helpText}</span>
       </div>
 
@@ -355,10 +355,12 @@ export default function DatosPersonales({ vehiculo, reserva, seguroIdx, servicio
         boxShadow: 'var(--sombra-tarjeta)'
       }}>
         <h4 style={{ fontSize: 16, fontWeight: 900, color: 'var(--texto-primary)', marginBottom: 6 }}>
-          Verificación Documental Obligatoria
+          {docsVerificados ? 'Verificación Documental' : 'Verificación Documental Obligatoria'}
         </h4>
         <p style={{ fontSize: 13, color: 'var(--texto-second)', marginBottom: 20 }}>
-          Sube los siguientes documentos en formato PDF. Estos serán revisados manualmente por el personal de la sucursal para validar y entregar tu vehículo.
+          {docsVerificados
+            ? 'Ya verificamos tus documentos en una reserva anterior. Si quieres, puedes reemplazarlos subiendo nuevos archivos PDF.'
+            : 'Sube los siguientes documentos en formato PDF. Estos serán revisados manualmente por el personal de la sucursal para validar y entregar tu vehículo.'}
         </p>
 
         {docsVerificados && (
@@ -384,6 +386,7 @@ export default function DatosPersonales({ vehiculo, reserva, seguroIdx, servicio
             loading={cedulaCargando}
             onUpload={(e) => handleUpload('cedula', e)}
             onClear={() => onCambio('cedulaPdf', null)}
+            required={!docsVerificados}
           />
 
           <DocumentUploader
@@ -394,6 +397,7 @@ export default function DatosPersonales({ vehiculo, reserva, seguroIdx, servicio
             loading={licenciaCargando}
             onUpload={(e) => handleUpload('licencia', e)}
             onClear={() => onCambio('licenciaPdf', null)}
+            required={!docsVerificados}
           />
         </div>
 
