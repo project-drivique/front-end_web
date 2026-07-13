@@ -59,19 +59,19 @@ export default function CalendarioReservas({ vehiculoId, fechaInicio, fechaFin, 
           <button
             type="button"
             onClick={() => setMesActual(m => subMonths(m, 1))}
-            className="flex h-10 w-10 items-center justify-center rounded-full text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700"
+            className="flex h-10 w-10 items-center justify-center rounded-full text-[var(--texto-second)] transition-colors hover:bg-[var(--bg-item-hover)] hover:text-[var(--texto-primary)]"
           >
             <FaChevronLeft size={14} />
           </button>
 
           <div className="flex items-center gap-3">
-            <span className="text-xl font-extrabold capitalize text-slate-900">
+            <span className="text-xl font-extrabold capitalize text-[var(--texto-primary)]">
               {format(mesActual, 'MMMM yyyy', { locale: es })}
             </span>
             <button
               type="button"
               onClick={() => setMesActual(new Date())}
-              className="rounded-full bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-500 transition-colors hover:bg-blue-50 hover:text-blue-700"
+              className="rounded-full bg-[var(--bg-item)] px-3 py-1.5 text-xs font-bold text-[var(--texto-second)] transition-colors hover:bg-blue-50 hover:text-blue-700"
             >
               {t('vehiculo.calendarToday')}
             </button>
@@ -80,7 +80,7 @@ export default function CalendarioReservas({ vehiculoId, fechaInicio, fechaFin, 
           <button
             type="button"
             onClick={() => setMesActual(m => addMonths(m, 1))}
-            className="flex h-10 w-10 items-center justify-center rounded-full text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700"
+            className="flex h-10 w-10 items-center justify-center rounded-full text-[var(--texto-second)] transition-colors hover:bg-[var(--bg-item-hover)] hover:text-[var(--texto-primary)]"
           >
             <FaChevronRight size={14} />
           </button>
@@ -88,7 +88,7 @@ export default function CalendarioReservas({ vehiculoId, fechaInicio, fechaFin, 
 
         <div className="grid w-full grid-cols-7">
           {DIAS_SEMANA.map(d => (
-            <div key={d} className="pb-3 text-center text-xs font-bold uppercase tracking-wide text-slate-400">
+            <div key={d} className="pb-3 text-center text-xs font-bold uppercase tracking-wide text-[var(--texto-second)]">
               {d}
             </div>
           ))}
@@ -125,9 +125,9 @@ export default function CalendarioReservas({ vehiculoId, fechaInicio, fechaFin, 
                     'relative mx-auto flex aspect-square w-full max-w-14 items-center justify-center rounded-full text-[15px] sm:text-base font-semibold transition-colors',
                     fueraDeMes ? 'text-transparent pointer-events-none' :
                     seleccionado ? 'bg-blue-600 text-white shadow-md shadow-blue-200' :
-                    pasado ? 'text-slate-300 cursor-not-allowed' :
-                    ocupado ? 'text-red-300 line-through cursor-not-allowed' :
-                    'text-slate-700 hover:bg-blue-100 cursor-pointer',
+                    pasado ? 'text-[var(--texto-second)] opacity-40 cursor-not-allowed' :
+                    ocupado ? 'text-red-400 line-through cursor-not-allowed' :
+                    'text-[var(--texto-primary)] hover:bg-blue-100 hover:text-blue-900 cursor-pointer',
                     isToday(dia) && !seleccionado ? 'ring-2 ring-blue-200' : '',
                   ].join(' ')}
                 >
@@ -144,7 +144,7 @@ export default function CalendarioReservas({ vehiculoId, fechaInicio, fechaFin, 
           })}
         </div>
 
-        <div className="mt-6 flex flex-wrap items-center justify-center gap-5 border-t border-slate-100 pt-5 text-xs font-semibold text-slate-500">
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-5 border-t border-[var(--borde)] pt-5 text-xs font-semibold text-[var(--texto-second)]">
           <span className="flex items-center gap-1.5">
             <span className="h-2 w-2 rounded-full bg-emerald-500" /> {t('vehiculo.calendarAvailable')}
           </span>
@@ -161,7 +161,7 @@ export default function CalendarioReservas({ vehiculoId, fechaInicio, fechaFin, 
         <p className="mt-3 text-center text-xs font-semibold text-red-500">{aviso}</p>
       )}
       {cargando && (
-        <p className="mt-3 text-center text-xs text-slate-400">{t('vehiculo.calendarLoading')}</p>
+        <p className="mt-3 text-center text-xs text-[var(--texto-second)]">{t('vehiculo.calendarLoading')}</p>
       )}
     </div>
   )
