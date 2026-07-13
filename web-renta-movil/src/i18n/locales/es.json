@@ -21,7 +21,10 @@
     "day": "día",
     "days": "días",
     "date": "Fecha",
-    "time": "Hora"
+    "time": "Hora",
+    "usdChargeAlertTitle": "El cobro siempre es en COP",
+    "usdChargeAlertHtml": "Estás viendo los precios en <b>dólares (USD)</b> solo como referencia visual.<br/>El cobro real a través de Wompi siempre se realiza en <b>pesos colombianos (COP)</b>, según la tasa de cambio del momento.",
+    "usdChargeAlertConfirm": "Entendido"
   },
   "login": {
     "title": "Iniciar sesión",
@@ -450,7 +453,9 @@
     "returnAtBranch": "Devolver en Sucursal ({{sucursal}})",
     "returnHome": "Devolución a domicilio",
     "returnAirport": "Devolución en Aeropuerto",
-    "returnTerminal": "Devolución en Terminal"
+    "returnTerminal": "Devolución en Terminal",
+    "termsFullText": "1. DURACIÓN DEL CONTRATO\n   La duración de la renta será la indicada en la reserva, desde la fecha y hora de inicio hasta la fecha y hora de finalizar.\n\n2. PAGOS Y TARIFAS\n   - El precio incluye la renta del vehículo, impuestos y cargos administrativos.\n   - Se requiere un pago total o parcial al momento de confirmar la reserva.\n\n3. KILOMETRAJE\n   - Opción limitado: Incluye km por día. Si se supera el límite, se cobrará un adicional por cada kilómetro extra ($1.500 COP/km).\n   - Opción ilimitado: No hay límite de kilómetros durante el periodo de renta.\n\n4. EXCESO DE KILOMETRAJE (solo para opción limitado)\n   - Se cobrará un valor por kilómetro adicional ($1.500 COP/km) por cada km que supere el límite pactado.\n   - El exceso se calcula al momento de la devolución del vehículo.\n\n5. CANCELACIONES Y REEMBOLSOS\n   - Drivique NO realiza devoluciones del dinero bajo ninguna circunstancia una vez confirmada la reserva.\n   - No se aplican reembolsos por cancelaciones, cambios de planes, no presentación ni por ningún otro motivo.\n\n6. DOCUMENTACIÓN REQUERIDA\n   - El usuario debe presentar documento de identidad válido (CC, CE o Pasaporte).\n   - Debe cumplir con los requisitos de edad y licencia de conducción según normativa vigente.\n\n7. USO DEL VEHÍCULO\n   - El vehículo debe ser usado únicamente en territorio colombiano.\n   - No se permite subarriendo, uso comercial no autorizado, ni transporte de carga prohibida.\n\n8. DAÑOS Y RESPONSABILIDAD\n   - El usuario es responsable por daños causados al vehículo durante el periodo de renta, excepto los cubiertos por el seguro contratado.\n   - En caso de accidente, se deberá notificar inmediatamente a Drivique y a las autoridades correspondientes.\n\n9. MODIFICACIONES AL CONTRATO\n   - Cualquier cambio en fechas, horas, sucursal o tipo de kilometraje debe ser acordado previamente con Drivique.\n   - Los cambios pueden implicar ajustes en el precio total.\n\n10. LEGISLACIÓN APLICABLE\n    Este contrato se rige por las leyes de la República de Colombia.",
+    "documentVerificationNote": "Nota: La verificación de tus documentos será realizada de forma manual por el personal de la sucursal al momento de la entrega del carro. Asegúrate de que las fotos/escaneos dentro del PDF sean nítidos."
   },
   "reservas": {
     "title": "Mis reservas",

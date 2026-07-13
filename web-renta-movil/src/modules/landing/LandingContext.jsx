@@ -55,30 +55,18 @@ export function LandingProvider({ children }) {
   // Envuelve setMoneda: si el usuario activa USD, se le avisa con SweetAlert
   // que el cobro real (Wompi) siempre se hace en pesos colombianos y que el
   // valor en dólares es solo una conversión visual de referencia.
+  // Los textos vienen del sistema de idiomas (i18next), no están hardcodeados.
   const setMoneda = useCallback((nuevaMoneda) => {
     setMonedaState(nuevaMoneda)
     if (nuevaMoneda === 'USD') {
-      const textoIdioma = {
-        es: {
-          title: 'El cobro siempre es en COP',
-          html: 'Estás viendo los precios en <b>dólares (USD)</b> solo como referencia visual.<br/>El cobro real a través de Wompi siempre se realiza en <b>pesos colombianos (COP)</b>, según la tasa de cambio del momento.',
-          confirm: 'Entendido',
-        },
-        en: {
-          title: 'You will always be charged in COP',
-          html: 'You are viewing prices in <b>US Dollars (USD)</b> as a visual reference only.<br/>The actual charge through Wompi is always made in <b>Colombian Pesos (COP)</b>, using the exchange rate at the time of payment.',
-          confirm: 'Got it',
-        },
-      }
-      const t = textoIdioma[idioma] || textoIdioma.es
       showAlert({
         icon: 'info',
-        title: t.title,
-        html: t.html,
-        confirmButtonText: t.confirm,
+        title: i18n.t('common.usdChargeAlertTitle'),
+        html: i18n.t('common.usdChargeAlertHtml'),
+        confirmButtonText: i18n.t('common.usdChargeAlertConfirm'),
       })
     }
-  }, [idioma])
+  }, [])
 
   return (
     <LandingContext.Provider value={{ tema, toggleTema, idioma, setIdioma, moneda, setMoneda, tasaUSD }}>
