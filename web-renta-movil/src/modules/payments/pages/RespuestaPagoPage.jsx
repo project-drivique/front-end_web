@@ -1,16 +1,21 @@
 import { useEffect, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { reservaService } from '@/services/reservaService';
 import { formatCurrency } from '@/utils/monedaUtils';
+import { showAlert } from '@/utils/swalConfig';
 import { useLanding } from '../../landing/LandingContext';
 import logo from '@/assets/logo.png';
+import VEHICULOS_MOCK from '@/mocks/vehiculos.json';
+import FirmaContrato from '../../contracts/components/FirmaContrato';
 
 export default function RespuestaPagoPage() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const transactionId = searchParams.get('id'); // Wompi retorna ?id=XXX
   const [reserva, setReserva] = useState(null);
+  const [contratoFirmado, setContratoFirmado] = useState(false);
   const { moneda } = useLanding();
 
   useEffect(() => {
@@ -25,6 +30,47 @@ export default function RespuestaPagoPage() {
       }
     }
   }, [transactionId]);
+
+  const vehiculoReserva = reserva ? VEHICULOS_MOCK.find(v => v.id === reserva.vehiculoId) : null;
+
+  // Regla del flujo: si el pago es por Wompi, el contrato se muestra solo
+  // después de la confirmación (simulada) del pago, justo aquí.
+  if (reserva && vehiculoReserva && !contratoFirmado) {
+    return (
+      <div style={{ minHeight: '100vh', background: 'var(--hero-fondo)', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', top: -80, right: -80, width: 500, height: 500, borderRadius: '50%', background: 'var(--hero-orb1)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', bottom: -60, left: -60, width: 350, height: 350, borderRadius: '50%', background: 'var(--hero-orb2)', pointerEvents: 'none' }} />
+        <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50, background: 'var(--bg-tarjeta)', backdropFilter: 'blur(12px)', borderBottom: '1px solid var(--borde)', boxShadow: '0 4px 20px rgba(0,0,0,0.04)', height: 96 }}>
+          <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px', height: '100%', display: 'flex', alignItems: 'center', gap: 20 }}>
+            <Link to="/"><img src={logo} alt="Drivique" style={{ height: 80 }} /></Link>
+          </div>
+        </nav>
+        <div style={{ position: 'relative', paddingTop: 128, paddingBottom: 48, paddingLeft: 24, paddingRight: 24 }}>
+          <div style={{ textAlign: 'center', maxWidth: 700, margin: '0 auto 28px' }}>
+            <h1 style={{ fontSize: 24, fontWeight: 900, color: 'var(--texto-primary)', margin: '0 0 8px' }}>
+              {t('contratoFirma.pageTitleWompi')}
+            </h1>
+            <p style={{ fontSize: 14, color: 'var(--texto-second)', margin: 0 }}>{t('contratoFirma.pageSubtitle')}</p>
+          </div>
+          <FirmaContrato
+            vehiculo={vehiculoReserva}
+            reservaGuardada={reserva}
+            onFirmado={() => {
+              setContratoFirmado(true);
+              showAlert({
+                icon: 'success',
+                title: 'Reserva Exitosa',
+                text: 'Tu pago fue registrado correctamente y tu reserva ha quedado confirmada.',
+                confirmButtonText: 'Aceptar',
+              }).then(() => navigate('/reservas'));
+            }}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  if (contratoFirmado) return null;
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg-page)' }}>
