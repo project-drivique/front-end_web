@@ -1,4 +1,4 @@
-﻿{
+{
   "common": {
     "backToHome": "Volver al inicio",
     "loading": "Cargando...",
@@ -435,7 +435,22 @@
       "datesRequired": "Debes seleccionar las fechas de retiro y devolución.",
       "datesOrder": "La fecha de devolución no puede ser anterior a la de recogida.",
       "hoursOrder": "La hora de devolución no puede ser anterior a la hora de recogida el mismo día."
-    }
+    },
+    "paymentMethodTitle": "Método de Pago Preferido",
+    "paymentWompiTitle": "Pago Virtual con Wompi",
+    "paymentWompiDesc": "Habilita entregas a domicilio, aeropuerto o terminal.",
+    "paymentCashTitle": "Pago en Efectivo",
+    "paymentCashDesc": "Obligatorio retirar y pagar directamente en sucursal.",
+    "deliveryTimeSectionTitle": "Lugar y Hora de Entrega/Devolución",
+    "dateRangeSectionTitle": "Selecciona el Rango de Fechas",
+    "pickupAtBranch": "Recoger en Sucursal ({{sucursal}})",
+    "deliveryHome": "Entrega a domicilio",
+    "deliveryAirport": "Entrega en Aeropuerto",
+    "deliveryTerminal": "Entrega en Terminal",
+    "returnAtBranch": "Devolver en Sucursal ({{sucursal}})",
+    "returnHome": "Devolución a domicilio",
+    "returnAirport": "Devolución en Aeropuerto",
+    "returnTerminal": "Devolución en Terminal"
   },
   "reservas": {
     "title": "Mis reservas",
@@ -456,7 +471,11 @@
     "cancelConfirm": "¿Estás seguro de cancelar esta reserva?",
     "viewContract": "Ver contrato",
     "loading": "Cargando reservas...",
-    "error": "Error al cargar las reservas"
+    "error": "Error al cargar las reservas",
+    "cashPaymentDeadline": "Tienes {{horas}} para pagar en sucursal antes de que la reserva se cancele automáticamente.",
+    "cashPaymentDeadlineLessThanHour": "menos de 1 hora",
+    "cashPaymentDeadlineHours": "~{{horas}} h",
+    "autoCancelledCash": "Se canceló automáticamente por no completarse el pago en efectivo dentro del plazo."
   },
   "perfil": {
     "title": "Mi perfil",
@@ -535,7 +554,8 @@
     "statusPending": "Pendiente",
     "statusFailed": "Fallido",
     "loading": "Cargando pagos...",
-    "error": "Error al cargar los pagos"
+    "error": "Error al cargar los pagos",
+    "preparingPayment": "Preparando pago…"
   },
   "contratos": {
     "title": "Mis contratos",

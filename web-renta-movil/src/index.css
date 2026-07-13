@@ -101,3 +101,76 @@ html.dark {
 .swal2-icon.swal2-success {
   color: #1e3a8a !important;
 }
+
+/* -- SweetAlert2 en modo oscuro -- */
+html.dark .swal2-project-popup {
+  background: #1e293b !important;
+  color: #f1f5f9 !important;
+  border: 1px solid rgba(147,197,253,0.18) !important;
+  box-shadow: 0 32px 80px rgba(0,0,0,0.45) !important;
+}
+html.dark .swal2-project-title {
+  color: #f1f5f9 !important;
+}
+html.dark .swal2-project-text {
+  color: #cbd5e1 !important;
+}
+html.dark .swal2-project-cancel {
+  background: #334155 !important;
+  color: #e2e8f0 !important;
+}
+html.dark .swal2-icon.swal2-warning,
+html.dark .swal2-icon.swal2-error,
+html.dark .swal2-icon.swal2-info,
+html.dark .swal2-icon.swal2-success {
+  color: #93c5fd !important;
+}
+
+/* ── react-datepicker: adaptado a modo claro/oscuro con las mismas
+   variables CSS del resto del proyecto (--bg-tarjeta, --texto-primary, etc). ── */
+.react-datepicker {
+  font-family: inherit !important;
+  background: var(--bg-tarjeta) !important;
+  border: 1px solid var(--borde) !important;
+  color: var(--texto-primary) !important;
+  box-shadow: 0 12px 36px rgba(0,0,0,0.15);
+}
+.react-datepicker__header {
+  background: var(--bg-item) !important;
+  border-bottom: 1px solid var(--borde) !important;
+}
+.react-datepicker__current-month,
+.react-datepicker-time__header,
+.react-datepicker-year-header,
+.react-datepicker__day-name {
+  color: var(--texto-primary) !important;
+}
+.react-datepicker__day {
+  color: var(--texto-primary) !important;
+}
+.react-datepicker__day:hover {
+  background: var(--bg-item-hover) !important;
+}
+.react-datepicker__day--disabled,
+.react-datepicker__day--outside-month {
+  color: var(--texto-second) !important;
+  opacity: 0.5;
+}
+.react-datepicker__day--selected,
+.react-datepicker__day--keyboard-selected {
+  background: #1e3a8a !important;
+  color: #ffffff !important;
+}
+.react-datepicker__navigation-icon::before {
+  border-color: var(--texto-second) !important;
+}
+.react-datepicker__triangle {
+  fill: var(--bg-tarjeta) !important;
+  color: var(--bg-tarjeta) !important;
+  stroke: var(--borde) !important;
+}
+.react-datepicker__input-container input {
+  background: var(--bg-tarjeta) !important;
+  color: var(--texto-primary) !important;
+  border-color: var(--borde) !important;
+}

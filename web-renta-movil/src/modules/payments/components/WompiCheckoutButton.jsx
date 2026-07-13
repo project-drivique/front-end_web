@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { generarFirmaIntegridad } from '@/services/wompiService';
 
 /**
@@ -35,6 +36,7 @@ export default function WompiCheckoutButton({
 }) {
     const formRef = useRef(null);
     const [firma, setFirma] = useState(null);
+    const { t } = useTranslation();
 
     useEffect(() => {
         generarFirmaIntegridad(reference, amountInCents, currency).then(setFirma);
@@ -58,7 +60,7 @@ export default function WompiCheckoutButton({
 
     return (
         <div>
-            {!firma && <p>Preparando pago…</p>}
+            {!firma && <p>{t('pagos.preparingPayment', 'Preparando pago…')}</p>}
             <form ref={formRef} />
         </div>
     );

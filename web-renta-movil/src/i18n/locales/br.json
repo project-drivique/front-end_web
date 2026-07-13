@@ -1,4 +1,4 @@
-﻿{
+{
   "common": {
     "backToHome": "Voltar ao início",
     "loading": "Carregando...",
@@ -430,7 +430,22 @@
       "datesRequired": "Você deve selecionar as datas de retirada e devolução.",
       "datesOrder": "A data de devolução não pode ser anterior à data de retirada.",
       "hoursOrder": "A hora de devolução não pode ser anterior à hora de retirada no mesmo dia."
-    }
+    },
+    "paymentMethodTitle": "Método de Pagamento Preferido",
+    "paymentWompiTitle": "Pagamento Online com Wompi",
+    "paymentWompiDesc": "Habilita entregas em domicílio, aeroporto ou terminal.",
+    "paymentCashTitle": "Pagamento em Dinheiro",
+    "paymentCashDesc": "Obrigatório retirar e pagar diretamente na filial.",
+    "deliveryTimeSectionTitle": "Local e Horário de Retirada/Devolução",
+    "dateRangeSectionTitle": "Selecione o Intervalo de Datas",
+    "pickupAtBranch": "Retirar na Filial ({{sucursal}})",
+    "deliveryHome": "Entrega em domicílio",
+    "deliveryAirport": "Entrega no aeroporto",
+    "deliveryTerminal": "Entrega no terminal",
+    "returnAtBranch": "Devolver na Filial ({{sucursal}})",
+    "returnHome": "Devolução em domicílio",
+    "returnAirport": "Devolução no aeroporto",
+    "returnTerminal": "Devolução no terminal"
   },
   "reservas": {
     "title": "Minhas reservas",
@@ -451,7 +466,11 @@
     "cancelConfirm": "Tem certeza que deseja cancelar esta reserva?",
     "viewContract": "Ver contrato",
     "loading": "Carregando reservas...",
-    "error": "Erro ao carregar as reservas"
+    "error": "Erro ao carregar as reservas",
+    "cashPaymentDeadline": "Você tem {{horas}} para pagar na filial antes que a reserva seja cancelada automaticamente.",
+    "cashPaymentDeadlineLessThanHour": "menos de 1 hora",
+    "cashPaymentDeadlineHours": "~{{horas}} h",
+    "autoCancelledCash": "Foi cancelada automaticamente por não concluir o pagamento em dinheiro dentro do prazo."
   },
   "perfil": {
     "title": "Meu perfil",
@@ -530,7 +549,8 @@
     "statusPending": "Pendente",
     "statusFailed": "Falhou",
     "loading": "Carregando pagamentos...",
-    "error": "Erro ao carregar os pagamentos"
+    "error": "Erro ao carregar os pagamentos",
+    "preparingPayment": "Preparando pagamento…"
   },
   "contratos": {
     "title": "Meus contratos",
