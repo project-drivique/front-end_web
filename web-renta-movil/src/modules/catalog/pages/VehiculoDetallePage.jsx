@@ -19,6 +19,7 @@ import TipoKilometraje from '../components/detalle/TipoKilometraje'
 import ServiciosAdicionales from '../components/detalle/ServiciosAdicionales'
 import ResumenLateral from '../components/detalle/ResumenLateral'
 import DatosPersonales from '../components/detalle/DatosPersonales'
+import FirmaContrato from '../../contracts/components/FirmaContrato'
 
 const IcoCheck = ({ color = '#16a34a', sz = 15 }) => (
   <svg width={sz} height={sz} fill="none" stroke={color} strokeWidth="2.8" viewBox="0 0 24 24">
@@ -82,6 +83,8 @@ export default function VehiculoDetallePage() {
   });
   const [errores, setErrores] = useState({});
   const [exito, setExito] = useState(false);
+  const [reservaCreada, setReservaCreada] = useState(null); // reserva guardada, usada por FirmaContrato
+  const [contratoFirmado, setContratoFirmado] = useState(false); // solo aplica al flujo de pago en efectivo
   const [datosPago, setDatosPago] = useState(null); // { referencia, amountInCents }
   const [redirigiendoPago, setRedirigiendoPago] = useState(false);
   const [errorPago, setErrorPago] = useState('');
@@ -230,7 +233,12 @@ export default function VehiculoDetallePage() {
       fechaReserva: new Date().toISOString(),
       datosForm,
       reservaDetalles: reserva,
-      total: totalCop
+      total: totalCop,
+      // Se guardan también el plan de protección y los servicios elegidos para
+      // que el contrato (aquí o al volver de Wompi) pueda mostrarlos aunque
+      // esos datos no vivan en reservaDetalles.
+      seguroIdx,
+      serviciosSeleccionados,
     });
 
     if (reservaGuardada.fechaLimitePago) {
@@ -240,7 +248,21 @@ export default function VehiculoDetallePage() {
     // Guardamos la referencia para que RespuestaPagoPage la recupere al volver de Wompi
     sessionStorage.setItem('current_wompi_reference', referencia);
 
+    setReservaCreada(reservaGuardada);
     setDatosPago({ referencia, amountInCents: aCentavos(totalCop) });
+
+    // Regla del flujo: si el pago es en efectivo, el contrato se firma justo
+    // después de los datos personales (aquí mismo). Si es Wompi, el contrato
+    // se firma más adelante, tras la confirmación del pago (RespuestaPagoPage).
+    if (reserva.metodoPago === 'efectivo') {
+      setContratoFirmado(false);
+    } else {
+      setExito(true);
+    }
+  };
+
+  const handleContratoFirmado = () => {
+    setContratoFirmado(true);
     setExito(true);
   };
 
@@ -269,6 +291,27 @@ export default function VehiculoDetallePage() {
     if (!datosPago) return;
     console.log('[Pago en efectivo] Pendiente de implementar. Referencia:', datosPago.referencia);
   };
+
+  if (reservaCreada && reserva.metodoPago === 'efectivo' && !contratoFirmado) return (
+    <div style={{ minHeight: '100vh', background: 'var(--hero-fondo)', position: 'relative', overflow: 'hidden' }}>
+      <div style={{ position: 'absolute', top: -80, right: -80, width: 500, height: 500, borderRadius: '50%', background: 'var(--hero-orb1)', pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', bottom: -60, left: -60, width: 350, height: 350, borderRadius: '50%', background: 'var(--hero-orb2)', pointerEvents: 'none' }} />
+      <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50, background: 'var(--bg-tarjeta)', backdropFilter: 'blur(12px)', borderBottom: '1px solid var(--borde)', boxShadow: '0 4px 20px rgba(0,0,0,0.04)', height: 96 }}>
+        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px', height: '100%', display: 'flex', alignItems: 'center', gap: 20 }}>
+          <Link to="/"><img src={logo} alt="Drivique" style={{ height: 80 }} /></Link>
+        </div>
+      </nav>
+      <div style={{ position: 'relative', paddingTop: 128, paddingBottom: 48, paddingLeft: 24, paddingRight: 24 }}>
+        <div style={{ textAlign: 'center', maxWidth: 700, margin: '0 auto 28px' }}>
+          <h1 style={{ fontSize: 24, fontWeight: 900, color: 'var(--texto-primary)', margin: '0 0 8px' }}>
+            {t('contratoFirma.pageTitleCash')}
+          </h1>
+          <p style={{ fontSize: 14, color: 'var(--texto-second)', margin: 0 }}>{t('contratoFirma.pageSubtitle')}</p>
+        </div>
+        <FirmaContrato vehiculo={vehiculo} reservaGuardada={reservaCreada} onFirmado={handleContratoFirmado} />
+      </div>
+    </div>
+  );
 
   if (exito) return (
     <div style={{
@@ -319,8 +362,8 @@ export default function VehiculoDetallePage() {
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 32 }}>
-              <p style={{ fontSize: 13, color: '#16a34a', fontWeight: 700, margin: 0 }}>
-                Recuerda llevar tu cédula y licencia física para la verificación manual.
+              <p style={{ fontSize: 13, color: '#2563eb', fontWeight: 700, margin: 0 }}>
+                El contrato firmado te llegó a tu correo. Muéstralo en la sucursal para realizar el pago.
               </p>
             </div>
             <div style={{ display: 'flex', justifyContent: 'center' }}>
