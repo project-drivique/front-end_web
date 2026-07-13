@@ -49,7 +49,7 @@ export default function DatePickerCustom({
         minDate={minDate || new Date()} // Si no llega minDate, usa la fecha actual.
         excludeDates={blockedDates} // Fechas que no se pueden seleccionar.
         placeholderText={placeholder || t('calendar.startDate', 'Seleccionar fecha')} // Placeholder traducido o personalizado.
-        className="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-red-500 focus:ring-4 focus:ring-red-500/20 transition-all outline-none text-gray-700 bg-white shadow-sm hover:border-gray-300 cursor-pointer" // Estilos del input.
+        className="w-full px-4 py-3 rounded-lg border-2 border-[var(--borde)] focus:border-red-500 focus:ring-4 focus:ring-red-500/20 transition-all outline-none text-[var(--texto-primary)] bg-[var(--bg-tarjeta)] shadow-sm hover:border-red-300 cursor-pointer" // Estilos del input, ahora usan las variables de tema (claro/oscuro).
         dayClassName={(date) =>
           blockedDates.some(bd => bd.getTime() === date.getTime()) // Compara si el día actual está bloqueado.
             ? "line-through text-red-500 bg-red-50 hover:bg-red-100 font-semibold" // Estilo para días bloqueados.
