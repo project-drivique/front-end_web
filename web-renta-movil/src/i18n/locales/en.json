@@ -1,4 +1,4 @@
-﻿{
+{
   "common": {
     "backToHome": "Back to home",
     "loading": "Loading...",
@@ -430,7 +430,22 @@
       "datesRequired": "You must select pickup and return dates.",
       "datesOrder": "The return date cannot be earlier than the pickup date.",
       "hoursOrder": "The return time cannot be earlier than the pickup time on the same day."
-    }
+    },
+    "paymentMethodTitle": "Preferred Payment Method",
+    "paymentWompiTitle": "Online Payment with Wompi",
+    "paymentWompiDesc": "Enables home, airport, or terminal delivery.",
+    "paymentCashTitle": "Cash Payment",
+    "paymentCashDesc": "Vehicle must be picked up and paid for at the branch.",
+    "deliveryTimeSectionTitle": "Pickup/Return Place and Time",
+    "dateRangeSectionTitle": "Select the Date Range",
+    "pickupAtBranch": "Pick up at Branch ({{sucursal}})",
+    "deliveryHome": "Home delivery",
+    "deliveryAirport": "Airport delivery",
+    "deliveryTerminal": "Terminal delivery",
+    "returnAtBranch": "Return at Branch ({{sucursal}})",
+    "returnHome": "Home return",
+    "returnAirport": "Airport return",
+    "returnTerminal": "Terminal return"
   },
   "reservas": {
     "title": "My reservations",
@@ -451,7 +466,11 @@
     "cancelConfirm": "Are you sure you want to cancel this reservation?",
     "viewContract": "View contract",
     "loading": "Loading reservations...",
-    "error": "Error loading reservations"
+    "error": "Error loading reservations",
+    "cashPaymentDeadline": "You have {{horas}} to pay at the branch before the reservation is automatically cancelled.",
+    "cashPaymentDeadlineLessThanHour": "less than 1 hour",
+    "cashPaymentDeadlineHours": "~{{horas}} h",
+    "autoCancelledCash": "It was automatically cancelled because cash payment was not completed within the deadline."
   },
   "perfil": {
     "title": "My profile",
@@ -530,7 +549,8 @@
     "statusPending": "Pending",
     "statusFailed": "Failed",
     "loading": "Loading payments...",
-    "error": "Error loading payments"
+    "error": "Error loading payments",
+    "preparingPayment": "Preparing payment…"
   },
   "contratos": {
     "title": "My contracts",

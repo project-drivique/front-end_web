@@ -33,8 +33,14 @@ function TarjetaReserva({ reserva, onCancelar }) {
     ? Math.max(0, (new Date(fechaLimitePago).getTime() - Date.now()) / 3600000)
     : null
 
+  const textoHoras = horasRestantes !== null
+    ? (horasRestantes < 1
+        ? t('reservas.cashPaymentDeadlineLessThanHour')
+        : t('reservas.cashPaymentDeadlineHours', { horas: Math.floor(horasRestantes) }))
+    : ''
+
   return (
-    <div className="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:flex-row sm:items-center">
+    <div className="flex flex-col gap-4 rounded-2xl border border-[var(--borde)] bg-[var(--bg-tarjeta)] p-5 shadow-sm sm:flex-row sm:items-center">
       <img
         src={vehiculo?.imagenes?.[0]}
         alt={vehiculo?.nombre || ''}
@@ -43,26 +49,26 @@ function TarjetaReserva({ reserva, onCancelar }) {
 
       <div className="flex-1">
         <div className="mb-2 flex flex-wrap items-center gap-2">
-          <h3 className="text-base font-extrabold text-slate-900">{vehiculo?.nombre || t('vehiculo.notFound')}</h3>
+          <h3 className="text-base font-extrabold text-[var(--texto-primary)]">{vehiculo?.nombre || t('vehiculo.notFound')}</h3>
           <span className={`rounded-full border px-3 py-0.5 text-xs font-bold ${ESTILOS_ESTADO[estado]}`}>
             {t(CLAVES_ESTADO[estado])}
           </span>
         </div>
 
-        <div className="flex flex-wrap gap-x-6 gap-y-1 text-sm text-slate-500">
-          <span><span className="font-semibold text-slate-700">{t('reservas.from')}:</span> {fechaInicio}</span>
-          <span><span className="font-semibold text-slate-700">{t('reservas.to')}:</span> {fechaFin}</span>
-          <span><span className="font-semibold text-slate-700">{t('reservas.total')}:</span> {formatCurrency(total, moneda)}</span>
+        <div className="flex flex-wrap gap-x-6 gap-y-1 text-sm text-[var(--texto-second)]">
+          <span><span className="font-semibold text-[var(--texto-primary)]">{t('reservas.from')}:</span> {fechaInicio}</span>
+          <span><span className="font-semibold text-[var(--texto-primary)]">{t('reservas.to')}:</span> {fechaFin}</span>
+          <span><span className="font-semibold text-[var(--texto-primary)]">{t('reservas.total')}:</span> {formatCurrency(total, moneda)}</span>
         </div>
 
         {pendientePagoEfectivo && (
           <p className="mt-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-700">
-            Tienes {horasRestantes < 1 ? 'menos de 1 hora' : `~${Math.floor(horasRestantes)} h`} para pagar en sucursal antes de que la reserva se cancele automáticamente.
+            {t('reservas.cashPaymentDeadline', { horas: textoHoras })}
           </p>
         )}
         {estadoRaw === 'CANCELADA_POR_TIEMPO' && (
-          <p className="mt-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-500">
-            Se canceló automáticamente por no completarse el pago en efectivo dentro del plazo.
+          <p className="mt-2 rounded-lg border border-[var(--borde)] bg-[var(--bg-item)] px-3 py-1.5 text-xs font-semibold text-[var(--texto-second)]">
+            {t('reservas.autoCancelledCash')}
           </p>
         )}
       </div>
@@ -96,19 +102,19 @@ export default function ReservasPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <nav className="fixed inset-x-0 top-0 z-50 h-24 border-b border-slate-100 bg-white/95 backdrop-blur">
+    <div className="min-h-screen bg-[var(--bg-page)]">
+      <nav className="fixed inset-x-0 top-0 z-50 h-24 border-b border-[var(--borde)] bg-[var(--bg-nav)] backdrop-blur">
         <div className="mx-auto flex h-full max-w-5xl items-center gap-5 px-6">
           <Link to="/home"><img src={logo} alt="Drivique" className="h-20" /></Link>
         </div>
       </nav>
 
       <div className="mx-auto max-w-5xl px-6 pb-16 pt-32">
-        <h1 className="text-2xl font-black text-slate-900">{t('reservas.title')}</h1>
-        <p className="mb-8 text-sm text-slate-500">{t('reservas.subtitle')}</p>
+        <h1 className="text-2xl font-black text-[var(--texto-primary)]">{t('reservas.title')}</h1>
+        <p className="mb-8 text-sm text-[var(--texto-second)]">{t('reservas.subtitle')}</p>
 
         {cargando && (
-          <p className="text-sm text-slate-400">{t('reservas.loading')}</p>
+          <p className="text-sm text-[var(--texto-second)]">{t('reservas.loading')}</p>
         )}
 
         {!cargando && error && (
@@ -116,9 +122,9 @@ export default function ReservasPage() {
         )}
 
         {!cargando && !error && reservas.length === 0 && (
-          <div className="rounded-2xl border border-slate-200 bg-white p-12 text-center">
-            <p className="mb-1 text-base font-bold text-slate-800">{t('reservas.noReservations')}</p>
-            <p className="mb-5 text-sm text-slate-500">{t('reservas.noReservationsSubtitle')}</p>
+          <div className="rounded-2xl border border-[var(--borde)] bg-[var(--bg-tarjeta)] p-12 text-center">
+            <p className="mb-1 text-base font-bold text-[var(--texto-primary)]">{t('reservas.noReservations')}</p>
+            <p className="mb-5 text-sm text-[var(--texto-second)]">{t('reservas.noReservationsSubtitle')}</p>
             <Link to="/home" className="inline-block rounded-full bg-blue-800 px-6 py-2.5 text-sm font-bold text-white">
               {t('common.backToHome')}
             </Link>

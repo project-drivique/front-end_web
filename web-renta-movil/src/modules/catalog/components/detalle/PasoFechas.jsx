@@ -10,12 +10,12 @@ const HORAS = Array.from({ length: 24 }, (_, i) => {
 
 function Campo({ icono: Icono, label, children }) {
   return (
-    <div className="flex min-h-[96px] w-full items-center gap-4 rounded-2xl border border-slate-200 bg-white pl-8 pr-6 py-5 shadow-sm hover:border-slate-300 hover:shadow-md transition-all">
+    <div className="flex min-h-[96px] w-full items-center gap-4 rounded-2xl border border-[var(--borde)] bg-[var(--bg-tarjeta)] pl-8 pr-6 py-5 shadow-sm hover:border-blue-300 hover:shadow-md transition-all">
       <span className="ml-2 flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-800">
         <Icono size={19} />
       </span>
       <div className="min-w-0 flex-1">
-        <span className="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">{label}</span>
+        <span className="block text-[11px] font-bold uppercase tracking-wider text-[var(--texto-second)] mb-1.5">{label}</span>
         {children}
       </div>
     </div>
@@ -26,7 +26,10 @@ function Campo({ icono: Icono, label, children }) {
 // largas (p. ej. "Recoger en Sucursal (Alquiler Neiva - Centro)") entren
 // bien sin romper el layout del select. El `title` en el <select> muestra
 // el texto completo al pasar el mouse.
-const selectCls = 'block w-full truncate bg-transparent text-sm sm:text-[15px] font-extrabold text-slate-800 outline-none cursor-pointer py-1.5'
+// Nota: el <select> usa "color-scheme" implícito del navegador para el menú
+// desplegable nativo, pero el propio control (cerrado) sí respeta el tema
+// gracias a var(--texto-primary).
+const selectCls = 'block w-full truncate bg-transparent text-sm sm:text-[15px] font-extrabold text-[var(--texto-primary)] outline-none cursor-pointer py-1.5'
 
 export default function PasoFechas({ vehiculo, reserva, onCambio }) {
   const { t } = useTranslation()
@@ -36,30 +39,30 @@ export default function PasoFechas({ vehiculo, reserva, onCambio }) {
   const cityObj = branchObj ? CIUDADES.find(c => c.nombre === branchObj.ciudad) : null;
 
   const opcionesEntrega = [
-    { value: carBranch, label: `Recoger en Sucursal (${carBranch})` }
+    { value: carBranch, label: t('vehiculo.pickupAtBranch', { sucursal: carBranch }) }
   ];
 
   if (reserva.metodoPago !== 'efectivo') {
-    opcionesEntrega.push({ value: 'domicilio', label: 'Entrega a domicilio' });
+    opcionesEntrega.push({ value: 'domicilio', label: t('vehiculo.deliveryHome') });
     if (cityObj?.tieneAeropuerto) {
-      opcionesEntrega.push({ value: 'aeropuerto', label: 'Entrega en Aeropuerto' });
+      opcionesEntrega.push({ value: 'aeropuerto', label: t('vehiculo.deliveryAirport') });
     }
     if (cityObj?.tieneTerminal) {
-      opcionesEntrega.push({ value: 'terminal', label: 'Entrega en Terminal' });
+      opcionesEntrega.push({ value: 'terminal', label: t('vehiculo.deliveryTerminal') });
     }
   }
 
   const opcionesDevolucion = [
-    { value: carBranch, label: `Devolver en Sucursal (${carBranch})` }
+    { value: carBranch, label: t('vehiculo.returnAtBranch', { sucursal: carBranch }) }
   ];
 
   if (reserva.metodoPago !== 'efectivo') {
-    opcionesDevolucion.push({ value: 'domicilio', label: 'Devolución a domicilio' });
+    opcionesDevolucion.push({ value: 'domicilio', label: t('vehiculo.returnHome') });
     if (cityObj?.tieneAeropuerto) {
-      opcionesDevolucion.push({ value: 'aeropuerto', label: 'Devolución en Aeropuerto' });
+      opcionesDevolucion.push({ value: 'aeropuerto', label: t('vehiculo.returnAirport') });
     }
     if (cityObj?.tieneTerminal) {
-      opcionesDevolucion.push({ value: 'terminal', label: 'Devolución en Terminal' });
+      opcionesDevolucion.push({ value: 'terminal', label: t('vehiculo.returnTerminal') });
     }
   }
 
@@ -75,12 +78,12 @@ export default function PasoFechas({ vehiculo, reserva, onCambio }) {
       <div className="w-full space-y-14">
         {/* Selector de Método de Pago */}
         <div className="w-full">
-          <span className="block text-xs font-extrabold uppercase tracking-widest text-slate-400 mb-6">
-            Método de Pago Preferido
+          <span className="block text-xs font-extrabold uppercase tracking-widest text-[var(--texto-second)] mb-6">
+            {t('vehiculo.paymentMethodTitle')}
           </span>
           <br></br>
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-            <label className={`flex min-h-[112px] items-start gap-4 rounded-2xl border p-6 cursor-pointer transition-all duration-200 ${reserva.metodoPago !== 'efectivo' ? 'border-blue-600 bg-blue-50/40 shadow-sm' : 'border-slate-200 hover:bg-slate-50'}`}>
+            <label className={`flex min-h-[112px] items-start gap-4 rounded-2xl border p-6 cursor-pointer transition-all duration-200 ${reserva.metodoPago !== 'efectivo' ? 'border-blue-600 bg-blue-50/40 shadow-sm' : 'border-[var(--borde)] bg-[var(--bg-tarjeta)] hover:bg-[var(--bg-item-hover)]'}`}>
               <input
                 type="radio"
                 name="metodoPago"
@@ -90,12 +93,12 @@ export default function PasoFechas({ vehiculo, reserva, onCambio }) {
                 className="h-5 w-5 shrink-0 text-blue-600 accent-blue-600 mt-1"
               />
               <div className="min-w-0 flex-1">
-                <span className="block text-lg font-extrabold text-slate-800 leading-snug">Pago Virtual con Wompi</span>
-                <span className="block text-sm text-slate-500 mt-2 leading-relaxed">Habilita entregas a domicilio, aeropuerto o terminal.</span>
+                <span className="block text-lg font-extrabold text-[var(--texto-primary)] leading-snug">{t('vehiculo.paymentWompiTitle')}</span>
+                <span className="block text-sm text-[var(--texto-second)] mt-2 leading-relaxed">{t('vehiculo.paymentWompiDesc')}</span>
               </div>
             </label>
 
-            <label className={`flex min-h-[112px] items-start gap-4 rounded-2xl border p-6 cursor-pointer transition-all duration-200 ${reserva.metodoPago === 'efectivo' ? 'border-blue-600 bg-blue-50/40 shadow-sm' : 'border-slate-200 hover:bg-slate-50'}`}>
+            <label className={`flex min-h-[112px] items-start gap-4 rounded-2xl border p-6 cursor-pointer transition-all duration-200 ${reserva.metodoPago === 'efectivo' ? 'border-blue-600 bg-blue-50/40 shadow-sm' : 'border-[var(--borde)] bg-[var(--bg-tarjeta)] hover:bg-[var(--bg-item-hover)]'}`}>
               <input
                 type="radio"
                 name="metodoPago"
@@ -105,8 +108,8 @@ export default function PasoFechas({ vehiculo, reserva, onCambio }) {
                 className="h-5 w-5 shrink-0 text-blue-600 accent-blue-600 mt-1"
               />
               <div className="min-w-0 flex-1">
-                <span className="block text-lg font-extrabold text-slate-800 leading-snug">Pago en Efectivo</span>
-                <span className="block text-sm text-slate-500 mt-2 leading-relaxed">Obligatorio retirar y pagar directamente en sucursal.</span>
+                <span className="block text-lg font-extrabold text-[var(--texto-primary)] leading-snug">{t('vehiculo.paymentCashTitle')}</span>
+                <span className="block text-sm text-[var(--texto-second)] mt-2 leading-relaxed">{t('vehiculo.paymentCashDesc')}</span>
               </div>
             </label>
           </div>
@@ -115,8 +118,8 @@ export default function PasoFechas({ vehiculo, reserva, onCambio }) {
         {/* Inputs de Ubicación y Hora */}
         <div className="w-full">
           <br></br>
-          <span className="block text-xs font-extrabold uppercase tracking-widest text-slate-400 mb-6">
-            Lugar y Hora de Entrega/Devolución
+          <span className="block text-xs font-extrabold uppercase tracking-widest text-[var(--texto-second)] mb-6">
+            {t('vehiculo.deliveryTimeSectionTitle')}
           </span>
           {/* En pantallas medianas se apila a 1 columna para que cada select
               tenga suficiente ancho para textos largos; a partir de lg pasa a 2 columnas. */}
@@ -166,12 +169,12 @@ export default function PasoFechas({ vehiculo, reserva, onCambio }) {
               <FaCalendarAlt size={15} />
             </span>
 
-            <span className="block text-xs font-extrabold uppercase tracking-widest text-slate-400">
-              Selecciona el Rango de Fechas
+            <span className="block text-xs font-extrabold uppercase tracking-widest text-[var(--texto-second)]">
+              {t('vehiculo.dateRangeSectionTitle')}
             </span>
           </div>
           {/* El calendario ahora ocupa el 100% del ancho de este contenedor */}
-          <div className="w-full bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm">
+          <div className="w-full bg-[var(--bg-tarjeta)] rounded-3xl border border-[var(--borde)] p-6 sm:p-8 shadow-sm">
             <CalendarioReservas
               vehiculoId={vehiculo.id}
               fechaInicio={reserva.fechaInicio}

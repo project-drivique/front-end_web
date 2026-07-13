@@ -1,4 +1,4 @@
-﻿{
+{
   "common": {
     "backToHome": "Retour à l'accueil",
     "loading": "Chargement...",
@@ -430,7 +430,22 @@
       "datesRequired": "Vous devez sélectionner les dates de prise en charge et de restitution.",
       "datesOrder": "La date de restitution ne peut pas être antérieure à la date de prise en charge.",
       "hoursOrder": "L'heure de restitution ne peut pas être antérieure à l'heure de prise en charge le même jour."
-    }
+    },
+    "paymentMethodTitle": "Mode de Paiement Préféré",
+    "paymentWompiTitle": "Paiement en Ligne avec Wompi",
+    "paymentWompiDesc": "Permet la livraison à domicile, à l'aéroport ou au terminal.",
+    "paymentCashTitle": "Paiement en Espèces",
+    "paymentCashDesc": "Retrait et paiement obligatoires directement en agence.",
+    "deliveryTimeSectionTitle": "Lieu et Heure de Prise en Charge/Retour",
+    "dateRangeSectionTitle": "Sélectionnez la Plage de Dates",
+    "pickupAtBranch": "Récupérer en Agence ({{sucursal}})",
+    "deliveryHome": "Livraison à domicile",
+    "deliveryAirport": "Livraison à l'aéroport",
+    "deliveryTerminal": "Livraison au terminal",
+    "returnAtBranch": "Retourner en Agence ({{sucursal}})",
+    "returnHome": "Retour à domicile",
+    "returnAirport": "Retour à l'aéroport",
+    "returnTerminal": "Retour au terminal"
   },
   "reservas": {
     "title": "Mes réservations",
@@ -451,7 +466,11 @@
     "cancelConfirm": "Êtes-vous sûr de vouloir annuler cette réservation ?",
     "viewContract": "Voir le contrat",
     "loading": "Chargement des réservations...",
-    "error": "Erreur lors du chargement des réservations"
+    "error": "Erreur lors du chargement des réservations",
+    "cashPaymentDeadline": "Il vous reste {{horas}} pour payer en agence avant l'annulation automatique de la réservation.",
+    "cashPaymentDeadlineLessThanHour": "moins d'1 heure",
+    "cashPaymentDeadlineHours": "~{{horas}} h",
+    "autoCancelledCash": "Annulée automatiquement car le paiement en espèces n'a pas été effectué dans le délai imparti."
   },
   "perfil": {
     "title": "Mon profil",
@@ -530,7 +549,8 @@
     "statusPending": "En attente",
     "statusFailed": "Échoué",
     "loading": "Chargement des paiements...",
-    "error": "Erreur lors du chargement des paiements"
+    "error": "Erreur lors du chargement des paiements",
+    "preparingPayment": "Préparation du paiement…"
   },
   "contratos": {
     "title": "Mes contrats",
