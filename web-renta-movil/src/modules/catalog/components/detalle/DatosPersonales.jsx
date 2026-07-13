@@ -182,11 +182,11 @@ export default function DatosPersonales({ vehiculo, reserva, seguroIdx, servicio
   const subtotalSeg = precioSeg * dias;
   const subtotalServicios = precioServicios * dias;
   const cargos = Math.round((subtotal + subtotalSeg + subtotalServicios) * 0.10);
-  
+
   const recargoRetiro = RECARGOS_LOGISTICOS[reserva.sucursalRetiro] || 0;
   const recargoDevolucion = RECARGOS_LOGISTICOS[reserva.sucursalDevolucion] || 0;
   const recargoLogistico = recargoRetiro + recargoDevolucion;
-  
+
   const total = subtotal + subtotalSeg + subtotalServicios + cargos + recargoLogistico;
 
 
@@ -310,7 +310,7 @@ export default function DatosPersonales({ vehiculo, reserva, seguroIdx, servicio
         <p style={{ fontSize: 13, color: 'var(--texto-second)', marginBottom: 20 }}>
           {docsVerificados
             ? 'Ya verificamos tus documentos en una reserva anterior. Si quieres, puedes reemplazarlos subiendo nuevos archivos PDF.'
-            : 'Sube los siguientes documentos en formato PDF. Estos serán revisados manualmente por el personal de la sucursal para validar y entregar tu vehículo.'}
+            : ''}
         </p>
 
         {docsVerificados && (
