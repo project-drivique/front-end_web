@@ -29,7 +29,7 @@ function Campo({ icono: Icono, label, children }) {
 // Nota: el <select> usa "color-scheme" implícito del navegador para el menú
 // desplegable nativo, pero el propio control (cerrado) sí respeta el tema
 // gracias a var(--texto-primary).
-const selectCls = 'block w-full truncate bg-transparent text-sm sm:text-[15px] font-extrabold text-[var(--texto-primary)] outline-none cursor-pointer py-1.5'
+const selectCls = 'campo-select block w-full truncate bg-transparent text-sm sm:text-[15px] font-extrabold text-[var(--texto-primary)] outline-none cursor-pointer py-1.5'
 
 export default function PasoFechas({ vehiculo, reserva, onCambio }) {
   const { t } = useTranslation()

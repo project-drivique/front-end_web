@@ -21,7 +21,10 @@
     "day": "jour",
     "days": "jours",
     "date": "Date",
-    "time": "Heure"
+    "time": "Heure",
+    "usdChargeAlertTitle": "La facturation est toujours en COP",
+    "usdChargeAlertHtml": "Vous consultez les prix en <b>dollars américains (USD)</b> à titre de référence visuelle uniquement.<br/>La facturation réelle via Wompi est toujours effectuée en <b>pesos colombiens (COP)</b>, selon le taux de change en vigueur au moment du paiement.",
+    "usdChargeAlertConfirm": "Compris"
   },
   "login": {
     "title": "Se connecter",
@@ -445,7 +448,9 @@
     "returnAtBranch": "Retourner en Agence ({{sucursal}})",
     "returnHome": "Retour à domicile",
     "returnAirport": "Retour à l'aéroport",
-    "returnTerminal": "Retour au terminal"
+    "returnTerminal": "Retour au terminal",
+    "termsFullText": "1. DURÉE DU CONTRAT\n   La durée de la location sera celle indiquée dans la réservation, de la date et l'heure de début à la date et l'heure de fin.\n\n2. PAIEMENTS ET TARIFS\n   - Le prix comprend la location du véhicule, les taxes et les frais administratifs.\n   - Un paiement total ou partiel est requis pour confirmer la réservation.\n\n3. KILOMÉTRAGE\n   - Option limitée : Comprend des km par jour. En cas de dépassement, un supplément est facturé par kilomètre excédentaire (1 500 COP/km).\n   - Option illimitée : Aucune limite de kilométrage pendant la période de location.\n\n4. DÉPASSEMENT DE KILOMÉTRAGE (option limitée uniquement)\n   - Un montant supplémentaire par kilomètre (1 500 COP/km) sera facturé pour chaque km dépassant la limite convenue.\n   - Le dépassement est calculé au moment de la restitution du véhicule.\n\n5. ANNULATIONS ET REMBOURSEMENTS\n   - Drivique n'effectue AUCUN remboursement, quelles que soient les circonstances, une fois la réservation confirmée.\n   - Aucun remboursement ne s'applique en cas d'annulation, de changement de plan, de non-présentation ou pour toute autre raison.\n\n6. DOCUMENTS REQUIS\n   - L'utilisateur doit présenter une pièce d'identité valide (carte d'identité, carte d'étranger ou passeport).\n   - Doit remplir les conditions d'âge et de permis de conduire selon la réglementation en vigueur.\n\n7. UTILISATION DU VÉHICULE\n   - Le véhicule ne peut être utilisé que sur le territoire colombien.\n   - La sous-location, l'usage commercial non autorisé et le transport de marchandises interdites ne sont pas permis.\n\n8. DOMMAGES ET RESPONSABILITÉ\n   - L'utilisateur est responsable des dommages causés au véhicule pendant la période de location, sauf ceux couverts par l'assurance souscrite.\n   - En cas d'accident, Drivique et les autorités compétentes doivent être informées immédiatement.\n\n9. MODIFICATIONS DU CONTRAT\n   - Tout changement de dates, d'heures, d'agence ou de type de kilométrage doit être convenu au préalable avec Drivique.\n   - Les modifications peuvent entraîner des ajustements du prix total.\n\n10. LÉGISLATION APPLICABLE\n    Ce contrat est régi par les lois de la République de Colombie.",
+    "documentVerificationNote": "Remarque : La vérification de vos documents sera effectuée manuellement par le personnel de l'agence au moment de la remise du véhicule. Assurez-vous que les photos/scans du PDF sont nets."
   },
   "reservas": {
     "title": "Mes réservations",

@@ -5,56 +5,6 @@ import { formatCurrency } from '@/utils/monedaUtils';
 import { RECARGOS_LOGISTICOS } from '../../constants';
 
 
-const TERMINOS_TXT = `
-1. DURACIÓN DEL CONTRATO
-   La duración de la renta será la indicada en la reserva, desde la fecha y hora de inicio hasta la fecha y hora de finalizar.
-
-
-2. PAGOS Y TARIFAS
-   - El precio incluye la renta del vehículo, impuestos y cargos administrativos.
-   - Se requiere un pago total o parcial al momento de confirmar la reserva.
-
-
-3. KILOMETRAJE
-   - Opción limitado: Incluye km por día. Si se supera el límite, se cobrará un adicional por cada kilómetro extra ($1.500 COP/km).
-   - Opción ilimitado: No hay límite de kilómetros durante el periodo de renta.
-
-
-4. EXCESO DE KILOMETRAJE (solo para opción limitado)
-   - Se cobrará un valor por kilómetro adicional ($1.500 COP/km) por cada km que supere el límite pactado.
-   - El exceso se calcula al momento de la devolución del vehículo.
-
-
-5. CANCELACIONES Y REEMBOLSOS
-   - Drivique NO realiza devoluciones del dinero bajo ninguna circunstancia una vez confirmada la reserva.
-   - No se aplican reembolsos por cancelaciones, cambios de planes, no presentación ni por ningún otro motivo.
-
-
-6. DOCUMENTACIÓN REQUERIDA
-   - El usuario debe presentar documento de identidad válido (CC, CE o Pasaporte).
-   - Debe cumplir con los requisitos de edad y licencia de conducción según normativa vigente.
-
-
-7. USO DEL VEHÍCULO
-   - El vehículo debe ser usado únicamente en territorio colombiano.
-   - No se permite subarriendo, uso comercial no autorizado, ni transporte de carga prohibida.
-
-
-8. DAÑOS Y RESPONSABILIDAD
-   - El usuario es responsable por daños causados al vehículo durante el periodo de renta, excepto los cubiertos por el seguro contratado.
-   - En caso de accidente, se deberá notificar inmediatamente a Drivique y a las autoridades correspondientes.
-
-
-9. MODIFICACIONES AL CONTRATO
-   - Cualquier cambio en fechas, horas, sucursal o tipo de kilometraje debe ser acordado previamente con Drivique.
-   - Los cambios pueden implicar ajustes en el precio total.
-
-
-10. LEGISLACIÓN APLICABLE
-    Este contrato se rige por las leyes de la República de Colombia.
-`;
-
-
 const DocumentUploader = ({ label, helpText, error, file, loading, onUpload, onClear, required = true }) => {
   return (
     <div style={{
@@ -406,7 +356,7 @@ export default function DatosPersonales({ vehiculo, reserva, seguroIdx, servicio
             <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 111.083.87l-.417.834M12 18.75h.007V19h-.007v-.025zM21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
           <span style={{ fontSize: 12, color: '#1e3a8a', lineHeight: 1.5, fontWeight: 600 }}>
-            Nota: La verificación de tus documentos será realizada de forma manual por el personal de la sucursal al momento de la entrega del carro. Asegúrate de que las fotos/escaneos dentro del PDF sean nítidos.
+            {t('vehiculo.documentVerificationNote')}
           </span>
         </div>
       </div>
@@ -438,7 +388,7 @@ export default function DatosPersonales({ vehiculo, reserva, seguroIdx, servicio
               </div>
             </div>
             <div style={{ background: '#f8fafc', padding: 18 }}>
-              <pre style={{ fontSize: 12, color: '#334155', lineHeight: 1.7, whiteSpace: 'pre-wrap', margin: 0, fontFamily: 'inherit' }}>{TERMINOS_TXT}</pre>
+              <pre style={{ fontSize: 12, color: '#334155', lineHeight: 1.7, whiteSpace: 'pre-wrap', margin: 0, fontFamily: 'inherit' }}>{t('vehiculo.termsFullText')}</pre>
             </div>
           </div>
         )}

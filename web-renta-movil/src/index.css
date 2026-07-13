@@ -174,3 +174,22 @@ html.dark .swal2-icon.swal2-success {
   color: var(--texto-primary) !important;
   border-color: var(--borde) !important;
 }
+
+/* ── Selects de hora / lugar de retiro / lugar de devolución (PasoFechas):
+   fondo, texto y borde según el tema activo. color-scheme hace que el propio
+   navegador dibuje el listado desplegable (options) y su ícono/flecha nativos
+   en la paleta correcta, evitando el fondo blanco con texto blanco en modo
+   oscuro. ── */
+.campo-select {
+  color-scheme: light;
+  background-color: var(--bg-tarjeta);
+  color: var(--texto-primary);
+  border-color: var(--borde);
+}
+html.dark .campo-select {
+  color-scheme: dark;
+}
+.campo-select option {
+  background-color: var(--bg-tarjeta);
+  color: var(--texto-primary);
+}
