@@ -138,8 +138,8 @@ export default function PerfilPage() {
   return (
     <div style={{ minHeight: '100vh', background: c.pageBg }}>
       {/* Banner superior con avatar */}
-      <div style={{ background: c.heroBg, padding: '40px 24px 80px' }}>
-        <div style={{ maxWidth: '780px', margin: '0 auto', display: 'flex', alignItems: 'center', gap: '24px' }}>
+      <div className="perfil-banner-fila" style={{ background: c.heroBg, padding: '40px 24px 80px' }}>
+        <div className="perfil-banner-inner" style={{ maxWidth: '780px', margin: '0 auto', display: 'flex', alignItems: 'center', gap: '24px' }}>
           <div style={{
             width: '80px',
             height: '80px',
@@ -209,7 +209,7 @@ export default function PerfilPage() {
       </div>
 
       {/* Contenido principal, superpuesto al banner */}
-      <div style={{ maxWidth: '780px', margin: '-44px auto 40px', padding: '0 24px' }}>
+      <div className="perfil-contenido-inner" style={{ maxWidth: '780px', margin: '-44px auto 40px', padding: '0 24px' }}>
 
         {/* Información Personal */}
         <div style={{ background: c.cardBg, borderRadius: '14px', border: `1px solid ${c.cardBorder}`, boxShadow: c.cardShadow, marginBottom: '20px', overflow: 'hidden' }}>

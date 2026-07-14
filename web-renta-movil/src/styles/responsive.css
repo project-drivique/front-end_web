@@ -1,0 +1,137 @@
+/* ============================================================
+   RESPONSIVE.CSS
+   Media queries para adaptar todas las pantallas a tablet y celular.
+   NO modifica nada en escritorio (>1024px): todo el diseño actual
+   se mantiene exactamente igual. Estas reglas solo se activan
+   por debajo de los breakpoints indicados, y usan !important
+   porque los componentes originales usan estilos inline (mayor
+   especificidad), así que es la única forma de sobreescribirlos
+   sin tocar el resto del código de cada pantalla.
+
+   Breakpoints:
+   - Tablet:  max-width: 1024px
+   - Celular: max-width: 640px
+
+   Nota: varias pantallas del proyecto (Reservas, Perfil -contenido-,
+   Verificar Correo, PasoFechas, CalendarioReservas,
+   ServiciosAdicionales, TipoKilometraje, GridVehiculos,
+   PaginacionCatalogo...) ya fueron construidas con Tailwind y clases
+   "auto-fit"/flex-wrap que se adaptan solas, así que no necesitan
+   reglas aquí.
+   ============================================================ */
+
+/* ============================================================
+   LANDING PAGE
+   ============================================================ */
+@media (max-width: 1024px) {
+  .landing-nav-inner { padding: 0 20px !important; gap: 16px !important; }
+  .landing-nav-links { display: none !important; }
+  .landing-nav-auth { display: none !important; }
+  .landing-nav-toggle { display: flex !important; }
+  .landing-nav-mobile-menu { display: flex !important; }
+
+  .landing-section-inner { padding: 0 20px !important; }
+  .landing-hero-inner { padding: 100px 20px 48px !important; gap: 40px !important; }
+  .landing-section { padding: 56px 0 !important; }
+  .landing-cta-section { padding: 56px 20px !important; }
+  .landing-footer { padding: 40px 20px 24px !important; }
+  .landing-footer-top { gap: 32px !important; }
+  .landing-footer-cols { gap: 28px !important; }
+}
+
+@media (max-width: 640px) {
+  .landing-nav-inner { padding: 0 16px !important; }
+  .landing-nav-inner img { height: 56px !important; }
+  .landing-hero-inner { padding: 90px 16px 40px !important; }
+  .landing-hero-stats { gap: 20px !important; flex-wrap: wrap !important; }
+  .landing-section-inner { padding: 0 16px !important; }
+  .landing-section { padding: 40px 0 !important; }
+  .landing-cta-section { padding: 40px 16px !important; }
+  .landing-cta-section h2 { font-size: 1.5rem !important; }
+  .landing-footer { padding: 32px 16px 20px !important; }
+  .landing-footer-top { flex-direction: column !important; gap: 28px !important; }
+  .landing-footer-cols { flex-direction: column !important; gap: 24px !important; }
+  .landing-footer-bottom { flex-direction: column !important; align-items: flex-start !important; }
+}
+
+/* ============================================================
+   AUTH (Login, Registro, Recuperar, Nueva Contraseña, 2FA)
+   El panel izquierdo decorativo ya se oculta solo por debajo de
+   1024px (lo hace el propio componente PanelIzquierdo / lg-left).
+   Aquí solo ajustamos el padding de la tarjeta del formulario.
+   ============================================================ */
+@media (max-width: 1024px) {
+  .auth-contenedor { padding: 24px !important; }
+}
+
+@media (max-width: 640px) {
+  .auth-contenedor { padding: 16px !important; }
+  .auth-card { padding: 24px 20px !important; border-radius: 16px !important; }
+}
+
+/* ============================================================
+   CATALOGO (Header, Hero de búsqueda, Filtros + Grid)
+   ============================================================ */
+@media (max-width: 1024px) {
+  .catalogo-layout { flex-direction: column !important; }
+  .filtros-panel { width: 100% !important; max-width: 100% !important; flex: 1 1 100% !important; position: static !important; top: auto !important; max-height: none !important; }
+  .catalogo-header-inner { padding: 0 20px !important; }
+  .catalogo-hero-inner { padding: 24px 20px 18px !important; }
+  .catalogo-contenido-inner { padding: 24px 20px !important; }
+  .hero-busqueda-grid { grid-template-columns: repeat(2, minmax(0,1fr)) !important; }
+}
+
+@media (max-width: 640px) {
+  .catalogo-header-inner { padding: 0 16px !important; gap: 10px !important; }
+  .catalogo-header-inner img { height: 56px !important; }
+  .catalogo-saludo { display: none !important; }
+  .catalogo-header-links { font-size: 13px !important; }
+  .catalogo-hero-inner { padding: 20px 16px 16px !important; }
+  .hero-busqueda-grid { grid-template-columns: 1fr !important; }
+  .catalogo-contenido-inner { padding: 16px !important; }
+}
+
+/* ============================================================
+   DETALLE DE VEHICULO
+   ============================================================ */
+@media (max-width: 1024px) {
+  .detalle-layout { flex-direction: column !important; }
+  .detalle-columna-principal { width: 100% !important; max-width: 100% !important; flex: 1 1 100% !important; }
+  .detalle-resumen-lateral { width: 100% !important; flex-shrink: 1 !important; position: static !important; top: auto !important; }
+  .detalle-contenido-inner { padding: 24px 20px !important; }
+}
+
+@media (max-width: 640px) {
+  .detalle-contenido-inner { padding: 16px !important; }
+  .detalle-galeria-principal { height: 240px !important; }
+  .datos-personales-grid { grid-template-columns: 1fr !important; }
+}
+
+/* ============================================================
+   RESPUESTA DE PAGO
+   ============================================================ */
+@media (max-width: 640px) {
+  .respuesta-pago-card { padding: 24px 20px !important; }
+}
+
+/* ============================================================
+   PERFIL
+   ============================================================ */
+@media (max-width: 640px) {
+  .perfil-banner-fila { padding: 28px 16px 64px !important; }
+  .perfil-banner-inner { flex-wrap: wrap !important; gap: 16px !important; }
+  .perfil-banner-inner h1 { font-size: 20px !important; }
+  .perfil-contenido-inner { padding: 0 16px !important; }
+}
+
+/* ============================================================
+   CONTRATOS / FIRMA
+   ============================================================ */
+@media (max-width: 1024px) {
+  .contrato-contenedor-externo { padding: 0 4px !important; }
+}
+
+@media (max-width: 640px) {
+  .contrato-contenido { padding: 18px 16px !important; }
+  .contrato-grid-2col { grid-template-columns: 1fr !important; }
+}

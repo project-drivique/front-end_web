@@ -151,7 +151,7 @@ export default function CatalogoUsuarioPage() {
           invitado={false}
         />
 
-        <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '22px 24px 24px', display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
+        <div className="catalogo-layout catalogo-contenido-inner" style={{ maxWidth: '1280px', margin: '0 auto', padding: '22px 24px 24px', display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
           <FiltrosCatalogo
             c={c}
             inputStyle={inputStyle}

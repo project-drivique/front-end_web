@@ -52,7 +52,7 @@ export default function Verificar2FAPage() {
       </div>
 
       {/* ── Panel derecho ── */}
-      <div style={{ flex: 1, background: '#f8fafc', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 24px' }}>
+      <div style={{ flex: 1, background: '#f8fafc', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 24px' }} className="auth-contenedor">
 
         {/* Logo mobile */}
         <div style={{ marginBottom: '32px' }} className="logo-mobile">
@@ -78,7 +78,7 @@ export default function Verificar2FAPage() {
           </div>
         )}
 
-        <div style={{ width: '100%', maxWidth: '400px', background: '#fff', borderRadius: '24px', boxShadow: '0 8px 40px rgba(0,0,0,0.08)', border: '1px solid #f1f5f9', padding: '40px' }}>
+        <div style={{ width: '100%', maxWidth: '400px', background: '#fff', borderRadius: '24px', boxShadow: '0 8px 40px rgba(0,0,0,0.08)', border: '1px solid #f1f5f9', padding: '40px' }} className="auth-card">
 
           {/* ── Éxito ── */}
           {exito ? (
