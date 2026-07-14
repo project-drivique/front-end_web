@@ -1,5 +1,6 @@
 // src/modules/landing/LandingPage.jsx
 import { useState, useEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import { Link } from 'react-router-dom'
 import logo from '@/assets/logo.png'
 import { useLanding } from './LandingContext'
@@ -54,6 +55,37 @@ const IconoCheck = ({ color = 'currentColor' }) => (
   </svg>
 )
 
+const IconoCoche = () => (
+  <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
+  </svg>
+)
+
+const IconoPin = () => (
+  <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0zM19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+  </svg>
+)
+
+const IconoLlave = () => (
+  <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z" />
+  </svg>
+)
+
+const IconoEtiqueta = () => (
+  <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z" />
+    <path strokeLinecap="round" strokeLinejoin="round" d="M6 6h.008v.008H6V6z" />
+  </svg>
+)
+
+const IconoAuricular = () => (
+  <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 18.75a60.07 60.07 0 0116.5 0M4.5 8.25V6.108c0-1.135.845-2.098 1.976-2.192.373-.03.748-.057 1.123-.08M19.5 8.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08M13.5 18.75c0-1.036.84-1.875 1.875-1.875h.75c1.035 0 1.875.84 1.875 1.875v.375c0 1.036-.84 1.875-1.875 1.875h-.75A1.875 1.875 0 0113.5 19.125v-.375zm-8.25 0c0-1.036.84-1.875 1.875-1.875h.75c1.035 0 1.875.84 1.875 1.875v.375c0 1.035-.84 1.875-1.875 1.875h-.75A1.875 1.875 0 015.25 19.125v-.375z" />
+  </svg>
+)
+
 const IconoFlecha = () => (
   <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
@@ -69,7 +101,7 @@ const ICONOS_FEATURES = [
   <svg style={{ width: 24, height: 24 }} fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.562.562 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" /></svg>,
 ]
 
-function MenuConfiguracion({ tx }) {
+function MenuConfiguracion({ tx, modoMovil = false }) {
   const { tema, toggleTema, idioma, setIdioma, moneda, setMoneda } = useLanding()
   const [abierto, setAbierto] = useState(false)
   const contenedorRef = useRef(null)
@@ -77,34 +109,206 @@ function MenuConfiguracion({ tx }) {
   const c = coloresTema(esModoOscuro)
 
   useEffect(() => {
+    if (modoMovil) return undefined
     const cerrarAlClickAfuera = (e) => {
       if (contenedorRef.current && !contenedorRef.current.contains(e.target)) setAbierto(false)
     }
     document.addEventListener('mousedown', cerrarAlClickAfuera)
     return () => document.removeEventListener('mousedown', cerrarAlClickAfuera)
-  }, [])
+  }, [modoMovil])
+
+  useEffect(() => {
+    if (!modoMovil || !abierto) return undefined
+    const previo = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => { document.body.style.overflow = previo }
+  }, [modoMovil, abierto])
+
+  const contenidoPanel = (
+    <>
+      <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--texto-second)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 8px' }}>
+        {tx.nav.tema}
+      </p>
+
+      <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+        {[
+          { valor: 'claro', etiqueta: tx.nav.claro },
+          { valor: 'oscuro', etiqueta: tx.nav.oscuro },
+        ].map(({ valor, etiqueta }) => {
+          const activo = tema === valor
+          return (
+            <button
+              key={valor}
+              onClick={() => { if (tema !== valor) toggleTema() }}
+              style={{
+                flex: 1,
+                padding: '8px 4px',
+                borderRadius: 10,
+                cursor: 'pointer',
+                fontSize: 12,
+                fontWeight: 600,
+                transition: 'all 150ms',
+                border: activo ? `2px solid ${c.acentoTexto}` : '2px solid var(--borde)',
+                background: activo ? c.acentoFondoSuave : 'transparent',
+                color: activo ? c.acentoTexto : 'var(--texto-second)',
+              }}
+            >
+              {etiqueta}
+            </button>
+          )
+        })}
+      </div>
+
+      <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--texto-second)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 8px' }}>
+        Moneda
+      </p>
+
+      <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+        {[
+          { valor: 'COP', etiqueta: 'COP ($)' },
+          { valor: 'USD', etiqueta: 'USD ($)' },
+        ].map(({ valor, etiqueta }) => {
+          const activo = moneda === valor
+          return (
+            <button
+              key={valor}
+              onClick={() => { if (moneda !== valor) setMoneda(valor) }}
+              style={{
+                flex: 1,
+                padding: '8px 4px',
+                borderRadius: 10,
+                cursor: 'pointer',
+                fontSize: 12,
+                fontWeight: 600,
+                transition: 'all 150ms',
+                border: activo ? `2px solid ${c.acentoTexto}` : '2px solid var(--borde)',
+                background: activo ? c.acentoFondoSuave : 'transparent',
+                color: activo ? c.acentoTexto : 'var(--texto-second)',
+              }}
+            >
+              {etiqueta}
+            </button>
+          )
+        })}
+      </div>
+
+      <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--texto-second)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 8px' }}>
+        {tx.nav.idioma}
+      </p>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+        {Object.entries(IDIOMAS).map(([codigo, { label, flag }]) => {
+          const activo = idioma === codigo
+          return (
+            <button
+              key={codigo}
+              onClick={() => { setIdioma(codigo); setAbierto(false) }}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 10,
+                padding: '8px 10px',
+                borderRadius: 10,
+                cursor: 'pointer',
+                border: activo ? `2px solid ${c.acentoTexto}` : '2px solid transparent',
+                background: activo ? c.acentoFondoSuave : 'transparent',
+                color: activo ? c.acentoTexto : 'var(--texto-primary)',
+                fontWeight: activo ? 700 : 400,
+                fontSize: 13,
+                textAlign: 'left',
+                width: '100%',
+                transition: 'all 150ms',
+              }}
+            >
+              <span style={{ fontSize: 18 }}>{flag}</span>
+              {label}
+              {activo && (
+                <span style={{ marginLeft: 'auto', color: c.acentoTexto }}>
+                  <IconoCheck color={c.acentoTexto} />
+                </span>
+              )}
+            </button>
+          )
+        })}
+      </div>
+    </>
+  )
+
+  const botonEngranaje = (
+    <button
+      onClick={() => setAbierto(a => !a)}
+      title={tx.nav.config}
+      style={{
+        width: 36,
+        height: 36,
+        borderRadius: '50%',
+        border: '2px solid var(--borde)',
+        background: abierto ? 'var(--bg-item-hover)' : 'transparent',
+        color: 'var(--texto-nav)',
+        cursor: 'pointer',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        transition: 'background 150ms, color 150ms',
+        flexShrink: 0,
+      }}
+    >
+      <IconoEngranaje />
+    </button>
+  )
+
+  if (modoMovil) {
+    return (
+      <>
+        {botonEngranaje}
+        {abierto && createPortal(
+          <div
+            onClick={() => setAbierto(false)}
+            style={{
+              position: 'fixed',
+              inset: 0,
+              zIndex: 400,
+              background: 'rgba(15,23,42,0.55)',
+              display: 'flex',
+              alignItems: 'flex-end',
+              justifyContent: 'center',
+            }}
+          >
+            <div
+              onClick={e => e.stopPropagation()}
+              style={{
+                width: '100%',
+                maxWidth: 480,
+                maxHeight: '85vh',
+                overflowY: 'auto',
+                background: 'var(--bg-tarjeta)',
+                borderRadius: '20px 20px 0 0',
+                boxShadow: '0 -8px 32px rgba(0,0,0,0.24)',
+                padding: '18px 20px 24px',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+                <span style={{ fontSize: 15, fontWeight: 800, color: 'var(--texto-primary)' }}>{tx.nav.config}</span>
+                <button
+                  onClick={() => setAbierto(false)}
+                  aria-label="Cerrar"
+                  style={{ width: 30, height: 30, borderRadius: '50%', border: 'none', background: 'var(--bg-item)', color: 'var(--texto-second)', cursor: 'pointer' }}
+                >
+                  ✕
+                </button>
+              </div>
+              {contenidoPanel}
+            </div>
+          </div>,
+          document.body
+        )}
+      </>
+    )
+  }
 
   return (
     <div ref={contenedorRef} style={{ position: 'relative' }}>
-      <button
-        onClick={() => setAbierto(a => !a)}
-        title={tx.nav.config}
-        style={{
-          width: 36,
-          height: 36,
-          borderRadius: '50%',
-          border: '2px solid var(--borde)',
-          background: abierto ? 'var(--bg-item-hover)' : 'transparent',
-          color: 'var(--texto-nav)',
-          cursor: 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          transition: 'background 150ms, color 150ms',
-        }}
-      >
-        <IconoEngranaje />
-      </button>
+      {botonEngranaje}
 
       {abierto && (
         <div
@@ -121,111 +325,7 @@ function MenuConfiguracion({ tx }) {
             zIndex: 200,
           }}
         >
-          <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--texto-second)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 8px' }}>
-            {tx.nav.tema}
-          </p>
-
-          <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
-            {[
-              { valor: 'claro', etiqueta: tx.nav.claro },
-              { valor: 'oscuro', etiqueta: tx.nav.oscuro },
-            ].map(({ valor, etiqueta }) => {
-              const activo = tema === valor
-              return (
-                <button
-                  key={valor}
-                  onClick={() => { if (tema !== valor) toggleTema() }}
-                  style={{
-                    flex: 1,
-                    padding: '8px 4px',
-                    borderRadius: 10,
-                    cursor: 'pointer',
-                    fontSize: 12,
-                    fontWeight: 600,
-                    transition: 'all 150ms',
-                    border: activo ? `2px solid ${c.acentoTexto}` : '2px solid var(--borde)',
-                    background: activo ? c.acentoFondoSuave : 'transparent',
-                    color: activo ? c.acentoTexto : 'var(--texto-second)',
-                  }}
-                >
-                  {etiqueta}
-                </button>
-              )
-            })}
-          </div>
-
-          <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--texto-second)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 8px' }}>
-            Moneda
-          </p>
-
-          <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
-            {[
-              { valor: 'COP', etiqueta: 'COP ($)' },
-              { valor: 'USD', etiqueta: 'USD ($)' },
-            ].map(({ valor, etiqueta }) => {
-              const activo = moneda === valor
-              return (
-                <button
-                  key={valor}
-                  onClick={() => { if (moneda !== valor) setMoneda(valor) }}
-                  style={{
-                    flex: 1,
-                    padding: '8px 4px',
-                    borderRadius: 10,
-                    cursor: 'pointer',
-                    fontSize: 12,
-                    fontWeight: 600,
-                    transition: 'all 150ms',
-                    border: activo ? `2px solid ${c.acentoTexto}` : '2px solid var(--borde)',
-                    background: activo ? c.acentoFondoSuave : 'transparent',
-                    color: activo ? c.acentoTexto : 'var(--texto-second)',
-                  }}
-                >
-                  {etiqueta}
-                </button>
-              )
-            })}
-          </div>
-
-          <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--texto-second)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 8px' }}>
-            {tx.nav.idioma}
-          </p>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            {Object.entries(IDIOMAS).map(([codigo, { label, flag }]) => {
-              const activo = idioma === codigo
-              return (
-                <button
-                  key={codigo}
-                  onClick={() => { setIdioma(codigo); setAbierto(false) }}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 10,
-                    padding: '8px 10px',
-                    borderRadius: 10,
-                    cursor: 'pointer',
-                    border: activo ? `2px solid ${c.acentoTexto}` : '2px solid transparent',
-                    background: activo ? c.acentoFondoSuave : 'transparent',
-                    color: activo ? c.acentoTexto : 'var(--texto-primary)',
-                    fontWeight: activo ? 700 : 400,
-                    fontSize: 13,
-                    textAlign: 'left',
-                    width: '100%',
-                    transition: 'all 150ms',
-                  }}
-                >
-                  <span style={{ fontSize: 18 }}>{flag}</span>
-                  {label}
-                  {activo && (
-                    <span style={{ marginLeft: 'auto', color: c.acentoTexto }}>
-                      <IconoCheck color={c.acentoTexto} />
-                    </span>
-                  )}
-                </button>
-              )
-            })}
-          </div>
+          {contenidoPanel}
         </div>
       )}
     </div>
@@ -239,6 +339,7 @@ export default function LandingPage() {
   const c = coloresTema(esModoOscuro)
 
   const [autos, setAutos] = useState([])
+  const [menuMovilAbierto, setMenuMovilAbierto] = useState(false)
 
   useEffect(() => {
     catalogoService.getVehiculosDestacados().then(data => setAutos(data)).catch(() => {})
@@ -261,10 +362,10 @@ export default function LandingPage() {
         background: 'var(--bg-nav)', backdropFilter: 'blur(12px)',
         borderBottom: '1px solid var(--borde)', boxShadow: 'var(--sombra-nav)', height: 96,
       }}>
-        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 48px', height: '100%', display: 'flex', alignItems: 'center', gap: 32 }}>
+        <div className="landing-nav-inner" style={{ maxWidth: 1280, margin: '0 auto', padding: '0 48px', height: '100%', display: 'flex', alignItems: 'center', gap: 32 }}>
           <img src={logo} alt="Drivique" style={{ height: 80, flexShrink: 0 }} />
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 32, flex: 1, justifyContent: 'center' }}>
+          <div className="landing-nav-links" style={{ display: 'flex', alignItems: 'center', gap: 32, flex: 1, justifyContent: 'center' }}>
             <Link
               to="/catalogo"
               style={estiloEnlaceNav}
@@ -300,7 +401,7 @@ export default function LandingPage() {
             ))}
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
+          <div className="landing-nav-auth" style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
             <MenuConfiguracion tx={tx} />
 
             <Link
@@ -341,7 +442,101 @@ export default function LandingPage() {
               {tx.nav.registro}
             </Link>
           </div>
+
+          {/* Botón hamburguesa: solo visible en tablet/celular (ver responsive.css) */}
+          <button
+            className="landing-nav-toggle"
+            onClick={() => setMenuMovilAbierto(v => !v)}
+            aria-label="Abrir menú"
+            style={{
+              display: 'none',
+              marginLeft: 'auto',
+              width: 40,
+              height: 40,
+              borderRadius: 10,
+              border: '2px solid var(--borde)',
+              background: 'transparent',
+              color: 'var(--texto-nav)',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              flexShrink: 0,
+            }}
+          >
+            <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              {menuMovilAbierto
+                ? <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                : <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />}
+            </svg>
+          </button>
         </div>
+
+        {/* Menú móvil desplegable */}
+        {menuMovilAbierto && (
+          <div
+            className="landing-nav-mobile-menu"
+            style={{
+              display: 'none',
+              position: 'absolute',
+              top: '100%',
+              left: 0,
+              right: 0,
+              flexDirection: 'column',
+              gap: 4,
+              background: 'var(--bg-nav)',
+              backdropFilter: 'blur(12px)',
+              borderTop: '1px solid var(--borde)',
+              boxShadow: 'var(--sombra-nav)',
+              padding: '12px 20px 20px',
+              maxHeight: 'calc(100vh - 96px)',
+              overflowY: 'auto',
+            }}
+          >
+            {[
+              { to: '/catalogo', label: tx.nav.vehiculos, icono: <IconoCoche /> },
+              { to: '/sucursales', label: tx.nav.sucursales, icono: <IconoPin /> },
+            ].map(item => (
+              <Link
+                key={item.to}
+                to={item.to}
+                onClick={() => setMenuMovilAbierto(false)}
+                style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '11px 10px', borderRadius: 12, textDecoration: 'none', color: 'var(--texto-nav)', fontWeight: 600, fontSize: 15, transition: 'background 150ms' }}
+                onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-item-hover)'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+              >
+                <span style={{ width: 34, height: 34, borderRadius: 10, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: c.acentoFondoSuave, color: c.acentoTexto }}>
+                  {item.icono}
+                </span>
+                {item.label}
+              </Link>
+            ))}
+
+            {[
+              { href: '#como-funciona', label: tx.nav.servicios, icono: <IconoLlave /> },
+              { href: '#tarifas', label: tx.nav.tarifas, icono: <IconoEtiqueta /> },
+              { href: '#soporte', label: tx.nav.soporte, icono: <IconoAuricular /> },
+            ].map(item => (
+              <a
+                key={item.href}
+                href={item.href}
+                onClick={() => setMenuMovilAbierto(false)}
+                style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '11px 10px', borderRadius: 12, textDecoration: 'none', color: 'var(--texto-nav)', fontWeight: 600, fontSize: 15, transition: 'background 150ms' }}
+                onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-item-hover)'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+              >
+                <span style={{ width: 34, height: 34, borderRadius: 10, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: c.acentoFondoSuave, color: c.acentoTexto }}>
+                  {item.icono}
+                </span>
+                {item.label}
+              </a>
+            ))}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 10, paddingTop: 14, borderTop: '1px solid var(--borde)', flexWrap: 'wrap' }}>
+              <MenuConfiguracion tx={tx} modoMovil />
+              <Link to="/login" onClick={() => setMenuMovilAbierto(false)} style={{ padding: '8px 20px', borderRadius: 9999, border: `2px solid ${c.loginBorder}`, color: c.loginText, fontSize: 14, fontWeight: 700, textDecoration: 'none' }}>{tx.nav.login}</Link>
+              <Link to="/registro" onClick={() => setMenuMovilAbierto(false)} style={{ padding: '8px 20px', borderRadius: 9999, background: COLOR_MARCA, color: '#fff', fontSize: 13, fontWeight: 700, textDecoration: 'none' }}>{tx.nav.registro}</Link>
+            </div>
+          </div>
+        )}
       </nav>
 
       <section style={{
@@ -356,7 +551,7 @@ export default function LandingPage() {
         <div style={{ position: 'absolute', top: -80, right: -80, width: 500, height: 500, borderRadius: '50%', background: 'var(--hero-orb1)', pointerEvents: 'none' }} />
         <div style={{ position: 'absolute', bottom: -60, left: -60, width: 350, height: 350, borderRadius: '50%', background: 'var(--hero-orb2)', pointerEvents: 'none' }} />
 
-        <div style={{ position: 'relative', width: '100%', maxWidth: 1280, margin: '0 auto', padding: '80px 48px', display: 'flex', alignItems: 'center', gap: 64, flexWrap: 'wrap' }}>
+        <div className="landing-hero-inner" style={{ position: 'relative', width: '100%', maxWidth: 1280, margin: '0 auto', padding: '80px 48px', display: 'flex', alignItems: 'center', gap: 64, flexWrap: 'wrap' }}>
           <div style={{ flex: '1 1 400px', minWidth: 300 }}>
             <span style={{
               display: 'inline-flex',
@@ -434,7 +629,7 @@ export default function LandingPage() {
               </Link>
             </div>
 
-            <div style={{ display: 'flex', gap: 40 }}>
+            <div className="landing-hero-stats" style={{ display: 'flex', gap: 40 }}>
               {[['50+', tx.hero.stat1], ['24/7', tx.hero.stat2], ['100%', tx.hero.stat3]].map(([num, etiqueta]) => (
                 <div key={etiqueta}>
                   <p style={{ fontSize: 28, fontWeight: 900, color: c.statColor, margin: 0 }}>{num}</p>
@@ -527,8 +722,8 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section id="como-funciona" style={{ padding: '80px 0', background: 'var(--bg-seccion1)' }}>
-        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 48px' }}>
+      <section id="como-funciona" className="landing-section" style={{ padding: '80px 0', background: 'var(--bg-seccion1)' }}>
+        <div className="landing-section-inner" style={{ maxWidth: 1280, margin: '0 auto', padding: '0 48px' }}>
           <div style={{ textAlign: 'center', marginBottom: 56 }}>
             <span style={{ color: c.sectionLabel, fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', display: 'block', marginBottom: 8 }}>
               {tx.como.label}
@@ -549,8 +744,8 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section id="servicios" style={{ padding: '80px 0', background: 'var(--bg-seccion2)' }}>
-        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 48px' }}>
+      <section id="servicios" className="landing-section" style={{ padding: '80px 0', background: 'var(--bg-seccion2)' }}>
+        <div className="landing-section-inner" style={{ maxWidth: 1280, margin: '0 auto', padding: '0 48px' }}>
           <div style={{ textAlign: 'center', marginBottom: 56 }}>
             <span style={{ color: c.sectionLabel, fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', display: 'block', marginBottom: 8 }}>
               {tx.features.label}
@@ -586,7 +781,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section style={{ padding: '80px 48px', background: 'linear-gradient(135deg,#0f1a3d,#1e3a8a,#2563eb)' }}>
+      <section className="landing-cta-section" style={{ padding: '80px 48px', background: 'linear-gradient(135deg,#0f1a3d,#1e3a8a,#2563eb)' }}>
         <div style={{ maxWidth: 700, margin: '0 auto', textAlign: 'center' }}>
           <h2 style={{ fontSize: '2rem', fontWeight: 900, color: '#fff', margin: '0 0 16px' }}>{tx.cta.titulo}</h2>
           <p style={{ color: '#93c5fd', fontSize: 16, margin: '0 0 32px' }}>{tx.cta.sub}</p>
@@ -632,15 +827,15 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <footer style={{ background: '#0f172a', color: 'var(--texto-second)', padding: '56px 48px 32px' }}>
+      <footer className="landing-footer" style={{ background: '#0f172a', color: 'var(--texto-second)', padding: '56px 48px 32px' }}>
         <div style={{ maxWidth: 1280, margin: '0 auto' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', gap: 48, flexWrap: 'wrap', marginBottom: 40 }}>
+          <div className="landing-footer-top" style={{ display: 'flex', justifyContent: 'space-between', gap: 48, flexWrap: 'wrap', marginBottom: 40 }}>
             <div style={{ maxWidth: 280 }}>
               <img src={logo} alt="Drivique" style={{ height: 64, marginBottom: 16, filter: 'brightness(0) invert(1)', opacity: 0.85 }} />
               <p style={{ fontSize: 14, lineHeight: 1.7, color: c.footerMuted, margin: 0 }}>{tx.footer.desc}</p>
             </div>
 
-            <div style={{ display: 'flex', gap: 48, flexWrap: 'wrap' }}>
+            <div className="landing-footer-cols" style={{ display: 'flex', gap: 48, flexWrap: 'wrap' }}>
               {tx.footer.cols.map(col => (
                 <div key={col.title}>
                   <p style={{ color: '#fff', fontWeight: 700, fontSize: 14, margin: '0 0 16px' }}>{col.title}</p>
@@ -659,7 +854,7 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <div style={{ borderTop: `1px solid ${c.socialBorder}`, paddingTop: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
+          <div className="landing-footer-bottom" style={{ borderTop: `1px solid ${c.socialBorder}`, paddingTop: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
             <p style={{ fontSize: 12, color: c.footerBottom, margin: 0 }}>{tx.footer.copy}</p>
 
             <div style={{ display: 'flex', gap: 10 }}>

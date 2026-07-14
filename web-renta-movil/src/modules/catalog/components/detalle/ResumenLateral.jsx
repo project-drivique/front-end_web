@@ -48,7 +48,7 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, servicios
   const total = subtotalReserva + recargoLogistico;
 
   return (
-    <aside style={{
+    <aside className="detalle-resumen-lateral" style={{
       width: 320, flexShrink: 0,
       background: 'var(--bg-tarjeta)', borderRadius: 24,
       border: '1px solid var(--borde)',

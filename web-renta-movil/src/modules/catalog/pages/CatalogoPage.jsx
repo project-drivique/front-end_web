@@ -8,6 +8,8 @@ import { useCatalogo } from '../hooks/useCatalogo'
 import logo from '@/assets/logo.png'
 import HeroBusqueda from '../components/HeroBusqueda'
 import FiltrosCatalogo from '../components/FiltrosCatalogo'
+import ModalFiltrosMovil from '../components/ModalFiltrosMovil'
+import ModalBusquedaMovil from '../components/ModalBusquedaMovil'
 import GridVehiculos from '../components/GridVehiculos'
 import PaginacionCatalogo from '../components/PaginacionCatalogo'
 import EstadoCarga from '../components/EstadoCarga'
@@ -85,6 +87,9 @@ export default function CatalogoPage() {
     reintentar,
   } = useCatalogo()
 
+  const [filtrosMovilAbierto, setFiltrosMovilAbierto] = useState(false)
+  const [busquedaMovilAbierta, setBusquedaMovilAbierta] = useState(false)
+
   const inputStyle = {
     width: '100%',
     padding: '9px 12px',
@@ -130,7 +135,7 @@ export default function CatalogoPage() {
         boxShadow: c.navShadow,
         height: '96px'
       }}>
-        <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 24px', height: '100%', display: 'flex', alignItems: 'center', gap: '24px' }}>
+        <div className="catalogo-header-inner" style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 24px', height: '100%', display: 'flex', alignItems: 'center', gap: '24px' }}>
           <Link to="/"><img src={logo} alt="Drivique" style={{ height: '80px', flexShrink: 0 }} /></Link>
           <div style={{ flex: 1 }} />
           {!usuario && (
@@ -176,9 +181,11 @@ export default function CatalogoPage() {
           limpiar={limpiar}
           invitado={true}
           onBuscarInvitado={handleBuscarInvitado}
+          onAbrirBusqueda={() => setBusquedaMovilAbierta(true)}
+          onAbrirFiltros={() => setFiltrosMovilAbierto(true)}
         />
 
-        <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '22px 24px 24px', display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
+        <div className="catalogo-layout catalogo-contenido-inner" style={{ maxWidth: '1280px', margin: '0 auto', padding: '22px 24px 24px', display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
           <FiltrosCatalogo
             c={c}
             inputStyle={inputStyle}
@@ -229,6 +236,36 @@ export default function CatalogoPage() {
           </div>
         </div>
       </div>
+
+      <ModalFiltrosMovil
+        abierto={filtrosMovilAbierto}
+        onCerrar={() => setFiltrosMovilAbierto(false)}
+        c={c}
+        inputStyle={inputStyle}
+        labelStyle={labelStyle}
+        filtros={filtros}
+        setFiltro={setFiltro}
+        limpiar={limpiar}
+        invitado={true}
+        onBuscarInvitado={handleBuscarInvitado}
+        mostrarFavoritos={false}
+        resultado={resultado}
+        cargando={cargando}
+      />
+
+      <ModalBusquedaMovil
+        abierto={busquedaMovilAbierta}
+        onCerrar={() => setBusquedaMovilAbierta(false)}
+        c={c}
+        inputStyle={inputStyle}
+        labelStyle={labelStyle}
+        busquedaForm={busquedaForm}
+        setForm={setForm}
+        errorBusqueda={errorBusqueda}
+        limpiar={limpiar}
+        invitado={true}
+        onBuscarInvitado={handleBuscarInvitado}
+      />
     </div>
   )
 }

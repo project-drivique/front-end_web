@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { FaSearch, FaExclamationTriangle, FaCalendarAlt, FaMapMarkerAlt } from 'react-icons/fa'
 import { CATEGORIAS, TRANSMISIONES, COMBUSTIBLES, SUCURSALES, CIUDADES } from '../constants'
+import CalendarioRango from './CalendarioRango'
 
 function Seccion({ label, children, ultimo, c }) {
   return (
@@ -70,6 +71,8 @@ export default function FiltrosCatalogo({
   soloFavoritos = false,
   setSoloFavoritos = () => {},
   mostrarFavoritos = false,
+  enModal = false,
+  soloBusqueda = false,
 }) {
   const { t } = useTranslation()
 
@@ -105,18 +108,26 @@ export default function FiltrosCatalogo({
   } = filtros
 
   const {
-    lugarRecogida = '',
-    lugarDevolucion = '',
+    ciudad: ciudadBusqueda = '',
+    sucursal: sucursalBusqueda = '',
     fechaInicio = '',
     fechaFin = '',
-    mismoLugar = true,
   } = busquedaForm
+
+  const fmtFecha = (iso) => {
+    if (!iso) return null
+    const [, m, d] = iso.split('-')
+    return `${d}/${m}`
+  }
 
   return (
     <>
       {showHero && (
         <div
-          style={{
+          style={enModal ? {
+            background: 'transparent',
+            padding: 0,
+          } : {
             background: c.heroCardBg,
             borderRadius: '16px',
             border: `1px solid ${c.heroCardBorder}`,
@@ -124,64 +135,71 @@ export default function FiltrosCatalogo({
             padding: '20px 24px',
           }}
         >
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px', alignItems: 'end' }}>
-            <div>
-              <label style={{ ...labelStyle, display: 'flex', alignItems: 'center', gap: '5px' }}>
-                <span style={{ color: c.accentText }}><FaMapMarkerAlt /></span>
-                {t('catalogo.pickupPlace')}
-              </label>
-              <select value={lugarRecogida} onChange={e => setForm('lugarRecogida', e.target.value)} style={{ ...inputStyle, cursor: 'pointer' }}>
-                <option value="">{t('catalogo.selectPoint')}</option>
-                {SUCURSALES.map(s => <option key={s} value={s}>{s}</option>)}
-              </select>
-            </div>
+          {enModal ? (
+            <>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '14px' }}>
+                <div>
+                  <label style={{ ...labelStyle, display: 'block' }}>Ciudad</label>
+                  <select
+                    value={ciudadBusqueda}
+                    onChange={e => { setForm('ciudad', e.target.value); setForm('sucursal', '') }}
+                    style={{ ...inputStyle, cursor: 'pointer' }}
+                  >
+                    <option value="">Selecciona Ciudad</option>
+                    {CIUDADES.map(ciud => (
+                      <option key={ciud.id} value={ciud.nombre}>{ciud.nombre}</option>
+                    ))}
+                  </select>
+                </div>
 
-            <div>
-              <label style={{ ...labelStyle, display: 'flex', alignItems: 'center', gap: '5px' }}>
-                <span style={{ color: c.accentText }}><FaMapMarkerAlt /></span>
-                {t('catalogo.returnPlace')}
-              </label>
-              <select
-                value={mismoLugar ? '__mismo__' : lugarDevolucion}
-                onChange={e => {
-                  if (e.target.value === '__mismo__') {
-                    setForm('mismoLugar', true)
-                    setForm('lugarDevolucion', '')
-                  } else {
-                    setForm('mismoLugar', false)
-                    setForm('lugarDevolucion', e.target.value)
-                  }
-                }}
-                style={{ ...inputStyle, cursor: 'pointer' }}
-              >
-                <option value="__mismo__">{t('catalogo.selectPoint')}</option>
-                {SUCURSALES.map(s => <option key={s} value={s}>{s}</option>)}
-              </select>
-            </div>
+                <div>
+                  <label style={{ ...labelStyle, display: 'block' }}>Sucursal</label>
+                  <select
+                    value={sucursalBusqueda}
+                    onChange={e => setForm('sucursal', e.target.value)}
+                    disabled={!ciudadBusqueda}
+                    style={{ ...inputStyle, cursor: 'pointer' }}
+                  >
+                    <option value="">Selecciona Sucursal</option>
+                    {SUCURSALES
+                      .filter(s => s.ciudad === ciudadBusqueda)
+                      .map(s => <option key={s.nombre} value={s.nombre}>{s.nombre}</option>)}
+                  </select>
+                </div>
+              </div>
 
-            <div>
-              <label style={{ ...labelStyle, display: 'flex', alignItems: 'center', gap: '5px' }}>
-                <span style={{ color: c.accentText }}><FaCalendarAlt /></span>
-                {t('vehiculo.pickupDate')}
-              </label>
-              <input type="date" value={fechaInicio} onChange={e => setForm('fechaInicio', e.target.value)} style={inputStyle} />
-            </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '14px' }}>
+                <div>
+                  <label style={{ ...labelStyle, display: 'block' }}>{t('vehiculo.pickupDate')}</label>
+                  <div style={{ ...inputStyle, display: 'flex', alignItems: 'center', gap: '7px', cursor: 'default' }}>
+                    <span style={{ color: c.accentText, flexShrink: 0 }}><FaCalendarAlt size={12} /></span>
+                    <span style={{ color: fechaInicio ? c.textPrimary : c.textSecondary, fontWeight: fechaInicio ? 700 : 500 }}>
+                      {fmtFecha(fechaInicio) || '—'}
+                    </span>
+                  </div>
+                </div>
 
-            <div>
-              <label style={{ ...labelStyle, display: 'flex', alignItems: 'center', gap: '5px' }}>
-                <span style={{ color: c.accentText }}><FaCalendarAlt /></span>
-                {t('vehiculo.returnDate')}
-              </label>
-              <input type="date" value={fechaFin} onChange={e => setForm('fechaFin', e.target.value)} style={inputStyle} />
-            </div>
+                <div>
+                  <label style={{ ...labelStyle, display: 'block' }}>{t('vehiculo.returnDate')}</label>
+                  <div style={{ ...inputStyle, display: 'flex', alignItems: 'center', gap: '7px', cursor: 'default' }}>
+                    <span style={{ color: c.accentText, flexShrink: 0 }}><FaCalendarAlt size={12} /></span>
+                    <span style={{ color: fechaFin ? c.textPrimary : c.textSecondary, fontWeight: fechaFin ? 700 : 500 }}>
+                      {fmtFecha(fechaFin) || '—'}
+                    </span>
+                  </div>
+                </div>
+              </div>
 
-            <div>
+              <div style={{ padding: '12px', borderRadius: '14px', background: c.panelBgSoft, border: `1px solid ${c.panelBorder}`, marginBottom: '14px' }}>
+                <CalendarioRango fechaInicio={fechaInicio} fechaFin={fechaFin} onCambiar={setForm} />
+              </div>
+
               <button
                 type="button"
                 onClick={invitado ? onBuscarInvitado : handleBuscar}
                 style={{
                   width: '100%',
-                  padding: '11px 20px',
+                  padding: '13px 20px',
                   borderRadius: '12px',
                   background: c.accentGradient,
                   color: '#fff',
@@ -199,8 +217,87 @@ export default function FiltrosCatalogo({
                 <FaSearch />
                 {t('catalogo.searchBtn')}
               </button>
+            </>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px', alignItems: 'end' }}>
+              <div>
+                <label style={{ ...labelStyle, display: 'flex', alignItems: 'center', gap: '5px' }}>
+                  <span style={{ color: c.accentText }}><FaMapMarkerAlt /></span>
+                  Ciudad
+                </label>
+                <select
+                  value={ciudadBusqueda}
+                  onChange={e => { setForm('ciudad', e.target.value); setForm('sucursal', '') }}
+                  style={{ ...inputStyle, cursor: 'pointer' }}
+                >
+                  <option value="">Selecciona Ciudad</option>
+                  {CIUDADES.map(ciud => (
+                    <option key={ciud.id} value={ciud.nombre}>{ciud.nombre}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label style={{ ...labelStyle, display: 'flex', alignItems: 'center', gap: '5px' }}>
+                  <span style={{ color: c.accentText }}><FaMapMarkerAlt /></span>
+                  Sucursal
+                </label>
+                <select
+                  value={sucursalBusqueda}
+                  onChange={e => setForm('sucursal', e.target.value)}
+                  disabled={!ciudadBusqueda}
+                  style={{ ...inputStyle, cursor: 'pointer' }}
+                >
+                  <option value="">Selecciona Sucursal</option>
+                  {SUCURSALES
+                    .filter(s => s.ciudad === ciudadBusqueda)
+                    .map(s => <option key={s.nombre} value={s.nombre}>{s.nombre}</option>)}
+                </select>
+              </div>
+
+              <div>
+                <label style={{ ...labelStyle, display: 'flex', alignItems: 'center', gap: '5px' }}>
+                  <span style={{ color: c.accentText }}><FaCalendarAlt /></span>
+                  {t('vehiculo.pickupDate')}
+                </label>
+                <input type="date" value={fechaInicio} onChange={e => setForm('fechaInicio', e.target.value)} style={inputStyle} />
+              </div>
+
+              <div>
+                <label style={{ ...labelStyle, display: 'flex', alignItems: 'center', gap: '5px' }}>
+                  <span style={{ color: c.accentText }}><FaCalendarAlt /></span>
+                  {t('vehiculo.returnDate')}
+                </label>
+                <input type="date" value={fechaFin} onChange={e => setForm('fechaFin', e.target.value)} style={inputStyle} />
+              </div>
+
+              <div>
+                <button
+                  type="button"
+                  onClick={invitado ? onBuscarInvitado : handleBuscar}
+                  style={{
+                    width: '100%',
+                    padding: '11px 20px',
+                    borderRadius: '12px',
+                    background: c.accentGradient,
+                    color: '#fff',
+                    fontWeight: 700,
+                    fontSize: '14px',
+                    border: 'none',
+                    cursor: 'pointer',
+                    boxShadow: '0 4px 14px rgba(30,58,138,0.25)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px',
+                  }}
+                >
+                  <FaSearch />
+                  {t('catalogo.searchBtn')}
+                </button>
+              </div>
             </div>
-          </div>
+          )}
 
           {errorBusqueda && (
             <div style={{ marginTop: '12px', padding: '10px 14px', borderRadius: '10px', background: c.dangerBg, border: `1px solid ${c.dangerBorder}` }}>
@@ -213,9 +310,18 @@ export default function FiltrosCatalogo({
         </div>
       )}
 
+      {!soloBusqueda && (
       <aside
-        className="filtros-panel"
-        style={{
+        className={enModal ? 'filtros-panel-modal' : 'filtros-panel'}
+        style={enModal ? {
+          width: '100%',
+          background: 'transparent',
+          borderRadius: 0,
+          border: 'none',
+          boxShadow: 'none',
+          padding: 0,
+          position: 'static',
+        } : {
           width: '240px',
           flexShrink: 0,
           background: c.panelBg,
@@ -229,7 +335,7 @@ export default function FiltrosCatalogo({
           overflowY: 'auto',
         }}
       >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
+        <div style={{ display: enModal ? 'none' : 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
           <h2 style={{ fontSize: '15px', fontWeight: 800, color: c.textPrimary, margin: 0 }}>{t('catalogo.filters')}</h2>
           <button
             type="button"
@@ -314,6 +420,7 @@ export default function FiltrosCatalogo({
           </div>
         </Seccion>
       </aside>
+      )}
     </>
   )
 }

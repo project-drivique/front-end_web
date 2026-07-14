@@ -140,7 +140,7 @@ export default function LoginPage() {
       <PanelIzquierdo />
 
       {/* ── Panel derecho (formulario) ── */}
-      <div style={{ flex: 1, background: c.pageBg, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 24px' }}>
+      <div style={{ flex: 1, background: c.pageBg, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 24px' }} className="auth-contenedor">
 
         {/* Logo mobile */}
         <div style={{ marginBottom: 32 }} className="logo-mobile">
@@ -164,7 +164,7 @@ export default function LoginPage() {
         </div>
 
         {/* Card */}
-        <div style={{ width: '100%', maxWidth: 400, background: c.cardBg, borderRadius: tok.borderRadius.card, boxShadow: c.cardShadow, border: `1px solid ${c.cardBorder}`, padding: 40 }}>
+        <div style={{ width: '100%', maxWidth: 400, background: c.cardBg, borderRadius: tok.borderRadius.card, boxShadow: c.cardShadow, border: `1px solid ${c.cardBorder}`, padding: 40 }} className="auth-card">
           <div style={{ marginBottom: 28 }}>
             <h1 style={{ fontSize: tok.fontSize.title, fontWeight: 900, color: c.title, margin: '0 0 6px' }}>{t('login.title')}</h1>
             <p style={{ color: c.text, fontSize: tok.fontSize.body, margin: 0 }}>{t('login.subtitle')}</p>

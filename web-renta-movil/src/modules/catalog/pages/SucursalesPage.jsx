@@ -231,7 +231,7 @@ export default function SucursalesPage() {
         borderBottom: `1px solid ${c.navBorder}`, boxShadow: c.navShadow,
         height: '96px'
       }}>
-        <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 24px', height: '100%', display: 'flex', alignItems: 'center', gap: '24px' }}>
+        <div className="catalogo-header-inner" style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 24px', height: '100%', display: 'flex', alignItems: 'center', gap: '24px' }}>
           <Link to="/"><img src={logo} alt="Drivique" style={{ height: '80px', flexShrink: 0 }} /></Link>
           <div style={{ flex: 1 }} />
           {!usuario && (
@@ -275,7 +275,7 @@ export default function SucursalesPage() {
             <span style={{ display: 'inline-block', padding: '6px 16px', borderRadius: '9999px', background: c.accentBgSoft, color: c.accentText, fontSize: '12px', fontWeight: 800, textTransform: 'uppercase', marginBottom: '12px' }}>
               {t('sucursales.officialNetwork')}
             </span>
-            <h1 style={{ fontSize: '2.5rem', fontWeight: 900, color: c.textPrimary, margin: '0 0 10px', letterSpacing: '-0.02em' }}>
+            <h1 style={{ fontSize: 'clamp(1.7rem, 5vw, 2.5rem)', fontWeight: 900, color: c.textPrimary, margin: '0 0 10px', letterSpacing: '-0.02em' }}>
               {t('sucursales.byAgency')}
             </h1>
             <p style={{ fontSize: '16px', color: c.textSecondary, margin: 0 }}>
