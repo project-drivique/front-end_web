@@ -286,6 +286,9 @@
     "searchReturnDate": "Selecione a data de devolução.",
     "searchReturnAfter": "A data de devolução deve ser posterior.",
     "clearFilters": "Limpar filtros",
+    "viewResults": "Ver resultados",
+    "searchAndFilters": "Busca e filtros",
+    "selectDestination": "Selecione cidade e datas",
     "viewAll": "Ver todos",
     "favorites": "Favoritos",
     "myFavorites": "Meus Favoritos",
@@ -305,7 +308,8 @@
     "fuelGas": "Gasolina",
     "fuelDiesel": "Diesel",
     "fuelHybrid": "Híbrido",
-    "fuelElec": "Elétrico"
+    "fuelElec": "Elétrico",
+    "consultAvailability": "Consultar disponibilidade"
   },
   "vehiculo": {
     "reserve": "Reservar veículo",

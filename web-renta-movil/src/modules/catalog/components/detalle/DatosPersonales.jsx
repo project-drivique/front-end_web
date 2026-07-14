@@ -7,7 +7,7 @@ import { RECARGOS_LOGISTICOS } from '../../constants';
 
 const DocumentUploader = ({ label, helpText, error, file, loading, onUpload, onClear, required = true }) => {
   return (
-    <div style={{
+    <div className="doc-uploader-card" style={{
       border: `2px dashed ${error ? '#fca5a5' : 'var(--borde)'}`,
       borderRadius: 16,
       padding: '24px 20px',
@@ -19,11 +19,14 @@ const DocumentUploader = ({ label, helpText, error, file, loading, onUpload, onC
       alignItems: 'center',
       justifyContent: 'center',
       gap: 12,
-      position: 'relative'
+      position: 'relative',
+      minWidth: 0,
+      maxWidth: '100%',
+      boxSizing: 'border-box',
     }}>
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
-        <span style={{ fontSize: 14, fontWeight: 800, color: 'var(--texto-primary)' }}>{label}{required ? ' *' : ''}</span>
-        <span style={{ fontSize: 11, color: 'var(--texto-second)', maxWidth: '240px', lineHeight: 1.4 }}>{helpText}</span>
+        <span className="doc-uploader-label" style={{ fontSize: 14, fontWeight: 800, color: 'var(--texto-primary)' }}>{label}{required ? ' *' : ''}</span>
+        <span className="doc-uploader-help" style={{ fontSize: 11, color: 'var(--texto-second)', maxWidth: '240px', lineHeight: 1.4 }}>{helpText}</span>
       </div>
 
       {loading ? (
@@ -35,7 +38,7 @@ const DocumentUploader = ({ label, helpText, error, file, loading, onUpload, onC
           <span>Subiendo archivo...</span>
         </div>
       ) : file ? (
-        <div style={{
+        <div className="doc-uploader-file" style={{
           display: 'flex',
           alignItems: 'center',
           gap: 12,
@@ -44,9 +47,10 @@ const DocumentUploader = ({ label, helpText, error, file, loading, onUpload, onC
           padding: '10px 16px',
           borderRadius: 12,
           width: '100%',
+          minWidth: 0,
           boxSizing: 'border-box'
         }}>
-          <svg width="24" height="24" fill="none" stroke="#16a34a" strokeWidth="2.5" viewBox="0 0 24 24">
+          <svg className="doc-uploader-file-icon" width="24" height="24" fill="none" stroke="#16a34a" strokeWidth="2.5" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
           </svg>
           <div style={{ flex: 1, minWidth: 0, textAlign: 'left' }}>
@@ -68,7 +72,8 @@ const DocumentUploader = ({ label, helpText, error, file, loading, onUpload, onC
               padding: 4,
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center'
+              justifyContent: 'center',
+              flexShrink: 0,
             }}
           >
             <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
@@ -77,7 +82,7 @@ const DocumentUploader = ({ label, helpText, error, file, loading, onUpload, onC
           </button>
         </div>
       ) : (
-        <label style={{
+        <label className="doc-uploader-btn" style={{
           display: 'inline-flex',
           alignItems: 'center',
           gap: 8,
@@ -296,7 +301,7 @@ export default function DatosPersonales({ vehiculo, reserva, seguroIdx, servicio
 
 
       {/* Contenedor de subida de documentos */}
-      <div style={{
+      <div className="doc-verificacion-card" style={{
         background: 'var(--bg-tarjeta)',
         borderRadius: 24,
         border: '1px solid var(--borde)',
@@ -327,7 +332,7 @@ export default function DatosPersonales({ vehiculo, reserva, seguroIdx, servicio
           </div>
         )}
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 24, marginBottom: 12 }}>
+        <div className="doc-uploader-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: 24, marginBottom: 12 }}>
           <DocumentUploader
             label="Cédula de Ciudadanía"
             helpText="Sube tu documento de identidad en un solo archivo PDF (ambos lados incluidos, máx 5MB)"
@@ -395,7 +400,7 @@ export default function DatosPersonales({ vehiculo, reserva, seguroIdx, servicio
       </div>
 
 
-      <div style={{ background: 'linear-gradient(135deg,#0f1a3d,#1e3a8a)', borderRadius: 24, padding: '24px 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 24, flexWrap: 'wrap', boxShadow: '0 12px 32px rgba(30,58,138,0.25)' }}>
+      <div className="confirmar-reserva-bloque" style={{ background: 'linear-gradient(135deg,#0f1a3d,#1e3a8a)', borderRadius: 24, padding: '24px 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 24, flexWrap: 'wrap', boxShadow: '0 12px 32px rgba(30,58,138,0.25)' }}>
         <div>
           <p style={{ fontSize: 13, color: '#bfdbfe', fontWeight: 700, margin: '0 0 4px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t('vehiculo.totalToPay')}</p>
           <p style={{ fontSize: 32, fontWeight: 900, color: '#fff', margin: 0 }}>{formatCurrency(total, moneda)}</p>

@@ -10,6 +10,8 @@ import { reservaService, HORAS_LIMITE_PAGO_EFECTIVO } from '@/services/reservaSe
 import { documentosService } from '@/services/documentosService'
 import { generarReferenciaUnica, aCentavos, construirUrlCheckout } from '@/services/wompiService'
 import { RECARGOS_LOGISTICOS } from '../constants'
+import { formatCurrency } from '@/utils/monedaUtils'
+import { useLanding } from '../../landing/LandingContext'
 
 import GaleriaImagenes from '../components/detalle/GaleriaImagenes'
 import InfoVehiculo from '../components/detalle/InfoVehiculo'
@@ -41,6 +43,7 @@ const TOTAL_PASOS = 3
 
 export default function VehiculoDetallePage() {
   const { t } = useTranslation()
+  const { moneda } = useLanding()
   const { id } = useParams();
   const navigate = useNavigate();
   const { usuario } = useAuthStore();
@@ -447,6 +450,27 @@ export default function VehiculoDetallePage() {
 
   const pasos = [t('vehiculo.stepDates'), t('vehiculo.stepProtection'), t('vehiculo.personalData')]
 
+  // Mismo cálculo que ResumenLateral/DatosPersonales, para poder mostrar
+  // el total también en la barra de "Confirmar reserva" que se ve en
+  // móvil/tablet debajo del resumen.
+  const tarifasTotal = vehiculo.tarifas || {};
+  const kmLimitTotal = tarifasTotal.kmLimitado || { precio: 0, km: 0 };
+  const kmIlimitTotal = tarifasTotal.kmIlimitado || { precio: 0 };
+  const precioTotal = reserva.tipoKm === 'ilimitado' ? kmIlimitTotal.precio : kmLimitTotal.precio;
+  const diasTotal = reserva.fechaInicio && reserva.fechaFin
+    ? Math.max(1, Math.ceil((new Date(reserva.fechaFin) - new Date(reserva.fechaInicio)) / 86400000))
+    : 1;
+  const precioSeguroTotal = seguroIdx !== null ? (vehiculo.seguros[seguroIdx]?.precio ?? 0) : 0;
+  const precioServiciosTotal = (vehiculo.servicios || [])
+    .filter(s => serviciosSeleccionados.includes(s.nombre))
+    .reduce((suma, s) => suma + s.precio, 0);
+  const subtotalDiarioTotal = precioTotal * diasTotal;
+  const subtotalSeguroTotal = precioSeguroTotal * diasTotal;
+  const subtotalServiciosTotal = precioServiciosTotal * diasTotal;
+  const cargosAdminTotal = Math.round((subtotalDiarioTotal + subtotalSeguroTotal + subtotalServiciosTotal) * 0.10);
+  const recargoLogisticoTotal = (RECARGOS_LOGISTICOS[reserva.sucursalRetiro] || 0) + (RECARGOS_LOGISTICOS[reserva.sucursalDevolucion] || 0);
+  const totalReserva = subtotalDiarioTotal + subtotalSeguroTotal + subtotalServiciosTotal + cargosAdminTotal + recargoLogisticoTotal;
+
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg-page)' }}>
       <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50, background: 'var(--bg-tarjeta)', backdropFilter: 'blur(12px)', borderBottom: '1px solid var(--borde)', boxShadow: '0 4px 20px rgba(0,0,0,0.04)', height: 96 }}>
@@ -548,7 +572,7 @@ export default function VehiculoDetallePage() {
               )}
 
               {pantalla < 3 && (
-                <div style={{ marginTop: 32 }}>
+                <div className="detalle-continuar-desktop" style={{ marginTop: 32 }}>
                   {errorPaso1 && (
                     <p style={{ color: '#dc2626', fontSize: 13, fontWeight: 700, marginBottom: 12, textAlign: 'right' }}>{errorPaso1}</p>
                   )}
@@ -573,6 +597,49 @@ export default function VehiculoDetallePage() {
               serviciosSeleccionados={serviciosSeleccionados}
               onEditar={irAEditar}
             />
+
+            {/* En tablet/celular el layout se apila en columna: este botón
+                (idéntico al de arriba) se muestra debajo del resumen de la
+                reserva en vez de arriba, vía CSS (ver responsive.css). */}
+            {pantalla < 3 && (
+              <div className="detalle-continuar-movil" style={{ display: 'none', width: '100%', marginTop: 24 }}>
+                {errorPaso1 && (
+                  <p style={{ color: '#dc2626', fontSize: 13, fontWeight: 700, marginBottom: 12, textAlign: 'center' }}>{errorPaso1}</p>
+                )}
+                <button
+                  onClick={irSiguiente}
+                  style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, padding: '16px 40px', borderRadius: 16, background: 'linear-gradient(90deg,#1e3a8a,#2563eb)', color: '#fff', fontWeight: 900, fontSize: 15, border: 'none', cursor: 'pointer', boxShadow: '0 8px 24px rgba(37,99,235,0.28)' }}
+                >
+                  {pantalla === 2 ? t('vehiculo.continueData') : t('common.continue')} <IcoArrow />
+                </button>
+              </div>
+            )}
+
+            {/* Igual que arriba: en móvil/tablet el botón "Confirmar reserva"
+                (con el total) se muestra debajo del resumen, no encima. */}
+            {pantalla === 3 && (
+              <div
+                className="confirmar-reserva-movil"
+                style={{
+                  display: 'none',
+                  width: '100%',
+                  marginTop: 24,
+                  background: 'linear-gradient(135deg,#0f1a3d,#1e3a8a)',
+                  borderRadius: 24,
+                  padding: '22px 24px',
+                  boxShadow: '0 12px 32px rgba(30,58,138,0.25)',
+                }}
+              >
+                <p style={{ fontSize: 12, color: '#bfdbfe', fontWeight: 700, margin: '0 0 4px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t('vehiculo.totalToPay')}</p>
+                <p style={{ fontSize: 26, fontWeight: 900, color: '#fff', margin: '0 0 16px' }}>{formatCurrency(totalReserva, moneda)}</p>
+                <button
+                  onClick={handleReservar}
+                  style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, padding: '15px 24px', borderRadius: 16, background: '#fff', color: '#1e3a8a', fontWeight: 900, fontSize: 15, border: 'none', cursor: 'pointer', boxShadow: '0 8px 24px rgba(0,0,0,0.18)' }}
+                >
+                  {t('vehiculo.confirmReserve')} →
+                </button>
+              </div>
+            )}
           </div>
 
         </div>

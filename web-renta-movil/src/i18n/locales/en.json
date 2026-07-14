@@ -286,6 +286,9 @@
     "searchReturnDate": "Select return date.",
     "searchReturnAfter": "Return date must be after pickup date.",
     "clearFilters": "Clear filters",
+    "viewResults": "View results",
+    "searchAndFilters": "Search and filters",
+    "selectDestination": "Select city and dates",
     "viewAll": "View all",
     "favorites": "Favorites",
     "myFavorites": "My Favorites",
@@ -305,7 +308,8 @@
     "fuelGas": "Gasoline",
     "fuelDiesel": "Diesel",
     "fuelHybrid": "Hybrid",
-    "fuelElec": "Electric"
+    "fuelElec": "Electric",
+    "consultAvailability": "Check availability"
   },
   "vehiculo": {
     "reserve": "Reserve vehicle",

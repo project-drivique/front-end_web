@@ -23,14 +23,14 @@ function ciudadDeSucursal(nombreSucursal) {
 }
 
 const Campo = ({ label, value }) => (
-  <div style={{
+  <div className="contrato-campo" style={{
     background: 'var(--bg-tarjeta)', border: '1px solid var(--borde)', borderRadius: 14,
     padding: '12px 14px', minHeight: 66,
   }}>
-    <span style={{ display: 'block', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--texto-second)', marginBottom: 8, fontWeight: 700 }}>
+    <span className="contrato-campo-label" style={{ display: 'block', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--texto-second)', marginBottom: 8, fontWeight: 700 }}>
       {label}
     </span>
-    <span style={{ display: 'block', fontSize: 15, fontWeight: 600, color: 'var(--texto-primary)', wordBreak: 'break-word' }}>
+    <span className="contrato-campo-valor" style={{ display: 'block', fontSize: 15, fontWeight: 600, color: 'var(--texto-primary)', wordBreak: 'break-word' }}>
       {value || '—'}
     </span>
   </div>

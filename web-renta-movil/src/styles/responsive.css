@@ -20,6 +20,13 @@
    reglas aquí.
    ============================================================ */
 
+/* Red de seguridad: evita que algún elemento que se pase de ancho
+   (texto largo, iconos fijos, etc.) genere scroll horizontal en toda
+   la página en celular/tablet. No afecta el layout de escritorio. */
+@media (max-width: 1024px) {
+  html, body { overflow-x: hidden; max-width: 100vw; }
+}
+
 /* ============================================================
    LANDING PAGE
    ============================================================ */
@@ -74,11 +81,18 @@
    ============================================================ */
 @media (max-width: 1024px) {
   .catalogo-layout { flex-direction: column !important; }
-  .filtros-panel { width: 100% !important; max-width: 100% !important; flex: 1 1 100% !important; position: static !important; top: auto !important; max-height: none !important; }
+
+  /* La barra de búsqueda completa y el panel de filtros lateral se
+     esconden en tablet/celular: se reemplazan por la barra compacta
+     (ciudad/fechas + botón "Filtros") que abre el modal con todos
+     los campos (ModalFiltrosMovil). */
+  .filtros-panel { display: none !important; }
+  .hero-busqueda-card { display: none !important; }
+  .hero-busqueda-compacta { display: flex !important; }
+
   .catalogo-header-inner { padding: 0 20px !important; }
   .catalogo-hero-inner { padding: 24px 20px 18px !important; }
   .catalogo-contenido-inner { padding: 24px 20px !important; }
-  .hero-busqueda-grid { grid-template-columns: repeat(2, minmax(0,1fr)) !important; }
 }
 
 @media (max-width: 640px) {
@@ -87,8 +101,18 @@
   .catalogo-saludo { display: none !important; }
   .catalogo-header-links { font-size: 13px !important; }
   .catalogo-hero-inner { padding: 20px 16px 16px !important; }
-  .hero-busqueda-grid { grid-template-columns: 1fr !important; }
   .catalogo-contenido-inner { padding: 16px !important; }
+  .hero-busqueda-compacta { flex-direction: column !important; align-items: stretch !important; }
+}
+
+/* Modal de filtros (móvil/tablet) */
+@media (max-width: 640px) {
+  .modal-filtros-panel { max-width: 100% !important; border-radius: 18px 18px 0 0 !important; max-height: 92vh !important; }
+}
+
+/* Contenedor de búsqueda dentro del modal móvil, un poco más compacto en celular */
+@media (max-width: 380px) {
+  .filtros-panel-modal { font-size: 13px; }
 }
 
 /* ============================================================
@@ -99,12 +123,32 @@
   .detalle-columna-principal { width: 100% !important; max-width: 100% !important; flex: 1 1 100% !important; }
   .detalle-resumen-lateral { width: 100% !important; flex-shrink: 1 !important; position: static !important; top: auto !important; }
   .detalle-contenido-inner { padding: 24px 20px !important; }
+
+  /* El botón "Continuar" pasa a mostrarse debajo del resumen de la
+     reserva (en vez de arriba) cuando el layout se apila en columna. */
+  .detalle-continuar-desktop { display: none !important; }
+  .detalle-continuar-movil { display: block !important; }
+
+  /* Igual con "Confirmar reserva" (paso de datos personales). */
+  .confirmar-reserva-bloque { display: none !important; }
+  .confirmar-reserva-movil { display: block !important; }
 }
 
 @media (max-width: 640px) {
   .detalle-contenido-inner { padding: 16px !important; }
   .detalle-galeria-principal { height: 240px !important; }
   .datos-personales-grid { grid-template-columns: 1fr !important; }
+
+  /* Cédula y Licencia: se mantienen dos tarjetas por fila (no una debajo
+     de la otra) pero más compactas para que quepan bien en celular. */
+  .doc-verificacion-card { padding: 18px 14px !important; }
+  .doc-uploader-grid { gap: 10px !important; }
+  .doc-uploader-card { padding: 14px 8px !important; gap: 8px !important; }
+  .doc-uploader-label { font-size: 12px !important; }
+  .doc-uploader-help { font-size: 10px !important; max-width: 100% !important; line-height: 1.3 !important; }
+  .doc-uploader-btn { padding: 9px 12px !important; font-size: 11px !important; gap: 5px !important; }
+  .doc-uploader-file { padding: 8px 8px !important; gap: 6px !important; }
+  .doc-uploader-file-icon { width: 18px !important; height: 18px !important; flex-shrink: 0; }
 }
 
 /* ============================================================
@@ -133,5 +177,10 @@
 
 @media (max-width: 640px) {
   .contrato-contenido { padding: 18px 16px !important; }
-  .contrato-grid-2col { grid-template-columns: 1fr !important; }
+  /* Se mantienen 2 campos por fila (no 1 debajo de otro), como en
+     escritorio, pero con menos separación para que quepan en celular. */
+  .contrato-grid-2col { gap: 8px !important; }
+  .contrato-campo { padding: 9px 10px !important; min-height: 56px !important; }
+  .contrato-campo-label { font-size: 9px !important; margin-bottom: 4px !important; }
+  .contrato-campo-valor { font-size: 12px !important; }
 }
