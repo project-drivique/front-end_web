@@ -8,6 +8,8 @@ import { useFavoritos } from '../hooks/useFavoritos'
 import HeaderCatalogo from '../components/HeaderCatalogo'
 import HeroBusqueda from '../components/HeroBusqueda'
 import FiltrosCatalogo from '../components/FiltrosCatalogo'
+import ModalFiltrosMovil from '../components/ModalFiltrosMovil'
+import ModalBusquedaMovil from '../components/ModalBusquedaMovil'
 import GridVehiculos from '../components/GridVehiculos'
 import PaginacionCatalogo from '../components/PaginacionCatalogo'
 import EstadoCarga from '../components/EstadoCarga'
@@ -71,6 +73,8 @@ export default function CatalogoUsuarioPage() {
   }, [usuario?.id])
 
   const { esFavorito, toggleFavorito } = useFavoritos(favoritosKey)
+  const [filtrosMovilAbierto, setFiltrosMovilAbierto] = useState(false)
+  const [busquedaMovilAbierta, setBusquedaMovilAbierta] = useState(false)
 
   const {
     cargando,
@@ -149,6 +153,8 @@ export default function CatalogoUsuarioPage() {
           errorBusqueda={errorBusqueda}
           handleBuscar={handleBuscar}
           invitado={false}
+          onAbrirBusqueda={() => setBusquedaMovilAbierta(true)}
+          onAbrirFiltros={() => setFiltrosMovilAbierto(true)}
         />
 
         <div className="catalogo-layout catalogo-contenido-inner" style={{ maxWidth: '1280px', margin: '0 auto', padding: '22px 24px 24px', display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
@@ -207,6 +213,37 @@ export default function CatalogoUsuarioPage() {
           </div>
         </div>
       </div>
+
+      <ModalFiltrosMovil
+        abierto={filtrosMovilAbierto}
+        onCerrar={() => setFiltrosMovilAbierto(false)}
+        c={c}
+        inputStyle={inputStyle}
+        labelStyle={labelStyle}
+        filtros={filtros}
+        setFiltro={setFiltro}
+        limpiar={limpiarTodo}
+        invitado={false}
+        soloFavoritos={soloFavoritos}
+        setSoloFavoritos={setSoloFavoritos}
+        mostrarFavoritos={Boolean(usuario)}
+        resultado={resultado}
+        cargando={cargando}
+      />
+
+      <ModalBusquedaMovil
+        abierto={busquedaMovilAbierta}
+        onCerrar={() => setBusquedaMovilAbierta(false)}
+        c={c}
+        inputStyle={inputStyle}
+        labelStyle={labelStyle}
+        busquedaForm={busquedaForm}
+        setForm={setForm}
+        errorBusqueda={errorBusqueda}
+        handleBuscar={handleBuscar}
+        limpiar={limpiarTodo}
+        invitado={false}
+      />
     </div>
   )
 }
