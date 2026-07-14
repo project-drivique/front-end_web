@@ -130,7 +130,7 @@ export default function CatalogoPage() {
         boxShadow: c.navShadow,
         height: '96px'
       }}>
-        <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 24px', height: '100%', display: 'flex', alignItems: 'center', gap: '24px' }}>
+        <div className="catalogo-header-inner" style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 24px', height: '100%', display: 'flex', alignItems: 'center', gap: '24px' }}>
           <Link to="/"><img src={logo} alt="Drivique" style={{ height: '80px', flexShrink: 0 }} /></Link>
           <div style={{ flex: 1 }} />
           {!usuario && (
@@ -178,7 +178,7 @@ export default function CatalogoPage() {
           onBuscarInvitado={handleBuscarInvitado}
         />
 
-        <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '22px 24px 24px', display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
+        <div className="catalogo-layout catalogo-contenido-inner" style={{ maxWidth: '1280px', margin: '0 auto', padding: '22px 24px 24px', display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
           <FiltrosCatalogo
             c={c}
             inputStyle={inputStyle}

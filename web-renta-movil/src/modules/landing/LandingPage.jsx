@@ -239,6 +239,7 @@ export default function LandingPage() {
   const c = coloresTema(esModoOscuro)
 
   const [autos, setAutos] = useState([])
+  const [menuMovilAbierto, setMenuMovilAbierto] = useState(false)
 
   useEffect(() => {
     catalogoService.getVehiculosDestacados().then(data => setAutos(data)).catch(() => {})
@@ -261,10 +262,10 @@ export default function LandingPage() {
         background: 'var(--bg-nav)', backdropFilter: 'blur(12px)',
         borderBottom: '1px solid var(--borde)', boxShadow: 'var(--sombra-nav)', height: 96,
       }}>
-        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 48px', height: '100%', display: 'flex', alignItems: 'center', gap: 32 }}>
+        <div className="landing-nav-inner" style={{ maxWidth: 1280, margin: '0 auto', padding: '0 48px', height: '100%', display: 'flex', alignItems: 'center', gap: 32 }}>
           <img src={logo} alt="Drivique" style={{ height: 80, flexShrink: 0 }} />
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 32, flex: 1, justifyContent: 'center' }}>
+          <div className="landing-nav-links" style={{ display: 'flex', alignItems: 'center', gap: 32, flex: 1, justifyContent: 'center' }}>
             <Link
               to="/catalogo"
               style={estiloEnlaceNav}
@@ -300,7 +301,7 @@ export default function LandingPage() {
             ))}
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
+          <div className="landing-nav-auth" style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
             <MenuConfiguracion tx={tx} />
 
             <Link
@@ -341,7 +342,68 @@ export default function LandingPage() {
               {tx.nav.registro}
             </Link>
           </div>
+
+          {/* Botón hamburguesa: solo visible en tablet/celular (ver responsive.css) */}
+          <button
+            className="landing-nav-toggle"
+            onClick={() => setMenuMovilAbierto(v => !v)}
+            aria-label="Abrir menú"
+            style={{
+              display: 'none',
+              marginLeft: 'auto',
+              width: 40,
+              height: 40,
+              borderRadius: 10,
+              border: '2px solid var(--borde)',
+              background: 'transparent',
+              color: 'var(--texto-nav)',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              flexShrink: 0,
+            }}
+          >
+            <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              {menuMovilAbierto
+                ? <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                : <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />}
+            </svg>
+          </button>
         </div>
+
+        {/* Menú móvil desplegable */}
+        {menuMovilAbierto && (
+          <div
+            className="landing-nav-mobile-menu"
+            style={{
+              display: 'none',
+              position: 'absolute',
+              top: '100%',
+              left: 0,
+              right: 0,
+              flexDirection: 'column',
+              gap: 4,
+              background: 'var(--bg-nav)',
+              backdropFilter: 'blur(12px)',
+              borderTop: '1px solid var(--borde)',
+              boxShadow: 'var(--sombra-nav)',
+              padding: '12px 20px 20px',
+              maxHeight: 'calc(100vh - 96px)',
+              overflowY: 'auto',
+            }}
+          >
+            <Link to="/catalogo" onClick={() => setMenuMovilAbierto(false)} style={{ ...estiloEnlaceNav, padding: '10px 4px' }}>{tx.nav.vehiculos}</Link>
+            <Link to="/sucursales" onClick={() => setMenuMovilAbierto(false)} style={{ ...estiloEnlaceNav, padding: '10px 4px' }}>{tx.nav.sucursales}</Link>
+            <a href="#como-funciona" onClick={() => setMenuMovilAbierto(false)} style={{ ...estiloEnlaceNav, padding: '10px 4px' }}>{tx.nav.servicios}</a>
+            <a href="#tarifas" onClick={() => setMenuMovilAbierto(false)} style={{ ...estiloEnlaceNav, padding: '10px 4px' }}>{tx.nav.tarifas}</a>
+            <a href="#soporte" onClick={() => setMenuMovilAbierto(false)} style={{ ...estiloEnlaceNav, padding: '10px 4px' }}>{tx.nav.soporte}</a>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 10, flexWrap: 'wrap' }}>
+              <MenuConfiguracion tx={tx} />
+              <Link to="/login" onClick={() => setMenuMovilAbierto(false)} style={{ padding: '8px 20px', borderRadius: 9999, border: `2px solid ${c.loginBorder}`, color: c.loginText, fontSize: 14, fontWeight: 700, textDecoration: 'none' }}>{tx.nav.login}</Link>
+              <Link to="/registro" onClick={() => setMenuMovilAbierto(false)} style={{ padding: '8px 20px', borderRadius: 9999, background: COLOR_MARCA, color: '#fff', fontSize: 13, fontWeight: 700, textDecoration: 'none' }}>{tx.nav.registro}</Link>
+            </div>
+          </div>
+        )}
       </nav>
 
       <section style={{
@@ -356,7 +418,7 @@ export default function LandingPage() {
         <div style={{ position: 'absolute', top: -80, right: -80, width: 500, height: 500, borderRadius: '50%', background: 'var(--hero-orb1)', pointerEvents: 'none' }} />
         <div style={{ position: 'absolute', bottom: -60, left: -60, width: 350, height: 350, borderRadius: '50%', background: 'var(--hero-orb2)', pointerEvents: 'none' }} />
 
-        <div style={{ position: 'relative', width: '100%', maxWidth: 1280, margin: '0 auto', padding: '80px 48px', display: 'flex', alignItems: 'center', gap: 64, flexWrap: 'wrap' }}>
+        <div className="landing-hero-inner" style={{ position: 'relative', width: '100%', maxWidth: 1280, margin: '0 auto', padding: '80px 48px', display: 'flex', alignItems: 'center', gap: 64, flexWrap: 'wrap' }}>
           <div style={{ flex: '1 1 400px', minWidth: 300 }}>
             <span style={{
               display: 'inline-flex',
@@ -434,7 +496,7 @@ export default function LandingPage() {
               </Link>
             </div>
 
-            <div style={{ display: 'flex', gap: 40 }}>
+            <div className="landing-hero-stats" style={{ display: 'flex', gap: 40 }}>
               {[['50+', tx.hero.stat1], ['24/7', tx.hero.stat2], ['100%', tx.hero.stat3]].map(([num, etiqueta]) => (
                 <div key={etiqueta}>
                   <p style={{ fontSize: 28, fontWeight: 900, color: c.statColor, margin: 0 }}>{num}</p>
@@ -527,8 +589,8 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section id="como-funciona" style={{ padding: '80px 0', background: 'var(--bg-seccion1)' }}>
-        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 48px' }}>
+      <section id="como-funciona" className="landing-section" style={{ padding: '80px 0', background: 'var(--bg-seccion1)' }}>
+        <div className="landing-section-inner" style={{ maxWidth: 1280, margin: '0 auto', padding: '0 48px' }}>
           <div style={{ textAlign: 'center', marginBottom: 56 }}>
             <span style={{ color: c.sectionLabel, fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', display: 'block', marginBottom: 8 }}>
               {tx.como.label}
@@ -549,8 +611,8 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section id="servicios" style={{ padding: '80px 0', background: 'var(--bg-seccion2)' }}>
-        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 48px' }}>
+      <section id="servicios" className="landing-section" style={{ padding: '80px 0', background: 'var(--bg-seccion2)' }}>
+        <div className="landing-section-inner" style={{ maxWidth: 1280, margin: '0 auto', padding: '0 48px' }}>
           <div style={{ textAlign: 'center', marginBottom: 56 }}>
             <span style={{ color: c.sectionLabel, fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', display: 'block', marginBottom: 8 }}>
               {tx.features.label}
@@ -586,7 +648,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section style={{ padding: '80px 48px', background: 'linear-gradient(135deg,#0f1a3d,#1e3a8a,#2563eb)' }}>
+      <section className="landing-cta-section" style={{ padding: '80px 48px', background: 'linear-gradient(135deg,#0f1a3d,#1e3a8a,#2563eb)' }}>
         <div style={{ maxWidth: 700, margin: '0 auto', textAlign: 'center' }}>
           <h2 style={{ fontSize: '2rem', fontWeight: 900, color: '#fff', margin: '0 0 16px' }}>{tx.cta.titulo}</h2>
           <p style={{ color: '#93c5fd', fontSize: 16, margin: '0 0 32px' }}>{tx.cta.sub}</p>
@@ -632,15 +694,15 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <footer style={{ background: '#0f172a', color: 'var(--texto-second)', padding: '56px 48px 32px' }}>
+      <footer className="landing-footer" style={{ background: '#0f172a', color: 'var(--texto-second)', padding: '56px 48px 32px' }}>
         <div style={{ maxWidth: 1280, margin: '0 auto' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', gap: 48, flexWrap: 'wrap', marginBottom: 40 }}>
+          <div className="landing-footer-top" style={{ display: 'flex', justifyContent: 'space-between', gap: 48, flexWrap: 'wrap', marginBottom: 40 }}>
             <div style={{ maxWidth: 280 }}>
               <img src={logo} alt="Drivique" style={{ height: 64, marginBottom: 16, filter: 'brightness(0) invert(1)', opacity: 0.85 }} />
               <p style={{ fontSize: 14, lineHeight: 1.7, color: c.footerMuted, margin: 0 }}>{tx.footer.desc}</p>
             </div>
 
-            <div style={{ display: 'flex', gap: 48, flexWrap: 'wrap' }}>
+            <div className="landing-footer-cols" style={{ display: 'flex', gap: 48, flexWrap: 'wrap' }}>
               {tx.footer.cols.map(col => (
                 <div key={col.title}>
                   <p style={{ color: '#fff', fontWeight: 700, fontSize: 14, margin: '0 0 16px' }}>{col.title}</p>
@@ -659,7 +721,7 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <div style={{ borderTop: `1px solid ${c.socialBorder}`, paddingTop: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
+          <div className="landing-footer-bottom" style={{ borderTop: `1px solid ${c.socialBorder}`, paddingTop: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
             <p style={{ fontSize: 12, color: c.footerBottom, margin: 0 }}>{tx.footer.copy}</p>
 
             <div style={{ display: 'flex', gap: 10 }}>

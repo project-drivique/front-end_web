@@ -18,7 +18,7 @@ export default function HeroBusqueda({
   const buscar = invitado ? onBuscarInvitado : handleBuscar
 
   return (
-    <div style={{ background: c.heroBg, padding: '28px 24px 22px' }}>
+    <div className="catalogo-hero-inner" style={{ background: c.heroBg, padding: '28px 24px 22px' }}>
       <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
         <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '14px', flexWrap: 'wrap', gap: '8px' }}>
           <div>
@@ -60,7 +60,7 @@ export default function HeroBusqueda({
         </div>
 
         <div style={{ background: c.heroCardBg, borderRadius: '16px', border: `1px solid ${c.heroCardBorder}`, boxShadow: c.heroCardShadow, padding: '16px 16px' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, minmax(0, 1fr))', gap: '14px', alignItems: 'end' }}>
+          <div className="hero-busqueda-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(5, minmax(0, 1fr))', gap: '14px', alignItems: 'end' }}>
             <div>
               <label style={{ ...labelStyle, display: 'block' }}>Ciudad</label>
               <select

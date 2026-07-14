@@ -50,11 +50,11 @@ export default function VerificarCorreoPage() {
   } = useVerificarCorreo()
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-white px-6 py-16">
+    <div className="flex min-h-screen items-center justify-center bg-white px-4 py-10 sm:px-6 sm:py-16">
       <div className="w-full max-w-[420px]">
-        <img src={logo} alt="Drivique" className="mx-auto mb-10 h-11" />
+        <img src={logo} alt="Drivique" className="mx-auto mb-8 h-11 sm:mb-10" />
 
-        <div className="rounded-3xl border border-slate-100 p-10 shadow-[0_1px_3px_rgba(0,0,0,0.05)]">
+        <div className="rounded-3xl border border-slate-100 p-6 shadow-[0_1px_3px_rgba(0,0,0,0.05)] sm:p-10">
 
           {exito ? (
             /* ── Pantalla 3: éxito ── */
@@ -122,7 +122,7 @@ export default function VerificarCorreoPage() {
               )}
 
               <form onSubmit={handleSubmit} noValidate>
-                <div className="mb-4 flex justify-center gap-2" onPaste={handlePaste}>
+                <div className="mb-4 flex justify-center gap-1.5 sm:gap-2" onPaste={handlePaste}>
                   {Array.from({ length: LARGO_CODIGO }).map((_, i) => (
                     <input
                       key={i}
@@ -134,7 +134,7 @@ export default function VerificarCorreoPage() {
                       onChange={e => handleCambioDigito(i, e.target.value)}
                       onKeyDown={e => handleKeyDown(i, e)}
                       disabled={cargando || expirado}
-                      className={`h-[54px] w-11 rounded-2xl border text-center text-xl font-bold outline-none transition-all ${
+                      className={`h-12 w-9 rounded-2xl border text-center text-lg font-bold outline-none transition-all sm:h-[54px] sm:w-11 sm:text-xl ${
                         error ? 'border-red-200 bg-red-50 text-red-700'
                         : codigo[i] ? 'border-blue-800 bg-blue-50/40 text-slate-900 ring-4 ring-blue-50'
                         : 'border-slate-200 bg-white text-slate-900 focus:border-blue-800 focus:ring-4 focus:ring-blue-50'

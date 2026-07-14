@@ -21,7 +21,7 @@ export default function GaleriaImagenes({ imagenes = [], nombreVehiculo = 'Vehí
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 24 }}>
-      <div style={{
+      <div className="detalle-galeria-principal" style={{
         width: '100%',
         height: 380,
         borderRadius: 20,

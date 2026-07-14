@@ -210,7 +210,7 @@ export default function DatosPersonales({ vehiculo, reserva, seguroIdx, servicio
 
 
       <div style={{ background: 'var(--bg-tarjeta)', borderRadius: 24, border: '1px solid var(--borde)', padding: '28px', marginBottom: 20, boxShadow: 'var(--sombra-tarjeta)' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px 24px' }}>
+        <div className="datos-personales-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px 24px' }}>
           <div>
             <label style={lbl}>{t('vehiculo.name')} *</label>
             <input value={datosForm.nombre} onChange={e => onCambio('nombre', e.target.value)} placeholder="Ej: Juan Pérez García" style={inp(errores.nombre)} />

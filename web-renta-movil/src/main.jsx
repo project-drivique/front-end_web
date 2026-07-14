@@ -15,6 +15,10 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import './index.css'
 // Importa los estilos globales de la aplicación.
 
+import './styles/responsive.css'
+// Importa las media queries responsive (tablet / celular).
+// Solo actúan por debajo de 1024px, en escritorio no cambia nada.
+
 import './i18n/index.js'
 // Importa la configuración de internacionalización.
 // Solo con importarlo ya se inicializa i18n en la app.

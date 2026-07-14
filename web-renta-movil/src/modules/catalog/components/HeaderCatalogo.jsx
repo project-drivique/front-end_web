@@ -26,17 +26,17 @@ export default function HeaderCatalogo({ c, usuario, withLinks = false }) {
       borderBottom: `1px solid ${c.navBorder}`,
       boxShadow: c.navShadow
     }}>
-      <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 24px', height: '100%', display: 'flex', alignItems: 'center', gap: '18px' }}>
+      <div className="catalogo-header-inner" style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 24px', height: '100%', display: 'flex', alignItems: 'center', gap: '18px' }}>
         <Link to="/"><img src={logo} alt="Drivique" style={{ height: '80px' }} /></Link>
 
         {withLinks && (
-          <Link to="/reservas" style={{ fontSize: '15px', color: c.navText, textDecoration: 'none', fontWeight: 600 }}>{t('catalogo.myReservations')}</Link>
+          <Link to="/reservas" className="catalogo-header-links" style={{ fontSize: '15px', color: c.navText, textDecoration: 'none', fontWeight: 600, whiteSpace: 'nowrap' }}>{t('catalogo.myReservations')}</Link>
         )}
 
         <div style={{ flex: 1 }} />
 
         {usuario && (
-          <span style={{ fontSize: '15px', color: c.navText, fontWeight: 600 }}>
+          <span className="catalogo-saludo" style={{ fontSize: '15px', color: c.navText, fontWeight: 600, whiteSpace: 'nowrap' }}>
             {t('catalogo.greeting')}, {nombre}
           </span>
         )}
