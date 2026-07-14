@@ -502,7 +502,7 @@ export default function RegistroPage() {
         </div>
 
         <div style={{ flex: 1, background: c.pageBg, overflowY: 'auto', height: '100%' }}>
-          <div style={{ minHeight: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '32px 24px' }}>
+          <div className="auth-contenedor" style={{ minHeight: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '32px 24px' }}>
             <div className="logo-mob" style={{ marginBottom: '20px' }}>
               <style>{`@media(min-width:1024px){.logo-mob{display:none}}`}</style>
               <img src={logo} alt="Drivique" style={{ height: '110px', display: 'block', margin: '0 auto' }} />
@@ -523,7 +523,7 @@ export default function RegistroPage() {
               </button>
             </div>
 
-            <div style={{ width: '100%', maxWidth: '460px', background: c.panelCard, borderRadius: '24px', boxShadow: c.panelCardShadow, border: `1px solid ${c.panelCardBorder}`, padding: '36px' }}>
+            <div className="auth-card" style={{ width: '100%', maxWidth: '460px', background: c.panelCard, borderRadius: '24px', boxShadow: c.panelCardShadow, border: `1px solid ${c.panelCardBorder}`, padding: '36px' }}>
               <div style={{ marginBottom: '24px' }}>
                 <h1 style={{ fontSize: '1.5rem', fontWeight: 900, color: c.title, margin: '0 0 6px' }}>{t('registro.title')}</h1>
                 <p style={{ fontSize: '13px', color: c.textMuted, margin: 0 }}>{t('registro.subtitle')}</p>

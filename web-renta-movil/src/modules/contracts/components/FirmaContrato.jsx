@@ -23,14 +23,14 @@ function ciudadDeSucursal(nombreSucursal) {
 }
 
 const Campo = ({ label, value }) => (
-  <div style={{
+  <div className="contrato-campo" style={{
     background: 'var(--bg-tarjeta)', border: '1px solid var(--borde)', borderRadius: 14,
     padding: '12px 14px', minHeight: 66,
   }}>
-    <span style={{ display: 'block', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--texto-second)', marginBottom: 8, fontWeight: 700 }}>
+    <span className="contrato-campo-label" style={{ display: 'block', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--texto-second)', marginBottom: 8, fontWeight: 700 }}>
       {label}
     </span>
-    <span style={{ display: 'block', fontSize: 15, fontWeight: 600, color: 'var(--texto-primary)', wordBreak: 'break-word' }}>
+    <span className="contrato-campo-valor" style={{ display: 'block', fontSize: 15, fontWeight: 600, color: 'var(--texto-primary)', wordBreak: 'break-word' }}>
       {value || '—'}
     </span>
   </div>
@@ -96,14 +96,14 @@ export default function FirmaContrato({ vehiculo, reservaGuardada, onFirmado }) 
   };
 
   return (
-    <div style={{ maxWidth: 980, margin: '0 auto' }}>
+    <div className="contrato-contenedor-externo" style={{ maxWidth: 980, margin: '0 auto' }}>
       <div style={{
         background: 'var(--bg-tarjeta)', border: '1px solid var(--borde)', borderRadius: 24,
         overflow: 'hidden', boxShadow: 'var(--sombra-tarjeta)',
       }}>
         <div style={{ height: 8, background: 'linear-gradient(90deg,#1e3a8a,#2563eb,#93c5fd)' }} />
 
-        <div style={{
+        <div className="contrato-contenido" style={{
           display: 'flex', justifyContent: 'space-between', gap: 28, flexWrap: 'wrap',
           padding: '30px 32px 22px', borderBottom: '1px solid var(--borde)',
         }}>
@@ -131,7 +131,7 @@ export default function FirmaContrato({ vehiculo, reservaGuardada, onFirmado }) 
           </aside>
         </div>
 
-        <div style={{ padding: '26px 32px 32px' }}>
+        <div className="contrato-contenido" style={{ padding: '26px 32px 32px' }}>
           <p style={{ fontSize: 15, color: 'var(--texto-primary)', marginBottom: 24, lineHeight: 1.6 }}>
             {t('contratoFirma.intro', {
               nombre: datosForm.nombre,
@@ -142,7 +142,7 @@ export default function FirmaContrato({ vehiculo, reservaGuardada, onFirmado }) 
 
           <section style={{ marginTop: 22 }}>
             <h3 style={{ fontSize: 17, color: 'var(--texto-primary)', marginBottom: 14 }}>{t('contratoFirma.userDataTitle')}</h3>
-            <div style={{ background: 'var(--bg-item)', border: '1px solid var(--borde)', borderRadius: 18, padding: 16, display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 14 }}>
+            <div style={{ background: 'var(--bg-item)', border: '1px solid var(--borde)', borderRadius: 18, padding: 16, display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 14 }} className="contrato-grid-2col">
               <Campo label={t('contratoFirma.fullName')} value={datosForm.nombre} />
               <Campo label={t('contratoFirma.document')} value={`${datosForm.tipoDoc || ''} ${datosForm.numDoc || ''}`.trim()} />
               <Campo label={t('contratoFirma.email')} value={datosForm.correo} />
@@ -154,7 +154,7 @@ export default function FirmaContrato({ vehiculo, reservaGuardada, onFirmado }) 
 
           <section style={{ marginTop: 26 }}>
             <h3 style={{ fontSize: 17, color: 'var(--texto-primary)', marginBottom: 14 }}>{t('contratoFirma.reservationTitle')}</h3>
-            <div style={{ background: 'var(--bg-item)', border: '1px solid var(--borde)', borderRadius: 18, padding: 16, display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 14 }}>
+            <div style={{ background: 'var(--bg-item)', border: '1px solid var(--borde)', borderRadius: 18, padding: 16, display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 14 }} className="contrato-grid-2col">
               <Campo label={t('contratoFirma.vehicle')} value={`${marca} ${modelo}`.trim()} />
               <Campo label={t('contratoFirma.plate')} value={vehiculo?.placa} />
               <Campo label={t('contratoFirma.color')} value={vehiculo?.color} />
@@ -207,7 +207,7 @@ export default function FirmaContrato({ vehiculo, reservaGuardada, onFirmado }) 
 
           <section style={{ marginTop: 26 }}>
             <h3 style={{ fontSize: 17, color: 'var(--texto-primary)', marginBottom: 14 }}>{t('contratoFirma.signaturesTitle')}</h3>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 14, marginBottom: 18 }}>
+            <div className="contrato-grid-2col" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 14, marginBottom: 18 }}>
               <Campo label={t('contratoFirma.signCity')} value={ciudadSucursal} />
               <Campo label={t('contratoFirma.signDate')} value={fechaGeneracion} />
             </div>

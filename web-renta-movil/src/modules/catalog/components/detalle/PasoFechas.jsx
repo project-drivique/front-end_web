@@ -10,12 +10,13 @@ const HORAS = Array.from({ length: 24 }, (_, i) => {
 
 function Campo({ icono: Icono, label, children }) {
   return (
-    <div className="flex min-h-[96px] w-full items-center gap-4 rounded-2xl border border-[var(--borde)] bg-[var(--bg-tarjeta)] pl-8 pr-6 py-5 shadow-sm hover:border-blue-300 hover:shadow-md transition-all">
-      <span className="ml-2 flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-800">
-        <Icono size={19} />
+    <div className="flex min-h-[88px] sm:min-h-[96px] w-full items-center gap-2.5 sm:gap-4 rounded-2xl border border-[var(--borde)] bg-[var(--bg-tarjeta)] pl-4 pr-3 sm:pl-8 sm:pr-6 py-4 sm:py-5 shadow-sm hover:border-blue-300 hover:shadow-md transition-all">
+      <span className="flex h-9 w-9 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-800">
+        <Icono size={16} className="sm:hidden" />
+        <Icono size={19} className="hidden sm:block" />
       </span>
       <div className="min-w-0 flex-1">
-        <span className="block text-[11px] font-bold uppercase tracking-wider text-[var(--texto-second)] mb-1.5">{label}</span>
+        <span className="block text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-[var(--texto-second)] mb-1 sm:mb-1.5">{label}</span>
         {children}
       </div>
     </div>
@@ -82,34 +83,34 @@ export default function PasoFechas({ vehiculo, reserva, onCambio }) {
             {t('vehiculo.paymentMethodTitle')}
           </span>
           <br></br>
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-            <label className={`flex min-h-[112px] items-start gap-4 rounded-2xl border p-6 cursor-pointer transition-all duration-200 ${reserva.metodoPago !== 'efectivo' ? 'border-blue-600 bg-blue-50/40 shadow-sm' : 'border-[var(--borde)] bg-[var(--bg-tarjeta)] hover:bg-[var(--bg-item-hover)]'}`}>
+          <div className="grid grid-cols-2 gap-3 sm:gap-5">
+            <label className={`flex min-h-[100px] sm:min-h-[112px] items-start gap-2.5 sm:gap-4 rounded-2xl border p-3.5 sm:p-6 cursor-pointer transition-all duration-200 ${reserva.metodoPago !== 'efectivo' ? 'border-blue-600 bg-blue-50/40 shadow-sm' : 'border-[var(--borde)] bg-[var(--bg-tarjeta)] hover:bg-[var(--bg-item-hover)]'}`}>
               <input
                 type="radio"
                 name="metodoPago"
                 value="wompi"
                 checked={reserva.metodoPago !== 'efectivo'}
                 onChange={() => onCambio('metodoPago', 'wompi')}
-                className="h-5 w-5 shrink-0 text-blue-600 accent-blue-600 mt-1"
+                className="h-4 w-4 sm:h-5 sm:w-5 shrink-0 text-blue-600 accent-blue-600 mt-1"
               />
               <div className="min-w-0 flex-1">
-                <span className="block text-lg font-extrabold text-[var(--texto-primary)] leading-snug">{t('vehiculo.paymentWompiTitle')}</span>
-                <span className="block text-sm text-[var(--texto-second)] mt-2 leading-relaxed">{t('vehiculo.paymentWompiDesc')}</span>
+                <span className="block text-sm sm:text-lg font-extrabold text-[var(--texto-primary)] leading-snug">{t('vehiculo.paymentWompiTitle')}</span>
+                <span className="block text-xs sm:text-sm text-[var(--texto-second)] mt-1 sm:mt-2 leading-relaxed">{t('vehiculo.paymentWompiDesc')}</span>
               </div>
             </label>
 
-            <label className={`flex min-h-[112px] items-start gap-4 rounded-2xl border p-6 cursor-pointer transition-all duration-200 ${reserva.metodoPago === 'efectivo' ? 'border-blue-600 bg-blue-50/40 shadow-sm' : 'border-[var(--borde)] bg-[var(--bg-tarjeta)] hover:bg-[var(--bg-item-hover)]'}`}>
+            <label className={`flex min-h-[100px] sm:min-h-[112px] items-start gap-2.5 sm:gap-4 rounded-2xl border p-3.5 sm:p-6 cursor-pointer transition-all duration-200 ${reserva.metodoPago === 'efectivo' ? 'border-blue-600 bg-blue-50/40 shadow-sm' : 'border-[var(--borde)] bg-[var(--bg-tarjeta)] hover:bg-[var(--bg-item-hover)]'}`}>
               <input
                 type="radio"
                 name="metodoPago"
                 value="efectivo"
                 checked={reserva.metodoPago === 'efectivo'}
                 onChange={() => onCambio('metodoPago', 'efectivo')}
-                className="h-5 w-5 shrink-0 text-blue-600 accent-blue-600 mt-1"
+                className="h-4 w-4 sm:h-5 sm:w-5 shrink-0 text-blue-600 accent-blue-600 mt-1"
               />
               <div className="min-w-0 flex-1">
-                <span className="block text-lg font-extrabold text-[var(--texto-primary)] leading-snug">{t('vehiculo.paymentCashTitle')}</span>
-                <span className="block text-sm text-[var(--texto-second)] mt-2 leading-relaxed">{t('vehiculo.paymentCashDesc')}</span>
+                <span className="block text-sm sm:text-lg font-extrabold text-[var(--texto-primary)] leading-snug">{t('vehiculo.paymentCashTitle')}</span>
+                <span className="block text-xs sm:text-sm text-[var(--texto-second)] mt-1 sm:mt-2 leading-relaxed">{t('vehiculo.paymentCashDesc')}</span>
               </div>
             </label>
           </div>
@@ -121,9 +122,9 @@ export default function PasoFechas({ vehiculo, reserva, onCambio }) {
           <span className="block text-xs font-extrabold uppercase tracking-widest text-[var(--texto-second)] mb-6">
             {t('vehiculo.deliveryTimeSectionTitle')}
           </span>
-          {/* En pantallas medianas se apila a 1 columna para que cada select
-              tenga suficiente ancho para textos largos; a partir de lg pasa a 2 columnas. */}
-          <div className="grid w-full grid-cols-1 gap-5 lg:grid-cols-2">
+          {/* Dos campos por fila desde `sm` en adelante (celular incluido),
+              igual que las tarjetas de método de pago. */}
+          <div className="grid w-full grid-cols-2 gap-3 sm:gap-5">
             <Campo icono={FaMapMarkerAlt} label={t('vehiculo.pickupLocationLabel')}>
               <select
                 id="campo-lugar-retiro"

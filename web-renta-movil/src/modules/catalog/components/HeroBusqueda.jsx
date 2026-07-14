@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next'
+import { FaMapMarkerAlt, FaSlidersH } from 'react-icons/fa'
 import { SUCURSALES, CIUDADES } from '../constants'
 
 export default function HeroBusqueda({
@@ -13,12 +14,30 @@ export default function HeroBusqueda({
   handleBuscar = () => {},
   onBuscarInvitado = () => {},
   invitado = false,
+  onAbrirBusqueda = null,
+  onAbrirFiltros = null,
 }) {
   const { t } = useTranslation()
   const buscar = invitado ? onBuscarInvitado : handleBuscar
 
+  const fmtFecha = (iso) => {
+    if (!iso) return ''
+    const partes = iso.split('-')
+    return `${partes[2]}/${partes[1]}`
+  }
+
+  const resumenPartes = [
+    busquedaForm.ciudad,
+    busquedaForm.sucursal,
+    (busquedaForm.fechaInicio || busquedaForm.fechaFin)
+      ? `${fmtFecha(busquedaForm.fechaInicio) || '—'} → ${fmtFecha(busquedaForm.fechaFin) || '—'}`
+      : null,
+  ].filter(Boolean)
+
+  const resumenTexto = resumenPartes.length > 0 ? resumenPartes.join(' · ') : t('catalogo.selectDestination')
+
   return (
-    <div style={{ background: c.heroBg, padding: '28px 24px 22px' }}>
+    <div className="catalogo-hero-inner" style={{ background: c.heroBg, padding: '28px 24px 22px' }}>
       <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
         <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '14px', flexWrap: 'wrap', gap: '8px' }}>
           <div>
@@ -59,8 +78,69 @@ export default function HeroBusqueda({
           </div>
         </div>
 
-        <div style={{ background: c.heroCardBg, borderRadius: '16px', border: `1px solid ${c.heroCardBorder}`, boxShadow: c.heroCardShadow, padding: '16px 16px' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, minmax(0, 1fr))', gap: '14px', alignItems: 'end' }}>
+        {(onAbrirBusqueda || onAbrirFiltros) && (
+          <div
+            className="hero-busqueda-compacta"
+            style={{ display: 'none', gap: '10px', alignItems: 'center' }}
+          >
+            <button
+              type="button"
+              onClick={onAbrirBusqueda || onAbrirFiltros}
+              style={{
+                flex: 1,
+                minWidth: 0,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                background: c.heroCardBg,
+                border: `1px solid ${c.heroCardBorder}`,
+                borderRadius: '12px',
+                padding: '11px 14px',
+                cursor: 'pointer',
+                textAlign: 'left',
+              }}
+            >
+              <span style={{ color: c.accentText, flexShrink: 0 }}><FaMapMarkerAlt size={14} /></span>
+              <span style={{
+                fontSize: '13px',
+                fontWeight: 600,
+                color: c.textPrimary,
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              }}>
+                {resumenTexto}
+              </span>
+            </button>
+
+            {onAbrirFiltros && (
+              <button
+                type="button"
+                onClick={onAbrirFiltros}
+                style={{
+                  flexShrink: 0,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  padding: '11px 16px',
+                  borderRadius: '12px',
+                  background: c.accentGradient,
+                  color: '#fff',
+                  fontWeight: 700,
+                  fontSize: '13px',
+                  border: 'none',
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 14px rgba(30,58,138,0.25)',
+                }}
+              >
+                <FaSlidersH size={13} /> {t('catalogo.filters')}
+              </button>
+            )}
+          </div>
+        )}
+
+        <div className="hero-busqueda-card" style={{ background: c.heroCardBg, borderRadius: '16px', border: `1px solid ${c.heroCardBorder}`, boxShadow: c.heroCardShadow, padding: '16px 16px' }}>
+          <div className="hero-busqueda-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(5, minmax(0, 1fr))', gap: '14px', alignItems: 'end' }}>
             <div>
               <label style={{ ...labelStyle, display: 'block' }}>Ciudad</label>
               <select
