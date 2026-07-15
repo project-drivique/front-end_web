@@ -9,7 +9,7 @@ import VEHICULOS_MOCK from '@/mocks/vehiculos.json'
 import { reservaService, HORAS_LIMITE_PAGO_EFECTIVO } from '@/services/reservaService'
 import { documentosService } from '@/services/documentosService'
 import { generarReferenciaUnica, aCentavos, construirUrlCheckout } from '@/services/wompiService'
-import { RECARGOS_LOGISTICOS } from '../constants'
+import { RECARGOS_LOGISTICOS, SUCURSALES } from '../constants'
 import { formatCurrency } from '@/utils/monedaUtils'
 import { useLanding } from '../../landing/LandingContext'
 
@@ -63,6 +63,10 @@ export default function VehiculoDetallePage() {
     sucursalDevolucion: vehiculo ? vehiculo.sucursal : '',
     tipoKm: 'limitado',
     metodoPago: 'wompi',
+    domicilioCiudad: '',
+    domicilioBarrio: '',
+    domicilioDireccion: '',
+    domicilioReferencias: '',
   });
   const cambiarReserva = (campo, valor) => {
     setReserva(prev => {
@@ -70,6 +74,14 @@ export default function VehiculoDetallePage() {
       if (campo === 'metodoPago' && valor === 'efectivo') {
         act.sucursalRetiro = vehiculo ? vehiculo.sucursal : '';
         act.sucursalDevolucion = vehiculo ? vehiculo.sucursal : '';
+        act.domicilioCiudad = '';
+        act.domicilioBarrio = '';
+        act.domicilioDireccion = '';
+        act.domicilioReferencias = '';
+      }
+      if (act.sucursalRetiro === 'domicilio') {
+        const branchObj = SUCURSALES.find(s => s.nombre === vehiculo?.sucursal);
+        act.domicilioCiudad = branchObj?.ciudad || '';
       }
       return act;
     });
@@ -129,6 +141,16 @@ export default function VehiculoDetallePage() {
       if (!reserva.fechaInicio || !reserva.fechaFin) {
         setErrorPaso1(t('vehiculo.errors.datesRequired'))
         return
+      }
+      if (reserva.sucursalRetiro === 'domicilio') {
+        if (
+          !reserva.domicilioBarrio?.trim() ||
+          !reserva.domicilioDireccion?.trim() ||
+          !reserva.domicilioReferencias?.trim()
+        ) {
+          setErrorPaso1(t('vehiculo.errors.domicilioRequired'))
+          return
+        }
       }
     }
     setErrorPaso1('')

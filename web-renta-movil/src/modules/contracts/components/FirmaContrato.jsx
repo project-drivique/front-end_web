@@ -46,10 +46,18 @@ export default function FirmaContrato({ vehiculo, reservaGuardada, onFirmado }) 
 
   const { datosForm = {}, reservaDetalles = {}, total = 0, referencia, seguroIdx, serviciosSeleccionados = [] } = reservaGuardada || {};
 
+  const direccionCompleta = reservaDetalles.sucursalRetiro === 'domicilio'
+    ? `${reservaDetalles.domicilioDireccion || ''}, ${reservaDetalles.domicilioBarrio || ''}, ${reservaDetalles.domicilioCiudad || ''} (Ref: ${reservaDetalles.domicilioReferencias || ''})`
+    : t('contratoFirma.notProvided');
+
   const codigoContrato = useMemo(() => contratoService.obtenerOCrearCodigo(referencia), [referencia]);
   const localeFecha = LOCALES_FECHA[i18n.language] || 'es-CO';
   const { marca, modelo } = separarMarcaModelo(vehiculo?.nombre);
-  const ciudadSucursal = ciudadDeSucursal(reservaDetalles.sucursalRetiro);
+  const ciudadSucursal = ciudadDeSucursal(
+    reservaDetalles.sucursalRetiro === 'domicilio'
+      ? vehiculo?.sucursal
+      : reservaDetalles.sucursalRetiro
+  );
   const fechaGeneracion = new Date().toLocaleDateString(localeFecha, { day: '2-digit', month: 'long', year: 'numeric' });
 
   const serviciosTexto = useMemo(() => {
@@ -147,7 +155,7 @@ export default function FirmaContrato({ vehiculo, reservaGuardada, onFirmado }) 
               <Campo label={t('contratoFirma.document')} value={`${datosForm.tipoDoc || ''} ${datosForm.numDoc || ''}`.trim()} />
               <Campo label={t('contratoFirma.email')} value={datosForm.correo} />
               <Campo label={t('contratoFirma.phone')} value={datosForm.celular} />
-              <Campo label={t('contratoFirma.address')} value={t('contratoFirma.notProvided')} />
+              <Campo label={t('contratoFirma.address')} value={direccionCompleta} />
               <Campo label={t('contratoFirma.license')} value={datosForm.licenciaPdf?.name || t('contratoFirma.notProvided')} />
             </div>
           </section>
@@ -159,14 +167,24 @@ export default function FirmaContrato({ vehiculo, reservaGuardada, onFirmado }) 
               <Campo label={t('contratoFirma.plate')} value={vehiculo?.placa} />
               <Campo label={t('contratoFirma.color')} value={vehiculo?.color} />
               <Campo label={t('contratoFirma.year')} value={vehiculo?.año} />
-              <Campo label={t('contratoFirma.branch')} value={reservaDetalles.sucursalRetiro} />
-              <Campo label={t('contratoFirma.branchCity')} value={ciudadSucursal} />
+              <Campo label={t('contratoFirma.branch')} value={reservaDetalles.sucursalRetiro === 'domicilio' ? 'Entrega a Domicilio' : reservaDetalles.sucursalRetiro} />
+              <Campo label={t('contratoFirma.branchCity')} value={reservaDetalles.sucursalRetiro === 'domicilio' ? (reservaDetalles.domicilioCiudad || ciudadSucursal) : ciudadSucursal} />
               <Campo label={t('contratoFirma.startDate')} value={formatearFecha(reservaDetalles.fechaInicio)} />
               <Campo label={t('contratoFirma.endDate')} value={formatearFecha(reservaDetalles.fechaFin)} />
               <Campo label={t('contratoFirma.paymentMethod')} value={metodoPagoTexto} />
               <Campo label={t('contratoFirma.totalValue')} value={formatCurrency(total, moneda)} />
               <Campo label={t('contratoFirma.additionalServices')} value={serviciosTexto} />
               <Campo label={t('contratoFirma.protectionPlan')} value={seguroIdx != null ? vehiculo?.seguros?.[seguroIdx]?.nombre : '—'} />
+              {reservaDetalles.sucursalRetiro === 'domicilio' && (
+                <>
+                  <Campo label="Dirección de Entrega" value={reservaDetalles.domicilioDireccion} />
+                  <Campo label="Barrio de Entrega" value={reservaDetalles.domicilioBarrio} />
+                  <Campo label="Referencias de Entrega" value={reservaDetalles.domicilioReferencias} />
+                </>
+              )}
+              {reservaDetalles.sucursalDevolucion === 'domicilio' && (
+                <Campo label="Devolución en Domicilio" value="Sí (Misma dirección de entrega)" />
+              )}
             </div>
           </section>
 

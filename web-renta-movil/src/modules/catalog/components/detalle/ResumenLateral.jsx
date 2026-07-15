@@ -74,8 +74,13 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, servicios
             {reserva.fechaInicio ? `${fmt(reserva.fechaInicio)}` : t('vehiculo.dateNotSelected')}
           </p>
           <p style={{ fontSize: 12, color: 'var(--texto-second)', margin: 0 }}>
-            {reserva.sucursalRetiro || t('vehiculo.selectLocation')} — {reserva.horaInicio || '09:00'}
+            {reserva.sucursalRetiro === 'domicilio' ? t('vehiculo.deliveryHome') : (reserva.sucursalRetiro || t('vehiculo.selectLocation'))} — {reserva.horaInicio || '09:00'}
           </p>
+          {reserva.sucursalRetiro === 'domicilio' && (reserva.domicilioDireccion || reserva.domicilioBarrio) && (
+            <p style={{ fontSize: 11, color: '#2563eb', fontWeight: 700, margin: '4px 0 0', wordBreak: 'break-word', lineHeight: 1.3 }}>
+              📍 {[reserva.domicilioDireccion, reserva.domicilioBarrio, reserva.domicilioCiudad].filter(Boolean).join(', ')}
+            </p>
+          )}
         </div>
 
         <div style={{ padding: '16px 0', borderBottom: '1px solid var(--borde)' }}>
@@ -89,8 +94,13 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, servicios
             {reserva.fechaFin ? `${fmt(reserva.fechaFin)}` : t('vehiculo.dateNotSelected')}
           </p>
           <p style={{ fontSize: 12, color: 'var(--texto-second)', margin: 0 }}>
-            {reserva.sucursalDevolucion || t('vehiculo.selectLocation')} — {reserva.horaFin || '09:00'}
+            {reserva.sucursalDevolucion === 'domicilio' ? t('vehiculo.returnHome') : (reserva.sucursalDevolucion || t('vehiculo.selectLocation'))} — {reserva.horaFin || '09:00'}
           </p>
+          {reserva.sucursalDevolucion === 'domicilio' && (reserva.domicilioDireccion || reserva.domicilioBarrio) && (
+            <p style={{ fontSize: 11, color: '#2563eb', fontWeight: 700, margin: '4px 0 0', wordBreak: 'break-word', lineHeight: 1.3 }}>
+              📍 {[reserva.domicilioDireccion, reserva.domicilioBarrio, reserva.domicilioCiudad].filter(Boolean).join(', ')}
+            </p>
+          )}
         </div>
 
         <div style={{ padding: '16px 0', borderBottom: '1px solid var(--borde)' }}>

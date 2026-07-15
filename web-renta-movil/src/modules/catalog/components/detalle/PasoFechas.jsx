@@ -160,7 +160,77 @@ export default function PasoFechas({ vehiculo, reserva, onCambio }) {
                 {HORAS.map(h => <option key={h} value={h}>{h}</option>)}
               </select>
             </Campo>
+
           </div>
+          <br></br>
+          {reserva.sucursalRetiro === 'domicilio' && (
+            <div className="w-full bg-[var(--bg-tarjeta)] rounded-2xl border border-[var(--borde)] p-6 sm:p-8 shadow-sm space-y-6 mt-8 animate-fadeIn transition-all duration-300">
+              <span className="block text-sm font-extrabold uppercase tracking-wider text-blue-900 border-b border-[var(--borde)] pb-4 mb-4">
+                {t('vehiculo.domicilioSectionTitle')}
+              </span> <br></br>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="sm:col-span-2 bg-[#f8fafc] border border-blue-100 rounded-2xl p-4 sm:p-5 flex items-center justify-between shadow-sm">
+                  <div className="flex items-center gap-3">
+                    <span className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-50 text-blue-800">
+                      <FaMapMarkerAlt size={15} />
+                    </span>
+                    <div>
+                      <span className="block text-[10px] font-extrabold uppercase tracking-widest text-[var(--texto-second)]">
+                        {t('vehiculo.domicilioCity')}
+                      </span>
+                      <span className="block text-sm font-extrabold text-blue-900 mt-1">
+                        {branchObj?.ciudad}
+                      </span>
+
+                      <br></br>
+                    </div>
+                  </div>
+                  <span className="text-[10px] font-extrabold text-blue-600 bg-blue-50 border border-blue-100 rounded-full px-3 py-1.5 uppercase tracking-wider">
+                    Auto-detectado
+                  </span>
+                </div>
+
+                <div className="sm:col-span-2">
+                  <label className="block text-xs font-extrabold uppercase tracking-widest text-[var(--texto-second)] mb-2.5">
+                    {t('vehiculo.domicilioNeighborhood')} *
+                  </label>
+                  <input
+                    type="text"
+                    placeholder={t('vehiculo.domicilioNeighborhoodPlaceholder')}
+                    value={reserva.domicilioBarrio || ''}
+                    onChange={e => onCambio('domicilioBarrio', e.target.value)}
+                    className="w-full rounded-xl border border-[var(--borde)] bg-[var(--bg-item)] px-4 py-3.5 text-sm text-[var(--texto-primary)] outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all font-semibold"
+                  />
+                </div>
+
+                <div className="sm:col-span-2">
+                  <label className="block text-xs font-extrabold uppercase tracking-widest text-[var(--texto-second)] mb-2.5">
+                    {t('vehiculo.domicilioAddress')} *
+                  </label>
+                  <input
+                    type="text"
+                    placeholder={t('vehiculo.domicilioAddressPlaceholder')}
+                    value={reserva.domicilioDireccion || ''}
+                    onChange={e => onCambio('domicilioDireccion', e.target.value)}
+                    className="w-full rounded-xl border border-[var(--borde)] bg-[var(--bg-item)] px-4 py-3.5 text-sm text-[var(--texto-primary)] outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all font-semibold"
+                  />
+                </div>
+
+                <div className="sm:col-span-2">
+                  <label className="block text-xs font-extrabold uppercase tracking-widest text-[var(--texto-second)] mb-2.5">
+                    {t('vehiculo.domicilioReferences')} *
+                  </label>
+                  <textarea
+                    rows="2"
+                    placeholder={t('vehiculo.domicilioReferencesPlaceholder')}
+                    value={reserva.domicilioReferencias || ''}
+                    onChange={e => onCambio('domicilioReferencias', e.target.value)}
+                    className="w-full rounded-xl border border-[var(--borde)] bg-[var(--bg-item)] px-4 py-3.5 text-sm text-[var(--texto-primary)] outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all resize-none font-semibold"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
         </div>
         <br></br>
         {/* Separación y Calendario */}
