@@ -74,7 +74,7 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, servicios
             {reserva.fechaInicio ? `${fmt(reserva.fechaInicio)}` : t('vehiculo.dateNotSelected')}
           </p>
           <p style={{ fontSize: 12, color: 'var(--texto-second)', margin: 0 }}>
-            {reserva.sucursalRetiro === 'domicilio' ? t('vehiculo.deliveryHome') : (reserva.sucursalRetiro || t('vehiculo.selectLocation'))} — {reserva.horaInicio || '09:00'}
+            {reserva.sucursalRetiro === 'domicilio' ? t('vehiculo.deliveryHome') : (reserva.sucursalRetiro || 'Lugar no seleccionado')} — {reserva.horaInicio || 'Hora no seleccionada'}
           </p>
           {reserva.sucursalRetiro === 'domicilio' && (reserva.domicilioDireccion || reserva.domicilioBarrio) && (
             <p style={{ fontSize: 11, color: '#2563eb', fontWeight: 700, margin: '4px 0 0', wordBreak: 'break-word', lineHeight: 1.3 }}>
@@ -94,7 +94,7 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, servicios
             {reserva.fechaFin ? `${fmt(reserva.fechaFin)}` : t('vehiculo.dateNotSelected')}
           </p>
           <p style={{ fontSize: 12, color: 'var(--texto-second)', margin: 0 }}>
-            {reserva.sucursalDevolucion === 'domicilio' ? t('vehiculo.returnHome') : (reserva.sucursalDevolucion || t('vehiculo.selectLocation'))} — {reserva.horaFin || '09:00'}
+            {reserva.sucursalDevolucion === 'domicilio' ? t('vehiculo.returnHome') : (reserva.sucursalDevolucion || 'Lugar no seleccionado')} — {reserva.horaFin || 'Hora no seleccionada'}
           </p>
           {reserva.sucursalDevolucion === 'domicilio' && (reserva.domicilioDireccion || reserva.domicilioBarrio) && (
             <p style={{ fontSize: 11, color: '#2563eb', fontWeight: 700, margin: '4px 0 0', wordBreak: 'break-word', lineHeight: 1.3 }}>
@@ -111,15 +111,27 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, servicios
             </button>
           </div>
           <p style={{ fontSize: 14, fontWeight: 800, color: 'var(--texto-primary)', margin: '0 0 4px' }}>{vehiculo.categoria} — {vehiculo.transmision}</p>
-          <span style={{
-            display: 'inline-block', fontSize: 11, fontWeight: 700, marginTop: 4,
-            padding: '4px 12px', borderRadius: 9999,
-            background: reserva.tipoKm === 'ilimitado' ? '#ecfdf5' : '#eff6ff',
-            color: reserva.tipoKm === 'ilimitado' ? '#059669' : '#1e3a8a',
-            border: `1px solid ${reserva.tipoKm === 'ilimitado' ? '#bbf7d0' : '#bfdbfe'}`,
-          }}>
-            {reserva.tipoKm === 'ilimitado' ? `∞ ${t('catalogo.unlimitedKm')}` : `${kmLimit.km} km/día ${t('catalogo.limitedKm')}`}
-          </span>
+          {reserva.tipoKm ? (
+            <span style={{
+              display: 'inline-block', fontSize: 11, fontWeight: 700, marginTop: 4,
+              padding: '4px 12px', borderRadius: 9999,
+              background: reserva.tipoKm === 'ilimitado' ? '#ecfdf5' : '#eff6ff',
+              color: reserva.tipoKm === 'ilimitado' ? '#059669' : '#1e3a8a',
+              border: `1px solid ${reserva.tipoKm === 'ilimitado' ? '#bbf7d0' : '#bfdbfe'}`,
+            }}>
+              {reserva.tipoKm === 'ilimitado' ? `∞ ${t('catalogo.unlimitedKm')}` : `${kmLimit.km} km/día ${t('catalogo.limitedKm')}`}
+            </span>
+          ) : (
+            <span style={{
+              display: 'inline-block', fontSize: 11, fontWeight: 700, marginTop: 4,
+              padding: '4px 12px', borderRadius: 9999,
+              background: '#f1f5f9',
+              color: '#64748b',
+              border: '1px solid #e2e8f0',
+            }}>
+              Tipo de km no seleccionado
+            </span>
+          )}
         </div>
 
         <div style={{ paddingTop: 16 }}>
@@ -131,7 +143,7 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, servicios
             <span style={{ color: 'var(--texto-primary)' }}>{dias} {t('vehiculo.daysCount')} × {formatCurrency(precio, moneda)}</span>
             <span style={{ fontWeight: 800, color: 'var(--texto-primary)' }}>{formatCurrency(subtotalDiario, moneda)}</span>
           </div>
-          {seguroIdx !== null && (
+          {seguroIdx !== null ? (
             <>
               <p style={{ fontSize: 11, fontWeight: 800, color: 'var(--texto-second)', margin: '0 0 4px' }}>{t('vehiculo.protectionsLabel')}</p>
               <div style={{ fontSize: 12, color: 'var(--texto-primary)', marginBottom: 4 }}>{vehiculo.seguros[seguroIdx]?.nombre}</div>
@@ -139,6 +151,11 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, servicios
                 <span style={{ color: 'var(--texto-primary)' }}>{dias} {t('vehiculo.daysCount')} × {formatCurrency(precioSeguro, moneda)}</span>
                 <span style={{ fontWeight: 800, color: 'var(--texto-primary)' }}>{formatCurrency(subtotalSeguro, moneda)}</span>
               </div>
+            </>
+          ) : (
+            <>
+              <p style={{ fontSize: 11, fontWeight: 800, color: 'var(--texto-second)', margin: '0 0 4px' }}>{t('vehiculo.protectionsLabel')}</p>
+              <div style={{ fontSize: 12, color: '#64748b', marginBottom: 12, fontStyle: 'italic' }}>Protección no seleccionada</div>
             </>
           )}
           {serviciosElegidos.length > 0 && (

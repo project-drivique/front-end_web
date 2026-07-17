@@ -4,12 +4,13 @@ import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '../../../store/authStore'
 import { showAlert } from '@/utils/swalConfig'
 import logo from '@/assets/logo.png'
-import { FaMoneyBillWave, FaCreditCard } from 'react-icons/fa'
+import { FaMoneyBillWave, FaCreditCard, FaMapMarkerAlt, FaClock, FaCalendarAlt, FaTimes } from 'react-icons/fa'
 import VEHICULOS_MOCK from '@/mocks/vehiculos.json'
 import { reservaService, HORAS_LIMITE_PAGO_EFECTIVO } from '@/services/reservaService'
 import { documentosService } from '@/services/documentosService'
 import { generarReferenciaUnica, aCentavos, construirUrlCheckout } from '@/services/wompiService'
-import { RECARGOS_LOGISTICOS, SUCURSALES } from '../constants'
+import { RECARGOS_LOGISTICOS, SUCURSALES, CIUDADES } from '../constants'
+import CalendarioReservas from '../components/detalle/CalendarioReservas'
 import { formatCurrency } from '@/utils/monedaUtils'
 import { useLanding } from '../../landing/LandingContext'
 
@@ -51,23 +52,40 @@ export default function VehiculoDetallePage() {
   const vehiculo = VEHICULOS_MOCK.find(v => v.id === Number(id));
 
   const [pantalla, setPantalla] = useState(1);
-  const [seguroIdx, setSeguroIdx] = useState(0);
+  const [seguroIdx, setSeguroIdx] = useState(null);
   const [serviciosSeleccionados, setServiciosSeleccionados] = useState([]);
   const toggleServicio = (nombre) => setServiciosSeleccionados(prev =>
     prev.includes(nombre) ? prev.filter(n => n !== nombre) : [...prev, nombre]
   );
   const [reserva, setReserva] = useState({
     fechaInicio: '', fechaFin: '',
-    horaInicio: '09:00', horaFin: '09:00',
-    sucursalRetiro: vehiculo ? vehiculo.sucursal : '',
-    sucursalDevolucion: vehiculo ? vehiculo.sucursal : '',
-    tipoKm: 'limitado',
-    metodoPago: 'wompi',
+    horaInicio: '', horaFin: '',
+    sucursalRetiro: '',
+    sucursalDevolucion: '',
+    tipoKm: '',
+    metodoPago: '',
     domicilioCiudad: '',
     domicilioBarrio: '',
     domicilioDireccion: '',
     domicilioReferencias: '',
   });
+
+  // Modal de Edición
+  const [modalEditarOpen, setModalEditarOpen] = useState(false);
+  const [modalEditarSeccion, setModalEditarSeccion] = useState(null); // 'retiro', 'devolucion', 'grupo', 'servicios'
+  const [localReserva, setLocalReserva] = useState({});
+  const [localSeguroIdx, setLocalSeguroIdx] = useState(null);
+  const [localServiciosSeleccionados, setLocalServiciosSeleccionados] = useState([]);
+  const [modalError, setModalError] = useState('');
+
+  const abrirModalEditar = (seccion) => {
+    setLocalReserva({ ...reserva });
+    setLocalSeguroIdx(seguroIdx);
+    setLocalServiciosSeleccionados([...serviciosSeleccionados]);
+    setModalError('');
+    setModalEditarSeccion(seccion);
+    setModalEditarOpen(true);
+  };
   const cambiarReserva = (campo, valor) => {
     setReserva(prev => {
       const act = { ...prev, [campo]: valor };
@@ -134,6 +152,10 @@ export default function VehiculoDetallePage() {
 
   const irSiguiente = () => {
     if (pantalla === 1) {
+      if (!reserva.metodoPago) {
+        setErrorPaso1("Debes seleccionar un método de pago.");
+        return;
+      }
       if (!reserva.sucursalRetiro || !reserva.sucursalDevolucion) {
         setErrorPaso1(t('vehiculo.selectLocation'))
         return
@@ -141,6 +163,10 @@ export default function VehiculoDetallePage() {
       if (!reserva.fechaInicio || !reserva.fechaFin) {
         setErrorPaso1(t('vehiculo.errors.datesRequired'))
         return
+      }
+      if (!reserva.horaInicio || !reserva.horaFin) {
+        setErrorPaso1("Debes seleccionar la hora de recogida y devolución.");
+        return;
       }
       if (reserva.sucursalRetiro === 'domicilio') {
         if (
@@ -151,6 +177,15 @@ export default function VehiculoDetallePage() {
           setErrorPaso1(t('vehiculo.errors.domicilioRequired'))
           return
         }
+      }
+    } else if (pantalla === 2) {
+      if (seguroIdx === null) {
+        setErrorPaso1("Debes seleccionar un plan de protección.");
+        return;
+      }
+      if (!reserva.tipoKm) {
+        setErrorPaso1("Debes seleccionar el tipo de kilometraje.");
+        return;
       }
     }
     setErrorPaso1('')
@@ -220,7 +255,7 @@ export default function VehiculoDetallePage() {
 
     // Calcular total original en COP (siempre localmente es en pesos antes del render)
     const tarifas = vehiculo.tarifas || {};
-    const precioKm = reserva.tipoKm === 'ilimitado' ? (tarifas.kmIlimitado?.precio || 0) : (tarifas.kmLimitado?.precio || 0);
+    const precioKm = reserva.tipoKm === 'ilimitado' ? (tarifas.kmIlimitado?.precio || 0) : (reserva.tipoKm === 'limitado' ? (tarifas.kmLimitado?.precio || 0) : 0);
     const dias = (reserva.fechaInicio && reserva.fechaFin) ? Math.max(1, Math.ceil((new Date(reserva.fechaFin) - new Date(reserva.fechaInicio)) / 86400000)) : 1;
     const precioSeguro = seguroIdx !== null ? (vehiculo.seguros[seguroIdx]?.precio ?? 0) : 0;
     const serviciosElegidos = (vehiculo.servicios || []).filter(s => serviciosSeleccionados.includes(s.nombre));
@@ -478,7 +513,7 @@ export default function VehiculoDetallePage() {
   const tarifasTotal = vehiculo.tarifas || {};
   const kmLimitTotal = tarifasTotal.kmLimitado || { precio: 0, km: 0 };
   const kmIlimitTotal = tarifasTotal.kmIlimitado || { precio: 0 };
-  const precioTotal = reserva.tipoKm === 'ilimitado' ? kmIlimitTotal.precio : kmLimitTotal.precio;
+  const precioTotal = reserva.tipoKm === 'ilimitado' ? kmIlimitTotal.precio : (reserva.tipoKm === 'limitado' ? kmLimitTotal.precio : 0);
   const diasTotal = reserva.fechaInicio && reserva.fechaFin
     ? Math.max(1, Math.ceil((new Date(reserva.fechaFin) - new Date(reserva.fechaInicio)) / 86400000))
     : 1;
@@ -617,7 +652,7 @@ export default function VehiculoDetallePage() {
               reserva={reserva}
               seguroIdx={seguroIdx}
               serviciosSeleccionados={serviciosSeleccionados}
-              onEditar={irAEditar}
+              onEditar={abrirModalEditar}
             />
 
             {/* En tablet/celular el layout se apila en columna: este botón
@@ -663,6 +698,359 @@ export default function VehiculoDetallePage() {
               </div>
             )}
           </div>
+
+          {/* Modal de Edición In-Place */}
+          {modalEditarOpen && (
+            <div style={{
+              position: 'fixed',
+              inset: 0,
+              zIndex: 9999,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              background: 'rgba(15, 23, 42, 0.65)',
+              backdropFilter: 'blur(8px)',
+              padding: 16,
+            }}>
+              <div style={{
+                background: 'var(--bg-tarjeta)',
+                borderRadius: 28,
+                border: '1px solid var(--borde)',
+                width: '100%',
+                maxWidth: modalEditarSeccion === 'grupo' || modalEditarSeccion === 'servicios' ? 840 : 560,
+                maxHeight: '90vh',
+                display: 'flex',
+                flexDirection: 'column',
+                boxShadow: '0 24px 70px rgba(15,23,42,0.25)',
+                overflow: 'hidden'
+              }}>
+                {/* Header */}
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  padding: '24px 28px',
+                  borderBottom: '1px solid var(--borde)',
+                  background: 'linear-gradient(135deg, #1e3a8a, #2563eb)'
+                }}>
+                  <h3 style={{ fontSize: 19, fontWeight: 900, color: '#fff', margin: 0, letterSpacing: '-0.01em' }}>
+                    {modalEditarSeccion === 'retiro' && "Editar Retiro"}
+                    {modalEditarSeccion === 'devolucion' && "Editar Devolución"}
+                    {modalEditarSeccion === 'grupo' && "Personaliza tu plan"}
+                    {modalEditarSeccion === 'servicios' && "Editar Servicios Adicionales"}
+                  </h3>
+                  <button
+                    onClick={() => setModalEditarOpen(false)}
+                    style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: 0 }}
+                  >
+                    <FaTimes size={20} />
+                  </button>
+                </div>
+
+                {/* Body */}
+                <div style={{ padding: '28px', overflowY: 'auto', flex: 1, display: 'flex', flexDirection: 'column', gap: 24 }}>
+                  {modalError && (
+                    <div style={{ background: '#fef2f2', border: '1px solid #fee2e2', borderRadius: 16, padding: '14px 18px', color: '#b91c1c', fontSize: 13, fontWeight: 800 }}>
+                      {modalError}
+                    </div>
+                  )}
+
+                  {/* Retiro / Devolucion Form */}
+                  {(modalEditarSeccion === 'retiro' || modalEditarSeccion === 'devolucion') && (
+                    <>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                        {modalEditarSeccion === 'retiro' ? (
+                          <>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                              <label style={{ fontSize: 11, fontWeight: 800, color: 'var(--texto-second)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                                {t('vehiculo.pickupLocationLabel')}
+                              </label>
+                              <div style={{ border: '1px solid var(--borde)', borderRadius: 16, padding: '12px 16px', background: 'var(--bg-item)' }}>
+                                <select
+                                  className="w-full bg-transparent text-sm font-extrabold text-[var(--texto-primary)] outline-none cursor-pointer"
+                                  value={localReserva.sucursalRetiro}
+                                  onChange={e => {
+                                    const val = e.target.value;
+                                    setLocalReserva(prev => {
+                                      const act = { ...prev, sucursalRetiro: val };
+                                      if (val === 'domicilio') {
+                                        const branchObj = SUCURSALES.find(s => s.nombre === vehiculo?.sucursal);
+                                        act.domicilioCiudad = branchObj?.ciudad || '';
+                                      }
+                                      return act;
+                                    });
+                                  }}
+                                >
+                                  <option value="">Selecciona sucursal</option>
+                                  {opcionesEntrega.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+                                </select>
+                              </div>
+                            </div>
+
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                              <label style={{ fontSize: 11, fontWeight: 800, color: 'var(--texto-second)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                                Hora
+                              </label>
+                              <div style={{ border: '1px solid var(--borde)', borderRadius: 16, padding: '12px 16px', background: 'var(--bg-item)' }}>
+                                <select
+                                  className="w-full bg-transparent text-sm font-extrabold text-[var(--texto-primary)] outline-none cursor-pointer"
+                                  value={localReserva.horaInicio}
+                                  onChange={e => setLocalReserva(prev => ({ ...prev, horaInicio: e.target.value }))}
+                                >
+                                  <option value="">Selecciona hora</option>
+                                  {HORAS.map(h => <option key={h} value={h}>{h}</option>)}
+                                </select>
+                              </div>
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                              <label style={{ fontSize: 11, fontWeight: 800, color: 'var(--texto-second)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                                {t('vehiculo.returnLocationLabel')}
+                              </label>
+                              <div style={{ border: '1px solid var(--borde)', borderRadius: 16, padding: '12px 16px', background: 'var(--bg-item)' }}>
+                                <select
+                                  className="w-full bg-transparent text-sm font-extrabold text-[var(--texto-primary)] outline-none cursor-pointer"
+                                  value={localReserva.sucursalDevolucion}
+                                  onChange={e => {
+                                    const val = e.target.value;
+                                    setLocalReserva(prev => {
+                                      const act = { ...prev, sucursalDevolucion: val };
+                                      if (val === 'domicilio') {
+                                        const branchObj = SUCURSALES.find(s => s.nombre === vehiculo?.sucursal);
+                                        act.domicilioCiudad = branchObj?.ciudad || '';
+                                      }
+                                      return act;
+                                    });
+                                  }}
+                                >
+                                  <option value="">Selecciona sucursal</option>
+                                  {opcionesDevolucion.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+                                </select>
+                              </div>
+                            </div>
+
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                              <label style={{ fontSize: 11, fontWeight: 800, color: 'var(--texto-second)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                                Hora
+                              </label>
+                              <div style={{ border: '1px solid var(--borde)', borderRadius: 16, padding: '12px 16px', background: 'var(--bg-item)' }}>
+                                <select
+                                  className="w-full bg-transparent text-sm font-extrabold text-[var(--texto-primary)] outline-none cursor-pointer"
+                                  value={localReserva.horaFin}
+                                  onChange={e => setLocalReserva(prev => ({ ...prev, horaFin: e.target.value }))}
+                                >
+                                  <option value="">Selecciona hora</option>
+                                  {HORAS.map(h => <option key={h} value={h}>{h}</option>)}
+                                </select>
+                              </div>
+                            </div>
+                          </>
+                        )}
+                      </div>
+
+                      {/* Domicilio Form inside Modal */}
+                      {((modalEditarSeccion === 'retiro' && localReserva.sucursalRetiro === 'domicilio') || 
+                        (modalEditarSeccion === 'devolucion' && localReserva.sucursalDevolucion === 'domicilio')) && (
+                        <div style={{ background: '#f8fafc', border: '1px solid var(--borde)', borderRadius: 20, padding: 20, display: 'flex', flexDirection: 'column', gap: 14 }}>
+                          <span style={{ fontSize: 13, fontWeight: 800, color: '#1e3a8a', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                            Dirección de Domicilio
+                          </span>
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                              <label style={{ fontSize: 10, fontWeight: 800, color: 'var(--texto-second)' }}>Ciudad</label>
+                              <input
+                                type="text"
+                                disabled
+                                value={localReserva.domicilioCiudad || ''}
+                                style={{ border: '1px solid var(--borde)', borderRadius: 12, padding: '10px 14px', background: '#e2e8f0', fontSize: 13, color: 'var(--texto-second)', fontWeight: 600 }}
+                              />
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                              <label style={{ fontSize: 10, fontWeight: 800, color: 'var(--texto-second)' }}>Barrio *</label>
+                              <input
+                                type="text"
+                                value={localReserva.domicilioBarrio || ''}
+                                onChange={e => setLocalReserva(prev => ({ ...prev, domicilioBarrio: e.target.value }))}
+                                style={{ border: '1px solid var(--borde)', borderRadius: 12, padding: '10px 14px', background: '#fff', fontSize: 13, color: 'var(--texto-primary)', fontWeight: 600 }}
+                              />
+                            </div>
+                          </div>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                            <label style={{ fontSize: 10, fontWeight: 800, color: 'var(--texto-second)' }}>Dirección *</label>
+                            <input
+                              type="text"
+                              value={localReserva.domicilioDireccion || ''}
+                              onChange={e => setLocalReserva(prev => ({ ...prev, domicilioDireccion: e.target.value }))}
+                              style={{ border: '1px solid var(--borde)', borderRadius: 12, padding: '10px 14px', background: '#fff', fontSize: 13, color: 'var(--texto-primary)', fontWeight: 600 }}
+                            />
+                          </div>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                            <label style={{ fontSize: 10, fontWeight: 800, color: 'var(--texto-second)' }}>Referencias *</label>
+                            <textarea
+                              rows="2"
+                              value={localReserva.domicilioReferencias || ''}
+                              onChange={e => setLocalReserva(prev => ({ ...prev, domicilioReferencias: e.target.value }))}
+                              style={{ border: '1px solid var(--borde)', borderRadius: 12, padding: '10px 14px', background: '#fff', fontSize: 13, color: 'var(--texto-primary)', resize: 'none', fontWeight: 600 }}
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Calendario inside Modal */}
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                        <label style={{ fontSize: 11, fontWeight: 800, color: 'var(--texto-second)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                          Fechas de Reserva
+                        </label>
+                        <div style={{ border: '1px solid var(--borde)', borderRadius: 20, padding: 16 }}>
+                          <CalendarioReservas
+                            vehiculoId={vehiculo.id}
+                            fechaInicio={localReserva.fechaInicio}
+                            fechaFin={localReserva.fechaFin}
+                            onCambiarFechas={({ fechaInicio, fechaFin }) => {
+                              setLocalReserva(prev => ({ ...prev, fechaInicio, fechaFin }));
+                            }}
+                          />
+                        </div>
+                      </div>
+                    </>
+                  )}
+
+                  {/* Grupo Edit Form */}
+                  {modalEditarSeccion === 'grupo' && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+                      <PlanesProteccion seguroIdx={localSeguroIdx} onSeleccionar={setLocalSeguroIdx} />
+                      <div style={{ borderTop: '1px solid var(--borde)', paddingTop: 20 }}>
+                        <TipoKilometraje
+                          vehiculo={vehiculo}
+                          tipoKm={localReserva.tipoKm}
+                          onSeleccionar={val => setLocalReserva(prev => ({ ...prev, tipoKm: val }))}
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Servicios Edit Form */}
+                  {modalEditarSeccion === 'servicios' && (
+                    <div>
+                      <ServiciosAdicionales
+                        servicios={vehiculo.servicios}
+                        seleccionados={localServiciosSeleccionados}
+                        onToggle={nombre => setLocalServiciosSeleccionados(prev =>
+                          prev.includes(nombre) ? prev.filter(n => n !== nombre) : [...prev, nombre]
+                        )}
+                      />
+                    </div>
+                  )}
+                </div>
+
+                {/* Footer */}
+                <div style={{
+                  padding: '18px 28px',
+                  borderTop: '1px solid var(--borde)',
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  gap: 12,
+                  background: '#fafafa'
+                }}>
+                  <button
+                    onClick={() => setModalEditarOpen(false)}
+                    style={{
+                      padding: '12px 24px',
+                      borderRadius: 14,
+                      border: '1px solid var(--borde)',
+                      background: '#fff',
+                      color: 'var(--texto-primary)',
+                      fontWeight: 700,
+                      fontSize: 14,
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    onClick={() => {
+                      // Validation
+                      if (modalEditarSeccion === 'retiro') {
+                        if (!localReserva.sucursalRetiro) {
+                          setModalError("Debes seleccionar el lugar de retiro.");
+                          return;
+                        }
+                        if (!localReserva.fechaInicio) {
+                          setModalError("Debes seleccionar la fecha de inicio.");
+                          return;
+                        }
+                        if (!localReserva.horaInicio) {
+                          setModalError("Debes seleccionar la hora de retiro.");
+                          return;
+                        }
+                        if (localReserva.sucursalRetiro === 'domicilio') {
+                          if (!localReserva.domicilioBarrio?.trim() || !localReserva.domicilioDireccion?.trim() || !localReserva.domicilioReferencias?.trim()) {
+                            setModalError("Debes completar todos los datos del domicilio.");
+                            return;
+                          }
+                        }
+                      }
+
+                      if (modalEditarSeccion === 'devolucion') {
+                        if (!localReserva.sucursalDevolucion) {
+                          setModalError("Debes seleccionar el lugar de devolución.");
+                          return;
+                        }
+                        if (!localReserva.fechaFin) {
+                          setModalError("Debes seleccionar la fecha de devolución.");
+                          return;
+                        }
+                        if (!localReserva.horaFin) {
+                          setModalError("Debes seleccionar la hora de devolución.");
+                          return;
+                        }
+                        if (localReserva.sucursalDevolucion === 'domicilio') {
+                          if (!localReserva.domicilioBarrio?.trim() || !localReserva.domicilioDireccion?.trim() || !localReserva.domicilioReferencias?.trim()) {
+                            setModalError("Debes completar todos los datos del domicilio.");
+                            return;
+                          }
+                        }
+                      }
+
+                      if (modalEditarSeccion === 'grupo') {
+                        if (localSeguroIdx === null) {
+                          setModalError("Debes seleccionar un plan de protección.");
+                          return;
+                        }
+                        if (!localReserva.tipoKm) {
+                          setModalError("Debes seleccionar el tipo de kilometraje.");
+                          return;
+                        }
+                      }
+
+                      // Commit changes
+                      setReserva({ ...localReserva });
+                      setSeguroIdx(localSeguroIdx);
+                      setServiciosSeleccionados([...localServiciosSeleccionados]);
+                      setModalError('');
+                      setModalEditarOpen(false);
+                      setModalEditarSeccion(null);
+                    }}
+                    style={{
+                      padding: '12px 24px',
+                      borderRadius: 14,
+                      background: 'linear-gradient(90deg,#1e3a8a,#2563eb)',
+                      color: '#fff',
+                      fontWeight: 900,
+                      fontSize: 14,
+                      border: 'none',
+                      cursor: 'pointer',
+                      boxShadow: '0 8px 20px rgba(37,99,235,0.22)'
+                    }}
+                  >
+                    Guardar Cambios
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
         </div>
       </div>
