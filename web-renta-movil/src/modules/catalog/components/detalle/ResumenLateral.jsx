@@ -5,7 +5,7 @@ import { RECARGOS_LOGISTICOS } from '../../constants'
 
 const IcoEdit = () => (
   <svg width="13" height="13" fill="none" stroke="#1e3a8a" strokeWidth="2.2" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125"/>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125" />
   </svg>
 )
 
@@ -39,13 +39,15 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, servicios
   const subtotalSeguro = precioSeguro * dias;
   const subtotalServicios = precioServicios * dias;
   const cargosAdmin = Math.round((subtotalDiario + subtotalSeguro + subtotalServicios) * 0.10);
-  
+
   const recargoRetiro = RECARGOS_LOGISTICOS[reserva.sucursalRetiro] || 0;
   const recargoDevolucion = RECARGOS_LOGISTICOS[reserva.sucursalDevolucion] || 0;
   const recargoLogistico = recargoRetiro + recargoDevolucion;
 
   const subtotalReserva = subtotalDiario + subtotalSeguro + subtotalServicios + cargosAdmin;
-  const total = subtotalReserva + recargoLogistico;
+  const subtotalPreIva = subtotalReserva + recargoLogistico;
+  const iva = Math.round(subtotalPreIva * 0.19);
+  const total = subtotalPreIva + iva;
 
   return (
     <aside className="detalle-resumen-lateral" style={{
@@ -105,7 +107,7 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, servicios
 
         <div style={{ padding: '16px 0', borderBottom: '1px solid var(--borde)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-            <span style={{ fontSize: 11, fontWeight: 800, color: '#1e3a8a', textTransform: 'uppercase', letterSpacing: '0.07em' }}>{t('vehiculo.group')}</span>
+            <span style={{ fontSize: 11, fontWeight: 800, color: '#1e3a8a', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Tu Protección y Extras</span>
             <button onClick={() => onEditar('grupo')} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#2563eb', fontWeight: 700, padding: 0 }}>
               <IcoEdit /> {t('common.edit')}
             </button>
@@ -177,21 +179,26 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, servicios
             <span style={{ color: 'var(--texto-primary)' }}>{t('vehiculo.adminChargesLabel')}</span>
             <span style={{ fontWeight: 800, color: 'var(--texto-primary)' }}>{formatCurrency(cargosAdmin, moneda)}</span>
           </div>
-          
+
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, paddingBottom: 10 }}>
             <span style={{ color: 'var(--texto-primary)' }}>Subtotal Reserva</span>
             <span style={{ fontWeight: 800, color: 'var(--texto-primary)' }}>{formatCurrency(subtotalReserva, moneda)}</span>
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, paddingBottom: 14, borderBottom: '1px solid var(--borde)', marginBottom: 14, flexWrap: 'wrap', gap: 4 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, paddingBottom: 10, flexWrap: 'wrap', gap: 4 }}>
             <span style={{ color: 'var(--texto-primary)' }}>Recargo Logístico</span>
             <span style={{ fontWeight: 800, color: 'var(--texto-primary)' }}>{formatCurrency(recargoLogistico, moneda)}</span>
             {recargoLogistico > 0 && (
               <span style={{ fontSize: 10, color: 'var(--texto-second)', width: '100%', display: 'block', textAlign: 'left' }}>
-                ({reserva.sucursalRetiro === 'domicilio' || reserva.sucursalRetiro === 'aeropuerto' || reserva.sucursalRetiro === 'terminal' ? `${reserva.sucursalRetiro}: ${formatCurrency(recargoRetiro, moneda)}` : ''} 
+                ({reserva.sucursalRetiro === 'domicilio' || reserva.sucursalRetiro === 'aeropuerto' || reserva.sucursalRetiro === 'terminal' ? `${reserva.sucursalRetiro}: ${formatCurrency(recargoRetiro, moneda)}` : ''}
                 {recargoDevolucion > 0 ? ` + devoluc. ${reserva.sucursalDevolucion}: ${formatCurrency(recargoDevolucion, moneda)}` : ''})
               </span>
             )}
+          </div>
+
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, paddingBottom: 14, borderBottom: '1px solid var(--borde)', marginBottom: 14 }}>
+            <span style={{ color: 'var(--texto-primary)' }}>IVA (19%)</span>
+            <span style={{ fontWeight: 800, color: 'var(--texto-primary)' }}>{formatCurrency(iva, moneda)}</span>
           </div>
 
           <div style={{ background: '#f8fafc', borderRadius: 16, padding: '16px', border: '1px solid #e2e8f0' }}>
