@@ -141,6 +141,29 @@ export default function VehiculoDetallePage() {
       return act;
     });
     setErrorPaso1('');
+
+    if (campo === 'metodoPago' && valor === 'efectivo' && vehiculo) {
+      const sucursal = SUCURSALES.find(s => s.nombre === vehiculo.sucursal);
+      if (sucursal) {
+        showAlert({
+          icon: 'info',
+          title: t('vehiculo.cashBranchTitle'),
+          html: `
+            <div style="text-align:left; font-size:14px; line-height:1.6;">
+              <p style="margin:0 0 10px;">${t('vehiculo.cashBranchIntro')}</p>
+              <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:12px; padding:14px 16px; text-align:left;">
+                <p style="margin:0 0 4px; font-weight:800; color:#1e3a8a;">${sucursal.nombre}</p>
+                <p style="margin:0 0 4px; color:#334155;"><strong>${t('vehiculo.cashBranchCity')}:</strong> ${sucursal.ciudad}</p>
+                <p style="margin:0; color:#334155;"><strong>${t('vehiculo.cashBranchAddress')}:</strong> ${sucursal.direccion || t('vehiculo.cashBranchNoAddress')}</p>
+              </div>
+              
+            </div>
+          `,
+          confirmButtonText: t('common.close'),
+          width: 480,
+        });
+      }
+    }
   }
 
   const [errorPaso1, setErrorPaso1] = useState('');
@@ -162,6 +185,8 @@ export default function VehiculoDetallePage() {
   const [hoverEfectivo, setHoverEfectivo] = useState(false);
   const [fechaLimitePago, setFechaLimitePago] = useState(null);
   const prellenado = useRef(false);
+  const [resumenMovilAbierto, setResumenMovilAbierto] = useState(false);
+  const resumenMovilRef = useRef(null);
 
   const idUsuarioDocs = usuario?.id || usuario?.correo || null;
   const docsVerificados = documentosService.tieneDocumentos(idUsuarioDocs);
@@ -643,7 +668,9 @@ export default function VehiculoDetallePage() {
                 <>
                   <div id="campo-grupo">
                     <PlanesProteccion seguroIdx={seguroIdx} onSeleccionar={setSeguroIdx} />
-                    <TipoKilometraje vehiculo={vehiculo} tipoKm={reserva.tipoKm} onSeleccionar={val => cambiarReserva('tipoKm', val)} />
+                    <div style={{ marginTop: 40 }}>
+                      <TipoKilometraje vehiculo={vehiculo} tipoKm={reserva.tipoKm} onSeleccionar={val => cambiarReserva('tipoKm', val)} />
+                    </div>
                   </div>
                   <div id="campo-servicios" style={{ marginTop: 32 }}>
                     <ServiciosAdicionales
@@ -688,13 +715,59 @@ export default function VehiculoDetallePage() {
               )}
             </div>
 
-            <ResumenLateral
-              vehiculo={vehiculo}
-              reserva={reserva}
-              seguroIdx={seguroIdx}
-              serviciosSeleccionados={serviciosSeleccionados}
-              onEditar={abrirModalEditar}
-            />
+            {/* Botón "Resumen de reserva" visible solo en tablet/celular
+                (vía CSS). Despliega/oculta el ResumenLateral colapsable en
+                los 3 pasos del flujo. En PC el resumen se ve fijo al lado. */}
+            <button
+              type="button"
+              onClick={() => setResumenMovilAbierto(prev => !prev)}
+              className="detalle-resumen-toggle"
+              style={{
+                display: 'none',
+                width: '100%',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: 10,
+                marginTop: 24,
+                padding: '15px 20px',
+                borderRadius: 16,
+                background: 'var(--bg-tarjeta)',
+                border: '1px solid var(--borde)',
+                boxShadow: '0 8px 24px rgba(15,23,42,0.06)',
+                cursor: 'pointer',
+              }}
+            >
+              <span style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 15, fontWeight: 800, color: 'var(--texto-primary)' }}>
+                <svg width="18" height="18" fill="none" stroke="#1e3a8a" strokeWidth="2.2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                </svg>
+                {t('vehiculo.reserveSummary')}
+              </span>
+              <span style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                width: 28, height: 28, borderRadius: '50%', background: '#eff6ff', color: '#1e3a8a',
+                transform: resumenMovilAbierto ? 'rotate(180deg)' : 'rotate(0deg)',
+                transition: 'transform 250ms ease',
+              }}>
+                <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 9l6 6 6-6" />
+                </svg>
+              </span>
+            </button>
+
+            <div
+              ref={resumenMovilRef}
+              className={`detalle-resumen-wrapper${resumenMovilAbierto ? ' abierto' : ''}`}
+              style={{ display: 'contents' }}
+            >
+              <ResumenLateral
+                vehiculo={vehiculo}
+                reserva={reserva}
+                seguroIdx={seguroIdx}
+                serviciosSeleccionados={serviciosSeleccionados}
+                onEditar={abrirModalEditar}
+              />
+            </div>
 
             {/* En tablet/celular el layout se apila en columna: este botón
                 (idéntico al de arriba) se muestra debajo del resumen de la
@@ -732,7 +805,7 @@ export default function VehiculoDetallePage() {
                 <p style={{ fontSize: 26, fontWeight: 900, color: '#fff', margin: '0 0 16px' }}>{formatCurrency(totalReserva, moneda)}</p>
                 <button
                   onClick={handleReservar}
-                  style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, padding: '15px 24px', borderRadius: 16, background: '#fff', color: '#1e3a8a', fontWeight: 900, fontSize: 15, border: 'none', cursor: 'pointer', boxShadow: '0 8px 24px rgba(0,0,0,0.18)' }}
+                  style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, padding: '15px 24px', borderRadius: 16, background: 'var(--bg-tarjeta)', color: '#1e3a8a', fontWeight: 900, fontSize: 15, border: 'none', cursor: 'pointer', boxShadow: '0 8px 24px rgba(0,0,0,0.18)' }}
                 >
                   {t('vehiculo.confirmReserve')} →
                 </button>
@@ -956,7 +1029,7 @@ export default function VehiculoDetallePage() {
                         {/* Domicilio Form inside Modal */}
                         {((modalEditarSeccion === 'retiro' && localReserva.sucursalRetiro === 'domicilio') || 
                           (modalEditarSeccion === 'devolucion' && localReserva.sucursalDevolucion === 'domicilio')) && (
-                          <div style={{ background: '#f8fafc', border: '1px solid var(--borde)', borderRadius: 20, padding: 20, display: 'flex', flexDirection: 'column', gap: 14 }}>
+                          <div style={{ background: 'var(--bg-item)', border: '1px solid var(--borde)', borderRadius: 20, padding: 20, display: 'flex', flexDirection: 'column', gap: 14 }}>
                             <span style={{ fontSize: 13, fontWeight: 800, color: '#1e3a8a', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                               Dirección de Domicilio
                             </span>
@@ -976,7 +1049,7 @@ export default function VehiculoDetallePage() {
                                   type="text"
                                   value={localReserva.domicilioBarrio || ''}
                                   onChange={e => setLocalReserva(prev => ({ ...prev, domicilioBarrio: e.target.value }))}
-                                  style={{ border: '1px solid var(--borde)', borderRadius: 12, padding: '10px 14px', background: '#fff', fontSize: 13, color: 'var(--texto-primary)', fontWeight: 600 }}
+                                  style={{ border: '1px solid var(--borde)', borderRadius: 12, padding: '10px 14px', background: 'var(--bg-item)', fontSize: 13, color: 'var(--texto-primary)', fontWeight: 600 }}
                                 />
                               </div>
                             </div>
@@ -986,7 +1059,7 @@ export default function VehiculoDetallePage() {
                                 type="text"
                                 value={localReserva.domicilioDireccion || ''}
                                 onChange={e => setLocalReserva(prev => ({ ...prev, domicilioDireccion: e.target.value }))}
-                                style={{ border: '1px solid var(--borde)', borderRadius: 12, padding: '10px 14px', background: '#fff', fontSize: 13, color: 'var(--texto-primary)', fontWeight: 600 }}
+                                style={{ border: '1px solid var(--borde)', borderRadius: 12, padding: '10px 14px', background: 'var(--bg-item)', fontSize: 13, color: 'var(--texto-primary)', fontWeight: 600 }}
                               />
                             </div>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
@@ -995,7 +1068,7 @@ export default function VehiculoDetallePage() {
                                 rows="2"
                                 value={localReserva.domicilioReferencias || ''}
                                 onChange={e => setLocalReserva(prev => ({ ...prev, domicilioReferencias: e.target.value }))}
-                                style={{ border: '1px solid var(--borde)', borderRadius: 12, padding: '10px 14px', background: '#fff', fontSize: 13, color: 'var(--texto-primary)', resize: 'none', fontWeight: 600 }}
+                                style={{ border: '1px solid var(--borde)', borderRadius: 12, padding: '10px 14px', background: 'var(--bg-item)', fontSize: 13, color: 'var(--texto-primary)', resize: 'none', fontWeight: 600 }}
                               />
                             </div>
                           </div>
@@ -1064,7 +1137,7 @@ export default function VehiculoDetallePage() {
                       padding: '12px 24px',
                       borderRadius: 14,
                       border: '1px solid var(--borde)',
-                      background: '#fff',
+                      background: 'var(--bg-tarjeta)',
                       color: 'var(--texto-primary)',
                       fontWeight: 700,
                       fontSize: 14,
@@ -1136,6 +1209,29 @@ export default function VehiculoDetallePage() {
                       setModalError('');
                       setModalEditarOpen(false);
                       setModalEditarSeccion(null);
+
+                      if (localReserva.metodoPago === 'efectivo' && vehiculo) {
+                        const sucursal = SUCURSALES.find(s => s.nombre === vehiculo.sucursal);
+                        if (sucursal) {
+                          showAlert({
+                            icon: 'info',
+                            title: t('vehiculo.cashBranchTitle'),
+                            html: `
+                              <div style="text-align:left; font-size:14px; line-height:1.6;">
+                                <p style="margin:0 0 10px;">${t('vehiculo.cashBranchIntro')}</p>
+                                <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:12px; padding:14px 16px; text-align:left;">
+                                  <p style="margin:0 0 4px; font-weight:800; color:#1e3a8a;">${sucursal.nombre}</p>
+                                  <p style="margin:0 0 4px; color:#334155;"><strong>${t('vehiculo.cashBranchCity')}:</strong> ${sucursal.ciudad}</p>
+                                  <p style="margin:0; color:#334155;"><strong>${t('vehiculo.cashBranchAddress')}:</strong> ${sucursal.direccion || t('vehiculo.cashBranchNoAddress')}</p>
+                                </div>
+                                
+                              </div>
+                            `,
+                            confirmButtonText: t('common.close'),
+                            width: 480,
+                          });
+                        }
+                      }
                     }}
                     style={{
                       padding: '12px 24px',

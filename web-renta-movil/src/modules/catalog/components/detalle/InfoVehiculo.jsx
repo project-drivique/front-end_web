@@ -21,7 +21,7 @@ export default function InfoVehiculo({ vehiculo }) {
             <span style={{ fontSize: 11, fontWeight: 600, color: '#1e3a8a', background: '#eff6ff', padding: '3px 9px', borderRadius: 6, marginBottom: 6, display: 'inline-block' }}>
               {vehiculo.categoria}
             </span>
-            <h2 style={{ fontSize: 22, fontWeight: 800, color: 'var(--texto-primary)', margin: '4px 0 6px' }}>
+            <h2 className="info-vehiculo-nombre" style={{ fontSize: 22, fontWeight: 800, color: 'var(--texto-primary)', margin: '4px 0 6px' }}>
               {vehiculo.nombre}
             </h2>
             <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
