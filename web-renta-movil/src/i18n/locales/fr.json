@@ -283,7 +283,10 @@
     "fuelGas": "Essence",
     "fuelDiesel": "Diesel",
     "fuelHybrid": "Hybride",
-    "fuelElec": "Électrique"
+    "fuelElec": "Électrique",
+    "unavailableDates": "Non disponible à ces dates",
+    "city": "Ville",
+    "selectCity": "Sélectionner une ville"
   },
   "vehiculo": {
     "reserve": "Réserver le véhicule",
