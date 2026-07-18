@@ -309,7 +309,8 @@
     "fuelDiesel": "Diesel",
     "fuelHybrid": "Hybrid",
     "fuelElec": "Electric",
-    "consultAvailability": "Check availability"
+    "consultAvailability": "Check availability",
+    "unavailableDates": "Not available on these dates"
   },
   "vehiculo": {
     "reserve": "Reserve vehicle",
@@ -533,6 +534,8 @@
     "profileUpdated": "Profile updated",
     "profileUpdatedText": "Your data was saved successfully.",
     "errorUpdating": "Error updating",
+    "backToCatalog": "Back to catalog",
+    "logoutConfirm": "Are you sure you want to sign out?",
     "rules": {
       "min8": "Minimum 8 characters",
       "uppercase": "One uppercase letter",

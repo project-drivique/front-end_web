@@ -1,18 +1,9 @@
 import { useEffect, useMemo, useState, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
+import { eachDayOfInterval, format, parseISO } from 'date-fns'
 import { catalogoService } from '../../../services/catalogoService'
+import { reservasService } from '../../../services/reservasService'
 import { SUCURSALES } from '../constants'
-
-const estaDisponibleEnRango = (vehiculo, fechaInicio, fechaFin) => {
-  const ocupados = vehiculo.disponibilidad?.ocupados ?? []
-  if (ocupados.length === 0) return true
-  const inicio = new Date(fechaInicio)
-  const fin = new Date(fechaFin)
-  return !ocupados.some(fecha => {
-    const d = new Date(fecha)
-    return d >= inicio && d < fin
-  })
-}
 
 const FILTROS_BASE = {
   ciudad: 'Todas',
@@ -30,6 +21,7 @@ export function useCatalogo({ esFavorito = () => false } = {}) {
   const [vehiculos, setVehiculos] = useState([])
   const [cargando, setCargando] = useState(false)
   const [error, setError] = useState(null)
+  const [reservas, setReservas] = useState([])
 
   const [filtros, setFiltros] = useState(FILTROS_BASE)
   const [busquedaForm, setBusquedaForm] = useState({
@@ -73,6 +65,31 @@ export function useCatalogo({ esFavorito = () => false } = {}) {
   useEffect(() => {
     cargarVehiculos()
   }, [cargarVehiculos])
+
+  useEffect(() => {
+    reservasService.getReservas()
+      .then(setReservas)
+      .catch(() => setReservas([]))
+  }, [])
+
+  const diasOcupadosPorVehiculo = useMemo(() => {
+    const mapa = new Map()
+    reservas.forEach(r => {
+      if (!r.fechaInicio || !r.fechaFin) return
+      const dias = eachDayOfInterval({ start: parseISO(r.fechaInicio), end: parseISO(r.fechaFin) })
+      const set = mapa.get(r.vehiculoId) ?? new Set()
+      dias.forEach(dia => set.add(format(dia, 'yyyy-MM-dd')))
+      mapa.set(r.vehiculoId, set)
+    })
+    return mapa
+  }, [reservas])
+
+  const estaDisponibleEnRango = useCallback((vehiculoId, fechaInicio, fechaFin) => {
+    const ocupados = diasOcupadosPorVehiculo.get(Number(vehiculoId))
+    if (!ocupados || ocupados.size === 0) return true
+    return !eachDayOfInterval({ start: new Date(fechaInicio), end: new Date(fechaFin) })
+      .some(dia => ocupados.has(format(dia, 'yyyy-MM-dd')))
+  }, [diasOcupadosPorVehiculo])
 
   const setFiltro = (campo, valor) => {
     setFiltros(prev => ({ ...prev, [campo]: valor }))
@@ -155,9 +172,13 @@ export function useCatalogo({ esFavorito = () => false } = {}) {
       arr = arr.filter(v => v.sucursal === busquedaAplicada.sucursal)
     }
 
-    if (busquedaRealizada && busquedaAplicada.fechaInicio && busquedaAplicada.fechaFin) {
-      arr = arr.filter(v => estaDisponibleEnRango(v, busquedaAplicada.fechaInicio, busquedaAplicada.fechaFin))
-    }
+    const hayRangoBuscado = busquedaRealizada && busquedaAplicada.fechaInicio && busquedaAplicada.fechaFin
+    arr = arr.map(v => ({
+      ...v,
+      disponibleEnFechas: hayRangoBuscado
+        ? estaDisponibleEnRango(v.id, busquedaAplicada.fechaInicio, busquedaAplicada.fechaFin)
+        : true,
+    }))
 
     if (filtros.orden === 'precio_asc') arr.sort((a, b) => Number(a.precio) - Number(b.precio))
     if (filtros.orden === 'precio_desc') arr.sort((a, b) => Number(b.precio) - Number(a.precio))
@@ -166,7 +187,7 @@ export function useCatalogo({ esFavorito = () => false } = {}) {
     if (soloFavoritos) arr = arr.filter(v => esFavorito(v.id))
 
     return arr
-  }, [vehiculos, filtros, soloFavoritos, esFavorito, busquedaRealizada, busquedaAplicada])
+  }, [vehiculos, filtros, soloFavoritos, esFavorito, busquedaRealizada, busquedaAplicada, estaDisponibleEnRango])
 
   const totalPaginas = Math.max(1, Math.ceil(resultado.length / 6))
   const vehiculosPagina = useMemo(() => {
