@@ -136,7 +136,9 @@ export default function CatalogoPage() {
         height: '96px'
       }}>
         <div className="catalogo-header-inner" style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 24px', height: '100%', display: 'flex', alignItems: 'center', gap: '24px' }}>
-          <Link to="/"><img src={logo} alt="Drivique" style={{ height: '80px', flexShrink: 0 }} /></Link>
+          <Link to={usuario ? "/home" : "/"}>
+            <img src={logo} alt="Drivique" style={{ height: '80px', flexShrink: 0 }} />
+          </Link>
           <div style={{ flex: 1 }} />
           {!usuario && (
             <div style={{ display: 'flex', gap: '10px' }}>

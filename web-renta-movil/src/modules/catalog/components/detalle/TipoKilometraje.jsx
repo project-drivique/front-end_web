@@ -6,15 +6,28 @@ export default function TipoKilometraje({ vehiculo, tipoKm, onSeleccionar }) {
   const { t } = useTranslation()
   const { moneda } = useLanding()
 
+  const kmLimit = vehiculo.tarifas?.kmLimitado || { precio: 0, km: 150, excedente: 550 };
+  const kmIlimit = vehiculo.tarifas?.kmIlimitado || { precio: 0 };
+
   const opciones = [
-    { val: 'limitado', label: `${t('catalogo.limitedKm')} (${vehiculo.tarifas.kmLimitado.km} km/${t('catalogo.day')})`, precio: vehiculo.tarifas.kmLimitado.precio },
-    { val: 'ilimitado', label: t('catalogo.unlimitedKm'), precio: vehiculo.tarifas.kmIlimitado.precio },
+    {
+      val: 'limitado',
+      titulo: 'Kilómetro limitado',
+      descripcion: `Incluye ${kmLimit.km} km por día dentro del valor de la tarifa. Si te pasas del límite, se cobra ${formatCurrency(kmLimit.excedente, moneda)} por cada km adicional.`,
+      precio: kmLimit.precio,
+    },
+    {
+      val: 'ilimitado',
+      titulo: 'Kilómetro ilimitado',
+      descripcion: 'Sin restricción de distancia dentro del territorio nacional. No aplica cobro adicional por exceso de kilómetros.',
+      precio: kmIlimit.precio,
+    },
   ]
 
   return (
-    <div className="mt-8">
-      <h3 className="mb-3 text-lg font-extrabold text-[var(--texto-primary)]">{t('vehiculo.kmTypeTitle')}</h3>
-      <div className="grid grid-cols-2 gap-2.5 sm:gap-4">
+    <div className="mt-12">
+      <h3 className="mb-12 text-lg font-extrabold text-[var(--texto-primary)]">{t('vehiculo.kmTypeTitle')}</h3>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {opciones.map(op => {
           const activo = tipoKm === op.val
           return (
@@ -22,12 +35,36 @@ export default function TipoKilometraje({ vehiculo, tipoKm, onSeleccionar }) {
               key={op.val}
               type="button"
               onClick={() => onSeleccionar(op.val)}
-              className={`flex min-h-[80px] sm:min-h-[92px] flex-col items-center justify-center gap-1 sm:gap-1.5 rounded-2xl border-2 px-2.5 sm:px-6 py-3.5 sm:py-5 text-center transition-colors ${
-                activo ? 'border-blue-600 bg-blue-50 shadow-sm' : 'border-[var(--borde)] bg-[var(--bg-tarjeta)] hover:border-blue-200'
+              style={{ cursor: 'pointer' }}
+              className={`group relative flex flex-col items-center text-center gap-3 rounded-2xl border-2 p-5 transition-all ${
+                activo
+                  ? 'border-blue-600 bg-[var(--bg-item-hover)] shadow-md'
+                  : 'border-[var(--borde)] bg-[var(--bg-tarjeta)] hover:border-blue-300 hover:shadow-sm'
               }`}
             >
-              <span className={`text-xs font-bold leading-snug sm:text-lg ${activo ? 'text-blue-800' : 'text-[var(--texto-primary)]'}`}>{op.label}</span>
-              <span className="text-xs font-black text-blue-800 sm:text-lg">{formatCurrency(op.precio, moneda)}/{t('catalogo.day')}</span>
+              {/* Indicador de selección (círculo) */}
+              <span
+                className={`absolute right-4 top-4 flex h-5 w-5 items-center justify-center rounded-full border-2 transition-all ${
+                  activo ? 'border-blue-600 bg-blue-600' : 'border-[#cbd5e1] bg-transparent'
+                }`}
+              >
+                {activo && (
+                  <svg width="11" height="11" fill="none" stroke="#fff" strokeWidth="3" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                  </svg>
+                )}
+              </span>
+
+              <span className={`text-base font-extrabold leading-snug break-words ${activo ? 'text-[var(--texto-acento)]' : 'text-[var(--texto-primary)]'}`}>
+                {op.titulo}
+              </span>
+              <p className={`text-xs leading-relaxed flex-1 break-words ${activo ? 'text-[var(--texto-acento)] opacity-80' : 'text-[var(--texto-second)]'}`}>
+                {op.descripcion}
+              </p>
+              <span className={`mt-1 inline-flex max-w-full items-baseline justify-center gap-1 font-black text-sm ${activo ? 'text-[var(--texto-acento)]' : 'text-[var(--texto-primary)]'}`}>
+                {formatCurrency(op.precio, moneda)}
+                <span className={`text-[11px] font-bold ${activo ? 'text-[var(--texto-acento)] opacity-80' : 'text-[var(--texto-second)]'}`}>/ {t('catalogo.day')}</span>
+              </span>
             </button>
           )
         })}
