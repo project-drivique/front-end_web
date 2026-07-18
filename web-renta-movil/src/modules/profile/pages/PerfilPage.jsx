@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useLanding } from '@/modules/landing/LandingContext'
 import { usePerfil } from '../hooks/usePerfil'
@@ -6,7 +7,7 @@ import { useAuthStore } from '@/store/authStore'
 import { showAlert } from '@/utils/swalConfig'
 import ModalVerificacionContrasena from '../components/ModalVerificacionContrasena'
 import CambiarContrasena from '../components/CambiarContrasena'
-import { FaEdit, FaCheck, FaTimes, FaUser, FaEnvelope, FaPhone, FaIdCard, FaBirthdayCake, FaLock } from 'react-icons/fa'
+import { FaEdit, FaCheck, FaTimes, FaUser, FaEnvelope, FaPhone, FaIdCard, FaBirthdayCake, FaLock, FaArrowLeft, FaSignOutAlt } from 'react-icons/fa'
 
 const colores = (dark) => ({
   pageBg: dark ? '#0f172a' : '#f1f5f9',
@@ -52,10 +53,27 @@ function iniciales(nombre = '', apellido = '') {
 
 export default function PerfilPage() {
   const { t } = useTranslation()
-  const { usuario } = useAuthStore()
+  const navigate = useNavigate()
+  const { usuario, logout } = useAuthStore()
   const { tema } = useLanding()
   const dark = tema === 'oscuro'
   const c = colores(dark)
+
+  const handleCerrarSesion = () => {
+    showAlert({
+      icon: 'warning',
+      title: t('catalogo.logout'),
+      text: t('perfil.logoutConfirm'),
+      showCancelButton: true,
+      confirmButtonText: t('catalogo.logout'),
+      cancelButtonText: t('perfil.cancel'),
+    }).then((result) => {
+      if (result.isConfirmed) {
+        logout()
+        window.location.href = '/'
+      }
+    })
+  }
 
   const {
     formData,
@@ -139,6 +157,27 @@ export default function PerfilPage() {
     <div style={{ minHeight: '100vh', background: c.pageBg }}>
       {/* Banner superior con avatar */}
       <div className="perfil-banner-fila" style={{ background: c.heroBg, padding: '40px 24px 80px' }}>
+        <div style={{ maxWidth: '780px', margin: '0 auto 20px', display: 'flex', alignItems: 'center' }}>
+          <button
+            onClick={() => navigate('/home')}
+            style={{
+              padding: '8px 16px',
+              borderRadius: '8px',
+              background: 'rgba(255,255,255,0.12)',
+              border: '1.5px solid rgba(255,255,255,0.3)',
+              color: '#fff',
+              fontWeight: 600,
+              fontSize: '13px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '7px',
+            }}
+          >
+            <FaArrowLeft style={{ fontSize: '11px' }} /> {t('perfil.backToCatalog')}
+          </button>
+        </div>
+
         <div className="perfil-banner-inner" style={{ maxWidth: '780px', margin: '0 auto', display: 'flex', alignItems: 'center', gap: '24px' }}>
           <div style={{
             width: '80px',
@@ -423,6 +462,37 @@ export default function PerfilPage() {
             </button>
           </div>
         )}
+
+        {/* Cerrar sesión */}
+        <div style={{ background: c.cardBg, borderRadius: '14px', border: `1px solid ${c.cardBorder}`, boxShadow: c.cardShadow, marginTop: '20px', padding: '20px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap' }}>
+          <div>
+            <h2 style={{ fontSize: '16px', fontWeight: 700, color: c.title, margin: '0 0 4px' }}>
+              {t('catalogo.logout')}
+            </h2>
+            <p style={{ fontSize: '13px', color: c.textMuted, margin: 0 }}>
+              {t('perfil.logoutConfirm')}
+            </p>
+          </div>
+          <button
+            onClick={handleCerrarSesion}
+            style={{
+              padding: '11px 24px',
+              borderRadius: '10px',
+              background: 'transparent',
+              border: '1.5px solid #ef4444',
+              color: '#ef4444',
+              fontWeight: 700,
+              fontSize: '14px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            <FaSignOutAlt /> {t('catalogo.logout')}
+          </button>
+        </div>
       </div>
 
       {requiereVerificacion && (
