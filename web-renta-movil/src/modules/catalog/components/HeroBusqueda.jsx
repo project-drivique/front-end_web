@@ -62,15 +62,15 @@ export default function HeroBusqueda({
         <div style={{ background: c.heroCardBg, borderRadius: '16px', border: `1px solid ${c.heroCardBorder}`, boxShadow: c.heroCardShadow, padding: '16px 16px' }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, minmax(0, 1fr))', gap: '14px', alignItems: 'end' }}>
             <div>
-              <label style={{ ...labelStyle, display: 'block' }}>{t('catalogo.pickupPlace')}</label>
+              <label style={{ ...labelStyle, display: 'block' }}>{t('catalogo.city')}</label>
               <select value={busquedaForm.lugarRecogida || ''} onChange={e => setForm('lugarRecogida', e.target.value)} style={inputStyle}>
-                <option value="">{t('catalogo.selectPoint')}</option>
+                <option value="">{t('catalogo.selectCity')}</option>
                 {SUCURSALES.map(s => <option key={s} value={s}>{s}</option>)}
               </select>
             </div>
 
             <div>
-              <label style={{ ...labelStyle, display: 'block' }}>{t('catalogo.returnPlace')}</label>
+              <label style={{ ...labelStyle, display: 'block' }}>{t('catalogo.branch')}</label>
               <select
                 value={busquedaForm.mismoLugar ? '__mismo__' : (busquedaForm.lugarDevolucion || '')}
                 onChange={e => {
@@ -84,7 +84,7 @@ export default function HeroBusqueda({
                 }}
                 style={inputStyle}
               >
-                <option value="__mismo__">{t('catalogo.selectPoint')}</option>
+                <option value="__mismo__">{t('vehiculo.selectBranch')}</option>
                 {SUCURSALES.map(s => <option key={s} value={s}>{s}</option>)}
               </select>
             </div>
