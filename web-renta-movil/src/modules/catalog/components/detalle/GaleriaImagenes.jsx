@@ -55,7 +55,7 @@ export default function GaleriaImagenes({ imagenes = [], nombreVehiculo = 'Vehí
                 border: isSelected ? '3px solid #1e3a8a' : '3px solid transparent',
                 opacity: isSelected ? 1 : 0.6,
                 transition: 'all 200ms ease',
-                background: '#f1f5f9'
+                background: 'var(--bg-item)'
               }}
             >
               <img
