@@ -121,8 +121,21 @@
 @media (max-width: 1024px) {
   .detalle-layout { flex-direction: column !important; }
   .detalle-columna-principal { width: 100% !important; max-width: 100% !important; flex: 1 1 100% !important; }
-  .detalle-resumen-lateral { width: 100% !important; flex-shrink: 1 !important; position: static !important; top: auto !important; }
   .detalle-contenido-inner { padding: 24px 20px !important; }
+
+  /* Resumen de reserva colapsable en tablet/celular.
+     Por defecto el panel lateral se oculta y aparece un botón
+     "Resumen de reserva" que lo despliega/cierra (funciona en los
+     3 pasos del flujo). En PC el resumen sigue fijo al lado. */
+  .detalle-resumen-toggle { display: flex !important; }
+  .detalle-resumen-lateral { width: 100% !important; flex-shrink: 1 !important; position: static !important; top: auto !important; }
+  .detalle-resumen-wrapper:not(.abierto) .detalle-resumen-lateral { display: none !important; }
+  .detalle-resumen-wrapper.abierto .detalle-resumen-lateral { margin-top: 16px !important; }
+
+  /* En el paso 1 el nombre del carro ya aparece arriba (en el título de la
+     pantalla) y otra vez dentro del ResumenLateral; ocultamos el de
+     InfoVehiculo en móvil/tablet para no repetirlo. En PC se mantiene. */
+  .info-vehiculo-nombre { display: none !important; }
 
   /* El botón "Continuar" pasa a mostrarse debajo del resumen de la
      reserva (en vez de arriba) cuando el layout se apila en columna. */

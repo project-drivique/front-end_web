@@ -40,6 +40,9 @@ body {
   --hero-fondo:    linear-gradient(135deg,#eff6ff 0%,#dbeafe 50%,#fff 100%);
   --hero-orb1:     rgba(191,219,254,0.5);
   --hero-orb2:     rgba(199,210,254,0.35);
+  /* Texto que vive sobre fondos azules de marca (selección activa).
+     Claro: azul oscuro legible; Oscuro: blanco. */
+  --texto-acento:   #1e3a8a;
 }
 
 /* ── Modo oscuro ── */
@@ -60,6 +63,7 @@ html.dark {
   --hero-fondo:    linear-gradient(135deg,#0f172a 0%,#1e293b 50%,#0f172a 100%);
   --hero-orb1:     rgba(30,58,138,0.2);
   --hero-orb2:     rgba(30,58,138,0.15);
+  --texto-acento:   #ffffff;
 }/* -- Estilos personalizados SweetAlert2 del proyecto -- */
 .swal2-project-popup {
   background: #f8fafc !important;

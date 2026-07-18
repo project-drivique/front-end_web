@@ -60,7 +60,7 @@ export default function PlanesProteccion({ seguroIdx, onSeleccionar }) {
             <div key={idx} style={{
               borderRadius: 20,
               border: `2px solid ${sel ? '#2563eb' : 'var(--borde)'}`,
-              background: sel ? '#f8fafc' : 'var(--bg-tarjeta)',
+              background: sel ? 'var(--bg-item-hover)' : 'var(--bg-tarjeta)',
               boxShadow: sel ? '0 6px 24px rgba(37,99,235,0.15)' : 'var(--sombra-tarjeta)',
               overflow: 'hidden',
               transition: 'all 250ms ease'
@@ -102,7 +102,7 @@ export default function PlanesProteccion({ seguroIdx, onSeleccionar }) {
                 <button onClick={() => onSeleccionar(idx)} style={{
                   width: '100%', padding: '14px', borderRadius: 12, fontWeight: 700, fontSize: 14,
                   cursor: 'pointer', transition: 'all 200ms ease',
-                  background: sel ? 'linear-gradient(90deg,#1e3a8a,#2563eb)' : (idx === 1 ? '#fff' : 'var(--bg-item)'),
+                  background: sel ? 'linear-gradient(90deg,#1e3a8a,#2563eb)' : (idx === 1 ? 'var(--bg-tarjeta)' : 'var(--bg-item)'),
                   color: sel ? '#fff' : (idx === 1 ? '#1e3a8a' : 'var(--texto-second)'),
                   border: idx === 1 && !sel ? '2px solid #1e3a8a' : 'none',
                   boxShadow: sel ? '0 4px 14px rgba(30,58,138,0.25)' : 'none',

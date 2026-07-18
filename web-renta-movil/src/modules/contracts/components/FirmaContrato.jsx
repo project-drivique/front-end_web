@@ -53,11 +53,11 @@ export default function FirmaContrato({ vehiculo, reservaGuardada, onFirmado }) 
   const codigoContrato = useMemo(() => contratoService.obtenerOCrearCodigo(referencia), [referencia]);
   const localeFecha = LOCALES_FECHA[i18n.language] || 'es-CO';
   const { marca, modelo } = separarMarcaModelo(vehiculo?.nombre);
-  const ciudadSucursal = ciudadDeSucursal(
-    reservaDetalles.sucursalRetiro === 'domicilio'
-      ? vehiculo?.sucursal
-      : reservaDetalles.sucursalRetiro
-  );
+  const sucursalRetiroNombre = reservaDetalles.sucursalRetiro === 'domicilio'
+    ? vehiculo?.sucursal
+    : reservaDetalles.sucursalRetiro;
+  const ciudadSucursal = ciudadDeSucursal(sucursalRetiroNombre);
+  const direccionSucursal = (SUCURSALES_MOCK.find((s) => s.nombre === sucursalRetiroNombre) || {}).direccion || '';
   const fechaGeneracion = new Date().toLocaleDateString(localeFecha, { day: '2-digit', month: 'long', year: 'numeric' });
 
   const serviciosTexto = useMemo(() => {
@@ -116,7 +116,7 @@ export default function FirmaContrato({ vehiculo, reservaGuardada, onFirmado }) 
           padding: '30px 32px 22px', borderBottom: '1px solid var(--borde)',
         }}>
           <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
-            <div style={{ width: 64, height: 64, borderRadius: 16, border: '1px solid var(--borde)', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', flexShrink: 0 }}>
+            <div style={{ width: 64, height: 64, borderRadius: 16, border: '1px solid var(--borde)', background: 'var(--bg-tarjeta)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', flexShrink: 0 }}>
               <img src={logo} alt="Drivique" style={{ width: '100%', height: '100%', objectFit: 'contain', padding: 8 }} />
             </div>
             <div>
@@ -169,6 +169,9 @@ export default function FirmaContrato({ vehiculo, reservaGuardada, onFirmado }) 
               <Campo label={t('contratoFirma.year')} value={vehiculo?.año} />
               <Campo label={t('contratoFirma.branch')} value={reservaDetalles.sucursalRetiro === 'domicilio' ? 'Entrega a Domicilio' : reservaDetalles.sucursalRetiro} />
               <Campo label={t('contratoFirma.branchCity')} value={reservaDetalles.sucursalRetiro === 'domicilio' ? (reservaDetalles.domicilioCiudad || ciudadSucursal) : ciudadSucursal} />
+              {reservaDetalles.sucursalRetiro !== 'domicilio' && (
+                <Campo label={t('contratoFirma.branchAddress')} value={direccionSucursal} />
+              )}
               <Campo label={t('contratoFirma.startDate')} value={formatearFecha(reservaDetalles.fechaInicio)} />
               <Campo label={t('contratoFirma.endDate')} value={formatearFecha(reservaDetalles.fechaFin)} />
               <Campo label={t('contratoFirma.paymentMethod')} value={metodoPagoTexto} />
@@ -244,7 +247,7 @@ export default function FirmaContrato({ vehiculo, reservaGuardada, onFirmado }) 
               <div style={{ background: 'var(--bg-item)', border: '1px solid var(--borde)', borderRadius: 20, padding: 18 }}>
                 <h4 style={{ margin: '0 0 12px', fontSize: 15, color: 'var(--texto-primary)' }}>{t('contratoFirma.platformSignature')}</h4>
                 <div style={{
-                  height: 160, borderRadius: 14, background: '#fff', border: '2px dashed #93c5fd',
+                  height: 160, borderRadius: 14, background: 'var(--bg-tarjeta)', border: '2px dashed #93c5fd',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 6, marginBottom: 12,
                 }}>
                   <img src={firmaDrivique} alt="Firma Drivique" style={{ maxHeight: 84, maxWidth: '78%', objectFit: 'contain' }} />
