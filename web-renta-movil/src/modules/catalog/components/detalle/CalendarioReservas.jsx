@@ -112,7 +112,7 @@ export default function CalendarioReservas({ vehiculoId, fechaInicio, fechaFin, 
                 key={fechaISO}
                 className={[
                   'w-full py-1',
-                  dentroDelRango ? 'bg-blue-50' : '',
+                  dentroDelRango ? 'bg-blue-600/10' : '',
                   dentroDelRango && esInicio ? 'rounded-l-full' : '',
                   dentroDelRango && esFin ? 'rounded-r-full' : '',
                 ].join(' ')}

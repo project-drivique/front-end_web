@@ -30,7 +30,7 @@ export default function ServiciosAdicionales({ servicios = [], seleccionados = [
             >
               <span
                 className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-2 text-xs font-black text-white ${
-                  activo ? 'border-blue-600 bg-blue-600' : 'border-slate-300 bg-transparent'
+                  activo ? 'border-blue-600 bg-blue-600' : 'border-[var(--borde)] bg-transparent'
                 }`}
               >
                 {activo && '✓'}

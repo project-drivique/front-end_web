@@ -108,9 +108,14 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, servicios
         <div style={{ padding: '16px 0', borderBottom: '1px solid var(--borde)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
             <span style={{ fontSize: 11, fontWeight: 800, color: '#1e3a8a', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Tu Protección y Extras</span>
-            <button onClick={() => onEditar('grupo')} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#2563eb', fontWeight: 700, padding: 0 }}>
-              <IcoEdit /> {t('common.edit')}
-            </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <button onClick={() => onEditar('servicios')} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#2563eb', fontWeight: 700, padding: 0 }}>
+                <IcoEdit /> {t('vehiculo.extraServices')}
+              </button>
+              <button onClick={() => onEditar('grupo')} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#2563eb', fontWeight: 700, padding: 0 }}>
+                <IcoEdit /> {t('common.edit')}
+              </button>
+            </div>
           </div>
           <p style={{ fontSize: 14, fontWeight: 800, color: 'var(--texto-primary)', margin: '0 0 4px' }}>{vehiculo.categoria} — {vehiculo.transmision}</p>
           {reserva.tipoKm ? (
@@ -127,7 +132,7 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, servicios
             <span style={{
               display: 'inline-block', fontSize: 11, fontWeight: 700, marginTop: 4,
               padding: '4px 12px', borderRadius: 9999,
-              background: '#f1f5f9',
+              background: 'var(--bg-item)',
               color: '#64748b',
               border: '1px solid #e2e8f0',
             }}>
@@ -201,7 +206,7 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, servicios
             <span style={{ fontWeight: 800, color: 'var(--texto-primary)' }}>{formatCurrency(iva, moneda)}</span>
           </div>
 
-          <div style={{ background: '#f8fafc', borderRadius: 16, padding: '16px', border: '1px solid #e2e8f0' }}>
+          <div style={{ background: 'var(--bg-item)', borderRadius: 16, padding: '16px', border: '1px solid var(--borde)' }}>
             <p style={{ fontSize: 11, fontWeight: 800, color: '#1e3a8a', textTransform: 'uppercase', letterSpacing: '0.09em', margin: '0 0 4px' }}>Total Final</p>
             <p style={{ fontSize: 24, fontWeight: 900, color: '#1e3a8a', margin: 0 }}>{formatCurrency(total, moneda)}</p>
             <p style={{ fontSize: 10, color: 'var(--texto-second)', margin: '6px 0 0' }}>{t('vehiculo.totalIncludesTaxes')}</p>

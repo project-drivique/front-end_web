@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLanding } from '../../../landing/LandingContext';
 import { formatCurrency } from '@/utils/monedaUtils';
@@ -87,7 +87,7 @@ const DocumentUploader = ({ label, helpText, error, file, loading, onUpload, onC
           alignItems: 'center',
           gap: 8,
           padding: '12px 24px',
-          background: '#fff',
+          background: 'var(--bg-item)',
           border: '2px solid var(--borde)',
           borderRadius: 12,
           fontSize: 13,
@@ -275,28 +275,6 @@ export default function DatosPersonales({ vehiculo, reserva, seguroIdx, servicio
         </div>
 
 
-        <div style={{
-          background: reserva.tipoKm === 'limitado' ? '#fef2f2' : '#f0fdf4',
-          padding: 16,
-          borderRadius: 12,
-          border: `1px solid ${reserva.tipoKm === 'limitado' ? '#fecaca' : '#bbf7d0'}`,
-          marginTop: 24,
-        }}>
-          {reserva.tipoKm === 'limitado' && (
-            <p style={{ fontSize: 13, color: '#7f1d1d', margin: 0, lineHeight: 1.5 }}>
-              <strong>{t('vehiculo.limitedKmPlan')}</strong>{' '}
-              {t('vehiculo.daysCount') !== 'días' ? '' : ''}<strong>{kmLimit.km} km</strong> {t('catalogo.day')}.{' '}
-              <strong>{t('catalogo.limitedKm')}:</strong>{' '}
-              <strong>{formatCurrency(1500, moneda)} / km extra</strong>
-            </p>
-          )}
-          {reserva.tipoKm === 'ilimitado' && (
-            <p style={{ fontSize: 13, color: '#166534', margin: 0, lineHeight: 1.5 }}>
-              <strong>{t('vehiculo.unlimitedKmPlan')}</strong>{' '}
-              {t('vehiculo.unlimitedKmText')}
-            </p>
-          )}
-        </div>
       </div>
 
 
@@ -392,8 +370,8 @@ export default function DatosPersonales({ vehiculo, reserva, seguroIdx, servicio
                 </p>
               </div>
             </div>
-            <div style={{ background: '#f8fafc', padding: 18 }}>
-              <pre style={{ fontSize: 12, color: '#334155', lineHeight: 1.7, whiteSpace: 'pre-wrap', margin: 0, fontFamily: 'inherit' }}>{t('vehiculo.termsFullText')}</pre>
+            <div style={{ background: 'var(--bg-item)', padding: 18 }}>
+              <pre style={{ fontSize: 12, color: 'var(--texto-primary)', lineHeight: 1.7, whiteSpace: 'pre-wrap', margin: 0, fontFamily: 'inherit' }}>{t('vehiculo.termsFullText')}</pre>
             </div>
           </div>
         )}
@@ -408,7 +386,7 @@ export default function DatosPersonales({ vehiculo, reserva, seguroIdx, servicio
         </div>
         <button
           onClick={onReservar}
-          style={{ padding: '16px 40px', borderRadius: 16, background: '#fff', color: '#1e3a8a', fontWeight: 900, fontSize: 16, border: 'none', cursor: 'pointer', boxShadow: '0 8px 24px rgba(0,0,0,0.18)', whiteSpace: 'nowrap', transition: 'transform 200ms ease' }}
+          style={{ padding: '16px 40px', borderRadius: 16, background: 'var(--bg-tarjeta)', color: '#1e3a8a', fontWeight: 900, fontSize: 16, border: 'none', cursor: 'pointer', boxShadow: '0 8px 24px rgba(0,0,0,0.18)', whiteSpace: 'nowrap', transition: 'transform 200ms ease' }}
           onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
           onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
         >
