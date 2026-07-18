@@ -56,25 +56,27 @@ export default function HeroBusqueda({
               </span>
             )}
 
-            <a
-              href="/"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '4px',
-                fontSize: '13px',
-                color: c.accentText,
-                fontWeight: 700,
-                textDecoration: 'none',
-                padding: '6px 14px',
-                borderRadius: '9999px',
-                background: c.accentBgSoft,
-                border: `1px solid ${c.accentBorder}`,
-                whiteSpace: 'nowrap'
-              }}
-            >
-              ← {t('common.backToHome')}
-            </a>
+            {invitado && (
+              <a
+                href="/"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  fontSize: '13px',
+                  color: c.accentText,
+                  fontWeight: 700,
+                  textDecoration: 'none',
+                  padding: '6px 14px',
+                  borderRadius: '9999px',
+                  background: c.accentBgSoft,
+                  border: `1px solid ${c.accentBorder}`,
+                  whiteSpace: 'nowrap'
+                }}
+              >
+                ← {t('common.backToHome')}
+              </a>
+            )}
           </div>
         </div>
 
