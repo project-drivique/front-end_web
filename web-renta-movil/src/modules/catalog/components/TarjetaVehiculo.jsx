@@ -121,8 +121,21 @@ export default function TarjetaVehiculo({
   const seguros = normalizeSeguros(vehiculo)
   const rating = normalizeRating(vehiculo)
   const estadoDisponible = vehiculo.disponible !== false
+  const disponibleEnFechas = vehiculo.disponibleEnFechas !== false
+  const puedeReservar = estadoDisponible && disponibleEnFechas
+
+  let badgeTexto = t('catalogo.available')
+  let badgeBg = '#e6f4ea', badgeColor = '#137333', badgeBorder = '#ceead6'
+  if (!estadoDisponible) {
+    badgeTexto = t('catalogo.unavailable')
+    badgeBg = '#fce8e6'; badgeColor = '#c5221f'; badgeBorder = '#fad2cf'
+  } else if (!disponibleEnFechas) {
+    badgeTexto = t('catalogo.unavailableDates')
+    badgeBg = '#fef3c7'; badgeColor = '#92400e'; badgeBorder = '#fde68a'
+  }
 
   const handleReservar = () => {
+    if (!puedeReservar) return
     if (invitado) {
       showAlert({
         icon: 'info',
@@ -173,7 +186,8 @@ export default function TarjetaVehiculo({
         boxShadow: destacado ? (hover ? '0 16px 40px rgba(37,99,235,0.24)' : '0 10px 26px rgba(37,99,235,0.16)') : (hover ? c.cardShadowHover : c.cardShadow),
         overflow: 'hidden',
         transform: hover ? 'translateY(-4px)' : 'translateY(0)',
-        transition: 'box-shadow 200ms ease, border-color 200ms ease, transform 200ms ease',
+        transition: 'box-shadow 200ms ease, border-color 200ms ease, transform 200ms ease, opacity 200ms ease',
+        opacity: puedeReservar ? 1 : 0.72,
         display: 'flex',
         flexDirection: 'column',
         alignSelf: 'flex-start',
@@ -199,12 +213,12 @@ export default function TarjetaVehiculo({
             fontWeight: 700,
             padding: '5px 12px',
             borderRadius: '9999px',
-            background: estadoDisponible ? '#e6f4ea' : '#fce8e6',
-            color: estadoDisponible ? '#137333' : '#c5221f',
-            border: `1px solid ${estadoDisponible ? '#ceead6' : '#fad2cf'}`,
+            background: badgeBg,
+            color: badgeColor,
+            border: `1px solid ${badgeBorder}`,
           }}
         >
-          {estadoDisponible ? t('catalogo.available') : t('catalogo.unavailable')}
+          {badgeTexto}
         </span>
 
         <button
@@ -308,7 +322,7 @@ export default function TarjetaVehiculo({
           <div style={{ marginTop: 'auto' }}>
             <button
               onClick={handleReservar}
-              disabled={!estadoDisponible}
+              disabled={!puedeReservar}
               style={{
                 width: '100%',
                 padding: '12px',
@@ -318,10 +332,10 @@ export default function TarjetaVehiculo({
                 border: 'none',
                 letterSpacing: '0.04em',
                 textTransform: 'uppercase',
-                cursor: estadoDisponible ? 'pointer' : 'not-allowed',
-                background: estadoDisponible ? c.accentGradient : c.paginationDisabledBg,
+                cursor: puedeReservar ? 'pointer' : 'not-allowed',
+                background: puedeReservar ? c.accentGradient : c.paginationDisabledBg,
                 color: '#fff',
-                boxShadow: estadoDisponible ? '0 4px 14px rgba(37,99,235,0.25)' : 'none',
+                boxShadow: puedeReservar ? '0 4px 14px rgba(37,99,235,0.25)' : 'none',
                 marginBottom: '8px',
                 display: 'flex',
                 alignItems: 'center',
@@ -330,7 +344,7 @@ export default function TarjetaVehiculo({
               }}
             >
               <FaCar />
-              {t('catalogo.reserveNow').toUpperCase()}
+              {puedeReservar ? t('catalogo.reserveNow').toUpperCase() : badgeTexto.toUpperCase()}
             </button>
 
             <div style={{ textAlign: 'center' }}>
