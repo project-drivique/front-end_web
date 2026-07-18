@@ -314,7 +314,8 @@
     "fuelDiesel": "Diesel",
     "fuelHybrid": "Híbrido",
     "fuelElec": "Eléctrico",
-    "consultAvailability": "Consultar disponibilidad"
+    "consultAvailability": "Consultar disponibilidad",
+    "unavailableDates": "No disponible en estas fechas"
   },
   "vehiculo": {
     "reserve": "Reservar vehículo",
@@ -538,6 +539,8 @@
     "profileUpdated": "Perfil actualizado",
     "profileUpdatedText": "Tus datos fueron guardados correctamente.",
     "errorUpdating": "Error al actualizar",
+    "backToCatalog": "Volver al catálogo",
+    "logoutConfirm": "¿Seguro que deseas cerrar tu sesión?",
     "rules": {
       "min8": "Mínimo 8 caracteres",
       "uppercase": "Una letra mayúscula",
