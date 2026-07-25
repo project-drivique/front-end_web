@@ -70,7 +70,7 @@ export default function PerfilPage() {
     }).then((result) => {
       if (result.isConfirmed) {
         logout()
-        window.location.href = '/'
+        window.location.replace('/')
       }
     })
   }
@@ -108,13 +108,7 @@ export default function PerfilPage() {
     }
   }, [error, t])
 
-  if (!usuario) {
-    return (
-      <div style={{ minHeight: '100vh', background: c.pageBg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ color: c.text, fontSize: '18px' }}>Por favor, inicia sesión</div>
-      </div>
-    )
-  }
+  if (!usuario) return null
 
   const inputStyle = (hasError) => ({
     width: '100%',
