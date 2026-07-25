@@ -22,7 +22,7 @@ function RutaPrivada({ children }) {
   const token    = useAuthStore((s) => s.token)
   const hydrated = useHydration()
   if (!hydrated) return null
-  return token ? children : <Navigate to="/login" replace />
+  return token ? children : <Navigate to="/" replace />
 }
 
 function Ruta2FA({ children }) {
@@ -36,7 +36,7 @@ function RutaVerificacionCorreo({ children }) {
   const verificacionCorreo = useAuthStore((s) => s.verificacionCorreo)
   const hydrated = useHydration()
   if (!hydrated) return null
-  return verificacionCorreo ? children : <Navigate to="/registro" replace />
+  return verificacionCorreo ? children : <Navigate to="/catalogo" replace />
 }
 
 export default function AppRouter() {
