@@ -28,10 +28,11 @@ export function useVerificarCorreo() {
   // se deriva del contador en vez de guardarse como estado aparte.
   const expirado = segundosExpiracion <= 0
 
-  // Sin una verificación pendiente en el store no hay nada que mostrar aquí
+  // Si ya no hay verificación pendiente, no mostramos nada más y evitamos
+  // que la app haga un salto a la vista de registro.
   useEffect(() => {
-    if (!verificacionCorreo) navigate('/registro', { replace: true })
-  }, [verificacionCorreo, navigate])
+    if (!verificacionCorreo) return
+  }, [verificacionCorreo])
 
   // Countdown para poder reenviar el código (solo corre una vez enviado el primero)
   useEffect(() => {
@@ -166,7 +167,7 @@ export function useVerificarCorreo() {
 
   const handleCancelar = () => {
     cancelarVerificacionCorreo()
-    navigate('/registro', { replace: true })
+    navigate('/catalogo', { replace: true })
   }
 
   return {
