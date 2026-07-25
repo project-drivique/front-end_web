@@ -15,15 +15,16 @@ export function useVerificar2FA() {
   const [codigo,    setCodigo]   = useState('')
   const [cargando,  setCargando] = useState(false)
   const [error,     setError]    = useState('')
-  const [exito,     setExito]    = useState(false)
+  const [redirigiendo, setRedirigiendo] = useState(false)
   const [segundos,  setSegundos] = useState(TIEMPO_REENVIO)
   const [reenviando, setReenviando] = useState(false)
   const inputsRef = useRef([])
 
-  // Si no hay sesión 2FA activa redirige al login
+  // Si no hay sesión 2FA activa y todavía no se completó la redirección,
+  // bloquea la pantalla y vuelve al login.
   useEffect(() => {
-    if (!sesion2FA) navigate('/login', { replace: true })
-  }, [sesion2FA, navigate])
+    if (!sesion2FA && !redirigiendo) navigate('/catalogo', { replace: true })
+  }, [sesion2FA, redirigiendo, navigate])
 
   // Countdown para reenvío del código
   useEffect(() => {
@@ -82,10 +83,8 @@ export function useVerificar2FA() {
     try {
       const datos = await authService.verificar2FA(sesion2FA, codigo)
       storeLogin(datos.token, datos.usuario)
-      setExito(true)
-      setTimeout(() => {
-        navigate(datos.usuario.rol === 'administrador' ? '/admin' : '/catalogo')
-      }, 1500)
+      setRedirigiendo(true)
+      navigate(datos.usuario.rol === 'administrador' ? '/admin' : '/catalogo', { replace: true })
     } catch (err) {
       const msg = err?.response?.data?.mensaje || ''
       if (msg.toLowerCase().includes('expir')) {
@@ -120,7 +119,7 @@ export function useVerificar2FA() {
 
   const handleCancelar = () => {
     cancelar2FA()
-    navigate('/login', { replace: true })
+    navigate('/catalogo', { replace: true })
   }
 
   return {
