@@ -1,5 +1,5 @@
-import ciudadesData from '../../mocks/ciudades.json'
-import sucursalesData from '../../mocks/sucursales.json'
+import ciudadesData from '../../mocks/cities.json'
+import sucursalesData from '../../mocks/branches.json'
 
 export const COLOR_MARCA = '#2f4ea2'
 
