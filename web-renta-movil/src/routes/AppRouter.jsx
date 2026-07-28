@@ -4,19 +4,19 @@ import { useHydration } from '../hooks/useHydration'
 
 import LandingPage from '../modules/landing/LandingPage'
 import LoginPage from '../modules/auth/pages/LoginPage'
-import RegistroPage from '../modules/auth/pages/RegistroPage'
-import RecuperarContrasenaPage from '../modules/auth/pages/RecuperarContrasenaPage'
-import NuevaContrasenaPage from '../modules/auth/pages/NuevaContrasenaPage'
-import Verificar2FAPage from '../modules/auth/pages/Verificar2FAPage'
-import VerificarCorreoPage from '../modules/auth/pages/VerificarCorreoPage'
-import CatalogoPage from '../modules/catalog/pages/CatalogoPage'
-import CatalogoUsuarioPage from '../modules/catalog/pages/CatalogoUsuarioPage'
-import VehiculoDetallePage from '../modules/catalog/pages/VehiculoDetallePage'
-import ReservasPage from '../modules/reservations/pages/ReservasPage'
+import RegistrationPage from '../modules/auth/pages/RegistrationPage'
+import RecoverPasswordPage from '../modules/auth/pages/RecoverPasswordPage'
+import NewPasswordPage from '../modules/auth/pages/NewPasswordPage'
+import Verify2FAPage from '../modules/auth/pages/Verify2FAPage'
+import VerifyEmailPage from '../modules/auth/pages/VerifyEmailPage'
+import CatalogPage from '../modules/catalog/pages/CatalogPage'
+import UserCatalogPage from '../modules/catalog/pages/UserCatalogPage'
+import VehicleDetailPage from '../modules/catalog/pages/VehicleDetailPage'
+import ReservationsPage from '../modules/reservations/pages/ReservationsPage'
 import AdminPage from '../modules/admin/pages/AdminPage'
-import SucursalesPage from '../modules/catalog/pages/SucursalesPage'
-import PerfilPage from '../modules/profile/pages/PerfilPage'
-import RespuestaPagoPage from '../modules/payments/pages/RespuestaPagoPage'
+import BranchesPage from '../modules/catalog/pages/BranchesPage'
+import ProfilePage from '../modules/profile/pages/ProfilePage'
+import PaymentResponsePage from '../modules/payments/pages/PaymentResponsePage'
 
 function RutaPrivada({ children }) {
   const token    = useAuthStore((s) => s.token)
@@ -46,20 +46,20 @@ export default function AppRouter() {
         <Route path="/" element={<LandingPage />} />
 
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/registro" element={<RegistroPage />} />
-        <Route path="/recuperar" element={<RecuperarContrasenaPage />} />
-        <Route path="/nueva-contrasena" element={<NuevaContrasenaPage />} />
-        <Route path="/verificar-2fa" element={<Ruta2FA><Verificar2FAPage /></Ruta2FA>} />
-        <Route path="/verificar-correo" element={<RutaVerificacionCorreo><VerificarCorreoPage /></RutaVerificacionCorreo>} />
+        <Route path="/registro" element={<RegistrationPage />} />
+        <Route path="/recuperar" element={<RecoverPasswordPage />} />
+        <Route path="/nueva-contrasena" element={<NewPasswordPage />} />
+        <Route path="/verificar-2fa" element={<Ruta2FA><Verify2FAPage /></Ruta2FA>} />
+        <Route path="/verificar-correo" element={<RutaVerificacionCorreo><VerifyEmailPage /></RutaVerificacionCorreo>} />
 
-        <Route path="/home" element={<RutaPrivada><CatalogoUsuarioPage /></RutaPrivada>} />
+        <Route path="/home" element={<RutaPrivada><UserCatalogPage /></RutaPrivada>} />
         <Route path="/admin" element={<RutaPrivada><AdminPage /></RutaPrivada>} />
-        <Route path="/perfil" element={<RutaPrivada><PerfilPage /></RutaPrivada>} />
-        <Route path="/catalogo" element={<CatalogoPage />} />
-        <Route path="/catalogo/:id" element={<VehiculoDetallePage />} />
-        <Route path="/sucursales" element={<SucursalesPage />} />
-        <Route path="/reservas" element={<RutaPrivada><ReservasPage /></RutaPrivada>} />
-        <Route path="/respuesta" element={<RespuestaPagoPage />} />
+        <Route path="/perfil" element={<RutaPrivada><ProfilePage /></RutaPrivada>} />
+        <Route path="/catalogo" element={<CatalogPage />} />
+        <Route path="/catalogo/:id" element={<VehicleDetailPage />} />
+        <Route path="/sucursales" element={<BranchesPage />} />
+        <Route path="/reservas" element={<RutaPrivada><ReservationsPage /></RutaPrivada>} />
+        <Route path="/respuesta" element={<PaymentResponsePage />} />
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
