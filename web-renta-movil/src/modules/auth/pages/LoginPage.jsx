@@ -3,14 +3,14 @@ import { useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useLogin } from '../hooks/useLogin'
-import { useRegistroSocial } from '../hooks/useRegistroSocial'
+import { useSocialRegistration } from '../hooks/useSocialRegistration'
 import { useLanding } from '../../landing/LandingContext'
 import logo from '@/assets/logo.png'
 import { showAlert } from '@/utils/swalConfig'
 
 import { coloresLogin, loginTokens } from '../styles/loginStyles'
-import SpinnerBtn from '../components/SpinnerBtn'
-import PanelIzquierdo from '../components/PanelIzquierdo'
+import SpinnerButton from '../components/SpinnerButton'
+import LeftPanel from '../components/LeftPanel'
 
 // ─── Íconos SVG locales ────────────────────────────────────────────────────────
 const IconoOjoAbierto = () => (
@@ -70,7 +70,7 @@ export default function LoginPage() {
   const {
     cargandoGoogle, cargandoFacebook, errorSocial,
     proveedorExito, iniciarGoogle, iniciarFacebook,
-  } = useRegistroSocial({ onExito: (_, data) => {
+  } = useSocialRegistration({ onExito: (_, data) => {
     const rol = data?.usuario?.rol
     navigate(rol === 'administrador' ? '/admin' : '/home')
   } })
@@ -137,7 +137,7 @@ export default function LoginPage() {
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', background: c.pageBg }}>
-      <PanelIzquierdo />
+      <LeftPanel />
 
       {/* ── Panel derecho (formulario) ── */}
       <div style={{ flex: 1, background: c.pageBg, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 24px' }} className="auth-contenedor">
@@ -261,7 +261,7 @@ export default function LoginPage() {
                   onMouseEnter={e => { if (!deshabilitado) { e.currentTarget.style.borderColor = c.socialHoverBorder; e.currentTarget.style.background = c.socialHoverBg } }}
                   onMouseLeave={e => { e.currentTarget.style.borderColor = c.socialBorder; e.currentTarget.style.background = c.socialBg }}
                 >
-                  {estaCargando ? <SpinnerBtn esModoOscuro={esModoOscuro} /> : <Icono />}
+                  {estaCargando ? <SpinnerButton esModoOscuro={esModoOscuro} /> : <Icono />}
                   {estaCargando ? labelCargando : label}
                 </button>
               )
