@@ -4,9 +4,9 @@ import { createPortal } from 'react-dom'
 import { Link } from 'react-router-dom'
 import logo from '@/assets/logo.png'
 import { useLanding } from './LandingContext'
-import traducciones, { IDIOMAS } from './traducciones'
-import { catalogoService } from '../../services/catalogoService'
-import { formatCurrency } from '@/utils/monedaUtils'
+import translations, { IDIOMAS } from './translations'
+import { catalogService } from '../../services/catalogService'
+import { formatCurrency } from '@/utils/currencyUtils'
 
 const COLOR_MARCA = '#1e3a8a'
 const COLOR_MARCA_HOVER = '#162d6e'
@@ -334,7 +334,7 @@ function MenuConfiguracion({ tx, modoMovil = false }) {
 
 export default function LandingPage() {
   const { tema, idioma, moneda } = useLanding()
-  const tx = traducciones[idioma] ?? traducciones.es
+  const tx = translations[idioma] ?? translations.es
   const esModoOscuro = tema === 'oscuro'
   const c = coloresTema(esModoOscuro)
 
@@ -342,7 +342,7 @@ export default function LandingPage() {
   const [menuMovilAbierto, setMenuMovilAbierto] = useState(false)
 
   useEffect(() => {
-    catalogoService.getVehiculosDestacados().then(data => setAutos(data)).catch(() => {})
+    catalogService.getVehiculosDestacados().then(data => setAutos(data)).catch(() => {})
   }, [])
 
   const estiloEnlaceNav = {
