@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { FaWifi } from 'react-icons/fa'
 import { formatCurrency } from '@/utils/currencyUtils'
-import { useLanding } from '../../../landing/LandingContext'
+import { useLanding } from '../../landing/LandingContext'
 
 export default function ServiciosAdicionales({ servicios = [], seleccionados = [], onToggle }) {
   const { t } = useTranslation()

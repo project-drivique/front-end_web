@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { FaShieldAlt, FaRegHeart } from "react-icons/fa";
 import { formatCurrency } from '@/utils/currencyUtils';
-import { useLanding } from '../../../landing/LandingContext';
+import { useLanding } from '../../landing/LandingContext';
 
 const IcoCheck = ({ color = '#16a34a', sz = 15 }) => (
   <svg width={sz} height={sz} fill="none" stroke={color} strokeWidth="2.8" viewBox="0 0 24 24">
