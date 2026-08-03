@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { showAlert } from '@/utils/swalConfig'
 import { useLanding } from '../../landing/LandingContext'
 import { formatCurrency } from '@/utils/currencyUtils'
+import BannerRegistro from './RegistrationBanner'
 import {
   FaHeart,
   FaRegHeart,
@@ -98,6 +98,7 @@ export default function TarjetaVehiculo({
   const [hover, setHover] = useState(false)
   const [verDetalles, setVerDetalles] = useState(false)
   const [fotoActiva, setFotoActiva] = useState(0)
+  const [bannerVisible, setBannerVisible] = useState(false)
 
   const normalizeCaracteristicas = (v) => {
     if (Array.isArray(v.caracteristicas) && v.caracteristicas.length > 0) return v.caracteristicas
@@ -137,18 +138,7 @@ export default function TarjetaVehiculo({
   const handleReservar = () => {
     if (!puedeReservar) return
     if (invitado) {
-      showAlert({
-        icon: 'info',
-        title: t('catalogo.registrationRequired'),
-        text: t('catalogo.registrationRequiredText'),
-        confirmButtonText: t('catalogo.goToRegister'),
-        showCancelButton: true,
-        cancelButtonText: t('common.cancel')
-      }).then((result) => {
-        if (result.isConfirmed) {
-          navigate('/registro')
-        }
-      })
+      setBannerVisible(true)
       return
     }
     navigate(`/catalogo/${vehiculo.id}`)
@@ -157,16 +147,7 @@ export default function TarjetaVehiculo({
   const handleFavoritoClick = (e) => {
     e.stopPropagation()
     if (invitado) {
-      showAlert({
-        icon: 'info',
-        title: t('catalogo.favoritesTitle'),
-        text: t('catalogo.favoritesText'),
-        confirmButtonText: t('catalogo.goToLogin'),
-      }).then((result) => {
-        if (result.isConfirmed) {
-          navigate('/login')
-        }
-      })
+      setBannerVisible(true)
       return
     }
     onFavorito()
@@ -470,6 +451,11 @@ export default function TarjetaVehiculo({
           </div>
         </div>
       </div>
+
+      <BannerRegistro
+        visible={bannerVisible}
+        onCerrar={() => setBannerVisible(false)}
+      />
     </div>
   )
 }
