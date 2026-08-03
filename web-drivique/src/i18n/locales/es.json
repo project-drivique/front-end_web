@@ -229,7 +229,7 @@
     "successTitle": "¡Correo verificado!",
     "successSubtitle": "Redirigiendo..."
   },
-  "catalogo": {
+"catalogo": {
     "title": "Catálogo de vehículos",
     "search": "Buscar vehículos...",
     "filters": "Filtros",
@@ -315,7 +315,28 @@
     "fuelHybrid": "Híbrido",
     "fuelElec": "Eléctrico",
     "consultAvailability": "Consultar disponibilidad",
-    "unavailableDates": "No disponible en estas fechas"
+    "unavailableDates": "No disponible en estas fechas",
+    "freeSearchPlaceholder": "Buscar por marca o modelo...",
+    "noMatchesFreeSearchTitle": "Sin coincidencias",
+    "noMatchesFreeSearch": "No encontramos resultados para \"{{termino}}\"",
+    "noAvailabilityDatesTitle": "Sin disponibilidad",
+    "noAvailabilityDates": "No hay vehículos disponibles en {{sucursal}} para las fechas seleccionadas.",
+    "noAvailabilityFiltersTitle": "Sin disponibilidad",
+    "noAvailabilityFiltersMsg": "No encontramos vehículos disponibles para esa ciudad, sucursal o esas fechas. Te mostramos el catálogo completo mientras tanto.",
+    "loginToCheckAvailability": "Inicia sesión para consultar disponibilidad",
+   "bannerRegistro": {
+      "titulo": "Crea tu cuenta para continuar",
+      "mensaje": "Regístrate o inicia sesión para consultar disponibilidad, elegir fechas y reservar tu vehículo.",
+      "registrarme": "Registrarme",
+      "iniciarSesion": "Iniciar sesión",
+      "continuarInvitado": "Continuar como invitado"
+    },
+    "chooseDatesModal": {
+      "titulo": "Elige fechas y lugar",
+      "mensaje": "Inicia sesión para buscar por fecha de recogida, devolución y sucursal.",
+      "cancelar": "Cancelar",
+      "iniciarSesion": "Iniciar sesión"
+    }
   },
   "vehiculo": {
     "reserve": "Reservar vehículo",
