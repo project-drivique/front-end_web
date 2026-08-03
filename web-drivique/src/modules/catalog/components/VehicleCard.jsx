@@ -7,16 +7,9 @@ import BannerRegistro from './RegistrationBanner'
 import {
   FaHeart,
   FaRegHeart,
-  FaSnowflake,
-  FaBolt,
-  FaLock,
-  FaSuitcase,
   FaCogs,
   FaGasPump,
-  FaUsers,
   FaCar,
-  FaShieldAlt,
-  FaMoneyBillWave,
   FaStar,
   FaMapMarkerAlt,
 } from 'react-icons/fa'
@@ -42,10 +35,6 @@ function getSafeImages(vehiculo) {
   return ['']
 }
 
-function getCarIcon(item) {
-  return item.icono || FaCogs
-}
-
 const TRANS_KEYS = {
   'Automática': 'catalogo.transAuto',
   'Manual':     'catalogo.transManual',
@@ -55,28 +44,6 @@ const FUEL_KEYS = {
   'Diesel':    'catalogo.fuelDiesel',
   'Híbrido':   'catalogo.fuelHybrid',
   'Eléctrico': 'catalogo.fuelElec',
-}
-const SEGURO_KEYS = {
-  'Protección Obligatoria': 'catalogo.basicProtection',
-  'Protección Total':       'catalogo.fullProtection',
-}
-
-function normalizeTarifas(vehiculo) {
-  const t = vehiculo.tarifas || {}
-  return {
-    kmLimitado: {
-      km: t.kmLimitado?.km ?? 150,
-      precio: t.kmLimitado?.precio ?? 0,
-    },
-    kmIlimitado: {
-      precio: t.kmIlimitado?.precio ?? 0,
-    },
-  }
-}
-
-function normalizeSeguros(vehiculo) {
-  if (Array.isArray(vehiculo.seguros) && vehiculo.seguros.length > 0) return vehiculo.seguros
-  return []
 }
 
 function normalizeRating(vehiculo) {
@@ -96,30 +63,10 @@ export default function TarjetaVehiculo({
   const navigate = useNavigate()
   const { moneda } = useLanding()
   const [hover, setHover] = useState(false)
-  const [verDetalles, setVerDetalles] = useState(false)
   const [fotoActiva, setFotoActiva] = useState(0)
   const [bannerVisible, setBannerVisible] = useState(false)
 
-  const normalizeCaracteristicas = (v) => {
-    if (Array.isArray(v.caracteristicas) && v.caracteristicas.length > 0) return v.caracteristicas
-    if (Array.isArray(v.detalles) && v.detalles.length > 0) return v.detalles
-    const transKey = TRANS_KEYS[v.transmision]
-    const fuelKey  = FUEL_KEYS[v.combustible]
-    return [
-      { icono: FaSnowflake, label: t('vehiculo.airConditioning') },
-      { icono: FaBolt,      label: t('vehiculo.windowsElec') },
-      { icono: FaLock,      label: t('vehiculo.centralLock') },
-      { icono: FaSuitcase,  label: `${v.maletero ?? 0}L ${t('vehiculo.trunk')}` },
-      { icono: FaCogs,      label: transKey ? t(transKey) : v.transmision || t('catalogo.transManual') },
-      { icono: FaGasPump,   label: fuelKey  ? t(fuelKey)  : v.combustible || t('catalogo.fuelGas') },
-      { icono: FaUsers,     label: `${v.pasajeros ?? 4} ${t('vehiculo.passengers')}` },
-    ]
-  }
-
   const imagenes = getSafeImages(vehiculo)
-  const caracteristicas = normalizeCaracteristicas(vehiculo)
-  const tarifas = normalizeTarifas(vehiculo)
-  const seguros = normalizeSeguros(vehiculo)
   const rating = normalizeRating(vehiculo)
   const estadoDisponible = vehiculo.disponible !== false
   const disponibleEnFechas = vehiculo.disponibleEnFechas !== false
@@ -135,13 +82,18 @@ export default function TarjetaVehiculo({
     badgeBg = '#fef3c7'; badgeColor = '#92400e'; badgeBorder = '#fde68a'
   }
 
-  const handleReservar = () => {
+  const handleVerDetalles = () => {
+    navigate(`/catalogo/${vehiculo.id}`)
+  }
+
+  const handleReservar = (e) => {
+    e.stopPropagation()
     if (!puedeReservar) return
     if (invitado) {
       setBannerVisible(true)
       return
     }
-    navigate(`/catalogo/${vehiculo.id}`)
+    navigate(`/reservas/${vehiculo.id}`)
   }
 
   const handleFavoritoClick = (e) => {
@@ -153,11 +105,17 @@ export default function TarjetaVehiculo({
     onFavorito()
   }
 
+  const handleDotClick = (e, i) => {
+    e.stopPropagation()
+    setFotoActiva(i)
+  }
+
   const estrellas = Array.from({ length: 5 }, (_, i) => i < Math.round(rating))
   const imagenActual = imagenes[fotoActiva] || ''
 
   return (
     <div
+      onClick={handleVerDetalles}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       style={{
@@ -174,6 +132,7 @@ export default function TarjetaVehiculo({
         alignSelf: 'flex-start',
         width: '100%',
         maxWidth: '350px',
+        cursor: 'pointer',
       }}
     >
       <div style={{ position: 'relative', height: '180px', background: c.imageFallbackBg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
@@ -231,7 +190,7 @@ export default function TarjetaVehiculo({
               <button
                 key={i}
                 type="button"
-                onClick={() => setFotoActiva(i)}
+                onClick={(e) => handleDotClick(e, i)}
                 style={{
                   width: i === fotoActiva ? '16px' : '6px',
                   height: '6px',
@@ -248,206 +207,84 @@ export default function TarjetaVehiculo({
         )}
       </div>
 
-      <div style={{ position: 'relative', height: '340px', overflow: 'hidden' }}>
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            padding: '16px',
-            display: 'flex',
-            flexDirection: 'column',
-            opacity: verDetalles ? 0 : 1,
-            transform: verDetalles ? 'translateX(-24px)' : 'translateX(0)',
-            transition: 'opacity 220ms ease, transform 220ms ease',
-            pointerEvents: verDetalles ? 'none' : 'all',
-          }}
-        >
-          <div style={{ marginBottom: '8px', display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
-            <span style={{ fontSize: '12px', fontWeight: 700, color: '#1e40af', background: '#eff6ff', padding: '4px 10px', borderRadius: '9999px', border: '1px solid #bfdbfe' }}>
-              {vehiculo.categoria || 'Económico'}
-            </span>
-            <span style={{ fontSize: '11px', fontWeight: 700, color: '#059669', background: '#ecfdf5', padding: '4px 10px', borderRadius: '9999px', border: '1px solid #bbf7d0', display: 'flex', alignItems: 'center', gap: '4px' }}>
-              <FaMapMarkerAlt /> {vehiculo.sucursal || 'Centro Neiva'}
-            </span>
-          </div>
-
-          <h3 style={{ fontSize: '16px', fontWeight: 800, color: c.textPrimary, margin: '0 0 6px', lineHeight: 1.3 }}>
-            {vehiculo.nombre}
-          </h3>
-
-          <div style={{ display: 'flex', gap: '12px', marginBottom: '6px', flexWrap: 'wrap' }}>
-            <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', color: c.textSecondary }}>
-              <FaCogs style={{ color: c.textMuted }} />
-              {TRANS_KEYS[vehiculo.transmision] ? t(TRANS_KEYS[vehiculo.transmision]) : vehiculo.transmision}
-            </span>
-            <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', color: c.textSecondary }}>
-              <FaGasPump style={{ color: c.textMuted }} />
-              {FUEL_KEYS[vehiculo.combustible] ? t(FUEL_KEYS[vehiculo.combustible]) : vehiculo.combustible}
-            </span>
-          </div>
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: '3px', marginBottom: '10px' }}>
-            {estrellas.map((llena, i) => (
-              <FaStar key={i} size={13} color={llena ? '#f59e0b' : '#d1d5db'} />
-            ))}
-            <span style={{ fontSize: '12px', color: c.textSecondary, marginLeft: '4px', fontWeight: 600 }}>{rating.toFixed(1)}</span>
-          </div>
-
-          <div style={{ marginBottom: '8px' }}>
-            <span style={{ fontSize: '24px', fontWeight: 900, color: '#1e3a8a' }}>
-              {formatCurrency(vehiculo.precio || 60000, moneda)}
-            </span>
-            <span style={{ fontSize: '12px', color: c.textSoft, marginLeft: '4px' }}>/{t('catalogo.day')}</span>
-          </div>
-
-          <div style={{ marginTop: 'auto' }}>
-            <button
-              onClick={handleReservar}
-              disabled={!puedeReservar}
-              style={{
-                width: '100%',
-                padding: '12px',
-                borderRadius: '12px',
-                fontSize: '13px',
-                fontWeight: 800,
-                border: 'none',
-                letterSpacing: '0.04em',
-                textTransform: 'uppercase',
-                cursor: puedeReservar ? 'pointer' : 'not-allowed',
-                background: puedeReservar ? c.accentGradient : c.paginationDisabledBg,
-                color: '#fff',
-                boxShadow: puedeReservar ? '0 4px 14px rgba(37,99,235,0.25)' : 'none',
-                marginBottom: '8px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px',
-              }}
-            >
-              <FaCar />
-              {puedeReservar ? t('catalogo.reserveNow').toUpperCase() : badgeTexto.toUpperCase()}
-            </button>
-
-            <div style={{ textAlign: 'center' }}>
-              <button
-                onClick={() => setVerDetalles(true)}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  fontSize: '13px',
-                  fontWeight: 700,
-                  color: '#2563eb',
-                  textDecoration: 'underline',
-                  marginBottom: '30px',
-                  padding: 0,
-                }}
-              >
-                {t('catalogo.details')}
-              </button>
-            </div>
-          </div>
+      <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', flex: 1 }}>
+        <div style={{ marginBottom: '8px', display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
+          <span style={{ fontSize: '12px', fontWeight: 700, color: '#1e40af', background: '#eff6ff', padding: '4px 10px', borderRadius: '9999px', border: '1px solid #bfdbfe' }}>
+            {vehiculo.categoria || 'Económico'}
+          </span>
+          <span style={{ fontSize: '11px', fontWeight: 700, color: '#059669', background: '#ecfdf5', padding: '4px 10px', borderRadius: '9999px', border: '1px solid #bbf7d0', display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <FaMapMarkerAlt /> {vehiculo.sucursal || 'Centro Neiva'}
+          </span>
         </div>
 
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            padding: '14px 16px',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '8px',
-            overflowY: 'auto',
-            opacity: verDetalles ? 1 : 0,
-            transform: verDetalles ? 'translateX(0)' : 'translateX(24px)',
-            transition: 'opacity 220ms ease, transform 220ms ease',
-            pointerEvents: verDetalles ? 'all' : 'none',
-          }}
-        >
-          <div style={{ textAlign: 'center', flexShrink: 0, marginBottom: '4px' }}>
-            <button
-              onClick={() => setVerDetalles(false)}
+        <h3 style={{ fontSize: '16px', fontWeight: 800, color: c.textPrimary, margin: '0 0 6px', lineHeight: 1.3 }}>
+          {vehiculo.nombre}
+        </h3>
+
+        <div style={{ display: 'flex', gap: '12px', marginBottom: '6px', flexWrap: 'wrap' }}>
+          <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', color: c.textSecondary }}>
+            <FaCogs style={{ color: c.textMuted }} />
+            {TRANS_KEYS[vehiculo.transmision] ? t(TRANS_KEYS[vehiculo.transmision]) : vehiculo.transmision}
+          </span>
+          <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', color: c.textSecondary }}>
+            <FaGasPump style={{ color: c.textMuted }} />
+            {FUEL_KEYS[vehiculo.combustible] ? t(FUEL_KEYS[vehiculo.combustible]) : vehiculo.combustible}
+          </span>
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '3px', marginBottom: '10px' }}>
+          {estrellas.map((llena, i) => (
+            <FaStar key={i} size={13} color={llena ? '#f59e0b' : '#d1d5db'} />
+          ))}
+          <span style={{ fontSize: '12px', color: c.textSecondary, marginLeft: '4px', fontWeight: 600 }}>{rating.toFixed(1)}</span>
+        </div>
+
+        <div style={{ marginBottom: '8px' }}>
+          <span style={{ fontSize: '24px', fontWeight: 900, color: '#1e3a8a' }}>
+            {formatCurrency(vehiculo.precio || 60000, moneda)}
+          </span>
+          <span style={{ fontSize: '12px', color: c.textSoft, marginLeft: '4px' }}>/{t('catalogo.day')}</span>
+        </div>
+
+        <div style={{ marginTop: 'auto' }}>
+          <button
+            onClick={handleReservar}
+            disabled={!puedeReservar}
+            style={{
+              width: '100%',
+              padding: '12px',
+              borderRadius: '12px',
+              fontSize: '13px',
+              fontWeight: 800,
+              border: 'none',
+              letterSpacing: '0.04em',
+              textTransform: 'uppercase',
+              cursor: puedeReservar ? 'pointer' : 'not-allowed',
+              background: puedeReservar ? c.accentGradient : c.paginationDisabledBg,
+              color: '#fff',
+              boxShadow: puedeReservar ? '0 4px 14px rgba(37,99,235,0.25)' : 'none',
+              marginBottom: '8px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+            }}
+          >
+            <FaCar />
+            {puedeReservar ? t('catalogo.reserveNow').toUpperCase() : badgeTexto.toUpperCase()}
+          </button>
+
+          <div style={{ textAlign: 'center' }}>
+            <span
               style={{
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
                 fontSize: '13px',
                 fontWeight: 700,
                 color: '#2563eb',
                 textDecoration: 'underline',
-                padding: 0,
               }}
             >
-              {t('catalogo.hideDetails')}
-            </button>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px', flexShrink: 0 }}>
-            {caracteristicas.map((item, i) => {
-              const Icono = getCarIcon(item)
-              return (
-                <div
-                  key={i}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    background: '#f8fafc',
-                    borderRadius: '8px',
-                    padding: '7px 8px',
-                    border: '1px solid #e2e8f0',
-                  }}
-                >
-                  <span style={{ fontSize: '14px', flexShrink: 0, color: '#64748b', display: 'flex', alignItems: 'center' }}>
-                    <Icono />
-                  </span>
-                  <span style={{ fontSize: '11px', fontWeight: 600, color: '#334155', lineHeight: 1.3 }}>{item.label}</span>
-                </div>
-              )
-            })}
-          </div>
-
-          <div style={{ background: '#f4fbf7', borderRadius: '8px', padding: '10px', border: '1px solid #ccf1dc', flexShrink: 0 }}>
-            <div style={{ fontSize: '11px', fontWeight: 800, color: '#137333', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '5px' }}>
-              <FaMoneyBillWave />
-              {t('catalogo.rates').toUpperCase()}
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: '#334155', marginBottom: '4px' }}>
-              <span>{t('catalogo.limitedKm')} ({tarifas.kmLimitado.km} km/{t('catalogo.day')})</span>
-              <span style={{ fontWeight: 800 }}>{formatCurrency(tarifas.kmLimitado.precio || 55000, moneda)}</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: '#334155' }}>
-              <span>{t('catalogo.unlimitedKm')}</span>
-              <span style={{ fontWeight: 800 }}>{formatCurrency(tarifas.kmIlimitado.precio || 68000, moneda)}</span>
-            </div>
-          </div>
-
-          <div style={{ background: '#f0f4ff', borderRadius: '8px', padding: '10px', border: '1px solid #ccd9ff', flexShrink: 0 }}>
-            <div style={{ fontSize: '11px', fontWeight: 800, color: '#1e40af', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '5px' }}>
-              <FaShieldAlt />
-              {t('catalogo.insurance').toUpperCase()}
-            </div>
-            {seguros.length > 0 ? (
-              seguros.map((seg, i) => (
-                <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '11px', color: '#334155', marginBottom: i < seguros.length - 1 ? '4px' : 0 }}>
-                  <span style={{ fontWeight: 600 }}>{SEGURO_KEYS[seg.nombre] ? t(SEGURO_KEYS[seg.nombre]) : seg.nombre}</span>
-                  <span style={{ fontWeight: 800, color: '#1e3a8a' }}>
-                    {formatCurrency(seg.precio, moneda)}/{t('catalogo.day')}
-                  </span>
-                </div>
-              ))
-            ) : (
-              <>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '11px', color: '#334155', marginBottom: '4px' }}>
-                  <span style={{ fontWeight: 600 }}>{t('catalogo.basicProtection')}</span>
-                  <span style={{ fontWeight: 800, color: '#1e3a8a' }}>{formatCurrency(29000, moneda)}/{t('catalogo.day')}</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '11px', color: '#334155' }}>
-                  <span style={{ fontWeight: 600 }}>{t('catalogo.fullProtection')}</span>
-                  <span style={{ fontWeight: 800, color: '#1e3a8a' }}>{formatCurrency(67000, moneda)}/{t('catalogo.day')}</span>
-                </div>
-              </>
-            )}
+              {t('catalogo.details')}
+            </span>
           </div>
         </div>
       </div>
