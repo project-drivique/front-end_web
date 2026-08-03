@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useAuthStore } from '../../../store/authStore'
 import { useLanding } from '../../landing/LandingContext'
 import { COLOR_MARCA } from '../constants'
@@ -9,13 +9,14 @@ import logo from '@/assets/logo.png'
 import SearchHero from '../components/SearchHero'
 import CatalogFilters from '../components/CatalogFilters'
 import MobileFiltersModal from '../components/MobileFiltersModal'
-import MobileSearchModal from '../components/MobileSearchModal'
+import BannerRegistro from '../components/RegistrationBanner'
+import ChooseDatesModal from '../components/ChooseDatesModal'
 import VehicleGrid from '../components/VehicleGrid'
 import CatalogPagination from '../components/CatalogPagination'
 import LoadingState from '../components/LoadingState'
 import ErrorState from '../components/ErrorState'
 import EmptyState from '../components/EmptyState'
-import { showAlert } from '@/utils/swalConfig'
+import AlertaModal from '../components/AlertaModal'
 
 const coloresTema = (esModoOscuro) => ({
   pageBg: esModoOscuro ? '#0f172a' : '#f8fafc',
@@ -62,7 +63,6 @@ const coloresTema = (esModoOscuro) => ({
 export default function CatalogoPage() {
   const { t } = useTranslation()
   const { tema } = useLanding()
-  const navigate = useNavigate()
   const { usuario } = useAuthStore()
   const esModoOscuro = tema === 'oscuro'
   const c = coloresTema(esModoOscuro)
@@ -75,9 +75,12 @@ export default function CatalogoPage() {
     busquedaForm,
     setForm,
     busquedaAplicada,
-    busquedaRealizada,
-    dias,
+    textoLibre,
+    setTextoLibre,
     resultado,
+    sinCoincidenciasTexto,
+    sinDisponibilidadFechas,
+    sinCoincidenciasFiltros,
     totalPaginas,
     vehiculosPagina,
     pagina,
@@ -88,7 +91,21 @@ export default function CatalogoPage() {
   } = useCatalogo()
 
   const [filtrosMovilAbierto, setFiltrosMovilAbierto] = useState(false)
-  const [busquedaMovilAbierta, setBusquedaMovilAbierta] = useState(false)
+  // Bottom-sheet de registro: para Reservar y Favoritos (ofrece Registrarme / Iniciar sesión / Continuar como invitado)
+  const [bannerRegistroAbierto, setBannerRegistroAbierto] = useState(false)
+  // Modal centrado "Elige fechas y lugar": específico para el botón candado del buscador (solo Cancelar / Iniciar sesión)
+  const [modalFechasAbierto, setModalFechasAbierto] = useState(false)
+  // Modal centrado "Sin disponibilidad" para los filtros del sidebar (Categoría,
+  // Ciudad, Sucursal, Precio, Transmisión, Combustible). Mismo componente que
+  // usa SearchHero para texto libre y fechas.
+  const [modalFiltrosCerrado, setModalFiltrosCerrado] = useState(false)
+
+  // Cada vez que cambia algún filtro del sidebar, el modal vuelve a estar
+  // disponible (por si la nueva combinación también queda sin resultados).
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setModalFiltrosCerrado(false)
+  }, [filtros])
 
   const inputStyle = {
     width: '100%',
@@ -112,18 +129,12 @@ export default function CatalogoPage() {
     letterSpacing: '0.06em',
   }
 
+  // Filtros / favoritos siguen abriendo el bottom-sheet de registro (con 3 opciones)
   const handleBuscarInvitado = () => {
-    showAlert({
-      icon: 'info',
-      title: t('catalogo.guestMode'),
-      text: t('catalogo.guestModeText'),
-      confirmButtonText: t('catalogo.goToRegister'),
-      showCancelButton: true,
-      cancelButtonText: t('common.cancel')
-    }).then((result) => {
-      if (result.isConfirmed) navigate('/registro')
-    })
+    setBannerRegistroAbierto(true)
   }
+
+  const mostrarModalFiltros = sinCoincidenciasFiltros && !modalFiltrosCerrado
 
   return (
     <div style={{ minHeight: '100vh', background: c.pageBg, display: 'flex', flexDirection: 'column' }}>
@@ -140,30 +151,6 @@ export default function CatalogoPage() {
             <img src={logo} alt="Drivique" style={{ height: '80px', flexShrink: 0 }} />
           </Link>
           <div style={{ flex: 1 }} />
-          {!usuario && (
-            <div style={{ display: 'flex', gap: '10px' }}>
-              <Link
-                to="/login"
-                style={{
-                  padding: '8px 20px',
-                  borderRadius: '9999px',
-                  border: `2px solid ${c.loginBorder}`,
-                  color: c.loginText,
-                  fontSize: '15px',
-                  fontWeight: 700,
-                  textDecoration: 'none',
-                  background: 'transparent',
-                }}
-                onMouseEnter={e => e.currentTarget.style.background = c.loginHoverBg}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-              >
-                {t('catalogo.signIn')}
-              </Link>
-              <Link to="/registro" style={{ padding: '8px 20px', borderRadius: '9999px', background: COLOR_MARCA, color: '#fff', fontSize: '15px', fontWeight: 700, textDecoration: 'none' }}>
-                {t('catalogo.signUp')}
-              </Link>
-            </div>
-          )}
         </div>
       </nav>
 
@@ -176,15 +163,14 @@ export default function CatalogoPage() {
           labelStyle={labelStyle}
           busquedaForm={busquedaForm}
           setForm={setForm}
-          errorBusqueda={errorBusqueda}
-          busquedaRealizada={busquedaRealizada}
           busquedaAplicada={busquedaAplicada}
-          dias={dias}
-          limpiar={limpiar}
+          errorBusqueda={errorBusqueda}
+          textoLibre={textoLibre}
+          setTextoLibre={setTextoLibre}
           invitado={true}
-          onBuscarInvitado={handleBuscarInvitado}
-          onAbrirBusqueda={() => setBusquedaMovilAbierta(true)}
-          onAbrirFiltros={() => setFiltrosMovilAbierto(true)}
+          onAbrirBusquedaInvitado={() => setModalFechasAbierto(true)}
+          sinCoincidenciasTexto={sinCoincidenciasTexto}
+          sinDisponibilidadFechas={sinDisponibilidadFechas}
         />
 
         <div className="catalogo-layout catalogo-contenido-inner" style={{ maxWidth: '1280px', margin: '0 auto', padding: '22px 24px 24px', display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
@@ -202,17 +188,31 @@ export default function CatalogoPage() {
           />
 
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-              <span style={{ fontSize: '13px', color: c.textSecondary, fontWeight: 600 }}>{t('catalogo.sort')}:</span>
-              <select value={filtros.orden} onChange={e => setFiltro('orden', e.target.value)} style={{ ...inputStyle, width: 'auto', padding: '8px 12px' }}>
-                <option value="precio_asc">{t('catalogo.sortPriceAsc')}</option>
-                <option value="precio_desc">{t('catalogo.sortPriceDesc')}</option>
-                <option value="calificacion">{t('catalogo.sortRating')}</option>
-              </select>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', marginBottom: '12px' }}>
+              {!cargando ? (
+                <span style={{ fontSize: '13px', color: c.textSecondary, fontWeight: 600 }}>
+                  {resultado.length} {t('catalogo.available')}
+                </span>
+              ) : <span />}
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ fontSize: '13px', color: c.textSecondary, fontWeight: 600 }}>{t('catalogo.sort')}:</span>
+                <select value={filtros.orden} onChange={e => setFiltro('orden', e.target.value)} style={{ ...inputStyle, width: 'auto', padding: '8px 12px' }}>
+                  <option value="precio_asc">{t('catalogo.sortPriceAsc')}</option>
+                  <option value="precio_desc">{t('catalogo.sortPriceDesc')}</option>
+                  <option value="calificacion">{t('catalogo.sortRating')}</option>
+                </select>
+              </div>
             </div>
 
             {cargando && <LoadingState c={c} />}
             {!cargando && error && <ErrorState c={c} error={error} onRetry={reintentar} />}
+
+            {/* El grid ya no queda vacío por texto libre, fechas, ni por los
+                filtros del sidebar (Categoría/Ciudad/Sucursal/Precio/Transmisión/
+                Combustible): esos tres casos se resuelven con el modal centrado
+                (AlertaModal). Esta tarjeta grande solo aparece cuando el catálogo
+                en sí está vacío (0 vehículos cargados desde el backend). */}
             {!cargando && !error && resultado.length === 0 && (
               <EmptyState c={c} onLimpiar={limpiar} titulo={t('catalogo.noResults')} mensaje={t('catalogo.noResultsSubtitle')} textoBoton={t('catalogo.clearFilters')} />
             )}
@@ -255,19 +255,25 @@ export default function CatalogoPage() {
         cargando={cargando}
       />
 
-      <MobileSearchModal
-        abierto={busquedaMovilAbierta}
-        onCerrar={() => setBusquedaMovilAbierta(false)}
-        c={c}
-        inputStyle={inputStyle}
-        labelStyle={labelStyle}
-        busquedaForm={busquedaForm}
-        setForm={setForm}
-        errorBusqueda={errorBusqueda}
-        limpiar={limpiar}
-        invitado={true}
-        onBuscarInvitado={handleBuscarInvitado}
+      <BannerRegistro
+        visible={bannerRegistroAbierto}
+        onCerrar={() => setBannerRegistroAbierto(false)}
       />
+
+      <ChooseDatesModal
+        visible={modalFechasAbierto}
+        onCerrar={() => setModalFechasAbierto(false)}
+      />
+
+      {mostrarModalFiltros ? (
+        <AlertaModal
+          c={c}
+          titulo={t('catalogo.noAvailabilityFiltersTitle')}
+          mensaje={t('catalogo.noAvailabilityFiltersMsg')}
+          textoBoton={t('common.close')}
+          onCerrar={() => setModalFiltrosCerrado(true)}
+        />
+      ) : null}
     </div>
   )
 }
