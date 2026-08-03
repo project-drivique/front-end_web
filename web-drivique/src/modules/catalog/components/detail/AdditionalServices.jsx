@@ -1,52 +1,26 @@
 import { useTranslation } from 'react-i18next'
 import { FaWifi } from 'react-icons/fa'
-import { formatCurrency } from '@/utils/currencyUtils'
 import { useLanding } from '../../../landing/LandingContext'
+import { formatCurrency } from '@/utils/currencyUtils'
 
-export default function ServiciosAdicionales({ servicios = [], seleccionados = [], onToggle }) {
+export default function AdditionalServices({ servicios = [] }) {
   const { t } = useTranslation()
   const { moneda } = useLanding()
 
-  if (servicios.length === 0) return null
+  if (!servicios.length) return null
 
   return (
-    <div>
-      <h3 className="mb-1 text-lg font-extrabold text-[var(--texto-primary)]">{t('vehiculo.extraServices')}</h3>
-      <p className="mb-4 text-sm text-[var(--texto-second)]">{t('vehiculo.extraServicesSubtitle')}</p>
-
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {servicios.map((servicio) => {
-          const activo = seleccionados.includes(servicio.nombre)
-          return (
-            <button
-              key={servicio.nombre}
-              type="button"
-              onClick={() => onToggle(servicio.nombre)}
-              className={`flex items-center gap-3 rounded-2xl border-2 p-4 text-left transition-colors ${
-                activo
-                  ? 'border-blue-600 bg-blue-50'
-                  : 'border-[var(--borde)] bg-[var(--bg-tarjeta)] hover:border-blue-200'
-              }`}
-            >
-              <span
-                className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-2 text-xs font-black text-white ${
-                  activo ? 'border-blue-600 bg-blue-600' : 'border-[var(--borde)] bg-transparent'
-                }`}
-              >
-                {activo && '✓'}
-              </span>
-
-              <FaWifi className={activo ? 'text-blue-600' : 'text-[var(--texto-second)]'} />
-
-              <span className="flex-1">
-                <span className="block text-sm font-bold text-[var(--texto-primary)]">{servicio.nombre}</span>
-                <span className="block text-xs font-semibold text-emerald-600">
-                  +{formatCurrency(servicio.precio, moneda)} / {t('catalogo.day')}
-                </span>
-              </span>
-            </button>
-          )
-        })}
+    <div style={{ background: 'var(--bg-tarjeta)', border: '1px solid var(--borde)', borderRadius: 16, padding: '28px 32px' }}>
+      <p style={{ fontSize: 16, fontWeight: 700, color: 'var(--texto-second)', margin: '0 0 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
+        <FaWifi size={18} /> {t('vehiculo.extraServices')}
+      </p>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
+        {servicios.map((serv, i) => (
+          <div key={i} style={{ background: 'var(--bg-item)', borderRadius: 10, padding: '14px 16px' }}>
+            <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--texto-primary)', margin: '0 0 6px' }}>{serv.nombre}</p>
+            <p style={{ fontSize: 14, fontWeight: 800, color: '#059669', margin: 0 }}>+{formatCurrency(serv.precio, moneda)} /{t('catalogo.day')}</p>
+          </div>
+        ))}
       </div>
     </div>
   )
