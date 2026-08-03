@@ -11,7 +11,8 @@ import Verify2FAPage from '../modules/auth/pages/Verify2FAPage'
 import VerifyEmailPage from '../modules/auth/pages/VerifyEmailPage'
 import CatalogPage from '../modules/catalog/pages/CatalogPage'
 import UserCatalogPage from '../modules/catalog/pages/UserCatalogPage'
-import VehicleDetailPage from '../modules/catalog/pages/VehicleDetailPage'
+import ReservationFlowPage from '../modules/reservations/pages/ReservationFlowPage'
+import VehicleDetailsPage from '../modules/catalog/pages/VehicleDetailsPage'
 import ReservationsPage from '../modules/reservations/pages/ReservationsPage'
 import AdminPage from '../modules/admin/pages/AdminPage'
 import BranchesPage from '../modules/catalog/pages/BranchesPage'
@@ -56,8 +57,9 @@ export default function AppRouter() {
         <Route path="/admin" element={<RutaPrivada><AdminPage /></RutaPrivada>} />
         <Route path="/perfil" element={<RutaPrivada><ProfilePage /></RutaPrivada>} />
         <Route path="/catalogo" element={<CatalogPage />} />
-        <Route path="/catalogo/:id" element={<VehicleDetailPage />} />
+        <Route path="/catalogo/:id" element={<VehicleDetailsPage />} />
         <Route path="/sucursales" element={<BranchesPage />} />
+        <Route path="/reservas/:id" element={<RutaPrivada><ReservationFlowPage /></RutaPrivada>} />
         <Route path="/reservas" element={<RutaPrivada><ReservationsPage /></RutaPrivada>} />
         <Route path="/respuesta" element={<PaymentResponsePage />} />
 
