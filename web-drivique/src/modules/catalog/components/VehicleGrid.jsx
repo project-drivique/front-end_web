@@ -7,16 +7,11 @@ export default function GridVehiculos({
   c,
   dias,
   invitado = false,
+  onGuestBlocked = () => {},
+  onGuestFavorito = () => {},   // <- nuevo
 }) {
   return (
-    <div
-      style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fill, minmax(270px, 1fr))',
-        gap: '20px',
-        alignItems: 'start',
-      }}
-    >
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(270px, 1fr))', gap: '20px', alignItems: 'start' }}>
       {vehiculosPagina.map((vehiculo, index) => (
         <VehicleCard
           key={vehiculo.id}
@@ -27,6 +22,8 @@ export default function GridVehiculos({
           dias={dias}
           invitado={invitado}
           destacado={index < 2}
+          onGuestBlocked={onGuestBlocked}
+          onGuestFavorito={onGuestFavorito}   // <- nuevo
         />
       ))}
     </div>
