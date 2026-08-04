@@ -17,6 +17,8 @@ import LoadingState from '../components/LoadingState'
 import ErrorState from '../components/ErrorState'
 import EmptyState from '../components/EmptyState'
 import AlertaModal from '../components/AlertaModal'
+import GuestReserveModal from '../components/GuestReserveModal'
+import GuestFavoriteModal from '../components/GuestFavoriteModal'
 
 const coloresTema = (esModoOscuro) => ({
   pageBg: esModoOscuro ? '#0f172a' : '#f8fafc',
@@ -91,8 +93,12 @@ export default function CatalogoPage() {
   } = useCatalogo()
 
   const [filtrosMovilAbierto, setFiltrosMovilAbierto] = useState(false)
-  // Bottom-sheet de registro: para Reservar y Favoritos (ofrece Registrarme / Iniciar sesión / Continuar como invitado)
+  // Bottom-sheet de registro: ahora solo lo usan los Filtros del sidebar (candado)
   const [bannerRegistroAbierto, setBannerRegistroAbierto] = useState(false)
+  // Modal centrado "Reserva este vehículo": botón "Reservar ahora" de cada tarjeta cuando el usuario es invitado
+  const [reservaModalAbierto, setReservaModalAbierto] = useState(false)
+  // Modal centrado "Guarda en favoritos": ícono de corazón de cada tarjeta cuando el usuario es invitado
+  const [favoritoModalAbierto, setFavoritoModalAbierto] = useState(false)
   // Modal centrado "Elige fechas y lugar": específico para el botón candado del buscador (solo Cancelar / Iniciar sesión)
   const [modalFechasAbierto, setModalFechasAbierto] = useState(false)
   // Modal centrado "Sin disponibilidad" para los filtros del sidebar (Categoría,
@@ -129,7 +135,7 @@ export default function CatalogoPage() {
     letterSpacing: '0.06em',
   }
 
-  // Filtros / favoritos siguen abriendo el bottom-sheet de registro (con 3 opciones)
+  // Filtros del sidebar siguen abriendo el bottom-sheet de registro (con 3 opciones)
   const handleBuscarInvitado = () => {
     setBannerRegistroAbierto(true)
   }
@@ -222,9 +228,11 @@ export default function CatalogoPage() {
                 <VehicleGrid
                   vehiculosPagina={vehiculosPagina}
                   esFavorito={() => false}
-                  toggleFavorito={() => handleBuscarInvitado()}
+                  toggleFavorito={() => {}}
                   c={c}
                   invitado={true}
+                  onGuestBlocked={() => setReservaModalAbierto(true)}
+                  onGuestFavorito={() => setFavoritoModalAbierto(true)}
                 />
 
                 <CatalogPagination
@@ -258,6 +266,18 @@ export default function CatalogoPage() {
       <BannerRegistro
         visible={bannerRegistroAbierto}
         onCerrar={() => setBannerRegistroAbierto(false)}
+      />
+
+      <GuestReserveModal
+        c={c}
+        visible={reservaModalAbierto}
+        onCerrar={() => setReservaModalAbierto(false)}
+      />
+
+      <GuestFavoriteModal
+        c={c}
+        visible={favoritoModalAbierto}
+        onCerrar={() => setFavoritoModalAbierto(false)}
       />
 
       <ChooseDatesModal
