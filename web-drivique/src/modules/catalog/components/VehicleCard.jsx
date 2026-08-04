@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useLanding } from '../../landing/LandingContext'
 import { formatCurrency } from '@/utils/currencyUtils'
-import BannerRegistro from './RegistrationBanner'
 import {
   FaHeart,
   FaRegHeart,
@@ -58,13 +57,14 @@ export default function TarjetaVehiculo({
   c,
   invitado = false,
   destacado = false,
+  onGuestBlocked = () => {},    // dispara GuestReserveModal (Reservar), vive en la página padre
+  onGuestFavorito = () => {},   // dispara GuestFavoriteModal (Favoritos), vive en la página padre
 }) {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { moneda } = useLanding()
   const [hover, setHover] = useState(false)
   const [fotoActiva, setFotoActiva] = useState(0)
-  const [bannerVisible, setBannerVisible] = useState(false)
 
   const imagenes = getSafeImages(vehiculo)
   const rating = normalizeRating(vehiculo)
@@ -90,7 +90,7 @@ export default function TarjetaVehiculo({
     e.stopPropagation()
     if (!puedeReservar) return
     if (invitado) {
-      setBannerVisible(true)
+      onGuestBlocked()
       return
     }
     navigate(`/reservas/${vehiculo.id}`)
@@ -99,7 +99,7 @@ export default function TarjetaVehiculo({
   const handleFavoritoClick = (e) => {
     e.stopPropagation()
     if (invitado) {
-      setBannerVisible(true)
+      onGuestFavorito()
       return
     }
     onFavorito()
@@ -288,11 +288,6 @@ export default function TarjetaVehiculo({
           </div>
         </div>
       </div>
-
-      <BannerRegistro
-        visible={bannerVisible}
-        onCerrar={() => setBannerVisible(false)}
-      />
     </div>
   )
 }
