@@ -90,7 +90,7 @@ export default function HeroBusqueda({
             <button
               type="button"
               onClick={() => navigate('/')}
-              aria-label={t('common.back', 'Volver')}
+              aria-label={t('common.back', 'Volver al inicio')}
               style={{
                 flexShrink: 0,
                 display: 'flex',
@@ -120,7 +120,7 @@ export default function HeroBusqueda({
               }}
             >
               <FaArrowLeft size={13} />
-              {t('common.back', 'Volver')}
+              {t('common.back', 'Volver al inicio')}
             </button>
           ) : null}
         </div>

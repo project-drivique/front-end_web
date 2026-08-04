@@ -336,6 +336,16 @@
       "mensaje": "Inicia sesión para buscar por fecha de recogida, devolución y sucursal.",
       "cancelar": "Cancelar",
       "iniciarSesion": "Iniciar sesión"
+    },
+    "guestReserveModal": {
+      "titulo": "Reserva este vehículo",
+      "mensaje": "Necesitas una cuenta activa para realizar reservas en Drivique.",
+      "iniciarSesion": "Iniciar sesión"
+    },
+    "guestFavoriteModal": {
+      "titulo": "Guarda en favoritos",
+      "mensaje": "Inicia sesión para guardar tus vehículos favoritos.",
+      "iniciarSesion": "Iniciar sesión"
     }
   },
   "vehiculo": {
