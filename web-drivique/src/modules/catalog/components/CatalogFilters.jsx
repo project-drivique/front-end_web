@@ -370,23 +370,23 @@ export default function FiltrosCatalogo({
             {t('catalogo.filters')}
           </h2>
           <button
-  type="button"
-  onClick={limpiar}
-  style={{
-    fontSize: '12px',
-    color: c.accentText,
-    fontWeight: 700,
-    background: c.accentBgSoft,
-    border: `1px solid ${c.accentBorder}`,
-    borderRadius: '8px',
-    cursor: 'pointer',
-    padding: '6px 12px',
-    whiteSpace: 'nowrap',
-    flexShrink: 0,
-  }}
->
-  {t('catalogo.clear')}
-</button>
+            type="button"
+            onClick={limpiar}
+            style={{
+              fontSize: '12px',
+              color: c.accentText,
+              fontWeight: 700,
+              background: '#ffffff',
+              border: `1px solid ${c.heroCardBorder}`,
+              borderRadius: '8px',
+              cursor: 'pointer',
+              padding: '6px 12px',
+              whiteSpace: 'nowrap',
+              flexShrink: 0,
+            }}
+          >
+            {t('catalogo.clear')}
+          </button>
         </div>
 
         {mostrarFavoritos && (

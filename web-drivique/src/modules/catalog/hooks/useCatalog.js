@@ -269,11 +269,12 @@ export function useCatalogo({ esFavorito = () => false } = {}) {
     }
   }, [vehiculos, filtros, soloFavoritos, esFavorito, busquedaRealizada, busquedaAplicada, estaDisponibleEnRango, textoLibre])
 
-  const totalPaginas = Math.max(1, Math.ceil(resultado.length / 6))
-  const vehiculosPagina = useMemo(() => {
-    const inicio = (pagina - 1) * 6
-    return resultado.slice(inicio, inicio + 6)
-  }, [resultado, pagina])
+   const POR_PAGINA = 8
+const totalPaginas = Math.max(1, Math.ceil(resultado.length / POR_PAGINA))
+const vehiculosPagina = useMemo(() => {
+  const inicio = (pagina - 1) * POR_PAGINA
+  return resultado.slice(inicio, inicio + POR_PAGINA)
+}, [resultado, pagina])
 
   return {
     vehiculos,
