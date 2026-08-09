@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { FaMapMarkerAlt, FaCalendarAlt } from 'react-icons/fa'
 
 import { SUCURSALES, CIUDADES } from '../constants'
-import AlertaModal from './AlertModal'
+import AlertaModal from './AlertaModal'
 
 export default function HeroBusqueda({
   c,
