@@ -338,10 +338,10 @@
       "iniciarSesion": "Iniciar sesión"
     },
     "guestReserveModal": {
-      "titulo": "Reserva este vehículo",
-      "mensaje": "Necesitas una cuenta activa para realizar reservas en Drivique.",
-      "iniciarSesion": "Iniciar sesión"
-    },
+  "titulo": "Inicia sesión para reservar",
+  "mensaje": "Crea una cuenta o inicia sesión para completar tu reserva y gestionar tus alquileres.",
+  "iniciarSesion": "Iniciar sesión"
+},
     "guestFavoriteModal": {
       "titulo": "Guarda en favoritos",
       "mensaje": "Inicia sesión para guardar tus vehículos favoritos.",
