@@ -1,72 +1,77 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
 export default function GaleriaImagenes({ imagenes = [], nombreVehiculo = 'Vehículo' }) {
   const { t } = useTranslation()
-  const [imagenPrincipal, setImagenPrincipal] = useState(imagenes[0]);
+  const [indiceActivo, setIndiceActivo] = useState(0);
 
   if (!imagenes || imagenes.length === 0) {
     return (
-      <div style={{ background: 'var(--bg-tarjeta)', border: '1px solid var(--borde)', borderRadius: 16, overflow: 'hidden', height: 220, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <p style={{ color: 'var(--texto-second)' }}>{t('vehiculo.noImages')}</p>
+      <div style={{
+        background: 'var(--bg-item)', border: '1px solid var(--borde)', borderRadius: 14,
+        height: 240, display: 'flex', alignItems: 'center', justifyContent: 'center',
+      }}>
+        <p style={{ color: 'var(--texto-second)', fontSize: 14 }}>{t('vehiculo.noImages')}</p>
       </div>
     );
   }
 
-  const imgsMostrar = [...imagenes];
-  while (imgsMostrar.length < 3) {
-    imgsMostrar.push(imagenes[0]);
-  }
-  const tresImagenes = imgsMostrar.slice(0, 3);
+  const total = imagenes.length;
+  const irAnterior = () => setIndiceActivo(i => (i - 1 + total) % total);
+  const irSiguiente = () => setIndiceActivo(i => (i + 1) % total);
+  const imagenPrincipal = imagenes[indiceActivo];
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-      <div className="detalle-galeria-principal" style={{
-        width: '100%',
-        height: 220,
-        borderRadius: 14,
-        overflow: 'hidden',
-        background: '#e2e8f0',
-        border: '1px solid var(--borde)',
-        position: 'relative',
-      }}>
-        <img
-          src={imagenPrincipal}
-          alt={nombreVehiculo}
-          style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'all 300ms ease' }}
-        />
-        <span style={{ position: 'absolute', top: 10, left: 10, fontSize: 11, fontWeight: 600, padding: '4px 10px', borderRadius: 9999, background: '#ecfdf5', color: '#059669', border: '1px solid #bbf7d0' }}>
-          ● {t('vehiculo.inGallery')}
-        </span>
-      </div>
+    <div style={{
+      width: '100%',
+      aspectRatio: '4 / 3',
+      maxHeight: 300,
+      borderRadius: 14,
+      overflow: 'hidden',
+      background: '#e2e8f0',
+      border: '1px solid var(--borde)',
+      position: 'relative',
+    }}>
+      <img
+        key={indiceActivo}
+        src={imagenPrincipal}
+        alt={nombreVehiculo}
+        loading="eager"
+        decoding="async"
+        style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', display: 'block' }}
+      />
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
-        {tresImagenes.map((img, index) => {
-          const isSelected = imagenPrincipal === img;
-          return (
-            <div
-              key={index}
-              onClick={() => setImagenPrincipal(img)}
-              style={{
-                height: 56,
-                borderRadius: 8,
-                overflow: 'hidden',
-                cursor: 'pointer',
-                border: isSelected ? '2px solid #1e3a8a' : '1px solid var(--borde)',
-                opacity: isSelected ? 1 : 0.65,
-                transition: 'all 200ms ease',
-                background: 'var(--bg-item)'
-              }}
-            >
-              <img
-                src={img}
-                alt={`${nombreVehiculo} vista ${index + 1}`}
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              />
-            </div>
-          );
-        })}
-      </div>
+      {total > 1 && (
+        <>
+          <button
+            onClick={irAnterior}
+            aria-label="Anterior"
+            style={{
+              position: 'absolute', top: '50%', left: 10, transform: 'translateY(-50%)',
+              width: 32, height: 32, borderRadius: '50%', border: 'none', cursor: 'pointer',
+              background: 'rgba(15,23,42,0.55)', color: '#fff',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              backdropFilter: 'blur(4px)',
+            }}
+          >
+            <FaChevronLeft size={12} />
+          </button>
+          <button
+            onClick={irSiguiente}
+            aria-label="Siguiente"
+            style={{
+              position: 'absolute', top: '50%', right: 10, transform: 'translateY(-50%)',
+              width: 32, height: 32, borderRadius: '50%', border: 'none', cursor: 'pointer',
+              background: 'rgba(15,23,42,0.55)', color: '#fff',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              backdropFilter: 'blur(4px)',
+            }}
+          >
+            <FaChevronRight size={12} />
+          </button>
+        </>
+      )}
     </div>
   );
 }
