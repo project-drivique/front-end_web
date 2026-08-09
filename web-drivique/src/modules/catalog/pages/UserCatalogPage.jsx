@@ -5,7 +5,6 @@ import { useLanding } from '../../landing/LandingContext'
 import { COLOR_MARCA } from '../constants'
 import { useCatalogo } from '../hooks/useCatalog'
 import { useFavoritos } from '../hooks/useFavorites'
-import CatalogHeader from '../components/CatalogHeader'
 import SearchHero from '../components/SearchHero'
 import CatalogFilters from '../components/CatalogFilters'
 import MobileFiltersModal from '../components/MobileFiltersModal'
@@ -138,10 +137,8 @@ export default function CatalogoUsuarioPage() {
   const tituloVacio = soloFavoritos ? t('catalogo.favoritesTitle') : t('catalogo.noResults')
 
   return (
-    <div style={{ minHeight: '100vh', background: c.pageBg, display: 'flex', flexDirection: 'column' }}>
-      <CatalogHeader c={c} usuario={usuario} withLinks />
-
-      <div style={{ paddingTop: '96px', flex: 1 }}>
+    <div style={{ minHeight: '100vh', width: '100%', background: c.pageBg, display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
+      <div style={{ flex: 1 }}>
         <SearchHero
           c={c}
           cargando={cargando}
@@ -157,59 +154,68 @@ export default function CatalogoUsuarioPage() {
           onAbrirFiltros={() => setFiltrosMovilAbierto(true)}
         />
 
-        <div className="catalogo-layout catalogo-contenido-inner" style={{ maxWidth: '1280px', margin: '0 auto', padding: '22px 24px 24px', display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
-          <CatalogFilters
-            c={c}
-            inputStyle={inputStyle}
-            labelStyle={labelStyle}
-            filtros={filtros}
-            setFiltro={setFiltro}
-            busquedaForm={busquedaForm}
-            setForm={setForm}
-            errorBusqueda={errorBusqueda}
-            handleBuscar={handleBuscar}
-            limpiar={limpiarTodo}
-            invitado={false}
-            showHero={false}
-            soloFavoritos={soloFavoritos}
-            setSoloFavoritos={setSoloFavoritos}
-            mostrarFavoritos={Boolean(usuario)}
-          />
+        <div style={{ width: '100%', maxWidth: '1600px', margin: '0 auto', padding: '22px clamp(16px, 3vw, 24px) 24px', boxSizing: 'border-box' }}>
+          <div className="catalogo-layout catalogo-contenido-inner" style={{ display: 'flex', gap: '20px', alignItems: 'flex-start', flexWrap: 'wrap' }}>
+            <CatalogFilters
+              c={c}
+              inputStyle={inputStyle}
+              labelStyle={labelStyle}
+              filtros={filtros}
+              setFiltro={setFiltro}
+              busquedaForm={busquedaForm}
+              setForm={setForm}
+              errorBusqueda={errorBusqueda}
+              handleBuscar={handleBuscar}
+              limpiar={limpiarTodo}
+              invitado={false}
+              showHero={false}
+              soloFavoritos={soloFavoritos}
+              setSoloFavoritos={setSoloFavoritos}
+              mostrarFavoritos={Boolean(usuario)}
+            />
 
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-              <span style={{ fontSize: '13px', color: c.textSecondary, fontWeight: 600 }}>{t('catalogo.sort')}:</span>
-              <select value={filtros.orden} onChange={e => setFiltro('orden', e.target.value)} style={{ ...inputStyle, width: 'auto', padding: '8px 12px' }}>
-                <option value="precio_asc">{t('catalogo.sortPriceAsc')}</option>
-                <option value="precio_desc">{t('catalogo.sortPriceDesc')}</option>
-                <option value="calificacion">{t('catalogo.sortRating')}</option>
-              </select>
+            <div style={{ flex: '1 1 600px', minWidth: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', marginBottom: '14px', flexWrap: 'wrap' }}>
+                {!cargando ? (
+                  <span style={{ fontSize: '13px', color: c.textSecondary, fontWeight: 600 }}>
+                    {resultado.length} {t('catalogo.available')}
+                  </span>
+                ) : <span />}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ fontSize: '13px', color: c.textSecondary, fontWeight: 600 }}>{t('catalogo.sort')}:</span>
+                  <select value={filtros.orden} onChange={e => setFiltro('orden', e.target.value)} style={{ ...inputStyle, width: 'auto', padding: '8px 12px' }}>
+                    <option value="precio_asc">{t('catalogo.sortPriceAsc')}</option>
+                    <option value="precio_desc">{t('catalogo.sortPriceDesc')}</option>
+                    <option value="calificacion">{t('catalogo.sortRating')}</option>
+                  </select>
+                </div>
+              </div>
+
+              {cargando && <LoadingState c={c} />}
+              {!cargando && error && <ErrorState c={c} error={error} onRetry={reintentar} />}
+              {!cargando && !error && resultado.length === 0 && (
+                <EmptyState c={c} onLimpiar={limpiarTodo} titulo={tituloVacio} mensaje={mensajeVacio} textoBoton={soloFavoritos ? t('catalogo.viewAll') : t('catalogo.clearFilters')} />
+              )}
+
+              {!cargando && !error && resultado.length > 0 && (
+                <>
+                  <VehicleGrid
+                    vehiculosPagina={vehiculosPagina}
+                    esFavorito={esFavorito}
+                    toggleFavorito={toggleFavorito}
+                    c={c}
+                    invitado={false}
+                  />
+
+                  <CatalogPagination
+                    pagina={pagina}
+                    setPagina={setPagina}
+                    totalPaginas={totalPaginas}
+                    c={c}
+                  />
+                </>
+              )}
             </div>
-
-            {cargando && <LoadingState c={c} />}
-            {!cargando && error && <ErrorState c={c} error={error} onRetry={reintentar} />}
-            {!cargando && !error && resultado.length === 0 && (
-              <EmptyState c={c} onLimpiar={limpiarTodo} titulo={tituloVacio} mensaje={mensajeVacio} textoBoton={soloFavoritos ? t('catalogo.viewAll') : t('catalogo.clearFilters')} />
-            )}
-
-            {!cargando && !error && resultado.length > 0 && (
-              <>
-                <VehicleGrid
-                  vehiculosPagina={vehiculosPagina}
-                  esFavorito={esFavorito}
-                  toggleFavorito={toggleFavorito}
-                  c={c}
-                  invitado={false}
-                />
-
-                <CatalogPagination
-                  pagina={pagina}
-                  setPagina={setPagina}
-                  totalPaginas={totalPaginas}
-                  c={c}
-                />
-              </>
-            )}
           </div>
         </div>
       </div>
