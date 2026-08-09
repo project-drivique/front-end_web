@@ -145,7 +145,6 @@ export default function TarjetaVehiculo({
 
   return (
     <article
-      onClick={handleVerDetalles}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       style={{
@@ -162,7 +161,6 @@ export default function TarjetaVehiculo({
         width: '100%',
         minWidth: 0,
         height: '100%',
-        cursor: 'pointer',
       }}
     >
 
@@ -363,11 +361,15 @@ export default function TarjetaVehiculo({
             {puedeReservar ? t('catalogo.reserveNow').toUpperCase() : badgeTexto.toUpperCase()}
           </button>
 
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', marginTop: '8px' }}>
-            <span style={{ fontSize: '11px', fontWeight: 700, color: '#2563eb' }}>
+          <div
+            onClick={handleVerDetalles}
+            role="button"
+            tabIndex={0}
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '8px', cursor: 'pointer' }}
+          >
+            <span style={{ fontSize: '11px', fontWeight: 700, color: '#2563eb', textDecoration: 'underline', textUnderlineOffset: '3px' }}>
               {t('catalogo.details')}
             </span>
-            <FaChevronRight size={8} color="#2563eb" />
           </div>
         </div>
       </div>
