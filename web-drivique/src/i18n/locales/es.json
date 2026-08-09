@@ -233,6 +233,8 @@
     "title": "Catálogo de vehículos",
     "search": "Buscar vehículos...",
     "filters": "Filtros",
+    "clear": "Limpiar",
+    "allShort": "Todos",
     "category": "Categoría",
     "allCategories": "Todas las categorías",
     "price": "Precio",
@@ -337,9 +339,9 @@
       "cancelar": "Cancelar",
       "iniciarSesion": "Iniciar sesión"
     },
-    "guestReserveModal": {
-  "titulo": "Inicia sesión para reservar",
-  "mensaje": "Crea una cuenta o inicia sesión para completar tu reserva y gestionar tus alquileres.",
+   "guestReserveModal": {
+  "titulo": "Reserva este vehículo",
+  "mensaje": "Necesitas una cuenta activa para realizar reservas en Drivique.",
   "iniciarSesion": "Iniciar sesión"
 },
     "guestFavoriteModal": {

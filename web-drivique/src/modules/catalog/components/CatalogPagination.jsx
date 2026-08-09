@@ -33,7 +33,7 @@ export default function PaginacionCatalogo({ pagina, setPagina, totalPaginas, c 
           cursor: pagina === 1 ? 'not-allowed' : 'pointer',
         }}
       >
-        ← {t('catalogo.previous')}
+         {t('catalogo.previous')}
       </button>
 
       {Array.from({ length: totalPaginas }, (_, i) => i + 1).map(num => (
@@ -74,7 +74,7 @@ export default function PaginacionCatalogo({ pagina, setPagina, totalPaginas, c 
           boxShadow: pagina === totalPaginas ? 'none' : '0 4px 12px rgba(37,99,235,0.18)',
         }}
       >
-        {t('catalogo.next')} →
+        {t('catalogo.next')} 
       </button>
     </div>
   )
