@@ -1,0 +1,9 @@
+.catalogo-header-profile {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  line-height: 0;
+  margin-left: auto;
+}
