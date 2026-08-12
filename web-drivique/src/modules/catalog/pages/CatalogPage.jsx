@@ -1,12 +1,11 @@
 import { useState, useEffect, useRef, useLayoutEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Link } from 'react-router-dom'
 import { useLanding } from '../../landing/LandingContext'
 import { COLOR_MARCA } from '../constants'
 import { useCatalogo } from '../hooks/useCatalog'
-import logo from '@/assets/logocatalog.png'
-import { FaSearch, FaArrowLeft } from 'react-icons/fa'
 
+import CatalogTopHeader from '../components/CatalogTopHeader'
+import CatalogSearchBar from '../components/CatalogSearchBar'
 import SearchHero from '../components/SearchHero'
 import CatalogFilters from '../components/CatalogFilters'
 import MobileFiltersModal from '../components/MobileFiltersModal'
@@ -158,56 +157,19 @@ export default function CatalogoPage() {
   return (
     <div className="catalogo-page" style={{ minHeight: '100vh', background: c.pageBg, color: c.textPrimary }}>
 
-      <header
-        ref={headerRef}
-        className="catalogo-header"
-        style={{
-          background: c.navBg,
-          borderBottom: `1px solid ${c.navBorder}`,
-          boxShadow: c.navShadow,
-        }}
+      <CatalogTopHeader
+        c={c}
+        headerRef={headerRef}
+        innerClassName="catalogo-header-inner"
+        mostrarVolverInicio
       >
-        <div className="catalogo-header-inner">
-          <div className="catalogo-logo-link">
-            <img src={logo} alt="Drivique" className="catalogo-logo" />
-            <div className="catalogo-logo-text">
-              <span className="catalogo-logo-title" style={{ color: c.accentText }}>Drivique</span>
-              
-            </div>
-          </div>
-
-          <div
-            className="catalogo-header-search"
-            style={{
-              background: c.heroCardBg,
-              border: `1px solid ${sinCoincidenciasTexto ? c.dangerBorder : c.heroCardBorder}`,
-            }}
-          >
-            <FaSearch size={15} color={c.accentText} style={{ flexShrink: 0 }} />
-            <input
-              type="text"
-              value={textoLibre}
-              onChange={e => setTextoLibre(e.target.value)}
-              placeholder={t('catalogo.freeSearchPlaceholder')}
-              className="catalogo-header-search-input"
-              style={{ color: c.inputText }}
-            />
-          </div>
-
-          <Link
-            to="/"
-            className="catalogo-header-back"
-            style={{
-              border: `1px solid ${c.heroCardBorder}`,
-              background: c.heroCardBg,
-              color: c.accentText,
-            }}
-          >
-            <FaArrowLeft size={12} />
-            Volver al inicio
-          </Link>
-        </div>
-      </header>
+        <CatalogSearchBar
+          c={c}
+          textoLibre={textoLibre}
+          setTextoLibre={setTextoLibre}
+          sinCoincidenciasTexto={sinCoincidenciasTexto}
+        />
+      </CatalogTopHeader>
 
       <main className="catalogo-main">
 

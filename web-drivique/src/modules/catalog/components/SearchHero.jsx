@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { FaMapMarkerAlt, FaCalendarAlt } from 'react-icons/fa'
+import { FaMapMarkerAlt, FaCalendarAlt, FaSearch, FaTimes } from 'react-icons/fa'
 
 import { SUCURSALES, CIUDADES } from '../constants'
 import NoResultsModal from './NoResultsModal'
@@ -16,9 +16,12 @@ export default function HeroBusqueda({
   handleBuscar = () => {},
   invitado = false,
   textoLibre = '',
+  setTextoLibre = () => {},
+  mostrarBusquedaLibre = false,
   onAbrirBusquedaInvitado = () => {},
   sinCoincidenciasTexto = false,
   sinDisponibilidadFechas = false,
+  onLimpiar = null,
 }) {
   const { t } = useTranslation()
 
@@ -62,6 +65,46 @@ export default function HeroBusqueda({
               onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') onAbrirBusquedaInvitado() }}
               style={{ position: 'absolute', inset: 0, zIndex: 5, cursor: 'pointer', borderRadius: '14px', background: 'transparent' }}
             />
+          )}
+
+          {mostrarBusquedaLibre && (
+            <div
+              style={{
+                marginBottom: '14px',
+                paddingBottom: '14px',
+                borderBottom: `1px solid ${c.panelBorder}`,
+              }}
+            >
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  background: c.inputBg,
+                  border: `1px solid ${sinCoincidenciasTexto ? c.dangerBorder : c.inputBorder}`,
+                  borderRadius: '10px',
+                  padding: '0 14px',
+                  height: '42px',
+                }}
+              >
+                <FaSearch size={13} color={c.accentText} style={{ flexShrink: 0 }} />
+                <input
+                  type="text"
+                  value={textoLibre}
+                  onChange={e => setTextoLibre(e.target.value)}
+                  placeholder={t('catalogo.freeSearchPlaceholder')}
+                  style={{
+                    flex: 1,
+                    minWidth: 0,
+                    border: 'none',
+                    outline: 'none',
+                    background: 'transparent',
+                    fontSize: '13px',
+                    color: c.inputText,
+                  }}
+                />
+              </div>
+            </div>
           )}
 
           <div
@@ -162,6 +205,38 @@ export default function HeroBusqueda({
             <div style={{ marginTop: '10px', padding: '8px 12px', borderRadius: '10px', background: c.dangerBg, border: `1px solid ${c.dangerBorder}` }}>
               <span style={{ fontSize: '12px', color: c.dangerText, fontWeight: 600 }}>{errorBusqueda}</span>
             </div>
+          )}
+
+          {/* Botón Limpiar — pestaña en el borde superior derecho */}
+          {onLimpiar && (
+            <button
+              type="button"
+              onClick={onLimpiar}
+              style={{
+                position: 'absolute',
+                top: '-1px',
+                right: '16px',
+                transform: 'translateY(-100%)',
+                height: '30px',
+                padding: '0 16px',
+                borderRadius: '8px 8px 0 0',
+                background: c.heroCardBg,
+                color: c.textSecondary,
+                fontWeight: 700,
+                fontSize: '11.5px',
+                border: `1px solid ${c.heroCardBorder}`,
+                borderBottom: 'none',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '5px',
+                boxShadow: '0 -2px 6px rgba(0,0,0,0.04)',
+                transition: 'all 150ms ease',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              Limpiar
+            </button>
           )}
         </div>
       </div>
