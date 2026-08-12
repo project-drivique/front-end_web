@@ -1,0 +1,27 @@
+.landing-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  height: 74px;
+  background: var(--bg-nav);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--borde);
+  box-shadow: var(--sombra-nav);
+}
+
+.landing-nav-inner {
+  width: min(1360px, calc(100% - 48px));
+  height: 100%;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.landing-nav-logo {
+  height: 60px;
+  flex-shrink: 0;
+  display: block;
+}
