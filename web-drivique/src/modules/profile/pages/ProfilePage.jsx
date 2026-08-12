@@ -148,7 +148,7 @@ export default function PerfilPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: c.pageBg }}>
+    <div style={{ minHeight: '100vh', background: c.pageBg, zoom: 0.9 }}>
       {/* Banner superior con avatar */}
       <div className="perfil-banner-fila" style={{ background: c.heroBg, padding: '40px 24px 80px' }}>
         <div style={{ maxWidth: '780px', margin: '0 auto 20px', display: 'flex', alignItems: 'center' }}>
