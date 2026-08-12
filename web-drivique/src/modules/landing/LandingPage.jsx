@@ -7,6 +7,7 @@ import { useLanding } from './LandingContext'
 import translations, { IDIOMAS } from './translations'
 import { catalogService } from '../../services/catalogService'
 import { formatCurrency } from '@/utils/currencyUtils'
+import './LandingPage.css'
 
 const COLOR_MARCA = '#1e3a8a'
 const COLOR_MARCA_HOVER = '#162d6e'
@@ -288,7 +289,7 @@ function MenuConfiguracion({ tx, modoMovil = false }) {
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
-                <span style={{ fontSize: 15, fontWeight: 800, color: 'var(--texto-primary)' }}>{tx.nav.config}</span>
+                <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--texto-primary)' }}>{tx.nav.config}</span>
                 <button
                   onClick={() => setAbierto(false)}
                   aria-label="Cerrar"
@@ -346,7 +347,7 @@ export default function LandingPage() {
   }, [])
 
   const estiloEnlaceNav = {
-    fontSize: 15,
+    fontSize: 13,
     color: 'var(--texto-nav)',
     fontWeight: 600,
     textDecoration: 'none',
@@ -356,14 +357,10 @@ export default function LandingPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg-page)', display: 'flex', flexDirection: 'column', overflowX: 'hidden' }}>
-      <nav style={{
-        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50,
-        background: 'var(--bg-nav)', backdropFilter: 'blur(12px)',
-        borderBottom: '1px solid var(--borde)', boxShadow: 'var(--sombra-nav)', height: 96,
-      }}>
-        <div className="landing-nav-inner" style={{ maxWidth: 1280, margin: '0 auto', padding: '0 48px', height: '100%', display: 'flex', alignItems: 'center', gap: 32 }}>
-          <img src={logo} alt="Drivique" style={{ height: 80, flexShrink: 0 }} />
+    <div style={{ minHeight: '100vh', background: 'var(--bg-page)', display: 'flex', flexDirection: 'column', overflowX: 'hidden', zoom: 0.9 }}>
+      <nav className="landing-nav">
+        <div className="landing-nav-inner">
+          <img src={logo} alt="Drivique" className="landing-nav-logo" />
 
           <div className="landing-nav-links" style={{ display: 'flex', alignItems: 'center', gap: 32, flex: 1, justifyContent: 'center' }}>
             <Link
@@ -411,7 +408,7 @@ export default function LandingPage() {
                 borderRadius: 9999,
                 border: `2px solid ${c.loginBorder}`,
                 color: c.loginText,
-                fontSize: 15,
+                fontSize: 13,
                 fontWeight: 700,
                 textDecoration: 'none',
                 whiteSpace: 'nowrap',
@@ -488,7 +485,7 @@ export default function LandingPage() {
               borderTop: '1px solid var(--borde)',
               boxShadow: 'var(--sombra-nav)',
               padding: '12px 20px 20px',
-              maxHeight: 'calc(100vh - 96px)',
+              maxHeight: 'calc(100vh - 74px)',
               overflowY: 'auto',
             }}
           >
@@ -541,7 +538,7 @@ export default function LandingPage() {
 
       <section style={{
         position: 'relative',
-        paddingTop: 96,
+        paddingTop: 74,
         minHeight: '100vh',
         background: 'var(--hero-fondo)',
         display: 'flex',
@@ -593,7 +590,7 @@ export default function LandingPage() {
                   background: COLOR_MARCA,
                   color: '#fff',
                   fontWeight: 700,
-                  fontSize: 15,
+                  fontSize: 13,
                   textDecoration: 'none',
                   boxShadow: '0 8px 24px rgba(30,58,138,0.30)',
                 }}
