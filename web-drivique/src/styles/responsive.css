@@ -86,7 +86,8 @@
      esconden en tablet/celular: se reemplazan por la barra compacta
      (ciudad/fechas + botón "Filtros") que abre el modal con todos
      los campos (ModalFiltrosMovil). */
-  .filtros-panel { display: none !important; }
+  .filtros-panel,
+  .user-filtros-panel { display: none !important; }
   .hero-busqueda-card { display: none !important; }
   .hero-busqueda-compacta { display: flex !important; }
 
