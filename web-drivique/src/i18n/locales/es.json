@@ -746,5 +746,22 @@
     "pageSubtitle": "Revisa la información generada automáticamente y firma para continuar.",
     "signedSuccessTitle": "Contrato firmado",
     "signedSuccessText": "Tu contrato quedó firmado y almacenado junto a tu reserva."
+  },
+  "vehiculo": {
+    "howToGetThere": "Cómo llegar",
+    "noImages": "Sin imágenes disponibles",
+    "backToCatalog": "Volver al catálogo",
+    "transmission": "Transmisión",
+    "fuel": "Combustible",
+    "capacity": "Capacidad",
+    "passengers": "personas",
+    "doorsLabel": "Puertas",
+    "trunk": "Maletero",
+    "engine": "Motor",
+    "colorLabel": "Color",
+    "year": "Año",
+    "category": "Categoría",
+    "description": "Descripción",
+    "branch": "Sucursal"
   }
 }
