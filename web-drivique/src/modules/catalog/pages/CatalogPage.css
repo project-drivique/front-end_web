@@ -32,7 +32,7 @@
 
 .catalogo-logo {
   width: auto;
-  height: 28px;
+  height: 22px;
   display: block;
   object-fit: contain;
 }
@@ -201,7 +201,7 @@
   }
 
   .catalogo-logo {
-    height: 24px;
+    height: 19px;
   }
 
   .catalogo-logo-title {
@@ -244,7 +244,7 @@
   }
 
   .catalogo-logo {
-    height: 22px;
+    height: 18px;
   }
 
   .catalogo-logo-subtitle {
