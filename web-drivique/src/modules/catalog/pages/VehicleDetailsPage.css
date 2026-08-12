@@ -1,0 +1,150 @@
+/* src/modules/catalog/pages/VehicleDetailsPage.css */
+
+.vehiculo-detail-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 992px) {
+  .vehiculo-detail-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .vehiculo-detail-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.vehiculo-header-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 0;
+  margin-bottom: 12px;
+}
+
+.vehiculo-back-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #2563eb;
+  font-weight: 700;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+.vehiculo-back-btn:hover {
+  text-decoration: underline;
+}
+
+.vehiculo-breadcrumb {
+  font-size: 13px;
+  color: var(--texto-second);
+  margin-bottom: 24px;
+  font-weight: 500;
+}
+.vehiculo-breadcrumb strong {
+  font-weight: 600;
+  color: var(--texto-primary);
+}
+
+/* Contenedor Principal Unificado */
+.vehiculo-main-container {
+  background: var(--bg-tarjeta);
+  border-radius: 20px;
+  border: 1px solid rgba(37,99,235,0.12);
+  box-shadow: 0 4px 24px rgba(30,58,138,0.07);
+  padding: 32px;
+}
+
+.vehiculo-tabs-header {
+  display: flex;
+  border-bottom: 1px solid var(--borde);
+  overflow-x: auto;
+  padding: 0 12px;
+}
+
+.vehiculo-tab-btn {
+  padding: 16px 20px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--texto-second);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+  margin-bottom: -1px;
+}
+
+.vehiculo-tab-btn:hover {
+  color: var(--texto-primary);
+}
+
+.vehiculo-tab-btn.active {
+  color: #2563eb;
+  border-bottom-color: #2563eb;
+}
+
+.vehiculo-tab-content {
+  padding: 24px;
+}
+
+/* Pricing Card and Reserve Button */
+.vehiculo-reserve-card {
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  padding: 20px;
+}
+
+.vehiculo-price-label {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--texto-second);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.vehiculo-price-value {
+  font-size: 28px;
+  font-weight: 800;
+  color: #1e3a8a;
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  margin-bottom: 16px;
+}
+.vehiculo-price-value span {
+  font-size: 14px;
+  color: var(--texto-second);
+  font-weight: 600;
+}
+
+.vehiculo-reserve-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+  padding: 14px;
+  border-radius: 12px;
+  background: #1e40af;
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  transition: all 0.2s;
+}
+.vehiculo-reserve-btn:hover {
+  background: #1e3a8a;
+}
