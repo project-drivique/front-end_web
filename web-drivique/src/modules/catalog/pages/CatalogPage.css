@@ -1,0 +1,265 @@
+.catalogo-page {
+  width: 100%;
+  min-height: 100vh;
+  zoom: 0.9;
+}
+
+.catalogo-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  width: 100%;
+}
+
+.catalogo-header-inner {
+  position: relative;
+  width: min(1360px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 14px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 22px;
+}
+
+.catalogo-logo-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.catalogo-logo {
+  width: auto;
+  height: 22px;
+  display: block;
+  object-fit: contain;
+}
+
+.catalogo-logo-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  line-height: 1.08;
+}
+
+.catalogo-logo-title {
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.catalogo-logo-subtitle {
+  font-size: 8px;
+  font-weight: 600;
+  margin-top: 1px;
+}
+
+/* BUSCADOR EN EL HEADER: alineado con el inicio del select "Sucursal" */
+.catalogo-header-search {
+  position: absolute;
+  left: calc(11px + 0.2121 * min(1360px, calc(100% - 48px)));
+  right: 180px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 46px;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  border-radius: 12px;
+  padding: 0 16px;
+  box-shadow: 0 2px 10px rgba(30, 58, 138, 0.03);
+  transition: all 150ms ease;
+}
+
+.catalogo-header-search-input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 13px;
+}
+
+.catalogo-header-back {
+  flex-shrink: 0;
+  height: 46px;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 2px 10px rgba(30, 58, 138, 0.03);
+}
+
+.catalogo-main {
+  width: 100%;
+}
+
+.catalogo-content {
+  width: min(1360px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 12px 0 28px;
+}
+
+.catalogo-layout {
+  display: grid;
+  grid-template-columns: 250px minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.catalogo-results {
+  min-width: 0;
+}
+
+.catalogo-results-toolbar {
+  min-height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 10px;
+}
+
+.catalogo-results-count {
+  color: #52617e;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.catalogo-sort {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  white-space: nowrap;
+}
+
+.catalogo-sort > span {
+  color: #52617e;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.filtros-panel {
+  width: 100% !important;
+  box-sizing: border-box;
+  position: sticky !important;
+  top: 90px;
+}
+
+.catalogo-results .vehicle-grid,
+.catalogo-results > div {
+  min-width: 0;
+}
+
+.catalogo-search-sticky {
+  position: sticky;
+  z-index: 40;
+}
+
+.vehicle-grid {
+  grid-template-columns: repeat(4, minmax(0, 270px));
+  justify-content: start;
+}
+
+@media (max-width: 1100px) {
+  .catalogo-header-inner,
+  .catalogo-content {
+    width: calc(100% - 32px);
+  }
+
+  .catalogo-layout {
+    grid-template-columns: 260px minmax(0, 1fr);
+    gap: 14px;
+  }
+
+  .filtros-panel {
+    display: none !important;
+  }
+
+  .catalogo-results-toolbar {
+    margin-bottom: 14px;
+  }
+
+  .catalogo-header-search {
+    display: none;
+  }
+}
+
+@media (max-width: 700px) {
+  .catalogo-header-inner {
+    width: calc(100% - 28px);
+    padding: 10px 0;
+    gap: 12px;
+  }
+
+  .catalogo-logo {
+    height: 19px;
+  }
+
+  .catalogo-logo-title {
+    font-size: 13px;
+  }
+
+  .catalogo-logo-subtitle {
+    font-size: 7px;
+  }
+
+  .catalogo-header-back {
+    height: 38px;
+    padding: 0 14px;
+    font-size: 12px;
+  }
+
+  .catalogo-content {
+    width: calc(100% - 24px);
+    padding-top: 10px;
+  }
+
+  .catalogo-results-toolbar {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .catalogo-sort {
+    width: 100%;
+  }
+
+  .catalogo-sort select {
+    flex: 1;
+  }
+}
+
+@media (max-width: 480px) {
+  .catalogo-header-inner {
+    width: calc(100% - 20px);
+  }
+
+  .catalogo-logo {
+    height: 18px;
+  }
+
+  .catalogo-logo-subtitle {
+    display: none;
+  }
+
+  .catalogo-header-back span {
+    display: none;
+  }
+
+  .catalogo-content {
+    width: calc(100% - 20px);
+  }
+
+  .vehicle-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

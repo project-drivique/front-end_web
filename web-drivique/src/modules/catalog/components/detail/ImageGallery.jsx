@@ -1,72 +1,89 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { FaChevronLeft, FaStar } from 'react-icons/fa';
 
-export default function GaleriaImagenes({ imagenes = [], nombreVehiculo = 'Vehículo' }) {
+export default function GaleriaImagenes({ imagenes = [], nombreVehiculo = 'Vehículo', calificacion = 0 }) {
   const { t } = useTranslation()
-  const [imagenPrincipal, setImagenPrincipal] = useState(imagenes[0]);
+  const navigate = useNavigate()
+  const [indiceActivo, setIndiceActivo] = useState(0);
 
   if (!imagenes || imagenes.length === 0) {
     return (
-      <div style={{ background: 'var(--bg-tarjeta)', border: '1px solid var(--borde)', borderRadius: 16, overflow: 'hidden', height: 220, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <p style={{ color: 'var(--texto-second)' }}>{t('vehiculo.noImages')}</p>
+      <div style={{
+        background: 'var(--bg-item)', border: '1px solid var(--borde)', borderRadius: 14,
+        height: 240, display: 'flex', alignItems: 'center', justifyContent: 'center',
+      }}>
+        <p style={{ color: 'var(--texto-second)', fontSize: 14 }}>{t('vehiculo.noImages')}</p>
       </div>
     );
   }
 
-  const imgsMostrar = [...imagenes];
-  while (imgsMostrar.length < 3) {
-    imgsMostrar.push(imagenes[0]);
-  }
-  const tresImagenes = imgsMostrar.slice(0, 3);
+  const imagenPrincipal = imagenes[indiceActivo];
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-      <div className="detalle-galeria-principal" style={{
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      {/* Imagen Principal */}
+      <div style={{
         width: '100%',
-        height: 220,
-        borderRadius: 14,
+        aspectRatio: '1.55 / 1',
+        borderRadius: 12,
         overflow: 'hidden',
         background: '#e2e8f0',
-        border: '1px solid var(--borde)',
         position: 'relative',
       }}>
         <img
+          key={indiceActivo}
           src={imagenPrincipal}
           alt={nombreVehiculo}
-          style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'all 300ms ease' }}
+          style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', display: 'block' }}
         />
-        <span style={{ position: 'absolute', top: 10, left: 10, fontSize: 11, fontWeight: 600, padding: '4px 10px', borderRadius: 9999, background: '#ecfdf5', color: '#059669', border: '1px solid #bbf7d0' }}>
-          ● {t('vehiculo.inGallery')}
-        </span>
+
+
+
+        {/* Calificación (Top Right) */}
+        <div style={{
+          position: 'absolute', top: 16, right: 16,
+          background: 'rgba(30, 41, 59, 0.7)', color: '#fff',
+          padding: '6px 12px', borderRadius: 20,
+          display: 'flex', alignItems: 'center', gap: 6,
+          fontSize: 13, fontWeight: 700,
+          backdropFilter: 'blur(8px)',
+        }}>
+          <FaStar color={calificacion > 0 ? "#f59e0b" : "#e2e8f0"} size={12} />
+          {calificacion > 0 ? calificacion.toFixed(1) : 'Nuevo'}
+        </div>
+
+        {/* Indicador de número (Bottom Right) */}
+        <div style={{
+          position: 'absolute', bottom: 16, right: 16,
+          background: 'rgba(30, 41, 59, 0.7)', color: '#fff',
+          padding: '4px 12px', borderRadius: 12,
+          fontSize: 12, fontWeight: 700,
+          backdropFilter: 'blur(8px)',
+        }}>
+          {indiceActivo + 1}/{imagenes.length}
+        </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
-        {tresImagenes.map((img, index) => {
-          const isSelected = imagenPrincipal === img;
-          return (
-            <div
-              key={index}
-              onClick={() => setImagenPrincipal(img)}
+      {/* Miniaturas (Thumbnails) */}
+      {imagenes.length > 1 && (
+        <div style={{ display: 'flex', gap: 12 }}>
+          {imagenes.slice(0, 3).map((img, idx) => (
+            <div 
+              key={idx}
+              onClick={() => setIndiceActivo(idx)}
               style={{
-                height: 56,
-                borderRadius: 8,
-                overflow: 'hidden',
-                cursor: 'pointer',
-                border: isSelected ? '2px solid #1e3a8a' : '1px solid var(--borde)',
-                opacity: isSelected ? 1 : 0.65,
-                transition: 'all 200ms ease',
-                background: 'var(--bg-item)'
+                width: 'calc(33.333% - 8px)', aspectRatio: '1.4 / 1', borderRadius: 8, overflow: 'hidden', cursor: 'pointer',
+                border: indiceActivo === idx ? '2px solid #2563eb' : '2px solid transparent',
+                transition: 'border-color 0.2s', opacity: indiceActivo === idx ? 1 : 0.7
               }}
             >
-              <img
-                src={img}
-                alt={`${nombreVehiculo} vista ${index + 1}`}
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              />
+              <img src={img} alt={`thumb-${idx}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             </div>
-          );
-        })}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
