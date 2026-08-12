@@ -146,7 +146,11 @@
     "successPanelCheck3": "✓  Sua conta continua protegida",
     "successEmailSent": "Se {{email}} estiver cadastrado, você receberá um link nos próximos minutos.",
     "successSpam": "Verifique também a pasta de spam. O link expira em 30 minutos.",
-    "copyright": "Drivique © 2026"
+    "copyright": "Drivique © 2026",
+    "notRegisteredTitle": "Este e-mail não está registrado na plataforma.",
+    "notRegisteredSub": "Verifique o e-mail inserido ou registre-se para criar uma conta.",
+    "noAccount": "Não tem uma conta?",
+    "registerHere": "Registre-se aqui"
   },
   "nuevaContrasena": {
     "title": "Nova senha",
@@ -157,10 +161,10 @@
     "confirmPlaceholder": "Repita sua nova senha",
     "submit": "Atualizar senha",
     "processing": "Atualizando...",
-    "successTitle": "Senha atualizada",
+    "successTitle": "Senha alterada com sucesso!",
     "successText": "Sua senha foi alterada com sucesso.",
-    "formTitle": "Criar nova senha",
-    "formSubtitle": "Escolha uma senha segura para recuperar o acesso",
+    "formTitle": "Crie sua nova senha",
+    "formSubtitle": "Sua senha deve atender a todos os requisitos de segurança.",
     "goToLogin": "Ir para fazer login",
     "invalidToken": "Link inválido ou expirado",
     "invalidTokenText": "Este link já foi usado ou expirou. Os links de recuperação são válidos por 30 minutos.",
@@ -168,6 +172,7 @@
     "checklist": {
       "min8": "Mínimo 8 caracteres",
       "uppercase": "Pelo menos uma letra maiúscula",
+      "lowercase": "Pelo menos uma letra minúscula",
       "number": "Pelo menos um número",
       "special": "Pelo menos um caractere especial"
     },
@@ -177,7 +182,10 @@
       "confirmRequired": "Por favor confirme sua senha",
       "confirmMismatch": "As senhas não coincidem",
       "genericError": "Ocorreu um erro. Tente novamente."
-    }
+    },
+    "successSubtitle": "Sua senha foi atualizada com sucesso.",
+    "successLoginText": "Agora você pode entrar com sua nova senha.",
+    "goLogin": "Ir para o login"
   },
   "verificar2fa": {
     "title": "Verificação em duas etapas",

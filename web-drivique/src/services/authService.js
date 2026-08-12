@@ -1,4 +1,4 @@
-﻿import axios from 'axios'
+import axios from 'axios'
 // Importa Axios, una librería para hacer peticiones HTTP a una API.
 import { useAuthStore } from '../store/authStore'
 // Store de Zustand: fuente de verdad del token en memoria.
@@ -77,6 +77,9 @@ export const DURACION_CODIGO_VERIFICACION_MS = 5 * 60 * 1000
 const CODIGOS_VERIFICACION_MOCK = new Map()
 // Guarda en memoria { correo -> { codigo, expiraEn } } mientras se usa el mock.
 // Al no existir backend, este Map hace las veces de "base de datos" temporal.
+
+const CODIGOS_RECUPERACION_MOCK = new Map()
+// Similar para la recuperación de contraseña.
 
 const generarCodigoMock = () => Math.floor(100000 + Math.random() * 900000).toString()
 // Genera un código numérico de 6 dígitos.
@@ -158,17 +161,67 @@ export const authService = {
   },
 
   solicitarRecuperacion: async (correo) => {
-    // Envía una solicitud al backend para recuperar contraseña.
+    if (USAR_MOCK) {
+      const usuario = MOCK_USERS.find(u => u.correo.toLowerCase() === correo.toLowerCase())
+      if (!usuario) {
+        const error = new Error('Este correo no está registrado en la plataforma.')
+        error.response = { status: 404, data: { mensaje: error.message } }
+        throw error
+      }
+      const codigo = generarCodigoMock()
+      CODIGOS_RECUPERACION_MOCK.set(correo, {
+        codigo,
+        expiraEn: Date.now() + DURACION_CODIGO_VERIFICACION_MS,
+      })
+      console.info(`[MOCK] Código de recuperación para ${correo}: ${codigo}`)
+      return { enviado: true }
+    }
 
     const { data } = await api.post('/auth/recuperar', { correo })
-    // Hace un POST al endpoint /auth/recuperar.
-
     return data
-    // Devuelve solo la data de la respuesta.
+  },
+
+  verificarCodigoRecuperacion: async (correo, codigo) => {
+    if (USAR_MOCK) {
+      const registro = CODIGOS_RECUPERACION_MOCK.get(correo)
+
+      if (!registro) {
+        const error = new Error('No hay un código pendiente para este correo. Solicita uno nuevo.')
+        error.response = { status: 400, data: { mensaje: error.message } }
+        throw error
+      }
+
+      if (Date.now() > registro.expiraEn) {
+        CODIGOS_RECUPERACION_MOCK.delete(correo)
+        const error = new Error('El código ha expirado. Solicita uno nuevo.')
+        error.response = { status: 410, data: { mensaje: error.message } }
+        throw error
+      }
+
+      if (registro.codigo !== codigo) {
+        const error = new Error('Código incorrecto. Verifica e intenta de nuevo.')
+        error.response = { status: 400, data: { mensaje: error.message } }
+        throw error
+      }
+
+      CODIGOS_RECUPERACION_MOCK.delete(correo)
+      const tokenRecuperacion = 'mock_recover_token_' + Math.random().toString(36).substring(2)
+      return { verificado: true, token: tokenRecuperacion }
+    }
+
+    const { data } = await api.post('/auth/recuperar/verificar-codigo', { correo, codigo })
+    return data
   },
 
   resetearContrasena: async (token, contrasena) => {
-    // Envía al backend el token de recuperación y la nueva contraseña.
+    if (USAR_MOCK) {
+      if (!token || !token.startsWith('mock_recover_token_')) {
+        const error = new Error('El enlace de recuperación es inválido o ha expirado.')
+        error.response = { status: 400, data: { mensaje: error.message } }
+        throw error
+      }
+      return { exito: true }
+    }
 
     const { data } = await api.post('/auth/nueva-contrasena', { token, contrasena })
     return data
