@@ -48,7 +48,7 @@
 
 @media (max-width: 640px) {
   .landing-nav-inner { padding: 0 16px !important; }
-  .landing-nav-inner img { height: 56px !important; }
+  .landing-nav-inner img { height: 24px !important; }
   .landing-hero-inner { padding: 90px 16px 40px !important; }
   .landing-hero-stats { gap: 20px !important; flex-wrap: wrap !important; }
   .landing-section-inner { padding: 0 16px !important; }
@@ -97,7 +97,7 @@
 
 @media (max-width: 640px) {
   .catalogo-header-inner { padding: 0 16px !important; gap: 10px !important; }
-  .catalogo-header-inner img { height: 56px !important; }
+  .catalogo-header-inner img { height: 24px !important; }
   .catalogo-saludo { display: none !important; }
   .catalogo-header-links { font-size: 13px !important; }
   .catalogo-hero-inner { padding: 20px 16px 16px !important; }
@@ -193,7 +193,7 @@
   /* Se mantienen 2 campos por fila (no 1 debajo de otro), como en
      escritorio, pero con menos separación para que quepan en celular. */
   .contrato-grid-2col { gap: 8px !important; }
-  .contrato-campo { padding: 9px 10px !important; min-height: 56px !important; }
+  .contrato-campo { padding: 9px 10px !important; min-height: 24px !important; }
   .contrato-campo-label { font-size: 9px !important; margin-bottom: 4px !important; }
   .contrato-campo-valor { font-size: 12px !important; }
 }

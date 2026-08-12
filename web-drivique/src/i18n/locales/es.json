@@ -323,9 +323,8 @@
     "noMatchesFreeSearch": "No encontramos resultados para \"{{termino}}\"",
     "noAvailabilityDatesTitle": "Sin disponibilidad",
     "noAvailabilityDates": "No hay vehículos disponibles en {{sucursal}} para las fechas seleccionadas.",
-    "noAvailabilityFiltersTitle": "Sin disponibilidad",
-    "noAvailabilityFiltersMsg": "No encontramos vehículos disponibles para esa ciudad, sucursal o esas fechas. Te mostramos el catálogo completo mientras tanto.",
-    "loginToCheckAvailability": "Inicia sesión para consultar disponibilidad",
+    "noAvailabilityFiltersTitle": "Sin resultados",
+    "noAvailabilityFiltersMsg": "No encontramos vehículos que coincidan con los filtros seleccionados. Te mostramos el catálogo completo mientras tanto.",
    "bannerRegistro": {
       "titulo": "Crea tu cuenta para continuar",
       "mensaje": "Regístrate o inicia sesión para consultar disponibilidad, elegir fechas y reservar tu vehículo.",
