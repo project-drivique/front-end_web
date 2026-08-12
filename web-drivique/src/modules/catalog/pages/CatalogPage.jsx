@@ -17,7 +17,7 @@ import CatalogPagination from '../components/CatalogPagination'
 import LoadingState from '../components/LoadingState'
 import ErrorState from '../components/ErrorState'
 import EmptyState from '../components/EmptyState'
-import AlertaModal from '../components/AlertModal'
+import NoResultsModal from '../components/NoResultsModal'
 import GuestReserveModal from '../components/GuestReserveModal'
 import GuestFavoriteModal from '../components/GuestFavoriteModal'
 
@@ -345,7 +345,7 @@ export default function CatalogoPage() {
       <ChooseDatesModal visible={modalFechasAbierto} onCerrar={() => setModalFechasAbierto(false)} />
 
       {mostrarModalFiltros && (
-        <AlertaModal
+        <NoResultsModal
           c={c}
           titulo={t('catalogo.noAvailabilityFiltersTitle')}
           mensaje={t('catalogo.noAvailabilityFiltersMsg')}

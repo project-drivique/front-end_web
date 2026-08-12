@@ -4,7 +4,7 @@ import AlertModal from './AlertModal'
 // Alerta genérica de "sin resultados" (texto libre, fechas sin disponibilidad,
 // filtros del sidebar sin coincidencias). Solo define contenido — el tamaño
 // y estilos viven en AlertModal.jsx.
-export default function AlertaModal({ c, titulo, mensaje, textoBoton, onCerrar }) {
+export default function NoResultsModal({ c, titulo, mensaje, textoBoton, onCerrar }) {
   return (
     <AlertModal
       theme={{
