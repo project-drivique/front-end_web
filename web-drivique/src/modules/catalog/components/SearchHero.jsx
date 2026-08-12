@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { FaMapMarkerAlt, FaCalendarAlt } from 'react-icons/fa'
 
 import { SUCURSALES, CIUDADES } from '../constants'
-import AlertaModal from './AlertaModal'
+import NoResultsModal from './NoResultsModal'
 
 export default function HeroBusqueda({
   c,
@@ -167,7 +167,7 @@ export default function HeroBusqueda({
       </div>
 
       {mostrarModalTexto && (
-        <AlertaModal
+        <NoResultsModal
           c={c}
           titulo={t('catalogo.noMatchesFreeSearchTitle')}
           mensaje={t('catalogo.noMatchesFreeSearch', { termino: textoLibre })}
@@ -177,7 +177,7 @@ export default function HeroBusqueda({
       )}
 
       {mostrarModalFechas && (
-        <AlertaModal
+        <NoResultsModal
           c={c}
           titulo={t('catalogo.noAvailabilityDatesTitle')}
           mensaje={t('catalogo.noAvailabilityDates', { sucursal: busquedaAplicada.sucursal })}

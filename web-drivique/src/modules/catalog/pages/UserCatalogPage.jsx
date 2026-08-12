@@ -14,6 +14,9 @@ import CatalogPagination from '../components/CatalogPagination'
 import LoadingState from '../components/LoadingState'
 import ErrorState from '../components/ErrorState'
 import EmptyState from '../components/EmptyState'
+import logo from '@/assets/logocatalog.png'
+import { FaSearch } from 'react-icons/fa'
+import './UserCatalogPage.css'
 
 const coloresTema = (esModoOscuro) => ({
   pageBg: esModoOscuro ? '#0f172a' : '#f8fafc',
@@ -92,7 +95,10 @@ export default function CatalogoUsuarioPage() {
     limpiar,
     reintentar,
     soloFavoritos,
-    setSoloFavoritos
+    setSoloFavoritos,
+    textoLibre,
+    setTextoLibre,
+    sinCoincidenciasTexto,
   } = useCatalogo({ esFavorito })
 
   useEffect(() => {
@@ -137,7 +143,47 @@ export default function CatalogoUsuarioPage() {
   const tituloVacio = soloFavoritos ? t('catalogo.favoritesTitle') : t('catalogo.noResults')
 
   return (
-    <div style={{ minHeight: '100vh', width: '100%', background: c.pageBg, display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
+    <div className="catalogo-page" style={{ minHeight: '100vh', width: '100%', background: c.pageBg, display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
+      <header
+        className="catalogo-header"
+        style={{
+          background: c.navBg,
+          borderBottom: `1px solid ${c.navBorder}`,
+          boxShadow: c.navShadow,
+        }}
+      >
+        <div className="user-catalogo-header-inner">
+          <div className="catalogo-logo-link">
+            <img src={logo} alt="Drivique" className="catalogo-logo" />
+            <div className="catalogo-logo-text">
+              <span className="catalogo-logo-title" style={{ color: c.accentText }}>Drivique</span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div className="user-catalogo-search-row" style={{ background: c.navBg }}>
+        <div className="user-catalogo-search-row-inner">
+          <div
+            className="catalogo-header-search"
+            style={{
+              background: c.heroCardBg,
+              border: `1px solid ${sinCoincidenciasTexto ? c.dangerBorder : c.heroCardBorder}`,
+            }}
+          >
+            <FaSearch size={15} color={c.accentText} style={{ flexShrink: 0 }} />
+            <input
+              type="text"
+              value={textoLibre}
+              onChange={e => setTextoLibre(e.target.value)}
+              placeholder={t('catalogo.freeSearchPlaceholder')}
+              className="catalogo-header-search-input"
+              style={{ color: c.inputText }}
+            />
+          </div>
+        </div>
+      </div>
+
       <div style={{ flex: 1 }}>
         <SearchHero
           c={c}
