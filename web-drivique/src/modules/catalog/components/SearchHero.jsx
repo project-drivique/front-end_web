@@ -70,9 +70,10 @@ export default function HeroBusqueda({
           {mostrarBusquedaLibre && (
             <div
               style={{
-                marginBottom: '14px',
-                paddingBottom: '14px',
+                marginBottom: '20px',
+                paddingBottom: '24px',
                 borderBottom: `1px solid ${c.panelBorder}`,
+                position: 'relative',
               }}
             >
               <div
@@ -104,6 +105,38 @@ export default function HeroBusqueda({
                   }}
                 />
               </div>
+
+              {/* Botón Limpiar en la línea divisoria cuando hay buscador libre */}
+              {onLimpiar && (
+                <button
+                  type="button"
+                  onClick={onLimpiar}
+                  style={{
+                    position: 'absolute',
+                    bottom: '0',
+                    right: '10px',
+                    transform: 'translateY(50%)',
+                    height: '30px',
+                    padding: '0 16px',
+                    borderRadius: '9999px',
+                    background: c.heroCardBg,
+                    color: c.textSecondary,
+                    fontWeight: 700,
+                    fontSize: '11.5px',
+                    border: `1px solid ${c.heroCardBorder}`,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '5px',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+                    transition: 'all 150ms ease',
+                    whiteSpace: 'nowrap',
+                    zIndex: 2,
+                  }}
+                >
+                  Limpiar
+                </button>
+              )}
             </div>
           )}
 
@@ -207,32 +240,32 @@ export default function HeroBusqueda({
             </div>
           )}
 
-          {/* Botón Limpiar — pestaña en el borde superior derecho */}
-          {onLimpiar && (
+          {/* Botón Limpiar en el borde superior cuando NO hay buscador libre */}
+          {!mostrarBusquedaLibre && onLimpiar && (
             <button
               type="button"
               onClick={onLimpiar}
               style={{
                 position: 'absolute',
-                top: '-1px',
+                top: '0',
                 right: '16px',
-                transform: 'translateY(-100%)',
+                transform: 'translateY(-50%)',
                 height: '30px',
                 padding: '0 16px',
-                borderRadius: '8px 8px 0 0',
+                borderRadius: '9999px',
                 background: c.heroCardBg,
                 color: c.textSecondary,
                 fontWeight: 700,
                 fontSize: '11.5px',
                 border: `1px solid ${c.heroCardBorder}`,
-                borderBottom: 'none',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '5px',
-                boxShadow: '0 -2px 6px rgba(0,0,0,0.04)',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
                 transition: 'all 150ms ease',
                 whiteSpace: 'nowrap',
+                zIndex: 2,
               }}
             >
               Limpiar
