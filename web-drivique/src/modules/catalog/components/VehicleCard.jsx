@@ -3,16 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useLanding } from '../../landing/LandingContext'
 import { formatCurrency } from '@/utils/currencyUtils'
-import BannerRegistro from './RegistrationBanner'
-import {
-  FaHeart,
-  FaRegHeart,
-  FaCogs,
-  FaGasPump,
-  FaCar,
-  FaStar,
-  FaMapMarkerAlt,
-} from 'react-icons/fa'
+
+import { FaHeart, FaRegHeart, FaCogs, FaGasPump, FaCar, FaStar, FaMapMarkerAlt, FaChevronRight, FaChevronLeft } from 'react-icons/fa'
 
 function getSafeImages(vehiculo) {
   const imgs = vehiculo.imagenes || vehiculo.fotos || []
@@ -37,13 +29,14 @@ function getSafeImages(vehiculo) {
 
 const TRANS_KEYS = {
   'Automática': 'catalogo.transAuto',
-  'Manual':     'catalogo.transManual',
+  'Manual': 'catalogo.transManual',
 }
+
 const FUEL_KEYS = {
-  'Gasolina':  'catalogo.fuelGas',
-  'Diesel':    'catalogo.fuelDiesel',
-  'Híbrido':   'catalogo.fuelHybrid',
-  'Eléctrico': 'catalogo.fuelElec',
+  Gasolina: 'catalogo.fuelGas',
+  Diesel: 'catalogo.fuelDiesel',
+  Híbrido: 'catalogo.fuelHybrid',
+  Eléctrico: 'catalogo.fuelElec',
 }
 
 function normalizeRating(vehiculo) {
@@ -57,107 +50,150 @@ export default function TarjetaVehiculo({
   onFavorito = () => {},
   c,
   invitado = false,
-  destacado = false,
+  onGuestBlocked = () => {},
+  onGuestFavorito = () => {},
 }) {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { moneda } = useLanding()
+
   const [hover, setHover] = useState(false)
   const [fotoActiva, setFotoActiva] = useState(0)
-  const [bannerVisible, setBannerVisible] = useState(false)
 
   const imagenes = getSafeImages(vehiculo)
   const rating = normalizeRating(vehiculo)
+  const totalImagenes = imagenes.length
+
   const estadoDisponible = vehiculo.disponible !== false
   const disponibleEnFechas = vehiculo.disponibleEnFechas !== false
   const puedeReservar = estadoDisponible && disponibleEnFechas
 
   let badgeTexto = t('catalogo.available')
-  let badgeBg = '#e6f4ea', badgeColor = '#137333', badgeBorder = '#ceead6'
+  let badgeBg = '#e8f7ee'
+  let badgeColor = '#16834a'
+  let badgeBorder = '#ccefdc'
+
   if (!estadoDisponible) {
     badgeTexto = t('catalogo.unavailable')
-    badgeBg = '#fce8e6'; badgeColor = '#c5221f'; badgeBorder = '#fad2cf'
+    badgeBg = '#fce8e6'
+    badgeColor = '#c5221f'
+    badgeBorder = '#fad2cf'
   } else if (!disponibleEnFechas) {
     badgeTexto = t('catalogo.unavailableDates')
-    badgeBg = '#fef3c7'; badgeColor = '#92400e'; badgeBorder = '#fde68a'
+    badgeBg = '#fef3c7'
+    badgeColor = '#92400e'
+    badgeBorder = '#fde68a'
   }
 
   const handleVerDetalles = () => {
     navigate(`/catalogo/${vehiculo.id}`)
   }
 
-  const handleReservar = (e) => {
+  const handleReservar = e => {
     e.stopPropagation()
     if (!puedeReservar) return
     if (invitado) {
-      setBannerVisible(true)
+      onGuestBlocked()
       return
     }
     navigate(`/reservas/${vehiculo.id}`)
   }
 
-  const handleFavoritoClick = (e) => {
+  const handleFavoritoClick = e => {
     e.stopPropagation()
     if (invitado) {
-      setBannerVisible(true)
+      onGuestFavorito()
       return
     }
     onFavorito()
   }
 
-  const handleDotClick = (e, i) => {
+  // FUNCIÓN: retrocede a la imagen anterior (con wrap-around: de la primera pasa a la última)
+  const irImagenAnterior = (e) => {
     e.stopPropagation()
-    setFotoActiva(i)
+    setFotoActiva(i => (i - 1 + totalImagenes) % totalImagenes)
+  }
+
+  // FUNCIÓN: avanza a la siguiente imagen (con wrap-around: de la última vuelve a la primera)
+  const irImagenSiguiente = (e) => {
+    e.stopPropagation()
+    setFotoActiva(i => (i + 1) % totalImagenes)
   }
 
   const estrellas = Array.from({ length: 5 }, (_, i) => i < Math.round(rating))
   const imagenActual = imagenes[fotoActiva] || ''
 
+  // ESTILO reutilizable para los botones flecha (< >) sobre la imagen
+  const botonFlechaStyle = (lado) => ({
+    position: 'absolute',
+    top: '50%',
+    [lado]: '6px',
+    transform: 'translateY(-50%)',
+    width: '22px',
+    height: '22px',
+    borderRadius: '50%',
+    border: 'none',
+    cursor: 'pointer',
+    background: 'rgba(15,23,42,0.5)',
+    color: '#fff',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 0,
+    zIndex: 2,
+  })
+
   return (
-    <div
-      onClick={handleVerDetalles}
+    <article
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       style={{
         background: c.panelBg,
-        borderRadius: '20px',
-        border: `1.5px solid ${hover ? c.cardBorderHover : c.cardBorder}`,
-        boxShadow: destacado ? (hover ? '0 16px 40px rgba(37,99,235,0.24)' : '0 10px 26px rgba(37,99,235,0.16)') : (hover ? c.cardShadowHover : c.cardShadow),
+        borderRadius: '14px',
+        border: `1px solid ${hover ? c.cardBorderHover : c.cardBorder}`,
+        boxShadow: hover ? c.cardShadowHover : c.cardShadow,
         overflow: 'hidden',
-        transform: hover ? 'translateY(-4px)' : 'translateY(0)',
-        transition: 'box-shadow 200ms ease, border-color 200ms ease, transform 200ms ease, opacity 200ms ease',
+        transform: hover ? 'translateY(-2px)' : 'translateY(0)',
+        transition: 'all 180ms ease',
         opacity: puedeReservar ? 1 : 0.72,
         display: 'flex',
         flexDirection: 'column',
-        alignSelf: 'flex-start',
         width: '100%',
-        maxWidth: '350px',
-        cursor: 'pointer',
+        minWidth: 0,
+        height: '100%',
       }}
     >
-      <div style={{ position: 'relative', height: '180px', background: c.imageFallbackBg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+
+      {/* IMAGEN: altura reducida para que la tarjeta sea más compacta */}
+      {/* IMAGEN: un poco más alta para que no se vea amontonada al ser tarjetas más angostas */}
+      <div style={{ position: 'relative', height: '150px', background: c.imageFallbackBg, overflow: 'hidden', flexShrink: 0 }}>
         {imagenActual ? (
-          <img src={imagenActual} alt={vehiculo.nombre} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          <img
+            src={imagenActual}
+            alt={vehiculo.nombre}
+            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+          />
         ) : (
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <FaCar size={42} color={c.imageFallbackIcon} />
+          <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <FaCar size={30} color={c.imageFallbackIcon} />
           </div>
         )}
 
         <span
           style={{
             position: 'absolute',
-            top: '12px',
-            left: '12px',
-            fontSize: '11px',
+            top: '8px',
+            left: '8px',
+            fontSize: '9px',
             fontWeight: 700,
-            padding: '5px 12px',
-            borderRadius: '9999px',
+            padding: '4px 8px',
+            borderRadius: '999px',
             background: badgeBg,
             color: badgeColor,
             border: `1px solid ${badgeBorder}`,
           }}
         >
+          <span style={{ display: 'inline-block', width: '5px', height: '5px', borderRadius: '50%', background: badgeColor, marginRight: '4px' }} />
           {badgeTexto}
         </span>
 
@@ -166,84 +202,136 @@ export default function TarjetaVehiculo({
           onClick={handleFavoritoClick}
           style={{
             position: 'absolute',
-            top: '10px',
-            right: '10px',
-            width: '36px',
-            height: '36px',
+            top: '7px',
+            right: '7px',
+            width: '27px',
+            height: '27px',
             borderRadius: '50%',
-            background: '#ffffff',
+            background: 'rgba(255,255,255,0.96)',
             border: 'none',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+            boxShadow: '0 3px 10px rgba(0,0,0,0.13)',
+            zIndex: 2,
           }}
           aria-label={esFavorito ? 'Quitar de favoritos' : 'Agregar a favoritos'}
         >
-          {esFavorito ? <FaHeart color="#e11d48" size={18} /> : <FaRegHeart color="#9ca3af" size={18} />}
+          {esFavorito ? <FaHeart color="#2563eb" size={13} /> : <FaRegHeart color="#94a3b8" size={13} />}
         </button>
 
-        {imagenes.length > 1 && (
-          <div style={{ position: 'absolute', bottom: '12px', left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: '6px', background: 'rgba(0,0,0,0.25)', padding: '4px 8px', borderRadius: '9999px' }}>
-            {imagenes.map((_, i) => (
-              <button
-                key={i}
-                type="button"
-                onClick={(e) => handleDotClick(e, i)}
-                style={{
-                  width: i === fotoActiva ? '16px' : '6px',
-                  height: '6px',
-                  borderRadius: '9999px',
-                  border: 'none',
-                  cursor: 'pointer',
-                  background: i === fotoActiva ? '#3b82f6' : '#e5e7eb',
-                  padding: 0,
-                  transition: 'all 200ms',
-                }}
-              />
-            ))}
-          </div>
+        {/* NAVEGACIÓN DE IMÁGENES: flechas < > en vez de puntos, solo si hay más de 1 foto */}
+        {totalImagenes > 1 && (
+          <>
+            <button
+              type="button"
+              onClick={irImagenAnterior}
+              aria-label="Imagen anterior"
+              style={botonFlechaStyle('left')}
+            >
+              <FaChevronLeft size={10} />
+            </button>
+            <button
+              type="button"
+              onClick={irImagenSiguiente}
+              aria-label="Imagen siguiente"
+              style={botonFlechaStyle('right')}
+            >
+              <FaChevronRight size={10} />
+            </button>
+          </>
         )}
       </div>
 
-      <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', flex: 1 }}>
-        <div style={{ marginBottom: '8px', display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
-          <span style={{ fontSize: '12px', fontWeight: 700, color: '#1e40af', background: '#eff6ff', padding: '4px 10px', borderRadius: '9999px', border: '1px solid #bfdbfe' }}>
+      {/* CONTENIDO */}
+      <div style={{ padding: '10px 12px 12px', display: 'flex', flexDirection: 'column', flex: 1 }}>
+
+        <div style={{ display: 'flex', gap: '5px', alignItems: 'center', marginBottom: '7px', flexWrap: 'nowrap', minWidth: 0 }}>
+          <span
+            style={{
+              fontSize: '9px',
+              fontWeight: 700,
+              color: '#1e40af',
+              background: '#eff6ff',
+              padding: '3px 7px',
+              borderRadius: '999px',
+              border: '1px solid #cfe0ff',
+              flexShrink: 0,
+              whiteSpace: 'nowrap',
+            }}
+          >
             {vehiculo.categoria || 'Económico'}
           </span>
-          <span style={{ fontSize: '11px', fontWeight: 700, color: '#059669', background: '#ecfdf5', padding: '4px 10px', borderRadius: '9999px', border: '1px solid #bbf7d0', display: 'flex', alignItems: 'center', gap: '4px' }}>
-            <FaMapMarkerAlt /> {vehiculo.sucursal || 'Centro Neiva'}
+
+          <span
+            style={{
+              fontSize: '9px',
+              fontWeight: 700,
+              color: '#059669',
+              background: '#ecfdf5',
+              padding: '3px 7px',
+              borderRadius: '999px',
+              border: '1px solid #c8efd9',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '3px',
+              minWidth: 0,
+              maxWidth: '100%',
+              flexShrink: 1,
+              overflow: 'hidden',
+            }}
+          >
+            <FaMapMarkerAlt size={8} style={{ flexShrink: 0 }} />
+            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {vehiculo.sucursal || 'Centro Neiva'}
+            </span>
           </span>
         </div>
 
-        <h3 style={{ fontSize: '16px', fontWeight: 800, color: c.textPrimary, margin: '0 0 6px', lineHeight: 1.3 }}>
+        <h3
+          style={{
+            fontSize: '13.5px',
+            fontWeight: 800,
+            color: c.textPrimary,
+            margin: '0 0 6px',
+            lineHeight: 1.25,
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+          }}
+        >
           {vehiculo.nombre}
         </h3>
 
-        <div style={{ display: 'flex', gap: '12px', marginBottom: '6px', flexWrap: 'wrap' }}>
-          <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', color: c.textSecondary }}>
-            <FaCogs style={{ color: c.textMuted }} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
+          <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '10px', color: c.textSecondary, whiteSpace: 'nowrap' }}>
+            <FaCogs color={c.textMuted} size={10} />
             {TRANS_KEYS[vehiculo.transmision] ? t(TRANS_KEYS[vehiculo.transmision]) : vehiculo.transmision}
           </span>
-          <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', color: c.textSecondary }}>
-            <FaGasPump style={{ color: c.textMuted }} />
+
+          <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '10px', color: c.textSecondary, whiteSpace: 'nowrap' }}>
+            <FaGasPump color={c.textMuted} size={10} />
             {FUEL_KEYS[vehiculo.combustible] ? t(FUEL_KEYS[vehiculo.combustible]) : vehiculo.combustible}
           </span>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '3px', marginBottom: '10px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginBottom: '7px' }}>
           {estrellas.map((llena, i) => (
-            <FaStar key={i} size={13} color={llena ? '#f59e0b' : '#d1d5db'} />
+            <FaStar key={i} size={10} color={llena ? '#f59e0b' : '#d8dee8'} />
           ))}
-          <span style={{ fontSize: '12px', color: c.textSecondary, marginLeft: '4px', fontWeight: 600 }}>{rating.toFixed(1)}</span>
+          <span style={{ fontSize: '10px', color: c.textSecondary, marginLeft: '4px', fontWeight: 700 }}>
+            {rating.toFixed(1)}
+          </span>
         </div>
 
-        <div style={{ marginBottom: '8px' }}>
-          <span style={{ fontSize: '24px', fontWeight: 900, color: '#1e3a8a' }}>
+        <div style={{ marginBottom: '10px' }}>
+          <span style={{ fontSize: '18px', fontWeight: 900, color: '#1e3a8a', letterSpacing: '-0.03em' }}>
             {formatCurrency(vehiculo.precio || 60000, moneda)}
           </span>
-          <span style={{ fontSize: '12px', color: c.textSoft, marginLeft: '4px' }}>/{t('catalogo.day')}</span>
+          <span style={{ fontSize: '10px', color: c.textSecondary, marginLeft: '3px' }}>
+            /{t('catalogo.day')}
+          </span>
         </div>
 
         <div style={{ marginTop: 'auto' }}>
@@ -252,47 +340,39 @@ export default function TarjetaVehiculo({
             disabled={!puedeReservar}
             style={{
               width: '100%',
-              padding: '12px',
-              borderRadius: '12px',
-              fontSize: '13px',
+              height: '36px',
+              borderRadius: '9px',
+              fontSize: '10px',
               fontWeight: 800,
               border: 'none',
-              letterSpacing: '0.04em',
+              letterSpacing: '0.02em',
               textTransform: 'uppercase',
               cursor: puedeReservar ? 'pointer' : 'not-allowed',
               background: puedeReservar ? c.accentGradient : c.paginationDisabledBg,
-              color: '#fff',
-              boxShadow: puedeReservar ? '0 4px 14px rgba(37,99,235,0.25)' : 'none',
-              marginBottom: '8px',
+              color: '#ffffff',
+              boxShadow: puedeReservar ? '0 5px 14px rgba(37,99,235,0.22)' : 'none',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: '8px',
+              gap: '6px',
             }}
           >
-            <FaCar />
+            <FaCar size={11} />
             {puedeReservar ? t('catalogo.reserveNow').toUpperCase() : badgeTexto.toUpperCase()}
           </button>
 
-          <div style={{ textAlign: 'center' }}>
-            <span
-              style={{
-                fontSize: '13px',
-                fontWeight: 700,
-                color: '#2563eb',
-                textDecoration: 'underline',
-              }}
-            >
+          <div
+            onClick={handleVerDetalles}
+            role="button"
+            tabIndex={0}
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '8px', cursor: 'pointer' }}
+          >
+            <span style={{ fontSize: '11px', fontWeight: 700, color: '#2563eb', textDecoration: 'underline', textUnderlineOffset: '3px' }}>
               {t('catalogo.details')}
             </span>
           </div>
         </div>
       </div>
-
-      <BannerRegistro
-        visible={bannerVisible}
-        onCerrar={() => setBannerVisible(false)}
-      />
-    </div>
+    </article>
   )
 }

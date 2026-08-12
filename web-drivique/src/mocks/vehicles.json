@@ -25,7 +25,7 @@
     "descripcion": "Sedán confiable y espacioso, ideal para viajes largos o uso diario en ciudad. Excelente relación de consumo y gran maletero para equipaje.",
     "caracteristicas": [
       { "nombre": "Aire acondicionado", "icono": "FaSnowflake" },
-      { "nombre": "Vidrios eléctricos", "icono": "FaBolt" },
+      { "nombre": "Vidrios eléctricos", "icono": "FaWindowMaximize" },
       { "nombre": "Cierre centralizado", "icono": "FaLock" },
       { "nombre": "Sensores de parqueo", "icono": "FaCarSide" }
     ],
@@ -86,7 +86,7 @@
     "descripcion": "SUV premium con gran presencia y comodidad para toda la familia. Techo panorámico y tecnología de seguridad avanzada.",
     "caracteristicas": [
       { "nombre": "Aire acondicionado", "icono": "FaSnowflake" },
-      { "nombre": "Vidrios eléctricos", "icono": "FaBolt" },
+      { "nombre": "Vidrios eléctricos", "icono": "FaWindowMaximize" },
       { "nombre": "Cierre centralizado", "icono": "FaLock" },
       { "nombre": "Techo panorámico", "icono": "FaSun" }
     ],
@@ -143,7 +143,7 @@
     "descripcion": "Compacto ágil y económico, perfecto para moverse por la ciudad y estacionar sin complicaciones.",
     "caracteristicas": [
       { "nombre": "Aire acondicionado", "icono": "FaSnowflake" },
-      { "nombre": "Vidrios eléctricos", "icono": "FaBolt" },
+      { "nombre": "Vidrios eléctricos", "icono": "FaWindowMaximize" },
       { "nombre": "Cierre centralizado", "icono": "FaLock" }
     ],
     "equipamientoTecnologico": [
@@ -194,7 +194,7 @@
     "descripcion": "Ícono deportivo con motor V8 de alto rendimiento. Pensado para quienes buscan una experiencia de conducción única.",
     "caracteristicas": [
       { "nombre": "Aire acondicionado", "icono": "FaSnowflake" },
-      { "nombre": "Vidrios eléctricos", "icono": "FaBolt" },
+      { "nombre": "Vidrios eléctricos", "icono": "FaWindowMaximize" },
       { "nombre": "Cierre centralizado", "icono": "FaLock" },
       { "nombre": "Modo deportivo", "icono": "FaTachometerAlt" },
       { "nombre": "Frenos de alto rendimiento", "icono": "FaShieldAlt" }
@@ -250,7 +250,7 @@
     "descripcion": "SUV robusto de 8 pasajeros con tracción 4x4, ideal para viajes familiares largos o terrenos exigentes.",
     "caracteristicas": [
       { "nombre": "Aire acondicionado", "icono": "FaSnowflake" },
-      { "nombre": "Vidrios eléctricos", "icono": "FaBolt" },
+      { "nombre": "Vidrios eléctricos", "icono": "FaWindowMaximize" },
       { "nombre": "Cierre centralizado", "icono": "FaLock" },
       { "nombre": "Tracción 4x4", "icono": "FaMountain" },
       { "nombre": "Tercera fila de asientos", "icono": "FaChair" }
@@ -309,7 +309,7 @@
     "descripcion": "Compacto ideal para ciudad, cómodo para 5 pasajeros y con buen rendimiento de combustible. Perfecto para desplazamientos diarios o viajes cortos en pareja o familia.",
     "caracteristicas": [
       { "nombre": "Aire acondicionado", "icono": "FaSnowflake" },
-      { "nombre": "Vidrios eléctricos", "icono": "FaBolt" },
+      { "nombre": "Vidrios eléctricos", "icono": "FaWindowMaximize" },
       { "nombre": "Cierre centralizado", "icono": "FaLock" }
     ],
     "equipamientoTecnologico": [
@@ -331,7 +331,8 @@
     ],
     "imagenes": [
       "https://th.bing.com/th/id/OIP.M8Xr6C7QAbptaShiYv_SigHaEi?w=259&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
-      "https://th.bing.com/th/id/OIP.51EBaowC6BNblc7CVjxDMQHaFL?w=258&h=181&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3"
+      "https://th.bing.com/th/id/OIP.51EBaowC6BNblc7CVjxDMQHaFL?w=258&h=181&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+      "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/5c55d73935760e36ac2c84a6f676e75136c75d1f.jpg"
     ],
     "disponibilidad": { "ocupados": [] },
     "comentarios": [
@@ -365,7 +366,7 @@
     "descripcion": "SUV híbrida eficiente y silenciosa, con amplio espacio de carga y tecnología de asistencia al conductor.",
     "caracteristicas": [
       { "nombre": "Aire acondicionado", "icono": "FaSnowflake" },
-      { "nombre": "Vidrios eléctricos", "icono": "FaBolt" },
+      { "nombre": "Vidrios eléctricos", "icono": "FaWindowMaximize" },
       { "nombre": "Cierre centralizado", "icono": "FaLock" },
       { "nombre": "Techo panorámico", "icono": "FaSun" }
     ],
@@ -422,7 +423,7 @@
     "descripcion": "Sedán moderno y cómodo, con gran maletero y acabados de calidad para trayectos diarios o de trabajo.",
     "caracteristicas": [
       { "nombre": "Aire acondicionado", "icono": "FaSnowflake" },
-      { "nombre": "Vidrios eléctricos", "icono": "FaBolt" },
+      { "nombre": "Vidrios eléctricos", "icono": "FaWindowMaximize" },
       { "nombre": "Cierre centralizado", "icono": "FaLock" }
     ],
     "equipamientoTecnologico": [
@@ -477,7 +478,7 @@
     "descripcion": "SUV híbrida con gran eficiencia de combustible, techo panorámico y espacio generoso para pasajeros y equipaje.",
     "caracteristicas": [
       { "nombre": "Aire acondicionado", "icono": "FaSnowflake" },
-      { "nombre": "Vidrios eléctricos", "icono": "FaBolt" },
+      { "nombre": "Vidrios eléctricos", "icono": "FaWindowMaximize" },
       { "nombre": "Cierre centralizado", "icono": "FaLock" },
       { "nombre": "Techo panorámico", "icono": "FaSun" }
     ],
