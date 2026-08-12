@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { FaSearch, FaExclamationTriangle, FaCalendarAlt, FaMapMarkerAlt } from 'react-icons/fa'
+import { FaSearch, FaExclamationTriangle, FaCalendarAlt, FaMapMarkerAlt, FaStar } from 'react-icons/fa'
 import { CATEGORIAS, TRANSMISIONES, COMBUSTIBLES, SUCURSALES, CIUDADES } from '../constants'
 import DateRangeCalendar from './DateRangeCalendar'
 
@@ -44,6 +44,10 @@ function Chip({ activo, onClick, children, c }) {
         background: activo ? c.chipActiveBg : c.chipBg,
         color: activo ? c.chipActiveText : c.chipText,
         border: 'none',
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '5px',
+        whiteSpace: 'nowrap',
       }}
     >
       {children}
@@ -62,9 +66,6 @@ export default function FiltrosCatalogo({
   errorBusqueda = '',
   handleBuscar = () => {},
   limpiar = () => {},
-  busquedaRealizada = false,
-  dias = 0,
-  busquedaAplicada = {},
   invitado = false,
   onBuscarInvitado = () => {},
   showHero = true,
@@ -73,11 +74,17 @@ export default function FiltrosCatalogo({
   mostrarFavoritos = false,
   enModal = false,
   soloBusqueda = false,
+  panelClassName = 'filtros-panel',
+  textoLibre = '',
+  setTextoLibre = null,
+  mostrarBusquedaLibre = false,
+  sinCoincidenciasTexto = false,
 }) {
+
   const { t } = useTranslation()
 
   const catLabels = {
-    'Todos': t('catalogo.allCategories'),
+    'Todos': t('catalogo.allShort'),
     'Sedan': 'Sedan',
     'SUV': 'SUV',
     'Económico': t('catalogo.catEco'),
@@ -143,7 +150,7 @@ export default function FiltrosCatalogo({
                   <select
                     value={ciudadBusqueda}
                     onChange={e => { setForm('ciudad', e.target.value); setForm('sucursal', '') }}
-                    style={{ ...inputStyle, cursor: 'pointer' }}
+                    style={{ ...inputStyle, width: '100%', boxSizing: 'border-box', cursor: 'pointer' }}
                   >
                     <option value="">Selecciona Ciudad</option>
                     {CIUDADES.map(ciud => (
@@ -158,7 +165,7 @@ export default function FiltrosCatalogo({
                     value={sucursalBusqueda}
                     onChange={e => setForm('sucursal', e.target.value)}
                     disabled={!ciudadBusqueda}
-                    style={{ ...inputStyle, cursor: 'pointer' }}
+                    style={{ ...inputStyle, width: '100%', boxSizing: 'border-box', cursor: 'pointer' }}
                   >
                     <option value="">Selecciona Sucursal</option>
                     {SUCURSALES
@@ -228,7 +235,7 @@ export default function FiltrosCatalogo({
                 <select
                   value={ciudadBusqueda}
                   onChange={e => { setForm('ciudad', e.target.value); setForm('sucursal', '') }}
-                  style={{ ...inputStyle, cursor: 'pointer' }}
+                  style={{ ...inputStyle, width: '100%', boxSizing: 'border-box', cursor: 'pointer' }}
                 >
                   <option value="">Selecciona Ciudad</option>
                   {CIUDADES.map(ciud => (
@@ -246,7 +253,7 @@ export default function FiltrosCatalogo({
                   value={sucursalBusqueda}
                   onChange={e => setForm('sucursal', e.target.value)}
                   disabled={!ciudadBusqueda}
-                  style={{ ...inputStyle, cursor: 'pointer' }}
+                  style={{ ...inputStyle, width: '100%', boxSizing: 'border-box', cursor: 'pointer' }}
                 >
                   <option value="">Selecciona Sucursal</option>
                   {SUCURSALES
@@ -260,7 +267,12 @@ export default function FiltrosCatalogo({
                   <span style={{ color: c.accentText }}><FaCalendarAlt /></span>
                   {t('vehiculo.pickupDate')}
                 </label>
-                <input type="date" value={fechaInicio} onChange={e => setForm('fechaInicio', e.target.value)} style={inputStyle} />
+                <input
+                  type="date"
+                  value={fechaInicio}
+                  onChange={e => setForm('fechaInicio', e.target.value)}
+                  style={{ ...inputStyle, width: '100%', boxSizing: 'border-box' }}
+                />
               </div>
 
               <div>
@@ -268,7 +280,12 @@ export default function FiltrosCatalogo({
                   <span style={{ color: c.accentText }}><FaCalendarAlt /></span>
                   {t('vehiculo.returnDate')}
                 </label>
-                <input type="date" value={fechaFin} onChange={e => setForm('fechaFin', e.target.value)} style={inputStyle} />
+                <input
+                  type="date"
+                  value={fechaFin}
+                  onChange={e => setForm('fechaFin', e.target.value)}
+                  style={{ ...inputStyle, width: '100%', boxSizing: 'border-box' }}
+                />
               </div>
 
               <div>
@@ -312,7 +329,7 @@ export default function FiltrosCatalogo({
 
       {!soloBusqueda && (
       <aside
-        className={enModal ? 'filtros-panel-modal' : 'filtros-panel'}
+        className={enModal ? 'filtros-panel-modal' : panelClassName}
         style={enModal ? {
           width: '100%',
           background: 'transparent',
@@ -320,29 +337,61 @@ export default function FiltrosCatalogo({
           border: 'none',
           boxShadow: 'none',
           padding: 0,
-          position: 'static',
+         position: 'relative',
         } : {
-          width: '240px',
+          width: '280px',
           flexShrink: 0,
           background: c.panelBg,
           borderRadius: '20px',
           border: `1px solid ${c.panelBorder}`,
           boxShadow: c.panelShadow,
           padding: '22px',
-          position: 'sticky',
-          top: '80px',
-          maxHeight: 'calc(100vh - 100px)',
-          overflowY: 'auto',
+          boxSizing: 'border-box',
+          position: 'relative',
         }}
       >
-        <div style={{ display: enModal ? 'none' : 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
-          <h2 style={{ fontSize: '15px', fontWeight: 800, color: c.textPrimary, margin: 0 }}>{t('catalogo.filters')}</h2>
+        <div
+          style={{
+            display: enModal ? 'none' : 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '8px',
+            marginBottom: '18px',
+            width: '100%',
+            boxSizing: 'border-box',
+          }}
+        >
+          <h2
+            style={{
+              fontSize: '15px',
+              fontWeight: 800,
+              color: c.textPrimary,
+              margin: 0,
+              minWidth: 0,
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {t('catalogo.filters')}
+          </h2>
           <button
             type="button"
             onClick={limpiar}
-            style={{ fontSize: '12px', color: c.accentText, fontWeight: 700, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+            style={{
+              fontSize: '12px',
+              color: c.accentText,
+              fontWeight: 700,
+              background: '#ffffff',
+              border: `1px solid ${c.heroCardBorder}`,
+              borderRadius: '8px',
+              cursor: 'pointer',
+              padding: '6px 12px',
+              whiteSpace: 'nowrap',
+              flexShrink: 0,
+            }}
           >
-            {t('catalogo.clearFilters')}
+            {t('catalogo.clear')}
           </button>
         </div>
 
@@ -350,7 +399,8 @@ export default function FiltrosCatalogo({
           <Seccion label={t('catalogo.favorites')} ultimo={false} c={c}>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
               <Chip activo={soloFavoritos} onClick={() => setSoloFavoritos(!soloFavoritos)} c={c}>
-                ⭐ {t('catalogo.myFavorites')}
+                <FaStar size={11} />
+                {t('catalogo.myFavorites')}
               </Chip>
             </div>
           </Seccion>
@@ -373,7 +423,7 @@ export default function FiltrosCatalogo({
               setFiltro('ciudad', e.target.value)
               setFiltro('sucursal', 'Todas')
             }}
-            style={{ ...inputStyle, cursor: 'pointer' }}
+            style={{ ...inputStyle, width: '100%', boxSizing: 'border-box', cursor: 'pointer' }}
           >
             <option value="Todas">Todas las ciudades</option>
             {CIUDADES.map(ciud => (
@@ -385,7 +435,11 @@ export default function FiltrosCatalogo({
         </Seccion>
 
         <Seccion label={t('catalogo.branch')} ultimo={false} c={c}>
-          <select value={sucursal} onChange={e => setFiltro('sucursal', e.target.value)} style={{ ...inputStyle, cursor: 'pointer' }}>
+          <select
+            value={sucursal}
+            onChange={e => setFiltro('sucursal', e.target.value)}
+            style={{ ...inputStyle, width: '100%', boxSizing: 'border-box', cursor: 'pointer' }}
+          >
             <option value="Todas">{t('catalogo.allBranches')}</option>
             {SUCURSALES
               .filter(s => filtros.ciudad === 'Todas' || s.ciudad === filtros.ciudad)
@@ -395,8 +449,22 @@ export default function FiltrosCatalogo({
 
         <Seccion label={t('catalogo.pricePerDay')} ultimo={false} c={c}>
           <div style={{ display: 'flex', gap: '8px' }}>
-            <input type="text" inputMode="numeric" placeholder={t('catalogo.min')} value={precioMin} onChange={e => setFiltro('precioMin', e.target.value.replace(/\D/g, ''))} style={{ ...inputStyle, width: '50%' }} />
-            <input type="text" inputMode="numeric" placeholder={t('catalogo.max')} value={precioMax} onChange={e => setFiltro('precioMax', e.target.value.replace(/\D/g, ''))} style={{ ...inputStyle, width: '50%' }} />
+            <input
+              type="text"
+              inputMode="numeric"
+              placeholder={t('catalogo.min')}
+              value={precioMin}
+              onChange={e => setFiltro('precioMin', e.target.value.replace(/\D/g, ''))}
+              style={{ ...inputStyle, width: '50%', boxSizing: 'border-box' }}
+            />
+            <input
+              type="text"
+              inputMode="numeric"
+              placeholder={t('catalogo.max')}
+              value={precioMax}
+              onChange={e => setFiltro('precioMax', e.target.value.replace(/\D/g, ''))}
+              style={{ ...inputStyle, width: '50%', boxSizing: 'border-box' }}
+            />
           </div>
         </Seccion>
 

@@ -234,8 +234,16 @@ export function useCatalogo({ esFavorito = () => false } = {}) {
     // que la UI avise con el modal de "sin resultados".
     arr = sinMatch ? arrAntesDeTexto : arrConTexto
 
+    const arrAntesDeSucursal = arr
+
     if (busquedaRealizada && busquedaAplicada.sucursal) {
       arr = arr.filter(v => v.sucursal === busquedaAplicada.sucursal)
+    }
+
+    const sinVehiculosEnSucursal = busquedaRealizada && Boolean(busquedaAplicada.sucursal) && arr.length === 0
+
+    if (sinVehiculosEnSucursal) {
+      arr = arrAntesDeSucursal // Revertir para no vaciar la grilla
     }
 
     const hayRangoBuscado = busquedaRealizada && busquedaAplicada.fechaInicio && busquedaAplicada.fechaFin
@@ -247,13 +255,11 @@ export function useCatalogo({ esFavorito = () => false } = {}) {
     }))
 
     // Hay vehículos en la sucursal buscada, pero TODOS quedaron ocupados en el
-    // rango de fechas elegido. Seguimos mostrando las tarjetas grises/"No
-    // disponible" (no las sacamos del grid) y avisamos con el modal.
-    const sinDisponibilidad =
-      hayRangoBuscado &&
-      Boolean(busquedaAplicada.sucursal) &&
-      arr.length > 0 &&
-      arr.every(v => !v.disponibleEnFechas)
+    // rango de fechas elegido. O bien, no hay NINGÚN vehículo en esa sucursal.
+    // Seguimos mostrando las tarjetas (grises o el catálogo completo) y avisamos con el modal.
+    const todosOcupados = hayRangoBuscado && Boolean(busquedaAplicada.sucursal) && arr.length > 0 && arr.every(v => !v.disponibleEnFechas)
+    
+    const sinDisponibilidad = sinVehiculosEnSucursal || todosOcupados
 
     if (filtros.orden === 'precio_asc') arr.sort((a, b) => Number(a.precio) - Number(b.precio))
     if (filtros.orden === 'precio_desc') arr.sort((a, b) => Number(b.precio) - Number(a.precio))
@@ -269,11 +275,12 @@ export function useCatalogo({ esFavorito = () => false } = {}) {
     }
   }, [vehiculos, filtros, soloFavoritos, esFavorito, busquedaRealizada, busquedaAplicada, estaDisponibleEnRango, textoLibre])
 
-  const totalPaginas = Math.max(1, Math.ceil(resultado.length / 6))
-  const vehiculosPagina = useMemo(() => {
-    const inicio = (pagina - 1) * 6
-    return resultado.slice(inicio, inicio + 6)
-  }, [resultado, pagina])
+   const POR_PAGINA = 8
+const totalPaginas = Math.max(1, Math.ceil(resultado.length / POR_PAGINA))
+const vehiculosPagina = useMemo(() => {
+  const inicio = (pagina - 1) * POR_PAGINA
+  return resultado.slice(inicio, inicio + POR_PAGINA)
+}, [resultado, pagina])
 
   return {
     vehiculos,
