@@ -193,58 +193,6 @@ export default function CatalogoUsuarioPage() {
           className="catalogo-search-sticky"
           style={{ top: `${headerAltura}px`, background: c.pageBg }}
         >
-          <div style={{ width: 'min(1360px, calc(100% - 48px))', margin: '0 auto', paddingTop: '8px' }}>
-            {/* BUSCADOR LIBRE — separado */}
-            <div
-              style={{
-                background: c.heroCardBg,
-                borderRadius: '12px',
-                border: `1px solid ${c.heroCardBorder}`,
-                boxShadow: c.heroCardShadow,
-                padding: '10px 16px',
-                marginBottom: '10px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '10px',
-              }}
-            >
-              <FaSearch size={14} color={c.accentText} style={{ flexShrink: 0 }} />
-              <input
-                type="text"
-                value={textoLibre}
-                onChange={e => setTextoLibre(e.target.value)}
-                placeholder={t('catalogo.freeSearchPlaceholder')}
-                style={{
-                  flex: 1,
-                  minWidth: 0,
-                  border: 'none',
-                  outline: 'none',
-                  background: 'transparent',
-                  fontSize: '14px',
-                  fontWeight: 500,
-                  color: c.inputText,
-                }}
-              />
-              {textoLibre && (
-                <button
-                  type="button"
-                  onClick={() => setTextoLibre('')}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                    padding: '4px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    color: c.textSecondary,
-                  }}
-                  aria-label="Limpiar búsqueda"
-                >
-                  <FaTimes size={12} />
-                </button>
-              )}
-            </div>
-          </div>
 
           {/* BUSCADOR DE SELECTS — Ciudad / Sucursal / Fechas / Buscar / Limpiar */}
           <SearchHero
@@ -260,6 +208,7 @@ export default function CatalogoUsuarioPage() {
             invitado={false}
             textoLibre={textoLibre}
             setTextoLibre={setTextoLibre}
+            mostrarBusquedaLibre={true}
             busquedaAplicada={busquedaAplicada}
             sinCoincidenciasTexto={sinCoincidenciasTexto}
             sinDisponibilidadFechas={sinDisponibilidadFechas}
@@ -284,7 +233,7 @@ export default function CatalogoUsuarioPage() {
               showHero={false}
               soloFavoritos={soloFavoritos}
               setSoloFavoritos={setSoloFavoritos}
-              mostrarFavoritos={Boolean(usuario)}
+              mostrarFavoritos={true}
             />
 
             <div className="catalogo-results">
