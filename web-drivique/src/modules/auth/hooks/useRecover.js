@@ -1,12 +1,16 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router-dom'
 import { authService } from '../../../services/authService'
+import { useAuthStore } from '../../../store/authStore'
 
 export function useRecover() {
   const { t } = useTranslation()
+  const navigate = useNavigate()
+  const iniciarRecuperacionCorreo = useAuthStore((s) => s.iniciarRecuperacionCorreo)
+  
   const [correo,   setCorreo]   = useState('')
   const [cargando, setCargando] = useState(false)
-  const [enviado,  setEnviado]  = useState(false)
   const [error,    setError]    = useState('')
 
   const validarCorreo = (valor) => {
@@ -26,16 +30,15 @@ export function useRecover() {
 
     try {
       await authService.solicitarRecuperacion(correo)
-      // Siempre mostramos éxito — nunca revelamos si el correo existe o no
-      setEnviado(true)
-    } catch {
-      // Por seguridad mostramos el mismo mensaje de éxito aunque falle
-      // para no revelar si el correo está registrado o no
-      setEnviado(true)
+      iniciarRecuperacionCorreo(correo)
+      navigate('/verificar-recuperacion')
+    } catch (errorApi) {
+      const msg = errorApi?.response?.data?.mensaje || 'Error al solicitar recuperación.'
+      setError(msg)
     } finally {
       setCargando(false)
     }
   }
 
-  return { correo, setCorreo, cargando, enviado, error, handleSubmit }
+  return { correo, setCorreo, cargando, error, handleSubmit }
 }

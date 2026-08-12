@@ -9,6 +9,7 @@ import RecoverPasswordPage from '../modules/auth/pages/RecoverPasswordPage'
 import NewPasswordPage from '../modules/auth/pages/NewPasswordPage'
 import Verify2FAPage from '../modules/auth/pages/Verify2FAPage'
 import VerifyEmailPage from '../modules/auth/pages/VerifyEmailPage'
+import VerifyRecoverPage from '../modules/auth/pages/VerifyRecoverPage'
 import CatalogPage from '../modules/catalog/pages/CatalogPage'
 import UserCatalogPage from '../modules/catalog/pages/UserCatalogPage'
 import ReservationFlowPage from '../modules/reservations/pages/ReservationFlowPage'
@@ -40,6 +41,13 @@ function RutaVerificacionCorreo({ children }) {
   return verificacionCorreo ? children : <Navigate to="/catalogo" replace />
 }
 
+function RutaRecuperacionCorreo({ children }) {
+  const recuperacionCorreo = useAuthStore((s) => s.recuperacionCorreo)
+  const hydrated = useHydration()
+  if (!hydrated) return null
+  return recuperacionCorreo ? children : <Navigate to="/login" replace />
+}
+
 export default function AppRouter() {
   return (
     <BrowserRouter>
@@ -52,6 +60,7 @@ export default function AppRouter() {
         <Route path="/nueva-contrasena" element={<NewPasswordPage />} />
         <Route path="/verificar-2fa" element={<Ruta2FA><Verify2FAPage /></Ruta2FA>} />
         <Route path="/verificar-correo" element={<RutaVerificacionCorreo><VerifyEmailPage /></RutaVerificacionCorreo>} />
+        <Route path="/verificar-recuperacion" element={<RutaRecuperacionCorreo><VerifyRecoverPage /></RutaRecuperacionCorreo>} />
 
         <Route path="/home" element={<RutaPrivada><UserCatalogPage /></RutaPrivada>} />
         <Route path="/admin" element={<RutaPrivada><AdminPage /></RutaPrivada>} />

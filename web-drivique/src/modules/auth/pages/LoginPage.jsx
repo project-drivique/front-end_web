@@ -1,16 +1,18 @@
 // src/modules/auth/pages/LoginPage.jsx
-import { useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useLogin } from '../hooks/useLogin'
 import { useSocialRegistration } from '../hooks/useSocialRegistration'
 import { useLanding } from '../../landing/LandingContext'
 import logo from '@/assets/logo.png'
+import { FaExclamationTriangle, FaCheckCircle } from 'react-icons/fa'
 import { showAlert } from '@/utils/swalConfig'
 
 import { coloresLogin, loginTokens } from '../styles/loginStyles'
 import SpinnerButton from '../components/SpinnerButton'
 import LeftPanel from '../components/LeftPanel'
+import AlertModal from '../../catalog/components/AlertModal'
 
 // ─── Íconos SVG locales ────────────────────────────────────────────────────────
 const IconoOjoAbierto = () => (
@@ -64,8 +66,7 @@ export default function LoginPage() {
     handleCorreoChange, handleSubmit,
   } = useLogin()
 
-  const showLoginAlert = ({ icon, title, text, confirmButtonText = 'Aceptar' }) =>
-    showAlert({ icon, title, text, confirmButtonText })
+  const [modalConfig, setModalConfig] = useState(null)
 
   const {
     cargandoGoogle, cargandoFacebook, errorSocial,
@@ -79,14 +80,14 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (errorSocial) {
-      showLoginAlert({ icon: 'error', title: t('login.socialError'), text: errorSocial })
+      setModalConfig({ type: 'error', title: t('login.socialError'), text: errorSocial })
     }
   }, [errorSocial, t])
 
   useEffect(() => {
     if (errores.general) {
-      showLoginAlert({
-        icon: bloqueado ? 'error' : 'warning',
+      setModalConfig({
+        type: bloqueado ? 'error' : 'warning',
         title: bloqueado ? t('login.blocked') : t('login.loginError'),
         text: errores.general,
       })
@@ -95,7 +96,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (exito) {
-      showLoginAlert({ icon: 'success', title: t('login.welcome'), text: exito })
+      setModalConfig({ type: 'success', title: t('login.welcome'), text: exito })
     }
   }, [exito, t])
 
@@ -136,7 +137,7 @@ export default function LoginPage() {
   })
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', background: c.pageBg }}>
+    <div style={{ minHeight: '112vh', display: 'flex', background: c.pageBg, zoom: 0.9 }}>
       <LeftPanel />
 
       {/* ── Panel derecho (formulario) ── */}
@@ -276,6 +277,21 @@ export default function LoginPage() {
           </p>
         </div>
       </div>
+
+      {modalConfig && (
+        <AlertModal
+          icon={
+            modalConfig.type === 'success' ? <FaCheckCircle size={22} color="#1e3a8a" /> :
+            <FaExclamationTriangle size={22} color="#1e3a8a" />
+          }
+          titulo={modalConfig.title}
+          mensaje={modalConfig.text}
+          primaryText="OK"
+          onPrimary={() => setModalConfig(null)}
+          onCerrar={() => setModalConfig(null)}
+          showCloseButton
+        />
+      )}
 
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
