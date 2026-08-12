@@ -146,7 +146,11 @@
     "successPanelCheck3": "✓  Votre compte reste protégé",
     "successEmailSent": "Si {{email}} est enregistré, vous recevrez un lien dans les prochaines minutes.",
     "successSpam": "Vérifiez aussi votre dossier spam. Le lien expire dans 30 minutes.",
-    "copyright": "Drivique © 2026"
+    "copyright": "Drivique © 2026",
+    "notRegisteredTitle": "Cet e-mail n'est pas enregistré sur la plateforme.",
+    "notRegisteredSub": "Vérifiez l'e-mail saisi ou inscrivez-vous pour créer un compte.",
+    "noAccount": "Vous n'avez pas de compte ?",
+    "registerHere": "Inscrivez-vous ici"
   },
   "nuevaContrasena": {
     "title": "Nouveau mot de passe",
@@ -157,10 +161,10 @@
     "confirmPlaceholder": "Répétez votre nouveau mot de passe",
     "submit": "Mettre à jour le mot de passe",
     "processing": "Mise à jour...",
-    "successTitle": "Mot de passe mis à jour",
+    "successTitle": "Mot de passe modifié avec succès !",
     "successText": "Votre mot de passe a été modifié avec succès.",
-    "formTitle": "Créer un nouveau mot de passe",
-    "formSubtitle": "Choisissez un mot de passe sécurisé pour retrouver votre accès",
+    "formTitle": "Créez votre nouveau mot de passe",
+    "formSubtitle": "Votre mot de passe doit répondre à toutes les exigences de sécurité.",
     "goToLogin": "Aller à la connexion",
     "invalidToken": "Lien invalide ou expiré",
     "invalidTokenText": "Ce lien a déjà été utilisé ou a expiré. Les liens de récupération sont valables 30 minutes.",
@@ -168,6 +172,7 @@
     "checklist": {
       "min8": "Minimum 8 caractères",
       "uppercase": "Au moins une lettre majuscule",
+      "lowercase": "Au moins une lettre minuscule",
       "number": "Au moins un chiffre",
       "special": "Au moins un caractère spécial"
     },
@@ -177,7 +182,10 @@
       "confirmRequired": "Veuillez confirmer votre mot de passe",
       "confirmMismatch": "Les mots de passe ne correspondent pas",
       "genericError": "Une erreur s'est produite. Réessayez."
-    }
+    },
+    "successSubtitle": "Votre mot de passe a été mis à jour avec succès.",
+    "successLoginText": "Vous pouvez maintenant vous connecter avec votre nouveau mot de passe.",
+    "goLogin": "Aller à la connexion"
   },
   "verificar2fa": {
     "title": "Vérification en deux étapes",

@@ -146,7 +146,11 @@
     "successPanelCheck3": "✓  Your account remains protected",
     "successEmailSent": "If {{email}} is registered, you will receive a link in the next few minutes.",
     "successSpam": "Check your spam folder too. The link expires in 30 minutes.",
-    "copyright": "Drivique © 2026"
+    "copyright": "Drivique © 2026",
+    "notRegisteredTitle": "This email is not registered on the platform.",
+    "notRegisteredSub": "Verify the entered email or register to create an account.",
+    "noAccount": "Don't have an account?",
+    "registerHere": "Register here"
   },
   "nuevaContrasena": {
     "title": "New password",
@@ -157,10 +161,10 @@
     "confirmPlaceholder": "Repeat your new password",
     "submit": "Update password",
     "processing": "Updating...",
-    "successTitle": "Password updated",
+    "successTitle": "Password changed successfully!",
     "successText": "Your password was changed successfully.",
-    "formTitle": "Create new password",
-    "formSubtitle": "Choose a secure password to regain access",
+    "formTitle": "Create your new password",
+    "formSubtitle": "Your password must meet all security requirements.",
     "goToLogin": "Go to sign in",
     "invalidToken": "Invalid or expired link",
     "invalidTokenText": "This link has already been used or has expired. Recovery links are valid for 30 minutes.",
@@ -168,6 +172,7 @@
     "checklist": {
       "min8": "Minimum 8 characters",
       "uppercase": "At least one uppercase letter",
+      "lowercase": "At least one lowercase letter",
       "number": "At least one number",
       "special": "At least one special character"
     },
@@ -177,7 +182,10 @@
       "confirmRequired": "Please confirm your password",
       "confirmMismatch": "Passwords do not match",
       "genericError": "An error occurred. Try again."
-    }
+    },
+    "successSubtitle": "Your password has been successfully updated.",
+    "successLoginText": "You can now log in with your new password.",
+    "goLogin": "Go to login"
   },
   "verificar2fa": {
     "title": "Two-step verification",
@@ -223,6 +231,17 @@
     "backToRegistro": "Back to registration",
     "successTitle": "Email verified!",
     "successSubtitle": "Redirecting..."
+  },
+  "verificarRecuperacion": {
+    "title": "Verify code",
+    "subtitle": "Enter the code we sent to",
+    "verifying": "Verifying...",
+    "submit": "Verify code",
+    "resending": "Resending...",
+    "resendIn": "Resend in {{seconds}}s",
+    "resendCode": "Resend code",
+    "cancel": "Cancel",
+    "wrongEmail": "Wrong email?"
   },
   "catalogo": {
     "title": "Vehicle catalog",
