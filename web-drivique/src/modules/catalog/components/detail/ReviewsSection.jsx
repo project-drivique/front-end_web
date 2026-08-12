@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { FaStar } from 'react-icons/fa'
-import DetailSection from './DetailSection'
 
 export default function ReviewsSection({ comentarios = [], calificacion = 0 }) {
   const { t } = useTranslation()
@@ -9,41 +8,111 @@ export default function ReviewsSection({ comentarios = [], calificacion = 0 }) {
 
   if (!comentarios.length) return null
 
-  const visibles = mostrarTodas ? comentarios : comentarios.slice(0, 2)
+  const visibles = mostrarTodas ? comentarios : comentarios.slice(0, 3)
+
+  const distribution = {
+    5: comentarios.filter(c => c.calificacion === 5).length,
+    4: comentarios.filter(c => c.calificacion === 4).length,
+    3: comentarios.filter(c => c.calificacion === 3).length,
+    2: comentarios.filter(c => c.calificacion === 2).length,
+    1: comentarios.filter(c => c.calificacion === 1).length,
+  }
+
+  const renderStars = (rating) => {
+    return Array.from({ length: 5 }).map((_, i) => (
+      <FaStar key={i} color={i < rating ? '#f59e0b' : '#e2e8f0'} size={18} />
+    ))
+  }
 
   return (
-    <DetailSection
-      icon={<FaStar size={12} />}
-      title={t('vehiculo.reviews')}
-      action={
-        <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--texto-primary)', display: 'flex', alignItems: 'center', gap: 6 }}>
-          <FaStar size={13} color="#f59e0b" /> {calificacion.toFixed(1)}
-          <span style={{ fontWeight: 500, color: 'var(--texto-second)' }}>· {comentarios.length}</span>
-        </span>
-      }
-    >
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 10 }}>
-        {visibles.map((c, i) => (
-          <div key={i} style={{ background: 'var(--bg-item)', borderRadius: 10, padding: '13px 15px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-              <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--texto-primary)' }}>{c.autor}</span>
-              <span style={{ fontSize: 12, color: '#f59e0b', display: 'flex', alignItems: 'center', gap: 3 }}>
-                <FaStar size={12} /> {c.calificacion.toFixed(1)}
-              </span>
-            </div>
-            <p style={{ fontSize: 13, color: 'var(--texto-second)', margin: 0, lineHeight: 1.55 }}>{c.texto}</p>
-          </div>
-        ))}
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 40, paddingTop: 10 }}>
+      
+      {/* Columna Izquierda: Resumen */}
+      <div style={{ flex: '0 0 240px' }}>
+        <h4 style={{ fontSize: 13, fontWeight: 700, color: 'var(--texto-primary)', margin: '0 0 16px' }}>
+          Reseñas de clientes
+        </h4>
+        <div style={{ fontSize: 48, fontWeight: 800, color: 'var(--texto-primary)', lineHeight: 1, marginBottom: 12 }}>
+          {calificacion.toFixed(1)}
+        </div>
+        <div style={{ display: 'flex', gap: 4, marginBottom: 8 }}>
+          {renderStars(Math.round(calificacion))}
+        </div>
+        <div style={{ fontSize: 12, color: 'var(--texto-second)', marginBottom: 24 }}>
+          {comentarios.length} reseñas
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {[5, 4, 3, 2, 1].map(star => {
+            const count = distribution[star]
+            const percentage = comentarios.length > 0 ? (count / comentarios.length) * 100 : 0
+            return (
+              <div key={star} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 12, color: 'var(--texto-second)' }}>
+                <span style={{ width: 12, textAlign: 'right' }}>{star}</span>
+                <FaStar size={10} color="#94a3b8" />
+                <div style={{ flex: 1, height: 6, background: '#f1f5f9', borderRadius: 3, overflow: 'hidden' }}>
+                  <div style={{ width: `${percentage}%`, height: '100%', background: '#64748b', borderRadius: 3 }} />
+                </div>
+                <span style={{ width: 12, textAlign: 'right' }}>{count}</span>
+              </div>
+            )
+          })}
+        </div>
       </div>
 
-      {comentarios.length > 2 && (
-        <button
-          onClick={() => setMostrarTodas(v => !v)}
-          style={{ width: '100%', marginTop: 12, padding: '10px', fontSize: 13, fontWeight: 700, color: '#2563eb', background: 'none', border: '1px solid var(--borde)', borderRadius: 10, cursor: 'pointer' }}
-        >
-          {mostrarTodas ? t('vehiculo.showLess') : t('vehiculo.viewAllReviews')}
-        </button>
-      )}
-    </DetailSection>
+      {/* Columna Derecha: Lista de Comentarios */}
+      <div style={{ flex: 1, minWidth: 300, display: 'flex', flexDirection: 'column', gap: 20 }}>
+        {comentarios.length === 0 ? (
+          <div style={{ background: '#f8fafc', borderRadius: 12, padding: 24, textAlign: 'center', border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+            <p style={{ color: 'var(--texto-primary)', fontWeight: 700, fontSize: 15, margin: '0 0 8px' }}>Este vehículo aún no tiene reseñas</p>
+            <p style={{ color: 'var(--texto-second)', fontSize: 13, margin: 0 }}>¡Anímate a reservarlo y sé el primero en compartir tu experiencia!</p>
+          </div>
+        ) : (
+          visibles.map((c, i) => (
+            <div key={i} style={{ display: 'flex', gap: 16, borderBottom: '1px solid rgba(0,0,0,0.04)', paddingBottom: 20 }}>
+              {/* Avatar */}
+              <div style={{ 
+                width: 40, height: 40, borderRadius: '50%', background: '#e2e8f0', 
+                display: 'flex', alignItems: 'center', justifyContent: 'center', 
+                fontSize: 14, fontWeight: 700, color: '#475569', flexShrink: 0
+              }}>
+                {c.autor.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()}
+              </div>
+              
+              {/* Contenido */}
+              <div style={{ flex: 1 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
+                  <div>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--texto-primary)' }}>{c.autor}</div>
+                    <div style={{ fontSize: 11, color: 'var(--texto-second)' }}>15 abr 2024</div>
+                  </div>
+                  <div style={{ display: 'flex', gap: 2 }}>
+                    {Array.from({ length: 5 }).map((_, j) => (
+                      <FaStar key={j} size={10} color={j < c.calificacion ? '#f59e0b' : '#e2e8f0'} />
+                    ))}
+                  </div>
+                </div>
+                <p style={{ fontSize: 13, color: 'var(--texto-second)', margin: 0, lineHeight: 1.5 }}>{c.texto}</p>
+              </div>
+            </div>
+          ))
+        )}
+
+        {comentarios.length > 3 && (
+          <div style={{ textAlign: 'center', marginTop: 10 }}>
+            <button
+              onClick={() => setMostrarTodas(v => !v)}
+              style={{ 
+                fontSize: 13, fontWeight: 700, color: '#2563eb', background: 'none', 
+                border: 'none', cursor: 'pointer', padding: '8px 16px' 
+              }}
+            >
+              {mostrarTodas ? 'Ver menos reseñas' : 'Ver más reseñas ˅'}
+            </button>
+          </div>
+        )}
+      </div>
+
+    </div>
   )
 }
