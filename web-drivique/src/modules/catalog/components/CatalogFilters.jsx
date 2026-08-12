@@ -74,7 +74,9 @@ export default function FiltrosCatalogo({
   mostrarFavoritos = false,
   enModal = false,
   soloBusqueda = false,
+  panelClassName = 'filtros-panel',
 }) {
+
   const { t } = useTranslation()
 
   const catLabels = {
@@ -323,7 +325,7 @@ export default function FiltrosCatalogo({
 
       {!soloBusqueda && (
       <aside
-        className={enModal ? 'filtros-panel-modal' : 'filtros-panel'}
+        className={enModal ? 'filtros-panel-modal' : panelClassName}
         style={enModal ? {
           width: '100%',
           background: 'transparent',
@@ -332,7 +334,7 @@ export default function FiltrosCatalogo({
           boxShadow: 'none',
           padding: 0,
          position: 'relative',
-        } : {                              // 👈 ESTA es la rama que se usa en desktop
+        } : {
           width: '280px',
           flexShrink: 0,
           background: c.panelBg,
@@ -341,7 +343,7 @@ export default function FiltrosCatalogo({
           boxShadow: c.panelShadow,
           padding: '22px',
           boxSizing: 'border-box',
-          position: 'relative',           // 👈 CAMBIA ESTA LÍNEA
+          position: 'relative',
         }}
       >
         <div
