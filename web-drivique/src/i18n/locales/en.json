@@ -728,5 +728,29 @@
     "pageSubtitle": "Review the automatically generated information and sign to continue.",
     "signedSuccessTitle": "Contract signed",
     "signedSuccessText": "Your contract has been signed and stored with your reservation."
+  },
+  "catalog": {
+    "menu": {
+      "catalog": "Catalog",
+      "reservations": "My Reservations",
+      "favorites": "My Favorites",
+      "notifications": "Notifications",
+      "support": "Support"
+    },
+    "reviews": {
+      "emptyTitle": "This vehicle has no reviews yet",
+      "emptySubtitle": "Book it now and be the first to share your experience!"
+    },
+    "gallery": {
+      "new": "New"
+    },
+    "card": {
+      "noReviews": "No reviews"
+    }
+  },
+  "placeholder": {
+    "title": "This screen is not implemented yet",
+    "subtitle": "We are working to have this section ready as soon as possible.",
+    "backBtn": "Back to Catalog"
   }
 }

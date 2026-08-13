@@ -9,13 +9,15 @@
   top: 0;
   z-index: 50;
   width: 100%;
+  height: 76px;
 }
 
 .catalogo-header-inner {
   position: relative;
   width: min(1360px, calc(100% - 48px));
+  height: 100%;
   margin: 0 auto;
-  padding: 14px 0;
+  padding: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
