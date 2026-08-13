@@ -12,12 +12,13 @@ import VerifyEmailPage from '../modules/auth/pages/VerifyEmailPage'
 import VerifyRecoverPage from '../modules/auth/pages/VerifyRecoverPage'
 import CatalogPage from '../modules/catalog/pages/CatalogPage'
 import UserCatalogPage from '../modules/catalog/pages/UserCatalogPage'
-import VehicleDetailPage from '../modules/catalog/pages/VehicleDetailPage'
-import ReservationsPage from '../modules/reservations/pages/ReservationsPage'
+import ReservationFlowPage from '../modules/reservations/pages/ReservationFlowPage'
+import VehicleDetailsPage from '../modules/catalog/pages/VehicleDetailsPage'
 import AdminPage from '../modules/admin/pages/AdminPage'
 import BranchesPage from '../modules/catalog/pages/BranchesPage'
 import ProfilePage from '../modules/profile/pages/ProfilePage'
 import PaymentResponsePage from '../modules/payments/pages/PaymentResponsePage'
+import PlaceholderPage from '../components/PlaceholderPage'
 
 function RutaPrivada({ children }) {
   const token    = useAuthStore((s) => s.token)
@@ -65,9 +66,14 @@ export default function AppRouter() {
         <Route path="/admin" element={<RutaPrivada><AdminPage /></RutaPrivada>} />
         <Route path="/perfil" element={<RutaPrivada><ProfilePage /></RutaPrivada>} />
         <Route path="/catalogo" element={<CatalogPage />} />
-        <Route path="/catalogo/:id" element={<VehicleDetailPage />} />
+        <Route path="/catalogo/:id" element={<VehicleDetailsPage />} />
         <Route path="/sucursales" element={<BranchesPage />} />
-        <Route path="/reservas" element={<RutaPrivada><ReservationsPage /></RutaPrivada>} />
+        <Route path="/reservas/:id" element={<RutaPrivada><ReservationFlowPage /></RutaPrivada>} />
+        {/* <Route path="/reservas" element={<RutaPrivada><ReservationsPage /></RutaPrivada>} /> */}
+        <Route path="/reservas" element={<RutaPrivada><PlaceholderPage /></RutaPrivada>} />
+        <Route path="/favoritos" element={<RutaPrivada><PlaceholderPage /></RutaPrivada>} />
+        <Route path="/notificaciones" element={<RutaPrivada><PlaceholderPage /></RutaPrivada>} />
+        <Route path="/soporte" element={<RutaPrivada><PlaceholderPage /></RutaPrivada>} />
         <Route path="/respuesta" element={<PaymentResponsePage />} />
 
         <Route path="*" element={<Navigate to="/" replace />} />

@@ -9,19 +9,19 @@ import VEHICULOS_MOCK from '@/mocks/vehicles.json'
 import { reservationService, HORAS_LIMITE_PAGO_EFECTIVO } from '@/services/reservationService'
 import { documentsService } from '@/services/documentsService'
 import { generarReferenciaUnica, aCentavos, construirUrlCheckout } from '@/services/wompiService'
-import { RECARGOS_LOGISTICOS, SUCURSALES, CIUDADES } from '../constants'
-import ReservationCalendar from '../components/detail/ReservationCalendar'
+import { RECARGOS_LOGISTICOS, SUCURSALES, CIUDADES } from '../../catalog/constants'
+import ReservationCalendar from '../components/ReservationCalendar'
 import { formatCurrency } from '@/utils/currencyUtils'
 import { useLanding } from '../../landing/LandingContext'
 
-import ImageGallery from '../components/detail/ImageGallery'
-import VehicleInfo from '../components/detail/VehicleInfo'
-import DateStep from '../components/detail/DateStep'
-import ProtectionPlans from '../components/detail/ProtectionPlans'
-import MileageType from '../components/detail/MileageType'
-import AdditionalServices from '../components/detail/AdditionalServices'
-import SideSummary from '../components/detail/SideSummary'
-import PersonalData from '../components/detail/PersonalData'
+import ImageGallery from '../../catalog/components/detail/ImageGallery'
+import VehicleInfo from '../../catalog/components/detail/VehicleInfo'
+import DateStep from '../components/DateStep'
+import ProtectionPlans from '../components/ProtectionPlans'
+import MileageType from '../components/MileageType'
+import AdditionalServices from '../components/AdditionalServices'
+import SideSummary from '../components/SideSummary'
+import PersonalData from '../components/PersonalData'
 import ContractSignature from '../../contracts/components/ContractSignature'
 
 const IcoCheck = ({ color = '#16a34a', sz = 15 }) => (
@@ -420,12 +420,7 @@ export default function VehiculoDetallePage() {
     <div style={{ minHeight: '100vh', background: 'var(--hero-fondo)', position: 'relative', overflow: 'hidden' }}>
       <div style={{ position: 'absolute', top: -80, right: -80, width: 500, height: 500, borderRadius: '50%', background: 'var(--hero-orb1)', pointerEvents: 'none' }} />
       <div style={{ position: 'absolute', bottom: -60, left: -60, width: 350, height: 350, borderRadius: '50%', background: 'var(--hero-orb2)', pointerEvents: 'none' }} />
-      <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50, background: 'var(--bg-tarjeta)', backdropFilter: 'blur(12px)', borderBottom: '1px solid var(--borde)', boxShadow: '0 4px 20px rgba(0,0,0,0.04)', height: 96 }}>
-        <div className="catalogo-header-inner" style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px', height: '100%', display: 'flex', alignItems: 'center', gap: 20 }}>
-          <Link to={usuario ? "/home" : "/"}><img src={logo} alt="Drivique" style={{ height: 80 }} /></Link>
-        </div>
-      </nav>
-      <div style={{ position: 'relative', paddingTop: 128, paddingBottom: 48, paddingLeft: 24, paddingRight: 24 }}>
+      <div style={{ position: 'relative', paddingTop: 48, paddingBottom: 48, paddingLeft: 24, paddingRight: 24 }}>
         <div style={{ textAlign: 'center', maxWidth: 700, margin: '0 auto 28px' }}>
           <h1 style={{ fontSize: 24, fontWeight: 900, color: 'var(--texto-primary)', margin: '0 0 8px' }}>
             {t('contratoFirma.pageTitleCash')}
@@ -595,21 +590,8 @@ export default function VehiculoDetallePage() {
   const totalReserva = subtotalPreIvaTotal + ivaTotal;
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg-page)' }}>
-      <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50, background: 'var(--bg-tarjeta)', backdropFilter: 'blur(12px)', borderBottom: '1px solid var(--borde)', boxShadow: '0 4px 20px rgba(0,0,0,0.04)', height: 96 }}>
-        <div className="catalogo-header-inner" style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px', height: '100%', display: 'flex', alignItems: 'center', gap: 20 }}>
-          <Link to={usuario ? "/home" : "/"}><img src={logo} alt="Drivique" style={{ height: 80 }} /></Link>
-          <div style={{ flex: 1 }} />
-          {!usuario && (
-            <div style={{ display: 'flex', gap: 12 }}>
-              <Link to="/login" style={{ padding: '10px 20px', borderRadius: 9999, border: '2px solid #bfdbfe', color: '#1e3a8a', fontSize: 15, fontWeight: 700, textDecoration: 'none', transition: 'all 200ms ease' }}>{t('catalogo.signIn')}</Link>
-              <Link to="/registro" style={{ padding: '10px 20px', borderRadius: 9999, background: '#1e3a8a', color: '#fff', fontSize: 15, fontWeight: 700, textDecoration: 'none', transition: 'all 200ms ease' }}>{t('catalogo.signUp')}</Link>
-            </div>
-          )}
-        </div>
-      </nav>
-
-      <div style={{ paddingTop: 96 }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg-page)', zoom: 0.9 }}>
+      <div style={{ paddingTop: 0 }}>
         <div className="detalle-contenido-inner" style={{ maxWidth: 1280, margin: '0 auto', padding: '32px 24px' }}>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 32 }}>
