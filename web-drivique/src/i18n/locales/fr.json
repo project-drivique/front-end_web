@@ -707,5 +707,29 @@
     "pageSubtitle": "Vérifiez les informations générées automatiquement et signez pour continuer.",
     "signedSuccessTitle": "Contrat signé",
     "signedSuccessText": "Votre contrat a été signé et enregistré avec votre réservation."
+  },
+  "catalog": {
+    "menu": {
+      "catalog": "Catalogue",
+      "reservations": "Mes réservations",
+      "favorites": "Mes favoris",
+      "notifications": "Notifications",
+      "support": "Support"
+    },
+    "reviews": {
+      "emptyTitle": "Ce véhicule n'a pas encore d'avis",
+      "emptySubtitle": "Réservez-le maintenant et soyez le premier à partager votre expérience !"
+    },
+    "gallery": {
+      "new": "Nouveau"
+    },
+    "card": {
+      "noReviews": "Aucun avis"
+    }
+  },
+  "placeholder": {
+    "title": "Cet écran n'est pas encore implémenté",
+    "subtitle": "Nous travaillons pour que cette section soit prête le plus rapidement possible.",
+    "backBtn": "Retour au catalogue"
   }
 }

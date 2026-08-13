@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { formatCurrency } from '@/utils/currencyUtils'
-import { useLanding } from '../../../landing/LandingContext'
+import { useLanding } from '../../landing/LandingContext'
 
 export default function TipoKilometraje({ vehiculo, tipoKm, onSeleccionar }) {
   const { t } = useTranslation()
