@@ -369,6 +369,8 @@
     }
   },
   "vehiculo": {
+    "pickupDate": "Fecha de recogida",
+    "returnDate": "Fecha de devolución",
     "howToGetThere": "Cómo llegar",
     "noImages": "Sin imágenes disponibles",
     "backToCatalog": "Volver al catálogo",
@@ -621,5 +623,29 @@
     "pageSubtitle": "Revisa la información generada automáticamente y firma para continuar.",
     "signedSuccessTitle": "Contrato firmado",
     "signedSuccessText": "Tu contrato quedó firmado y almacenado junto a tu reserva."
+  },
+  "catalog": {
+    "menu": {
+      "catalog": "Catálogo",
+      "reservations": "Mis reservas",
+      "favorites": "Mis favoritos",
+      "notifications": "Notificaciones",
+      "support": "Soporte"
+    },
+    "reviews": {
+      "emptyTitle": "Este vehículo aún no tiene reseñas",
+      "emptySubtitle": "¡Anímate a reservarlo y sé el primero en compartir tu experiencia!"
+    },
+    "gallery": {
+      "new": "Nuevo"
+    },
+    "card": {
+      "noReviews": "Sin reseñas"
+    }
+  },
+  "placeholder": {
+    "title": "Aún falta implementar esta pantalla",
+    "subtitle": "Estamos trabajando para tener lista esta sección lo antes posible.",
+    "backBtn": "Volver al Catálogo"
   }
 }

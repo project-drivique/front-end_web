@@ -51,7 +51,7 @@ export default function GaleriaImagenes({ imagenes = [], nombreVehiculo = 'Vehí
           backdropFilter: 'blur(8px)',
         }}>
           <FaStar color={calificacion > 0 ? "#f59e0b" : "#e2e8f0"} size={12} />
-          {calificacion > 0 ? calificacion.toFixed(1) : 'Nuevo'}
+          {calificacion > 0 ? calificacion.toFixed(1) : t('catalog.gallery.new', 'Nuevo')}
         </div>
 
         {/* Indicador de número (Bottom Right) */}
@@ -67,23 +67,24 @@ export default function GaleriaImagenes({ imagenes = [], nombreVehiculo = 'Vehí
       </div>
 
       {/* Miniaturas (Thumbnails) */}
-      {imagenes.length > 1 && (
-        <div style={{ display: 'flex', gap: 12 }}>
-          {imagenes.slice(0, 3).map((img, idx) => (
+      <div style={{ display: 'flex', gap: 12 }}>
+        {[0, 1, 2].map((idx) => {
+          const imgSrc = imagenes[idx] || imagenes[0];
+          return (
             <div 
               key={idx}
-              onClick={() => setIndiceActivo(idx)}
+              onClick={() => setIndiceActivo(idx % imagenes.length)}
               style={{
                 width: 'calc(33.333% - 8px)', aspectRatio: '1.4 / 1', borderRadius: 8, overflow: 'hidden', cursor: 'pointer',
-                border: indiceActivo === idx ? '2px solid #2563eb' : '2px solid transparent',
-                transition: 'border-color 0.2s', opacity: indiceActivo === idx ? 1 : 0.7
+                border: indiceActivo === (idx % imagenes.length) ? '2px solid #2563eb' : '2px solid transparent',
+                transition: 'border-color 0.2s', opacity: indiceActivo === (idx % imagenes.length) ? 1 : 0.7
               }}
             >
-              <img src={img} alt={`thumb-${idx}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              <img src={imgSrc} alt={`thumb-${idx}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             </div>
-          ))}
-        </div>
-      )}
+          );
+        })}
+      </div>
     </div>
   );
 }
