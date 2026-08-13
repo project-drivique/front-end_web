@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { FaMapMarkerAlt, FaClock, FaCalendarAlt } from 'react-icons/fa'
-import { SUCURSALES, CIUDADES } from '../../constants'
+import { SUCURSALES, CIUDADES } from '../../catalog/constants'
 import ReservationCalendar from './ReservationCalendar'
 
 const HORAS = Array.from({ length: 24 }, (_, i) => {

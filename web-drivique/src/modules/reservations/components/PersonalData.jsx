@@ -1,8 +1,8 @@
 ﻿import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useLanding } from '../../../landing/LandingContext';
+import { useLanding } from '../../landing/LandingContext';
 import { formatCurrency } from '@/utils/currencyUtils';
-import { RECARGOS_LOGISTICOS } from '../../constants';
+import { RECARGOS_LOGISTICOS } from '../../catalog/constants';
 
 
 const DocumentUploader = ({ label, helpText, error, file, loading, onUpload, onClear, required = true }) => {
