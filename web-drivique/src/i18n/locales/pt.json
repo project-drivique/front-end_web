@@ -146,7 +146,11 @@
     "successPanelCheck3": "✓  A sua conta continua protegida",
     "successEmailSent": "Se {{email}} estiver registado, receberá um link nos próximos minutos.",
     "successSpam": "Verifique também a pasta de spam. O link expira em 30 minutos.",
-    "copyright": "Drivique © 2026"
+    "copyright": "Drivique © 2026",
+    "notRegisteredTitle": "Este e-mail não está registrado na plataforma.",
+    "notRegisteredSub": "Verifique o e-mail inserido ou registre-se para criar uma conta.",
+    "noAccount": "Não tem uma conta?",
+    "registerHere": "Registre-se aqui"
   },
   "nuevaContrasena": {
     "title": "Nova palavra-passe",
@@ -157,10 +161,10 @@
     "confirmPlaceholder": "Repita a sua nova palavra-passe",
     "submit": "Atualizar palavra-passe",
     "processing": "A atualizar...",
-    "successTitle": "Palavra-passe atualizada",
+    "successTitle": "Senha alterada com sucesso!",
     "successText": "A sua palavra-passe foi alterada com sucesso.",
-    "formTitle": "Criar nova palavra-passe",
-    "formSubtitle": "Escolha uma palavra-passe segura para recuperar o acesso",
+    "formTitle": "Crie sua nova senha",
+    "formSubtitle": "Sua senha deve atender a todos os requisitos de segurança.",
     "goToLogin": "Ir para iniciar sessão",
     "invalidToken": "Ligação inválida ou expirada",
     "invalidTokenText": "Esta ligação já foi usada ou expirou. As ligações de recuperação são válidas por 30 minutos.",
@@ -168,6 +172,7 @@
     "checklist": {
       "min8": "Mínimo 8 caracteres",
       "uppercase": "Pelo menos uma letra maiúscula",
+      "lowercase": "Pelo menos uma letra minúscula",
       "number": "Pelo menos um número",
       "special": "Pelo menos um carácter especial"
     },
@@ -177,7 +182,10 @@
       "confirmRequired": "Por favor confirme a sua palavra-passe",
       "confirmMismatch": "As palavras-passe não coincidem",
       "genericError": "Ocorreu um erro. Tente novamente."
-    }
+    },
+    "successSubtitle": "Sua senha foi atualizada com sucesso.",
+    "successLoginText": "Agora você pode entrar com sua nova senha.",
+    "goLogin": "Ir para o login"
   },
   "verificar2fa": {
     "title": "Verificação em dois passos",
