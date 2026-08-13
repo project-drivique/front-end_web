@@ -6,6 +6,7 @@ import { authService } from '../../../services/authService'
 const REGLAS_BASE = [
   { id: 'longitud',  key: 'nuevaContrasena.checklist.min8',     test: (v) => v.length >= 8 },
   { id: 'mayuscula', key: 'nuevaContrasena.checklist.uppercase', test: (v) => /[A-Z]/.test(v) },
+  { id: 'minuscula', key: 'nuevaContrasena.checklist.lowercase', test: (v) => /[a-z]/.test(v) },
   { id: 'numero',    key: 'nuevaContrasena.checklist.number',    test: (v) => /[0-9]/.test(v) },
   { id: 'especial',  key: 'nuevaContrasena.checklist.special',   test: (v) => /[^A-Za-z0-9]/.test(v) },
 ]
