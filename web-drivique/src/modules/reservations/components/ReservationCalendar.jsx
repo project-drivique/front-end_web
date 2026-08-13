@@ -6,7 +6,7 @@ import {
 } from 'date-fns'
 import { es } from 'date-fns/locale'
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa'
-import { useDisponibilidadVehiculo } from '../../hooks/useVehicleAvailability'
+import { useDisponibilidadVehiculo } from '../hooks/useVehicleAvailability'
 
 const hoyISO = format(new Date(), 'yyyy-MM-dd')
 const DIAS_SEMANA = ['lun', 'mar', 'mié', 'jue', 'vie', 'sáb', 'dom']

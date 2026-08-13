@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
-import { useLanding } from '../../../landing/LandingContext'
+import { useLanding } from '../../landing/LandingContext'
 import { formatCurrency } from '@/utils/currencyUtils'
-import { RECARGOS_LOGISTICOS } from '../../constants'
+import { RECARGOS_LOGISTICOS } from '../../catalog/constants'
 
 const IcoEdit = () => (
   <svg width="13" height="13" fill="none" stroke="#1e3a8a" strokeWidth="2.2" viewBox="0 0 24 24">

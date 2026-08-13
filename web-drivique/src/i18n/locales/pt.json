@@ -707,5 +707,29 @@
     "pageSubtitle": "Reveja a informação gerada automaticamente e assine para continuar.",
     "signedSuccessTitle": "Contrato assinado",
     "signedSuccessText": "O seu contrato foi assinado e armazenado junto com a sua reserva."
+  },
+  "catalog": {
+    "menu": {
+      "catalog": "Catálogo",
+      "reservations": "Minhas reservas",
+      "favorites": "Meus favoritos",
+      "notifications": "Notificações",
+      "support": "Suporte"
+    },
+    "reviews": {
+      "emptyTitle": "Este veículo ainda não tem avaliações",
+      "emptySubtitle": "Reserve agora e seja o primeiro a compartilhar sua experiência!"
+    },
+    "gallery": {
+      "new": "Novo"
+    },
+    "card": {
+      "noReviews": "Sem avaliações"
+    }
+  },
+  "placeholder": {
+    "title": "Esta tela ainda não foi implementada",
+    "subtitle": "Estamos trabalhando para deixar esta seção pronta o mais rápido possível.",
+    "backBtn": "Voltar ao Catálogo"
   }
 }
