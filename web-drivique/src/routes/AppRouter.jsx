@@ -18,6 +18,7 @@ import AdminPage from '../modules/admin/pages/AdminPage'
 import BranchesPage from '../modules/catalog/pages/BranchesPage'
 import ProfilePage from '../modules/profile/pages/ProfilePage'
 import PaymentResponsePage from '../modules/payments/pages/PaymentResponsePage'
+import PlaceholderPage from '../components/PlaceholderPage'
 
 function RutaPrivada({ children }) {
   const token    = useAuthStore((s) => s.token)
@@ -68,6 +69,9 @@ export default function AppRouter() {
         <Route path="/catalogo/:id" element={<VehicleDetailPage />} />
         <Route path="/sucursales" element={<BranchesPage />} />
         <Route path="/reservas" element={<RutaPrivada><ReservationsPage /></RutaPrivada>} />
+        <Route path="/favoritos" element={<RutaPrivada><PlaceholderPage /></RutaPrivada>} />
+        <Route path="/notificaciones" element={<RutaPrivada><PlaceholderPage /></RutaPrivada>} />
+        <Route path="/soporte" element={<RutaPrivada><PlaceholderPage /></RutaPrivada>} />
         <Route path="/respuesta" element={<PaymentResponsePage />} />
 
         <Route path="*" element={<Navigate to="/" replace />} />

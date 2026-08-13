@@ -25,7 +25,7 @@ export default function VehicleCharacteristics({ vehiculo }) {
   ]
 
   return (
-    <div style={{ background: '#fff', padding: 20, borderRadius: 16, border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div style={{ background: '#fff', padding: 20, borderRadius: 16, border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', gap: 16, height: '100%', flex: 1 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 0 }}>
         <FaListUl color="#2563eb" size={14} />
         <h3 style={{ fontSize: 13, fontWeight: 700, color: '#1e3a8a', margin: 0 }}>Características</h3>

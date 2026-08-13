@@ -95,12 +95,12 @@ export default function VehicleDetailsPage() {
             {/* Col 1: Galería + Características */}
             <div className="vehiculo-col-left" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
               <ImageGallery 
-                imagenes={vehiculo.imagenes} 
+                imagenes={vehiculo.imagenes || []} 
                 nombreVehiculo={vehiculo.nombre} 
-                calificacion={vehiculo.calificacion} 
+                calificacion={vehiculo.comentarios?.length ? vehiculo.calificacion : 0} 
               />
               
-              <div>
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                 <VehicleCharacteristics vehiculo={vehiculo} />
               </div>
             </div>
@@ -111,10 +111,12 @@ export default function VehicleDetailsPage() {
               
               <BranchInfo sucursalInfo={vehiculo.sucursalInfo} />
               
-              <EquipmentSection 
-                caracteristicas={vehiculo.caracteristicas} 
-                equipamiento={vehiculo.equipamientoTecnologico} 
-              />
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                <EquipmentSection 
+                  caracteristicas={vehiculo.caracteristicas} 
+                  equipamiento={vehiculo.equipamientoTecnologico} 
+                />
+              </div>
             </div>
 
             {/* Col 3: Tarifas y Reservar */}
@@ -123,7 +125,7 @@ export default function VehicleDetailsPage() {
 
               <RentalRequirements />
 
-              <div className="vehiculo-reserve-card" style={{ margin: 0 }}>
+              <div className="vehiculo-reserve-card" style={{ margin: 0, flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                 <div className="vehiculo-price-label">Precio por día (COP)</div>
                 <div className="vehiculo-price-value">
                   {formatCurrency(vehiculo.precio, moneda)} <span>/día</span>

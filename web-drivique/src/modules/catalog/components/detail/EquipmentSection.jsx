@@ -4,7 +4,7 @@ import { FaMobileAlt, FaMapMarkerAlt } from 'react-icons/fa'
 export default function EquipmentSection({ caracteristicas = [], equipamiento = [] }) {
   
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 24, height: '100%', flex: 1 }}>
       
       {/* Equipamiento Tecnológico */}
       {equipamiento.length > 0 && (
@@ -33,7 +33,7 @@ export default function EquipmentSection({ caracteristicas = [], equipamiento = 
 
       {/* Equipamiento General (Características) */}
       {caracteristicas.length > 0 && (
-        <div style={{ background: '#fff', padding: 20, borderRadius: 16, border: '1px solid #e2e8f0' }}>
+        <div style={{ background: '#fff', padding: 20, borderRadius: 16, border: '1px solid #e2e8f0', flex: 1 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
             <FaMapMarkerAlt color="#2563eb" size={14} />
             <h3 style={{ fontSize: 13, fontWeight: 700, color: '#1e3a8a', margin: 0 }}>Equipamiento</h3>
