@@ -70,7 +70,7 @@ export function useCatalogo({ esFavorito = () => false } = {}) {
 
   useEffect(() => {
     reservationsService.getReservas()
-      // eslint-disable-next-line react-hooks/set-state-in-effect
+       
       .then(setReservas)
       .catch(() => setReservas([]))
   }, [])
