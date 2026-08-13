@@ -185,6 +185,7 @@ export default function CatalogoUsuarioPage() {
         headerRef={headerRef}
         innerClassName="catalogo-header-inner"
         mostrarPerfil
+        modoRegistrado
       />
 
       <main className="catalogo-main">
