@@ -40,6 +40,7 @@ const FUEL_KEYS = {
 }
 
 function normalizeRating(vehiculo) {
+  if (!vehiculo.comentarios || vehiculo.comentarios.length === 0) return 0;
   const r = Number(vehiculo.calificacion ?? vehiculo.rating ?? 0)
   return Number.isFinite(r) ? r : 0
 }
@@ -321,7 +322,7 @@ export default function TarjetaVehiculo({
             <FaStar key={i} size={10} color={llena ? '#f59e0b' : '#d8dee8'} />
           ))}
           <span style={{ fontSize: '10px', color: c.textSecondary, marginLeft: '4px', fontWeight: 700 }}>
-            {rating.toFixed(1)}
+            {rating > 0 ? rating.toFixed(1) : t('catalog.card.noReviews', 'Sin reseñas')}
           </span>
         </div>
 

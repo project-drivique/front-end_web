@@ -6,7 +6,19 @@ export default function ReviewsSection({ comentarios = [], calificacion = 0 }) {
   const { t } = useTranslation()
   const [mostrarTodas, setMostrarTodas] = useState(false)
 
-  if (!comentarios.length) return null
+  if (!comentarios || comentarios.length === 0) {
+    return (
+      <div style={{ paddingTop: 10 }}>
+        <h4 style={{ fontSize: 13, fontWeight: 700, color: 'var(--texto-primary)', margin: '0 0 16px' }}>
+          Reseñas de clientes
+        </h4>
+        <div style={{ background: '#f8fafc', borderRadius: 12, padding: 24, textAlign: 'center', border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+          <p style={{ color: 'var(--texto-primary)', fontWeight: 700, fontSize: 15, margin: '0 0 8px' }}>{t('catalog.reviews.emptyTitle', 'Este vehículo aún no tiene reseñas')}</p>
+          <p style={{ color: 'var(--texto-second)', fontSize: 13, margin: 0 }}>{t('catalog.reviews.emptySubtitle', '¡Anímate a reservarlo y sé el primero en compartir tu experiencia!')}</p>
+        </div>
+      </div>
+    );
+  }
 
   const visibles = mostrarTodas ? comentarios : comentarios.slice(0, 3)
 
@@ -62,13 +74,7 @@ export default function ReviewsSection({ comentarios = [], calificacion = 0 }) {
 
       {/* Columna Derecha: Lista de Comentarios */}
       <div style={{ flex: 1, minWidth: 300, display: 'flex', flexDirection: 'column', gap: 20 }}>
-        {comentarios.length === 0 ? (
-          <div style={{ background: '#f8fafc', borderRadius: 12, padding: 24, textAlign: 'center', border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-            <p style={{ color: 'var(--texto-primary)', fontWeight: 700, fontSize: 15, margin: '0 0 8px' }}>Este vehículo aún no tiene reseñas</p>
-            <p style={{ color: 'var(--texto-second)', fontSize: 13, margin: 0 }}>¡Anímate a reservarlo y sé el primero en compartir tu experiencia!</p>
-          </div>
-        ) : (
-          visibles.map((c, i) => (
+        {visibles.map((c, i) => (
             <div key={i} style={{ display: 'flex', gap: 16, borderBottom: '1px solid rgba(0,0,0,0.04)', paddingBottom: 20 }}>
               {/* Avatar */}
               <div style={{ 
@@ -96,15 +102,17 @@ export default function ReviewsSection({ comentarios = [], calificacion = 0 }) {
               </div>
             </div>
           ))
-        )}
+        }
 
         {comentarios.length > 3 && (
           <div style={{ textAlign: 'center', marginTop: 10 }}>
             <button
               onClick={() => setMostrarTodas(v => !v)}
               style={{ 
-                fontSize: 13, fontWeight: 700, color: '#2563eb', background: 'none', 
-                border: 'none', cursor: 'pointer', padding: '8px 16px' 
+                background: '#fff', border: '1px solid #dbe5f3', color: '#2f4ea2',
+                padding: '8px 16px', borderRadius: '8px', display: 'inline-flex',
+                alignItems: 'center', gap: 8, cursor: 'pointer', fontWeight: 600,
+                fontSize: 13
               }}
             >
               {mostrarTodas ? 'Ver menos reseñas' : 'Ver más reseñas ˅'}
