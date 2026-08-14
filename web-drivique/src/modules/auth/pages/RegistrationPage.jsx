@@ -6,7 +6,7 @@ import { useRegistration } from '../hooks/useRegistration'
 import { useSocialRegistration } from '../hooks/useSocialRegistration'
 import { useAuthStore } from '../../../store/authStore'
 import { useLanding } from '@/modules/landing/LandingContext'
-import logo from '@/assets/logo.png'
+import logo from '@/assets/logocatalog.png'
 import { showAlert } from '@/utils/swalConfig'
 import {
   FaTimes,
@@ -16,24 +16,27 @@ import {
   FaHeadset,
   FaCheckCircle
 } from 'react-icons/fa'
+import AuthHeaderControls from '../components/AuthHeaderControls'
+import LeftPanel from '../components/LeftPanel'
 
 const COLOR_MARCA = '#1e3a8a'
 
 const coloresRegistro = (esModoOscuro) => ({
   pageBg: esModoOscuro ? '#0f172a' : '#f8fafc',
-  panelCard: esModoOscuro ? '#111827' : '#ffffff',
-  panelCardBorder: esModoOscuro ? '#1e293b' : '#f1f5f9',
-  panelCardShadow: esModoOscuro ? '0 10px 40px rgba(0,0,0,0.35)' : '0 4px 32px rgba(0,0,0,0.07)',
-  title: esModoOscuro ? '#f8fafc' : '#0f172a',
-  text: esModoOscuro ? '#e2e8f0' : '#1e293b',
-  textSoft: esModoOscuro ? '#cbd5e1' : '#475569',
+  panelCard: esModoOscuro ? '#0e172a' : '#ffffff',
+  panelCardBorder: esModoOscuro ? '#1e293b' : '#dbe5f3',
+  panelCardShadow: esModoOscuro ? '0 10px 40px rgba(0,0,0,0.35)' : '0 10px 30px rgba(30,58,138,0.06)',
+  title: esModoOscuro ? '#ffffff' : '#1e3a8a',
+  labelColor: esModoOscuro ? '#ffffff' : '#1e3a8a',
+  text: esModoOscuro ? '#ffffff' : '#1e293b',
+  textSoft: esModoOscuro ? '#94a3b8' : '#475569',
   textMuted: esModoOscuro ? '#94a3b8' : '#64748b',
   textFaint: esModoOscuro ? '#64748b' : '#94a3b8',
 
-  inputBg: esModoOscuro ? '#0f172a' : '#f8fafc',
-  inputText: esModoOscuro ? '#f8fafc' : '#1e293b',
-  inputBorder: esModoOscuro ? '#334155' : '#e2e8f0',
-  inputBorderHover: esModoOscuro ? '#475569' : '#cbd5e1',
+  inputBg: esModoOscuro ? '#172136' : '#ffffff',
+  inputText: esModoOscuro ? '#ffffff' : '#1e293b',
+  inputBorder: esModoOscuro ? '#23314d' : '#dbe5f3',
+  inputBorderHover: esModoOscuro ? '#60a5fa' : '#cbd5e1',
   inputPlaceholder: esModoOscuro ? '#64748b' : '#94a3b8',
 
   inputErrorBg: esModoOscuro ? 'rgba(127,29,29,0.18)' : '#fef2f2',
@@ -62,8 +65,8 @@ const coloresRegistro = (esModoOscuro) => ({
   checklistTrack: esModoOscuro ? '#334155' : '#e2e8f0',
   checklistNeutralDotBg: esModoOscuro ? '#1e293b' : '#f1f5f9',
   checklistNeutralDotColor: esModoOscuro ? '#64748b' : '#94a3b8',
-  checklistOkDotBg: esModoOscuro ? 'rgba(22,163,74,0.18)' : '#dcfce7',
-  checklistOkDotColor: esModoOscuro ? '#86efac' : '#16a34a',
+  checklistOkDotBg: esModoOscuro ? 'rgba(34,197,94,0.2)' : '#dcfce7',
+  checklistOkDotColor: esModoOscuro ? '#4ade80' : '#16a34a',
   checklistOkText: esModoOscuro ? '#bbf7d0' : '#15803d',
   checklistOffText: esModoOscuro ? '#94a3b8' : '#64748b',
 
@@ -115,15 +118,8 @@ const fieldWrap = { display: 'flex', flexDirection: 'column', gap: '5px' }
 
 function ModalTerminos({ onCerrar, onAceptar, c }) {
   const { t } = useTranslation()
-  const clausulas = [
-    { num: '1', titulo: 'Objeto', texto: 'Drivique presta el servicio de arrendamiento de vehículos a personas naturales mayores de 18 años con licencia de conducción vigente. La relación contractual se perfecciona mediante la aceptación electrónica de estos términos, conforme al artículo 14 de la Ley 527 de 1999 (comercio electrónico).' },
-    { num: '2', titulo: 'Tratamiento de datos personales — Ley 1581 de 2012', texto: 'En cumplimiento de la Ley Estatutaria 1581 de 2012 y el Decreto Reglamentario 1377 de 2013, Drivique, identificada con NIT 900.XXX.XXX-X, actúa como Responsable del Tratamiento de sus datos personales. Los datos recolectados (correo electrónico) se utilizarán exclusivamente para: (i) prestación del servicio de arrendamiento, (ii) envío de confirmaciones y notificaciones, (iii) cumplimiento de obligaciones legales. No se transferirán a terceros sin su autorización previa, salvo mandato judicial o legal. Puede ejercer sus derechos de acceso, corrección, supresión y revocación escribiendo a privacidad@Drivique.com.' },
-    { num: '3', titulo: 'Veracidad de la información y responsabilidad del usuario', texto: 'El usuario declara bajo juramento que la información suministrada es verídica y actual. El suministro de datos falsos constituye una conducta punible conforme al artículo 286 del Código Penal colombiano (falsedad en documento privado, pena de 1 a 6 años de prisión). Drivique queda exonerada de toda responsabilidad civil y penal derivada de información falsa o suplantación de identidad, al tenor del artículo 1604 del Código Civil.' },
-    { num: '4', titulo: 'Seguridad de la cuenta', texto: 'El usuario es el único responsable de la custodia de sus credenciales de acceso (correo y contraseña). Cualquier actividad realizada con dichas credenciales se presumirá efectuada por el titular de la cuenta. En caso de compromiso de seguridad, el usuario deberá notificarlo de inmediato a soporte@Drivique.com.' },
-    { num: '5', titulo: 'Validez de la aceptación electrónica', texto: 'La marcación del casillero "Acepto los términos y condiciones" constituye una firma electrónica válida con plena eficacia jurídica, de conformidad con los artículos 7 y 14 de la Ley 527 de 1999. Esta aceptación queda registrada con fecha, hora y dirección IP para efectos probatorios.' },
-    { num: '6', titulo: 'Modificaciones', texto: 'Drivique podrá modificar estos términos notificando al correo registrado con al menos 15 días de antelación. El uso continuado de la plataforma tras dicho plazo implica la aceptación de los cambios.' },
-    { num: '7', titulo: 'Ley aplicable y jurisdicción', texto: 'El presente acuerdo se rige por las leyes de la República de Colombia. Cualquier controversia será resuelta ante los jueces competentes de la ciudad de Bogotá D.C., con renuncia expresa a cualquier otro fuero.' },
-  ]
+  const clausulasObtenidas = t('registro.modal.clausulas', { returnObjects: true })
+  const clausulas = Array.isArray(clausulasObtenidas) ? clausulasObtenidas : []
 
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 999, background: c.modalOverlay, backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}>
@@ -462,37 +458,86 @@ export default function RegistroPage() {
         />
       )}
 
-      <div style={{ height: '100vh', display: 'flex', overflow: 'hidden', background: c.pageBg }}>
-        <div className="lg-left" style={{ display: 'none', width: '42%', flexDirection: 'column', background: 'linear-gradient(160deg,#060e2e 0%,#0c1f5c 50%,#1e3a8a 100%)', position: 'relative', overflow: 'hidden', flexShrink: 0 }}>
-          <style>{`@media(min-width:1024px){.lg-left{display:flex !important}}`}</style>
+      <div style={{ minHeight: '112vh', display: 'flex', background: c.pageBg, zoom: 0.9 }} className="auth-responsive-layout">
+        <style>{`
+          .auth-responsive-layout {
+            flex-direction: column-reverse !important;
+          }
+          .lg-left {
+            width: 100% !important;
+            border-bottom: ${esModoOscuro ? '1px solid #334155' : '1px solid rgba(255,255,255,0.12)'};
+            display: flex !important;
+          }
+          @media(min-width:1024px) {
+            .auth-responsive-layout {
+              flex-direction: row !important;
+            }
+            .lg-left {
+              width: 42% !important;
+              border-bottom: none !important;
+              border-right: ${esModoOscuro ? '1px solid #334155' : '1px solid rgba(255,255,255,0.12)'} !important;
+            }
+          }
+        `}</style>
+
+        <div className="lg-left" style={{ display: 'flex', flexDirection: 'column', background: esModoOscuro ? 'linear-gradient(160deg, #070d1e 0%, #0f172a 55%, #1e293b 100%)' : 'linear-gradient(160deg,#060e2e 0%,#0c1f5c 50%,#1e3a8a 100%)', position: 'relative', overflow: 'hidden', flexShrink: 0 }}>
           <div style={{ position: 'absolute', top: '-100px', left: '-100px', width: '400px', height: '400px', borderRadius: '50%', border: '1px solid rgba(255,255,255,0.05)', background: 'rgba(255,255,255,0.02)' }} />
           <div style={{ position: 'absolute', bottom: '-80px', right: '-80px', width: '340px', height: '340px', borderRadius: '50%', background: 'rgba(99,102,241,0.08)' }} />
 
           <div style={{ position: 'relative', zIndex: 1, flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 36px', textAlign: 'center', gap: '24px' }}>
-            <img src={logo} alt="Drivique" style={{ height: '160px', filter: 'brightness(0) invert(1)' }} />
-            <div>
-              <h2 style={{ color: '#fff', fontSize: '1.4rem', fontWeight: 900, margin: '0 0 8px' }}>{t('registro.leftPanel.title')}</h2>
-              <p style={{ color: 'rgba(191,219,254,0.7)', fontSize: '13px', lineHeight: 1.6, maxWidth: '240px', margin: '0 auto' }}>
-                {t('registro.leftPanel.subtitle')}
-              </p>
+            <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+              <img src={logo} alt="Drivique" style={{ height: '48px', width: 'auto', display: 'block', filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.25))' }} />
+              <span style={{
+                fontFamily: 'Outfit, Inter, sans-serif',
+                fontWeight: 900,
+                fontSize: '18px',
+                letterSpacing: '0.14em',
+                color: '#93c5fd',
+                textTransform: 'uppercase',
+                textShadow: '0 2px 10px rgba(147,197,253,0.35)'
+              }}>
+                DRIVIQUE
+              </span>
             </div>
+            {/* Contenedor glassmórfico de la información */}
+            <div style={{
+              background: esModoOscuro ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.06)',
+              backdropFilter: 'blur(24px)',
+              WebkitBackdropFilter: 'blur(24px)',
+              border: esModoOscuro ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(255, 255, 255, 0.14)',
+              borderRadius: '24px',
+              padding: '32px 28px',
+              boxShadow: esModoOscuro ? '0 20px 50px rgba(0, 0, 0, 0.4)' : '0 20px 50px rgba(0, 0, 0, 0.25)',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '22px',
+              width: '100%',
+              maxWidth: '360px',
+              boxSizing: 'border-box',
+              transition: 'all 300ms ease'
+            }}>
+              <div>
+                <p style={{ color: 'rgba(191,219,254,0.7)', fontSize: '13px', lineHeight: 1.6, maxWidth: '260px', margin: '0 auto' }}>
+                  {t('registro.leftPanel.subtitle')}
+                </p>
+              </div>
 
-            <span></span>
-
-            <div style={{ width: '80%', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              {[
-                { icon: FaCheckCircle, text: t('registro.leftPanel.feature1') },
-                { icon: FaCreditCard, text: t('registro.leftPanel.feature2') },
-                { icon: FaFileAlt, text: t('registro.leftPanel.feature3') },
-                { icon: FaHeadset, text: t('registro.leftPanel.feature4') },
-              ].map(({ icon: Icono, text }) => (
-                <div key={text} style={{ display: 'flex', alignItems: 'center', gap: '10px', background: c.leftPanelCardBg, borderRadius: '10px', padding: '10px 14px', border: `1px solid ${c.leftPanelCardBorder}` }}>
-                  <span style={{ fontSize: '16px', flexShrink: 0, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <Icono />
-                  </span>
-                  <p style={{ color: '#fff', fontSize: '13px', fontWeight: 600, margin: 0, textAlign: 'left' }}>{text}</p>
-                </div>
-              ))}
+              <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {[
+                  { icon: FaCheckCircle, text: t('registro.leftPanel.feature1') },
+                  { icon: FaCreditCard, text: t('registro.leftPanel.feature2') },
+                  { icon: FaFileAlt, text: t('registro.leftPanel.feature3') },
+                  { icon: FaHeadset, text: t('registro.leftPanel.feature4') },
+                ].map(({ icon: Icono, text }) => (
+                  <div key={text} style={{ display: 'flex', alignItems: 'center', gap: '10px', background: esModoOscuro ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.08)', borderRadius: '10px', padding: '10px 14px', border: esModoOscuro ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(255,255,255,0.1)' }}>
+                    <span style={{ fontSize: '16px', flexShrink: 0, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Icono />
+                    </span>
+                    <p style={{ color: '#fff', fontSize: '13px', fontWeight: 600, margin: 0, textAlign: 'left' }}>{text}</p>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
@@ -503,30 +548,33 @@ export default function RegistroPage() {
 
         <div style={{ flex: 1, background: c.pageBg, overflowY: 'auto', height: '100%' }}>
           <div className="auth-contenedor" style={{ minHeight: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '32px 24px' }}>
-            <div className="logo-mob" style={{ marginBottom: '20px' }}>
-              <style>{`@media(min-width:1024px){.logo-mob{display:none}}`}</style>
-              <img src={logo} alt="Drivique" style={{ height: '110px', display: 'block', margin: '0 auto' }} />
-            </div>
-
-            <div style={{ width: '100%', maxWidth: '460px', marginBottom: '10px' }}>
-              <button
-                type="button"
-                onClick={() => navigate('/')}
-                style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', background: 'none', border: 'none', cursor: 'pointer', color: c.volver, fontSize: '13px', fontWeight: 500, padding: 0 }}
-                onMouseEnter={e => { e.currentTarget.style.color = c.volverHover }}
-                onMouseLeave={e => { e.currentTarget.style.color = c.volver }}
-              >
-                <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-                </svg>
-                {t('common.backToHome')}
-              </button>
+            <div style={{ width: '100%', maxWidth: '460px' }}>
+              <AuthHeaderControls backTo="/" backLabelKey="common.backToHome" backLabelFallback="Volver al inicio" />
             </div>
 
             <div className="auth-card" style={{ width: '100%', maxWidth: '460px', background: c.panelCard, borderRadius: '24px', boxShadow: c.panelCardShadow, border: `1px solid ${c.panelCardBorder}`, padding: '36px' }}>
-              <div style={{ marginBottom: '24px' }}>
-                <h1 style={{ fontSize: '1.5rem', fontWeight: 900, color: c.title, margin: '0 0 6px' }}>{t('registro.title')}</h1>
-                <p style={{ fontSize: '13px', color: c.textMuted, margin: 0 }}>{t('registro.subtitle')}</p>
+              <div style={{ marginBottom: '24px', textAlign: 'center' }}>
+                <h1 style={{
+                  fontFamily: 'Outfit, Inter, system-ui, sans-serif',
+                  fontSize: '1.55rem',
+                  fontWeight: 900,
+                  color: esModoOscuro ? '#f8fafc' : '#0f172a',
+                  margin: '0 0 6px',
+                  letterSpacing: '-0.02em',
+                  lineHeight: 1.25
+                }}>
+                  {t('registro.title')}
+                </h1>
+                <p style={{
+                  fontFamily: 'Inter, system-ui, sans-serif',
+                  fontSize: '13.5px',
+                  color: esModoOscuro ? '#94a3b8' : '#64748b',
+                  fontWeight: 500,
+                  margin: 0,
+                  lineHeight: 1.5
+                }}>
+                  {t('registro.subtitle')}
+                </p>
               </div>
 
               {exitoFinal && (
