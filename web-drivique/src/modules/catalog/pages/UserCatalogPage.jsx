@@ -1,16 +1,18 @@
 import { useEffect, useMemo, useState, useRef, useLayoutEffect } from 'react'
+import { useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '../../../store/authStore'
 import { useLanding } from '../../landing/LandingContext'
 import { COLOR_MARCA } from '../constants'
 import { useCatalogo } from '../hooks/useCatalog'
 import { useFavoritos } from '../hooks/useFavorites'
-import { FaSearch, FaTimes } from 'react-icons/fa'
+import { FaSearch, FaTimes, FaSlidersH, FaCalendarAlt } from 'react-icons/fa'
 import CatalogTopHeader from '../components/CatalogTopHeader'
 import SearchHero from '../components/SearchHero'
 import CatalogFilters from '../components/CatalogFilters'
 import MobileFiltersModal from '../components/MobileFiltersModal'
 import MobileSearchModal from '../components/MobileSearchModal'
+import CatalogSearchBar from '../components/CatalogSearchBar'
 import VehicleGrid from '../components/VehicleGrid'
 import CatalogPagination from '../components/CatalogPagination'
 import LoadingState from '../components/LoadingState'
@@ -85,6 +87,16 @@ export default function CatalogoUsuarioPage() {
   const [filtrosMovilAbierto, setFiltrosMovilAbierto] = useState(false)
   const [busquedaMovilAbierta, setBusquedaMovilAbierta] = useState(false)
   const [modalFiltrosCerrado, setModalFiltrosCerrado] = useState(false)
+
+  const location = useLocation()
+
+  useEffect(() => {
+    if (location.state?.sucursalFiltro) {
+      setFiltro('sucursal', location.state.sucursalFiltro)
+    } else if (location.state?.textoBusqueda) {
+      setTextoLibre(location.state.textoBusqueda)
+    }
+  }, [location.state])
 
   const {
     cargando,
@@ -194,27 +206,64 @@ export default function CatalogoUsuarioPage() {
           className="catalogo-search-sticky"
           style={{ top: `${headerAltura}px`, background: c.pageBg }}
         >
+          {/* DESKTOP SEARCH HERO */}
+          <div className="search-hero-desktop">
+            <SearchHero
+              c={c}
+              cargando={cargando}
+              resultado={resultado}
+              inputStyle={inputStyle}
+              labelStyle={labelStyle}
+              busquedaForm={busquedaForm}
+              setForm={setForm}
+              errorBusqueda={errorBusqueda}
+              handleBuscar={handleBuscar}
+              invitado={false}
+              textoLibre={textoLibre}
+              setTextoLibre={setTextoLibre}
+              mostrarBusquedaLibre={true}
+              busquedaAplicada={busquedaAplicada}
+              sinCoincidenciasTexto={sinCoincidenciasTexto}
+              sinDisponibilidadFechas={sinDisponibilidadFechas}
+              onLimpiar={limpiarTodo}
+            />
+          </div>
 
-          {/* BUSCADOR DE SELECTS — Ciudad / Sucursal / Fechas / Buscar / Limpiar */}
-          <SearchHero
-            c={c}
-            cargando={cargando}
-            resultado={resultado}
-            inputStyle={inputStyle}
-            labelStyle={labelStyle}
-            busquedaForm={busquedaForm}
-            setForm={setForm}
-            errorBusqueda={errorBusqueda}
-            handleBuscar={handleBuscar}
-            invitado={false}
-            textoLibre={textoLibre}
-            setTextoLibre={setTextoLibre}
-            mostrarBusquedaLibre={true}
-            busquedaAplicada={busquedaAplicada}
-            sinCoincidenciasTexto={sinCoincidenciasTexto}
-            sinDisponibilidadFechas={sinDisponibilidadFechas}
-            onLimpiar={limpiarTodo}
-          />
+          {/* MOBILE RESPONSIVE SEARCH BAR: Free Search + Date/Location Icon Button */}
+          <div className="search-hero-mobile">
+            <div className="search-hero-mobile-inner">
+              <CatalogSearchBar
+                c={c}
+                textoLibre={textoLibre}
+                setTextoLibre={setTextoLibre}
+                sinCoincidenciasTexto={sinCoincidenciasTexto}
+                containerClassName="catalogo-mobile-search-bar"
+              />
+
+              <button
+                type="button"
+                onClick={() => setBusquedaMovilAbierta(true)}
+                aria-label="Buscar por fechas y sucursal"
+                style={{
+                  height: '44px',
+                  width: '44px',
+                  borderRadius: '12px',
+                  background: c.heroCardBg,
+                  border: `1px solid ${c.heroCardBorder}`,
+                  color: c.accentText,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                  cursor: 'pointer',
+                  boxShadow: '0 2px 10px rgba(30, 58, 138, 0.04)',
+                }}
+                title="Seleccionar ciudad, sucursal y fechas"
+              >
+                <FaCalendarAlt size={17} color={c.accentText} />
+              </button>
+            </div>
+          </div>
         </div>
 
         <section className="catalogo-content">
@@ -240,23 +289,44 @@ export default function CatalogoUsuarioPage() {
             <div className="catalogo-results">
 
               <div className="catalogo-results-toolbar">
-                {!cargando ? (
-                  <span className="catalogo-results-count">
-                    {resultado.length} {t('catalogo.available')}
-                  </span>
-                ) : (
-                  <span />
-                )}
+                <div className="catalogo-toolbar-left" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <button
+                    type="button"
+                    className="btn-filtros-movil"
+                    onClick={() => setFiltrosMovilAbierto(true)}
+                    style={{
+                      alignItems: 'center',
+                      gap: '6px',
+                      padding: '7px 14px',
+                      borderRadius: '10px',
+                      background: c.heroCardBg,
+                      border: `1px solid ${c.panelBorderStrong}`,
+                      color: c.textPrimary,
+                      fontWeight: 700,
+                      fontSize: '13px',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <FaSlidersH size={13} color={c.accentText} />
+                    <span>{t('catalogo.filters', 'Filtros')}</span>
+                  </button>
 
-                <div className="catalogo-sort">
-                  <span>{t('catalogo.sort')}:</span>
+                  {!cargando && (
+                    <span className="catalogo-results-count">
+                      {resultado.length} {t('catalogo.vehicles', 'vehículos')}
+                    </span>
+                  )}
+                </div>
+
+                <div className="catalogo-sort" style={{ marginLeft: 'auto' }}>
+                  <span className="catalogo-sort-label">{t('catalogo.sort')}:</span>
                   <select
                     value={filtros.orden}
                     onChange={e => setFiltro('orden', e.target.value)}
                     style={{
                       ...inputStyle,
                       width: 'auto',
-                      minWidth: '190px',
+                      minWidth: '150px',
                       minHeight: '36px',
                       padding: '7px 10px',
                       cursor: 'pointer',
