@@ -2,6 +2,7 @@ import { Link, useLocation } from 'react-router-dom'
 import { FaArrowLeft, FaUserCircle } from 'react-icons/fa'
 import { useTranslation } from 'react-i18next'
 import logo from '@/assets/logocatalog.png'
+import MenuConfiguracion from '@/components/MenuConfiguracion'
 import { showAlert } from '@/utils/swalConfig'
 import './CatalogTopHeader.css'
 
@@ -37,12 +38,10 @@ export default function CatalogTopHeader({
       }}
     >
       <div className={innerClassName}>
-        <div className="catalogo-logo-link">
+        <Link to={modoRegistrado ? '/home' : '/catalogo'} className="catalogo-logo-link">
           <img src={logo} alt="Drivique" className="catalogo-logo" />
-          <div className="catalogo-logo-text">
-            <span className="catalogo-logo-title" style={{ color: c.accentText }}>Drivique</span>
-          </div>
-        </div>
+          <span className="catalogo-logo-title" style={{ color: c.accentText }}>Drivique</span>
+        </Link>
 
         {modoRegistrado && (
           <nav className="catalogo-header-nav" style={{ display: 'flex', gap: '32px', alignItems: 'center', marginLeft: 'auto', marginRight: '32px' }}>
@@ -91,31 +90,35 @@ export default function CatalogTopHeader({
 
         {children}
 
-        {mostrarVolverInicio && (
-          <Link
-            to="/"
-            className="catalogo-header-back"
-            style={{
-              border: `1px solid ${c.heroCardBorder}`,
-              background: c.heroCardBg,
-              color: c.accentText,
-            }}
-          >
-            <FaArrowLeft size={12} />
-            Volver al inicio
-          </Link>
-        )}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginLeft: 'auto', flexShrink: 0, position: 'relative', zIndex: 10 }}>
+          <MenuConfiguracion />
 
-        {mostrarPerfil && (
-          <Link
-            to="/perfil"
-            aria-label="Perfil"
-            className="catalogo-header-profile"
-            style={{ color: c.accentText }}
-          >
-            <FaUserCircle size={30} />
-          </Link>
-        )}
+          {mostrarVolverInicio && (
+            <Link
+              to="/"
+              className="catalogo-header-back"
+              style={{
+                border: `1px solid ${c.heroCardBorder}`,
+                background: c.heroCardBg,
+                color: c.accentText,
+              }}
+            >
+              <FaArrowLeft size={12} />
+              {t('catalogo.backToHome', 'Volver al inicio')}
+            </Link>
+          )}
+
+          {mostrarPerfil && (
+            <Link
+              to="/perfil"
+              aria-label="Perfil"
+              className="catalogo-header-profile"
+              style={{ color: c.accentText }}
+            >
+              <FaUserCircle size={30} />
+            </Link>
+          )}
+        </div>
       </div>
     </header>
   )

@@ -57,7 +57,7 @@ export default function ModalFiltrosMovil({ abierto, onCerrar, c, resultado = []
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <span style={{ color: c.accentText }}><FaSlidersH size={16} /></span>
-            <h2 style={{ fontSize: '16px', fontWeight: 800, color: c.textPrimary, margin: 0 }}>
+            <h2 style={{ fontSize: '16px', fontWeight: 600, letterSpacing: '0.02em', color: c.textPrimary, margin: 0 }}>
               {t('catalogo.filters')}
             </h2>
           </div>
