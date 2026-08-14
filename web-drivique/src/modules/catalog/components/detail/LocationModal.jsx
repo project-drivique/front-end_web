@@ -1,10 +1,19 @@
 import { FaTimes, FaMapMarkerAlt, FaClock, FaDirections } from 'react-icons/fa'
 import { createPortal } from 'react-dom'
+import { useTranslation } from 'react-i18next'
 
-export default function LocationModal({ visible, onClose, sucursalInfo }) {
+const SCHEDULE_MAP = {
+  'Lun a sáb, 7:00 am - 7:00 pm': 'vehiculo.scheduleMonSat',
+  'Lun a dom, 6:00 am - 10:00 pm': 'vehiculo.scheduleMonSun',
+  'Todos los días, 6:00 am - 10:00 pm': 'vehiculo.scheduleMonSun',
+}
+
+export default function LocationModal({ visible, onClose, sucursalInfo, c }) {
+  const { t } = useTranslation()
   if (!visible || !sucursalInfo) return null
 
   const { nombre, direccion, horario } = sucursalInfo
+  const horarioTraducido = SCHEDULE_MAP[horario] ? t(SCHEDULE_MAP[horario]) : horario
 
   const handleBackdropClick = (e) => {
     if (e.target === e.currentTarget) {
@@ -16,6 +25,13 @@ export default function LocationModal({ visible, onClose, sucursalInfo }) {
   const mapEmbedUrl = direccion
     ? `https://maps.google.com/maps?q=${encodeURIComponent(direccion)}&t=&z=15&ie=UTF8&iwloc=&output=embed`
     : ''
+
+  const cardBg = c?.cardBg || 'var(--bg-tarjeta)'
+  const footerBg = c?.subCardBg || 'var(--bg-item)'
+  const borderColor = c?.cardBorder || 'var(--borde)'
+  const titleColor = c?.titleColor || 'var(--texto-acento)'
+  const textPrimary = c?.textPrimary || 'var(--texto-primary)'
+  const textSecondary = c?.textSecondary || 'var(--texto-second)'
 
   return createPortal(
     <div
@@ -37,25 +53,26 @@ export default function LocationModal({ visible, onClose, sucursalInfo }) {
     >
       <div
         style={{
-          background: '#fff',
+          background: cardBg,
           width: '100%',
           maxWidth: '600px',
           borderRadius: '16px',
           overflow: 'hidden',
-          boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+          boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.25), 0 10px 10px -5px rgba(0, 0, 0, 0.1)',
           animation: 'modalSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+          border: `1px solid ${borderColor}`,
         }}
       >
         {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 24px', borderBottom: '1px solid #e2e8f0' }}>
-          <h2 style={{ margin: 0, fontSize: 18, fontWeight: 800, color: '#1e3a8a', display: 'flex', alignItems: 'center', gap: 8 }}>
-            <FaDirections /> Cómo llegar
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 24px', borderBottom: `1px solid ${borderColor}` }}>
+          <h2 style={{ margin: 0, fontSize: 18, fontWeight: 800, color: titleColor, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <FaDirections /> {t('vehiculo.howToGetThere', 'Cómo llegar')}
           </h2>
           <button
             onClick={onClose}
             style={{
               background: 'none', border: 'none', cursor: 'pointer',
-              color: '#64748b', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              color: textSecondary, display: 'flex', alignItems: 'center', justifyContent: 'center',
               width: 32, height: 32, borderRadius: '50%', padding: 0
             }}
           >
@@ -66,18 +83,19 @@ export default function LocationModal({ visible, onClose, sucursalInfo }) {
         {/* Content */}
         <div style={{ padding: '24px' }}>
           <div style={{ marginBottom: 20 }}>
-            <p style={{ fontSize: 16, fontWeight: 700, color: 'var(--texto-primary)', margin: '0 0 8px' }}>
+            <p style={{ fontSize: 16, fontWeight: 700, color: textPrimary, margin: '0 0 8px' }}>
               {nombre}
             </p>
             {horario && (
-              <p style={{ fontSize: 14, color: 'var(--texto-second)', margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
-                <FaClock size={14} color="#94a3b8" /> {horario}
+              <p style={{ fontSize: 14, color: textSecondary, margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
+                <FaClock size={14} color="#94a3b8" /> {horarioTraducido}
               </p>
             )}
           </div>
 
+
           {mapEmbedUrl && (
-            <div style={{ width: '100%', height: '300px', borderRadius: '12px', overflow: 'hidden', background: '#e2e8f0' }}>
+            <div style={{ width: '100%', height: '300px', borderRadius: '12px', overflow: 'hidden', background: footerBg }}>
               <iframe
                 title="Mapa de la sucursal"
                 width="100%"
@@ -91,19 +109,20 @@ export default function LocationModal({ visible, onClose, sucursalInfo }) {
           )}
         </div>
 
-        {/* Footer (Optional) */}
-        <div style={{ padding: '16px 24px', background: '#f8fafc', borderTop: '1px solid #e2e8f0', display: 'flex', justifyContent: 'flex-end' }}>
+        {/* Footer */}
+        <div style={{ padding: '16px 24px', background: footerBg, borderTop: `1px solid ${borderColor}`, display: 'flex', justifyContent: 'flex-end' }}>
           <button
             onClick={onClose}
             style={{
-              background: '#1e3a8a', color: '#fff', border: 'none', borderRadius: '8px',
+              background: 'linear-gradient(90deg, #1e3a8a, #2563eb)', color: '#fff', border: 'none', borderRadius: '8px',
               padding: '10px 20px', fontSize: 14, fontWeight: 700, cursor: 'pointer'
             }}
           >
-            Cerrar
+            {t('common.close', 'Cerrar')}
           </button>
         </div>
       </div>
+
 
       <style>{`
         @keyframes modalSlideUp {

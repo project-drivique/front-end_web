@@ -1,19 +1,25 @@
 import { useTranslation } from 'react-i18next'
 import { FaAlignLeft } from 'react-icons/fa'
 
-export default function DescriptionSection({ descripcion }) {
+export default function DescriptionSection({ descripcion, id, c }) {
   const { t } = useTranslation()
 
   if (!descripcion) return null
+  const textoDescripcion = id ? t(`vehiculo.descriptions.${id}`, { defaultValue: descripcion }) : descripcion
+
+  const bg = c?.cardBg || '#fff'
+  const border = c?.cardBorder || '#e2e8f0'
+  const titleColor = c?.titleColor || '#1e3a8a'
+  const textColor = c?.textSecondary || '#64748b'
 
   return (
-    <div style={{ background: '#fff', padding: 20, borderRadius: 16, border: '1px solid #e2e8f0' }}>
+    <div style={{ background: bg, padding: 20, borderRadius: 16, border: `1px solid ${border}` }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-        <FaAlignLeft color="#2563eb" size={14} />
-        <h3 style={{ fontSize: 13, fontWeight: 700, color: '#1e3a8a', margin: 0 }}>{t('vehiculo.description', 'Descripción')}</h3>
+        <FaAlignLeft color={c?.accentText || '#2563eb'} size={14} />
+        <h3 style={{ fontSize: 13, fontWeight: 700, color: titleColor, margin: 0 }}>{t('vehiculo.description', 'Descripción')}</h3>
       </div>
-      <p style={{ fontSize: 13, color: '#64748b', lineHeight: 1.6, margin: 0 }}>
-        {descripcion}
+      <p style={{ fontSize: 13, color: textColor, lineHeight: 1.6, margin: 0 }}>
+        {textoDescripcion}
       </p>
     </div>
   )

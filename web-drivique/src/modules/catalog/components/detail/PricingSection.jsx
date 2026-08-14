@@ -18,39 +18,50 @@ function PriceRow({ label, value, sub }) {
   )
 }
 
-export default function PricingSection({ tarifas, seguros = [] }) {
+export default function PricingSection({ tarifas, seguros = [], c }) {
   const { t } = useTranslation()
   const { moneda } = useLanding()
 
   if (!tarifas && !seguros.length) return null
 
+  const bg = c?.cardBg || '#fff'
+  const border = c?.cardBorder || '#e2e8f0'
+  const titleColor = c?.titleColor || '#1e3a8a'
+  const subBg = c?.subCardBg || '#f8fafc'
+  const subBorder = c?.subCardBorder || '#e2e8f0'
+
   const kmLimit = tarifas?.kmLimitado || { precio: 0, km: 0 }
   const kmIlimit = tarifas?.kmIlimitado || { precio: 0 }
 
+  const seguroNombreMap = {
+    'Protección Obligatoria': 'catalogo.basicProtection',
+    'Protección Total': 'catalogo.fullProtection',
+  }
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-      
-          {/* Tarjeta Tarifas */}
+
+      {/* Tarjeta Tarifas */}
       {tarifas && (
-        <div style={{ background: '#fff', padding: 20, borderRadius: 16, border: '1px solid #e2e8f0' }}>
+        <div style={{ background: bg, padding: 20, borderRadius: 16, border: `1px solid ${border}` }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-            <FaRoad size={14} color="#2563eb" />
-            <h3 style={{ fontSize: 13, fontWeight: 700, color: '#1e3a8a', margin: 0 }}>Tarifas por kilometraje</h3>
+            <FaRoad size={14} color={c?.accentText || "#2563eb"} />
+            <h3 style={{ fontSize: 13, fontWeight: 700, color: titleColor, margin: 0 }}>{t('vehiculo.mileageRates', 'Tarifas por kilometraje')}</h3>
           </div>
-          
+
           <div style={{ 
-            background: '#f8fafc', 
-            border: '1px solid #e2e8f0', 
+            background: subBg, 
+            border: `1px solid ${subBorder}`, 
             borderRadius: 12, padding: '0 16px' 
           }}>
             <PriceRow
-              label="Kilometraje limitado"
-              sub={`${kmLimit.km} km/día incluidos · Excedente: ${formatCurrency(kmLimit.excedente, moneda)}/km adicional`}
-              value={`${formatCurrency(kmLimit.precio, moneda)} /día`}
+              label={t('vehiculo.limitedMileage', 'Kilometraje limitado')}
+              sub={t('vehiculo.kmIncludedSub', { km: kmLimit.km, excedente: formatCurrency(kmLimit.excedente, moneda), defaultValue: `${kmLimit.km} km/día incluidos · Excedente: ${formatCurrency(kmLimit.excedente, moneda)}/km adicional` })}
+              value={`${formatCurrency(kmLimit.precio, moneda)}${t('catalogo.perDay', '/día')}`}
             />
             <PriceRow
-              label="Kilometraje ilimitado"
-              value={`${formatCurrency(kmIlimit.precio, moneda)} /día`}
+              label={t('vehiculo.unlimitedMileage', 'Kilometraje ilimitado')}
+              value={`${formatCurrency(kmIlimit.precio, moneda)}${t('catalogo.perDay', '/día')}`}
             />
           </div>
         </div>
@@ -58,22 +69,22 @@ export default function PricingSection({ tarifas, seguros = [] }) {
 
       {/* Tarjeta Seguros */}
       {seguros.length > 0 && (
-        <div style={{ background: '#fff', padding: 20, borderRadius: 16, border: '1px solid #e2e8f0' }}>
+        <div style={{ background: bg, padding: 20, borderRadius: 16, border: `1px solid ${border}` }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-            <FaShieldAlt size={14} color="#2563eb" />
-            <h3 style={{ fontSize: 13, fontWeight: 700, color: '#1e3a8a', margin: 0 }}>Seguros</h3>
+            <FaShieldAlt size={14} color={c?.accentText || "#2563eb"} />
+            <h3 style={{ fontSize: 13, fontWeight: 700, color: titleColor, margin: 0 }}>{t('vehiculo.insurance', 'Seguros')}</h3>
           </div>
-          
+
           <div style={{ 
-            background: '#f8fafc', 
-            border: '1px solid #e2e8f0', 
+            background: subBg, 
+            border: `1px solid ${subBorder}`, 
             borderRadius: 12, padding: '0 16px' 
           }}>
             {seguros.map((seg, i) => (
               <PriceRow
                 key={i}
-                label={seg.nombre}
-                value={`${formatCurrency(seg.precio, moneda)} /día`}
+                label={seguroNombreMap[seg.nombre] ? t(seguroNombreMap[seg.nombre]) : seg.nombre}
+                value={`${formatCurrency(seg.precio, moneda)}${t('catalogo.perDay', '/día')}`}
               />
             ))}
           </div>
@@ -82,4 +93,4 @@ export default function PricingSection({ tarifas, seguros = [] }) {
 
     </div>
   )
-}
+}
