@@ -134,7 +134,7 @@ export default function HeroBusqueda({
                     zIndex: 2,
                   }}
                 >
-                  Limpiar
+                  {t('catalogo.clear')}
                 </button>
               )}
             </div>
@@ -154,14 +154,14 @@ export default function HeroBusqueda({
             <div>
               <label style={{ ...labelStyle, display: 'flex', alignItems: 'center', gap: '5px' }}>
                 <FaMapMarkerAlt size={10} color={c.accentText} />
-                Ciudad
+                {t('catalogo.cityLabel')}
               </label>
               <select
                 value={busquedaForm.ciudad || ''}
                 onChange={e => { setForm('ciudad', e.target.value); setForm('sucursal', '') }}
                 style={{ ...inputStyle, cursor: 'pointer' }}
               >
-                <option value="">Selecciona ciudad</option>
+                <option value="">{t('catalogo.selectCity')}</option>
                 {CIUDADES.map(ciudad => (
                   <option key={ciudad.id} value={ciudad.nombre}>{ciudad.nombre}</option>
                 ))}
@@ -171,7 +171,7 @@ export default function HeroBusqueda({
             <div>
               <label style={{ ...labelStyle, display: 'flex', alignItems: 'center', gap: '5px' }}>
                 <FaMapMarkerAlt size={10} color={c.accentText} />
-                Sucursal
+                {t('catalogo.branchLabel')}
               </label>
               <select
                 value={busquedaForm.sucursal || ''}
@@ -179,7 +179,7 @@ export default function HeroBusqueda({
                 disabled={!busquedaForm.ciudad}
                 style={{ ...inputStyle, cursor: 'pointer' }}
               >
-                <option value="">Selecciona sucursal</option>
+                <option value="">{t('catalogo.selectBranch')}</option>
                 {SUCURSALES.filter(s => s.ciudad === busquedaForm.ciudad).map(s => (
                   <option key={s.nombre} value={s.nombre}>{s.nombre}</option>
                 ))}

@@ -174,8 +174,8 @@ export default function PerfilPage() {
 
         <div className="perfil-banner-inner" style={{ maxWidth: '780px', margin: '0 auto', display: 'flex', alignItems: 'center', gap: '24px' }}>
           <div style={{
-            width: '80px',
-            height: '80px',
+            width: 80,
+            height: 80,
             borderRadius: '50%',
             background: 'rgba(255,255,255,0.2)',
             border: '3px solid rgba(255,255,255,0.5)',

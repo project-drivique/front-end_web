@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { FaChevronLeft, FaStar } from 'react-icons/fa';
+import { FaChevronLeft, FaChevronRight, FaStar } from 'react-icons/fa';
 
 export default function GaleriaImagenes({ imagenes = [], nombreVehiculo = 'Vehículo', calificacion = 0 }) {
   const { t } = useTranslation()
@@ -14,12 +14,22 @@ export default function GaleriaImagenes({ imagenes = [], nombreVehiculo = 'Vehí
         background: 'var(--bg-item)', border: '1px solid var(--borde)', borderRadius: 14,
         height: 240, display: 'flex', alignItems: 'center', justifyContent: 'center',
       }}>
-        <p style={{ color: 'var(--texto-second)', fontSize: 14 }}>{t('vehiculo.noImages')}</p>
+        <p style={{ color: 'var(--texto-second)', fontSize: 14 }}>{t('vehiculo.noImages', 'Sin imágenes')}</p>
       </div>
     );
   }
 
   const imagenPrincipal = imagenes[indiceActivo];
+
+  const anteriorImagen = (e) => {
+    e.stopPropagation()
+    setIndiceActivo((prev) => (prev - 1 + imagenes.length) % imagenes.length)
+  }
+
+  const siguienteImagen = (e) => {
+    e.stopPropagation()
+    setIndiceActivo((prev) => (prev + 1) % imagenes.length)
+  }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -39,7 +49,82 @@ export default function GaleriaImagenes({ imagenes = [], nombreVehiculo = 'Vehí
           style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', display: 'block' }}
         />
 
+        {/* Botones de Navegación < > */}
+        {imagenes.length > 1 && (
+          <>
+            <button
+              type="button"
+              onClick={anteriorImagen}
+              aria-label="Imagen anterior"
+              style={{
+                position: 'absolute',
+                left: 12,
+                top: '50%',
+                transform: 'translateY(-50%)',
+                width: 36,
+                height: 36,
+                borderRadius: '50%',
+                background: 'rgba(15, 23, 42, 0.65)',
+                color: '#ffffff',
+                border: '1px solid rgba(255, 255, 255, 0.25)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                backdropFilter: 'blur(8px)',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.25)',
+                transition: 'all 150ms ease',
+                zIndex: 10,
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'rgba(15, 23, 42, 0.88)'
+                e.currentTarget.style.transform = 'translateY(-50%) scale(1.08)'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'rgba(15, 23, 42, 0.65)'
+                e.currentTarget.style.transform = 'translateY(-50%) scale(1)'
+              }}
+            >
+              <FaChevronLeft size={14} />
+            </button>
 
+            <button
+              type="button"
+              onClick={siguienteImagen}
+              aria-label="Imagen siguiente"
+              style={{
+                position: 'absolute',
+                right: 12,
+                top: '50%',
+                transform: 'translateY(-50%)',
+                width: 36,
+                height: 36,
+                borderRadius: '50%',
+                background: 'rgba(15, 23, 42, 0.65)',
+                color: '#ffffff',
+                border: '1px solid rgba(255, 255, 255, 0.25)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                backdropFilter: 'blur(8px)',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.25)',
+                transition: 'all 150ms ease',
+                zIndex: 10,
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'rgba(15, 23, 42, 0.88)'
+                e.currentTarget.style.transform = 'translateY(-50%) scale(1.08)'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'rgba(15, 23, 42, 0.65)'
+                e.currentTarget.style.transform = 'translateY(-50%) scale(1)'
+              }}
+            >
+              <FaChevronRight size={14} />
+            </button>
+          </>
+        )}
 
         {/* Calificación (Top Right) */}
         <div style={{
@@ -68,23 +153,20 @@ export default function GaleriaImagenes({ imagenes = [], nombreVehiculo = 'Vehí
 
       {/* Miniaturas (Thumbnails) */}
       <div style={{ display: 'flex', gap: 12 }}>
-        {[0, 1, 2].map((idx) => {
-          const imgSrc = imagenes[idx] || imagenes[0];
-          return (
-            <div 
-              key={idx}
-              onClick={() => setIndiceActivo(idx % imagenes.length)}
-              style={{
-                width: 'calc(33.333% - 8px)', aspectRatio: '1.4 / 1', borderRadius: 8, overflow: 'hidden', cursor: 'pointer',
-                border: indiceActivo === (idx % imagenes.length) ? '2px solid #2563eb' : '2px solid transparent',
-                transition: 'border-color 0.2s', opacity: indiceActivo === (idx % imagenes.length) ? 1 : 0.7
-              }}
-            >
-              <img src={imgSrc} alt={`thumb-${idx}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            </div>
-          );
-        })}
+        {imagenes.map((imgSrc, idx) => (
+          <div 
+            key={idx}
+            onClick={() => setIndiceActivo(idx)}
+            style={{
+              flex: 1, aspectRatio: '1.4 / 1', borderRadius: 8, overflow: 'hidden', cursor: 'pointer',
+              border: indiceActivo === idx ? '2px solid #2563eb' : '2px solid transparent',
+              transition: 'border-color 0.2s', opacity: indiceActivo === idx ? 1 : 0.7
+            }}
+          >
+            <img src={imgSrc} alt={`thumb-${idx}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          </div>
+        ))}
       </div>
     </div>
   );
-}
+}

@@ -14,9 +14,13 @@ import { obtenerTasaSincrona } from '../services/exchangeRateService'
 export const formatCurrency = (amount, moneda, tasaUSD) => {
   const value = Number(amount) || 0
   const tasa = tasaUSD || obtenerTasaSincrona()
+  const tasaEUR = tasa * 1.08
 
   if (moneda === 'USD') {
     return `USD ${(value / tasa).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+  }
+  if (moneda === 'EUR') {
+    return `EUR ${(value / tasaEUR).toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
   }
   return `$${value.toLocaleString('es-CO')}`
 }
