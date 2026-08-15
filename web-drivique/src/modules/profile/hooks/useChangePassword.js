@@ -27,10 +27,12 @@ export function useCambiarContrasena() {
 
   const validar = () => {
     const e = {}
-    if (!form.actual.trim()) e.actual = t('perfil.errors.currentPasswordRequired')
-    if (fortaleza < 4)       e.nueva = t('perfil.errors.passwordWeak')
-    if (!form.confirmar)     e.confirmar = t('perfil.errors.confirmRequired')
-    else if (form.nueva !== form.confirmar) e.confirmar = t('perfil.errors.confirmMismatch')
+    if (!form.actual.trim()) e.actual = t('perfil.errors.currentPasswordRequired', 'Ingresa tu contraseña actual.')
+    if (!form.nueva.trim()) e.nueva = t('perfil.errors.newPasswordRequired', 'Ingresa la nueva contraseña.')
+    else if (fortaleza < 4) e.nueva = t('perfil.errors.passwordWeak', 'La nueva contraseña no cumple los criterios de seguridad.')
+    
+    if (!form.confirmar.trim()) e.confirmar = t('perfil.errors.confirmRequired', 'Confirma la nueva contraseña.')
+    else if (form.nueva !== form.confirmar) e.confirmar = t('perfil.errors.confirmMismatch', 'Las contraseñas no coinciden.')
     return e
   }
 
