@@ -589,7 +589,37 @@
     "licenseDesc": "Permis de conduire valide délivré depuis au moins 1 an.",
     "branchMap": "Carte de l'agence",
     "prevImage": "Image précédente",
-    "nextImage": "Image suivante"
+    "nextImage": "Image suivante",
+    "selectTime": "Choisir l'heure",
+    "autoDetected": "Auto-détecté",
+    "kmLimitedTitle": "Kilométrage limité",
+    "kmLimitedDesc": "Inclut {{km}} km par jour dans le tarif de base. En cas de dépassement, {{excedente}} est facturé par km supplémentaire.",
+    "kmUnlimitedTitle": "Kilométrage illimité",
+    "kmUnlimitedDesc": "Sans restriction de distance sur le territoire national. Pas de frais supplémentaires pour kilométrage excessif.",
+    "uploadingFile": "Téléchargement du fichier...",
+    "uploadPdf": "Télécharger PDF",
+    "pdfFormatRequired": "Le fichier doit être au format PDF.",
+    "docVerification": "Vérification des documents",
+    "mandatoryDocVerification": "Vérification obligatoire des documents",
+    "docVerifiedSubtitle": "Nous avons déjà vérifié vos documents lors d'une réservation précédente. Vous pouvez les remplacer si vous le souhaitez.",
+    "docsAlreadyRegistered": "Documents déjà enregistrés : Vous avez déjà téléchargé votre pièce d'identité et votre permis de conduire.",
+    "idDocCard": "Carte d'identité",
+    "idDocHelpText": "Téléchargez votre pièce d'identité dans un seul fichier PDF (les deux côtés inclus, max 5Mo)",
+    "driverLicense": "Permis de conduire",
+    "driverLicenseHelpText": "Téléchargez votre permis de conduire valide au format PDF (max 5Mo)",
+    "reservationRegisteredTitle": "Réservation enregistrée",
+    "cashReservationRegisteredDesc": "Votre réservation a été enregistrée. Pour la confirmer, rendez-vous à la succursale {{sucursal}} pour payer en espèces et récupérer le véhicule.",
+    "paymentDeadlineTitle": "Délai de paiement",
+    "paymentDeadlineDesc": "Vous avez {{horas}} heures à compter de maintenant pour vous rendre en succursale et payer.",
+    "signedContractSentEmail": "Le contrat signé a été envoyé à votre e-mail. Présentez-le en succursale pour effectuer le paiement.",
+    "reservationCompletedAlertTitle": "Réservation terminée !",
+    "reservationCompletedAlertText": "Votre réservation a été enregistrée. Nous vous attendons en succursale.",
+    "confirmAndViewReservations": "Confirmer et voir mes réservations",
+    "wompiReservationRegisteredDesc": "Votre réservation est enregistrée comme en attente. Complétez le paiement sécurisé.",
+    "wompiRedirectNote": "Vous serez redirigé vers le paiement officiel.",
+    "wompiSuccessNote": "Vous recevrez la confirmation dès que le paiement sera validé.",
+    "redirecting": "Redirection…",
+    "payWithWompi": "Payer avec Wompi"
   },
   "reservas": {
     "title": "Mes réservations",
@@ -627,9 +657,9 @@
     "birthDate": "Date de naissance",
     "email": "Adresse e-mail",
     "phone": "Téléphone",
-    "nationality": "Nationalité",
-    "identityDoc": "Pièce d'identité",
-    "docType": "Type de document",
+    "nationality": "Nacionalidad",
+    "identityDoc": "Documento de identidad",
+    "docType": "Tipo de documento",
     "docNumber": "Numéro de document",
     "incomplete": "Incomplet",
     "select": "Sélectionner",
@@ -753,10 +783,7 @@
       "India": "Inde",
       "Otro": "Autre"
     },
-    "completeProfile": "Completar perfil",
-    "nationality": "Nacionalidad",
-    "identityDoc": "Documento de identidad",
-    "docType": "Tipo de documento"
+    "completeProfile": "Completar perfil"
   },
   "pagos": {
     "title": "Mes paiements",
@@ -930,7 +957,12 @@
     "pageTitleWompi": "Signez votre contrat pour finaliser le paiement",
     "pageSubtitle": "Vérifiez les informations générées automatiquement et signez pour continuer.",
     "signedSuccessTitle": "Contrat signé",
-    "signedSuccessText": "Votre contrat a été signé et enregistré avec votre réservation."
+    "signedSuccessText": "Votre contrat a été signé et enregistré avec votre réservation.",
+    "deliveryAddress": "Adresse de livraison",
+    "deliveryNeighborhood": "Quartier de livraison",
+    "deliveryReferences": "Repères de livraison",
+    "deliveryReturnHome": "Retour à domicile",
+    "sameDeliveryAddress": "Oui (Même adresse de livraison)"
   },
   "catalog": {
     "menu": {
