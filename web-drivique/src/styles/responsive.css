@@ -216,6 +216,14 @@
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 10px !important;
   }
+  .hero-busqueda-registered-wrapper {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 16px !important;
+  }
+  .hero-busqueda-registered-wrapper > div:last-child {
+    width: 100% !important;
+  }
 }
 
 @media (max-width: 600px) {
