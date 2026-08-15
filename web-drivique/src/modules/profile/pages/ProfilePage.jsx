@@ -342,7 +342,7 @@ export default function PerfilPage() {
                 }}
               >
                 <FaUser style={{ fontSize: '9px' }} />
-                {usuario.rol ? (usuario.rol.charAt(0).toUpperCase() + usuario.rol.slice(1)) : 'Usuario'}
+                {t('perfil.roles.' + (usuario.rol || 'usuario').toLowerCase(), 'Usuario')}
               </span>
             </div>
 
@@ -464,7 +464,7 @@ export default function PerfilPage() {
                 </label>
                 <div style={{ ...readonlyStyle, padding: '0 14px' }}>
                   <span style={{ color: formData.nacionalidad ? c.readonlyText : '#94a3b8', fontStyle: formData.nacionalidad ? 'normal' : 'italic' }}>
-                    {formData.nacionalidad || t('perfil.incomplete', 'Incompleto')}
+                    {formData.nacionalidad ? t('perfil.countries.' + formData.nacionalidad, formData.nacionalidad) : t('perfil.incomplete', 'Incompleto')}
                   </span>
                 </div>
               </div>
@@ -499,7 +499,7 @@ export default function PerfilPage() {
                 </label>
                 <div style={readonlyStyle}>
                   <span style={{ color: formData.tipoDocumento ? c.readonlyText : '#94a3b8', fontStyle: formData.tipoDocumento ? 'normal' : 'italic' }}>
-                    {TIPOS_DOC.find(t => t.value === formData.tipoDocumento)?.label || formData.tipoDocumento || t('perfil.incomplete', 'Incompleto')}
+                    {formData.tipoDocumento ? t('perfil.docTypes.' + formData.tipoDocumento, formData.tipoDocumento) : t('perfil.incomplete', 'Incompleto')}
                   </span>
                 </div>
               </div>

@@ -299,7 +299,9 @@ export default function CompleteProfileModal({
                 >
                   <option value="">{t('perfil.select', 'Seleccionar')}</option>
                   {[...paisesMock].sort((a, b) => a.nombre.localeCompare(b.nombre, 'es')).map(p => (
-                    <option key={p.nombre} value={p.nombre}>{p.nombre} ({p.prefijo})</option>
+                    <option key={p.nombre} value={p.nombre}>
+                      {t('perfil.countries.' + p.nombre, p.nombre)} {p.prefijo ? `(${p.prefijo})` : ''}
+                    </option>
                   ))}
                 </select>
                 {errores.nacionalidad && <p style={{ color: c.errorText, fontSize: '11px', margin: '4px 0 0' }}>{errores.nacionalidad}</p>}
@@ -403,7 +405,7 @@ export default function CompleteProfileModal({
                 >
                   <option value="">{t('perfil.select', 'Seleccionar')}</option>
                   {TIPOS_DOC.map(td => (
-                    <option key={td.value} value={td.value}>{td.label}</option>
+                    <option key={td.value} value={td.value}>{t('perfil.docTypes.' + td.value, td.label)}</option>
                   ))}
                 </select>
                 {errores.tipoDocumento && <p style={{ color: c.errorText, fontSize: '11px', margin: '4px 0 0' }}>{errores.tipoDocumento}</p>}
