@@ -4,7 +4,7 @@ import { FaLock, FaEye, FaEyeSlash, FaTimes, FaShieldAlt } from 'react-icons/fa'
 import { useCambiarContrasena } from '../hooks/useChangePassword'
 import { showAlert } from '@/utils/swalConfig'
 
-export default function CambiarContrasena({ c }) {
+export default function CambiarContrasena({ c, esModoOscuro }) {
   const { t } = useTranslation()
   const {
     form, errores, cargando, exito,
@@ -22,16 +22,16 @@ export default function CambiarContrasena({ c }) {
         title: t('perfil.passwordUpdatedTitle', '¡Contraseña actualizada!'),
         text: t('perfil.passwordUpdatedText', 'Tu contraseña se ha actualizado correctamente.'),
         confirmButtonText: 'Entendido',
-        confirmButtonColor: '#1d4ed8',
+        confirmButtonColor: '#1e3a8a',
       })
     }
   }, [exito, t])
 
   const inputStyle = (hasError) => ({
     width: '100%',
-    height: '44px',
+    height: '42px',
     padding: '0 40px 0 14px',
-    borderRadius: '12px',
+    borderRadius: '10px',
     border: `1.5px solid ${hasError ? '#f87171' : c.inputBorder || '#e2e8f0'}`,
     background: hasError ? c.inputErrorBg || '#fef2f2' : c.inputBg || '#ffffff',
     fontSize: '13.5px',
@@ -51,53 +51,38 @@ export default function CambiarContrasena({ c }) {
 
   return (
     <>
-      {/* 1. Tarjeta gatillo en la pantalla de Perfil */}
+      {/* Tarjeta de Seguridad y Contraseña uniforme con el diseño de 3 columnas */}
       <div
         style={{
-          background: c.innerCardBg || '#ffffff',
-          borderRadius: '16px',
-          border: `1px solid ${c.innerCardBorder || '#e2e8f0'}`,
-          boxShadow: c.innerCardShadow || '0 1px 3px rgba(0,0,0,0.05)',
-          padding: '22px 24px',
+          background: c.innerCardBg,
+          borderRadius: '14px',
+          border: `1px solid ${c.innerCardBorder}`,
+          boxShadow: c.innerCardShadow,
+          padding: '22px',
           display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          flexWrap: 'wrap',
+          flexDirection: 'column',
           gap: '16px',
-          marginTop: '20px',
+          flex: 1,
+          justifyContent: 'space-between',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-          <div
-            style={{
-              width: '40px',
-              height: '40px',
-              borderRadius: '12px',
-              background: 'rgba(37, 99, 235, 0.1)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              flexShrink: 0,
-            }}
-          >
-            <FaShieldAlt style={{ color: '#2563eb', fontSize: '18px' }} />
-          </div>
-          <div>
-            <h2 style={{ fontSize: '15.5px', fontWeight: 700, color: c.title || '#1e293b', margin: 0 }}>
-              {t('perfil.security', 'Seguridad y Contraseña')}
-            </h2>
-            <p style={{ fontSize: '12.5px', color: c.textMuted || '#64748b', margin: '2px 0 0' }}>
-              {t('perfil.securityHint', 'Administra tu clave de acceso y seguridad')}
-            </p>
-          </div>
+        <div style={{ paddingBottom: '12px', borderBottom: `1px solid ${esModoOscuro ? 'rgba(255, 255, 255, 0.08)' : 'rgba(226, 232, 240, 0.8)'}` }}>
+          <h2 style={{ fontSize: '15px', fontWeight: 700, color: esModoOscuro ? '#93c5fd' : '#1e3a8a', margin: 0, letterSpacing: '-0.01em' }}>
+            {t('perfil.security', 'Seguridad y Contraseña')}
+          </h2>
         </div>
+
+        <p style={{ fontSize: '13px', color: c.textMuted, margin: 0, lineHeight: '1.45' }}>
+          {t('perfil.securityHint', 'Protege tu cuenta actualizando tu clave de acceso de forma periódica.')}
+        </p>
 
         <button
           onClick={() => setModoEdicion(true)}
           style={{
-            padding: '10px 20px',
+            width: '100%',
+            padding: '11px',
             borderRadius: '10px',
-            background: c.btnPrimary || '#1e40af',
+            background: c.btnPrimary || '#1e3a8a',
             color: '#ffffff',
             border: 'none',
             fontWeight: 700,
@@ -105,6 +90,7 @@ export default function CambiarContrasena({ c }) {
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
+            justifyContent: 'center',
             gap: '8px',
             transition: 'all 150ms ease',
           }}
@@ -113,7 +99,7 @@ export default function CambiarContrasena({ c }) {
         </button>
       </div>
 
-      {/* 2. Modal Emergente cuando se presiona "Cambiar contraseña" */}
+      {/* Modal Emergente cuando se presiona "Cambiar contraseña" */}
       {modoEdicion && (
         <div
           style={{
@@ -138,43 +124,27 @@ export default function CambiarContrasena({ c }) {
           <div
             style={{
               background: c.innerCardBg || '#ffffff',
-              borderRadius: '24px',
+              borderRadius: '20px',
               maxWidth: '420px',
               width: '100%',
-              padding: '26px 24px',
+              padding: '24px',
               boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
               border: `1px solid ${c.innerCardBorder || '#e2e8f0'}`,
               display: 'flex',
               flexDirection: 'column',
-              gap: '20px',
+              gap: '18px',
               boxSizing: 'border-box',
             }}
           >
             {/* Modal Header */}
-            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <div
-                  style={{
-                    width: '42px',
-                    height: '42px',
-                    borderRadius: '12px',
-                    background: 'rgba(37, 99, 235, 0.1)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0,
-                  }}
-                >
-                  <FaShieldAlt style={{ color: '#2563eb', fontSize: '18px' }} />
-                </div>
-                <div>
-                  <h3 style={{ fontSize: '17px', fontWeight: 800, color: c.title || '#1e293b', margin: 0, letterSpacing: '-0.01em' }}>
-                    {t('perfil.changePasswordTitle', 'Cambiar contraseña')}
-                  </h3>
-                  <p style={{ fontSize: '12.5px', color: c.textMuted || '#64748b', margin: '2px 0 0' }}>
-                    {t('perfil.changePasswordSub', 'Protege el acceso a tu cuenta')}
-                  </p>
-                </div>
+            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', paddingBottom: '12px', borderBottom: `1px solid ${esModoOscuro ? 'rgba(255, 255, 255, 0.08)' : 'rgba(226, 232, 240, 0.8)'}` }}>
+              <div>
+                <h3 style={{ fontSize: '16.5px', fontWeight: 800, color: esModoOscuro ? '#93c5fd' : '#1e3a8a', margin: 0, letterSpacing: '-0.01em' }}>
+                  {t('perfil.changePasswordTitle', 'Cambiar contraseña')}
+                </h3>
+                <p style={{ fontSize: '12.5px', color: c.textMuted || '#64748b', margin: '2px 0 0' }}>
+                  {t('perfil.changePasswordSub', 'Protege el acceso a tu cuenta')}
+                </p>
               </div>
               <button
                 onClick={handleCancelar}
@@ -195,7 +165,7 @@ export default function CambiarContrasena({ c }) {
             </div>
 
             {/* Modal Form Fields */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               {/* Contraseña actual */}
               <div>
                 <label style={labelStyle}>{t('perfil.currentPassword', 'Contraseña actual')}</label>
@@ -205,7 +175,7 @@ export default function CambiarContrasena({ c }) {
                     value={form.actual}
                     onChange={e => actualizarCampo('actual', e.target.value)}
                     style={inputStyle(!!errores.actual)}
-                    onFocus={e => e.target.style.borderColor = c.inputBorderFocus || '#2563eb'}
+                    onFocus={e => e.target.style.borderColor = c.inputBorderFocus || '#1e3a8a'}
                     onBlur={e => e.target.style.borderColor = errores.actual ? '#f87171' : c.inputBorder || '#e2e8f0'}
                   />
                   <button
@@ -239,7 +209,7 @@ export default function CambiarContrasena({ c }) {
                     value={form.nueva}
                     onChange={e => actualizarCampo('nueva', e.target.value)}
                     style={inputStyle(!!errores.nueva)}
-                    onFocus={e => e.target.style.borderColor = c.inputBorderFocus || '#2563eb'}
+                    onFocus={e => e.target.style.borderColor = c.inputBorderFocus || '#1e3a8a'}
                     onBlur={e => e.target.style.borderColor = errores.nueva ? '#f87171' : c.inputBorder || '#e2e8f0'}
                   />
                   <button
@@ -273,7 +243,7 @@ export default function CambiarContrasena({ c }) {
                     value={form.confirmar}
                     onChange={e => actualizarCampo('confirmar', e.target.value)}
                     style={inputStyle(!!errores.confirmar)}
-                    onFocus={e => e.target.style.borderColor = c.inputBorderFocus || '#2563eb'}
+                    onFocus={e => e.target.style.borderColor = c.inputBorderFocus || '#1e3a8a'}
                     onBlur={e => e.target.style.borderColor = errores.confirmar ? '#f87171' : c.inputBorder || '#e2e8f0'}
                   />
                   <button
@@ -306,7 +276,7 @@ export default function CambiarContrasena({ c }) {
                 disabled={cargando}
                 style={{
                   padding: '11px',
-                  borderRadius: '12px',
+                  borderRadius: '10px',
                   background: c.btnSecBg || '#ffffff',
                   border: `1.5px solid ${c.btnSecBorder || '#e2e8f0'}`,
                   color: c.btnSecText || '#475569',
@@ -323,8 +293,8 @@ export default function CambiarContrasena({ c }) {
                 disabled={cargando}
                 style={{
                   padding: '11px',
-                  borderRadius: '12px',
-                  background: c.btnPrimary || '#1d4ed8',
+                  borderRadius: '10px',
+                  background: c.btnPrimary || '#1e3a8a',
                   color: '#ffffff',
                   border: 'none',
                   fontWeight: 700,
