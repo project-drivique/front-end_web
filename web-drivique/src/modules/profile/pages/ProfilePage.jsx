@@ -369,7 +369,8 @@ export default function PerfilPage() {
 
               {/* Nombres Completo */}
               <div>
-                <label style={labelStyle}>
+                <label style={{ ...labelStyle, display: 'flex', alignItems: 'center' }}>
+                  <FaUser style={{ color: c.accentText || '#1e3a8a', fontSize: '12px', marginRight: '6px' }} />
                   {t('perfil.firstName', 'Nombres completos')}
                 </label>
                 {modoEdicion ? (
@@ -399,7 +400,8 @@ export default function PerfilPage() {
 
               {/* Apellidos Completo */}
               <div>
-                <label style={labelStyle}>
+                <label style={{ ...labelStyle, display: 'flex', alignItems: 'center' }}>
+                  <FaUser style={{ color: c.accentText || '#1e3a8a', fontSize: '12px', marginRight: '6px' }} />
                   {t('perfil.lastName', 'Apellidos completos')}
                 </label>
                 {modoEdicion ? (
@@ -429,7 +431,8 @@ export default function PerfilPage() {
 
               {/* Fecha de nacimiento */}
               <div>
-                <label style={labelStyle}>
+                <label style={{ ...labelStyle, display: 'flex', alignItems: 'center' }}>
+                  <FaCalendarAlt style={{ color: c.accentText || '#1e3a8a', fontSize: '12px', marginRight: '6px' }} />
                   {t('perfil.birthDate', 'Fecha de nacimiento')}
                 </label>
                 {modoEdicion ? (
@@ -468,7 +471,8 @@ export default function PerfilPage() {
 
               {/* Correo electrónico */}
               <div>
-                <label style={labelStyle}>
+                <label style={{ ...labelStyle, display: 'flex', alignItems: 'center' }}>
+                  <FaEnvelope style={{ color: c.accentText || '#1e3a8a', fontSize: '12px', marginRight: '6px' }} />
                   {t('perfil.email', 'Correo electrónico')}
                 </label>
                 {modoEdicion ? (
@@ -487,7 +491,8 @@ export default function PerfilPage() {
 
               {/* Nacionalidad */}
               <div>
-                <label style={labelStyle}>
+                <label style={{ ...labelStyle, display: 'flex', alignItems: 'center' }}>
+                  <FaGlobe style={{ color: c.accentText || '#1e3a8a', fontSize: '12px', marginRight: '6px' }} />
                   {t('perfil.nationality', 'Nacionalidad')}
                 </label>
                 {modoEdicion ? (
@@ -517,7 +522,8 @@ export default function PerfilPage() {
 
               {/* Teléfono */}
               <div>
-                <label style={labelStyle}>
+                <label style={{ ...labelStyle, display: 'flex', alignItems: 'center' }}>
+                  <FaPhone style={{ color: c.accentText || '#1e3a8a', fontSize: '12px', marginRight: '6px' }} />
                   {t('perfil.phone', 'Teléfono')}
                 </label>
                 {modoEdicion ? (
@@ -603,7 +609,8 @@ export default function PerfilPage() {
 
               {/* Tipo de documento */}
               <div>
-                <label style={labelStyle}>
+                <label style={{ ...labelStyle, display: 'flex', alignItems: 'center' }}>
+                  <FaIdCard style={{ color: c.accentText || '#1e3a8a', fontSize: '12px', marginRight: '6px' }} />
                   {t('perfil.docType', 'Tipo de documento')}
                 </label>
                 {modoEdicion ? (
@@ -633,7 +640,8 @@ export default function PerfilPage() {
 
               {/* Número de documento */}
               <div>
-                <label style={labelStyle}>
+                <label style={{ ...labelStyle, display: 'flex', alignItems: 'center' }}>
+                  <FaHashtag style={{ color: c.accentText || '#1e3a8a', fontSize: '12px', marginRight: '6px' }} />
                   {t('perfil.docNumber', 'Número de documento')}
                 </label>
                 {modoEdicion ? (
@@ -780,7 +788,7 @@ export default function PerfilPage() {
                 onMouseEnter={e => e.currentTarget.style.background = esModoOscuro ? 'rgba(255,255,255,0.05)' : '#f8fafc'}
                 onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
               >
-                {t('catalogo.logout', 'Cerrar sesión')}
+                <FaSignOutAlt style={{ fontSize: '13px', color: c.textMuted }} /> {t('catalogo.logout', 'Cerrar sesión')}
               </button>
             </div>
 
@@ -830,7 +838,7 @@ export default function PerfilPage() {
                 onMouseEnter={e => e.currentTarget.style.background = esModoOscuro ? 'rgba(239, 68, 68, 0.2)' : '#fee2e2'}
                 onMouseLeave={e => e.currentTarget.style.background = esModoOscuro ? 'rgba(239, 68, 68, 0.12)' : '#fef2f2'}
               >
-                {t('perfil.deleteAccountBtn', 'Eliminar cuenta')}
+                <FaTrashAlt style={{ fontSize: '13px' }} /> {t('perfil.deleteAccountBtn', 'Eliminar cuenta')}
               </button>
             </div>
           </div>
