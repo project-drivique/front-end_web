@@ -260,32 +260,171 @@ html.dark .campo-select {
   }
 }
 
+/* ── Header Bar de Reserva ── */
+.flujo-header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.flujo-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--texto-acento);
+  font-weight: 700;
+  background: var(--bg-item);
+  border: 1px solid var(--borde);
+  border-radius: 9999px;
+  padding: 8px 16px;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all 200ms ease;
+}
+
+.flujo-titulo {
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--texto-primary);
+  margin: 0;
+  line-height: 1.2;
+}
+
+/* ── Stepper Bar de Reserva (100% Horizontal & Responsive) ── */
+.flujo-pasos-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 650px;
+  margin: 0 auto 36px;
+  padding: 0 8px;
+}
+
+.flujo-paso-item {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.flujo-paso-item:last-child {
+  flex: 0 0 auto;
+}
+
+.flujo-paso-circulo-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  position: relative;
+  z-index: 1;
+}
+
+.flujo-paso-circulo {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 14px;
+  background: var(--bg-item);
+  color: var(--texto-second);
+  transition: all 300ms ease;
+  flex-shrink: 0;
+  border: 2px solid var(--borde);
+}
+
+.flujo-paso-circulo.activo {
+  background: linear-gradient(135deg, #1e3a8a, #2563eb);
+  color: #ffffff;
+  border-color: transparent;
+  box-shadow: 0 6px 20px rgba(37,99,235,0.3);
+}
+
+.flujo-paso-circulo.completado {
+  background: #1e3a8a;
+  color: #ffffff;
+  border-color: transparent;
+}
+
+.flujo-paso-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--texto-second);
+  white-space: nowrap;
+  text-align: center;
+}
+
+.flujo-paso-label.activo {
+  font-weight: 800;
+  color: var(--texto-primary);
+}
+
+.flujo-paso-linea {
+  flex: 1;
+  height: 3px;
+  background: var(--borde);
+  margin: 0 10px 22px;
+  transition: background 400ms ease;
+}
+
+.flujo-paso-linea.completado {
+  background: #1e3a8a;
+}
+
 @media (max-width: 640px) {
-  .contrato-contenido {
-    padding: 18px 16px 20px !important;
+  .flujo-header-bar {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 8px !important;
+    margin-bottom: 20px !important;
   }
 
-  .contrato-grid-2col {
-    grid-template-columns: 1fr !important;
-    gap: 10px !important;
+  .flujo-titulo {
+    font-size: 14px !important;
+    text-align: center !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    max-width: 170px !important;
   }
 
-  .pasos-barra-item {
-    gap: 4px !important;
+  .flujo-back-btn {
+    padding: 6px 10px !important;
+    font-size: 11px !important;
   }
 
-  .pasos-barra-circulo {
-    width: 32px !important;
-    height: 32px !important;
-    font-size: 12px !important;
+  .flujo-back-btn span {
+    display: inline-block !important;
   }
 
-  .pasos-barra-linea {
-    width: 20px !important;
-    margin: 0 4px 16px !important;
+  .flujo-pasos-container {
+    margin-bottom: 20px !important;
+    padding: 0 !important;
   }
 
-  .pasos-barra-label {
-    font-size: 10px !important;
+  .flujo-paso-circulo {
+    width: 28px !important;
+    height: 28px !important;
+    font-size: 11px !important;
+  }
+
+  .flujo-paso-label {
+    font-size: 9px !important;
+    max-width: 75px !important;
+    white-space: normal !important;
+    line-height: 1.1 !important;
+  }
+
+  .flujo-paso-linea {
+    margin: 0 4px 18px !important;
+    height: 2px !important;
   }
 }
