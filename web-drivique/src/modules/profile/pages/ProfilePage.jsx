@@ -361,7 +361,18 @@ export default function PerfilPage() {
                 <h2 style={{ fontSize: '15px', fontWeight: 700, color: esModoOscuro ? '#93c5fd' : '#1e3a8a', margin: 0, letterSpacing: '-0.01em' }}>
                   {t('perfil.personalInfo', 'Datos Personales')}
                 </h2>
-                <p style={{ fontSize: '12.5px', color: c.textMuted, margin: '4px 0 0', lineHeight: '1.45' }}>
+              </div>
+
+              {/* Subcuadrito informativo */}
+              <div
+                style={{
+                  background: esModoOscuro ? 'rgba(30, 41, 59, 0.6)' : '#f8fafc',
+                  border: `1px solid ${esModoOscuro ? 'rgba(255, 255, 255, 0.08)' : '#e2e8f0'}`,
+                  borderRadius: '10px',
+                  padding: '10px 14px',
+                }}
+              >
+                <p style={{ fontSize: '12px', color: c.textMuted, margin: 0, lineHeight: '1.45' }}>
                   {t('perfil.personalInfoHint', 'Mantén tu nombre completo y fecha de nacimiento actualizados para personalizar tu perfil.')}
                 </p>
               </div>
@@ -462,7 +473,18 @@ export default function PerfilPage() {
                 <h2 style={{ fontSize: '15px', fontWeight: 700, color: esModoOscuro ? '#93c5fd' : '#1e3a8a', margin: 0, letterSpacing: '-0.01em' }}>
                   {t('perfil.contactData', 'Datos de Contacto')}
                 </h2>
-                <p style={{ fontSize: '12.5px', color: c.textMuted, margin: '4px 0 0', lineHeight: '1.45' }}>
+              </div>
+
+              {/* Subcuadrito informativo */}
+              <div
+                style={{
+                  background: esModoOscuro ? 'rgba(30, 41, 59, 0.6)' : '#f8fafc',
+                  border: `1px solid ${esModoOscuro ? 'rgba(255, 255, 255, 0.08)' : '#e2e8f0'}`,
+                  borderRadius: '10px',
+                  padding: '10px 14px',
+                }}
+              >
+                <p style={{ fontSize: '12px', color: c.textMuted, margin: 0, lineHeight: '1.45' }}>
                   {t('perfil.contactDataHint', 'Registra tu correo, nacionalidad y teléfono para recibir novedades de tus reservas.')}
                 </p>
               </div>
@@ -599,7 +621,18 @@ export default function PerfilPage() {
                 <h2 style={{ fontSize: '15px', fontWeight: 700, color: esModoOscuro ? '#93c5fd' : '#1e3a8a', margin: 0, letterSpacing: '-0.01em' }}>
                   {t('perfil.identityDoc', 'Documento de Identidad')}
                 </h2>
-                <p style={{ fontSize: '12.5px', color: c.textMuted, margin: '4px 0 0', lineHeight: '1.45' }}>
+              </div>
+
+              {/* Subcuadrito informativo */}
+              <div
+                style={{
+                  background: esModoOscuro ? 'rgba(30, 41, 59, 0.6)' : '#f8fafc',
+                  border: `1px solid ${esModoOscuro ? 'rgba(255, 255, 255, 0.08)' : '#e2e8f0'}`,
+                  borderRadius: '10px',
+                  padding: '10px 14px',
+                }}
+              >
+                <p style={{ fontSize: '12px', color: c.textMuted, margin: 0, lineHeight: '1.45' }}>
                   {t('perfil.identityDocHint', 'Ingresa tu documento oficial para validar tu cuenta y agilizar el alquiler de vehículos.')}
                 </p>
               </div>
@@ -820,9 +853,9 @@ export default function PerfilPage() {
                   width: '100%',
                   padding: '11px',
                   borderRadius: '10px',
-                  background: esModoOscuro ? 'rgba(239, 68, 68, 0.12)' : '#fef2f2',
-                  border: `1.5px solid ${esModoOscuro ? 'rgba(239, 68, 68, 0.3)' : '#fee2e2'}`,
-                  color: '#dc2626',
+                  background: 'transparent',
+                  border: `1.5px solid ${esModoOscuro ? '#475569' : '#cbd5e1'}`,
+                  color: esModoOscuro ? '#f87171' : '#dc2626',
                   fontWeight: 700,
                   fontSize: '13.5px',
                   cursor: 'pointer',
@@ -832,8 +865,14 @@ export default function PerfilPage() {
                   gap: '8px',
                   transition: 'all 150ms ease',
                 }}
-                onMouseEnter={e => e.currentTarget.style.background = esModoOscuro ? 'rgba(239, 68, 68, 0.2)' : '#fee2e2'}
-                onMouseLeave={e => e.currentTarget.style.background = esModoOscuro ? 'rgba(239, 68, 68, 0.12)' : '#fef2f2'}
+                onMouseEnter={e => {
+                  e.currentTarget.style.background = esModoOscuro ? 'rgba(239, 68, 68, 0.12)' : '#fef2f2'
+                  e.currentTarget.style.borderColor = '#dc2626'
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.background = 'transparent'
+                  e.currentTarget.style.borderColor = esModoOscuro ? '#475569' : '#cbd5e1'
+                }}
               >
                 <FaTrashAlt style={{ fontSize: '13px' }} /> {t('perfil.deleteAccountBtn', 'Eliminar cuenta')}
               </button>
