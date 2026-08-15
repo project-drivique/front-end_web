@@ -8,7 +8,7 @@ import { showAlert } from '@/utils/swalConfig'
 import PasswordVerificationModal from '../components/PasswordVerificationModal'
 import ChangePassword from '../components/ChangePassword'
 import MenuConfiguracion from '@/components/MenuConfiguracion'
-import { FaEdit, FaCheck, FaTimes, FaUser, FaEnvelope, FaPhone, FaArrowLeft, FaSignOutAlt, FaExclamationTriangle, FaIdCard, FaGlobe } from 'react-icons/fa'
+import { FaEdit, FaCheck, FaTimes, FaUser, FaEnvelope, FaPhone, FaArrowLeft, FaSignOutAlt, FaExclamationTriangle, FaIdCard, FaGlobe, FaCalendarAlt, FaHashtag } from 'react-icons/fa'
 import paisesMock from '@/mocks/nationalities.json'
 import '@/modules/catalog/pages/CatalogPage.css'
 import '@/modules/catalog/pages/VehicleDetailsPage.css'
@@ -360,7 +360,10 @@ export default function PerfilPage() {
               <div style={{ background: c.innerCardBg, borderRadius: '14px', border: `1px solid ${c.innerCardBorder}`, boxShadow: c.innerCardShadow, padding: '22px', display: 'flex', flexDirection: 'column', gap: '14px', flex: 1 }}>
                 {/* Nombres Completo */}
                 <div>
-                  <label style={labelStyle}>{t('perfil.firstName', 'Nombres completos')}</label>
+                  <label style={{ ...labelStyle, display: 'flex', alignItems: 'center' }}>
+                    <FaUser style={{ color: c.accentText || '#1e3a8a', fontSize: '12px', marginRight: '6px' }} />
+                    {t('perfil.firstName', 'Nombres completos')}
+                  </label>
                   {modoEdicion ? (
                     <>
                       <input
@@ -388,7 +391,10 @@ export default function PerfilPage() {
 
                 {/* Apellidos Completo */}
                 <div>
-                  <label style={labelStyle}>{t('perfil.lastName', 'Apellidos completos')}</label>
+                  <label style={{ ...labelStyle, display: 'flex', alignItems: 'center' }}>
+                    <FaUser style={{ color: c.accentText || '#1e3a8a', fontSize: '12px', marginRight: '6px' }} />
+                    {t('perfil.lastName', 'Apellidos completos')}
+                  </label>
                   {modoEdicion ? (
                     <>
                       <input
@@ -416,7 +422,10 @@ export default function PerfilPage() {
 
                 {/* Fecha de nacimiento */}
                 <div>
-                  <label style={labelStyle}>{t('perfil.birthDate', 'Fecha de nacimiento')}</label>
+                  <label style={{ ...labelStyle, display: 'flex', alignItems: 'center' }}>
+                    <FaCalendarAlt style={{ color: c.accentText || '#1e3a8a', fontSize: '12px', marginRight: '6px' }} />
+                    {t('perfil.birthDate', 'Fecha de nacimiento')}
+                  </label>
                   {modoEdicion ? (
                     <>
                       <input
@@ -449,7 +458,10 @@ export default function PerfilPage() {
               <div style={{ background: c.innerCardBg, borderRadius: '14px', border: `1px solid ${c.innerCardBorder}`, boxShadow: c.innerCardShadow, padding: '22px', display: 'flex', flexDirection: 'column', gap: '14px', flex: 1 }}>
                 {/* Correo electrónico */}
                 <div>
-                  <label style={labelStyle}>{t('perfil.email', 'Correo electrónico')}</label>
+                  <label style={{ ...labelStyle, display: 'flex', alignItems: 'center' }}>
+                    <FaEnvelope style={{ color: c.accentText || '#1e3a8a', fontSize: '12px', marginRight: '6px' }} />
+                    {t('perfil.email', 'Correo electrónico')}
+                  </label>
                   {modoEdicion ? (
                     <>
                       <input type="email" value={formData.correo} onChange={e => actualizarCampo('correo', e.target.value)} placeholder="correo@ejemplo.com" style={inputStyle(!!errores.correo)} onFocus={e => e.target.style.borderColor = c.inputBorderFocus} onBlur={e => e.target.style.borderColor = errores.correo ? c.inputErrorBorder : c.inputBorder} />
@@ -466,7 +478,10 @@ export default function PerfilPage() {
 
                 {/* Nacionalidad */}
                 <div>
-                  <label style={labelStyle}>{t('perfil.nationality', 'Nacionalidad')}</label>
+                  <label style={{ ...labelStyle, display: 'flex', alignItems: 'center' }}>
+                    <FaGlobe style={{ color: c.accentText || '#1e3a8a', fontSize: '12px', marginRight: '6px' }} />
+                    {t('perfil.nationality', 'Nacionalidad')}
+                  </label>
                   {modoEdicion ? (
                     <>
                       <select
@@ -477,7 +492,7 @@ export default function PerfilPage() {
                         onBlur={e => e.target.style.borderColor = errores.nacionalidad ? c.inputErrorBorder : c.inputBorder}
                       >
                         <option value="">{t('perfil.selectNationality', 'Seleccionar país')}</option>
-                        {paisesMock.map(p => (
+                        {[...paisesMock].sort((a, b) => a.nombre.localeCompare(b.nombre, 'es')).map(p => (
                           <option key={p.nombre} value={p.nombre}>{p.nombre} ({p.prefijo})</option>
                         ))}
                       </select>
@@ -494,7 +509,10 @@ export default function PerfilPage() {
 
                 {/* Teléfono */}
                 <div>
-                  <label style={labelStyle}>{t('perfil.phone', 'Teléfono')}</label>
+                  <label style={{ ...labelStyle, display: 'flex', alignItems: 'center' }}>
+                    <FaPhone style={{ color: c.accentText || '#1e3a8a', fontSize: '12px', marginRight: '6px' }} />
+                    {t('perfil.phone', 'Teléfono')}
+                  </label>
                   {modoEdicion ? (
                     <>
                       <div
@@ -574,7 +592,10 @@ export default function PerfilPage() {
               <div style={{ background: c.innerCardBg, borderRadius: '14px', border: `1px solid ${c.innerCardBorder}`, boxShadow: c.innerCardShadow, padding: '22px', display: 'flex', flexDirection: 'column', gap: '14px', flex: 1 }}>
                 {/* Tipo de documento */}
                 <div>
-                  <label style={labelStyle}>{t('perfil.docType', 'Tipo de documento')}</label>
+                  <label style={{ ...labelStyle, display: 'flex', alignItems: 'center' }}>
+                    <FaIdCard style={{ color: c.accentText || '#1e3a8a', fontSize: '12px', marginRight: '6px' }} />
+                    {t('perfil.docType', 'Tipo de documento')}
+                  </label>
                   {modoEdicion ? (
                     <>
                       <select
@@ -602,7 +623,10 @@ export default function PerfilPage() {
 
                 {/* Número de documento */}
                 <div>
-                  <label style={labelStyle}>{t('perfil.docNumber', 'Número de documento')}</label>
+                  <label style={{ ...labelStyle, display: 'flex', alignItems: 'center' }}>
+                    <FaHashtag style={{ color: c.accentText || '#1e3a8a', fontSize: '12px', marginRight: '6px' }} />
+                    {t('perfil.docNumber', 'Número de documento')}
+                  </label>
                   {modoEdicion ? (
                     <>
                       <div
