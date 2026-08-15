@@ -83,7 +83,7 @@ export default function PasoFechas({ vehiculo, reserva, onCambio }) {
             {t('vehiculo.paymentMethodTitle')}
           </span>
           <br></br>
-          <div className="grid grid-cols-2 gap-3 sm:gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-5">
             <label className={`flex min-h-[100px] sm:min-h-[112px] items-start gap-2.5 sm:gap-4 rounded-2xl border p-3.5 sm:p-6 cursor-pointer transition-all duration-200 ${reserva.metodoPago === 'wompi' ? 'border-blue-600 bg-[var(--bg-item-hover)] shadow-sm' : 'border-[var(--borde)] bg-[var(--bg-tarjeta)] hover:bg-[var(--bg-item-hover)]'}`}>
               <input
                 type="radio"
@@ -124,7 +124,7 @@ export default function PasoFechas({ vehiculo, reserva, onCambio }) {
           </span>
           {/* Dos campos por fila desde `sm` en adelante (celular incluido),
               igual que las tarjetas de método de pago. */}
-          <div className="grid w-full grid-cols-2 gap-3 sm:gap-5">
+          <div className="grid w-full grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-5">
             <Campo icono={FaMapMarkerAlt} label={t('vehiculo.pickupLocationLabel')}>
               <select
                 id="campo-lugar-retiro"
