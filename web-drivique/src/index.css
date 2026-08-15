@@ -209,3 +209,74 @@ html.dark .campo-select {
   background-color: var(--bg-tarjeta);
   color: var(--texto-primary);
 }
+
+/* ── Reglas de Diseño Responsive para Pantallas de Reserva ── */
+@media (max-width: 1024px) {
+  .detalle-layout {
+    flex-direction: column !important;
+    gap: 24px !important;
+  }
+
+  .detalle-resumen-toggle {
+    display: flex !important;
+  }
+
+  .detalle-columna-principal {
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .detalle-contenido-inner {
+    padding: 20px 16px !important;
+  }
+
+  .datos-personales-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  .doc-uploader-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  .confirmar-reserva-bloque {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    text-align: center !important;
+    padding: 20px 20px !important;
+    gap: 16px !important;
+  }
+
+  .confirmar-reserva-bloque button {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  .respuesta-pago-card {
+    padding: 28px 18px !important;
+    border-radius: 20px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .pasos-barra-item {
+    gap: 4px !important;
+  }
+
+  .pasos-barra-circulo {
+    width: 32px !important;
+    height: 32px !important;
+    font-size: 12px !important;
+  }
+
+  .pasos-barra-linea {
+    width: 20px !important;
+    margin: 0 4px 16px !important;
+  }
+
+  .pasos-barra-label {
+    font-size: 10px !important;
+  }
+}
