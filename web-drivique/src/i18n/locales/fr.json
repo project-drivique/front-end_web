@@ -720,6 +720,39 @@
       "emailTaken": "Cet e-mail est déjà enregistré",
       "updateFailed": "Impossible de mettre à jour le profil"
     },
+    "roles": {
+      "usuario": "Utilisateur",
+      "cliente": "Client",
+      "admin": "Administrateur"
+    },
+    "docTypes": {
+      "CC": "Carte d'identité (CC)",
+      "TI": "Carte d'identité jeune (TI)",
+      "CE": "Document étranger (CE)",
+      "PAS": "Passeport (PAS)"
+    },
+    "countries": {
+      "Colombia": "Colombie",
+      "Estados Unidos": "États-Unis",
+      "Alemania": "Allemagne",
+      "Francia": "France",
+      "España": "Espagne",
+      "Italia": "Italie",
+      "Reino Unido": "Royaume-Uni",
+      "Canadá": "Canada",
+      "Brasil": "Brésil",
+      "Argentina": "Argentine",
+      "México": "Mexique",
+      "Venezuela": "Venezuela",
+      "Ecuador": "Équateur",
+      "Perú": "Pérou",
+      "Chile": "Chili",
+      "Australia": "Australie",
+      "Japón": "Japon",
+      "China": "Chine",
+      "India": "Inde",
+      "Otro": "Autre"
+    },
     "completeProfile": "Completar perfil",
     "nationality": "Nacionalidad",
     "identityDoc": "Documento de identidad",

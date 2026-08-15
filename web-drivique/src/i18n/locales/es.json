@@ -624,6 +624,39 @@
       "emailInvalid": "Formato de correo inválido",
       "emailTaken": "Este correo ya está registrado",
       "updateFailed": "No se pudo actualizar el perfil"
+    },
+    "roles": {
+      "usuario": "Usuario",
+      "cliente": "Cliente",
+      "admin": "Administrador"
+    },
+    "docTypes": {
+      "CC": "Cédula de ciudadanía (CC)",
+      "TI": "Tarjeta de identidad (TI)",
+      "CE": "Documento extranjero (CE)",
+      "PAS": "Pasaporte (PAS)"
+    },
+    "countries": {
+      "Colombia": "Colombia",
+      "Estados Unidos": "Estados Unidos",
+      "Alemania": "Alemania",
+      "Francia": "Francia",
+      "España": "España",
+      "Italia": "Italia",
+      "Reino Unido": "Reino Unido",
+      "Canadá": "Canadá",
+      "Brasil": "Brasil",
+      "Argentina": "Argentina",
+      "México": "México",
+      "Venezuela": "Venezuela",
+      "Ecuador": "Ecuador",
+      "Perú": "Perú",
+      "Chile": "Chile",
+      "Australia": "Australia",
+      "Japón": "Japón",
+      "China": "China",
+      "India": "India",
+      "Otro": "Otro"
     }
   },
   "pagos": {
