@@ -52,7 +52,7 @@ export default function VehiculoDetallePage() {
   const { moneda } = useLanding()
   const { id } = useParams();
   const navigate = useNavigate();
-  const { usuario } = useAuthStore();
+  const { usuario, actualizarUsuario } = useAuthStore();
 
   const vehiculo = VEHICULOS_MOCK.find(v => v.id === Number(id));
 
@@ -196,12 +196,15 @@ export default function VehiculoDetallePage() {
     prellenado.current = true
     const tel = (usuario.telefono || '').replace(/\D/g, '')
     const celular = tel.startsWith('57') && tel.length > 10 ? tel.slice(2) : tel
+    const nombreCompleto = [usuario.nombre, usuario.apellido].filter(Boolean).join(' ')
     setDatosForm(prev => ({
       ...prev,
-      nombre: [usuario.nombre, usuario.apellido].filter(Boolean).join(' '),
-      correo: usuario.correo || '',
-      celular,
-      numDoc: usuario.cedula || '',
+      nombre: nombreCompleto || prev.nombre,
+      correo: usuario.correo || prev.correo,
+      celular: celular || prev.celular,
+      numDoc: usuario.cedula || prev.numDoc,
+      nacionalidad: usuario.nacionalidad || prev.nacionalidad || 'Colombia',
+      tipoDoc: usuario.tipoDocumento || prev.tipoDoc || 'CC',
     }))
   }, [usuario]);
 
@@ -336,6 +339,23 @@ export default function VehiculoDetallePage() {
 
     // Crear la referencia única para Wompi Checkout
     const referencia = generarReferenciaUnica();
+
+    // Si el usuario tenía su perfil incompleto o actualizó sus datos en la reserva,
+    // sincronizamos automáticamente su perfil global para que quede completado.
+    if (usuario && actualizarUsuario) {
+      const partesNombre = (datosForm.nombre || '').trim().split(' ');
+      const primerNombre = partesNombre.length > 1 ? partesNombre.slice(0, -1).join(' ') : partesNombre[0] || '';
+      const primerApellido = partesNombre.length > 1 ? partesNombre[partesNombre.length - 1] : '';
+
+      actualizarUsuario({
+        nombre: usuario.nombre || primerNombre || datosForm.nombre,
+        apellido: usuario.apellido || primerApellido || '',
+        cedula: usuario.cedula || datosForm.numDoc,
+        telefono: usuario.telefono || datosForm.celular,
+        nacionalidad: usuario.nacionalidad || datosForm.nacionalidad,
+        tipoDocumento: usuario.tipoDocumento || datosForm.tipoDoc,
+      });
+    }
 
     // Si el usuario subió documentos nuevos (o no tenía aún), los dejamos
     // registrados para no volver a pedírselos en su próxima reserva.
