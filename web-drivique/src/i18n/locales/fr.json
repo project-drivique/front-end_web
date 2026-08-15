@@ -560,7 +560,9 @@
       "termsRequired": "Vous devez accepter les termes et conditions",
       "datesRequired": "Vous devez sélectionner les dates de prise en charge et de restitution.",
       "datesOrder": "La date de restitution ne peut pas être antérieure à la date de prise en charge.",
-      "hoursOrder": "L'heure de restitution ne peut pas être antérieure à l'heure de prise en charge le même jour."
+      "hoursOrder": "L'heure de restitution ne peut pas être antérieure à l'heure de prise en charge le même jour.",
+      "cedulaPdfRequired": "Vous devez télécharger votre pièce d'identité au format PDF.",
+      "licenciaPdfRequired": "Vous devez télécharger votre permis de conduire au format PDF."
     },
     "paymentMethodTitle": "Mode de Paiement",
     "paymentWompiTitle": "Paiement Numérique Sécurisé (Wompi)",
@@ -1013,5 +1015,14 @@
     "resending": "Renvoi en cours...",
     "resendIn": "Renvoyer dans {{seconds}}s",
     "cancel": "Annuler"
+  },
+  "pago": {
+    "paymentInProcess": "Paiement en Cours",
+    "paymentInProcessDesc": "Votre paiement via Wompi a été enregistré. Le statut de la réservation est maintenant EN ATTENTE DE VALIDATION.",
+    "internalRef": "Référence Interne",
+    "wompiTxId": "ID de Transaction Wompi",
+    "amountToPay": "Montant à Payer",
+    "noLocalReservationInfo": "Information locale de réservation introuvable.",
+    "backToAccount": "Retour à Mon Compte"
   }
 }

@@ -560,7 +560,9 @@
       "termsRequired": "Deve aceitar os termos e condições",
       "datesRequired": "Deve selecionar as datas de recolha e devolução.",
       "datesOrder": "A data de devolução não pode ser anterior à data de recolha.",
-      "hoursOrder": "A hora de devolução não pode ser anterior à hora de recolha no mesmo dia."
+      "hoursOrder": "A hora de devolução não pode ser anterior à hora de recolha no mesmo dia.",
+      "cedulaPdfRequired": "Você deve enviar seu documento no formato PDF.",
+      "licenciaPdfRequired": "Você deve enviar sua carteira de habilitação no formato PDF."
     },
     "paymentMethodTitle": "Método de Pagamento",
     "paymentWompiTitle": "Pagamento Digital Seguro (Wompi)",
@@ -1012,5 +1014,14 @@
     "resending": "Reenviando...",
     "resendIn": "Reenviar em {{seconds}}s",
     "cancel": "Cancelar"
+  },
+  "pago": {
+    "paymentInProcess": "Pagamento em Processamento",
+    "paymentInProcessDesc": "Seu pagamento via Wompi foi registrado. O status da reserva agora é PENDENTE DE VALIDAÇÃO.",
+    "internalRef": "Referência Interna",
+    "wompiTxId": "ID da Transação Wompi",
+    "amountToPay": "Valor a Pagar",
+    "noLocalReservationInfo": "Informação local da reserva não encontrada.",
+    "backToAccount": "Voltar para Minha Conta"
   }
 }

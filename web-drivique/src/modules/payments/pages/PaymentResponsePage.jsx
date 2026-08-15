@@ -82,7 +82,7 @@ export default function RespuestaPagoPage() {
           <Link to={usuario ? "/home" : "/"}><img src={logo} alt="Drivique" style={{ height: 80 }} /></Link>
           <div style={{ flex: 1 }} />
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <Link to="/home" style={{ padding: '10px 20px', borderRadius: 9999, border: '2px solid #bfdbfe', color: 'var(--texto-acento)', fontSize: 14, fontWeight: 700, textDecoration: 'none', transition: 'all 200ms ease' }}>Ir al Inicio</Link>
+            <Link to="/home" style={{ padding: '10px 20px', borderRadius: 9999, border: '2px solid #bfdbfe', color: 'var(--texto-acento)', fontSize: 14, fontWeight: 700, textDecoration: 'none', transition: 'all 200ms ease' }}>{t('common.goHome', 'Ir al Inicio')}</Link>
             <MenuConfiguracion />
           </div>
         </div>
@@ -97,43 +97,39 @@ export default function RespuestaPagoPage() {
             </svg>
           </div>
           
-          <h2 style={{ fontSize: 26, fontWeight: 900, color: 'var(--texto-primary)', margin: '0 0 12px' }}>Pago en Proceso</h2>
+          <h2 style={{ fontSize: 26, fontWeight: 900, color: 'var(--texto-primary)', margin: '0 0 12px' }}>{t('pago.paymentInProcess', 'Pago en Proceso')}</h2>
           <p style={{ fontSize: 15, color: 'var(--texto-second)', marginBottom: 24 }}>
-            Tu pago a través de Wompi se ha registrado. El estado de la reserva ahora es <strong style={{ color: '#059669' }}>PENDIENTE DE VALIDACIÓN</strong>. 
-            <em> (Esto es una simulación de Sandbox)</em>
+            {t('pago.paymentInProcessDesc', 'Tu pago a través de Wompi se ha registrado. El estado de la reserva ahora es PENDIENTE DE VALIDACIÓN.')}
           </p>
 
           {reserva ? (
             <div style={{ background: '#f8fafc', borderRadius: 16, padding: '24px', border: '1px solid #e2e8f0', textAlign: 'left', marginBottom: 24 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
-                <span style={{ fontSize: 13, color: 'var(--texto-second)', fontWeight: 600 }}>Vehículo</span>
+                <span style={{ fontSize: 13, color: 'var(--texto-second)', fontWeight: 600 }}>{t('reservas.vehicle', 'Vehículo')}</span>
                 <span style={{ fontSize: 13, color: 'var(--texto-primary)', fontWeight: 800 }}>{reserva.vehiculoNombre}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
-                <span style={{ fontSize: 13, color: 'var(--texto-second)', fontWeight: 600 }}>Referencia Interna</span>
+                <span style={{ fontSize: 13, color: 'var(--texto-second)', fontWeight: 600 }}>{t('pago.internalRef', 'Referencia Interna')}</span>
                 <span style={{ fontSize: 13, color: 'var(--texto-primary)', fontWeight: 800 }}>{reserva.referencia}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
-                <span style={{ fontSize: 13, color: 'var(--texto-second)', fontWeight: 600 }}>ID de Transacción Wompi</span>
+                <span style={{ fontSize: 13, color: 'var(--texto-second)', fontWeight: 600 }}>{t('pago.wompiTxId', 'ID de Transacción Wompi')}</span>
                 <span style={{ fontSize: 13, color: '#3b82f6', fontWeight: 800 }}>{transactionId || 'N/A'}</span>
               </div>
               <div style={{ borderTop: '1px solid #e2e8f0', margin: '16px 0' }}></div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ fontSize: 13, color: 'var(--texto-primary)', fontWeight: 800 }}>Monto a Pagar</span>
+                <span style={{ fontSize: 13, color: 'var(--texto-primary)', fontWeight: 800 }}>{t('pago.amountToPay', 'Monto a Pagar')}</span>
                 <span style={{ fontSize: 18, color: '#1e3a8a', fontWeight: 900 }}>{formatCurrency(reserva.total, moneda)}</span>
               </div>
-              <p style={{ fontSize: 11, color: 'var(--texto-second)', marginTop: 8, textAlign: 'center' }}>
-                * El monto real enviado a Wompi fue en COP ({reserva.total} COP). Si ves otra moneda, es una conversión visual de la UI.
-              </p>
             </div>
           ) : (
             <div style={{ padding: 20, background: '#fee2e2', color: '#b91c1c', borderRadius: 12, marginBottom: 24, fontSize: 14 }}>
-              No se encontró la información local de la reserva.
+              {t('pago.noLocalReservationInfo', 'No se encontró la información local de la reserva.')}
             </div>
           )}
 
           <Link to="/home" style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '14px 32px', borderRadius: 16, background: 'linear-gradient(90deg,#1e3a8a,#2563eb)', color: '#fff', fontWeight: 900, fontSize: 15, border: 'none', cursor: 'pointer', textDecoration: 'none', boxShadow: '0 8px 24px rgba(37,99,235,0.28)' }}>
-            Volver a Mi Cuenta
+            {t('pago.backToAccount', 'Volver a Mi Cuenta')}
           </Link>
 
         </div>
