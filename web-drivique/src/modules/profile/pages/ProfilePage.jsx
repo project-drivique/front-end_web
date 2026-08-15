@@ -602,8 +602,8 @@ export default function PerfilPage() {
                   width: '100%',
                   padding: '11px',
                   borderRadius: '10px',
-                  background: 'transparent',
-                  border: `1.5px solid ${esModoOscuro ? '#475569' : '#cbd5e1'}`,
+                  background: esModoOscuro ? 'rgba(239, 68, 68, 0.1)' : '#fff5f5',
+                  border: `1.5px solid ${esModoOscuro ? 'rgba(239, 68, 68, 0.35)' : '#fecaca'}`,
                   color: esModoOscuro ? '#f87171' : '#dc2626',
                   fontWeight: 700,
                   fontSize: '13.5px',
@@ -615,15 +615,16 @@ export default function PerfilPage() {
                   transition: 'all 150ms ease',
                 }}
                 onMouseEnter={e => {
-                  e.currentTarget.style.background = esModoOscuro ? 'rgba(239, 68, 68, 0.12)' : '#fef2f2'
-                  e.currentTarget.style.borderColor = '#dc2626'
+                  e.currentTarget.style.background = esModoOscuro ? 'rgba(239, 68, 68, 0.2)' : '#fee2e2'
+                  e.currentTarget.style.borderColor = '#ef4444'
                 }}
                 onMouseLeave={e => {
-                  e.currentTarget.style.background = 'transparent'
-                  e.currentTarget.style.borderColor = esModoOscuro ? '#475569' : '#cbd5e1'
+                  e.currentTarget.style.background = esModoOscuro ? 'rgba(239, 68, 68, 0.1)' : '#fff5f5'
+                  e.currentTarget.style.borderColor = esModoOscuro ? 'rgba(239, 68, 68, 0.35)' : '#fecaca'
                 }}
               >
-                <FaTrashAlt style={{ fontSize: '13px' }} /> {t('perfil.deleteAccountBtn', 'Eliminar cuenta')}
+                <FaTrashAlt style={{ fontSize: '13px', color: esModoOscuro ? '#f87171' : '#dc2626' }} />
+                {t('perfil.deleteAccountBtn', 'Eliminar cuenta')}
               </button>
             </div>
           </div>
@@ -642,11 +643,12 @@ export default function PerfilPage() {
             esPerfilIncompleto={esPerfilIncompleto}
           />
 
-          {/* Modal Discord de Eliminar Cuenta */}
+          {/* Modal de Eliminar Cuenta */}
           <DeleteAccountModal
             isOpen={modalEliminarAbierto}
             onClose={() => setModalEliminarAbierto(false)}
             c={c}
+            esModoOscuro={esModoOscuro}
           />
 
         </div>
