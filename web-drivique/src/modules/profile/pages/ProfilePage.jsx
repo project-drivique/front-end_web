@@ -22,6 +22,24 @@ function iniciales(nombre = '', apellido = '', correo = '') {
   return 'U'
 }
 
+const TIPOS_DOC = [
+  { value: 'CC', sigla: 'CC', label: 'Cédula de ciudadanía (CC)' },
+  { value: 'TI', sigla: 'TI', label: 'Tarjeta de identidad (TI)' },
+  { value: 'CE', sigla: 'CE', label: 'Documento extranjero (CE)' },
+  { value: 'PAS', sigla: 'PAS', label: 'Pasaporte (PAS)' },
+]
+
+function getSiglaDoc(tipo) {
+  const item = TIPOS_DOC.find(t => t.value === tipo || t.sigla === tipo)
+  return item?.sigla || (tipo ? tipo.substring(0, 3).toUpperCase() : 'CC')
+}
+
+function getPrefijoPais(nacionalidad) {
+  if (!nacionalidad) return '+57'
+  const pais = paisesMock.find(p => p.nombre.toLowerCase() === nacionalidad.toLowerCase())
+  return pais?.prefijo || '+57'
+}
+
 export default function PerfilPage() {
   const { t } = useTranslation()
   const navigate = useNavigate()
@@ -196,66 +214,6 @@ export default function PerfilPage() {
           <MenuConfiguracion />
         </div>
 
-        {/* Banner Alerta de Perfil Incompleto */}
-        {esPerfilIncompleto && !modoEdicion && (
-          <div
-            style={{
-              marginBottom: '20px',
-              padding: '16px 20px',
-              borderRadius: '14px',
-              background: esModoOscuro ? 'rgba(234, 179, 8, 0.14)' : '#fffbe8',
-              border: `1.5px solid ${esModoOscuro ? 'rgba(234, 179, 8, 0.4)' : '#fef08a'}`,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              gap: '16px',
-              boxShadow: esModoOscuro ? '0 4px 16px rgba(0,0,0,0.25)' : '0 2px 10px rgba(234,179,8,0.12)',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-              <div
-                style={{
-                  width: '38px',
-                  height: '38px',
-                  borderRadius: '50%',
-                  background: esModoOscuro ? 'rgba(234, 179, 8, 0.2)' : '#fef08a',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  flexShrink: 0,
-                }}
-              >
-                <FaExclamationTriangle size={18} color={esModoOscuro ? '#facc15' : '#ca8a04'} />
-              </div>
-              <div>
-                <h4 style={{ margin: '0 0 2px', fontSize: '14px', fontWeight: 800, color: esModoOscuro ? '#fef08a' : '#854d0e' }}>
-                  {t('perfil.incompleteBannerTitle', 'Información de perfil opcional')}
-                </h4>
-                <p style={{ margin: 0, fontSize: '12.5px', color: esModoOscuro ? '#fef9c3' : '#a16207' }}>
-                  {t('perfil.incompleteBannerText', 'Puedes completar tus datos aquí, o si lo prefieres, se guardarán y completarán automáticamente al realizar tu primera reserva.')}
-                </p>
-              </div>
-            </div>
-            <button
-              onClick={habilitarEdicion}
-              style={{
-                padding: '9px 18px',
-                borderRadius: '10px',
-                background: 'linear-gradient(90deg, #ca8a04, #eab308)',
-                color: '#ffffff',
-                fontWeight: 800,
-                fontSize: '12.5px',
-                border: 'none',
-                cursor: 'pointer',
-                whiteSpace: 'nowrap',
-                boxShadow: '0 4px 12px rgba(202,138,4,0.25)',
-              }}
-            >
-              {t('perfil.completeProfileBtn', 'Completar perfil ahora')}
-            </button>
-          </div>
-        )}
-
         {/* Contenedor Maestro Unificado */}
         <div className="vehiculo-main-container perfil-master-wrapper" style={{ background: c.cardBg, border: `1px solid ${c.cardBorder}`, boxShadow: esModoOscuro ? '0 4px 24px rgba(0,0,0,0.40)' : '0 4px 24px rgba(30,58,138,0.07)', borderRadius: '20px', padding: '24px' }}>
           
@@ -373,12 +331,23 @@ export default function PerfilPage() {
               </div>
 
               <div className="perfil-info-grid">
-                {/* Nombre Completo */}
+                {/* Nombres Completo */}
                 <div>
                   <label style={labelStyle}>{t('perfil.firstName', 'Nombres completos')}</label>
                   {modoEdicion ? (
                     <>
-                      <input type="text" value={formData.nombre} onChange={e => actualizarCampo('nombre', e.target.value)} placeholder="Tus nombres completos" style={inputStyle(!!errores.nombre)} onFocus={e => e.target.style.borderColor = c.inputBorderFocus} onBlur={e => e.target.style.borderColor = errores.nombre ? c.inputErrorBorder : c.inputBorder} />
+                      <input
+                        type="text"
+                        value={formData.nombre}
+                        onChange={e => {
+                          const val = e.target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '')
+                          actualizarCampo('nombre', val)
+                        }}
+                        placeholder="Tus nombres completos"
+                        style={inputStyle(!!errores.nombre)}
+                        onFocus={e => e.target.style.borderColor = c.inputBorderFocus}
+                        onBlur={e => e.target.style.borderColor = errores.nombre ? c.inputErrorBorder : c.inputBorder}
+                      />
                       {errores.nombre && <p style={{ color: c.errorText, fontSize: '11.5px', margin: '4px 0 0' }}>{errores.nombre}</p>}
                     </>
                   ) : ( <input type="text" value={formData.nombre || ''} readOnly style={readonlyStyle} /> )}
@@ -389,7 +358,18 @@ export default function PerfilPage() {
                   <label style={labelStyle}>{t('perfil.lastName', 'Apellidos completos')}</label>
                   {modoEdicion ? (
                     <>
-                      <input type="text" value={formData.apellido} onChange={e => actualizarCampo('apellido', e.target.value)} placeholder="Tus apellidos completos" style={inputStyle(!!errores.apellido)} onFocus={e => e.target.style.borderColor = c.inputBorderFocus} onBlur={e => e.target.style.borderColor = errores.apellido ? c.inputErrorBorder : c.inputBorder} />
+                      <input
+                        type="text"
+                        value={formData.apellido}
+                        onChange={e => {
+                          const val = e.target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '')
+                          actualizarCampo('apellido', val)
+                        }}
+                        placeholder="Tus apellidos completos"
+                        style={inputStyle(!!errores.apellido)}
+                        onFocus={e => e.target.style.borderColor = c.inputBorderFocus}
+                        onBlur={e => e.target.style.borderColor = errores.apellido ? c.inputErrorBorder : c.inputBorder}
+                      />
                       {errores.apellido && <p style={{ color: c.errorText, fontSize: '11.5px', margin: '4px 0 0' }}>{errores.apellido}</p>}
                     </>
                   ) : ( <input type="text" value={formData.apellido || ''} readOnly style={readonlyStyle} /> )}
@@ -406,50 +386,73 @@ export default function PerfilPage() {
                         style={{ ...inputStyle(!!errores.tipoDocumento), cursor: 'pointer' }}
                       >
                         <option value="">{t('perfil.selectDocType', 'Seleccionar tipo')}</option>
-                        <option value="CC">Cédula de Ciudadanía (CC)</option>
-                        <option value="CE">Cédula de Extranjería (CE)</option>
-                        <option value="Pasaporte">Pasaporte</option>
-                        <option value="CNH">Carteira de Habilitação (CNH)</option>
+                        {TIPOS_DOC.map(td => (
+                          <option key={td.value} value={td.value}>{td.label}</option>
+                        ))}
                       </select>
                       {errores.tipoDocumento && <p style={{ color: c.errorText, fontSize: '11.5px', margin: '4px 0 0' }}>{errores.tipoDocumento}</p>}
                     </>
                   ) : (
-                    <input type="text" value={formData.tipoDocumento || ''} readOnly style={readonlyStyle} />
+                    <input type="text" value={TIPOS_DOC.find(t => t.value === formData.tipoDocumento)?.label || formData.tipoDocumento || ''} readOnly style={readonlyStyle} />
                   )}
                 </div>
 
-                {/* Número de documento */}
+                {/* Número de documento con insignia de Sigla (CC, TI, CE, PAS) */}
                 <div>
                   <label style={labelStyle}>{t('perfil.docNumber', 'Número de documento')}</label>
                   {modoEdicion ? (
                     <>
-                      <input type="text" value={formData.cedula} onChange={e => actualizarCampo('cedula', e.target.value)} placeholder="Número de documento" style={inputStyle(!!errores.cedula)} onFocus={e => e.target.style.borderColor = c.inputBorderFocus} onBlur={e => e.target.style.borderColor = errores.cedula ? c.inputErrorBorder : c.inputBorder} />
+                      <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <span
+                          style={{
+                            padding: '0 10px',
+                            height: '42px',
+                            background: c.badgeBg,
+                            color: c.badgeText,
+                            fontSize: '12px',
+                            fontWeight: 800,
+                            borderTopLeftRadius: '10px',
+                            borderBottomLeftRadius: '10px',
+                            border: `1.5px solid ${errores.cedula ? c.inputErrorBorder : c.inputBorder}`,
+                            borderRight: 'none',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            minWidth: '44px',
+                            boxSizing: 'border-box',
+                          }}
+                        >
+                          {getSiglaDoc(formData.tipoDocumento)}
+                        </span>
+                        <input
+                          type="text"
+                          value={formData.cedula}
+                          onChange={e => {
+                            const isNumericOnly = ['CC', 'TI'].includes(formData.tipoDocumento || 'CC')
+                            const val = isNumericOnly
+                              ? e.target.value.replace(/\D/g, '')
+                              : e.target.value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase()
+                            actualizarCampo('cedula', val)
+                          }}
+                          placeholder={['CC', 'TI'].includes(formData.tipoDocumento || 'CC') ? "Ej: 1020304050" : "Ej: AB123456"}
+                          style={{
+                            ...inputStyle(!!errores.cedula),
+                            borderTopLeftRadius: 0,
+                            borderBottomLeftRadius: 0,
+                          }}
+                          onFocus={e => e.target.style.borderColor = c.inputBorderFocus}
+                          onBlur={e => e.target.style.borderColor = errores.cedula ? c.inputErrorBorder : c.inputBorder}
+                        />
+                      </div>
                       {errores.cedula && <p style={{ color: c.errorText, fontSize: '11.5px', margin: '4px 0 0' }}>{errores.cedula}</p>}
                     </>
                   ) : (
-                    <input type="text" value={formData.cedula || ''} readOnly style={readonlyStyle} />
-                  )}
-                </div>
-
-                {/* Nacionalidad */}
-                <div>
-                  <label style={labelStyle}>{t('perfil.nationality', 'Nacionalidad')}</label>
-                  {modoEdicion ? (
-                    <>
-                      <select
-                        value={formData.nacionalidad}
-                        onChange={e => actualizarCampo('nacionalidad', e.target.value)}
-                        style={{ ...inputStyle(!!errores.nacionalidad), cursor: 'pointer' }}
-                      >
-                        <option value="">{t('perfil.selectNationality', 'Seleccionar país')}</option>
-                        {paisesMock.map(p => (
-                          <option key={p.nombre} value={p.nombre}>{p.nombre}</option>
-                        ))}
-                      </select>
-                      {errores.nacionalidad && <p style={{ color: c.errorText, fontSize: '11.5px', margin: '4px 0 0' }}>{errores.nacionalidad}</p>}
-                    </>
-                  ) : (
-                    <input type="text" value={formData.nacionalidad || ''} readOnly style={readonlyStyle} />
+                    <input
+                      type="text"
+                      value={formData.cedula ? `${getSiglaDoc(formData.tipoDocumento)} - ${formData.cedula}` : ''}
+                      readOnly
+                      style={readonlyStyle}
+                    />
                   )}
                 </div>
 
@@ -458,7 +461,14 @@ export default function PerfilPage() {
                   <label style={labelStyle}>{t('perfil.birthDate', 'Fecha de nacimiento')}</label>
                   {modoEdicion ? (
                     <>
-                      <input type="date" value={formData.fechaNacimiento || ''} onChange={e => actualizarCampo('fechaNacimiento', e.target.value)} style={{ ...inputStyle(!!errores.fechaNacimiento), colorScheme: esModoOscuro ? 'dark' : 'light' }} onFocus={e => e.target.style.borderColor = c.inputBorderFocus} onBlur={e => e.target.style.borderColor = errores.fechaNacimiento ? c.inputErrorBorder : c.inputBorder} />
+                      <input
+                        type="date"
+                        value={formData.fechaNacimiento || ''}
+                        onChange={e => actualizarCampo('fechaNacimiento', e.target.value)}
+                        style={{ ...inputStyle(!!errores.fechaNacimiento), colorScheme: esModoOscuro ? 'dark' : 'light' }}
+                        onFocus={e => e.target.style.borderColor = c.inputBorderFocus}
+                        onBlur={e => e.target.style.borderColor = errores.fechaNacimiento ? c.inputErrorBorder : c.inputBorder}
+                      />
                       {errores.fechaNacimiento && <p style={{ color: c.errorText, fontSize: '11.5px', margin: '4px 0 0' }}>{errores.fechaNacimiento}</p>}
                     </>
                   ) : (
@@ -496,18 +506,86 @@ export default function PerfilPage() {
                   )}
                 </div>
 
-                {/* Teléfono */}
+                {/* Nacionalidad */}
+                <div>
+                  <label style={labelStyle}>{t('perfil.nationality', 'Nacionalidad')}</label>
+                  {modoEdicion ? (
+                    <>
+                      <select
+                        value={formData.nacionalidad}
+                        onChange={e => actualizarCampo('nacionalidad', e.target.value)}
+                        style={{ ...inputStyle(!!errores.nacionalidad), cursor: 'pointer' }}
+                      >
+                        <option value="">{t('perfil.selectNationality', 'Seleccionar país')}</option>
+                        {paisesMock.map(p => (
+                          <option key={p.nombre} value={p.nombre}>{p.nombre} ({p.prefijo})</option>
+                        ))}
+                      </select>
+                      {errores.nacionalidad && <p style={{ color: c.errorText, fontSize: '11.5px', margin: '4px 0 0' }}>{errores.nacionalidad}</p>}
+                    </>
+                  ) : (
+                    <div style={{ ...readonlyStyle, padding: '0 14px' }}>
+                      <FaGlobe style={{ color: esModoOscuro ? '#94a3b8' : '#1e3a8a', fontSize: '13px', marginRight: '10px', flexShrink: 0 }} />
+                      <input type="text" value={formData.nacionalidad || ''} readOnly style={{ border: 'none', background: 'transparent', outline: 'none', width: '100%', fontSize: '13px', fontWeight: '500', color: c.readonlyText, cursor: 'default' }} />
+                    </div>
+                  )}
+                </div>
+
+                {/* Teléfono con insignia de prefijo internacional (+57, +1, +55, etc.) */}
                 <div>
                   <label style={labelStyle}>{t('perfil.phone', 'Teléfono')}</label>
                   {modoEdicion ? (
                     <>
-                      <input type="tel" value={formData.telefono} onChange={e => actualizarCampo('telefono', e.target.value)} placeholder="+57 300 1234567" style={inputStyle(!!errores.telefono)} onFocus={e => e.target.style.borderColor = c.inputBorderFocus} onBlur={e => e.target.style.borderColor = errores.telefono ? c.inputErrorBorder : c.inputBorder} />
+                      <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <span
+                          style={{
+                            padding: '0 10px',
+                            height: '42px',
+                            background: c.badgeBg,
+                            color: c.badgeText,
+                            fontSize: '12px',
+                            fontWeight: 800,
+                            borderTopLeftRadius: '10px',
+                            borderBottomLeftRadius: '10px',
+                            border: `1.5px solid ${errores.telefono ? c.inputErrorBorder : c.inputBorder}`,
+                            borderRight: 'none',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            minWidth: '46px',
+                            boxSizing: 'border-box',
+                          }}
+                        >
+                          {getPrefijoPais(formData.nacionalidad)}
+                        </span>
+                        <input
+                          type="tel"
+                          value={formData.telefono}
+                          onChange={e => {
+                            const val = e.target.value.replace(/\D/g, '')
+                            actualizarCampo('telefono', val)
+                          }}
+                          placeholder="3001234567"
+                          style={{
+                            ...inputStyle(!!errores.telefono),
+                            borderTopLeftRadius: 0,
+                            borderBottomLeftRadius: 0,
+                          }}
+                          onFocus={e => e.target.style.borderColor = c.inputBorderFocus}
+                          onBlur={e => e.target.style.borderColor = errores.telefono ? c.inputErrorBorder : c.inputBorder}
+                        />
+                      </div>
                       {errores.telefono && <p style={{ color: c.errorText, fontSize: '11.5px', margin: '4px 0 0' }}>{errores.telefono}</p>}
                     </>
                   ) : (
                     <div style={{ ...readonlyStyle, padding: '0 14px' }}>
                       <FaPhone style={{ color: esModoOscuro ? '#94a3b8' : '#1e3a8a', fontSize: '13px', marginRight: '10px', flexShrink: 0 }} />
-                      <input type="tel" value={formData.telefono || ''} readOnly style={{ border: 'none', background: 'transparent', outline: 'none', width: '100%', fontSize: '13px', fontWeight: '500', color: c.readonlyText, cursor: 'default' }} />
+                      <input
+                        type="tel"
+                        value={formData.telefono ? `${getPrefijoPais(formData.nacionalidad)} ${formData.telefono}` : ''}
+                        readOnly
+                        style={{ border: 'none', background: 'transparent', outline: 'none', width: '100%', fontSize: '13px', fontWeight: '500', color: c.readonlyText, cursor: 'default' }}
+                      />
                     </div>
                   )}
                 </div>
