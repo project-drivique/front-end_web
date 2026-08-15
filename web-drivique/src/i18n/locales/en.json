@@ -739,6 +739,39 @@
       "emailInvalid": "Invalid email format",
       "emailTaken": "This email is already registered",
       "updateFailed": "Could not update profile"
+    },
+    "roles": {
+      "usuario": "User",
+      "cliente": "Client",
+      "admin": "Administrator"
+    },
+    "docTypes": {
+      "CC": "Citizenship ID (CC)",
+      "TI": "Identity Card (TI)",
+      "CE": "Foreign ID (CE)",
+      "PAS": "Passport (PAS)"
+    },
+    "countries": {
+      "Colombia": "Colombia",
+      "Estados Unidos": "United States",
+      "Alemania": "Germany",
+      "Francia": "France",
+      "España": "Spain",
+      "Italia": "Italy",
+      "Reino Unido": "United Kingdom",
+      "Canadá": "Canada",
+      "Brasil": "Brazil",
+      "Argentina": "Argentina",
+      "México": "Mexico",
+      "Venezuela": "Venezuela",
+      "Ecuador": "Ecuador",
+      "Perú": "Peru",
+      "Chile": "Chile",
+      "Australia": "Australia",
+      "Japón": "Japan",
+      "China": "China",
+      "India": "India",
+      "Otro": "Other"
     }
   },
   "pagos": {
