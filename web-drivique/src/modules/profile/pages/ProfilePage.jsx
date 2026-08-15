@@ -30,14 +30,15 @@ const TIPOS_DOC = [
 ]
 
 function getSiglaDoc(tipo) {
+  if (!tipo) return ''
   const item = TIPOS_DOC.find(t => t.value === tipo || t.sigla === tipo)
-  return item?.sigla || (tipo ? tipo.substring(0, 3).toUpperCase() : 'CC')
+  return item?.sigla || (tipo ? tipo.substring(0, 3).toUpperCase() : '')
 }
 
 function getPrefijoPais(nacionalidad) {
-  if (!nacionalidad) return '+57'
+  if (!nacionalidad) return ''
   const pais = paisesMock.find(p => p.nombre.toLowerCase() === nacionalidad.toLowerCase())
-  return pais?.prefijo || '+57'
+  return pais?.prefijo || ''
 }
 
 export default function PerfilPage() {
@@ -310,7 +311,7 @@ export default function PerfilPage() {
 
             <div style={{ flex: 1 }} />
 
-            {!modoEdicion ? (
+            {!modoEdicion && (
               <button
                 onClick={habilitarEdicion}
                 style={{
@@ -327,7 +328,6 @@ export default function PerfilPage() {
                   alignItems: 'center',
                   gap: '8px',
                   transition: 'all 150ms ease',
-                  marginLeft: 'auto',
                   zIndex: 1,
                   boxShadow: esPerfilIncompleto ? '0 4px 16px rgba(0,0,0,0.18)' : 'none',
                 }}
@@ -345,31 +345,6 @@ export default function PerfilPage() {
                   ? t('perfil.completeProfileBtn', 'Completar perfil')
                   : t('perfil.editProfileBtn', 'Editar perfil')}
               </button>
-            ) : (
-              <button
-                onClick={handleCancelar}
-                style={{
-                  padding: '9px 18px',
-                  borderRadius: '10px',
-                  background: 'rgba(255, 255, 255, 0.15)',
-                  backdropFilter: 'blur(8px)',
-                  border: '1px solid rgba(255, 255, 255, 0.4)',
-                  color: '#ffffff',
-                  fontWeight: 700,
-                  fontSize: '13px',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '7px',
-                  transition: 'all 150ms ease',
-                  marginLeft: 'auto',
-                  zIndex: 1,
-                }}
-                onMouseEnter={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.28)'}
-                onMouseLeave={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)'}
-              >
-                <FaTimes style={{ fontSize: '13px' }} /> {t('perfil.cancel', 'Cancelar')}
-              </button>
             )}
           </div>
 
@@ -379,14 +354,10 @@ export default function PerfilPage() {
             {/* Tarjeta Izquierda: Información Personal */}
             <div style={{ background: c.innerCardBg, borderRadius: '14px', border: `1px solid ${c.innerCardBorder}`, boxShadow: c.innerCardShadow, padding: '22px' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '18px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <div style={{ width: '30px', height: '30px', borderRadius: '50%', background: c.badgeBg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <FaUser style={{ color: c.badgeText, fontSize: '13px' }} />
-                  </div>
-                  <h2 style={{ fontSize: '16px', fontWeight: 700, color: c.title, margin: 0 }}>
-                    {t('perfil.personalInfo', 'Información Personal')}
-                  </h2>
-                </div>
+                <h2 style={{ fontSize: '16px', fontWeight: 700, color: c.title, margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <FaUser style={{ color: c.accentText || '#1e3a8a', fontSize: '15px' }} />
+                  {t('perfil.personalInfo', 'Información Personal')}
+                </h2>
 
                 {esPerfilIncompleto ? (
                   <span
@@ -512,7 +483,7 @@ export default function PerfilPage() {
                   )}
                 </div>
 
-                {/* Número de documento con insignia de Sigla unificada */}
+                {/* Número de documento con insignia de Sigla solo al seleccionar */}
                 <div>
                   <label style={labelStyle}>{t('perfil.docNumber', 'Número de documento')}</label>
                   {modoEdicion ? (
@@ -530,25 +501,27 @@ export default function PerfilPage() {
                           transition: 'all 150ms ease',
                         }}
                       >
-                        <span
-                          style={{
-                            padding: '0 12px',
-                            height: '100%',
-                            background: esModoOscuro ? '#1e293b' : '#f1f5f9',
-                            borderRight: `1px solid ${c.inputBorder}`,
-                            color: esModoOscuro ? '#93c5fd' : '#1e3a8a',
-                            fontSize: '12.5px',
-                            fontWeight: 800,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            userSelect: 'none',
-                            letterSpacing: '0.04em',
-                            flexShrink: 0,
-                          }}
-                        >
-                          {getSiglaDoc(formData.tipoDocumento)}
-                        </span>
+                        {getSiglaDoc(formData.tipoDocumento) && (
+                          <span
+                            style={{
+                              padding: '0 12px',
+                              height: '100%',
+                              background: esModoOscuro ? '#1e293b' : '#f1f5f9',
+                              borderRight: `1px solid ${c.inputBorder}`,
+                              color: esModoOscuro ? '#93c5fd' : '#1e3a8a',
+                              fontSize: '12.5px',
+                              fontWeight: 800,
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              userSelect: 'none',
+                              letterSpacing: '0.04em',
+                              flexShrink: 0,
+                            }}
+                          >
+                            {getSiglaDoc(formData.tipoDocumento)}
+                          </span>
+                        )}
                         <input
                           type="text"
                           value={formData.cedula}
@@ -559,7 +532,11 @@ export default function PerfilPage() {
                               : e.target.value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase()
                             actualizarCampo('cedula', val)
                           }}
-                          placeholder={['CC', 'TI'].includes(formData.tipoDocumento || 'CC') ? "Ej: 1020304050" : "Ej: AB123456"}
+                          placeholder={
+                            !formData.tipoDocumento
+                              ? "Selecciona tipo de documento primero"
+                              : (['CC', 'TI'].includes(formData.tipoDocumento) ? "Ej: 1020304050" : "Ej: AB123456")
+                          }
                           style={{
                             flex: 1,
                             height: '100%',
@@ -613,10 +590,8 @@ export default function PerfilPage() {
             {/* Tarjeta Derecha: Datos de Contacto */}
             <div style={{ background: c.innerCardBg, borderRadius: '14px', border: `1px solid ${c.innerCardBorder}`, boxShadow: c.innerCardShadow, padding: '22px', display: 'flex', flexDirection: 'column' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '18px' }}>
-                <div style={{ width: '30px', height: '30px', borderRadius: '50%', background: c.badgeBg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <FaEnvelope style={{ color: c.badgeText, fontSize: '13px' }} />
-                </div>
-                <h2 style={{ fontSize: '16px', fontWeight: 700, color: c.title, margin: 0 }}>
+                <h2 style={{ fontSize: '16px', fontWeight: 700, color: c.title, margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <FaEnvelope style={{ color: c.accentText || '#1e3a8a', fontSize: '15px' }} />
                   {t('perfil.contactData', 'Datos de Contacto')}
                 </h2>
               </div>
@@ -632,7 +607,6 @@ export default function PerfilPage() {
                     </>
                   ) : (
                     <div style={{ ...readonlyStyle, padding: '0 14px' }}>
-                      <FaEnvelope style={{ color: esModoOscuro ? '#94a3b8' : '#1e3a8a', fontSize: '13px', marginRight: '10px', flexShrink: 0 }} />
                       <span style={{ color: formData.correo ? c.readonlyText : '#94a3b8', fontStyle: formData.correo ? 'normal' : 'italic' }}>
                         {formData.correo || t('perfil.notSpecified', 'Sin registrar')}
                       </span>
@@ -661,7 +635,6 @@ export default function PerfilPage() {
                     </>
                   ) : (
                     <div style={{ ...readonlyStyle, padding: '0 14px' }}>
-                      <FaGlobe style={{ color: esModoOscuro ? '#94a3b8' : '#1e3a8a', fontSize: '13px', marginRight: '10px', flexShrink: 0 }} />
                       <span style={{ color: formData.nacionalidad ? c.readonlyText : '#94a3b8', fontStyle: formData.nacionalidad ? 'normal' : 'italic' }}>
                         {formData.nacionalidad || t('perfil.notSpecified', 'Sin registrar')}
                       </span>
@@ -669,7 +642,7 @@ export default function PerfilPage() {
                   )}
                 </div>
 
-                {/* Teléfono con insignia de prefijo internacional (+57, +1, +55, etc.) unificada */}
+                {/* Teléfono con insignia de prefijo internacional (+57, +1, +55, etc.) solo al seleccionar */}
                 <div>
                   <label style={labelStyle}>{t('perfil.phone', 'Teléfono')}</label>
                   {modoEdicion ? (
@@ -687,25 +660,27 @@ export default function PerfilPage() {
                           transition: 'all 150ms ease',
                         }}
                       >
-                        <span
-                          style={{
-                            padding: '0 12px',
-                            height: '100%',
-                            background: esModoOscuro ? '#1e293b' : '#f1f5f9',
-                            borderRight: `1px solid ${c.inputBorder}`,
-                            color: esModoOscuro ? '#93c5fd' : '#1e3a8a',
-                            fontSize: '12.5px',
-                            fontWeight: 700,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            userSelect: 'none',
-                            letterSpacing: '0.04em',
-                            flexShrink: 0,
-                          }}
-                        >
-                          {getPrefijoPais(formData.nacionalidad)}
-                        </span>
+                        {getPrefijoPais(formData.nacionalidad) && (
+                          <span
+                            style={{
+                              padding: '0 12px',
+                              height: '100%',
+                              background: esModoOscuro ? '#1e293b' : '#f1f5f9',
+                              borderRight: `1px solid ${c.inputBorder}`,
+                              color: esModoOscuro ? '#93c5fd' : '#1e3a8a',
+                              fontSize: '12.5px',
+                              fontWeight: 800,
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              userSelect: 'none',
+                              letterSpacing: '0.04em',
+                              flexShrink: 0,
+                            }}
+                          >
+                            {getPrefijoPais(formData.nacionalidad)}
+                          </span>
+                        )}
                         <input
                           type="tel"
                           value={formData.telefono}
@@ -713,7 +688,7 @@ export default function PerfilPage() {
                             const val = e.target.value.replace(/\D/g, '')
                             actualizarCampo('telefono', val)
                           }}
-                          placeholder="3001234567"
+                          placeholder={!formData.nacionalidad ? "Selecciona nacionalidad primero" : "3001234567"}
                           style={{
                             flex: 1,
                             height: '100%',
@@ -731,7 +706,6 @@ export default function PerfilPage() {
                     </>
                   ) : (
                     <div style={{ ...readonlyStyle, padding: '0 14px' }}>
-                      <FaPhone style={{ color: esModoOscuro ? '#94a3b8' : '#1e3a8a', fontSize: '13px', marginRight: '10px', flexShrink: 0 }} />
                       <span style={{ color: formData.telefono ? c.readonlyText : '#94a3b8', fontStyle: formData.telefono ? 'normal' : 'italic' }}>
                         {formData.telefono ? `${getPrefijoPais(formData.nacionalidad)} ${formData.telefono}` : t('perfil.notSpecified', 'Sin registrar')}
                       </span>
