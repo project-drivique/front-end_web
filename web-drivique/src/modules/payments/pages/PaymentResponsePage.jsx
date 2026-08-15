@@ -9,6 +9,7 @@ import logo from '@/assets/logo.png';
 import VEHICULOS_MOCK from '@/mocks/vehicles.json';
 import ContractSignature from '../../contracts/components/ContractSignature';
 import { useAuthStore } from '../../../store/authStore';
+import MenuConfiguracion from '@/components/MenuConfiguracion';
 
 export default function RespuestaPagoPage() {
   const { t } = useTranslation();
@@ -80,8 +81,9 @@ export default function RespuestaPagoPage() {
         <div className="catalogo-header-inner" style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px', height: '100%', display: 'flex', alignItems: 'center', gap: 20 }}>
           <Link to={usuario ? "/home" : "/"}><img src={logo} alt="Drivique" style={{ height: 80 }} /></Link>
           <div style={{ flex: 1 }} />
-          <div style={{ display: 'flex', gap: 12 }}>
-            <Link to="/home" style={{ padding: '10px 20px', borderRadius: 9999, border: '2px solid #bfdbfe', color: '#1e3a8a', fontSize: 14, fontWeight: 700, textDecoration: 'none', transition: 'all 200ms ease' }}>Ir al Inicio</Link>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <Link to="/home" style={{ padding: '10px 20px', borderRadius: 9999, border: '2px solid #bfdbfe', color: 'var(--texto-acento)', fontSize: 14, fontWeight: 700, textDecoration: 'none', transition: 'all 200ms ease' }}>Ir al Inicio</Link>
+            <MenuConfiguracion />
           </div>
         </div>
       </nav>
