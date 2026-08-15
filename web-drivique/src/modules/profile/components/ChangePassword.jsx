@@ -95,7 +95,7 @@ export default function CambiarContrasena({ c, esModoOscuro }) {
             transition: 'all 150ms ease',
           }}
         >
-          <FaLock style={{ fontSize: '12px' }} /> {t('perfil.changePassword', 'Cambiar contraseña')}
+          {t('perfil.changePassword', 'Cambiar contraseña')}
         </button>
       </div>
 
