@@ -64,7 +64,18 @@ html.dark {
   --hero-orb1:     rgba(30,58,138,0.2);
   --hero-orb2:     rgba(30,58,138,0.15);
   --texto-acento:   #ffffff;
-}/* -- Estilos personalizados SweetAlert2 del proyecto -- */
+}/* ── Estilo global de zoom de catálogo (90%) ── */
+.catalogo-page {
+  zoom: 0.9;
+}
+
+@media (max-width: 1024px) {
+  .catalogo-page {
+    zoom: 1 !important;
+  }
+}
+
+/* -- Estilos personalizados SweetAlert2 del proyecto -- */
 .swal2-project-popup {
   background: #f8fafc !important;
   color: #0f172a !important;

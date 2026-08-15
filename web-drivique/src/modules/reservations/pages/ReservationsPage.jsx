@@ -102,7 +102,7 @@ export default function ReservasPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--bg-page)]" style={{ zoom: 0.9 }}>
+    <div className="catalogo-page min-h-screen bg-[var(--bg-page)]">
       <nav className="fixed inset-x-0 top-0 z-50 h-24 border-b border-[var(--borde)] bg-[var(--bg-nav)] backdrop-blur">
         <div className="mx-auto flex h-full max-w-5xl items-center gap-5 px-6">
           <Link to="/home"><img src={logo} alt="Drivique" className="h-20" /></Link>
