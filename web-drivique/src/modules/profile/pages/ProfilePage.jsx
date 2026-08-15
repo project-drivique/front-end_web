@@ -144,25 +144,47 @@ export default function PerfilPage() {
 
   const inputStyle = (hasError) => ({
     width: '100%',
-    padding: '12px 16px',
+    height: '42px',
+    padding: '0 14px',
     borderRadius: '10px',
     border: `1.5px solid ${hasError ? c.inputErrorBorder : c.inputBorder}`,
     background: hasError ? c.inputErrorBg : c.inputBg,
-    fontSize: '14px',
+    fontSize: '13.5px',
     color: c.inputText,
     outline: 'none',
     boxSizing: 'border-box',
-    transition: 'border-color 150ms',
+    transition: 'all 150ms ease',
+  })
+
+  const selectStyle = (hasError) => ({
+    width: '100%',
+    height: '42px',
+    padding: '0 36px 0 14px',
+    borderRadius: '10px',
+    border: `1.5px solid ${hasError ? c.inputErrorBorder : c.inputBorder}`,
+    background: hasError ? c.inputErrorBg : c.inputBg,
+    fontSize: '13.5px',
+    color: c.inputText,
+    outline: 'none',
+    boxSizing: 'border-box',
+    cursor: 'pointer',
+    transition: 'all 150ms ease',
+    appearance: 'none',
+    WebkitAppearance: 'none',
+    MozAppearance: 'none',
+    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`,
+    backgroundRepeat: 'no-repeat',
+    backgroundPosition: 'right 14px center',
   })
 
   const readonlyStyle = {
     width: '100%',
+    height: '42px',
     padding: '0 14px',
-    height: '38px',
     borderRadius: '10px',
-    border: 'none',
+    border: `1px solid ${c.innerCardBorder}`,
     background: c.readonlyBg,
-    fontSize: '13px',
+    fontSize: '13.5px',
     fontWeight: '500',
     color: c.readonlyText,
     outline: 'none',
@@ -383,7 +405,9 @@ export default function PerfilPage() {
                       <select
                         value={formData.tipoDocumento}
                         onChange={e => actualizarCampo('tipoDocumento', e.target.value)}
-                        style={{ ...inputStyle(!!errores.tipoDocumento), cursor: 'pointer' }}
+                        style={selectStyle(!!errores.tipoDocumento)}
+                        onFocus={e => e.target.style.borderColor = c.inputBorderFocus}
+                        onBlur={e => e.target.style.borderColor = errores.tipoDocumento ? c.inputErrorBorder : c.inputBorder}
                       >
                         <option value="">{t('perfil.selectDocType', 'Seleccionar tipo')}</option>
                         {TIPOS_DOC.map(td => (
@@ -397,29 +421,39 @@ export default function PerfilPage() {
                   )}
                 </div>
 
-                {/* Número de documento con insignia de Sigla (CC, TI, CE, PAS) */}
+                {/* Número de documento con insignia de Sigla unificada */}
                 <div>
                   <label style={labelStyle}>{t('perfil.docNumber', 'Número de documento')}</label>
                   {modoEdicion ? (
                     <>
-                      <div style={{ display: 'flex', alignItems: 'center' }}>
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          borderRadius: '10px',
+                          border: `1.5px solid ${errores.cedula ? c.inputErrorBorder : c.inputBorder}`,
+                          background: errores.cedula ? c.inputErrorBg : c.inputBg,
+                          height: '42px',
+                          overflow: 'hidden',
+                          boxSizing: 'border-box',
+                          transition: 'all 150ms ease',
+                        }}
+                      >
                         <span
                           style={{
-                            padding: '0 10px',
-                            height: '42px',
-                            background: c.badgeBg,
-                            color: c.badgeText,
-                            fontSize: '12px',
+                            padding: '0 12px',
+                            height: '100%',
+                            background: esModoOscuro ? '#1e293b' : '#f1f5f9',
+                            borderRight: `1px solid ${c.inputBorder}`,
+                            color: esModoOscuro ? '#93c5fd' : '#1e3a8a',
+                            fontSize: '12.5px',
                             fontWeight: 800,
-                            borderTopLeftRadius: '10px',
-                            borderBottomLeftRadius: '10px',
-                            border: `1.5px solid ${errores.cedula ? c.inputErrorBorder : c.inputBorder}`,
-                            borderRight: 'none',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            minWidth: '44px',
-                            boxSizing: 'border-box',
+                            userSelect: 'none',
+                            letterSpacing: '0.04em',
+                            flexShrink: 0,
                           }}
                         >
                           {getSiglaDoc(formData.tipoDocumento)}
@@ -436,12 +470,16 @@ export default function PerfilPage() {
                           }}
                           placeholder={['CC', 'TI'].includes(formData.tipoDocumento || 'CC') ? "Ej: 1020304050" : "Ej: AB123456"}
                           style={{
-                            ...inputStyle(!!errores.cedula),
-                            borderTopLeftRadius: 0,
-                            borderBottomLeftRadius: 0,
+                            flex: 1,
+                            height: '100%',
+                            border: 'none',
+                            background: 'transparent',
+                            padding: '0 12px',
+                            fontSize: '13.5px',
+                            color: c.inputText,
+                            outline: 'none',
+                            boxSizing: 'border-box',
                           }}
-                          onFocus={e => e.target.style.borderColor = c.inputBorderFocus}
-                          onBlur={e => e.target.style.borderColor = errores.cedula ? c.inputErrorBorder : c.inputBorder}
                         />
                       </div>
                       {errores.cedula && <p style={{ color: c.errorText, fontSize: '11.5px', margin: '4px 0 0' }}>{errores.cedula}</p>}
@@ -514,7 +552,9 @@ export default function PerfilPage() {
                       <select
                         value={formData.nacionalidad}
                         onChange={e => actualizarCampo('nacionalidad', e.target.value)}
-                        style={{ ...inputStyle(!!errores.nacionalidad), cursor: 'pointer' }}
+                        style={selectStyle(!!errores.nacionalidad)}
+                        onFocus={e => e.target.style.borderColor = c.inputBorderFocus}
+                        onBlur={e => e.target.style.borderColor = errores.nacionalidad ? c.inputErrorBorder : c.inputBorder}
                       >
                         <option value="">{t('perfil.selectNationality', 'Seleccionar país')}</option>
                         {paisesMock.map(p => (
@@ -531,29 +571,39 @@ export default function PerfilPage() {
                   )}
                 </div>
 
-                {/* Teléfono con insignia de prefijo internacional (+57, +1, +55, etc.) */}
+                {/* Teléfono con insignia de prefijo internacional (+57, +1, +55, etc.) unificada */}
                 <div>
                   <label style={labelStyle}>{t('perfil.phone', 'Teléfono')}</label>
                   {modoEdicion ? (
                     <>
-                      <div style={{ display: 'flex', alignItems: 'center' }}>
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          borderRadius: '10px',
+                          border: `1.5px solid ${errores.telefono ? c.inputErrorBorder : c.inputBorder}`,
+                          background: errores.telefono ? c.inputErrorBg : c.inputBg,
+                          height: '42px',
+                          overflow: 'hidden',
+                          boxSizing: 'border-box',
+                          transition: 'all 150ms ease',
+                        }}
+                      >
                         <span
                           style={{
-                            padding: '0 10px',
-                            height: '42px',
-                            background: c.badgeBg,
-                            color: c.badgeText,
-                            fontSize: '12px',
-                            fontWeight: 800,
-                            borderTopLeftRadius: '10px',
-                            borderBottomLeftRadius: '10px',
-                            border: `1.5px solid ${errores.telefono ? c.inputErrorBorder : c.inputBorder}`,
-                            borderRight: 'none',
+                            padding: '0 12px',
+                            height: '100%',
+                            background: esModoOscuro ? '#1e293b' : '#f1f5f9',
+                            borderRight: `1px solid ${c.inputBorder}`,
+                            color: esModoOscuro ? '#93c5fd' : '#1e3a8a',
+                            fontSize: '12.5px',
+                            fontWeight: 700,
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            minWidth: '46px',
-                            boxSizing: 'border-box',
+                            userSelect: 'none',
+                            letterSpacing: '0.04em',
+                            flexShrink: 0,
                           }}
                         >
                           {getPrefijoPais(formData.nacionalidad)}
@@ -567,12 +617,16 @@ export default function PerfilPage() {
                           }}
                           placeholder="3001234567"
                           style={{
-                            ...inputStyle(!!errores.telefono),
-                            borderTopLeftRadius: 0,
-                            borderBottomLeftRadius: 0,
+                            flex: 1,
+                            height: '100%',
+                            border: 'none',
+                            background: 'transparent',
+                            padding: '0 12px',
+                            fontSize: '13.5px',
+                            color: c.inputText,
+                            outline: 'none',
+                            boxSizing: 'border-box',
                           }}
-                          onFocus={e => e.target.style.borderColor = c.inputBorderFocus}
-                          onBlur={e => e.target.style.borderColor = errores.telefono ? c.inputErrorBorder : c.inputBorder}
                         />
                       </div>
                       {errores.telefono && <p style={{ color: c.errorText, fontSize: '11.5px', margin: '4px 0 0' }}>{errores.telefono}</p>}
