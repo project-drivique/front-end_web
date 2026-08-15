@@ -229,10 +229,10 @@ export default function PerfilPage() {
               </div>
               <div>
                 <h4 style={{ margin: '0 0 2px', fontSize: '14px', fontWeight: 800, color: esModoOscuro ? '#fef08a' : '#854d0e' }}>
-                  {t('perfil.incompleteBannerTitle', '¡Completa tu información personal!')}
+                  {t('perfil.incompleteBannerTitle', 'Información de perfil opcional')}
                 </h4>
                 <p style={{ margin: 0, fontSize: '12.5px', color: esModoOscuro ? '#fef9c3' : '#a16207' }}>
-                  {t('perfil.incompleteBannerText', 'Diligencia tus nombres, apellidos, documento y teléfono para dejar tu perfil listo para reservar.')}
+                  {t('perfil.incompleteBannerText', 'Puedes completar tus datos aquí, o si lo prefieres, se guardarán y completarán automáticamente al realizar tu primera reserva.')}
                 </p>
               </div>
             </div>
