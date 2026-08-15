@@ -122,7 +122,7 @@ export default function CalendarioReservas({ vehiculoId, fechaInicio, fechaFin, 
                   disabled={!clicable}
                   onClick={() => handleClickDia(dia)}
                   className={[
-                    'relative mx-auto flex aspect-square w-full max-w-14 items-center justify-center rounded-full text-[15px] sm:text-base font-semibold transition-colors',
+                    'relative mx-auto flex aspect-square w-full max-w-8 sm:max-w-11 md:max-w-14 items-center justify-center rounded-full text-xs sm:text-sm md:text-base font-semibold transition-colors',
                     fueraDeMes ? 'text-transparent pointer-events-none' :
                     seleccionado ? 'bg-blue-600 text-white shadow-md shadow-blue-200' :
                     pasado ? 'text-[var(--texto-second)] opacity-40 cursor-not-allowed' :
