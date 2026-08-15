@@ -310,7 +310,7 @@ export default function PerfilPage() {
 
             <div style={{ flex: 1 }} />
 
-            {!modoEdicion && (
+            {!modoEdicion ? (
               <button
                 onClick={habilitarEdicion}
                 style={{
@@ -344,6 +344,31 @@ export default function PerfilPage() {
                 {esPerfilIncompleto
                   ? t('perfil.completeProfileBtn', 'Completar perfil')
                   : t('perfil.editProfileBtn', 'Editar perfil')}
+              </button>
+            ) : (
+              <button
+                onClick={handleCancelar}
+                style={{
+                  padding: '9px 18px',
+                  borderRadius: '10px',
+                  background: 'rgba(255, 255, 255, 0.15)',
+                  backdropFilter: 'blur(8px)',
+                  border: '1px solid rgba(255, 255, 255, 0.4)',
+                  color: '#ffffff',
+                  fontWeight: 700,
+                  fontSize: '13px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '7px',
+                  transition: 'all 150ms ease',
+                  marginLeft: 'auto',
+                  zIndex: 1,
+                }}
+                onMouseEnter={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.28)'}
+                onMouseLeave={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)'}
+              >
+                <FaTimes style={{ fontSize: '13px' }} /> {t('perfil.cancel', 'Cancelar')}
               </button>
             )}
           </div>
@@ -717,6 +742,18 @@ export default function PerfilPage() {
             </div>
           </div>
 
+          {/* Botones de guardar/cancelar en modo edición */}
+          {modoEdicion && (
+            <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '20px', marginBottom: '24px' }}>
+              <button onClick={handleCancelar} disabled={cargando} style={{ padding: '11px 24px', borderRadius: '10px', background: c.btnSecBg, border: `1.5px solid ${c.btnSecBorder}`, color: c.btnSecText, fontWeight: 600, fontSize: '14px', cursor: cargando ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: '8px', opacity: cargando ? 0.5 : 1 }}>
+                <FaTimes /> {t('perfil.cancel', 'Cancelar')}
+              </button>
+              <button onClick={handleGuardar} disabled={cargando} style={{ padding: '11px 28px', borderRadius: '10px', background: c.btnPrimary, color: '#fff', border: 'none', fontWeight: 700, fontSize: '14px', cursor: cargando ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: '8px', opacity: cargando ? 0.7 : 1 }}>
+                {cargando ? ( <><span style={{ width: 14, height: 14, border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#fff', borderRadius: '50%', animation: 'spin 0.7s linear infinite', display: 'inline-block' }} /> {t('perfil.saving', 'Guardando...')}</> ) : ( <><FaCheck /> {t('perfil.save', 'Guardar cambios')}</> )}
+              </button>
+            </div>
+          )}
+
           {/* 3. Seguridad y Contraseña */}
           <div>
             <ChangePassword c={c} />
@@ -767,18 +804,6 @@ export default function PerfilPage() {
               <FaSignOutAlt style={{ fontSize: '13px' }} /> {t('catalogo.logout', 'Cerrar sesión')}
             </button>
           </div>
-
-          {/* Botones de guardar/cancelar en modo edición */}
-          {modoEdicion && (
-            <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '20px' }}>
-              <button onClick={handleCancelar} disabled={cargando} style={{ padding: '11px 24px', borderRadius: '10px', background: c.btnSecBg, border: `1.5px solid ${c.btnSecBorder}`, color: c.btnSecText, fontWeight: 600, fontSize: '14px', cursor: cargando ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: '8px', opacity: cargando ? 0.5 : 1 }}>
-                <FaTimes /> {t('perfil.cancel')}
-              </button>
-              <button onClick={handleGuardar} disabled={cargando} style={{ padding: '11px 28px', borderRadius: '10px', background: c.btnPrimary, color: '#fff', border: 'none', fontWeight: 700, fontSize: '14px', cursor: cargando ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: '8px', opacity: cargando ? 0.7 : 1 }}>
-                {cargando ? ( <><span style={{ width: 14, height: 14, border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#fff', borderRadius: '50%', animation: 'spin 0.7s linear infinite', display: 'inline-block' }} /> {t('perfil.saving')}</> ) : ( <><FaCheck /> {t('perfil.save')}</> )}
-              </button>
-            </div>
-          )}
 
         </div>
 
