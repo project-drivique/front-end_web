@@ -210,7 +210,7 @@ export default function PerfilPage() {
   return (
     <div className="catalogo-page" style={{ minHeight: '100vh', background: c.pageBg, color: c.textPrimary, zoom: 0.9 }}>
       
-      <div className="detalle-contenido-inner" style={{ maxWidth: 1040, margin: '0 auto', padding: '20px 20px 50px' }}>
+      <div className="detalle-contenido-inner" style={{ maxWidth: 1360, margin: '0 auto', padding: '24px 24px 60px' }}>
         
         {/* Top bar (Botón Volver al catálogo a la izquierda + Menú Configuración a la derecha) */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
@@ -358,44 +358,6 @@ export default function PerfilPage() {
                   <FaUser style={{ color: c.accentText || '#1e3a8a', fontSize: '15px' }} />
                   {t('perfil.personalInfo', 'Información Personal')}
                 </h2>
-
-                {esPerfilIncompleto ? (
-                  <span
-                    style={{
-                      padding: '4px 10px',
-                      borderRadius: '20px',
-                      background: esModoOscuro ? 'rgba(148, 163, 184, 0.15)' : '#f1f5f9',
-                      color: esModoOscuro ? '#cbd5e1' : '#475569',
-                      fontSize: '11px',
-                      fontWeight: 700,
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '6px',
-                      border: `1px solid ${esModoOscuro ? 'rgba(148, 163, 184, 0.3)' : '#cbd5e1'}`,
-                    }}
-                  >
-                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: esModoOscuro ? '#94a3b8' : '#64748b' }} />
-                    {t('perfil.statusIncomplete', 'Incompleto')}
-                  </span>
-                ) : (
-                  <span
-                    style={{
-                      padding: '4px 10px',
-                      borderRadius: '20px',
-                      background: esModoOscuro ? 'rgba(37, 99, 235, 0.2)' : '#eff6ff',
-                      color: esModoOscuro ? '#93c5fd' : '#1e3a8a',
-                      fontSize: '11px',
-                      fontWeight: 700,
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '6px',
-                      border: `1px solid ${esModoOscuro ? 'rgba(37, 99, 235, 0.4)' : '#bfdbfe'}`,
-                    }}
-                  >
-                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: esModoOscuro ? '#60a5fa' : '#2563eb' }} />
-                    {t('perfil.statusVerified', 'Verificado')}
-                  </span>
-                )}
               </div>
 
               <div className="perfil-info-grid">
