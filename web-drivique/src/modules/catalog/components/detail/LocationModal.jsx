@@ -97,7 +97,7 @@ export default function LocationModal({ visible, onClose, sucursalInfo, c }) {
           {mapEmbedUrl && (
             <div style={{ width: '100%', height: '300px', borderRadius: '12px', overflow: 'hidden', background: footerBg }}>
               <iframe
-                title="Mapa de la sucursal"
+                title={t('vehiculo.branchMap', 'Mapa de la sucursal')}
                 width="100%"
                 height="100%"
                 style={{ border: 0 }}

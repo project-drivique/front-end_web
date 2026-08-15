@@ -101,37 +101,38 @@ export const authService = {
   },
 
   registro: async (datosUsuario) => {
-    // Método asíncrono para registrar usuario.
     const index = MOCK_USERS.findIndex(
       (u) => u.correo.toLowerCase() === datosUsuario.correo.toLowerCase()
     )
 
-    let usuario
     if (index !== -1) {
-      if (datosUsuario.contrasena) {
-        MOCK_USERS[index].contrasena = datosUsuario.contrasena
-      }
-      usuario = MOCK_USERS[index]
-    } else {
-      usuario = {
-        correo: datosUsuario.correo,
-        contrasena: datosUsuario.contrasena || 'Drivique123*',
-        nombre: datosUsuario.nombre || datosUsuario.correo.split('@')[0],
-        apellido: datosUsuario.apellido || 'Drivique',
-        rol: 'usuario',
-        telefono: datosUsuario.telefono || '+573000000000',
-        cedula: datosUsuario.cedula || '1000000000',
-        fechaNacimiento: datosUsuario.fechaNacimiento || '2000-01-01',
-        emailVerificado: true,
-      }
-      MOCK_USERS.push(usuario)
+      const error = new Error('El correo electrónico ya está registrado')
+      error.response = { status: 400 }
+      throw error
     }
+
+    const usuario = {
+      correo: datosUsuario.correo,
+      contrasena: datosUsuario.contrasena,
+      nombre: '',
+      apellido: '',
+      nacionalidad: '',
+      tipoDocumento: '',
+      rol: 'usuario',
+      telefono: '',
+      cedula: '',
+      fechaNacimiento: '',
+      emailVerificado: true,
+    }
+    MOCK_USERS.push(usuario)
 
     return {
       token: generateMockToken(),
       correo: usuario.correo,
       nombre: usuario.nombre,
       apellido: usuario.apellido,
+      nacionalidad: usuario.nacionalidad,
+      tipoDocumento: usuario.tipoDocumento,
       rol: usuario.rol,
       telefono: usuario.telefono,
       cedula: usuario.cedula,

@@ -34,7 +34,7 @@ const coloresTema = (esModoOscuro) => ({
   panelBorderStrong: esModoOscuro ? '#475569' : '#dce5f3',
   panelShadow: esModoOscuro ? '0 6px 24px rgba(0,0,0,0.25)' : '0 4px 18px rgba(30,58,138,0.06)',
   heroCardBg: esModoOscuro ? '#111827' : '#ffffff',
-  heroCardBorder: esModoOscuro ? '#334155' : '#dbe5f3',
+  heroCardBorder: esModoOscuro ? '#334155' : '#d9e3f1',
   heroCardShadow: esModoOscuro ? '0 6px 24px rgba(0,0,0,0.25)' : '0 4px 18px rgba(30,58,138,0.06)',
   textPrimary: esModoOscuro ? '#f8fafc' : '#111a3a',
   textSecondary: esModoOscuro ? '#94a3b8' : '#64748b',
