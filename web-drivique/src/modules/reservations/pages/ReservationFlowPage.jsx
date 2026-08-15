@@ -648,9 +648,8 @@ export default function VehiculoDetallePage() {
 
               {pantalla === 1 && (
                 <>
-                  <ImageGallery imagenes={vehiculo.imagenes} nombreVehiculo={vehiculo.nombre} />
-                  <VehicleInfo vehiculo={vehiculo} />
-                  <div style={{ marginTop: 32 }}>
+                  <ImageGallery imagenes={vehiculo.imagenes} nombreVehiculo={vehiculo.nombre} compact={true} />
+                  <div style={{ marginTop: 24 }}>
                     <DateStep vehiculo={vehiculo} reserva={reserva} onCambio={cambiarReserva} />
                   </div>
                 </>
