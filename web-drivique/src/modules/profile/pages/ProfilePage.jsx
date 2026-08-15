@@ -363,20 +363,6 @@ export default function PerfilPage() {
                 </h2>
               </div>
 
-              {/* Subcuadrito informativo */}
-              <div
-                style={{
-                  background: esModoOscuro ? 'rgba(30, 41, 59, 0.6)' : '#f8fafc',
-                  border: `1px solid ${esModoOscuro ? 'rgba(255, 255, 255, 0.08)' : '#e2e8f0'}`,
-                  borderRadius: '10px',
-                  padding: '10px 14px',
-                }}
-              >
-                <p style={{ fontSize: '12px', color: c.textMuted, margin: 0, lineHeight: '1.45' }}>
-                  {t('perfil.personalInfoHint', 'Mantén tu nombre completo y fecha de nacimiento actualizados para personalizar tu perfil.')}
-                </p>
-              </div>
-
               {/* Nombres Completo */}
               <div>
                 <label style={{ ...labelStyle, display: 'flex', alignItems: 'center' }}>
@@ -473,20 +459,6 @@ export default function PerfilPage() {
                 <h2 style={{ fontSize: '15px', fontWeight: 700, color: esModoOscuro ? '#93c5fd' : '#1e3a8a', margin: 0, letterSpacing: '-0.01em' }}>
                   {t('perfil.contactData', 'Datos de Contacto')}
                 </h2>
-              </div>
-
-              {/* Subcuadrito informativo */}
-              <div
-                style={{
-                  background: esModoOscuro ? 'rgba(30, 41, 59, 0.6)' : '#f8fafc',
-                  border: `1px solid ${esModoOscuro ? 'rgba(255, 255, 255, 0.08)' : '#e2e8f0'}`,
-                  borderRadius: '10px',
-                  padding: '10px 14px',
-                }}
-              >
-                <p style={{ fontSize: '12px', color: c.textMuted, margin: 0, lineHeight: '1.45' }}>
-                  {t('perfil.contactDataHint', 'Registra tu correo, nacionalidad y teléfono para recibir novedades de tus reservas.')}
-                </p>
               </div>
 
               {/* Correo electrónico */}
@@ -621,20 +593,6 @@ export default function PerfilPage() {
                 <h2 style={{ fontSize: '15px', fontWeight: 700, color: esModoOscuro ? '#93c5fd' : '#1e3a8a', margin: 0, letterSpacing: '-0.01em' }}>
                   {t('perfil.identityDoc', 'Documento de Identidad')}
                 </h2>
-              </div>
-
-              {/* Subcuadrito informativo */}
-              <div
-                style={{
-                  background: esModoOscuro ? 'rgba(30, 41, 59, 0.6)' : '#f8fafc',
-                  border: `1px solid ${esModoOscuro ? 'rgba(255, 255, 255, 0.08)' : '#e2e8f0'}`,
-                  borderRadius: '10px',
-                  padding: '10px 14px',
-                }}
-              >
-                <p style={{ fontSize: '12px', color: c.textMuted, margin: 0, lineHeight: '1.45' }}>
-                  {t('perfil.identityDocHint', 'Ingresa tu documento oficial para validar tu cuenta y agilizar el alquiler de vehículos.')}
-                </p>
               </div>
 
               {/* Tipo de documento */}
