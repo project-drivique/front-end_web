@@ -437,7 +437,7 @@ export default function VehiculoDetallePage() {
   };
 
   if (reservaCreada && reserva.metodoPago === 'efectivo' && !contratoFirmado) return (
-    <div style={{ minHeight: '100vh', background: 'var(--hero-fondo)', position: 'relative', overflow: 'hidden' }}>
+    <div className="catalogo-page" style={{ minHeight: '100vh', background: 'var(--hero-fondo)', position: 'relative', overflow: 'hidden' }}>
       <div style={{ position: 'absolute', top: -80, right: -80, width: 500, height: 500, borderRadius: '50%', background: 'var(--hero-orb1)', pointerEvents: 'none' }} />
       <div style={{ position: 'absolute', bottom: -60, left: -60, width: 350, height: 350, borderRadius: '50%', background: 'var(--hero-orb2)', pointerEvents: 'none' }} />
       <div style={{ position: 'relative', paddingTop: 48, paddingBottom: 48, paddingLeft: 24, paddingRight: 24 }}>
@@ -453,7 +453,7 @@ export default function VehiculoDetallePage() {
   );
 
   if (exito) return (
-    <div style={{
+    <div className="catalogo-page" style={{
       minHeight: '100vh', background: 'var(--hero-fondo)', position: 'relative',
       overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24,
     }}>
@@ -610,7 +610,7 @@ export default function VehiculoDetallePage() {
   const totalReserva = subtotalPreIvaTotal + ivaTotal;
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg-page)', zoom: 0.9 }}>
+    <div className="catalogo-page" style={{ minHeight: '100vh', background: 'var(--bg-page)' }}>
       <div style={{ paddingTop: 0 }}>
         <div className="detalle-contenido-inner" style={{ maxWidth: 1280, margin: '0 auto', padding: '32px 24px' }}>
 
