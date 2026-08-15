@@ -13,6 +13,7 @@ import { RECARGOS_LOGISTICOS, SUCURSALES, CIUDADES } from '../../catalog/constan
 import ReservationCalendar from '../components/ReservationCalendar'
 import { formatCurrency } from '@/utils/currencyUtils'
 import { useLanding } from '../../landing/LandingContext'
+import MenuConfiguracion from '@/components/MenuConfiguracion'
 
 import ImageGallery from '../../catalog/components/detail/ImageGallery'
 import VehicleInfo from '../../catalog/components/detail/VehicleInfo'
@@ -614,16 +615,17 @@ export default function VehiculoDetallePage() {
       <div style={{ paddingTop: 0 }}>
         <div className="detalle-contenido-inner" style={{ maxWidth: 1280, margin: '0 auto', padding: '32px 24px' }}>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 32 }}>
-            <button
-              onClick={irAtras}
-              style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 14, color: '#1e3a8a', fontWeight: 700, background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 9999, padding: '8px 18px', cursor: 'pointer', transition: 'all 200ms ease' }}
-              onMouseEnter={e => e.currentTarget.style.background = '#dbeafe'}
-              onMouseLeave={e => e.currentTarget.style.background = '#eff6ff'}
-            >
-              <IcoBack /> {pantalla === 1 ? t('vehiculo.backToCatalog') : t('common.goBack')}
-            </button>
-            <h1 style={{ fontSize: 24, fontWeight: 900, color: 'var(--texto-primary)', margin: 0 }}>{t('vehiculo.reserve')} — {vehiculo.nombre}</h1>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, marginBottom: 32, flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+              <button
+                onClick={irAtras}
+                style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 14, color: 'var(--texto-acento)', fontWeight: 700, background: 'var(--bg-item)', border: '1px solid var(--borde)', borderRadius: 9999, padding: '8px 18px', cursor: 'pointer', transition: 'all 200ms ease' }}
+              >
+                <IcoBack /> {pantalla === 1 ? t('vehiculo.backToCatalog') : t('common.goBack')}
+              </button>
+              <h1 style={{ fontSize: 24, fontWeight: 900, color: 'var(--texto-primary)', margin: 0 }}>{t('vehiculo.reserve')} — {vehiculo.nombre}</h1>
+            </div>
+            <MenuConfiguracion />
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0, marginBottom: 36, flexWrap: 'wrap' }}>
