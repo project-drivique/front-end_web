@@ -112,7 +112,7 @@ const inputStyle = (hasError, c) => ({
   transition: 'border-color 150ms, background 150ms, color 150ms',
 })
 
-const labelStyle = (c) => ({ fontSize: '13px', fontWeight: 700, color: c.text })
+const labelStyle = (c) => ({ fontSize: '13px', fontWeight: 700, color: c.labelColor })
 const errorStyle = (c) => ({ color: c.errorInline, fontSize: '12px', margin: '4px 0 0' })
 const fieldWrap = { display: 'flex', flexDirection: 'column', gap: '5px' }
 
@@ -558,7 +558,7 @@ export default function RegistroPage() {
                   fontFamily: 'Outfit, Inter, system-ui, sans-serif',
                   fontSize: '1.55rem',
                   fontWeight: 900,
-                  color: esModoOscuro ? '#f8fafc' : '#0f172a',
+                  color: c.title,
                   margin: '0 0 6px',
                   letterSpacing: '-0.02em',
                   lineHeight: 1.25
@@ -669,7 +669,7 @@ export default function RegistroPage() {
                         {t('registro.termsLink')}
                       </span>
                       {' '}{t('registro.termsSuffix')}{' '}
-                      <span style={{ fontWeight: 600 }}>{t('registro.termsLaw')}</span>.
+                      <span style={{ fontWeight: 700, color: c.accent }}>{t('registro.termsLaw')}</span>.
                     </label>
                     {errores.terminos && <p style={errorStyle(c)}>{errores.terminos}</p>}
                   </div>

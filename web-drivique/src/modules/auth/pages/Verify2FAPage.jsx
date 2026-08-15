@@ -170,7 +170,7 @@ export default function Verificar2FAPage() {
                 }}>
                   <FaShieldAlt size={36} color={c.iconColor} />
                 </div>
-                <h1 style={{ fontSize: '1.55rem', fontWeight: 900, color: c.textPrimary, margin: '0 0 8px' }}>
+                <h1 style={{ fontSize: '1.55rem', fontWeight: 900, color: esModoOscuro ? '#ffffff' : '#1e3a8a', margin: '0 0 8px' }}>
                   {t('verificar2fa.title')}
                 </h1>
                 <p style={{ color: c.textSecondary, fontSize: '14px', lineHeight: 1.65, margin: 0 }}>

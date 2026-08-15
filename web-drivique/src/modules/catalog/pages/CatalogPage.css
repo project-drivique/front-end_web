@@ -86,6 +86,13 @@
   font-size: 13px;
 }
 
+.catalogo-free-search-input::placeholder,
+.catalogo-header-search-input::placeholder {
+  color: var(--placeholder-color, #18234a);
+  opacity: 0.82;
+  font-weight: 500;
+}
+
 .catalogo-header-back {
   flex-shrink: 0;
   height: 46px;

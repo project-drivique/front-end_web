@@ -55,7 +55,7 @@ export default function GaleriaImagenes({ imagenes = [], nombreVehiculo = 'Vehí
             <button
               type="button"
               onClick={anteriorImagen}
-              aria-label="Imagen anterior"
+              aria-label={t('vehiculo.prevImage', 'Imagen anterior')}
               style={{
                 position: 'absolute',
                 left: 12,
@@ -91,7 +91,7 @@ export default function GaleriaImagenes({ imagenes = [], nombreVehiculo = 'Vehí
             <button
               type="button"
               onClick={siguienteImagen}
-              aria-label="Imagen siguiente"
+              aria-label={t('vehiculo.nextImage', 'Imagen siguiente')}
               style={{
                 position: 'absolute',
                 right: 12,

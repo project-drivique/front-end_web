@@ -5,30 +5,38 @@
     "nombre": "Juan",
     "apellido": "Pérez",
     "fechaRegistro": "2026-08-14T00:00:00.000Z",
-    "emailVerificado": true
+    "emailVerificado": true,
+    "nacionalidad": "Colombiana",
+    "tipoDocumento": "CC"
   },
   {
     "correo": "laura@Drivique.com",
     "contrasena": "Laura123*",
-    "nombre": "Laura",
-    "apellido": "Gómez",
+    "nombre": "",
+    "apellido": "",
     "fechaRegistro": "2026-08-14T00:00:00.000Z",
-    "emailVerificado": true
+    "emailVerificado": true,
+    "nacionalidad": "",
+    "tipoDocumento": ""
   },
   {
     "correo": "danna@Drivique.com",
     "contrasena": "Danna123*",
-    "nombre": "Danna",
-    "apellido": "Martínez",
+    "nombre": "",
+    "apellido": "",
     "fechaRegistro": "2026-08-14T00:00:00.000Z",
-    "emailVerificado": true
+    "emailVerificado": true,
+    "nacionalidad": "",
+    "tipoDocumento": ""
   },
   {
     "correo": "emily@Drivique.com",
     "contrasena": "Emily123*",
-    "nombre": "Emily",
-    "apellido": "Rodríguez",
+    "nombre": "",
+    "apellido": "",
     "fechaRegistro": "2026-08-14T00:00:00.000Z",
-    "emailVerificado": true
+    "emailVerificado": true,
+    "nacionalidad": "",
+    "tipoDocumento": ""
   }
 ]
