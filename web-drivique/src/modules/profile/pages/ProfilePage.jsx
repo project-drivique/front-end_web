@@ -9,6 +9,7 @@ import PasswordVerificationModal from '../components/PasswordVerificationModal'
 import ChangePassword from '../components/ChangePassword'
 import MenuConfiguracion from '@/components/MenuConfiguracion'
 import { FaEdit, FaCheck, FaTimes, FaUser, FaEnvelope, FaPhone, FaArrowLeft, FaSignOutAlt, FaExclamationTriangle, FaIdCard, FaGlobe, FaCalendarAlt, FaHashtag } from 'react-icons/fa'
+import { FcBusinessContact, FcCalendar, FcGlobe, FcPhone, FcDocument, FcContacts } from 'react-icons/fc'
 import paisesMock from '@/mocks/nationalities.json'
 import '@/modules/catalog/pages/CatalogPage.css'
 import '@/modules/catalog/pages/VehicleDetailsPage.css'
@@ -361,7 +362,7 @@ export default function PerfilPage() {
                 {/* Nombres Completo */}
                 <div>
                   <label style={{ ...labelStyle, display: 'flex', alignItems: 'center' }}>
-                    <FaUser style={{ color: c.accentText || '#1e3a8a', fontSize: '12px', marginRight: '6px' }} />
+                    <FcBusinessContact style={{ fontSize: '15px', marginRight: '6px' }} />
                     {t('perfil.firstName', 'Nombres completos')}
                   </label>
                   {modoEdicion ? (
@@ -392,7 +393,7 @@ export default function PerfilPage() {
                 {/* Apellidos Completo */}
                 <div>
                   <label style={{ ...labelStyle, display: 'flex', alignItems: 'center' }}>
-                    <FaUser style={{ color: c.accentText || '#1e3a8a', fontSize: '12px', marginRight: '6px' }} />
+                    <FcBusinessContact style={{ fontSize: '15px', marginRight: '6px' }} />
                     {t('perfil.lastName', 'Apellidos completos')}
                   </label>
                   {modoEdicion ? (
@@ -423,7 +424,7 @@ export default function PerfilPage() {
                 {/* Fecha de nacimiento */}
                 <div>
                   <label style={{ ...labelStyle, display: 'flex', alignItems: 'center' }}>
-                    <FaCalendarAlt style={{ color: c.accentText || '#1e3a8a', fontSize: '12px', marginRight: '6px' }} />
+                    <FcCalendar style={{ fontSize: '15px', marginRight: '6px' }} />
                     {t('perfil.birthDate', 'Fecha de nacimiento')}
                   </label>
                   {modoEdicion ? (
@@ -459,7 +460,7 @@ export default function PerfilPage() {
                 {/* Correo electrónico */}
                 <div>
                   <label style={{ ...labelStyle, display: 'flex', alignItems: 'center' }}>
-                    <FaEnvelope style={{ color: c.accentText || '#1e3a8a', fontSize: '12px', marginRight: '6px' }} />
+                    <FcContacts style={{ fontSize: '15px', marginRight: '6px' }} />
                     {t('perfil.email', 'Correo electrónico')}
                   </label>
                   {modoEdicion ? (
@@ -479,7 +480,7 @@ export default function PerfilPage() {
                 {/* Nacionalidad */}
                 <div>
                   <label style={{ ...labelStyle, display: 'flex', alignItems: 'center' }}>
-                    <FaGlobe style={{ color: c.accentText || '#1e3a8a', fontSize: '12px', marginRight: '6px' }} />
+                    <FcGlobe style={{ fontSize: '15px', marginRight: '6px' }} />
                     {t('perfil.nationality', 'Nacionalidad')}
                   </label>
                   {modoEdicion ? (
@@ -510,7 +511,7 @@ export default function PerfilPage() {
                 {/* Teléfono */}
                 <div>
                   <label style={{ ...labelStyle, display: 'flex', alignItems: 'center' }}>
-                    <FaPhone style={{ color: c.accentText || '#1e3a8a', fontSize: '12px', marginRight: '6px' }} />
+                    <FcPhone style={{ fontSize: '15px', marginRight: '6px' }} />
                     {t('perfil.phone', 'Teléfono')}
                   </label>
                   {modoEdicion ? (
@@ -593,7 +594,7 @@ export default function PerfilPage() {
                 {/* Tipo de documento */}
                 <div>
                   <label style={{ ...labelStyle, display: 'flex', alignItems: 'center' }}>
-                    <FaIdCard style={{ color: c.accentText || '#1e3a8a', fontSize: '12px', marginRight: '6px' }} />
+                    <FcDocument style={{ fontSize: '15px', marginRight: '6px' }} />
                     {t('perfil.docType', 'Tipo de documento')}
                   </label>
                   {modoEdicion ? (
@@ -624,7 +625,7 @@ export default function PerfilPage() {
                 {/* Número de documento */}
                 <div>
                   <label style={{ ...labelStyle, display: 'flex', alignItems: 'center' }}>
-                    <FaHashtag style={{ color: c.accentText || '#1e3a8a', fontSize: '12px', marginRight: '6px' }} />
+                    <FcDocument style={{ fontSize: '15px', marginRight: '6px' }} />
                     {t('perfil.docNumber', 'Número de documento')}
                   </label>
                   {modoEdicion ? (
