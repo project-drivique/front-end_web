@@ -477,13 +477,13 @@ export default function VehiculoDetallePage() {
         />
 
         <h2 style={{ fontSize: 30, fontWeight: 900, color: 'var(--texto-primary)', margin: '0 0 14px', letterSpacing: '-0.02em' }}>
-          Reserva Registrada
+          {t('vehiculo.reservationRegisteredTitle', 'Reserva Registrada')}
         </h2>
 
         {reserva.metodoPago === 'efectivo' ? (
           <>
             <p style={{ fontSize: 16, color: 'var(--texto-second)', lineHeight: 1.6, margin: '0 0 20px' }}>
-              Tu reserva quedó registrada. Para confirmarla, debes acercarte a la sucursal de <strong>{vehiculo.sucursal}</strong> para realizar el pago en efectivo y retirar el vehículo.
+              {t('vehiculo.cashReservationRegisteredDesc', 'Tu reserva quedó registrada. Para confirmarla, debes acercarte a la sucursal de {{sucursal}} para realizar el pago en efectivo y retirar el vehículo.', { sucursal: vehiculo.sucursal })}
             </p>
 
             <div style={{
@@ -491,19 +491,16 @@ export default function VehiculoDetallePage() {
               padding: '16px 20px', marginBottom: 20, textAlign: 'left',
             }}>
               <p style={{ fontSize: 13, fontWeight: 900, color: '#92400e', margin: '0 0 4px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                Plazo para pagar
+                {t('vehiculo.paymentDeadlineTitle', 'Plazo para pagar')}
               </p>
               <p style={{ fontSize: 14, color: '#92400e', margin: 0, lineHeight: 1.5 }}>
-                Tienes <strong>{HORAS_LIMITE_PAGO_EFECTIVO} horas</strong> desde ahora para acercarte a la sucursal y pagar
-                {fechaLimitePago && (
-                  <> (hasta las <strong>{new Date(fechaLimitePago).toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })}</strong>)</>
-                )}. Si no pagas dentro de este plazo, la reserva se cancelará automáticamente.
+                {t('vehiculo.paymentDeadlineDesc', 'Tienes {{horas}} horas desde ahora para acercarte a la sucursal y pagar. Si no pagas dentro de este plazo, la reserva se cancelará automáticamente.', { horas: HORAS_LIMITE_PAGO_EFECTIVO })}
               </p>
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 32 }}>
               <p style={{ fontSize: 13, color: '#2563eb', fontWeight: 700, margin: 0 }}>
-                El contrato firmado te llegó a tu correo. Muéstralo en la sucursal para realizar el pago.
+                {t('vehiculo.signedContractSentEmail', 'El contrato firmado te llegó a tu correo. Muéstralo en la sucursal para realizar el pago.')}
               </p>
             </div>
             <div style={{ display: 'flex', justifyContent: 'center' }}>
@@ -511,9 +508,9 @@ export default function VehiculoDetallePage() {
                 onClick={() => {
                   showAlert({
                     icon: 'success',
-                    title: '¡Reserva Completada!',
-                    text: 'Tu reserva presencial ha sido registrada. Te esperamos en la sucursal.',
-                    confirmButtonText: 'Aceptar'
+                    title: t('vehiculo.reservationCompletedAlertTitle', '¡Reserva Completada!'),
+                    text: t('vehiculo.reservationCompletedAlertText', 'Tu reserva presencial ha sido registrada. Te esperamos en la sucursal.'),
+                    confirmButtonText: t('common.accept', 'Aceptar')
                   }).then(() => navigate('/reservas'));
                 }}
                 style={{
@@ -527,22 +524,22 @@ export default function VehiculoDetallePage() {
                 }}
               >
                 <FaMoneyBillWave size={20} />
-                <span>Confirmar y Ver Mis Reservas</span>
+                <span>{t('vehiculo.confirmAndViewReservations', 'Confirmar y Ver Mis Reservas')}</span>
               </button>
             </div>
           </>
         ) : (
           <>
             <p style={{ fontSize: 16, color: 'var(--texto-second)', lineHeight: 1.6, margin: '0 0 20px' }}>
-              Tu reserva quedó guardada como pendiente. Para confirmarla, completa el pago digital seguro con Wompi (Pruebas).
+              {t('vehiculo.wompiReservationRegisteredDesc', 'Tu reserva quedó guardada como pendiente. Para confirmarla, completa el pago digital seguro con Wompi (Pruebas).')}
             </p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 32 }}>
               <p style={{ fontSize: 13, color: '#2563eb', fontWeight: 700, margin: 0 }}>
-                Serás redirigido al checkout oficial de Wompi.
+                {t('vehiculo.wompiRedirectNote', 'Serás redirigido al checkout oficial de Wompi.')}
               </p>
               <p style={{ fontSize: 13, color: 'var(--texto-second)', fontWeight: 600, margin: 0 }}>
-                Recibirás la confirmación de tu reserva cuando el pago sea exitoso.
+                {t('vehiculo.wompiSuccessNote', 'Recibirás la confirmación de tu reserva cuando el pago sea exitoso.')}
               </p>
             </div>
 
@@ -571,7 +568,7 @@ export default function VehiculoDetallePage() {
                   }}
                 >
                   <FaCreditCard size={20} />
-                  <span>{redirigiendoPago ? 'Redirigiendo…' : 'Pagar con Wompi'}</span>
+                  <span>{redirigiendoPago ? t('vehiculo.redirecting', 'Redirigiendo…') : t('vehiculo.payWithWompi', 'Pagar con Wompi')}</span>
                 </button>
               </div>
             )}
