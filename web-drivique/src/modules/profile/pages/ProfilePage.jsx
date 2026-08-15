@@ -724,81 +724,110 @@ export default function PerfilPage() {
             </div>
           )}
 
-          {/* 3. Seguridad, Contraseña y Gestión de Cuenta */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <ChangePassword c={c} />
+          {/* 3. Fila inferior de 3 tarjetas: Seguridad y Contraseña + Cerrar Sesión + Eliminar Cuenta */}
+          <div className="perfil-cards-grid" style={{ marginTop: '24px' }}>
+            
+            {/* Tarjeta 4: Seguridad y Contraseña */}
+            <ChangePassword c={c} esModoOscuro={esModoOscuro} />
 
-            {/* 4. Gestión de Cuenta (Cerrar Sesión y Eliminar Cuenta) */}
+            {/* Tarjeta 5: Cerrar Sesión */}
             <div
               style={{
                 background: c.innerCardBg,
-                borderRadius: '16px',
+                borderRadius: '14px',
                 border: `1px solid ${c.innerCardBorder}`,
                 boxShadow: c.innerCardShadow,
-                padding: '22px 24px',
+                padding: '22px',
                 display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
+                flexDirection: 'column',
                 gap: '16px',
-                flexWrap: 'wrap',
+                flex: 1,
+                justifyContent: 'space-between',
               }}
             >
-              <div>
-                <h2 style={{ fontSize: '15.5px', fontWeight: 700, color: c.title, margin: '0 0 3px' }}>
-                  {t('perfil.accountManagement', 'Gestión de Cuenta')}
+              <div style={{ paddingBottom: '12px', borderBottom: `1px solid ${esModoOscuro ? 'rgba(255, 255, 255, 0.08)' : 'rgba(226, 232, 240, 0.8)'}` }}>
+                <h2 style={{ fontSize: '15px', fontWeight: 700, color: esModoOscuro ? '#93c5fd' : '#1e3a8a', margin: 0, letterSpacing: '-0.01em' }}>
+                  {t('catalogo.logout', 'Cerrar Sesión')}
                 </h2>
-                <p style={{ fontSize: '12.5px', color: c.textMuted, margin: 0 }}>
-                  {t('perfil.accountManagementHint', 'Administra el estado de tu sesión o elimina tu cuenta')}
-                </p>
               </div>
-              
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-                <button
-                  onClick={handleCerrarSesion}
-                  style={{
-                    padding: '10px 20px',
-                    borderRadius: '10px',
-                    background: 'transparent',
-                    border: `1.5px solid ${esModoOscuro ? '#475569' : '#cbd5e1'}`,
-                    color: c.title,
-                    fontWeight: 600,
-                    fontSize: '13.5px',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    whiteSpace: 'nowrap',
-                    transition: 'all 150ms ease',
-                  }}
-                  onMouseEnter={e => e.currentTarget.style.background = esModoOscuro ? 'rgba(255,255,255,0.05)' : '#f8fafc'}
-                  onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-                >
-                  <FaSignOutAlt style={{ fontSize: '13px', color: c.textMuted }} /> {t('catalogo.logout', 'Cerrar sesión')}
-                </button>
 
-                <button
-                  onClick={() => setModalEliminarAbierto(true)}
-                  style={{
-                    padding: '10px 20px',
-                    borderRadius: '10px',
-                    background: '#fef2f2',
-                    border: '1.5px solid #fee2e2',
-                    color: '#dc2626',
-                    fontWeight: 700,
-                    fontSize: '13.5px',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    whiteSpace: 'nowrap',
-                    transition: 'all 150ms ease',
-                  }}
-                  onMouseEnter={e => e.currentTarget.style.background = '#fee2e2'}
-                  onMouseLeave={e => e.currentTarget.style.background = '#fef2f2'}
-                >
-                  <FaTrashAlt style={{ fontSize: '13px' }} /> {t('perfil.deleteAccountBtn', 'Eliminar cuenta')}
-                </button>
+              <p style={{ fontSize: '13px', color: c.textMuted, margin: 0, lineHeight: '1.45' }}>
+                {t('perfil.logoutHint', 'Finaliza tu sesión activa actual en este dispositivo de forma segura.')}
+              </p>
+
+              <button
+                onClick={handleCerrarSesion}
+                style={{
+                  width: '100%',
+                  padding: '11px',
+                  borderRadius: '10px',
+                  background: 'transparent',
+                  border: `1.5px solid ${esModoOscuro ? '#475569' : '#cbd5e1'}`,
+                  color: c.title,
+                  fontWeight: 600,
+                  fontSize: '13.5px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                  transition: 'all 150ms ease',
+                }}
+                onMouseEnter={e => e.currentTarget.style.background = esModoOscuro ? 'rgba(255,255,255,0.05)' : '#f8fafc'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+              >
+                <FaSignOutAlt style={{ fontSize: '13px', color: c.textMuted }} /> {t('catalogo.logout', 'Cerrar sesión')}
+              </button>
+            </div>
+
+            {/* Tarjeta 6: Eliminar Cuenta */}
+            <div
+              style={{
+                background: c.innerCardBg,
+                borderRadius: '14px',
+                border: `1px solid ${c.innerCardBorder}`,
+                boxShadow: c.innerCardShadow,
+                padding: '22px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '16px',
+                flex: 1,
+                justifyContent: 'space-between',
+              }}
+            >
+              <div style={{ paddingBottom: '12px', borderBottom: `1px solid ${esModoOscuro ? 'rgba(255, 255, 255, 0.08)' : 'rgba(226, 232, 240, 0.8)'}` }}>
+                <h2 style={{ fontSize: '15px', fontWeight: 700, color: esModoOscuro ? '#93c5fd' : '#1e3a8a', margin: 0, letterSpacing: '-0.01em' }}>
+                  {t('perfil.deleteAccountTitle', 'Eliminar Cuenta')}
+                </h2>
               </div>
+
+              <p style={{ fontSize: '13px', color: c.textMuted, margin: 0, lineHeight: '1.45' }}>
+                {t('perfil.deleteAccountHint', 'Elimina permanentemente tu cuenta y todos tus datos guardados.')}
+              </p>
+
+              <button
+                onClick={() => setModalEliminarAbierto(true)}
+                style={{
+                  width: '100%',
+                  padding: '11px',
+                  borderRadius: '10px',
+                  background: esModoOscuro ? 'rgba(239, 68, 68, 0.12)' : '#fef2f2',
+                  border: `1.5px solid ${esModoOscuro ? 'rgba(239, 68, 68, 0.3)' : '#fee2e2'}`,
+                  color: '#dc2626',
+                  fontWeight: 700,
+                  fontSize: '13.5px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                  transition: 'all 150ms ease',
+                }}
+                onMouseEnter={e => e.currentTarget.style.background = esModoOscuro ? 'rgba(239, 68, 68, 0.2)' : '#fee2e2'}
+                onMouseLeave={e => e.currentTarget.style.background = esModoOscuro ? 'rgba(239, 68, 68, 0.12)' : '#fef2f2'}
+              >
+                <FaTrashAlt style={{ fontSize: '13px' }} /> {t('perfil.deleteAccountBtn', 'Eliminar cuenta')}
+              </button>
             </div>
           </div>
 
