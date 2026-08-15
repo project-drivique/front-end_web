@@ -612,41 +612,32 @@ export default function VehiculoDetallePage() {
       <div style={{ paddingTop: 0 }}>
         <div className="detalle-contenido-inner" style={{ maxWidth: 1280, margin: '0 auto', padding: '32px 24px' }}>
 
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, marginBottom: 32, flexWrap: 'wrap' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-              <button
-                onClick={irAtras}
-                style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 14, color: 'var(--texto-acento)', fontWeight: 700, background: 'var(--bg-item)', border: '1px solid var(--borde)', borderRadius: 9999, padding: '8px 18px', cursor: 'pointer', transition: 'all 200ms ease' }}
-              >
-                <IcoBack /> {pantalla === 1 ? t('vehiculo.backToCatalog') : t('common.goBack')}
-              </button>
-              <h1 style={{ fontSize: 24, fontWeight: 900, color: 'var(--texto-primary)', margin: 0 }}>{t('vehiculo.reserve')} — {vehiculo.nombre}</h1>
+          <div className="flujo-header-bar">
+            <button onClick={irAtras} className="flujo-back-btn">
+              <IcoBack /> <span>{pantalla === 1 ? t('vehiculo.backToCatalog') : t('common.goBack')}</span>
+            </button>
+            <h1 className="flujo-titulo">{t('vehiculo.reserve')} — {vehiculo.nombre}</h1>
+            <div className="flujo-menu-config">
+              <MenuConfiguracion />
             </div>
-            <MenuConfiguracion />
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0, marginBottom: 36, flexWrap: 'wrap' }}>
+          <div className="flujo-pasos-container">
             {pasos.map((label, i) => {
               const num = i + 1;
               const activo = pantalla === num;
               const completado = pantalla > num;
               return (
-                <div key={i} style={{ display: 'flex', alignItems: 'center' }}>
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
-                    <div style={{
-                      width: 36, height: 36, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontWeight: 800, fontSize: 14,
-                      background: completado ? '#1e3a8a' : activo ? 'linear-gradient(135deg,#1e3a8a,#2563eb)' : 'var(--bg-item)',
-                      color: completado || activo ? '#fff' : 'var(--texto-second)',
-                      boxShadow: activo ? '0 8px 24px rgba(37,99,235,0.25)' : 'none',
-                      transition: 'all 300ms ease',
-                      flexShrink: 0,
-                    }}>
+                <div key={i} className="flujo-paso-item">
+                  <div className="flujo-paso-circulo-wrapper">
+                    <div className={`flujo-paso-circulo ${completado ? 'completado' : activo ? 'activo' : ''}`}>
                       {completado ? <IcoCheck color="#fff" sz={16} /> : num}
                     </div>
-                    <span style={{ fontSize: 12, fontWeight: activo ? 800 : 600, color: activo ? '#1e3a8a' : 'var(--texto-second)', whiteSpace: 'nowrap' }}>{label}</span>
+                    <span className={`flujo-paso-label ${activo ? 'activo' : ''}`}>{label}</span>
                   </div>
-                  {i < pasos.length - 1 && <div style={{ width: 56, height: 3, background: pantalla > num ? '#1e3a8a' : 'var(--borde)', margin: '0 8px', marginBottom: 20, transition: 'background 400ms ease' }} />}
+                  {i < pasos.length - 1 && (
+                    <div className={`flujo-paso-linea ${pantalla > num ? 'completado' : ''}`} />
+                  )}
                 </div>
               );
             })}
