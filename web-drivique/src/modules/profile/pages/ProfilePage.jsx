@@ -316,13 +316,11 @@ export default function PerfilPage() {
                 style={{
                   padding: '9px 20px',
                   borderRadius: '10px',
-                  background: esPerfilIncompleto
-                    ? 'linear-gradient(90deg, #d97706, #f59e0b)'
-                    : 'rgba(255, 255, 255, 0.12)',
+                  background: esPerfilIncompleto ? '#ffffff' : 'rgba(255, 255, 255, 0.12)',
                   backdropFilter: 'blur(8px)',
                   border: esPerfilIncompleto ? 'none' : '1px solid rgba(255, 255, 255, 0.35)',
-                  color: '#fff',
-                  fontWeight: 700,
+                  color: esPerfilIncompleto ? '#1e3a8a' : '#ffffff',
+                  fontWeight: 800,
                   fontSize: '13px',
                   cursor: 'pointer',
                   display: 'flex',
@@ -331,12 +329,14 @@ export default function PerfilPage() {
                   transition: 'all 150ms ease',
                   marginLeft: 'auto',
                   zIndex: 1,
-                  boxShadow: esPerfilIncompleto ? '0 4px 14px rgba(217, 119, 6, 0.35)' : 'none',
+                  boxShadow: esPerfilIncompleto ? '0 4px 16px rgba(0,0,0,0.18)' : 'none',
                 }}
                 onMouseEnter={e => {
+                  e.currentTarget.style.transform = 'translateY(-1px)'
                   if (!esPerfilIncompleto) e.currentTarget.style.background = 'rgba(255, 255, 255, 0.22)'
                 }}
                 onMouseLeave={e => {
+                  e.currentTarget.style.transform = 'translateY(0)'
                   if (!esPerfilIncompleto) e.currentTarget.style.background = 'rgba(255, 255, 255, 0.12)'
                 }}
               >
@@ -368,17 +368,17 @@ export default function PerfilPage() {
                     style={{
                       padding: '4px 10px',
                       borderRadius: '20px',
-                      background: esModoOscuro ? 'rgba(234, 179, 8, 0.15)' : '#fef9c3',
-                      color: esModoOscuro ? '#facc15' : '#a16207',
+                      background: esModoOscuro ? 'rgba(148, 163, 184, 0.15)' : '#f1f5f9',
+                      color: esModoOscuro ? '#cbd5e1' : '#475569',
                       fontSize: '11px',
                       fontWeight: 700,
                       display: 'inline-flex',
                       alignItems: 'center',
-                      gap: '5px',
-                      border: `1px solid ${esModoOscuro ? 'rgba(234, 179, 8, 0.3)' : '#fef08a'}`,
+                      gap: '6px',
+                      border: `1px solid ${esModoOscuro ? 'rgba(148, 163, 184, 0.3)' : '#cbd5e1'}`,
                     }}
                   >
-                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#eab308' }} />
+                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: esModoOscuro ? '#94a3b8' : '#64748b' }} />
                     {t('perfil.statusIncomplete', 'Incompleto')}
                   </span>
                 ) : (
@@ -386,17 +386,17 @@ export default function PerfilPage() {
                     style={{
                       padding: '4px 10px',
                       borderRadius: '20px',
-                      background: esModoOscuro ? 'rgba(34, 197, 94, 0.15)' : '#dcfce7',
-                      color: esModoOscuro ? '#4ade80' : '#15803d',
+                      background: esModoOscuro ? 'rgba(37, 99, 235, 0.2)' : '#eff6ff',
+                      color: esModoOscuro ? '#93c5fd' : '#1e3a8a',
                       fontSize: '11px',
                       fontWeight: 700,
                       display: 'inline-flex',
                       alignItems: 'center',
-                      gap: '5px',
-                      border: `1px solid ${esModoOscuro ? 'rgba(34, 197, 94, 0.3)' : '#bbf7d0'}`,
+                      gap: '6px',
+                      border: `1px solid ${esModoOscuro ? 'rgba(37, 99, 235, 0.4)' : '#bfdbfe'}`,
                     }}
                   >
-                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#22c55e' }} />
+                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: esModoOscuro ? '#60a5fa' : '#2563eb' }} />
                     {t('perfil.statusVerified', 'Verificado')}
                   </span>
                 )}
