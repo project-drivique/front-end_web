@@ -208,9 +208,10 @@ export default function PerfilPage() {
     marginBottom: '5px',
   }
 
-  const nombreMostrar = (usuario.nombre || usuario.apellido)
+  const tieneNombre = (usuario?.nombre && usuario.nombre.trim()) || (usuario?.apellido && usuario.apellido.trim())
+  const tituloHeader = tieneNombre
     ? `${usuario.nombre || ''} ${usuario.apellido || ''}`.trim()
-    : (usuario.correo || 'Usuario')
+    : t('perfil.welcomeUser', 'Usuario Drivique')
 
   return (
     <div className="catalogo-page" style={{ minHeight: '100vh', background: c.pageBg, color: c.textPrimary, zoom: 0.9 }}>
@@ -245,47 +246,78 @@ export default function PerfilPage() {
         {/* Contenedor Maestro Unificado */}
         <div className="vehiculo-main-container perfil-master-wrapper" style={{ background: c.cardBg, border: `1px solid ${c.cardBorder}`, boxShadow: esModoOscuro ? '0 4px 24px rgba(0,0,0,0.40)' : '0 4px 24px rgba(30,58,138,0.07)', borderRadius: '20px', padding: '24px' }}>
           
-          {/* 1. Header de Perfil Usuario (Tarjeta Limpia Corporativa) */}
+          {/* 1. Header de Perfil Usuario (Banner Azul Corporativo Drivique) */}
           <div
+            className="perfil-banner-card"
             style={{
-              background: c.innerCardBg,
+              background: esModoOscuro
+                ? 'linear-gradient(135deg, #0f1a3d 0%, #1e3a8a 100%)'
+                : 'linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%)',
               borderRadius: '16px',
-              border: `1px solid ${c.innerCardBorder}`,
-              boxShadow: c.innerCardShadow,
               padding: '24px 28px',
               display: 'flex',
               alignItems: 'center',
               gap: '20px',
-              flexWrap: 'wrap',
+              position: 'relative',
+              overflow: 'hidden',
               marginBottom: '24px',
+              boxShadow: esModoOscuro ? '0 8px 30px rgba(0,0,0,0.4)' : '0 8px 30px rgba(30, 58, 138, 0.25)',
             }}
           >
-            {/* Avatar en Círculo Limpio */}
+            {/* Formas Geométricas Decorativas de Fondo (Círculos Traslúcidos Elegantes) */}
             <div
               style={{
-                width: 58,
-                height: 58,
+                position: 'absolute',
+                right: '-60px',
+                top: '-80px',
+                width: '360px',
+                height: '360px',
                 borderRadius: '50%',
-                background: esModoOscuro ? 'rgba(59, 130, 246, 0.15)' : 'rgba(30, 58, 138, 0.08)',
-                border: `1.5px solid ${esModoOscuro ? 'rgba(147, 197, 253, 0.3)' : 'rgba(30, 58, 138, 0.2)'}`,
+                background: 'rgba(255, 255, 255, 0.07)',
+                pointerEvents: 'none',
+              }}
+            />
+            <div
+              style={{
+                position: 'absolute',
+                right: '90px',
+                top: '-120px',
+                width: '260px',
+                height: '260px',
+                borderRadius: '50%',
+                background: 'rgba(255, 255, 255, 0.05)',
+                pointerEvents: 'none',
+              }}
+            />
+
+            {/* Avatar en Círculo Blanco / Cristal */}
+            <div
+              style={{
+                width: 62,
+                height: 62,
+                borderRadius: '50%',
+                background: 'rgba(255, 255, 255, 0.15)',
+                backdropFilter: 'blur(8px)',
+                border: '1.5px solid rgba(255, 255, 255, 0.4)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: '20px',
+                fontSize: '22px',
                 fontWeight: 800,
-                color: esModoOscuro ? '#93c5fd' : '#1e3a8a',
+                color: '#ffffff',
                 flexShrink: 0,
+                zIndex: 1,
               }}
             >
               {iniciales(usuario.nombre, usuario.apellido, usuario.correo)}
             </div>
             
-            {/* Info de Nombre, Correo y Rol */}
-            <div>
-              <h1 style={{ fontSize: '19px', fontWeight: 800, color: c.title, margin: '0 0 2px', letterSpacing: '-0.01em' }}>
-                {nombreMostrar}
+            {/* Info de Nombre, Correo y Rol (Sin repetir el correo!) */}
+            <div style={{ zIndex: 1 }}>
+              <h1 style={{ fontSize: '20px', fontWeight: 800, color: '#ffffff', margin: '0 0 3px', letterSpacing: '-0.01em' }}>
+                {tituloHeader}
               </h1>
-              <p style={{ fontSize: '13px', color: c.textMuted, margin: '0 0 6px' }}>
+              <p style={{ fontSize: '13px', color: 'rgba(255, 255, 255, 0.85)', margin: '0 0 8px', fontWeight: 500 }}>
                 {usuario.correo}
               </p>
               <span
@@ -293,9 +325,10 @@ export default function PerfilPage() {
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '5px',
-                  background: esModoOscuro ? 'rgba(59, 130, 246, 0.15)' : '#eff6ff',
-                  border: `1px solid ${esModoOscuro ? 'rgba(147, 197, 253, 0.2)' : '#dbeafe'}`,
-                  color: esModoOscuro ? '#93c5fd' : '#1e3a8a',
+                  background: 'rgba(255, 255, 255, 0.2)',
+                  backdropFilter: 'blur(4px)',
+                  border: '1px solid rgba(255, 255, 255, 0.3)',
+                  color: '#ffffff',
                   fontSize: '11px',
                   fontWeight: 700,
                   padding: '3px 12px',
@@ -314,23 +347,31 @@ export default function PerfilPage() {
               <button
                 onClick={habilitarEdicion}
                 style={{
-                  padding: '10px 22px',
+                  padding: '11px 24px',
                   borderRadius: '10px',
-                  background: c.btnPrimary || '#1e3a8a',
-                  color: '#ffffff',
+                  background: '#ffffff',
+                  color: '#1e3a8a',
                   border: 'none',
-                  fontWeight: 700,
+                  fontWeight: 800,
                   fontSize: '13.5px',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '8px',
                   transition: 'all 150ms ease',
+                  zIndex: 1,
+                  boxShadow: '0 4px 16px rgba(0,0,0,0.18)',
                 }}
-                onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'}
-                onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
+                onMouseEnter={e => {
+                  e.currentTarget.style.transform = 'translateY(-2px)'
+                  e.currentTarget.style.boxShadow = '0 6px 20px rgba(0,0,0,0.25)'
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.transform = 'translateY(0)'
+                  e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.18)'
+                }}
               >
-                <FaEdit style={{ fontSize: '12px' }} />
+                <FaEdit style={{ fontSize: '13px', color: '#1e3a8a' }} />
                 {esPerfilIncompleto
                   ? t('perfil.completeProfileBtn', 'Completar perfil')
                   : t('perfil.editProfileBtn', 'Editar perfil')}
