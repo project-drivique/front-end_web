@@ -1,0 +1,77 @@
+/* src/modules/profile/pages/ProfilePage.css */
+
+.perfil-container {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 24px 24px 60px;
+}
+
+.perfil-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.perfil-master-wrapper {
+  border-radius: 20px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.perfil-banner-card {
+  border-radius: 14px;
+  padding: 22px 28px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.perfil-cards-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.perfil-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+@media (max-width: 992px) {
+  .perfil-cards-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .perfil-container {
+    padding: 16px 12px 40px;
+  }
+
+  .perfil-master-wrapper {
+    padding: 20px 16px;
+    border-radius: 18px;
+  }
+
+  .perfil-banner-card {
+    flex-direction: column;
+    text-align: center;
+    padding: 24px 16px;
+  }
+
+  .perfil-banner-card > button {
+    margin-left: 0 !important;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .perfil-info-grid {
+    grid-template-columns: 1fr;
+  }
+}

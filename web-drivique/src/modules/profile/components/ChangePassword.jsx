@@ -65,22 +65,24 @@ export default function CambiarContrasena({ c }) {
   }
 
   return (
-    <div style={{ background: c.cardBg, borderRadius: '14px', border: `1px solid ${c.cardBorder}`, boxShadow: c.cardShadow, overflow: 'hidden' }}>
+    <div style={{ background: c.innerCardBg, borderRadius: '16px', border: `1px solid ${c.innerCardBorder}`, boxShadow: c.innerCardShadow, padding: '28px' }}>
       {/* Header */}
-      <div style={{ padding: '20px 24px', borderBottom: `1px solid ${c.divider}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <FaShieldAlt style={{ color: c.sectionTitle, fontSize: '15px' }} />
-          <h2 style={{ fontSize: '16px', fontWeight: 700, color: c.title, margin: 0 }}>
-            {t('perfil.security')}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{ width: '34px', height: '34px', borderRadius: '50%', background: '#eff6ff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <FaShieldAlt style={{ color: '#1e3a8a', fontSize: '14px' }} />
+          </div>
+          <h2 style={{ fontSize: '18px', fontWeight: 700, color: c.title, margin: 0 }}>
+            {t('perfil.security', 'Seguridad y Contraseña')}
           </h2>
         </div>
         {!modoEdicion && (
           <button
             onClick={() => setModoEdicion(true)}
             style={{
-              padding: '8px 18px',
+              padding: '10px 22px',
               borderRadius: '8px',
-              background: c.btnPrimary,
+              background: c.btnPrimary || '#1b43b5',
               color: '#fff',
               border: 'none',
               fontWeight: 600,
@@ -88,23 +90,36 @@ export default function CambiarContrasena({ c }) {
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
-              gap: '7px',
+              gap: '8px',
+              transition: 'background 150ms'
             }}
           >
-            <FaLock style={{ fontSize: '11px' }} /> {t('perfil.changePassword')}
+            <FaLock style={{ fontSize: '12px' }} /> {t('perfil.changePassword', 'Cambiar contraseña')}
           </button>
         )}
       </div>
 
       {/* Contenido */}
       {!modoEdicion ? (
-        <div style={{ padding: '20px 24px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: c.badgeBg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <FaLock style={{ color: c.sectionTitle, fontSize: '16px' }} />
+        <div style={{
+          background: c.readonlyBg || '#f8fafc',
+          borderRadius: '12px',
+          padding: '20px 24px',
+          marginTop: '24px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '16px'
+        }}>
+          <div style={{ width: '42px', height: '42px', borderRadius: '50%', background: '#eff6ff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <FaLock style={{ color: '#1e3a8a', fontSize: '16px' }} />
           </div>
           <div>
-            <p style={{ fontSize: '14px', fontWeight: 600, color: c.text, margin: '0 0 2px' }}>{t('perfil.passwordSet')}</p>
-            <p style={{ fontSize: '12px', color: c.textMuted, margin: 0 }}>{t('perfil.passwordSetHint')}</p>
+            <p style={{ fontSize: '15px', fontWeight: 700, color: c.title, margin: '0 0 4px' }}>
+              {t('perfil.passwordSet', 'Contraseña establecida')}
+            </p>
+            <p style={{ fontSize: '13px', color: c.textMuted, margin: 0 }}>
+              {t('perfil.passwordSetHint', 'Haz clic en "Cambiar contraseña" para actualizarla.')}
+            </p>
           </div>
         </div>
       ) : (

@@ -110,12 +110,17 @@ export function useCatalogo({ esFavorito = () => false } = {}) {
   }
 
   const handleBuscar = () => {
-    if (!busquedaForm.ciudad) return setErrorBusqueda(t('catalogo.selectCity') || 'Selecciona una ciudad')
-    if (!busquedaForm.sucursal) return setErrorBusqueda(t('catalogo.selectBranch') || 'Selecciona una sucursal')
-    if (!busquedaForm.fechaInicio) return setErrorBusqueda(t('catalogo.searchPickupDate'))
-    if (!busquedaForm.fechaFin) return setErrorBusqueda(t('catalogo.searchReturnDate'))
+    if (!busquedaForm.ciudad) {
+      return setErrorBusqueda(t('catalogo.selectCityMsg', 'Por favor selecciona la ciudad y sucursal donde deseas consultar los vehículos disponibles.'))
+    }
+    if (!busquedaForm.sucursal) {
+      return setErrorBusqueda(t('catalogo.selectBranchMsg', 'Por favor selecciona la sucursal de entrega para continuar con tu consulta de disponibilidad.'))
+    }
+    if (!busquedaForm.fechaInicio || !busquedaForm.fechaFin) {
+      return setErrorBusqueda(t('catalogo.selectDatesMsg', 'Por favor indica la fecha de recogida y la fecha de devolución para comprobar la flota disponible.'))
+    }
     if (busquedaForm.fechaFin <= busquedaForm.fechaInicio) {
-      return setErrorBusqueda(t('catalogo.searchReturnAfter'))
+      return setErrorBusqueda(t('catalogo.selectDateRangeMsg', 'La fecha de devolución debe ser posterior a la fecha de recogida. Revisa tu itinerario.'))
     }
 
     setBusquedaAplicada({ ...busquedaForm })

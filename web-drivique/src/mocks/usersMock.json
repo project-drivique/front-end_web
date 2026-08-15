@@ -8,7 +8,9 @@
     "telefono": "+573001234567",
     "cedula": "1234567890",
     "fechaNacimiento": "1990-05-15",
-    "emailVerificado": true
+    "emailVerificado": true,
+    "nacionalidad": "",
+    "tipoDocumento": ""
   },
   {
     "correo": "cliente@Drivique.com",
@@ -19,7 +21,9 @@
     "telefono": "+573109876543",
     "cedula": "9876543210",
     "fechaNacimiento": "1995-03-20",
-    "emailVerificado": true
+    "emailVerificado": true,
+    "nacionalidad": "Colombiana",
+    "tipoDocumento": "CC"
   },
   {
     "correo": "laura@Drivique.com",
@@ -27,31 +31,37 @@
     "nombre": "Laura",
     "apellido": "Gómez",
     "rol": "usuario",
-    "telefono": "+573151112233",
-    "cedula": "1020304050",
-    "fechaNacimiento": "1998-07-12",
-    "emailVerificado": true
+    "telefono": "",
+    "cedula": "",
+    "fechaNacimiento": "",
+    "emailVerificado": true,
+    "nacionalidad": "",
+    "tipoDocumento": ""
   },
   {
     "correo": "danna@Drivique.com",
     "contrasena": "Danna123*",
-    "nombre": "Danna",
-    "apellido": "Martínez",
+    "nombre": "",
+    "apellido": "",
     "rol": "usuario",
-    "telefono": "+573184445566",
-    "cedula": "1060708090",
-    "fechaNacimiento": "2000-01-25",
-    "emailVerificado": true
+    "telefono": "",
+    "cedula": "",
+    "fechaNacimiento": "",
+    "emailVerificado": true,
+    "nacionalidad": "",
+    "tipoDocumento": ""
   },
   {
     "correo": "emily@Drivique.com",
     "contrasena": "Emily123*",
-    "nombre": "Emily",
-    "apellido": "Rodríguez",
+    "nombre": "",
+    "apellido": "",
     "rol": "usuario",
-    "telefono": "+573207778899",
-    "cedula": "1090807060",
-    "fechaNacimiento": "2001-11-18",
-    "emailVerificado": true
+    "telefono": "",
+    "cedula": "",
+    "fechaNacimiento": "",
+    "emailVerificado": true,
+    "nacionalidad": "",
+    "tipoDocumento": ""
   }
 ]

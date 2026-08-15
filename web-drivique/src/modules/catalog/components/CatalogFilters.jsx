@@ -146,13 +146,13 @@ export default function FiltrosCatalogo({
             <>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '14px' }}>
                 <div>
-                  <label style={{ ...labelStyle, display: 'block' }}>Ciudad</label>
+                  <label style={{ ...labelStyle, display: 'block' }}>{t('catalogo.city', 'Ciudad')}</label>
                   <select
                     value={ciudadBusqueda}
                     onChange={e => { setForm('ciudad', e.target.value); setForm('sucursal', '') }}
                     style={{ ...inputStyle, width: '100%', boxSizing: 'border-box', cursor: 'pointer' }}
                   >
-                    <option value="">Selecciona Ciudad</option>
+                    <option value="">{t('catalogo.selectCity', 'Selecciona Ciudad')}</option>
                     {CIUDADES.map(ciud => (
                       <option key={ciud.id} value={ciud.nombre}>{ciud.nombre}</option>
                     ))}
@@ -160,14 +160,14 @@ export default function FiltrosCatalogo({
                 </div>
 
                 <div>
-                  <label style={{ ...labelStyle, display: 'block' }}>Sucursal</label>
+                  <label style={{ ...labelStyle, display: 'block' }}>{t('catalogo.branch', 'Sucursal')}</label>
                   <select
                     value={sucursalBusqueda}
                     onChange={e => setForm('sucursal', e.target.value)}
                     disabled={!ciudadBusqueda}
                     style={{ ...inputStyle, width: '100%', boxSizing: 'border-box', cursor: 'pointer' }}
                   >
-                    <option value="">Selecciona Sucursal</option>
+                    <option value="">{t('catalogo.selectBranch', 'Selecciona Sucursal')}</option>
                     {SUCURSALES
                       .filter(s => s.ciudad === ciudadBusqueda)
                       .map(s => <option key={s.nombre} value={s.nombre}>{s.nombre}</option>)}
