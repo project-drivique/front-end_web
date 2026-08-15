@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { FaChevronLeft, FaChevronRight, FaStar } from 'react-icons/fa';
 
-export default function GaleriaImagenes({ imagenes = [], nombreVehiculo = 'Vehículo', calificacion = 0 }) {
+export default function GaleriaImagenes({ imagenes = [], nombreVehiculo = 'Vehículo', calificacion = 0, compact = false }) {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const [indiceActivo, setIndiceActivo] = useState(0);
@@ -12,7 +12,7 @@ export default function GaleriaImagenes({ imagenes = [], nombreVehiculo = 'Vehí
     return (
       <div style={{
         background: 'var(--bg-item)', border: '1px solid var(--borde)', borderRadius: 14,
-        height: 240, display: 'flex', alignItems: 'center', justifyContent: 'center',
+        height: compact ? 180 : 240, display: 'flex', alignItems: 'center', justifyContent: 'center',
       }}>
         <p style={{ color: 'var(--texto-second)', fontSize: 14 }}>{t('vehiculo.noImages', 'Sin imágenes')}</p>
       </div>
@@ -32,12 +32,13 @@ export default function GaleriaImagenes({ imagenes = [], nombreVehiculo = 'Vehí
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: compact ? 10 : 16 }}>
       {/* Imagen Principal */}
       <div style={{
         width: '100%',
-        aspectRatio: '1.55 / 1',
-        borderRadius: 12,
+        aspectRatio: compact ? '2.2 / 1' : '1.7 / 1',
+        maxHeight: compact ? 290 : 380,
+        borderRadius: 16,
         overflow: 'hidden',
         background: '#e2e8f0',
         position: 'relative',
@@ -152,13 +153,13 @@ export default function GaleriaImagenes({ imagenes = [], nombreVehiculo = 'Vehí
       </div>
 
       {/* Miniaturas (Thumbnails) */}
-      <div style={{ display: 'flex', gap: 12 }}>
+      <div style={{ display: 'flex', gap: compact ? 8 : 12, maxWidth: compact ? 360 : 'none' }}>
         {imagenes.map((imgSrc, idx) => (
           <div 
             key={idx}
             onClick={() => setIndiceActivo(idx)}
             style={{
-              flex: 1, aspectRatio: '1.4 / 1', borderRadius: 8, overflow: 'hidden', cursor: 'pointer',
+              flex: 1, height: compact ? 50 : 64, borderRadius: 8, overflow: 'hidden', cursor: 'pointer',
               border: indiceActivo === idx ? '2px solid #2563eb' : '2px solid transparent',
               transition: 'border-color 0.2s', opacity: indiceActivo === idx ? 1 : 0.7
             }}
