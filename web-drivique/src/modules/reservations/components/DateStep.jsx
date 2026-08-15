@@ -153,14 +153,14 @@ export default function PasoFechas({ vehiculo, reserva, onCambio }) {
 
             <Campo icono={FaClock} label={t('vehiculo.timeLabel')}>
               <select className={selectCls} value={reserva.horaInicio} onChange={e => onCambio('horaInicio', e.target.value)}>
-                <option value="">Selecciona hora...</option>
+                <option value="">{t('vehiculo.selectTime', 'Seleccionar hora')}</option>
                 {HORAS.map(h => <option key={h} value={h}>{h}</option>)}
               </select>
             </Campo>
 
             <Campo icono={FaClock} label={t('vehiculo.timeLabel')}>
               <select className={selectCls} value={reserva.horaFin} onChange={e => onCambio('horaFin', e.target.value)}>
-                <option value="">Selecciona hora...</option>
+                <option value="">{t('vehiculo.selectTime', 'Seleccionar hora')}</option>
                 {HORAS.map(h => <option key={h} value={h}>{h}</option>)}
               </select>
             </Campo>
@@ -190,7 +190,7 @@ export default function PasoFechas({ vehiculo, reserva, onCambio }) {
                     </div>
                   </div>
                   <span className="text-[10px] font-extrabold text-blue-600 bg-blue-50 border border-blue-100 rounded-full px-3 py-1.5 uppercase tracking-wider">
-                    Auto-detectado
+                    {t('vehiculo.autoDetected', 'Auto-detectado')}
                   </span>
                 </div>
 
