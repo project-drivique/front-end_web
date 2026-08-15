@@ -571,7 +571,9 @@
       "datesRequired": "You must select pickup and return dates.",
       "datesOrder": "The return date cannot be earlier than the pickup date.",
       "hoursOrder": "The return time cannot be earlier than the pickup time on the same day.",
-      "domicilioRequired": "Please complete all fields for home delivery (neighborhood, address, and references)."
+      "domicilioRequired": "Please complete all fields for home delivery (neighborhood, address, and references).",
+      "cedulaPdfRequired": "You must upload your ID in PDF format.",
+      "licenciaPdfRequired": "You must upload your driver's license in PDF format."
     },
     "paymentMethodTitle": "Payment Method",
     "paymentWompiTitle": "Secure Digital Payment (Wompi)",
@@ -1014,5 +1016,14 @@
     "title": "This screen is not implemented yet",
     "subtitle": "We are working to have this section ready as soon as possible.",
     "backBtn": "Back to Catalog"
+  },
+  "pago": {
+    "paymentInProcess": "Payment Processing",
+    "paymentInProcessDesc": "Your payment via Wompi was registered. The reservation status is now PENDING VALIDATION.",
+    "internalRef": "Internal Reference",
+    "wompiTxId": "Wompi Transaction ID",
+    "amountToPay": "Amount to Pay",
+    "noLocalReservationInfo": "Local reservation information not found.",
+    "backToAccount": "Back to My Account"
   }
 }

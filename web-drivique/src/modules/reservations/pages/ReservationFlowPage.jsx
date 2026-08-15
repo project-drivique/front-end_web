@@ -312,8 +312,8 @@ export default function VehiculoDetallePage() {
     if (!datosForm.correo.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(datosForm.correo)) e.correo = t('vehiculo.errors.emailInvalid');
     if (!datosForm.celular.trim() || datosForm.celular.length < 10) e.celular = t('vehiculo.errors.phoneInvalid');
     if (!datosForm.numDoc.trim()) e.numDoc = t('vehiculo.errors.docRequired');
-    if (!docsVerificados && !datosForm.cedulaPdf) e.cedulaPdf = "Debes subir tu cédula en formato PDF.";
-    if (!docsVerificados && !datosForm.licenciaPdf) e.licenciaPdf = "Debes subir tu licencia de conducción en formato PDF.";
+    if (!docsVerificados && !datosForm.cedulaPdf) e.cedulaPdf = t('vehiculo.errors.cedulaPdfRequired', 'Debes subir tu cédula en formato PDF.');
+    if (!docsVerificados && !datosForm.licenciaPdf) e.licenciaPdf = t('vehiculo.errors.licenciaPdfRequired', 'Debes subir tu licencia de conducción en formato PDF.');
     if (!datosForm.terminos) e.terminos = t('vehiculo.errors.termsRequired');
 
     setErrores(e);

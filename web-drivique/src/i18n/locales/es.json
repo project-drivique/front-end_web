@@ -613,7 +613,11 @@
     "timeNotSelected": "Hora no seleccionada",
     "kmNotSelected": "Tipo de km no seleccionado",
     "protectionNotSelected": "Protección no seleccionada",
-    "protectionAndExtras": "Tu Protección y Extras"
+    "protectionAndExtras": "Tu Protección y Extras",
+    "errors": {
+      "cedulaPdfRequired": "Debes subir tu cédula en formato PDF.",
+      "licenciaPdfRequired": "Debes subir tu licencia de conducción en formato PDF."
+    }
   },
   "reservas": {
     "title": "Mis reservas",
@@ -980,5 +984,14 @@
     "title": "Aún falta implementar esta pantalla",
     "subtitle": "Estamos trabajando para tener lista esta sección lo antes posible.",
     "backBtn": "Volver al Catálogo"
+  },
+  "pago": {
+    "paymentInProcess": "Pago en Proceso",
+    "paymentInProcessDesc": "Tu pago a través de Wompi se ha registrado. El estado de la reserva ahora es PENDIENTE DE VALIDACIÓN.",
+    "internalRef": "Referencia Interna",
+    "wompiTxId": "ID de Transacción Wompi",
+    "amountToPay": "Monto a Pagar",
+    "noLocalReservationInfo": "No se encontró la información local de la reserva.",
+    "backToAccount": "Volver a Mi Cuenta"
   }
 }
