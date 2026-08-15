@@ -361,11 +361,10 @@ export default function PerfilPage() {
                 <h2 style={{ fontSize: '15px', fontWeight: 700, color: esModoOscuro ? '#93c5fd' : '#1e3a8a', margin: 0, letterSpacing: '-0.01em' }}>
                   {t('perfil.personalInfo', 'Datos Personales')}
                 </h2>
+                <p style={{ fontSize: '12.5px', color: c.textMuted, margin: '4px 0 0', lineHeight: '1.45' }}>
+                  {t('perfil.personalInfoHint', 'Mantén tu nombre completo y fecha de nacimiento actualizados para personalizar tu perfil.')}
+                </p>
               </div>
-
-              <p style={{ fontSize: '12.5px', color: c.textMuted, margin: 0, lineHeight: '1.45' }}>
-                {t('perfil.personalInfoHint', 'Mantén tu nombre completo y fecha de nacimiento actualizados para personalizar tu perfil.')}
-              </p>
 
               {/* Nombres Completo */}
               <div>
@@ -463,11 +462,10 @@ export default function PerfilPage() {
                 <h2 style={{ fontSize: '15px', fontWeight: 700, color: esModoOscuro ? '#93c5fd' : '#1e3a8a', margin: 0, letterSpacing: '-0.01em' }}>
                   {t('perfil.contactData', 'Datos de Contacto')}
                 </h2>
+                <p style={{ fontSize: '12.5px', color: c.textMuted, margin: '4px 0 0', lineHeight: '1.45' }}>
+                  {t('perfil.contactDataHint', 'Registra tu correo, nacionalidad y teléfono para recibir novedades de tus reservas.')}
+                </p>
               </div>
-
-              <p style={{ fontSize: '12.5px', color: c.textMuted, margin: 0, lineHeight: '1.45' }}>
-                {t('perfil.contactDataHint', 'Registra tu correo, nacionalidad y teléfono para recibir novedades de tus reservas.')}
-              </p>
 
               {/* Correo electrónico */}
               <div>
@@ -601,11 +599,10 @@ export default function PerfilPage() {
                 <h2 style={{ fontSize: '15px', fontWeight: 700, color: esModoOscuro ? '#93c5fd' : '#1e3a8a', margin: 0, letterSpacing: '-0.01em' }}>
                   {t('perfil.identityDoc', 'Documento de Identidad')}
                 </h2>
+                <p style={{ fontSize: '12.5px', color: c.textMuted, margin: '4px 0 0', lineHeight: '1.45' }}>
+                  {t('perfil.identityDocHint', 'Ingresa tu documento oficial para validar tu cuenta y agilizar el alquiler de vehículos.')}
+                </p>
               </div>
-
-              <p style={{ fontSize: '12.5px', color: c.textMuted, margin: 0, lineHeight: '1.45' }}>
-                {t('perfil.identityDocHint', 'Ingresa tu documento oficial para validar tu cuenta y agilizar el alquiler de vehículos.')}
-              </p>
 
               {/* Tipo de documento */}
               <div>
