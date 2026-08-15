@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useLanding } from '@/modules/landing/LandingContext'
@@ -7,8 +7,9 @@ import { useAuthStore } from '@/store/authStore'
 import { showAlert } from '@/utils/swalConfig'
 import PasswordVerificationModal from '../components/PasswordVerificationModal'
 import ChangePassword from '../components/ChangePassword'
+import DeleteAccountModal from '../components/DeleteAccountModal'
 import MenuConfiguracion from '@/components/MenuConfiguracion'
-import { FaEdit, FaCheck, FaTimes, FaUser, FaEnvelope, FaPhone, FaArrowLeft, FaSignOutAlt, FaExclamationTriangle, FaIdCard, FaGlobe, FaCalendarAlt, FaHashtag } from 'react-icons/fa'
+import { FaEdit, FaCheck, FaTimes, FaUser, FaEnvelope, FaPhone, FaArrowLeft, FaSignOutAlt, FaExclamationTriangle, FaIdCard, FaGlobe, FaCalendarAlt, FaHashtag, FaTrashAlt } from 'react-icons/fa'
 import paisesMock from '@/mocks/nationalities.json'
 import '@/modules/catalog/pages/CatalogPage.css'
 import '@/modules/catalog/pages/VehicleDetailsPage.css'
@@ -45,15 +46,18 @@ export default function PerfilPage() {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { usuario, logout } = useAuthStore()
+  const [modalEliminarAbierto, setModalEliminarAbierto] = useState(false)
 
   const handleCerrarSesion = () => {
     showAlert({
       icon: 'warning',
       title: t('catalogo.logout', 'Cerrar sesión'),
-      text: t('perfil.logoutConfirm', '¿Seguro que deseas cerrar tu sesión?'),
+      text: t('perfil.logoutConfirm', '¿Estás seguro de que deseas cerrar sesión?'),
       showCancelButton: true,
-      confirmButtonText: t('catalogo.logout', 'Cerrar sesión'),
+      confirmButtonText: t('perfil.accept', 'Aceptar'),
       cancelButtonText: t('perfil.cancel', 'Cancelar'),
+      confirmButtonColor: '#2563eb',
+      cancelButtonColor: '#64748b',
     }).then((result) => {
       if (result.isConfirmed) {
         logout()
@@ -720,56 +724,90 @@ export default function PerfilPage() {
             </div>
           )}
 
-          {/* 3. Seguridad y Contraseña */}
-          <div>
+          {/* 3. Seguridad, Contraseña y Gestión de Cuenta */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <ChangePassword c={c} />
-          </div>
 
-          {/* 4. Cerrar sesión */}
-          <div style={{
-            background: c.innerCardBg,
-            borderRadius: '14px',
-            border: `1px solid ${c.innerCardBorder}`,
-            boxShadow: c.innerCardShadow,
-            padding: '20px 24px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: '16px',
-            flexWrap: 'wrap'
-          }}>
-            <div>
-              <h2 style={{ fontSize: '15px', fontWeight: 700, color: c.title, margin: '0 0 3px' }}>
-                {t('catalogo.logout', 'Cerrar sesión')}
-              </h2>
-              <p style={{ fontSize: '12.5px', color: c.textMuted, margin: 0 }}>
-                {t('perfil.logoutConfirm', '¿Seguro que deseas cerrar tu sesión?')}
-              </p>
-            </div>
-            
-            <button
-              onClick={handleCerrarSesion}
+            {/* 4. Gestión de Cuenta (Cerrar Sesión y Eliminar Cuenta) */}
+            <div
               style={{
-                padding: '9px 20px',
-                borderRadius: '8px',
-                background: 'transparent',
-                border: '1.5px solid #ef4444',
-                color: '#ef4444',
-                fontWeight: 700,
-                fontSize: '13px',
-                cursor: 'pointer',
+                background: c.innerCardBg,
+                borderRadius: '16px',
+                border: `1px solid ${c.innerCardBorder}`,
+                boxShadow: c.innerCardShadow,
+                padding: '22px 24px',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '7px',
-                whiteSpace: 'nowrap',
-                transition: 'all 150ms',
+                justifyContent: 'space-between',
+                gap: '16px',
+                flexWrap: 'wrap',
               }}
-              onMouseEnter={e => e.currentTarget.style.background = 'rgba(239, 68, 68, 0.05)'}
-              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
             >
-              <FaSignOutAlt style={{ fontSize: '13px' }} /> {t('catalogo.logout', 'Cerrar sesión')}
-            </button>
+              <div>
+                <h2 style={{ fontSize: '15.5px', fontWeight: 700, color: c.title, margin: '0 0 3px' }}>
+                  {t('perfil.accountManagement', 'Gestión de Cuenta')}
+                </h2>
+                <p style={{ fontSize: '12.5px', color: c.textMuted, margin: 0 }}>
+                  {t('perfil.accountManagementHint', 'Administra el estado de tu sesión o elimina tu cuenta')}
+                </p>
+              </div>
+              
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                <button
+                  onClick={handleCerrarSesion}
+                  style={{
+                    padding: '10px 20px',
+                    borderRadius: '10px',
+                    background: 'transparent',
+                    border: `1.5px solid ${esModoOscuro ? '#475569' : '#cbd5e1'}`,
+                    color: c.title,
+                    fontWeight: 600,
+                    fontSize: '13.5px',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    whiteSpace: 'nowrap',
+                    transition: 'all 150ms ease',
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.background = esModoOscuro ? 'rgba(255,255,255,0.05)' : '#f8fafc'}
+                  onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                >
+                  <FaSignOutAlt style={{ fontSize: '13px', color: c.textMuted }} /> {t('catalogo.logout', 'Cerrar sesión')}
+                </button>
+
+                <button
+                  onClick={() => setModalEliminarAbierto(true)}
+                  style={{
+                    padding: '10px 20px',
+                    borderRadius: '10px',
+                    background: '#fef2f2',
+                    border: '1.5px solid #fee2e2',
+                    color: '#dc2626',
+                    fontWeight: 700,
+                    fontSize: '13.5px',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    whiteSpace: 'nowrap',
+                    transition: 'all 150ms ease',
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.background = '#fee2e2'}
+                  onMouseLeave={e => e.currentTarget.style.background = '#fef2f2'}
+                >
+                  <FaTrashAlt style={{ fontSize: '13px' }} /> {t('perfil.deleteAccountBtn', 'Eliminar cuenta')}
+                </button>
+              </div>
+            </div>
           </div>
+
+          {/* Modal Discord de Eliminar Cuenta */}
+          <DeleteAccountModal
+            isOpen={modalEliminarAbierto}
+            onClose={() => setModalEliminarAbierto(false)}
+            c={c}
+          />
 
         </div>
 
