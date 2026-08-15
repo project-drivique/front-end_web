@@ -261,6 +261,15 @@ html.dark .campo-select {
 }
 
 @media (max-width: 640px) {
+  .contrato-contenido {
+    padding: 18px 16px 20px !important;
+  }
+
+  .contrato-grid-2col {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
   .pasos-barra-item {
     gap: 4px !important;
   }
