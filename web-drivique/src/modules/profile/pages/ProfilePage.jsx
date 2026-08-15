@@ -361,10 +361,11 @@ export default function PerfilPage() {
                 <h2 style={{ fontSize: '15px', fontWeight: 700, color: esModoOscuro ? '#93c5fd' : '#1e3a8a', margin: 0, letterSpacing: '-0.01em' }}>
                   {t('perfil.personalInfo', 'Datos Personales')}
                 </h2>
-                <p style={{ fontSize: '12.5px', color: c.textMuted, margin: '2px 0 0' }}>
-                  {t('perfil.personalInfoHint', 'Administra tu nombre completo y fecha de nacimiento')}
-                </p>
               </div>
+
+              <p style={{ fontSize: '13px', color: c.textMuted, margin: 0, lineHeight: '1.45' }}>
+                {t('perfil.personalInfoHint', 'Administra tu nombre completo y fecha de nacimiento.')}
+              </p>
 
               {/* Nombres Completo */}
               <div>
@@ -462,10 +463,11 @@ export default function PerfilPage() {
                 <h2 style={{ fontSize: '15px', fontWeight: 700, color: esModoOscuro ? '#93c5fd' : '#1e3a8a', margin: 0, letterSpacing: '-0.01em' }}>
                   {t('perfil.contactData', 'Datos de Contacto')}
                 </h2>
-                <p style={{ fontSize: '12.5px', color: c.textMuted, margin: '2px 0 0' }}>
-                  {t('perfil.contactDataHint', 'Gestiona tu correo, país y número telefónico')}
-                </p>
               </div>
+
+              <p style={{ fontSize: '13px', color: c.textMuted, margin: 0, lineHeight: '1.45' }}>
+                {t('perfil.contactDataHint', 'Gestiona tu correo, país y número telefónico.')}
+              </p>
 
               {/* Correo electrónico */}
               <div>
@@ -599,10 +601,11 @@ export default function PerfilPage() {
                 <h2 style={{ fontSize: '15px', fontWeight: 700, color: esModoOscuro ? '#93c5fd' : '#1e3a8a', margin: 0, letterSpacing: '-0.01em' }}>
                   {t('perfil.identityDoc', 'Documento de Identidad')}
                 </h2>
-                <p style={{ fontSize: '12.5px', color: c.textMuted, margin: '2px 0 0' }}>
-                  {t('perfil.identityDocHint', 'Registra tu tipo y número de documento oficial')}
-                </p>
               </div>
+
+              <p style={{ fontSize: '13px', color: c.textMuted, margin: 0, lineHeight: '1.45' }}>
+                {t('perfil.identityDocHint', 'Registra tu tipo y número de documento oficial.')}
+              </p>
 
               {/* Tipo de documento */}
               <div>
