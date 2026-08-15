@@ -352,334 +352,331 @@ export default function PerfilPage() {
           <div className="perfil-cards-grid">
             
             {/* Tarjeta 1: Datos Personales */}
-            <div style={{ background: c.innerCardBg, borderRadius: '14px', border: `1px solid ${c.innerCardBorder}`, boxShadow: c.innerCardShadow, padding: '22px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '4px' }}>
-                <h2 style={{ fontSize: '16px', fontWeight: 700, color: c.title, margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <FaUser style={{ color: c.accentText || '#1e3a8a', fontSize: '15px' }} />
-                  {t('perfil.personalInfo', 'Datos Personales')}
-                </h2>
-              </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <h2 style={{ fontSize: '15px', fontWeight: 700, color: c.title, margin: '0 0 2px' }}>
+                {t('perfil.personalInfo', 'Datos Personales')}
+              </h2>
 
-              {/* Nombres Completo */}
-              <div>
-                <label style={labelStyle}>{t('perfil.firstName', 'Nombres completos')}</label>
-                {modoEdicion ? (
-                  <>
-                    <input
-                      type="text"
-                      value={formData.nombre}
-                      onChange={e => {
-                        const val = e.target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '')
-                        actualizarCampo('nombre', val)
-                      }}
-                      placeholder="Tus nombres completos"
-                      style={inputStyle(!!errores.nombre)}
-                      onFocus={e => e.target.style.borderColor = c.inputBorderFocus}
-                      onBlur={e => e.target.style.borderColor = errores.nombre ? c.inputErrorBorder : c.inputBorder}
-                    />
-                    {errores.nombre && <p style={{ color: c.errorText, fontSize: '11.5px', margin: '4px 0 0' }}>{errores.nombre}</p>}
-                  </>
-                ) : (
-                  <div style={readonlyStyle}>
-                    <span style={{ color: formData.nombre ? c.readonlyText : '#94a3b8', fontStyle: formData.nombre ? 'normal' : 'italic' }}>
-                      {formData.nombre || t('perfil.notSpecified', 'Sin registrar')}
-                    </span>
-                  </div>
-                )}
-              </div>
+              <div style={{ background: c.innerCardBg, borderRadius: '14px', border: `1px solid ${c.innerCardBorder}`, boxShadow: c.innerCardShadow, padding: '22px', display: 'flex', flexDirection: 'column', gap: '14px', flex: 1 }}>
+                {/* Nombres Completo */}
+                <div>
+                  <label style={labelStyle}>{t('perfil.firstName', 'Nombres completos')}</label>
+                  {modoEdicion ? (
+                    <>
+                      <input
+                        type="text"
+                        value={formData.nombre}
+                        onChange={e => {
+                          const val = e.target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '')
+                          actualizarCampo('nombre', val)
+                        }}
+                        placeholder="Tus nombres completos"
+                        style={inputStyle(!!errores.nombre)}
+                        onFocus={e => e.target.style.borderColor = c.inputBorderFocus}
+                        onBlur={e => e.target.style.borderColor = errores.nombre ? c.inputErrorBorder : c.inputBorder}
+                      />
+                      {errores.nombre && <p style={{ color: c.errorText, fontSize: '11.5px', margin: '4px 0 0' }}>{errores.nombre}</p>}
+                    </>
+                  ) : (
+                    <div style={readonlyStyle}>
+                      <span style={{ color: formData.nombre ? c.readonlyText : '#94a3b8', fontStyle: formData.nombre ? 'normal' : 'italic' }}>
+                        {formData.nombre || t('perfil.incomplete', 'Incompleto')}
+                      </span>
+                    </div>
+                  )}
+                </div>
 
-              {/* Apellidos Completo */}
-              <div>
-                <label style={labelStyle}>{t('perfil.lastName', 'Apellidos completos')}</label>
-                {modoEdicion ? (
-                  <>
-                    <input
-                      type="text"
-                      value={formData.apellido}
-                      onChange={e => {
-                        const val = e.target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '')
-                        actualizarCampo('apellido', val)
-                      }}
-                      placeholder="Tus apellidos completos"
-                      style={inputStyle(!!errores.apellido)}
-                      onFocus={e => e.target.style.borderColor = c.inputBorderFocus}
-                      onBlur={e => e.target.style.borderColor = errores.apellido ? c.inputErrorBorder : c.inputBorder}
-                    />
-                    {errores.apellido && <p style={{ color: c.errorText, fontSize: '11.5px', margin: '4px 0 0' }}>{errores.apellido}</p>}
-                  </>
-                ) : (
-                  <div style={readonlyStyle}>
-                    <span style={{ color: formData.apellido ? c.readonlyText : '#94a3b8', fontStyle: formData.apellido ? 'normal' : 'italic' }}>
-                      {formData.apellido || t('perfil.notSpecified', 'Sin registrar')}
-                    </span>
-                  </div>
-                )}
-              </div>
+                {/* Apellidos Completo */}
+                <div>
+                  <label style={labelStyle}>{t('perfil.lastName', 'Apellidos completos')}</label>
+                  {modoEdicion ? (
+                    <>
+                      <input
+                        type="text"
+                        value={formData.apellido}
+                        onChange={e => {
+                          const val = e.target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '')
+                          actualizarCampo('apellido', val)
+                        }}
+                        placeholder="Tus apellidos completos"
+                        style={inputStyle(!!errores.apellido)}
+                        onFocus={e => e.target.style.borderColor = c.inputBorderFocus}
+                        onBlur={e => e.target.style.borderColor = errores.apellido ? c.inputErrorBorder : c.inputBorder}
+                      />
+                      {errores.apellido && <p style={{ color: c.errorText, fontSize: '11.5px', margin: '4px 0 0' }}>{errores.apellido}</p>}
+                    </>
+                  ) : (
+                    <div style={readonlyStyle}>
+                      <span style={{ color: formData.apellido ? c.readonlyText : '#94a3b8', fontStyle: formData.apellido ? 'normal' : 'italic' }}>
+                        {formData.apellido || t('perfil.incomplete', 'Incompleto')}
+                      </span>
+                    </div>
+                  )}
+                </div>
 
-              {/* Fecha de nacimiento */}
-              <div>
-                <label style={labelStyle}>{t('perfil.birthDate', 'Fecha de nacimiento')}</label>
-                {modoEdicion ? (
-                  <>
-                    <input
-                      type="date"
-                      value={formData.fechaNacimiento || ''}
-                      onChange={e => actualizarCampo('fechaNacimiento', e.target.value)}
-                      style={{ ...inputStyle(!!errores.fechaNacimiento), colorScheme: esModoOscuro ? 'dark' : 'light' }}
-                      onFocus={e => e.target.style.borderColor = c.inputBorderFocus}
-                      onBlur={e => e.target.style.borderColor = errores.fechaNacimiento ? c.inputErrorBorder : c.inputBorder}
-                    />
-                    {errores.fechaNacimiento && <p style={{ color: c.errorText, fontSize: '11.5px', margin: '4px 0 0' }}>{errores.fechaNacimiento}</p>}
-                  </>
-                ) : (
-                  <div style={readonlyStyle}>
-                    <span style={{ color: formData.fechaNacimiento ? c.readonlyText : '#94a3b8', fontStyle: formData.fechaNacimiento ? 'normal' : 'italic' }}>
-                      {formData.fechaNacimiento || t('perfil.notSpecified', 'Sin registrar')}
-                    </span>
-                  </div>
-                )}
+                {/* Fecha de nacimiento */}
+                <div>
+                  <label style={labelStyle}>{t('perfil.birthDate', 'Fecha de nacimiento')}</label>
+                  {modoEdicion ? (
+                    <>
+                      <input
+                        type="date"
+                        value={formData.fechaNacimiento || ''}
+                        onChange={e => actualizarCampo('fechaNacimiento', e.target.value)}
+                        style={{ ...inputStyle(!!errores.fechaNacimiento), colorScheme: esModoOscuro ? 'dark' : 'light' }}
+                        onFocus={e => e.target.style.borderColor = c.inputBorderFocus}
+                        onBlur={e => e.target.style.borderColor = errores.fechaNacimiento ? c.inputErrorBorder : c.inputBorder}
+                      />
+                      {errores.fechaNacimiento && <p style={{ color: c.errorText, fontSize: '11.5px', margin: '4px 0 0' }}>{errores.fechaNacimiento}</p>}
+                    </>
+                  ) : (
+                    <div style={readonlyStyle}>
+                      <span style={{ color: formData.fechaNacimiento ? c.readonlyText : '#94a3b8', fontStyle: formData.fechaNacimiento ? 'normal' : 'italic' }}>
+                        {formData.fechaNacimiento || t('perfil.incomplete', 'Incompleto')}
+                      </span>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
             {/* Tarjeta 2: Datos de Contacto */}
-            <div style={{ background: c.innerCardBg, borderRadius: '14px', border: `1px solid ${c.innerCardBorder}`, boxShadow: c.innerCardShadow, padding: '22px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '4px' }}>
-                <h2 style={{ fontSize: '16px', fontWeight: 700, color: c.title, margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <FaEnvelope style={{ color: c.accentText || '#1e3a8a', fontSize: '15px' }} />
-                  {t('perfil.contactData', 'Datos de Contacto')}
-                </h2>
-              </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <h2 style={{ fontSize: '15px', fontWeight: 700, color: c.title, margin: '0 0 2px' }}>
+                {t('perfil.contactData', 'Datos de Contacto')}
+              </h2>
 
-              {/* Correo electrónico */}
-              <div>
-                <label style={labelStyle}>{t('perfil.email', 'Correo electrónico')}</label>
-                {modoEdicion ? (
-                  <>
-                    <input type="email" value={formData.correo} onChange={e => actualizarCampo('correo', e.target.value)} placeholder="correo@ejemplo.com" style={inputStyle(!!errores.correo)} onFocus={e => e.target.style.borderColor = c.inputBorderFocus} onBlur={e => e.target.style.borderColor = errores.correo ? c.inputErrorBorder : c.inputBorder} />
-                    {errores.correo && <p style={{ color: c.errorText, fontSize: '11.5px', margin: '4px 0 0' }}>{errores.correo}</p>}
-                  </>
-                ) : (
-                  <div style={{ ...readonlyStyle, padding: '0 14px' }}>
-                    <span style={{ color: formData.correo ? c.readonlyText : '#94a3b8', fontStyle: formData.correo ? 'normal' : 'italic' }}>
-                      {formData.correo || t('perfil.notSpecified', 'Sin registrar')}
-                    </span>
-                  </div>
-                )}
-              </div>
-
-              {/* Nacionalidad */}
-              <div>
-                <label style={labelStyle}>{t('perfil.nationality', 'Nacionalidad')}</label>
-                {modoEdicion ? (
-                  <>
-                    <select
-                      value={formData.nacionalidad}
-                      onChange={e => actualizarCampo('nacionalidad', e.target.value)}
-                      style={selectStyle(!!errores.nacionalidad)}
-                      onFocus={e => e.target.style.borderColor = c.inputBorderFocus}
-                      onBlur={e => e.target.style.borderColor = errores.nacionalidad ? c.inputErrorBorder : c.inputBorder}
-                    >
-                      <option value="">{t('perfil.selectNationality', 'Seleccionar país')}</option>
-                      {paisesMock.map(p => (
-                        <option key={p.nombre} value={p.nombre}>{p.nombre} ({p.prefijo})</option>
-                      ))}
-                    </select>
-                    {errores.nacionalidad && <p style={{ color: c.errorText, fontSize: '11.5px', margin: '4px 0 0' }}>{errores.nacionalidad}</p>}
-                  </>
-                ) : (
-                  <div style={{ ...readonlyStyle, padding: '0 14px' }}>
-                    <span style={{ color: formData.nacionalidad ? c.readonlyText : '#94a3b8', fontStyle: formData.nacionalidad ? 'normal' : 'italic' }}>
-                      {formData.nacionalidad || t('perfil.notSpecified', 'Sin registrar')}
-                    </span>
-                  </div>
-                )}
-              </div>
-
-              {/* Teléfono */}
-              <div>
-                <label style={labelStyle}>{t('perfil.phone', 'Teléfono')}</label>
-                {modoEdicion ? (
-                  <>
-                    <div
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        borderRadius: '10px',
-                        border: `1.5px solid ${errores.telefono ? c.inputErrorBorder : c.inputBorder}`,
-                        background: errores.telefono ? c.inputErrorBg : c.inputBg,
-                        height: '42px',
-                        overflow: 'hidden',
-                        boxSizing: 'border-box',
-                        transition: 'all 150ms ease',
-                      }}
-                    >
-                      {getPrefijoPais(formData.nacionalidad) && (
-                        <span
-                          style={{
-                            padding: '0 12px',
-                            height: '100%',
-                            background: esModoOscuro ? '#1e293b' : '#f1f5f9',
-                            borderRight: `1px solid ${c.inputBorder}`,
-                            color: esModoOscuro ? '#93c5fd' : '#1e3a8a',
-                            fontSize: '12.5px',
-                            fontWeight: 800,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            userSelect: 'none',
-                            letterSpacing: '0.04em',
-                            flexShrink: 0,
-                          }}
-                        >
-                          {getPrefijoPais(formData.nacionalidad)}
-                        </span>
-                      )}
-                      <input
-                        type="tel"
-                        value={formData.telefono}
-                        onChange={e => {
-                          const val = e.target.value.replace(/\D/g, '')
-                          actualizarCampo('telefono', val)
-                        }}
-                        placeholder={!formData.nacionalidad ? "Selecciona nacionalidad primero" : "3001234567"}
-                        style={{
-                          flex: 1,
-                          height: '100%',
-                          border: 'none',
-                          background: 'transparent',
-                          padding: '0 12px',
-                          fontSize: '13.5px',
-                          color: c.inputText,
-                          outline: 'none',
-                          boxSizing: 'border-box',
-                        }}
-                      />
+              <div style={{ background: c.innerCardBg, borderRadius: '14px', border: `1px solid ${c.innerCardBorder}`, boxShadow: c.innerCardShadow, padding: '22px', display: 'flex', flexDirection: 'column', gap: '14px', flex: 1 }}>
+                {/* Correo electrónico */}
+                <div>
+                  <label style={labelStyle}>{t('perfil.email', 'Correo electrónico')}</label>
+                  {modoEdicion ? (
+                    <>
+                      <input type="email" value={formData.correo} onChange={e => actualizarCampo('correo', e.target.value)} placeholder="correo@ejemplo.com" style={inputStyle(!!errores.correo)} onFocus={e => e.target.style.borderColor = c.inputBorderFocus} onBlur={e => e.target.style.borderColor = errores.correo ? c.inputErrorBorder : c.inputBorder} />
+                      {errores.correo && <p style={{ color: c.errorText, fontSize: '11.5px', margin: '4px 0 0' }}>{errores.correo}</p>}
+                    </>
+                  ) : (
+                    <div style={{ ...readonlyStyle, padding: '0 14px' }}>
+                      <span style={{ color: formData.correo ? c.readonlyText : '#94a3b8', fontStyle: formData.correo ? 'normal' : 'italic' }}>
+                        {formData.correo || t('perfil.incomplete', 'Incompleto')}
+                      </span>
                     </div>
-                    {errores.telefono && <p style={{ color: c.errorText, fontSize: '11.5px', margin: '4px 0 0' }}>{errores.telefono}</p>}
-                  </>
-                ) : (
-                  <div style={{ ...readonlyStyle, padding: '0 14px' }}>
-                    <span style={{ color: formData.telefono ? c.readonlyText : '#94a3b8', fontStyle: formData.telefono ? 'normal' : 'italic' }}>
-                      {formData.telefono ? `${getPrefijoPais(formData.nacionalidad)} ${formData.telefono}` : t('perfil.notSpecified', 'Sin registrar')}
-                    </span>
-                  </div>
-                )}
+                  )}
+                </div>
+
+                {/* Nacionalidad */}
+                <div>
+                  <label style={labelStyle}>{t('perfil.nationality', 'Nacionalidad')}</label>
+                  {modoEdicion ? (
+                    <>
+                      <select
+                        value={formData.nacionalidad}
+                        onChange={e => actualizarCampo('nacionalidad', e.target.value)}
+                        style={selectStyle(!!errores.nacionalidad)}
+                        onFocus={e => e.target.style.borderColor = c.inputBorderFocus}
+                        onBlur={e => e.target.style.borderColor = errores.nacionalidad ? c.inputErrorBorder : c.inputBorder}
+                      >
+                        <option value="">{t('perfil.selectNationality', 'Seleccionar país')}</option>
+                        {paisesMock.map(p => (
+                          <option key={p.nombre} value={p.nombre}>{p.nombre} ({p.prefijo})</option>
+                        ))}
+                      </select>
+                      {errores.nacionalidad && <p style={{ color: c.errorText, fontSize: '11.5px', margin: '4px 0 0' }}>{errores.nacionalidad}</p>}
+                    </>
+                  ) : (
+                    <div style={{ ...readonlyStyle, padding: '0 14px' }}>
+                      <span style={{ color: formData.nacionalidad ? c.readonlyText : '#94a3b8', fontStyle: formData.nacionalidad ? 'normal' : 'italic' }}>
+                        {formData.nacionalidad || t('perfil.incomplete', 'Incompleto')}
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Teléfono */}
+                <div>
+                  <label style={labelStyle}>{t('perfil.phone', 'Teléfono')}</label>
+                  {modoEdicion ? (
+                    <>
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          borderRadius: '10px',
+                          border: `1.5px solid ${errores.telefono ? c.inputErrorBorder : c.inputBorder}`,
+                          background: errores.telefono ? c.inputErrorBg : c.inputBg,
+                          height: '42px',
+                          overflow: 'hidden',
+                          boxSizing: 'border-box',
+                          transition: 'all 150ms ease',
+                        }}
+                      >
+                        {getPrefijoPais(formData.nacionalidad) && (
+                          <span
+                            style={{
+                              padding: '0 12px',
+                              height: '100%',
+                              background: esModoOscuro ? '#1e293b' : '#f1f5f9',
+                              borderRight: `1px solid ${c.inputBorder}`,
+                              color: esModoOscuro ? '#93c5fd' : '#1e3a8a',
+                              fontSize: '12.5px',
+                              fontWeight: 800,
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              userSelect: 'none',
+                              letterSpacing: '0.04em',
+                              flexShrink: 0,
+                            }}
+                          >
+                            {getPrefijoPais(formData.nacionalidad)}
+                          </span>
+                        )}
+                        <input
+                          type="tel"
+                          value={formData.telefono}
+                          onChange={e => {
+                            const val = e.target.value.replace(/\D/g, '')
+                            actualizarCampo('telefono', val)
+                          }}
+                          placeholder={!formData.nacionalidad ? "Selecciona nacionalidad primero" : "3001234567"}
+                          style={{
+                            flex: 1,
+                            height: '100%',
+                            border: 'none',
+                            background: 'transparent',
+                            padding: '0 12px',
+                            fontSize: '13.5px',
+                            color: c.inputText,
+                            outline: 'none',
+                            boxSizing: 'border-box',
+                          }}
+                        />
+                      </div>
+                      {errores.telefono && <p style={{ color: c.errorText, fontSize: '11.5px', margin: '4px 0 0' }}>{errores.telefono}</p>}
+                    </>
+                  ) : (
+                    <div style={{ ...readonlyStyle, padding: '0 14px' }}>
+                      <span style={{ color: formData.telefono ? c.readonlyText : '#94a3b8', fontStyle: formData.telefono ? 'normal' : 'italic' }}>
+                        {formData.telefono ? `${getPrefijoPais(formData.nacionalidad)} ${formData.telefono}` : t('perfil.incomplete', 'Incompleto')}
+                      </span>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
             {/* Tarjeta 3: Documento de Identidad */}
-            <div style={{ background: c.innerCardBg, borderRadius: '14px', border: `1px solid ${c.innerCardBorder}`, boxShadow: c.innerCardShadow, padding: '22px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '4px' }}>
-                <h2 style={{ fontSize: '16px', fontWeight: 700, color: c.title, margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <FaIdCard style={{ color: c.accentText || '#1e3a8a', fontSize: '15px' }} />
-                  {t('perfil.identityDoc', 'Documento de Identidad')}
-                </h2>
-              </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <h2 style={{ fontSize: '15px', fontWeight: 700, color: c.title, margin: '0 0 2px' }}>
+                {t('perfil.identityDoc', 'Documento de Identidad')}
+              </h2>
 
-              {/* Tipo de documento */}
-              <div>
-                <label style={labelStyle}>{t('perfil.docType', 'Tipo de documento')}</label>
-                {modoEdicion ? (
-                  <>
-                    <select
-                      value={formData.tipoDocumento}
-                      onChange={e => actualizarCampo('tipoDocumento', e.target.value)}
-                      style={selectStyle(!!errores.tipoDocumento)}
-                      onFocus={e => e.target.style.borderColor = c.inputBorderFocus}
-                      onBlur={e => e.target.style.borderColor = errores.tipoDocumento ? c.inputErrorBorder : c.inputBorder}
-                    >
-                      <option value="">{t('perfil.selectDocType', 'Seleccionar tipo')}</option>
-                      {TIPOS_DOC.map(td => (
-                        <option key={td.value} value={td.value}>{td.label}</option>
-                      ))}
-                    </select>
-                    {errores.tipoDocumento && <p style={{ color: c.errorText, fontSize: '11.5px', margin: '4px 0 0' }}>{errores.tipoDocumento}</p>}
-                  </>
-                ) : (
-                  <div style={readonlyStyle}>
-                    <span style={{ color: formData.tipoDocumento ? c.readonlyText : '#94a3b8', fontStyle: formData.tipoDocumento ? 'normal' : 'italic' }}>
-                      {TIPOS_DOC.find(t => t.value === formData.tipoDocumento)?.label || formData.tipoDocumento || t('perfil.notSpecified', 'Sin registrar')}
-                    </span>
-                  </div>
-                )}
-              </div>
-
-              {/* Número de documento */}
-              <div>
-                <label style={labelStyle}>{t('perfil.docNumber', 'Número de documento')}</label>
-                {modoEdicion ? (
-                  <>
-                    <div
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        borderRadius: '10px',
-                        border: `1.5px solid ${errores.cedula ? c.inputErrorBorder : c.inputBorder}`,
-                        background: errores.cedula ? c.inputErrorBg : c.inputBg,
-                        height: '42px',
-                        overflow: 'hidden',
-                        boxSizing: 'border-box',
-                        transition: 'all 150ms ease',
-                      }}
-                    >
-                      {getSiglaDoc(formData.tipoDocumento) && (
-                        <span
-                          style={{
-                            padding: '0 12px',
-                            height: '100%',
-                            background: esModoOscuro ? '#1e293b' : '#f1f5f9',
-                            borderRight: `1px solid ${c.inputBorder}`,
-                            color: esModoOscuro ? '#93c5fd' : '#1e3a8a',
-                            fontSize: '12.5px',
-                            fontWeight: 800,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            userSelect: 'none',
-                            letterSpacing: '0.04em',
-                            flexShrink: 0,
-                          }}
-                        >
-                          {getSiglaDoc(formData.tipoDocumento)}
-                        </span>
-                      )}
-                      <input
-                        type="text"
-                        value={formData.cedula}
-                        onChange={e => {
-                          const isNumericOnly = ['CC', 'TI'].includes(formData.tipoDocumento || 'CC')
-                          const val = isNumericOnly
-                            ? e.target.value.replace(/\D/g, '')
-                            : e.target.value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase()
-                          actualizarCampo('cedula', val)
-                        }}
-                        placeholder={
-                          !formData.tipoDocumento
-                            ? "Selecciona tipo de documento primero"
-                            : (['CC', 'TI'].includes(formData.tipoDocumento) ? "Ej: 1020304050" : "Ej: AB123456")
-                        }
-                        style={{
-                          flex: 1,
-                          height: '100%',
-                          border: 'none',
-                          background: 'transparent',
-                          padding: '0 12px',
-                          fontSize: '13.5px',
-                          color: c.inputText,
-                          outline: 'none',
-                          boxSizing: 'border-box',
-                        }}
-                      />
+              <div style={{ background: c.innerCardBg, borderRadius: '14px', border: `1px solid ${c.innerCardBorder}`, boxShadow: c.innerCardShadow, padding: '22px', display: 'flex', flexDirection: 'column', gap: '14px', flex: 1 }}>
+                {/* Tipo de documento */}
+                <div>
+                  <label style={labelStyle}>{t('perfil.docType', 'Tipo de documento')}</label>
+                  {modoEdicion ? (
+                    <>
+                      <select
+                        value={formData.tipoDocumento}
+                        onChange={e => actualizarCampo('tipoDocumento', e.target.value)}
+                        style={selectStyle(!!errores.tipoDocumento)}
+                        onFocus={e => e.target.style.borderColor = c.inputBorderFocus}
+                        onBlur={e => e.target.style.borderColor = errores.tipoDocumento ? c.inputErrorBorder : c.inputBorder}
+                      >
+                        <option value="">{t('perfil.selectDocType', 'Seleccionar tipo')}</option>
+                        {TIPOS_DOC.map(td => (
+                          <option key={td.value} value={td.value}>{td.label}</option>
+                        ))}
+                      </select>
+                      {errores.tipoDocumento && <p style={{ color: c.errorText, fontSize: '11.5px', margin: '4px 0 0' }}>{errores.tipoDocumento}</p>}
+                    </>
+                  ) : (
+                    <div style={readonlyStyle}>
+                      <span style={{ color: formData.tipoDocumento ? c.readonlyText : '#94a3b8', fontStyle: formData.tipoDocumento ? 'normal' : 'italic' }}>
+                        {TIPOS_DOC.find(t => t.value === formData.tipoDocumento)?.label || formData.tipoDocumento || t('perfil.incomplete', 'Incompleto')}
+                      </span>
                     </div>
-                    {errores.cedula && <p style={{ color: c.errorText, fontSize: '11.5px', margin: '4px 0 0' }}>{errores.cedula}</p>}
-                  </>
-                ) : (
-                  <div style={readonlyStyle}>
-                    <span style={{ color: formData.cedula ? c.readonlyText : '#94a3b8', fontStyle: formData.cedula ? 'normal' : 'italic' }}>
-                      {formData.cedula ? `${getSiglaDoc(formData.tipoDocumento)} - ${formData.cedula}` : t('perfil.notSpecified', 'Sin registrar')}
-                    </span>
-                  </div>
-                )}
+                  )}
+                </div>
+
+                {/* Número de documento */}
+                <div>
+                  <label style={labelStyle}>{t('perfil.docNumber', 'Número de documento')}</label>
+                  {modoEdicion ? (
+                    <>
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          borderRadius: '10px',
+                          border: `1.5px solid ${errores.cedula ? c.inputErrorBorder : c.inputBorder}`,
+                          background: errores.cedula ? c.inputErrorBg : c.inputBg,
+                          height: '42px',
+                          overflow: 'hidden',
+                          boxSizing: 'border-box',
+                          transition: 'all 150ms ease',
+                        }}
+                      >
+                        {getSiglaDoc(formData.tipoDocumento) && (
+                          <span
+                            style={{
+                              padding: '0 12px',
+                              height: '100%',
+                              background: esModoOscuro ? '#1e293b' : '#f1f5f9',
+                              borderRight: `1px solid ${c.inputBorder}`,
+                              color: esModoOscuro ? '#93c5fd' : '#1e3a8a',
+                              fontSize: '12.5px',
+                              fontWeight: 800,
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              userSelect: 'none',
+                              letterSpacing: '0.04em',
+                              flexShrink: 0,
+                            }}
+                          >
+                            {getSiglaDoc(formData.tipoDocumento)}
+                          </span>
+                        )}
+                        <input
+                          type="text"
+                          value={formData.cedula}
+                          onChange={e => {
+                            const isNumericOnly = ['CC', 'TI'].includes(formData.tipoDocumento || 'CC')
+                            const val = isNumericOnly
+                              ? e.target.value.replace(/\D/g, '')
+                              : e.target.value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase()
+                            actualizarCampo('cedula', val)
+                          }}
+                          placeholder={
+                            !formData.tipoDocumento
+                              ? "Selecciona tipo de documento primero"
+                              : (['CC', 'TI'].includes(formData.tipoDocumento) ? "Ej: 1020304050" : "Ej: AB123456")
+                          }
+                          style={{
+                            flex: 1,
+                            height: '100%',
+                            border: 'none',
+                            background: 'transparent',
+                            padding: '0 12px',
+                            fontSize: '13.5px',
+                            color: c.inputText,
+                            outline: 'none',
+                            boxSizing: 'border-box',
+                          }}
+                        />
+                      </div>
+                      {errores.cedula && <p style={{ color: c.errorText, fontSize: '11.5px', margin: '4px 0 0' }}>{errores.cedula}</p>}
+                    </>
+                  ) : (
+                    <div style={readonlyStyle}>
+                      <span style={{ color: formData.cedula ? c.readonlyText : '#94a3b8', fontStyle: formData.cedula ? 'normal' : 'italic' }}>
+                        {formData.cedula ? `${getSiglaDoc(formData.tipoDocumento)} - ${formData.cedula}` : t('perfil.incomplete', 'Incompleto')}
+                      </span>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -689,7 +686,7 @@ export default function PerfilPage() {
           {modoEdicion && (
             <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '20px', marginBottom: '24px' }}>
               <button onClick={handleCancelar} disabled={cargando} style={{ padding: '11px 24px', borderRadius: '10px', background: c.btnSecBg, border: `1.5px solid ${c.btnSecBorder}`, color: c.btnSecText, fontWeight: 600, fontSize: '14px', cursor: cargando ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: '8px', opacity: cargando ? 0.5 : 1 }}>
-                <FaTimes /> {t('perfil.cancel', 'Cancelar')}
+                {t('perfil.cancel', 'Cancelar')}
               </button>
               <button onClick={handleGuardar} disabled={cargando} style={{ padding: '11px 28px', borderRadius: '10px', background: c.btnPrimary, color: '#fff', border: 'none', fontWeight: 700, fontSize: '14px', cursor: cargando ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: '8px', opacity: cargando ? 0.7 : 1 }}>
                 {cargando ? (
