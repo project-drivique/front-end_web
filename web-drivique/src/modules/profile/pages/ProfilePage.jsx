@@ -373,7 +373,7 @@ export default function PerfilPage() {
                           const val = e.target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '')
                           actualizarCampo('nombre', val)
                         }}
-                        placeholder="Tus nombres completos"
+                        placeholder="Nombres completos"
                         style={inputStyle(!!errores.nombre)}
                         onFocus={e => e.target.style.borderColor = c.inputBorderFocus}
                         onBlur={e => e.target.style.borderColor = errores.nombre ? c.inputErrorBorder : c.inputBorder}
@@ -404,7 +404,7 @@ export default function PerfilPage() {
                           const val = e.target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '')
                           actualizarCampo('apellido', val)
                         }}
-                        placeholder="Tus apellidos completos"
+                        placeholder="Apellidos completos"
                         style={inputStyle(!!errores.apellido)}
                         onFocus={e => e.target.style.borderColor = c.inputBorderFocus}
                         onBlur={e => e.target.style.borderColor = errores.apellido ? c.inputErrorBorder : c.inputBorder}
@@ -491,7 +491,7 @@ export default function PerfilPage() {
                         onFocus={e => e.target.style.borderColor = c.inputBorderFocus}
                         onBlur={e => e.target.style.borderColor = errores.nacionalidad ? c.inputErrorBorder : c.inputBorder}
                       >
-                        <option value="">{t('perfil.selectNationality', 'Seleccionar país')}</option>
+                        <option value="">{t('perfil.select', 'Seleccionar')}</option>
                         {[...paisesMock].sort((a, b) => a.nombre.localeCompare(b.nombre, 'es')).map(p => (
                           <option key={p.nombre} value={p.nombre}>{p.nombre} ({p.prefijo})</option>
                         ))}
@@ -556,7 +556,7 @@ export default function PerfilPage() {
                             const val = e.target.value.replace(/\D/g, '')
                             actualizarCampo('telefono', val)
                           }}
-                          placeholder={!formData.nacionalidad ? "Selecciona nacionalidad primero" : "3001234567"}
+                          placeholder="3001234567"
                           style={{
                             flex: 1,
                             height: '100%',
@@ -605,7 +605,7 @@ export default function PerfilPage() {
                         onFocus={e => e.target.style.borderColor = c.inputBorderFocus}
                         onBlur={e => e.target.style.borderColor = errores.tipoDocumento ? c.inputErrorBorder : c.inputBorder}
                       >
-                        <option value="">{t('perfil.selectDocType', 'Seleccionar tipo')}</option>
+                        <option value="">{t('perfil.select', 'Seleccionar')}</option>
                         {TIPOS_DOC.map(td => (
                           <option key={td.value} value={td.value}>{td.label}</option>
                         ))}
@@ -674,9 +674,7 @@ export default function PerfilPage() {
                             actualizarCampo('cedula', val)
                           }}
                           placeholder={
-                            !formData.tipoDocumento
-                              ? "Selecciona tipo de documento primero"
-                              : (['CC', 'TI'].includes(formData.tipoDocumento) ? "Ej: 1020304050" : "Ej: AB123456")
+                            ['CC', 'TI'].includes(formData.tipoDocumento || 'CC') ? "1020304050" : "AB123456"
                           }
                           style={{
                             flex: 1,
