@@ -8,7 +8,8 @@ import { showAlert } from '@/utils/swalConfig'
 import PasswordVerificationModal from '../components/PasswordVerificationModal'
 import ChangePassword from '../components/ChangePassword'
 import MenuConfiguracion from '@/components/MenuConfiguracion'
-import { FaEdit, FaCheck, FaTimes, FaUser, FaEnvelope, FaPhone, FaArrowLeft, FaSignOutAlt } from 'react-icons/fa'
+import { FaEdit, FaCheck, FaTimes, FaUser, FaEnvelope, FaPhone, FaArrowLeft, FaSignOutAlt, FaExclamationTriangle, FaIdCard, FaGlobe } from 'react-icons/fa'
+import paisesMock from '@/mocks/nationalities.json'
 import '@/modules/catalog/pages/CatalogPage.css'
 import '@/modules/catalog/pages/VehicleDetailsPage.css'
 import './ProfilePage.css'
@@ -94,6 +95,7 @@ export default function PerfilPage() {
     exito,
     error,
     modoEdicion,
+    esPerfilIncompleto,
     requiereVerificacion,
     errorVerificacion,
     cargandoVerificacion,
@@ -193,6 +195,66 @@ export default function PerfilPage() {
 
           <MenuConfiguracion />
         </div>
+
+        {/* Banner Alerta de Perfil Incompleto */}
+        {esPerfilIncompleto && !modoEdicion && (
+          <div
+            style={{
+              marginBottom: '20px',
+              padding: '16px 20px',
+              borderRadius: '14px',
+              background: esModoOscuro ? 'rgba(234, 179, 8, 0.14)' : '#fffbe8',
+              border: `1.5px solid ${esModoOscuro ? 'rgba(234, 179, 8, 0.4)' : '#fef08a'}`,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '16px',
+              boxShadow: esModoOscuro ? '0 4px 16px rgba(0,0,0,0.25)' : '0 2px 10px rgba(234,179,8,0.12)',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+              <div
+                style={{
+                  width: '38px',
+                  height: '38px',
+                  borderRadius: '50%',
+                  background: esModoOscuro ? 'rgba(234, 179, 8, 0.2)' : '#fef08a',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                }}
+              >
+                <FaExclamationTriangle size={18} color={esModoOscuro ? '#facc15' : '#ca8a04'} />
+              </div>
+              <div>
+                <h4 style={{ margin: '0 0 2px', fontSize: '14px', fontWeight: 800, color: esModoOscuro ? '#fef08a' : '#854d0e' }}>
+                  {t('perfil.incompleteBannerTitle', '¡Completa tu información personal!')}
+                </h4>
+                <p style={{ margin: 0, fontSize: '12.5px', color: esModoOscuro ? '#fef9c3' : '#a16207' }}>
+                  {t('perfil.incompleteBannerText', 'Diligencia tus nombres, apellidos, documento y teléfono para dejar tu perfil listo para reservar.')}
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={habilitarEdicion}
+              style={{
+                padding: '9px 18px',
+                borderRadius: '10px',
+                background: 'linear-gradient(90deg, #ca8a04, #eab308)',
+                color: '#ffffff',
+                fontWeight: 800,
+                fontSize: '12.5px',
+                border: 'none',
+                cursor: 'pointer',
+                whiteSpace: 'nowrap',
+                boxShadow: '0 4px 12px rgba(202,138,4,0.25)',
+              }}
+            >
+              {t('perfil.completeProfileBtn', 'Completar perfil ahora')}
+            </button>
+          </div>
+        )}
 
         {/* Contenedor Maestro Unificado */}
         <div className="vehiculo-main-container perfil-master-wrapper" style={{ background: c.cardBg, border: `1px solid ${c.cardBorder}`, boxShadow: esModoOscuro ? '0 4px 24px rgba(0,0,0,0.40)' : '0 4px 24px rgba(30,58,138,0.07)', borderRadius: '20px', padding: '24px' }}>
@@ -311,35 +373,83 @@ export default function PerfilPage() {
               </div>
 
               <div className="perfil-info-grid">
-                {/* Nombre */}
+                {/* Nombre Completo */}
                 <div>
-                  <label style={labelStyle}>{t('perfil.firstName', 'Nombre')}</label>
+                  <label style={labelStyle}>{t('perfil.firstName', 'Nombres completos')}</label>
                   {modoEdicion ? (
                     <>
-                      <input type="text" value={formData.nombre} onChange={e => actualizarCampo('nombre', e.target.value)} placeholder="Tu nombre" style={inputStyle(!!errores.nombre)} onFocus={e => e.target.style.borderColor = c.inputBorderFocus} onBlur={e => e.target.style.borderColor = errores.nombre ? c.inputErrorBorder : c.inputBorder} />
+                      <input type="text" value={formData.nombre} onChange={e => actualizarCampo('nombre', e.target.value)} placeholder="Tus nombres completos" style={inputStyle(!!errores.nombre)} onFocus={e => e.target.style.borderColor = c.inputBorderFocus} onBlur={e => e.target.style.borderColor = errores.nombre ? c.inputErrorBorder : c.inputBorder} />
                       {errores.nombre && <p style={{ color: c.errorText, fontSize: '11.5px', margin: '4px 0 0' }}>{errores.nombre}</p>}
                     </>
                   ) : ( <input type="text" value={formData.nombre || ''} readOnly style={readonlyStyle} /> )}
                 </div>
 
-                {/* Apellido */}
+                {/* Apellidos Completo */}
                 <div>
-                  <label style={labelStyle}>{t('perfil.lastName', 'Apellido')}</label>
+                  <label style={labelStyle}>{t('perfil.lastName', 'Apellidos completos')}</label>
                   {modoEdicion ? (
                     <>
-                      <input type="text" value={formData.apellido} onChange={e => actualizarCampo('apellido', e.target.value)} placeholder="Tu apellido" style={inputStyle(!!errores.apellido)} onFocus={e => e.target.style.borderColor = c.inputBorderFocus} onBlur={e => e.target.style.borderColor = errores.apellido ? c.inputErrorBorder : c.inputBorder} />
+                      <input type="text" value={formData.apellido} onChange={e => actualizarCampo('apellido', e.target.value)} placeholder="Tus apellidos completos" style={inputStyle(!!errores.apellido)} onFocus={e => e.target.style.borderColor = c.inputBorderFocus} onBlur={e => e.target.style.borderColor = errores.apellido ? c.inputErrorBorder : c.inputBorder} />
                       {errores.apellido && <p style={{ color: c.errorText, fontSize: '11.5px', margin: '4px 0 0' }}>{errores.apellido}</p>}
                     </>
                   ) : ( <input type="text" value={formData.apellido || ''} readOnly style={readonlyStyle} /> )}
+                </div>
+
+                {/* Tipo de documento */}
+                <div>
+                  <label style={labelStyle}>{t('perfil.docType', 'Tipo de documento')}</label>
+                  {modoEdicion ? (
+                    <>
+                      <select
+                        value={formData.tipoDocumento}
+                        onChange={e => actualizarCampo('tipoDocumento', e.target.value)}
+                        style={{ ...inputStyle(!!errores.tipoDocumento), cursor: 'pointer' }}
+                      >
+                        <option value="">{t('perfil.selectDocType', 'Seleccionar tipo')}</option>
+                        <option value="CC">Cédula de Ciudadanía (CC)</option>
+                        <option value="CE">Cédula de Extranjería (CE)</option>
+                        <option value="Pasaporte">Pasaporte</option>
+                        <option value="CNH">Carteira de Habilitação (CNH)</option>
+                      </select>
+                      {errores.tipoDocumento && <p style={{ color: c.errorText, fontSize: '11.5px', margin: '4px 0 0' }}>{errores.tipoDocumento}</p>}
+                    </>
+                  ) : (
+                    <input type="text" value={formData.tipoDocumento || ''} readOnly style={readonlyStyle} />
+                  )}
                 </div>
 
                 {/* Número de documento */}
                 <div>
                   <label style={labelStyle}>{t('perfil.docNumber', 'Número de documento')}</label>
                   {modoEdicion ? (
-                    <input type="text" value={formData.cedula} onChange={e => actualizarCampo('cedula', e.target.value)} placeholder="Número de documento" style={inputStyle(!!errores.cedula)} onFocus={e => e.target.style.borderColor = c.inputBorderFocus} onBlur={e => e.target.style.borderColor = errores.cedula ? c.inputErrorBorder : c.inputBorder} />
+                    <>
+                      <input type="text" value={formData.cedula} onChange={e => actualizarCampo('cedula', e.target.value)} placeholder="Número de documento" style={inputStyle(!!errores.cedula)} onFocus={e => e.target.style.borderColor = c.inputBorderFocus} onBlur={e => e.target.style.borderColor = errores.cedula ? c.inputErrorBorder : c.inputBorder} />
+                      {errores.cedula && <p style={{ color: c.errorText, fontSize: '11.5px', margin: '4px 0 0' }}>{errores.cedula}</p>}
+                    </>
                   ) : (
                     <input type="text" value={formData.cedula || ''} readOnly style={readonlyStyle} />
+                  )}
+                </div>
+
+                {/* Nacionalidad */}
+                <div>
+                  <label style={labelStyle}>{t('perfil.nationality', 'Nacionalidad')}</label>
+                  {modoEdicion ? (
+                    <>
+                      <select
+                        value={formData.nacionalidad}
+                        onChange={e => actualizarCampo('nacionalidad', e.target.value)}
+                        style={{ ...inputStyle(!!errores.nacionalidad), cursor: 'pointer' }}
+                      >
+                        <option value="">{t('perfil.selectNationality', 'Seleccionar país')}</option>
+                        {paisesMock.map(p => (
+                          <option key={p.nombre} value={p.nombre}>{p.nombre}</option>
+                        ))}
+                      </select>
+                      {errores.nacionalidad && <p style={{ color: c.errorText, fontSize: '11.5px', margin: '4px 0 0' }}>{errores.nacionalidad}</p>}
+                    </>
+                  ) : (
+                    <input type="text" value={formData.nacionalidad || ''} readOnly style={readonlyStyle} />
                   )}
                 </div>
 
@@ -347,7 +457,10 @@ export default function PerfilPage() {
                 <div>
                   <label style={labelStyle}>{t('perfil.birthDate', 'Fecha de nacimiento')}</label>
                   {modoEdicion ? (
-                    <input type="date" value={formData.fechaNacimiento || ''} onChange={e => actualizarCampo('fechaNacimiento', e.target.value)} style={{ ...inputStyle(false), colorScheme: esModoOscuro ? 'dark' : 'light' }} onFocus={e => e.target.style.borderColor = c.inputBorderFocus} onBlur={e => e.target.style.borderColor = c.inputBorder} />
+                    <>
+                      <input type="date" value={formData.fechaNacimiento || ''} onChange={e => actualizarCampo('fechaNacimiento', e.target.value)} style={{ ...inputStyle(!!errores.fechaNacimiento), colorScheme: esModoOscuro ? 'dark' : 'light' }} onFocus={e => e.target.style.borderColor = c.inputBorderFocus} onBlur={e => e.target.style.borderColor = errores.fechaNacimiento ? c.inputErrorBorder : c.inputBorder} />
+                      {errores.fechaNacimiento && <p style={{ color: c.errorText, fontSize: '11.5px', margin: '4px 0 0' }}>{errores.fechaNacimiento}</p>}
+                    </>
                   ) : (
                     <input type="text" value={formData.fechaNacimiento || ''} readOnly style={readonlyStyle} />
                   )}
