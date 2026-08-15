@@ -363,8 +363,8 @@ export default function PerfilPage() {
                 </h2>
               </div>
 
-              <p style={{ fontSize: '13px', color: c.textMuted, margin: 0, lineHeight: '1.45' }}>
-                {t('perfil.personalInfoHint', 'Administra tu nombre completo y fecha de nacimiento.')}
+              <p style={{ fontSize: '12.5px', color: c.textMuted, margin: 0, lineHeight: '1.45' }}>
+                {t('perfil.personalInfoHint', 'Mantén tu nombre completo y fecha de nacimiento actualizados para personalizar tu perfil.')}
               </p>
 
               {/* Nombres Completo */}
@@ -465,8 +465,8 @@ export default function PerfilPage() {
                 </h2>
               </div>
 
-              <p style={{ fontSize: '13px', color: c.textMuted, margin: 0, lineHeight: '1.45' }}>
-                {t('perfil.contactDataHint', 'Gestiona tu correo, país y número telefónico.')}
+              <p style={{ fontSize: '12.5px', color: c.textMuted, margin: 0, lineHeight: '1.45' }}>
+                {t('perfil.contactDataHint', 'Registra tu correo, nacionalidad y teléfono para recibir novedades de tus reservas.')}
               </p>
 
               {/* Correo electrónico */}
@@ -603,8 +603,8 @@ export default function PerfilPage() {
                 </h2>
               </div>
 
-              <p style={{ fontSize: '13px', color: c.textMuted, margin: 0, lineHeight: '1.45' }}>
-                {t('perfil.identityDocHint', 'Registra tu tipo y número de documento oficial.')}
+              <p style={{ fontSize: '12.5px', color: c.textMuted, margin: 0, lineHeight: '1.45' }}>
+                {t('perfil.identityDocHint', 'Ingresa tu documento oficial para validar tu cuenta y agilizar el alquiler de vehículos.')}
               </p>
 
               {/* Tipo de documento */}
