@@ -314,26 +314,36 @@ export default function PerfilPage() {
               <button
                 onClick={habilitarEdicion}
                 style={{
-                  padding: '7px 16px',
-                  borderRadius: '8px',
-                  background: 'rgba(255, 255, 255, 0.08)',
+                  padding: '9px 20px',
+                  borderRadius: '10px',
+                  background: esPerfilIncompleto
+                    ? 'linear-gradient(90deg, #d97706, #f59e0b)'
+                    : 'rgba(255, 255, 255, 0.12)',
                   backdropFilter: 'blur(8px)',
-                  border: '1px solid rgba(255, 255, 255, 0.35)',
+                  border: esPerfilIncompleto ? 'none' : '1px solid rgba(255, 255, 255, 0.35)',
                   color: '#fff',
-                  fontWeight: 500,
-                  fontSize: '12.5px',
+                  fontWeight: 700,
+                  fontSize: '13px',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '6px',
-                  transition: 'background 150ms',
+                  gap: '8px',
+                  transition: 'all 150ms ease',
                   marginLeft: 'auto',
                   zIndex: 1,
+                  boxShadow: esPerfilIncompleto ? '0 4px 14px rgba(217, 119, 6, 0.35)' : 'none',
                 }}
-                onMouseEnter={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.18)'}
-                onMouseLeave={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)'}
+                onMouseEnter={e => {
+                  if (!esPerfilIncompleto) e.currentTarget.style.background = 'rgba(255, 255, 255, 0.22)'
+                }}
+                onMouseLeave={e => {
+                  if (!esPerfilIncompleto) e.currentTarget.style.background = 'rgba(255, 255, 255, 0.12)'
+                }}
               >
-                <FaEdit style={{ fontSize: '12px' }} /> {t('perfil.edit', 'Editar')}
+                <FaEdit style={{ fontSize: '13px' }} />
+                {esPerfilIncompleto
+                  ? t('perfil.completeProfileBtn', 'Completar perfil')
+                  : t('perfil.editProfileBtn', 'Editar perfil')}
               </button>
             )}
           </div>
@@ -343,13 +353,53 @@ export default function PerfilPage() {
             
             {/* Tarjeta Izquierda: Información Personal */}
             <div style={{ background: c.innerCardBg, borderRadius: '14px', border: `1px solid ${c.innerCardBorder}`, boxShadow: c.innerCardShadow, padding: '22px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '18px' }}>
-                <div style={{ width: '30px', height: '30px', borderRadius: '50%', background: c.badgeBg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <FaUser style={{ color: c.badgeText, fontSize: '13px' }} />
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '18px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <div style={{ width: '30px', height: '30px', borderRadius: '50%', background: c.badgeBg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <FaUser style={{ color: c.badgeText, fontSize: '13px' }} />
+                  </div>
+                  <h2 style={{ fontSize: '16px', fontWeight: 700, color: c.title, margin: 0 }}>
+                    {t('perfil.personalInfo', 'Información Personal')}
+                  </h2>
                 </div>
-                <h2 style={{ fontSize: '16px', fontWeight: 700, color: c.title, margin: 0 }}>
-                  {t('perfil.personalInfo', 'Información Personal')}
-                </h2>
+
+                {esPerfilIncompleto ? (
+                  <span
+                    style={{
+                      padding: '4px 10px',
+                      borderRadius: '20px',
+                      background: esModoOscuro ? 'rgba(234, 179, 8, 0.15)' : '#fef9c3',
+                      color: esModoOscuro ? '#facc15' : '#a16207',
+                      fontSize: '11px',
+                      fontWeight: 700,
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '5px',
+                      border: `1px solid ${esModoOscuro ? 'rgba(234, 179, 8, 0.3)' : '#fef08a'}`,
+                    }}
+                  >
+                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#eab308' }} />
+                    {t('perfil.statusIncomplete', 'Incompleto')}
+                  </span>
+                ) : (
+                  <span
+                    style={{
+                      padding: '4px 10px',
+                      borderRadius: '20px',
+                      background: esModoOscuro ? 'rgba(34, 197, 94, 0.15)' : '#dcfce7',
+                      color: esModoOscuro ? '#4ade80' : '#15803d',
+                      fontSize: '11px',
+                      fontWeight: 700,
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '5px',
+                      border: `1px solid ${esModoOscuro ? 'rgba(34, 197, 94, 0.3)' : '#bbf7d0'}`,
+                    }}
+                  >
+                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#22c55e' }} />
+                    {t('perfil.statusVerified', 'Verificado')}
+                  </span>
+                )}
               </div>
 
               <div className="perfil-info-grid">
@@ -372,7 +422,13 @@ export default function PerfilPage() {
                       />
                       {errores.nombre && <p style={{ color: c.errorText, fontSize: '11.5px', margin: '4px 0 0' }}>{errores.nombre}</p>}
                     </>
-                  ) : ( <input type="text" value={formData.nombre || ''} readOnly style={readonlyStyle} /> )}
+                  ) : (
+                    <div style={readonlyStyle}>
+                      <span style={{ color: formData.nombre ? c.readonlyText : '#94a3b8', fontStyle: formData.nombre ? 'normal' : 'italic' }}>
+                        {formData.nombre || t('perfil.notSpecified', 'Sin registrar')}
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 {/* Apellidos Completo */}
@@ -394,7 +450,13 @@ export default function PerfilPage() {
                       />
                       {errores.apellido && <p style={{ color: c.errorText, fontSize: '11.5px', margin: '4px 0 0' }}>{errores.apellido}</p>}
                     </>
-                  ) : ( <input type="text" value={formData.apellido || ''} readOnly style={readonlyStyle} /> )}
+                  ) : (
+                    <div style={readonlyStyle}>
+                      <span style={{ color: formData.apellido ? c.readonlyText : '#94a3b8', fontStyle: formData.apellido ? 'normal' : 'italic' }}>
+                        {formData.apellido || t('perfil.notSpecified', 'Sin registrar')}
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 {/* Tipo de documento */}
@@ -417,7 +479,11 @@ export default function PerfilPage() {
                       {errores.tipoDocumento && <p style={{ color: c.errorText, fontSize: '11.5px', margin: '4px 0 0' }}>{errores.tipoDocumento}</p>}
                     </>
                   ) : (
-                    <input type="text" value={TIPOS_DOC.find(t => t.value === formData.tipoDocumento)?.label || formData.tipoDocumento || ''} readOnly style={readonlyStyle} />
+                    <div style={readonlyStyle}>
+                      <span style={{ color: formData.tipoDocumento ? c.readonlyText : '#94a3b8', fontStyle: formData.tipoDocumento ? 'normal' : 'italic' }}>
+                        {TIPOS_DOC.find(t => t.value === formData.tipoDocumento)?.label || formData.tipoDocumento || t('perfil.notSpecified', 'Sin registrar')}
+                      </span>
+                    </div>
                   )}
                 </div>
 
@@ -485,12 +551,11 @@ export default function PerfilPage() {
                       {errores.cedula && <p style={{ color: c.errorText, fontSize: '11.5px', margin: '4px 0 0' }}>{errores.cedula}</p>}
                     </>
                   ) : (
-                    <input
-                      type="text"
-                      value={formData.cedula ? `${getSiglaDoc(formData.tipoDocumento)} - ${formData.cedula}` : ''}
-                      readOnly
-                      style={readonlyStyle}
-                    />
+                    <div style={readonlyStyle}>
+                      <span style={{ color: formData.cedula ? c.readonlyText : '#94a3b8', fontStyle: formData.cedula ? 'normal' : 'italic' }}>
+                        {formData.cedula ? `${getSiglaDoc(formData.tipoDocumento)} - ${formData.cedula}` : t('perfil.notSpecified', 'Sin registrar')}
+                      </span>
+                    </div>
                   )}
                 </div>
 
@@ -510,7 +575,11 @@ export default function PerfilPage() {
                       {errores.fechaNacimiento && <p style={{ color: c.errorText, fontSize: '11.5px', margin: '4px 0 0' }}>{errores.fechaNacimiento}</p>}
                     </>
                   ) : (
-                    <input type="text" value={formData.fechaNacimiento || ''} readOnly style={readonlyStyle} />
+                    <div style={readonlyStyle}>
+                      <span style={{ color: formData.fechaNacimiento ? c.readonlyText : '#94a3b8', fontStyle: formData.fechaNacimiento ? 'normal' : 'italic' }}>
+                        {formData.fechaNacimiento || t('perfil.notSpecified', 'Sin registrar')}
+                      </span>
+                    </div>
                   )}
                 </div>
               </div>
@@ -539,7 +608,9 @@ export default function PerfilPage() {
                   ) : (
                     <div style={{ ...readonlyStyle, padding: '0 14px' }}>
                       <FaEnvelope style={{ color: esModoOscuro ? '#94a3b8' : '#1e3a8a', fontSize: '13px', marginRight: '10px', flexShrink: 0 }} />
-                      <input type="email" value={formData.correo || ''} readOnly style={{ border: 'none', background: 'transparent', outline: 'none', width: '100%', fontSize: '13px', fontWeight: '500', color: c.readonlyText, cursor: 'default' }} />
+                      <span style={{ color: formData.correo ? c.readonlyText : '#94a3b8', fontStyle: formData.correo ? 'normal' : 'italic' }}>
+                        {formData.correo || t('perfil.notSpecified', 'Sin registrar')}
+                      </span>
                     </div>
                   )}
                 </div>
@@ -566,7 +637,9 @@ export default function PerfilPage() {
                   ) : (
                     <div style={{ ...readonlyStyle, padding: '0 14px' }}>
                       <FaGlobe style={{ color: esModoOscuro ? '#94a3b8' : '#1e3a8a', fontSize: '13px', marginRight: '10px', flexShrink: 0 }} />
-                      <input type="text" value={formData.nacionalidad || ''} readOnly style={{ border: 'none', background: 'transparent', outline: 'none', width: '100%', fontSize: '13px', fontWeight: '500', color: c.readonlyText, cursor: 'default' }} />
+                      <span style={{ color: formData.nacionalidad ? c.readonlyText : '#94a3b8', fontStyle: formData.nacionalidad ? 'normal' : 'italic' }}>
+                        {formData.nacionalidad || t('perfil.notSpecified', 'Sin registrar')}
+                      </span>
                     </div>
                   )}
                 </div>
@@ -634,12 +707,9 @@ export default function PerfilPage() {
                   ) : (
                     <div style={{ ...readonlyStyle, padding: '0 14px' }}>
                       <FaPhone style={{ color: esModoOscuro ? '#94a3b8' : '#1e3a8a', fontSize: '13px', marginRight: '10px', flexShrink: 0 }} />
-                      <input
-                        type="tel"
-                        value={formData.telefono ? `${getPrefijoPais(formData.nacionalidad)} ${formData.telefono}` : ''}
-                        readOnly
-                        style={{ border: 'none', background: 'transparent', outline: 'none', width: '100%', fontSize: '13px', fontWeight: '500', color: c.readonlyText, cursor: 'default' }}
-                      />
+                      <span style={{ color: formData.telefono ? c.readonlyText : '#94a3b8', fontStyle: formData.telefono ? 'normal' : 'italic' }}>
+                        {formData.telefono ? `${getPrefijoPais(formData.nacionalidad)} ${formData.telefono}` : t('perfil.notSpecified', 'Sin registrar')}
+                      </span>
                     </div>
                   )}
                 </div>
