@@ -220,8 +220,12 @@ export default function CambiarContrasena({ c }) {
                 </button>
               </div>
               {form.confirmar && (
-                <p style={{ fontSize: '12px', margin: '5px 0 0', color: form.nueva === form.confirmar ? '#22c55e' : '#ef4444', fontWeight: 600 }}>
-                  {form.nueva === form.confirmar ? `✓ ${t('perfil.passwordMatch')}` : `✗ ${t('perfil.passwordNoMatch')}`}
+                <p style={{ fontSize: '12px', margin: '5px 0 0', color: form.nueva === form.confirmar ? '#22c55e' : '#ef4444', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '5px' }}>
+                  {form.nueva === form.confirmar ? (
+                    <><FaCheck size={11} /> {t('perfil.passwordMatch')}</>
+                  ) : (
+                    <><FaTimes size={11} /> {t('perfil.passwordNoMatch')}</>
+                  )}
                 </p>
               )}
               {errores.confirmar && !form.confirmar && <p style={{ color: c.errorText, fontSize: '12px', margin: '5px 0 0' }}>{errores.confirmar}</p>}
