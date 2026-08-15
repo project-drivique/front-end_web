@@ -165,9 +165,8 @@ export default function CompleteProfileModal({
           }}
         >
           <div
+            className="modal-responsive-grid"
             style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))',
               gap: '20px',
             }}
           >
@@ -484,6 +483,7 @@ export default function CompleteProfileModal({
 
         {/* Footer del Modal */}
         <div
+          className="modal-responsive-footer"
           style={{
             padding: '16px 24px',
             borderTop: `1px solid ${c.modalDivider}`,

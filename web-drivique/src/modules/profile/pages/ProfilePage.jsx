@@ -213,10 +213,10 @@ export default function PerfilPage() {
   return (
     <div className="catalogo-page" style={{ minHeight: '100vh', background: c.pageBg, color: c.textPrimary, zoom: 0.9 }}>
       
-      <div className="detalle-contenido-inner" style={{ maxWidth: 1360, margin: '0 auto', padding: '24px 24px 60px' }}>
+      <div className="detalle-contenido-inner perfil-container">
         
         {/* Top bar (Botón Volver al catálogo a la izquierda + Menú Configuración a la derecha) */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+        <div className="perfil-top-bar">
           <button 
             className="catalogo-header-back" 
             onClick={() => navigate('/home')}

@@ -1,7 +1,7 @@
 /* src/modules/profile/pages/ProfilePage.css */
 
 .perfil-container {
-  max-width: 1040px;
+  max-width: 1360px;
   margin: 0 auto;
   padding: 24px 24px 60px;
 }
@@ -11,6 +11,7 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: 20px;
+  gap: 12px;
 }
 
 .perfil-master-wrapper {
@@ -18,60 +19,140 @@
   padding: 24px;
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 20px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .perfil-banner-card {
-  border-radius: 14px;
-  padding: 22px 28px;
+  border-radius: 16px;
+  padding: 24px 28px;
   display: flex;
   align-items: center;
   gap: 20px;
   position: relative;
   overflow: hidden;
+  box-sizing: border-box;
 }
 
 .perfil-cards-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 18px;
+  gap: 20px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-.perfil-info-grid {
+.modal-responsive-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
 }
 
-@media (max-width: 992px) {
+.modal-responsive-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+/* =========================================================
+   BREAKPOINTS RESPONSIVOS (TABLETS Y SMARTPHONES)
+   ========================================================= */
+
+/* Tablets / Laptops Pequeñas (≤ 1024px) */
+@media (max-width: 1024px) {
+  .catalogo-page {
+    zoom: 1 !important;
+  }
+
   .perfil-cards-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .modal-responsive-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
   }
 }
 
-@media (max-width: 600px) {
+/* Tablets Medianas (≤ 768px) */
+@media (max-width: 768px) {
   .perfil-container {
-    padding: 16px 12px 40px;
+    padding: 16px 16px 40px;
   }
 
   .perfil-master-wrapper {
-    padding: 20px 16px;
-    border-radius: 18px;
+    padding: 18px 16px;
+    border-radius: 16px;
   }
 
   .perfil-banner-card {
     flex-direction: column;
-    text-align: center;
-    padding: 24px 16px;
+    align-items: flex-start;
+    padding: 20px 20px;
+    gap: 16px;
   }
 
   .perfil-banner-card > button {
-    margin-left: 0 !important;
+    width: 100%;
+    justify-content: center;
+    margin-top: 4px;
+  }
+
+  .perfil-cards-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .modal-responsive-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .modal-responsive-footer {
+    flex-direction: column-reverse;
+    width: 100%;
+  }
+
+  .modal-responsive-footer > button {
     width: 100%;
     justify-content: center;
   }
+}
 
-  .perfil-info-grid {
-    grid-template-columns: 1fr;
+/* Teléfonos Móviles Pequeños (≤ 520px) */
+@media (max-width: 520px) {
+  .perfil-container {
+    padding: 12px 10px 30px;
+  }
+
+  .perfil-top-bar {
+    flex-direction: row;
+    gap: 10px;
+  }
+
+  .catalogo-header-back {
+    padding: 6px 10px !important;
+    font-size: 12px !important;
+  }
+
+  .perfil-master-wrapper {
+    padding: 14px 12px;
+    border-radius: 14px;
+  }
+
+  .perfil-banner-card {
+    padding: 18px 16px;
+  }
+
+  .phone-input-wrapper {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  .phone-input-wrapper select {
+    width: 100% !important;
   }
 }
