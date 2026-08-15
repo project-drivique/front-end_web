@@ -209,9 +209,6 @@ export default function PerfilPage() {
   }
 
   const tieneNombre = (usuario?.nombre && usuario.nombre.trim()) || (usuario?.apellido && usuario.apellido.trim())
-  const tituloHeader = tieneNombre
-    ? `${usuario.nombre || ''} ${usuario.apellido || ''}`.trim()
-    : t('perfil.welcomeUser', 'Usuario Drivique')
 
   return (
     <div className="catalogo-page" style={{ minHeight: '100vh', background: c.pageBg, color: c.textPrimary, zoom: 0.9 }}>
@@ -312,14 +309,22 @@ export default function PerfilPage() {
               {iniciales(usuario.nombre, usuario.apellido, usuario.correo)}
             </div>
             
-            {/* Info de Nombre, Correo y Rol (Sin repetir el correo!) */}
+            {/* Info de Nombre, Correo y Rol */}
             <div style={{ zIndex: 1 }}>
-              <h1 style={{ fontSize: '20px', fontWeight: 800, color: '#ffffff', margin: '0 0 3px', letterSpacing: '-0.01em' }}>
-                {tituloHeader}
-              </h1>
-              <p style={{ fontSize: '13px', color: 'rgba(255, 255, 255, 0.85)', margin: '0 0 8px', fontWeight: 500 }}>
-                {usuario.correo}
-              </p>
+              {tieneNombre ? (
+                <>
+                  <h1 style={{ fontSize: '20px', fontWeight: 800, color: '#ffffff', margin: '0 0 3px', letterSpacing: '-0.01em' }}>
+                    {`${usuario.nombre || ''} ${usuario.apellido || ''}`.trim()}
+                  </h1>
+                  <p style={{ fontSize: '13px', color: 'rgba(255, 255, 255, 0.85)', margin: '0 0 8px', fontWeight: 500 }}>
+                    {usuario.correo}
+                  </p>
+                </>
+              ) : (
+                <h1 style={{ fontSize: '20px', fontWeight: 800, color: '#ffffff', margin: '0 0 8px', letterSpacing: '-0.01em' }}>
+                  {usuario.correo}
+                </h1>
+              )}
               <span
                 style={{
                   display: 'inline-flex',
