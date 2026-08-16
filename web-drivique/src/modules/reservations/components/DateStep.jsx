@@ -32,7 +32,7 @@ function Campo({ icono: Icono, label, children }) {
 // gracias a var(--texto-primary).
 const selectCls = 'campo-select block w-full truncate bg-transparent text-sm sm:text-[15px] font-extrabold text-[var(--texto-primary)] outline-none cursor-pointer py-1.5'
 
-export default function PasoFechas({ vehiculo, reserva, onCambio }) {
+export default function PasoFechas({ vehiculo, reserva, onCambio, hidePaymentMethod = false }) {
   const { t } = useTranslation()
 
   const carBranch = vehiculo.sucursal;
@@ -78,43 +78,45 @@ export default function PasoFechas({ vehiculo, reserva, onCambio }) {
       <br></br>
       <div className="w-full space-y-14">
         {/* Selector de Método de Pago */}
-        <div className="w-full">
-          <span className="block text-xs font-extrabold uppercase tracking-widest text-[var(--texto-second)] mb-6">
-            {t('vehiculo.paymentMethodTitle')}
-          </span>
-          <br></br>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-5">
-            <label className={`flex min-h-[100px] sm:min-h-[112px] items-start gap-2.5 sm:gap-4 rounded-2xl border p-3.5 sm:p-6 cursor-pointer transition-all duration-200 ${reserva.metodoPago === 'wompi' ? 'border-blue-600 bg-[var(--bg-item-hover)] shadow-sm' : 'border-[var(--borde)] bg-[var(--bg-tarjeta)] hover:bg-[var(--bg-item-hover)]'}`}>
-              <input
-                type="radio"
-                name="metodoPago"
-                value="wompi"
-                checked={reserva.metodoPago === 'wompi'}
-                onChange={() => onCambio('metodoPago', 'wompi')}
-                className="h-4 w-4 sm:h-5 sm:w-5 shrink-0 text-blue-600 accent-blue-600 mt-1"
-              />
-              <div className="min-w-0 flex-1">
-                <span className="block text-sm sm:text-lg font-extrabold text-[var(--texto-primary)] leading-snug">{t('vehiculo.paymentWompiTitle')}</span>
-                <span className="block text-xs sm:text-sm text-[var(--texto-second)] mt-1 sm:mt-2 leading-relaxed">{t('vehiculo.paymentWompiDesc')}</span>
-              </div>
-            </label>
+        {!hidePaymentMethod && (
+          <div className="w-full">
+            <span className="block text-xs font-extrabold uppercase tracking-widest text-[var(--texto-second)] mb-6">
+              {t('vehiculo.paymentMethodTitle')}
+            </span>
+            <br></br>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-5">
+              <label className={`flex min-h-[100px] sm:min-h-[112px] items-start gap-2.5 sm:gap-4 rounded-2xl border p-3.5 sm:p-6 cursor-pointer transition-all duration-200 ${reserva.metodoPago === 'wompi' ? 'border-blue-600 bg-[var(--bg-item-hover)] shadow-sm' : 'border-[var(--borde)] bg-[var(--bg-tarjeta)] hover:bg-[var(--bg-item-hover)]'}`}>
+                <input
+                  type="radio"
+                  name="metodoPago"
+                  value="wompi"
+                  checked={reserva.metodoPago === 'wompi'}
+                  onChange={() => onCambio('metodoPago', 'wompi')}
+                  className="h-4 w-4 sm:h-5 sm:w-5 shrink-0 text-blue-600 accent-blue-600 mt-1"
+                />
+                <div className="min-w-0 flex-1">
+                  <span className="block text-sm sm:text-lg font-extrabold text-[var(--texto-primary)] leading-snug">{t('vehiculo.paymentWompiTitle')}</span>
+                  <span className="block text-xs sm:text-sm text-[var(--texto-second)] mt-1 sm:mt-2 leading-relaxed">{t('vehiculo.paymentWompiDesc')}</span>
+                </div>
+              </label>
 
-            <label className={`flex min-h-[100px] sm:min-h-[112px] items-start gap-2.5 sm:gap-4 rounded-2xl border p-3.5 sm:p-6 cursor-pointer transition-all duration-200 ${reserva.metodoPago === 'efectivo' ? 'border-blue-600 bg-[var(--bg-item-hover)] shadow-sm' : 'border-[var(--borde)] bg-[var(--bg-tarjeta)] hover:bg-[var(--bg-item-hover)]'}`}>
-              <input
-                type="radio"
-                name="metodoPago"
-                value="efectivo"
-                checked={reserva.metodoPago === 'efectivo'}
-                onChange={() => onCambio('metodoPago', 'efectivo')}
-                className="h-4 w-4 sm:h-5 sm:w-5 shrink-0 text-blue-600 accent-blue-600 mt-1"
-              />
-              <div className="min-w-0 flex-1">
-                <span className="block text-sm sm:text-lg font-extrabold text-[var(--texto-primary)] leading-snug">{t('vehiculo.paymentCashTitle')}</span>
-                <span className="block text-xs sm:text-sm text-[var(--texto-second)] mt-1 sm:mt-2 leading-relaxed">{t('vehiculo.paymentCashDesc')}</span>
-              </div>
-            </label>
+              <label className={`flex min-h-[100px] sm:min-h-[112px] items-start gap-2.5 sm:gap-4 rounded-2xl border p-3.5 sm:p-6 cursor-pointer transition-all duration-200 ${reserva.metodoPago === 'efectivo' ? 'border-blue-600 bg-[var(--bg-item-hover)] shadow-sm' : 'border-[var(--borde)] bg-[var(--bg-tarjeta)] hover:bg-[var(--bg-item-hover)]'}`}>
+                <input
+                  type="radio"
+                  name="metodoPago"
+                  value="efectivo"
+                  checked={reserva.metodoPago === 'efectivo'}
+                  onChange={() => onCambio('metodoPago', 'efectivo')}
+                  className="h-4 w-4 sm:h-5 sm:w-5 shrink-0 text-blue-600 accent-blue-600 mt-1"
+                />
+                <div className="min-w-0 flex-1">
+                  <span className="block text-sm sm:text-lg font-extrabold text-[var(--texto-primary)] leading-snug">{t('vehiculo.paymentCashTitle')}</span>
+                  <span className="block text-xs sm:text-sm text-[var(--texto-second)] mt-1 sm:mt-2 leading-relaxed">{t('vehiculo.paymentCashDesc')}</span>
+                </div>
+              </label>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Inputs de Ubicación y Hora */}
         <div className="w-full">
