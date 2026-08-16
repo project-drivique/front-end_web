@@ -140,16 +140,7 @@ export default function GaleriaImagenes({ imagenes = [], nombreVehiculo = 'Vehí
           {calificacion > 0 ? calificacion.toFixed(1) : t('catalog.gallery.new', 'Nuevo')}
         </div>
 
-        {/* Indicador de número (Bottom Right) */}
-        <div style={{
-          position: 'absolute', bottom: 16, right: 16,
-          background: 'rgba(30, 41, 59, 0.7)', color: '#fff',
-          padding: '4px 12px', borderRadius: 12,
-          fontSize: 12, fontWeight: 700,
-          backdropFilter: 'blur(8px)',
-        }}>
-          {indiceActivo + 1}/{imagenes.length}
-        </div>
+
       </div>
 
       {/* Miniaturas (Thumbnails) */}
