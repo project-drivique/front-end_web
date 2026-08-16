@@ -17,9 +17,10 @@ export function LandingProvider({ children }) {
   const [idioma, setIdioma] = useState(
     () => sessionStorage.getItem('rm_idioma') || 'es'
   )
-  const [moneda, setMonedaState] = useState(
-    () => localStorage.getItem('rm_moneda') || 'COP'
-  )
+  const [moneda, setMonedaState] = useState(() => {
+    const m = localStorage.getItem('rm_moneda') || 'COP'
+    return m === 'EUR' ? 'COP' : m
+  })
   // Tasa USD -> COP en tiempo real (se actualiza sola, ver useEffect abajo).
   const [tasaUSD, setTasaUSD] = useState(() => obtenerTasaSincrona())
 
