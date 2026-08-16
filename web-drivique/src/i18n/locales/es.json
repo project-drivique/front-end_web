@@ -435,6 +435,23 @@
     "returnDate": "Fecha de devolución",
     "howToGetThere": "Cómo llegar",
     "noImages": "Sin imágenes disponibles",
+    "viewFullDetailsModal": "Ver detalles completos del vehículo",
+    "picoYPlaca": {
+      "titulo": "Pico y Placa",
+      "subtitulo": "Información de circulación vial",
+      "ultimoDigito": "Último dígito",
+      "diaRestriccion": "Día restringido",
+      "horarioRestriccion": "Horario habitual",
+      "horarioDetalle": "6:00 AM - 9:00 PM",
+      "notaInformativa": "Consulte las regulaciones locales vigentes de la ciudad de tránsito.",
+      "dias": {
+        "lunes": "Lunes",
+        "martes": "Martes",
+        "miercoles": "Miércoles",
+        "jueves": "Jueves",
+        "viernes": "Viernes"
+      }
+    },
     "backToCatalog": "Volver al catálogo",
     "transmission": "Transmisión",
     "fuel": "Combustible",
@@ -526,6 +543,7 @@
     "redirecting": "Redirigiendo…",
     "payWithWompi": "Pagar con Wompi",
     "reserve": "Reservar",
+    "stepLabel": "Paso",
     "stepDates": "Fechas y Ubicación",
     "stepDatesSubtitle": "Selecciona el método de pago, el punto de recogida/devolución y las fechas",
     "stepProtection": "Protección y Extras",
