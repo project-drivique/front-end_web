@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '../../../store/authStore'
 import { showAlert } from '@/utils/swalConfig'
 import logo from '@/assets/logo.png'
-import { FaMoneyBillWave, FaCreditCard, FaMapMarkerAlt, FaClock, FaCalendarAlt, FaTimes } from 'react-icons/fa'
+import { FaMoneyBillWave, FaCreditCard, FaMapMarkerAlt, FaClock, FaCalendarAlt, FaTimes, FaArrowLeft, FaEye, FaShieldAlt, FaUserEdit } from 'react-icons/fa'
 import VEHICULOS_MOCK from '@/mocks/vehicles.json'
 import { reservationService, HORAS_LIMITE_PAGO_EFECTIVO } from '@/services/reservationService'
 import { documentsService } from '@/services/documentsService'
@@ -17,6 +17,8 @@ import MenuConfiguracion from '@/components/MenuConfiguracion'
 
 import ImageGallery from '../../catalog/components/detail/ImageGallery'
 import VehicleInfo from '../../catalog/components/detail/VehicleInfo'
+import PicoYPlacaCard from '../../catalog/components/detail/PicoYPlacaCard'
+import VehicleDetailsModal from '../../catalog/components/detail/VehicleDetailsModal'
 import DateStep from '../components/DateStep'
 import ProtectionPlans from '../components/ProtectionPlans'
 import MileageType from '../components/MileageType'
@@ -50,7 +52,18 @@ const HORAS = Array.from({ length: 24 }, (_, i) => {
 
 export default function VehiculoDetallePage() {
   const { t } = useTranslation()
-  const { moneda } = useLanding()
+  const { tema, moneda } = useLanding()
+  const esModoOscuro = tema === 'oscuro'
+  const c = {
+    pageBg: esModoOscuro ? '#0f172a' : '#f8fafc',
+    cardBg: esModoOscuro ? '#111827' : '#ffffff',
+    cardBorder: esModoOscuro ? '#1e293b' : '#e2e8f0',
+    subCardBg: esModoOscuro ? '#1e293b' : '#f8fafc',
+    subCardBorder: esModoOscuro ? '#334155' : '#e2e8f0',
+    textPrimary: esModoOscuro ? '#f8fafc' : '#0f172a',
+    textSecondary: esModoOscuro ? '#94a3b8' : '#64748b',
+    accentText: esModoOscuro ? '#93c5fd' : '#1e3a8a',
+  }
   const { id } = useParams();
   const navigate = useNavigate();
   const { usuario, actualizarUsuario } = useAuthStore();
@@ -58,6 +71,7 @@ export default function VehiculoDetallePage() {
   const vehiculo = VEHICULOS_MOCK.find(v => v.id === Number(id));
 
   const [pantalla, setPantalla] = useState(1);
+  const [modalDetallesOpen, setModalDetallesOpen] = useState(false);
   const [seguroIdx, setSeguroIdx] = useState(null);
   const [serviciosSeleccionados, setServiciosSeleccionados] = useState([]);
   const toggleServicio = (nombre) => setServiciosSeleccionados(prev =>
@@ -582,7 +596,11 @@ export default function VehiculoDetallePage() {
     </div>
   );
 
-  const pasos = [t('vehiculo.stepDates'), t('vehiculo.stepProtection'), t('vehiculo.personalData')]
+  const pasos = [
+    { label: t('vehiculo.stepDates'), icon: <FaCalendarAlt /> },
+    { label: t('vehiculo.stepProtection'), icon: <FaShieldAlt /> },
+    { label: t('vehiculo.personalData'), icon: <FaUserEdit /> },
+  ]
 
   // Mismo cálculo que ResumenLateral/DatosPersonales, para poder mostrar
   // el total también en la barra de "Confirmar reserva" que se ve en
@@ -608,51 +626,166 @@ export default function VehiculoDetallePage() {
   const totalReserva = subtotalPreIvaTotal + ivaTotal;
 
   return (
-    <div className="catalogo-page" style={{ minHeight: '100vh', background: 'var(--bg-page)' }}>
-      <div style={{ paddingTop: 0 }}>
-        <div className="detalle-contenido-inner" style={{ maxWidth: 1280, margin: '0 auto', padding: '32px 24px' }}>
+    <div className="catalogo-page" style={{ minHeight: '100vh', background: c.pageBg, color: c.textPrimary }}>
+      <div className="detalle-contenido-inner" style={{ maxWidth: 1360, margin: '0 auto', padding: '24px 24px 60px' }}>
 
-          <div className="flujo-header-bar">
-            <button onClick={irAtras} className="flujo-back-btn">
-              <IcoBack /> <span>{pantalla === 1 ? t('vehiculo.backToCatalog') : t('common.goBack')}</span>
-            </button>
-            <h1 className="flujo-titulo">{t('vehiculo.reserve')} — {vehiculo.nombre}</h1>
-            <div className="flujo-menu-config">
-              <MenuConfiguracion />
-            </div>
+        {/* Top bar fuera del contenedor principal */}
+        <div style={{ marginBottom: 24, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <button 
+            className="catalogo-header-back" 
+            onClick={irAtras}
+            style={{
+              background: c.cardBg,
+              border: `1px solid ${c.cardBorder}`,
+              color: c.accentText,
+              padding: '8px 16px',
+              borderRadius: '8px',
+              display: 'inline-flex', alignItems: 'center', gap: 8,
+              cursor: 'pointer',
+              fontWeight: 600
+            }}
+          >
+            <FaArrowLeft size={12} /> {pantalla === 1 ? t('vehiculo.backToCatalog') : t('common.goBack')}
+          </button>
+
+          <MenuConfiguracion />
+        </div>
+
+        {/* Contenedor Principal (Tarjeta con diseño idéntico a Ver Detalles) */}
+        <div className="vehiculo-main-container" style={{ background: c.cardBg, border: `1px solid ${c.cardBorder}`, borderRadius: '16px', padding: '32px', boxShadow: esModoOscuro ? '0 4px 24px rgba(0,0,0,0.40)' : '0 4px 24px rgba(30,58,138,0.07)' }}>
+
+          <div style={{ marginBottom: 24 }}>
+            <h1 className="detalle-titulo" style={{ fontSize: 26, fontWeight: 800, color: c.textPrimary, margin: 0, letterSpacing: '-0.02em' }}>
+              {vehiculo.nombre}
+            </h1>
           </div>
 
-          <div className="flujo-pasos-container">
-            {pasos.map((label, i) => {
-              const num = i + 1;
-              const activo = pantalla === num;
-              const completado = pantalla > num;
-              return (
-                <div key={i} className="flujo-paso-item">
-                  <div className="flujo-paso-circulo-wrapper">
-                    <div className={`flujo-paso-circulo ${completado ? 'completado' : activo ? 'activo' : ''}`}>
-                      {completado ? <IcoCheck color="#fff" sz={16} /> : num}
-                    </div>
-                    <span className={`flujo-paso-label ${activo ? 'activo' : ''}`}>{label}</span>
+          <div className="flujo-progress-bar" style={{ marginBottom: 32 }}>
+            {/* Labels encima de la barra */}
+            <div style={{ display: 'flex', marginBottom: 10 }}>
+              {pasos.map((paso, i) => {
+                const num = i + 1;
+                const activo = pantalla === num;
+                const completado = pantalla > num;
+                return (
+                  <div
+                    key={i}
+                    style={{
+                      flex: 1,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 6,
+                      cursor: completado ? 'pointer' : 'default',
+                    }}
+                    onClick={() => completado && setPantalla(num)}
+                  >
+                    {/* Número / Check */}
+                    <span style={{
+                      width: 22,
+                      height: 22,
+                      borderRadius: '50%',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: 11,
+                      fontWeight: 800,
+                      flexShrink: 0,
+                      background: activo
+                        ? 'linear-gradient(135deg, #1e3a8a, #2563eb)'
+                        : completado
+                          ? '#1e3a8a'
+                          : (esModoOscuro ? 'rgba(148,163,184,0.15)' : 'rgba(100,116,139,0.1)'),
+                      color: (activo || completado) ? '#fff' : c.textSecondary,
+                      transition: 'all 300ms ease',
+                    }}>
+                      {completado ? <IcoCheck color="#fff" sz={12} /> : num}
+                    </span>
+                    {/* Nombre del paso */}
+                    <span style={{
+                      fontSize: 12.5,
+                      fontWeight: activo ? 800 : 600,
+                      color: activo ? c.accentText : completado ? c.textPrimary : c.textSecondary,
+                      whiteSpace: 'nowrap',
+                      transition: 'all 200ms ease',
+                    }}>
+                      {paso.label}
+                    </span>
                   </div>
-                  {i < pasos.length - 1 && (
-                    <div className={`flujo-paso-linea ${pantalla > num ? 'completado' : ''}`} />
-                  )}
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
+
+            {/* Barra segmentada */}
+            <div style={{ display: 'flex', gap: 4, height: 5, borderRadius: 999 }}>
+              {pasos.map((_, i) => {
+                const num = i + 1;
+                const lleno = pantalla >= num;
+                return (
+                  <div
+                    key={i}
+                    style={{
+                      flex: 1,
+                      borderRadius: 999,
+                      background: lleno
+                        ? 'linear-gradient(90deg, #1e3a8a, #2563eb)'
+                        : (esModoOscuro ? 'rgba(148,163,184,0.12)' : 'rgba(100,116,139,0.1)'),
+                      transition: 'background 400ms ease',
+                    }}
+                  />
+                );
+              })}
+            </div>
           </div>
 
           <div className="detalle-layout" style={{ display: 'flex', gap: 32, alignItems: 'flex-start' }}>
             <div className="detalle-columna-principal" style={{ flex: 1, minWidth: 0 }}>
 
               {pantalla === 1 && (
-                <>
-                  <ImageGallery imagenes={vehiculo.imagenes} nombreVehiculo={vehiculo.nombre} compact={true} />
-                  <div style={{ marginTop: 24 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+                  <div style={{ maxWidth: 480 }}>
+                    <ImageGallery imagenes={vehiculo.imagenes} nombreVehiculo={vehiculo.nombre} calificacion={vehiculo.comentarios?.length ? vehiculo.calificacion : 0} c={c} />
+                  </div>
+
+                  {/* Resumen rápido del vehículo + Botón para abrir el Modal de detalles */}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12, background: c.subCardBg, border: `1px solid ${c.subCardBorder}`, borderRadius: 14, padding: '14px 18px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: c.accentText, background: c.subCardBg, border: `1px solid ${c.subCardBorder}`, padding: '4px 12px', borderRadius: 9999 }}>
+                        {vehiculo.categoria}
+                      </span>
+                      <span style={{ fontSize: 13, fontWeight: 600, color: c.textSecondary }}>
+                        {vehiculo.transmision} · {vehiculo.combustible} · {vehiculo.pasajeros} {t('vehiculo.passengers', 'pasajeros')} · {vehiculo.año}
+                      </span>
+                    </div>
+
+                    <button
+                      onClick={() => setModalDetallesOpen(true)}
+                      style={{
+                        background: c.cardBg,
+                        border: `1.5px solid ${c.accentText}`,
+                        color: c.accentText,
+                        padding: '8px 16px',
+                        borderRadius: 10,
+                        fontSize: 13,
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 8,
+                        transition: 'all 150ms ease',
+                      }}
+                    >
+                      <FaEye /> {t('vehiculo.viewFullDetailsModal', 'Ver detalles completos')}
+                    </button>
+                  </div>
+
+                  {/* Tarjeta Informativa de Pico y Placa */}
+                  <PicoYPlacaCard placa={vehiculo.placa} c={c} />
+
+                  {/* Selección de Fechas */}
+                  <div>
                     <DateStep vehiculo={vehiculo} reserva={reserva} onCambio={cambiarReserva} />
                   </div>
-                </>
+                </div>
               )}
 
               {pantalla === 2 && (
@@ -1242,6 +1375,14 @@ export default function VehiculoDetallePage() {
               </div>
             </div>
           )}
+
+          {/* Modal de Detalles Completos del Vehículo */}
+          <VehicleDetailsModal
+            vehiculo={vehiculo}
+            visible={modalDetallesOpen}
+            onCerrar={() => setModalDetallesOpen(false)}
+            c={c}
+          />
 
         </div>
       </div>
