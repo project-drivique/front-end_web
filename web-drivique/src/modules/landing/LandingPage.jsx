@@ -2,9 +2,9 @@
 import { useState, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { Link } from 'react-router-dom'
-import logo from '@/assets/logo.png'
+import logocatalog from '@/assets/logocatalog.png'
 import { useLanding } from './LandingContext'
-import translations, { IDIOMAS } from './translations'
+import translations, { IDIOMAS, CAT_MAP } from './translations'
 import { catalogService } from '../../services/catalogService'
 import { formatCurrency } from '@/utils/currencyUtils'
 import './LandingPage.css'
@@ -360,7 +360,10 @@ export default function LandingPage() {
     <div style={{ minHeight: '100vh', background: 'var(--bg-page)', display: 'flex', flexDirection: 'column', overflowX: 'hidden', zoom: 0.9 }}>
       <nav className="landing-nav">
         <div className="landing-nav-inner">
-          <img src={logo} alt="Drivique" className="landing-nav-logo" />
+          <Link to="/" className="catalogo-logo-link" style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 2, flexShrink: 0 }}>
+            <img src={logocatalog} alt="Drivique" className="catalogo-logo" style={{ height: '22px', width: 'auto', display: 'block', objectFit: 'contain' }} />
+            <span className="catalogo-logo-title" style={{ fontSize: '9.5px', fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase', lineHeight: 1, color: c.acentoTexto }}>Drivique</span>
+          </Link>
 
           <div className="landing-nav-links" style={{ display: 'flex', alignItems: 'center', gap: 32, flex: 1, justifyContent: 'center' }}>
             <Link
@@ -681,12 +684,14 @@ export default function LandingPage() {
                   </div>
 
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--texto-primary)', margin: 0 }}>{auto.categoria}</p>
+                    <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--texto-primary)', margin: 0 }}>
+                      {CAT_MAP[auto.categoria]?.[idioma] || auto.categoria}
+                    </p>
                     <p style={{ fontSize: 12, color: 'var(--texto-second)', margin: '2px 0 0' }}>{auto.nombre}</p>
                   </div>
 
                   <span style={{ fontSize: 15, fontWeight: 900, color: c.acentoTexto, whiteSpace: 'nowrap' }}>
-                    {formatCurrency(auto.precio, moneda)}/día
+                    {formatCurrency(auto.precio, moneda)}{tx.hero.perDay || '/día'}
                   </span>
                 </div>
               ))}
@@ -828,7 +833,10 @@ export default function LandingPage() {
         <div style={{ maxWidth: 1280, margin: '0 auto' }}>
           <div className="landing-footer-top" style={{ display: 'flex', justifyContent: 'space-between', gap: 48, flexWrap: 'wrap', marginBottom: 40 }}>
             <div style={{ maxWidth: 280 }}>
-              <img src={logo} alt="Drivique" style={{ height: 64, marginBottom: 16, filter: 'brightness(0) invert(1)', opacity: 0.85 }} />
+              <Link to="/" className="catalogo-logo-link" style={{ textDecoration: 'none', display: 'inline-flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2, marginBottom: 16 }}>
+                <img src={logocatalog} alt="Drivique" style={{ height: '22px', width: 'auto', display: 'block', objectFit: 'contain', filter: 'brightness(0) invert(1)', opacity: 0.9 }} />
+                <span className="catalogo-logo-title" style={{ fontSize: '9.5px', fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#ffffff' }}>Drivique</span>
+              </Link>
               <p style={{ fontSize: 14, lineHeight: 1.7, color: c.footerMuted, margin: 0 }}>{tx.footer.desc}</p>
             </div>
 
