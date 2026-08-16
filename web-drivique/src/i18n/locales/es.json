@@ -558,7 +558,7 @@
     "total": "Total",
     "protectionsLabel": "Protecciones",
     "adminChargesLabel": "Cargos administrativos (10%)",
-    "paymentMethodTitle": "Método de Pago",
+    "paymentMethodTitle": "Selecciona el método de pago",
     "paymentWompiTitle": "Pago Digital Seguro (Wompi)",
     "paymentWompiDesc": "Paga en línea con tarjetas de crédito, débito PSE o Nequi. Confirmación inmediata.",
     "paymentCashTitle": "Pago en Efectivo (En Sucursal)",
