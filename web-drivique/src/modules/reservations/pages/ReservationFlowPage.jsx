@@ -22,8 +22,7 @@ import VehicleCharacteristics from '../../catalog/components/detail/VehicleChara
 import VehicleInfo from '../../catalog/components/detail/VehicleInfo'
 import PicoYPlacaCard from '../../catalog/components/detail/PicoYPlacaCard'
 import VehicleDetailsModal from '../../catalog/components/detail/VehicleDetailsModal'
-import DateStep from '../components/DateStep'
-import PaymentMethodCard from '../components/PaymentMethodCard'
+import UnifiedReservationConfigCard from '../components/UnifiedReservationConfigCard'
 import VehicleQuickSpecsCard from '../components/VehicleQuickSpecsCard'
 import ProtectionPlans from '../components/ProtectionPlans'
 import MileageType from '../components/MileageType'
@@ -147,12 +146,14 @@ export default function VehiculoDetallePage() {
     setReserva(prev => {
       const act = { ...prev, [campo]: valor };
       if (campo === 'metodoPago' && valor === 'efectivo') {
-        act.sucursalRetiro = vehiculo ? vehiculo.sucursal : '';
-        act.sucursalDevolucion = vehiculo ? vehiculo.sucursal : '';
+        // Only clear domicilio data, let the user pick the location manually
         act.domicilioCiudad = '';
         act.domicilioBarrio = '';
         act.domicilioDireccion = '';
         act.domicilioReferencias = '';
+        // Reset location picks that were set to domicilio since efectivo doesn't allow it
+        if (act.sucursalRetiro === 'domicilio') act.sucursalRetiro = '';
+        if (act.sucursalDevolucion === 'domicilio') act.sucursalDevolucion = '';
       }
       if (act.sucursalRetiro === 'domicilio') {
         const branchObj = SUCURSALES.find(s => s.nombre === vehiculo?.sucursal);
@@ -795,50 +796,55 @@ export default function VehiculoDetallePage() {
               {pantalla === 1 && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
                   
-                  {/* Fila Principal de 3 Columnas */}
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 24, alignItems: 'start' }}>
+                  {/* Fila Principal (Layout 2/3 y 1/3 en Desktop) */}
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
                     
-                    {/* COLUMNA 1 (Izquierda): Tarjeta contenedora con Nombre del Vehículo + Galería de Imágenes + Tarjeta Método de Pago */}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-                      <div 
-                        style={{ 
-                          background: esModoOscuro ? '#1e293b' : '#ffffff', 
-                          border: `1px solid ${esModoOscuro ? 'rgba(255,255,255,0.08)' : '#e2e8f0'}`, 
-                          borderRadius: 20, 
-                          padding: 24,
-                          display: 'flex',
-                          flexDirection: 'column',
-                          gap: 16,
-                          boxShadow: esModoOscuro ? '0 8px 24px rgba(0,0,0,0.3)' : '0 6px 20px rgba(0,0,0,0.03)'
-                        }}
-                      >
-                        <h2 style={{ fontSize: 22, fontWeight: 800, color: c.textPrimary, margin: 0, letterSpacing: '-0.02em' }}>
-                          {vehiculo.nombre}
-                        </h2>
+                    {/* Lado Izquierdo (Colspan 2) */}
+                    <div className="lg:col-span-2 flex flex-col gap-6">
+                      
+                      {/* Grid de 2 columnas interno para Galería y Descripción/Sucursal */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+                        {/* Columna A: Galería */}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+                          <div 
+                            style={{ 
+                              background: esModoOscuro ? '#1e293b' : '#ffffff', 
+                              border: `1px solid ${esModoOscuro ? 'rgba(255,255,255,0.08)' : '#e2e8f0'}`, 
+                              borderRadius: 20, 
+                              padding: 24,
+                              display: 'flex',
+                              flexDirection: 'column',
+                              gap: 16,
+                              boxShadow: esModoOscuro ? '0 8px 24px rgba(0,0,0,0.3)' : '0 6px 20px rgba(0,0,0,0.03)'
+                            }}
+                          >
+                            <h2 style={{ fontSize: 22, fontWeight: 800, color: c.textPrimary, margin: 0, letterSpacing: '-0.02em' }}>
+                              {vehiculo.nombre}
+                            </h2>
 
-                        <ImageGallery 
-                          imagenes={vehiculo.imagenes} 
-                          nombreVehiculo={vehiculo.nombre} 
-                          calificacion={vehiculo.comentarios?.length ? vehiculo.calificacion : 0} 
-                          c={c} 
-                        />
+                            <ImageGallery 
+                              imagenes={vehiculo.imagenes} 
+                              nombreVehiculo={vehiculo.nombre} 
+                              calificacion={vehiculo.comentarios?.length ? vehiculo.calificacion : 0} 
+                              c={c} 
+                            />
+                          </div>
+                        </div>
+
+                        {/* Columna B: Descripción y Sucursal */}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+                          <DescriptionSection descripcion={vehiculo.descripcion} id={vehiculo.id} c={c} />
+                          <BranchInfo sucursalInfo={vehiculo.sucursalInfo} c={c} />
+                        </div>
                       </div>
 
-                      {/* Tarjeta de Selección de Método de Pago */}
-                      <PaymentMethodCard reserva={reserva} onCambio={cambiarReserva} c={c} />
+                      {/* Tarjeta Unificada (ocupa el 100% de este contenedor, es decir, col 1 y 2 visuales) */}
+                      <UnifiedReservationConfigCard vehiculo={vehiculo} reserva={reserva} onCambio={cambiarReserva} c={c} />
+
                     </div>
 
-                    {/* COLUMNA 2 (Centro): Descripción, Sucursal y Selección de Fechas */}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-                      <DescriptionSection descripcion={vehiculo.descripcion} id={vehiculo.id} c={c} />
-                      <BranchInfo sucursalInfo={vehiculo.sucursalInfo} c={c} />
-                      <div>
-                        <DateStep vehiculo={vehiculo} reserva={reserva} onCambio={cambiarReserva} hidePaymentMethod={true} />
-                      </div>
-                    </div>
-
-                    {/* COLUMNA 3 (Derecha): Características (sin íconos) arriba y Resumen de Reserva directamente abajo */}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+                    {/* Lado Derecho (Colspan 1): Resumen */}
+                    <div className="lg:col-span-1 flex flex-col gap-5">
                       <VehicleCharacteristics vehiculo={vehiculo} c={c} showIcon={false} />
                       
                       <div
@@ -854,7 +860,6 @@ export default function VehiculoDetallePage() {
                         />
                       </div>
                     </div>
-
                   </div>
                 </div>
               )}
