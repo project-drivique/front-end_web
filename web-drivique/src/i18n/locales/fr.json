@@ -439,6 +439,7 @@
     "gastosAdmin": "Frais administratifs",
     "notFound": "Véhicule non trouvé",
     "backToProtection": "Retour à la protection",
+    "stepLabel": "Étape",
     "stepDates": "Dates et Emplacement",
     "stepDatesSubtitle": "Sélectionnez le mode de paiement, l'emplacement et les dates",
     "stepProtection": "Protection et Options",
@@ -532,7 +533,24 @@
     "selectLocation": "Sélectionner un lieu...",
     "timeLabel": "Heure de Prise / Restitution",
     "saveChanges": "Enregistrer les Modifications",
-    "noImages": "Aucune image disponible",
+    "noImages": "Pas d'images disponibles",
+    "viewFullDetailsModal": "Voir tous les détails du véhicule",
+    "picoYPlaca": {
+      "titulo": "Pico y Placa",
+      "subtitulo": "Informations sur les restrictions de circulation",
+      "ultimoDigito": "Dernier chiffre",
+      "diaRestriccion": "Jour restreint",
+      "horarioRestriccion": "Horaire habituel",
+      "horarioDetalle": "6h00 - 21h00",
+      "notaInformativa": "Consultez les réglementations locales en vigueur dans la ville de transit.",
+      "dias": {
+        "lunes": "Lundi",
+        "martes": "Mardi",
+        "miercoles": "Mercredi",
+        "jueves": "Jeudi",
+        "viernes": "Vendredi"
+      }
+    },
     "inGallery": "En galerie",
     "airConditioning": "Climatisation",
     "windowsElec": "Vitres électriques",

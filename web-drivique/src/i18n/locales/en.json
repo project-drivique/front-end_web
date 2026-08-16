@@ -449,6 +449,7 @@
     "gastosAdmin": "Administrative fees",
     "notFound": "Vehicle not found",
     "backToProtection": "Back to protection",
+    "stepLabel": "Step",
     "stepDates": "Dates & Location",
     "stepDatesSubtitle": "Select payment method, pickup/return location and rental dates",
     "stepProtection": "Protection & Extras",
@@ -543,6 +544,23 @@
     "timeLabel": "Pickup / Return Time",
     "saveChanges": "Save Changes",
     "noImages": "No images available",
+    "viewFullDetailsModal": "View full vehicle details",
+    "picoYPlaca": {
+      "titulo": "Pico y Placa",
+      "subtitulo": "Traffic restriction information",
+      "ultimoDigito": "Last digit",
+      "diaRestriccion": "Restricted day",
+      "horarioRestriccion": "Usual schedule",
+      "horarioDetalle": "6:00 AM - 9:00 PM",
+      "notaInformativa": "Check the current local regulations in the transit city.",
+      "dias": {
+        "lunes": "Monday",
+        "martes": "Tuesday",
+        "miercoles": "Wednesday",
+        "jueves": "Thursday",
+        "viernes": "Friday"
+      }
+    },
     "inGallery": "In gallery",
     "airConditioning": "Air conditioning",
     "windowsElec": "Electric windows",

@@ -15,6 +15,7 @@ import BranchInfo from '../components/detail/BranchInfo'
 import RentalRequirements from '../components/detail/RentalRequirements'
 import ReviewsSection from '../components/detail/ReviewsSection'
 import GuestReserveModal from '../components/GuestReserveModal'
+import MenuConfiguracion from '@/components/MenuConfiguracion'
 import { FaCar, FaArrowLeft } from 'react-icons/fa'
 
 import './CatalogPage.css'
@@ -67,8 +68,8 @@ export default function VehicleDetailsPage() {
       
       <div className="detalle-contenido-inner" style={{ maxWidth: 1360, margin: '0 auto', padding: '24px 24px 60px' }}>
         
-        {/* Botón flotante fuera del contenedor principal */}
-        <div style={{ marginBottom: 24 }}>
+        {/* Top bar fuera del contenedor principal */}
+        <div style={{ marginBottom: 24, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <button 
             className="catalogo-header-back" 
             onClick={() => navigate(esAutenticado ? '/home' : '/catalogo')}
@@ -85,6 +86,8 @@ export default function VehicleDetailsPage() {
           >
             <FaArrowLeft size={12} /> {t('vehiculo.backToCatalog')}
           </button>
+
+          <MenuConfiguracion />
         </div>
 
         <div className="vehiculo-main-container" style={{ background: c.cardBg, border: `1px solid ${c.cardBorder}`, boxShadow: esModoOscuro ? '0 4px 24px rgba(0,0,0,0.40)' : '0 4px 24px rgba(30,58,138,0.07)' }}>

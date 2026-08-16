@@ -439,6 +439,7 @@
     "gastosAdmin": "Despesas administrativas",
     "notFound": "Veículo não encontrado",
     "backToProtection": "Voltar à proteção",
+    "stepLabel": "Passo",
     "stepDates": "Datas e Localização",
     "stepDatesSubtitle": "Selecione o método de pagamento, ponto de recolha/devolução e datas",
     "stepProtection": "Proteção e Extras",
@@ -533,6 +534,23 @@
     "timeLabel": "Hora de Recolha / Devolução",
     "saveChanges": "Guardar Alterações",
     "noImages": "Sem imagens disponíveis",
+    "viewFullDetailsModal": "Ver detalhes completos do veículo",
+    "picoYPlaca": {
+      "titulo": "Pico y Placa",
+      "subtitulo": "Informações sobre restrições de trânsito",
+      "ultimoDigito": "Último dígito",
+      "diaRestriccion": "Dia restrito",
+      "horarioRestriccion": "Horário habitual",
+      "horarioDetalle": "6:00 - 21:00",
+      "notaInformativa": "Consulte as regulamentações locais vigentes na cidade de trânsito.",
+      "dias": {
+        "lunes": "Segunda-feira",
+        "martes": "Terça-feira",
+        "miercoles": "Quarta-feira",
+        "jueves": "Quinta-feira",
+        "viernes": "Sexta-feira"
+      }
+    },
     "inGallery": "Na galeria",
     "airConditioning": "Ar condicionado",
     "windowsElec": "Vidros elétricos",
