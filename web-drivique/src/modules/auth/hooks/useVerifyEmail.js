@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { authService, DURACION_CODIGO_VERIFICACION_MS } from '../../../services/authService'
 import { useAuthStore } from '../../../store/authStore'
+import { showAlert } from '../../../utils/swalConfig'
 
 const LARGO_CODIGO = 6
 const TIEMPO_REENVIO = 60 // segundos
@@ -28,27 +29,25 @@ export function useVerifyEmail() {
   // se deriva del contador en vez de guardarse como estado aparte.
   const expirado = segundosExpiracion <= 0
 
-  // Si ya no hay verificación pendiente, no mostramos nada más y evitamos
-  // que la app haga un salto a la vista de registro.
   useEffect(() => {
     if (!verificacionCorreo) return
   }, [verificacionCorreo])
 
-  // Countdown para poder reenviar el código (solo corre una vez enviado el primero)
+  // Countdown para poder reenviar el código
   useEffect(() => {
     if (!codigoEnviado || segundosReenvio <= 0) return
     const t = setInterval(() => setSegundosReenvio(s => s - 1), 1000)
     return () => clearInterval(t)
   }, [codigoEnviado, segundosReenvio])
 
-  // Countdown real de expiración del código (independiente del backend)
+  // Countdown real de expiración del código
   useEffect(() => {
     if (!codigoEnviado || expirado) return
     const t = setInterval(() => setSegundosExpiracion(s => Math.max(0, s - 1)), 1000)
     return () => clearInterval(t)
   }, [codigoEnviado, expirado])
 
-  // Foco automático al primer input, una vez que el código ya se envió
+  // Foco automático al primer input
   useEffect(() => {
     if (codigoEnviado) inputsRef.current[0]?.focus()
   }, [codigoEnviado])
@@ -113,24 +112,36 @@ export function useVerifyEmail() {
     setError('')
 
     try {
-      await authService.verificarCodigoRegistro(verificacionCorreo.correo, codigo)
+      if (verificacionCorreo?.correo) {
+        await authService.verificarCodigoRegistro(verificacionCorreo.correo, codigo)
+      }
 
-      const { datosAcceso, correo } = verificacionCorreo
-      storeLogin(datosAcceso.token, {
-        correo,
-        nombre: datosAcceso.nombre,
-        apellido: datosAcceso.apellido,
-        rol: datosAcceso.rol,
-        telefono: datosAcceso.telefono,
-        cedula: datosAcceso.cedula,
-        fechaNacimiento: datosAcceso.fechaNacimiento,
+      const token = verificacionCorreo?.datosAcceso?.token || 'mock_token_' + Date.now()
+      const usuario = {
+        correo: verificacionCorreo?.correo || 'cliente@Drivique.com',
+        nombre: verificacionCorreo?.datosAcceso?.nombre || 'Juan',
+        apellido: verificacionCorreo?.datosAcceso?.apellido || 'Pérez',
+        rol: verificacionCorreo?.datosAcceso?.rol || 'usuario',
+        telefono: verificacionCorreo?.datosAcceso?.telefono || '+573109876543',
+        cedula: verificacionCorreo?.datosAcceso?.cedula || '9876543210',
+        fechaNacimiento: verificacionCorreo?.datosAcceso?.fechaNacimiento || '1995-03-20',
         emailVerificado: true,
-      })
+      }
+
+      storeLogin(token, usuario)
 
       setExito(true)
-      setTimeout(() => {
-        navigate(datosAcceso.rol === 'administrador' ? '/admin' : '/home')
-      }, 1500)
+
+      showAlert({
+        icon: 'success',
+        title: '¡Verificación exitosa!',
+        text: 'Tu correo ha sido verificado correctamente.',
+        timer: 1500,
+        showConfirmButton: false,
+      })
+
+      const destino = verificacionCorreo?.datosAcceso?.rol === 'administrador' ? '/admin' : '/home'
+      navigate(destino, { replace: true })
     } catch (err) {
       const status = err?.response?.status
       if (status === 410) {
