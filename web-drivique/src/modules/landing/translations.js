@@ -1,11 +1,16 @@
-﻿// src/modules/landing/traducciones.js
-
 export const IDIOMAS = {
   es: { label: 'Español',             flag: '🇪🇸' },
   en: { label: 'English',             flag: '🇺🇸' },
   fr: { label: 'Français',            flag: '🇫🇷' },
   pt: { label: 'Português',           flag: '🇵🇹' },
   br: { label: 'Português brasileiro', flag: '🇧🇷' },
+}
+
+export const CAT_MAP = {
+  'Económico': { es: 'Económico', en: 'Economy', fr: 'Économique', pt: 'Económico', br: 'Econômico' },
+  'Deportivo': { es: 'Deportivo', en: 'Sport', fr: 'Sportive', pt: 'Esportivo', br: 'Esportivo' },
+  'Sedan': { es: 'Sedan', en: 'Sedan', fr: 'Berline', pt: 'Berlina', br: 'Sedã' },
+  'SUV': { es: 'SUV', en: 'SUV', fr: 'SUV', pt: 'SUV', br: 'SUV' },
 }
 
 const traducciones = {
@@ -23,6 +28,7 @@ const traducciones = {
       cta1: 'Comenzar ahora', cta2: 'Iniciar sesión',
       stat1: 'Vehículos', stat2: 'Soporte', stat3: 'Digital',
       cardTitle: 'Disponibles ahora', cardOnline: 'En línea', verFlota: 'Ver toda la flota',
+      perDay: '/día',
     },
     como: {
       label: 'Proceso simple', titulo: '¿Cómo funciona?',
@@ -76,6 +82,7 @@ const traducciones = {
       cta1: 'Get started', cta2: 'Log in',
       stat1: 'Vehicles', stat2: 'Support', stat3: 'Digital',
       cardTitle: 'Available now', cardOnline: 'Online', verFlota: 'View full fleet',
+      perDay: '/day',
     },
     como: {
       label: 'Simple process', titulo: 'How does it work?',
@@ -129,6 +136,7 @@ const traducciones = {
       cta1: 'Commencer', cta2: 'Se connecter',
       stat1: 'Véhicules', stat2: 'Support', stat3: 'Numérique',
       cardTitle: 'Disponibles maintenant', cardOnline: 'En ligne', verFlota: 'Voir toute la flotte',
+      perDay: '/jour',
     },
     como: {
       label: 'Processus simple', titulo: 'Comment ça marche ?',
@@ -182,6 +190,7 @@ const traducciones = {
       cta1: 'Começar agora', cta2: 'Entrar',
       stat1: 'Veículos', stat2: 'Suporte', stat3: 'Digital',
       cardTitle: 'Disponíveis agora', cardOnline: 'Online', verFlota: 'Ver toda a frota',
+      perDay: '/dia',
     },
     como: {
       label: 'Processo simples', titulo: 'Como funciona?',
@@ -235,6 +244,7 @@ const traducciones = {
       cta1: 'Começar agora', cta2: 'Entrar',
       stat1: 'Veículos', stat2: 'Suporte', stat3: 'Digital',
       cardTitle: 'Disponíveis agora', cardOnline: 'Online', verFlota: 'Ver toda a frota',
+      perDay: '/dia',
     },
     como: {
       label: 'Processo simples', titulo: 'Como funciona?',
