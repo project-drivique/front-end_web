@@ -51,17 +51,25 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, servicios
 
   return (
     <aside className="detalle-resumen-lateral" style={{
-      width: 320, flexShrink: 0,
-      background: 'var(--bg-tarjeta)', borderRadius: 24,
+      width: '100%',
+      background: 'var(--bg-tarjeta)',
+      borderRadius: 16,
       border: '1px solid var(--borde)',
-      boxShadow: '0 12px 36px rgba(0,0,0,0.06)',
       overflow: 'hidden',
       position: 'sticky', top: 88,
       alignSelf: 'flex-start',
     }}>
-      <div style={{ background: 'linear-gradient(135deg, #1e3a8a, #2563eb)', padding: '18px 24px' }}>
-        <p style={{ color: '#bfdbfe', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.09em', margin: '0 0 4px' }}>{t('vehiculo.reserveSummary')}</p>
-        <p style={{ color: '#fff', fontSize: 18, fontWeight: 800, margin: 0 }}>{vehiculo.nombre}</p>
+      {/* Header estilo tarjeta */}
+      <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--borde)', display: 'flex', alignItems: 'center', gap: 8 }}>
+        <svg width="14" height="14" fill="none" stroke="#2563eb" strokeWidth="2.2" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z" />
+        </svg>
+        <h3 style={{ margin: 0, fontSize: 13, fontWeight: 700, color: '#2563eb' }}>
+          {t('vehiculo.reserveSummary', 'Resumen de reserva')}
+        </h3>
+      </div>
+      <div style={{ padding: '0 20px 4px', marginTop: 4 }}>
+        <p style={{ fontSize: 15, fontWeight: 800, color: 'var(--texto-primary)', margin: '12px 0 0' }}>{vehiculo.nombre}</p>
       </div>
 
       <div style={{ padding: '0 20px 20px' }}>
