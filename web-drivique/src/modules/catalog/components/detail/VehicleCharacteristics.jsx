@@ -15,7 +15,7 @@ const COLOR_MAP  = {
   'Plata': 'vehiculo.colorPlata',
 }
 
-export default function VehicleCharacteristics({ vehiculo, c }) {
+export default function VehicleCharacteristics({ vehiculo, c, showIcon = true }) {
   const { t } = useTranslation()
 
   const bg = c?.cardBg || '#fff'
@@ -46,7 +46,7 @@ export default function VehicleCharacteristics({ vehiculo, c }) {
         <h3 style={{ fontSize: 13, fontWeight: 700, color: titleColor, margin: 0 }}>{t('vehiculo.characteristics', 'Características')}</h3>
       </div>
       <div style={{ paddingTop: 0 }}>
-        <SpecsGrid items={items} c={c} />
+        <SpecsGrid items={items} c={c} showIcon={showIcon} />
       </div>
     </div>
   )
