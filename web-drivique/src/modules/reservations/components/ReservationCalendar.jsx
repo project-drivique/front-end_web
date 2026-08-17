@@ -9,7 +9,7 @@ import { FaChevronLeft, FaChevronRight } from 'react-icons/fa'
 import { useDisponibilidadVehiculo } from '../hooks/useVehicleAvailability'
 
 const hoyISO = format(new Date(), 'yyyy-MM-dd')
-const DIAS_SEMANA = ['lun', 'mar', 'mié', 'jue', 'vie', 'sáb', 'dom']
+const DIAS_SEMANA = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom']
 
 export default function CalendarioReservas({ vehiculoId, fechaInicio, fechaFin, onCambiarFechas }) {
   const { t } = useTranslation()
@@ -53,115 +53,197 @@ export default function CalendarioReservas({ vehiculoId, fechaInicio, fechaFin, 
   }, [fechaInicio, fechaFin, esPasado, estaOcupado, hayConflictoEnRango, onCambiarFechas, t])
 
   return (
-    <div className="w-full">
-      <div className="w-full">
-        <div className="mb-6 flex items-center justify-between">
-          <button
-            type="button"
-            onClick={() => setMesActual(m => subMonths(m, 1))}
-            className="flex h-10 w-10 items-center justify-center rounded-full text-[var(--texto-second)] transition-colors hover:bg-[var(--bg-item-hover)] hover:text-[var(--texto-primary)]"
-          >
-            <FaChevronLeft size={14} />
-          </button>
+    <div style={{ width: '100%', fontFamily: 'inherit' }}>
 
-          <div className="flex items-center gap-3">
-            <span className="text-xl font-extrabold capitalize text-[var(--texto-primary)]">
-              {format(mesActual, 'MMMM yyyy', { locale: es })}
-            </span>
-            <button
-              type="button"
-              onClick={() => setMesActual(new Date())}
-              className="rounded-full bg-[var(--bg-item)] px-3 py-1.5 text-xs font-bold text-[var(--texto-second)] transition-colors hover:bg-blue-50 hover:text-blue-700"
-            >
-              {t('vehiculo.calendarToday')}
-            </button>
-          </div>
+      {/* Navegación del mes */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
+        <button
+          type="button"
+          onClick={() => setMesActual(m => subMonths(m, 1))}
+          style={{
+            width: 36, height: 36, borderRadius: '50%',
+            background: '#f1f5f9', border: '1px solid #e2e8f0',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            cursor: 'pointer', color: '#475569', transition: 'all 0.2s',
+          }}
+          onMouseEnter={e => { e.currentTarget.style.background = '#e2e8f0'; e.currentTarget.style.color = '#1e293b' }}
+          onMouseLeave={e => { e.currentTarget.style.background = '#f1f5f9'; e.currentTarget.style.color = '#475569' }}
+        >
+          <FaChevronLeft size={12} />
+        </button>
 
-          <button
-            type="button"
-            onClick={() => setMesActual(m => addMonths(m, 1))}
-            className="flex h-10 w-10 items-center justify-center rounded-full text-[var(--texto-second)] transition-colors hover:bg-[var(--bg-item-hover)] hover:text-[var(--texto-primary)]"
-          >
-            <FaChevronRight size={14} />
-          </button>
-        </div>
-
-        <div className="grid w-full grid-cols-7">
-          {DIAS_SEMANA.map(d => (
-            <div key={d} className="pb-3 text-center text-xs font-bold uppercase tracking-wide text-[var(--texto-second)]">
-              {d}
-            </div>
-          ))}
-        </div>
-
-        <div className="grid w-full grid-cols-7">
-          {dias.map(dia => {
-            const fechaISO = format(dia, 'yyyy-MM-dd')
-            const fueraDeMes = !isSameMonth(dia, mesActual)
-            const pasado = esPasado(fechaISO)
-            const ocupado = estaOcupado(fechaISO)
-            const esInicio = fechaISO === fechaInicio
-            const esFin = fechaISO === fechaFin
-            const rangoActivo = Boolean(fechaInicio && fechaFin)
-            const dentroDelRango = rangoActivo && fechaISO >= fechaInicio && fechaISO <= fechaFin
-            const seleccionado = esInicio || esFin
-            const clicable = !fueraDeMes && !pasado && !ocupado
-
-            return (
-              <div
-                key={fechaISO}
-                className={[
-                  'w-full py-1',
-                  dentroDelRango ? 'bg-blue-600/10' : '',
-                  dentroDelRango && esInicio ? 'rounded-l-full' : '',
-                  dentroDelRango && esFin ? 'rounded-r-full' : '',
-                ].join(' ')}
-              >
-                <button
-                  type="button"
-                  disabled={!clicable}
-                  onClick={() => handleClickDia(dia)}
-                  className={[
-                    'relative mx-auto flex aspect-square w-full max-w-14 items-center justify-center rounded-full text-[15px] sm:text-base font-semibold transition-colors',
-                    fueraDeMes ? 'text-transparent pointer-events-none' :
-                    seleccionado ? 'bg-blue-600 text-white shadow-md shadow-blue-200' :
-                    pasado ? 'text-[var(--texto-second)] opacity-40 cursor-not-allowed' :
-                    ocupado ? 'text-red-400 line-through cursor-not-allowed' :
-                    'text-[var(--texto-primary)] hover:bg-blue-100 hover:text-blue-900 cursor-pointer',
-                    isToday(dia) && !seleccionado ? 'ring-2 ring-blue-200' : '',
-                  ].join(' ')}
-                >
-                  {format(dia, 'd')}
-                  {clicable && !ocupado && (
-                    <span className="absolute bottom-1.5 h-1 w-1 rounded-full bg-emerald-500" />
-                  )}
-                  {!fueraDeMes && !pasado && ocupado && (
-                    <span className="absolute bottom-1.5 h-1 w-1 rounded-full bg-red-400" />
-                  )}
-                </button>
-              </div>
-            )
-          })}
-        </div>
-
-        <div className="mt-6 flex flex-wrap items-center justify-center gap-5 border-t border-[var(--borde)] pt-5 text-xs font-semibold text-[var(--texto-second)]">
-          <span className="flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full bg-emerald-500" /> {t('vehiculo.calendarAvailable')}
-          </span>
-          <span className="flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full bg-red-500" /> {t('vehiculo.calendarOccupied')}
-          </span>
-          <span className="flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full bg-blue-600" /> {t('vehiculo.calendarSelected')}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <span style={{ fontSize: 17, fontWeight: 800, color: '#0f172a', textTransform: 'capitalize', letterSpacing: '-0.01em' }}>
+            {format(mesActual, 'MMMM yyyy', { locale: es })}
           </span>
         </div>
+
+        <button
+          type="button"
+          onClick={() => setMesActual(m => addMonths(m, 1))}
+          style={{
+            width: 36, height: 36, borderRadius: '50%',
+            background: '#f1f5f9', border: '1px solid #e2e8f0',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            cursor: 'pointer', color: '#475569', transition: 'all 0.2s',
+          }}
+          onMouseEnter={e => { e.currentTarget.style.background = '#e2e8f0'; e.currentTarget.style.color = '#1e293b' }}
+          onMouseLeave={e => { e.currentTarget.style.background = '#f1f5f9'; e.currentTarget.style.color = '#475569' }}
+        >
+          <FaChevronRight size={12} />
+        </button>
       </div>
 
+      {/* Encabezado de días */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', marginBottom: 8 }}>
+        {DIAS_SEMANA.map(d => (
+          <div key={d} style={{
+            textAlign: 'center', paddingBottom: 10,
+            fontSize: 11, fontWeight: 700,
+            color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.06em'
+          }}>
+            {d}
+          </div>
+        ))}
+      </div>
+
+      {/* Grilla de días */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '2px 0' }}>
+        {dias.map(dia => {
+          const fechaISO = format(dia, 'yyyy-MM-dd')
+          const fueraDeMes = !isSameMonth(dia, mesActual)
+          const pasado = esPasado(fechaISO)
+          const ocupado = estaOcupado(fechaISO)
+          const esInicio = fechaISO === fechaInicio
+          const esFin = fechaISO === fechaFin
+          const rangoActivo = Boolean(fechaInicio && fechaFin)
+          const dentroDelRango = rangoActivo && fechaISO > fechaInicio && fechaISO < fechaFin
+          const seleccionado = esInicio || esFin
+          const clicable = !fueraDeMes && !pasado && !ocupado
+
+          // Colores dinámicos
+          let btnBg = 'transparent'
+          let btnColor = '#334155'
+          let btnBorder = 'none'
+          let btnCursor = 'pointer'
+          let btnOpacity = 1
+          let rowBg = 'transparent'
+          let roundedLeft = false
+          let roundedRight = false
+
+          if (fueraDeMes) {
+            btnColor = 'transparent'
+            btnCursor = 'default'
+          } else if (seleccionado) {
+            btnBg = '#2563eb'
+            btnColor = '#fff'
+          } else if (pasado) {
+            btnColor = '#94a3b8'
+            btnOpacity = 0.5
+            btnCursor = 'not-allowed'
+          } else if (ocupado) {
+            btnColor = '#f87171'
+            btnCursor = 'not-allowed'
+          }
+
+          if (dentroDelRango) {
+            rowBg = 'rgba(37, 99, 235, 0.08)'
+          }
+          if (esInicio && fechaFin) roundedLeft = true
+          if (esFin) roundedRight = true
+
+          return (
+            <div
+              key={fechaISO}
+              style={{
+                background: rowBg,
+                borderRadius: roundedLeft ? '50% 0 0 50%' : roundedRight ? '0 50% 50% 0' : 0,
+                padding: '2px 0',
+              }}
+            >
+              <button
+                type="button"
+                disabled={!clicable}
+                onClick={() => handleClickDia(dia)}
+                style={{
+                  display: 'flex', flexDirection: 'column',
+                  alignItems: 'center', justifyContent: 'center',
+                  width: 38, height: 38,
+                  margin: '0 auto',
+                  borderRadius: '50%',
+                  background: btnBg,
+                  color: btnColor,
+                  border: isToday(dia) && !seleccionado ? '2px solid #bfdbfe' : btnBorder,
+                  cursor: btnCursor,
+                  opacity: btnOpacity,
+                  fontSize: 13,
+                  fontWeight: seleccionado ? 800 : 500,
+                  transition: 'all 0.15s',
+                  position: 'relative',
+                  outline: 'none',
+                  gap: 2,
+                }}
+                onMouseEnter={e => {
+                  if (clicable && !seleccionado) {
+                    e.currentTarget.style.background = '#eff6ff'
+                    e.currentTarget.style.color = '#1e40af'
+                  }
+                }}
+                onMouseLeave={e => {
+                  if (clicable && !seleccionado) {
+                    e.currentTarget.style.background = 'transparent'
+                    e.currentTarget.style.color = '#334155'
+                  }
+                }}
+              >
+                {format(dia, 'd')}
+                {/* Punto indicador */}
+                {!fueraDeMes && !pasado && (
+                  <span style={{
+                    width: 4, height: 4, borderRadius: '50%',
+                    background: ocupado ? '#f87171' : seleccionado ? 'rgba(255,255,255,0.7)' : '#34d399',
+                    display: 'block',
+                    marginTop: -1,
+                  }} />
+                )}
+              </button>
+            </div>
+          )
+        })}
+      </div>
+
+      {/* Leyenda */}
+      <div style={{
+        display: 'flex', flexWrap: 'wrap', alignItems: 'center',
+        justifyContent: 'center', gap: 16,
+        marginTop: 20, paddingTop: 16,
+        borderTop: '1px solid #f1f5f9',
+        fontSize: 11, fontWeight: 600, color: '#94a3b8'
+      }}>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#34d399', display: 'block' }} />
+          {t('vehiculo.calendarAvailable', 'Disponible')}
+        </span>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#f87171', display: 'block' }} />
+          {t('vehiculo.calendarOccupied', 'Ocupado')}
+        </span>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#2563eb', display: 'block' }} />
+          {t('vehiculo.calendarSelected', 'Seleccionado')}
+        </span>
+      </div>
+
+      {/* Mensajes */}
       {aviso && (
-        <p className="mt-3 text-center text-xs font-semibold text-red-500">{aviso}</p>
+        <p style={{ marginTop: 12, textAlign: 'center', fontSize: 12, fontWeight: 600, color: '#ef4444' }}>
+          {aviso}
+        </p>
       )}
       {cargando && (
-        <p className="mt-3 text-center text-xs text-[var(--texto-second)]">{t('vehiculo.calendarLoading')}</p>
+        <p style={{ marginTop: 12, textAlign: 'center', fontSize: 12, color: '#94a3b8' }}>
+          {t('vehiculo.calendarLoading', 'Cargando disponibilidad...')}
+        </p>
       )}
     </div>
   )

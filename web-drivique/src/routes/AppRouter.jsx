@@ -29,22 +29,31 @@ function RutaPrivada({ children }) {
 
 function Ruta2FA({ children }) {
   const sesion2FA = useAuthStore((s) => s.sesion2FA)
+  const token     = useAuthStore((s) => s.token)
+  const usuario   = useAuthStore((s) => s.usuario)
   const hydrated  = useHydration()
   if (!hydrated) return null
+  if (token) return <Navigate to={usuario?.rol === 'administrador' ? '/admin' : '/home'} replace />
   return sesion2FA ? children : <Navigate to="/login" replace />
 }
 
 function RutaVerificacionCorreo({ children }) {
   const verificacionCorreo = useAuthStore((s) => s.verificacionCorreo)
-  const hydrated = useHydration()
+  const token              = useAuthStore((s) => s.token)
+  const usuario            = useAuthStore((s) => s.usuario)
+  const hydrated           = useHydration()
   if (!hydrated) return null
-  return verificacionCorreo ? children : <Navigate to="/catalogo" replace />
+  if (token) return <Navigate to={usuario?.rol === 'administrador' ? '/admin' : '/home'} replace />
+  return verificacionCorreo ? children : <Navigate to="/home" replace />
 }
 
 function RutaRecuperacionCorreo({ children }) {
   const recuperacionCorreo = useAuthStore((s) => s.recuperacionCorreo)
-  const hydrated = useHydration()
+  const token              = useAuthStore((s) => s.token)
+  const usuario            = useAuthStore((s) => s.usuario)
+  const hydrated           = useHydration()
   if (!hydrated) return null
+  if (token) return <Navigate to={usuario?.rol === 'administrador' ? '/admin' : '/home'} replace />
   return recuperacionCorreo ? children : <Navigate to="/login" replace />
 }
 
