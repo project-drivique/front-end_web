@@ -1,18 +1,16 @@
-// src/modules/auth/pages/LoginPage.jsx
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useLogin } from '../hooks/useLogin'
 import { useSocialRegistration } from '../hooks/useSocialRegistration'
 import { useLanding } from '../../landing/LandingContext'
-import logo from '@/assets/logo.png'
-import { FaExclamationTriangle, FaCheckCircle } from 'react-icons/fa'
-import { showAlert } from '@/utils/swalConfig'
-
+import logo from '@/assets/logocatalog.png'
+import { FaExclamationTriangle, FaCheckCircle, FaEye, FaEyeSlash } from 'react-icons/fa'
 import { coloresLogin, loginTokens } from '../styles/loginStyles'
 import SpinnerButton from '../components/SpinnerButton'
 import LeftPanel from '../components/LeftPanel'
 import AlertModal from '../../catalog/components/AlertModal'
+import AuthHeaderControls from '../components/AuthHeaderControls'
 
 // ─── Íconos SVG locales ────────────────────────────────────────────────────────
 const IconoOjoAbierto = () => (
@@ -137,44 +135,57 @@ export default function LoginPage() {
   })
 
   return (
-    <div style={{ minHeight: '112vh', display: 'flex', background: c.pageBg, zoom: 0.9 }}>
+    <div style={{ minHeight: '112vh', display: 'flex', background: c.pageBg, zoom: 0.9 }} className="auth-responsive-layout">
+      <style>{`
+        .auth-responsive-layout {
+          flex-direction: column-reverse !important;
+        }
+        @media(min-width:1024px) {
+          .auth-responsive-layout {
+            flex-direction: row !important;
+          }
+        }
+      `}</style>
       <LeftPanel />
 
       {/* ── Panel derecho (formulario) ── */}
       <div style={{ flex: 1, background: c.pageBg, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 24px' }} className="auth-contenedor">
 
-        {/* Logo mobile */}
-        <div style={{ marginBottom: 32 }} className="logo-mobile">
-          <style>{`@media(min-width:1024px){.logo-mobile{display:none}}`}</style>
-          <img src={logo} alt="Drivique" style={{ height: 110, display: 'block', margin: '0 auto' }} />
-        </div>
-
         {/* Botón volver */}
-        <div style={{ width: '100%', maxWidth: 400, marginBottom: 12 }}>
-          <Link
-            to="/"
-            style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: tok.fontSize.label, color: c.backLink, textDecoration: 'none', fontWeight: 600 }}
-            onMouseEnter={e => e.currentTarget.style.color = c.backLinkHover}
-            onMouseLeave={e => e.currentTarget.style.color = c.backLink}
-          >
-            <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-            </svg>
-            {t('common.backToHome')}
-          </Link>
+        <div style={{ width: '100%', maxWidth: 400 }}>
+          <AuthHeaderControls backTo="/" backLabelKey="common.backToHome" backLabelFallback="Volver al inicio" />
         </div>
 
         {/* Card */}
         <div style={{ width: '100%', maxWidth: 400, background: c.cardBg, borderRadius: tok.borderRadius.card, boxShadow: c.cardShadow, border: `1px solid ${c.cardBorder}`, padding: 40 }} className="auth-card">
-          <div style={{ marginBottom: 28 }}>
-            <h1 style={{ fontSize: tok.fontSize.title, fontWeight: 900, color: c.title, margin: '0 0 6px' }}>{t('login.title')}</h1>
-            <p style={{ color: c.text, fontSize: tok.fontSize.body, margin: 0 }}>{t('login.subtitle')}</p>
+          <div style={{ marginBottom: 24, textAlign: 'center' }}>
+            <h1 style={{
+              fontFamily: 'Outfit, Inter, system-ui, sans-serif',
+              fontSize: '1.55rem',
+              fontWeight: 900,
+              color: c.title,
+              margin: '0 0 6px',
+              letterSpacing: '-0.02em',
+              lineHeight: 1.25
+            }}>
+              {t('login.title')}
+            </h1>
+            <p style={{
+              fontFamily: 'Inter, system-ui, sans-serif',
+              color: esModoOscuro ? '#94a3b8' : '#64748b',
+              fontSize: '13.5px',
+              fontWeight: 500,
+              margin: 0,
+              lineHeight: 1.5
+            }}>
+              {t('login.subtitle')}
+            </p>
           </div>
 
           <form onSubmit={handleSubmit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
             {/* Campo correo */}
             <div>
-              <label style={{ display: 'block', fontSize: tok.fontSize.label, fontWeight: 700, color: c.label, marginBottom: 8 }}>
+              <label style={{ display: 'block', fontFamily: 'Outfit, Inter, system-ui, sans-serif', fontSize: tok.fontSize.label, fontWeight: 800, color: c.label, marginBottom: 8 }}>
                 {t('login.email')}
               </label>
               <input
@@ -193,7 +204,7 @@ export default function LoginPage() {
 
             {/* Campo contraseña */}
             <div>
-              <label style={{ display: 'block', fontSize: tok.fontSize.label, fontWeight: 700, color: c.label, marginBottom: 8 }}>
+              <label style={{ display: 'block', fontFamily: 'Outfit, Inter, system-ui, sans-serif', fontSize: tok.fontSize.label, fontWeight: 800, color: c.label, marginBottom: 8 }}>
                 {t('login.password')}
               </label>
               <div style={{ position: 'relative' }}>
@@ -211,9 +222,15 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => setMostrarPass(!mostrarPass)}
-                  style={{ position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: c.eyeIcon, padding: 0, display: 'flex' }}
+                  disabled={bloqueado || cargando}
+                  aria-label={t('login.togglePassword')}
+                  style={{
+                    position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)',
+                    background: 'none', border: 'none', cursor: 'pointer', color: c.eyeIcon,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0,
+                  }}
                 >
-                  {mostrarPass ? <IconoOjoCerrado /> : <IconoOjoAbierto />}
+                  {mostrarPass ? <FaEyeSlash size={17} /> : <FaEye size={17} />}
                 </button>
               </div>
               {errores.contrasena && <p style={{ color: c.helperError, fontSize: tok.fontSize.helper, marginTop: 6 }}>{errores.contrasena}</p>}
@@ -221,7 +238,7 @@ export default function LoginPage() {
 
             {/* Olvidé contraseña */}
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <Link to="/recuperar" style={{ fontSize: tok.fontSize.label, color: c.forgot, fontWeight: 700, textDecoration: 'none' }}>
+              <Link to="/recuperar" style={{ fontFamily: 'Outfit, Inter, system-ui, sans-serif', fontSize: tok.fontSize.label, color: c.forgot, fontWeight: 800, textDecoration: 'none' }}>
                 {t('login.forgotPassword')}
               </Link>
             </div>
@@ -271,7 +288,7 @@ export default function LoginPage() {
 
           <p style={{ textAlign: 'center', fontSize: tok.fontSize.body, color: c.footerText, marginTop: 24, marginBottom: 0 }}>
             {t('login.noAccount')}{' '}
-            <Link to="/registro" style={{ color: c.registerLink, fontWeight: 700, textDecoration: 'none' }}>
+            <Link to="/registro" style={{ fontFamily: 'Outfit, Inter, system-ui, sans-serif', color: c.registerLink, fontWeight: 800, textDecoration: 'none' }}>
               {t('login.registerLink')}
             </Link>
           </p>
@@ -281,12 +298,12 @@ export default function LoginPage() {
       {modalConfig && (
         <AlertModal
           icon={
-            modalConfig.type === 'success' ? <FaCheckCircle size={22} color="#1e3a8a" /> :
-            <FaExclamationTriangle size={22} color="#1e3a8a" />
+            modalConfig.type === 'success' ? <FaCheckCircle size={22} color={esModoOscuro ? '#4ade80' : '#16a34a'} /> :
+            <FaExclamationTriangle size={22} color={esModoOscuro ? '#93c5fd' : '#1e3a8a'} />
           }
           titulo={modalConfig.title}
           mensaje={modalConfig.text}
-          primaryText="OK"
+          primaryText={t('common.accept', 'Aceptar')}
           onPrimary={() => setModalConfig(null)}
           onCerrar={() => setModalConfig(null)}
           showCloseButton

@@ -39,10 +39,43 @@ const FUEL_KEYS = {
   Eléctrico: 'catalogo.fuelElec',
 }
 
+const CAT_KEYS = {
+  'Económico': 'catalogo.catEco',
+  'Deportivo': 'catalogo.catSport',
+  'Sedan': 'catalogo.catSedan',
+  'SUV': 'catalogo.catSuv',
+}
+
 function normalizeRating(vehiculo) {
   if (!vehiculo.comentarios || vehiculo.comentarios.length === 0) return 0;
   const r = Number(vehiculo.calificacion ?? vehiculo.rating ?? 0)
   return Number.isFinite(r) ? r : 0
+}
+
+function getBranchDisplay(sucursalNombre, langCode = 'es') {
+  if (!sucursalNombre) return ''
+  const l = (langCode || 'es').substring(0, 2).toLowerCase()
+  if (l === 'pt' || l === 'br') {
+    return sucursalNombre
+      .replace(/Aeropuerto/g, 'Aeroporto')
+      .replace(/Alquiler/g, l === 'br' ? 'Aluguel' : 'Aluguer')
+      .replace(/Downtown/g, 'Centro')
+      .replace(/Poblado/g, 'Bairro Poblado')
+  }
+  if (l === 'en') {
+    return sucursalNombre
+      .replace(/Aeropuerto/g, 'Airport')
+      .replace(/Alquiler/g, 'Rental')
+      .replace(/Poblado/g, 'Poblado Area')
+  }
+  if (l === 'fr') {
+    return sucursalNombre
+      .replace(/Aeropuerto/g, 'Aéroport')
+      .replace(/Alquiler/g, 'Location')
+      .replace(/Downtown/g, 'Centre-ville')
+      .replace(/Poblado/g, 'Quartier Poblado')
+  }
+  return sucursalNombre
 }
 
 export default function TarjetaVehiculo({
@@ -54,9 +87,10 @@ export default function TarjetaVehiculo({
   onGuestBlocked = () => {},
   onGuestFavorito = () => {},
 }) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const navigate = useNavigate()
   const { moneda } = useLanding()
+  const sucursalDisplay = getBranchDisplay(vehiculo.sucursal, i18n.language)
 
   const [hover, setHover] = useState(false)
   const [fotoActiva, setFotoActiva] = useState(0)
@@ -262,7 +296,7 @@ export default function TarjetaVehiculo({
               whiteSpace: 'nowrap',
             }}
           >
-            {vehiculo.categoria || 'Económico'}
+            {CAT_KEYS[vehiculo.categoria] ? t(CAT_KEYS[vehiculo.categoria]) : (vehiculo.categoria || 'Económico')}
           </span>
 
           <span
@@ -285,7 +319,7 @@ export default function TarjetaVehiculo({
           >
             <FaMapMarkerAlt size={8} style={{ flexShrink: 0 }} />
             <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              {vehiculo.sucursal || 'Centro Neiva'}
+              {sucursalDisplay || 'Centro Neiva'}
             </span>
           </span>
         </div>
@@ -305,14 +339,16 @@ export default function TarjetaVehiculo({
           {vehiculo.nombre}
         </h3>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
-          <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '10px', color: c.textSecondary, whiteSpace: 'nowrap' }}>
-            <FaCogs color={c.textMuted} size={10} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+          <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', color: c.textSecondary, fontWeight: 600 }}>
+            <FaCogs color={c.textMuted} size={11} />
             {TRANS_KEYS[vehiculo.transmision] ? t(TRANS_KEYS[vehiculo.transmision]) : vehiculo.transmision}
           </span>
 
-          <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '10px', color: c.textSecondary, whiteSpace: 'nowrap' }}>
-            <FaGasPump color={c.textMuted} size={10} />
+          <span style={{ color: c.cardBorderHover, fontSize: '11px' }}>|</span>
+
+          <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', color: c.textSecondary, fontWeight: 600 }}>
+            <FaGasPump color={c.textMuted} size={11} />
             {FUEL_KEYS[vehiculo.combustible] ? t(FUEL_KEYS[vehiculo.combustible]) : vehiculo.combustible}
           </span>
         </div>
@@ -369,7 +405,7 @@ export default function TarjetaVehiculo({
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '8px', cursor: 'pointer' }}
           >
             <span style={{ fontSize: '11px', fontWeight: 700, color: '#2563eb', textDecoration: 'underline', textUnderlineOffset: '3px' }}>
-              {t('catalogo.details')}
+              {t('catalogo.details', 'Ver detalles')}
             </span>
           </div>
         </div>

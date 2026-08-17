@@ -39,7 +39,7 @@ export default function ServiciosAdicionales({ servicios = [], seleccionados = [
               <FaWifi className={activo ? 'text-blue-600' : 'text-[var(--texto-second)]'} />
 
               <span className="flex-1">
-                <span className="block text-sm font-bold text-[var(--texto-primary)]">{servicio.nombre}</span>
+                <span className="block text-sm font-bold text-[var(--texto-primary)]">{t('servicios.' + servicio.nombre, servicio.nombre)}</span>
                 <span className="block text-xs font-semibold text-emerald-600">
                   +{formatCurrency(servicio.precio, moneda)} / {t('catalogo.day')}
                 </span>
