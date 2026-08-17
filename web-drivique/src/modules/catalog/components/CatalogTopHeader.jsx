@@ -1,9 +1,20 @@
 import { Link, useLocation } from 'react-router-dom'
-import { FaArrowLeft, FaUserCircle } from 'react-icons/fa'
+import { FaArrowLeft, FaUserCircle, FaBars, FaTimes } from 'react-icons/fa'
 import { useTranslation } from 'react-i18next'
+import { useState } from 'react'
 import logo from '@/assets/logocatalog.png'
+import MenuConfiguracion from '@/components/MenuConfiguracion'
+import { useAuthStore } from '@/store/authStore'
 import { showAlert } from '@/utils/swalConfig'
 import './CatalogTopHeader.css'
+
+function iniciales(nombre = '', apellido = '', correo = '') {
+  const n = (nombre || '').trim()[0] ?? ''
+  const a = (apellido || '').trim()[0] ?? ''
+  if (n || a) return (n + a).toUpperCase()
+  if (correo) return (correo || '').trim()[0].toUpperCase()
+  return 'U'
+}
 
 export default function CatalogTopHeader({
   c,
@@ -17,6 +28,8 @@ export default function CatalogTopHeader({
   const location = useLocation();
   const currentPath = location.pathname;
   const { t } = useTranslation();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { usuario } = useAuthStore();
 
   const menuOptions = [
     { name: t('catalog.menu.catalog', 'Catálogo'), path: '/home' },
@@ -37,12 +50,10 @@ export default function CatalogTopHeader({
       }}
     >
       <div className={innerClassName}>
-        <div className="catalogo-logo-link">
+        <Link to={modoRegistrado ? '/home' : '/catalogo'} className="catalogo-logo-link">
           <img src={logo} alt="Drivique" className="catalogo-logo" />
-          <div className="catalogo-logo-text">
-            <span className="catalogo-logo-title" style={{ color: c.accentText }}>Drivique</span>
-          </div>
-        </div>
+          <span className="catalogo-logo-title" style={{ color: c.accentText }}>Drivique</span>
+        </Link>
 
         {modoRegistrado && (
           <nav className="catalogo-header-nav" style={{ display: 'flex', gap: '32px', alignItems: 'center', marginLeft: 'auto', marginRight: '32px' }}>
@@ -91,32 +102,102 @@ export default function CatalogTopHeader({
 
         {children}
 
-        {mostrarVolverInicio && (
-          <Link
-            to="/"
-            className="catalogo-header-back"
-            style={{
-              border: `1px solid ${c.heroCardBorder}`,
-              background: c.heroCardBg,
-              color: c.accentText,
-            }}
-          >
-            <FaArrowLeft size={12} />
-            Volver al inicio
-          </Link>
-        )}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginLeft: 'auto', flexShrink: 0, position: 'relative', zIndex: 10 }}>
+          <MenuConfiguracion />
 
-        {mostrarPerfil && (
-          <Link
-            to="/perfil"
-            aria-label="Perfil"
-            className="catalogo-header-profile"
-            style={{ color: c.accentText }}
-          >
-            <FaUserCircle size={30} />
-          </Link>
-        )}
+          {mostrarVolverInicio && (
+            <Link
+              to="/"
+              className="catalogo-header-back"
+              style={{
+                border: `1px solid ${c.heroCardBorder}`,
+                background: c.heroCardBg,
+                color: c.accentText,
+              }}
+            >
+              <FaArrowLeft size={12} />
+              <span className="back-text-desktop">{t('catalogo.backToHome', 'Volver al inicio')}</span>
+            </Link>
+          )}
+
+          {modoRegistrado && (
+            <button
+              className="catalogo-mobile-menu-btn"
+              onClick={() => setIsMobileMenuOpen(true)}
+              style={{ color: c.accentText }}
+              aria-label="Abrir menú"
+            >
+              <FaBars size={22} />
+            </button>
+          )}
+
+          {mostrarPerfil && (
+            <Link
+              to="/perfil"
+              aria-label="Perfil"
+              className="catalogo-header-profile"
+              style={{ color: c.accentText, display: 'flex', alignItems: 'center' }}
+            >
+              {usuario ? (
+                <div style={{
+                  width: '32px',
+                  height: '32px',
+                  borderRadius: '50%',
+                  background: '#1e40af',
+                  color: '#ffffff',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '14px',
+                  fontWeight: 'bold',
+                  border: `2px solid ${c.navBorder}`
+                }}>
+                  {iniciales(usuario.nombre, usuario.apellido, usuario.correo)}
+                </div>
+              ) : (
+                <FaUserCircle size={30} />
+              )}
+            </Link>
+          )}
+        </div>
       </div>
+
+      {/* MOBILE MENU OVERLAY */}
+      {modoRegistrado && isMobileMenuOpen && (
+        <div className="catalogo-mobile-menu-overlay" style={{ background: c.navBg }}>
+          <div className="catalogo-mobile-menu-header" style={{ borderBottom: `1px solid ${c.navBorder}` }}>
+            <span className="catalogo-mobile-menu-title" style={{ color: c.textPrimary }}>Menú</span>
+            <button
+              className="catalogo-mobile-menu-close"
+              onClick={() => setIsMobileMenuOpen(false)}
+              style={{ color: c.textPrimary }}
+              aria-label="Cerrar menú"
+            >
+              <FaTimes size={24} />
+            </button>
+          </div>
+          <nav className="catalogo-mobile-menu-links">
+            {menuOptions.map((option) => {
+              const isActive = currentPath === option.path;
+              return (
+                <Link
+                  key={option.name}
+                  to={option.path}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  style={{
+                    color: isActive ? '#2563eb' : c.textPrimary,
+                    fontWeight: isActive ? 700 : 500,
+                    borderBottom: `1px solid ${c.navBorder}`
+                  }}
+                  className="catalogo-mobile-link"
+                >
+                  {option.name}
+                </Link>
+              );
+            })}
+          </nav>
+        </div>
+      )}
     </header>
   )
 }

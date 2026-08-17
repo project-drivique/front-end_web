@@ -85,8 +85,8 @@ export default function FiltrosCatalogo({
 
   const catLabels = {
     'Todos': t('catalogo.allShort'),
-    'Sedan': 'Sedan',
-    'SUV': 'SUV',
+    'Sedan': t('catalogo.catSedan'),
+    'SUV': t('catalogo.catSuv'),
     'Económico': t('catalogo.catEco'),
     'Deportivo': t('catalogo.catSport'),
   }
@@ -146,13 +146,13 @@ export default function FiltrosCatalogo({
             <>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '14px' }}>
                 <div>
-                  <label style={{ ...labelStyle, display: 'block' }}>Ciudad</label>
+                  <label style={{ ...labelStyle, display: 'block' }}>{t('catalogo.city', 'Ciudad')}</label>
                   <select
                     value={ciudadBusqueda}
                     onChange={e => { setForm('ciudad', e.target.value); setForm('sucursal', '') }}
                     style={{ ...inputStyle, width: '100%', boxSizing: 'border-box', cursor: 'pointer' }}
                   >
-                    <option value="">Selecciona Ciudad</option>
+                    <option value="">{t('catalogo.selectCity', 'Selecciona Ciudad')}</option>
                     {CIUDADES.map(ciud => (
                       <option key={ciud.id} value={ciud.nombre}>{ciud.nombre}</option>
                     ))}
@@ -160,14 +160,14 @@ export default function FiltrosCatalogo({
                 </div>
 
                 <div>
-                  <label style={{ ...labelStyle, display: 'block' }}>Sucursal</label>
+                  <label style={{ ...labelStyle, display: 'block' }}>{t('catalogo.branch', 'Sucursal')}</label>
                   <select
                     value={sucursalBusqueda}
                     onChange={e => setForm('sucursal', e.target.value)}
                     disabled={!ciudadBusqueda}
                     style={{ ...inputStyle, width: '100%', boxSizing: 'border-box', cursor: 'pointer' }}
                   >
-                    <option value="">Selecciona Sucursal</option>
+                    <option value="">{t('catalogo.selectBranch', 'Selecciona Sucursal')}</option>
                     {SUCURSALES
                       .filter(s => s.ciudad === ciudadBusqueda)
                       .map(s => <option key={s.nombre} value={s.nombre}>{s.nombre}</option>)}
@@ -230,14 +230,14 @@ export default function FiltrosCatalogo({
               <div>
                 <label style={{ ...labelStyle, display: 'flex', alignItems: 'center', gap: '5px' }}>
                   <span style={{ color: c.accentText }}><FaMapMarkerAlt /></span>
-                  Ciudad
+                  {t('catalogo.city')}
                 </label>
                 <select
                   value={ciudadBusqueda}
                   onChange={e => { setForm('ciudad', e.target.value); setForm('sucursal', '') }}
                   style={{ ...inputStyle, width: '100%', boxSizing: 'border-box', cursor: 'pointer' }}
                 >
-                  <option value="">Selecciona Ciudad</option>
+                  <option value="">{t('catalogo.selectCity')}</option>
                   {CIUDADES.map(ciud => (
                     <option key={ciud.id} value={ciud.nombre}>{ciud.nombre}</option>
                   ))}
@@ -247,7 +247,7 @@ export default function FiltrosCatalogo({
               <div>
                 <label style={{ ...labelStyle, display: 'flex', alignItems: 'center', gap: '5px' }}>
                   <span style={{ color: c.accentText }}><FaMapMarkerAlt /></span>
-                  Sucursal
+                  {t('catalogo.branch')}
                 </label>
                 <select
                   value={sucursalBusqueda}
@@ -255,7 +255,7 @@ export default function FiltrosCatalogo({
                   disabled={!ciudadBusqueda}
                   style={{ ...inputStyle, width: '100%', boxSizing: 'border-box', cursor: 'pointer' }}
                 >
-                  <option value="">Selecciona Sucursal</option>
+                  <option value="">{t('catalogo.selectBranch')}</option>
                   {SUCURSALES
                     .filter(s => s.ciudad === ciudadBusqueda)
                     .map(s => <option key={s.nombre} value={s.nombre}>{s.nombre}</option>)}
@@ -357,6 +357,8 @@ export default function FiltrosCatalogo({
             justifyContent: 'space-between',
             gap: '8px',
             marginBottom: '18px',
+            paddingBottom: '14px',
+            borderBottom: `1px solid ${c.panelBorder}`,
             width: '100%',
             boxSizing: 'border-box',
           }}
@@ -364,7 +366,8 @@ export default function FiltrosCatalogo({
           <h2
             style={{
               fontSize: '15px',
-              fontWeight: 800,
+              fontWeight: 600,
+              letterSpacing: '0.02em',
               color: c.textPrimary,
               margin: 0,
               minWidth: 0,
@@ -382,14 +385,17 @@ export default function FiltrosCatalogo({
               fontSize: '12px',
               color: c.accentText,
               fontWeight: 700,
-              background: '#ffffff',
+              background: c.heroCardBg,
               border: `1px solid ${c.heroCardBorder}`,
               borderRadius: '8px',
               cursor: 'pointer',
-              padding: '6px 12px',
+              padding: '5px 12px',
               whiteSpace: 'nowrap',
               flexShrink: 0,
+              transition: 'all 150ms ease',
             }}
+            onMouseEnter={e => e.currentTarget.style.background = c.accentBgSoft}
+            onMouseLeave={e => e.currentTarget.style.background = c.heroCardBg}
           >
             {t('catalogo.clear')}
           </button>
@@ -416,7 +422,7 @@ export default function FiltrosCatalogo({
           </div>
         </Seccion>
 
-        <Seccion label="Ciudad" ultimo={false} c={c}>
+        <Seccion label={t('catalogo.city')} ultimo={false} c={c}>
           <select
             value={filtros.ciudad || 'Todas'}
             onChange={e => {
@@ -425,7 +431,7 @@ export default function FiltrosCatalogo({
             }}
             style={{ ...inputStyle, width: '100%', boxSizing: 'border-box', cursor: 'pointer' }}
           >
-            <option value="Todas">Todas las ciudades</option>
+            <option value="Todas">{t('catalogo.allCities')}</option>
             {CIUDADES.map(ciud => (
               <option key={ciud.id} value={ciud.nombre}>
                 {ciud.nombre}

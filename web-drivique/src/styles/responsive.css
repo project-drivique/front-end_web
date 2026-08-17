@@ -198,3 +198,170 @@
   .contrato-campo-label { font-size: 9px !important; margin-bottom: 4px !important; }
   .contrato-campo-valor { font-size: 12px !important; }
 }
+
+/* ============================================================
+   CATALOGO & SEARCH HERO & VEHICLE GRID
+   ============================================================ */
+@media (max-width: 1100px) {
+  .catalogo-layout {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 1024px) {
+  .catalogo-header-nav {
+    display: none !important;
+  }
+  .hero-busqueda-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+  .hero-busqueda-registered-wrapper {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 16px !important;
+  }
+  .hero-busqueda-registered-wrapper > div:last-child {
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .hero-busqueda-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Grilla de vehículos fluida que llena el 100% del espacio disponible */
+.vehicle-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)) !important;
+  gap: 16px !important;
+  width: 100% !important;
+  justify-content: stretch !important;
+}
+
+@media (max-width: 520px) {
+  .vehicle-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* ============================================================
+   DETALLE DE VEHICULO (VehicleDetailsPage)
+   ============================================================ */
+
+/* ============================================================
+   DETALLE DE VEHICULO (VehicleDetailsPage)
+   ============================================================ */
+@media (max-width: 768px) {
+  .detalle-contenido-inner {
+    padding: 16px 16px 40px !important;
+  }
+  .detalle-titulo {
+    font-size: 20px !important;
+  }
+  .vehiculo-main-container {
+    padding: 20px 16px !important;
+    border-radius: 14px !important;
+  }
+  .detalle-resenas-wrapper {
+    margin-top: 24px !important;
+    padding-top: 24px !important;
+  }
+  .vehiculo-price-value {
+    font-size: 22px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .detalle-contenido-inner {
+    padding: 12px 10px 32px !important;
+  }
+  .detalle-titulo {
+    font-size: 18px !important;
+  }
+  .vehiculo-main-container {
+    padding: 16px 12px !important;
+    border-radius: 12px !important;
+  }
+}
+
+/* ============================================================
+   RESEÑAS (ReviewsSection)
+   En celular la columna de resumen pasa arriba de la lista
+   ============================================================ */
+@media (max-width: 768px) {
+  .resenas-layout {
+    flex-direction: column !important;
+    gap: 24px !important;
+  }
+  .resenas-resumen {
+    flex: 1 1 100% !important;
+    width: 100% !important;
+  }
+  .resenas-lista {
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+}
+
+/* ============================================================
+   SUCURSALES / BRANCHES PAGE
+   ============================================================ */
+@media (max-width: 1200px) {
+  .sucursales-grid-container {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .sucursales-grid-container {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .sucursales-main-card {
+    padding: 24px 16px !important;
+    border-radius: 20px !important;
+  }
+  .sucursales-flota-panel {
+    padding: 20px 16px !important;
+    border-radius: 16px !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .sucursales-grid-container {
+    grid-template-columns: 1fr !important;
+  }
+  .sucursales-main-card {
+    padding: 20px 14px !important;
+    border-radius: 16px !important;
+  }
+}
+
+/* ============================================================
+   RESPUESTA DE PAGO (PaymentResponsePage)
+   ============================================================ */
+@media (max-width: 640px) {
+  .respuesta-pago-card {
+    padding: 24px 16px !important;
+    border-radius: 16px !important;
+  }
+}
+
+/* ============================================================
+   PLACEHOLDER PAGE
+   ============================================================ */
+@media (max-width: 640px) {
+  .placeholder-card {
+    padding: 28px 20px !important;
+    border-radius: 16px !important;
+  }
+  .placeholder-card h1 {
+    font-size: 1.2rem !important;
+  }
+}
+
