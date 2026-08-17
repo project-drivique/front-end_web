@@ -1,6 +1,9 @@
+import { useLocation, useNavigate } from 'react-router-dom'
 import { useState, useEffect, useRef, useLayoutEffect } from 'react'
+import { FaArrowLeft, FaSlidersH, FaCalendarAlt } from 'react-icons/fa'
 import { useTranslation } from 'react-i18next'
 import { useLanding } from '../../landing/LandingContext'
+import { useAuthStore } from '../../../store/authStore'
 import { COLOR_MARCA } from '../constants'
 import { useCatalogo } from '../hooks/useCatalog'
 
@@ -66,8 +69,17 @@ const coloresTema = (esModoOscuro) => ({
 })
 
 export default function CatalogoPage() {
+  const navigate = useNavigate()
+  const token = useAuthStore((s) => s.token)
+  const usuario = useAuthStore((s) => s.usuario)
   const { t } = useTranslation()
   const { tema } = useLanding()
+
+  useEffect(() => {
+    if (token) {
+      navigate(usuario?.rol === 'administrador' ? '/admin' : '/home', { replace: true })
+    }
+  }, [token, usuario, navigate])
 
   const esModoOscuro = tema === 'oscuro'
   const c = coloresTema(esModoOscuro)
@@ -101,6 +113,16 @@ export default function CatalogoPage() {
   const [favoritoModalAbierto, setFavoritoModalAbierto] = useState(false)
   const [modalFechasAbierto, setModalFechasAbierto] = useState(false)
   const [modalFiltrosCerrado, setModalFiltrosCerrado] = useState(false)
+
+  const location = useLocation()
+
+  useEffect(() => {
+    if (location.state?.sucursalFiltro) {
+      setFiltro('sucursal', location.state.sucursalFiltro)
+    } else if (location.state?.textoBusqueda) {
+      setTextoLibre(location.state.textoBusqueda)
+    }
+  }, [location.state])
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -177,23 +199,62 @@ export default function CatalogoPage() {
           className="catalogo-search-sticky"
           style={{ top: `${headerAltura}px`, background: c.pageBg }}
         >
-          <SearchHero
-            c={c}
-            cargando={cargando}
-            resultado={resultado}
-            inputStyle={inputStyle}
-            labelStyle={labelStyle}
-            busquedaForm={busquedaForm}
-            setForm={setForm}
-            busquedaAplicada={busquedaAplicada}
-            errorBusqueda={errorBusqueda}
-            textoLibre={textoLibre}
-            setTextoLibre={setTextoLibre}
-            invitado={true}
-            onAbrirBusquedaInvitado={() => setModalFechasAbierto(true)}
-            sinCoincidenciasTexto={sinCoincidenciasTexto}
-            sinDisponibilidadFechas={sinDisponibilidadFechas}
-          />
+          {/* DESKTOP SEARCH HERO */}
+          <div className="search-hero-desktop">
+            <SearchHero
+              c={c}
+              cargando={cargando}
+              resultado={resultado}
+              inputStyle={inputStyle}
+              labelStyle={labelStyle}
+              busquedaForm={busquedaForm}
+              setForm={setForm}
+              busquedaAplicada={busquedaAplicada}
+              errorBusqueda={errorBusqueda}
+              textoLibre={textoLibre}
+              setTextoLibre={setTextoLibre}
+              invitado={true}
+              onAbrirBusquedaInvitado={() => setModalFechasAbierto(true)}
+              sinCoincidenciasTexto={sinCoincidenciasTexto}
+              sinDisponibilidadFechas={sinDisponibilidadFechas}
+            />
+          </div>
+
+          {/* MOBILE RESPONSIVE SEARCH BAR: Free Search + Date/Location Icon Button */}
+          <div className="search-hero-mobile">
+            <div className="search-hero-mobile-inner">
+              <CatalogSearchBar
+                c={c}
+                textoLibre={textoLibre}
+                setTextoLibre={setTextoLibre}
+                sinCoincidenciasTexto={sinCoincidenciasTexto}
+                containerClassName="catalogo-mobile-search-bar"
+              />
+
+              <button
+                type="button"
+                onClick={() => setModalFechasAbierto(true)}
+                aria-label="Buscar por fechas y sucursal"
+                style={{
+                  height: '44px',
+                  width: '44px',
+                  borderRadius: '12px',
+                  background: c.heroCardBg,
+                  border: `1px solid ${c.heroCardBorder}`,
+                  color: c.accentText,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                  cursor: 'pointer',
+                  boxShadow: '0 2px 10px rgba(30, 58, 138, 0.04)',
+                }}
+                title="Seleccionar ciudad, sucursal y fechas"
+              >
+                <FaCalendarAlt size={17} color={c.accentText} />
+              </button>
+            </div>
+          </div>
         </div>
 
         <section className="catalogo-content">
@@ -214,23 +275,44 @@ export default function CatalogoPage() {
             <div className="catalogo-results">
 
               <div className="catalogo-results-toolbar">
-                {!cargando ? (
-                  <span className="catalogo-results-count">
-                    {resultado.length} {t('catalogo.available')}
-                  </span>
-                ) : (
-                  <span />
-                )}
+                <div className="catalogo-toolbar-left" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <button
+                    type="button"
+                    className="btn-filtros-movil"
+                    onClick={() => setFiltrosMovilAbierto(true)}
+                    style={{
+                      alignItems: 'center',
+                      gap: '6px',
+                      padding: '7px 14px',
+                      borderRadius: '10px',
+                      background: c.heroCardBg,
+                      border: `1px solid ${c.panelBorderStrong}`,
+                      color: c.textPrimary,
+                      fontWeight: 700,
+                      fontSize: '13px',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <FaSlidersH size={13} color={c.accentText} />
+                    <span>{t('catalogo.filters', 'Filtros')}</span>
+                  </button>
 
-                <div className="catalogo-sort">
-                  <span>{t('catalogo.sort')}:</span>
+                  {!cargando && (
+                    <span className="catalogo-results-count">
+                      {resultado.length} {t('catalogo.vehicles', 'vehículos')}
+                    </span>
+                  )}
+                </div>
+
+                <div className="catalogo-sort" style={{ marginLeft: 'auto' }}>
+                  <span className="catalogo-sort-label">{t('catalogo.sort')}:</span>
                   <select
                     value={filtros.orden}
                     onChange={e => setFiltro('orden', e.target.value)}
                     style={{
                       ...inputStyle,
                       width: 'auto',
-                      minWidth: '190px',
+                      minWidth: '150px',
                       minHeight: '36px',
                       padding: '7px 10px',
                       cursor: 'pointer',

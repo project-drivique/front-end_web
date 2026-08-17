@@ -36,32 +36,10 @@ api.interceptors.request.use((config) => {
   // Devuelve la configuración modificada para que la petición continúe.
 })
 
-const MOCK_USERS = [
-  {
-    correo: 'admin@Drivique.com',
-    contrasena: 'Admin123*',
-    nombre: 'Administrador',
-    apellido: 'Drivique',
-    rol: 'administrador',
-    telefono: '+573001234567',
-    cedula: '1234567890',
-    fechaNacimiento: '1990-05-15',
-    emailVerificado: true,
-  },
-  {
-    correo: 'cliente@Drivique.com',
-    contrasena: 'Cliente123*',
-    nombre: 'Juan',
-    apellido: 'Pérez',
-    rol: 'usuario',
-    telefono: '+573109876543',
-    cedula: '9876543210',
-    fechaNacimiento: '1995-03-20',
-    emailVerificado: true,
-  },
-]
-// Lista de usuarios simulados.
-// Sirve como backend falso para pruebas de login y registro.
+import mockUsersData from '../mocks/usersMock.json'
+
+const MOCK_USERS = [...mockUsersData]
+// Lista de usuarios simulados cargados desde src/mocks/usersMock.json.
 
 const generateMockToken = () => {
   return 'mock_token_' + Math.random().toString(36).substring(2) + Date.now()
@@ -123,41 +101,44 @@ export const authService = {
   },
 
   registro: async (datosUsuario) => {
-    // Método asíncrono para registrar usuario.
-    // En este mock no crea usuarios nuevos; solo valida contra MOCK_USERS.
-
-    const usuario = MOCK_USERS.find(
-      (u) => u.correo === datosUsuario.correo && u.contrasena === datosUsuario.contrasena
+    const index = MOCK_USERS.findIndex(
+      (u) => u.correo.toLowerCase() === datosUsuario.correo.toLowerCase()
     )
-    // Busca un usuario que coincida exactamente con correo y contraseña.
 
-    if (usuario) {
-      return {
-        token: generateMockToken(),
-        correo: usuario.correo,
-        nombre: usuario.nombre,
-        apellido: usuario.apellido,
-        rol: usuario.rol,
-        telefono: usuario.telefono,
-        cedula: usuario.cedula,
-        fechaNacimiento: usuario.fechaNacimiento,
-        emailVerificado: false,
-        // Toda cuenta recién registrada empieza sin verificar,
-        // aunque la cuenta mock de base ya esté marcada como verificada.
-      }
-      // Si lo encuentra, devuelve un objeto similar al login exitoso.
+    if (index !== -1) {
+      const error = new Error('El correo electrónico ya está registrado')
+      error.response = { status: 400 }
+      throw error
     }
 
-    const error = new Error(
-      'No existe una cuenta con estas credenciales. Usa [admin@Drivique.com](mailto:admin@Drivique.com) o [cliente@Drivique.com](mailto:cliente@Drivique.com) con la contraseña correspondiente.'
-    )
-    // Error personalizado para indicar que solo existen esas cuentas mock.
+    const usuario = {
+      correo: datosUsuario.correo,
+      contrasena: datosUsuario.contrasena,
+      nombre: '',
+      apellido: '',
+      nacionalidad: '',
+      tipoDocumento: '',
+      rol: 'usuario',
+      telefono: '',
+      cedula: '',
+      fechaNacimiento: '',
+      emailVerificado: true,
+    }
+    MOCK_USERS.push(usuario)
 
-    error.response = { status: 400 }
-    // Simula un error HTTP 400 Bad Request.
-
-    throw error
-    // Lanza el error.
+    return {
+      token: generateMockToken(),
+      correo: usuario.correo,
+      nombre: usuario.nombre,
+      apellido: usuario.apellido,
+      nacionalidad: usuario.nacionalidad,
+      tipoDocumento: usuario.tipoDocumento,
+      rol: usuario.rol,
+      telefono: usuario.telefono,
+      cedula: usuario.cedula,
+      fechaNacimiento: usuario.fechaNacimiento,
+      emailVerificado: usuario.emailVerificado ?? true,
+    }
   },
 
   solicitarRecuperacion: async (correo) => {
@@ -242,14 +223,23 @@ export const authService = {
   },
 
   verificar2FA: async (sesionTemporal, codigo) => {
-    // Verifica un código de autenticación de dos factores.
+    if (USAR_MOCK) {
+      const userMail = typeof sesionTemporal === 'string' ? sesionTemporal : (sesionTemporal?.correo || 'cliente@Drivique.com')
+      const usuario = MOCK_USERS.find(u => u.correo.toLowerCase() === userMail.toLowerCase()) || MOCK_USERS[1]
+      return {
+        token: generateMockToken(),
+        usuario
+      }
+    }
 
     const { data } = await api.post('/auth/2fa/verificar', { sesionTemporal, codigo })
     return data
   },
 
   reenviarCodigo2FA: async (sesionTemporal) => {
-    // Reenvía el código de verificación 2FA.
+    if (USAR_MOCK) {
+      return { enviado: true }
+    }
 
     const { data } = await api.post('/auth/2fa/reenviar', { sesionTemporal })
     return data

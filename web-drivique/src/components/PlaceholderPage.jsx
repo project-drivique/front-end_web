@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 export default function PlaceholderPage() {
   const { t } = useTranslation()
   return (
-    <div style={{
+    <div className="placeholder-wrapper" style={{
       minHeight: '100vh',
       display: 'flex',
       flexDirection: 'column',
@@ -16,7 +16,7 @@ export default function PlaceholderPage() {
       padding: '24px',
       textAlign: 'center'
     }}>
-      <div style={{
+      <div className="placeholder-card" style={{
         background: 'white',
         padding: '48px',
         borderRadius: '24px',

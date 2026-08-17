@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '../../../store/authStore'
 import { showAlert } from '@/utils/swalConfig'
 import logo from '@/assets/logo.png'
-import { FaMoneyBillWave, FaCreditCard, FaMapMarkerAlt, FaClock, FaCalendarAlt, FaTimes } from 'react-icons/fa'
+import { FaMoneyBillWave, FaCreditCard, FaMapMarkerAlt, FaClock, FaCalendarAlt, FaTimes, FaArrowLeft, FaEye, FaShieldAlt, FaUserEdit } from 'react-icons/fa'
 import VEHICULOS_MOCK from '@/mocks/vehicles.json'
 import { reservationService, HORAS_LIMITE_PAGO_EFECTIVO } from '@/services/reservationService'
 import { documentsService } from '@/services/documentsService'
@@ -13,10 +13,17 @@ import { RECARGOS_LOGISTICOS, SUCURSALES, CIUDADES } from '../../catalog/constan
 import ReservationCalendar from '../components/ReservationCalendar'
 import { formatCurrency } from '@/utils/currencyUtils'
 import { useLanding } from '../../landing/LandingContext'
+import MenuConfiguracion from '@/components/MenuConfiguracion'
 
 import ImageGallery from '../../catalog/components/detail/ImageGallery'
+import DescriptionSection from '../../catalog/components/detail/DescriptionSection'
+import BranchInfo from '../../catalog/components/detail/BranchInfo'
+import VehicleCharacteristics from '../../catalog/components/detail/VehicleCharacteristics'
 import VehicleInfo from '../../catalog/components/detail/VehicleInfo'
-import DateStep from '../components/DateStep'
+import PicoYPlacaCard from '../../catalog/components/detail/PicoYPlacaCard'
+import VehicleDetailsModal from '../../catalog/components/detail/VehicleDetailsModal'
+import UnifiedReservationConfigCard from '../components/UnifiedReservationConfigCard'
+import VehicleQuickSpecsCard from '../components/VehicleQuickSpecsCard'
 import ProtectionPlans from '../components/ProtectionPlans'
 import MileageType from '../components/MileageType'
 import AdditionalServices from '../components/AdditionalServices'
@@ -49,14 +56,26 @@ const HORAS = Array.from({ length: 24 }, (_, i) => {
 
 export default function VehiculoDetallePage() {
   const { t } = useTranslation()
-  const { moneda } = useLanding()
+  const { tema, moneda } = useLanding()
+  const esModoOscuro = tema === 'oscuro'
+  const c = {
+    pageBg: esModoOscuro ? '#0f172a' : '#f8fafc',
+    cardBg: esModoOscuro ? '#111827' : '#ffffff',
+    cardBorder: esModoOscuro ? '#1e293b' : '#e2e8f0',
+    subCardBg: esModoOscuro ? '#1e293b' : '#f8fafc',
+    subCardBorder: esModoOscuro ? '#334155' : '#e2e8f0',
+    textPrimary: esModoOscuro ? '#f8fafc' : '#0f172a',
+    textSecondary: esModoOscuro ? '#94a3b8' : '#64748b',
+    accentText: esModoOscuro ? '#93c5fd' : '#1e3a8a',
+  }
   const { id } = useParams();
   const navigate = useNavigate();
-  const { usuario } = useAuthStore();
+  const { usuario, actualizarUsuario } = useAuthStore();
 
   const vehiculo = VEHICULOS_MOCK.find(v => v.id === Number(id));
 
   const [pantalla, setPantalla] = useState(1);
+  const [modalDetallesOpen, setModalDetallesOpen] = useState(false);
   const [seguroIdx, setSeguroIdx] = useState(null);
   const [serviciosSeleccionados, setServiciosSeleccionados] = useState([]);
   const toggleServicio = (nombre) => setServiciosSeleccionados(prev =>
@@ -127,12 +146,14 @@ export default function VehiculoDetallePage() {
     setReserva(prev => {
       const act = { ...prev, [campo]: valor };
       if (campo === 'metodoPago' && valor === 'efectivo') {
-        act.sucursalRetiro = vehiculo ? vehiculo.sucursal : '';
-        act.sucursalDevolucion = vehiculo ? vehiculo.sucursal : '';
+        // Only clear domicilio data, let the user pick the location manually
         act.domicilioCiudad = '';
         act.domicilioBarrio = '';
         act.domicilioDireccion = '';
         act.domicilioReferencias = '';
+        // Reset location picks that were set to domicilio since efectivo doesn't allow it
+        if (act.sucursalRetiro === 'domicilio') act.sucursalRetiro = '';
+        if (act.sucursalDevolucion === 'domicilio') act.sucursalDevolucion = '';
       }
       if (act.sucursalRetiro === 'domicilio') {
         const branchObj = SUCURSALES.find(s => s.nombre === vehiculo?.sucursal);
@@ -196,12 +217,15 @@ export default function VehiculoDetallePage() {
     prellenado.current = true
     const tel = (usuario.telefono || '').replace(/\D/g, '')
     const celular = tel.startsWith('57') && tel.length > 10 ? tel.slice(2) : tel
+    const nombreCompleto = [usuario.nombre, usuario.apellido].filter(Boolean).join(' ')
     setDatosForm(prev => ({
       ...prev,
-      nombre: [usuario.nombre, usuario.apellido].filter(Boolean).join(' '),
-      correo: usuario.correo || '',
-      celular,
-      numDoc: usuario.cedula || '',
+      nombre: nombreCompleto || prev.nombre,
+      correo: usuario.correo || prev.correo,
+      celular: celular || prev.celular,
+      numDoc: usuario.cedula || prev.numDoc,
+      nacionalidad: usuario.nacionalidad || prev.nacionalidad || 'Colombia',
+      tipoDoc: usuario.tipoDocumento || prev.tipoDoc || 'CC',
     }))
   }, [usuario]);
 
@@ -308,8 +332,8 @@ export default function VehiculoDetallePage() {
     if (!datosForm.correo.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(datosForm.correo)) e.correo = t('vehiculo.errors.emailInvalid');
     if (!datosForm.celular.trim() || datosForm.celular.length < 10) e.celular = t('vehiculo.errors.phoneInvalid');
     if (!datosForm.numDoc.trim()) e.numDoc = t('vehiculo.errors.docRequired');
-    if (!docsVerificados && !datosForm.cedulaPdf) e.cedulaPdf = "Debes subir tu cédula en formato PDF.";
-    if (!docsVerificados && !datosForm.licenciaPdf) e.licenciaPdf = "Debes subir tu licencia de conducción en formato PDF.";
+    if (!docsVerificados && !datosForm.cedulaPdf) e.cedulaPdf = t('vehiculo.errors.cedulaPdfRequired', 'Debes subir tu cédula en formato PDF.');
+    if (!docsVerificados && !datosForm.licenciaPdf) e.licenciaPdf = t('vehiculo.errors.licenciaPdfRequired', 'Debes subir tu licencia de conducción en formato PDF.');
     if (!datosForm.terminos) e.terminos = t('vehiculo.errors.termsRequired');
 
     setErrores(e);
@@ -336,6 +360,23 @@ export default function VehiculoDetallePage() {
 
     // Crear la referencia única para Wompi Checkout
     const referencia = generarReferenciaUnica();
+
+    // Si el usuario tenía su perfil incompleto o actualizó sus datos en la reserva,
+    // sincronizamos automáticamente su perfil global para que quede completado.
+    if (usuario && actualizarUsuario) {
+      const partesNombre = (datosForm.nombre || '').trim().split(' ');
+      const primerNombre = partesNombre.length > 1 ? partesNombre.slice(0, -1).join(' ') : partesNombre[0] || '';
+      const primerApellido = partesNombre.length > 1 ? partesNombre[partesNombre.length - 1] : '';
+
+      actualizarUsuario({
+        nombre: usuario.nombre || primerNombre || datosForm.nombre,
+        apellido: usuario.apellido || primerApellido || '',
+        cedula: usuario.cedula || datosForm.numDoc,
+        telefono: usuario.telefono || datosForm.celular,
+        nacionalidad: usuario.nacionalidad || datosForm.nacionalidad,
+        tipoDocumento: usuario.tipoDocumento || datosForm.tipoDoc,
+      });
+    }
 
     // Si el usuario subió documentos nuevos (o no tenía aún), los dejamos
     // registrados para no volver a pedírselos en su próxima reserva.
@@ -417,7 +458,7 @@ export default function VehiculoDetallePage() {
   };
 
   if (reservaCreada && reserva.metodoPago === 'efectivo' && !contratoFirmado) return (
-    <div style={{ minHeight: '100vh', background: 'var(--hero-fondo)', position: 'relative', overflow: 'hidden' }}>
+    <div className="catalogo-page" style={{ minHeight: '100vh', background: 'var(--hero-fondo)', position: 'relative', overflow: 'hidden' }}>
       <div style={{ position: 'absolute', top: -80, right: -80, width: 500, height: 500, borderRadius: '50%', background: 'var(--hero-orb1)', pointerEvents: 'none' }} />
       <div style={{ position: 'absolute', bottom: -60, left: -60, width: 350, height: 350, borderRadius: '50%', background: 'var(--hero-orb2)', pointerEvents: 'none' }} />
       <div style={{ position: 'relative', paddingTop: 48, paddingBottom: 48, paddingLeft: 24, paddingRight: 24 }}>
@@ -433,7 +474,7 @@ export default function VehiculoDetallePage() {
   );
 
   if (exito) return (
-    <div style={{
+    <div className="catalogo-page" style={{
       minHeight: '100vh', background: 'var(--hero-fondo)', position: 'relative',
       overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24,
     }}>
@@ -456,13 +497,13 @@ export default function VehiculoDetallePage() {
         />
 
         <h2 style={{ fontSize: 30, fontWeight: 900, color: 'var(--texto-primary)', margin: '0 0 14px', letterSpacing: '-0.02em' }}>
-          Reserva Registrada
+          {t('vehiculo.reservationRegisteredTitle', 'Reserva Registrada')}
         </h2>
 
         {reserva.metodoPago === 'efectivo' ? (
           <>
             <p style={{ fontSize: 16, color: 'var(--texto-second)', lineHeight: 1.6, margin: '0 0 20px' }}>
-              Tu reserva quedó registrada. Para confirmarla, debes acercarte a la sucursal de <strong>{vehiculo.sucursal}</strong> para realizar el pago en efectivo y retirar el vehículo.
+              {t('vehiculo.cashReservationRegisteredDesc', 'Tu reserva quedó registrada. Para confirmarla, debes acercarte a la sucursal de {{sucursal}} para realizar el pago en efectivo y retirar el vehículo.', { sucursal: vehiculo.sucursal })}
             </p>
 
             <div style={{
@@ -470,19 +511,16 @@ export default function VehiculoDetallePage() {
               padding: '16px 20px', marginBottom: 20, textAlign: 'left',
             }}>
               <p style={{ fontSize: 13, fontWeight: 900, color: '#92400e', margin: '0 0 4px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                Plazo para pagar
+                {t('vehiculo.paymentDeadlineTitle', 'Plazo para pagar')}
               </p>
               <p style={{ fontSize: 14, color: '#92400e', margin: 0, lineHeight: 1.5 }}>
-                Tienes <strong>{HORAS_LIMITE_PAGO_EFECTIVO} horas</strong> desde ahora para acercarte a la sucursal y pagar
-                {fechaLimitePago && (
-                  <> (hasta las <strong>{new Date(fechaLimitePago).toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })}</strong>)</>
-                )}. Si no pagas dentro de este plazo, la reserva se cancelará automáticamente.
+                {t('vehiculo.paymentDeadlineDesc', 'Tienes {{horas}} horas desde ahora para acercarte a la sucursal y pagar. Si no pagas dentro de este plazo, la reserva se cancelará automáticamente.', { horas: HORAS_LIMITE_PAGO_EFECTIVO })}
               </p>
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 32 }}>
               <p style={{ fontSize: 13, color: '#2563eb', fontWeight: 700, margin: 0 }}>
-                El contrato firmado te llegó a tu correo. Muéstralo en la sucursal para realizar el pago.
+                {t('vehiculo.signedContractSentEmail', 'El contrato firmado te llegó a tu correo. Muéstralo en la sucursal para realizar el pago.')}
               </p>
             </div>
             <div style={{ display: 'flex', justifyContent: 'center' }}>
@@ -490,9 +528,9 @@ export default function VehiculoDetallePage() {
                 onClick={() => {
                   showAlert({
                     icon: 'success',
-                    title: '¡Reserva Completada!',
-                    text: 'Tu reserva presencial ha sido registrada. Te esperamos en la sucursal.',
-                    confirmButtonText: 'Aceptar'
+                    title: t('vehiculo.reservationCompletedAlertTitle', '¡Reserva Completada!'),
+                    text: t('vehiculo.reservationCompletedAlertText', 'Tu reserva presencial ha sido registrada. Te esperamos en la sucursal.'),
+                    confirmButtonText: t('common.accept', 'Aceptar')
                   }).then(() => navigate('/reservas'));
                 }}
                 style={{
@@ -506,22 +544,22 @@ export default function VehiculoDetallePage() {
                 }}
               >
                 <FaMoneyBillWave size={20} />
-                <span>Confirmar y Ver Mis Reservas</span>
+                <span>{t('vehiculo.confirmAndViewReservations', 'Confirmar y Ver Mis Reservas')}</span>
               </button>
             </div>
           </>
         ) : (
           <>
             <p style={{ fontSize: 16, color: 'var(--texto-second)', lineHeight: 1.6, margin: '0 0 20px' }}>
-              Tu reserva quedó guardada como pendiente. Para confirmarla, completa el pago digital seguro con Wompi (Pruebas).
+              {t('vehiculo.wompiReservationRegisteredDesc', 'Tu reserva quedó guardada como pendiente. Para confirmarla, completa el pago digital seguro con Wompi (Pruebas).')}
             </p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 32 }}>
               <p style={{ fontSize: 13, color: '#2563eb', fontWeight: 700, margin: 0 }}>
-                Serás redirigido al checkout oficial de Wompi.
+                {t('vehiculo.wompiRedirectNote', 'Serás redirigido al checkout oficial de Wompi.')}
               </p>
               <p style={{ fontSize: 13, color: 'var(--texto-second)', fontWeight: 600, margin: 0 }}>
-                Recibirás la confirmación de tu reserva cuando el pago sea exitoso.
+                {t('vehiculo.wompiSuccessNote', 'Recibirás la confirmación de tu reserva cuando el pago sea exitoso.')}
               </p>
             </div>
 
@@ -550,7 +588,7 @@ export default function VehiculoDetallePage() {
                   }}
                 >
                   <FaCreditCard size={20} />
-                  <span>{redirigiendoPago ? 'Redirigiendo…' : 'Pagar con Wompi'}</span>
+                  <span>{redirigiendoPago ? t('vehiculo.redirecting', 'Redirigiendo…') : t('vehiculo.payWithWompi', 'Pagar con Wompi')}</span>
                 </button>
               </div>
             )}
@@ -564,7 +602,23 @@ export default function VehiculoDetallePage() {
     </div>
   );
 
-  const pasos = [t('vehiculo.stepDates'), t('vehiculo.stepProtection'), t('vehiculo.personalData')]
+  const pasos = [
+    { 
+      label: t('vehiculo.stepDates', 'Fechas y ubicación'), 
+      sublabel: t('vehiculo.stepDatesSub', 'Completa los detalles de tu reserva'),
+      icon: <FaCalendarAlt /> 
+    },
+    { 
+      label: t('vehiculo.stepProtection', 'Protección y extras'), 
+      sublabel: t('vehiculo.stepProtectionSub', 'Personaliza tu experiencia'),
+      icon: <FaShieldAlt /> 
+    },
+    { 
+      label: t('vehiculo.personalData', 'Datos personales'), 
+      sublabel: t('vehiculo.personalDataSub', 'Finaliza tu reserva'),
+      icon: <FaUserEdit /> 
+    },
+  ]
 
   // Mismo cálculo que ResumenLateral/DatosPersonales, para poder mostrar
   // el total también en la barra de "Confirmar reserva" que se ve en
@@ -590,45 +644,148 @@ export default function VehiculoDetallePage() {
   const totalReserva = subtotalPreIvaTotal + ivaTotal;
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg-page)', zoom: 0.9 }}>
-      <div style={{ paddingTop: 0 }}>
-        <div className="detalle-contenido-inner" style={{ maxWidth: 1280, margin: '0 auto', padding: '32px 24px' }}>
+    <div className="catalogo-page" style={{ minHeight: '100vh', background: c.pageBg, color: c.textPrimary }}>
+      <div className="detalle-contenido-inner" style={{ maxWidth: 1360, margin: '0 auto', padding: '24px 24px 60px' }}>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 32 }}>
-            <button
-              onClick={irAtras}
-              style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 14, color: '#1e3a8a', fontWeight: 700, background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 9999, padding: '8px 18px', cursor: 'pointer', transition: 'all 200ms ease' }}
-              onMouseEnter={e => e.currentTarget.style.background = '#dbeafe'}
-              onMouseLeave={e => e.currentTarget.style.background = '#eff6ff'}
-            >
-              <IcoBack /> {pantalla === 1 ? t('vehiculo.backToCatalog') : t('common.goBack')}
-            </button>
-            <h1 style={{ fontSize: 24, fontWeight: 900, color: 'var(--texto-primary)', margin: 0 }}>{t('vehiculo.reserve')} — {vehiculo.nombre}</h1>
-          </div>
+        {/* Top bar fuera del contenedor principal */}
+        <div style={{ marginBottom: 24, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <button 
+            className="catalogo-header-back" 
+            onClick={irAtras}
+            style={{
+              background: c.cardBg,
+              border: `1px solid ${c.cardBorder}`,
+              color: c.accentText,
+              padding: '8px 16px',
+              borderRadius: '8px',
+              display: 'inline-flex', alignItems: 'center', gap: 8,
+              cursor: 'pointer',
+              fontWeight: 600
+            }}
+          >
+            <FaArrowLeft size={12} /> {pantalla === 1 ? t('vehiculo.backToCatalog') : t('common.goBack')}
+          </button>
 
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0, marginBottom: 36, flexWrap: 'wrap' }}>
-            {pasos.map((label, i) => {
+          <MenuConfiguracion />
+        </div>
+
+        {/* Contenedor Principal (Tarjeta con diseño idéntico a Ver Detalles) */}
+        <div className="vehiculo-main-container" style={{ background: c.cardBg, border: `1px solid ${c.cardBorder}`, borderRadius: '16px', padding: '32px', boxShadow: esModoOscuro ? '0 4px 24px rgba(0,0,0,0.40)' : '0 4px 24px rgba(30,58,138,0.07)' }}>
+
+          {/* Stepper Tabs Minimalistas (Diseño exacto de la imagen) */}
+          <div 
+            className="flujo-tabs-container" 
+            style={{ 
+              marginBottom: 32, 
+              borderBottom: `1px solid ${esModoOscuro ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)'}`,
+              display: 'flex',
+              alignItems: 'stretch',
+              position: 'relative',
+              overflowX: 'auto',
+              scrollbarWidth: 'none',
+              msOverflowStyle: 'none'
+            }}
+          >
+            {pasos.map((paso, i) => {
               const num = i + 1;
               const activo = pantalla === num;
               const completado = pantalla > num;
+
               return (
-                <div key={i} style={{ display: 'flex', alignItems: 'center' }}>
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
-                    <div style={{
-                      width: 36, height: 36, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontWeight: 800, fontSize: 14,
-                      background: completado ? '#1e3a8a' : activo ? 'linear-gradient(135deg,#1e3a8a,#2563eb)' : 'var(--bg-item)',
-                      color: completado || activo ? '#fff' : 'var(--texto-second)',
-                      boxShadow: activo ? '0 8px 24px rgba(37,99,235,0.25)' : 'none',
-                      transition: 'all 300ms ease',
-                      flexShrink: 0,
-                    }}>
-                      {completado ? <IcoCheck color="#fff" sz={16} /> : num}
-                    </div>
-                    <span style={{ fontSize: 12, fontWeight: activo ? 800 : 600, color: activo ? '#1e3a8a' : 'var(--texto-second)', whiteSpace: 'nowrap' }}>{label}</span>
+                <button
+                  key={i}
+                  type="button"
+                  onClick={() => (completado || activo) && setPantalla(num)}
+                  disabled={!completado && !activo}
+                  style={{
+                    flex: 1,
+                    minWidth: 200,
+                    padding: '16px 20px 20px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 12,
+                    cursor: (completado || activo) ? 'pointer' : 'default',
+                    position: 'relative',
+                    background: 'transparent',
+                    border: 'none',
+                    borderRight: i < pasos.length - 1 
+                      ? `1px solid ${esModoOscuro ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}` 
+                      : 'none',
+                    transition: 'all 200ms ease',
+                    userSelect: 'none',
+                    outline: 'none'
+                  }}
+                >
+                  {/* Icono de Check Verde en círculo cuando está completado */}
+                  {completado && (
+                    <span 
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: 28,
+                        height: 28,
+                        borderRadius: '50%',
+                        border: `1.5px solid ${esModoOscuro ? '#059669' : '#10b981'}`,
+                        background: esModoOscuro ? 'rgba(16, 185, 129, 0.15)' : '#ffffff',
+                        color: '#10b981',
+                        flexShrink: 0,
+                        fontSize: 13,
+                        fontWeight: 800,
+                        boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
+                      }}
+                    >
+                      ✓
+                    </span>
+                  )}
+
+                  {/* Textos: Título + Subtítulo */}
+                  <div style={{ display: 'flex', flexDirection: 'column', textAlign: 'left' }}>
+                    <span 
+                      style={{
+                        fontSize: 14,
+                        fontWeight: activo ? 800 : completado ? 700 : 600,
+                        color: activo 
+                          ? (esModoOscuro ? '#f3f4f6' : '#0f172a') 
+                          : completado 
+                            ? c.textPrimary 
+                            : (esModoOscuro ? '#64748b' : '#64748b'),
+                        letterSpacing: '-0.01em',
+                        lineHeight: 1.25
+                      }}
+                    >
+                      {paso.label}
+                    </span>
+
+                    <span 
+                      style={{
+                        fontSize: 12,
+                        fontWeight: 400,
+                        color: esModoOscuro ? '#94a3b8' : '#64748b',
+                        marginTop: 4,
+                        lineHeight: 1.2
+                      }}
+                    >
+                      {paso.sublabel}
+                    </span>
                   </div>
-                  {i < pasos.length - 1 && <div style={{ width: 56, height: 3, background: pantalla > num ? '#1e3a8a' : 'var(--borde)', margin: '0 8px', marginBottom: 20, transition: 'background 400ms ease' }} />}
-                </div>
+
+                  {/* Línea inferior azul que abarca la pestaña activa */}
+                  {activo && (
+                    <div 
+                      style={{
+                        position: 'absolute',
+                        bottom: -1,
+                        left: 0,
+                        right: 0,
+                        height: 3,
+                        background: esModoOscuro ? '#3b82f6' : '#1d4ed8',
+                        boxShadow: esModoOscuro ? '0 0 10px rgba(59, 130, 246, 0.5)' : 'none'
+                      }}
+                    />
+                  )}
+                </button>
               );
             })}
           </div>
@@ -637,13 +794,74 @@ export default function VehiculoDetallePage() {
             <div className="detalle-columna-principal" style={{ flex: 1, minWidth: 0 }}>
 
               {pantalla === 1 && (
-                <>
-                  <ImageGallery imagenes={vehiculo.imagenes} nombreVehiculo={vehiculo.nombre} />
-                  <VehicleInfo vehiculo={vehiculo} />
-                  <div style={{ marginTop: 32 }}>
-                    <DateStep vehiculo={vehiculo} reserva={reserva} onCambio={cambiarReserva} />
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
+                  
+                  {/* Fila Principal (Layout 2/3 y 1/3 en Desktop) */}
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+                    
+                    {/* Lado Izquierdo (Colspan 2) */}
+                    <div className="lg:col-span-2 flex flex-col gap-6">
+                      
+                      {/* Grid de 2 columnas interno para Galería y Descripción/Sucursal */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+                        {/* Columna A: Galería */}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+                          <div 
+                            style={{ 
+                              background: esModoOscuro ? '#1e293b' : '#ffffff', 
+                              border: `1px solid ${esModoOscuro ? 'rgba(255,255,255,0.08)' : '#e2e8f0'}`, 
+                              borderRadius: 20, 
+                              padding: 24,
+                              display: 'flex',
+                              flexDirection: 'column',
+                              gap: 16,
+                              boxShadow: esModoOscuro ? '0 8px 24px rgba(0,0,0,0.3)' : '0 6px 20px rgba(0,0,0,0.03)'
+                            }}
+                          >
+                            <h2 style={{ fontSize: 22, fontWeight: 800, color: c.textPrimary, margin: 0, letterSpacing: '-0.02em' }}>
+                              {vehiculo.nombre}
+                            </h2>
+
+                            <ImageGallery 
+                              imagenes={vehiculo.imagenes} 
+                              nombreVehiculo={vehiculo.nombre} 
+                              calificacion={vehiculo.comentarios?.length ? vehiculo.calificacion : 0} 
+                              c={c} 
+                            />
+                          </div>
+                        </div>
+
+                        {/* Columna B: Descripción y Sucursal */}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+                          <DescriptionSection descripcion={vehiculo.descripcion} id={vehiculo.id} c={c} />
+                          <BranchInfo sucursalInfo={vehiculo.sucursalInfo} c={c} />
+                        </div>
+                      </div>
+
+                      {/* Tarjeta Unificada (ocupa el 100% de este contenedor, es decir, col 1 y 2 visuales) */}
+                      <UnifiedReservationConfigCard vehiculo={vehiculo} reserva={reserva} onCambio={cambiarReserva} c={c} />
+
+                    </div>
+
+                    {/* Lado Derecho (Colspan 1): Resumen */}
+                    <div className="lg:col-span-1 flex flex-col gap-5">
+                      <VehicleCharacteristics vehiculo={vehiculo} c={c} showIcon={false} />
+                      
+                      <div
+                        ref={resumenMovilRef}
+                        className={`detalle-resumen-wrapper${resumenMovilAbierto ? ' abierto' : ''}`}
+                      >
+                        <SideSummary
+                          vehiculo={vehiculo}
+                          reserva={reserva}
+                          seguroIdx={seguroIdx}
+                          serviciosSeleccionados={serviciosSeleccionados}
+                          onEditar={abrirModalEditar}
+                        />
+                      </div>
+                    </div>
                   </div>
-                </>
+                </div>
               )}
 
               {pantalla === 2 && (
@@ -697,59 +915,20 @@ export default function VehiculoDetallePage() {
               )}
             </div>
 
-            {/* Botón "Resumen de reserva" visible solo en tablet/celular
-                (vía CSS). Despliega/oculta el ResumenLateral colapsable en
-                los 3 pasos del flujo. En PC el resumen se ve fijo al lado. */}
-            <button
-              type="button"
-              onClick={() => setResumenMovilAbierto(prev => !prev)}
-              className="detalle-resumen-toggle"
-              style={{
-                display: 'none',
-                width: '100%',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                gap: 10,
-                marginTop: 24,
-                padding: '15px 20px',
-                borderRadius: 16,
-                background: 'var(--bg-tarjeta)',
-                border: '1px solid var(--borde)',
-                boxShadow: '0 8px 24px rgba(15,23,42,0.06)',
-                cursor: 'pointer',
-              }}
-            >
-              <span style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 15, fontWeight: 800, color: 'var(--texto-primary)' }}>
-                <svg width="18" height="18" fill="none" stroke="#1e3a8a" strokeWidth="2.2" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-                </svg>
-                {t('vehiculo.reserveSummary')}
-              </span>
-              <span style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                width: 28, height: 28, borderRadius: '50%', background: '#eff6ff', color: '#1e3a8a',
-                transform: resumenMovilAbierto ? 'rotate(180deg)' : 'rotate(0deg)',
-                transition: 'transform 250ms ease',
-              }}>
-                <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 9l6 6 6-6" />
-                </svg>
-              </span>
-            </button>
-
-            <div
-              ref={resumenMovilRef}
-              className={`detalle-resumen-wrapper${resumenMovilAbierto ? ' abierto' : ''}`}
-              style={{ display: 'contents' }}
-            >
-              <SideSummary
-                vehiculo={vehiculo}
-                reserva={reserva}
-                seguroIdx={seguroIdx}
-                serviciosSeleccionados={serviciosSeleccionados}
-                onEditar={abrirModalEditar}
-              />
-            </div>
+            {pantalla > 1 && (
+              <div
+                ref={resumenMovilRef}
+                className={`detalle-resumen-wrapper${resumenMovilAbierto ? ' abierto' : ''}`}
+              >
+                <SideSummary
+                  vehiculo={vehiculo}
+                  reserva={reserva}
+                  seguroIdx={seguroIdx}
+                  serviciosSeleccionados={serviciosSeleccionados}
+                  onEditar={abrirModalEditar}
+                />
+              </div>
+            )}
 
             {/* En tablet/celular el layout se apila en columna: este botón
                 (idéntico al de arriba) se muestra debajo del resumen de la
@@ -1233,6 +1412,14 @@ export default function VehiculoDetallePage() {
               </div>
             </div>
           )}
+
+          {/* Modal de Detalles Completos del Vehículo */}
+          <VehicleDetailsModal
+            vehiculo={vehiculo}
+            visible={modalDetallesOpen}
+            onCerrar={() => setModalDetallesOpen(false)}
+            c={c}
+          />
 
         </div>
       </div>
