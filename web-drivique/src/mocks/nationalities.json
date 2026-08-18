@@ -1,0 +1,22 @@
+[
+  { "nombre": "Colombia", "prefijo": "+57" },
+  { "nombre": "Estados Unidos", "prefijo": "+1" },
+  { "nombre": "Alemania", "prefijo": "+49" },
+  { "nombre": "Francia", "prefijo": "+33" },
+  { "nombre": "España", "prefijo": "+34" },
+  { "nombre": "Italia", "prefijo": "+39" },
+  { "nombre": "Reino Unido", "prefijo": "+44" },
+  { "nombre": "Canadá", "prefijo": "+1" },
+  { "nombre": "Brasil", "prefijo": "+55" },
+  { "nombre": "Argentina", "prefijo": "+54" },
+  { "nombre": "México", "prefijo": "+52" },
+  { "nombre": "Venezuela", "prefijo": "+58" },
+  { "nombre": "Ecuador", "prefijo": "+593" },
+  { "nombre": "Perú", "prefijo": "+51" },
+  { "nombre": "Chile", "prefijo": "+56" },
+  { "nombre": "Australia", "prefijo": "+61" },
+  { "nombre": "Japón", "prefijo": "+81" },
+  { "nombre": "China", "prefijo": "+86" },
+  { "nombre": "India", "prefijo": "+91" },
+  { "nombre": "Otro", "prefijo": "" }
+]
