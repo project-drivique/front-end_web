@@ -15,7 +15,7 @@ export default function CatalogSearchBar({
       className={containerClassName}
       style={{
         background: c.heroCardBg,
-        border: `1px solid ${sinCoincidenciasTexto ? c.dangerBorder : c.heroCardBorder}`,
+        border: `1px solid ${sinCoincidenciasTexto ? c.dangerBorder : c.inputBorder}`,
       }}
     >
       <FaSearch size={15} color={c.accentText} style={{ flexShrink: 0 }} />
@@ -25,7 +25,7 @@ export default function CatalogSearchBar({
         onChange={e => setTextoLibre(e.target.value)}
         placeholder={t('catalogo.freeSearchPlaceholder')}
         className="catalogo-header-search-input"
-        style={{ color: c.inputText }}
+        style={{ color: c.inputText, '--placeholder-color': c.inputText }}
       />
     </div>
   )

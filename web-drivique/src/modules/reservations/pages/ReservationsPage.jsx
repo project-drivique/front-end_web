@@ -5,6 +5,7 @@ import { formatCurrency } from '@/utils/currencyUtils'
 import { showAlert } from '@/utils/swalConfig'
 import { useHistorialReservas } from '../hooks/useReservations'
 import logo from '@/assets/logo.png'
+import MenuConfiguracion from '@/components/MenuConfiguracion'
 
 const ESTILOS_ESTADO = {
   activa: 'bg-blue-50 text-blue-700 border-blue-200',
@@ -102,10 +103,11 @@ export default function ReservasPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--bg-page)]" style={{ zoom: 0.9 }}>
+    <div className="catalogo-page min-h-screen bg-[var(--bg-page)]">
       <nav className="fixed inset-x-0 top-0 z-50 h-24 border-b border-[var(--borde)] bg-[var(--bg-nav)] backdrop-blur">
-        <div className="mx-auto flex h-full max-w-5xl items-center gap-5 px-6">
+        <div className="mx-auto flex h-full max-w-5xl items-center justify-between px-6">
           <Link to="/home"><img src={logo} alt="Drivique" className="h-20" /></Link>
+          <MenuConfiguracion />
         </div>
       </nav>
 

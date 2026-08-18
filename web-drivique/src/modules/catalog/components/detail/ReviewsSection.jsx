@@ -2,15 +2,38 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { FaStar } from 'react-icons/fa'
 
+const REVIEW_TEXT_MAP = {
+  "Muy cómodo para viajes cortos, sin problemas mecánicos y el proceso de entrega fue rápido.": "vehiculo.reviews.rev1",
+  "Buen carro y buen precio, aunque el aire tardó un poco en enfriar el primer día.": "vehiculo.reviews.rev2",
+  "Excelente vehículo, muy cómodo y puntual en la entrega.": "vehiculo.reviews.rev3",
+  "Buen servicio, el carro en perfectas condiciones.": "vehiculo.reviews.rev4",
+  "Lo recomiendo totalmente, volveré a alquilar.": "vehiculo.reviews.rev5",
+  "Una locura de carro, corre muchísimo y está impecable.": "vehiculo.reviews.rev6",
+  "Perfecta para ir al campo, muy fuerte.": "vehiculo.reviews.rev7",
+  "Espacio de sobra para toda la familia. La volveré a alquilar.": "vehiculo.reviews.rev8"
+}
+
 export default function ReviewsSection({ comentarios = [], calificacion = 0 }) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const [mostrarTodas, setMostrarTodas] = useState(false)
+
+  const formatearFecha = (fechaStr) => {
+    if (!fechaStr) return ''
+    try {
+      const date = new Date(fechaStr)
+      const langMap = { es: 'es-ES', en: 'en-US', fr: 'fr-FR', pt: 'pt-PT', br: 'pt-BR' }
+      const locale = langMap[i18n.language] || 'es-ES'
+      return date.toLocaleDateString(locale, { day: 'numeric', month: 'short', year: 'numeric' })
+    } catch {
+      return fechaStr
+    }
+  }
 
   if (!comentarios || comentarios.length === 0) {
     return (
       <div style={{ paddingTop: 10 }}>
         <h4 style={{ fontSize: 13, fontWeight: 700, color: 'var(--texto-primary)', margin: '0 0 16px' }}>
-          Reseñas de clientes
+          {t('vehiculo.customerReviews', 'Reseñas de clientes')}
         </h4>
         <div style={{ background: '#f8fafc', borderRadius: 12, padding: 24, textAlign: 'center', border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
           <p style={{ color: 'var(--texto-primary)', fontWeight: 700, fontSize: 15, margin: '0 0 8px' }}>{t('catalog.reviews.emptyTitle', 'Este vehículo aún no tiene reseñas')}</p>
@@ -37,12 +60,12 @@ export default function ReviewsSection({ comentarios = [], calificacion = 0 }) {
   }
 
   return (
-    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 40, paddingTop: 10 }}>
+    <div className="resenas-layout" style={{ display: 'flex', flexWrap: 'wrap', gap: 40, paddingTop: 10 }}>
       
       {/* Columna Izquierda: Resumen */}
-      <div style={{ flex: '0 0 240px' }}>
+      <div className="resenas-resumen" style={{ flex: '0 0 240px' }}>
         <h4 style={{ fontSize: 13, fontWeight: 700, color: 'var(--texto-primary)', margin: '0 0 16px' }}>
-          Reseñas de clientes
+          {t('vehiculo.customerReviews', 'Reseñas de clientes')}
         </h4>
         <div style={{ fontSize: 48, fontWeight: 800, color: 'var(--texto-primary)', lineHeight: 1, marginBottom: 12 }}>
           {calificacion.toFixed(1)}
@@ -51,7 +74,7 @@ export default function ReviewsSection({ comentarios = [], calificacion = 0 }) {
           {renderStars(Math.round(calificacion))}
         </div>
         <div style={{ fontSize: 12, color: 'var(--texto-second)', marginBottom: 24 }}>
-          {comentarios.length} reseñas
+          {t('vehiculo.reviewsCount', { count: comentarios.length, defaultValue: `${comentarios.length} reseñas` })}
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -73,8 +96,11 @@ export default function ReviewsSection({ comentarios = [], calificacion = 0 }) {
       </div>
 
       {/* Columna Derecha: Lista de Comentarios */}
-      <div style={{ flex: 1, minWidth: 300, display: 'flex', flexDirection: 'column', gap: 20 }}>
-        {visibles.map((c, i) => (
+      <div className="resenas-lista" style={{ flex: 1, minWidth: 300, display: 'flex', flexDirection: 'column', gap: 20 }}>
+        {visibles.map((c, i) => {
+          const textoTraducido = REVIEW_TEXT_MAP[c.texto] ? t(REVIEW_TEXT_MAP[c.texto]) : c.texto
+          const fechaFormateada = formatearFecha(c.fecha || '2026-04-15')
+          return (
             <div key={i} style={{ display: 'flex', gap: 16, borderBottom: '1px solid rgba(0,0,0,0.04)', paddingBottom: 20 }}>
               {/* Avatar */}
               <div style={{ 
@@ -90,7 +116,7 @@ export default function ReviewsSection({ comentarios = [], calificacion = 0 }) {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
                   <div>
                     <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--texto-primary)' }}>{c.autor}</div>
-                    <div style={{ fontSize: 11, color: 'var(--texto-second)' }}>15 abr 2024</div>
+                    <div style={{ fontSize: 11, color: 'var(--texto-second)' }}>{fechaFormateada}</div>
                   </div>
                   <div style={{ display: 'flex', gap: 2 }}>
                     {Array.from({ length: 5 }).map((_, j) => (
@@ -98,11 +124,12 @@ export default function ReviewsSection({ comentarios = [], calificacion = 0 }) {
                     ))}
                   </div>
                 </div>
-                <p style={{ fontSize: 13, color: 'var(--texto-second)', margin: 0, lineHeight: 1.5 }}>{c.texto}</p>
+                <p style={{ fontSize: 13, color: 'var(--texto-second)', margin: 0, lineHeight: 1.5 }}>{textoTraducido}</p>
               </div>
             </div>
-          ))
-        }
+          )
+        })}
+
 
         {comentarios.length > 3 && (
           <div style={{ textAlign: 'center', marginTop: 10 }}>
@@ -115,11 +142,12 @@ export default function ReviewsSection({ comentarios = [], calificacion = 0 }) {
                 fontSize: 13
               }}
             >
-              {mostrarTodas ? 'Ver menos reseñas' : 'Ver más reseñas ˅'}
+              {mostrarTodas ? t('vehiculo.viewLessReviews', 'Ver menos reseñas') : t('vehiculo.viewMoreReviews', 'Ver más reseñas ˅')}
             </button>
           </div>
         )}
       </div>
+
 
     </div>
   )

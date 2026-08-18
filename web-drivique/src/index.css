@@ -64,7 +64,18 @@ html.dark {
   --hero-orb1:     rgba(30,58,138,0.2);
   --hero-orb2:     rgba(30,58,138,0.15);
   --texto-acento:   #ffffff;
-}/* -- Estilos personalizados SweetAlert2 del proyecto -- */
+}/* ── Estilo global de zoom de catálogo (90%) ── */
+.catalogo-page {
+  zoom: 0.9;
+}
+
+@media (max-width: 1024px) {
+  .catalogo-page {
+    zoom: 1 !important;
+  }
+}
+
+/* -- Estilos personalizados SweetAlert2 del proyecto -- */
 .swal2-project-popup {
   background: #f8fafc !important;
   color: #0f172a !important;
@@ -197,4 +208,126 @@ html.dark .campo-select {
 .campo-select option {
   background-color: var(--bg-tarjeta);
   color: var(--texto-primary);
+}
+
+/* ── Reglas de Diseño Responsive para Pantallas de Reserva ── */
+@media (max-width: 1024px) {
+  .detalle-layout {
+    flex-direction: column !important;
+    gap: 24px !important;
+  }
+
+  .detalle-resumen-toggle {
+    display: flex !important;
+  }
+
+  .detalle-columna-principal {
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .detalle-contenido-inner {
+    padding: 20px 16px !important;
+  }
+
+  .datos-personales-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  .doc-uploader-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  .confirmar-reserva-bloque {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    text-align: center !important;
+    padding: 20px 20px !important;
+    gap: 16px !important;
+  }
+
+  .confirmar-reserva-bloque button {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  .respuesta-pago-card {
+    padding: 28px 18px !important;
+    border-radius: 20px !important;
+  }
+}
+
+/* ── Header Bar de Reserva ── */
+.flujo-header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.flujo-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--texto-acento);
+  font-weight: 700;
+  background: var(--bg-item);
+  border: 1px solid var(--borde);
+  border-radius: 9999px;
+  padding: 8px 16px;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all 200ms ease;
+}
+
+.flujo-titulo {
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--texto-primary);
+  margin: 0;
+  line-height: 1.2;
+}
+
+/* ── Barra de Progreso Segmentada (Stepper Minimalista) ── */
+.flujo-progress-bar {
+  width: 100%;
+  max-width: 680px;
+}
+
+@media (max-width: 640px) {
+  .flujo-header-bar {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 8px !important;
+    margin-bottom: 20px !important;
+  }
+
+  .flujo-titulo {
+    font-size: 14px !important;
+    text-align: center !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    max-width: 170px !important;
+  }
+
+  .flujo-back-btn {
+    padding: 6px 10px !important;
+    font-size: 11px !important;
+  }
+
+  .flujo-back-btn span {
+    display: inline-block !important;
+  }
+
+  .flujo-progress-bar {
+    max-width: 100% !important;
+  }
 }
