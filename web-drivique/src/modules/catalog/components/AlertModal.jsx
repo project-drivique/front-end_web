@@ -1,24 +1,27 @@
 import { createPortal } from 'react-dom'
 import { FaTimes } from 'react-icons/fa'
+import { useLanding } from '../../landing/LandingContext'
 
-// ─────────────────────────────────────────────────────────────────────────
-// Componente BASE reutilizable para TODAS las alertas/modales de confirmación
-// del catálogo. El tamaño de la tarjeta (260px), el padding, el ícono y los
-// botones se definen UNA sola vez aquí. Los demás modales (AlertaModal,
-// GuestFavoriteModal, GuestReserveModal, ChooseDatesModal, etc.) son solo
-// wrappers que le pasan texto/ícono/acciones — así nunca vuelven a
-// desincronizarse en tamaño.
-// ─────────────────────────────────────────────────────────────────────────
-
-const TEMA_DEFECTO = {
-  overlayBg: 'rgba(15,23,42,0.55)',
+const TEMA_LIGHT = {
+  overlayBg: 'rgba(15,23,42,0.60)',
   cardBg: '#ffffff',
   cardBorder: '#e5ebf5',
-  textPrimary: '#111a3a',
+  textPrimary: '#0f172a',
   textSecondary: '#64748b',
   accent: '#1e3a8a',
   accentBgSoft: '#eff6ff',
-  accentGradient: 'linear-gradient(90deg,#1e3a8a,#2563eb)',
+  accentGradient: 'linear-gradient(135deg,#1e3a8a,#2563eb)',
+}
+
+const TEMA_DARK = {
+  overlayBg: 'rgba(0,0,0,0.75)',
+  cardBg: '#111827',
+  cardBorder: '#334155',
+  textPrimary: '#f8fafc',
+  textSecondary: '#cbd5e1',
+  accent: '#93c5fd',
+  accentBgSoft: 'rgba(30,58,138,0.35)',
+  accentGradient: 'linear-gradient(135deg,#1e3a8a,#2563eb)',
 }
 
 const ESTILOS = {
@@ -30,28 +33,35 @@ const ESTILOS = {
     alignItems: 'center',
     justifyContent: 'center',
     padding: '20px',
+    backdropFilter: 'blur(4px)',
+    WebkitBackdropFilter: 'blur(4px)',
   },
   card: {
     position: 'relative',
     width: '100%',
-    maxWidth: '260px',
-    borderRadius: '18px',
-    padding: '22px 18px 18px',
+    maxWidth: '280px',
+    borderRadius: '16px',
+    padding: '20px 16px 16px',
     textAlign: 'center',
-    boxShadow: '0 16px 40px rgba(0,0,0,0.28)',
+    boxShadow: '0 12px 30px rgba(0,0,0,0.35)',
+    boxSizing: 'border-box',
+    transition: 'all 200ms ease',
   },
   closeButton: {
     position: 'absolute',
-    top: '12px',
-    right: '12px',
+    top: '10px',
+    right: '10px',
     background: 'none',
     border: 'none',
     cursor: 'pointer',
-    padding: '4px',
+    padding: '6px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   iconWrapper: {
-    width: '44px',
-    height: '44px',
+    width: '42px',
+    height: '42px',
     borderRadius: '50%',
     display: 'flex',
     alignItems: 'center',
@@ -62,21 +72,24 @@ const ESTILOS = {
     margin: 0,
     fontSize: '15px',
     fontWeight: 800,
+    lineHeight: '1.3',
   },
   mensaje: {
-    margin: '6px 0 18px',
+    margin: '6px 0 16px',
     fontSize: '12.5px',
-    lineHeight: '18px',
+    lineHeight: '1.45',
   },
   botonesRow: {
     display: 'flex',
-    gap: '10px',
+    gap: '8px',
   },
   botonBase: {
-    height: '40px',
+    height: '38px',
     borderRadius: '10px',
-    fontSize: '13px',
+    fontSize: '12.5px',
+    fontWeight: 700,
     cursor: 'pointer',
+    transition: 'all 180ms ease',
   },
 }
 
@@ -93,7 +106,20 @@ export default function AlertModal({
   showCloseButton = false,
   usePortal = true,
 }) {
-  const t = { ...TEMA_DEFECTO, ...theme }
+  let esModoOscuro = false
+  try {
+    const landing = useLanding()
+    if (landing && landing.tema) {
+      esModoOscuro = landing.tema === 'oscuro'
+    } else {
+      esModoOscuro = document.documentElement.classList.contains('dark')
+    }
+  } catch (e) {
+    esModoOscuro = typeof document !== 'undefined' && document.documentElement.classList.contains('dark')
+  }
+
+  const baseTheme = esModoOscuro ? TEMA_DARK : TEMA_LIGHT
+  const t = { ...baseTheme, ...theme }
 
   const botonSecundario = {
     ...ESTILOS.botonBase,
