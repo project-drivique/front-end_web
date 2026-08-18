@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLanding } from '../../landing/LandingContext';
 import { formatCurrency } from '@/utils/currencyUtils';
@@ -288,11 +288,11 @@ export default function DatosPersonales({ vehiculo, reserva, seguroIdx, servicio
         boxShadow: 'var(--sombra-tarjeta)'
       }}>
         <h4 style={{ fontSize: 16, fontWeight: 900, color: 'var(--texto-primary)', marginBottom: 6 }}>
-          {docsVerificados ? 'Verificación Documental' : 'Verificación Documental Obligatoria'}
+          {docsVerificados ? t('vehiculo.docVerification', 'Verificación Documental') : t('vehiculo.mandatoryDocVerification', 'Verificación Documental Obligatoria')}
         </h4>
         <p style={{ fontSize: 13, color: 'var(--texto-second)', marginBottom: 20 }}>
           {docsVerificados
-            ? 'Ya verificamos tus documentos en una reserva anterior. Si quieres, puedes reemplazarlos subiendo nuevos archivos PDF.'
+            ? t('vehiculo.docVerifiedSubtitle', 'Ya verificamos tus documentos en una reserva anterior. Si quieres, puedes reemplazarlos subiendo nuevos archivos PDF.')
             : ''}
         </p>
 
@@ -305,15 +305,15 @@ export default function DatosPersonales({ vehiculo, reserva, seguroIdx, servicio
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
             </svg>
             <span style={{ fontSize: 13, color: '#166534', lineHeight: 1.5, fontWeight: 700, textAlign: 'left' }}>
-              Documentos ya registrados: Ya has subido tu cédula y licencia de conducción anteriormente. No es obligatorio volver a cargarlos, pero si lo deseas puedes reemplazarlos subiendo nuevos archivos PDF.
+              {t('vehiculo.docsAlreadyRegistered', 'Documentos ya registrados: Ya has subido tu cédula y licencia de conducción anteriormente. No es obligatorio volver a cargarlos, pero si lo deseas puedes reemplazarlos subiendo nuevos archivos PDF.')}
             </span>
           </div>
         )}
 
         <div className="doc-uploader-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: 24, marginBottom: 12 }}>
           <DocumentUploader
-            label="Cédula de Ciudadanía"
-            helpText="Sube tu documento de identidad en un solo archivo PDF (ambos lados incluidos, máx 5MB)"
+            label={t('vehiculo.idDocCard', 'Cédula de Ciudadanía')}
+            helpText={t('vehiculo.idDocHelpText', 'Sube tu documento de identidad en un solo archivo PDF (ambos lados incluidos, máx 5MB)')}
             error={errores.cedulaPdf || cedulaError}
             file={datosForm.cedulaPdf}
             loading={cedulaCargando}
@@ -323,8 +323,8 @@ export default function DatosPersonales({ vehiculo, reserva, seguroIdx, servicio
           />
 
           <DocumentUploader
-            label="Licencia de Conducción"
-            helpText="Sube tu licencia de conducción vigente y legible en formato PDF (máx 5MB)"
+            label={t('vehiculo.driverLicense', 'Licencia de Conducción')}
+            helpText={t('vehiculo.driverLicenseHelpText', 'Sube tu licencia de conducción vigente y legible en formato PDF (máx 5MB)')}
             error={errores.licenciaPdf || licenciaError}
             file={datosForm.licenciaPdf}
             loading={licenciaCargando}

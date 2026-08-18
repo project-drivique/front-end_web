@@ -180,13 +180,13 @@ export default function FirmaContrato({ vehiculo, reservaGuardada, onFirmado }) 
               <Campo label={t('contratoFirma.protectionPlan')} value={seguroIdx != null ? vehiculo?.seguros?.[seguroIdx]?.nombre : '—'} />
               {reservaDetalles.sucursalRetiro === 'domicilio' && (
                 <>
-                  <Campo label="Dirección de Entrega" value={reservaDetalles.domicilioDireccion} />
-                  <Campo label="Barrio de Entrega" value={reservaDetalles.domicilioBarrio} />
-                  <Campo label="Referencias de Entrega" value={reservaDetalles.domicilioReferencias} />
+                  <Campo label={t('contratoFirma.deliveryAddress', 'Dirección de Entrega')} value={reservaDetalles.domicilioDireccion} />
+                  <Campo label={t('contratoFirma.deliveryNeighborhood', 'Barrio de Entrega')} value={reservaDetalles.domicilioBarrio} />
+                  <Campo label={t('contratoFirma.deliveryReferences', 'Referencias de Entrega')} value={reservaDetalles.domicilioReferencias} />
                 </>
               )}
               {reservaDetalles.sucursalDevolucion === 'domicilio' && (
-                <Campo label="Devolución en Domicilio" value="Sí (Misma dirección de entrega)" />
+                <Campo label={t('contratoFirma.deliveryReturnHome', 'Devolución en Domicilio')} value={t('contratoFirma.sameDeliveryAddress', 'Sí (Misma dirección de entrega)')} />
               )}
             </div>
           </section>

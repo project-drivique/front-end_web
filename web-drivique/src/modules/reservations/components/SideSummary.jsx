@@ -51,17 +51,25 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, servicios
 
   return (
     <aside className="detalle-resumen-lateral" style={{
-      width: 320, flexShrink: 0,
-      background: 'var(--bg-tarjeta)', borderRadius: 24,
+      width: '100%',
+      background: 'var(--bg-tarjeta)',
+      borderRadius: 16,
       border: '1px solid var(--borde)',
-      boxShadow: '0 12px 36px rgba(0,0,0,0.06)',
       overflow: 'hidden',
       position: 'sticky', top: 88,
       alignSelf: 'flex-start',
     }}>
-      <div style={{ background: 'linear-gradient(135deg, #1e3a8a, #2563eb)', padding: '18px 24px' }}>
-        <p style={{ color: '#bfdbfe', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.09em', margin: '0 0 4px' }}>{t('vehiculo.reserveSummary')}</p>
-        <p style={{ color: '#fff', fontSize: 18, fontWeight: 800, margin: 0 }}>{vehiculo.nombre}</p>
+      {/* Header estilo tarjeta */}
+      <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--borde)', display: 'flex', alignItems: 'center', gap: 8 }}>
+        <svg width="14" height="14" fill="none" stroke="#2563eb" strokeWidth="2.2" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z" />
+        </svg>
+        <h3 style={{ margin: 0, fontSize: 13, fontWeight: 700, color: '#2563eb' }}>
+          {t('vehiculo.reserveSummary', 'Resumen de reserva')}
+        </h3>
+      </div>
+      <div style={{ padding: '0 20px 4px', marginTop: 4 }}>
+        <p style={{ fontSize: 15, fontWeight: 800, color: 'var(--texto-primary)', margin: '12px 0 0' }}>{vehiculo.nombre}</p>
       </div>
 
       <div style={{ padding: '0 20px 20px' }}>
@@ -76,7 +84,7 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, servicios
             {reserva.fechaInicio ? `${fmt(reserva.fechaInicio)}` : t('vehiculo.dateNotSelected')}
           </p>
           <p style={{ fontSize: 12, color: 'var(--texto-second)', margin: 0 }}>
-            {reserva.sucursalRetiro === 'domicilio' ? t('vehiculo.deliveryHome') : (reserva.sucursalRetiro || 'Lugar no seleccionado')} — {reserva.horaInicio || 'Hora no seleccionada'}
+            {reserva.sucursalRetiro === 'domicilio' ? t('vehiculo.deliveryHome') : (reserva.sucursalRetiro || t('vehiculo.locationNotSelected', 'Lugar no seleccionado'))} — {reserva.horaInicio || t('vehiculo.timeNotSelected', 'Hora no seleccionada')}
           </p>
           {reserva.sucursalRetiro === 'domicilio' && (reserva.domicilioDireccion || reserva.domicilioBarrio) && (
             <p style={{ fontSize: 11, color: '#2563eb', fontWeight: 700, margin: '4px 0 0', wordBreak: 'break-word', lineHeight: 1.3 }}>
@@ -96,7 +104,7 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, servicios
             {reserva.fechaFin ? `${fmt(reserva.fechaFin)}` : t('vehiculo.dateNotSelected')}
           </p>
           <p style={{ fontSize: 12, color: 'var(--texto-second)', margin: 0 }}>
-            {reserva.sucursalDevolucion === 'domicilio' ? t('vehiculo.returnHome') : (reserva.sucursalDevolucion || 'Lugar no seleccionado')} — {reserva.horaFin || 'Hora no seleccionada'}
+            {reserva.sucursalDevolucion === 'domicilio' ? t('vehiculo.returnHome') : (reserva.sucursalDevolucion || t('vehiculo.locationNotSelected', 'Lugar no seleccionado'))} — {reserva.horaFin || t('vehiculo.timeNotSelected', 'Hora no seleccionada')}
           </p>
           {reserva.sucursalDevolucion === 'domicilio' && (reserva.domicilioDireccion || reserva.domicilioBarrio) && (
             <p style={{ fontSize: 11, color: '#2563eb', fontWeight: 700, margin: '4px 0 0', wordBreak: 'break-word', lineHeight: 1.3 }}>
@@ -107,7 +115,7 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, servicios
 
         <div style={{ padding: '16px 0', borderBottom: '1px solid var(--borde)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-            <span style={{ fontSize: 11, fontWeight: 800, color: '#1e3a8a', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Tu Protección y Extras</span>
+            <span style={{ fontSize: 11, fontWeight: 800, color: '#1e3a8a', textTransform: 'uppercase', letterSpacing: '0.07em' }}>{t('vehiculo.protectionAndExtras', 'Tu Protección y Extras')}</span>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               <button onClick={() => onEditar('servicios')} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#2563eb', fontWeight: 700, padding: 0 }}>
                 <IcoEdit /> {t('vehiculo.extraServices')}
@@ -136,7 +144,7 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, servicios
               color: '#64748b',
               border: '1px solid #e2e8f0',
             }}>
-              Tipo de km no seleccionado
+              {t('vehiculo.kmNotSelected', 'Tipo de km no seleccionado')}
             </span>
           )}
         </div>
@@ -147,7 +155,7 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, servicios
             <span>{t('vehiculo.dailyLabel')}</span><span>{t('vehiculo.total')}</span>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, marginBottom: 12 }}>
-            <span style={{ color: 'var(--texto-primary)' }}>{dias} {t('vehiculo.daysCount')} × {formatCurrency(precio, moneda)}</span>
+            <span style={{ color: 'var(--texto-primary)' }}>{dias} {t('vehiculo.daysCount', { count: dias })} × {formatCurrency(precio, moneda)}</span>
             <span style={{ fontWeight: 800, color: 'var(--texto-primary)' }}>{formatCurrency(subtotalDiario, moneda)}</span>
           </div>
           {seguroIdx !== null ? (
@@ -155,14 +163,14 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, servicios
               <p style={{ fontSize: 11, fontWeight: 800, color: 'var(--texto-second)', margin: '0 0 4px' }}>{t('vehiculo.protectionsLabel')}</p>
               <div style={{ fontSize: 12, color: 'var(--texto-primary)', marginBottom: 4 }}>{vehiculo.seguros[seguroIdx]?.nombre}</div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, marginBottom: 12 }}>
-                <span style={{ color: 'var(--texto-primary)' }}>{dias} {t('vehiculo.daysCount')} × {formatCurrency(precioSeguro, moneda)}</span>
+                <span style={{ color: 'var(--texto-primary)' }}>{dias} {t('vehiculo.daysCount', { count: dias })} × {formatCurrency(precioSeguro, moneda)}</span>
                 <span style={{ fontWeight: 800, color: 'var(--texto-primary)' }}>{formatCurrency(subtotalSeguro, moneda)}</span>
               </div>
             </>
           ) : (
             <>
               <p style={{ fontSize: 11, fontWeight: 800, color: 'var(--texto-second)', margin: '0 0 4px' }}>{t('vehiculo.protectionsLabel')}</p>
-              <div style={{ fontSize: 12, color: '#64748b', marginBottom: 12, fontStyle: 'italic' }}>Protección no seleccionada</div>
+              <div style={{ fontSize: 12, color: '#64748b', marginBottom: 12, fontStyle: 'italic' }}>{t('vehiculo.protectionNotSelected', 'Protección no seleccionada')}</div>
             </>
           )}
           {serviciosElegidos.length > 0 && (
@@ -173,9 +181,9 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, servicios
                   <IcoEdit /> {t('common.edit')}
                 </button>
               </div>
-              <div style={{ fontSize: 12, color: 'var(--texto-primary)', marginBottom: 4 }}>{serviciosElegidos.map(s => s.nombre).join(', ')}</div>
+              <div style={{ fontSize: 12, color: 'var(--texto-primary)', marginBottom: 4 }}>{serviciosElegidos.map(s => t('servicios.' + s.nombre, s.nombre)).join(', ')}</div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, marginBottom: 12 }}>
-                <span style={{ color: 'var(--texto-primary)' }}>{dias} {t('vehiculo.daysCount')} × {formatCurrency(precioServicios, moneda)}</span>
+                <span style={{ color: 'var(--texto-primary)' }}>{dias} {t('vehiculo.daysCount', { count: dias })} × {formatCurrency(precioServicios, moneda)}</span>
                 <span style={{ fontWeight: 800, color: 'var(--texto-primary)' }}>{formatCurrency(subtotalServicios, moneda)}</span>
               </div>
             </>
@@ -186,12 +194,12 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, servicios
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, paddingBottom: 10 }}>
-            <span style={{ color: 'var(--texto-primary)' }}>Subtotal Reserva</span>
+            <span style={{ color: 'var(--texto-primary)' }}>{t('vehiculo.subtotalReservation', 'Subtotal Reserva')}</span>
             <span style={{ fontWeight: 800, color: 'var(--texto-primary)' }}>{formatCurrency(subtotalReserva, moneda)}</span>
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, paddingBottom: 10, flexWrap: 'wrap', gap: 4 }}>
-            <span style={{ color: 'var(--texto-primary)' }}>Recargo Logístico</span>
+            <span style={{ color: 'var(--texto-primary)' }}>{t('vehiculo.logisticsFeeLabel', 'Recargo Logístico')}</span>
             <span style={{ fontWeight: 800, color: 'var(--texto-primary)' }}>{formatCurrency(recargoLogistico, moneda)}</span>
             {recargoLogistico > 0 && (
               <span style={{ fontSize: 10, color: 'var(--texto-second)', width: '100%', display: 'block', textAlign: 'left' }}>
@@ -207,7 +215,7 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, servicios
           </div>
 
           <div style={{ background: 'var(--bg-item)', borderRadius: 16, padding: '16px', border: '1px solid var(--borde)' }}>
-            <p style={{ fontSize: 11, fontWeight: 800, color: '#1e3a8a', textTransform: 'uppercase', letterSpacing: '0.09em', margin: '0 0 4px' }}>Total Final</p>
+            <p style={{ fontSize: 11, fontWeight: 800, color: '#1e3a8a', textTransform: 'uppercase', letterSpacing: '0.09em', margin: '0 0 4px' }}>{t('vehiculo.finalTotal', 'Total Final')}</p>
             <p style={{ fontSize: 24, fontWeight: 900, color: '#1e3a8a', margin: 0 }}>{formatCurrency(total, moneda)}</p>
             <p style={{ fontSize: 10, color: 'var(--texto-second)', margin: '6px 0 0' }}>{t('vehiculo.totalIncludesTaxes')}</p>
           </div>

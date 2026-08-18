@@ -15,6 +15,7 @@ import BranchInfo from '../components/detail/BranchInfo'
 import RentalRequirements from '../components/detail/RentalRequirements'
 import ReviewsSection from '../components/detail/ReviewsSection'
 import GuestReserveModal from '../components/GuestReserveModal'
+import MenuConfiguracion from '@/components/MenuConfiguracion'
 import { FaCar, FaArrowLeft } from 'react-icons/fa'
 
 import './CatalogPage.css'
@@ -24,31 +25,38 @@ export default function VehicleDetailsPage() {
   const { t } = useTranslation()
   const { id } = useParams()
   const navigate = useNavigate()
-  const { usuario } = useAuthStore()
-  const { moneda } = useLanding()
+  const token = useAuthStore((s) => s.token)
+  const usuario = useAuthStore((s) => s.usuario)
+  const esAutenticado = Boolean(token && usuario)
+  const { tema, moneda } = useLanding()
+  const esModoOscuro = tema === 'oscuro'
   const [bannerVisible, setBannerVisible] = useState(false)
 
   const c = {
-    heroCardBg: '#ffffff',
-    heroCardBorder: '#dbe5f3',
-    textPrimary: '#111a3a',
-    textSecondary: '#64748b',
-    accentText: '#1e3a8a',
-    accentBgSoft: '#eff6ff',
+    pageBg: esModoOscuro ? '#0f172a' : '#f8fafc',
+    cardBg: esModoOscuro ? '#111827' : '#ffffff',
+    cardBorder: esModoOscuro ? '#1e293b' : '#e2e8f0',
+    subCardBg: esModoOscuro ? '#1e293b' : '#f8fafc',
+    subCardBorder: esModoOscuro ? '#334155' : '#e2e8f0',
+    textPrimary: esModoOscuro ? '#f8fafc' : '#0f172a',
+    textSecondary: esModoOscuro ? '#94a3b8' : '#64748b',
+    accentText: esModoOscuro ? '#93c5fd' : '#1e3a8a',
+    titleColor: esModoOscuro ? '#93c5fd' : '#1e3a8a',
+    accentBgSoft: esModoOscuro ? 'rgba(37,99,235,0.18)' : '#eff6ff',
     accentGradient: 'linear-gradient(90deg, #1e3a8a, #2563eb)'
   }
 
   const vehiculo = VEHICULOS_MOCK.find(v => v.id === Number(id))
 
   if (!vehiculo) return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 14 }}>
-      <p style={{ fontSize: 20, fontWeight: 800, color: 'var(--texto-primary)' }}>{t('vehiculo.notFound')}</p>
-      <Link to={usuario ? '/home' : '/catalogo'} style={{ color: '#1e3a8a', fontWeight: 700, fontSize: 14 }}>← {t('vehiculo.backToCatalog')}</Link>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 14, background: c.pageBg, color: c.textPrimary }}>
+      <p style={{ fontSize: 20, fontWeight: 800, color: c.textPrimary }}>{t('vehiculo.notFound')}</p>
+      <Link to={esAutenticado ? '/home' : '/catalogo'} style={{ color: c.accentText, fontWeight: 700, fontSize: 14 }}>← {t('vehiculo.backToCatalog')}</Link>
     </div>
   )
 
   const handleReservar = () => {
-    if (!usuario) {
+    if (!esAutenticado) {
       setBannerVisible(true)
       return
     }
@@ -56,19 +64,19 @@ export default function VehicleDetailsPage() {
   }
 
   return (
-    <div className="catalogo-page" style={{ minHeight: '100vh', background: 'var(--bg-page)', color: 'var(--texto-primary)' }}>
+    <div className="catalogo-page" style={{ minHeight: '100vh', background: c.pageBg, color: c.textPrimary }}>
       
-      <div style={{ maxWidth: 1360, margin: '0 auto', padding: '24px 24px 60px' }}>
+      <div className="detalle-contenido-inner" style={{ maxWidth: 1360, margin: '0 auto', padding: '24px 24px 60px' }}>
         
-        {/* Botón flotante fuera del contenedor principal */}
-        <div style={{ marginBottom: 24 }}>
+        {/* Top bar fuera del contenedor principal */}
+        <div style={{ marginBottom: 24, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <button 
             className="catalogo-header-back" 
-            onClick={() => navigate(usuario ? '/home' : '/catalogo')}
+            onClick={() => navigate(esAutenticado ? '/home' : '/catalogo')}
             style={{
-              background: '#fff',
-              border: '1px solid #dbe5f3',
-              color: '#2f4ea2',
+              background: c.cardBg,
+              border: `1px solid ${c.cardBorder}`,
+              color: c.accentText,
               padding: '8px 16px',
               borderRadius: '8px',
               display: 'inline-flex', alignItems: 'center', gap: 8,
@@ -78,13 +86,15 @@ export default function VehicleDetailsPage() {
           >
             <FaArrowLeft size={12} /> {t('vehiculo.backToCatalog')}
           </button>
+
+          <MenuConfiguracion />
         </div>
 
-        <div className="vehiculo-main-container">
+        <div className="vehiculo-main-container" style={{ background: c.cardBg, border: `1px solid ${c.cardBorder}`, boxShadow: esModoOscuro ? '0 4px 24px rgba(0,0,0,0.40)' : '0 4px 24px rgba(30,58,138,0.07)' }}>
           
           {/* Header Layout */}
           <div style={{ marginBottom: 24 }}>
-            <h1 style={{ fontSize: 26, fontWeight: 800, color: '#0f172a', margin: 0, letterSpacing: '-0.02em' }}>
+            <h1 className="detalle-titulo" style={{ fontSize: 26, fontWeight: 800, color: c.textPrimary, margin: 0, letterSpacing: '-0.02em' }}>
               {vehiculo.nombre}
             </h1>
           </div>
@@ -98,40 +108,42 @@ export default function VehicleDetailsPage() {
                 imagenes={vehiculo.imagenes || []} 
                 nombreVehiculo={vehiculo.nombre} 
                 calificacion={vehiculo.comentarios?.length ? vehiculo.calificacion : 0} 
+                c={c}
               />
               
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                <VehicleCharacteristics vehiculo={vehiculo} />
+                <VehicleCharacteristics vehiculo={vehiculo} c={c} />
               </div>
             </div>
 
             {/* Col 2: Info central + Equipamiento */}
             <div className="vehiculo-col-center" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <DescriptionSection descripcion={vehiculo.descripcion} />
+              <DescriptionSection descripcion={vehiculo.descripcion} id={vehiculo.id} c={c} />
               
-              <BranchInfo sucursalInfo={vehiculo.sucursalInfo} />
+              <BranchInfo sucursalInfo={vehiculo.sucursalInfo} c={c} />
               
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                 <EquipmentSection 
                   caracteristicas={vehiculo.caracteristicas} 
                   equipamiento={vehiculo.equipamientoTecnologico} 
+                  c={c}
                 />
               </div>
             </div>
 
             {/* Col 3: Tarifas y Reservar */}
             <div className="vehiculo-col-right" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <PricingSection tarifas={vehiculo.tarifas} seguros={vehiculo.seguros} />
+              <PricingSection tarifas={vehiculo.tarifas} seguros={vehiculo.seguros} c={c} />
 
-              <RentalRequirements />
+              <RentalRequirements c={c} />
 
-              <div className="vehiculo-reserve-card" style={{ margin: 0, flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                <div className="vehiculo-price-label">Precio por día (COP)</div>
-                <div className="vehiculo-price-value">
-                  {formatCurrency(vehiculo.precio, moneda)} <span>/día</span>
+              <div className="vehiculo-reserve-card" style={{ margin: 0, flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', background: c.cardBg, border: `1px solid ${c.cardBorder}` }}>
+                <div className="vehiculo-price-label" style={{ color: c.textSecondary }}>{t('catalogo.pricePerDay', 'Precio por día ($COP)')}</div>
+                <div className="vehiculo-price-value" style={{ color: c.accentText }}>
+                  {formatCurrency(vehiculo.precio, moneda)} <span style={{ color: c.textSecondary }}>{t('catalogo.perDay', '/día')}</span>
                 </div>
                 <button className="vehiculo-reserve-btn" onClick={handleReservar}>
-                  <FaCar /> Reservar ahora
+                  <FaCar /> {t('catalogo.reserveNow', 'Reservar ahora')}
                 </button>
               </div>
             </div>
@@ -139,7 +151,7 @@ export default function VehicleDetailsPage() {
           </div>
 
           {/* Reseñas (separado por línea) */}
-          <div style={{ borderTop: '1px solid var(--borde)', marginTop: 40, paddingTop: 40 }}>
+          <div className="detalle-resenas-wrapper" style={{ borderTop: '1px solid var(--borde)', marginTop: 40, paddingTop: 40 }}>
             <ReviewsSection comentarios={vehiculo.comentarios} calificacion={vehiculo.calificacion} />
           </div>
 
