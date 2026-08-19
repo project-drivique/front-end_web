@@ -53,7 +53,7 @@ export default function PlanesProteccion({ seguroIdx, onSeleccionar }) {
   return (
     <div>
       <h3 style={{ fontSize: 18, fontWeight: 800, color: 'var(--texto-primary)', margin: '0 0 16px' }}>{t('vehiculo.chooseProtection')}</h3>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(270px, 1fr))', gap: 18, marginBottom: 32 }}>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
         {planes.map((plan, idx) => {
           const sel = seguroIdx === idx;
           return (

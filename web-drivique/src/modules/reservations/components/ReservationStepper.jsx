@@ -1,8 +1,8 @@
 import { useTranslation } from 'react-i18next'
-import { FaCalendarAlt, FaShieldAlt, FaUserEdit } from 'react-icons/fa'
+import { FaCalendarAlt, FaShieldAlt, FaUserEdit, FaCheck } from 'react-icons/fa'
 
 const IcoCheck = () => (
-  <span style={{ fontSize: 13, fontWeight: 800 }}>✓</span>
+  <FaCheck size={12} />
 )
 
 export default function ReservationStepper({ pantalla, setPantalla, esModoOscuro }) {

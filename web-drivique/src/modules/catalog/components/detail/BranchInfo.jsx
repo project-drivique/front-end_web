@@ -53,6 +53,8 @@ export default function BranchInfo({ sucursalInfo, c }) {
         <>
           <button
             onClick={() => setModalVisible(true)}
+            onMouseEnter={e => e.currentTarget.style.background = 'rgba(37,99,235,0.08)'}
+            onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
             style={{
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
               fontSize: 13, fontWeight: 700, color: c?.accentText || '#1e3a8a', background: 'transparent',
