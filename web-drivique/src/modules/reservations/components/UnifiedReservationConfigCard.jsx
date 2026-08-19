@@ -3,7 +3,6 @@ import { FaCalendarAlt, FaMapMarkerAlt, FaClock, FaCreditCard, FaPencilAlt } fro
 import { useState } from 'react'
 import ReservationCalendar from './ReservationCalendar'
 import DomicilioModal from './DomicilioModal'
-import PicoYPlacaChecker from './PicoYPlacaChecker'
 import { SUCURSALES, CIUDADES } from '../../catalog/constants'
 
 const HORAS = Array.from({ length: 24 }, (_, i) => {
@@ -134,9 +133,6 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
         </div>
       </div>
 
-      {/* SECCIÓN: PICO Y PLACA (CONSULTA) */}
-      <PicoYPlacaChecker c={c} />
-
       {/* SECCIÓN: LUGAR Y HORA */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -259,7 +255,7 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
               <FaCalendarAlt size={10} color="#94a3b8" /> {t('vehiculo.pickupDateTitle', 'FECHA DE RETIRO')}
             </span>
             <span style={{ fontSize: 14, fontWeight: 700, color: textPrimary, marginTop: 2 }}>
-              {reserva.fechaInicio || t('vehiculo.selectAction', 'Seleccionar...')}
+              {reserva.fechaInicio || t('vehiculo.selectAction', 'Seleccionar')}
             </span>
           </div>
           
@@ -268,7 +264,7 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
               <FaCalendarAlt size={10} color="#94a3b8" /> {t('vehiculo.returnDateTitle', 'FECHA DE DEVOLUCIÓN')}
             </span>
             <span style={{ fontSize: 14, fontWeight: 700, color: textPrimary, marginTop: 2 }}>
-              {reserva.fechaFin || t('vehiculo.selectAction', 'Seleccionar...')}
+              {reserva.fechaFin || t('vehiculo.selectAction', 'Seleccionar')}
             </span>
           </div>
         </div>

@@ -4,15 +4,17 @@ import BranchInfo from '../../catalog/components/detail/BranchInfo'
 import VehicleCharacteristics from '../../catalog/components/detail/VehicleCharacteristics'
 import UnifiedReservationConfigCard from './UnifiedReservationConfigCard'
 import SideSummary from './SideSummary'
+import PicoYPlacaChecker from './PicoYPlacaChecker'
+import RentalRequirements from '../../catalog/components/detail/RentalRequirements'
 
-export default function ReservationStep1({ vehiculo, c, esModoOscuro, reserva, cambiarReserva, seguroIdx, serviciosSeleccionados, abrirModalEditar, pantalla }) {
+export default function ReservationStep1({ vehiculo, c, esModoOscuro, reserva, cambiarReserva, seguroIdx, serviciosSeleccionados, abrirModalEditar, pantalla, onContinuar }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
 
       {/* Grid superior: galería / descripción / características */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
 
-        {/* Columnas 1–2: galería + descripción/sucursal */}
+        {/* Columnas 1-2: galería + descripción/sucursal */}
         <div className="lg:col-span-2 flex flex-col">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch flex-1">
 
@@ -44,11 +46,16 @@ export default function ReservationStep1({ vehiculo, c, esModoOscuro, reserva, c
               <BranchInfo sucursalInfo={vehiculo.sucursalInfo} c={c} />
             </div>
           </div>
+          
+          <div style={{ marginTop: 24 }}>
+            <PicoYPlacaChecker c={c} />
+          </div>
         </div>
 
-        {/* Columna 3: Características */}
-        <div className="lg:col-span-1 flex flex-col">
+        {/* Columna 3: Características y Requisitos */}
+        <div className="lg:col-span-1 flex flex-col gap-6">
           <VehicleCharacteristics vehiculo={vehiculo} c={c} showIcon={false} />
+          <RentalRequirements c={c} />
         </div>
       </div>
 
@@ -76,6 +83,7 @@ export default function ReservationStep1({ vehiculo, c, esModoOscuro, reserva, c
             seguroIdx={seguroIdx}
             serviciosSeleccionados={serviciosSeleccionados}
             onEditar={abrirModalEditar}
+            onContinuar={onContinuar}
             pantalla={pantalla}
             c={c}
           />
