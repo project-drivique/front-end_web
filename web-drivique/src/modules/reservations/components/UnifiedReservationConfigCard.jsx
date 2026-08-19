@@ -3,6 +3,7 @@ import { FaCalendarAlt, FaMapMarkerAlt, FaClock, FaCreditCard, FaPencilAlt } fro
 import { useState } from 'react'
 import ReservationCalendar from './ReservationCalendar'
 import DomicilioModal from './DomicilioModal'
+import PicoYPlacaChecker from './PicoYPlacaChecker'
 import { SUCURSALES, CIUDADES } from '../../catalog/constants'
 
 const HORAS = Array.from({ length: 24 }, (_, i) => {
@@ -133,6 +134,9 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
         </div>
       </div>
 
+      {/* SECCIÓN: PICO Y PLACA (CONSULTA) */}
+      <PicoYPlacaChecker c={c} />
+
       {/* SECCIÓN: LUGAR Y HORA */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -153,7 +157,7 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
               onChange={e => handleLugarChange('sucursalRetiro', e.target.value)}
               style={selectStyle}
             >
-              <option value="">{t('vehiculo.selectLocation', 'Seleccionar...')}</option>
+              <option value="">{t('vehiculo.selectLocation', 'Seleccionar')}</option>
               {opcionesEntrega.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
             </select>
             {reserva?.sucursalRetiro === 'domicilio' && (
@@ -179,7 +183,7 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
               onChange={e => handleLugarChange('sucursalDevolucion', e.target.value)}
               style={selectStyle}
             >
-              <option value="">{t('vehiculo.selectLocation', 'Seleccionar...')}</option>
+              <option value="">{t('vehiculo.selectLocation', 'Seleccionar')}</option>
               {opcionesDevolucion.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
             </select>
             {reserva?.sucursalDevolucion === 'domicilio' && (
@@ -205,7 +209,7 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
               onChange={e => onCambio('horaInicio', e.target.value)}
               style={selectStyle}
             >
-              <option value="">{t('vehiculo.selectTime', 'Seleccionar...')}</option>
+              <option value="">{t('vehiculo.selectTime', 'Seleccionar')}</option>
               {HORAS.map(h => <option key={h} value={h}>{h}</option>)}
             </select>
           </div>
@@ -220,7 +224,7 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
               onChange={e => onCambio('horaFin', e.target.value)}
               style={selectStyle}
             >
-              <option value="">{t('vehiculo.selectTime', 'Seleccionar...')}</option>
+              <option value="">{t('vehiculo.selectTime', 'Seleccionar')}</option>
               {HORAS.map(h => <option key={h} value={h}>{h}</option>)}
             </select>
           </div>
