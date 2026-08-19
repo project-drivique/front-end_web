@@ -15,7 +15,7 @@ const COLOR_MAP  = {
   'Plata': 'vehiculo.colorPlata',
 }
 
-export default function VehicleCharacteristics({ vehiculo, c, showIcon = true }) {
+export default function VehicleCharacteristics({ vehiculo, c, showIcon = true, compact = false }) {
   const { t } = useTranslation()
 
   const bg = c?.cardBg || '#fff'
@@ -40,13 +40,13 @@ export default function VehicleCharacteristics({ vehiculo, c, showIcon = true })
   ]
 
   return (
-    <div style={{ background: bg, padding: 20, borderRadius: 16, border: `1px solid ${border}`, display: 'flex', flexDirection: 'column', gap: 16, height: '100%', flex: 1 }}>
+    <div style={{ background: bg, padding: compact ? 16 : 20, borderRadius: 16, border: `1px solid ${border}`, display: 'flex', flexDirection: 'column', gap: compact ? 12 : 16, height: '100%', flex: 1 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 0 }}>
         <FaListUl color={c?.accentText || "#2563eb"} size={14} />
         <h3 style={{ fontSize: 13, fontWeight: 700, color: titleColor, margin: 0 }}>{t('vehiculo.characteristics', 'Características')}</h3>
       </div>
       <div style={{ paddingTop: 0 }}>
-        <SpecsGrid items={items} c={c} showIcon={showIcon} />
+        <SpecsGrid items={items} c={c} showIcon={showIcon} compact={compact} />
       </div>
     </div>
   )

@@ -142,9 +142,9 @@ export default function DatosPersonales({ vehiculo, reserva, seguroIdx, servicio
 
     if (file.size > 5 * 1024 * 1024) {
       if (tipo === 'cedula') {
-        setCedulaError('El archivo supera el peso máximo de 5MB.');
+        setCedulaError(t('vehiculo.fileSizeExceeded', 'El archivo supera el peso máximo de 5MB.'));
       } else {
-        setLicenciaError('El archivo supera el peso máximo de 5MB.');
+        setLicenciaError(t('vehiculo.fileSizeExceeded', 'El archivo supera el peso máximo de 5MB.'));
       }
       return;
     }

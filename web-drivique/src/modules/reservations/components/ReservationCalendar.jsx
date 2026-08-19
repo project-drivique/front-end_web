@@ -218,18 +218,22 @@ export default function CalendarioReservas({ vehiculoId, fechaInicio, fechaFin, 
         justifyContent: 'center', gap: 16,
         marginTop: 20, paddingTop: 16,
         borderTop: '1px solid #f1f5f9',
-        fontSize: 11, fontWeight: 600, color: '#94a3b8'
+        fontSize: 12, fontWeight: 500, color: '#64748b'
       }}>
         <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#34d399', display: 'block' }} />
+          <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#10b981', display: 'block' }} />
           {t('vehiculo.calendarAvailable', 'Disponible')}
         </span>
         <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#f87171', display: 'block' }} />
-          {t('vehiculo.calendarOccupied', 'Ocupado')}
+          <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#dc2626', display: 'block' }} />
+          {t('vehiculo.calendarOccupied', 'Reservado')}
         </span>
         <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#2563eb', display: 'block' }} />
+          <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#64748b', display: 'block' }} />
+          {t('vehiculo.calendarMaintenance', 'Mantenimiento')}
+        </span>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#2563eb', display: 'block' }} />
           {t('vehiculo.calendarSelected', 'Seleccionado')}
         </span>
       </div>
