@@ -94,26 +94,6 @@
     "eqLeatherSeats": "Asientos de cuero",
     "scheduleMonSat": "Lun a sáb, 7:00 am - 7:00 pm",
     "scheduleMonSun": "Lun a dom, 6:00 am - 10:00 pm",
-    "reviews": {
-      "rev1": "Muy cómodo para viajes cortos, sin problemas mecánicos y el proceso de entrega fue rápido.",
-      "rev2": "Buen carro y buen precio, aunque el aire tardó un poco en enfriar el primer día.",
-      "rev3": "Excelente vehículo, muy cómodo y puntual en la entrega.",
-      "rev4": "Buen servicio, el carro en perfectas condiciones.",
-      "rev5": "Lo recomiendo totalmente, volveré a alquilar.",
-      "rev6": "Una locura de carro, corre muchísimo y está impecable.",
-      "rev7": "Perfecta para ir al campo, muy fuerte.",
-      "rev8": "Espacio de sobra para toda la familia. La volveré a alquilar."
-    },
-    "descriptions": {
-      "1": "Compacto ideal para ciudad, cómodo para 5 pasajeros y con buen rendimiento de combustible. Perfecto para desplazamientos diarios o viajes cortos en pareja o familia.",
-      "2": "Vehículo económico y ágil, fácil de estacionar en ciudad. Ideal para parejas o ejecutivos que buscan bajo consumo de combustible.",
-      "3": "Sedán elegante, espacioso y seguro. Excelente nivel de equipamiento tecnológico y alto confort para viajes de larga distancia.",
-      "4": "Sedán moderno con diseño deportivo y amplio espacio interior. Cuenta con excelente conectividad y sistemas de seguridad avanzados.",
-      "5": "SUV versátil y tecnológica, perfecta para trayectos urbanos o escapadas de fin de semana con la familia.",
-      "6": "SUV de lujo con diseño KODO, acabados de primera calidad y conducción dinámica superior para cualquier terreno.",
-      "7": "SUV futurista con gran espacio de baúl, alta tecnología y sistemas de asistencia al conductor de última generación.",
-      "8": "Camioneta 4x4 robusta y potente, ideal para viajes exigentes por carretera y terrenos difíciles con total confort."
-    },
     "readTerms": "Leer términos y condiciones",
     "termsPrefix": "Acepto los",
     "termsLink": "términos y condiciones",
@@ -431,6 +411,26 @@
     "selectDateRangeMsg": "La fecha de devolución debe ser posterior a la fecha de recogida. Revisa tu itinerario."
   },
   "vehiculo": {
+    "reviews": {
+      "rev1": "Muy cómodo para viajes cortos, sin problemas mecánicos y el proceso de entrega fue rápido.",
+      "rev2": "Buen carro y buen precio, aunque el aire tardó un poco en enfriar el primer día.",
+      "rev3": "Excelente vehículo, muy cómodo y puntual en la entrega.",
+      "rev4": "Buen servicio, el carro en perfectas condiciones.",
+      "rev5": "Lo recomiendo totalmente, volveré a alquilar.",
+      "rev6": "Una locura de carro, corre muchísimo y está impecable.",
+      "rev7": "Perfecta para ir al campo, muy fuerte.",
+      "rev8": "Espacio de sobra para toda la familia. La volveré a alquilar."
+    },
+    "descriptions": {
+      "1": "Compacto ideal para ciudad, cómodo para 5 pasajeros y con buen rendimiento de combustible. Perfecto para desplazamientos diarios o viajes cortos en pareja o familia.",
+      "2": "Vehículo económico y ágil, fácil de estacionar en ciudad. Ideal para parejas o ejecutivos que buscan bajo consumo de combustible.",
+      "3": "Sedán elegante, espacioso y seguro. Excelente nivel de equipamiento tecnológico y alto confort para viajes de larga distancia.",
+      "4": "Sedán moderno con diseño deportivo y amplio espacio interior. Cuenta con excelente conectividad y sistemas de seguridad avanzados.",
+      "5": "SUV versátil y tecnológica, perfecta para trayectos urbanos o escapadas de fin de semana con la familia.",
+      "6": "SUV de lujo con diseño KODO, acabados de primera calidad y conducción dinámica superior para cualquier terreno.",
+      "7": "SUV futurista con gran espacio de baúl, alta tecnología y sistemas de asistencia al conductor de última generación.",
+      "8": "Camioneta 4x4 robusta y potente, ideal para viajes exigentes por carretera y terrenos difíciles con total confort."
+    },
     "pickupDate": "Fecha de recogida",
     "returnDate": "Fecha de devolución",
     "howToGetThere": "Cómo llegar",

@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { FaWifi } from 'react-icons/fa'
+import { FaWifi, FaCheck } from 'react-icons/fa'
 import { formatCurrency } from '@/utils/currencyUtils'
 import { useLanding } from '../../landing/LandingContext'
 
@@ -33,7 +33,7 @@ export default function ServiciosAdicionales({ servicios = [], seleccionados = [
                   activo ? 'border-blue-600 bg-blue-600' : 'border-[var(--borde)] bg-transparent'
                 }`}
               >
-                {activo && '✓'}
+                {activo && <FaCheck size={11} />}
               </span>
 
               <FaWifi className={activo ? 'text-blue-600' : 'text-[var(--texto-second)]'} />

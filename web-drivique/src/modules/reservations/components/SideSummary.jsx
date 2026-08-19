@@ -9,7 +9,7 @@ const IcoEdit = () => (
   </svg>
 )
 
-export default function ResumenLateral({ vehiculo, reserva, seguroIdx, serviciosSeleccionados = [], onEditar }) {
+export default function ResumenLateral({ vehiculo, reserva, seguroIdx, serviciosSeleccionados = [], onEditar, onContinuar }) {
   const { t, i18n } = useTranslation()
   const { moneda } = useLanding();
 
@@ -115,6 +115,16 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, servicios
 
         <div style={{ padding: '16px 0', borderBottom: '1px solid var(--borde)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+            <span style={{ fontSize: 11, fontWeight: 800, color: '#1e3a8a', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Pico y Placa</span>
+            <button onClick={() => onEditar('pico')} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#2563eb', fontWeight: 700, padding: 0 }}>
+              <IcoEdit /> {t('common.edit', 'Editar')}
+            </button>
+          </div>
+          <p style={{ fontSize: 13, color: 'var(--texto-primary)', margin: 0, fontWeight: 600 }}>Consultar Restricciones</p>
+        </div>
+
+        <div style={{ padding: '16px 0', borderBottom: '1px solid var(--borde)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
             <span style={{ fontSize: 11, fontWeight: 800, color: '#1e3a8a', textTransform: 'uppercase', letterSpacing: '0.07em' }}>{t('vehiculo.protectionAndExtras', 'Tu Protección y Extras')}</span>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               <button onClick={() => onEditar('servicios')} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#2563eb', fontWeight: 700, padding: 0 }}>
@@ -134,7 +144,7 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, servicios
               color: reserva.tipoKm === 'ilimitado' ? '#059669' : '#1e3a8a',
               border: `1px solid ${reserva.tipoKm === 'ilimitado' ? '#bbf7d0' : '#bfdbfe'}`,
             }}>
-              {reserva.tipoKm === 'ilimitado' ? `∞ ${t('catalogo.unlimitedKm')}` : `${kmLimit.km} km/día ${t('catalogo.limitedKm')}`}
+              {reserva.tipoKm === 'ilimitado' ? `Ilimitado ${t('catalogo.unlimitedKm')}` : `${kmLimit.km} km/día ${t('catalogo.limitedKm')}`}
             </span>
           ) : (
             <span style={{
@@ -219,6 +229,21 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, servicios
             <p style={{ fontSize: 24, fontWeight: 900, color: '#1e3a8a', margin: 0 }}>{formatCurrency(total, moneda)}</p>
             <p style={{ fontSize: 10, color: 'var(--texto-second)', margin: '6px 0 0' }}>{t('vehiculo.totalIncludesTaxes')}</p>
           </div>
+
+          {onContinuar && (
+            <button
+              onClick={onContinuar}
+              style={{
+                width: '100%', marginTop: 16, padding: '14px', borderRadius: 12,
+                background: 'linear-gradient(90deg, #2563eb, #1e40af)', color: '#fff',
+                fontSize: 14, fontWeight: 800, border: 'none', cursor: 'pointer',
+                boxShadow: '0 4px 14px rgba(37,99,235,0.3)', transition: 'all 0.2s',
+                display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8
+              }}
+            >
+              {t('common.continue', 'Continuar')} &rarr;
+            </button>
+          )}
         </div>
       </div>
     </aside>

@@ -7,6 +7,7 @@ export default function PicoYPlacaChecker({ c }) {
   const bg = c?.cardBg || '#fff'
   const border = c?.cardBorder || '#e2e8f0'
   const titleColor = c?.titleColor || '#1e3a8a'
+  const textColor = c?.textSecondary || '#64748b'
   const accent = c?.accentText || '#2563eb'
 
   return (
@@ -27,8 +28,8 @@ export default function PicoYPlacaChecker({ c }) {
               {t('vehiculo.checkPicoYPlacaTitle', 'Consultar Pico y Placa')}
             </h3>
           </div>
-          <p style={{ fontSize: 13, color: 'var(--texto-second)', margin: 0, lineHeight: 1.6 }}>
-            {t('vehiculo.checkPicoYPlacaDesc', '¿No estás seguro de si este vehículo tiene restricción hoy? Consulta la información oficial a nivel nacional.')}
+          <p style={{ fontSize: 13, color: textColor, margin: 0, lineHeight: 1.6 }}>
+            {t('vehiculo.checkPicoYPlacaDesc', 'Consulta si el vehículo tiene restricciones de movilidad para hoy y planifica tu ruta evitando multas.')}
           </p>
         </div>
 
@@ -41,7 +42,7 @@ export default function PicoYPlacaChecker({ c }) {
             alignItems: 'center',
             justifyContent: 'center',
             gap: 8,
-            background: 'rgba(37,99,235,0.05)',
+            background: 'transparent',
             color: accent,
             textDecoration: 'none',
             padding: '10px 16px',
@@ -56,10 +57,10 @@ export default function PicoYPlacaChecker({ c }) {
             alignSelf: 'center'
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.background = 'rgba(37,99,235,0.1)'
+            e.currentTarget.style.background = 'rgba(37,99,235,0.08)'
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.background = 'rgba(37,99,235,0.05)'
+            e.currentTarget.style.background = 'transparent'
           }}
         >
           {t('vehiculo.goToOfficialSite', 'Ir a la página')} <FaExternalLinkAlt size={11} />

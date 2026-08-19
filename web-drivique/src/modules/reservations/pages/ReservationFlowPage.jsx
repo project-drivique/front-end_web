@@ -197,6 +197,7 @@ export default function ReservationFlowPage() {
                   serviciosSeleccionados={serviciosSeleccionados}
                   abrirModalEditar={abrirModalEditar}
                   pantalla={pantalla}
+                  onContinuar={irSiguiente}
                 />
               )}
 
@@ -231,21 +232,9 @@ export default function ReservationFlowPage() {
               )}
 
               {/* ── Botón continuar (pasos 1 y 2) ── */}
-              {pantalla < 3 && (
-                <div className="detalle-continuar-desktop" style={{ marginTop: 32 }}>
-                  {errorPaso1 && (
-                    <p style={{ color: '#dc2626', fontSize: 13, fontWeight: 700, marginBottom: 12, textAlign: 'right' }}>{errorPaso1}</p>
-                  )}
-                  <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                    <button
-                      onClick={irSiguiente}
-                      style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '16px 40px', borderRadius: 16, background: 'linear-gradient(90deg,#1e3a8a,#2563eb)', color: '#fff', fontWeight: 900, fontSize: 15, border: 'none', cursor: 'pointer', boxShadow: '0 8px 24px rgba(37,99,235,0.28)', transition: 'transform 200ms ease' }}
-                      onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
-                      onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
-                    >
-                      {pantalla === 2 ? t('vehiculo.continueData', 'Continuar a Datos Personales') : t('common.continue', 'Continuar')} <IcoArrow />
-                    </button>
-                  </div>
+              {pantalla < 3 && errorPaso1 && (
+                <div className="detalle-continuar-desktop" style={{ marginTop: 16 }}>
+                  <p style={{ color: '#dc2626', fontSize: 13, fontWeight: 700, marginBottom: 12, textAlign: 'right' }}>{errorPaso1}</p>
                 </div>
               )}
             </div>
@@ -263,6 +252,7 @@ export default function ReservationFlowPage() {
                   serviciosSeleccionados={serviciosSeleccionados}
                   onEditar={abrirModalEditar}
                   pantalla={pantalla}
+                  onContinuar={irSiguiente}
                   c={c}
                 />
               </div>
