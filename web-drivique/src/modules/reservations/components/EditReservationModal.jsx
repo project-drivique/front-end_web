@@ -80,12 +80,14 @@ export default function EditReservationModal({
         showAlert({
           icon: 'info',
           title: t('vehiculo.cashBranchTitle'),
-          html: `<div style="text-align:left;font-size:14px;line-height:1.6;">
+          background: 'var(--bg-tarjeta)',
+          color: 'var(--texto-primary)',
+          html: `<div style="text-align:left;font-size:14px;line-height:1.6;color:var(--texto-primary);">
             <p style="margin:0 0 10px;">${t('vehiculo.cashBranchIntro')}</p>
-            <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;padding:14px 16px;">
-              <p style="margin:0 0 4px;font-weight:800;color:#1e3a8a;">${sucursal.nombre}</p>
-              <p style="margin:0 0 4px;color:#334155;"><strong>${t('vehiculo.cashBranchCity')}:</strong> ${sucursal.ciudad}</p>
-              <p style="margin:0;color:#334155;"><strong>${t('vehiculo.cashBranchAddress')}:</strong> ${sucursal.direccion || t('vehiculo.cashBranchNoAddress')}</p>
+            <div style="background:var(--bg-item);border:1px solid var(--borde);border-radius:12px;padding:14px 16px;">
+              <p style="margin:0 0 4px;font-weight:800;color:var(--texto-acento);">${sucursal.nombre}</p>
+              <p style="margin:0 0 4px;color:var(--texto-second);"><strong>${t('vehiculo.cashBranchCity')}:</strong> ${sucursal.ciudad}</p>
+              <p style="margin:0;color:var(--texto-second);"><strong>${t('vehiculo.cashBranchAddress')}:</strong> ${sucursal.direccion || t('vehiculo.cashBranchNoAddress')}</p>
             </div>
           </div>`,
           confirmButtonText: t('common.close'),

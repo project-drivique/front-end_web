@@ -11,21 +11,22 @@ export default function ReservationStep1({ vehiculo, c, esModoOscuro, reserva, c
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
 
-      {/* Grid superior: galería / descripción / características */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-
-        {/* Columnas 1-2: galería + descripción/sucursal */}
-        <div className="lg:col-span-2 flex flex-col gap-6">
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 24 }}>
-
-            {/* Galería */}
+      {/* Contenedor principal dividido en Lado Izquierdo (Cols 1 y 2) y Lado Derecho (Col 3) para independizar alturas, pero alineado en tercios exactos */}
+      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 24 }}>
+        
+        {/* Lado Izquierdo */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+          {/* Fila superior del lado izquierdo: 2 columnas exactamente iguales (1/3 de la pantalla cada una) */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
+            {/* Columna 1: Galería */}
             <div style={{
               background: c?.cardBg || 'var(--bg-tarjeta)',
               border: `1px solid ${c?.cardBorder || 'var(--borde)'}`,
               borderRadius: 20, padding: 24,
               display: 'flex', flexDirection: 'column', gap: 16,
-              alignSelf: 'stretch',
               boxShadow: c?.isDark ? '0 8px 24px rgba(0,0,0,0.3)' : '0 6px 20px rgba(0,0,0,0.03)',
+              boxSizing: 'border-box',
+              height: '100%'
             }}>
               <h2 style={{ fontSize: 22, fontWeight: 800, color: c.textPrimary, margin: 0, letterSpacing: '-0.02em' }}>
                 {vehiculo.nombre}
@@ -34,29 +35,32 @@ export default function ReservationStep1({ vehiculo, c, esModoOscuro, reserva, c
                 imagenes={vehiculo.imagenes}
                 nombreVehiculo={vehiculo.nombre}
                 calificacion={vehiculo.comentarios?.length ? vehiculo.calificacion : 0}
+                compact={true}
+                stretchThumbnails={true}
                 c={c}
               />
             </div>
 
-            {/* Descripción + Sucursal */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+            {/* Columna 2: Descripción + Sucursal */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16, boxSizing: 'border-box', height: '100%', justifyContent: 'space-between' }}>
               <DescriptionSection descripcion={vehiculo.descripcion} id={vehiculo.id} c={c} />
               <BranchInfo sucursalInfo={vehiculo.sucursalInfo} c={c} />
             </div>
           </div>
 
-
-
-          {/* Pico y Placa */}
-          <div>
-            <PicoYPlacaChecker c={c} />
+          {/* Fila inferior del lado izquierdo: Pico y Placa ocupa ambas columnas */}
+          <div style={{ boxSizing: 'border-box' }}>
+            <PicoYPlacaChecker c={c} compact={true} vehiculo={vehiculo} />
           </div>
         </div>
 
-        {/* Columna 3: Características y Requisitos */}
-        <div className="lg:col-span-1 flex flex-col gap-6">
-          <VehicleCharacteristics vehiculo={vehiculo} c={c} showIcon={false} compact={true} />
-          <RentalRequirements c={c} />
+        {/* Lado Derecho (Columna 3: exactamente 1/3 de la pantalla) */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 24, boxSizing: 'border-box' }}>
+          {/* Características */}
+          <VehicleCharacteristics vehiculo={vehiculo} c={c} showIcon={true} compact={true} />
+          
+          {/* Requisitos para Rentar */}
+          <RentalRequirements vehiculo={vehiculo} c={c} compact={true} />
         </div>
       </div>
 

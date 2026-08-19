@@ -6,16 +6,12 @@ function SpecItem({ icon: Icono, label, value, showIcon = true, c }) {
   const accent = c?.accentText || '#2563eb'
 
   return (
-    <div style={{ display: 'flex', alignItems: 'flex-start', gap: showIcon ? 10 : 0 }}>
-      {showIcon && Icono && (
-        <span style={{ color: accent, marginTop: 2, flexShrink: 0 }}>
-          <Icono size={16} />
-        </span>
-      )}
-      <div>
-        <p style={{ fontSize: 12, color: textSecond, margin: '0 0 2px', fontWeight: 500 }}>{label}</p>
-        <p style={{ fontSize: 14, color: textPrimary, margin: 0, fontWeight: 700 }}>{value}</p>
-      </div>
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <p style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: textSecond, margin: '0 0 2px', fontWeight: 500 }}>
+        {showIcon && Icono && <Icono size={12} color="#94a3b8" />}
+        {label}
+      </p>
+      <p style={{ fontSize: 14, color: textPrimary, margin: 0, fontWeight: 700 }}>{value}</p>
     </div>
   )
 }
@@ -24,7 +20,16 @@ export default function SpecsGrid({ items, showIcon = true, compact = false, c }
   const { t } = useTranslation() // If needed inside
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', rowGap: compact ? 12 : 20, columnGap: 16 }}>
+    <div 
+      style={{ 
+        display: 'grid', 
+        gridTemplateColumns: 'repeat(2, 1fr)', 
+        gap: compact ? 16 : 24, 
+        rowGap: compact ? 24 : 32,
+        flex: 1,
+        alignContent: 'space-between'
+      }}
+    >
       {items.map((it, i) => <SpecItem key={i} icon={it.Icono} label={it.label} value={it.value} showIcon={showIcon} c={c} />)}
     </div>
   )

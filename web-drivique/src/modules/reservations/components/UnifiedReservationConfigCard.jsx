@@ -98,7 +98,6 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
             return (
               <label
                 key={value}
-                onClick={() => onCambio('metodoPago', value)}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
