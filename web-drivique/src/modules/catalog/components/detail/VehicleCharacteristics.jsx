@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { FaCar, FaGasPump, FaUserFriends, FaDoorOpen, FaSuitcase, FaBolt, FaPalette, FaCalendarAlt, FaListUl, FaTag } from 'react-icons/fa'
+import { FaCar, FaGasPump, FaUserFriends, FaDoorOpen, FaSuitcase, FaBolt, FaPalette, FaCalendarAlt, FaListUl, FaTag, FaIdCard } from 'react-icons/fa'
 import DetailSection from './DetailSection'
 import SpecsGrid from './SpecsGrid'
 
@@ -37,6 +37,7 @@ export default function VehicleCharacteristics({ vehiculo, c, showIcon = true, c
     { Icono: FaBolt,        label: t('vehiculo.engine', 'Motor'), value: vehiculo.cilindraje },
     { Icono: FaPalette,     label: t('vehiculo.colorLabel', 'Color'), value: color },
     { Icono: FaCalendarAlt, label: t('vehiculo.year', 'Año'), value: `${vehiculo.año}` },
+    { Icono: FaIdCard,      label: t('vehiculo.plateLabel', 'Placa'), value: vehiculo.placa || '—' },
   ]
 
   return (

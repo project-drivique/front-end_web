@@ -24,7 +24,8 @@ function RutaPrivada({ children }) {
   const token    = useAuthStore((s) => s.token)
   const hydrated = useHydration()
   if (!hydrated) return null
-  return token ? children : <Navigate to="/" replace />
+  const esValido = token && token !== 'null' && token !== 'undefined'
+  return esValido ? children : <Navigate to="/" replace />
 }
 
 function Ruta2FA({ children }) {

@@ -169,8 +169,18 @@ export default function ReservationFlowPage() {
         {/* Top bar */}
         <div style={{ marginBottom: 24, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <button
+            className="catalogo-header-back"
             onClick={irAtras}
-            style={{ background: c.cardBg, border: `1px solid ${c.cardBorder}`, color: c.accentText, padding: '8px 16px', borderRadius: '8px', display: 'inline-flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontWeight: 600 }}
+            style={{
+              background: c.cardBg,
+              border: `1px solid ${c.cardBorder}`,
+              color: c.accentText,
+              padding: '8px 16px',
+              borderRadius: '8px',
+              display: 'inline-flex', alignItems: 'center', gap: 8,
+              cursor: 'pointer',
+              fontWeight: 600
+            }}
           >
             <FaArrowLeft size={12} /> {pantalla === 1 ? t('vehiculo.backToCatalog') : t('common.goBack')}
           </button>
@@ -239,7 +249,7 @@ export default function ReservationFlowPage() {
               )}
             </div>
 
-            {/* ── SideSummary (pasos 2 y 3) ── */}
+            {/* ── SideSummary (pasos 2 y 3, en columna lateral) ── */}
             {pantalla > 1 && (
               <div
                 ref={resumenMovilRef}
@@ -252,7 +262,7 @@ export default function ReservationFlowPage() {
                   serviciosSeleccionados={serviciosSeleccionados}
                   onEditar={abrirModalEditar}
                   pantalla={pantalla}
-                  onContinuar={irSiguiente}
+                  onContinuar={pantalla < 3 ? irSiguiente : null}
                   c={c}
                 />
               </div>
