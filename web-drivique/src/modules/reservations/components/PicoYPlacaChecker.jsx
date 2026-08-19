@@ -11,10 +11,10 @@ export default function PicoYPlacaChecker({ c }) {
   const accent = c?.accentText || '#2563eb'
 
   return (
-    <div style={{ 
-      background: bg, 
-      padding: 20, 
-      borderRadius: 16, 
+    <div style={{
+      background: bg,
+      padding: 20,
+      borderRadius: 16,
       border: `1px solid ${border}`,
       display: 'flex',
       flexDirection: 'column',
@@ -29,13 +29,13 @@ export default function PicoYPlacaChecker({ c }) {
             </h3>
           </div>
           <p style={{ fontSize: 13, color: textColor, margin: 0, lineHeight: 1.6 }}>
-            {t('vehiculo.checkPicoYPlacaDesc', 'Consulta si el vehículo tiene restricciones de movilidad para hoy y planifica tu ruta evitando multas.')}
+            {t('vehiculo.checkPicoYPlacaDesc', '¿No estás seguro de si este vehículo tiene restricción de movilidad hoy? Consulta la información oficial a nivel nacional para planificar tu ruta y evitar multas o contratiempos durante tu reserva. Recuerda que las restricciones pueden variar según la ciudad y el día de la semana, por lo que es vital estar informado antes de viajar.')}
           </p>
         </div>
 
-        <a 
-          href="https://www.pyphoy.com/" 
-          target="_blank" 
+        <a
+          href="https://www.pyphoy.com/"
+          target="_blank"
           rel="noopener noreferrer"
           style={{
             display: 'inline-flex',
@@ -55,12 +55,6 @@ export default function PicoYPlacaChecker({ c }) {
             transition: 'all 0.2s',
             cursor: 'pointer',
             alignSelf: 'center'
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = 'rgba(37,99,235,0.08)'
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = 'transparent'
           }}
         >
           {t('vehiculo.goToOfficialSite', 'Ir a la página')} <FaExternalLinkAlt size={11} />

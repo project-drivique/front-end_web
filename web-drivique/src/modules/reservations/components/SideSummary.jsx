@@ -9,9 +9,11 @@ const IcoEdit = () => (
   </svg>
 )
 
-export default function ResumenLateral({ vehiculo, reserva, seguroIdx, serviciosSeleccionados = [], onEditar, onContinuar }) {
+export default function ResumenLateral({ vehiculo, reserva, seguroIdx, serviciosSeleccionados = [], onEditar, onContinuar, pantalla = 1 }) {
   const { t, i18n } = useTranslation()
   const { moneda } = useLanding();
+
+  const editHabilitado = pantalla >= 3
 
   const fmt = d => {
     if (!d) return '—';
@@ -76,9 +78,11 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, servicios
         <div style={{ padding: '16px 0', borderBottom: '1px solid var(--borde)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
             <span style={{ fontSize: 11, fontWeight: 800, color: '#1e3a8a', textTransform: 'uppercase', letterSpacing: '0.07em' }}>{t('vehiculo.pickupLocation')}</span>
-            <button onClick={() => onEditar('retiro')} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#2563eb', fontWeight: 700, padding: 0 }}>
-              <IcoEdit /> {reserva.fechaInicio ? t('common.edit') : t('common.select')}
-            </button>
+            {editHabilitado && (
+              <button onClick={() => onEditar('retiro')} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#2563eb', fontWeight: 700, padding: 0 }}>
+                <IcoEdit /> {reserva.fechaInicio ? t('common.edit') : t('common.select')}
+              </button>
+            )}
           </div>
           <p style={{ fontSize: 14, fontWeight: 800, color: 'var(--texto-primary)', margin: '0 0 4px' }}>
             {reserva.fechaInicio ? `${fmt(reserva.fechaInicio)}` : t('vehiculo.dateNotSelected')}
@@ -96,9 +100,11 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, servicios
         <div style={{ padding: '16px 0', borderBottom: '1px solid var(--borde)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
             <span style={{ fontSize: 11, fontWeight: 800, color: '#1e3a8a', textTransform: 'uppercase', letterSpacing: '0.07em' }}>{t('vehiculo.returnSummary')}</span>
-            <button onClick={() => onEditar('devolucion')} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#2563eb', fontWeight: 700, padding: 0 }}>
-              <IcoEdit /> {reserva.fechaFin ? t('common.edit') : t('common.select')}
-            </button>
+            {editHabilitado && (
+              <button onClick={() => onEditar('devolucion')} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#2563eb', fontWeight: 700, padding: 0 }}>
+                <IcoEdit /> {reserva.fechaFin ? t('common.edit') : t('common.select')}
+              </button>
+            )}
           </div>
           <p style={{ fontSize: 14, fontWeight: 800, color: 'var(--texto-primary)', margin: '0 0 4px' }}>
             {reserva.fechaFin ? `${fmt(reserva.fechaFin)}` : t('vehiculo.dateNotSelected')}
@@ -116,9 +122,11 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, servicios
         <div style={{ padding: '16px 0', borderBottom: '1px solid var(--borde)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
             <span style={{ fontSize: 11, fontWeight: 800, color: '#1e3a8a', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Pico y Placa</span>
-            <button onClick={() => onEditar('pico')} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#2563eb', fontWeight: 700, padding: 0 }}>
-              <IcoEdit /> {t('common.edit', 'Editar')}
-            </button>
+            {editHabilitado && (
+              <button onClick={() => onEditar('pico')} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#2563eb', fontWeight: 700, padding: 0 }}>
+                <IcoEdit /> {t('common.edit', 'Editar')}
+              </button>
+            )}
           </div>
           <p style={{ fontSize: 13, color: 'var(--texto-primary)', margin: 0, fontWeight: 600 }}>Consultar Restricciones</p>
         </div>
@@ -127,12 +135,16 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, servicios
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
             <span style={{ fontSize: 11, fontWeight: 800, color: '#1e3a8a', textTransform: 'uppercase', letterSpacing: '0.07em' }}>{t('vehiculo.protectionAndExtras', 'Tu Protección y Extras')}</span>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <button onClick={() => onEditar('servicios')} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#2563eb', fontWeight: 700, padding: 0 }}>
-                <IcoEdit /> {t('vehiculo.extraServices')}
-              </button>
-              <button onClick={() => onEditar('grupo')} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#2563eb', fontWeight: 700, padding: 0 }}>
-                <IcoEdit /> {t('common.edit')}
-              </button>
+              {editHabilitado && (
+                <button onClick={() => onEditar('servicios')} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#2563eb', fontWeight: 700, padding: 0 }}>
+                  <IcoEdit /> {t('vehiculo.extraServices')}
+                </button>
+              )}
+              {editHabilitado && (
+                <button onClick={() => onEditar('grupo')} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#2563eb', fontWeight: 700, padding: 0 }}>
+                  <IcoEdit /> {t('common.edit')}
+                </button>
+              )}
             </div>
           </div>
           <p style={{ fontSize: 14, fontWeight: 800, color: 'var(--texto-primary)', margin: '0 0 4px' }}>{vehiculo.categoria} — {vehiculo.transmision}</p>
