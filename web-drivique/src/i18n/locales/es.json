@@ -422,14 +422,15 @@
       "rev8": "Espacio de sobra para toda la familia. La volveré a alquilar."
     },
     "descriptions": {
-      "1": "Compacto ideal para ciudad, cómodo para 5 pasajeros y con buen rendimiento de combustible. Perfecto para desplazamientos diarios o viajes cortos en pareja o familia.",
-      "2": "Vehículo económico y ágil, fácil de estacionar en ciudad. Ideal para parejas o ejecutivos que buscan bajo consumo de combustible.",
-      "3": "Sedán elegante, espacioso y seguro. Excelente nivel de equipamiento tecnológico y alto confort para viajes de larga distancia.",
-      "4": "Sedán moderno con diseño deportivo y amplio espacio interior. Cuenta con excelente conectividad y sistemas de seguridad avanzados.",
-      "5": "SUV versátil y tecnológica, perfecta para trayectos urbanos o escapadas de fin de semana con la familia.",
-      "6": "SUV de lujo con diseño KODO, acabados de primera calidad y conducción dinámica superior para cualquier terreno.",
-      "7": "SUV futurista con gran espacio de baúl, alta tecnología y sistemas de asistencia al conductor de última generación.",
-      "8": "Camioneta 4x4 robusta y potente, ideal para viajes exigentes por carretera y terrenos difíciles con total confort."
+      "1": "Sedán confiable y espacioso, ideal para viajes largos o uso diario en la ciudad. Ofrece una excelente relación de consumo de combustible y un maletero generoso para todo tu equipaje. Máxima comodidad.",
+      "2": "SUV premium que destaca por su gran presencia y comodidad para toda la familia. Incluye techo panorámico, acabados de lujo y tecnología de seguridad avanzada para brindarte tranquilidad. Excelente diseño.",
+      "3": "Vehículo compacto, ágil y muy económico, perfecto para moverte rápidamente por la ciudad. Te permite estacionar sin complicaciones y ofrece un rendimiento de combustible insuperable para el día a día. Gran elección.",
+      "4": "Ícono deportivo inconfundible equipado con un potente motor V8 de alto rendimiento. Pensado exclusivamente para quienes buscan sentir la adrenalina pura y vivir una experiencia de conducción verdaderamente única y emocionante.",
+      "5": "Imponente SUV de 8 pasajeros equipada con tracción 4x4. Es la opción ideal para realizar viajes familiares largos con total confort o para enfrentarse a terrenos exigentes sin ningún problema. Capacidad extrema.",
+      "6": "Vehículo compacto ideal para la ciudad, con un habitáculo súper cómodo para 5 pasajeros. Cuenta con un excelente rendimiento de combustible que cuida tu bolsillo durante todos tus desplazamientos diarios. Gran vehículo.",
+      "7": "Sofisticada SUV híbrida, reconocida por ser muy eficiente y silenciosa. Cuenta con un amplio espacio de carga y lo último en tecnología de asistencia al conductor para mayor seguridad. Tecnología limpia.",
+      "8": "Elegante sedán moderno y confortable, diseñado con un gran maletero y acabados de altísima calidad. Es el compañero perfecto tanto para trayectos diarios como para viajes importantes de negocios. Confort garantizado.",
+      "9": "SUV híbrida premium que ofrece una gran eficiencia de combustible. Su interior destaca por un hermoso techo panorámico y un espacio muy generoso tanto para pasajeros como para su equipaje. Viajes inolvidables."
     },
     "pickupDate": "Fecha de recogida",
     "returnDate": "Fecha de devolución",
@@ -635,7 +636,11 @@
     "errors": {
       "cedulaPdfRequired": "Debes subir tu cédula en formato PDF.",
       "licenciaPdfRequired": "Debes subir tu licencia de conducción en formato PDF."
-    }
+    },
+    "cashBranchTitle": "Información de la Sucursal",
+    "cashBranchIntro": "Paga en efectivo directamente en nuestra sucursal:",
+    "cashBranchCity": "Ciudad",
+    "cashBranchAddress": "Dirección"
   },
   "reservas": {
     "title": "Mis reservas",

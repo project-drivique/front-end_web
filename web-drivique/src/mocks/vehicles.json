@@ -22,42 +22,110 @@
       "direccion": "Av. El Dorado # 103-09, Bogotá, Cundinamarca",
       "horario": "Todos los días, 6:00 am - 10:00 pm"
     },
-    "descripcion": "Sedán confiable y espacioso, ideal para viajes largos o uso diario en ciudad. Excelente relación de consumo y gran maletero para equipaje.",
+    "descripcion": "Sedán confiable y espacioso, ideal para viajes largos o uso diario en la ciudad. Ofrece una excelente relación de consumo de combustible y un maletero generoso para todo tu equipaje. Máxima comodidad.",
     "caracteristicas": [
-      { "nombre": "Aire acondicionado", "icono": "FaSnowflake" },
-      { "nombre": "Vidrios eléctricos", "icono": "FaWindowMaximize" },
-      { "nombre": "Cierre centralizado", "icono": "FaLock" },
-      { "nombre": "Sensores de parqueo", "icono": "FaCarSide" }
+      {
+        "nombre": "Aire acondicionado",
+        "icono": "FaSnowflake"
+      },
+      {
+        "nombre": "Vidrios eléctricos",
+        "icono": "FaWindowMaximize"
+      },
+      {
+        "nombre": "Cierre centralizado",
+        "icono": "FaLock"
+      },
+      {
+        "nombre": "Sensores de parqueo",
+        "icono": "FaCarSide"
+      }
     ],
     "equipamientoTecnologico": [
-      { "nombre": "Bluetooth", "icono": "FaBluetoothB" },
-      { "nombre": "Puerto USB", "icono": "FaPlug" },
-      { "nombre": "Pantalla táctil", "icono": "FaMobileAlt" },
-      { "nombre": "Cámara de reversa", "icono": "FaCamera" }
+      {
+        "nombre": "Bluetooth",
+        "icono": "FaBluetoothB"
+      },
+      {
+        "nombre": "Puerto USB",
+        "icono": "FaPlug"
+      },
+      {
+        "nombre": "Pantalla táctil",
+        "icono": "FaMobileAlt"
+      },
+      {
+        "nombre": "Cámara de reversa",
+        "icono": "FaCamera"
+      }
     ],
     "tarifas": {
-      "kmLimitado": { "km": 200, "precio": 85000, "excedente": 800 },
-      "kmIlimitado": { "precio": 105000 }
+      "kmLimitado": {
+        "km": 200,
+        "precio": 85000,
+        "excedente": 800
+      },
+      "kmIlimitado": {
+        "precio": 105000
+      }
     },
     "seguros": [
-      { "nombre": "Protección Obligatoria", "precio": 29000 },
-      { "nombre": "Protección Total", "precio": 67000 }
+      {
+        "nombre": "Protección Obligatoria",
+        "precio": 29000
+      },
+      {
+        "nombre": "Protección Total",
+        "precio": 67000
+      }
     ],
     "servicios": [
-      { "nombre": "GPS", "precio": 15000 },
-      { "nombre": "Silla bebé", "precio": 20000 },
-      { "nombre": "Conductor adicional", "precio": 30000 }
+      {
+        "nombre": "GPS",
+        "precio": 15000
+      },
+      {
+        "nombre": "Silla bebé",
+        "precio": 20000
+      },
+      {
+        "nombre": "Conductor adicional",
+        "precio": 30000
+      }
     ],
     "imagenes": [
       "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/a2cb0b378c25efdb1e116246f84149744c2f4081.jpg",
       "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/1c6e90229d22ae38444b4c27a5ecedbc3aaa7739.jpg",
       "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/5c55d73935760e36ac2c84a6f676e75136c75d1f.jpg"
     ],
-    "disponibilidad": { "ocupados": ["2026-07-20", "2026-07-21", "2026-07-22", "2026-07-28", "2026-07-29"] },
+    "disponibilidad": {
+      "ocupados": [
+        "2026-07-20",
+        "2026-07-21",
+        "2026-07-22",
+        "2026-07-28",
+        "2026-07-29"
+      ]
+    },
     "comentarios": [
-      { "autor": "Carlos M.", "calificacion": 5, "texto": "Excelente vehículo, muy cómodo y puntual en la entrega.", "fecha": "2026-04-10" },
-      { "autor": "Laura P.", "calificacion": 4, "texto": "Buen servicio, el carro en perfectas condiciones.", "fecha": "2026-03-22" },
-      { "autor": "Andrés R.", "calificacion": 5, "texto": "Lo recomiendo totalmente, volveré a alquilar.", "fecha": "2026-03-05" }
+      {
+        "autor": "Carlos M.",
+        "calificacion": 5,
+        "texto": "Excelente vehículo, muy cómodo y puntual en la entrega.",
+        "fecha": "2026-04-10"
+      },
+      {
+        "autor": "Laura P.",
+        "calificacion": 4,
+        "texto": "Buen servicio, el carro en perfectas condiciones.",
+        "fecha": "2026-03-22"
+      },
+      {
+        "autor": "Andrés R.",
+        "calificacion": 5,
+        "texto": "Lo recomiendo totalmente, volveré a alquilar.",
+        "fecha": "2026-03-05"
+      }
     ]
   },
   {
@@ -83,41 +151,98 @@
       "direccion": "Cra 43A # 5A-113, El Poblado, Medellín",
       "horario": "Lun a dom, 7:00 am - 9:00 pm"
     },
-    "descripcion": "SUV premium con gran presencia y comodidad para toda la familia. Techo panorámico y tecnología de seguridad avanzada.",
+    "descripcion": "SUV premium que destaca por su gran presencia y comodidad para toda la familia. Incluye techo panorámico, acabados de lujo y tecnología de seguridad avanzada para brindarte tranquilidad. Excelente diseño.",
     "caracteristicas": [
-      { "nombre": "Aire acondicionado", "icono": "FaSnowflake" },
-      { "nombre": "Vidrios eléctricos", "icono": "FaWindowMaximize" },
-      { "nombre": "Cierre centralizado", "icono": "FaLock" },
-      { "nombre": "Techo panorámico", "icono": "FaSun" }
+      {
+        "nombre": "Aire acondicionado",
+        "icono": "FaSnowflake"
+      },
+      {
+        "nombre": "Vidrios eléctricos",
+        "icono": "FaWindowMaximize"
+      },
+      {
+        "nombre": "Cierre centralizado",
+        "icono": "FaLock"
+      },
+      {
+        "nombre": "Techo panorámico",
+        "icono": "FaSun"
+      }
     ],
     "equipamientoTecnologico": [
-      { "nombre": "Bluetooth", "icono": "FaBluetoothB" },
-      { "nombre": "Puerto USB", "icono": "FaPlug" },
-      { "nombre": "Pantalla táctil", "icono": "FaMobileAlt" },
-      { "nombre": "Cámara de reversa", "icono": "FaCamera" },
-      { "nombre": "Sensores de punto ciego", "icono": "FaEye" }
+      {
+        "nombre": "Bluetooth",
+        "icono": "FaBluetoothB"
+      },
+      {
+        "nombre": "Puerto USB",
+        "icono": "FaPlug"
+      },
+      {
+        "nombre": "Pantalla táctil",
+        "icono": "FaMobileAlt"
+      },
+      {
+        "nombre": "Cámara de reversa",
+        "icono": "FaCamera"
+      },
+      {
+        "nombre": "Sensores de punto ciego",
+        "icono": "FaEye"
+      }
     ],
     "tarifas": {
-      "kmLimitado": { "km": 250, "precio": 145000, "excedente": 1000 },
-      "kmIlimitado": { "precio": 175000 }
+      "kmLimitado": {
+        "km": 250,
+        "precio": 145000,
+        "excedente": 1000
+      },
+      "kmIlimitado": {
+        "precio": 175000
+      }
     },
     "seguros": [
-      { "nombre": "Protección Obligatoria", "precio": 29000 },
-      { "nombre": "Protección Total", "precio": 67000 }
+      {
+        "nombre": "Protección Obligatoria",
+        "precio": 29000
+      },
+      {
+        "nombre": "Protección Total",
+        "precio": 67000
+      }
     ],
     "servicios": [
-      { "nombre": "GPS", "precio": 15000 },
-      { "nombre": "Silla bebé", "precio": 20000 }
+      {
+        "nombre": "GPS",
+        "precio": 15000
+      },
+      {
+        "nombre": "Silla bebé",
+        "precio": 20000
+      }
     ],
     "imagenes": [
       "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/5acb88622cc00284455f7d6c6e19fd2f5b11a6cd.jpg",
       "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/3660959c1dc9ad6069d89d42723db9cda29afeba.jpg",
       "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/ec7412fd3f8148ee85aeb9d7c9a05577be7409d6.jpg"
     ],
-    "disponibilidad": { "ocupados": [] },
+    "disponibilidad": {
+      "ocupados": []
+    },
     "comentarios": [
-      { "autor": "Mariana Gómez", "calificacion": 5, "texto": "Excelente SUV, superó mis expectativas.", "fecha": "2026-05-12" },
-      { "autor": "Daniel O.", "calificacion": 5, "texto": "Muy cómoda para el viaje en familia, excelente consumo.", "fecha": "2026-06-22" }
+      {
+        "autor": "Mariana Gómez",
+        "calificacion": 5,
+        "texto": "Excelente SUV, superó mis expectativas.",
+        "fecha": "2026-05-12"
+      },
+      {
+        "autor": "Daniel O.",
+        "calificacion": 5,
+        "texto": "Muy cómoda para el viaje en familia, excelente consumo.",
+        "fecha": "2026-06-22"
+      }
     ]
   },
   {
@@ -143,33 +268,65 @@
       "direccion": "Calle 76 # 54-11, Barranquilla, Atlántico",
       "horario": "Lun a sáb, 7:00 am - 7:00 pm"
     },
-    "descripcion": "Compacto ágil y económico, perfecto para moverse por la ciudad y estacionar sin complicaciones.",
+    "descripcion": "Vehículo compacto, ágil y muy económico, perfecto para moverte rápidamente por la ciudad. Te permite estacionar sin complicaciones y ofrece un rendimiento de combustible insuperable para el día a día. Gran elección.",
     "caracteristicas": [
-      { "nombre": "Aire acondicionado", "icono": "FaSnowflake" },
-      { "nombre": "Vidrios eléctricos", "icono": "FaWindowMaximize" },
-      { "nombre": "Cierre centralizado", "icono": "FaLock" }
+      {
+        "nombre": "Aire acondicionado",
+        "icono": "FaSnowflake"
+      },
+      {
+        "nombre": "Vidrios eléctricos",
+        "icono": "FaWindowMaximize"
+      },
+      {
+        "nombre": "Cierre centralizado",
+        "icono": "FaLock"
+      }
     ],
     "equipamientoTecnologico": [
-      { "nombre": "Bluetooth", "icono": "FaBluetoothB" },
-      { "nombre": "Puerto USB", "icono": "FaPlug" }
+      {
+        "nombre": "Bluetooth",
+        "icono": "FaBluetoothB"
+      },
+      {
+        "nombre": "Puerto USB",
+        "icono": "FaPlug"
+      }
     ],
     "tarifas": {
-      "kmLimitado": { "km": 150, "precio": 60000, "excedente": 600 },
-      "kmIlimitado": { "precio": 75000 }
+      "kmLimitado": {
+        "km": 150,
+        "precio": 60000,
+        "excedente": 600
+      },
+      "kmIlimitado": {
+        "precio": 75000
+      }
     },
     "seguros": [
-      { "nombre": "Protección Obligatoria", "precio": 29000 },
-      { "nombre": "Protección Total", "precio": 67000 }
+      {
+        "nombre": "Protección Obligatoria",
+        "precio": 29000
+      },
+      {
+        "nombre": "Protección Total",
+        "precio": 67000
+      }
     ],
     "servicios": [
-      { "nombre": "GPS", "precio": 15000 }
+      {
+        "nombre": "GPS",
+        "precio": 15000
+      }
     ],
     "imagenes": [
       "https://th.bing.com/th/id/OIP.fXE8mmnIQyu_3aOZ3jDciAHaE0?w=277&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
       "https://th.bing.com/th/id/OIP.Ta7fayfrmFJd3HPo8xojKAHaEJ?w=321&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
       "https://th.bing.com/th/id/OIP.M8Xr6C7QAbptaShiYv_SigHaEi?w=259&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3"
     ],
-    "disponibilidad": { "ocupados": [] },
+    "disponibilidad": {
+      "ocupados": []
+    },
     "comentarios": []
   },
   {
@@ -195,39 +352,88 @@
       "direccion": "Aeropuerto Rafael Núñez, Cartagena, Bolívar",
       "horario": "Todos los días, 6:00 am - 11:00 pm"
     },
-    "descripcion": "Ícono deportivo con motor V8 de alto rendimiento. Pensado para quienes buscan una experiencia de conducción única.",
+    "descripcion": "Ícono deportivo inconfundible equipado con un potente motor V8 de alto rendimiento. Pensado exclusivamente para quienes buscan sentir la adrenalina pura y vivir una experiencia de conducción verdaderamente única y emocionante.",
     "caracteristicas": [
-      { "nombre": "Aire acondicionado", "icono": "FaSnowflake" },
-      { "nombre": "Vidrios eléctricos", "icono": "FaWindowMaximize" },
-      { "nombre": "Cierre centralizado", "icono": "FaLock" },
-      { "nombre": "Modo deportivo", "icono": "FaTachometerAlt" },
-      { "nombre": "Frenos de alto rendimiento", "icono": "FaShieldAlt" }
+      {
+        "nombre": "Aire acondicionado",
+        "icono": "FaSnowflake"
+      },
+      {
+        "nombre": "Vidrios eléctricos",
+        "icono": "FaWindowMaximize"
+      },
+      {
+        "nombre": "Cierre centralizado",
+        "icono": "FaLock"
+      },
+      {
+        "nombre": "Modo deportivo",
+        "icono": "FaTachometerAlt"
+      },
+      {
+        "nombre": "Frenos de alto rendimiento",
+        "icono": "FaShieldAlt"
+      }
     ],
     "equipamientoTecnologico": [
-      { "nombre": "Bluetooth", "icono": "FaBluetoothB" },
-      { "nombre": "Puerto USB", "icono": "FaPlug" },
-      { "nombre": "Pantalla táctil", "icono": "FaMobileAlt" },
-      { "nombre": "Sistema de sonido premium", "icono": "FaVolumeUp" }
+      {
+        "nombre": "Bluetooth",
+        "icono": "FaBluetoothB"
+      },
+      {
+        "nombre": "Puerto USB",
+        "icono": "FaPlug"
+      },
+      {
+        "nombre": "Pantalla táctil",
+        "icono": "FaMobileAlt"
+      },
+      {
+        "nombre": "Sistema de sonido premium",
+        "icono": "FaVolumeUp"
+      }
     ],
     "tarifas": {
-      "kmLimitado": { "km": 300, "precio": 220000, "excedente": 1500 },
-      "kmIlimitado": { "precio": 260000 }
+      "kmLimitado": {
+        "km": 300,
+        "precio": 220000,
+        "excedente": 1500
+      },
+      "kmIlimitado": {
+        "precio": 260000
+      }
     },
     "seguros": [
-      { "nombre": "Protección Obligatoria", "precio": 29000 },
-      { "nombre": "Protección Total", "precio": 67000 }
+      {
+        "nombre": "Protección Obligatoria",
+        "precio": 29000
+      },
+      {
+        "nombre": "Protección Total",
+        "precio": 67000
+      }
     ],
     "servicios": [
-      { "nombre": "GPS", "precio": 15000 }
+      {
+        "nombre": "GPS",
+        "precio": 15000
+      }
     ],
     "imagenes": [
       "https://th.bing.com/th/id/OIP.1fmggTD9brrhHIbn4PxbFQHaEK?w=294&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
       "https://th.bing.com/th/id/OIP.YtLn_MV5ghgGtbCAOjl6zwHaE6?w=250&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
       "https://th.bing.com/th/id/R.2312c5cbb5b968f100d34bdbde5c576a?rik=Mw4jE71kRKyhuA&riu=http%3a%2f%2fimages.gtcarlot.com%2fpictures%2f145962677.jpg&ehk=fs3qI14Aid1CfPQQ%2f23zMMfkFuVyphuDrrOvFIsJMY8%3d&risl=&pid=ImgRaw&r=0"
     ],
-    "disponibilidad": { "ocupados": [] },
+    "disponibilidad": {
+      "ocupados": []
+    },
     "comentarios": [
-      { "autor": "Sebastián T.", "calificacion": 5, "texto": "Una locura de carro, corre muchísimo y está impecable.", "fecha": "2026-01-10" }
+      {
+        "autor": "Sebastián T.",
+        "calificacion": 5,
+        "texto": "Una locura de carro, corre muchísimo y está impecable.",
+        "fecha": "2026-01-10"
+      }
     ]
   },
   {
@@ -253,43 +459,106 @@
       "direccion": "Aeropuerto Alfonso Bonilla Aragón, Palmira, Valle del Cauca",
       "horario": "Todos los días, 6:00 am - 10:00 pm"
     },
-    "descripcion": "SUV robusto de 8 pasajeros con tracción 4x4, ideal para viajes familiares largos o terrenos exigentes.",
+    "descripcion": "Imponente SUV de 8 pasajeros equipada con tracción 4x4. Es la opción ideal para realizar viajes familiares largos con total confort o para enfrentarse a terrenos exigentes sin ningún problema. Capacidad extrema.",
     "caracteristicas": [
-      { "nombre": "Aire acondicionado", "icono": "FaSnowflake" },
-      { "nombre": "Vidrios eléctricos", "icono": "FaWindowMaximize" },
-      { "nombre": "Cierre centralizado", "icono": "FaLock" },
-      { "nombre": "Tracción 4x4", "icono": "FaMountain" },
-      { "nombre": "Tercera fila de asientos", "icono": "FaChair" }
+      {
+        "nombre": "Aire acondicionado",
+        "icono": "FaSnowflake"
+      },
+      {
+        "nombre": "Vidrios eléctricos",
+        "icono": "FaWindowMaximize"
+      },
+      {
+        "nombre": "Cierre centralizado",
+        "icono": "FaLock"
+      },
+      {
+        "nombre": "Tracción 4x4",
+        "icono": "FaMountain"
+      },
+      {
+        "nombre": "Tercera fila de asientos",
+        "icono": "FaChair"
+      }
     ],
     "equipamientoTecnologico": [
-      { "nombre": "Bluetooth", "icono": "FaBluetoothB" },
-      { "nombre": "Puerto USB", "icono": "FaPlug" },
-      { "nombre": "Pantalla táctil", "icono": "FaMobileAlt" },
-      { "nombre": "Cámara de reversa", "icono": "FaCamera" },
-      { "nombre": "Sensores de parqueo", "icono": "FaCarSide" }
+      {
+        "nombre": "Bluetooth",
+        "icono": "FaBluetoothB"
+      },
+      {
+        "nombre": "Puerto USB",
+        "icono": "FaPlug"
+      },
+      {
+        "nombre": "Pantalla táctil",
+        "icono": "FaMobileAlt"
+      },
+      {
+        "nombre": "Cámara de reversa",
+        "icono": "FaCamera"
+      },
+      {
+        "nombre": "Sensores de parqueo",
+        "icono": "FaCarSide"
+      }
     ],
     "tarifas": {
-      "kmLimitado": { "km": 300, "precio": 180000, "excedente": 1200 },
-      "kmIlimitado": { "precio": 215000 }
+      "kmLimitado": {
+        "km": 300,
+        "precio": 180000,
+        "excedente": 1200
+      },
+      "kmIlimitado": {
+        "precio": 215000
+      }
     },
     "seguros": [
-      { "nombre": "Protección Obligatoria", "precio": 29000 },
-      { "nombre": "Protección Total", "precio": 67000 }
+      {
+        "nombre": "Protección Obligatoria",
+        "precio": 29000
+      },
+      {
+        "nombre": "Protección Total",
+        "precio": 67000
+      }
     ],
     "servicios": [
-      { "nombre": "GPS", "precio": 15000 },
-      { "nombre": "Silla bebé", "precio": 20000 },
-      { "nombre": "Conductor adicional", "precio": 30000 }
+      {
+        "nombre": "GPS",
+        "precio": 15000
+      },
+      {
+        "nombre": "Silla bebé",
+        "precio": 20000
+      },
+      {
+        "nombre": "Conductor adicional",
+        "precio": 30000
+      }
     ],
     "imagenes": [
       "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/4d34066b6e9e1a29c93d7d0edeb2f415058411d3.jpg",
       "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/64be097eae7f8698be22c3646647d73c234e60a0.jpg",
       "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/ef353e43a859b12a67c8bd45cb5f5265beddef2a.jpg"
     ],
-    "disponibilidad": { "ocupados": [] },
+    "disponibilidad": {
+      "ocupados": []
+    },
     "comentarios": [
-      { "autor": "Julio R.", "calificacion": 4, "texto": "Perfecta para ir al campo, muy fuerte.", "fecha": "2026-02-14" },
-      { "autor": "Ana Maria", "calificacion": 5, "texto": "Espacio de sobra para toda la familia. La volveré a alquilar.", "fecha": "2026-03-01" }
+      {
+        "autor": "Julio R.",
+        "calificacion": 4,
+        "texto": "Perfecta para ir al campo, muy fuerte.",
+        "fecha": "2026-02-14"
+      },
+      {
+        "autor": "Ana Maria",
+        "calificacion": 5,
+        "texto": "Espacio de sobra para toda la familia. La volveré a alquilar.",
+        "fecha": "2026-03-01"
+      }
     ]
   },
   {
@@ -315,38 +584,86 @@
       "direccion": "Cra 5 # 12-34, Neiva, Huila",
       "horario": "Lun a sáb, 7:00 am - 7:00 pm"
     },
-    "descripcion": "Compacto ideal para ciudad, cómodo para 5 pasajeros y con buen rendimiento de combustible. Perfecto para desplazamientos diarios o viajes cortos en pareja o familia.",
+    "descripcion": "Vehículo compacto ideal para la ciudad, con un habitáculo súper cómodo para 5 pasajeros. Cuenta con un excelente rendimiento de combustible que cuida tu bolsillo durante todos tus desplazamientos diarios. Gran vehículo.",
     "caracteristicas": [
-      { "nombre": "Aire acondicionado", "icono": "FaSnowflake" },
-      { "nombre": "Vidrios eléctricos", "icono": "FaWindowMaximize" },
-      { "nombre": "Cierre centralizado", "icono": "FaLock" }
+      {
+        "nombre": "Aire acondicionado",
+        "icono": "FaSnowflake"
+      },
+      {
+        "nombre": "Vidrios eléctricos",
+        "icono": "FaWindowMaximize"
+      },
+      {
+        "nombre": "Cierre centralizado",
+        "icono": "FaLock"
+      }
     ],
     "equipamientoTecnologico": [
-      { "nombre": "Bluetooth", "icono": "FaBluetoothB" },
-      { "nombre": "Puerto USB", "icono": "FaPlug" },
-      { "nombre": "Pantalla táctil", "icono": "FaMobileAlt" },
-      { "nombre": "Cámara de reversa", "icono": "FaCamera" }
+      {
+        "nombre": "Bluetooth",
+        "icono": "FaBluetoothB"
+      },
+      {
+        "nombre": "Puerto USB",
+        "icono": "FaPlug"
+      },
+      {
+        "nombre": "Pantalla táctil",
+        "icono": "FaMobileAlt"
+      },
+      {
+        "nombre": "Cámara de reversa",
+        "icono": "FaCamera"
+      }
     ],
     "tarifas": {
-      "kmLimitado": { "km": 150, "precio": 55000, "excedente": 550 },
-      "kmIlimitado": { "precio": 68000 }
+      "kmLimitado": {
+        "km": 150,
+        "precio": 55000,
+        "excedente": 550
+      },
+      "kmIlimitado": {
+        "precio": 68000
+      }
     },
     "seguros": [
-      { "nombre": "Protección Obligatoria", "precio": 29000 },
-      { "nombre": "Protección Total", "precio": 67000 }
+      {
+        "nombre": "Protección Obligatoria",
+        "precio": 29000
+      },
+      {
+        "nombre": "Protección Total",
+        "precio": 67000
+      }
     ],
     "servicios": [
-      { "nombre": "GPS", "precio": 15000 }
+      {
+        "nombre": "GPS",
+        "precio": 15000
+      }
     ],
     "imagenes": [
       "https://th.bing.com/th/id/OIP.M8Xr6C7QAbptaShiYv_SigHaEi?w=259&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
       "https://th.bing.com/th/id/OIP.51EBaowC6BNblc7CVjxDMQHaFL?w=258&h=181&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
       "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/5c55d73935760e36ac2c84a6f676e75136c75d1f.jpg"
     ],
-    "disponibilidad": { "ocupados": [] },
+    "disponibilidad": {
+      "ocupados": []
+    },
     "comentarios": [
-      { "autor": "Camila R.", "calificacion": 5, "texto": "Muy cómodo para viajes cortos, sin problemas mecánicos y el proceso de entrega fue rápido.", "fecha": "2026-06-14" },
-      { "autor": "Juan P.", "calificacion": 4, "texto": "Buen carro y buen precio, aunque el aire tardó un poco en enfriar el primer día.", "fecha": "2026-05-30" }
+      {
+        "autor": "Camila R.",
+        "calificacion": 5,
+        "texto": "Muy cómodo para viajes cortos, sin problemas mecánicos y el proceso de entrega fue rápido.",
+        "fecha": "2026-06-14"
+      },
+      {
+        "autor": "Juan P.",
+        "calificacion": 4,
+        "texto": "Buen carro y buen precio, aunque el aire tardó un poco en enfriar el primer día.",
+        "fecha": "2026-05-30"
+      }
     ]
   },
   {
@@ -372,40 +689,92 @@
       "direccion": "Aeropuerto Palonegro, Lebrija, Santander",
       "horario": "Todos los días, 6:00 am - 9:00 pm"
     },
-    "descripcion": "SUV híbrida eficiente y silenciosa, con amplio espacio de carga y tecnología de asistencia al conductor.",
+    "descripcion": "Sofisticada SUV híbrida, reconocida por ser muy eficiente y silenciosa. Cuenta con un amplio espacio de carga y lo último en tecnología de asistencia al conductor para mayor seguridad. Tecnología limpia.",
     "caracteristicas": [
-      { "nombre": "Aire acondicionado", "icono": "FaSnowflake" },
-      { "nombre": "Vidrios eléctricos", "icono": "FaWindowMaximize" },
-      { "nombre": "Cierre centralizado", "icono": "FaLock" },
-      { "nombre": "Techo panorámico", "icono": "FaSun" }
+      {
+        "nombre": "Aire acondicionado",
+        "icono": "FaSnowflake"
+      },
+      {
+        "nombre": "Vidrios eléctricos",
+        "icono": "FaWindowMaximize"
+      },
+      {
+        "nombre": "Cierre centralizado",
+        "icono": "FaLock"
+      },
+      {
+        "nombre": "Techo panorámico",
+        "icono": "FaSun"
+      }
     ],
     "equipamientoTecnologico": [
-      { "nombre": "Bluetooth", "icono": "FaBluetoothB" },
-      { "nombre": "Puerto USB", "icono": "FaPlug" },
-      { "nombre": "Pantalla táctil", "icono": "FaMobileAlt" },
-      { "nombre": "Cámara de reversa", "icono": "FaCamera" },
-      { "nombre": "Cargador inalámbrico", "icono": "FaChargingStation" }
+      {
+        "nombre": "Bluetooth",
+        "icono": "FaBluetoothB"
+      },
+      {
+        "nombre": "Puerto USB",
+        "icono": "FaPlug"
+      },
+      {
+        "nombre": "Pantalla táctil",
+        "icono": "FaMobileAlt"
+      },
+      {
+        "nombre": "Cámara de reversa",
+        "icono": "FaCamera"
+      },
+      {
+        "nombre": "Cargador inalámbrico",
+        "icono": "FaChargingStation"
+      }
     ],
     "tarifas": {
-      "kmLimitado": { "km": 250, "precio": 160000, "excedente": 1100 },
-      "kmIlimitado": { "precio": 192000 }
+      "kmLimitado": {
+        "km": 250,
+        "precio": 160000,
+        "excedente": 1100
+      },
+      "kmIlimitado": {
+        "precio": 192000
+      }
     },
     "seguros": [
-      { "nombre": "Protección Obligatoria", "precio": 29000 },
-      { "nombre": "Protección Total", "precio": 67000 }
+      {
+        "nombre": "Protección Obligatoria",
+        "precio": 29000
+      },
+      {
+        "nombre": "Protección Total",
+        "precio": 67000
+      }
     ],
     "servicios": [
-      { "nombre": "GPS", "precio": 15000 },
-      { "nombre": "Silla bebé", "precio": 20000 }
+      {
+        "nombre": "GPS",
+        "precio": 15000
+      },
+      {
+        "nombre": "Silla bebé",
+        "precio": 20000
+      }
     ],
     "imagenes": [
       "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/c86e9f8dd37048853c7c2fce700fb4bb5b1e062c.jpg",
       "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/8631ecb31093479ab34a56263b478b44fb2d74f6.jpg",
       "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/aa041a9462ecf25c4c543ea284f7af255338df95.jpg"
     ],
-    "disponibilidad": { "ocupados": [] },
+    "disponibilidad": {
+      "ocupados": []
+    },
     "comentarios": [
-      { "autor": "Luis C.", "calificacion": 5, "texto": "Muy económica por ser híbrida. Totalmente recomendada.", "fecha": "2026-07-02" }
+      {
+        "autor": "Luis C.",
+        "calificacion": 5,
+        "texto": "Muy económica por ser híbrida. Totalmente recomendada.",
+        "fecha": "2026-07-02"
+      }
     ]
   },
   {
@@ -431,36 +800,77 @@
       "direccion": "Aeropuerto Matecaña, Pereira, Risaralda",
       "horario": "Todos los días, 6:00 am - 9:00 pm"
     },
-    "descripcion": "Sedán moderno y cómodo, con gran maletero y acabados de calidad para trayectos diarios o de trabajo.",
+    "descripcion": "Elegante sedán moderno y confortable, diseñado con un gran maletero y acabados de altísima calidad. Es el compañero perfecto tanto para trayectos diarios como para viajes importantes de negocios. Confort garantizado.",
     "caracteristicas": [
-      { "nombre": "Aire acondicionado", "icono": "FaSnowflake" },
-      { "nombre": "Vidrios eléctricos", "icono": "FaWindowMaximize" },
-      { "nombre": "Cierre centralizado", "icono": "FaLock" }
+      {
+        "nombre": "Aire acondicionado",
+        "icono": "FaSnowflake"
+      },
+      {
+        "nombre": "Vidrios eléctricos",
+        "icono": "FaWindowMaximize"
+      },
+      {
+        "nombre": "Cierre centralizado",
+        "icono": "FaLock"
+      }
     ],
     "equipamientoTecnologico": [
-      { "nombre": "Bluetooth", "icono": "FaBluetoothB" },
-      { "nombre": "Puerto USB", "icono": "FaPlug" },
-      { "nombre": "Pantalla táctil", "icono": "FaMobileAlt" },
-      { "nombre": "Cámara de reversa", "icono": "FaCamera" }
+      {
+        "nombre": "Bluetooth",
+        "icono": "FaBluetoothB"
+      },
+      {
+        "nombre": "Puerto USB",
+        "icono": "FaPlug"
+      },
+      {
+        "nombre": "Pantalla táctil",
+        "icono": "FaMobileAlt"
+      },
+      {
+        "nombre": "Cámara de reversa",
+        "icono": "FaCamera"
+      }
     ],
     "tarifas": {
-      "kmLimitado": { "km": 200, "precio": 95000, "excedente": 900 },
-      "kmIlimitado": { "precio": 115000 }
+      "kmLimitado": {
+        "km": 200,
+        "precio": 95000,
+        "excedente": 900
+      },
+      "kmIlimitado": {
+        "precio": 115000
+      }
     },
     "seguros": [
-      { "nombre": "Protección Obligatoria", "precio": 29000 },
-      { "nombre": "Protección Total", "precio": 67000 }
+      {
+        "nombre": "Protección Obligatoria",
+        "precio": 29000
+      },
+      {
+        "nombre": "Protección Total",
+        "precio": 67000
+      }
     ],
     "servicios": [
-      { "nombre": "GPS", "precio": 15000 },
-      { "nombre": "Conductor adicional", "precio": 30000 }
+      {
+        "nombre": "GPS",
+        "precio": 15000
+      },
+      {
+        "nombre": "Conductor adicional",
+        "precio": 30000
+      }
     ],
     "imagenes": [
       "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/7718dbfc25ce3e387cb976f4ded742dc8d8c7582.jpg",
       "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/1e686f124bd42a21481a43969615adc261e39251.jpg",
       "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/de7fef41a3ee96557b1600b7e91494dd78a5e7b1.jpg"
     ],
-    "disponibilidad": { "ocupados": [] },
+    "disponibilidad": {
+      "ocupados": []
+    },
     "comentarios": []
   },
   {
@@ -486,38 +896,85 @@
       "direccion": "Aeropuerto Camilo Daza, Cúcuta, Norte de Santander",
       "horario": "Todos los días, 6:00 am - 9:00 pm"
     },
-    "descripcion": "SUV híbrida con gran eficiencia de combustible, techo panorámico y espacio generoso para pasajeros y equipaje.",
+    "descripcion": "SUV híbrida premium que ofrece una gran eficiencia de combustible. Su interior destaca por un hermoso techo panorámico y un espacio muy generoso tanto para pasajeros como para su equipaje. Viajes inolvidables.",
     "caracteristicas": [
-      { "nombre": "Aire acondicionado", "icono": "FaSnowflake" },
-      { "nombre": "Vidrios eléctricos", "icono": "FaWindowMaximize" },
-      { "nombre": "Cierre centralizado", "icono": "FaLock" },
-      { "nombre": "Techo panorámico", "icono": "FaSun" }
+      {
+        "nombre": "Aire acondicionado",
+        "icono": "FaSnowflake"
+      },
+      {
+        "nombre": "Vidrios eléctricos",
+        "icono": "FaWindowMaximize"
+      },
+      {
+        "nombre": "Cierre centralizado",
+        "icono": "FaLock"
+      },
+      {
+        "nombre": "Techo panorámico",
+        "icono": "FaSun"
+      }
     ],
     "equipamientoTecnologico": [
-      { "nombre": "Bluetooth", "icono": "FaBluetoothB" },
-      { "nombre": "Puerto USB", "icono": "FaPlug" },
-      { "nombre": "Pantalla táctil", "icono": "FaMobileAlt" },
-      { "nombre": "Cámara de reversa", "icono": "FaCamera" },
-      { "nombre": "Sensores de punto ciego", "icono": "FaEye" }
+      {
+        "nombre": "Bluetooth",
+        "icono": "FaBluetoothB"
+      },
+      {
+        "nombre": "Puerto USB",
+        "icono": "FaPlug"
+      },
+      {
+        "nombre": "Pantalla táctil",
+        "icono": "FaMobileAlt"
+      },
+      {
+        "nombre": "Cámara de reversa",
+        "icono": "FaCamera"
+      },
+      {
+        "nombre": "Sensores de punto ciego",
+        "icono": "FaEye"
+      }
     ],
     "tarifas": {
-      "kmLimitado": { "km": 250, "precio": 140000, "excedente": 1000 },
-      "kmIlimitado": { "precio": 170000 }
+      "kmLimitado": {
+        "km": 250,
+        "precio": 140000,
+        "excedente": 1000
+      },
+      "kmIlimitado": {
+        "precio": 170000
+      }
     },
     "seguros": [
-      { "nombre": "Protección Obligatoria", "precio": 29000 },
-      { "nombre": "Protección Total", "precio": 67000 }
+      {
+        "nombre": "Protección Obligatoria",
+        "precio": 29000
+      },
+      {
+        "nombre": "Protección Total",
+        "precio": 67000
+      }
     ],
     "servicios": [
-      { "nombre": "GPS", "precio": 15000 },
-      { "nombre": "Silla bebé", "precio": 20000 }
+      {
+        "nombre": "GPS",
+        "precio": 15000
+      },
+      {
+        "nombre": "Silla bebé",
+        "precio": 20000
+      }
     ],
     "imagenes": [
       "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/5acb88622cc00284455f7d6c6e19fd2f5b11a6cd.jpg",
       "https://th.bing.com/th/id/OIP.fXE8mmnIQyu_3aOZ3jDciAHaE0?w=277&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
       "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/8631ecb31093479ab34a56263b478b44fb2d74f6.jpg"
     ],
-    "disponibilidad": { "ocupados": [] },
+    "disponibilidad": {
+      "ocupados": []
+    },
     "comentarios": []
   }
 ]

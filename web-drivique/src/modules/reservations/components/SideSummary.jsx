@@ -177,7 +177,7 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, servicios
             <span>{t('vehiculo.dailyLabel')}</span><span>{t('vehiculo.total')}</span>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, marginBottom: 12 }}>
-            <span style={{ color: 'var(--texto-primary)' }}>{dias} {t('vehiculo.daysCount', { count: dias })} × {formatCurrency(precio, moneda)}</span>
+            <span style={{ color: 'var(--texto-primary)' }}>{t('vehiculo.daysCount', { count: dias })} × {formatCurrency(precio, moneda)}</span>
             <span style={{ fontWeight: 800, color: 'var(--texto-primary)' }}>{formatCurrency(subtotalDiario, moneda)}</span>
           </div>
           {seguroIdx !== null ? (
@@ -185,7 +185,7 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, servicios
               <p style={{ fontSize: 11, fontWeight: 800, color: 'var(--texto-second)', margin: '0 0 4px' }}>{t('vehiculo.protectionsLabel')}</p>
               <div style={{ fontSize: 12, color: 'var(--texto-primary)', marginBottom: 4 }}>{vehiculo.seguros[seguroIdx]?.nombre}</div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, marginBottom: 12 }}>
-                <span style={{ color: 'var(--texto-primary)' }}>{dias} {t('vehiculo.daysCount', { count: dias })} × {formatCurrency(precioSeguro, moneda)}</span>
+                <span style={{ color: 'var(--texto-primary)' }}>{t('vehiculo.daysCount', { count: dias })} × {formatCurrency(precioSeguro, moneda)}</span>
                 <span style={{ fontWeight: 800, color: 'var(--texto-primary)' }}>{formatCurrency(subtotalSeguro, moneda)}</span>
               </div>
             </>
@@ -205,7 +205,7 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, servicios
               </div>
               <div style={{ fontSize: 12, color: 'var(--texto-primary)', marginBottom: 4 }}>{serviciosElegidos.map(s => t('servicios.' + s.nombre, s.nombre)).join(', ')}</div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, marginBottom: 12 }}>
-                <span style={{ color: 'var(--texto-primary)' }}>{dias} {t('vehiculo.daysCount', { count: dias })} × {formatCurrency(precioServicios, moneda)}</span>
+                <span style={{ color: 'var(--texto-primary)' }}>{t('vehiculo.daysCount', { count: dias })} × {formatCurrency(precioServicios, moneda)}</span>
                 <span style={{ fontWeight: 800, color: 'var(--texto-primary)' }}>{formatCurrency(subtotalServicios, moneda)}</span>
               </div>
             </>
