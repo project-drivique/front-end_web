@@ -510,9 +510,9 @@
     "noRefundPolicy": "Politique de Non-Remboursement : Une fois confirmée, la réservation n'est pas remboursable.",
     "totalToPay": "Total à payer",
     "taxesIncluded": "Taxes et frais inclus",
-    "chooseProtection": "Choisissez Votre Niveau de Protection",
-    "planSelected": "Formule Sélectionnée",
-    "choosePlan": "Choisir cette formule",
+    "chooseProtection": "Choisissez votre niveau de protection",
+    "planSelected": "Plan Sélectionné",
+    "choosePlan": "Choisir un Plan",
     "extraServices": "Services supplémentaires",
     "extraServicesSubtitle": "Ajoutez des équipements supplémentaires à votre location",
     "reserveSummary": "Résumé de la réservation",
@@ -611,7 +611,7 @@
     "branchMap": "Carte de l'agence",
     "prevImage": "Image précédente",
     "nextImage": "Image suivante",
-    "selectTime": "Sélectionner",
+    "selectTime": "Sélectionner l'heure",
     "autoDetected": "Auto-détecté",
     "kmLimitedTitle": "Kilométrage limité",
     "kmLimitedDesc": "Inclut {{km}} km par jour dans le tarif de base. En cas de dépassement, {{excedente}} est facturé par km supplémentaire.",
@@ -685,8 +685,8 @@
     "wompiDesc": "Permet la livraison à domicile, aéroport ou terminal.",
     "cashPayment": "Paiement en espèces",
     "cashDesc": "Obligatoire de récupérer et payer directement en agence.",
-    "selectPickupLoc": "Sélectionner le lieu de prise en charge",
-    "selectReturnLoc": "Sélectionner le lieu de restitution",
+    "selectPickupLoc": "Sélectionner le lieu de retrait",
+    "selectReturnLoc": "Sélectionner le lieu de retour",
     "selectPickupTime": "Sélectionner l'heure de prise en charge",
     "selectReturnTime": "Sélectionner l'heure de restitution",
     "selectDropdown": "Sélectionner",
@@ -727,7 +727,9 @@
     "terminal": "Terminal",
     "mandatoryProtection": "Protection Obligatoire",
     "totalProtection": "Protection Totale",
-    "totalPlansExtras": "Total des plans et suppléments"
+    "totalPlansExtras": "Total des plans et suppléments",
+    "select": "Sélectionner",
+    "selected": "Sélectionné"
   },
   "reservas": {
     "title": "Mes réservations",
@@ -1114,5 +1116,12 @@
     "amountToPay": "Montant à Payer",
     "noLocalReservationInfo": "Information locale de réservation introuvable.",
     "backToAccount": "Retour à Mon Compte"
+  },
+  "servicios": {
+    "Conductor adicional": "Conducteur supplémentaire",
+    "Devolución con tanque vacío": "Retour avec réservoir vide",
+    "GPS Integrado": "GPS Intégré",
+    "Lavado de auto post-entrega": "Lavage de voiture après location",
+    "Silla de bebé": "Siège bébé"
   }
 }

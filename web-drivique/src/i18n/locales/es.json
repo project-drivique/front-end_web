@@ -513,7 +513,7 @@
     "branchMap": "Mapa de la sucursal",
     "prevImage": "Imagen anterior",
     "nextImage": "Imagen siguiente",
-    "selectTime": "Seleccionar",
+    "selectTime": "Seleccionar hora",
     "autoDetected": "Auto-detectado",
     "kmLimitedTitle": "Kilometraje limitado",
     "kmLimitedDesc": "Incluye {{km}} km por día dentro del valor de la tarifa. Si te pasas del límite, se cobra {{excedente}} por cada km adicional.",
@@ -712,7 +712,9 @@
     "terminal": "Terminal",
     "mandatoryProtection": "Protección Obligatoria",
     "totalProtection": "Protección Total",
-    "totalPlansExtras": "Total de planes y extras"
+    "totalPlansExtras": "Total de planes y extras",
+    "select": "Seleccionar",
+    "selected": "Seleccionado"
   },
   "reservas": {
     "title": "Mis reservas",
@@ -1088,5 +1090,12 @@
     "amountToPay": "Monto a Pagar",
     "noLocalReservationInfo": "No se encontró la información local de la reserva.",
     "backToAccount": "Volver a Mi Cuenta"
+  },
+  "servicios": {
+    "Conductor adicional": "Conductor adicional",
+    "Devolución con tanque vacío": "Devolución con tanque vacío",
+    "GPS Integrado": "GPS Integrado",
+    "Lavado de auto post-entrega": "Lavado de auto post-entrega",
+    "Silla de bebé": "Silla de bebé"
   }
 }
