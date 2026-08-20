@@ -8,6 +8,7 @@ import MileageType from './MileageType'
 import AdditionalServices from './AdditionalServices'
 import UnifiedReservationConfigCard from './UnifiedReservationConfigCard'
 import { showAlert } from '@/utils/swalConfig'
+import { useIsMobile } from '../../../hooks/useIsMobile'
 
 export default function EditReservationModal({
   modalEditarOpen, setModalEditarOpen, modalEditarSeccion,
@@ -18,6 +19,7 @@ export default function EditReservationModal({
   setReserva, setSeguroIdx, setServiciosSeleccionados, c
 }) {
   const { t } = useTranslation()
+  const isMobile = useIsMobile()
 
   if (!modalEditarOpen) return null
 
@@ -83,21 +85,17 @@ export default function EditReservationModal({
   return (
     <div style={{
       position: 'fixed', inset: 0, zIndex: 9999,
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      background: 'rgba(15,23,42,0.65)', backdropFilter: 'blur(8px)', padding: 16,
+      display: 'flex', alignItems: isMobile ? 'flex-end' : 'center', justifyContent: 'center',
+      background: 'rgba(15,23,42,0.65)', backdropFilter: 'blur(8px)', padding: isMobile ? 0 : 16,
     }}>
       <div style={{
-        background: c?.cardBg || 'var(--bg-tarjeta)', borderRadius: 28, border: `1px solid ${c?.cardBorder || 'var(--borde)'}`,
+        background: c?.cardBg || 'var(--bg-tarjeta)', borderRadius: isMobile ? '28px 28px 0 0' : 28, border: `1px solid ${c?.cardBorder || 'var(--borde)'}`,
         width: '100%', maxWidth: isWide ? 840 : 560,
         maxHeight: '90vh', display: 'flex', flexDirection: 'column',
         boxShadow: c?.isDark ? '0 24px 70px rgba(0,0,0,0.5)' : '0 24px 70px rgba(15,23,42,0.25)', overflow: 'hidden',
       }}>
         {/* Header */}
-        <div style={{
-          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-          padding: '24px 28px', borderBottom: '1px solid var(--borde)',
-          background: 'linear-gradient(135deg,#1e3a8a,#2563eb)',
-        }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: isMobile ? '20px' : '24px 28px', borderBottom: `1px solid ${c?.cardBorder || 'var(--borde)'}`, background: c?.isDark ? 'rgba(255,255,255,0.02)' : 'linear-gradient(135deg,#1e3a8a,#2563eb)' }}>
           <h3 style={{ fontSize: 19, fontWeight: 900, color: '#fff', margin: 0, letterSpacing: '-0.01em' }}>
             {titleMap[modalEditarSeccion]}
           </h3>
@@ -107,9 +105,9 @@ export default function EditReservationModal({
         </div>
 
         {/* Body */}
-        <div style={{ padding: 28, overflowY: 'auto', flex: 1, display: 'flex', flexDirection: 'column', gap: 24 }}>
+        <div style={{ padding: isMobile ? '16px' : '28px', overflowY: 'auto', flex: 1, background: c?.isDark ? 'transparent' : '#f8fafc' }}>
           {modalError && (
-            <div style={{ background: '#fef2f2', border: '1px solid #fee2e2', borderRadius: 16, padding: '14px 18px', color: '#b91c1c', fontSize: 13, fontWeight: 800 }}>
+            <div style={{ background: 'rgba(220,38,38,0.1)', color: '#dc2626', padding: '12px 16px', borderRadius: 12, marginBottom: 20, fontSize: 13, fontWeight: 700, border: '1px solid rgba(220,38,38,0.2)' }}>
               {modalError}
             </div>
           )}
@@ -165,7 +163,7 @@ export default function EditReservationModal({
         </div>
 
         {/* Footer */}
-        <div style={{ padding: '18px 28px', borderTop: `1px solid ${c?.cardBorder || 'var(--borde)'}`, display: 'flex', justifyContent: 'flex-end', gap: 12, background: c?.isDark ? 'rgba(255,255,255,0.02)' : 'var(--bg-item)' }}>
+        <div style={{ padding: isMobile ? '16px' : '18px 28px', borderTop: `1px solid ${c?.cardBorder || 'var(--borde)'}`, display: 'flex', justifyContent: 'flex-end', gap: 12, background: c?.isDark ? 'rgba(255,255,255,0.02)' : 'var(--bg-item)' }}>
           <button onClick={cerrar} style={{ padding: '12px 24px', borderRadius: 14, border: `1px solid ${c?.cardBorder || 'var(--borde)'}`, background: c?.cardBg || 'var(--bg-tarjeta)', color: c?.textPrimary || 'var(--texto-primary)', fontWeight: 700, fontSize: 14, cursor: 'pointer' }}>
             {t('common.cancel', 'Cancelar')}
           </button>
