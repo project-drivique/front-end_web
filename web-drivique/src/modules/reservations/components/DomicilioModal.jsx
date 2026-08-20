@@ -7,7 +7,8 @@ export default function DomicilioModal({
   onClose, 
   reserva, 
   onCambio, 
-  c 
+  c,
+  isReadOnly 
 }) {
   const { t } = useTranslation()
   const bg = c?.cardBg || '#fff'
@@ -20,7 +21,8 @@ export default function DomicilioModal({
   const [localDatos, setLocalDatos] = useState({
     barrio: reserva?.domicilioBarrio || '',
     direccion: reserva?.domicilioDireccion || '',
-    referencias: reserva?.domicilioReferencias || ''
+    referencias: reserva?.domicilioReferencias || '',
+    mismoLugar: reserva?.sucursalDevolucion === 'domicilio'
   })
   
   const [error, setError] = useState('')
@@ -30,7 +32,8 @@ export default function DomicilioModal({
       setLocalDatos({
         barrio: reserva?.domicilioBarrio || '',
         direccion: reserva?.domicilioDireccion || '',
-        referencias: reserva?.domicilioReferencias || ''
+        referencias: reserva?.domicilioReferencias || '',
+        mismoLugar: reserva?.sucursalDevolucion === 'domicilio'
       })
       setError('')
     }
@@ -48,6 +51,13 @@ export default function DomicilioModal({
     onCambio('domicilioBarrio', localDatos.barrio)
     onCambio('domicilioDireccion', localDatos.direccion)
     onCambio('domicilioReferencias', localDatos.referencias)
+    
+    if (localDatos.mismoLugar) {
+      onCambio('sucursalDevolucion', 'domicilio')
+    } else if (reserva?.sucursalDevolucion === 'domicilio') {
+      onCambio('sucursalDevolucion', '')
+    }
+
     onClose()
   }
 
@@ -83,7 +93,7 @@ export default function DomicilioModal({
           background: bg,
           borderRadius: 24,
           width: '100%',
-          maxWidth: 450,
+          maxWidth: 550,
           boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
           overflow: 'hidden',
           display: 'flex',
@@ -124,17 +134,32 @@ export default function DomicilioModal({
             </div>
           )}
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <label style={{ fontSize: 13, fontWeight: 700, color: textPrimary }}>
-              {t('vehiculo.domicilioNeighborhoodLabel', 'Barrio')} <span style={{ color: '#ef4444' }}>*</span>
-            </label>
-            <input
-              type="text"
-              placeholder={t('vehiculo.domicilioNeighborhoodPlaceholder', 'Ej. El Centro, Norte...')}
-              value={localDatos.barrio}
-              onChange={e => setLocalDatos({...localDatos, barrio: e.target.value})}
-              style={inputStyle}
-            />
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <label style={{ fontSize: 13, fontWeight: 700, color: textPrimary }}>
+                {t('vehiculo.domicilioCityLabel', 'Ciudad (Fija según sucursal)')}
+              </label>
+              <input
+                type="text"
+                value={reserva?.domicilioCiudad || ''}
+                disabled
+                style={{ ...inputStyle, opacity: 0.7, cursor: 'not-allowed' }}
+              />
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <label style={{ fontSize: 13, fontWeight: 700, color: textPrimary }}>
+                {t('vehiculo.domicilioNeighborhoodLabel', 'Barrio')} <span style={{ color: '#ef4444' }}>*</span>
+              </label>
+              <input
+                type="text"
+                placeholder={t('vehiculo.domicilioNeighborhoodPlaceholder', 'Ej. El Centro...')}
+                value={localDatos.barrio}
+                onChange={e => setLocalDatos({...localDatos, barrio: e.target.value})}
+                style={{ ...inputStyle, opacity: isReadOnly ? 0.7 : 1, cursor: isReadOnly ? 'not-allowed' : 'text' }}
+                disabled={isReadOnly}
+              />
+            </div>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -148,7 +173,8 @@ export default function DomicilioModal({
                 placeholder={t('vehiculo.domicilioAddressPlaceholder', 'Calle 10 # 5-20')}
                 value={localDatos.direccion}
                 onChange={e => setLocalDatos({...localDatos, direccion: e.target.value})}
-                style={{ ...inputStyle, paddingLeft: 38 }}
+                style={{ ...inputStyle, paddingLeft: 38, opacity: isReadOnly ? 0.7 : 1, cursor: isReadOnly ? 'not-allowed' : 'text' }}
+                disabled={isReadOnly}
               />
             </div>
           </div>
@@ -158,30 +184,56 @@ export default function DomicilioModal({
               {t('vehiculo.domicilioReferencesLabel', 'Indicaciones o Referencias')}
             </label>
             <textarea
-              rows={3}
+              rows={2}
               placeholder={t('vehiculo.domicilioReferencesPlaceholder', 'Ej. Frente al parque, casa de rejas blancas...')}
               value={localDatos.referencias}
               onChange={e => setLocalDatos({...localDatos, referencias: e.target.value})}
-              style={{ ...inputStyle, resize: 'none' }}
+              style={{ ...inputStyle, resize: 'none', opacity: isReadOnly ? 0.7 : 1, cursor: isReadOnly ? 'not-allowed' : 'text' }}
+              disabled={isReadOnly}
             />
           </div>
 
+          {!isReadOnly && reserva?.sucursalRetiro === 'domicilio' && (
+            <label style={{ display: 'flex', gap: 10, alignItems: 'flex-start', marginTop: 10, padding: '12px 16px', cursor: 'pointer', background: 'rgba(37, 99, 235, 0.05)', borderRadius: 12, border: `1px solid rgba(37, 99, 235, 0.2)` }}>
+              <input
+                type="checkbox"
+                checked={localDatos.mismoLugar}
+                onChange={e => setLocalDatos({...localDatos, mismoLugar: e.target.checked})}
+                style={{ accentColor: accent, width: 18, height: 18, cursor: 'pointer', flexShrink: 0, marginTop: 2 }}
+              />
+              <p style={{ fontSize: 13, color: textPrimary, margin: 0, fontWeight: 500, lineHeight: 1.4 }}>
+                <strong style={{ color: accent, display: 'block', marginBottom: 4 }}>Devolver el vehículo en esta misma dirección</strong>
+                Al marcar esta casilla, el lugar de devolución quedará automáticamente configurado para recoger el auto en esta misma ubicación al finalizar tu reserva.
+              </p>
+            </label>
+          )}
         </div>
 
         {/* Footer */}
         <div style={{ padding: '16px 24px 24px', display: 'flex', gap: 12 }}>
-          <button 
-            onClick={onClose}
-            style={{ flex: 1, padding: '12px', borderRadius: 12, background: 'transparent', border: `1px solid ${border}`, color: textPrimary, fontSize: 14, fontWeight: 700, cursor: 'pointer' }}
-          >
-            {t('common.cancel', 'Cancelar')}
-          </button>
-          <button 
-            onClick={handleGuardar}
-            style={{ flex: 1, padding: '12px', borderRadius: 12, background: accent, border: 'none', color: '#fff', fontSize: 14, fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 12px rgba(37, 99, 235, 0.3)' }}
-          >
-            {t('common.confirm', 'Confirmar Dirección')}
-          </button>
+          {isReadOnly ? (
+            <button 
+              onClick={onClose}
+              style={{ flex: 1, padding: '12px', borderRadius: 12, background: accent, border: 'none', color: '#fff', fontSize: 14, fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 12px rgba(37, 99, 235, 0.3)' }}
+            >
+              {t('common.close', 'Cerrar')}
+            </button>
+          ) : (
+            <>
+              <button 
+                onClick={onClose}
+                style={{ flex: 1, padding: '12px', borderRadius: 12, background: 'transparent', border: `1px solid ${border}`, color: textPrimary, fontSize: 14, fontWeight: 700, cursor: 'pointer' }}
+              >
+                {t('common.cancel', 'Cancelar')}
+              </button>
+              <button 
+                onClick={handleGuardar}
+                style={{ flex: 1, padding: '12px', borderRadius: 12, background: accent, border: 'none', color: '#fff', fontSize: 14, fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 12px rgba(37, 99, 235, 0.3)' }}
+              >
+                {t('common.confirm', 'Confirmar Dirección')}
+              </button>
+            </>
+          )}
         </div>
       </div>
 

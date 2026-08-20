@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { FaCalendarAlt, FaMapMarkerAlt, FaClock, FaCreditCard, FaPencilAlt } from 'react-icons/fa'
+import { FaCalendarAlt, FaMapMarkerAlt, FaClock, FaCreditCard, FaPencilAlt, FaCheckCircle, FaEye, FaHourglassHalf } from 'react-icons/fa'
 import { useState } from 'react'
 import ReservationCalendar from './ReservationCalendar'
 import DomicilioModal from './DomicilioModal'
@@ -22,6 +22,7 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
   const isDark     = c?.isDark || false
 
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isModalReadOnly, setIsModalReadOnly] = useState(false)
 
   // Payment Options
   const metodoPago = reserva?.metodoPago
@@ -63,7 +64,7 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
     background: 'transparent',
     outline: 'none',
     fontSize: 14,
-    fontWeight: 700,
+    fontWeight: 500,
     color: textPrimary,
     cursor: 'pointer',
     appearance: 'auto',
@@ -71,15 +72,42 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
     marginTop: 4
   }
 
+  const hasDomicilioData = reserva?.domicilioBarrio && reserva?.domicilioDireccion
+
   const handleLugarChange = (campo, valor) => {
     onCambio(campo, valor)
-    if (valor === 'domicilio') {
-      // Always open modal when domicilio is selected so user can fill/edit
+    if (valor === 'domicilio' && !hasDomicilioData) {
+      setIsModalReadOnly(false)
       setIsModalOpen(true)
     }
   }
 
-  const hasDomicilioData = reserva?.domicilioBarrio && reserva?.domicilioDireccion
+  let durationText = ''
+  if (reserva?.fechaInicio && reserva?.fechaFin) {
+    if (reserva?.horaInicio && reserva?.horaFin) {
+      const start = new Date(`${reserva.fechaInicio}T${reserva.horaInicio}:00`)
+      const end = new Date(`${reserva.fechaFin}T${reserva.horaFin}:00`)
+      const diffMs = end - start
+      if (diffMs > 0) {
+        const diffHrs = Math.floor(diffMs / (1000 * 60 * 60))
+        const dias = Math.floor(diffHrs / 24)
+        const horas = diffHrs % 24
+        
+        const parts = []
+        if (dias > 0) parts.push(`${dias} ${dias === 1 ? 'día' : 'días'}`)
+        if (horas > 0) parts.push(`${horas} ${horas === 1 ? 'hora' : 'horas'}`)
+        durationText = parts.join(' - ') || '0 horas'
+      }
+    } else {
+      const start = new Date(reserva.fechaInicio)
+      const end = new Date(reserva.fechaFin)
+      const diffMs = end - start
+      if (diffMs >= 0) {
+        const dias = Math.max(1, Math.ceil(diffMs / 86400000))
+        durationText = `${dias} ${dias === 1 ? 'día' : 'días'}`
+      }
+    }
+  }
 
   return (
     <div style={{ background: bg, padding: 20, borderRadius: 16, border: `1px solid ${border}`, display: 'flex', flexDirection: 'column', gap: 32 }}>
@@ -98,6 +126,12 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
             return (
               <label
                 key={value}
+                onClick={(e) => {
+                  if (activo) {
+                    e.preventDefault();
+                    onCambio('metodoPago', value);
+                  }
+                }}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -134,94 +168,107 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
 
       {/* SECCIÓN: LUGAR Y HORA */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <FaMapMarkerAlt color={accent} size={14} />
-          <h3 style={{ fontSize: 13, fontWeight: 700, color: titleColor, margin: 0 }}>
-            {t('vehiculo.locationPickerTitle', 'Selecciona lugar y hora de entrega/devolución')}
-          </h3>
-        </div>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Lugar Retiro */}
-          <div style={{ padding: '14px 18px', borderRadius: 12, border: `1px solid ${border}`, background: 'transparent' }}>
-            <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 10, fontWeight: 800, color: textSecond, textTransform: 'uppercase' }}>
-              <FaMapMarkerAlt size={10} color="#94a3b8" /> LUGAR DE RETIRO
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 700, color: titleColor }}>
+              <FaMapMarkerAlt color={accent} size={14} /> Seleccionar lugar de retiro
             </span>
-            <select
-              value={reserva?.sucursalRetiro || ''}
-              onChange={e => handleLugarChange('sucursalRetiro', e.target.value)}
-              style={selectStyle}
-            >
-              <option value="">{t('vehiculo.selectLocation', 'Seleccionar')}</option>
-              {opcionesEntrega.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
-            </select>
+            <div style={{ padding: '12px 16px', borderRadius: 12, border: `1px solid ${border}`, background: 'transparent' }}>
+              <select
+                value={reserva?.sucursalRetiro || ''}
+                onChange={e => handleLugarChange('sucursalRetiro', e.target.value)}
+                style={selectStyle}
+              >
+                <option value="">{t('vehiculo.selectLocation', 'Seleccionar')}</option>
+                {opcionesEntrega.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+              </select>
+            </div>
             {reserva?.sucursalRetiro === 'domicilio' && (
               <div 
-                onClick={() => setIsModalOpen(true)}
-                style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 8, fontSize: 11, color: accent, fontWeight: 700, cursor: 'pointer', padding: '4px 8px', background: 'rgba(37,99,235,0.1)', borderRadius: 6, width: 'fit-content' }}
+                onClick={() => {
+                  setIsModalReadOnly(false)
+                  setIsModalOpen(true)
+                }}
+                style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4, fontSize: 11, color: accent, fontWeight: 700, cursor: 'pointer', padding: '4px 8px', background: 'rgba(37,99,235,0.1)', borderRadius: 6, width: 'fit-content' }}
               >
                 <FaPencilAlt size={10} />
                 {hasDomicilioData
-                  ? `${reserva.domicilioBarrio}, ${reserva.domicilioDireccion.substring(0,15)}...`
+                  ? 'Editar'
                   : t('vehiculo.fillAddressBtn', 'Ingresar dirección')}
               </div>
             )}
           </div>
           
           {/* Lugar Devolución */}
-          <div style={{ padding: '14px 18px', borderRadius: 12, border: `1px solid ${border}`, background: 'transparent' }}>
-            <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 10, fontWeight: 800, color: textSecond, textTransform: 'uppercase' }}>
-              <FaMapMarkerAlt size={10} color="#94a3b8" /> LUGAR DE DEVOLUCIÓN
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 700, color: titleColor }}>
+              <FaMapMarkerAlt color={accent} size={14} /> Seleccionar lugar de devolución
             </span>
-            <select
-              value={reserva?.sucursalDevolucion || ''}
-              onChange={e => handleLugarChange('sucursalDevolucion', e.target.value)}
-              style={selectStyle}
-            >
-              <option value="">{t('vehiculo.selectLocation', 'Seleccionar')}</option>
-              {opcionesDevolucion.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
-            </select>
+            <div style={{ padding: '12px 16px', borderRadius: 12, border: `1px solid ${border}`, background: 'transparent' }}>
+              <select
+                value={reserva?.sucursalDevolucion || ''}
+                onChange={e => handleLugarChange('sucursalDevolucion', e.target.value)}
+                style={selectStyle}
+              >
+                <option value="">{t('vehiculo.selectLocation', 'Seleccionar')}</option>
+                {opcionesDevolucion.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+              </select>
+            </div>
             {reserva?.sucursalDevolucion === 'domicilio' && (
               <div 
-                onClick={() => setIsModalOpen(true)}
-                style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 8, fontSize: 11, color: accent, fontWeight: 700, cursor: 'pointer', padding: '4px 8px', background: 'rgba(37,99,235,0.1)', borderRadius: 6, width: 'fit-content' }}
+                onClick={() => {
+                  if (reserva?.sucursalRetiro === 'domicilio') {
+                    setIsModalReadOnly(true)
+                    setIsModalOpen(true)
+                  } else {
+                    setIsModalReadOnly(false)
+                    setIsModalOpen(true)
+                  }
+                }}
+                style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4, fontSize: 11, color: accent, fontWeight: 700, cursor: 'pointer', padding: '4px 8px', background: 'rgba(37,99,235,0.1)', borderRadius: 6, width: 'fit-content' }}
               >
-                <FaPencilAlt size={10} />
+                {reserva?.sucursalRetiro === 'domicilio' ? <FaEye size={12} /> : <FaPencilAlt size={10} />}
                 {hasDomicilioData
-                  ? `Editar dirección — ${reserva.domicilioBarrio}`
+                  ? (reserva?.sucursalRetiro === 'domicilio' ? 'Ver' : 'Editar')
                   : t('vehiculo.fillAddressBtn', 'Ingresar dirección')}
               </div>
             )}
           </div>
 
           {/* Hora Retiro */}
-          <div style={{ padding: '14px 18px', borderRadius: 12, border: `1px solid ${border}`, background: 'transparent' }}>
-            <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 10, fontWeight: 800, color: textSecond, textTransform: 'uppercase' }}>
-              <FaClock size={10} color="#94a3b8" /> HORA DE RETIRO
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 700, color: titleColor }}>
+              <FaClock color={accent} size={14} /> Selecciona Hora de Retiro
             </span>
-            <select
-              value={reserva?.horaInicio || ''}
-              onChange={e => onCambio('horaInicio', e.target.value)}
-              style={selectStyle}
-            >
-              <option value="">{t('vehiculo.selectTime', 'Seleccionar')}</option>
-              {HORAS.map(h => <option key={h} value={h}>{h}</option>)}
-            </select>
+            <div style={{ padding: '12px 16px', borderRadius: 12, border: `1px solid ${border}`, background: 'transparent' }}>
+              <select
+                value={reserva?.horaInicio || ''}
+                onChange={e => onCambio('horaInicio', e.target.value)}
+                style={selectStyle}
+              >
+                <option value="">{t('vehiculo.selectTime', 'Seleccionar')}</option>
+                {HORAS.map(h => <option key={h} value={h}>{h}</option>)}
+              </select>
+            </div>
           </div>
 
           {/* Hora Devolución */}
-          <div style={{ padding: '14px 18px', borderRadius: 12, border: `1px solid ${border}`, background: 'transparent' }}>
-            <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 10, fontWeight: 800, color: textSecond, textTransform: 'uppercase' }}>
-              <FaClock size={10} color="#94a3b8" /> HORA DE DEVOLUCIÓN
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 700, color: titleColor }}>
+              <FaClock color={accent} size={14} /> Selecciona Hora de Devolución
             </span>
-            <select
-              value={reserva?.horaFin || ''}
-              onChange={e => onCambio('horaFin', e.target.value)}
-              style={selectStyle}
-            >
-              <option value="">{t('vehiculo.selectTime', 'Seleccionar')}</option>
-              {HORAS.map(h => <option key={h} value={h}>{h}</option>)}
-            </select>
+            <div style={{ padding: '12px 16px', borderRadius: 12, border: `1px solid ${border}`, background: 'transparent' }}>
+              <select
+                value={reserva?.horaFin || ''}
+                onChange={e => onCambio('horaFin', e.target.value)}
+                style={selectStyle}
+              >
+                <option value="">{t('vehiculo.selectTime', 'Seleccionar')}</option>
+                {HORAS.map(h => <option key={h} value={h}>{h}</option>)}
+              </select>
+            </div>
           </div>
         </div>
       </div>
@@ -229,7 +276,7 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
       {/* SECCIÓN: CALENDARIO */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <FaCalendarAlt color={accent} size={14} />
+          <FaCalendarAlt color={titleColor} size={14} />
           <h3 style={{ fontSize: 13, fontWeight: 700, color: titleColor, margin: 0 }}>
             {t('vehiculo.dateRangeSectionTitle', 'Calendario de disponibilidad')}
           </h3>
@@ -249,24 +296,39 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
 
         {/* Tarjetas de fechas seleccionadas en la parte inferior */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 4, padding: '12px 16px', borderRadius: 12, border: `1px solid ${border}`, background: 'transparent' }}>
-            <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 10, fontWeight: 800, color: textSecond, textTransform: 'uppercase' }}>
-              <FaCalendarAlt size={10} color="#94a3b8" /> {t('vehiculo.pickupDateTitle', 'FECHA DE RETIRO')}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 700, color: titleColor }}>
+              <FaCalendarAlt color={titleColor} size={14} /> {t('vehiculo.pickupDateTitle', 'Fecha de retiro')}
             </span>
-            <span style={{ fontSize: 14, fontWeight: 700, color: textPrimary, marginTop: 2 }}>
-              {reserva.fechaInicio || t('vehiculo.selectAction', 'Seleccionar')}
-            </span>
+            <div style={{ padding: '12px 16px', borderRadius: 12, border: `1px solid ${border}`, background: 'transparent' }}>
+              <span style={{ fontSize: 14, fontWeight: 500, color: textPrimary, display: 'block' }}>
+                {reserva.fechaInicio || t('vehiculo.selectAction', 'Seleccionar')}
+              </span>
+            </div>
           </div>
           
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 4, padding: '12px 16px', borderRadius: 12, border: `1px solid ${border}`, background: 'transparent' }}>
-            <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 10, fontWeight: 800, color: textSecond, textTransform: 'uppercase' }}>
-              <FaCalendarAlt size={10} color="#94a3b8" /> {t('vehiculo.returnDateTitle', 'FECHA DE DEVOLUCIÓN')}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 700, color: titleColor }}>
+              <FaCalendarAlt color={titleColor} size={14} /> {t('vehiculo.returnDateTitle', 'Fecha de devolución')}
             </span>
-            <span style={{ fontSize: 14, fontWeight: 700, color: textPrimary, marginTop: 2 }}>
-              {reserva.fechaFin || t('vehiculo.selectAction', 'Seleccionar')}
-            </span>
+            <div style={{ padding: '12px 16px', borderRadius: 12, border: `1px solid ${border}`, background: 'transparent' }}>
+              <span style={{ fontSize: 14, fontWeight: 500, color: textPrimary, display: 'block' }}>
+                {reserva.fechaFin || t('vehiculo.selectAction', 'Seleccionar')}
+              </span>
+            </div>
           </div>
         </div>
+
+        {durationText && (
+          <div style={{ marginTop: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', borderRadius: 12, background: 'rgba(37,99,235,0.05)', border: `1px solid rgba(37,99,235,0.15)` }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, color: textSecond }}>
+              <FaHourglassHalf color={textSecond} size={14} /> Duración del alquiler:
+            </span>
+            <span style={{ fontSize: 14, fontWeight: 800, color: titleColor }}>
+              {durationText}
+            </span>
+          </div>
+        )}
       </div>
 
       <DomicilioModal
@@ -275,6 +337,7 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
         reserva={reserva}
         onCambio={onCambio}
         c={c}
+        isReadOnly={isModalReadOnly}
       />
     </div>
   )
