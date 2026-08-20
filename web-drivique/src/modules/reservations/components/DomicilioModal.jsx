@@ -80,7 +80,7 @@ export default function DomicilioModal({
         top: 0, left: 0, right: 0, bottom: 0,
         backgroundColor: 'rgba(15, 23, 42, 0.6)',
         backdropFilter: 'blur(4px)',
-        zIndex: 9999,
+        zIndex: 99999,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
