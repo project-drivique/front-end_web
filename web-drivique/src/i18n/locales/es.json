@@ -430,7 +430,7 @@
       "6": "Vehículo compacto ideal para la ciudad, con un habitáculo súper cómodo para 5 pasajeros. Cuenta con un excelente rendimiento de combustible que cuida tu bolsillo durante todos tus desplazamientos diarios. Gran vehículo.",
       "7": "Sofisticada SUV híbrida, reconocida por ser muy eficiente y silenciosa. Cuenta con un amplio espacio de carga y lo último en tecnología de asistencia al conductor para mayor seguridad. Tecnología limpia.",
       "8": "Elegante sedán moderno y confortable, diseñado con un gran maletero y acabados de altísima calidad. Es el compañero perfecto tanto para trayectos diarios como para viajes importantes de negocios. Confort garantizado.",
-      "9": "SUV híbrida premium que ofrece una gran eficiencia de combustible. Su interior destaca por un hermoso techo panorámico y un espacio muy generoso tanto para pasajeros como para su equipaje. Viajes inolvidables."
+      "9": "SUV híbrida premium que ofrece una gran eficiencia de combustible. Su interior destaca por un hermoso techo panorámico y un espacio muy generoso tanto para pasajeros y su equipaje. Viajes inolvidables."
     },
     "pickupDate": "Fecha de recogida",
     "returnDate": "Fecha de devolución",
@@ -707,7 +707,12 @@
     "days": "días",
     "hour": "hora",
     "hours": "horas",
-    "limited": "Limitado"
+    "limited": "Limitado",
+    "airport": "Aeropuerto",
+    "terminal": "Terminal",
+    "mandatoryProtection": "Protección Obligatoria",
+    "totalProtection": "Protección Total",
+    "totalPlansExtras": "Total de planes y extras"
   },
   "reservas": {
     "title": "Mis reservas",

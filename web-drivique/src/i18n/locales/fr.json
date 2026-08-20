@@ -494,14 +494,15 @@
       "rev8": "Beaucoup d'espace pour toute la famille. Je relouerai sans hésiter."
     },
     "descriptions": {
-      "1": "Compacte idéale pour la ville, confortable pour 5 passagers et très économique en carburant. Parfaite pour les déplacements quotidiens.",
-      "2": "Véhicule économique et agile, facile à garer en ville. Idéal pour les couples ou les professionnels.",
-      "3": "Berline élégante, spacieuse et sûre. Excellent équipement technologique et grand confort pour les longs trajets.",
-      "4": "Berline moderne au design sportif et grand espace intérieur. Offre une excellente connectivité.",
-      "5": "SUV polyvalent et technologique, parfait pour les trajets urbains ou les week-ends en famille.",
-      "6": "SUV haut de gamme avec design KODO, finitions de première qualité et conduite dynamique.",
-      "7": "SUV futuriste avec un grand coffre, une haute technologie et des aides à la conduite de pointe.",
-      "8": "4x4 robuste et puissant, idéal pour les voyages exigeants sur tous terrains en toute sérénité."
+      "1": "Berline fiable et spacieuse, idéale pour les longs trajets ou un usage quotidien en ville. Elle offre un excellent rapport de consommation de carburant et un coffre généreux pour tous vos bagages. Confort maximum.",
+      "2": "SUV premium qui se distingue par sa grande présence et son confort pour toute la famille. Comprend un toit panoramique, des finitions de luxe et une technologie de sécurité avancée. Excellent design.",
+      "3": "Véhicule compact, agile et très économique, parfait pour se déplacer rapidement en ville. Vous permet de vous garer sans complications et offre une efficacité énergétique inégalée pour le quotidien. Excellent choix.",
+      "4": "Icône sportive incomparable équipée d'un puissant moteur V8 hautes performances. Conçu exclusivement pour ceux qui cherchent à ressentir l'adrénaline pure et à vivre une expérience de conduite unique et passionnante.",
+      "5": "Imposant SUV de 8 passagers équipé d'une traction 4x4. C'est l'option idéale pour faire de longs voyages en famille avec un confort total ou affronter des terrains exigeants sans aucun problème. Capacité extrême.",
+      "6": "Véhicule compact idéal pour la ville, avec un habitacle super confortable pour 5 passagers. Il offre une excellente efficacité énergétique qui prend soin de votre portefeuille lors de vos déplacements quotidiens. Super véhicule.",
+      "7": "SUV hybride sophistiqué, reconnu pour être très efficace et silencieux. Il dispose d'un grand espace de chargement et des dernières technologies d'assistance au conducteur pour plus de sécurité. Technologie propre.",
+      "8": "Berline élégante, moderne et confortable, conçue avec un grand coffre et des finitions de haute qualité. C'est le compagnon idéal aussi bien pour les trajets quotidiens que pour les voyages d'affaires importants. Confort garanti.",
+      "9": "SUV hybride premium qui offre une grande efficacité énergétique. Son intérieur se distingue par un beau toit panoramique et un espace très généreux pour les passagers et leurs bagages. Des voyages inoubliables."
     },
     "readTerms": "Lire les conditions et la politique de non-remboursement",
     "hideTerms": "Masquer les conditions",
@@ -721,7 +722,12 @@
     "days": "jours",
     "hour": "heure",
     "hours": "heures",
-    "limited": "Limité"
+    "limited": "Limité",
+    "airport": "Aéroport",
+    "terminal": "Terminal",
+    "mandatoryProtection": "Protection Obligatoire",
+    "totalProtection": "Protection Totale",
+    "totalPlansExtras": "Total des plans et suppléments"
   },
   "reservas": {
     "title": "Mes réservations",

@@ -7,6 +7,12 @@ export default function PlansSummaryCard({ vehiculo, reserva, seguroIdx, servici
   const { t } = useTranslation()
   const { moneda } = useLanding()
 
+  const translateProtection = (protName) => {
+    if (protName === 'Protección Obligatoria') return t('vehiculo.mandatoryProtection', 'Protección Obligatoria');
+    if (protName === 'Protección Total') return t('vehiculo.totalProtection', 'Protección Total');
+    return protName || t('vehiculo.noneSelected', 'Ninguna seleccionada');
+  };
+
   if (!vehiculo) return null;
 
   const dias = reserva.fechaInicio && reserva.fechaFin
@@ -16,13 +22,13 @@ export default function PlansSummaryCard({ vehiculo, reserva, seguroIdx, servici
   // Proteccion
   const seguro = seguroIdx !== null ? vehiculo.seguros[seguroIdx] : null;
   const precioSeguro = seguro ? seguro.precio : 0;
-  const seguroNombre = seguro ? seguro.nombre : 'Sin protección';
+  const seguroNombre = translateProtection(seguro ? seguro.nombre : null);
 
   // Kilometraje
   const kmLimit = vehiculo.tarifas?.kmLimitado || { precio: 0 };
   const kmIlimit = vehiculo.tarifas?.kmIlimitado || { precio: 0 };
   const precioKm = reserva.tipoKm === 'ilimitado' ? kmIlimit.precio : kmLimit.precio;
-  const kmNombre = reserva.tipoKm === 'ilimitado' ? 'Ilimitado' : 'Limitado';
+  const kmNombre = reserva.tipoKm === 'ilimitado' ? t('vehiculo.unlimited', 'Ilimitado') : t('vehiculo.limited', 'Limitado');
 
   // Servicios
   const serviciosElegidos = (vehiculo.servicios || []).filter(s => serviciosSeleccionados.includes(s.nombre));
@@ -53,7 +59,7 @@ export default function PlansSummaryCard({ vehiculo, reserva, seguroIdx, servici
           {/* Protección */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: 12, color: c?.textSecondary || '#64748b' }}>
-              Protección — <span style={{ color: c?.textPrimary || '#0f172a', fontWeight: 500 }}>{seguroNombre}</span>
+              {t('vehiculo.protectionDefault', 'Protección')} — <span style={{ color: c?.textPrimary || '#0f172a', fontWeight: 500 }}>{seguroNombre}</span>
             </span>
             <span style={{ fontSize: 13, fontWeight: 700, color: c?.textPrimary || '#0f172a' }}>
               {formatCurrency(precioSeguro, moneda)}
@@ -63,7 +69,7 @@ export default function PlansSummaryCard({ vehiculo, reserva, seguroIdx, servici
           {/* Kilometraje */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: 12, color: c?.textSecondary || '#64748b' }}>
-              Kilometraje — <span style={{ color: c?.textPrimary || '#0f172a', fontWeight: 500 }}>{kmNombre}</span>
+              {t('vehiculo.mileageType', 'Kilometraje')} — <span style={{ color: c?.textPrimary || '#0f172a', fontWeight: 500 }}>{kmNombre}</span>
             </span>
             <span style={{ fontSize: 13, fontWeight: 700, color: c?.textPrimary || '#0f172a' }}>
               {formatCurrency(precioKm, moneda)}
@@ -73,7 +79,7 @@ export default function PlansSummaryCard({ vehiculo, reserva, seguroIdx, servici
           {/* Servicios */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: 12, color: c?.textSecondary || '#64748b' }}>
-              Servicios adicionales
+              {t('vehiculo.additionalServices', 'Servicios adicionales')}
             </span>
             <span style={{ fontSize: 13, fontWeight: 700, color: c?.textPrimary || '#0f172a' }}>
               {formatCurrency(precioServicios, moneda)}
@@ -92,7 +98,7 @@ export default function PlansSummaryCard({ vehiculo, reserva, seguroIdx, servici
           justifyContent: 'space-between'
         }}>
           <span style={{ fontSize: 12, fontWeight: 700, color: c?.textPrimary || '#0f172a' }}>
-            Total de planes y extras ({dias} día{dias !== 1 ? 's' : ''})
+            {t('vehiculo.totalPlansExtras', 'Total de planes y extras')} ({dias} {dias !== 1 ? t('vehiculo.days', 'días') : t('vehiculo.day', 'día')})
           </span>
           <span style={{ fontSize: 16, fontWeight: 800, color: c?.accentText || '#1e3a8a' }}>
             {formatCurrency(totalMultiplicado, moneda)}

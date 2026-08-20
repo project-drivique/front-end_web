@@ -15,6 +15,20 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, servicios
     const fecha = new Date(parseInt(y), parseInt(m) - 1, parseInt(day));
     return fecha.toLocaleDateString(i18n.language, { day: 'numeric', month: 'short', year: 'numeric' });
   };
+
+  const translateLocation = (loc) => {
+    if (loc === 'domicilio') return t('vehiculo.atHome', 'A Domicilio');
+    if (loc === 'aeropuerto') return t('vehiculo.airport', 'Aeropuerto');
+    if (loc === 'terminal') return t('vehiculo.terminal', 'Terminal');
+    return loc || t('vehiculo.notSelected', 'No seleccionado');
+  };
+
+  const translateProtection = (protName) => {
+    if (protName === 'Protección Obligatoria') return t('vehiculo.mandatoryProtection', 'Protección Obligatoria');
+    if (protName === 'Protección Total') return t('vehiculo.totalProtection', 'Protección Total');
+    return protName || t('vehiculo.noneSelected', 'Ninguna seleccionada');
+  };
+
   if (!vehiculo) return null;
 
   const tarifas = vehiculo.tarifas || {};
@@ -80,7 +94,7 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, servicios
         <div>
           <p style={{ fontSize: 11, fontWeight: 600, color: c?.textSecondary || '#64748b', textTransform: 'uppercase', margin: '0 0 4px' }}>{t('vehiculo.pickupLocationLabel', 'Lugar de Retiro')}</p>
           <p style={{ fontSize: 14, fontWeight: 800, color: c?.textPrimary || '#0f172a', margin: '0' }}>
-            {reserva.sucursalRetiro === 'domicilio' ? t('vehiculo.atHome', 'A Domicilio') : (reserva.sucursalRetiro || t('vehiculo.notSelected', 'No seleccionado'))}
+            {translateLocation(reserva.sucursalRetiro)}
           </p>
           {reserva.sucursalRetiro === 'domicilio' && (reserva.domicilioDireccion || reserva.domicilioBarrio) && (
             <p style={{ fontSize: 11, color: c?.accentText || '#2563eb', fontWeight: 700, margin: '4px 0 0', wordBreak: 'break-word', lineHeight: 1.3 }}>
@@ -106,7 +120,7 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, servicios
         <div>
           <p style={{ fontSize: 11, fontWeight: 600, color: c?.textSecondary || '#64748b', textTransform: 'uppercase', margin: '0 0 4px' }}>{t('vehiculo.returnLocationLabel', 'Lugar de Devolución')}</p>
           <p style={{ fontSize: 14, fontWeight: 800, color: c?.textPrimary || '#0f172a', margin: '0' }}>
-            {reserva.sucursalDevolucion === 'domicilio' ? t('vehiculo.atHome', 'A Domicilio') : (reserva.sucursalDevolucion || t('vehiculo.notSelected', 'No seleccionado'))}
+            {translateLocation(reserva.sucursalDevolucion)}
           </p>
           {reserva.sucursalDevolucion === 'domicilio' && (reserva.domicilioDireccion || reserva.domicilioBarrio) && (
             <p style={{ fontSize: 11, color: c?.accentText || '#2563eb', fontWeight: 700, margin: '4px 0 0', wordBreak: 'break-word', lineHeight: 1.3 }}>
@@ -125,7 +139,7 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, servicios
         <div style={{ marginBottom: 12 }}>
           <p style={{ fontSize: 11, fontWeight: 600, color: c?.textSecondary || '#64748b', textTransform: 'uppercase', margin: '0 0 4px' }}>{t('vehiculo.protections', 'Protecciones')}</p>
           <p style={{ fontSize: 14, fontWeight: 800, color: c?.textPrimary || '#0f172a', margin: '0' }}>
-            {seguroIdx !== null ? vehiculo.seguros[seguroIdx]?.nombre : t('vehiculo.noneSelected', 'Ninguna seleccionada')}
+            {translateProtection(seguroIdx !== null ? vehiculo.seguros[seguroIdx]?.nombre : null)}
           </p>
         </div>
         
@@ -164,8 +178,8 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, servicios
         </div>
         
         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: c?.textSecondary || '#64748b', marginBottom: 12 }}>
-          <span>{seguroIdx !== null && vehiculo.seguros[seguroIdx] ? vehiculo.seguros[seguroIdx].nombre : t('vehiculo.protectionDefault', 'Protección')}</span>
-          <span style={{ fontWeight: 800, color: c?.textPrimary || '#0f172a' }}>{subtotalSeguro > 0 ? formatCurrency(subtotalSeguro, moneda) : '—'}</span>
+          <span>{translateProtection(seguroIdx !== null && vehiculo.seguros[seguroIdx] ? vehiculo.seguros[seguroIdx].nombre : null)}</span>
+          <span style={{ fontWeight: 800, color: c?.textPrimary || '#0f172a' }}>{subtotalSeguro > 0 ? formatCurrency(subtotalSeguro, moneda) : '-'}</span>
         </div>
         
         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: c?.textSecondary || '#64748b', marginBottom: 12 }}>

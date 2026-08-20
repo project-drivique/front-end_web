@@ -504,15 +504,15 @@
       "rev8": "Plenty of space for the whole family. Will rent again."
     },
     "descriptions": {
-      "1": "Sedán confiable y espacioso, ideal para viajes largos o uso diario en la ciudad. Ofrece una excelente relación de consumo de combustible y un maletero generoso para todo tu equipaje. Máxima comodidad.",
-      "2": "SUV premium que destaca por su gran presencia y comodidad para toda la familia. Incluye techo panorámico, acabados de lujo y tecnología de seguridad avanzada para brindarte tranquilidad. Excelente diseño.",
-      "3": "Vehículo compacto, ágil y muy económico, perfecto para moverte rápidamente por la ciudad. Te permite estacionar sin complicaciones y ofrece un rendimiento de combustible insuperable para el día a día. Gran elección.",
-      "4": "Ícono deportivo inconfundible equipado con un potente motor V8 de alto rendimiento. Pensado exclusivamente para quienes buscan sentir la adrenalina pura y vivir una experiencia de conducción verdaderamente única y emocionante.",
-      "5": "Imponente SUV de 8 pasajeros equipada con tracción 4x4. Es la opción ideal para realizar viajes familiares largos con total confort o para enfrentarse a terrenos exigentes sin ningún problema. Capacidad extrema.",
-      "6": "Vehículo compacto ideal para la ciudad, con un habitáculo súper cómodo para 5 pasajeros. Cuenta con un excelente rendimiento de combustible que cuida tu bolsillo durante todos tus desplazamientos diarios. Gran vehículo.",
-      "7": "Sofisticada SUV híbrida, reconocida por ser muy eficiente y silenciosa. Cuenta con un amplio espacio de carga y lo último en tecnología de asistencia al conductor para mayor seguridad. Tecnología limpia.",
-      "8": "Elegante sedán moderno y confortable, diseñado con un gran maletero y acabados de altísima calidad. Es el compañero perfecto tanto para trayectos diarios como para viajes importantes de negocios. Confort garantizado.",
-      "9": "SUV híbrida premium que ofrece una gran eficiencia de combustible. Su interior destaca por un hermoso techo panorámico y un espacio muy generoso tanto para pasajeros como para su equipaje. Viajes inolvidables."
+      "1": "Reliable and spacious sedan, ideal for long trips or daily use in the city. It offers an excellent fuel consumption ratio and a generous trunk for all your luggage. Maximum comfort.",
+      "2": "Premium SUV that stands out for its great presence and comfort for the whole family. Includes a panoramic roof, luxury finishes, and advanced safety technology to give you peace of mind. Excellent design.",
+      "3": "Compact vehicle, agile and very economical, perfect for moving quickly around the city. Allows you to park without complications and offers unsurpassed fuel efficiency for everyday use. Great choice.",
+      "4": "Unmistakable sports icon equipped with a powerful high-performance V8 engine. Designed exclusively for those looking to feel pure adrenaline and live a truly unique and exciting driving experience.",
+      "5": "Imposing 8-passenger SUV equipped with 4x4 traction. It is the ideal option for making long family trips with total comfort or facing demanding terrain without any problem. Extreme capacity.",
+      "6": "Compact vehicle ideal for the city, with a super comfortable cabin for 5 passengers. It features excellent fuel efficiency that takes care of your wallet during all your daily commutes. Great vehicle.",
+      "7": "Sophisticated hybrid SUV, recognized for being very efficient and quiet. It features ample cargo space and the latest in driver assistance technology for added safety. Clean technology.",
+      "8": "Elegant, modern and comfortable sedan, designed with a large trunk and high-quality finishes. It is the perfect companion for both daily commutes and important business trips. Guaranteed comfort.",
+      "9": "Premium hybrid SUV that offers great fuel efficiency. Its interior stands out with a beautiful panoramic roof and very generous space for both passengers and their luggage. Unforgettable trips."
     },
     "readTerms": "Read terms, conditions and no-refund policy",
     "hideTerms": "Hide terms and conditions",
@@ -734,7 +734,12 @@
     "days": "days",
     "hour": "hour",
     "hours": "hours",
-    "limited": "Limited"
+    "limited": "Limited",
+    "airport": "Airport",
+    "terminal": "Terminal",
+    "mandatoryProtection": "Mandatory Protection",
+    "totalProtection": "Total Protection",
+    "totalPlansExtras": "Total for plans and extras"
   },
   "reservas": {
     "title": "My reservations",
