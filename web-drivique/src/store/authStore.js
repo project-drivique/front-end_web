@@ -20,8 +20,9 @@ const authStorage = {
     } catch {
       usuario = null
     }
+    if (token === 'null' || token === 'undefined') return null
     if (!token && !usuario) return null
-    return { state: { token, usuario }, version: 0 }
+    return { state: { token: (token === 'null' || token === 'undefined') ? null : token, usuario }, version: 0 }
   },
   setItem: (_name, value) => {
     const { token, usuario } = value.state

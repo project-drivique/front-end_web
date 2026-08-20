@@ -1,4 +1,4 @@
-﻿import { useState } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { authService } from '../../../services/authService'
@@ -80,7 +80,8 @@ export function useLogin() {
       setExito(t('login.successRedirecting'))
 
       setTimeout(() => {
-        navigate(datos.rol === 'administrador' ? '/admin' : '/home')
+        const lastPath = localStorage.getItem('last_path')
+        navigate(lastPath && lastPath !== '/' && lastPath !== '/login' ? lastPath : (datos.rol === 'administrador' ? '/admin' : '/home'))
       }, 1000)
     } catch {
       const nuevosIntentos = intentos + 1

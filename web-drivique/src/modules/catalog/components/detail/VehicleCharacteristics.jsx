@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { FaCar, FaGasPump, FaUserFriends, FaDoorOpen, FaSuitcase, FaBolt, FaPalette, FaCalendarAlt, FaListUl, FaTag } from 'react-icons/fa'
+import { FaCar, FaGasPump, FaUserFriends, FaDoorOpen, FaSuitcase, FaBolt, FaPalette, FaCalendarAlt, FaListUl, FaTag, FaIdCard } from 'react-icons/fa'
 import DetailSection from './DetailSection'
 import SpecsGrid from './SpecsGrid'
 
@@ -15,7 +15,7 @@ const COLOR_MAP  = {
   'Plata': 'vehiculo.colorPlata',
 }
 
-export default function VehicleCharacteristics({ vehiculo, c, showIcon = true }) {
+export default function VehicleCharacteristics({ vehiculo, c, showIcon = true, compact = false }) {
   const { t } = useTranslation()
 
   const bg = c?.cardBg || '#fff'
@@ -37,16 +37,17 @@ export default function VehicleCharacteristics({ vehiculo, c, showIcon = true })
     { Icono: FaBolt,        label: t('vehiculo.engine', 'Motor'), value: vehiculo.cilindraje },
     { Icono: FaPalette,     label: t('vehiculo.colorLabel', 'Color'), value: color },
     { Icono: FaCalendarAlt, label: t('vehiculo.year', 'Año'), value: `${vehiculo.año}` },
+    { Icono: FaIdCard,      label: t('vehiculo.plateLabel', 'Placa'), value: vehiculo.placa || '—' },
   ]
 
   return (
-    <div style={{ background: bg, padding: 20, borderRadius: 16, border: `1px solid ${border}`, display: 'flex', flexDirection: 'column', gap: 16, height: '100%', flex: 1 }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 0 }}>
+    <div style={{ background: bg, padding: 20, borderRadius: 16, border: `1px solid ${border}`, display: 'flex', flexDirection: 'column', height: '100%', flex: 1 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: compact ? 16 : 24 }}>
         <FaListUl color={c?.accentText || "#2563eb"} size={14} />
         <h3 style={{ fontSize: 13, fontWeight: 700, color: titleColor, margin: 0 }}>{t('vehiculo.characteristics', 'Características')}</h3>
       </div>
-      <div style={{ paddingTop: 0 }}>
-        <SpecsGrid items={items} c={c} showIcon={showIcon} />
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+        <SpecsGrid items={items} c={c} showIcon={showIcon} compact={compact} />
       </div>
     </div>
   )
