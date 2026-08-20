@@ -76,7 +76,8 @@ export default function CatalogoPage() {
   const { tema } = useLanding()
 
   useEffect(() => {
-    if (token) {
+    const esTokenValido = token && token !== 'null' && token !== 'undefined'
+    if (esTokenValido) {
       navigate(usuario?.rol === 'administrador' ? '/admin' : '/home', { replace: true })
     }
   }, [token, usuario, navigate])
