@@ -79,9 +79,16 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, servicios
       </div>
 
       <div style={{ padding: '20px', borderBottom: `1px solid ${c?.cardBorder || 'var(--borde)'}` }}>
-        <h4 style={{ fontSize: 11, fontWeight: 800, color: c?.accentText || '#1e3a8a', textTransform: 'uppercase', letterSpacing: '0.07em', margin: '0 0 12px' }}>
-          {t('vehiculo.pickupLocation', 'Lugar de entrega')}
-        </h4>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+          <h4 style={{ fontSize: 11, fontWeight: 800, color: c?.accentText || '#1e3a8a', textTransform: 'uppercase', letterSpacing: '0.07em', margin: 0 }}>
+            {t('vehiculo.pickupLocation', 'Lugar de entrega')}
+          </h4>
+          {editHabilitado && (
+            <button onClick={() => onEditar('retiro')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 11, color: c?.accentText || '#2563eb', fontWeight: 700, padding: 0 }}>
+              {t('vehiculo.edit', 'Editar')}
+            </button>
+          )}
+        </div>
         <div style={{ marginBottom: 12 }}>
           <p style={{ fontSize: 11, fontWeight: 600, color: c?.textSecondary || '#64748b', textTransform: 'uppercase', margin: '0 0 4px' }}>{t('vehiculo.pickupDate', 'Fecha de Retiro')}</p>
           <p style={{ fontSize: 14, fontWeight: 800, color: c?.textPrimary || '#0f172a', margin: '0 0 2px' }}>
@@ -105,9 +112,16 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, servicios
       </div>
 
       <div style={{ padding: '20px', borderBottom: `1px solid ${c?.cardBorder || 'var(--borde)'}` }}>
-        <h4 style={{ fontSize: 11, fontWeight: 800, color: c?.accentText || '#1e3a8a', textTransform: 'uppercase', letterSpacing: '0.07em', margin: '0 0 12px' }}>
-          {t('vehiculo.returnLocation', 'Lugar de devolución')}
-        </h4>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+          <h4 style={{ fontSize: 11, fontWeight: 800, color: c?.accentText || '#1e3a8a', textTransform: 'uppercase', letterSpacing: '0.07em', margin: 0 }}>
+            {t('vehiculo.returnLocation', 'Lugar de devolución')}
+          </h4>
+          {editHabilitado && (
+            <button onClick={() => onEditar('devolucion')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 11, color: c?.accentText || '#2563eb', fontWeight: 700, padding: 0 }}>
+              {t('vehiculo.edit', 'Editar')}
+            </button>
+          )}
+        </div>
         <div style={{ marginBottom: 12 }}>
           <p style={{ fontSize: 11, fontWeight: 600, color: c?.textSecondary || '#64748b', textTransform: 'uppercase', margin: '0 0 4px' }}>{t('vehiculo.returnDate', 'Fecha de Devolución')}</p>
           <p style={{ fontSize: 14, fontWeight: 800, color: c?.textPrimary || '#0f172a', margin: '0 0 2px' }}>
@@ -131,9 +145,16 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, servicios
       </div>
 
       <div style={{ padding: '20px', borderBottom: `1px solid ${c?.cardBorder || 'var(--borde)'}` }}>
-        <h4 style={{ fontSize: 11, fontWeight: 800, color: c?.accentText || '#1e3a8a', textTransform: 'uppercase', letterSpacing: '0.07em', margin: '0 0 12px' }}>
-          {t('vehiculo.protectionExtras', 'Tu protección y extras')}
-        </h4>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+          <h4 style={{ fontSize: 11, fontWeight: 800, color: c?.accentText || '#1e3a8a', textTransform: 'uppercase', letterSpacing: '0.07em', margin: 0 }}>
+            {t('vehiculo.protectionExtras', 'Tu protección y extras')}
+          </h4>
+          {editHabilitado && (
+            <button onClick={() => onEditar('grupo')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 11, color: c?.accentText || '#2563eb', fontWeight: 700, padding: 0 }}>
+              {t('vehiculo.edit', 'Editar')}
+            </button>
+          )}
+        </div>
         
         {/* Protecciones */}
         <div style={{ marginBottom: 12 }}>
