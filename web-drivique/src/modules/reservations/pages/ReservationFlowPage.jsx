@@ -308,6 +308,7 @@ export default function ReservationFlowPage() {
             setReserva={flow.setReserva ?? (() => {})}
             setSeguroIdx={setSeguroIdx}
             setServiciosSeleccionados={setServiciosSeleccionados}
+            c={c}
           />
 
           {/* Modal detalles vehículo */}
