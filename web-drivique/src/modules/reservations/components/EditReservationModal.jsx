@@ -167,10 +167,10 @@ export default function EditReservationModal({
         {/* Footer */}
         <div style={{ padding: '18px 28px', borderTop: `1px solid ${c?.cardBorder || 'var(--borde)'}`, display: 'flex', justifyContent: 'flex-end', gap: 12, background: c?.isDark ? 'rgba(255,255,255,0.02)' : 'var(--bg-item)' }}>
           <button onClick={cerrar} style={{ padding: '12px 24px', borderRadius: 14, border: `1px solid ${c?.cardBorder || 'var(--borde)'}`, background: c?.cardBg || 'var(--bg-tarjeta)', color: c?.textPrimary || 'var(--texto-primary)', fontWeight: 700, fontSize: 14, cursor: 'pointer' }}>
-            Cancelar
+            {t('common.cancel', 'Cancelar')}
           </button>
           <button onClick={guardar} style={{ padding: '12px 24px', borderRadius: 14, background: 'linear-gradient(90deg,#1e3a8a,#2563eb)', color: '#fff', fontWeight: 900, fontSize: 14, border: 'none', cursor: 'pointer', boxShadow: '0 8px 20px rgba(37,99,235,0.22)' }}>
-            Guardar Cambios
+            {t('common.save', 'Guardar cambios')}
           </button>
         </div>
       </div>
