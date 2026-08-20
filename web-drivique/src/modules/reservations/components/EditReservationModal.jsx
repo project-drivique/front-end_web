@@ -24,23 +24,16 @@ export default function EditReservationModal({
   const cerrar = () => { setModalEditarOpen(false); setModalError('') }
 
   const guardar = () => {
-    if (modalEditarSeccion === 'retiro') {
+    if (modalEditarSeccion === 'retiro' || modalEditarSeccion === 'devolucion') {
       if (!localReserva.sucursalRetiro) { setModalError('Debes seleccionar el lugar de retiro.'); return }
       if (!localReserva.fechaInicio) { setModalError('Debes seleccionar la fecha de inicio.'); return }
       if (!localReserva.horaInicio) { setModalError('Debes seleccionar la hora de retiro.'); return }
-      if (localReserva.sucursalRetiro === 'domicilio') {
-        if (!localReserva.domicilioBarrio?.trim() || !localReserva.domicilioDireccion?.trim() || !localReserva.domicilioReferencias?.trim()) {
-          setModalError('Debes completar todos los datos del domicilio.'); return
-        }
-      }
-    }
-    if (modalEditarSeccion === 'devolucion') {
       if (!localReserva.sucursalDevolucion) { setModalError('Debes seleccionar el lugar de devolución.'); return }
       if (!localReserva.fechaFin) { setModalError('Debes seleccionar la fecha de devolución.'); return }
       if (!localReserva.horaFin) { setModalError('Debes seleccionar la hora de devolución.'); return }
-      if (localReserva.sucursalDevolucion === 'domicilio') {
-        if (!localReserva.domicilioBarrio?.trim() || !localReserva.domicilioDireccion?.trim() || !localReserva.domicilioReferencias?.trim()) {
-          setModalError('Debes completar todos los datos del domicilio.'); return
+      if (localReserva.sucursalRetiro === 'domicilio' || localReserva.sucursalDevolucion === 'domicilio') {
+        if (!localReserva.domicilioBarrio?.trim() || !localReserva.domicilioDireccion?.trim()) {
+          setModalError('Debes completar los datos del domicilio.'); return
         }
       }
     }
