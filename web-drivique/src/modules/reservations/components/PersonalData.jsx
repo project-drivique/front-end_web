@@ -3,16 +3,19 @@ import { useTranslation } from 'react-i18next';
 import { useLanding } from '../../landing/LandingContext';
 import { formatCurrency } from '@/utils/currencyUtils';
 import { RECARGOS_LOGISTICOS } from '../../catalog/constants';
+import { FaUser, FaIdCard, FaShieldAlt, FaArrowRight } from 'react-icons/fa';
 
 
-const DocumentUploader = ({ label, helpText, error, file, loading, onUpload, onClear, required = true }) => {
+const DocumentUploader = ({ label, helpText, error, file, loading, onUpload, onClear, required = true, c }) => {
+  const isDark = c?.isDark;
+  
   return (
     <div className="doc-uploader-card" style={{
-      border: `2px dashed ${error ? '#fca5a5' : 'var(--borde)'}`,
+      border: `2px ${file ? 'solid' : 'dashed'} ${error ? '#fca5a5' : (file ? (c?.accentText || '#2563eb') : (c?.cardBorder || '#e2e8f0'))}`,
       borderRadius: 16,
       padding: '24px 20px',
       textAlign: 'center',
-      background: error ? '#fef2f2' : 'var(--bg-item)',
+      background: error ? (isDark ? 'rgba(239,68,68,0.1)' : '#fef2f2') : (file ? (isDark ? 'rgba(37,99,235,0.05)' : '#eff6ff') : (c?.cardBg || '#ffffff')),
       transition: 'all 200ms ease',
       display: 'flex',
       flexDirection: 'column',
@@ -25,25 +28,25 @@ const DocumentUploader = ({ label, helpText, error, file, loading, onUpload, onC
       boxSizing: 'border-box',
     }}>
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
-        <span className="doc-uploader-label" style={{ fontSize: 14, fontWeight: 800, color: 'var(--texto-primary)' }}>{label}{required ? ' *' : ''}</span>
-        <span className="doc-uploader-help" style={{ fontSize: 11, color: 'var(--texto-second)', maxWidth: '240px', lineHeight: 1.4 }}>{helpText}</span>
+        <span className="doc-uploader-label" style={{ fontSize: 14, fontWeight: 800, color: c?.textPrimary || '#0f172a' }}>{label}{required ? ' *' : ''}</span>
+        <span className="doc-uploader-help" style={{ fontSize: 11, color: c?.textSecondary || '#64748b', maxWidth: '240px', lineHeight: 1.4 }}>{helpText}</span>
       </div>
 
       {loading ? (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: '#2563eb', fontWeight: 700 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: c?.accentText || '#2563eb', fontWeight: 700 }}>
           <svg className="animate-spin" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
           </svg>
-          <span>Subiendo archivo...</span>
+          <span>Subiendo...</span>
         </div>
       ) : file ? (
         <div className="doc-uploader-file" style={{
           display: 'flex',
           alignItems: 'center',
           gap: 12,
-          background: '#f0fdf4',
-          border: '1px solid #bbf7d0',
+          background: isDark ? 'rgba(22,163,74,0.1)' : '#f0fdf4',
+          border: `1px solid ${isDark ? '#166534' : '#bbf7d0'}`,
           padding: '10px 16px',
           borderRadius: 12,
           width: '100%',
@@ -54,10 +57,10 @@ const DocumentUploader = ({ label, helpText, error, file, loading, onUpload, onC
             <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
           </svg>
           <div style={{ flex: 1, minWidth: 0, textAlign: 'left' }}>
-            <div style={{ fontSize: 13, fontWeight: 700, color: '#166534', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: isDark ? '#4ade80' : '#166534', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {file.name}
             </div>
-            <div style={{ fontSize: 11, color: '#15803d' }}>
+            <div style={{ fontSize: 11, color: isDark ? '#22c55e' : '#15803d' }}>
               {(file.size / 1024 / 1024).toFixed(2)} MB
             </div>
           </div>
@@ -87,12 +90,12 @@ const DocumentUploader = ({ label, helpText, error, file, loading, onUpload, onC
           alignItems: 'center',
           gap: 8,
           padding: '12px 24px',
-          background: 'var(--bg-item)',
-          border: '2px solid var(--borde)',
+          background: isDark ? 'rgba(37,99,235,0.15)' : '#eff6ff',
+          border: `1px solid ${c?.accentText || '#2563eb'}`,
           borderRadius: 12,
           fontSize: 13,
           fontWeight: 700,
-          color: '#1e3a8a',
+          color: c?.accentText || '#1e3a8a',
           cursor: 'pointer',
           boxShadow: '0 2px 6px rgba(0,0,0,0.03)',
           transition: 'all 150ms ease'
@@ -117,7 +120,7 @@ const DocumentUploader = ({ label, helpText, error, file, loading, onUpload, onC
   )
 }
 
-export default function DatosPersonales({ vehiculo, reserva, seguroIdx, serviciosSeleccionados = [], datosForm, onCambio, onReservar, errores, docsVerificados }) {
+export default function DatosPersonales({ vehiculo, reserva, seguroIdx, serviciosSeleccionados = [], datosForm, onCambio, onReservar, errores, docsVerificados, c }) {
   const { t } = useTranslation()
   const { moneda } = useLanding();
   const [verTyC, setVerTyC] = useState(false);
@@ -197,24 +200,46 @@ export default function DatosPersonales({ vehiculo, reserva, seguroIdx, servicio
 
   const inp = (err) => ({
     width: '100%', padding: '14px', borderRadius: 12, boxSizing: 'border-box',
-    border: `2px solid ${err ? '#fca5a5' : 'var(--borde)'}`,
-    background: err ? '#fef2f2' : 'var(--bg-item)',
-    fontSize: 14, color: 'var(--texto-primary)', outline: 'none',
-    transition: 'border-color 200ms ease'
+    border: `1px solid ${err ? '#fca5a5' : (c?.cardBorder || '#e2e8f0')}`,
+    background: err ? (c?.isDark ? 'rgba(239,68,68,0.1)' : '#fef2f2') : (c?.isDark ? 'rgba(255,255,255,0.05)' : '#f8fafc'),
+    fontSize: 14, color: c?.textPrimary || '#0f172a', outline: 'none',
+    transition: 'border-color 200ms ease, box-shadow 200ms ease'
   });
 
 
-  const lbl = { display: 'block', fontSize: 12, fontWeight: 800, color: 'var(--texto-primary)', marginBottom: 6, letterSpacing: '0.04em' };
+  const lbl = { display: 'block', fontSize: 12, fontWeight: 700, color: c?.textPrimary || '#0f172a', marginBottom: 6, letterSpacing: '0.02em' };
 
+  const sectionCardStyle = {
+    background: c?.cardBg || '#ffffff',
+    borderRadius: 16,
+    border: `1px solid ${c?.cardBorder || '#e2e8f0'}`,
+    padding: '24px',
+    marginBottom: 20,
+    boxShadow: c?.isDark ? '0 4px 12px rgba(0,0,0,0.2)' : '0 4px 12px rgba(0,0,0,0.02)'
+  };
+
+  const headerStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 20
+  };
 
   return (
     <div>
-      <h3 style={{ fontSize: 22, fontWeight: 900, color: 'var(--texto-primary)', margin: '0 0 6px' }}>{t('vehiculo.personalData')}</h3>
-      <p style={{ fontSize: 14, color: 'var(--texto-second)', margin: '0 0 8px' }}>{t('vehiculo.personalDataSubtitle')}</p>
-      <p style={{ fontSize: 12, color: '#ef4444', fontStyle: 'italic', margin: '0 0 24px' }}>{t('vehiculo.requiredFields')}</p>
+      {/* Datos Personales */}
+      <div style={sectionCardStyle}>
+        <div style={headerStyle}>
+          <FaUser color={c?.accentText || '#1e3a8a'} size={14} />
+          <h3 style={{ fontSize: 14, fontWeight: 700, color: c?.accentText || '#1e3a8a', margin: 0, textTransform: 'none' }}>
+            {t('vehiculo.personalData')}
+          </h3>
+        </div>
+        
+        <p style={{ fontSize: 13, color: c?.textSecondary || '#64748b', margin: '0 0 20px', lineHeight: 1.5 }}>
+          {t('vehiculo.personalDataSubtitle')}
+        </p>
 
-
-      <div style={{ background: 'var(--bg-tarjeta)', borderRadius: 24, border: '1px solid var(--borde)', padding: '28px', marginBottom: 20, boxShadow: 'var(--sombra-tarjeta)' }}>
         <div className="datos-personales-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px 24px' }}>
           <div>
             <label style={lbl}>{t('vehiculo.name')} *</label>
@@ -254,7 +279,11 @@ export default function DatosPersonales({ vehiculo, reserva, seguroIdx, servicio
           <div>
             <label style={lbl}>{t('vehiculo.phoneNumber')} *</label>
             <div style={{ display: 'flex', gap: 8 }}>
-              <div style={{ background: 'var(--bg-item)', border: '2px solid var(--borde)', borderRadius: 12, padding: '14px', fontSize: 14, color: 'var(--texto-second)', fontWeight: 800, whiteSpace: 'nowrap' }}>+57</div>
+              <div style={{ 
+                background: c?.isDark ? 'rgba(255,255,255,0.05)' : '#f8fafc', 
+                border: `1px solid ${c?.cardBorder || '#e2e8f0'}`, 
+                borderRadius: 12, padding: '14px', fontSize: 14, color: c?.textSecondary || '#64748b', fontWeight: 800, whiteSpace: 'nowrap' 
+              }}>+57</div>
               <input type="tel" value={datosForm.celular} onChange={e => onCambio('celular', e.target.value.replace(/\D/g, ''))} placeholder="3001234567" style={{ ...inp(errores.celular), flex: 1 }} />
             </div>
             {errores.celular && <p style={{ color: '#ef4444', fontSize: 11, margin: '6px 0 0', fontWeight: 600 }}>{errores.celular}</p>}
@@ -273,38 +302,32 @@ export default function DatosPersonales({ vehiculo, reserva, seguroIdx, servicio
             {errores.numDoc && <p style={{ color: '#ef4444', fontSize: 11, margin: '6px 0 0', fontWeight: 600 }}>{errores.numDoc}</p>}
           </div>
         </div>
-
-
       </div>
 
-
-      {/* Contenedor de subida de documentos */}
-      <div className="doc-verificacion-card" style={{
-        background: 'var(--bg-tarjeta)',
-        borderRadius: 24,
-        border: '1px solid var(--borde)',
-        padding: '28px',
-        marginBottom: 20,
-        boxShadow: 'var(--sombra-tarjeta)'
-      }}>
-        <h4 style={{ fontSize: 16, fontWeight: 900, color: 'var(--texto-primary)', marginBottom: 6 }}>
-          {docsVerificados ? t('vehiculo.docVerification', 'Verificación Documental') : t('vehiculo.mandatoryDocVerification', 'Verificación Documental Obligatoria')}
-        </h4>
-        <p style={{ fontSize: 13, color: 'var(--texto-second)', marginBottom: 20 }}>
+      {/* Verificación Documental */}
+      <div style={sectionCardStyle}>
+        <div style={headerStyle}>
+          <FaIdCard color={c?.accentText || '#1e3a8a'} size={14} />
+          <h3 style={{ fontSize: 14, fontWeight: 700, color: c?.accentText || '#1e3a8a', margin: 0, textTransform: 'none' }}>
+            {docsVerificados ? t('vehiculo.docVerification', 'Verificación Documental') : t('vehiculo.mandatoryDocVerification', 'Verificación Documental Obligatoria')}
+          </h3>
+        </div>
+        
+        <p style={{ fontSize: 13, color: c?.textSecondary || '#64748b', marginBottom: 20, lineHeight: 1.5 }}>
           {docsVerificados
             ? t('vehiculo.docVerifiedSubtitle', 'Ya verificamos tus documentos en una reserva anterior. Si quieres, puedes reemplazarlos subiendo nuevos archivos PDF.')
-            : ''}
+            : 'Sube los documentos requeridos para verificar tu identidad y habilitar la reserva del vehículo.'}
         </p>
 
         {docsVerificados && (
           <div style={{
-            display: 'flex', gap: 10, background: '#f0fdf4', border: '1px solid #bbf7d0',
+            display: 'flex', gap: 10, background: c?.isDark ? 'rgba(22,163,74,0.1)' : '#f0fdf4', border: `1px solid ${c?.isDark ? '#166534' : '#bbf7d0'}`,
             borderRadius: 12, padding: 14, marginBottom: 20
           }}>
             <svg width="20" height="20" fill="none" stroke="#16a34a" strokeWidth="2.5" viewBox="0 0 24 24" style={{ flexShrink: 0, marginTop: 2 }}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
             </svg>
-            <span style={{ fontSize: 13, color: '#166534', lineHeight: 1.5, fontWeight: 700, textAlign: 'left' }}>
+            <span style={{ fontSize: 13, color: c?.isDark ? '#4ade80' : '#166534', lineHeight: 1.5, fontWeight: 700, textAlign: 'left' }}>
               {t('vehiculo.docsAlreadyRegistered', 'Documentos ya registrados: Ya has subido tu cédula y licencia de conducción anteriormente. No es obligatorio volver a cargarlos, pero si lo deseas puedes reemplazarlos subiendo nuevos archivos PDF.')}
             </span>
           </div>
@@ -320,6 +343,7 @@ export default function DatosPersonales({ vehiculo, reserva, seguroIdx, servicio
             onUpload={(e) => handleUpload('cedula', e)}
             onClear={() => onCambio('cedulaPdf', null)}
             required={!docsVerificados}
+            c={c}
           />
 
           <DocumentUploader
@@ -331,62 +355,90 @@ export default function DatosPersonales({ vehiculo, reserva, seguroIdx, servicio
             onUpload={(e) => handleUpload('licencia', e)}
             onClear={() => onCambio('licenciaPdf', null)}
             required={!docsVerificados}
+            c={c}
           />
         </div>
 
-        <div style={{ display: 'flex', gap: 10, background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 12, padding: 14, marginTop: 16 }}>
-          <svg width="20" height="20" fill="none" stroke="#1e3a8a" strokeWidth="2.5" viewBox="0 0 24 24" style={{ shrink: 0, marginTop: 2 }}>
+        <div style={{ display: 'flex', gap: 10, background: c?.isDark ? 'rgba(37,99,235,0.05)' : '#eff6ff', border: `1px solid ${c?.isDark ? '#1e3a8a' : '#bfdbfe'}`, borderRadius: 12, padding: 14, marginTop: 16 }}>
+          <svg width="20" height="20" fill="none" stroke={c?.accentText || '#1e3a8a'} strokeWidth="2.5" viewBox="0 0 24 24" style={{ shrink: 0, marginTop: 2 }}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 111.083.87l-.417.834M12 18.75h.007V19h-.007v-.025zM21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          <span style={{ fontSize: 12, color: '#1e3a8a', lineHeight: 1.5, fontWeight: 600 }}>
+          <span style={{ fontSize: 12, color: c?.accentText || '#1e3a8a', lineHeight: 1.5, fontWeight: 600 }}>
             {t('vehiculo.documentVerificationNote')}
           </span>
         </div>
       </div>
 
+      {/* Términos y Condiciones */}
+      <div style={sectionCardStyle}>
+        <div style={headerStyle}>
+          <FaShieldAlt color={c?.accentText || '#1e3a8a'} size={14} />
+          <h3 style={{ fontSize: 14, fontWeight: 700, color: c?.accentText || '#1e3a8a', margin: 0, textTransform: 'none' }}>
+            Políticas y Seguridad
+          </h3>
+        </div>
 
-      <div style={{ background: 'var(--bg-tarjeta)', borderRadius: 24, border: '1px solid var(--borde)', padding: '24px', marginBottom: 20, boxShadow: 'var(--sombra-tarjeta)' }}>
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: errores.terminos ? 8 : 16 }}>
-          <input type="checkbox" id="tyc" checked={datosForm.terminos} onChange={e => onCambio('terminos', e.target.checked)} style={{ width: 18, height: 18, cursor: 'pointer', marginTop: 2, flexShrink: 0, accentColor: '#1e3a8a' }} />
-          <label htmlFor="tyc" style={{ fontSize: 14, color: 'var(--texto-primary)', cursor: 'pointer', lineHeight: 1.5 }}>
-            {t('vehiculo.termsConsent')} <span style={{ color: '#1e3a8a', fontWeight: 800 }}>{t('vehiculo.privacyPolicy')}</span> *
+          <input type="checkbox" id="tyc" checked={datosForm.terminos} onChange={e => onCambio('terminos', e.target.checked)} style={{ width: 18, height: 18, cursor: 'pointer', marginTop: 2, flexShrink: 0, accentColor: c?.accentText || '#1e3a8a' }} />
+          <label htmlFor="tyc" style={{ fontSize: 14, color: c?.textPrimary || '#0f172a', cursor: 'pointer', lineHeight: 1.5 }}>
+            {t('vehiculo.termsConsent')} <span style={{ color: c?.accentText || '#1e3a8a', fontWeight: 800 }}>{t('vehiculo.privacyPolicy')}</span> *
           </label>
         </div>
         {errores.terminos && <p style={{ color: '#ef4444', fontSize: 12, margin: '0 0 12px 28px', fontWeight: 600 }}>{errores.terminos}</p>}
 
-
-        <button onClick={() => setVerTyC(v => !v)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#2563eb', fontSize: 14, fontWeight: 800, padding: '0 0 0 28px', transition: 'opacity 200ms ease' }} onMouseEnter={e => e.currentTarget.style.opacity = '0.8'} onMouseLeave={e => e.currentTarget.style.opacity = '1'}>
+        <button onClick={() => setVerTyC(v => !v)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: c?.accentText || '#2563eb', fontSize: 14, fontWeight: 800, padding: '0 0 0 28px', transition: 'opacity 200ms ease' }} onMouseEnter={e => e.currentTarget.style.opacity = '0.8'} onMouseLeave={e => e.currentTarget.style.opacity = '1'}>
           {verTyC ? `▼ ${t('vehiculo.hideTerms')}` : `▶ ${t('vehiculo.readTerms')}`}
         </button>
 
-
         {verTyC && (
-          <div style={{ marginTop: 16, borderRadius: 16, overflow: 'hidden', border: '1px solid #1e3a8a' }}>
-            <div style={{ background: '#1e3a8a', padding: '16px', display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+          <div style={{ marginTop: 16, borderRadius: 12, overflow: 'hidden', border: `1px solid ${c?.cardBorder || '#e2e8f0'}`, background: c?.isDark ? 'rgba(255,255,255,0.02)' : '#f8fafc' }}>
+            <div style={{ background: c?.isDark ? 'rgba(37,99,235,0.2)' : '#eff6ff', padding: '16px', display: 'flex', gap: 12, alignItems: 'flex-start', borderBottom: `1px solid ${c?.cardBorder || '#e2e8f0'}` }}>
               <div>
-                <p style={{ fontSize: 13, fontWeight: 900, color: '#bfdbfe', margin: '0 0 4px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t('vehiculo.importantPolicies')}</p>
-                <p style={{ fontSize: 13, color: '#ffffff', margin: 0, lineHeight: 1.5 }}>
+                <p style={{ fontSize: 12, fontWeight: 800, color: c?.accentText || '#1e3a8a', margin: '0 0 4px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t('vehiculo.importantPolicies')}</p>
+                <p style={{ fontSize: 13, color: c?.textPrimary || '#0f172a', margin: 0, lineHeight: 1.5 }}>
                   <strong>{t('vehiculo.noRefundPolicy')}</strong>
                 </p>
               </div>
             </div>
-            <div style={{ background: 'var(--bg-item)', padding: 18 }}>
-              <pre style={{ fontSize: 12, color: 'var(--texto-primary)', lineHeight: 1.7, whiteSpace: 'pre-wrap', margin: 0, fontFamily: 'inherit' }}>{t('vehiculo.termsFullText')}</pre>
+            <div style={{ padding: 18 }}>
+              <pre style={{ fontSize: 12, color: c?.textSecondary || '#64748b', lineHeight: 1.7, whiteSpace: 'pre-wrap', margin: 0, fontFamily: 'inherit' }}>{t('vehiculo.termsFullText')}</pre>
             </div>
           </div>
         )}
       </div>
 
-
-      <div className="confirmar-reserva-bloque" style={{ background: 'linear-gradient(135deg,#0f1a3d,#1e3a8a)', borderRadius: 24, padding: '24px 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 24, flexWrap: 'wrap', boxShadow: '0 12px 32px rgba(30,58,138,0.25)' }}>
+      {/* Confirmar Reserva */}
+      <div className="confirmar-reserva-bloque" style={{ 
+        background: 'linear-gradient(135deg, #1e3a8a, #0f172a)', 
+        borderRadius: 16, 
+        padding: '24px 32px', 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center', 
+        gap: 24, 
+        flexWrap: 'wrap', 
+        boxShadow: '0 12px 32px rgba(30,58,138,0.25)' 
+      }}>
         <div>
-          <p style={{ fontSize: 13, color: '#bfdbfe', fontWeight: 700, margin: '0 0 4px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t('vehiculo.totalToPay')}</p>
+          <p style={{ fontSize: 12, color: '#bfdbfe', fontWeight: 700, margin: '0 0 4px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t('vehiculo.totalToPay')}</p>
           <p style={{ fontSize: 32, fontWeight: 900, color: '#fff', margin: 0 }}>{formatCurrency(total, moneda)}</p>
           <p style={{ fontSize: 11, color: '#bfdbfe', margin: '6px 0 0' }}>{t('vehiculo.taxesIncluded')}</p>
         </div>
         <button
           onClick={onReservar}
-          style={{ padding: '16px 40px', borderRadius: 16, background: 'var(--bg-tarjeta)', color: '#1e3a8a', fontWeight: 900, fontSize: 16, border: 'none', cursor: 'pointer', boxShadow: '0 8px 24px rgba(0,0,0,0.18)', whiteSpace: 'nowrap', transition: 'transform 200ms ease' }}
+          style={{ 
+            padding: '16px 40px', 
+            borderRadius: 12, 
+            background: '#ffffff', 
+            color: '#1e3a8a', 
+            fontWeight: 900, 
+            fontSize: 16, 
+            border: 'none', 
+            cursor: 'pointer', 
+            boxShadow: '0 8px 24px rgba(0,0,0,0.18)', 
+            whiteSpace: 'nowrap', 
+            transition: 'transform 200ms ease' 
+          }}
           onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
           onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
         >
