@@ -715,7 +715,13 @@
     "missingDataTitle": "Dados incompletos",
     "missingDataText": "Preencha as informações necessárias para continuar com sua reserva.",
     "reservationCompletedTitle": "Reserva Concluída!",
-    "reservationCompletedText": "Sua reserva presencial foi registrada."
+    "reservationCompletedText": "Sua reserva presencial foi registrada.",
+    "rentalDuration": "Duração do aluguel",
+    "day": "dia",
+    "days": "dias",
+    "hour": "hora",
+    "hours": "horas",
+    "limited": "Limitado"
   },
   "reservas": {
     "title": "As minhas reservas",

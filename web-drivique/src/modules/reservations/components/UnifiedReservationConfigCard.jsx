@@ -91,12 +91,11 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
       if (diffMs > 0) {
         const diffHrs = Math.floor(diffMs / (1000 * 60 * 60))
         const dias = Math.floor(diffHrs / 24)
-        const horas = diffHrs % 24
-        
+        const horas = Math.max(0, Math.ceil((diffMs % 86400000) / 3600000))
         const parts = []
-        if (dias > 0) parts.push(`${dias} ${dias === 1 ? 'día' : 'días'}`)
-        if (horas > 0) parts.push(`${horas} ${horas === 1 ? 'hora' : 'horas'}`)
-        durationText = parts.join(' - ') || '0 horas'
+        if (dias > 0) parts.push(`${dias} ${dias === 1 ? t('vehiculo.day', 'día') : t('vehiculo.days', 'días')}`)
+        if (horas > 0) parts.push(`${horas} ${horas === 1 ? t('vehiculo.hour', 'hora') : t('vehiculo.hours', 'horas')}`)
+        durationText = parts.join(' - ') || `0 ${t('vehiculo.hours', 'horas')}`
       }
     } else {
       const start = new Date(reserva.fechaInicio)
@@ -104,7 +103,7 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
       const diffMs = end - start
       if (diffMs >= 0) {
         const dias = Math.max(1, Math.ceil(diffMs / 86400000))
-        durationText = `${dias} ${dias === 1 ? 'día' : 'días'}`
+        durationText = `${dias} ${dias === 1 ? t('vehiculo.day', 'día') : t('vehiculo.days', 'días')}`
       }
     }
   }
@@ -322,7 +321,7 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
         {durationText && (
           <div style={{ marginTop: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', borderRadius: 12, background: 'rgba(37,99,235,0.05)', border: `1px solid rgba(37,99,235,0.15)` }}>
             <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, color: textSecond }}>
-              <FaHourglassHalf color={textSecond} size={14} /> Duración del alquiler:
+              <FaHourglassHalf color={textSecond} size={14} /> {t('vehiculo.rentalDuration', 'Duración del alquiler:')}
             </span>
             <span style={{ fontSize: 14, fontWeight: 800, color: titleColor }}>
               {durationText}

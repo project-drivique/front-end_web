@@ -728,7 +728,13 @@
     "missingDataTitle": "Missing data",
     "missingDataText": "Please complete the required information to continue with your reservation.",
     "reservationCompletedTitle": "Reservation Completed!",
-    "reservationCompletedText": "Your in-person reservation has been registered."
+    "reservationCompletedText": "Your in-person reservation has been registered.",
+    "rentalDuration": "Rental duration",
+    "day": "day",
+    "days": "days",
+    "hour": "hour",
+    "hours": "hours",
+    "limited": "Limited"
   },
   "reservas": {
     "title": "My reservations",

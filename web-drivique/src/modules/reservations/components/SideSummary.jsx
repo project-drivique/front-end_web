@@ -133,7 +133,7 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, servicios
         <div style={{ marginBottom: 12 }}>
           <p style={{ fontSize: 11, fontWeight: 600, color: c?.textSecondary || '#64748b', textTransform: 'uppercase', margin: '0 0 4px' }}>{t('vehiculo.mileageType', 'Tipo de kilometraje')}</p>
           <p style={{ fontSize: 14, fontWeight: 800, color: c?.textPrimary || '#0f172a', margin: '0' }}>
-            {reserva.tipoKm === 'ilimitado' ? t('vehiculo.unlimited', 'Ilimitado') : (reserva.tipoKm === 'limitado' ? `${kmLimit.km} km/día` : t('vehiculo.notSelected', 'No seleccionado'))}
+            {reserva.tipoKm === 'ilimitado' ? t('vehiculo.unlimited', 'Ilimitado') : (reserva.tipoKm === 'limitado' ? `${t('vehiculo.limited', 'Limitado')} (${kmLimit.km} km/${t('vehiculo.day', 'día')})` : t('vehiculo.notSelected', 'No seleccionado'))}
           </p>
         </div>
         
