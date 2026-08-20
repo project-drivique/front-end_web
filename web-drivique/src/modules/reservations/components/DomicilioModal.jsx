@@ -202,7 +202,7 @@ export default function DomicilioModal({
                 style={{ accentColor: accent, width: 18, height: 18, cursor: 'pointer', flexShrink: 0, marginTop: 2 }}
               />
               <p style={{ fontSize: 13, color: textPrimary, margin: 0, fontWeight: 500, lineHeight: 1.4 }}>
-                <strong style={{ color: accent, display: 'block', marginBottom: 4 }}>Devolver el vehículo en esta misma dirección</strong>
+                <strong style={{ color: accent, display: 'block', marginBottom: 4 }}>{t('vehiculo.returnSameAddress', 'Devolver el vehículo en esta misma dirección')}</strong>
                 Al marcar esta casilla, el lugar de devolución quedará automáticamente configurado para recoger el auto en esta misma ubicación al finalizar tu reserva.
               </p>
             </label>

@@ -12,12 +12,12 @@ export default function ReservationStep1({ vehiculo, c, esModoOscuro, reserva, c
     <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
 
       {/* Contenedor principal dividido en Lado Izquierdo (Cols 1 y 2) y Lado Derecho (Col 3) para independizar alturas, pero alineado en tercios exactos */}
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 24 }}>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* Lado Izquierdo */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+        <div className="lg:col-span-2 flex flex-col gap-6">
           {/* Fila superior del lado izquierdo: 2 columnas exactamente iguales (1/3 de la pantalla cada una) */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Columna 1: Galería */}
             <div style={{
               background: c?.cardBg || 'var(--bg-tarjeta)',
@@ -55,7 +55,7 @@ export default function ReservationStep1({ vehiculo, c, esModoOscuro, reserva, c
         </div>
 
         {/* Lado Derecho (Columna 3: exactamente 1/3 de la pantalla) */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 24, boxSizing: 'border-box' }}>
+        <div className="lg:col-span-1 flex flex-col gap-6" style={{ boxSizing: 'border-box' }}>
           {/* Características */}
           <VehicleCharacteristics vehiculo={vehiculo} c={c} showIcon={true} compact={true} />
           

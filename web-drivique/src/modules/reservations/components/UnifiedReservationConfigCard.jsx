@@ -29,13 +29,13 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
   const paymentOptions = [
     {
       value: 'wompi',
-      titulo: 'Pago virtual con Wompi',
-      desc: 'Habilita entregas a domicilio, aeropuerto o terminal.',
+      titulo: t('vehiculo.wompiPayment', 'Pago virtual con Wompi'),
+      desc: t('vehiculo.wompiDesc', 'Habilita entregas a domicilio, aeropuerto o terminal.'),
     },
     {
       value: 'efectivo',
-      titulo: 'Pago en efectivo',
-      desc: 'Obligatorio retirar y pagar directamente en sucursal.',
+      titulo: t('vehiculo.cashPayment', 'Pago en efectivo'),
+      desc: t('vehiculo.cashDesc', 'Obligatorio retirar y pagar directamente en sucursal.'),
     },
   ]
 
@@ -173,7 +173,7 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
           {/* Lugar Retiro */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 700, color: titleColor }}>
-              <FaMapMarkerAlt color={accent} size={14} /> Seleccionar lugar de retiro
+              <FaMapMarkerAlt color={accent} size={14} /> {t('vehiculo.selectPickupLoc', 'Seleccionar lugar de retiro')}
             </span>
             <div style={{ padding: '12px 16px', borderRadius: 12, border: `1px solid ${border}`, background: 'transparent' }}>
               <select
@@ -204,7 +204,7 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
           {/* Lugar Devolución */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 700, color: titleColor }}>
-              <FaMapMarkerAlt color={accent} size={14} /> Seleccionar lugar de devolución
+              <FaMapMarkerAlt color={accent} size={14} /> {t('vehiculo.selectReturnLoc', 'Seleccionar lugar de devolución')}
             </span>
             <div style={{ padding: '12px 16px', borderRadius: 12, border: `1px solid ${border}`, background: 'transparent' }}>
               <select
@@ -240,7 +240,7 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
           {/* Hora Retiro */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 700, color: titleColor }}>
-              <FaClock color={accent} size={14} /> Selecciona Hora de Retiro
+              <FaClock color={accent} size={14} /> {t('vehiculo.selectPickupTime', 'Selecciona Hora de Retiro')}
             </span>
             <div style={{ padding: '12px 16px', borderRadius: 12, border: `1px solid ${border}`, background: 'transparent' }}>
               <select
@@ -257,7 +257,7 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
           {/* Hora Devolución */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 700, color: titleColor }}>
-              <FaClock color={accent} size={14} /> Selecciona Hora de Devolución
+              <FaClock color={accent} size={14} /> {t('vehiculo.selectReturnTime', 'Selecciona Hora de Devolución')}
             </span>
             <div style={{ padding: '12px 16px', borderRadius: 12, border: `1px solid ${border}`, background: 'transparent' }}>
               <select

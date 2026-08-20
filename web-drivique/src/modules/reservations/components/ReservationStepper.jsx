@@ -32,6 +32,7 @@ export default function ReservationStepper({ pantalla, setPantalla, esModoOscuro
         marginBottom: 32,
         borderBottom: `1px solid ${esModoOscuro ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)'}`,
         display: 'flex',
+        gap: 32,
         alignItems: 'stretch',
         position: 'relative',
         overflowX: 'auto',
@@ -62,9 +63,6 @@ export default function ReservationStepper({ pantalla, setPantalla, esModoOscuro
               position: 'relative',
               background: 'transparent',
               border: 'none',
-              borderRight: i < pasos.length - 1
-                ? `1px solid ${esModoOscuro ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}`
-                : 'none',
               transition: 'all 200ms ease',
               userSelect: 'none',
               outline: 'none',

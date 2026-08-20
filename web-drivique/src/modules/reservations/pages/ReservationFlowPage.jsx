@@ -117,7 +117,7 @@ export default function ReservationFlowPage() {
             <div style={{ display: 'flex', justifyContent: 'center' }}>
               <button
                 onClick={() => {
-                  showAlert({ icon: 'success', title: '¡Reserva Completada!', text: 'Tu reserva presencial ha sido registrada.', confirmButtonText: 'Aceptar' })
+                  showAlert({ icon: 'success', title: t('vehiculo.reservationCompletedTitle', '¡Reserva Completada!'), text: t('vehiculo.reservationCompletedText', 'Tu reserva presencial ha sido registrada.'), confirmButtonText: t('common.accept', 'Aceptar') })
                     .then(() => navigate('/reservas'))
                 }}
                 style={{ display: 'inline-flex', alignItems: 'center', gap: 12, padding: '18px 36px', borderRadius: 16, background: 'linear-gradient(90deg,#1e3a8a,#2563eb)', color: '#fff', fontWeight: 900, fontSize: 15, border: 'none', cursor: 'pointer', boxShadow: '0 8px 24px rgba(37,99,235,0.28)' }}
@@ -254,8 +254,9 @@ export default function ReservationFlowPage() {
               <div
                 ref={resumenMovilRef}
                 className={`detalle-resumen-wrapper${resumenMovilAbierto ? ' abierto' : ''}`}
+                style={{ flex: '0 0 calc(33.333% - 21.33px)' }}
               >
-                <SideSummary
+                <SideSummary c={c} 
                   vehiculo={vehiculo}
                   reserva={reserva}
                   seguroIdx={seguroIdx}
