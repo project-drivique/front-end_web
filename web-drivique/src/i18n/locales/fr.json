@@ -729,7 +729,19 @@
     "totalProtection": "Protection Totale",
     "totalPlansExtras": "Total des plans et suppléments",
     "select": "Sélectionner",
-    "selected": "Sélectionné"
+    "selected": "Sélectionné",
+    "errorPickupLocation": "Vous devez s�lectionner un lieu de retrait.",
+    "errorPickupDate": "Vous devez s�lectionner une date de retrait.",
+    "errorPickupTime": "Vous devez s�lectionner une heure de retrait.",
+    "errorReturnLocation": "Vous devez s�lectionner un lieu de restitution.",
+    "errorReturnDate": "Vous devez s�lectionner une date de restitution.",
+    "errorReturnTime": "Vous devez s�lectionner une heure de restitution.",
+    "errorDomicilioData": "Vous devez compl�ter les d�tails de l'adresse de livraison.",
+    "errorProtectionPlan": "Vous devez s�lectionner un plan de protection.",
+    "errorMileageType": "Vous devez s�lectionner un type de kilom�trage.",
+    "editDatesLocations": "Modifier les dates et lieux",
+    "yourProtectionExtras": "Votre protection et vos options",
+    "editAdditionalServices": "Modifier les services suppl�mentaires"
   },
   "reservas": {
     "title": "Mes réservations",

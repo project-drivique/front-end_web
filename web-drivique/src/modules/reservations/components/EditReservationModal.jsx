@@ -25,21 +25,21 @@ export default function EditReservationModal({
 
   const guardar = () => {
     if (modalEditarSeccion === 'retiro' || modalEditarSeccion === 'devolucion') {
-      if (!localReserva.sucursalRetiro) { setModalError('Debes seleccionar el lugar de retiro.'); return }
-      if (!localReserva.fechaInicio) { setModalError('Debes seleccionar la fecha de inicio.'); return }
-      if (!localReserva.horaInicio) { setModalError('Debes seleccionar la hora de retiro.'); return }
-      if (!localReserva.sucursalDevolucion) { setModalError('Debes seleccionar el lugar de devolución.'); return }
-      if (!localReserva.fechaFin) { setModalError('Debes seleccionar la fecha de devolución.'); return }
-      if (!localReserva.horaFin) { setModalError('Debes seleccionar la hora de devolución.'); return }
+      if (!localReserva.sucursalRetiro) { setModalError(t('vehiculo.errorPickupLocation', 'Debes seleccionar el lugar de retiro.')); return }
+      if (!localReserva.fechaInicio) { setModalError(t('vehiculo.errorPickupDate', 'Debes seleccionar la fecha de inicio.')); return }
+      if (!localReserva.horaInicio) { setModalError(t('vehiculo.errorPickupTime', 'Debes seleccionar la hora de retiro.')); return }
+      if (!localReserva.sucursalDevolucion) { setModalError(t('vehiculo.errorReturnLocation', 'Debes seleccionar el lugar de devolución.')); return }
+      if (!localReserva.fechaFin) { setModalError(t('vehiculo.errorReturnDate', 'Debes seleccionar la fecha de devolución.')); return }
+      if (!localReserva.horaFin) { setModalError(t('vehiculo.errorReturnTime', 'Debes seleccionar la hora de devolución.')); return }
       if (localReserva.sucursalRetiro === 'domicilio' || localReserva.sucursalDevolucion === 'domicilio') {
         if (!localReserva.domicilioBarrio?.trim() || !localReserva.domicilioDireccion?.trim()) {
-          setModalError('Debes completar los datos del domicilio.'); return
+          setModalError(t('vehiculo.errorDomicilioData', 'Debes completar los datos del domicilio.')); return
         }
       }
     }
     if (modalEditarSeccion === 'grupo') {
-      if (localSeguroIdx === null) { setModalError('Debes seleccionar un plan de protección.'); return }
-      if (!localReserva.tipoKm) { setModalError('Debes seleccionar el tipo de kilometraje.'); return }
+      if (localSeguroIdx === null) { setModalError(t('vehiculo.errorProtectionPlan', 'Debes seleccionar un plan de protección.')); return }
+      if (!localReserva.tipoKm) { setModalError(t('vehiculo.errorMileageType', 'Debes seleccionar el tipo de kilometraje.')); return }
     }
 
     setReserva({ ...localReserva })
@@ -72,10 +72,10 @@ export default function EditReservationModal({
   }
 
   const titleMap = {
-    retiro: 'Editar Fechas y Lugares',
-    devolucion: 'Editar Fechas y Lugares',
-    grupo: 'Tu Protección y Extras',
-    servicios: 'Editar Servicios Adicionales',
+    retiro: t('vehiculo.editDatesLocations', 'Editar Fechas y Lugares'),
+    devolucion: t('vehiculo.editDatesLocations', 'Editar Fechas y Lugares'),
+    grupo: t('vehiculo.yourProtectionExtras', 'Tu Protección y Extras'),
+    servicios: t('vehiculo.editAdditionalServices', 'Editar Servicios Adicionales'),
   }
 
   const isWide = modalEditarSeccion === 'grupo' || modalEditarSeccion === 'servicios'
