@@ -332,6 +332,9 @@ function MenuConfiguracion({ tx, modoMovil = false }) {
         </div>
       )}
     </div>
+  )
+}
+
 export default function LandingPage() {
   const { tema, idioma, moneda } = useLanding()
   const tx = translations[idioma] ?? translations.es
