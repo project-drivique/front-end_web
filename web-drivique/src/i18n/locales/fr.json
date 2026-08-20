@@ -715,7 +715,13 @@
     "missingDataTitle": "Données manquantes",
     "missingDataText": "Veuillez compléter les informations requises pour continuer votre réservation.",
     "reservationCompletedTitle": "Réservation terminée !",
-    "reservationCompletedText": "Votre réservation sur place a été enregistrée."
+    "reservationCompletedText": "Votre réservation sur place a été enregistrée.",
+    "rentalDuration": "Durée de location",
+    "day": "jour",
+    "days": "jours",
+    "hour": "heure",
+    "hours": "heures",
+    "limited": "Limité"
   },
   "reservas": {
     "title": "Mes réservations",
