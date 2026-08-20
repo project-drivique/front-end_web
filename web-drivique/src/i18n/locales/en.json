@@ -741,7 +741,19 @@
     "totalProtection": "Total Protection",
     "totalPlansExtras": "Total for plans and extras",
     "select": "Select",
-    "selected": "Selected"
+    "selected": "Selected",
+    "errorPickupLocation": "You must select a pickup location.",
+    "errorPickupDate": "You must select a pickup date.",
+    "errorPickupTime": "You must select a pickup time.",
+    "errorReturnLocation": "You must select a return location.",
+    "errorReturnDate": "You must select a return date.",
+    "errorReturnTime": "You must select a return time.",
+    "errorDomicilioData": "You must complete the home delivery address details.",
+    "errorProtectionPlan": "You must select a protection plan.",
+    "errorMileageType": "You must select a mileage type.",
+    "editDatesLocations": "Edit Dates and Locations",
+    "yourProtectionExtras": "Your Protection and Extras",
+    "editAdditionalServices": "Edit Additional Services"
   },
   "reservas": {
     "title": "My reservations",
