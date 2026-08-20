@@ -81,16 +81,24 @@
     ],
     "servicios": [
       {
-        "nombre": "GPS",
+        "nombre": "GPS Integrado",
         "precio": 15000
       },
       {
-        "nombre": "Silla bebé",
+        "nombre": "Silla de bebé",
         "precio": 20000
       },
       {
         "nombre": "Conductor adicional",
         "precio": 30000
+      },
+      {
+        "nombre": "Lavado de auto post-entrega",
+        "precio": 25000
+      },
+      {
+        "nombre": "Devolución con tanque vacío",
+        "precio": 50000
       }
     ],
     "imagenes": [
@@ -214,12 +222,24 @@
     ],
     "servicios": [
       {
-        "nombre": "GPS",
+        "nombre": "GPS Integrado",
         "precio": 15000
       },
       {
-        "nombre": "Silla bebé",
+        "nombre": "Silla de bebé",
         "precio": 20000
+      },
+      {
+        "nombre": "Conductor adicional",
+        "precio": 30000
+      },
+      {
+        "nombre": "Lavado de auto post-entrega",
+        "precio": 25000
+      },
+      {
+        "nombre": "Devolución con tanque vacío",
+        "precio": 50000
       }
     ],
     "imagenes": [
@@ -315,8 +335,24 @@
     ],
     "servicios": [
       {
-        "nombre": "GPS",
+        "nombre": "GPS Integrado",
         "precio": 15000
+      },
+      {
+        "nombre": "Silla de bebé",
+        "precio": 20000
+      },
+      {
+        "nombre": "Conductor adicional",
+        "precio": 30000
+      },
+      {
+        "nombre": "Lavado de auto post-entrega",
+        "precio": 25000
+      },
+      {
+        "nombre": "Devolución con tanque vacío",
+        "precio": 50000
       }
     ],
     "imagenes": [
@@ -415,8 +451,24 @@
     ],
     "servicios": [
       {
-        "nombre": "GPS",
+        "nombre": "GPS Integrado",
         "precio": 15000
+      },
+      {
+        "nombre": "Silla de bebé",
+        "precio": 20000
+      },
+      {
+        "nombre": "Conductor adicional",
+        "precio": 30000
+      },
+      {
+        "nombre": "Lavado de auto post-entrega",
+        "precio": 25000
+      },
+      {
+        "nombre": "Devolución con tanque vacío",
+        "precio": 50000
       }
     ],
     "imagenes": [
@@ -526,16 +578,24 @@
     ],
     "servicios": [
       {
-        "nombre": "GPS",
+        "nombre": "GPS Integrado",
         "precio": 15000
       },
       {
-        "nombre": "Silla bebé",
+        "nombre": "Silla de bebé",
         "precio": 20000
       },
       {
         "nombre": "Conductor adicional",
         "precio": 30000
+      },
+      {
+        "nombre": "Lavado de auto post-entrega",
+        "precio": 25000
+      },
+      {
+        "nombre": "Devolución con tanque vacío",
+        "precio": 50000
       }
     ],
     "imagenes": [
@@ -639,8 +699,24 @@
     ],
     "servicios": [
       {
-        "nombre": "GPS",
+        "nombre": "GPS Integrado",
         "precio": 15000
+      },
+      {
+        "nombre": "Silla de bebé",
+        "precio": 20000
+      },
+      {
+        "nombre": "Conductor adicional",
+        "precio": 30000
+      },
+      {
+        "nombre": "Lavado de auto post-entrega",
+        "precio": 25000
+      },
+      {
+        "nombre": "Devolución con tanque vacío",
+        "precio": 50000
       }
     ],
     "imagenes": [
@@ -752,12 +828,24 @@
     ],
     "servicios": [
       {
-        "nombre": "GPS",
+        "nombre": "GPS Integrado",
         "precio": 15000
       },
       {
-        "nombre": "Silla bebé",
+        "nombre": "Silla de bebé",
         "precio": 20000
+      },
+      {
+        "nombre": "Conductor adicional",
+        "precio": 30000
+      },
+      {
+        "nombre": "Lavado de auto post-entrega",
+        "precio": 25000
+      },
+      {
+        "nombre": "Devolución con tanque vacío",
+        "precio": 50000
       }
     ],
     "imagenes": [
@@ -855,12 +943,24 @@
     ],
     "servicios": [
       {
-        "nombre": "GPS",
+        "nombre": "GPS Integrado",
         "precio": 15000
+      },
+      {
+        "nombre": "Silla de bebé",
+        "precio": 20000
       },
       {
         "nombre": "Conductor adicional",
         "precio": 30000
+      },
+      {
+        "nombre": "Lavado de auto post-entrega",
+        "precio": 25000
+      },
+      {
+        "nombre": "Devolución con tanque vacío",
+        "precio": 50000
       }
     ],
     "imagenes": [
@@ -959,12 +1059,24 @@
     ],
     "servicios": [
       {
-        "nombre": "GPS",
+        "nombre": "GPS Integrado",
         "precio": 15000
       },
       {
-        "nombre": "Silla bebé",
+        "nombre": "Silla de bebé",
         "precio": 20000
+      },
+      {
+        "nombre": "Conductor adicional",
+        "precio": 30000
+      },
+      {
+        "nombre": "Lavado de auto post-entrega",
+        "precio": 25000
+      },
+      {
+        "nombre": "Devolución con tanque vacío",
+        "precio": 50000
       }
     ],
     "imagenes": [

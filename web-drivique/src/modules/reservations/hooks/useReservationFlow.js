@@ -171,9 +171,9 @@ export function useReservationFlow() {
     const mostrarAlerta = () => {
       showAlert({
         icon: 'info',
-        title: 'Faltan datos por completar',
-        text: 'Completa la información requerida para continuar con tu reserva.',
-        confirmButtonText: 'Cerrar'
+        title: t('vehiculo.missingDataTitle', 'Faltan datos por completar'),
+        text: t('vehiculo.missingDataText', 'Completa la información requerida para continuar con tu reserva.'),
+        confirmButtonText: t('common.close', 'Cerrar')
       })
     }
 

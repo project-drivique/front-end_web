@@ -23,13 +23,12 @@ export default function PicoYPlacaChecker({ c }) {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 20, flexWrap: 'wrap' }}>
         <div style={{ display: 'flex', flexDirection: 'column', flex: '1 1 300px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-            <FaCar color={accent} size={14} />
-            <h3 style={{ fontSize: 13, fontWeight: 700, color: titleColor, margin: 0 }}>
-              {t('vehiculo.checkPicoYPlacaTitle', 'Consultar Pico y Placa')}
-            </h3>
+            <h4 style={{ margin: 0, fontSize: 13, fontWeight: 700, color: titleColor, display: 'flex', alignItems: 'center', gap: 6 }}>
+              <FaCar size={14} /> {t('vehiculo.picoYPlacaTitle', 'Consultar Pico y Placa')}
+            </h4>
           </div>
-          <p style={{ fontSize: 13, color: textColor, margin: 0, lineHeight: 1.6 }}>
-            {t('vehiculo.checkPicoYPlacaDesc', '¿No estás seguro de si este vehículo tiene restricción de movilidad hoy? Consulta la información oficial a nivel nacional para planificar tu ruta y evitar multas o contratiempos durante tu reserva. Recuerda que las restricciones pueden variar según la ciudad y el día de la semana, por lo que es vital estar informado antes de viajar.')}
+          <p style={{ margin: '8px 0 0', fontSize: 12, lineHeight: 1.5, color: textColor }}>
+            {t('vehiculo.picoYPlacaDesc', '¿No estás seguro de si este vehículo tiene restricción de movilidad hoy? Consulta la información oficial a nivel nacional para planificar tu ruta y evitar multas o contratiempos durante tu reserva. Recuerda que las restricciones pueden variar según la ciudad y el día de la semana, por lo que es vital estar informado antes de viajar.')}
           </p>
         </div>
 
@@ -57,10 +56,9 @@ export default function PicoYPlacaChecker({ c }) {
             alignSelf: 'center'
           }}
         >
-          {t('vehiculo.goToOfficialSite', 'Ir a la página')} <FaExternalLinkAlt size={11} />
+          {t('vehiculo.goToPage', 'Ir a la página')} <FaExternalLinkAlt size={11} />
         </a>
       </div>
     </div>
   )
 }
-

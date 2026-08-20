@@ -4,18 +4,29 @@ import {
   startOfMonth, endOfMonth, startOfWeek, endOfWeek, eachDayOfInterval,
   addMonths, subMonths, isSameMonth, isToday, format,
 } from 'date-fns'
-import { es } from 'date-fns/locale'
+import { es, enUS, fr, ptBR } from 'date-fns/locale'
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa'
 import { useDisponibilidadVehiculo } from '../hooks/useVehicleAvailability'
 
 const hoyISO = format(new Date(), 'yyyy-MM-dd')
-const DIAS_SEMANA = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom']
 
 export default function CalendarioReservas({ vehiculoId, fechaInicio, fechaFin, onCambiarFechas }) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { estaOcupado, cargando } = useDisponibilidadVehiculo(vehiculoId)
   const [mesActual, setMesActual] = useState(new Date())
   const [aviso, setAviso] = useState('')
+
+  const getLocale = () => {
+    switch (i18n.language) {
+      case 'en': return enUS
+      case 'fr': return fr
+      case 'pt': return ptBR
+      case 'br': return ptBR
+      default: return es
+    }
+  }
+  const currentLocale = getLocale()
+  const DIAS_SEMANA = t('vehiculo.calendarDays', 'Lun,Mar,Mié,Jue,Vie,Sáb,Dom').split(',')
 
   const dias = useMemo(() => {
     const inicio = startOfWeek(startOfMonth(mesActual), { weekStartsOn: 1 })
@@ -74,7 +85,7 @@ export default function CalendarioReservas({ vehiculoId, fechaInicio, fechaFin, 
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <span style={{ fontSize: 17, fontWeight: 800, color: '#0f172a', textTransform: 'capitalize', letterSpacing: '-0.01em' }}>
-            {format(mesActual, 'MMMM yyyy', { locale: es })}
+            {format(mesActual, 'MMMM yyyy', { locale: currentLocale })}
           </span>
         </div>
 
