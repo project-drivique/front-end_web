@@ -376,7 +376,7 @@ export function useReservationFlow() {
   const totalReserva = subtotalPreIvaT + ivaT
 
   return {
-    vehiculo, pantalla, setPantalla, reserva, cambiarReserva,
+    vehiculo, pantalla, setPantalla, reserva, setReserva, cambiarReserva,
     seguroIdx, setSeguroIdx, serviciosSeleccionados, setServiciosSeleccionados, toggleServicio,
     modalEditarOpen, setModalEditarOpen, modalEditarSeccion, setModalEditarSeccion,
     localReserva, setLocalReserva, localSeguroIdx, setLocalSeguroIdx,
