@@ -4,18 +4,29 @@ import {
   startOfMonth, endOfMonth, startOfWeek, endOfWeek, eachDayOfInterval,
   addMonths, subMonths, isSameMonth, isToday, format,
 } from 'date-fns'
-import { es } from 'date-fns/locale'
+import { es, enUS, fr, ptBR } from 'date-fns/locale'
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa'
 import { useDisponibilidadVehiculo } from '../hooks/useVehicleAvailability'
 
 const hoyISO = format(new Date(), 'yyyy-MM-dd')
-const DIAS_SEMANA = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom']
 
 export default function CalendarioReservas({ vehiculoId, fechaInicio, fechaFin, onCambiarFechas }) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { estaOcupado, cargando } = useDisponibilidadVehiculo(vehiculoId)
   const [mesActual, setMesActual] = useState(new Date())
   const [aviso, setAviso] = useState('')
+
+  const getLocale = () => {
+    switch (i18n.language) {
+      case 'en': return enUS
+      case 'fr': return fr
+      case 'pt': return ptBR
+      case 'br': return ptBR
+      default: return es
+    }
+  }
+  const currentLocale = getLocale()
+  const DIAS_SEMANA = t('vehiculo.calendarDays', 'Lun,Mar,Mié,Jue,Vie,Sáb,Dom').split(',')
 
   const dias = useMemo(() => {
     const inicio = startOfWeek(startOfMonth(mesActual), { weekStartsOn: 1 })
@@ -74,7 +85,7 @@ export default function CalendarioReservas({ vehiculoId, fechaInicio, fechaFin, 
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <span style={{ fontSize: 17, fontWeight: 800, color: '#0f172a', textTransform: 'capitalize', letterSpacing: '-0.01em' }}>
-            {format(mesActual, 'MMMM yyyy', { locale: es })}
+            {format(mesActual, 'MMMM yyyy', { locale: currentLocale })}
           </span>
         </div>
 
@@ -218,18 +229,22 @@ export default function CalendarioReservas({ vehiculoId, fechaInicio, fechaFin, 
         justifyContent: 'center', gap: 16,
         marginTop: 20, paddingTop: 16,
         borderTop: '1px solid #f1f5f9',
-        fontSize: 11, fontWeight: 600, color: '#94a3b8'
+        fontSize: 12, fontWeight: 500, color: '#64748b'
       }}>
         <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#34d399', display: 'block' }} />
+          <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#10b981', display: 'block' }} />
           {t('vehiculo.calendarAvailable', 'Disponible')}
         </span>
         <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#f87171', display: 'block' }} />
-          {t('vehiculo.calendarOccupied', 'Ocupado')}
+          <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#dc2626', display: 'block' }} />
+          {t('vehiculo.calendarOccupied', 'Reservado')}
         </span>
         <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#2563eb', display: 'block' }} />
+          <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#64748b', display: 'block' }} />
+          {t('vehiculo.calendarMaintenance', 'Mantenimiento')}
+        </span>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#2563eb', display: 'block' }} />
           {t('vehiculo.calendarSelected', 'Seleccionado')}
         </span>
       </div>
