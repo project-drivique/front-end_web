@@ -347,7 +347,8 @@ export default function LandingPage() {
   useEffect(() => {
     const esValido = token && token !== 'null' && token !== 'undefined'
     if (esValido) {
-      navigate(usuario?.rol === 'administrador' ? '/admin' : '/home', { replace: true })
+      const lastPath = localStorage.getItem('last_path')
+      navigate(lastPath && lastPath !== '/' && lastPath !== '/login' ? lastPath : (usuario?.rol === 'administrador' ? '/admin' : '/home'), { replace: true })
     }
   }, [token, usuario, navigate])
 
