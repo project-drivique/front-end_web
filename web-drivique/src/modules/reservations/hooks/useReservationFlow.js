@@ -94,7 +94,7 @@ export function useReservationFlow() {
         if (act.sucursalRetiro === 'domicilio') act.sucursalRetiro = ''
         if (act.sucursalDevolucion === 'domicilio') act.sucursalDevolucion = ''
       }
-      if (act.sucursalRetiro === 'domicilio') {
+      if (act.sucursalRetiro === 'domicilio' || act.sucursalDevolucion === 'domicilio') {
         const b = SUCURSALES.find(s => s.nombre === vehiculo?.sucursal)
         act.domicilioCiudad = b?.ciudad || ''
       }
@@ -168,19 +168,28 @@ export function useReservationFlow() {
   }, [usuario])
 
   const irSiguiente = () => {
+    const mostrarAlerta = () => {
+      showAlert({
+        icon: 'info',
+        title: 'Faltan datos por completar',
+        text: 'Completa la información requerida para continuar con tu reserva.',
+        confirmButtonText: 'Cerrar'
+      })
+    }
+
     if (pantalla === 1) {
-      if (!reserva.metodoPago) { setErrorPaso1('Debes seleccionar un método de pago.'); return }
-      if (!reserva.sucursalRetiro || !reserva.sucursalDevolucion) { setErrorPaso1(t('vehiculo.selectLocation')); return }
-      if (!reserva.fechaInicio || !reserva.fechaFin) { setErrorPaso1(t('vehiculo.errors.datesRequired')); return }
-      if (!reserva.horaInicio || !reserva.horaFin) { setErrorPaso1('Debes seleccionar la hora de recogida y devolución.'); return }
+      if (!reserva.metodoPago) { mostrarAlerta(); return }
+      if (!reserva.sucursalRetiro || !reserva.sucursalDevolucion) { mostrarAlerta(); return }
+      if (!reserva.fechaInicio || !reserva.fechaFin) { mostrarAlerta(); return }
+      if (!reserva.horaInicio || !reserva.horaFin) { mostrarAlerta(); return }
       if (reserva.sucursalRetiro === 'domicilio') {
         if (!reserva.domicilioBarrio?.trim() || !reserva.domicilioDireccion?.trim() || !reserva.domicilioReferencias?.trim()) {
-          setErrorPaso1(t('vehiculo.errors.domicilioRequired')); return
+          mostrarAlerta(); return
         }
       }
     } else if (pantalla === 2) {
-      if (seguroIdx === null) { setErrorPaso1('Debes seleccionar un plan de protección.'); return }
-      if (!reserva.tipoKm) { setErrorPaso1('Debes seleccionar el tipo de kilometraje.'); return }
+      if (seguroIdx === null) { mostrarAlerta(); return }
+      if (!reserva.tipoKm) { mostrarAlerta(); return }
     }
     setErrorPaso1('')
     setPantalla(p => Math.min(TOTAL_PASOS, p + 1))
