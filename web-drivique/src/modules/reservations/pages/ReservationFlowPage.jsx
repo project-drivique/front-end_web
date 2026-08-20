@@ -9,6 +9,7 @@ import { showAlert } from '@/utils/swalConfig'
 import { useNavigate } from 'react-router-dom'
 
 import { useReservationFlow } from '../hooks/useReservationFlow'
+import { useIsMobile } from '../../../hooks/useIsMobile'
 import MenuConfiguracion from '@/components/MenuConfiguracion'
 import ReservationStepper from '../components/ReservationStepper'
 import ReservationStep1 from '../components/ReservationStep1'
@@ -42,6 +43,8 @@ export default function ReservationFlowPage() {
     accentText:    esModoOscuro ? '#93c5fd'  : '#1e3a8a',
     isDark:        esModoOscuro,
   }
+  
+  const isMobile = useIsMobile()
 
   const flow = useReservationFlow()
   const {
@@ -188,11 +191,11 @@ export default function ReservationFlowPage() {
         </div>
 
         {/* Tarjeta principal */}
-        <div style={{ background: c.cardBg, border: `1px solid ${c.cardBorder}`, borderRadius: 16, padding: 32, boxShadow: esModoOscuro ? '0 4px 24px rgba(0,0,0,0.40)' : '0 4px 24px rgba(30,58,138,0.07)' }}>
+        <div style={{ background: c.cardBg, border: `1px solid ${c.cardBorder}`, borderRadius: 16, padding: isMobile ? 16 : 32, boxShadow: esModoOscuro ? '0 4px 24px rgba(0,0,0,0.40)' : '0 4px 24px rgba(30,58,138,0.07)' }}>
 
           <ReservationStepper pantalla={pantalla} setPantalla={setPantalla} esModoOscuro={esModoOscuro} />
 
-          <div className="detalle-layout" style={{ display: 'flex', gap: 32, alignItems: 'flex-start' }}>
+          <div className="detalle-layout" style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: 32, alignItems: 'flex-start' }}>
             <div className="detalle-columna-principal" style={{ flex: 1, minWidth: 0 }}>
 
               {/* ── Paso 1 ── */}
@@ -254,7 +257,7 @@ export default function ReservationFlowPage() {
               <div
                 ref={resumenMovilRef}
                 className={`detalle-resumen-wrapper${resumenMovilAbierto ? ' abierto' : ''}`}
-                style={{ flex: '0 0 calc(33.333% - 21.33px)' }}
+                style={{ width: isMobile ? '100%' : '360px', flexShrink: 0 }}
               >
                 <SideSummary c={c} 
                   vehiculo={vehiculo}
@@ -285,7 +288,7 @@ export default function ReservationFlowPage() {
                 <p style={{ fontSize: 12, color: '#bfdbfe', fontWeight: 700, margin: '0 0 4px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t('vehiculo.totalToPay')}</p>
                 <p style={{ fontSize: 26, fontWeight: 900, color: '#fff', margin: '0 0 16px' }}>{formatCurrency(totalReserva, moneda)}</p>
                 <button onClick={handleReservar} style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, padding: '15px 24px', borderRadius: 16, background: 'var(--bg-tarjeta)', color: '#1e3a8a', fontWeight: 900, fontSize: 15, border: 'none', cursor: 'pointer' }}>
-                  {t('vehiculo.confirmReserve')} →
+                  {t('vehiculo.confirmReserve')}
                 </button>
               </div>
             )}

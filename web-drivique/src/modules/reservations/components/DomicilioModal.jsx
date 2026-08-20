@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { FaMapMarkerAlt, FaTimes, FaHome, FaInfoCircle } from 'react-icons/fa'
+import { useIsMobile } from '../../../hooks/useIsMobile'
 import { useEffect, useState } from 'react'
 
 export default function DomicilioModal({ 
@@ -16,6 +17,8 @@ export default function DomicilioModal({
   const textSecond = c?.textSecondary || '#64748b'
   const accent = c?.accentText || '#2563eb'
   const border = c?.cardBorder || '#e2e8f0'
+  
+  const isMobile = useIsMobile()
 
   // Local state to handle form before saving
   const [localDatos, setLocalDatos] = useState({
@@ -82,16 +85,16 @@ export default function DomicilioModal({
         backdropFilter: 'blur(4px)',
         zIndex: 99999,
         display: 'flex',
-        alignItems: 'center',
+        alignItems: isMobile ? 'flex-end' : 'center',
         justifyContent: 'center',
-        padding: 20
+        padding: isMobile ? 0 : 20
       }}
       onClick={onClose}
     >
       <div 
         style={{
           background: bg,
-          borderRadius: 24,
+          borderRadius: isMobile ? '24px 24px 0 0' : 24,
           width: '100%',
           maxWidth: 550,
           boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
@@ -103,7 +106,7 @@ export default function DomicilioModal({
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div style={{ padding: '24px 24px 20px', borderBottom: `1px solid ${border}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ padding: isMobile ? '20px' : '24px 24px 20px', borderBottom: `1px solid ${border}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <div style={{ width: 40, height: 40, borderRadius: 12, background: 'rgba(37, 99, 235, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: accent }}>
               <FaHome size={20} />
@@ -125,12 +128,24 @@ export default function DomicilioModal({
           </button>
         </div>
 
-        {/* Body */}
-        <div style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 20 }}>
+        {/* Content */}
+        <div style={{ padding: isMobile ? '16px' : '24px', flex: 1, overflowY: 'auto' }}>
           
           {error && (
-            <div style={{ background: '#fef2f2', border: '1px solid #fecaca', padding: '10px 14px', borderRadius: 10, color: '#ef4444', fontSize: 13, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 8 }}>
-              <FaInfoCircle /> {error}
+            <div style={{ 
+              marginBottom: 20, 
+              padding: '12px 16px', 
+              borderRadius: 12, 
+              background: 'rgba(239, 68, 68, 0.1)', 
+              color: '#ef4444', 
+              fontSize: 13, 
+              fontWeight: 600,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 10
+            }}>
+              <FaInfoCircle size={16} />
+              {error}
             </div>
           )}
 
@@ -210,7 +225,7 @@ export default function DomicilioModal({
         </div>
 
         {/* Footer */}
-        <div style={{ padding: '16px 24px 24px', display: 'flex', gap: 12 }}>
+        <div style={{ padding: isMobile ? '16px' : '20px 24px', borderTop: `1px solid ${border}`, display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
           {isReadOnly ? (
             <button 
               onClick={onClose}
@@ -222,15 +237,15 @@ export default function DomicilioModal({
             <>
               <button 
                 onClick={onClose}
-                style={{ flex: 1, padding: '12px', borderRadius: 12, background: 'transparent', border: `1px solid ${border}`, color: textPrimary, fontSize: 14, fontWeight: 700, cursor: 'pointer' }}
+                style={{ padding: '12px 20px', borderRadius: 12, background: 'transparent', border: `1px solid ${border}`, color: textPrimary, fontWeight: 700, fontSize: 14, cursor: 'pointer' }}
               >
                 {t('common.cancel', 'Cancelar')}
               </button>
               <button 
                 onClick={handleGuardar}
-                style={{ flex: 1, padding: '12px', borderRadius: 12, background: accent, border: 'none', color: '#fff', fontSize: 14, fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 12px rgba(37, 99, 235, 0.3)' }}
+                style={{ padding: '12px 24px', borderRadius: 12, background: 'linear-gradient(90deg, #1e3a8a, #2563eb)', color: '#fff', fontWeight: 800, fontSize: 14, border: 'none', cursor: 'pointer', boxShadow: '0 4px 12px rgba(37, 99, 235, 0.2)' }}
               >
-                {t('common.confirm', 'Confirmar Dirección')}
+                {t('common.save', 'Guardar cambios')}
               </button>
             </>
           )}
