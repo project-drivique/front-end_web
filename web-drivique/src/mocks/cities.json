@@ -1,27 +1,352 @@
 [
-  { "id": "bogota", "nombre": "Bogotá", "departamento": "Cundinamarca", "tieneAeropuerto": true, "tieneTerminal": true },
-  { "id": "medellin", "nombre": "Medellín", "departamento": "Antioquia", "tieneAeropuerto": true, "tieneTerminal": true },
-  { "id": "cali", "nombre": "Cali", "departamento": "Valle del Cauca", "tieneAeropuerto": true, "tieneTerminal": true },
-  { "id": "barranquilla", "nombre": "Barranquilla", "departamento": "Atlántico", "tieneAeropuerto": true, "tieneTerminal": true },
-  { "id": "cartagena", "nombre": "Cartagena", "departamento": "Bolívar", "tieneAeropuerto": true, "tieneTerminal": true },
-  { "id": "bucaramanga", "nombre": "Bucaramanga", "departamento": "Santander", "tieneAeropuerto": true, "tieneTerminal": true },
-  { "id": "pereira", "nombre": "Pereira", "departamento": "Risaralda", "tieneAeropuerto": true, "tieneTerminal": true },
-  { "id": "cucuta", "nombre": "Cúcuta", "departamento": "Norte de Santander", "tieneAeropuerto": true, "tieneTerminal": false },
-  { "id": "santa_marta", "nombre": "Santa Marta", "departamento": "Magdalena", "tieneAeropuerto": true, "tieneTerminal": true },
-  { "id": "manizales", "nombre": "Manizales", "departamento": "Caldas", "tieneAeropuerto": false, "tieneTerminal": true },
-  { "id": "ibague", "nombre": "Ibagué", "departamento": "Tolima", "tieneAeropuerto": true, "tieneTerminal": true },
-  { "id": "pasto", "nombre": "Pasto", "departamento": "Nariño", "tieneAeropuerto": true, "tieneTerminal": true },
-  { "id": "villavicencio", "nombre": "Villavicencio", "departamento": "Meta", "tieneAeropuerto": true, "tieneTerminal": true },
-  { "id": "monteria", "nombre": "Montería", "departamento": "Córdoba", "tieneAeropuerto": true, "tieneTerminal": true },
-  { "id": "valledupar", "nombre": "Valledupar", "departamento": "Cesar", "tieneAeropuerto": true, "tieneTerminal": true },
-  { "id": "armenia", "nombre": "Armenia", "departamento": "Quindío", "tieneAeropuerto": true, "tieneTerminal": true },
-  { "id": "neiva", "nombre": "Neiva", "departamento": "Huila", "tieneAeropuerto": true, "tieneTerminal": true },
-  { "id": "popayan", "nombre": "Popayán", "departamento": "Cauca", "tieneAeropuerto": true, "tieneTerminal": true },
-  { "id": "sincelejo", "nombre": "Sincelejo", "departamento": "Sucre", "tieneAeropuerto": true, "tieneTerminal": true },
-  { "id": "tunja", "nombre": "Tunja", "departamento": "Boyacá", "tieneAeropuerto": false, "tieneTerminal": true },
-  { "id": "riohacha", "nombre": "Riohacha", "departamento": "La Guajira", "tieneAeropuerto": true, "tieneTerminal": true },
-  { "id": "quibdo", "nombre": "Quibdó", "departamento": "Chocó", "tieneAeropuerto": true, "tieneTerminal": true },
-  { "id": "florencia", "nombre": "Florencia", "departamento": "Caquetá", "tieneAeropuerto": true, "tieneTerminal": true },
-  { "id": "yopal", "nombre": "Yopal", "departamento": "Casanare", "tieneAeropuerto": true, "tieneTerminal": true },
-  { "id": "san_andres", "nombre": "San Andrés", "departamento": "San Andrés y Providencia", "tieneAeropuerto": true, "tieneTerminal": false }
+  {
+    "id": "bogota",
+    "nombre": "Bogotá",
+    "departamento": "Cundinamarca",
+    "tieneAeropuerto": true,
+    "tieneTerminal": true,
+    "picoYPlaca": {
+      "aplica": true,
+      "horario": "6:00 AM - 9:00 PM",
+      "dias": "Lunes a Viernes",
+      "esquema": "par-impar",
+      "notaLink": "https://www.sdm.gov.co/gestion-del-transito/pico-y-placa"
+    }
+  },
+  {
+    "id": "medellin",
+    "nombre": "Medellín",
+    "departamento": "Antioquia",
+    "tieneAeropuerto": true,
+    "tieneTerminal": true,
+    "picoYPlaca": {
+      "aplica": true,
+      "horario": "5:00 AM - 8:00 PM",
+      "dias": "Lunes a Viernes",
+      "esquema": "rotacion-semestral",
+      "notaLink": "https://www.medellin.gov.co/es/pico-y-placa/"
+    }
+  },
+  {
+    "id": "cali",
+    "nombre": "Cali",
+    "departamento": "Valle del Cauca",
+    "tieneAeropuerto": true,
+    "tieneTerminal": true,
+    "picoYPlaca": {
+      "aplica": true,
+      "horario": "6:00 AM - 8:00 PM",
+      "dias": "Lunes a Viernes",
+      "esquema": "rotacion-semestral",
+      "notaLink": "https://www.cali.gov.co/movilidad/publicaciones/180234/pico-y-placa/"
+    }
+  },
+  {
+    "id": "barranquilla",
+    "nombre": "Barranquilla",
+    "departamento": "Atlántico",
+    "tieneAeropuerto": true,
+    "tieneTerminal": true,
+    "picoYPlaca": {
+      "aplica": true,
+      "horario": "Variable",
+      "dias": "Lunes a Viernes",
+      "esquema": "rotacion-taxis-y-particulares",
+      "notaLink": "https://www.barranquilla.gov.co/transito"
+    }
+  },
+  {
+    "id": "cartagena",
+    "nombre": "Cartagena",
+    "departamento": "Bolívar",
+    "tieneAeropuerto": true,
+    "tieneTerminal": true,
+    "picoYPlaca": {
+      "aplica": false,
+      "horario": "Sin restricción",
+      "dias": "N/A",
+      "esquema": "ninguno",
+      "notaLink": ""
+    }
+  },
+  {
+    "id": "bucaramanga",
+    "nombre": "Bucaramanga",
+    "departamento": "Santander",
+    "tieneAeropuerto": true,
+    "tieneTerminal": true,
+    "picoYPlaca": {
+      "aplica": false,
+      "horario": "Sin restricción",
+      "dias": "N/A",
+      "esquema": "ninguno",
+      "notaLink": ""
+    }
+  },
+  {
+    "id": "pereira",
+    "nombre": "Pereira",
+    "departamento": "Risaralda",
+    "tieneAeropuerto": true,
+    "tieneTerminal": true,
+    "picoYPlaca": {
+      "aplica": false,
+      "horario": "Sin restricción",
+      "dias": "N/A",
+      "esquema": "ninguno",
+      "notaLink": ""
+    }
+  },
+  {
+    "id": "cucuta",
+    "nombre": "Cúcuta",
+    "departamento": "Norte de Santander",
+    "tieneAeropuerto": true,
+    "tieneTerminal": false,
+    "picoYPlaca": {
+      "aplica": false,
+      "horario": "Sin restricción",
+      "dias": "N/A",
+      "esquema": "ninguno",
+      "notaLink": ""
+    }
+  },
+  {
+    "id": "santa_marta",
+    "nombre": "Santa Marta",
+    "departamento": "Magdalena",
+    "tieneAeropuerto": true,
+    "tieneTerminal": true,
+    "picoYPlaca": {
+      "aplica": false,
+      "horario": "Sin restricción",
+      "dias": "N/A",
+      "esquema": "ninguno",
+      "notaLink": ""
+    }
+  },
+  {
+    "id": "manizales",
+    "nombre": "Manizales",
+    "departamento": "Caldas",
+    "tieneAeropuerto": false,
+    "tieneTerminal": true,
+    "picoYPlaca": {
+      "aplica": false,
+      "horario": "Sin restricción",
+      "dias": "N/A",
+      "esquema": "ninguno",
+      "notaLink": ""
+    }
+  },
+  {
+    "id": "ibague",
+    "nombre": "Ibagué",
+    "departamento": "Tolima",
+    "tieneAeropuerto": true,
+    "tieneTerminal": true,
+    "picoYPlaca": {
+      "aplica": false,
+      "horario": "Sin restricción",
+      "dias": "N/A",
+      "esquema": "ninguno",
+      "notaLink": ""
+    }
+  },
+  {
+    "id": "pasto",
+    "nombre": "Pasto",
+    "departamento": "Nariño",
+    "tieneAeropuerto": true,
+    "tieneTerminal": true,
+    "picoYPlaca": {
+      "aplica": false,
+      "horario": "Sin restricción",
+      "dias": "N/A",
+      "esquema": "ninguno",
+      "notaLink": ""
+    }
+  },
+  {
+    "id": "villavicencio",
+    "nombre": "Villavicencio",
+    "departamento": "Meta",
+    "tieneAeropuerto": true,
+    "tieneTerminal": true,
+    "picoYPlaca": {
+      "aplica": false,
+      "horario": "Sin restricción",
+      "dias": "N/A",
+      "esquema": "ninguno",
+      "notaLink": ""
+    }
+  },
+  {
+    "id": "monteria",
+    "nombre": "Montería",
+    "departamento": "Córdoba",
+    "tieneAeropuerto": true,
+    "tieneTerminal": true,
+    "picoYPlaca": {
+      "aplica": false,
+      "horario": "Sin restricción",
+      "dias": "N/A",
+      "esquema": "ninguno",
+      "notaLink": ""
+    }
+  },
+  {
+    "id": "valledupar",
+    "nombre": "Valledupar",
+    "departamento": "Cesar",
+    "tieneAeropuerto": true,
+    "tieneTerminal": true,
+    "picoYPlaca": {
+      "aplica": false,
+      "horario": "Sin restricción",
+      "dias": "N/A",
+      "esquema": "ninguno",
+      "notaLink": ""
+    }
+  },
+  {
+    "id": "armenia",
+    "nombre": "Armenia",
+    "departamento": "Quindío",
+    "tieneAeropuerto": true,
+    "tieneTerminal": true,
+    "picoYPlaca": {
+      "aplica": false,
+      "horario": "Sin restricción",
+      "dias": "N/A",
+      "esquema": "ninguno",
+      "notaLink": ""
+    }
+  },
+  {
+    "id": "neiva",
+    "nombre": "Neiva",
+    "departamento": "Huila",
+    "tieneAeropuerto": true,
+    "tieneTerminal": true,
+    "picoYPlaca": {
+      "aplica": false,
+      "horario": "Sin restricción",
+      "dias": "N/A",
+      "esquema": "ninguno",
+      "notaLink": ""
+    }
+  },
+  {
+    "id": "popayan",
+    "nombre": "Popayán",
+    "departamento": "Cauca",
+    "tieneAeropuerto": true,
+    "tieneTerminal": true,
+    "picoYPlaca": {
+      "aplica": false,
+      "horario": "Sin restricción",
+      "dias": "N/A",
+      "esquema": "ninguno",
+      "notaLink": ""
+    }
+  },
+  {
+    "id": "sincelejo",
+    "nombre": "Sincelejo",
+    "departamento": "Sucre",
+    "tieneAeropuerto": true,
+    "tieneTerminal": true,
+    "picoYPlaca": {
+      "aplica": false,
+      "horario": "Sin restricción",
+      "dias": "N/A",
+      "esquema": "ninguno",
+      "notaLink": ""
+    }
+  },
+  {
+    "id": "tunja",
+    "nombre": "Tunja",
+    "departamento": "Boyacá",
+    "tieneAeropuerto": false,
+    "tieneTerminal": true,
+    "picoYPlaca": {
+      "aplica": false,
+      "horario": "Sin restricción",
+      "dias": "N/A",
+      "esquema": "ninguno",
+      "notaLink": ""
+    }
+  },
+  {
+    "id": "riohacha",
+    "nombre": "Riohacha",
+    "departamento": "La Guajira",
+    "tieneAeropuerto": true,
+    "tieneTerminal": true,
+    "picoYPlaca": {
+      "aplica": false,
+      "horario": "Sin restricción",
+      "dias": "N/A",
+      "esquema": "ninguno",
+      "notaLink": ""
+    }
+  },
+  {
+    "id": "quibdo",
+    "nombre": "Quibdó",
+    "departamento": "Chocó",
+    "tieneAeropuerto": true,
+    "tieneTerminal": true,
+    "picoYPlaca": {
+      "aplica": false,
+      "horario": "Sin restricción",
+      "dias": "N/A",
+      "esquema": "ninguno",
+      "notaLink": ""
+    }
+  },
+  {
+    "id": "florencia",
+    "nombre": "Florencia",
+    "departamento": "Caquetá",
+    "tieneAeropuerto": true,
+    "tieneTerminal": true,
+    "picoYPlaca": {
+      "aplica": false,
+      "horario": "Sin restricción",
+      "dias": "N/A",
+      "esquema": "ninguno",
+      "notaLink": ""
+    }
+  },
+  {
+    "id": "yopal",
+    "nombre": "Yopal",
+    "departamento": "Casanare",
+    "tieneAeropuerto": true,
+    "tieneTerminal": true,
+    "picoYPlaca": {
+      "aplica": false,
+      "horario": "Sin restricción",
+      "dias": "N/A",
+      "esquema": "ninguno",
+      "notaLink": ""
+    }
+  },
+  {
+    "id": "san_andres",
+    "nombre": "San Andrés",
+    "departamento": "San Andrés y Providencia",
+    "tieneAeropuerto": true,
+    "tieneTerminal": false,
+    "picoYPlaca": {
+      "aplica": false,
+      "horario": "Sin restricción",
+      "dias": "N/A",
+      "esquema": "ninguno",
+      "notaLink": ""
+    }
+  }
 ]

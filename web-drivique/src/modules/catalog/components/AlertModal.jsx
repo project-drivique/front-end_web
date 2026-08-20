@@ -3,25 +3,18 @@ import { FaTimes } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 
 const TEMA_LIGHT = {
-  overlayBg: 'rgba(15,23,42,0.60)',
-  cardBg: '#ffffff',
-  cardBorder: '#e5ebf5',
-  textPrimary: '#0f172a',
-  textSecondary: '#64748b',
-  accent: '#1e3a8a',
-  accentBgSoft: '#eff6ff',
-  accentGradient: 'linear-gradient(135deg,#1e3a8a,#2563eb)',
+  overlayBg: 'rgba(15, 23, 42, 0.6)',
+  cardBg: 'var(--bg-tarjeta)',
+  cardBorder: 'var(--borde)',
+  textPrimary: 'var(--texto-primary)',
+  textSecondary: 'var(--texto-second)',
+  accent: 'var(--texto-acento)',
+  accentBgSoft: 'var(--bg-item)',
+  accentGradient: 'linear-gradient(135deg, #1e3a8a, #2563eb)',
 }
 
 const TEMA_DARK = {
-  overlayBg: 'rgba(0,0,0,0.75)',
-  cardBg: '#111827',
-  cardBorder: '#334155',
-  textPrimary: '#f8fafc',
-  textSecondary: '#cbd5e1',
-  accent: '#93c5fd',
-  accentBgSoft: 'rgba(30,58,138,0.35)',
-  accentGradient: 'linear-gradient(135deg,#1e3a8a,#2563eb)',
+  ...TEMA_LIGHT
 }
 
 const ESTILOS = {

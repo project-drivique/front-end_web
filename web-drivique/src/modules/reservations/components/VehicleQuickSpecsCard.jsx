@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { FaCar, FaGasPump, FaUserFriends, FaDoorOpen, FaSuitcase, FaBolt, FaTag, FaInfoCircle } from 'react-icons/fa';
+import { FaCar, FaGasPump, FaUserFriends, FaDoorOpen, FaSuitcase, FaBolt, FaTag, FaInfoCircle, FaIdCard } from 'react-icons/fa';
 
 const CAT_KEYS   = { 'Económico': 'catalogo.catEco', 'Deportivo': 'catalogo.catSport', 'Sedan': 'catalogo.catSedan', 'SUV': 'catalogo.catSuv' };
 const TRANS_KEYS = { 'Automática': 'catalogo.transAuto', 'Manual': 'catalogo.transManual' };
@@ -46,6 +46,16 @@ export default function VehicleQuickSpecsCard({ vehiculo, c }) {
       Icon: FaBolt, 
       label: t('vehiculo.engine', 'Motor'), 
       value: vehiculo.cilindraje || 'Estándar' 
+    },
+    { 
+      Icon: FaTag, 
+      label: t('vehiculo.colorLabel', 'Color'), 
+      value: vehiculo.color || '—' 
+    },
+    { 
+      Icon: FaIdCard, 
+      label: t('vehiculo.plateLabel', 'Placa'), 
+      value: vehiculo.placa || '—' 
     },
   ];
 

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { FaChevronLeft, FaChevronRight, FaStar } from 'react-icons/fa';
 
-export default function GaleriaImagenes({ imagenes = [], nombreVehiculo = 'Vehículo', calificacion = 0, compact = false }) {
+export default function GaleriaImagenes({ imagenes = [], nombreVehiculo = 'Vehículo', calificacion = 0, compact = false, stretch = false, stretchThumbnails = false }) {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const [indiceActivo, setIndiceActivo] = useState(0);
@@ -32,11 +32,11 @@ export default function GaleriaImagenes({ imagenes = [], nombreVehiculo = 'Vehí
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: compact ? 10 : 16 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: compact ? 10 : 16, height: stretchThumbnails ? '100%' : 'auto', justifyContent: stretchThumbnails ? 'space-between' : 'flex-start' }}>
       {/* Imagen Principal */}
       <div style={{
         width: '100%',
-        aspectRatio: compact ? '2.2 / 1' : '1.7 / 1',
+        aspectRatio: compact ? '1.6 / 1' : '1.7 / 1',
         maxHeight: compact ? 290 : 380,
         borderRadius: 16,
         overflow: 'hidden',
@@ -150,7 +150,7 @@ export default function GaleriaImagenes({ imagenes = [], nombreVehiculo = 'Vehí
             key={idx}
             onClick={() => setIndiceActivo(idx)}
             style={{
-              flex: 1, height: compact ? 50 : 64, borderRadius: 8, overflow: 'hidden', cursor: 'pointer',
+              flex: 1, height: compact ? 80 : 64, borderRadius: 8, overflow: 'hidden', cursor: 'pointer',
               border: indiceActivo === idx ? '2px solid #2563eb' : '2px solid transparent',
               transition: 'border-color 0.2s', opacity: indiceActivo === idx ? 1 : 0.7
             }}

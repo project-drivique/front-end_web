@@ -1,5 +1,6 @@
 import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
+import { FaLock } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
 import { COLOR_MARCA } from '../constants'
 
@@ -39,7 +40,7 @@ export default function BannerRegistro({ visible, onCerrar, mensaje }) {
           boxShadow: '0 -8px 40px rgba(0,0,0,0.30)',
         }}
       >
-        <span style={{ fontSize: '40px', marginBottom: '4px' }}>🔒</span>
+        <span style={{ fontSize: '32px', marginBottom: '8px' }}><FaLock /></span>
 
         <h2 style={{ fontSize: '20px', fontWeight: 700, color: '#1a1a2e', textAlign: 'center', margin: 0 }}>
           {t('catalogo.bannerRegistro.titulo')}
