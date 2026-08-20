@@ -79,7 +79,7 @@ export default function ReservationFlowPage() {
 
   // ─── Pantalla: Firma de contrato (efectivo) ───────────────────────────────
   if (reservaCreada && reserva.metodoPago === 'efectivo' && !contratoFirmado) return (
-    <div className="catalogo-page" style={{ minHeight: '100vh', background: 'var(--hero-fondo)', position: 'relative', overflow: 'hidden' }}>
+    <div className="catalogo-page" style={{ minHeight: 'calc(100vh / 0.9)', background: 'var(--hero-fondo)', position: 'relative', overflow: 'hidden' }}>
       <div style={{ position: 'absolute', top: -80, right: -80, width: 500, height: 500, borderRadius: '50%', background: 'var(--hero-orb1)', pointerEvents: 'none' }} />
       <div style={{ position: 'absolute', bottom: -60, left: -60, width: 350, height: 350, borderRadius: '50%', background: 'var(--hero-orb2)', pointerEvents: 'none' }} />
       <div style={{ position: 'relative', paddingTop: 48, paddingBottom: 48, paddingLeft: 24, paddingRight: 24 }}>
@@ -96,7 +96,7 @@ export default function ReservationFlowPage() {
 
   // ─── Pantalla: Éxito / Pago ───────────────────────────────────────────────
   if (exito) return (
-    <div className="catalogo-page" style={{ minHeight: '100vh', background: c.pageBg, color: c.textPrimary, position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+    <div className="catalogo-page" style={{ minHeight: 'calc(100vh / 0.9)', background: c.pageBg, color: c.textPrimary, position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
       {/* Cabecera con opciones de tema e idioma */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '24px 24px 0', maxWidth: 1360, margin: '0 auto', width: '100%', zIndex: 10 }}>
         <button onClick={() => navigate('/home')} style={{ background: 'none', border: 'none', display: 'flex', alignItems: 'center', gap: 8, color: c.textSecondary, fontWeight: 700, cursor: 'pointer', padding: 0 }}>
@@ -178,7 +178,7 @@ export default function ReservationFlowPage() {
 
   // ─── Flujo principal ──────────────────────────────────────────────────────
   return (
-    <div className="catalogo-page" style={{ minHeight: '100vh', background: c.pageBg, color: c.textPrimary }}>
+    <div className="catalogo-page" style={{ minHeight: 'calc(100vh / 0.9)', background: c.pageBg, color: c.textPrimary }}>
       <div className="detalle-contenido-inner" style={{ maxWidth: 1360, margin: '0 auto', padding: '24px 24px 60px' }}>
 
         {/* Top bar */}
