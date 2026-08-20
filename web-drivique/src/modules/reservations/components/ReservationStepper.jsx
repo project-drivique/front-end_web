@@ -46,11 +46,8 @@ export default function ReservationStepper({ pantalla, setPantalla, esModoOscuro
         const completado = pantalla > num
 
         return (
-          <button
+          <div
             key={i}
-            type="button"
-            onClick={() => (completado || activo) && setPantalla(num)}
-            disabled={!completado && !activo}
             style={{
               flex: 1,
               minWidth: 200,
@@ -59,7 +56,7 @@ export default function ReservationStepper({ pantalla, setPantalla, esModoOscuro
               alignItems: 'center',
               justifyContent: 'center',
               gap: 12,
-              cursor: completado || activo ? 'pointer' : 'default',
+              cursor: 'default',
               position: 'relative',
               background: 'transparent',
               border: 'none',
@@ -111,7 +108,7 @@ export default function ReservationStepper({ pantalla, setPantalla, esModoOscuro
                 boxShadow: esModoOscuro ? '0 0 10px rgba(59,130,246,0.5)' : 'none',
               }} />
             )}
-          </button>
+          </div>
         )
       })}
     </div>
