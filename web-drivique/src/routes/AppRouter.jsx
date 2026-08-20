@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { useEffect } from 'react'
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { useAuthStore } from '../store/authStore'
 import { useHydration } from '../hooks/useHydration'
 
@@ -34,7 +35,10 @@ function Ruta2FA({ children }) {
   const usuario   = useAuthStore((s) => s.usuario)
   const hydrated  = useHydration()
   if (!hydrated) return null
-  if (token) return <Navigate to={usuario?.rol === 'administrador' ? '/admin' : '/home'} replace />
+  if (token) {
+    const lastPath = localStorage.getItem('last_path')
+    return <Navigate to={lastPath && lastPath !== '/' && lastPath !== '/login' ? lastPath : (usuario?.rol === 'administrador' ? '/admin' : '/home')} replace />
+  }
   return sesion2FA ? children : <Navigate to="/login" replace />
 }
 
@@ -44,7 +48,10 @@ function RutaVerificacionCorreo({ children }) {
   const usuario            = useAuthStore((s) => s.usuario)
   const hydrated           = useHydration()
   if (!hydrated) return null
-  if (token) return <Navigate to={usuario?.rol === 'administrador' ? '/admin' : '/home'} replace />
+  if (token) {
+    const lastPath = localStorage.getItem('last_path')
+    return <Navigate to={lastPath && lastPath !== '/' && lastPath !== '/login' ? lastPath : (usuario?.rol === 'administrador' ? '/admin' : '/home')} replace />
+  }
   return verificacionCorreo ? children : <Navigate to="/home" replace />
 }
 
@@ -54,13 +61,29 @@ function RutaRecuperacionCorreo({ children }) {
   const usuario            = useAuthStore((s) => s.usuario)
   const hydrated           = useHydration()
   if (!hydrated) return null
-  if (token) return <Navigate to={usuario?.rol === 'administrador' ? '/admin' : '/home'} replace />
+  if (token) {
+    const lastPath = localStorage.getItem('last_path')
+    return <Navigate to={lastPath && lastPath !== '/' && lastPath !== '/login' ? lastPath : (usuario?.rol === 'administrador' ? '/admin' : '/home')} replace />
+  }
   return recuperacionCorreo ? children : <Navigate to="/login" replace />
+}
+
+function RouteTracker() {
+  const location = useLocation()
+  useEffect(() => {
+    // No guardar rutas de autenticación, la raíz, o rutas de respuesta de pagos/callback
+    const ignorar = ['/', '/login', '/registro', '/recuperar', '/nueva-contrasena', '/verificar-2fa', '/verificar-correo', '/verificar-recuperacion', '/respuesta']
+    if (!ignorar.includes(location.pathname)) {
+      localStorage.setItem('last_path', location.pathname + location.search)
+    }
+  }, [location])
+  return null
 }
 
 export default function AppRouter() {
   return (
     <BrowserRouter>
+      <RouteTracker />
       <Routes>
         <Route path="/" element={<LandingPage />} />
 
