@@ -1,9 +1,10 @@
 // src/modules/landing/LandingPage.jsx
 import { useState, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import logocatalog from '@/assets/logocatalog.png'
 import { useLanding } from './LandingContext'
+import { useAuthStore } from '../../store/authStore'
 import translations, { IDIOMAS, CAT_MAP } from './translations'
 import { catalogService } from '../../services/catalogService'
 import { formatCurrency } from '@/utils/currencyUtils'
@@ -339,6 +340,18 @@ export default function LandingPage() {
   const esModoOscuro = tema === 'oscuro'
   const c = coloresTema(esModoOscuro)
 
+  const navigate = useNavigate()
+  const token = useAuthStore(s => s.token)
+  const usuario = useAuthStore(s => s.usuario)
+
+  useEffect(() => {
+    const esValido = token && token !== 'null' && token !== 'undefined'
+    if (esValido) {
+      const lastPath = localStorage.getItem('last_path')
+      navigate(lastPath && lastPath !== '/' && lastPath !== '/login' ? lastPath : (usuario?.rol === 'administrador' ? '/admin' : '/home'), { replace: true })
+    }
+  }, [token, usuario, navigate])
+
   const [autos, setAutos] = useState([])
   const [menuMovilAbierto, setMenuMovilAbierto] = useState(false)
 
@@ -403,7 +416,6 @@ export default function LandingPage() {
 
           <div className="landing-nav-auth" style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
             <MenuConfiguracion tx={tx} />
-
             <Link
               to="/login"
               style={{

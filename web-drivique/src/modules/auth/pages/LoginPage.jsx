@@ -71,7 +71,8 @@ export default function LoginPage() {
     proveedorExito, iniciarGoogle, iniciarFacebook,
   } = useSocialRegistration({ onExito: (_, data) => {
     const rol = data?.usuario?.rol
-    navigate(rol === 'administrador' ? '/admin' : '/home')
+    const lastPath = localStorage.getItem('last_path')
+    navigate(lastPath && lastPath !== '/' && lastPath !== '/login' ? lastPath : (rol === 'administrador' ? '/admin' : '/home'))
   } })
 
   const exitoFinal = !!proveedorExito
