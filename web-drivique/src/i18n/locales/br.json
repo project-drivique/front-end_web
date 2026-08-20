@@ -494,14 +494,15 @@
       "rev8": "Espaço de sobra para toda a família. Voltarei a alugar."
     },
     "descriptions": {
-      "1": "Compacto ideal para a cidade, confortável para 5 passageiros e com excelente consumo de combustível. Perfeito para deslocações diárias.",
-      "2": "Veículo económico e ágil, fácil de estacionar na cidade. Ideal para casais ou executivos.",
-      "3": "Berlina elegante, espaçosa e segura. Excelente nível de equipamento tecnológico e alto conforto.",
-      "4": "Berlina moderna com design desportivo e amplo espaço interior. Excelente conetividade.",
-      "5": "SUV versátil e tecnológico, perfeito para trajetos urbanos ou viagens de fim de semana.",
-      "6": "SUV de luxo com design KODO, acabamentos premium e condução dinâmica em qualquer terreno.",
-      "7": "SUV futurista com grande porta-bagagens, alta tecnologia e sistemas de assistência ao condutor.",
-      "8": "4x4 robusto e potente, ideal para viagens exigentes na estrada e terrenos difíceis."
+      "1": "Sedã confiável e espaçoso, ideal para viagens longas ou uso diário na cidade. Oferece excelente relação de consumo de combustível e porta-malas generoso para toda a sua bagagem. Conforto máximo.",
+      "2": "SUV premium que se destaca pela sua grande presença e conforto para toda a família. Inclui teto panorâmico, acabamentos de luxo e tecnologia de segurança avançada para lhe dar tranquilidade. Excelente design.",
+      "3": "Veículo compacto, ágil e muito econômico, perfeito para se deslocar rapidamente pela cidade. Permite estacionar sem complicações e oferece eficiência de combustível insuperável para o uso diário. Ótima escolha.",
+      "4": "Ícone esportivo inconfundível equipado com um poderoso motor V8 de alto desempenho. Projetado exclusivamente para quem busca sentir adrenalina pura e viver uma experiência de condução única e emocionante.",
+      "5": "Imponente SUV de 8 passageiros equipado com tração 4x4. É a opção ideal para fazer viagens longas em família com total conforto ou enfrentar terrenos exigentes sem nenhum problema. Capacidade extrema.",
+      "6": "Veículo compacto ideal para a cidade, com cabine super confortável para 5 passageiros. Possui excelente eficiência de combustível que cuida do seu bolso durante todos os seus deslocamentos diários. Ótimo veículo.",
+      "7": "SUV híbrido sofisticado, reconhecido por ser muito eficiente e silencioso. Possui amplo espaço de carga e o mais recente em tecnologia de assistência ao motorista para maior segurança. Tecnologia limpa.",
+      "8": "Sedã elegante, moderno e confortável, projetado com grande porta-malas e acabamentos de alta qualidade. É o companheiro perfeito tanto para deslocamentos diários quanto para viagens de negócios importantes. Conforto garantido.",
+      "9": "SUV híbrido premium que oferece grande eficiência de combustível. Seu interior se destaca com um belo teto panorâmico e espaço muito generoso para passageiros e bagagens. Viagens inesquecíveis."
     },
     "readTerms": "Ler termos e política de não reembolso",
     "hideTerms": "Ocultar termos e condições",
@@ -721,7 +722,12 @@
     "days": "dias",
     "hour": "hora",
     "hours": "horas",
-    "limited": "Limitado"
+    "limited": "Limitado",
+    "airport": "Aeroporto",
+    "terminal": "Terminal",
+    "mandatoryProtection": "Proteção Obrigatória",
+    "totalProtection": "Proteção Total",
+    "totalPlansExtras": "Total de planos e extras"
   },
   "reservas": {
     "title": "As minhas reservas",
