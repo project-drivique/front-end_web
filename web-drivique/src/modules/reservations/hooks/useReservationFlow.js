@@ -24,10 +24,24 @@ export function useReservationFlow() {
 
   const vehiculo = VEHICULOS_MOCK.find(v => v.id === Number(id))
 
-  const [pantalla, setPantalla] = useState(1)
-  const [seguroIdx, setSeguroIdx] = useState(null)
-  const [serviciosSeleccionados, setServiciosSeleccionados] = useState([])
-  const [reserva, setReserva] = useState({
+  const storageKey = `drivique_reservation_state_${id}`
+
+  const getInitialState = () => {
+    try {
+      const saved = sessionStorage.getItem(storageKey)
+      if (saved) return JSON.parse(saved)
+    } catch (e) {
+      console.error('Error reading sessionStorage', e)
+    }
+    return null
+  }
+
+  const savedState = getInitialState()
+
+  const [pantalla, setPantalla] = useState(savedState?.pantalla || 1)
+  const [seguroIdx, setSeguroIdx] = useState(savedState?.seguroIdx !== undefined ? savedState.seguroIdx : null)
+  const [serviciosSeleccionados, setServiciosSeleccionados] = useState(savedState?.serviciosSeleccionados || [])
+  const [reserva, setReserva] = useState(savedState?.reserva || {
     fechaInicio: '', fechaFin: '',
     horaInicio: '', horaFin: '',
     sucursalRetiro: '',
@@ -130,7 +144,7 @@ export function useReservationFlow() {
   )
 
   const [errorPaso1, setErrorPaso1] = useState('')
-  const [datosForm, setDatosForm] = useState({
+  const [datosForm, setDatosForm] = useState(savedState?.datosForm || {
     nombre: '', correo: '', celular: '',
     nacionalidad: 'Colombia', tipoDoc: 'CC', numDoc: '',
     vuelo: false, numVuelo: '', terminos: false,
@@ -149,6 +163,22 @@ export function useReservationFlow() {
 
   const idUsuarioDocs = usuario?.id || usuario?.correo || null
   const docsVerificados = documentsService.tieneDocumentos(idUsuarioDocs)
+
+  // Sincronizar estado con sessionStorage
+  useEffect(() => {
+    const stateToSave = {
+      pantalla,
+      seguroIdx,
+      serviciosSeleccionados,
+      reserva,
+      datosForm: {
+        ...datosForm,
+        cedulaPdf: null, // No podemos guardar archivos File
+        licenciaPdf: null,
+      }
+    }
+    sessionStorage.setItem(storageKey, JSON.stringify(stateToSave))
+  }, [pantalla, seguroIdx, serviciosSeleccionados, reserva, datosForm, storageKey])
 
   useEffect(() => {
     if (!usuario || prellenado.current) return
@@ -291,6 +321,9 @@ export function useReservationFlow() {
     } else {
       setExito(true)
     }
+
+    // Limpiar sessionStorage al completar reserva exitosamente
+    sessionStorage.removeItem(storageKey)
   }
 
   const handleContratoFirmado = () => {
