@@ -14,7 +14,7 @@ export default function EditReservationModal({
   localServiciosSeleccionados, setLocalServiciosSeleccionados,
   modalError, setModalError,
   vehiculo,
-  setReserva, setSeguroIdx, setServiciosSeleccionados,
+  setReserva, setSeguroIdx, setServiciosSeleccionados, c
 }) {
   const { t } = useTranslation()
 
@@ -113,10 +113,10 @@ export default function EditReservationModal({
       background: 'rgba(15,23,42,0.65)', backdropFilter: 'blur(8px)', padding: 16,
     }}>
       <div style={{
-        background: 'var(--bg-tarjeta)', borderRadius: 28, border: '1px solid var(--borde)',
+        background: c?.cardBg || 'var(--bg-tarjeta)', borderRadius: 28, border: `1px solid ${c?.cardBorder || 'var(--borde)'}`,
         width: '100%', maxWidth: isWide ? 840 : 560,
         maxHeight: '90vh', display: 'flex', flexDirection: 'column',
-        boxShadow: '0 24px 70px rgba(15,23,42,0.25)', overflow: 'hidden',
+        boxShadow: c?.isDark ? '0 24px 70px rgba(0,0,0,0.5)' : '0 24px 70px rgba(15,23,42,0.25)', overflow: 'hidden',
       }}>
         {/* Header */}
         <div style={{
@@ -145,8 +145,8 @@ export default function EditReservationModal({
             <>
               {/* Método de pago */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                <label style={{ fontSize: 11, fontWeight: 800, color: 'var(--texto-second)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Método de Pago</label>
-                <div style={{ border: '1px solid var(--borde)', borderRadius: 16, padding: '12px 16px', background: 'var(--bg-item)' }}>
+                <label style={{ fontSize: 11, fontWeight: 800, color: c?.textSecondary || 'var(--texto-second)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Método de Pago</label>
+                <div style={{ border: `1px solid ${c?.cardBorder || 'var(--borde)'}`, borderRadius: 16, padding: '12px 16px', background: c?.isDark ? 'rgba(255,255,255,0.05)' : 'var(--bg-item)' }}>
                   <select
                     className="w-full bg-transparent text-sm font-extrabold text-[var(--texto-primary)] outline-none cursor-pointer"
                     value={localReserva.metodoPago}
@@ -174,8 +174,8 @@ export default function EditReservationModal({
                 {modalEditarSeccion === 'retiro' ? (
                   <>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                      <label style={{ fontSize: 11, fontWeight: 800, color: 'var(--texto-second)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t('vehiculo.pickupLocationLabel')}</label>
-                      <div style={{ border: '1px solid var(--borde)', borderRadius: 16, padding: '12px 16px', background: 'var(--bg-item)' }}>
+                      <label style={{ fontSize: 11, fontWeight: 800, color: c?.textSecondary || 'var(--texto-second)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t('vehiculo.pickupLocationLabel')}</label>
+                      <div style={{ border: `1px solid ${c?.cardBorder || 'var(--borde)'}`, borderRadius: 16, padding: '12px 16px', background: c?.isDark ? 'rgba(255,255,255,0.05)' : 'var(--bg-item)' }}>
                         <select
                           className="w-full bg-transparent text-sm font-extrabold text-[var(--texto-primary)] outline-none cursor-pointer"
                           value={localReserva.sucursalRetiro}
@@ -197,8 +197,8 @@ export default function EditReservationModal({
                       </div>
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                      <label style={{ fontSize: 11, fontWeight: 800, color: 'var(--texto-second)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Hora</label>
-                      <div style={{ border: '1px solid var(--borde)', borderRadius: 16, padding: '12px 16px', background: 'var(--bg-item)' }}>
+                      <label style={{ fontSize: 11, fontWeight: 800, color: c?.textSecondary || 'var(--texto-second)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Hora</label>
+                      <div style={{ border: `1px solid ${c?.cardBorder || 'var(--borde)'}`, borderRadius: 16, padding: '12px 16px', background: c?.isDark ? 'rgba(255,255,255,0.05)' : 'var(--bg-item)' }}>
                         <select
                           className="w-full bg-transparent text-sm font-extrabold text-[var(--texto-primary)] outline-none cursor-pointer"
                           value={localReserva.horaInicio}
@@ -213,8 +213,8 @@ export default function EditReservationModal({
                 ) : (
                   <>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                      <label style={{ fontSize: 11, fontWeight: 800, color: 'var(--texto-second)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t('vehiculo.returnLocationLabel')}</label>
-                      <div style={{ border: '1px solid var(--borde)', borderRadius: 16, padding: '12px 16px', background: 'var(--bg-item)' }}>
+                      <label style={{ fontSize: 11, fontWeight: 800, color: c?.textSecondary || 'var(--texto-second)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t('vehiculo.returnLocationLabel')}</label>
+                      <div style={{ border: `1px solid ${c?.cardBorder || 'var(--borde)'}`, borderRadius: 16, padding: '12px 16px', background: c?.isDark ? 'rgba(255,255,255,0.05)' : 'var(--bg-item)' }}>
                         <select
                           className="w-full bg-transparent text-sm font-extrabold text-[var(--texto-primary)] outline-none cursor-pointer"
                           value={localReserva.sucursalDevolucion}
@@ -236,8 +236,8 @@ export default function EditReservationModal({
                       </div>
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                      <label style={{ fontSize: 11, fontWeight: 800, color: 'var(--texto-second)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Hora</label>
-                      <div style={{ border: '1px solid var(--borde)', borderRadius: 16, padding: '12px 16px', background: 'var(--bg-item)' }}>
+                      <label style={{ fontSize: 11, fontWeight: 800, color: c?.textSecondary || 'var(--texto-second)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Hora</label>
+                      <div style={{ border: `1px solid ${c?.cardBorder || 'var(--borde)'}`, borderRadius: 16, padding: '12px 16px', background: c?.isDark ? 'rgba(255,255,255,0.05)' : 'var(--bg-item)' }}>
                         <select
                           className="w-full bg-transparent text-sm font-extrabold text-[var(--texto-primary)] outline-none cursor-pointer"
                           value={localReserva.horaFin}
@@ -287,6 +287,7 @@ export default function EditReservationModal({
                     fechaInicio={localReserva.fechaInicio}
                     fechaFin={localReserva.fechaFin}
                     onCambiarFechas={({ fechaInicio, fechaFin }) => setLocalReserva(prev => ({ ...prev, fechaInicio, fechaFin }))}
+                    c={c}
                   />
                 </div>
               </div>
@@ -296,9 +297,9 @@ export default function EditReservationModal({
           {/* Grupo (protección + km) */}
           {modalEditarSeccion === 'grupo' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-              <ProtectionPlans seguroIdx={localSeguroIdx} onSeleccionar={setLocalSeguroIdx} />
-              <div style={{ borderTop: '1px solid var(--borde)', paddingTop: 20 }}>
-                <MileageType vehiculo={vehiculo} tipoKm={localReserva.tipoKm} onSeleccionar={val => setLocalReserva(prev => ({ ...prev, tipoKm: val }))} />
+              <ProtectionPlans seguroIdx={localSeguroIdx} onSeleccionar={setLocalSeguroIdx} c={c} />
+              <div style={{ borderTop: `1px solid ${c?.cardBorder || 'var(--borde)'}`, paddingTop: 20 }}>
+                <MileageType vehiculo={vehiculo} tipoKm={localReserva.tipoKm} onSeleccionar={val => setLocalReserva(prev => ({ ...prev, tipoKm: val }))} c={c} />
               </div>
             </div>
           )}
@@ -311,13 +312,14 @@ export default function EditReservationModal({
               onToggle={nombre => setLocalServiciosSeleccionados(prev =>
                 prev.includes(nombre) ? prev.filter(n => n !== nombre) : [...prev, nombre]
               )}
+              c={c}
             />
           )}
         </div>
 
         {/* Footer */}
-        <div style={{ padding: '18px 28px', borderTop: '1px solid var(--borde)', display: 'flex', justifyContent: 'flex-end', gap: 12, background: 'var(--bg-item)' }}>
-          <button onClick={cerrar} style={{ padding: '12px 24px', borderRadius: 14, border: '1px solid var(--borde)', background: 'var(--bg-tarjeta)', color: 'var(--texto-primary)', fontWeight: 700, fontSize: 14, cursor: 'pointer' }}>
+        <div style={{ padding: '18px 28px', borderTop: `1px solid ${c?.cardBorder || 'var(--borde)'}`, display: 'flex', justifyContent: 'flex-end', gap: 12, background: c?.isDark ? 'rgba(255,255,255,0.02)' : 'var(--bg-item)' }}>
+          <button onClick={cerrar} style={{ padding: '12px 24px', borderRadius: 14, border: `1px solid ${c?.cardBorder || 'var(--borde)'}`, background: c?.cardBg || 'var(--bg-tarjeta)', color: c?.textPrimary || 'var(--texto-primary)', fontWeight: 700, fontSize: 14, cursor: 'pointer' }}>
             Cancelar
           </button>
           <button onClick={guardar} style={{ padding: '12px 24px', borderRadius: 14, background: 'linear-gradient(90deg,#1e3a8a,#2563eb)', color: '#fff', fontWeight: 900, fontSize: 14, border: 'none', cursor: 'pointer', boxShadow: '0 8px 20px rgba(37,99,235,0.22)' }}>
