@@ -714,19 +714,7 @@
     "totalProtection": "Protección Total",
     "totalPlansExtras": "Total de planes y extras",
     "select": "Seleccionar",
-    "selected": "Seleccionado",
-    "errorPickupLocation": "Debes seleccionar el lugar de retiro.",
-    "errorPickupDate": "Debes seleccionar la fecha de inicio.",
-    "errorPickupTime": "Debes seleccionar la hora de retiro.",
-    "errorReturnLocation": "Debes seleccionar el lugar de devoluci�n.",
-    "errorReturnDate": "Debes seleccionar la fecha de devoluci�n.",
-    "errorReturnTime": "Debes seleccionar la hora de devoluci�n.",
-    "errorDomicilioData": "Debes completar los datos del domicilio.",
-    "errorProtectionPlan": "Debes seleccionar un plan de protecci�n.",
-    "errorMileageType": "Debes seleccionar el tipo de kilometraje.",
-    "editDatesLocations": "Editar Fechas y Lugares",
-    "yourProtectionExtras": "Tu Protecci�n y Extras",
-    "editAdditionalServices": "Editar Servicios Adicionales"
+    "selected": "Seleccionado"
   },
   "reservas": {
     "title": "Mis reservas",
@@ -751,7 +739,19 @@
     "cashPaymentDeadline": "Tienes {{horas}} para pagar en sucursal antes de que la reserva se cancele automáticamente.",
     "cashPaymentDeadlineLessThanHour": "menos de 1 hora",
     "cashPaymentDeadlineHours": "~{{horas}} h",
-    "autoCancelledCash": "Se canceló automáticamente por no completarse el pago en efectivo dentro del plazo."
+    "autoCancelledCash": "Se canceló automáticamente por no completarse el pago en efectivo dentro del plazo.",
+    "errorPickupLocation": "Debes seleccionar el lugar de retiro.",
+    "errorPickupDate": "Debes seleccionar la fecha de inicio.",
+    "errorPickupTime": "Debes seleccionar la hora de retiro.",
+    "errorReturnLocation": "Debes seleccionar el lugar de devoluci�n.",
+    "errorReturnDate": "Debes seleccionar la fecha de devoluci�n.",
+    "errorReturnTime": "Debes seleccionar la hora de devoluci�n.",
+    "errorDomicilioData": "Debes completar los datos del domicilio.",
+    "errorProtectionPlan": "Debes seleccionar un plan de protecci�n.",
+    "errorMileageType": "Debes seleccionar el tipo de kilometraje.",
+    "editDatesLocations": "Editar Fechas y Lugares",
+    "yourProtectionExtras": "Tu Protecci�n y Extras",
+    "editAdditionalServices": "Editar Servicios Adicionales"
   },
   "perfil": {
     "title": "Mi perfil",
