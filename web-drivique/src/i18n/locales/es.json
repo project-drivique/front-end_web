@@ -1222,6 +1222,12 @@
     "close": "Cerrar",
     "quickQuestionsTitle": "Preguntas Rápidas:",
     "inputPlaceholder": "Escribe tu pregunta aquí...",
-    "send": "Enviar"
+    "send": "Enviar",
+    "actions": {
+      "alquilar": "🚗 ¿Cómo alquilar un vehículo?",
+      "requisitos": "📋 ¿Cuáles son los requisitos?",
+      "pagos": "💰 Métodos de pago y depósitos",
+      "agente": "👤 Hablar con un agente (WhatsApp/Teléfono)"
+    }
   }
 }

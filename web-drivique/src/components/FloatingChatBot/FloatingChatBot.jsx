@@ -14,7 +14,7 @@ import './FloatingChatBot.css'
 
 export default function FloatingChatBot() {
   const { t } = useTranslation()
-  const { moneda, formatCurrency } = useLanding()
+  const { moneda } = useLanding()
 
   const [abierto, setAbierto] = useState(false)
   const [minimizado, setMinimizado] = useState(false)
@@ -76,22 +76,27 @@ export default function FloatingChatBot() {
     if (!textoParam) setInputTexto('')
     setEscribiendo(true)
 
-    // Simulación de respuesta en tiempo real del chatbot
+    // Respuesta en tiempo real asegurada con try/finally
     setTimeout(() => {
-      const respuestaTexto = procesarPreguntaBot(textoFinal, t, moneda, formatCurrency)
-      const horaBot = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      try {
+        const respuestaTexto = procesarPreguntaBot(textoFinal, t, moneda)
+        const horaBot = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 
-      setMensajes((prev) => [
-        ...prev,
-        {
-          id: Date.now() + 1,
-          sender: 'bot',
-          texto: respuestaTexto,
-          time: horaBot,
-        },
-      ])
-      setEscribiendo(false)
-    }, 850)
+        setMensajes((prev) => [
+          ...prev,
+          {
+            id: Date.now() + 1,
+            sender: 'bot',
+            texto: respuestaTexto,
+            time: horaBot,
+          },
+        ])
+      } catch (err) {
+        console.error('Error generating bot answer:', err)
+      } finally {
+        setEscribiendo(false)
+      }
+    }, 700)
   }
 
   const handleKeyDown = (e) => {

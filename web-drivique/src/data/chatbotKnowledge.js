@@ -23,10 +23,9 @@ export const getBotQuickActions = (t) => [
   },
 ]
 
-export const getBotResponses = (t, moneda, formatCurrency) => {
-  const tarifaEjemploUSD = formatCurrency(50, 'USD')
-  const tarifaEjemploCOP = formatCurrency(200000, 'COP')
-  const precioActualEjemplo = moneda === 'USD' ? tarifaEjemploUSD : tarifaEjemploCOP
+export const getBotResponses = (t, moneda) => {
+  const m = moneda === 'USD' ? 'USD' : 'COP'
+  const precioActualEjemplo = m === 'USD' ? '$50 USD' : '$200.000 COP'
 
   return {
     hola: t(
@@ -36,12 +35,12 @@ export const getBotResponses = (t, moneda, formatCurrency) => {
 
     queEsDrivique: t(
       'chatbot.responses.queEsDrivique',
-      '✨ **¿Qué es Drivique?**\n\nDrivique es la plataforma líder de alquiler de vehículos premium y compactos en Colombia. Te ofrecemos reservas 100% digitales, firmas de contratos online, asistencia 24/7 y la flota más moderna con la mejor tarifa garantizada.'
+      '✨ **¿Qué es Drivique?**\n\nDrivique es la plataforma líder de alquiler de vehículos en Colombia. Te ofrecemos reservas 100% digitales, contratos online, asistencia 24/7 y la flota más moderna.'
     ),
 
     dolar: t(
       'chatbot.responses.dolar',
-      `💵 **Conversión de Moneda y Tarifas:**\n\nEn Drivique puedes visualizar todos los precios del catálogo tanto en **Pesos Colombianos (COP)** como en **Dólares (USD)**.\n\n• Tarifas desde aproximadamente **${precioActualEjemplo}/día**.\n• La conversión se calcula en tiempo real según la tasa de cambio vigente al pagar.`
+      `💵 **Conversión de Moneda y Tarifas:**\n\nEn Drivique puedes visualizar todos los precios del catálogo en **COP** o **USD**.\n\n• Tarifas desde aproximadamente **${precioActualEjemplo}/día**.\n• La conversión se calcula en tiempo real según la moneda seleccionada.`
     ),
 
     alquilar: t(
@@ -56,7 +55,7 @@ export const getBotResponses = (t, moneda, formatCurrency) => {
 
     pagos: t(
       'chatbot.responses.pagos',
-      `💰 **Métodos de Pago y Depósitos:**\n\nAceptamos todos los medios de pago digitales a través de la pasarela **Wompi**:\n• Tarjetas de crédito (Visa, Mastercard, American Express).\n• Transferencias PSE / Nequi / Bancolombia.\n• Tarjetas débito nacionales e internacionales en COP o USD.\n\n*El depósito en garantía se libera automáticamente 24 horas después de la devolución.*`
+      '💰 **Métodos de Pago y Depósitos:**\n\nAceptamos todos los medios de pago digitales a través de la pasarela **Wompi**:\n• Tarjetas de crédito (Visa, Mastercard, American Express).\n• Transferencias PSE / Nequi / Bancolombia.\n• Tarjetas débito nacionales e internacionales en COP o USD.\n\n*El depósito en garantía se libera automáticamente 24 horas después de la devolución.*'
     ),
 
     agente: t(
@@ -89,120 +88,147 @@ export const getBotResponses = (t, moneda, formatCurrency) => {
 /**
  * Genera la respuesta del chatbot analizando palabras clave en la pregunta del usuario.
  */
-export function procesarPreguntaBot(pregunta, t, moneda, formatCurrency) {
-  const texto = pregunta.toLowerCase().trim()
-  const resp = getBotResponses(t, moneda, formatCurrency)
+export function procesarPreguntaBot(pregunta, t, moneda) {
+  try {
+    const texto = (pregunta || '').toLowerCase().trim()
+    const resp = getBotResponses(t, moneda)
 
-  if (!texto) return resp.default
+    if (!texto) return resp.default
 
-  if (
-    texto.includes('hola') ||
-    texto.includes('buenas') ||
-    texto.includes('buenos dias') ||
-    texto.includes('buenas tardes') ||
-    texto.includes('buenas noches') ||
-    texto.includes('hi') ||
-    texto.includes('hello')
-  ) {
-    return resp.hola
+    if (
+      texto.includes('hola') ||
+      texto.includes('buenas') ||
+      texto.includes('buenos dias') ||
+      texto.includes('buenas tardes') ||
+      texto.includes('buenas noches') ||
+      texto.includes('hi') ||
+      texto.includes('hello') ||
+      texto.includes('bonjour') ||
+      texto.includes('ola')
+    ) {
+      return resp.hola
+    }
+
+    if (
+      texto.includes('de que trata') ||
+      texto.includes('que es drivique') ||
+      texto.includes('quienes son') ||
+      texto.includes('plataforma') ||
+      texto.includes('acerca de') ||
+      texto.includes('que hacen') ||
+      texto.includes('what is')
+    ) {
+      return resp.queEsDrivique
+    }
+
+    if (
+      texto.includes('dolar') ||
+      texto.includes('dólar') ||
+      texto.includes('usd') ||
+      texto.includes('cop') ||
+      texto.includes('moneda') ||
+      texto.includes('conversion') ||
+      texto.includes('cambio') ||
+      texto.includes('currency')
+    ) {
+      return resp.dolar
+    }
+
+    if (
+      texto.includes('alquilar') ||
+      texto.includes('rentar') ||
+      texto.includes('reservar') ||
+      texto.includes('pasos') ||
+      texto.includes('como funciona') ||
+      texto.includes('rent') ||
+      texto.includes('louer') ||
+      texto.includes('alugar')
+    ) {
+      return resp.alquilar
+    }
+
+    if (
+      texto.includes('requisito') ||
+      texto.includes('documento') ||
+      texto.includes('licencia') ||
+      texto.includes('cedula') ||
+      texto.includes('pasaporte') ||
+      texto.includes('edad') ||
+      texto.includes('16') ||
+      texto.includes('requirement') ||
+      texto.includes('condition')
+    ) {
+      return resp.requisitos
+    }
+
+    if (
+      texto.includes('pago') ||
+      texto.includes('deposito') ||
+      texto.includes('tarjeta') ||
+      texto.includes('wompi') ||
+      texto.includes('pse') ||
+      texto.includes('precio') ||
+      texto.includes('costo') ||
+      texto.includes('tarifa') ||
+      texto.includes('pay') ||
+      texto.includes('deposit')
+    ) {
+      return resp.pagos
+    }
+
+    if (
+      texto.includes('agente') ||
+      texto.includes('humano') ||
+      texto.includes('whatsapp') ||
+      texto.includes('telefono') ||
+      texto.includes('contacto') ||
+      texto.includes('asesor') ||
+      texto.includes('llamada') ||
+      texto.includes('agent') ||
+      texto.includes('talk')
+    ) {
+      return resp.agente
+    }
+
+    if (
+      texto.includes('falla') ||
+      texto.includes('averia') ||
+      texto.includes('danio') ||
+      texto.includes('grua') ||
+      texto.includes('taller') ||
+      texto.includes('problema') ||
+      texto.includes('accidente') ||
+      texto.includes('soporte') ||
+      texto.includes('support')
+    ) {
+      return resp.incidencia
+    }
+
+    if (
+      texto.includes('cancelar') ||
+      texto.includes('reembolso') ||
+      texto.includes('devolucion') ||
+      texto.includes('cancel') ||
+      texto.includes('refund')
+    ) {
+      return resp.cancelacion
+    }
+
+    if (
+      texto.includes('sucursal') ||
+      texto.includes('sede') ||
+      texto.includes('donde') ||
+      texto.includes('ubicacion') ||
+      texto.includes('direccion') ||
+      texto.includes('branch') ||
+      texto.includes('location')
+    ) {
+      return resp.sucursales
+    }
+
+    return resp.default
+  } catch (err) {
+    console.error('Error processing bot question:', err)
+    return '🤖 ' + (t ? t('chatbot.responses.default', '¿En qué puedo ayudarte?') : '¿En qué puedo ayudarte?')
   }
-
-  if (
-    texto.includes('de que trata') ||
-    texto.includes('que es drivique') ||
-    texto.includes('quienes son') ||
-    texto.includes('plataforma') ||
-    texto.includes('acerca de') ||
-    texto.includes('que hacen')
-  ) {
-    return resp.queEsDrivique
-  }
-
-  if (
-    texto.includes('dolar') ||
-    texto.includes('dólar') ||
-    texto.includes('usd') ||
-    texto.includes('cop') ||
-    texto.includes('moneda') ||
-    texto.includes('conversion') ||
-    texto.includes('cambio')
-  ) {
-    return resp.dolar
-  }
-
-  if (
-    texto.includes('alquilar') ||
-    texto.includes('rentar') ||
-    texto.includes('reservar') ||
-    texto.includes('pasos') ||
-    texto.includes('como funciona')
-  ) {
-    return resp.alquilar
-  }
-
-  if (
-    texto.includes('requisito') ||
-    texto.includes('documento') ||
-    texto.includes('licencia') ||
-    texto.includes('cedula') ||
-    texto.includes('pasaporte') ||
-    texto.includes('edad') ||
-    texto.includes('16')
-  ) {
-    return resp.requisitos
-  }
-
-  if (
-    texto.includes('pago') ||
-    texto.includes('deposito') ||
-    texto.includes('tarjeta') ||
-    texto.includes('wompi') ||
-    texto.includes('pse') ||
-    texto.includes('precio') ||
-    texto.includes('costo') ||
-    texto.includes('tarifa')
-  ) {
-    return resp.pagos
-  }
-
-  if (
-    texto.includes('agente') ||
-    texto.includes('humano') ||
-    texto.includes('whatsapp') ||
-    texto.includes('telefono') ||
-    texto.includes('contacto') ||
-    texto.includes('asesor') ||
-    texto.includes('llamada')
-  ) {
-    return resp.agente
-  }
-
-  if (
-    texto.includes('falla') ||
-    texto.includes('averia') ||
-    texto.includes('danio') ||
-    texto.includes('grua') ||
-    texto.includes('taller') ||
-    texto.includes('problema') ||
-    texto.includes('accidente') ||
-    texto.includes('soporte')
-  ) {
-    return resp.incidencia
-  }
-
-  if (texto.includes('cancelar') || texto.includes('reembolso') || texto.includes('devolucion')) {
-    return resp.cancelacion
-  }
-
-  if (
-    texto.includes('sucursal') ||
-    texto.includes('sede') ||
-    texto.includes('donde') ||
-    texto.includes('ubicacion') ||
-    texto.includes('direccion')
-  ) {
-    return resp.sucursales
-  }
-
-  return resp.default
 }

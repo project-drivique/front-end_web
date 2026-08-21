@@ -1245,6 +1245,12 @@
     "close": "Fermer",
     "quickQuestionsTitle": "Questions Rapides :",
     "inputPlaceholder": "Écrivez votre question ici...",
-    "send": "Envoyer"
+    "send": "Envoyer",
+    "actions": {
+      "alquilar": "🚗 Comment louer un véhicule ?",
+      "requisitos": "📋 Quelles sont les conditions ?",
+      "pagos": "💰 Modes de paiement et dépôts",
+      "agente": "👤 Parler à un agent (WhatsApp/Tél)"
+    }
   }
 }
