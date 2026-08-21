@@ -1237,5 +1237,34 @@
       "q3": "Can I swap vehicles if repair takes too long?",
       "a3": "Yes, if technical repair exceeds reasonable time, we arrange an equivalent replacement vehicle."
     }
+  },
+  "chatbot": {
+    "toggleTitle": "Drivique Support Assistant",
+    "welcomeMsg": "👋 Hi! I am the Drivique 24/7 interactive virtual assistant.\nHow can I help you today?",
+    "onlineStatus": "Online | Drivique Bot 24/7",
+    "minimize": "Minimize",
+    "close": "Close",
+    "quickQuestionsTitle": "Quick Questions:",
+    "inputPlaceholder": "Type your question here...",
+    "send": "Send",
+    "actions": {
+      "alquilar": "🚗 How to rent a vehicle?",
+      "requisitos": "📋 What are the requirements?",
+      "pagos": "💰 Payment methods and deposits",
+      "agente": "👤 Talk to an agent (WhatsApp/Phone)"
+    },
+    "responses": {
+      "hola": "👋 Hi! Welcome to Drivique. How can I assist you today? Feel free to pick a quick option or type your question.",
+      "queEsDrivique": "✨ **What is Drivique?**\n\nDrivique is the leading car rental platform in Colombia. We offer 100% digital bookings, online contracts, 24/7 roadside assistance, and a modern fleet.",
+      "dolar": "💵 **Currency Conversion & Rates:**\n\nAt Drivique you can view all vehicle prices in **COP** or **USD**.\n\n• Rates starting from approximately **{{precio}}/day**.\n• Conversion is calculated in real time based on your chosen currency.",
+      "alquilar": "🚗 **Renting at Drivique is super easy:**\n\n1. Select your preferred vehicle in the **Catalog**.\n2. Choose pickup & return dates, and your preferred branch.\n3. Upload your ID and valid driver's license.\n4. Complete secure online payment via **Wompi**.\n5. All set! You will receive instant booking confirmation.",
+      "requisitos": "📋 **Mandatory Requirements:**\n\n• **Minimum age:** 16 years old.\n• **ID Document:** ID card, Passport, Identity card or Foreigner ID.\n• **Driver's License:** Valid (national or international).\n• **Security deposit:** Credit or debit card under renter's name.",
+      "pagos": "💰 **Payment Methods & Deposits:**\n\nWe accept all digital payment methods via **Wompi**:\n• Credit cards (Visa, Mastercard, American Express).\n• Bank transfers / PSE / Nequi.\n• International credit & debit cards in COP or USD.\n\n*Security deposit is automatically released 24h after vehicle return.*",
+      "agente": "👤 **Personalized Human Support:**\n\nContact our control team directly:\n• 📱 **WhatsApp 24/7:** +57 314 478 9702\n• 📞 **Phone Line:** +57 322 3163531\n• ✉️ **Email:** soporte@drivique.com\n\n*Average response time: under 2 minutes.*",
+      "incidencia": "🛠️ **Vehicle Issue?**\n\nHead to **Support** in the top menu or go to **My Reservations** and click **\"Report issue\"**. Our roadside team will dispatch assistance right away.",
+      "cancelacion": "🔄 **Cancellation Policy:**\n\nYou can cancel your booking for a full refund up to **24 hours before** pickup from **My Reservations**.",
+      "sucursales": "🏢 **Available Branches:**\n\nWe have physical branches in Neiva, Bogotá, Medellín, Cali, and Cartagena. View exact locations in **Branches**.",
+      "default": "🤖 I understand your question. Explore our **Catalog**, check **My Reservations**, or contact an agent by typing **\"agent\"**."
+    }
   }
 }
