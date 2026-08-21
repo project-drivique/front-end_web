@@ -40,7 +40,6 @@ export default function FirmaContrato({ vehiculo, reservaGuardada, onFirmado }) 
   const { t, i18n } = useTranslation();
   const { moneda } = useLanding();
   const canvasRef = useRef(null);
-  const [firmaVacia, setFirmaVacia] = useState(true);
   const [errorFirma, setErrorFirma] = useState('');
   const [firmando, setFirmando] = useState(false);
 
@@ -78,7 +77,7 @@ export default function FirmaContrato({ vehiculo, reservaGuardada, onFirmado }) 
     return d.toLocaleDateString(localeFecha, { day: '2-digit', month: 'long', year: 'numeric' });
   };
 
-  const handleFirmar = () => {
+  const handleFirmar = async () => {
     if (!canvasRef.current || canvasRef.current.estaVacio()) {
       setErrorFirma(t('contratoFirma.signatureRequired'));
       return;
@@ -89,22 +88,30 @@ export default function FirmaContrato({ vehiculo, reservaGuardada, onFirmado }) 
     const firmaUsuarioDataUrl = canvasRef.current.obtenerDataUrl();
     const ahoraIso = new Date().toISOString();
 
-    // Simula una pequeña latencia de guardado, consistente con el resto del
-    // flujo (subida de documentos, etc.), mientras no exista backend real.
-    setTimeout(() => {
+    try {
       const contrato = contractService.guardarFirma(referencia, {
         codigo: codigoContrato,
         firmaUsuarioDataUrl,
         ciudad: ciudadSucursal,
         fecha: ahoraIso,
+        contratoOriginal: {
+          reserva: JSON.parse(JSON.stringify(reservaGuardada)),
+          vehiculo: JSON.parse(JSON.stringify(vehiculo)),
+          idioma: i18n.language,
+          guardadoEn: ahoraIso,
+        },
       });
       setFirmando(false);
       onFirmado?.(contrato);
-    }, 600);
+    } catch (error) {
+      console.error('No se pudo guardar el contrato', error);
+      setErrorFirma('No fue posible guardar el contrato firmado. Intenta nuevamente.');
+      setFirmando(false);
+    }
   };
 
   return (
-    <div className="contrato-contenedor-externo" style={{ maxWidth: 980, margin: '0 auto' }}>
+    <div className="contrato-contenedor-externo" style={{ maxWidth: 980, margin: '0 auto', background: '#f8fafc' }}>
       <div style={{
         background: 'var(--bg-tarjeta)', border: '1px solid var(--borde)', borderRadius: 24,
         overflow: 'hidden', boxShadow: 'var(--sombra-tarjeta)',
@@ -236,7 +243,7 @@ export default function FirmaContrato({ vehiculo, reservaGuardada, onFirmado }) 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 18 }}>
               <div style={{ background: 'var(--bg-item)', border: '1px solid var(--borde)', borderRadius: 20, padding: 18 }}>
                 <h4 style={{ margin: '0 0 12px', fontSize: 15, color: 'var(--texto-primary)' }}>{t('contratoFirma.userSignature')}</h4>
-                <SignatureCanvas ref={canvasRef} onCambio={(vacia) => { setFirmaVacia(vacia); if (!vacia) setErrorFirma(''); }} />
+                <SignatureCanvas ref={canvasRef} onCambio={(vacia) => { if (!vacia) setErrorFirma(''); }} />
                 {errorFirma && <p style={{ color: '#ef4444', fontSize: 12, fontWeight: 700, margin: '8px 0 0' }}>{errorFirma}</p>}
                 <div style={{ marginTop: 12 }}>
                   <p style={{ margin: '4px 0', fontSize: 13, color: 'var(--texto-primary)' }}><strong>{t('contratoFirma.fullName')}:</strong> {datosForm.nombre}</p>

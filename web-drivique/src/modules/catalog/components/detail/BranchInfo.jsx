@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { FaMapMarkerAlt, FaClock, FaDirections } from 'react-icons/fa'
-import DetailSection from './DetailSection'
 import LocationModal from './LocationModal'
 
 const SCHEDULE_MAP = {
@@ -62,15 +61,15 @@ export default function BranchInfo({ sucursalInfo, c }) {
           >
             <FaDirections size={14} /> {t('vehiculo.howToGetThere')}
           </button>
-          
-          <LocationModal 
-            visible={modalVisible} 
-            onClose={() => setModalVisible(false)} 
-            sucursalInfo={sucursalInfo} 
+
+          <LocationModal
+            visible={modalVisible}
+            onClose={() => setModalVisible(false)}
+            sucursalInfo={sucursalInfo}
             c={c}
           />
         </>
       )}
     </div>
   )
-}
+}

@@ -75,10 +75,6 @@ export default function FiltrosCatalogo({
   enModal = false,
   soloBusqueda = false,
   panelClassName = 'filtros-panel',
-  textoLibre = '',
-  setTextoLibre = null,
-  mostrarBusquedaLibre = false,
-  sinCoincidenciasTexto = false,
 }) {
 
   const { t } = useTranslation()
