@@ -1133,5 +1133,41 @@
     "clearFilters": "Limpiar filtros",
     "delete": "Eliminar",
     "viewDetailsAndReserve": "Ver detalles y reservar"
+  },
+  "notificaciones": {
+    "title": "Notificaciones",
+    "subtitle": "Consulta tus alertas importantes y promociones exclusivas",
+    "tabGenerales": "Generales",
+    "tabPromociones": "Promociones",
+    "marcarTodasLeidas": "Marcar todas como leídas",
+    "venceHoy": "Vence hoy",
+    "venceEnDias": "Vence en {{dias}} días",
+    "sinNotificacionesTitle": "Sin notificaciones generales",
+    "sinNotificacionesMsg": "Actualmente no tienes mensajes ni alertas pendientes en tu cuenta.",
+    "seccionCupones": "Más cupones geniales",
+    "porAgotarse": "¡Por agotarse!",
+    "verCondiciones": "Condiciones",
+    "reservaMinima": "Reserva mínima",
+    "sinReservaMinima": "Sin reserva mínima",
+    "aplicarCupon": "Aplicar",
+    "cuponAplicado": "✓ Aplicado",
+    "sinCuponesTitle": "No tienes cupones vigentes",
+    "sinCuponesMsg": "Completa más reservas para desbloquear recompensas exclusivas.",
+    "seccionPromosDestacadas": "Promociones destacadas",
+    "sinPromosTitle": "No hay ofertas de vehículos en este momento",
+    "items": {
+      "reservaConfirmadaTitle": "Reserva confirmada",
+      "reservaConfirmadaMsg": "Tu reserva del Toyota Prado ha sido confirmada con éxito. Recuerda que el retiro es en la sucursal Neiva el día acordado.",
+      "pagoValidadoTitle": "Pago validado",
+      "pagoValidadoMsg": "El pago digital a través de Wompi fue validado de forma satisfactoria. Guarda tu compromiso.",
+      "docsVerificadosTitle": "Documentos verificados ✓",
+      "docsVerificadosMsg": "Tu licencia de conducción y documento de identidad fueron aprobados por nuestro equipo. Ya puedes continuar con tu reserva.",
+      "soporteRespuestaTitle": "Soporte respondió tu caso",
+      "soporteRespuestaMsg": "El equipo de soporte respondió a su solicitud #4821. Ingresa a la sección de soporte para ver la respuesta.",
+      "alquilerFinalizadoTitle": "Alquiler finalizado",
+      "alquilerFinalizadoMsg": "Tu alquiler del Ford Explorer finalizó correctamente. Gracias por preferir Drivique.",
+      "politicaActualizacionTitle": "Actualización de políticas",
+      "politicaActualizacionMsg": "Hemos actualizado nuestros términos y condiciones de protección contra colisiones. Revisa los detalles en tu cuenta."
+    }
   }
 }

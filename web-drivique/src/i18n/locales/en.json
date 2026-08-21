@@ -1157,5 +1157,41 @@
     "clearFilters": "Clear filters",
     "delete": "Remove",
     "viewDetailsAndReserve": "View details & reserve"
+  },
+  "notificaciones": {
+    "title": "Notifications",
+    "subtitle": "Check your important alerts and exclusive promotions",
+    "tabGenerales": "General",
+    "tabPromociones": "Promotions",
+    "marcarTodasLeidas": "Mark all as read",
+    "venceHoy": "Expires today",
+    "venceEnDias": "Expires in {{dias}} days",
+    "sinNotificacionesTitle": "No general notifications",
+    "sinNotificacionesMsg": "You currently have no pending messages or alerts in your account.",
+    "seccionCupones": "More cool coupons",
+    "porAgotarse": "Running out!",
+    "verCondiciones": "Terms",
+    "reservaMinima": "Minimum booking",
+    "sinReservaMinima": "No minimum booking",
+    "aplicarCupon": "Apply",
+    "cuponAplicado": "✓ Applied",
+    "sinCuponesTitle": "No active coupons",
+    "sinCuponesMsg": "Complete more bookings to unlock exclusive rewards.",
+    "seccionPromosDestacadas": "Featured promotions",
+    "sinPromosTitle": "No vehicle deals at this time",
+    "items": {
+      "reservaConfirmadaTitle": "Booking confirmed",
+      "reservaConfirmadaMsg": "Your Toyota Prado booking has been confirmed successfully. Pickup is at Neiva branch on the scheduled date.",
+      "pagoValidadoTitle": "Payment validated",
+      "pagoValidadoMsg": "Digital payment via Wompi was successfully validated. Keep your confirmation.",
+      "docsVerificadosTitle": "Documents verified ✓",
+      "docsVerificadosMsg": "Your driver's license and ID document were approved by our team. You can continue with your booking.",
+      "soporteRespuestaTitle": "Support answered your case",
+      "soporteRespuestaMsg": "Support team responded to ticket #4821. Check the support section to read the answer.",
+      "alquilerFinalizadoTitle": "Rental finished",
+      "alquilerFinalizadoMsg": "Your Ford Explorer rental finished successfully. Thank you for choosing Drivique.",
+      "politicaActualizacionTitle": "Policy update",
+      "politicaActualizacionMsg": "We updated our collision damage terms. Review details in your account."
+    }
   }
 }

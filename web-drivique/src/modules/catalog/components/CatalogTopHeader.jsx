@@ -15,6 +15,8 @@ function iniciales(nombre = '', apellido = '', correo = '') {
   return 'U'
 }
 
+import { useNotificationStore } from '@/modules/notifications/store/useNotificationStore'
+
 export default function CatalogTopHeader({
   c,
   innerClassName = 'catalogo-header-inner',
@@ -29,6 +31,7 @@ export default function CatalogTopHeader({
   const { t } = useTranslation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { usuario } = useAuthStore();
+  const { conteoNoLeidas } = useNotificationStore();
 
   const menuOptions = [
     { name: t('catalog.menu.catalog', 'Catálogo'), path: '/home' },
@@ -58,6 +61,7 @@ export default function CatalogTopHeader({
           <nav className="catalogo-header-nav" style={{ display: 'flex', gap: '32px', alignItems: 'center', marginLeft: 'auto', marginRight: '32px' }}>
             {menuOptions.map((option) => {
               const isActive = currentPath === option.path;
+              const esNotif = option.path === '/notificaciones';
               
               return (
                 <Link
@@ -72,7 +76,10 @@ export default function CatalogTopHeader({
                     paddingBottom: '8px',
                     whiteSpace: 'nowrap',
                     transition: 'color 150ms',
-                    cursor: 'pointer'
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px'
                   }}
                   onMouseEnter={e => {
                     if (!isActive) e.currentTarget.style.color = '#2563eb';
@@ -82,6 +89,23 @@ export default function CatalogTopHeader({
                   }}
                 >
                   {option.name}
+                  {esNotif && conteoNoLeidas > 0 && (
+                    <span
+                      style={{
+                        background: '#ef4444',
+                        color: '#ffffff',
+                        fontSize: '10px',
+                        fontWeight: 800,
+                        padding: '1px 6px',
+                        borderRadius: '10px',
+                        lineHeight: 1.2,
+                        minWidth: '16px',
+                        textAlign: 'center',
+                      }}
+                    >
+                      {conteoNoLeidas}
+                    </span>
+                  )}
                   {isActive && (
                     <span style={{
                       position: 'absolute',
