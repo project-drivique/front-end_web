@@ -34,7 +34,7 @@ export default function ReservationFlowPage() {
   const esModoOscuro = tema === 'oscuro'
 
   const c = {
-    pageBg:        esModoOscuro ? '#0f172a'  : '#f8fafc',
+    pageBg:        esModoOscuro ? '#0f172a'  : '#eaeff8',
     cardBg:        esModoOscuro ? '#111827'  : '#ffffff',
     cardBorder:    esModoOscuro ? '#1e293b'  : '#e2e8f0',
     subCardBg:     esModoOscuro ? '#1e293b'  : '#f8fafc',

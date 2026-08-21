@@ -871,10 +871,11 @@
       "admin": "Administrador"
     },
     "docTypes": {
-      "CC": "Cédula de ciudadanía (CC)",
-      "TI": "Tarjeta de identidad (TI)",
-      "CE": "Documento extranjero (CE)",
-      "PAS": "Pasaporte (PAS)"
+      "CC": "Cédula de Ciudadanía",
+      "TI": "Tarjeta de Identidad",
+      "CE": "Cédula de Extranjería",
+      "PAS": "Pasaporte",
+      "PA": "Pasaporte"
     },
     "countries": {
       "Colombia": "Colombia",
@@ -1117,5 +1118,20 @@
     "GPS Integrado": "GPS Integrado",
     "Lavado de auto post-entrega": "Lavado de auto post-entrega",
     "Silla de bebé": "Silla de bebé"
+  },
+  "favoritos": {
+    "title": "Mis Favoritos",
+    "subtitle": "Gestiona tus vehículos preferidos y accede a sus detalles rápidamente",
+    "searchPlaceholder": "Buscar por marca o modelo...",
+    "allCategories": "Todas las categorías",
+    "loading": "Cargando tus favoritos...",
+    "noFavoritesTitle": "No tienes vehículos favoritos guardados",
+    "noFavoritesText": "Explora nuestro catálogo y presiona el icono de corazón en los vehículos que te gusten para guardarlos aquí.",
+    "exploreCatalog": "Explorar catálogo",
+    "noMatchesTitle": "No hay coincidencia",
+    "noMatchesText": "No encontramos vehículos guardados en tus favoritos que coincidan con los filtros aplicados.",
+    "clearFilters": "Limpiar filtros",
+    "delete": "Eliminar",
+    "viewDetailsAndReserve": "Ver detalles y reservar"
   }
 }
