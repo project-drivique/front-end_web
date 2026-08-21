@@ -2,22 +2,18 @@ import { useState, useEffect, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { reservationsService } from '../../../services/reservationsService'
 import { catalogService } from '../../../services/catalogService'
+import { obtenerEstadoVisible } from '../utils/reservationStatus'
 
 const estadoReserva = (r) => {
   if (r.estado) {
-    const est = r.estado.toLowerCase()
-    if (est.includes('cancel')) return 'cancelada'
-    if (est.includes('completa')) return 'completada'
-    if (est.includes('pendiente') || est.includes('validacion')) return 'pendiente'
-    if (est.includes('activ')) return 'activa'
-    return est
+    return obtenerEstadoVisible(r.estado)
   }
   const hoy = new Date().toISOString().split('T')[0]
   const inicio = r.fechaInicio || r.reservaDetalles?.fechaInicio
   const fin = r.fechaFin || r.reservaDetalles?.fechaFin
-  if (fin < hoy) return 'completada'
-  if (inicio <= hoy && hoy <= fin) return 'activa'
-  return 'pendiente'
+  if (fin < hoy) return 'finalizada'
+  if (inicio <= hoy && hoy <= fin) return 'en_curso'
+  return 'confirmada'
 }
 
 export function useHistorialReservas() {
@@ -46,7 +42,10 @@ export function useHistorialReservas() {
           }
         })
       )
-      setReservas(conVehiculo)
+      const valoraciones = reservationsService.getValoracionesLocales()
+      setReservas(conVehiculo
+        .map(r => ({ ...r, valoracion: valoraciones[r.id] || r.valoracion || null }))
+        .sort((a, b) => new Date(b.fechaInicio) - new Date(a.fechaInicio)))
     } catch {
       setError(t('reservas.error'))
     } finally {
@@ -63,5 +62,11 @@ export function useHistorialReservas() {
     setReservas(prev => prev.map(r => r.id === id ? { ...r, estado: 'cancelada' } : r))
   }
 
-  return { reservas, cargando, error, recargar: cargarReservas, cancelarReserva }
+  const guardarValoracion = async (id, valoracion) => {
+    const guardada = await reservationsService.guardarValoracion(id, valoracion)
+    setReservas(prev => prev.map(r => r.id === id ? { ...r, valoracion: guardada } : r))
+    return guardada
+  }
+
+  return { reservas, cargando, error, recargar: cargarReservas, cancelarReserva, guardarValoracion }
 }

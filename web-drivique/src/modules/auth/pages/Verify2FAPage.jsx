@@ -262,7 +262,7 @@ export default function Verificar2FAPage() {
                 <div style={{ textAlign: 'center' }}>
                   {segundos > 0 ? (
                     <span style={{ fontSize: '13px', fontWeight: 600, color: c.textSecondary }}>
-                      {t('verificar2fa.resendCountdown', { seconds })}
+                      {t('verificar2fa.resendCountdown', { seconds: segundos })}
                     </span>
                   ) : (
                     <button

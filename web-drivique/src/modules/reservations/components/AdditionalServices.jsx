@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { FaCheck, FaWifi, FaCar, FaBaby, FaUserPlus, FaRoad, FaPlane, FaPlusCircle, FaGasPump, FaShower } from 'react-icons/fa'
+import { FaCheck, FaWifi, FaBaby, FaUserPlus, FaRoad, FaPlane, FaPlusCircle, FaGasPump, FaShower } from 'react-icons/fa'
 import { formatCurrency } from '@/utils/currencyUtils'
 import { useLanding } from '../../landing/LandingContext'
 

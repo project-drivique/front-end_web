@@ -1,5 +1,3 @@
-import { Link } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
 
 const IconoCheck = () => (
   <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24" style={{ marginTop: '1px' }}>
@@ -8,8 +6,6 @@ const IconoCheck = () => (
 )
 
 export default function RecoveryStepper({ currentStep }) {
-  const { t } = useTranslation()
-
   // Nombres de los pasos hardcodeados o traducidos
   const pasos = [
     { id: 1, label: 'Correo' },
@@ -30,8 +26,6 @@ export default function RecoveryStepper({ currentStep }) {
         {pasos.map((paso, index) => {
           const completado = currentStep > paso.id
           const activo = currentStep === paso.id
-          const pendiente = currentStep < paso.id
-
           return (
             <div key={paso.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', zIndex: 1, flex: 1 }}>
               

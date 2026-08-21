@@ -17,7 +17,6 @@ import {
   FaCheckCircle
 } from 'react-icons/fa'
 import AuthHeaderControls from '../components/AuthHeaderControls'
-import LeftPanel from '../components/LeftPanel'
 
 const COLOR_MARCA = '#1e3a8a'
 
