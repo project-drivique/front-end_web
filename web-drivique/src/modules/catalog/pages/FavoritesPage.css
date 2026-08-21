@@ -130,6 +130,7 @@ html.dark .favoritos-search-input {
   font-size: 14px;
   font-weight: 700;
   outline: none;
+  cursor: pointer;
   box-shadow: 0 4px 16px rgba(37, 99, 235, 0.12);
   transition: all 0.2s ease;
 }
@@ -137,15 +138,6 @@ html.dark .favoritos-search-input {
 html.dark .favoritos-select-cat {
   background: linear-gradient(#1e293b, #1e293b) padding-box,
               linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%) border-box;
-  color: #f8fafc;
-}
-  cursor: pointer;
-  box-shadow: 0 4px 14px rgba(30, 58, 138, 0.04);
-}
-
-html.dark .favoritos-select-cat {
-  background: #1e293b;
-  border-color: #334155;
   color: #f8fafc;
 }
 
