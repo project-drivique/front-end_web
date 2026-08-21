@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import {
@@ -32,6 +32,14 @@ import { CANALES_ATENCION, TIPOS_INCIDENCIA, FAQS_INITIAL } from '../data/suppor
 import ReportDetailModal from '../components/ReportDetailModal'
 import './SupportPage.css'
 
+// Lista de vehículos con reservas activas/válidas para el selector
+const VEHICULOS_RESERVAS_ACTIVAS = [
+  { id: 'res-1', nombre: 'Toyota Prado VX', placa: 'KLS-849' },
+  { id: 'res-2', nombre: 'Chevrolet Spark GT', placa: 'HGF-123' },
+  { id: 'res-3', nombre: 'Ford Explorer 2024', placa: 'ERT-456' },
+  { id: 'res-4', nombre: 'Toyota Corolla 2024', placa: 'ABC-123' },
+]
+
 export default function SupportPage() {
   const { t } = useTranslation()
   const location = useLocation()
@@ -40,7 +48,7 @@ export default function SupportPage() {
   const { tema } = useLanding()
   const esModoOscuro = tema === 'oscuro'
 
-  // Leer parámetros de URL por si viene desde "Hacer reporte" en Mis Reservas
+  // Leer parámetros de URL o location state si viene de "Hacer reporte" en Mis Reservas
   const searchParams = new URLSearchParams(location.search)
   const vehiculoParam = searchParams.get('vehiculo') || location.state?.vehiculo || ''
   const placaParam = searchParams.get('placa') || location.state?.placa || ''
@@ -57,8 +65,8 @@ export default function SupportPage() {
 
   // Estado del Formulario
   const [formData, setFormData] = useState({
-    vehiculo: vehiculoParam,
-    placa: placaParam,
+    vehiculo: vehiculoParam || VEHICULOS_RESERVAS_ACTIVAS[0].nombre,
+    placa: placaParam || VEHICULOS_RESERVAS_ACTIVAS[0].placa,
     tipoIncidenciaId: 'averia_mecanica',
     descripcion: '',
     evidenciasCount: 0,
@@ -67,7 +75,7 @@ export default function SupportPage() {
     contactoEmail: usuario?.correo || usuario?.email || 'cliente@drivique.com',
   })
 
-  // Actualiza precarga si cambian params de navegación
+  // Actualiza el formulario si llegan params desde Mis Reservas
   useEffect(() => {
     if (vehiculoParam || placaParam) {
       setFormData((prev) => ({
@@ -78,6 +86,18 @@ export default function SupportPage() {
       setPestanaActiva('reportar')
     }
   }, [vehiculoParam, placaParam])
+
+  // Al seleccionar un vehículo del dropdown, actualiza el vehículo y su placa correspondiente
+  const handleSelectVehiculoChange = (e) => {
+    const nombreVeh = e.target.value
+    const vehEncontrado = VEHICULOS_RESERVAS_ACTIVAS.find((v) => v.nombre === nombreVeh)
+
+    setFormData((prev) => ({
+      ...prev,
+      vehiculo: nombreVeh,
+      placa: vehEncontrado ? vehEncontrado.placa : prev.placa,
+    }))
+  }
 
   // Obtiene objeto del tipo de incidencia seleccionado
   const tipoSeleccionadoObj = TIPOS_INCIDENCIA.find((t) => t.id === formData.tipoIncidenciaId) || TIPOS_INCIDENCIA[0]
@@ -295,19 +315,30 @@ export default function SupportPage() {
                 <h3>{t('soporte.formTitle', 'Formulario de Incidencia')}</h3>
               </div>
 
-              {/* Vehículo / Reserva asociada */}
+              {/* Vehículo (Select de Reservas en curso) / Placa asociada */}
               <div className="form-grupo">
                 <label className="form-label">
                   {t('soporte.vehiculoLabel', 'Vehículo / Reserva asociada')}
                 </label>
                 <div className="form-grid-2col">
-                  <input
-                    type="text"
+                  {/* Select desplegable con vehículos en reserva válida */}
+                  <select
                     className="form-input-text"
-                    placeholder="Ej: Toyota Prado VX"
                     value={formData.vehiculo}
-                    onChange={(e) => setFormData({ ...formData, vehiculo: e.target.value })}
-                  />
+                    onChange={handleSelectVehiculoChange}
+                  >
+                    {VEHICULOS_RESERVAS_ACTIVAS.map((item) => (
+                      <option key={item.id} value={item.nombre}>
+                        {item.nombre}
+                      </option>
+                    ))}
+                    {formData.vehiculo &&
+                      !VEHICULOS_RESERVAS_ACTIVAS.some((v) => v.nombre === formData.vehiculo) && (
+                        <option value={formData.vehiculo}>{formData.vehiculo}</option>
+                      )}
+                  </select>
+
+                  {/* Input de Placa */}
                   <input
                     type="text"
                     className="form-input-text"

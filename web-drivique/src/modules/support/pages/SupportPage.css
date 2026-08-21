@@ -549,12 +549,81 @@
   text-decoration: underline;
 }
 
-/* Responsive */
-@media (max-width: 640px) {
+/* Responsive Media Queries */
+@media (max-width: 768px) {
+  .soporte-main {
+    padding: 20px 14px 60px;
+  }
+  
+  .soporte-header-title h1 {
+    font-size: 24px;
+  }
+  
+  .soporte-tabs-container {
+    flex-wrap: wrap;
+    gap: 4px;
+    padding: 4px;
+  }
+  
+  .soporte-tab-btn {
+    padding: 10px 10px;
+    font-size: 12px;
+  }
+  
+  .centro-atencion-card {
+    padding: 24px 16px;
+  }
+  
+  .formulario-incidencia-card {
+    padding: 20px 16px;
+  }
+  
   .form-grid-2col {
     grid-template-columns: 1fr;
+    gap: 12px;
   }
+  
   .tipos-incidencia-grid {
     grid-template-columns: 1fr;
+    gap: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .soporte-header-title h1 {
+    font-size: 22px;
+  }
+  
+  .soporte-tab-btn {
+    font-size: 11px;
+    padding: 8px 6px;
+    gap: 4px;
+  }
+  
+  .canal-card-item {
+    padding: 14px 14px;
+    gap: 12px;
+  }
+  
+  .canal-icon-wrap {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+  }
+  
+  .btn-reportar-incidencia-hero {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .btn-enviar-reporte {
+    padding: 13px 18px;
+    font-size: 14px;
+  }
+  
+  .reporte-top-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
   }
 }

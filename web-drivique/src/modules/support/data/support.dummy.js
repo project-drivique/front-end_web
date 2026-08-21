@@ -83,7 +83,7 @@ export const INITIAL_REPORTS = [
     contactoTelefono: '+57 314 478 9702',
     contactoEmail: 'cliente@drivique.com',
     tiempoEstimado: '2 a 4 horas',
-    estado: 'en_atencion', // 'recibido' | 'en_revision' | 'en_atencion' | 'resuelto'
+    estado: 'en_atencion',
     fechaIso: new Date(Date.now() - 3600 * 1000 * 3).toISOString(),
     evidenciasCount: 1,
     historial: [
@@ -144,27 +144,34 @@ export const INITIAL_REPORTS = [
   },
 ]
 
-// ─── FAQS ────────────────────────────────────────────────────────────────────
+// ─── EXACT FAQS FROM IMAGE UPLOADED BY USER ───────────────────────────────────
 export const FAQS_INITIAL = [
   {
     id: 'faq-1',
     preguntaKey: 'soporte.faqs.q1',
-    preguntaFallback: '¿Qué debo hacer si el vehículo sufre una avería en carretera?',
+    preguntaFallback: '¿Cómo se gestiona el cambio de estado del informe?',
     respuestaKey: 'soporte.faqs.a1',
-    respuestaFallback: 'Estaciónese en un lugar seguro, encienda las luces de emergencia y utilice la pestaña "Reportar incidencia" en esta sección o comuníquese a nuestra línea de asistencia en carretera 24/7.',
+    respuestaFallback: 'El estado del informe es actualizado exclusivamente por el equipo administrador técnico (Recibido, En revisión, En atención o Resuelto). Recibirás notificaciones por correo y en la aplicación cada vez que el administrador actualice tu caso.',
   },
   {
     id: 'faq-2',
     preguntaKey: 'soporte.faqs.q2',
-    preguntaFallback: '¿Cómo funciona la asistencia mecánica o de grúa?',
+    preguntaFallback: '¿Puedo modificar los datos de contacto del reporte?',
     respuestaKey: 'soporte.faqs.a2',
-    respuestaFallback: 'Contamos con una red nacional de unidades móviles y talleres autorizados. Una vez reportada la incidencia, coordinamos la grúa o mecánico sin costo adicional si está cubierto por tu plan de protección.',
+    respuestaFallback: 'Sí. Por defecto se precargan los datos de tu perfil registrado, pero puedes cambiarlos en el formulario si deseas que la atención en campo sea coordinada con otra persona o número telefónico.',
   },
   {
     id: 'faq-3',
     preguntaKey: 'soporte.faqs.q3',
-    preguntaFallback: '¿Puedo cambiar de vehículo si el reporte toma mucho tiempo?',
+    preguntaFallback: '¿Cómo se calcula el tiempo estimado de solución?',
     respuestaKey: 'soporte.faqs.a3',
-    respuestaFallback: 'Sí, si la falla técnica supera un tiempo de solución razonable, nuestro equipo de soporte coordinará un vehículo de reemplazo de categoría equivalente en la sucursal más cercana.',
+    respuestaFallback: 'El tiempo se calcula automáticamente según la categoría de la incidencia seleccionada y la disponibilidad de unidades móviles de taller autorizados en tu zona.',
+  },
+  {
+    id: 'faq-4',
+    preguntaKey: 'soporte.faqs.q4',
+    preguntaFallback: '¿Dónde puedo consultar el historial de contratos y reservas?',
+    respuestaKey: 'soporte.faqs.a4',
+    respuestaFallback: "Dirígete a la sección 'Mis Reservas' en la barra inferior para ver el detalle de tus vehículos, descargar contratos firmados en PDF o reportar incidencias específicas.",
   },
 ]

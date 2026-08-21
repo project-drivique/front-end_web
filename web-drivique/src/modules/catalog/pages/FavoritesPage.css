@@ -96,38 +96,49 @@ html.dark .favoritos-header-title p {
 .favoritos-search-input {
   flex: 1;
   min-width: 240px;
-  padding: 14px 18px;
+  padding: 14px 20px;
   border-radius: 14px;
-  border: 1.5px solid #cbd5e1;
-  background: #ffffff;
+  border: 2px solid transparent;
+  background: linear-gradient(#ffffff, #ffffff) padding-box,
+              linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%) border-box;
   color: #0f172a;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   outline: none;
-  box-shadow: 0 4px 14px rgba(30, 58, 138, 0.04);
-  transition: border-color 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.12);
+  transition: all 0.2s ease;
 }
 
 .favoritos-search-input:focus {
-  border-color: #2563eb;
-  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.25);
+  transform: translateY(-1px);
 }
 
 html.dark .favoritos-search-input {
-  background: #1e293b;
-  border-color: #334155;
+  background: linear-gradient(#1e293b, #1e293b) padding-box,
+              linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%) border-box;
   color: #f8fafc;
 }
 
 .favoritos-select-cat {
-  padding: 14px 18px;
+  padding: 14px 20px;
   border-radius: 14px;
-  border: 1.5px solid #cbd5e1;
-  background: #ffffff;
+  border: 2px solid transparent;
+  background: linear-gradient(#ffffff, #ffffff) padding-box,
+              linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%) border-box;
   color: #0f172a;
   font-size: 14px;
   font-weight: 700;
   outline: none;
+  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.12);
+  transition: all 0.2s ease;
+}
+
+html.dark .favoritos-select-cat {
+  background: linear-gradient(#1e293b, #1e293b) padding-box,
+              linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%) border-box;
+  color: #f8fafc;
+}
   cursor: pointer;
   box-shadow: 0 4px 14px rgba(30, 58, 138, 0.04);
 }
