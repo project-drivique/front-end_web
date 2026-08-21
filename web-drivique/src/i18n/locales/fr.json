@@ -1251,6 +1251,19 @@
       "requisitos": "📋 Quelles sont les conditions ?",
       "pagos": "💰 Modes de paiement et dépôts",
       "agente": "👤 Parler à un agent (WhatsApp/Tél)"
+    },
+    "responses": {
+      "hola": "👋 Bonjour ! Bienvenue chez Drivique. Comment puis-je vous aider aujourd'hui ?",
+      "queEsDrivique": "✨ **Qu'est-ce que Drivique ?**\n\nDrivique est la plateforme leader de location de véhicules en Colombie. Réservations 100% digitales, contrats en ligne et assistance 24/7.",
+      "dolar": "💵 **Conversion de devises et Tarifs :**\n\nVisualisez tous les prix en **COP** ou **USD**.\n\n• Tarifs à partir d'environ **{{precio}}/jour**.\n• Conversion en temps réel.",
+      "alquilar": "🚗 **Louer chez Drivique est très simple :**\n\n1. Choisissez votre véhicule dans le **Catalogue**.\n2. Sélectionnez les dates et la succursale.\n3. Joignez votre pièce d'identité et permis de conduire valide.\n4. Payez en ligne en toute sécurité via **Wompi**.\n5. Confirmation instantanée !",
+      "requisitos": "📋 **Conditions obligatoires :**\n\n• **Âge minimum :** 16 ans révolus.\n• **Pièce d'identité :** Carte d'identité, Passeport ou Titre de séjour.\n• **Permis de conduire :** Valide (national ou international).\n• **Dépôt de garantie :** Carte de crédit ou débit.",
+      "pagos": "💰 **Modes de paiement et dépôts :**\n\nPaiements sécurisés via **Wompi** (cartes de crédit, virements, cartes internationales en COP ou USD).\n\n*Libération automatique du dépôt sous 24h après restitution.*",
+      "agente": "👤 **Assistance Humaine Personnalisée :**\n\n• 📱 **WhatsApp 24/7 :** +57 314 478 9702\n• 📞 **Ligne Téléphonique :** +57 322 3163531\n• ✉️ **E-mail :** soporte@drivique.com",
+      "incidencia": "🛠️ **Problème avec le véhicule ?**\n\nAllez dans **Support** ou dans **Mes Réservations** et cliquez sur **\"Signaler incident\"**.",
+      "cancelacion": "🔄 **Politique d'annulation :**\n\nAnnulation avec remboursement intégral jusqu'à **24 heures avant** la prise en charge.",
+      "sucursales": "🏢 **Succursales disponibles :**\n\nSedes à Neiva, Bogotá, Medellín, Cali et Cartagena.",
+      "default": "🤖 Je comprends votre question. Explorez le **Catalogue**, vos **Réservations** ou écrivez **\"agent\"** pour parler à un conseiller."
     }
   }
 }

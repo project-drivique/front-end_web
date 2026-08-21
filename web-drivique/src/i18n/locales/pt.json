@@ -1250,6 +1250,19 @@
       "requisitos": "📋 Quais são os requisitos?",
       "pagos": "💰 Métodos de pagamento e depósitos",
       "agente": "👤 Falar com um agente (WhatsApp/Telefone)"
+    },
+    "responses": {
+      "hola": "👋 Olá! Bem-vindo à Drivique. Como posso ajudar você hoje?",
+      "queEsDrivique": "✨ **O que é a Drivique?**\n\nA Drivique é a plataforma líder de aluguel de veículos na Colômbia. Reservas 100% digitais, contratos online e assistência 24/7.",
+      "dolar": "💵 **Conversão de Moeda e Tarifas:**\n\nVisualize todos os preços em **COP** ou **USD**.\n\n• Tarifas a partir de aproximadamente **{{precio}}/dia**.\n• Conversão em tempo real.",
+      "alquilar": "🚗 **Alugar na Drivique é muito simples:**\n\n1. Escolha seu veículo no **Catálogo**.\n2. Escolha as datas e a filial desejada.\n3. Anexe documento de identidade e carteira de motorista válida.\n4. Realize o pagamento seguro via **Wompi**.\n5. Confirmação instantânea!",
+      "requisitos": "📋 **Requisitos obrigatórios:**\n\n• **Idade mínima:** 16 anos completos.\n• **Documento de Identidade:** RG, Passaporte ou Documento estrangeiro.\n• **Carteira de Habilitação:** Válida.\n• **Depósito de garantia:** Cartão de crédito ou débito.",
+      "pagos": "💰 **Métodos de Pagamento e Depósitos:**\n\nPagamentos via **Wompi** (cartões de crédito/débito em COP ou USD).\n\n*Liberação automática do depósito em 24h após a devolução.*",
+      "agente": "👤 **Atendimento Humano Personalizado:**\n\n• 📱 **WhatsApp 24/7:** +57 314 478 9702\n• 📞 **Telefone:** +57 322 3163531\n• ✉️ **E-mail:** soporte@drivique.com",
+      "incidencia": "🛠️ **Problema no veículo?**\n\nAcesse **Suporte** ou **Minhas Reservas** e clique em **\"Reportar incidência\"**.",
+      "cancelacion": "🔄 **Política de Cancelamento:**\n\nCancelamento com reembolso total até **24 horas antes** da retirada.",
+      "sucursales": "🏢 **Filiais disponíveis:**\n\nFiliais em Neiva, Bogotá, Medellín, Cali e Cartagena.",
+      "default": "🤖 Entendo sua dúvida. Explore nosso **Catálogo**, consulte **Minhas Reservas** ou digite **\"agente\"**."
     }
   }
 }
