@@ -253,7 +253,7 @@ export default function TarjetaVehiculo({
           }}
           aria-label={esFavorito ? 'Quitar de favoritos' : 'Agregar a favoritos'}
         >
-          {esFavorito ? <FaHeart color="#2563eb" size={13} /> : <FaRegHeart color="#94a3b8" size={13} />}
+          {esFavorito ? <FaHeart color="#ef4444" size={13} /> : <FaRegHeart color="#94a3b8" size={13} />}
         </button>
 
         {/* NAVEGACIÓN DE IMÁGENES: flechas < > en vez de puntos, solo si hay más de 1 foto */}

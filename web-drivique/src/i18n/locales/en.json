@@ -1142,5 +1142,20 @@
     "GPS Integrado": "Integrated GPS",
     "Lavado de auto post-entrega": "Post-rental car wash",
     "Silla de bebé": "Baby seat"
+  },
+  "favoritos": {
+    "title": "My Favorites",
+    "subtitle": "Manage your favorite vehicles and access their details quickly",
+    "searchPlaceholder": "Search by make or model...",
+    "allCategories": "All categories",
+    "loading": "Loading your favorites...",
+    "noFavoritesTitle": "You have no saved favorite vehicles",
+    "noFavoritesText": "Explore our catalog and press the heart icon on vehicles you like to save them here.",
+    "exploreCatalog": "Explore catalog",
+    "noMatchesTitle": "No matches found",
+    "noMatchesText": "We couldn't find saved favorite vehicles matching your applied filters.",
+    "clearFilters": "Clear filters",
+    "delete": "Remove",
+    "viewDetailsAndReserve": "View details & reserve"
   }
 }

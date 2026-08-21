@@ -23,7 +23,7 @@ import './CatalogPage.css'
 import './UserCatalogPage.css'
 
 const coloresTema = (esModoOscuro) => ({
-  pageBg: esModoOscuro ? '#0f172a' : '#f8fafc',
+  pageBg: esModoOscuro ? '#0f172a' : '#eaeff8',
   navBg: esModoOscuro ? 'rgba(15,23,42,0.92)' : 'rgba(255,255,255,0.98)',
   navBorder: esModoOscuro ? '#1e293b' : '#e8eef8',
   navShadow: esModoOscuro ? '0 2px 12px rgba(0,0,0,0.25)' : '0 2px 14px rgba(30,58,138,0.06)',

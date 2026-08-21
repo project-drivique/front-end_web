@@ -1140,5 +1140,20 @@
     "GPS Integrado": "GPS Integrado",
     "Lavado de auto post-entrega": "Lavagem de carro após entrega",
     "Silla de bebé": "Cadeira de bebê"
+  },
+  "favoritos": {
+    "title": "Meus Favoritos",
+    "subtitle": "Gerencie seus veículos preferidos e acesse seus detalhes rapidamente",
+    "searchPlaceholder": "Buscar por marca ou modelo...",
+    "allCategories": "Todas as categorias",
+    "loading": "Carregando seus favoritos...",
+    "noFavoritesTitle": "Você não tem veículos favoritos salvos",
+    "noFavoritesText": "Explore nosso catálogo e pressione o ícone de coração nos veículos que gostar para salvá-los aqui.",
+    "exploreCatalog": "Explorar catálogo",
+    "noMatchesTitle": "Nenhum resultado encontrado",
+    "noMatchesText": "Não encontramos veículos salvos nos seus favoritos que correspondam aos filtros aplicados.",
+    "clearFilters": "Limpar filtros",
+    "delete": "Remover",
+    "viewDetailsAndReserve": "Ver detalhes e reservar"
   }
 }
