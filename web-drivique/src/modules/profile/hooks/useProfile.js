@@ -5,7 +5,7 @@ import { userService } from '../../../services/userService'
 
 export function usePerfil() {
   const { t } = useTranslation()
-  const { usuario, token, actualizarUsuario } = useAuthStore()
+  const { usuario, actualizarUsuario } = useAuthStore()
   const [cargando, setCargando] = useState(false)
   const [exito, setExito] = useState(false)
   const [error, setError] = useState('')
@@ -125,7 +125,7 @@ export function usePerfil() {
     }
   }
 
-  const _guardarCambios = async (correoYaVerificado = false) => {
+  const _guardarCambios = async () => {
     setCargando(true)
     setError('')
     try {

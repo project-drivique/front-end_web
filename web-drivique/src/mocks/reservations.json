@@ -1,8 +1,0 @@
-[
-  { "id": 1, "vehiculoId": 1, "fechaInicio": "2026-07-20", "fechaFin": "2026-07-22" },
-  { "id": 2, "vehiculoId": 1, "fechaInicio": "2026-07-28", "fechaFin": "2026-07-29" },
-  { "id": 3, "vehiculoId": 2, "fechaInicio": "2026-07-15", "fechaFin": "2026-07-18" },
-  { "id": 4, "vehiculoId": 3, "fechaInicio": "2026-07-25", "fechaFin": "2026-07-31" },
-  { "id": 5, "vehiculoId": 5, "fechaInicio": "2026-07-12", "fechaFin": "2026-07-14" },
-  { "id": 6, "vehiculoId": 7, "fechaInicio": "2026-08-01", "fechaFin": "2026-08-05" }
-]

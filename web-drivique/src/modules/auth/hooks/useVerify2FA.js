@@ -126,7 +126,7 @@ export function useVerify2FA() {
   }
 
   return {
-    codigo, cargando, error, exito,
+    codigo, cargando, error,
     segundos, reenviando,
     inputsRef, LARGO_CODIGO,
     handleCambioDigito, handleKeyDown,

@@ -29,7 +29,7 @@ export default function NuevaContrasenaPage() {
     cargando, error, tokenInvalido, exito,
     setContrasena, setConfirmar,
     setMostrarPass, setMostrarConf,
-    fortaleza, esValida,
+    esValida,
     handleSubmit,
   } = useNewPassword()
   
