@@ -118,13 +118,13 @@ export function useVerifyEmail() {
 
       const token = verificacionCorreo?.datosAcceso?.token || 'mock_token_' + Date.now()
       const usuario = {
-        correo: verificacionCorreo?.correo || 'cliente@Drivique.com',
-        nombre: verificacionCorreo?.datosAcceso?.nombre || 'Juan',
-        apellido: verificacionCorreo?.datosAcceso?.apellido || 'Pérez',
+        correo: verificacionCorreo?.correo || '',
+        nombre: verificacionCorreo?.datosAcceso?.nombre || '',
+        apellido: verificacionCorreo?.datosAcceso?.apellido || '',
         rol: verificacionCorreo?.datosAcceso?.rol || 'usuario',
-        telefono: verificacionCorreo?.datosAcceso?.telefono || '+573109876543',
-        cedula: verificacionCorreo?.datosAcceso?.cedula || '9876543210',
-        fechaNacimiento: verificacionCorreo?.datosAcceso?.fechaNacimiento || '1995-03-20',
+        telefono: verificacionCorreo?.datosAcceso?.telefono || '',
+        cedula: verificacionCorreo?.datosAcceso?.cedula || '',
+        fechaNacimiento: verificacionCorreo?.datosAcceso?.fechaNacimiento || '',
         emailVerificado: true,
       }
 

@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useState, useEffect, useRef, useLayoutEffect } from 'react'
-import { FaArrowLeft, FaSlidersH, FaCalendarAlt } from 'react-icons/fa'
+import { FaSlidersH, FaCalendarAlt } from 'react-icons/fa'
 import { useTranslation } from 'react-i18next'
 import { useLanding } from '../../landing/LandingContext'
 import { useAuthStore } from '../../../store/authStore'
@@ -123,10 +123,10 @@ export default function CatalogoPage() {
     } else if (location.state?.textoBusqueda) {
       setTextoLibre(location.state.textoBusqueda)
     }
-  }, [location.state])
+  }, [location.state, setFiltro, setTextoLibre])
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+     
     setModalFiltrosCerrado(false)
   }, [filtros])
 
