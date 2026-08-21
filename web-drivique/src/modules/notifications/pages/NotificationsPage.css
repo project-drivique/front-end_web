@@ -1,0 +1,527 @@
+/* ── Contenedor Principal de Notificaciones ── */
+.notificaciones-pagina {
+  min-height: 100vh;
+  background-color: var(--bg-seccion1, #eaeff8);
+  color: var(--texto-primary, #0f172a);
+  font-family: system-ui, -apple-system, sans-serif;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+.notificaciones-main {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 32px 20px 80px;
+}
+
+/* Encabezado */
+.notificaciones-header-title {
+  margin-bottom: 24px;
+}
+
+.notificaciones-header-title h1 {
+  font-size: 28px;
+  font-weight: 900;
+  color: var(--texto-primary, #0f172a);
+  letter-spacing: -0.02em;
+  margin: 0 0 6px 0;
+}
+
+.notificaciones-header-title p {
+  font-size: 14px;
+  color: var(--texto-second, #64748b);
+  margin: 0;
+}
+
+/* ── Pestañas (Tabs Bar) ── */
+.notificaciones-tabs-container {
+  display: flex;
+  align-items: center;
+  background: var(--bg-tarjeta, #ffffff);
+  border-radius: 16px;
+  padding: 6px;
+  margin-bottom: 28px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  border: 1px solid var(--borde, #e2e8f0);
+}
+
+.notificacion-tab-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 18px;
+  border: none;
+  background: transparent;
+  color: var(--texto-second, #64748b);
+  font-size: 14px;
+  font-weight: 700;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.notificacion-tab-btn.activa {
+  background: #2563eb;
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25);
+}
+
+.notificacion-tab-badge {
+  background: #ef4444;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 20px;
+  line-height: 1;
+}
+
+.notificacion-tab-btn.activa .notificacion-tab-badge {
+  background: #ffffff;
+  color: #2563eb;
+}
+
+/* ── Encabezado Secundario (Marcar leídas) ── */
+.notif-generales-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.btn-marcar-todas-leidas {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  color: #2563eb;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 8px;
+  transition: background 0.15s ease;
+}
+
+.btn-marcar-todas-leidas:hover {
+  background: rgba(37, 99, 235, 0.08);
+}
+
+/* ── Tarjetas de Notificaciones Generales ── */
+.notificaciones-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.notificacion-card-item {
+  background: var(--bg-tarjeta, #ffffff);
+  border: 1px solid var(--borde, #e2e8f0);
+  border-radius: 18px;
+  padding: 18px 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  position: relative;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  cursor: pointer;
+}
+
+.notificacion-card-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.08);
+}
+
+.notificacion-card-item.no-leida {
+  border-left: 5px solid #2563eb;
+}
+
+.notif-icono-wrap {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--bg-item, #f1f5f9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.notif-contenido {
+  flex: 1;
+  min-width: 0;
+}
+
+.notif-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.notif-titulo {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--texto-primary, #0f172a);
+  margin: 0;
+}
+
+.notif-fecha-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--texto-second, #94a3b8);
+  margin-bottom: 8px;
+}
+
+.notif-mensaje {
+  font-size: 13px;
+  color: var(--texto-second, #475569);
+  line-height: 1.5;
+  margin: 0 0 10px 0;
+}
+
+.notif-punto-no-leida {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #2563eb;
+  box-shadow: 0 0 8px rgba(37, 99, 235, 0.5);
+  flex-shrink: 0;
+}
+
+/* Chip de Expiración */
+.notif-chip-vencimiento {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: 20px;
+  line-height: 1.3;
+}
+
+.notif-chip-vencimiento.urgente {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.notif-chip-vencimiento.normal {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+/* ── PESTAÑA PROMOCIONES ── */
+.promociones-seccion-titulo {
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--texto-primary, #0f172a);
+  margin: 0 0 16px 0;
+  letter-spacing: -0.01em;
+}
+
+.cupones-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-bottom: 40px;
+}
+
+/* ── Ticket Físico con 4 Muescas ── */
+.cupon-ticket-card {
+  background: var(--bg-tarjeta, #ffffff);
+  border-radius: 20px;
+  border: 1px solid var(--borde, #e2e8f0);
+  box-shadow: 0 8px 30px rgba(37, 99, 235, 0.06);
+  display: flex;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cupon-ticket-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 36px rgba(37, 99, 235, 0.12);
+}
+
+/* Muescas externas en bordes izquierdo y derecho del ticket */
+.cupon-notch-left,
+.cupon-notch-right {
+  position: absolute;
+  top: 50%;
+  width: 20px;
+  height: 20px;
+  background-color: var(--bg-seccion1, #eaeff8);
+  border-radius: 50%;
+  transform: translateY(-50%);
+  z-index: 3;
+}
+
+.cupon-notch-left {
+  left: -10px;
+}
+
+.cupon-notch-right {
+  right: -10px;
+}
+
+/* Muescas internas en la divisoria punteada */
+.cupon-notch-top,
+.cupon-notch-bottom {
+  position: absolute;
+  left: 62%;
+  width: 18px;
+  height: 18px;
+  background-color: var(--bg-seccion1, #eaeff8);
+  border-radius: 50%;
+  z-index: 3;
+}
+
+.cupon-notch-top {
+  top: -9px;
+}
+
+.cupon-notch-bottom {
+  bottom: -9px;
+}
+
+/* Parte Izquierda del Ticket */
+.cupon-ticket-left {
+  flex: 1.6;
+  padding: 20px 22px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-right: 2px dashed var(--borde, #cbd5e1);
+  position: relative;
+}
+
+.cupon-top-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.cupon-logro-titulo {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--texto-primary, #0f172a);
+  margin: 0;
+}
+
+/* Thumbnails de autos reales del catálogo */
+.cupon-vehiculos-thumbs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.cupon-thumb-img {
+  width: 58px;
+  height: 40px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 1px solid var(--borde, #e2e8f0);
+  background: #f8fafc;
+}
+
+.cupon-footer-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-size: 12px;
+}
+
+.badge-por-agotarse {
+  background: #fee2e2;
+  color: #dc2626;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 3px 9px;
+  border-radius: 12px;
+}
+
+.cupon-fecha-otorgado {
+  color: var(--texto-second, #94a3b8);
+}
+
+.cupon-condiciones-link {
+  color: #2563eb;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 12px;
+}
+
+.cupon-condiciones-link:hover {
+  text-decoration: underline;
+}
+
+/* Parte Derecha del Ticket */
+.cupon-ticket-right {
+  flex: 1;
+  background: var(--bg-item, #f8fafc);
+  padding: 20px 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.cupon-descuento-monto {
+  font-size: 20px;
+  font-weight: 900;
+  color: #2563eb;
+  margin-bottom: 4px;
+  line-height: 1.2;
+}
+
+.cupon-condicion-reserva {
+  font-size: 11px;
+  color: var(--texto-second, #64748b);
+  margin-bottom: 14px;
+}
+
+.btn-aplicar-cupon {
+  width: 100%;
+  padding: 10px 16px;
+  border-radius: 12px;
+  background: #2563eb;
+  color: #ffffff;
+  border: none;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+  transition: all 0.2s ease;
+}
+
+.btn-aplicar-cupon:hover {
+  background: #1d4ed8;
+}
+
+.btn-aplicar-cupon.aplicado {
+  background: #10b981;
+  cursor: default;
+  box-shadow: none;
+}
+
+/* ── Promociones de Vehículos Específicos ── */
+.promos-vehiculos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 18px;
+}
+
+.promo-vehiculo-card {
+  background: var(--bg-tarjeta, #ffffff);
+  border-radius: 18px;
+  border: 1px solid var(--borde, #e2e8f0);
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.promo-vehiculo-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 28px rgba(37, 99, 235, 0.1);
+}
+
+.promo-vehiculo-img-wrap {
+  height: 140px;
+  background: #f8fafc;
+  position: relative;
+}
+
+.promo-vehiculo-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 12px;
+}
+
+.promo-vehiculo-content {
+  padding: 16px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.promo-vehiculo-titulo {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--texto-primary, #0f172a);
+  margin: 0 0 10px 0;
+  line-height: 1.4;
+}
+
+.promo-vehiculo-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--texto-second, #94a3b8);
+}
+
+/* Estado Vacío */
+.notificaciones-vacio {
+  text-align: center;
+  padding: 60px 20px;
+  background: var(--bg-tarjeta, #ffffff);
+  border-radius: 20px;
+  border: 1px solid var(--borde, #e2e8f0);
+  margin-top: 20px;
+}
+
+.notificaciones-vacio-icon {
+  font-size: 48px;
+  color: #94a3b8;
+  margin-bottom: 16px;
+}
+
+.notificaciones-vacio h3 {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--texto-primary, #0f172a);
+  margin: 0 0 8px 0;
+}
+
+.notificaciones-vacio p {
+  font-size: 13px;
+  color: var(--texto-second, #64748b);
+  margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .cupon-ticket-card {
+    flex-direction: column;
+  }
+  .cupon-ticket-left {
+    border-right: none;
+    border-bottom: 2px dashed var(--borde, #cbd5e1);
+  }
+  .cupon-notch-top,
+  .cupon-notch-bottom {
+    display: none;
+  }
+}

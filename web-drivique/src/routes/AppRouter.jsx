@@ -22,6 +22,7 @@ import PaymentResponsePage from '../modules/payments/pages/PaymentResponsePage'
 import PlaceholderPage from '../components/PlaceholderPage'
 import ReservationsPage from '../modules/reservations/pages/ReservationsPage'
 import FavoritesPage from '../modules/catalog/pages/FavoritesPage'
+import NotificationsPage from '../modules/notifications/pages/NotificationsPage'
 
 function RutaPrivada({ children }) {
   const token    = useAuthStore((s) => s.token)
@@ -106,7 +107,7 @@ export default function AppRouter() {
         <Route path="/reservas/:id" element={<RutaPrivada><ReservationFlowPage /></RutaPrivada>} />
         <Route path="/reservas" element={<RutaPrivada><ReservationsPage /></RutaPrivada>} />
         <Route path="/favoritos" element={<RutaPrivada><FavoritesPage /></RutaPrivada>} />
-        <Route path="/notificaciones" element={<RutaPrivada><PlaceholderPage /></RutaPrivada>} />
+        <Route path="/notificaciones" element={<RutaPrivada><NotificationsPage /></RutaPrivada>} />
         <Route path="/soporte" element={<RutaPrivada><PlaceholderPage /></RutaPrivada>} />
         <Route path="/respuesta" element={<PaymentResponsePage />} />
 
