@@ -1246,6 +1246,12 @@
     "close": "Close",
     "quickQuestionsTitle": "Quick Questions:",
     "inputPlaceholder": "Type your question here...",
-    "send": "Send"
+    "send": "Send",
+    "actions": {
+      "alquilar": "🚗 How to rent a vehicle?",
+      "requisitos": "📋 What are the requirements?",
+      "pagos": "💰 Payment methods and deposits",
+      "agente": "👤 Talk to an agent (WhatsApp/Phone)"
+    }
   }
 }
