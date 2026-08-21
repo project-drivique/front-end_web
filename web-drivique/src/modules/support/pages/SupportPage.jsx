@@ -26,19 +26,12 @@ import {
 } from 'react-icons/fa'
 import { useLanding } from '@/modules/landing/LandingContext'
 import { useAuthStore } from '@/store/authStore'
+import { useHistorialReservas } from '@/modules/reservations/hooks/useReservations'
 import CatalogTopHeader from '@/modules/catalog/components/CatalogTopHeader'
 import { useSupportStore } from '../store/useSupportStore'
 import { CANALES_ATENCION, TIPOS_INCIDENCIA, FAQS_INITIAL } from '../data/support.dummy'
 import ReportDetailModal from '../components/ReportDetailModal'
 import './SupportPage.css'
-
-// Lista de vehículos con reservas activas/válidas para el selector
-const VEHICULOS_RESERVAS_ACTIVAS = [
-  { id: 'res-1', nombre: 'Toyota Prado VX', placa: 'KLS-849' },
-  { id: 'res-2', nombre: 'Chevrolet Spark GT', placa: 'HGF-123' },
-  { id: 'res-3', nombre: 'Ford Explorer 2024', placa: 'ERT-456' },
-  { id: 'res-4', nombre: 'Toyota Corolla 2024', placa: 'ABC-123' },
-]
 
 export default function SupportPage() {
   const { t } = useTranslation()
@@ -47,6 +40,30 @@ export default function SupportPage() {
   const { usuario } = useAuthStore()
   const { tema } = useLanding()
   const esModoOscuro = tema === 'oscuro'
+
+  // Carga historial de reservas para validar estado (Confirmada, En curso, Finalizada)
+  const { reservas } = useHistorialReservas()
+
+  // Filtrado de vehículos: solo reservas confirmadas / en curso / finalizadas (excluye pendientes y canceladas)
+  const vehiculosElegibles = useMemo(() => {
+    const validas = reservas.filter(
+      (r) => r.estado === 'confirmada' || r.estado === 'en_curso' || r.estado === 'finalizada'
+    )
+    if (validas.length > 0) {
+      return validas.map((r) => ({
+        id: String(r.id),
+        nombre: r.vehiculo?.nombre || `Reserva #${r.id}`,
+        placa: r.vehiculo?.placa || 'KLS-849',
+        estado: r.estado,
+      }))
+    }
+    // Mock inicial cuando no hay reservas locales
+    return [
+      { id: 'res-1', nombre: 'Toyota Prado VX', placa: 'KLS-849', estado: 'confirmada' },
+      { id: 'res-2', nombre: 'Chevrolet Spark GT', placa: 'HGF-123', estado: 'confirmada' },
+      { id: 'res-3', nombre: 'Ford Explorer 2024', placa: 'ERT-456', estado: 'en_curso' },
+    ]
+  }, [reservas])
 
   // Leer parámetros de URL o location state si viene de "Hacer reporte" en Mis Reservas
   const searchParams = new URLSearchParams(location.search)
@@ -65,8 +82,8 @@ export default function SupportPage() {
 
   // Estado del Formulario
   const [formData, setFormData] = useState({
-    vehiculo: vehiculoParam || VEHICULOS_RESERVAS_ACTIVAS[0].nombre,
-    placa: placaParam || VEHICULOS_RESERVAS_ACTIVAS[0].placa,
+    vehiculo: vehiculoParam || (vehiculosElegibles[0] ? vehiculosElegibles[0].nombre : ''),
+    placa: placaParam || (vehiculosElegibles[0] ? vehiculosElegibles[0].placa : ''),
     tipoIncidenciaId: 'averia_mecanica',
     descripcion: '',
     evidenciasCount: 0,
@@ -75,7 +92,7 @@ export default function SupportPage() {
     contactoEmail: usuario?.correo || usuario?.email || 'cliente@drivique.com',
   })
 
-  // Actualiza el formulario si llegan params desde Mis Reservas
+  // Actualiza el formulario si llegan params desde Mis Reservas y la reserva es válida
   useEffect(() => {
     if (vehiculoParam || placaParam) {
       setFormData((prev) => ({
@@ -90,7 +107,7 @@ export default function SupportPage() {
   // Al seleccionar un vehículo del dropdown, actualiza el vehículo y su placa correspondiente
   const handleSelectVehiculoChange = (e) => {
     const nombreVeh = e.target.value
-    const vehEncontrado = VEHICULOS_RESERVAS_ACTIVAS.find((v) => v.nombre === nombreVeh)
+    const vehEncontrado = vehiculosElegibles.find((v) => v.nombre === nombreVeh)
 
     setFormData((prev) => ({
       ...prev,
@@ -116,6 +133,11 @@ export default function SupportPage() {
 
   const handleEnviarReporte = (e) => {
     e.preventDefault()
+
+    if (!formData.vehiculo) {
+      alert(t('soporte.errorVehiculo', 'Debes seleccionar un vehículo con reserva confirmada o en curso.'))
+      return
+    }
 
     if (!formData.descripcion.trim()) {
       alert(t('soporte.errorDescripcion', 'Por favor describe el problema sucedido.'))
@@ -321,19 +343,19 @@ export default function SupportPage() {
                   {t('soporte.vehiculoLabel', 'Vehículo / Reserva asociada')}
                 </label>
                 <div className="form-grid-2col">
-                  {/* Select desplegable con vehículos en reserva válida */}
+                  {/* Select desplegable con vehículos en reserva confirmada/en curso/finalizada */}
                   <select
                     className="form-input-text"
                     value={formData.vehiculo}
                     onChange={handleSelectVehiculoChange}
                   >
-                    {VEHICULOS_RESERVAS_ACTIVAS.map((item) => (
+                    {vehiculosElegibles.map((item) => (
                       <option key={item.id} value={item.nombre}>
                         {item.nombre}
                       </option>
                     ))}
                     {formData.vehiculo &&
-                      !VEHICULOS_RESERVAS_ACTIVAS.some((v) => v.nombre === formData.vehiculo) && (
+                      !vehiculosElegibles.some((v) => v.nombre === formData.vehiculo) && (
                         <option value={formData.vehiculo}>{formData.vehiculo}</option>
                       )}
                   </select>
