@@ -11,6 +11,7 @@ import DeleteAccountModal from '../components/DeleteAccountModal'
 import CompleteProfileModal from '../components/CompleteProfileModal'
 import MenuConfiguracion from '@/components/MenuConfiguracion'
 import { FaEdit, FaUser, FaEnvelope, FaPhone, FaArrowLeft, FaSignOutAlt, FaIdCard, FaGlobe, FaCalendarAlt, FaHashtag, FaTrashAlt } from 'react-icons/fa'
+import { getNombreTipoDoc, getSiglaDoc, TIPOS_DOCUMENTO as TIPOS_DOC } from '@/utils/documentUtils'
 import paisesMock from '@/mocks/nationalities.json'
 import '@/modules/catalog/pages/CatalogPage.css'
 import '@/modules/catalog/pages/VehicleDetailsPage.css'
@@ -22,19 +23,6 @@ function iniciales(nombre = '', apellido = '', correo = '') {
   if (n || a) return (n + a).toUpperCase()
   if (correo) return (correo || '').trim()[0].toUpperCase()
   return 'U'
-}
-
-const TIPOS_DOC = [
-  { value: 'CC', sigla: 'CC', label: 'Cédula de ciudadanía (CC)' },
-  { value: 'TI', sigla: 'TI', label: 'Tarjeta de identidad (TI)' },
-  { value: 'CE', sigla: 'CE', label: 'Documento extranjero (CE)' },
-  { value: 'PAS', sigla: 'PAS', label: 'Pasaporte (PAS)' },
-]
-
-function getSiglaDoc(tipo) {
-  if (!tipo) return ''
-  const item = TIPOS_DOC.find(t => t.value === tipo || t.sigla === tipo)
-  return item?.sigla || (tipo ? tipo.substring(0, 3).toUpperCase() : '')
 }
 
 function getPrefijoPais(nacionalidad) {
@@ -71,7 +59,7 @@ export default function PerfilPage() {
   const esModoOscuro = tema === 'oscuro'
 
   const c = {
-    pageBg: esModoOscuro ? '#0f172a' : '#f8fafc',
+    pageBg: esModoOscuro ? '#0f172a' : '#eaeff8',
     cardBg: esModoOscuro ? '#111827' : '#ffffff',
     cardBorder: esModoOscuro ? '#334155' : '#e2e8f0',
     subCardBg: esModoOscuro ? '#1e293b' : '#f8fafc',
@@ -465,7 +453,7 @@ export default function PerfilPage() {
                 </label>
                 <div style={readonlyStyle}>
                   <span style={{ color: formData.tipoDocumento ? c.readonlyText : '#94a3b8', fontStyle: formData.tipoDocumento ? 'normal' : 'italic' }}>
-                    {formData.tipoDocumento ? t('perfil.docTypes.' + formData.tipoDocumento, formData.tipoDocumento) : t('perfil.incomplete', 'Incompleto')}
+                    {formData.tipoDocumento ? getNombreTipoDoc(formData.tipoDocumento) : t('perfil.incomplete', 'Incompleto')}
                   </span>
                 </div>
               </div>
@@ -478,7 +466,7 @@ export default function PerfilPage() {
                 </label>
                 <div style={readonlyStyle}>
                   <span style={{ color: formData.cedula ? c.readonlyText : '#94a3b8', fontStyle: formData.cedula ? 'normal' : 'italic' }}>
-                    {formData.cedula ? `${getSiglaDoc(formData.tipoDocumento)} - ${formData.cedula}` : t('perfil.incomplete', 'Incompleto')}
+                    {formData.cedula ? `${getNombreTipoDoc(formData.tipoDocumento)}: ${formData.cedula}` : t('perfil.incomplete', 'Incompleto')}
                   </span>
                 </div>
               </div>

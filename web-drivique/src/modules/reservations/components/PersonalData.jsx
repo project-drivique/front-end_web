@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLanding } from '../../landing/LandingContext';
 import { formatCurrency } from '@/utils/currencyUtils';
+import { getNombreTipoDoc } from '@/utils/documentUtils';
 import { RECARGOS_LOGISTICOS } from '../../catalog/constants';
 import { FaUser, FaIdCard, FaShieldAlt } from 'react-icons/fa';
 
@@ -292,8 +293,9 @@ export default function DatosPersonales({ vehiculo, reserva, seguroIdx, servicio
             <label style={lbl}>{t('vehiculo.docType')} *</label>
             <select value={datosForm.tipoDoc} onChange={e => onCambio('tipoDoc', e.target.value)} style={{ ...inp(false), cursor: 'pointer' }}>
               <option value="CC">Cédula de Ciudadanía (CC)</option>
+              <option value="TI">Tarjeta de Identidad (TI)</option>
               <option value="CE">Cédula de Extranjería (CE)</option>
-              <option value="PA">Pasaporte (PA)</option>
+              <option value="PAS">Pasaporte (PAS)</option>
             </select>
           </div>
           <div>
@@ -335,8 +337,8 @@ export default function DatosPersonales({ vehiculo, reserva, seguroIdx, servicio
 
         <div className="doc-uploader-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: 24, marginBottom: 12 }}>
           <DocumentUploader
-            label={t('vehiculo.idDocCard', 'Cédula de Ciudadanía')}
-            helpText={t('vehiculo.idDocHelpText', 'Sube tu documento de identidad en un solo archivo PDF (ambos lados incluidos, máx 5MB)')}
+            label={getNombreTipoDoc(datosForm.tipoDoc) || 'Documento de Identidad'}
+            helpText={`Sube tu ${(getNombreTipoDoc(datosForm.tipoDoc) || 'documento de identidad').toLowerCase()} en un solo archivo PDF (ambos lados incluidos, máx 5MB)`}
             error={errores.cedulaPdf || cedulaError}
             file={datosForm.cedulaPdf}
             loading={cedulaCargando}

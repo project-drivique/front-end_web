@@ -1,0 +1,456 @@
+/* src/modules/catalog/pages/FavoritesPage.css */
+
+.favoritos-pagina {
+  min-height: 100vh;
+  background-color: #eaeff8;
+  color: var(--texto-primary, #0f172a);
+}
+
+html.dark .favoritos-pagina {
+  background-color: #0b1120;
+}
+
+.favoritos-main {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 32px 24px 80px;
+}
+
+/* Header superior con botón volver */
+.favoritos-header-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.btn-volver-catalogo {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #1e3a8a;
+  padding: 10px 18px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  width: fit-content;
+  box-shadow: 0 3px 12px rgba(30, 58, 138, 0.05);
+  transition: all 0.2s ease;
+}
+
+.btn-volver-catalogo:hover {
+  background: #eff6ff;
+  border-color: #2563eb;
+  color: #2563eb;
+  transform: translateX(-3px);
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.12);
+}
+
+html.dark .btn-volver-catalogo {
+  background: #1e293b;
+  border-color: #334155;
+  color: #93c5fd;
+}
+
+html.dark .btn-volver-catalogo:hover {
+  background: #27364b;
+  border-color: #60a5fa;
+  color: #bfdbfe;
+}
+
+.favoritos-header-title h1 {
+  font-size: 32px;
+  font-weight: 900;
+  color: #0f172a;
+  margin: 0 0 6px;
+  letter-spacing: -0.03em;
+  font-family: 'Outfit', 'Inter', system-ui, sans-serif;
+}
+
+html.dark .favoritos-header-title h1 {
+  color: #f8fafc;
+}
+
+.favoritos-header-title p {
+  font-size: 14px;
+  color: #64748b;
+  margin: 0;
+  font-weight: 500;
+}
+
+html.dark .favoritos-header-title p {
+  color: #94a3b8;
+}
+
+/* Filtros */
+.favoritos-filtros-bar {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.favoritos-search-input {
+  flex: 1;
+  min-width: 240px;
+  padding: 14px 18px;
+  border-radius: 14px;
+  border: 1.5px solid #cbd5e1;
+  background: #ffffff;
+  color: #0f172a;
+  font-size: 14px;
+  font-weight: 500;
+  outline: none;
+  box-shadow: 0 4px 14px rgba(30, 58, 138, 0.04);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.favoritos-search-input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
+}
+
+html.dark .favoritos-search-input {
+  background: #1e293b;
+  border-color: #334155;
+  color: #f8fafc;
+}
+
+.favoritos-select-cat {
+  padding: 14px 18px;
+  border-radius: 14px;
+  border: 1.5px solid #cbd5e1;
+  background: #ffffff;
+  color: #0f172a;
+  font-size: 14px;
+  font-weight: 700;
+  outline: none;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(30, 58, 138, 0.04);
+}
+
+html.dark .favoritos-select-cat {
+  background: #1e293b;
+  border-color: #334155;
+  color: #f8fafc;
+}
+
+/* Contenedor de la lista de tarjetas agrandadas */
+.favoritos-grid-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Tarjeta agrandada */
+.favorito-card-agrandada {
+  display: flex;
+  gap: 24px;
+  background: #ffffff;
+  border: 1px solid #dbe3f0;
+  border-radius: 22px;
+  padding: 24px;
+  box-shadow: 0 8px 30px rgba(30, 58, 138, 0.06);
+  cursor: pointer;
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+  position: relative;
+}
+
+.favorito-card-agrandada:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 40px rgba(30, 58, 138, 0.12);
+  border-color: #bfdbfe;
+}
+
+html.dark .favorito-card-agrandada {
+  background: #1e293b;
+  border-color: #334155;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+}
+
+html.dark .favorito-card-agrandada:hover {
+  border-color: #60a5fa;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+}
+
+/* Contenedor de Imagen de la tarjeta */
+.favorito-card-imagen-wrap {
+  width: 220px;
+  height: 150px;
+  flex-shrink: 0;
+  border-radius: 18px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  overflow: hidden;
+  position: relative;
+}
+
+html.dark .favorito-card-imagen-wrap {
+  background: #0f172a;
+  border-color: #334155;
+}
+
+.favorito-card-imagen-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: transform 0.35s ease;
+}
+
+.favorito-card-agrandada:hover .favorito-card-imagen-wrap img {
+  transform: scale(1.06);
+}
+
+/* Info del vehículo */
+.favorito-card-contenido {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.favorito-card-top-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.favorito-badge-categoria {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: #eff6ff;
+  color: #2563eb;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 6px;
+}
+
+html.dark .favorito-badge-categoria {
+  background: rgba(37, 99, 235, 0.2);
+  color: #93c5fd;
+}
+
+.favorito-card-titulo {
+  font-size: 22px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 6px;
+  letter-spacing: -0.02em;
+}
+
+html.dark .favorito-card-titulo {
+  color: #f8fafc;
+}
+
+.favorito-card-precio {
+  font-size: 22px;
+  font-weight: 900;
+  color: #1e3a8a;
+  white-space: nowrap;
+}
+
+html.dark .favorito-card-precio {
+  color: #60a5fa;
+}
+
+.favorito-card-precio span {
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748b;
+}
+
+html.dark .favorito-card-precio span {
+  color: #94a3b8;
+}
+
+/* Especificaciones badges */
+.favorito-specs-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 12px 0 18px;
+}
+
+.favorito-spec-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 10px;
+  background: #f1f5f9;
+  color: #475569;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+html.dark .favorito-spec-item {
+  background: #0f172a;
+  color: #cbd5e1;
+}
+
+/* Acciones de la tarjeta */
+.favorito-card-acciones {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 14px;
+  border-top: 1px solid #f1f5f9;
+}
+
+html.dark .favorito-card-acciones {
+  border-top-color: #334155;
+}
+
+.btn-eliminar-favorito-card {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #fef2f2;
+  border: 1px solid #fca5a5;
+  color: #ef4444;
+  padding: 9px 16px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-eliminar-favorito-card:hover {
+  background: #fee2e2;
+  border-color: #dc2626;
+  color: #dc2626;
+  transform: translateY(-1px);
+}
+
+html.dark .btn-eliminar-favorito-card {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: #991b1b;
+  color: #fca5a5;
+}
+
+html.dark .btn-eliminar-favorito-card:hover {
+  background: rgba(239, 68, 68, 0.25);
+  color: #f87171;
+}
+
+.btn-ver-detalles-card {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+  color: #ffffff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.22);
+  transition: all 0.2s ease;
+}
+
+.btn-ver-detalles-card:hover {
+  background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.32);
+}
+
+/* Estado Vacío */
+.favoritos-vacio-contenedor {
+  text-align: center;
+  padding: 64px 32px;
+  background: #ffffff;
+  border: 1px solid #dbe3f0;
+  border-radius: 24px;
+  box-shadow: 0 10px 30px rgba(30, 58, 138, 0.05);
+}
+
+html.dark .favoritos-vacio-contenedor {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+.favoritos-vacio-icon-wrap {
+  width: 72px;
+  height: 72px;
+  border-radius: 22px;
+  background: #eff6ff;
+  color: #2563eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  font-size: 32px;
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.15);
+}
+
+html.dark .favoritos-vacio-icon-wrap {
+  background: rgba(37, 99, 235, 0.2);
+  color: #93c5fd;
+}
+
+.favoritos-vacio-contenedor h2 {
+  font-size: 22px;
+  font-weight: 900;
+  margin-bottom: 10px;
+  color: #0f172a;
+}
+
+html.dark .favoritos-vacio-contenedor h2 {
+  color: #f8fafc;
+}
+
+.favoritos-vacio-contenedor p {
+  font-size: 14px;
+  color: #64748b;
+  max-width: 460px;
+  margin: 0 auto 28px;
+  line-height: 1.6;
+}
+
+html.dark .favoritos-vacio-contenedor p {
+  color: #94a3b8;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .favorito-card-agrandada {
+    flex-direction: column;
+    gap: 16px;
+    padding: 18px;
+  }
+  .favorito-card-imagen-wrap {
+    width: 100%;
+    height: 160px;
+  }
+  .favorito-card-top-header {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .favorito-card-precio {
+    align-self: flex-start;
+  }
+  .favorito-card-acciones {
+    flex-direction: column-reverse;
+    gap: 10px;
+  }
+  .btn-eliminar-favorito-card,
+  .btn-ver-detalles-card {
+    width: 100%;
+    justify-content: center;
+  }
+}
