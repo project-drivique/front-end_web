@@ -1192,5 +1192,49 @@
       "politicaActualizacionTitle": "Mise à jour des politiques",
       "politicaActualizacionMsg": "Nous avons mis à jour nos conditions de couverture dommages."
     }
+  },
+  "soporte": {
+    "title": "Support",
+    "subtitle": "Assistance routière et service personnalisé 24/7",
+    "tabCanales": "Canaux de contact",
+    "tabReportar": "Signaler un incident",
+    "tabInformes": "Rapports actifs",
+    "centroTitle": "Centre d'Assistance Utilisateur",
+    "centroSub": "Assistance personnalisée pour vos locations de véhicules chez Drivique.",
+    "btnReportarHero": "Signaler un Incident",
+    "canalesHeader": "Canaux d'assistance",
+    "faqsHeader": "Foire aux questions",
+    "formBanner": "Remplissez le formulaire pour signaler tout problème technique ou mécanique lors de votre réservation.",
+    "formTitle": "Formulaire d'Incident",
+    "vehiculoLabel": "Véhicule / Réservation associée",
+    "tipoIncidenciaLabel": "Type d'incident",
+    "tiempoEstLabel": "Temps estimé d'assistance technique :",
+    "descripcionLabel": "Description du problème",
+    "descripcionPlaceholder": "Décrivez ce qui s'est passé, les bruits, les voyants ou votre emplacement...",
+    "evidenciasLabel": "Preuves (Images / Vidéos optionnelles)",
+    "contactoHeader": "Coordonnées de suivi",
+    "contactoSub": "Préremplies automatiquement à partir de votre profil (modifiable si besoin).",
+    "nombreLabel": "Nom complet",
+    "telefonoLabel": "Téléphone",
+    "emailLabel": "Adresse e-mail",
+    "btnEnviarReporte": "Envoyer le Rapport d'Incident",
+    "sinReportesTitle": "Aucun rapport actif",
+    "sinReportesMsg": "Si vous rencontrez un problème, vous pouvez créer un rapport dans l'onglet précédent.",
+    "canales": {
+      "whatsappTitle": "Chat WhatsApp Direct",
+      "whatsappSub": "Assistance 24/7 - +57 314 478 9702",
+      "telefonoTitle": "Ligne Téléphonique",
+      "telefonoSub": "+57 322 3163531 - Assistance routière",
+      "correoTitle": "E-mail de Support",
+      "correoSub": "soporte@drivique.com - Réponse en moins de 2 heures"
+    },
+    "faqs": {
+      "q1": "Que faire en cas de panne sur la route ?",
+      "a1": "Garez-vous en sécurité, allumez les feux de détresse et utilisez l'onglet 'Signaler un incident' ou appelez notre ligne direct.",
+      "q2": "Comment fonctionne la dépanneuse ?",
+      "a2": "Nous disposons d'un réseau national. Un dépanneur sera envoyé sans frais supplémentaires si vous êtes couvert.",
+      "q3": "Puis-je changer de véhicule si la réparation est trop longue ?",
+      "a3": "Oui, si le délai de réparation est trop long, un véhicule de remplacement équivalent sera fourni."
+    }
   }
 }
