@@ -1213,5 +1213,15 @@
       "q3": "¿Puedo cambiar de vehículo si el reporte toma mucho tiempo?",
       "a3": "Sí, si la falla técnica supera un tiempo de solución razonable, nuestro equipo de soporte coordinará un vehículo de reemplazo de categoría equivalente en la sucursal más cercana."
     }
+  },
+  "chatbot": {
+    "toggleTitle": "Asistente de Soporte Drivique",
+    "welcomeMsg": "👋 ¡Hola! Soy el asistente virtual interactivo de Drivique 24/7.\n¿En qué puedo ayudarte hoy?",
+    "onlineStatus": "En línea | Drivique Bot 24/7",
+    "minimize": "Minimizar",
+    "close": "Cerrar",
+    "quickQuestionsTitle": "Preguntas Rápidas:",
+    "inputPlaceholder": "Escribe tu pregunta aquí...",
+    "send": "Enviar"
   }
 }

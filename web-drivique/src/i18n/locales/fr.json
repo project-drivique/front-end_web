@@ -1236,5 +1236,15 @@
       "q3": "Puis-je changer de véhicule si la réparation est trop longue ?",
       "a3": "Oui, si le délai de réparation est trop long, un véhicule de remplacement équivalent sera fourni."
     }
+  },
+  "chatbot": {
+    "toggleTitle": "Assistant de Support Drivique",
+    "welcomeMsg": "👋 Bonjour ! Je suis l'assistant virtuel interactif Drivique 24/7.\nComment puis-je vous aider aujourd'hui ?",
+    "onlineStatus": "En ligne | Bot Drivique 24/7",
+    "minimize": "Réduire",
+    "close": "Fermer",
+    "quickQuestionsTitle": "Questions Rapides :",
+    "inputPlaceholder": "Écrivez votre question ici...",
+    "send": "Envoyer"
   }
 }

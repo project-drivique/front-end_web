@@ -1235,5 +1235,15 @@
       "q3": "Posso trocar de veículo se o reparo demorar?",
       "a3": "Sim, se o reparo demorar além do razoável, disponibilizamos um veículo de substituição equivalente."
     }
+  },
+  "chatbot": {
+    "toggleTitle": "Assistente de Suporte Drivique",
+    "welcomeMsg": "👋 Olá! Sou o assistente virtual interativo da Drivique 24/7.\nComo posso ajudar você hoje?",
+    "onlineStatus": "Online | Drivique Bot 24/7",
+    "minimize": "Minimizar",
+    "close": "Fechar",
+    "quickQuestionsTitle": "Perguntas Rápidas:",
+    "inputPlaceholder": "Digite sua pergunta aqui...",
+    "send": "Enviar"
   }
 }
