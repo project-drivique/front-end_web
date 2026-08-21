@@ -10,7 +10,7 @@ import ChangePassword from '../components/ChangePassword'
 import DeleteAccountModal from '../components/DeleteAccountModal'
 import CompleteProfileModal from '../components/CompleteProfileModal'
 import MenuConfiguracion from '@/components/MenuConfiguracion'
-import { FaEdit, FaCheck, FaTimes, FaUser, FaEnvelope, FaPhone, FaArrowLeft, FaSignOutAlt, FaExclamationTriangle, FaIdCard, FaGlobe, FaCalendarAlt, FaHashtag, FaTrashAlt } from 'react-icons/fa'
+import { FaEdit, FaUser, FaEnvelope, FaPhone, FaArrowLeft, FaSignOutAlt, FaIdCard, FaGlobe, FaCalendarAlt, FaHashtag, FaTrashAlt } from 'react-icons/fa'
 import paisesMock from '@/mocks/nationalities.json'
 import '@/modules/catalog/pages/CatalogPage.css'
 import '@/modules/catalog/pages/VehicleDetailsPage.css'
@@ -61,8 +61,9 @@ export default function PerfilPage() {
       cancelButtonColor: '#64748b',
     }).then((result) => {
       if (result.isConfirmed) {
+        localStorage.removeItem('last_path')
         logout()
-        window.location.replace('/')
+        navigate('/', { replace: true })
       }
     })
   }
@@ -147,41 +148,6 @@ export default function PerfilPage() {
   }, [error, t])
 
   if (!usuario) return null
-
-  const inputStyle = (hasError) => ({
-    width: '100%',
-    height: '42px',
-    padding: '0 14px',
-    borderRadius: '10px',
-    border: `1.5px solid ${hasError ? c.inputErrorBorder : c.inputBorder}`,
-    background: hasError ? c.inputErrorBg : c.inputBg,
-    fontSize: '13.5px',
-    color: c.inputText,
-    outline: 'none',
-    boxSizing: 'border-box',
-    transition: 'all 150ms ease',
-  })
-
-  const selectStyle = (hasError) => ({
-    width: '100%',
-    height: '42px',
-    padding: '0 36px 0 14px',
-    borderRadius: '10px',
-    border: `1.5px solid ${hasError ? c.inputErrorBorder : c.inputBorder}`,
-    background: hasError ? c.inputErrorBg : c.inputBg,
-    fontSize: '13.5px',
-    color: c.inputText,
-    outline: 'none',
-    boxSizing: 'border-box',
-    cursor: 'pointer',
-    transition: 'all 150ms ease',
-    appearance: 'none',
-    WebkitAppearance: 'none',
-    MozAppearance: 'none',
-    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`,
-    backgroundRepeat: 'no-repeat',
-    backgroundPosition: 'right 14px center',
-  })
 
   const readonlyStyle = {
     width: '100%',

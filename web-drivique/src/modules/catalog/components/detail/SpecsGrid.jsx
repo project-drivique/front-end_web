@@ -1,9 +1,6 @@
-import { useTranslation } from 'react-i18next'
-
 function SpecItem({ icon: Icono, label, value, showIcon = true, c }) {
   const textSecond = c?.textSecondary || 'var(--texto-second)'
   const textPrimary = c?.textPrimary || 'var(--texto-primary)'
-  const accent = c?.accentText || '#2563eb'
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -17,8 +14,6 @@ function SpecItem({ icon: Icono, label, value, showIcon = true, c }) {
 }
 
 export default function SpecsGrid({ items, showIcon = true, compact = false, c }) {
-  const { t } = useTranslation() // If needed inside
-
   return (
     <div 
       style={{ 

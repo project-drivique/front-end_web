@@ -99,17 +99,9 @@ export default function AlertModal({
   showCloseButton = false,
   usePortal = true,
 }) {
-  let esModoOscuro = false
-  try {
-    const landing = useLanding()
-    if (landing && landing.tema) {
-      esModoOscuro = landing.tema === 'oscuro'
-    } else {
-      esModoOscuro = document.documentElement.classList.contains('dark')
-    }
-  } catch (e) {
-    esModoOscuro = typeof document !== 'undefined' && document.documentElement.classList.contains('dark')
-  }
+  const landing = useLanding()
+  const temaGuardado = typeof sessionStorage !== 'undefined' ? sessionStorage.getItem('rm_tema') : null
+  const esModoOscuro = (landing?.tema || temaGuardado) === 'oscuro'
 
   const baseTheme = esModoOscuro ? TEMA_DARK : TEMA_LIGHT
   const t = { ...baseTheme, ...theme }

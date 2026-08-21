@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { FaEnvelope, FaCheckCircle, FaExclamationTriangle, FaArrowLeft } from 'react-icons/fa'
+import { FaEnvelope, FaCheckCircle, FaExclamationTriangle } from 'react-icons/fa'
 import { useVerifyEmail } from '../hooks/useVerifyEmail'
 import { useLanding } from '@/modules/landing/LandingContext'
 
@@ -21,7 +21,7 @@ export default function VerificarCorreoPage() {
     inputsRef, LARGO_CODIGO,
     handleCambioDigito, handleKeyDown,
     handlePaste, handleSubmit,
-    handleReenviar, handleCancelar,
+    handleReenviar,
   } = useVerifyEmail()
 
   const c = {
