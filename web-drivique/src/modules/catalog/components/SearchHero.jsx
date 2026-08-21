@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { FaMapMarkerAlt, FaCalendarAlt, FaSearch, FaTimes, FaStore, FaExclamationTriangle } from 'react-icons/fa'
+import { FaMapMarkerAlt, FaCalendarAlt, FaSearch, FaTimes, FaStore } from 'react-icons/fa'
 
 import { SUCURSALES, CIUDADES } from '../constants'
 import IncompleteSearchModal from './IncompleteSearchModal'
@@ -18,11 +18,9 @@ export default function HeroBusqueda({
   invitado = false,
   textoLibre = '',
   setTextoLibre = () => {},
-  mostrarBusquedaLibre = false,
   onAbrirBusquedaInvitado = () => {},
   sinCoincidenciasTexto = false,
   sinDisponibilidadFechas = false,
-  onLimpiar = null,
 }) {
   const { t } = useTranslation()
 
@@ -31,17 +29,17 @@ export default function HeroBusqueda({
   const [modalErrorCerrado, setModalErrorCerrado] = useState(false)
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+     
     setModalTextoCerrado(false)
   }, [textoLibre])
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+     
     setModalFechasCerrado(false)
   }, [busquedaAplicada])
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+     
     setModalErrorCerrado(false)
   }, [errorBusqueda])
 

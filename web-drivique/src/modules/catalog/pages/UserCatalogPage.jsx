@@ -6,7 +6,7 @@ import { useLanding } from '../../landing/LandingContext'
 import { COLOR_MARCA } from '../constants'
 import { useCatalogo } from '../hooks/useCatalog'
 import { useFavoritos } from '../hooks/useFavorites'
-import { FaSearch, FaTimes, FaSlidersH, FaCalendarAlt } from 'react-icons/fa'
+import { FaSlidersH, FaCalendarAlt } from 'react-icons/fa'
 import CatalogTopHeader from '../components/CatalogTopHeader'
 import SearchHero from '../components/SearchHero'
 import CatalogFilters from '../components/CatalogFilters'
@@ -90,14 +90,6 @@ export default function CatalogoUsuarioPage() {
 
   const location = useLocation()
 
-  useEffect(() => {
-    if (location.state?.sucursalFiltro) {
-      setFiltro('sucursal', location.state.sucursalFiltro)
-    } else if (location.state?.textoBusqueda) {
-      setTextoLibre(location.state.textoBusqueda)
-    }
-  }, [location.state])
-
   const {
     cargando,
     error,
@@ -125,6 +117,14 @@ export default function CatalogoUsuarioPage() {
   } = useCatalogo({ esFavorito })
 
   useEffect(() => {
+    if (location.state?.sucursalFiltro) {
+      setFiltro('sucursal', location.state.sucursalFiltro)
+    } else if (location.state?.textoBusqueda) {
+      setTextoLibre(location.state.textoBusqueda)
+    }
+  }, [location.state, setFiltro, setTextoLibre])
+
+  useEffect(() => {
     setPagina(1)
   }, [usuario?.id, setPagina])
 
@@ -133,7 +133,7 @@ export default function CatalogoUsuarioPage() {
   }, [soloFavoritos, filtros, busquedaForm, setPagina])
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+     
     setModalFiltrosCerrado(false)
   }, [filtros])
 

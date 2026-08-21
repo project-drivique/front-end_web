@@ -1,4 +1,4 @@
-import { FaTimes, FaMapMarkerAlt, FaClock, FaDirections } from 'react-icons/fa'
+import { FaTimes, FaClock, FaDirections } from 'react-icons/fa'
 import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 

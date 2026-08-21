@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { FaCalendarAlt, FaMapMarkerAlt, FaClock, FaCreditCard, FaPencilAlt, FaCheckCircle, FaEye, FaHourglassHalf } from 'react-icons/fa'
+import { FaCalendarAlt, FaMapMarkerAlt, FaClock, FaCreditCard, FaPencilAlt, FaEye, FaHourglassHalf } from 'react-icons/fa'
 import { useState } from 'react'
 import ReservationCalendar from './ReservationCalendar'
 import DomicilioModal from './DomicilioModal'

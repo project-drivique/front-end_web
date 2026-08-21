@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'; // Importa React y useMemo para memorizar cálculos y evitar recomputarlos en cada render.
+import { useMemo } from 'react'; // Importa useMemo para memorizar cálculos y evitar recomputarlos en cada render.
 import DatePicker from 'react-datepicker'; // Importa el calendario visual listo para usar.
 import 'react-datepicker/dist/react-datepicker.css'; // Carga los estilos base del DatePicker.
 import { parseISO, eachDayOfInterval } from 'date-fns'; // parseISO convierte strings a Date; eachDayOfInterval genera todos los días entre dos fechas.
