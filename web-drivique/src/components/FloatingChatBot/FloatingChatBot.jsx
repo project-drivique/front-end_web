@@ -8,11 +8,13 @@ import {
   FaRobot,
   FaChevronRight,
 } from 'react-icons/fa'
-import { BOT_QUICK_ACTIONS, procesarPreguntaBot } from '@/data/chatbotKnowledge'
+import { useLanding } from '@/modules/landing/LandingContext'
+import { getBotQuickActions, procesarPreguntaBot } from '@/data/chatbotKnowledge'
 import './FloatingChatBot.css'
 
 export default function FloatingChatBot() {
   const { t } = useTranslation()
+  const { moneda, formatCurrency } = useLanding()
 
   const [abierto, setAbierto] = useState(false)
   const [minimizado, setMinimizado] = useState(false)
@@ -34,6 +36,8 @@ export default function FloatingChatBot() {
   const [escribiendo, setEscribiendo] = useState(false)
 
   const messagesEndRef = useRef(null)
+
+  const quickActions = getBotQuickActions(t)
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -74,7 +78,7 @@ export default function FloatingChatBot() {
 
     // Simulación de respuesta en tiempo real del chatbot
     setTimeout(() => {
-      const respuestaTexto = procesarPreguntaBot(textoFinal)
+      const respuestaTexto = procesarPreguntaBot(textoFinal, t, moneda, formatCurrency)
       const horaBot = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 
       setMensajes((prev) => [
@@ -87,7 +91,7 @@ export default function FloatingChatBot() {
         },
       ])
       setEscribiendo(false)
-    }, 900)
+    }, 850)
   }
 
   const handleKeyDown = (e) => {
@@ -174,7 +178,7 @@ export default function FloatingChatBot() {
               {t('chatbot.quickQuestionsTitle', 'Preguntas Rápidas:')}
             </span>
             <div className="chatbot-chips-grid">
-              {BOT_QUICK_ACTIONS.map((action) => (
+              {quickActions.map((action) => (
                 <button
                   key={action.id}
                   className="chatbot-chip-btn"
