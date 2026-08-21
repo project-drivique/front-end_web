@@ -196,7 +196,7 @@ export default function ReservationsPage() {
     (mes === 'todos' || r.fechaInicio?.slice(5, 7) === mes) &&
     (estadoFiltro === 'todos' || r.estado === estadoFiltro)
   ), [reservas, mes, estadoFiltro])
-  const reportar = reserva => navigate(`/soporte?reserva=${encodeURIComponent(reserva.id)}&vehiculo=${encodeURIComponent(reserva.vehiculo?.nombre || '')}`, { state: { reservaId: reserva.id, vehiculo: reserva.vehiculo?.nombre, fechaInicio: reserva.fechaInicio, fechaFin: reserva.fechaFin } })
+  const reportar = reserva => navigate(`/soporte?reserva=${encodeURIComponent(reserva.id)}&vehiculo=${encodeURIComponent(reserva.vehiculo?.nombre || '')}&placa=${encodeURIComponent(reserva.vehiculo?.placa || '')}`, { state: { reservaId: reserva.id, vehiculo: reserva.vehiculo?.nombre, placa: reserva.vehiculo?.placa } })
   const c = coloresTema(tema === 'oscuro')
   return <div className="catalogo-page reservas-page"><CatalogTopHeader c={c} mostrarPerfil modoRegistrado /><main className="reservas-main">
     <div className="reservas-titlebar">
