@@ -1191,5 +1191,49 @@
       "politicaActualizacionTitle": "Atualização de políticas",
       "politicaActualizacionMsg": "Atualizamos nossos termos de proteção contra colisões."
     }
+  },
+  "soporte": {
+    "title": "Suporte",
+    "subtitle": "Assistência rodoviária e atendimento personalizado 24/7",
+    "tabCanales": "Canais de atendimento",
+    "tabReportar": "Reportar incidência",
+    "tabInformes": "Relatórios ativos",
+    "centroTitle": "Centro de Atendimento ao Usuário",
+    "centroSub": "Assistência personalizada para seus aluguéis de veículos na Drivique.",
+    "btnReportarHero": "Reportar Incidência",
+    "canalesHeader": "Canais de atendimento",
+    "faqsHeader": "Perguntas frequentes",
+    "formBanner": "Preencha o formulário para reportar qualquer problema técnico ou mecânico durante sua reserva.",
+    "formTitle": "Formulário de Incidência",
+    "vehiculoLabel": "Veículo / Reserva associada",
+    "tipoIncidenciaLabel": "Tipo de Incidência",
+    "tiempoEstLabel": "Tempo estimado de atendimento técnico:",
+    "descripcionLabel": "Descrição do problema",
+    "descripcionPlaceholder": "Descreva o ocorrido, ruídos, luzes no painel ou localização atual...",
+    "evidenciasLabel": "Evidências (Imagens / Vídeos opcionais)",
+    "contactoHeader": "Dados de contato para acompanhamento",
+    "contactoSub": "Preenchidos automaticamente a partir do seu perfil (editável se necessário).",
+    "nombreLabel": "Nome completo",
+    "telefonoLabel": "Telefone",
+    "emailLabel": "E-mail",
+    "btnEnviarReporte": "Enviar Relatório de Incidência",
+    "sinReportesTitle": "Nenhum relatório ativo",
+    "sinReportesMsg": "Se você tiver algum problema com seu veículo, crie um relatório na aba anterior.",
+    "canales": {
+      "whatsappTitle": "Chat de WhatsApp Direto",
+      "whatsappSub": "Atendimento 24/7 - +57 314 478 9702",
+      "telefonoTitle": "Linha Telefônica de Atendimento",
+      "telefonoSub": "+57 322 3163531 - Assistência rodoviária",
+      "correoTitle": "E-mail de Suporte",
+      "correoSub": "soporte@drivique.com - Resposta em menos de 2 horas"
+    },
+    "faqs": {
+      "q1": "O que fazer se o veículo quebrar na estrada?",
+      "a1": "Estacione com segurança, ligue o pisca-alerta e use a aba 'Reportar incidência' ou ligue para nossa linha 24/7.",
+      "q2": "Como funciona o guincho ou assistência técnica?",
+      "a2": "Temos uma rede nacional de guinchos e mecânicos sem custo adicional se coberto pelo seu plano.",
+      "q3": "Posso trocar de veículo se o reparo demorar?",
+      "a3": "Sim, se o reparo demorar além do razoável, disponibilizamos um veículo de substituição equivalente."
+    }
   }
 }

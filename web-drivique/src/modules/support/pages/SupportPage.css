@@ -1,0 +1,560 @@
+/* ── Contenedor Principal de Soporte ── */
+.soporte-pagina {
+  min-height: 100vh;
+  background-color: var(--bg-seccion1, #eaeff8);
+  color: var(--texto-primary, #0f172a);
+  font-family: system-ui, -apple-system, sans-serif;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+.soporte-main {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 32px 20px 80px;
+}
+
+/* Encabezado */
+.soporte-header-title {
+  margin-bottom: 24px;
+}
+
+.soporte-header-title h1 {
+  font-size: 28px;
+  font-weight: 900;
+  color: var(--texto-primary, #0f172a);
+  letter-spacing: -0.02em;
+  margin: 0 0 6px 0;
+}
+
+.soporte-header-title p {
+  font-size: 14px;
+  color: var(--texto-second, #64748b);
+  margin: 0;
+}
+
+/* ── Pestañas (Tabs Bar) ── */
+.soporte-tabs-container {
+  display: flex;
+  align-items: center;
+  background: var(--bg-tarjeta, #ffffff);
+  border-radius: 16px;
+  padding: 6px;
+  margin-bottom: 28px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  border: 1px solid var(--borde, #e2e8f0);
+}
+
+.soporte-tab-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 14px;
+  border: none;
+  background: transparent;
+  color: var(--texto-second, #64748b);
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.soporte-tab-btn.activa {
+  background: #2563eb;
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25);
+}
+
+.soporte-tab-badge {
+  background: #ef4444;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 20px;
+  line-height: 1;
+}
+
+.soporte-tab-btn.activa .soporte-tab-badge {
+  background: #ffffff;
+  color: #2563eb;
+}
+
+/* ── PESTAÑA 1: CANALES DE ATENCIÓN ── */
+.centro-atencion-card {
+  background: var(--bg-tarjeta, #ffffff);
+  border-radius: 24px;
+  padding: 32px 24px;
+  text-align: center;
+  border: 1px solid var(--borde, #e2e8f0);
+  box-shadow: 0 6px 24px rgba(37, 99, 235, 0.05);
+  margin-bottom: 32px;
+}
+
+.centro-atencion-icon-wrap {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: #eff6ff;
+  color: #2563eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  margin: 0 auto 16px;
+  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.15);
+}
+
+.centro-atencion-card h2 {
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--texto-primary, #0f172a);
+  margin: 0 0 8px 0;
+}
+
+.centro-atencion-card p {
+  font-size: 14px;
+  color: var(--texto-second, #64748b);
+  margin: 0 0 24px 0;
+  max-width: 440px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.btn-reportar-incidencia-hero {
+  background: #2563eb;
+  color: #ffffff;
+  border: none;
+  border-radius: 14px;
+  padding: 14px 28px;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.25);
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.btn-reportar-incidencia-hero:hover {
+  transform: translateY(-2px);
+  background: #1d4ed8;
+}
+
+/* Canales de Atención List */
+.seccion-subtitulo-soporte {
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--texto-primary, #0f172a);
+  margin: 0 0 16px 0;
+}
+
+.canales-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 40px;
+}
+
+.canal-card-item {
+  background: var(--bg-tarjeta, #ffffff);
+  border-radius: 18px;
+  border: 1px solid var(--borde, #e2e8f0);
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  text-decoration: none;
+  color: inherit;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.canal-card-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.08);
+}
+
+.canal-icon-wrap {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.canal-icon-wrap.whatsapp {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.canal-icon-wrap.telefono {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+.canal-icon-wrap.correo {
+  background: #f3e8ff;
+  color: #9333ea;
+}
+
+.canal-info {
+  flex: 1;
+}
+
+.canal-titulo {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--texto-primary, #0f172a);
+  margin: 0 0 2px 0;
+}
+
+.canal-subtitulo {
+  font-size: 13px;
+  color: var(--texto-second, #64748b);
+  margin: 0;
+}
+
+.canal-flecha {
+  color: var(--texto-second, #94a3b8);
+  font-size: 14px;
+}
+
+/* FAQs Accordion */
+.faqs-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.faq-item {
+  background: var(--bg-tarjeta, #ffffff);
+  border-radius: 16px;
+  border: 1px solid var(--borde, #e2e8f0);
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+}
+
+.faq-pregunta-btn {
+  width: 100%;
+  padding: 16px 20px;
+  background: transparent;
+  border: none;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--texto-primary, #0f172a);
+  cursor: pointer;
+}
+
+.faq-respuesta {
+  padding: 0 20px 16px;
+  font-size: 13px;
+  color: var(--texto-second, #64748b);
+  line-height: 1.6;
+}
+
+/* ── PESTAÑA 2: REPORTAR INCIDENCIA (FORMULARIO) ── */
+.form-info-banner {
+  background: var(--bg-tarjeta, #ffffff);
+  border: 1px solid var(--borde, #e2e8f0);
+  border-left: 5px solid #2563eb;
+  border-radius: 16px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 13px;
+  color: var(--texto-primary, #334155);
+  margin-bottom: 24px;
+}
+
+.formulario-incidencia-card {
+  background: var(--bg-tarjeta, #ffffff);
+  border-radius: 24px;
+  padding: 28px 24px;
+  border: 1px solid var(--borde, #e2e8f0);
+  box-shadow: 0 8px 30px rgba(37, 99, 235, 0.05);
+}
+
+.form-header-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.form-header-row h3 {
+  font-size: 20px;
+  font-weight: 900;
+  color: var(--texto-primary, #0f172a);
+  margin: 0;
+}
+
+.form-grupo {
+  margin-bottom: 22px;
+}
+
+.form-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--texto-primary, #0f172a);
+  margin-bottom: 8px;
+}
+
+.form-label span {
+  color: #ef4444;
+}
+
+.form-grid-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.form-input-text,
+.form-textarea {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 14px;
+  border: 1px solid var(--borde, #cbd5e1);
+  background: var(--bg-item, #f8fafc);
+  color: var(--texto-primary, #0f172a);
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.form-input-text:focus,
+.form-textarea:focus {
+  border-color: #2563eb;
+}
+
+/* Grid de Chips Tipos de Incidencia */
+.tipos-incidencia-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.tipo-chip-btn {
+  background: var(--bg-item, #f8fafc);
+  border: 1px solid var(--borde, #e2e8f0);
+  border-radius: 16px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: left;
+}
+
+.tipo-chip-btn.seleccionado {
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25);
+}
+
+.tipo-chip-btn span {
+  font-size: 13px;
+  font-weight: 800;
+}
+
+/* Banner de Tiempo Estimado */
+.tiempo-estimado-banner {
+  background: #fef3c7;
+  border: 1px solid #fde68a;
+  border-radius: 14px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #92400e;
+  margin-bottom: 22px;
+}
+
+.tiempo-estimado-text {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.tiempo-estimado-val {
+  font-size: 15px;
+  font-weight: 900;
+  display: block;
+}
+
+/* Evidencias Uploader */
+.evidencias-upload-box {
+  width: 100px;
+  height: 90px;
+  border: 2px dashed #93c5fd;
+  border-radius: 16px;
+  background: var(--bg-item, #eff6ff);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: #2563eb;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 800;
+  transition: background 0.15s ease;
+}
+
+.evidencias-upload-box:hover {
+  background: #dbeafe;
+}
+
+/* Sección Datos de Contacto */
+.contacto-seccion-header {
+  border-top: 1px solid var(--borde, #e2e8f0);
+  padding-top: 20px;
+  margin-top: 24px;
+  margin-bottom: 16px;
+}
+
+.contacto-seccion-header h4 {
+  font-size: 15px;
+  font-weight: 900;
+  color: var(--texto-primary, #0f172a);
+  margin: 0 0 4px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.contacto-seccion-header p {
+  font-size: 12px;
+  color: var(--texto-second, #64748b);
+  margin: 0;
+}
+
+.btn-enviar-reporte {
+  width: 100%;
+  padding: 15px 24px;
+  border-radius: 16px;
+  background: #16a34a;
+  color: #ffffff;
+  border: none;
+  font-size: 16px;
+  font-weight: 900;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-shadow: 0 8px 24px rgba(22, 163, 74, 0.25);
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.btn-enviar-reporte:hover {
+  transform: translateY(-2px);
+  background: #15803d;
+}
+
+/* ── PESTAÑA 3: INFORMES ERRÓNEOS (MIS REPORTES) ── */
+.reportes-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.reporte-card-item {
+  background: var(--bg-tarjeta, #ffffff);
+  border-radius: 20px;
+  border: 1px solid var(--borde, #e2e8f0);
+  padding: 20px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.02);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.reporte-card-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.08);
+}
+
+.reporte-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.reporte-codigo {
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--texto-primary, #0f172a);
+}
+
+.reporte-tipo-vehiculo {
+  font-size: 14px;
+  font-weight: 800;
+  color: #2563eb;
+  margin-bottom: 2px;
+}
+
+.reporte-vehiculo-sub {
+  font-size: 12px;
+  color: var(--texto-second, #64748b);
+  margin-bottom: 12px;
+}
+
+.reporte-desc-snippet {
+  font-size: 13px;
+  color: var(--texto-second, #475569);
+  line-height: 1.5;
+  margin: 0 0 16px 0;
+}
+
+.reporte-footer-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--borde, #f1f5f9);
+  padding-top: 12px;
+}
+
+.reporte-tiempo-est {
+  font-size: 12px;
+  color: var(--texto-second, #94a3b8);
+}
+
+.btn-ver-detalle-reporte {
+  background: transparent;
+  border: none;
+  color: #2563eb;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.btn-ver-detalle-reporte:hover {
+  text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .form-grid-2col {
+    grid-template-columns: 1fr;
+  }
+  .tipos-incidencia-grid {
+    grid-template-columns: 1fr;
+  }
+}
