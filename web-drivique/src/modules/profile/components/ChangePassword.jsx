@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { FaLock, FaEye, FaEyeSlash, FaTimes, FaShieldAlt } from 'react-icons/fa'
+import { FaLock, FaEye, FaEyeSlash, FaTimes } from 'react-icons/fa'
 import { useCambiarContrasena } from '../hooks/useChangePassword'
 import { showAlert } from '@/utils/swalConfig'
 

@@ -1,8 +1,4 @@
-import { useTranslation } from 'react-i18next';
-
 export default function VehicleInfo({ vehiculo }) {
-  const { t } = useTranslation();
-
   return (
     <div style={{ background: '#fff', padding: 20, borderRadius: 16, border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', gap: 12 }}>
       <div>

@@ -10,7 +10,6 @@ import { useNavigate } from 'react-router-dom'
 
 import { useReservationFlow } from '../hooks/useReservationFlow'
 import { useIsMobile } from '../../../hooks/useIsMobile'
-import MenuConfiguracion from '@/components/MenuConfiguracion'
 import ReservationStepper from '../components/ReservationStepper'
 import ReservationStep1 from '../components/ReservationStep1'
 import ReservationStep2 from '../components/ReservationStep2'
@@ -52,7 +51,7 @@ export default function ReservationFlowPage() {
   const {
     vehiculo, pantalla, setPantalla, reserva, cambiarReserva,
     seguroIdx, setSeguroIdx, serviciosSeleccionados, setServiciosSeleccionados, toggleServicio,
-    modalEditarOpen, setModalEditarOpen, modalEditarSeccion, setModalEditarSeccion,
+    modalEditarOpen, setModalEditarOpen, modalEditarSeccion,
     localReserva, setLocalReserva, localSeguroIdx, setLocalSeguroIdx,
     localServiciosSeleccionados, setLocalServiciosSeleccionados,
     modalError, setModalError, abrirModalEditar,
@@ -61,12 +60,12 @@ export default function ReservationFlowPage() {
     errorPaso1,
     datosForm, setDatosForm, errores,
     exito, reservaCreada, contratoFirmado, datosPago,
-    redirigiendoPago, errorPago, setErrorPago,
+    redirigiendoPago, errorPago,
     hoverWompi, setHoverWompi,
-    fechaLimitePago, docsVerificados,
+    docsVerificados,
     irSiguiente, irAtras, handleReservar, handleContratoFirmado,
     handlePagarConWompi,
-    totalReserva, TOTAL_PASOS,
+    totalReserva,
     usuario,
   } = flow
 
@@ -97,12 +96,10 @@ export default function ReservationFlowPage() {
   // ─── Pantalla: Éxito / Pago ───────────────────────────────────────────────
   if (exito) return (
     <div className="catalogo-page" style={{ minHeight: 'calc(100vh / 0.9)', background: c.pageBg, color: c.textPrimary, position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-      {/* Cabecera con opciones de tema e idioma */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '24px 24px 0', maxWidth: 1360, margin: '0 auto', width: '100%', zIndex: 10 }}>
+      <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', padding: '24px 24px 0', maxWidth: 1360, margin: '0 auto', width: '100%', zIndex: 10 }}>
         <button onClick={() => navigate('/home')} style={{ background: 'none', border: 'none', display: 'flex', alignItems: 'center', gap: 8, color: c.textSecondary, fontWeight: 700, cursor: 'pointer', padding: 0 }}>
           <FaArrowLeft size={12} /> {t('common.goBack')}
         </button>
-        <MenuConfiguracion />
       </div>
 
       <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24, position: 'relative' }}>
@@ -182,7 +179,7 @@ export default function ReservationFlowPage() {
       <div className="detalle-contenido-inner" style={{ maxWidth: 1360, margin: '0 auto', padding: '24px 24px 60px' }}>
 
         {/* Top bar */}
-        <div style={{ marginBottom: 24, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ marginBottom: 24, display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
           <button
             className="catalogo-header-back"
             onClick={irAtras}
@@ -199,7 +196,6 @@ export default function ReservationFlowPage() {
           >
             <FaArrowLeft size={12} /> {pantalla === 1 ? t('vehiculo.backToCatalog') : t('common.goBack')}
           </button>
-          <MenuConfiguracion />
         </div>
 
         {/* Tarjeta principal */}

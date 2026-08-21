@@ -53,11 +53,20 @@ export const contractService = {
     return generarCodigoContrato();
   },
 
+  completarContratoOriginal: (referenciaReserva, contratoOriginal) => {
+    if (!referenciaReserva || !contratoOriginal) return null;
+    const todos = leerTodos();
+    if (!todos[referenciaReserva]) return null;
+    todos[referenciaReserva] = { ...todos[referenciaReserva], contratoOriginal };
+    guardarTodos(todos);
+    return todos[referenciaReserva];
+  },
+
   /**
    * Guarda la firma del usuario y deja el contrato en estado FIRMADO,
    * asociado a la referencia de la reserva.
    */
-  guardarFirma: (referenciaReserva, { codigo, firmaUsuarioDataUrl, ciudad, fecha }) => {
+  guardarFirma: (referenciaReserva, { codigo, firmaUsuarioDataUrl, ciudad, fecha, contratoOriginal }) => {
     if (!referenciaReserva) return null;
     const todos = leerTodos();
 
@@ -67,6 +76,7 @@ export const contractService = {
       firmaUsuarioDataUrl,
       ciudad: ciudad || '',
       fecha: fecha || new Date().toISOString(),
+      contratoOriginal: contratoOriginal || null,
       estado: 'FIRMADO',
       firmadoEn: new Date().toISOString(),
     };

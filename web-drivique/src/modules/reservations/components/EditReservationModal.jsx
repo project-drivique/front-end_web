@@ -1,8 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { FaTimes } from 'react-icons/fa'
 import { SUCURSALES } from '../../catalog/constants'
-import { HORAS } from '../hooks/useReservationFlow'
-import ReservationCalendar from './ReservationCalendar'
 import ProtectionPlans from './ProtectionPlans'
 import MileageType from './MileageType'
 import AdditionalServices from './AdditionalServices'

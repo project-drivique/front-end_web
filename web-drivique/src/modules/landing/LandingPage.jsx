@@ -1,11 +1,9 @@
 // src/modules/landing/LandingPage.jsx
 import { useState, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
-import { Link, Navigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import logocatalog from '@/assets/logocatalog.png'
 import { useLanding } from './LandingContext'
-import { useAuthStore } from '../../store/authStore'
-import { useHydration } from '../../hooks/useHydration'
 import translations, { IDIOMAS, CAT_MAP } from './translations'
 import { catalogService } from '../../services/catalogService'
 import { formatCurrency } from '@/utils/currencyUtils'
@@ -341,24 +339,12 @@ export default function LandingPage() {
   const esModoOscuro = tema === 'oscuro'
   const c = coloresTema(esModoOscuro)
 
-  const token = useAuthStore(s => s.token)
-  const usuario = useAuthStore(s => s.usuario)
-  const hydrated = useHydration()
-
   const [autos, setAutos] = useState([])
   const [menuMovilAbierto, setMenuMovilAbierto] = useState(false)
 
   useEffect(() => {
     catalogService.getVehiculosDestacados().then(data => setAutos(data)).catch(() => {})
   }, [])
-
-  if (!hydrated) return null
-
-  const esValido = token && token !== 'null' && token !== 'undefined'
-  if (esValido) {
-    const lastPath = localStorage.getItem('last_path')
-    return <Navigate to={lastPath && lastPath !== '/' && lastPath !== '/login' ? lastPath : (usuario?.rol === 'administrador' ? '/admin' : '/home')} replace />
-  }
 
   const estiloEnlaceNav = {
     fontSize: 13,
