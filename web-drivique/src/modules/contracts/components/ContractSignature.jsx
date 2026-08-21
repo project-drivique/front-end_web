@@ -5,6 +5,7 @@ import logo from '@/assets/logo.png';
 import firmaDrivique from '@/assets/drivique-signature.png';
 import { useLanding } from '../../landing/LandingContext';
 import { formatCurrency } from '@/utils/currencyUtils';
+import { getNombreTipoDoc } from '@/utils/documentUtils';
 import { contractService } from '@/services/contractService';
 import SUCURSALES_MOCK from '@/mocks/branches.json';
 import SignatureCanvas from './SignatureCanvas';
@@ -150,7 +151,7 @@ export default function FirmaContrato({ vehiculo, reservaGuardada, onFirmado }) 
           <p style={{ fontSize: 15, color: 'var(--texto-primary)', marginBottom: 24, lineHeight: 1.6 }}>
             {t('contratoFirma.intro', {
               nombre: datosForm.nombre,
-              tipoDoc: datosForm.tipoDoc,
+              tipoDoc: getNombreTipoDoc(datosForm.tipoDoc),
               numDoc: datosForm.numDoc,
             })}
           </p>
@@ -159,7 +160,7 @@ export default function FirmaContrato({ vehiculo, reservaGuardada, onFirmado }) 
             <h3 style={{ fontSize: 17, color: 'var(--texto-primary)', marginBottom: 14 }}>{t('contratoFirma.userDataTitle')}</h3>
             <div style={{ background: 'var(--bg-item)', border: '1px solid var(--borde)', borderRadius: 18, padding: 16, display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 14 }} className="contrato-grid-2col">
               <Campo label={t('contratoFirma.fullName')} value={datosForm.nombre} />
-              <Campo label={t('contratoFirma.document')} value={`${datosForm.tipoDoc || ''} ${datosForm.numDoc || ''}`.trim()} />
+              <Campo label={t('contratoFirma.document')} value={`${getNombreTipoDoc(datosForm.tipoDoc)}: ${datosForm.numDoc || ''}`.trim()} />
               <Campo label={t('contratoFirma.email')} value={datosForm.correo} />
               <Campo label={t('contratoFirma.phone')} value={datosForm.celular} />
               <Campo label={t('contratoFirma.address')} value={direccionCompleta} />
@@ -247,7 +248,7 @@ export default function FirmaContrato({ vehiculo, reservaGuardada, onFirmado }) 
                 {errorFirma && <p style={{ color: '#ef4444', fontSize: 12, fontWeight: 700, margin: '8px 0 0' }}>{errorFirma}</p>}
                 <div style={{ marginTop: 12 }}>
                   <p style={{ margin: '4px 0', fontSize: 13, color: 'var(--texto-primary)' }}><strong>{t('contratoFirma.fullName')}:</strong> {datosForm.nombre}</p>
-                  <p style={{ margin: '4px 0', fontSize: 13, color: 'var(--texto-primary)' }}><strong>{t('contratoFirma.document')}:</strong> {`${datosForm.tipoDoc || ''} ${datosForm.numDoc || ''}`.trim()}</p>
+                  <p style={{ margin: '4px 0', fontSize: 13, color: 'var(--texto-primary)' }}><strong>{t('contratoFirma.document')}:</strong> {`${getNombreTipoDoc(datosForm.tipoDoc)}: ${datosForm.numDoc || ''}`.trim()}</p>
                 </div>
               </div>
 

@@ -1141,5 +1141,20 @@
     "GPS Integrado": "GPS Intégré",
     "Lavado de auto post-entrega": "Lavage de voiture après location",
     "Silla de bebé": "Siège bébé"
+  },
+  "favoritos": {
+    "title": "Mes Favoris",
+    "subtitle": "Gérez vos véhicules préférés et accédez rapidement à leurs détails",
+    "searchPlaceholder": "Rechercher par marque ou modèle...",
+    "allCategories": "Toutes les catégories",
+    "loading": "Chargement de vos favoris...",
+    "noFavoritesTitle": "Vous n'avez aucun véhicule favori enregistré",
+    "noFavoritesText": "Explorez notre catalogue et appuyez sur l'icône de cœur sur les véhicules que vous aimez pour les enregistrer ici.",
+    "exploreCatalog": "Explorer le catalogue",
+    "noMatchesTitle": "Aucun résultat trouvé",
+    "noMatchesText": "Nous n'avons trouvé aucun véhicule favori correspondant aux filtres appliqués.",
+    "clearFilters": "Effacer les filtres",
+    "delete": "Supprimer",
+    "viewDetailsAndReserve": "Voir détails et réserver"
   }
 }
