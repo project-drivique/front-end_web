@@ -25,7 +25,7 @@ export const getBotQuickActions = (t) => [
 
 export const getBotResponses = (t, moneda) => {
   const m = moneda === 'USD' ? 'USD' : 'COP'
-  const precioActualEjemplo = m === 'USD' ? '$50 USD' : '$200.000 COP'
+  const precio = m === 'USD' ? '$50 USD' : '$200.000 COP'
 
   return {
     hola: t(
@@ -40,7 +40,8 @@ export const getBotResponses = (t, moneda) => {
 
     dolar: t(
       'chatbot.responses.dolar',
-      `💵 **Conversión de Moneda y Tarifas:**\n\nEn Drivique puedes visualizar todos los precios del catálogo en **COP** o **USD**.\n\n• Tarifas desde aproximadamente **${precioActualEjemplo}/día**.\n• La conversión se calcula en tiempo real según la moneda seleccionada.`
+      { precio },
+      `💵 **Conversión de Moneda y Tarifas:**\n\nEn Drivique puedes visualizar todos los precios del catálogo en **COP** o **USD**.\n\n• Tarifas desde aproximadamente **${precio}/día**.\n• La conversión se calcula en tiempo real según la moneda seleccionada.`
     ),
 
     alquilar: t(
@@ -156,7 +157,9 @@ export function procesarPreguntaBot(pregunta, t, moneda) {
       texto.includes('edad') ||
       texto.includes('16') ||
       texto.includes('requirement') ||
-      texto.includes('condition')
+      texto.includes('condition') ||
+      texto.includes('requisitos') ||
+      texto.includes('conditions')
     ) {
       return resp.requisitos
     }
@@ -171,7 +174,8 @@ export function procesarPreguntaBot(pregunta, t, moneda) {
       texto.includes('costo') ||
       texto.includes('tarifa') ||
       texto.includes('pay') ||
-      texto.includes('deposit')
+      texto.includes('deposit') ||
+      texto.includes('payment')
     ) {
       return resp.pagos
     }
@@ -185,7 +189,8 @@ export function procesarPreguntaBot(pregunta, t, moneda) {
       texto.includes('asesor') ||
       texto.includes('llamada') ||
       texto.includes('agent') ||
-      texto.includes('talk')
+      texto.includes('talk') ||
+      texto.includes('speak')
     ) {
       return resp.agente
     }
