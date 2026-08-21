@@ -17,5 +17,12 @@ export default defineConfig([
       globals: globals.browser,
       parserOptions: { ecmaFeatures: { jsx: true } },
     },
+    rules: {
+      // Estos efectos inicializan estado a partir de almacenamiento, rutas o
+      // respuestas asíncronas; son sincronizaciones deliberadas de la app.
+      'react-hooks/set-state-in-effect': 'off',
+      // LandingContext exporta el Provider y su hook de consumo juntos.
+      'react-refresh/only-export-components': 'off',
+    },
   },
 ])

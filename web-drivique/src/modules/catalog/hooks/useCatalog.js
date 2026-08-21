@@ -61,10 +61,10 @@ export function useCatalogo({ esFavorito = () => false } = {}) {
     } finally {
       setCargando(false)
     }
-  }, [])
+  }, [t])
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+     
     cargarVehiculos()
   }, [cargarVehiculos])
 
