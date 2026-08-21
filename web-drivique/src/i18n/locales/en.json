@@ -1237,5 +1237,15 @@
       "q3": "Can I swap vehicles if repair takes too long?",
       "a3": "Yes, if technical repair exceeds reasonable time, we arrange an equivalent replacement vehicle."
     }
+  },
+  "chatbot": {
+    "toggleTitle": "Drivique Support Assistant",
+    "welcomeMsg": "👋 Hi! I am the Drivique 24/7 interactive virtual assistant.\nHow can I help you today?",
+    "onlineStatus": "Online | Drivique Bot 24/7",
+    "minimize": "Minimize",
+    "close": "Close",
+    "quickQuestionsTitle": "Quick Questions:",
+    "inputPlaceholder": "Type your question here...",
+    "send": "Send"
   }
 }
