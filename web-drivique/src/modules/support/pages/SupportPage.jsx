@@ -41,28 +41,20 @@ export default function SupportPage() {
   const { tema } = useLanding()
   const esModoOscuro = tema === 'oscuro'
 
-  // Carga historial de reservas para validar estado (Confirmada, En curso, Finalizada)
+  // Carga historial real de reservas
   const { reservas } = useHistorialReservas()
 
-  // Filtrado de vehículos: solo reservas confirmadas / en curso / finalizadas (excluye pendientes y canceladas)
+  // Filtrado de vehículos: solo reservas confirmadas / en curso / finalizadas (excluye estrictamente pendientes y canceladas)
   const vehiculosElegibles = useMemo(() => {
     const validas = reservas.filter(
       (r) => r.estado === 'confirmada' || r.estado === 'en_curso' || r.estado === 'finalizada'
     )
-    if (validas.length > 0) {
-      return validas.map((r) => ({
-        id: String(r.id),
-        nombre: r.vehiculo?.nombre || `Reserva #${r.id}`,
-        placa: r.vehiculo?.placa || 'KLS-849',
-        estado: r.estado,
-      }))
-    }
-    // Mock inicial cuando no hay reservas locales
-    return [
-      { id: 'res-1', nombre: 'Toyota Prado VX', placa: 'KLS-849', estado: 'confirmada' },
-      { id: 'res-2', nombre: 'Chevrolet Spark GT', placa: 'HGF-123', estado: 'confirmada' },
-      { id: 'res-3', nombre: 'Ford Explorer 2024', placa: 'ERT-456', estado: 'en_curso' },
-    ]
+    return validas.map((r) => ({
+      id: String(r.id),
+      nombre: r.vehiculo?.nombre || `Reserva #${r.id}`,
+      placa: r.vehiculo?.placa || '',
+      estado: r.estado,
+    }))
   }, [reservas])
 
   // Leer parámetros de URL o location state si viene de "Hacer reporte" en Mis Reservas
@@ -92,7 +84,7 @@ export default function SupportPage() {
     contactoEmail: usuario?.correo || usuario?.email || 'cliente@drivique.com',
   })
 
-  // Actualiza el formulario si llegan params desde Mis Reservas y la reserva es válida
+  // Sincroniza vehículo y placa cuando cargan las reservas o llegan parámetros
   useEffect(() => {
     if (vehiculoParam || placaParam) {
       setFormData((prev) => ({
@@ -101,8 +93,14 @@ export default function SupportPage() {
         placa: placaParam || prev.placa,
       }))
       setPestanaActiva('reportar')
+    } else if (vehiculosElegibles.length > 0 && !formData.vehiculo) {
+      setFormData((prev) => ({
+        ...prev,
+        vehiculo: vehiculosElegibles[0].nombre,
+        placa: vehiculosElegibles[0].placa,
+      }))
     }
-  }, [vehiculoParam, placaParam])
+  }, [vehiculoParam, placaParam, vehiculosElegibles])
 
   // Al seleccionar un vehículo del dropdown, actualiza el vehículo y su placa correspondiente
   const handleSelectVehiculoChange = (e) => {
@@ -134,8 +132,13 @@ export default function SupportPage() {
   const handleEnviarReporte = (e) => {
     e.preventDefault()
 
-    if (!formData.vehiculo) {
-      alert(t('soporte.errorVehiculo', 'Debes seleccionar un vehículo con reserva confirmada o en curso.'))
+    if (vehiculosElegibles.length === 0 && !formData.vehiculo) {
+      alert(
+        t(
+          'soporte.sinReservasConfirmadasErr',
+          'No tienes ninguna reserva confirmada o en curso activa para realizar un reporte de incidencia.'
+        )
+      )
       return
     }
 
@@ -330,6 +333,30 @@ export default function SupportPage() {
               </span>
             </div>
 
+            {/* Aviso si no hay reservas confirmadas activas */}
+            {vehiculosElegibles.length === 0 && !formData.vehiculo && (
+              <div
+                style={{
+                  background: '#fef2f2',
+                  border: '1px solid #fecaca',
+                  color: '#991b1b',
+                  borderRadius: 16,
+                  padding: '16px 20px',
+                  marginBottom: 24,
+                  fontSize: 13,
+                  fontWeight: 700,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 12,
+                }}
+              >
+                <FaExclamationTriangle style={{ fontSize: 20, flexShrink: 0 }} />
+                <span>
+                  No cuentas con reservas confirmadas o en curso en este momento. Para reportar una incidencia debes tener una reserva confirmada activa.
+                </span>
+              </div>
+            )}
+
             {/* Card del Formulario */}
             <form className="formulario-incidencia-card" onSubmit={handleEnviarReporte}>
               <div className="form-header-row">
@@ -348,12 +375,17 @@ export default function SupportPage() {
                     className="form-input-text"
                     value={formData.vehiculo}
                     onChange={handleSelectVehiculoChange}
+                    disabled={vehiculosElegibles.length === 0 && !formData.vehiculo}
                   >
-                    {vehiculosElegibles.map((item) => (
-                      <option key={item.id} value={item.nombre}>
-                        {item.nombre}
-                      </option>
-                    ))}
+                    {vehiculosElegibles.length === 0 ? (
+                      <option value="">No tienes reservas confirmadas para reportar</option>
+                    ) : (
+                      vehiculosElegibles.map((item) => (
+                        <option key={item.id} value={item.nombre}>
+                          {item.nombre}
+                        </option>
+                      ))
+                    )}
                     {formData.vehiculo &&
                       !vehiculosElegibles.some((v) => v.nombre === formData.vehiculo) && (
                         <option value={formData.vehiculo}>{formData.vehiculo}</option>
@@ -501,7 +533,15 @@ export default function SupportPage() {
                 </div>
               </div>
 
-              <button type="submit" className="btn-enviar-reporte">
+              <button
+                type="submit"
+                className="btn-enviar-reporte"
+                disabled={vehiculosElegibles.length === 0 && !formData.vehiculo}
+                style={{
+                  opacity: vehiculosElegibles.length === 0 && !formData.vehiculo ? 0.6 : 1,
+                  cursor: vehiculosElegibles.length === 0 && !formData.vehiculo ? 'not-allowed' : 'pointer',
+                }}
+              >
                 <FaPaperPlane /> {t('soporte.btnEnviarReporte', 'Enviar Reporte de Incidencia')}
               </button>
             </form>
