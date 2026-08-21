@@ -1193,5 +1193,49 @@
       "politicaActualizacionTitle": "Policy update",
       "politicaActualizacionMsg": "We updated our collision damage terms. Review details in your account."
     }
+  },
+  "soporte": {
+    "title": "Support",
+    "subtitle": "Roadside assistance and 24/7 personalized care",
+    "tabCanales": "Contact Channels",
+    "tabReportar": "Report Incident",
+    "tabInformes": "Active Reports",
+    "centroTitle": "User Support Center",
+    "centroSub": "Personalized assistance for your vehicle rentals at Drivique.",
+    "btnReportarHero": "Report Incident",
+    "canalesHeader": "Contact channels",
+    "faqsHeader": "Frequently asked questions",
+    "formBanner": "Fill out the form to report any technical or mechanical issue during your reservation.",
+    "formTitle": "Incident Report Form",
+    "vehiculoLabel": "Associated Vehicle / Reservation",
+    "tipoIncidenciaLabel": "Incident Type",
+    "tiempoEstLabel": "Estimated technical assistance time:",
+    "descripcionLabel": "Problem description",
+    "descripcionPlaceholder": "Describe what happened, noises, dashboard warning lights or current location...",
+    "evidenciasLabel": "Evidences (Optional Images / Videos)",
+    "contactoHeader": "Follow-up contact details",
+    "contactoSub": "Automatically pre-filled from your registered profile (you can edit them if needed).",
+    "nombreLabel": "Full name",
+    "telefonoLabel": "Phone",
+    "emailLabel": "Email address",
+    "btnEnviarReporte": "Submit Incident Report",
+    "sinReportesTitle": "No active reports",
+    "sinReportesMsg": "If you experience any vehicle issue, you can create a report in the previous tab.",
+    "canales": {
+      "whatsappTitle": "Direct WhatsApp Chat",
+      "whatsappSub": "Immediate 24/7 care - +57 314 478 9702",
+      "telefonoTitle": "Phone Support Line",
+      "telefonoSub": "+57 322 3163531 - Roadside assistance",
+      "correoTitle": "Support Email",
+      "correoSub": "soporte@drivique.com - Response in under 2 hours"
+    },
+    "faqs": {
+      "q1": "What should I do if the vehicle breaks down on the road?",
+      "a1": "Park safely, turn on hazard lights, and use the 'Report incident' tab or call our 24/7 hotline.",
+      "q2": "How does tow truck or roadside service work?",
+      "a2": "We have a nationwide network. Once reported, we dispatch a tow truck or technician at no extra charge if covered.",
+      "q3": "Can I swap vehicles if repair takes too long?",
+      "a3": "Yes, if technical repair exceeds reasonable time, we arrange an equivalent replacement vehicle."
+    }
   }
 }

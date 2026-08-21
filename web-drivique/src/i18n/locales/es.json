@@ -1169,5 +1169,49 @@
       "politicaActualizacionTitle": "Actualización de políticas",
       "politicaActualizacionMsg": "Hemos actualizado nuestros términos y condiciones de protección contra colisiones. Revisa los detalles en tu cuenta."
     }
+  },
+  "soporte": {
+    "title": "Soporte",
+    "subtitle": "Asistencia técnica en carretera y atención personalizada 24/7",
+    "tabCanales": "Canales de atención",
+    "tabReportar": "Reportar incidencia",
+    "tabInformes": "Informes erróneos",
+    "centroTitle": "Centro de Atención al Usuario",
+    "centroSub": "Asistencia personalizada para tus alquileres de vehículos en Drivique.",
+    "btnReportarHero": "Reportar Incidencia",
+    "canalesHeader": "Canales de atención",
+    "faqsHeader": "Preguntas frecuentes",
+    "formBanner": "Complete el formulario para reportar cualquier problema técnico o mecánico durante su reserva.",
+    "formTitle": "Formulario de Incidencia",
+    "vehiculoLabel": "Vehículo / Reserva asociada",
+    "tipoIncidenciaLabel": "Tipo de Incidencia",
+    "tiempoEstLabel": "Tiempo estimado de atención técnica:",
+    "descripcionLabel": "Descripción del problema",
+    "descripcionPlaceholder": "Describe lo sucedido, ruidos, testigos en tablero o ubicación actual...",
+    "evidenciasLabel": "Evidencias (Imágenes / Videos opcionales)",
+    "contactoHeader": "Datos de contacto para seguimiento",
+    "contactoSub": "Precargados automáticamente desde tu perfil registrado (puedes editarlos si lo requieres).",
+    "nombreLabel": "Nombre completo",
+    "telefonoLabel": "Teléfono",
+    "emailLabel": "Correo electrónico",
+    "btnEnviarReporte": "Enviar Reporte de Incidencia",
+    "sinReportesTitle": "No tienes informes o reportes activos",
+    "sinReportesMsg": "Si tienes alguna avería o problema con tu vehículo, puedes crear un reporte en la pestaña anterior.",
+    "canales": {
+      "whatsappTitle": "Chat de WhatsApp Directo",
+      "whatsappSub": "Atención inmediata 24/7 - +57 314 478 9702",
+      "telefonoTitle": "Línea Telefónica de Atención",
+      "telefonoSub": "+57 322 3163531 - Soporte en carretera",
+      "correoTitle": "Correo Electrónico de Soporte",
+      "correoSub": "soporte@drivique.com - Respuesta en menos de 2 horas"
+    },
+    "faqs": {
+      "q1": "¿Qué debo hacer si el vehículo sufre una avería en carretera?",
+      "a1": "Estaciónese en un lugar seguro, encienda las luces de emergencia y utilice la pestaña 'Reportar incidencia' en esta sección o comuníquese a nuestra línea de asistencia en carretera 24/7.",
+      "q2": "¿Cómo funciona la asistencia mecánica o de grúa?",
+      "a2": "Contamos con una red nacional de unidades móviles y talleres autorizados. Una vez reportada la incidencia, coordinamos la grúa o mecánico sin costo adicional si está cubierto por tu plan de protección.",
+      "q3": "¿Puedo cambiar de vehículo si el reporte toma mucho tiempo?",
+      "a3": "Sí, si la falla técnica supera un tiempo de solución razonable, nuestro equipo de soporte coordinará un vehículo de reemplazo de categoría equivalente en la sucursal más cercana."
+    }
   }
 }
