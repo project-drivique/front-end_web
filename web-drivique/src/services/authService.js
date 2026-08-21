@@ -1,6 +1,7 @@
 import axios from 'axios'
 // Importa Axios, una librería para hacer peticiones HTTP a una API.
 import { useAuthStore } from '../store/authStore'
+import { mockUsersStorage } from './mockUsersStorage'
 // Store de Zustand: fuente de verdad del token en memoria.
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
@@ -36,11 +37,6 @@ api.interceptors.request.use((config) => {
   // Devuelve la configuración modificada para que la petición continúe.
 })
 
-import mockUsersData from '../mocks/usersMock.json'
-
-const MOCK_USERS = [...mockUsersData]
-// Lista de usuarios simulados cargados desde src/mocks/usersMock.json.
-
 const generateMockToken = () => {
   return 'mock_token_' + Math.random().toString(36).substring(2) + Date.now()
 }
@@ -62,17 +58,40 @@ const CODIGOS_RECUPERACION_MOCK = new Map()
 const generarCodigoMock = () => Math.floor(100000 + Math.random() * 900000).toString()
 // Genera un código numérico de 6 dígitos.
 
+function prepararUsuariosLocales() {
+  mockUsersStorage.asegurarConfigurados([
+    {
+      correo: import.meta.env.VITE_MOCK_USER_EMAIL,
+      contrasena: import.meta.env.VITE_MOCK_USER_PASSWORD,
+      nombre: import.meta.env.VITE_MOCK_USER_NAME || '',
+      apellido: import.meta.env.VITE_MOCK_USER_LASTNAME || '',
+      rol: 'usuario', telefono: '', cedula: '', fechaNacimiento: '',
+      nacionalidad: '', tipoDocumento: '', emailVerificado: true,
+    },
+    {
+      correo: import.meta.env.VITE_MOCK_ADMIN_EMAIL,
+      contrasena: import.meta.env.VITE_MOCK_ADMIN_PASSWORD,
+      nombre: import.meta.env.VITE_MOCK_ADMIN_NAME || '',
+      apellido: '', rol: 'administrador', telefono: '', cedula: '',
+      fechaNacimiento: '', nacionalidad: '', tipoDocumento: '', emailVerificado: true,
+    },
+  ])
+}
+
 export const authService = {
   login: async ({ correo, contrasena }) => {
+    if (!USAR_MOCK) {
+      const { data } = await api.post('/auth/login', { correo, contrasena })
+      return data
+    }
+    prepararUsuariosLocales()
     // Método asíncrono para iniciar sesión.
 
-    const usuario = MOCK_USERS.find(
-      (u) => u.correo.toLowerCase() === correo.toLowerCase() && u.contrasena === contrasena
-    )
+    const usuario = mockUsersStorage.buscarPorCorreo(correo)
     // Busca un usuario que coincida con correo y contraseña.
     // El correo se compara en minúsculas para evitar problemas por mayúsculas/minúsculas.
 
-    if (usuario) {
+    if (usuario?.contrasena === contrasena) {
       return {
         token: generateMockToken(),
         // Devuelve un token falso si el usuario existe.
@@ -101,11 +120,14 @@ export const authService = {
   },
 
   registro: async (datosUsuario) => {
-    const index = MOCK_USERS.findIndex(
-      (u) => u.correo.toLowerCase() === datosUsuario.correo.toLowerCase()
-    )
+    if (!USAR_MOCK) {
+      const { data } = await api.post('/auth/registro', datosUsuario)
+      return data
+    }
+    prepararUsuariosLocales()
+    const existente = mockUsersStorage.buscarPorCorreo(datosUsuario.correo)
 
-    if (index !== -1) {
+    if (existente) {
       const error = new Error('El correo electrónico ya está registrado')
       error.response = { status: 400 }
       throw error
@@ -124,7 +146,7 @@ export const authService = {
       fechaNacimiento: '',
       emailVerificado: true,
     }
-    MOCK_USERS.push(usuario)
+    mockUsersStorage.registrar(usuario)
 
     return {
       token: generateMockToken(),
@@ -143,7 +165,7 @@ export const authService = {
 
   solicitarRecuperacion: async (correo) => {
     if (USAR_MOCK) {
-      const usuario = MOCK_USERS.find(u => u.correo.toLowerCase() === correo.toLowerCase())
+      const usuario = mockUsersStorage.buscarPorCorreo(correo)
       if (!usuario) {
         const error = new Error('Este correo no está registrado en la plataforma.')
         error.response = { status: 404, data: { mensaje: error.message } }
@@ -186,7 +208,7 @@ export const authService = {
       }
 
       CODIGOS_RECUPERACION_MOCK.delete(correo)
-      const tokenRecuperacion = 'mock_recover_token_' + Math.random().toString(36).substring(2)
+      const tokenRecuperacion = `mock_recover_token_${encodeURIComponent(correo)}_${Math.random().toString(36).substring(2)}`
       return { verificado: true, token: tokenRecuperacion }
     }
 
@@ -199,6 +221,12 @@ export const authService = {
       if (!token || !token.startsWith('mock_recover_token_')) {
         const error = new Error('El enlace de recuperación es inválido o ha expirado.')
         error.response = { status: 400, data: { mensaje: error.message } }
+        throw error
+      }
+      const correo = decodeURIComponent(token.slice('mock_recover_token_'.length).split('_')[0])
+      if (!mockUsersStorage.actualizarContrasena(correo, contrasena)) {
+        const error = new Error('No se encontró el usuario asociado a la recuperación.')
+        error.response = { status: 404, data: { mensaje: error.message } }
         throw error
       }
       return { exito: true }
@@ -224,8 +252,13 @@ export const authService = {
 
   verificar2FA: async (sesionTemporal, codigo) => {
     if (USAR_MOCK) {
-      const userMail = typeof sesionTemporal === 'string' ? sesionTemporal : (sesionTemporal?.correo || 'cliente@Drivique.com')
-      const usuario = MOCK_USERS.find(u => u.correo.toLowerCase() === userMail.toLowerCase()) || MOCK_USERS[1]
+      const userMail = typeof sesionTemporal === 'string' ? sesionTemporal : sesionTemporal?.correo
+      const usuario = mockUsersStorage.buscarPorCorreo(userMail)
+      if (!usuario) {
+        const error = new Error('No se encontró la sesión del usuario.')
+        error.response = { status: 404 }
+        throw error
+      }
       return {
         token: generateMockToken(),
         usuario
