@@ -24,6 +24,7 @@ import ReservationsPage from '../modules/reservations/pages/ReservationsPage'
 import FavoritesPage from '../modules/catalog/pages/FavoritesPage'
 import NotificationsPage from '../modules/notifications/pages/NotificationsPage'
 import SupportPage from '../modules/support/pages/SupportPage'
+import FloatingChatBot from '../components/FloatingChatBot/FloatingChatBot'
 
 function RutaPrivada({ children }) {
   const token    = useAuthStore((s) => s.token)
@@ -114,6 +115,7 @@ export default function AppRouter() {
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+      <FloatingChatBot />
     </BrowserRouter>
   )
 }
