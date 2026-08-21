@@ -5,7 +5,7 @@ const IcoCheck = () => (
   <FaCheck size={12} />
 )
 
-export default function ReservationStepper({ pantalla, setPantalla, esModoOscuro }) {
+export default function ReservationStepper({ pantalla, esModoOscuro }) {
   const { t } = useTranslation()
 
   const pasos = [

@@ -7,7 +7,7 @@ import SideSummary from './SideSummary'
 import PicoYPlacaChecker from './PicoYPlacaChecker'
 import RentalRequirements from '../../catalog/components/detail/RentalRequirements'
 
-export default function ReservationStep1({ vehiculo, c, esModoOscuro, reserva, cambiarReserva, seguroIdx, serviciosSeleccionados, abrirModalEditar, pantalla, onContinuar }) {
+export default function ReservationStep1({ vehiculo, c, reserva, cambiarReserva, seguroIdx, serviciosSeleccionados, abrirModalEditar, pantalla, onContinuar }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
 

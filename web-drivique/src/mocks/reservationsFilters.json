@@ -1,0 +1,15 @@
+{
+  "estados": [
+    { "valor": "pendiente", "clase": "estado-pendiente" },
+    { "valor": "confirmada", "clase": "estado-confirmada" },
+    { "valor": "en_curso", "clase": "estado-en-curso" },
+    { "valor": "finalizada", "clase": "estado-finalizada" },
+    { "valor": "cancelada", "clase": "estado-cancelada" }
+  ],
+  "meses": [
+    { "valor": "01" }, { "valor": "02" }, { "valor": "03" },
+    { "valor": "04" }, { "valor": "05" }, { "valor": "06" },
+    { "valor": "07" }, { "valor": "08" }, { "valor": "09" },
+    { "valor": "10" }, { "valor": "11" }, { "valor": "12" }
+  ]
+}

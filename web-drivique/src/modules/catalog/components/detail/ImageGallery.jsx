@@ -1,11 +1,9 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { FaChevronLeft, FaChevronRight, FaStar } from 'react-icons/fa';
 
-export default function GaleriaImagenes({ imagenes = [], nombreVehiculo = 'Vehículo', calificacion = 0, compact = false, stretch = false, stretchThumbnails = false }) {
+export default function GaleriaImagenes({ imagenes = [], nombreVehiculo = 'Vehículo', calificacion = 0, compact = false, stretchThumbnails = false }) {
   const { t } = useTranslation()
-  const navigate = useNavigate()
   const [indiceActivo, setIndiceActivo] = useState(0);
 
   if (!imagenes || imagenes.length === 0) {
@@ -146,7 +144,7 @@ export default function GaleriaImagenes({ imagenes = [], nombreVehiculo = 'Vehí
       {/* Miniaturas (Thumbnails) */}
       <div style={{ display: 'flex', gap: compact ? 8 : 12, maxWidth: compact ? 360 : 'none' }}>
         {imagenes.map((imgSrc, idx) => (
-          <div 
+          <div
             key={idx}
             onClick={() => setIndiceActivo(idx)}
             style={{
@@ -161,4 +159,4 @@ export default function GaleriaImagenes({ imagenes = [], nombreVehiculo = 'Vehí
       </div>
     </div>
   );
-}
+}
