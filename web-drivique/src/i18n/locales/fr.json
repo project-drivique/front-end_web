@@ -1156,5 +1156,41 @@
     "clearFilters": "Effacer les filtres",
     "delete": "Supprimer",
     "viewDetailsAndReserve": "Voir détails et réserver"
+  },
+  "notificaciones": {
+    "title": "Notifications",
+    "subtitle": "Consultez vos alertes importantes et promotions exclusives",
+    "tabGenerales": "Générales",
+    "tabPromociones": "Promotions",
+    "marcarTodasLeidas": "Tout marquer comme lu",
+    "venceHoy": "Expire aujourd'hui",
+    "venceEnDias": "Expire dans {{dias}} jours",
+    "sinNotificacionesTitle": "Aucune notification générale",
+    "sinNotificacionesMsg": "Vous n'avez actuellement aucun message ni alerte en attente.",
+    "seccionCupones": "Plus de super coupons",
+    "porAgotarse": "Presque épuisé !",
+    "verCondiciones": "Conditions",
+    "reservaMinima": "Réservation minimum",
+    "sinReservaMinima": "Sans réservation minimum",
+    "aplicarCupon": "Appliquer",
+    "cuponAplicado": "✓ Appliqué",
+    "sinCuponesTitle": "Aucun coupon valide",
+    "sinCuponesMsg": "Effectuez plus de réservations pour débloquer des récompenses exclusives.",
+    "seccionPromosDestacadas": "Promotions vedettes",
+    "sinPromosTitle": "Aucune offre de véhicule pour le moment",
+    "items": {
+      "reservaConfirmadaTitle": "Réservation confirmée",
+      "reservaConfirmadaMsg": "Votre réservation du Toyota Prado a été confirmée avec succès. Le retrait se fait à la succursale de Neiva.",
+      "pagoValidadoTitle": "Paiement validé",
+      "pagoValidadoMsg": "Le paiement numérique via Wompi a été validé. Conservez votre reçu.",
+      "docsVerificadosTitle": "Documents vérifiés ✓",
+      "docsVerificadosMsg": "Votre permis de conduire et votre pièce d'identité ont été approuvés.",
+      "soporteRespuestaTitle": "Le support a répondu",
+      "soporteRespuestaMsg": "L'équipe de support a répondu au ticket #4821. Consultez la rubrique support.",
+      "alquilerFinalizadoTitle": "Location terminée",
+      "alquilerFinalizadoMsg": "Votre location de Ford Explorer s'est terminée avec succès. Merci d'avoir choisi Drivique.",
+      "politicaActualizacionTitle": "Mise à jour des politiques",
+      "politicaActualizacionMsg": "Nous avons mis à jour nos conditions de couverture dommages."
+    }
   }
 }

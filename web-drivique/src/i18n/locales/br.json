@@ -1155,5 +1155,41 @@
     "clearFilters": "Limpar filtros",
     "delete": "Remover",
     "viewDetailsAndReserve": "Ver detalhes e reservar"
+  },
+  "notificaciones": {
+    "title": "Notificações",
+    "subtitle": "Confira seus alertas importantes e promoções exclusivas",
+    "tabGenerales": "Gerais",
+    "tabPromociones": "Promoções",
+    "marcarTodasLeidas": "Marcar todas como lidas",
+    "venceHoy": "Vence hoje",
+    "venceEnDias": "Vence em {{dias}} dias",
+    "sinNotificacionesTitle": "Sem notificações gerais",
+    "sinNotificacionesMsg": "Você não tem mensagens ou alertas pendentes no momento.",
+    "seccionCupones": "Mais cupons incríveis",
+    "porAgotarse": "Quase esgotado!",
+    "verCondiciones": "Condições",
+    "reservaMinima": "Reserva mínima",
+    "sinReservaMinima": "Sem reserva mínima",
+    "aplicarCupon": "Aplicar",
+    "cuponAplicado": "✓ Aplicado",
+    "sinCuponesTitle": "Sem cupons válidos",
+    "sinCuponesMsg": "Conclua mais reservas para desbloquear recompensas exclusivas.",
+    "seccionPromosDestacadas": "Promoções em destaque",
+    "sinPromosTitle": "Sem ofertas de veículos no momento",
+    "items": {
+      "reservaConfirmadaTitle": "Reserva confirmada",
+      "reservaConfirmadaMsg": "Sua reserva do Toyota Prado foi confirmada com sucesso. A retirada é na filial Neiva.",
+      "pagoValidadoTitle": "Pagamento validado",
+      "pagoValidadoMsg": "O pagamento digital via Wompi foi validado com sucesso.",
+      "docsVerificadosTitle": "Documentos verificados ✓",
+      "docsVerificadosMsg": "Sua carteira de motorista e documento de identidade foram aprovados.",
+      "soporteRespuestaTitle": "Suporte respondeu seu caso",
+      "soporteRespuestaMsg": "A equipe de suporte respondeu ao ticket #4821. Acesse a seção de suporte.",
+      "alquilerFinalizadoTitle": "Aluguel finalizado",
+      "alquilerFinalizadoMsg": "Seu aluguel do Ford Explorer foi finalizado com sucesso.",
+      "politicaActualizacionTitle": "Atualização de políticas",
+      "politicaActualizacionMsg": "Atualizamos nossos termos de proteção contra colisões."
+    }
   }
 }
