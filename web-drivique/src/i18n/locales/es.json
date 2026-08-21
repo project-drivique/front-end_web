@@ -1213,5 +1213,34 @@
       "q3": "¿Puedo cambiar de vehículo si el reporte toma mucho tiempo?",
       "a3": "Sí, si la falla técnica supera un tiempo de solución razonable, nuestro equipo de soporte coordinará un vehículo de reemplazo de categoría equivalente en la sucursal más cercana."
     }
+  },
+  "chatbot": {
+    "toggleTitle": "Asistente de Soporte Drivique",
+    "welcomeMsg": "👋 ¡Hola! Soy el asistente virtual interactivo de Drivique 24/7.\n¿En qué puedo ayudarte hoy?",
+    "onlineStatus": "En línea | Drivique Bot 24/7",
+    "minimize": "Minimizar",
+    "close": "Cerrar",
+    "quickQuestionsTitle": "Preguntas Rápidas:",
+    "inputPlaceholder": "Escribe tu pregunta aquí...",
+    "send": "Enviar",
+    "actions": {
+      "alquilar": "🚗 ¿Cómo alquilar un vehículo?",
+      "requisitos": "📋 ¿Cuáles son los requisitos?",
+      "pagos": "💰 Métodos de pago y depósitos",
+      "agente": "👤 Hablar con un agente (WhatsApp/Teléfono)"
+    },
+    "responses": {
+      "hola": "👋 ¡Hola! Bienvenido a Drivique. ¿En qué te puedo asesorar hoy? Puedes elegir una opción rápida o escribirme cualquier inquietud.",
+      "queEsDrivique": "✨ **¿Qué es Drivique?**\n\nDrivique es la plataforma líder de alquiler de vehículos en Colombia. Te ofrecemos reservas 100% digitales, contratos online, asistencia 24/7 y la flota más moderna.",
+      "dolar": "💵 **Conversión de Moneda y Tarifas:**\n\nEn Drivique puedes visualizar todos los precios del catálogo en **COP** o **USD**.\n\n• Tarifas desde aproximadamente **{{precio}}/día**.\n• La conversión se calcula en tiempo real según la moneda seleccionada.",
+      "alquilar": "🚗 **Alquilar en Drivique es muy sencillo:**\n\n1. Selecciona tu vehículo preferido en el **Catálogo**.\n2. Elige la fecha de entrega y devolución, junto con la sucursal deseada.\n3. Adjunta tu documento de identidad y licencia de conducción válida.\n4. Realiza el pago seguro en línea a través de **Wompi**.\n5. ¡Listo! Recibirás la confirmación de reserva al instante.",
+      "requisitos": "📋 **Requisitos obligatorios para alquilar:**\n\n• **Edad mínima:** 16 años cumplidos.\n• **Documento de Identidad:** Cédula de ciudadanía, Pasaporte, Tarjeta de identidad o Documento de extranjería.\n• **Licencia de Conducción:** Vigente (nacional o internacional).\n• **Depósito de garantía:** Tarjeta de crédito o débito a nombre del titular.",
+      "pagos": "💰 **Métodos de Pago y Depósitos:**\n\nAceptamos todos los medios de pago digitales a través de la pasarela **Wompi**:\n• Tarjetas de crédito (Visa, Mastercard, American Express).\n• Transferencias PSE / Nequi / Bancolombia.\n• Tarjetas débito nacionales e internacionales en COP o USD.\n\n*El depósito en garantía se libera automáticamente 24 horas después de la devolución.*",
+      "agente": "👤 **Atención personalizada con Asesor Humano:**\n\nPuedes comunicarte de inmediato con nuestro centro de control:\n• 📱 **WhatsApp 24/7:** +57 314 478 9702\n• 📞 **Línea Telefónica:** +57 322 3163531\n• ✉️ **Correo:** soporte@drivique.com\n\n*Tiempo medio de respuesta: menos de 2 minutos.*",
+      "incidencia": "🛠️ **¿Tuviste un problema con tu vehículo?**\n\nDirígete a la sección de **Soporte** en el menú superior o ingresa a **Mis Reservas** y haz clic en **\"Hacer reporte\"**. Nuestro equipo de asistencia en carretera enviará una unidad móvil de inmediato.",
+      "cancelacion": "🔄 **Política de Cancelaciones:**\n\nPuedes cancelar tu reserva con reembolso total hasta **24 horas antes** de la fecha de entrega acordada desde la sección **Mis Reservas**.",
+      "sucursales": "🏢 **Sucursales disponibles:**\n\nContamos con sedes físicas en Neiva, Bogotá, Medellín, Cali y Cartagena. Puedes ver la ubicación exacta y horarios en la sección **Sucursales**.",
+      "default": "🤖 Entiendo tu inquietud. Puedes explorar nuestro **Catálogo** para alquilar, revisar **Mis Reservas** o contactar a un asesor por WhatsApp escribiendo **\"agente\"**."
+    }
   }
 }
