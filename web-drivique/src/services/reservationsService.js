@@ -1,5 +1,5 @@
-import reservasMock from '../mocks/reservations.json'
 import { reservationService } from './reservationService'
+import { useAuthStore } from '../store/authStore'
 
 const USAR_MOCK =
   import.meta.env.VITE_USAR_MOCK === 'true' || !import.meta.env.VITE_API_URL
@@ -37,9 +37,16 @@ function mapearReservaLocal(r) {
 export const reservationsService = {
   getReservas: async () => {
     if (USAR_MOCK) {
-      const locales = reservationService.getReservas().map(mapearReservaLocal)
-      // Las reservas reales creadas en esta sesión/navegador van primero.
-      return [...locales, ...reservasMock]
+      const usuario = useAuthStore.getState().usuario
+      const correo = usuario?.correo?.trim().toLowerCase()
+      const documento = String(usuario?.cedula || '').replace(/\D/g, '')
+      return reservationService.getReservas()
+        .filter((reserva) => {
+          const correoReserva = reserva.datosForm?.correo?.trim().toLowerCase()
+          const documentoReserva = String(reserva.datosForm?.numDoc || '').replace(/\D/g, '')
+          return (correo && correoReserva === correo) || (documento && documentoReserva === documento)
+        })
+        .map(mapearReservaLocal)
     }
 
     const api = await getApi()
@@ -49,7 +56,7 @@ export const reservationsService = {
 
   getReservasPorVehiculo: async (vehiculoId) => {
     if (USAR_MOCK) {
-      return reservasMock.filter(r => r.vehiculoId === Number(vehiculoId))
+      return reservationService.getReservas().filter(r => r.vehiculoId === Number(vehiculoId))
     }
 
     const api = await getApi()
@@ -59,7 +66,7 @@ export const reservationsService = {
 
   getReservaById: async (id) => {
     if (USAR_MOCK) {
-      const reserva = reservasMock.find(r => r.id === Number(id))
+      const reserva = reservationService.obtenerPorReferencia(id)
       if (!reserva) throw new Error('Reserva no encontrada')
       return reserva
     }
@@ -90,5 +97,26 @@ export const reservationsService = {
     const api = await getApi()
     const { data } = await api.patch(`/reservas/${id}/cancelar`)
     return data
+  },
+
+  guardarValoracion: async (id, valoracion) => {
+    if (USAR_MOCK) {
+      const guardadas = JSON.parse(localStorage.getItem('drivique_valoraciones') || '{}')
+      guardadas[id] = { ...valoracion, actualizadaEn: new Date().toISOString() }
+      localStorage.setItem('drivique_valoraciones', JSON.stringify(guardadas))
+      return guardadas[id]
+    }
+
+    const api = await getApi()
+    const { data } = await api.put(`/reservas/${id}/valoracion`, valoracion)
+    return data
+  },
+
+  getValoracionesLocales: () => {
+    try {
+      return JSON.parse(localStorage.getItem('drivique_valoraciones') || '{}')
+    } catch {
+      return {}
+    }
   },
 }

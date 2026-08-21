@@ -1,4 +1,3 @@
-import React from 'react'
 import { createRoot } from 'react-dom/client'
 import AlertModal from '../modules/catalog/components/AlertModal'
 import { FaCheckCircle, FaExclamationTriangle, FaInfoCircle, FaQuestionCircle } from 'react-icons/fa'
@@ -33,8 +32,7 @@ export const showAlert = (options) => {
 
     const esModoOscuro = typeof document !== 'undefined' && (
       document.documentElement.classList.contains('dark') ||
-      localStorage.getItem('drivique_tema') === 'oscuro' ||
-      localStorage.getItem('tema') === 'oscuro'
+      sessionStorage.getItem('rm_tema') === 'oscuro'
     )
 
     const iconType = options.icon || 'info'

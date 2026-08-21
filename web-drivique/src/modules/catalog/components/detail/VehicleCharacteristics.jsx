@@ -1,6 +1,5 @@
 import { useTranslation } from 'react-i18next'
 import { FaCar, FaGasPump, FaUserFriends, FaDoorOpen, FaSuitcase, FaBolt, FaPalette, FaCalendarAlt, FaListUl, FaTag, FaIdCard } from 'react-icons/fa'
-import DetailSection from './DetailSection'
 import SpecsGrid from './SpecsGrid'
 
 const CAT_KEYS   = { 'Económico': 'catalogo.catEco', 'Deportivo': 'catalogo.catSport', 'Sedan': 'catalogo.catSedan', 'SUV': 'catalogo.catSuv' }
