@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useLanding } from '../../landing/LandingContext';
 import { formatCurrency } from '@/utils/currencyUtils';
 import { RECARGOS_LOGISTICOS } from '../../catalog/constants';
-import { FaUser, FaIdCard, FaShieldAlt, FaArrowRight } from 'react-icons/fa';
+import { FaUser, FaIdCard, FaShieldAlt } from 'react-icons/fa';
 
 
 const DocumentUploader = ({ label, helpText, error, file, loading, onUpload, onClear, required = true, c }) => {

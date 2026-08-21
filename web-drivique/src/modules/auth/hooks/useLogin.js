@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { authService } from '../../../services/authService'
-import { adminService } from '../../../services/adminService'
 import { useAuthStore } from '../../../store/authStore'
 
 const MAX_INTENTOS = 3
@@ -58,8 +57,7 @@ export function useLogin() {
     setErrores({ correo: '', contrasena: '', general: '' })
 
     try {
-      const servicio = correo.trim().toLowerCase() === 'admin@drivique.com' ? adminService.login : authService.login
-      const datos = await servicio({ correo, contrasena })
+      const datos = await authService.login({ correo, contrasena })
 
       if (datos.requiere2FA) {
         iniciar2FA(datos.sesionTemporal)

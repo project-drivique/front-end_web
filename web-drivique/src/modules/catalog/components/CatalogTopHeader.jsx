@@ -5,7 +5,6 @@ import { useState } from 'react'
 import logo from '@/assets/logocatalog.png'
 import MenuConfiguracion from '@/components/MenuConfiguracion'
 import { useAuthStore } from '@/store/authStore'
-import { showAlert } from '@/utils/swalConfig'
 import './CatalogTopHeader.css'
 
 function iniciales(nombre = '', apellido = '', correo = '') {

@@ -1,25 +1,20 @@
 import { useState, useMemo, useRef } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useLanding } from '../../landing/LandingContext'
-import { useAuthStore } from '../../../store/authStore'
 import { formatCurrency } from '@/utils/currencyUtils'
 import { useCatalogo } from '../hooks/useCatalog'
 import VehicleGrid from '../components/VehicleGrid'
 import LoadingState from '../components/LoadingState'
 import ErrorState from '../components/ErrorState'
 import CatalogPagination from '../components/CatalogPagination'
-import { showAlert } from '@/utils/swalConfig'
 import {
   FaMapMarkerAlt,
   FaClock,
   FaCar,
   FaCheckCircle,
-  FaArrowLeft,
-  FaStar
+  FaArrowLeft
 } from 'react-icons/fa'
-
-const COLOR_BOTON_AZUL = 'linear-gradient(90deg, #1e3a8a, #2563eb)'
 
 const coloresTema = (esModoOscuro) => ({
   pageBg: esModoOscuro ? '#020617' : '#f8fafc',
@@ -593,7 +588,6 @@ export default function SucursalesPage() {
   const { t, i18n } = useTranslation()
   const { tema, moneda } = useLanding()
   const navigate = useNavigate()
-  const { usuario } = useAuthStore()
   const esModoOscuro = tema === 'oscuro'
   const c = coloresTema(esModoOscuro)
   const [sucursalActiva, setSucursalActiva] = useState(null)
@@ -620,9 +614,6 @@ export default function SucursalesPage() {
     if (suc.flotaKeys && suc.flotaKeys[lang]) return suc.flotaKeys[lang]
     return suc.flota
   }
-
-  const token = useAuthStore((s) => s.token)
-  const esAutenticado = Boolean(token && usuario)
 
   const vehiculosSucursalCache = useMemo(() => {
     const map = {}

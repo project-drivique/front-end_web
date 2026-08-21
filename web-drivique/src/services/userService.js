@@ -1,12 +1,6 @@
 ﻿import { api } from './authService'
 import { useAuthStore } from '../store/authStore'
-
-const MOCK_PASSWORDS = {
-  'admin@drivique.com': 'Admin123*',
-  'cliente@drivique.com': 'Cliente123*',
-}
-
-const MOCK_EMAILS = Object.keys(MOCK_PASSWORDS)
+import { mockUsersStorage } from './mockUsersStorage'
 
 const getUsuarioGuardado = () => useAuthStore.getState().usuario
 
@@ -28,10 +22,8 @@ export const userService = {
       if (err?.response?.status === 409) throw err
       const usuario = getUsuarioGuardado()
       const correoNorm = correo.toLowerCase()
-      const ocupado = MOCK_EMAILS.find(
-        (e) => e === correoNorm && e !== usuario?.correo?.toLowerCase()
-      )
-      if (ocupado) {
+      const ocupado = mockUsersStorage.buscarPorCorreo(correoNorm)
+      if (ocupado && ocupado.correo.toLowerCase() !== usuario?.correo?.toLowerCase()) {
         const conflict = new Error('Correo ya registrado')
         conflict.response = { status: 409, data: { mensaje: 'Este correo ya está registrado' } }
         throw conflict
@@ -48,8 +40,7 @@ export const userService = {
       if (err?.response?.status === 401 || err?.response?.status === 400) throw err
       const usuario = getUsuarioGuardado()
       const correo = usuario?.correo?.toLowerCase()
-      const guardadas = JSON.parse(localStorage.getItem('renta_passwords') || '{}')
-      const passwordCorrecta = guardadas[correo] ?? MOCK_PASSWORDS[correo]
+      const passwordCorrecta = mockUsersStorage.buscarPorCorreo(correo)?.contrasena
       if (passwordCorrecta && contrasena === passwordCorrecta) {
         return { valida: true }
       }
@@ -67,15 +58,13 @@ export const userService = {
       if (err?.response?.status === 401 || err?.response?.status === 400) throw err
       const usuario = getUsuarioGuardado()
       const correo = usuario?.correo?.toLowerCase()
-      const guardadas = JSON.parse(localStorage.getItem('renta_passwords') || '{}')
-      const passwordCorrecta = guardadas[correo] ?? MOCK_PASSWORDS[correo]
+      const passwordCorrecta = mockUsersStorage.buscarPorCorreo(correo)?.contrasena
       if (!passwordCorrecta || contrasenaActual !== passwordCorrecta) {
         const error = new Error('Contraseña actual incorrecta')
         error.response = { status: 401, data: { mensaje: 'Contraseña actual incorrecta' } }
         throw error
       }
-      const nuevas = { ...guardadas, [correo]: contrasenaNueva }
-      localStorage.setItem('renta_passwords', JSON.stringify(nuevas))
+      mockUsersStorage.actualizarContrasena(correo, contrasenaNueva)
       return { mensaje: 'Contraseña actualizada correctamente' }
     }
   },

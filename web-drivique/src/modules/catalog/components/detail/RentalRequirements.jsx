@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { FaIdCard, FaCreditCard, FaUserAlt, FaClipboardCheck } from 'react-icons/fa'
+import { FaIdCard, FaUserAlt, FaClipboardCheck } from 'react-icons/fa'
 
 export default function RentalRequirements({ c }) {
   const { t } = useTranslation()

@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { FaTimes, FaCar, FaInfoCircle } from 'react-icons/fa'
+import { FaTimes, FaCar } from 'react-icons/fa'
 import ImageGallery from './ImageGallery'
 import VehicleCharacteristics from './VehicleCharacteristics'
 import EquipmentSection from './EquipmentSection'
