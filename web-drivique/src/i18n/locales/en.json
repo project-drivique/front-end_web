@@ -53,7 +53,9 @@
       "emailInvalid": "Invalid email format",
       "accountLocked": "Account locked. Use Forgot your password?",
       "invalidCredentials": "Invalid credentials. Remaining attempts: {{remaining}}",
-      "maxAttemptsReached": "Account locked after {{max}} failed attempts."
+      "maxAttemptsReached": "Account locked after {{max}} failed attempts.",
+      "temporaryLock": "Account temporarily locked for {{minutes}} minutes.",
+      "accessDenied": "You do not have permission to access. Contact the main administrator."
     }
   },
   "registro": {
@@ -1020,7 +1022,17 @@
     "payments": "Payments",
     "contracts": "Contracts",
     "branches": "Branches",
-    "logout": "Sign out"
+    "logout": "Sign out",
+    "adminRole": "General administrator",
+    "branchRole": "Branch manager",
+    "branchTitle": "Branch dashboard",
+    "welcome": "Welcome, {{name}}",
+    "assignedBranch": "Assigned branch",
+    "audit": "Audit",
+    "moduleAvailable": "Module available according to your permissions.",
+    "recentAccess": "Recent administrative access",
+    "noAudit": "There are no access records yet.",
+    "auditColumns": { "date": "Date and time", "email": "Email", "role": "Role", "result": "Result", "ip": "IP" }
   },
   "contratoFirma": {
     "badgeLabel": "Digital document",
