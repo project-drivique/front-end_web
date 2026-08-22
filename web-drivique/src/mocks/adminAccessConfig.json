@@ -23,5 +23,22 @@
   "dashboardModules": {
     "administrador": ["vehicles", "users", "reservations", "contracts", "branches", "audit"],
     "encargado_sucursal": ["vehicles", "reservations", "contracts"]
+  },
+  "dashboardNavigation": {
+    "administrador": [
+      { "key": "dashboard", "route": "/admin" },
+      { "key": "vehicles", "route": "/admin/vehicles" },
+      { "key": "users", "route": "/admin/users" },
+      { "key": "reservations", "route": "/admin/reservations" },
+      { "key": "contracts", "route": "/admin/contracts" },
+      { "key": "branches", "route": "/admin/branches" },
+      { "key": "audit", "route": "/admin/audit" }
+    ],
+    "encargado_sucursal": [
+      { "key": "dashboard", "route": "/encargado" },
+      { "key": "vehicles", "route": "/encargado/vehicles" },
+      { "key": "reservations", "route": "/encargado/reservations" },
+      { "key": "contracts", "route": "/encargado/contracts" }
+    ]
   }
 }
