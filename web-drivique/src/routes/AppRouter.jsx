@@ -16,10 +16,11 @@ import UserCatalogPage from '../modules/catalog/pages/UserCatalogPage'
 import ReservationFlowPage from '../modules/reservations/pages/ReservationFlowPage'
 import VehicleDetailsPage from '../modules/catalog/pages/VehicleDetailsPage'
 import AdminPage from '../modules/admin/pages/AdminPage'
+import BranchManagerPage from '../modules/admin/pages/BranchManagerPage'
+import { getRoleHome, hasValidRoleAccess, ROLES } from '../modules/auth/utils/accessControl'
 import BranchesPage from '../modules/catalog/pages/BranchesPage'
 import ProfilePage from '../modules/profile/pages/ProfilePage'
 import PaymentResponsePage from '../modules/payments/pages/PaymentResponsePage'
-import PlaceholderPage from '../components/PlaceholderPage'
 import ReservationsPage from '../modules/reservations/pages/ReservationsPage'
 import FavoritesPage from '../modules/catalog/pages/FavoritesPage'
 import NotificationsPage from '../modules/notifications/pages/NotificationsPage'
@@ -34,6 +35,18 @@ function RutaPrivada({ children }) {
   return esValido ? children : <Navigate to="/" replace />
 }
 
+function RutaPorRol({ children, roles }) {
+  const token = useAuthStore((s) => s.token)
+  const usuario = useAuthStore((s) => s.usuario)
+  const hydrated = useHydration()
+  if (!hydrated) return null
+  const esValido = token && token !== 'null' && token !== 'undefined'
+  if (!esValido) return <Navigate to="/login" replace />
+  return roles.includes(usuario?.rol) && hasValidRoleAccess(usuario)
+    ? children
+    : <Navigate to="/login" replace />
+}
+
 function Ruta2FA({ children }) {
   const sesion2FA = useAuthStore((s) => s.sesion2FA)
   const token     = useAuthStore((s) => s.token)
@@ -41,8 +54,7 @@ function Ruta2FA({ children }) {
   const hydrated  = useHydration()
   if (!hydrated) return null
   if (token) {
-    const lastPath = localStorage.getItem('last_path')
-    return <Navigate to={lastPath && lastPath !== '/' && lastPath !== '/login' ? lastPath : (usuario?.rol === 'administrador' ? '/admin' : '/home')} replace />
+    return <Navigate to={getRoleHome(usuario?.rol)} replace />
   }
   return sesion2FA ? children : <Navigate to="/login" replace />
 }
@@ -54,8 +66,7 @@ function RutaVerificacionCorreo({ children }) {
   const hydrated           = useHydration()
   if (!hydrated) return null
   if (token) {
-    const lastPath = localStorage.getItem('last_path')
-    return <Navigate to={lastPath && lastPath !== '/' && lastPath !== '/login' ? lastPath : (usuario?.rol === 'administrador' ? '/admin' : '/home')} replace />
+    return <Navigate to={getRoleHome(usuario?.rol)} replace />
   }
   return verificacionCorreo ? children : <Navigate to="/home" replace />
 }
@@ -67,8 +78,7 @@ function RutaRecuperacionCorreo({ children }) {
   const hydrated           = useHydration()
   if (!hydrated) return null
   if (token) {
-    const lastPath = localStorage.getItem('last_path')
-    return <Navigate to={lastPath && lastPath !== '/' && lastPath !== '/login' ? lastPath : (usuario?.rol === 'administrador' ? '/admin' : '/home')} replace />
+    return <Navigate to={getRoleHome(usuario?.rol)} replace />
   }
   return recuperacionCorreo ? children : <Navigate to="/login" replace />
 }
@@ -101,7 +111,8 @@ export default function AppRouter() {
         <Route path="/verificar-recuperacion" element={<RutaRecuperacionCorreo><VerifyRecoverPage /></RutaRecuperacionCorreo>} />
 
         <Route path="/home" element={<RutaPrivada><UserCatalogPage /></RutaPrivada>} />
-        <Route path="/admin" element={<RutaPrivada><AdminPage /></RutaPrivada>} />
+        <Route path="/admin" element={<RutaPorRol roles={[ROLES.ADMIN]}><AdminPage /></RutaPorRol>} />
+        <Route path="/encargado" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER]}><BranchManagerPage /></RutaPorRol>} />
         <Route path="/perfil" element={<RutaPrivada><ProfilePage /></RutaPrivada>} />
         <Route path="/catalogo" element={<CatalogPage />} />
         <Route path="/catalogo/:id" element={<VehicleDetailsPage />} />
