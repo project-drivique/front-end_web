@@ -2,6 +2,9 @@ import axios from 'axios'
 // Importa Axios, una librería para hacer peticiones HTTP a una API.
 import { useAuthStore } from '../store/authStore'
 import { mockUsersStorage } from './mockUsersStorage'
+import { accessAuditService } from './accessAuditService'
+import { hasValidRoleAccess, PERMISSIONS, ROLES } from '../modules/auth/utils/accessControl'
+import accessConfig from '../mocks/adminAccessConfig.json'
 // Store de Zustand: fuente de verdad del token en memoria.
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
@@ -58,24 +61,75 @@ const CODIGOS_RECUPERACION_MOCK = new Map()
 const generarCodigoMock = () => Math.floor(100000 + Math.random() * 900000).toString()
 // Genera un código numérico de 6 dígitos.
 
+const LOGIN_SECURITY_KEY = 'drivique_login_security'
+const MAX_LOGIN_ATTEMPTS = accessConfig.security.maxLoginAttempts
+const LOCK_DURATION_MS = accessConfig.security.lockDurationMinutes * 60 * 1000
+
+function readLoginSecurity() {
+  try {
+    return JSON.parse(localStorage.getItem(LOGIN_SECURITY_KEY) || '{}') || {}
+  } catch {
+    return {}
+  }
+}
+
+function getLoginSecurity(correo) {
+  const key = String(correo || '').trim().toLowerCase()
+  const all = readLoginSecurity()
+  const current = all[key] || { intentos: 0, bloqueadoHasta: 0 }
+  if (current.bloqueadoHasta && current.bloqueadoHasta <= Date.now()) {
+    delete all[key]
+    localStorage.setItem(LOGIN_SECURITY_KEY, JSON.stringify(all))
+    return { intentos: 0, bloqueadoHasta: 0 }
+  }
+  return current
+}
+
+function saveLoginFailure(correo) {
+  const key = String(correo || '').trim().toLowerCase()
+  const all = readLoginSecurity()
+  const current = getLoginSecurity(correo)
+  const intentos = current.intentos + 1
+  const bloqueadoHasta = intentos >= MAX_LOGIN_ATTEMPTS ? Date.now() + LOCK_DURATION_MS : 0
+  all[key] = { intentos: bloqueadoHasta ? 0 : intentos, bloqueadoHasta }
+  localStorage.setItem(LOGIN_SECURITY_KEY, JSON.stringify(all))
+  return { intentos, bloqueadoHasta, restantes: Math.max(0, MAX_LOGIN_ATTEMPTS - intentos) }
+}
+
+function clearLoginSecurity(correo) {
+  const key = String(correo || '').trim().toLowerCase()
+  const all = readLoginSecurity()
+  delete all[key]
+  localStorage.setItem(LOGIN_SECURITY_KEY, JSON.stringify(all))
+}
+
 function prepararUsuariosLocales() {
-  mockUsersStorage.asegurarConfigurados([
+  const migrado = mockUsersStorage.asegurarConfigurados([
     {
       correo: import.meta.env.VITE_MOCK_USER_EMAIL,
       contrasena: import.meta.env.VITE_MOCK_USER_PASSWORD,
       nombre: import.meta.env.VITE_MOCK_USER_NAME || '',
       apellido: import.meta.env.VITE_MOCK_USER_LASTNAME || '',
-      rol: 'usuario', telefono: '', cedula: '', fechaNacimiento: '',
+      rol: ROLES.USER, activo: true, permisos: [], telefono: '', cedula: '', fechaNacimiento: '',
       nacionalidad: '', tipoDocumento: '', emailVerificado: true,
     },
     {
       correo: import.meta.env.VITE_MOCK_ADMIN_EMAIL,
       contrasena: import.meta.env.VITE_MOCK_ADMIN_PASSWORD,
       nombre: import.meta.env.VITE_MOCK_ADMIN_NAME || '',
-      apellido: '', rol: 'administrador', telefono: '', cedula: '',
+      apellido: '', rol: ROLES.ADMIN, activo: true, permisos: [PERMISSIONS.ADMIN_PANEL], telefono: '', cedula: '',
       fechaNacimiento: '', nacionalidad: '', tipoDocumento: '', emailVerificado: true,
     },
+    {
+      correo: import.meta.env.VITE_MOCK_MANAGER_EMAIL,
+      contrasena: import.meta.env.VITE_MOCK_MANAGER_PASSWORD,
+      nombre: import.meta.env.VITE_MOCK_MANAGER_NAME || '',
+      apellido: '', rol: ROLES.BRANCH_MANAGER, activo: true,
+      permisos: [PERMISSIONS.BRANCH_PANEL], sucursalId: import.meta.env.VITE_MOCK_MANAGER_BRANCH_ID,
+      telefono: '', cedula: '', fechaNacimiento: '', nacionalidad: '', tipoDocumento: '', emailVerificado: true,
+    },
   ])
+  if (migrado) localStorage.removeItem(LOGIN_SECURITY_KEY)
 }
 
 export const authService = {
@@ -91,7 +145,23 @@ export const authService = {
     // Busca un usuario que coincida con correo y contraseña.
     // El correo se compara en minúsculas para evitar problemas por mayúsculas/minúsculas.
 
+    const seguridad = getLoginSecurity(correo)
+    if (seguridad.bloqueadoHasta > Date.now()) {
+      accessAuditService.record({ correo, rol: usuario?.rol, resultado: 'bloqueado', motivo: 'bloqueo_temporal' })
+      const error = new Error('Cuenta bloqueada temporalmente')
+      error.response = { status: 429, data: { codigo: 'ACCOUNT_LOCKED', bloqueadoHasta: seguridad.bloqueadoHasta } }
+      throw error
+    }
+
     if (usuario?.contrasena === contrasena) {
+      if (!hasValidRoleAccess(usuario)) {
+        accessAuditService.record({ correo, rol: usuario.rol, resultado: 'denegado', motivo: 'sin_permisos' })
+        const error = new Error('ACCESS_DENIED')
+        error.response = { status: 403, data: { codigo: 'ACCESS_DENIED' } }
+        throw error
+      }
+      clearLoginSecurity(correo)
+      accessAuditService.record({ correo, rol: usuario.rol, resultado: 'exitoso' })
       return {
         token: generateMockToken(),
         // Devuelve un token falso si el usuario existe.
@@ -100,6 +170,9 @@ export const authService = {
         nombre: usuario.nombre,
         apellido: usuario.apellido,
         rol: usuario.rol,
+        activo: usuario.activo,
+        permisos: usuario.permisos,
+        sucursalId: usuario.sucursalId,
         telefono: usuario.telefono,
         cedula: usuario.cedula,
         fechaNacimiento: usuario.fechaNacimiento,
@@ -109,10 +182,19 @@ export const authService = {
       }
     }
 
+    const fallo = saveLoginFailure(correo)
+    accessAuditService.record({ correo, rol: usuario?.rol, resultado: 'fallido', motivo: 'credenciales_incorrectas' })
     const error = new Error('Credenciales incorrectas')
     // Crea un error si no encuentra coincidencia.
 
-    error.response = { status: 401 }
+    error.response = {
+      status: fallo.bloqueadoHasta ? 429 : 401,
+      data: {
+        codigo: fallo.bloqueadoHasta ? 'ACCOUNT_LOCKED' : 'INVALID_CREDENTIALS',
+        restantes: fallo.restantes,
+        bloqueadoHasta: fallo.bloqueadoHasta || undefined,
+      },
+    }
     // Simula un error HTTP 401 Unauthorized.
 
     throw error
@@ -140,7 +222,9 @@ export const authService = {
       apellido: '',
       nacionalidad: '',
       tipoDocumento: '',
-      rol: 'usuario',
+      rol: ROLES.USER,
+      activo: true,
+      permisos: [],
       telefono: '',
       cedula: '',
       fechaNacimiento: '',
