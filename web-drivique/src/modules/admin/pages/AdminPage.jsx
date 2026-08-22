@@ -1,10 +1,5 @@
-import { useTranslation } from 'react-i18next'
+import ManagementDashboard from '../components/ManagementDashboard'
 
 export default function AdminPage() {
-  const { t } = useTranslation()
-  return (
-    <div>
-      <h1>{t('admin.title')}</h1>
-    </div>
-  )
+  return <ManagementDashboard />
 }

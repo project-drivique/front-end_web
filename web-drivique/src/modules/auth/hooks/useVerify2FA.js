@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { authService } from '../../../services/authService'
 import { useAuthStore } from '../../../store/authStore'
+import { getRoleHome } from '../utils/accessControl'
 
 const LARGO_CODIGO  = 6
 const TIEMPO_REENVIO = 60 // segundos
@@ -86,7 +87,7 @@ export function useVerify2FA() {
       const datos = await authService.verificar2FA(sesion2FA, codigo)
       redirigiendoRef.current = true
       storeLogin(datos.token, datos.usuario)
-      const destino = datos.usuario?.rol === 'administrador' ? '/admin' : '/home'
+      const destino = getRoleHome(datos.usuario?.rol)
       navigate(destino, { replace: true })
     } catch (err) {
       const msg = err?.response?.data?.mensaje || ''

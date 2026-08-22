@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { authService } from '../../../services/authService'
 import { useAuthStore } from '../../../store/authStore'
+import { getRoleHome } from '../utils/accessControl'
 
 const MAX_INTENTOS = 3
 
@@ -17,9 +18,20 @@ export function useLogin() {
   const [mostrarPass, setMostrarPass] = useState(false)
   const [cargando, setCargando] = useState(false)
   const [intentos, setIntentos] = useState(0)
-  const [bloqueado, setBloqueado] = useState(false)
+  const [bloqueadoHasta, setBloqueadoHasta] = useState(0)
   const [errores, setErrores] = useState({ correo: '', contrasena: '', general: '' })
   const [exito, setExito] = useState('')
+  const bloqueado = Boolean(bloqueadoHasta)
+
+  useEffect(() => {
+    if (!bloqueadoHasta) return undefined
+    const timeout = setTimeout(() => {
+      setBloqueadoHasta(0)
+      setIntentos(0)
+      setErrores((prev) => ({ ...prev, general: '' }))
+    }, Math.max(0, bloqueadoHasta - Date.now()))
+    return () => clearTimeout(timeout)
+  }, [bloqueadoHasta])
 
   const validarCorreo = (valor) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -73,28 +85,38 @@ export function useLogin() {
         telefono: datos.telefono,
         cedula: datos.cedula,
         fechaNacimiento: datos.fechaNacimiento,
+        activo: datos.activo,
+        permisos: datos.permisos,
+        sucursalId: datos.sucursalId,
       })
 
       setExito(t('login.successRedirecting'))
 
       setTimeout(() => {
-        const lastPath = localStorage.getItem('last_path')
-        navigate(lastPath && lastPath !== '/' && lastPath !== '/login' ? lastPath : (datos.rol === 'administrador' ? '/admin' : '/home'))
+        navigate(getRoleHome(datos.rol))
       }, 1000)
-    } catch {
+    } catch (error) {
+      const status = error?.response?.status
+      const data = error?.response?.data || {}
+
+      if (status === 403) {
+        setErrores((prev) => ({ ...prev, general: t('login.errors.accessDenied') }))
+        return
+      }
+
       const nuevosIntentos = intentos + 1
       setIntentos(nuevosIntentos)
 
-      if (nuevosIntentos >= MAX_INTENTOS) {
-        setBloqueado(true)
+      if (status === 429) {
+        setBloqueadoHasta(data.bloqueadoHasta || Date.now() + 5 * 60 * 1000)
         setErrores((prev) => ({
           ...prev,
-          general: t('login.errors.maxAttemptsReached', { max: MAX_INTENTOS }),
+          general: t('login.errors.temporaryLock', { minutes: 5 }),
         }))
       } else {
         setErrores((prev) => ({
           ...prev,
-          general: t('login.errors.invalidCredentials', { remaining: MAX_INTENTOS - nuevosIntentos }),
+          general: t('login.errors.invalidCredentials', { remaining: data.restantes ?? Math.max(0, MAX_INTENTOS - nuevosIntentos) }),
         }))
       }
     } finally {
