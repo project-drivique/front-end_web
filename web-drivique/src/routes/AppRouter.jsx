@@ -17,6 +17,7 @@ import ReservationFlowPage from '../modules/reservations/pages/ReservationFlowPa
 import VehicleDetailsPage from '../modules/catalog/pages/VehicleDetailsPage'
 import AdminPage from '../modules/admin/pages/AdminPage'
 import BranchManagerPage from '../modules/admin/pages/BranchManagerPage'
+import ManagementModulePage from '../modules/admin/pages/ManagementModulePage'
 import { getRoleHome, hasValidRoleAccess, ROLES } from '../modules/auth/utils/accessControl'
 import BranchesPage from '../modules/catalog/pages/BranchesPage'
 import ProfilePage from '../modules/profile/pages/ProfilePage'
@@ -95,6 +96,15 @@ function RouteTracker() {
   return null
 }
 
+function ContextualChatBot() {
+  const { pathname } = useLocation()
+  const isManagementRoute = pathname === '/admin'
+    || pathname.startsWith('/admin/')
+    || pathname === '/encargado'
+    || pathname.startsWith('/encargado/')
+  return isManagementRoute ? null : <FloatingChatBot />
+}
+
 export default function AppRouter() {
   return (
     <BrowserRouter>
@@ -112,7 +122,9 @@ export default function AppRouter() {
 
         <Route path="/home" element={<RutaPrivada><UserCatalogPage /></RutaPrivada>} />
         <Route path="/admin" element={<RutaPorRol roles={[ROLES.ADMIN]}><AdminPage /></RutaPorRol>} />
+        <Route path="/admin/:moduleKey" element={<RutaPorRol roles={[ROLES.ADMIN]}><ManagementModulePage /></RutaPorRol>} />
         <Route path="/encargado" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER]}><BranchManagerPage /></RutaPorRol>} />
+        <Route path="/encargado/:moduleKey" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER]}><ManagementModulePage /></RutaPorRol>} />
         <Route path="/perfil" element={<RutaPrivada><ProfilePage /></RutaPrivada>} />
         <Route path="/catalogo" element={<CatalogPage />} />
         <Route path="/catalogo/:id" element={<VehicleDetailsPage />} />
@@ -126,7 +138,7 @@ export default function AppRouter() {
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-      <FloatingChatBot />
+      <ContextualChatBot />
     </BrowserRouter>
   )
 }
