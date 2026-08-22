@@ -4,6 +4,7 @@ import { FaSlidersH, FaCalendarAlt } from 'react-icons/fa'
 import { useTranslation } from 'react-i18next'
 import { useLanding } from '../../landing/LandingContext'
 import { useAuthStore } from '../../../store/authStore'
+import { getRoleHome } from '../../auth/utils/accessControl'
 import { COLOR_MARCA } from '../constants'
 import { useCatalogo } from '../hooks/useCatalog'
 
@@ -78,7 +79,7 @@ export default function CatalogoPage() {
   useEffect(() => {
     const esTokenValido = token && token !== 'null' && token !== 'undefined'
     if (esTokenValido) {
-      navigate(usuario?.rol === 'administrador' ? '/admin' : '/home', { replace: true })
+      navigate(getRoleHome(usuario?.rol), { replace: true })
     }
   }, [token, usuario, navigate])
 

@@ -53,7 +53,9 @@
       "emailInvalid": "Formato de correo inválido",
       "accountLocked": "Cuenta bloqueada. Usa ¿Olvidaste tu contraseña?",
       "invalidCredentials": "Credenciales incorrectas. Intentos restantes: {{remaining}}",
-      "maxAttemptsReached": "Cuenta bloqueada tras {{max}} intentos fallidos."
+      "maxAttemptsReached": "Cuenta bloqueada tras {{max}} intentos fallidos.",
+      "temporaryLock": "Cuenta bloqueada temporalmente durante {{minutes}} minutos.",
+      "accessDenied": "No tienes permisos para acceder. Contacta al administrador principal."
     }
   },
   "registro": {
@@ -987,7 +989,17 @@
     "payments": "Pagos",
     "contracts": "Contratos",
     "branches": "Sucursales",
-    "logout": "Cerrar sesión"
+    "logout": "Cerrar sesión",
+    "adminRole": "Administrador general",
+    "branchRole": "Encargado de sucursal",
+    "branchTitle": "Panel de sucursal",
+    "welcome": "Bienvenido, {{name}}",
+    "assignedBranch": "Sucursal asignada",
+    "audit": "Auditoría",
+    "moduleAvailable": "Módulo disponible según tus permisos.",
+    "recentAccess": "Accesos administrativos recientes",
+    "noAudit": "Todavía no hay registros de acceso.",
+    "auditColumns": { "date": "Fecha y hora", "email": "Correo", "role": "Rol", "result": "Resultado", "ip": "IP" }
   },
   "panel": {
     "welcome": "Bienvenido de vuelta",

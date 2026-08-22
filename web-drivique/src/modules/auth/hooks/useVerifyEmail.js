@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { authService, DURACION_CODIGO_VERIFICACION_MS } from '../../../services/authService'
 import { useAuthStore } from '../../../store/authStore'
+import { getRoleHome } from '../utils/accessControl'
 import { showAlert } from '../../../utils/swalConfig'
 
 const LARGO_CODIGO = 6
@@ -140,7 +141,7 @@ export function useVerifyEmail() {
         showConfirmButton: false,
       })
 
-      const destino = verificacionCorreo?.datosAcceso?.rol === 'administrador' ? '/admin' : '/home'
+      const destino = getRoleHome(verificacionCorreo?.datosAcceso?.rol)
       navigate(destino, { replace: true })
     } catch (err) {
       const status = err?.response?.status
