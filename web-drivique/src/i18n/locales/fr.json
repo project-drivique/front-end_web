@@ -53,7 +53,9 @@
       "emailInvalid": "Format d'e-mail invalide",
       "accountLocked": "Compte bloqué. Utilisez Mot de passe oublié ?",
       "invalidCredentials": "Identifiants incorrects. Tentatives restantes : {{remaining}}",
-      "maxAttemptsReached": "Compte bloqué après {{max}} tentatives échouées."
+      "maxAttemptsReached": "Compte bloqué après {{max}} tentatives échouées.",
+      "temporaryLock": "Compte temporairement bloqué pendant {{minutes}} minutes.",
+      "accessDenied": "Vous n’avez pas les autorisations nécessaires. Contactez l’administrateur principal."
     }
   },
   "registro": {
@@ -1009,7 +1011,17 @@
     "payments": "Paiements",
     "contracts": "Contrats",
     "branches": "Agences",
-    "logout": "Se déconnecter"
+    "logout": "Se déconnecter",
+    "adminRole": "Administrateur général",
+    "branchRole": "Responsable d’agence",
+    "branchTitle": "Tableau de bord de l’agence",
+    "welcome": "Bienvenue, {{name}}",
+    "assignedBranch": "Agence assignée",
+    "audit": "Audit",
+    "moduleAvailable": "Module disponible selon vos autorisations.",
+    "recentAccess": "Accès administratifs récents",
+    "noAudit": "Aucun accès enregistré pour le moment.",
+    "auditColumns": { "date": "Date et heure", "email": "E-mail", "role": "Rôle", "result": "Résultat", "ip": "IP" }
   },
   "contratoFirma": {
     "badgeLabel": "Document numérique",

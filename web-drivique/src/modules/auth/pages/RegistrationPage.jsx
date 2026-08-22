@@ -17,6 +17,7 @@ import {
   FaCheckCircle
 } from 'react-icons/fa'
 import AuthHeaderControls from '../components/AuthHeaderControls'
+import { getRoleHome } from '../utils/accessControl'
 
 const COLOR_MARCA = '#1e3a8a'
 
@@ -372,7 +373,7 @@ export default function RegistroPage() {
         text: t('registro.successText'),
       })
       const rol = data?.usuario?.rol
-      setTimeout(() => navigate(rol === 'administrador' ? '/admin' : '/home'), 2000)
+      setTimeout(() => navigate(getRoleHome(rol)), 2000)
     },
   })
 
