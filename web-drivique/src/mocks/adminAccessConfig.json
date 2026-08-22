@@ -1,0 +1,27 @@
+{
+  "roles": {
+    "user": "usuario",
+    "admin": "administrador",
+    "branchManager": "encargado_sucursal"
+  },
+  "permissions": {
+    "adminPanel": "panel_administracion",
+    "branchPanel": "panel_sucursal"
+  },
+  "destinations": {
+    "usuario": "/home",
+    "administrador": "/admin",
+    "encargado_sucursal": "/encargado"
+  },
+  "security": {
+    "maxLoginAttempts": 3,
+    "lockDurationMinutes": 5
+  },
+  "audit": {
+    "maxRecords": 100
+  },
+  "dashboardModules": {
+    "administrador": ["vehicles", "users", "reservations", "contracts", "branches", "audit"],
+    "encargado_sucursal": ["vehicles", "reservations", "contracts"]
+  }
+}
