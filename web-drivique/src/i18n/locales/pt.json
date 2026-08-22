@@ -53,7 +53,9 @@
       "emailInvalid": "Formato de e-mail inválido",
       "accountLocked": "Conta bloqueada. Use Esqueceu a palavra-passe?",
       "invalidCredentials": "Credenciais incorretas. Tentativas restantes: {{remaining}}",
-      "maxAttemptsReached": "Conta bloqueada após {{max}} tentativas falhadas."
+      "maxAttemptsReached": "Conta bloqueada após {{max}} tentativas falhadas.",
+      "temporaryLock": "Conta temporariamente bloqueada durante {{minutes}} minutos.",
+      "accessDenied": "Não tem permissões para aceder. Contacte o administrador principal."
     }
   },
   "registro": {
@@ -1008,7 +1010,17 @@
     "payments": "Pagamentos",
     "contracts": "Contratos",
     "branches": "Agências",
-    "logout": "Terminar sessão"
+    "logout": "Terminar sessão",
+    "adminRole": "Administrador geral",
+    "branchRole": "Responsável de agência",
+    "branchTitle": "Painel da agência",
+    "welcome": "Bem-vindo, {{name}}",
+    "assignedBranch": "Agência atribuída",
+    "audit": "Auditoria",
+    "moduleAvailable": "Módulo disponível de acordo com as suas permissões.",
+    "recentAccess": "Acessos administrativos recentes",
+    "noAudit": "Ainda não existem registos de acesso.",
+    "auditColumns": { "date": "Data e hora", "email": "E-mail", "role": "Função", "result": "Resultado", "ip": "IP" }
   },
   "contratoFirma": {
     "badgeLabel": "Documento digital",

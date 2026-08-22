@@ -10,6 +10,7 @@ import SpinnerButton from '../components/SpinnerButton'
 import LeftPanel from '../components/LeftPanel'
 import AlertModal from '../../catalog/components/AlertModal'
 import AuthHeaderControls from '../components/AuthHeaderControls'
+import { getRoleHome } from '../utils/accessControl'
 
 // ─── SVGs de proveedores sociales ─────────────────────────────────────────────
 const IconoGoogle = () => (
@@ -56,8 +57,7 @@ export default function LoginPage() {
     proveedorExito, iniciarGoogle, iniciarFacebook,
   } = useSocialRegistration({ onExito: (_, data) => {
     const rol = data?.usuario?.rol
-    const lastPath = localStorage.getItem('last_path')
-    navigate(lastPath && lastPath !== '/' && lastPath !== '/login' ? lastPath : (rol === 'administrador' ? '/admin' : '/home'))
+    navigate(getRoleHome(rol))
   } })
 
   const exitoFinal = !!proveedorExito
