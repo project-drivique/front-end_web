@@ -5,6 +5,7 @@
     "save": "Guardar cambios",
     "cancel": "Cancelar",
     "edit": "Editar",
+    "delete": "Eliminar",
     "select": "Seleccionar",
     "goBack": "Volver",
     "continue": "Continuar",
@@ -1018,7 +1019,13 @@
     "moduleAvailable": "Módulo disponible según tus permisos.",
     "recentAccess": "Accesos administrativos recientes",
     "noAudit": "Todavía no hay registros de acceso.",
-    "auditColumns": { "date": "Fecha y hora", "email": "Correo", "role": "Rol", "result": "Resultado", "ip": "IP" }
+    "auditColumns": { "date": "Fecha y hora", "email": "Correo", "role": "Rol", "result": "Resultado", "ip": "IP" },
+    "cities": {
+      "title": "Gestión de ciudades", "subtitle": "Administra las ciudades disponibles para organizar la red de sucursales.", "create": "Nueva ciudad", "search": "Buscar por ciudad o departamento...", "filterDepartment": "Filtrar por departamento", "allDepartments": "Todos los departamentos", "export": "Opciones de exportación", "print": "Imprimir", "results": "ciudades en el listado", "exportTitle": "Listado de ciudades - Drivique", "emptyTitle": "No se encontraron ciudades", "emptyText": "Ajusta los filtros o registra una nueva ciudad.", "formLabel": "Información de la ciudad", "createTitle": "Crear ciudad", "editTitle": "Editar ciudad", "deleteTitle": "Eliminar ciudad", "deleteText": "¿Deseas eliminar {{city}}? Esta acción no se puede deshacer.", "hasAirport": "Cuenta con aeropuerto", "hasTerminal": "Cuenta con terminal",
+      "fields": { "name": "Ciudad", "department": "Departamento", "branches": "Sucursales", "airport": "Aeropuerto", "terminal": "Terminal", "actions": "Acciones" },
+      "messages": { "created": "La ciudad fue creada correctamente.", "updated": "La ciudad fue actualizada correctamente.", "deleted": "La ciudad fue eliminada correctamente." },
+      "errors": { "required": "La ciudad y el departamento son obligatorios.", "duplicate": "Ya existe una ciudad con ese nombre.", "notFound": "La ciudad ya no se encuentra disponible.", "hasBranches": "No se puede eliminar: la ciudad tiene {{count}} sucursales asociadas." }
+    }
   },
   "panel": {
     "welcome": "Bienvenido de vuelta",
