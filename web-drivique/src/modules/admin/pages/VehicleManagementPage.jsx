@@ -20,7 +20,27 @@ export default function VehicleManagementPage() {
   const { t } = useTranslation(); const { tema } = useLanding(); const user = useAuthStore((state) => state.usuario)
   const [vehicles, setVehicles] = useState(() => vehicleManagementService.list()); const [search, setSearch] = useState(''); const [branchFilter, setBranchFilter] = useState('all'); const [stateFilter, setStateFilter] = useState('all'); const [modal, setModal] = useState(null); const [form, setForm] = useState(EMPTY); const [error, setError] = useState(''); const [notice, setNotice] = useState('')
   const branches = branchManagementService.list().sort((a, b) => a.nombre.localeCompare(b.nombre))
-  const filtered = useMemo(() => { const term = search.trim().toLocaleLowerCase(); return vehicles.filter((vehicle) => (branchFilter === 'all' || vehicle.sucursal === branchFilter) && (stateFilter === 'all' || vehicle.estadoEfectivo === stateFilter) && (!term || `${vehicle.nombre} ${vehicle.placa} ${vehicle.categoria} ${vehicle.sucursal}`.toLocaleLowerCase().includes(term))).sort((a, b) => a.nombre.localeCompare(b.nombre)) }, [branchFilter, search, stateFilter, vehicles])
+  const esEncargado = user?.rol === 'encargado' || user?.rol === 'encargado_sucursal' || user?.rol === 'branch_manager'
+  const sucursalAsignada = user?.sucursal || user?.sucursalId || user?.sucursalAsignada
+
+  const filtered = useMemo(() => {
+    const term = search.trim().toLocaleLowerCase()
+    return vehicles.filter((vehicle) => {
+      // Si es encargado de sucursal, solo gestiona vehículos de su sucursal asignada
+      if (esEncargado && sucursalAsignada) {
+        const vSuc = (vehicle.sucursal || '').toLowerCase()
+        const userSuc = sucursalAsignada.toLowerCase()
+        const matchBranch = vSuc.includes(userSuc) || userSuc.includes(vSuc)
+        if (!matchBranch) return false
+      }
+
+      const matchBranchFilter = branchFilter === 'all' || vehicle.sucursal === branchFilter
+      const matchStateFilter = stateFilter === 'all' || vehicle.estadoEfectivo === stateFilter
+      const matchSearch = !term || `${vehicle.nombre} ${vehicle.placa} ${vehicle.categoria} ${vehicle.sucursal}`.toLocaleLowerCase().includes(term)
+
+      return matchBranchFilter && matchStateFilter && matchSearch
+    }).sort((a, b) => a.nombre.localeCompare(b.nombre))
+  }, [branchFilter, search, stateFilter, vehicles, esEncargado, sucursalAsignada])
   const headers = [t('admin.vehiclesManagement.fields.vehicle'), t('admin.vehiclesManagement.fields.plate'), t('admin.vehiclesManagement.fields.branch'), t('admin.vehiclesManagement.fields.category'), t('admin.vehiclesManagement.fields.state'), t('admin.vehiclesManagement.fields.price'), t('admin.vehiclesManagement.fields.pico')]
   const rows = filtered.map((vehicle) => [vehicle.nombre, vehicle.placa, vehicle.sucursal, vehicle.categoria, t(`admin.vehiclesManagement.states.${vehicle.estadoEfectivo}`), vehicle.precio, vehicle.picoYPlaca.dia || '—'])
   const exportData = { title: t('admin.vehiclesManagement.exportTitle'), headers, rows, items: filtered, filename: 'flota-drivique' }
