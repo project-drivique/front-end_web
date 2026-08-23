@@ -5,6 +5,7 @@ import { mockUsersStorage } from './mockUsersStorage'
 import { accessAuditService } from './accessAuditService'
 import { hasValidRoleAccess, PERMISSIONS, ROLES } from '../modules/auth/utils/accessControl'
 import accessConfig from '../mocks/adminAccessConfig.json'
+import initialBranches from '../mocks/branches.json'
 // Store de Zustand: fuente de verdad del token en memoria.
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
@@ -103,7 +104,34 @@ function clearLoginSecurity(correo) {
   localStorage.setItem(LOGIN_SECURITY_KEY, JSON.stringify(all))
 }
 
+function slugifyBranch(nombre) {
+  return String(nombre || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '_')
+    .replace(/^_|_$/g, '')
+}
+
 function prepararUsuariosLocales() {
+  const branchManagers = initialBranches.map((b, idx) => {
+    const slug = slugifyBranch(b.nombre)
+    return {
+      correo: `encargado.${slug}@drivique.com`,
+      contrasena: 'Encargado2026!',
+      nombre: `Encargado ${b.nombre}`,
+      apellido: '',
+      rol: ROLES.BRANCH_MANAGER,
+      activo: true,
+      permisos: [PERMISSIONS.BRANCH_PANEL],
+      sucursalId: b.nombre,
+      sucursal: b.nombre,
+      telefono: `+57 310 ${100 + (idx % 800)} ${(2000 + idx) % 9000}`,
+      cedula: `1075${100000 + idx}`,
+      emailVerificado: true,
+    }
+  })
+
   const migrado = mockUsersStorage.asegurarConfigurados([
     {
       correo: import.meta.env.VITE_MOCK_USER_EMAIL,
@@ -125,9 +153,11 @@ function prepararUsuariosLocales() {
       contrasena: import.meta.env.VITE_MOCK_MANAGER_PASSWORD,
       nombre: import.meta.env.VITE_MOCK_MANAGER_NAME || '',
       apellido: '', rol: ROLES.BRANCH_MANAGER, activo: true,
-      permisos: [PERMISSIONS.BRANCH_PANEL], sucursalId: import.meta.env.VITE_MOCK_MANAGER_BRANCH_ID,
+      permisos: [PERMISSIONS.BRANCH_PANEL], sucursalId: import.meta.env.VITE_MOCK_MANAGER_BRANCH_ID || 'Alamo Neiva - Centro',
+      sucursal: 'Alamo Neiva - Centro',
       telefono: '', cedula: '', fechaNacimiento: '', nacionalidad: '', tipoDocumento: '', emailVerificado: true,
     },
+    ...branchManagers,
   ])
   if (migrado) localStorage.removeItem(LOGIN_SECURITY_KEY)
 }
