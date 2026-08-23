@@ -5,7 +5,7 @@
   --city-card: #ffffff;
   --city-text: #0f172a;
   --city-muted: #64748b;
-  --city-border: #e2e8f0;
+  --city-border: #cbd5e1;
   --city-soft: #eff6ff;
   min-height: 100vh;
   background: var(--city-bg);
@@ -23,7 +23,7 @@
 }
 
 .cities-container {
-  max-width: 1400px;
+  max-width: 1440px;
   margin: 0 auto;
 }
 
@@ -68,7 +68,7 @@
 .cities-danger {
   border: 0;
   border-radius: 12px;
-  padding: 12px 20px;
+  padding: 12px 22px;
   background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
   color: #ffffff;
   font-weight: 800;
@@ -78,23 +78,23 @@
   justify-content: center;
   gap: 8px;
   cursor: pointer;
-  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.25);
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.28);
   transition: all 0.2s ease;
 }
 
 .cities-primary:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 10px 25px rgba(37, 99, 235, 0.35);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(37, 99, 235, 0.4);
 }
 
 .cities-danger {
   background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
-  box-shadow: 0 6px 20px rgba(220, 38, 38, 0.25);
+  box-shadow: 0 6px 20px rgba(220, 38, 38, 0.28);
 }
 
 .cities-danger:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 10px 25px rgba(220, 38, 38, 0.35);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(220, 38, 38, 0.4);
 }
 
 .cities-notice {
@@ -102,14 +102,14 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 18px;
-  border: 1px solid #93c5fd;
+  border: 1.5px solid #93c5fd;
   background: #eff6ff;
   color: #1e40af;
   border-radius: 14px;
   padding: 12px 18px;
   font-weight: 700;
   font-size: 13px;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.08);
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.08);
 }
 
 .cities-notice button {
@@ -124,64 +124,72 @@
 .cities-card {
   background: var(--city-card);
   border: 1px solid var(--city-border);
-  border-radius: 20px;
-  padding: 24px;
-  box-shadow: 0 14px 40px rgba(15, 23, 42, 0.06);
+  border-radius: 22px;
+  padding: 26px;
+  box-shadow: 0 16px 45px rgba(15, 23, 42, 0.07);
 }
 
-/* Toolbar de Filtros y Búsqueda */
+/* 🎨 BUSCADOR Y FILTROS CON BORDE DE DEGRADADO AZUL PRÉMIUM */
 .cities-toolbar {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
   flex-wrap: wrap;
-  margin-bottom: 16px;
+  margin-bottom: 18px;
 }
 
 .cities-search {
   display: flex;
   align-items: center;
   gap: 10px;
-  border: 1px solid var(--city-border);
-  background: var(--city-bg);
-  border-radius: 12px;
+  border: 2px solid transparent;
+  background: linear-gradient(var(--city-card), var(--city-card)) padding-box,
+    linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) border-box;
+  border-radius: 14px;
   padding: 0 14px;
-  color: var(--city-muted);
-  flex: 1 1 260px;
-  transition: all 0.2s ease;
+  color: #2563eb;
+  flex: 1 1 280px;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.12);
+  transition: all 0.25s ease;
 }
 
+.cities-search:hover,
 .cities-search:focus-within {
-  border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.22);
 }
 
-.cities-search input,
-.cities-toolbar select,
-.cities-modal input:not([type='checkbox']) {
+.cities-search input {
   border: 0;
   outline: 0;
   width: 100%;
-  padding: 11px 0;
+  padding: 12px 0;
   background: transparent;
   color: var(--city-text);
   font: inherit;
   font-size: 13px;
+  font-weight: 600;
 }
 
 .cities-toolbar select {
-  border: 1px solid var(--city-border);
-  border-radius: 12px;
-  padding: 0 14px;
-  background: var(--city-bg);
+  border: 2px solid transparent;
+  background: linear-gradient(var(--city-card), var(--city-card)) padding-box,
+    linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) border-box;
+  border-radius: 14px;
+  padding: 12px 14px;
+  color: var(--city-text);
   font-weight: 700;
   font-size: 13px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.1);
+  transition: all 0.25s ease;
+  outline: none;
 }
 
+.cities-toolbar select:hover,
 .cities-toolbar select:focus {
-  border-color: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 22px rgba(37, 99, 235, 0.2);
 }
 
 .cities-export {
@@ -192,75 +200,99 @@
 
 .cities-export button,
 .cities-row-actions button {
-  border: 1px solid var(--city-border);
-  background: var(--city-card);
+  border: 1.5px solid transparent;
+  background: linear-gradient(var(--city-card), var(--city-card)) padding-box,
+    linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) border-box;
   color: var(--city-text);
-  border-radius: 10px;
-  padding: 9px 14px;
+  border-radius: 12px;
+  padding: 9px 15px;
   display: flex;
   align-items: center;
   gap: 7px;
   font-weight: 750;
   font-size: 12px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.08);
+  transition: all 0.22s ease;
 }
 
 .cities-export button:hover {
-  border-color: #3b82f6;
-  background: var(--city-soft);
-  color: #2563eb;
-  transform: translateY(-1px);
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
 }
 
 .cities-summary {
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--city-muted);
-  margin: 16px 4px 12px;
+  margin: 18px 4px 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-/* Tabla Estilizada Ultra-Premium */
+/* 🏆 TABLA MEJORADA CON ESTILO ULTRAPRÉMIUM Y ENCABEZADO DEGRADADO */
 .cities-table-wrap {
   overflow-x: auto;
-  border-radius: 14px;
-  border: 1px solid var(--city-border);
+  border-radius: 16px;
+  border: 2px solid transparent;
+  background: linear-gradient(var(--city-card), var(--city-card)) padding-box,
+    linear-gradient(135deg, rgba(37, 99, 235, 0.3) 0%, rgba(29, 78, 216, 0.15) 100%) border-box;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
 }
 
 .cities-table-wrap table {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
-  min-width: 930px;
+  min-width: 950px;
 }
 
 .cities-table-wrap th {
   text-align: left;
-  background: var(--city-soft);
-  color: var(--city-muted);
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  color: #f8fafc;
   font-size: 11px;
   font-weight: 900;
   text-transform: uppercase;
-  letter-spacing: 0.6px;
-  padding: 14px 16px;
-  border-bottom: 1px solid var(--city-border);
+  letter-spacing: 0.8px;
+  padding: 16px 18px;
+  border-bottom: 2px solid #2563eb;
+}
+
+.cities-page--dark .cities-table-wrap th {
+  background: linear-gradient(135deg, #0f172a 0%, #111c2e 100%);
+  border-bottom-color: #3b82f6;
 }
 
 .cities-table-wrap th:first-child {
-  border-top-left-radius: 13px;
+  border-top-left-radius: 14px;
 }
 
 .cities-table-wrap th:last-child {
-  border-top-right-radius: 13px;
+  border-top-right-radius: 14px;
 }
 
 .cities-table-wrap td {
-  padding: 14px 16px;
+  padding: 16px 18px;
   border-bottom: 1px solid var(--city-border);
   font-size: 13px;
   vertical-align: middle;
-  background: var(--city-card);
-  transition: background 0.18s ease;
+  background: #f0f7ff;
+  transition: all 0.2s ease;
+}
+
+.cities-page--dark .cities-table-wrap td {
+  background: #0f1b2d;
+}
+
+.cities-table-wrap tbody tr:nth-child(even) td {
+  background: #e8f2fe;
+}
+
+.cities-page--dark .cities-table-wrap tbody tr:nth-child(even) td {
+  background: #122137;
 }
 
 .cities-table-wrap tbody tr:last-child td {
@@ -268,7 +300,11 @@
 }
 
 .cities-table-wrap tbody tr:hover td {
-  background: var(--city-soft);
+  background: #dbeafe !important;
+}
+
+.cities-page--dark .cities-table-wrap tbody tr:hover td {
+  background: #1a3254 !important;
 }
 
 .cities-name {
@@ -278,14 +314,20 @@
 }
 
 .cities-name > span {
-  width: 38px;
-  height: 38px;
-  border-radius: 11px;
-  background: var(--city-soft);
-  color: #2563eb;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  color: #1d4ed8;
   display: grid;
   place-items: center;
-  font-size: 15px;
+  font-size: 16px;
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.15);
+}
+
+.cities-page--dark .cities-name > span {
+  background: linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 100%);
+  color: #ffffff;
 }
 
 .cities-name div {
@@ -295,13 +337,14 @@
 
 .cities-name strong {
   font-size: 14px;
+  font-weight: 800;
   color: var(--city-text);
 }
 
 .cities-name small {
   font-size: 11px;
   color: var(--city-muted);
-  margin-top: 1px;
+  margin-top: 2px;
 }
 
 .cities-branches {
@@ -318,7 +361,7 @@
 }
 
 .cities-status {
-  padding: 5px 12px;
+  padding: 6px 14px;
   border-radius: 999px;
   background: var(--city-bg);
   color: var(--city-muted);
@@ -339,32 +382,32 @@
 }
 
 .cities-row-actions button {
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   padding: 0;
-  border-radius: 10px;
+  border-radius: 11px;
   display: grid;
   place-items: center;
   background: var(--city-bg);
-  border: 1px solid var(--city-border);
+  border: 1.5px solid var(--city-border);
   color: var(--city-muted);
-  font-size: 13px;
-  transition: all 0.2s ease;
+  font-size: 14px;
+  transition: all 0.22s ease;
 }
 
 .cities-row-actions button:hover {
-  background: #2563eb;
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
   border-color: #2563eb;
   color: #ffffff;
-  transform: scale(1.08);
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+  transform: scale(1.1);
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
 }
 
 .cities-row-actions button.is-danger:hover {
-  background: #dc2626;
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
   border-color: #dc2626;
   color: #ffffff;
-  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
+  box-shadow: 0 6px 16px rgba(220, 38, 38, 0.3);
 }
 
 /* Estado Vacío */
@@ -375,7 +418,7 @@
 }
 
 .cities-empty > svg {
-  font-size: 42px;
+  font-size: 48px;
   color: #60a5fa;
   margin-bottom: 12px;
 }
@@ -390,8 +433,8 @@
 .cities-modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(2, 6, 23, 0.65);
-  backdrop-filter: blur(4px);
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(3px);
   display: grid;
   place-items: center;
   padding: 18px;
@@ -399,14 +442,21 @@
 }
 
 .cities-modal {
-  width: min(540px, 100%);
-  background: var(--city-card);
-  border: 1px solid var(--city-border);
+  width: min(560px, 100%);
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
   border-radius: 24px;
-  padding: 28px;
-  color: var(--city-text);
-  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.3);
+  padding: 30px;
+  color: #0f172a;
+  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.25);
   box-sizing: border-box;
+}
+
+.cities-page--dark .cities-modal,
+html.dark .cities-modal {
+  background: #111c2e;
+  border-color: #26354d;
+  color: #f8fafc;
 }
 
 .cities-modal__head {
@@ -447,9 +497,9 @@
 .cities-modal form > label select {
   display: block;
   width: 100%;
-  border: 1px solid var(--city-border) !important;
+  border: 1.5px solid var(--city-border) !important;
   border-radius: 12px !important;
-  padding: 11px 14px !important;
+  padding: 12px 14px !important;
   margin-top: 6px;
   box-sizing: border-box;
   background: var(--city-bg) !important;
@@ -464,7 +514,7 @@
 }
 
 .cities-checks label {
-  border: 1px solid var(--city-border);
+  border: 1.5px solid var(--city-border);
   border-radius: 12px;
   padding: 12px;
   font-size: 13px;
@@ -490,7 +540,7 @@
 }
 
 .cities-modal__actions > button:not(.cities-primary):not(.cities-danger) {
-  border: 1px solid var(--city-border);
+  border: 1.5px solid var(--city-border);
   background: transparent;
   color: var(--city-text);
   border-radius: 12px;
@@ -501,14 +551,14 @@
 }
 
 .cities-delete-icon {
-  width: 52px;
-  height: 52px;
+  width: 54px;
+  height: 54px;
   border-radius: 16px;
   background: #fee2e2;
   color: #dc2626;
   display: grid;
   place-items: center;
-  font-size: 20px;
+  font-size: 22px;
   margin-bottom: 14px;
 }
 
