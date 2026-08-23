@@ -1041,7 +1041,26 @@
       "fields": { "name": "Sucursal", "city": "Ciudad", "address": "Dirección", "manager": "Encargado", "cash": "Pago en efectivo", "vehicles": "Vehículos", "reservations": "Reservas" },
       "messages": { "created": "La sucursal fue creada correctamente.", "updated": "La sucursal fue actualizada correctamente.", "deleted": "La sucursal fue eliminada correctamente." },
       "errors": { "required": "Todos los campos son obligatorios.", "invalidCity": "Selecciona una ciudad existente.", "invalidManager": "Selecciona un encargado activo.", "duplicate": "Ya existe una sucursal con ese nombre.", "notFound": "La sucursal ya no está disponible.", "hasAssociations": "No se puede eliminar: tiene {{vehicles}} vehículos y {{reservations}} reservas asociadas.", "noManagers": "No hay encargados activos disponibles. Registra uno antes de crear la sucursal." }
-    }
+    },
+    "reservationsTitle": "Gestión de Reservas",
+    "reservationsSubtitle": "Control operativo completo de reservas, entregas, devoluciones y cancelaciones.",
+    "createManualReservation": "+ Reserva Manual",
+    "searchReservations": "Buscar por código, cliente, auto, placa...",
+    "allStatuses": "Todos los estados",
+    "allBranches": "Todas las sucursales",
+    "statusConfirmada": "Confirmada",
+    "statusEnCurso": "En curso",
+    "statusFinalizada": "Finalizada",
+    "statusPendiente": "Pendiente",
+    "statusCancelada": "Cancelada",
+    "print": "Imprimir",
+    "reservationsFound": "reservas encontradas",
+    "noReservationsTitle": "No hay reservas registradas",
+    "noReservationsText": "No se encontraron reservas con los filtros aplicados.",
+    "actions": "Acciones",
+    "createdSuccess": "Reserva manual registrada exitosamente.",
+    "updatedSuccess": "Reserva actualizada correctamente.",
+    "cancelledSuccess": "Reserva cancelada correctamente."
   },
   "panel": {
     "welcome": "Bienvenido de vuelta",

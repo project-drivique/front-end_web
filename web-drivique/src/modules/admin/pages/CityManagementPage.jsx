@@ -7,6 +7,7 @@ import { useAuthStore } from '../../../store/authStore'
 import { cityManagementService } from '../../../services/cityManagementService'
 import { exportExcel, exportPdf, printTable } from '../../../utils/listExportUtils'
 import MenuConfiguracion from '../../../components/MenuConfiguracion'
+import ManagementSidebar from '../components/ManagementSidebar'
 import './CityManagementPage.css'
 
 const EMPTY_FORM = { nombre: '', departamento: '', tieneAeropuerto: false, tieneTerminal: false }
@@ -65,10 +66,12 @@ export default function CityManagementPage() {
   }
 
   return (
-    <main className={`cities-page ${tema === 'oscuro' ? 'cities-page--dark' : ''}`}>
-      <div className="cities-container">
+    <div className={`management-shell ${tema === 'oscuro' ? 'management-shell--dark' : ''}`}>
+      <ManagementSidebar />
+      <main className="management-main" style={{ padding: '24px 32px' }}>
+        <div className="cities-container" style={{ maxWidth: '100%' }}>
         <header className="cities-topbar">
-          <div><Link className="cities-back" to="/admin"><FaArrowLeft /> {t('admin.backToDashboard')}</Link><p className="cities-eyebrow">{t('admin.management')}</p><h1>{t('admin.cities.title')}</h1><p className="cities-subtitle">{t('admin.cities.subtitle')}</p></div>
+          <div><p className="cities-eyebrow">{t('admin.management')}</p><h1>{t('admin.cities.title')}</h1><p className="cities-subtitle">{t('admin.cities.subtitle')}</p></div>
           <div className="cities-topbar__actions"><MenuConfiguracion /><button className="cities-primary" type="button" onClick={openCreate}><FaPlus /> {t('admin.cities.create')}</button></div>
         </header>
 
@@ -97,5 +100,6 @@ export default function CityManagementPage() {
         {modal.type === 'form' ? <><div className="cities-modal__head"><div><p className="cities-eyebrow">{t('admin.cities.formLabel')}</p><h2 id="cities-modal-title">{t(modal.city ? 'admin.cities.editTitle' : 'admin.cities.createTitle')}</h2></div><button type="button" onClick={closeModal} aria-label={t('common.close')}>×</button></div><form onSubmit={save}><label>{t('admin.cities.fields.name')}<input autoFocus value={form.nombre} onChange={(event) => setForm({ ...form, nombre: event.target.value })} /></label><label>{t('admin.cities.fields.department')}<input value={form.departamento} onChange={(event) => setForm({ ...form, departamento: event.target.value })} /></label><div className="cities-checks"><label><input type="checkbox" checked={form.tieneAeropuerto} onChange={(event) => setForm({ ...form, tieneAeropuerto: event.target.checked })} /> {t('admin.cities.hasAirport')}</label><label><input type="checkbox" checked={form.tieneTerminal} onChange={(event) => setForm({ ...form, tieneTerminal: event.target.checked })} /> {t('admin.cities.hasTerminal')}</label></div>{error && <p className="cities-error">{error}</p>}<div className="cities-modal__actions"><button type="button" onClick={closeModal}>{t('common.cancel')}</button><button className="cities-primary" type="submit">{t('common.save')}</button></div></form></> : <><div className="cities-delete-icon"><FaTrash /></div><h2 id="cities-modal-title">{t('admin.cities.deleteTitle')}</h2><p>{t('admin.cities.deleteText', { city: modal.city.nombre })}</p><div className="cities-modal__actions"><button type="button" onClick={closeModal}>{t('common.cancel')}</button><button className="cities-danger" type="button" onClick={remove}>{t('common.delete')}</button></div></>}
       </section></div>}
     </main>
+    </div>
   )
 }
