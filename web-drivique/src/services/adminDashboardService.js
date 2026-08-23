@@ -1,4 +1,4 @@
-import vehicles from '../mocks/vehicles.json'
+import { vehicleManagementService } from './vehicleManagementService'
 import { reservationService } from './reservationService'
 import { ESTADOS_RESERVA } from '../modules/reservations/utils/reservationStatus'
 import { ROLES } from '../modules/auth/utils/accessControl'
@@ -53,6 +53,7 @@ function isSameMonth(value, reference) {
 
 export const adminDashboardService = {
   getSummary(user, referenceDate = new Date()) {
+    const vehicles = vehicleManagementService.list()
     const vehicleById = new Map(vehicles.map((vehicle) => [Number(vehicle.id), vehicle]))
     const isBranchManager = user?.rol === ROLES.BRANCH_MANAGER
     const assignedBranch = user?.sucursalId || ''
