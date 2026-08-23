@@ -7,6 +7,7 @@ import { reservationService } from '@/services/reservationService'
 import { documentsService } from '@/services/documentsService'
 import { generarReferenciaUnica, aCentavos, construirUrlCheckout } from '@/services/wompiService'
 import { RECARGOS_LOGISTICOS, SUCURSALES, CIUDADES } from '../../catalog/constants'
+import { branchManagementService } from '../../../services/branchManagementService'
 import VEHICULOS_MOCK from '@/mocks/vehicles.json'
 
 export const TOTAL_PASOS = 3
@@ -48,6 +49,7 @@ export function useReservationFlow() {
     sucursalDevolucion: '',
     tipoKm: '',
     metodoPago: '',
+    sucursalPagoEfectivo: '',
     domicilioCiudad: '',
     domicilioBarrio: '',
     domicilioDireccion: '',
@@ -101,6 +103,8 @@ export function useReservationFlow() {
     setReserva(prev => {
       const act = { ...prev, [campo]: valor }
       if (campo === 'metodoPago' && valor === 'efectivo') {
+        const autorizadas = branchManagementService.getCashAuthorized()
+        if (!autorizadas.some((branch) => branch.nombre === act.sucursalPagoEfectivo)) act.sucursalPagoEfectivo = autorizadas[0]?.nombre || ''
         act.domicilioCiudad = ''
         act.domicilioBarrio = ''
         act.domicilioDireccion = ''
@@ -117,7 +121,7 @@ export function useReservationFlow() {
     setErrorPaso1('')
 
     if (campo === 'metodoPago' && valor === 'efectivo' && vehiculo) {
-      const sucursal = SUCURSALES.find(s => s.nombre === vehiculo.sucursal)
+      const sucursal = branchManagementService.getCashAuthorized().find(s => s.nombre === reserva.sucursalPagoEfectivo) || branchManagementService.getCashAuthorized()[0]
       if (sucursal) {
         showAlert({
           icon: 'info',
@@ -209,6 +213,7 @@ export function useReservationFlow() {
 
     if (pantalla === 1) {
       if (!reserva.metodoPago) { mostrarAlerta(); return }
+      if (reserva.metodoPago === 'efectivo' && !branchManagementService.getCashAuthorized().some((branch) => branch.nombre === reserva.sucursalPagoEfectivo)) { mostrarAlerta(); return }
       if (!reserva.sucursalRetiro || !reserva.sucursalDevolucion) { mostrarAlerta(); return }
       if (!reserva.fechaInicio || !reserva.fechaFin) { mostrarAlerta(); return }
       if (!reserva.horaInicio || !reserva.horaFin) { mostrarAlerta(); return }

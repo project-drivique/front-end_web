@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { FaTimes } from 'react-icons/fa'
 import { SUCURSALES } from '../../catalog/constants'
+import { branchManagementService } from '../../../services/branchManagementService'
 import ProtectionPlans from './ProtectionPlans'
 import MileageType from './MileageType'
 import AdditionalServices from './AdditionalServices'
@@ -119,6 +120,7 @@ export default function EditReservationModal({
                 onCambio={(campo, valor) => setLocalReserva(prev => {
                   const act = { ...prev, [campo]: valor }
                   if (campo === 'metodoPago' && valor === 'efectivo') {
+                    act.sucursalPagoEfectivo = branchManagementService.getCashAuthorized()[0]?.nombre || ''
                     act.sucursalRetiro = vehiculo ? vehiculo.sucursal : ''
                     act.sucursalDevolucion = vehiculo ? vehiculo.sucursal : ''
                     act.domicilioBarrio = ''; act.domicilioDireccion = ''
