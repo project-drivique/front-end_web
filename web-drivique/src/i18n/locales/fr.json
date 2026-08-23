@@ -592,6 +592,9 @@
     "paymentCashTitle": "Paiement en Espèces (En Succursale)",
     "paymentCashDesc": "Réservez maintenant et payez en espèces à la succursale.",
     "cashBranchTitle": "Informations sur la succursale",
+    "cashPaymentBranchLabel": "Point autorisé pour le paiement en espèces",
+    "selectCashPaymentBranch": "Sélectionnez un point de paiement",
+    "noCashPaymentBranches": "Aucune agence n'est autorisée à recevoir des paiements en espèces.",
     "cashBranchIntro": "Payez en espèces directement dans notre succursale:",
     "cashBranchCity": "Ville",
     "cashBranchAddress": "Adresse",
@@ -632,7 +635,7 @@
     "driverLicense": "Permis de conduire",
     "driverLicenseHelpText": "Téléchargez votre permis de conduire valide au format PDF (max 5Mo)",
     "reservationRegisteredTitle": "Réservation enregistrée",
-    "cashReservationRegisteredDesc": "Votre réservation a été enregistrée. Pour la confirmer, rendez-vous à la succursale {{sucursal}} pour payer en espèces et récupérer le véhicule.",
+    "cashReservationRegisteredDesc": "Votre réservation a été enregistrée. Pour la confirmer, payez en espèces au point autorisé {{sucursal}}.",
     "paymentDeadlineTitle": "Délai de paiement",
     "paymentDeadlineDesc": "Vous avez {{horas}} heures à compter de maintenant pour vous rendre en succursale et payer.",
     "signedContractSentEmail": "Le contrat signé a été envoyé à votre e-mail. Présentez-le en succursale pour effectuer le paiement.",
@@ -1047,6 +1050,12 @@
       "fields": { "name": "Ville", "department": "Département", "branches": "Agences", "airport": "Aéroport", "terminal": "Terminal", "actions": "Actions" },
       "messages": { "created": "La ville a été créée.", "updated": "La ville a été mise à jour.", "deleted": "La ville a été supprimée." },
       "errors": { "required": "La ville et le département sont obligatoires.", "duplicate": "Une ville portant ce nom existe déjà.", "notFound": "La ville n'est plus disponible.", "hasBranches": "Suppression impossible : {{count}} agences sont associées à cette ville." }
+    },
+    "branchesManagement": {
+      "title": "Gestion des agences", "subtitle": "Organisez les opérations, les responsables et les points de paiement en espèces.", "create": "Nouvelle agence", "search": "Rechercher une agence, ville, adresse ou responsable...", "allCities": "Toutes les villes", "allCashStates": "Tous les états de paiement", "authorized": "Autorisée", "notAuthorized": "Non autorisée", "results": "agences dans la liste", "exportTitle": "Liste des agences - Drivique", "emptyTitle": "Aucune agence trouvée", "emptyText": "Modifiez les filtres ou ajoutez une agence.", "formLabel": "Informations de l'agence", "createTitle": "Créer une agence", "editTitle": "Modifier l'agence", "deleteTitle": "Supprimer l'agence", "deleteText": "Supprimer {{branch}} ? Cette action est irréversible.", "cashLabel": "Autorisée pour les paiements en espèces", "cashHint": "Elle apparaîtra comme point de paiement même sans véhicules.",
+      "fields": { "name": "Agence", "city": "Ville", "address": "Adresse", "manager": "Responsable", "cash": "Paiement espèces", "vehicles": "Véhicules", "reservations": "Réservations" },
+      "messages": { "created": "L'agence a été créée.", "updated": "L'agence a été mise à jour.", "deleted": "L'agence a été supprimée." },
+      "errors": { "required": "Tous les champs sont obligatoires.", "invalidCity": "Sélectionnez une ville existante.", "invalidManager": "Sélectionnez un responsable actif.", "duplicate": "Une agence portant ce nom existe déjà.", "notFound": "L'agence n'est plus disponible.", "hasAssociations": "Suppression impossible : {{vehicles}} véhicules et {{reservations}} réservations sont associés.", "noManagers": "Aucun responsable actif n'est disponible." }
     }
   },
   "contratoFirma": {
@@ -1081,6 +1090,7 @@
     "endDate": "Date de fin",
     "paymentMethod": "Moyen de paiement",
     "paymentMethodCash": "Paiement en espèces en agence",
+    "cashPaymentBranch": "Point de paiement en espèces",
     "paymentMethodWompi": "Wompi (mode test)",
     "totalValue": "Montant total",
     "additionalServices": "Services additionnels",

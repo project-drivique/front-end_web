@@ -603,6 +603,9 @@
     "paymentCashTitle": "Cash Payment (At Branch)",
     "paymentCashDesc": "Book now and pay in cash directly at the branch when picking up the vehicle.",
     "cashBranchTitle": "Branch Information",
+    "cashPaymentBranchLabel": "Authorized cash payment point",
+    "selectCashPaymentBranch": "Select a payment point",
+    "noCashPaymentBranches": "There are no branches authorized to receive cash payments.",
     "cashBranchIntro": "Pay in cash directly at our branch:",
     "cashBranchCity": "City",
     "cashBranchAddress": "Address",
@@ -652,7 +655,7 @@
     "driverLicense": "Driver's License",
     "driverLicenseHelpText": "Upload your valid and legible driver's license in PDF format (max 5MB)",
     "reservationRegisteredTitle": "Reservation Registered",
-    "cashReservationRegisteredDesc": "Your reservation has been registered. To confirm it, please visit the {{sucursal}} branch to pay in cash and pick up the vehicle.",
+    "cashReservationRegisteredDesc": "Your reservation has been registered. To confirm it, pay in cash at the authorized point {{sucursal}}.",
     "paymentDeadlineTitle": "Payment deadline",
     "paymentDeadlineDesc": "You have {{horas}} hours from now to visit the branch and pay. Otherwise, the reservation will be automatically cancelled.",
     "signedContractSentEmail": "The signed contract was sent to your email. Present it at the branch to make the payment.",
@@ -1058,6 +1061,12 @@
       "fields": { "name": "City", "department": "Department", "branches": "Branches", "airport": "Airport", "terminal": "Terminal", "actions": "Actions" },
       "messages": { "created": "The city was created successfully.", "updated": "The city was updated successfully.", "deleted": "The city was deleted successfully." },
       "errors": { "required": "City and department are required.", "duplicate": "A city with that name already exists.", "notFound": "The city is no longer available.", "hasBranches": "Cannot delete: the city has {{count}} associated branches." }
+    },
+    "branchesManagement": {
+      "title": "Branch management", "subtitle": "Organize operations, managers and authorized cash payment points.", "create": "New branch", "search": "Search branch, city, address or manager...", "allCities": "All cities", "allCashStates": "All payment states", "authorized": "Authorized", "notAuthorized": "Not authorized", "results": "branches in the list", "exportTitle": "Branch list - Drivique", "emptyTitle": "No branches found", "emptyText": "Adjust the filters or register a new branch.", "formLabel": "Branch information", "createTitle": "Create branch", "editTitle": "Edit branch", "deleteTitle": "Delete branch", "deleteText": "Delete {{branch}}? This action cannot be undone.", "cashLabel": "Authorized for cash payments", "cashHint": "It will appear as a payment point even without assigned vehicles.",
+      "fields": { "name": "Branch", "city": "City", "address": "Address", "manager": "Manager", "cash": "Cash payment", "vehicles": "Vehicles", "reservations": "Reservations" },
+      "messages": { "created": "The branch was created successfully.", "updated": "The branch was updated successfully.", "deleted": "The branch was deleted successfully." },
+      "errors": { "required": "All fields are required.", "invalidCity": "Select an existing city.", "invalidManager": "Select an active manager.", "duplicate": "A branch with that name already exists.", "notFound": "The branch is no longer available.", "hasAssociations": "Cannot delete: it has {{vehicles}} vehicles and {{reservations}} associated reservations.", "noManagers": "No active managers are available. Register one before creating the branch." }
     }
   },
   "contratoFirma": {
@@ -1092,6 +1101,7 @@
     "endDate": "End date",
     "paymentMethod": "Payment method",
     "paymentMethodCash": "Cash payment at branch",
+    "cashPaymentBranch": "Cash payment point",
     "paymentMethodWompi": "Wompi (test mode)",
     "totalValue": "Total amount",
     "additionalServices": "Additional services",
