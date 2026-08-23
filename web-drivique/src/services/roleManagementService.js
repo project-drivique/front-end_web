@@ -1,6 +1,5 @@
 // src/services/roleManagementService.js
 import { accessAuditService } from './accessAuditService'
-import useNotificationStore from '../modules/notifications/store/useNotificationStore'
 
 const ACCOUNTS_KEY = 'drivique_admin_accounts'
 const ROLES_KEY = 'drivique_custom_roles'
@@ -302,13 +301,19 @@ export const roleManagementService = {
 
     // Notificación al nuevo administrador/encargado
     try {
-      const store = useNotificationStore.getState()
-      if (store && store.agregarNotificacion) {
-        store.agregarNotificacion({
-          tipo: 'sistema',
-          titulo: '🎉 Cuenta Administrativa Creada',
-          mensaje: `Bienvenido a Drivique. Se ha creado tu cuenta con el rol "${newAccount.rolNombre}". Credenciales temporales enviadas a ${newAccount.correo} (Contraseña: ${tempPassword}).`,
-        })
+      const NOTIFS_KEY = 'drivique_user_notifications'
+      const existingNotifs = JSON.parse(localStorage.getItem(NOTIFS_KEY) || '[]')
+      const nuevaNotificacion = {
+        id: `notif-${Date.now()}`,
+        tipo: 'sistema',
+        titulo: '🎉 Cuenta Administrativa Creada',
+        mensaje: `Bienvenido a Drivique. Se ha creado tu cuenta con el rol "${newAccount.rolNombre}". Credenciales temporales enviadas a ${newAccount.correo} (Contraseña: ${tempPassword}).`,
+        fecha: new Date().toISOString(),
+        leida: false,
+      }
+      if (Array.isArray(existingNotifs)) {
+        existingNotifs.unshift(nuevaNotificacion)
+        localStorage.setItem(NOTIFS_KEY, JSON.stringify(existingNotifs))
       }
     } catch (e) {
       console.log('Notificación registrada')
