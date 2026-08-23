@@ -592,6 +592,9 @@
     "paymentCashTitle": "Pagamento em Dinheiro (Na Filial)",
     "paymentCashDesc": "Reserve agora e pague diretamente na filial ao levantar o veículo.",
     "cashBranchTitle": "Informação da Filial",
+    "cashPaymentBranchLabel": "Ponto autorizado para pagamento em dinheiro",
+    "selectCashPaymentBranch": "Selecione um ponto de pagamento",
+    "noCashPaymentBranches": "Não existem agências autorizadas a receber pagamentos em dinheiro.",
     "cashBranchIntro": "Pague em dinheiro diretamente em nossa filial:",
     "cashBranchCity": "Cidade",
     "cashBranchAddress": "Endereço",
@@ -632,7 +635,7 @@
     "driverLicense": "Carta de Condução",
     "driverLicenseHelpText": "Carregue a sua carta de condução válida e legível em formato PDF (máx 5MB)",
     "reservationRegisteredTitle": "Reserva Registada",
-    "cashReservationRegisteredDesc": "A sua reserva foi registada. Para confirmar, dirija-se à filial {{sucursal}} para pagar em dinheiro e levantar o veículo.",
+    "cashReservationRegisteredDesc": "A sua reserva foi registada. Para confirmar, pague em dinheiro no ponto autorizado {{sucursal}}.",
     "paymentDeadlineTitle": "Prazo para pagamento",
     "paymentDeadlineDesc": "Tem {{horas}} horas a partir de agora para ir à filial e pagar. Caso contrário, a reserva será cancelada automaticamente.",
     "signedContractSentEmail": "O contrato assinado foi enviado para o seu e-mail. Apresente-o na filial para realizar o pagamento.",
@@ -1046,6 +1049,12 @@
       "fields": { "name": "Cidade", "department": "Departamento", "branches": "Agências", "airport": "Aeroporto", "terminal": "Terminal", "actions": "Ações" },
       "messages": { "created": "A cidade foi criada com sucesso.", "updated": "A cidade foi atualizada com sucesso.", "deleted": "A cidade foi eliminada com sucesso." },
       "errors": { "required": "A cidade e o departamento são obrigatórios.", "duplicate": "Já existe uma cidade com esse nome.", "notFound": "A cidade já não está disponível.", "hasBranches": "Não é possível eliminar: a cidade possui {{count}} agências associadas." }
+    },
+    "branchesManagement": {
+      "title": "Gestão de agências", "subtitle": "Organize a operação, os responsáveis e os pontos autorizados para pagamento em dinheiro.", "create": "Nova agência", "search": "Pesquisar agência, cidade, morada ou responsável...", "allCities": "Todas as cidades", "allCashStates": "Todos os estados de pagamento", "authorized": "Autorizada", "notAuthorized": "Não autorizada", "results": "agências na lista", "exportTitle": "Lista de agências - Drivique", "emptyTitle": "Nenhuma agência encontrada", "emptyText": "Ajuste os filtros ou registe uma nova agência.", "formLabel": "Informações da agência", "createTitle": "Criar agência", "editTitle": "Editar agência", "deleteTitle": "Eliminar agência", "deleteText": "Eliminar {{branch}}? Esta ação não pode ser desfeita.", "cashLabel": "Autorizada para pagamento em dinheiro", "cashHint": "Aparecerá como ponto de pagamento mesmo sem veículos.",
+      "fields": { "name": "Agência", "city": "Cidade", "address": "Morada", "manager": "Responsável", "cash": "Pagamento em dinheiro", "vehicles": "Veículos", "reservations": "Reservas" },
+      "messages": { "created": "A agência foi criada com sucesso.", "updated": "A agência foi atualizada com sucesso.", "deleted": "A agência foi eliminada com sucesso." },
+      "errors": { "required": "Todos os campos são obrigatórios.", "invalidCity": "Selecione uma cidade existente.", "invalidManager": "Selecione um responsável ativo.", "duplicate": "Já existe uma agência com esse nome.", "notFound": "A agência já não está disponível.", "hasAssociations": "Não é possível eliminar: possui {{vehicles}} veículos e {{reservations}} reservas associadas.", "noManagers": "Não existem responsáveis ativos disponíveis." }
     }
   },
   "contratoFirma": {
@@ -1080,6 +1089,7 @@
     "endDate": "Data de fim",
     "paymentMethod": "Método de pagamento",
     "paymentMethodCash": "Pagamento em dinheiro na sucursal",
+    "cashPaymentBranch": "Ponto de pagamento em dinheiro",
     "paymentMethodWompi": "Wompi (modo de teste)",
     "totalValue": "Valor total",
     "additionalServices": "Serviços adicionais",
