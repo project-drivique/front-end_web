@@ -52,7 +52,8 @@ function relatedNames(branch) {
 
 function associations(branch) {
   const names = relatedNames(branch)
-  const associatedVehicles = vehicles.filter((vehicle) => names.has(normalize(vehicle.sucursal)))
+  const managedVehicles = readArray('drivique_admin_vehicles', vehicles)
+  const associatedVehicles = managedVehicles.filter((vehicle) => names.has(normalize(vehicle.sucursal)))
   const vehicleIds = new Set(associatedVehicles.map((vehicle) => Number(vehicle.id)))
   const associatedReservations = reservationService.getReservas().filter((reservation) => {
     const detail = reservation.reservaDetalles || {}
