@@ -139,6 +139,7 @@ export default function ReservationManagementPage() {
     title: esEncargado ? `Gestión de Reservas - Sucursal ${sucursalEncargado}` : 'Gestión Global de Reservas - Drivique',
     headers: headersExport,
     rows: rowsExport,
+    items: filtradas,
     filename: `reservas-drivique-${new Date().toISOString().slice(0, 10)}`,
   }
 
@@ -263,7 +264,7 @@ export default function ReservationManagementPage() {
               type="button"
               onClick={() => setModalCrear(true)}
             >
-              <FaPlus /> {t('admin.createManualReservation', '+ Reserva Manual')}
+              <FaPlus /> {t('admin.createManualReservation', 'Reserva Manual')}
             </button>
           </div>
         </header>
@@ -394,12 +395,29 @@ export default function ReservationManagementPage() {
                       </td>
 
                       <td>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                          <FaCar style={{ color: '#2563eb' }} />
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                          {r.vehiculoImagen ? (
+                            <img
+                              src={r.vehiculoImagen}
+                              alt={r.vehiculoNombre}
+                              style={{
+                                width: 44,
+                                height: 32,
+                                borderRadius: 8,
+                                objectFit: 'cover',
+                                border: '1px solid var(--city-border)',
+                                boxShadow: '0 2px 6px rgba(0,0,0,0.1)'
+                              }}
+                            />
+                          ) : (
+                            <div className="cities-name">
+                              <span><FaCar /></span>
+                            </div>
+                          )}
                           <div>
-                            <strong>{r.vehiculoNombre}</strong>
+                            <strong style={{ display: 'block', fontSize: 13, color: 'var(--city-text)' }}>{r.vehiculoNombre}</strong>
                             {r.vehiculoPlaca && (
-                              <small style={{ display: 'block', color: '#64748b', fontSize: 11 }}>
+                              <small style={{ display: 'block', color: '#64748b', fontSize: 11, fontWeight: 700 }}>
                                 Placa: {r.vehiculoPlaca}
                               </small>
                             )}
