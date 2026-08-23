@@ -115,7 +115,7 @@ export default function ReservationFlowPage() {
           {reserva.metodoPago === 'efectivo' ? (
             <>
               <p style={{ fontSize: 16, color: c.textSecondary, lineHeight: 1.6, margin: '0 0 20px' }}>
-                {t('vehiculo.cashReservationRegisteredDesc', 'Tu reserva quedó registrada. Acércate a la sucursal de {{sucursal}} para realizar el pago.', { sucursal: vehiculo.sucursal })}
+                {t('vehiculo.cashReservationRegisteredDesc', { sucursal: reserva.sucursalPagoEfectivo })}
               </p>
               <div style={{ background: '#fffbeb', border: '1px solid #fde68a', borderRadius: 16, padding: '16px 20px', marginBottom: 20, textAlign: 'left' }}>
                 <p style={{ fontSize: 13, fontWeight: 900, color: '#92400e', margin: '0 0 4px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
