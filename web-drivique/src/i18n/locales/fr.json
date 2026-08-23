@@ -1063,7 +1063,26 @@
       "fields": { "name": "Agence", "city": "Ville", "address": "Adresse", "manager": "Responsable", "cash": "Paiement espèces", "vehicles": "Véhicules", "reservations": "Réservations" },
       "messages": { "created": "L'agence a été créée.", "updated": "L'agence a été mise à jour.", "deleted": "L'agence a été supprimée." },
       "errors": { "required": "Tous les champs sont obligatoires.", "invalidCity": "Sélectionnez une ville existante.", "invalidManager": "Sélectionnez un responsable actif.", "duplicate": "Une agence portant ce nom existe déjà.", "notFound": "L'agence n'est plus disponible.", "hasAssociations": "Suppression impossible : {{vehicles}} véhicules et {{reservations}} réservations sont associés.", "noManagers": "Aucun responsable actif n'est disponible." }
-    }
+    },
+    "reservationsTitle": "Gestion des Réservations",
+    "reservationsSubtitle": "Contrôle opérationnel complet des réservations, retraits et annulations.",
+    "createManualReservation": "+ Réservation Manuelle",
+    "searchReservations": "Rechercher par code, client, voiture...",
+    "allStatuses": "Tous les statuts",
+    "allBranches": "Toutes les succursales",
+    "statusConfirmada": "Confirmée",
+    "statusEnCurso": "En cours",
+    "statusFinalizada": "Terminée",
+    "statusPendiente": "En attente",
+    "statusCancelada": "Annulée",
+    "print": "Imprimer",
+    "reservationsFound": "réservations trouvées",
+    "noReservationsTitle": "Aucune réservation trouvée",
+    "noReservationsText": "Aucune réservation ne correspond aux filtres.",
+    "actions": "Actions",
+    "createdSuccess": "Réservation manuelle créée avec succès.",
+    "updatedSuccess": "Réservation mise à jour avec succès.",
+    "cancelledSuccess": "Réservation annulée avec succès."
   },
   "contratoFirma": {
     "badgeLabel": "Document numérique",
@@ -1320,28 +1339,5 @@
       "sucursales": "🏢 **Succursales disponibles :**\n\nSedes à Neiva, Bogotá, Medellín, Cali et Cartagena.",
       "default": "🤖 Je comprends votre question. Explorez le **Catalogue**, vos **Réservations** ou écrivez **\"agent\"** pour parler à un conseiller."
     }
-  },
-  "admin": {
-    "backToDashboard": "Retour au Tableau de bord",
-    "management": "Gestion Opérationnelle",
-    "reservationsTitle": "Gestion des Réservations",
-    "reservationsSubtitle": "Contrôle opérationnel complet des réservations, retraits et annulations.",
-    "createManualReservation": "+ Réservation Manuelle",
-    "searchReservations": "Rechercher par code, client, voiture...",
-    "allStatuses": "Tous les statuts",
-    "allBranches": "Toutes les succursales",
-    "statusConfirmada": "Confirmée",
-    "statusEnCurso": "En cours",
-    "statusFinalizada": "Terminée",
-    "statusPendiente": "En attente",
-    "statusCancelada": "Annulée",
-    "print": "Imprimer",
-    "reservationsFound": "réservations trouvées",
-    "noReservationsTitle": "Aucune réservation trouvée",
-    "noReservationsText": "Aucune réservation ne correspond aux filtres.",
-    "actions": "Actions",
-    "createdSuccess": "Réservation manuelle créée avec succès.",
-    "updatedSuccess": "Réservation mise à jour avec succès.",
-    "cancelledSuccess": "Réservation annulée avec succès."
   }
 }

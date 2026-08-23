@@ -38,8 +38,8 @@ export default function ReservationManagementPage() {
   const user = useAuthStore((state) => state.usuario)
   const esModoOscuro = tema === 'oscuro'
 
-  const esEncargado = user?.rol === 'encargado' || user?.rol === 'branch_manager'
-  const sucursalEncargado = user?.sucursalAsignada || user?.sucursal || 'Neiva'
+  const esEncargado = user?.rol === 'encargado' || user?.rol === 'branch_manager' || user?.rol === 'encargado_sucursal'
+  const sucursalEncargado = user?.sucursalAsignada || user?.sucursalId || user?.sucursal || 'Neiva'
 
   const [reservas, setReservas] = useState([])
   const [search, setSearch] = useState('')

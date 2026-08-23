@@ -1074,7 +1074,26 @@
       "fields": { "name": "Branch", "city": "City", "address": "Address", "manager": "Manager", "cash": "Cash payment", "vehicles": "Vehicles", "reservations": "Reservations" },
       "messages": { "created": "The branch was created successfully.", "updated": "The branch was updated successfully.", "deleted": "The branch was deleted successfully." },
       "errors": { "required": "All fields are required.", "invalidCity": "Select an existing city.", "invalidManager": "Select an active manager.", "duplicate": "A branch with that name already exists.", "notFound": "The branch is no longer available.", "hasAssociations": "Cannot delete: it has {{vehicles}} vehicles and {{reservations}} associated reservations.", "noManagers": "No active managers are available. Register one before creating the branch." }
-    }
+    },
+    "reservationsTitle": "Reservations Management",
+    "reservationsSubtitle": "Full operational control over bookings, pickups, returns, and cancellations.",
+    "createManualReservation": "+ Manual Reservation",
+    "searchReservations": "Search by code, customer, car, plate...",
+    "allStatuses": "All statuses",
+    "allBranches": "All branches",
+    "statusConfirmada": "Confirmed",
+    "statusEnCurso": "In progress",
+    "statusFinalizada": "Completed",
+    "statusPendiente": "Pending",
+    "statusCancelada": "Cancelled",
+    "print": "Print",
+    "reservationsFound": "reservations found",
+    "noReservationsTitle": "No reservations found",
+    "noReservationsText": "No reservations match the applied filters.",
+    "actions": "Actions",
+    "createdSuccess": "Manual reservation created successfully.",
+    "updatedSuccess": "Reservation updated successfully.",
+    "cancelledSuccess": "Reservation cancelled successfully."
   },
   "contratoFirma": {
     "badgeLabel": "Digital document",
@@ -1321,28 +1340,5 @@
       "sucursales": "🏢 **Available Branches:**\n\nWe have physical branches in Neiva, Bogotá, Medellín, Cali, and Cartagena. View exact locations in **Branches**.",
       "default": "🤖 I understand your question. Explore our **Catalog**, check **My Reservations**, or contact an agent by typing **\"agent\"**."
     }
-  },
-  "admin": {
-    "backToDashboard": "Back to Dashboard",
-    "management": "Operations Management",
-    "reservationsTitle": "Reservations Management",
-    "reservationsSubtitle": "Full operational control over bookings, pickups, returns, and cancellations.",
-    "createManualReservation": "+ Manual Reservation",
-    "searchReservations": "Search by code, customer, car, plate...",
-    "allStatuses": "All statuses",
-    "allBranches": "All branches",
-    "statusConfirmada": "Confirmed",
-    "statusEnCurso": "In progress",
-    "statusFinalizada": "Completed",
-    "statusPendiente": "Pending",
-    "statusCancelada": "Cancelled",
-    "print": "Print",
-    "reservationsFound": "reservations found",
-    "noReservationsTitle": "No reservations found",
-    "noReservationsText": "No reservations match the applied filters.",
-    "actions": "Actions",
-    "createdSuccess": "Manual reservation created successfully.",
-    "updatedSuccess": "Reservation updated successfully.",
-    "cancelledSuccess": "Reservation cancelled successfully."
   }
 }
