@@ -1,8 +1,34 @@
 // src/services/roleManagementService.js
 import { accessAuditService } from './accessAuditService'
+import initialBranches from '../mocks/branches.json'
 
 const ACCOUNTS_KEY = 'drivique_admin_accounts'
 const ROLES_KEY = 'drivique_custom_roles'
+
+function slugifyBranch(nombre) {
+  return String(nombre || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '_')
+    .replace(/^_|_$/g, '')
+}
+
+const BRANCH_MANAGER_ACCOUNTS = initialBranches.map((b, idx) => {
+  const slug = slugifyBranch(b.nombre)
+  return {
+    id: `acc-encargado-${idx + 1}`,
+    nombre: `Encargado ${b.nombre}`,
+    correo: `encargado.${slug}@drivique.com`,
+    telefono: `+57 310 ${100 + (idx % 800)} ${(2000 + idx) % 9000}`,
+    rolId: 'role-encargado',
+    rolCodigo: 'encargado_sucursal',
+    rolNombre: 'Encargado de Sucursal',
+    sucursal: b.nombre,
+    activo: true,
+    fechaCreacion: '2026-01-01T08:00:00.000Z',
+  }
+})
 
 const INITIAL_ROLES = [
   {
@@ -70,18 +96,6 @@ const INITIAL_ACCOUNTS = [
   },
   {
     id: 'acc-2',
-    nombre: 'Encargado Neiva',
-    correo: 'encargado.neiva@drivique.com',
-    telefono: '+57 315 901 2233',
-    rolId: 'role-encargado',
-    rolCodigo: 'encargado_sucursal',
-    rolNombre: 'Encargado de Sucursal',
-    sucursal: 'Neiva',
-    activo: true,
-    fechaCreacion: '2026-01-05T09:30:00.000Z',
-  },
-  {
-    id: 'acc-3',
     nombre: 'Supervisora Bogotá',
     correo: 'supervisora.bogota@drivique.com',
     telefono: '+57 310 445 8899',
@@ -92,6 +106,7 @@ const INITIAL_ACCOUNTS = [
     activo: true,
     fechaCreacion: '2026-02-10T14:00:00.000Z',
   },
+  ...BRANCH_MANAGER_ACCOUNTS,
 ]
 
 function readRoles() {
@@ -119,12 +134,17 @@ function writeRoles(data) {
 function readAccounts() {
   try {
     const raw = localStorage.getItem(ACCOUNTS_KEY)
-    if (!raw) {
-      localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(INITIAL_ACCOUNTS))
-      return INITIAL_ACCOUNTS
+    let parsed = raw ? JSON.parse(raw) : []
+    if (!Array.isArray(parsed) || parsed.length < INITIAL_ACCOUNTS.length) {
+      const existingMails = new Set(parsed.map((a) => a.correo?.toLowerCase()))
+      INITIAL_ACCOUNTS.forEach((initAcc) => {
+        if (!existingMails.has(initAcc.correo?.toLowerCase())) {
+          parsed.push(initAcc)
+        }
+      })
+      localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(parsed))
     }
-    const parsed = JSON.parse(raw)
-    return Array.isArray(parsed) && parsed.length > 0 ? parsed : INITIAL_ACCOUNTS
+    return parsed
   } catch {
     return INITIAL_ACCOUNTS
   }
