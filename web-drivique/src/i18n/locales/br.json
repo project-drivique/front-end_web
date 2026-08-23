@@ -1062,7 +1062,26 @@
       "fields": { "name": "Agência", "city": "Cidade", "address": "Endereço", "manager": "Responsável", "cash": "Pagamento em dinheiro", "vehicles": "Veículos", "reservations": "Reservas" },
       "messages": { "created": "A agência foi criada com sucesso.", "updated": "A agência foi atualizada com sucesso.", "deleted": "A agência foi excluída com sucesso." },
       "errors": { "required": "Todos os campos são obrigatórios.", "invalidCity": "Selecione uma cidade existente.", "invalidManager": "Selecione um responsável ativo.", "duplicate": "Já existe uma agência com esse nome.", "notFound": "A agência não está mais disponível.", "hasAssociations": "Não é possível excluir: possui {{vehicles}} veículos e {{reservations}} reservas associadas.", "noManagers": "Não há responsáveis ativos disponíveis." }
-    }
+    },
+    "reservationsTitle": "Gestão de Reservas",
+    "reservationsSubtitle": "Controle operacional completo sobre reservas, retiradas e cancelamentos.",
+    "createManualReservation": "+ Reserva Manual",
+    "searchReservations": "Buscar por código, cliente, carro...",
+    "allStatuses": "Todos os status",
+    "allBranches": "Todas as filiais",
+    "statusConfirmada": "Confirmada",
+    "statusEnCurso": "Em andamento",
+    "statusFinalizada": "Concluída",
+    "statusPendiente": "Pendente",
+    "statusCancelada": "Cancelada",
+    "print": "Imprimir",
+    "reservationsFound": "reservas encontradas",
+    "noReservationsTitle": "Nenhuma reserva encontrada",
+    "noReservationsText": "Nenhuma reserva corresponde aos filtros.",
+    "actions": "Ações",
+    "createdSuccess": "Reserva manual criada com sucesso.",
+    "updatedSuccess": "Reserva atualizada com sucesso.",
+    "cancelledSuccess": "Reserva cancelada com sucesso."
   },
   "contratoFirma": {
     "badgeLabel": "Documento digital",

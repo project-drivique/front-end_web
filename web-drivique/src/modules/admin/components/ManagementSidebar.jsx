@@ -1,0 +1,81 @@
+import { NavLink, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
+import {
+  FaBuilding,
+  FaCar,
+  FaChartPie,
+  FaCity,
+  FaClipboardList,
+  FaFileContract,
+  FaShieldAlt,
+  FaSignOutAlt,
+  FaUsers,
+} from 'react-icons/fa'
+import { useAuthStore } from '../../../store/authStore'
+import accessConfig from '../../../mocks/adminAccessConfig.json'
+import { ROLES } from '../../auth/utils/accessControl'
+import logo from '../../../assets/logocatalog.png'
+import './ManagementDashboard.css'
+
+const MODULE_ICONS = {
+  dashboard: FaChartPie,
+  vehicles: FaCar,
+  users: FaUsers,
+  reservations: FaClipboardList,
+  contracts: FaFileContract,
+  cities: FaCity,
+  branches: FaBuilding,
+  audit: FaShieldAlt,
+}
+
+export default function ManagementSidebar({ branchOnly = false }) {
+  const { t } = useTranslation()
+  const navigate = useNavigate()
+  const usuario = useAuthStore((state) => state.usuario)
+  const logout = useAuthStore((state) => state.logout)
+
+  const isBranchManager = branchOnly || usuario?.rol === ROLES.BRANCH_MANAGER || usuario?.rol === 'encargado' || usuario?.rol === 'encargado_sucursal'
+  const roleKey = isBranchManager ? ROLES.BRANCH_MANAGER : ROLES.ADMIN
+  const navigation = accessConfig.dashboardNavigation[roleKey] || []
+
+  const closeSession = () => {
+    logout()
+    localStorage.removeItem('last_path')
+    navigate('/login', { replace: true })
+  }
+
+  return (
+    <aside className="management-sidebar">
+      <div className="management-brand">
+        <span className="management-brand__mark">
+          <img src={logo} alt="Drivique" />
+        </span>
+        <div>
+          <strong>Drivique</strong>
+          <small>{t('admin.management', 'Gestión')}</small>
+        </div>
+      </div>
+
+      <nav className="management-nav" aria-label={t('admin.navigation', 'Navegación')}>
+        {navigation.map(({ key, route }) => {
+          const Icon = MODULE_ICONS[key] || FaChartPie
+          return (
+            <NavLink
+              key={key}
+              to={route}
+              end={key === 'dashboard'}
+              className={({ isActive }) => `management-nav__item ${isActive ? 'is-active' : ''}`}
+            >
+              <Icon aria-hidden="true" />
+              <span>{t(key === 'cities' ? 'admin.cities.title' : `admin.${key}`)}</span>
+            </NavLink>
+          )
+        })}
+      </nav>
+
+      <button type="button" className="management-logout" onClick={closeSession}>
+        <FaSignOutAlt /> {t('admin.logout', 'Cerrar sesión')}
+      </button>
+    </aside>
+  )
+}
