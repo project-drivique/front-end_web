@@ -13,6 +13,8 @@ import MenuConfiguracion from '../../../components/MenuConfiguracion'
 import logo from '../../../assets/logocatalog.png'
 import './ManagementDashboard.css'
 
+import ManagementSidebar from './ManagementSidebar'
+
 const MODULE_ICONS = { dashboard: FaChartPie, vehicles: FaCar, users: FaUsers, reservations: FaClipboardList, contracts: FaFileContract, cities: FaCity, branches: FaBuilding, audit: FaShieldAlt }
 const KPI_ICONS = { monthlyRevenue: FaDollarSign, rentedVehicles: FaCar, availableVehicles: FaCheckCircle, todayDeliveries: FaClipboardList }
 
@@ -33,24 +35,9 @@ export default function ManagementDashboard({ branchOnly = false }) {
     { key: 'todayDeliveries', value: summary.todayDeliveries },
   ]
 
-  const closeSession = () => {
-    logout()
-    localStorage.removeItem('last_path')
-    navigate('/login', { replace: true })
-  }
-
   return (
     <div className={`management-shell ${tema === 'oscuro' ? 'management-shell--dark' : ''}`}>
-      <aside className="management-sidebar">
-        <div className="management-brand"><span className="management-brand__mark"><img src={logo} alt="Drivique" /></span><div><strong>Drivique</strong><small>{t('admin.management')}</small></div></div>
-        <nav className="management-nav" aria-label={t('admin.navigation')}>
-          {navigation.map(({ key, route }) => {
-            const Icon = MODULE_ICONS[key] || FaChartPie
-            return <NavLink key={key} to={route} end={key === 'dashboard'} className={({ isActive }) => `management-nav__item ${isActive ? 'is-active' : ''}`}><Icon aria-hidden="true" /><span>{t(key === 'cities' ? 'admin.cities.title' : `admin.${key}`)}</span></NavLink>
-          })}
-        </nav>
-        <button type="button" className="management-logout" onClick={closeSession}><FaSignOutAlt /> {t('admin.logout')}</button>
-      </aside>
+      <ManagementSidebar branchOnly={branchOnly} />
 
       <main className="management-main">
         <header className="management-header">
