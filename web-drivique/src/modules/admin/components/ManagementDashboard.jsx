@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { FaBuilding, FaCar, FaChartPie, FaCheckCircle, FaClipboardList, FaDollarSign, FaFileContract, FaShieldAlt, FaSignOutAlt, FaUsers } from 'react-icons/fa'
+import { FaBuilding, FaCar, FaChartPie, FaCheckCircle, FaCity, FaClipboardList, FaDollarSign, FaFileContract, FaShieldAlt, FaSignOutAlt, FaUsers } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import { useAuthStore } from '../../../store/authStore'
 import { accessAuditService } from '../../../services/accessAuditService'
@@ -13,7 +13,7 @@ import MenuConfiguracion from '../../../components/MenuConfiguracion'
 import logo from '../../../assets/logocatalog.png'
 import './ManagementDashboard.css'
 
-const MODULE_ICONS = { dashboard: FaChartPie, vehicles: FaCar, users: FaUsers, reservations: FaClipboardList, contracts: FaFileContract, branches: FaBuilding, audit: FaShieldAlt }
+const MODULE_ICONS = { dashboard: FaChartPie, vehicles: FaCar, users: FaUsers, reservations: FaClipboardList, contracts: FaFileContract, cities: FaCity, branches: FaBuilding, audit: FaShieldAlt }
 const KPI_ICONS = { monthlyRevenue: FaDollarSign, rentedVehicles: FaCar, availableVehicles: FaCheckCircle, todayDeliveries: FaClipboardList }
 
 export default function ManagementDashboard({ branchOnly = false }) {
@@ -46,7 +46,7 @@ export default function ManagementDashboard({ branchOnly = false }) {
         <nav className="management-nav" aria-label={t('admin.navigation')}>
           {navigation.map(({ key, route }) => {
             const Icon = MODULE_ICONS[key] || FaChartPie
-            return <NavLink key={key} to={route} end={key === 'dashboard'} className={({ isActive }) => `management-nav__item ${isActive ? 'is-active' : ''}`}><Icon aria-hidden="true" /><span>{t(`admin.${key}`)}</span></NavLink>
+            return <NavLink key={key} to={route} end={key === 'dashboard'} className={({ isActive }) => `management-nav__item ${isActive ? 'is-active' : ''}`}><Icon aria-hidden="true" /><span>{t(key === 'cities' ? 'admin.cities.title' : `admin.${key}`)}</span></NavLink>
           })}
         </nav>
         <button type="button" className="management-logout" onClick={closeSession}><FaSignOutAlt /> {t('admin.logout')}</button>
