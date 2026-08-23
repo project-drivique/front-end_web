@@ -5,6 +5,7 @@
     "save": "Save changes",
     "cancel": "Cancel",
     "edit": "Edit",
+    "delete": "Delete",
     "select": "Select",
     "goBack": "Back",
     "continue": "Continue",
@@ -1051,7 +1052,13 @@
     "moduleAvailable": "Module available according to your permissions.",
     "recentAccess": "Recent administrative access",
     "noAudit": "There are no access records yet.",
-    "auditColumns": { "date": "Date and time", "email": "Email", "role": "Role", "result": "Result", "ip": "IP" }
+    "auditColumns": { "date": "Date and time", "email": "Email", "role": "Role", "result": "Result", "ip": "IP" },
+    "cities": {
+      "title": "City management", "subtitle": "Manage the cities available for organizing the branch network.", "create": "New city", "search": "Search city or department...", "filterDepartment": "Filter by department", "allDepartments": "All departments", "export": "Export options", "print": "Print", "results": "cities in the list", "exportTitle": "City list - Drivique", "emptyTitle": "No cities found", "emptyText": "Adjust the filters or register a new city.", "formLabel": "City information", "createTitle": "Create city", "editTitle": "Edit city", "deleteTitle": "Delete city", "deleteText": "Delete {{city}}? This action cannot be undone.", "hasAirport": "Has an airport", "hasTerminal": "Has a terminal",
+      "fields": { "name": "City", "department": "Department", "branches": "Branches", "airport": "Airport", "terminal": "Terminal", "actions": "Actions" },
+      "messages": { "created": "The city was created successfully.", "updated": "The city was updated successfully.", "deleted": "The city was deleted successfully." },
+      "errors": { "required": "City and department are required.", "duplicate": "A city with that name already exists.", "notFound": "The city is no longer available.", "hasBranches": "Cannot delete: the city has {{count}} associated branches." }
+    }
   },
   "contratoFirma": {
     "badgeLabel": "Digital document",
