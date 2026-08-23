@@ -18,6 +18,7 @@ import VehicleDetailsPage from '../modules/catalog/pages/VehicleDetailsPage'
 import AdminPage from '../modules/admin/pages/AdminPage'
 import BranchManagerPage from '../modules/admin/pages/BranchManagerPage'
 import ManagementModulePage from '../modules/admin/pages/ManagementModulePage'
+import CityManagementPage from '../modules/admin/pages/CityManagementPage'
 import { getRoleHome, hasValidRoleAccess, ROLES } from '../modules/auth/utils/accessControl'
 import BranchesPage from '../modules/catalog/pages/BranchesPage'
 import ProfilePage from '../modules/profile/pages/ProfilePage'
@@ -122,6 +123,7 @@ export default function AppRouter() {
 
         <Route path="/home" element={<RutaPrivada><UserCatalogPage /></RutaPrivada>} />
         <Route path="/admin" element={<RutaPorRol roles={[ROLES.ADMIN]}><AdminPage /></RutaPorRol>} />
+        <Route path="/admin/cities" element={<RutaPorRol roles={[ROLES.ADMIN]}><CityManagementPage /></RutaPorRol>} />
         <Route path="/admin/:moduleKey" element={<RutaPorRol roles={[ROLES.ADMIN]}><ManagementModulePage /></RutaPorRol>} />
         <Route path="/encargado" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER]}><BranchManagerPage /></RutaPorRol>} />
         <Route path="/encargado/:moduleKey" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER]}><ManagementModulePage /></RutaPorRol>} />
