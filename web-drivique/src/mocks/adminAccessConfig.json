@@ -21,7 +21,7 @@
     "maxRecords": 100
   },
   "dashboardModules": {
-    "administrador": ["vehicles", "users", "reservations", "contracts", "branches", "audit"],
+    "administrador": ["vehicles", "users", "reservations", "contracts", "cities", "branches", "audit"],
     "encargado_sucursal": ["vehicles", "reservations", "contracts"]
   },
   "dashboardNavigation": {
@@ -31,6 +31,7 @@
       { "key": "users", "route": "/admin/users" },
       { "key": "reservations", "route": "/admin/reservations" },
       { "key": "contracts", "route": "/admin/contracts" },
+      { "key": "cities", "route": "/admin/cities" },
       { "key": "branches", "route": "/admin/branches" },
       { "key": "audit", "route": "/admin/audit" }
     ],
