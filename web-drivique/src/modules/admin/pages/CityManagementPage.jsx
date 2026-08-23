@@ -71,7 +71,7 @@ export default function CityManagementPage() {
       <main className="management-main" style={{ padding: '24px 32px' }}>
         <div className="cities-container" style={{ maxWidth: '100%' }}>
         <header className="cities-topbar">
-          <div><Link className="cities-back" to="/admin"><FaArrowLeft /> {t('admin.backToDashboard')}</Link><p className="cities-eyebrow">{t('admin.management')}</p><h1>{t('admin.cities.title')}</h1><p className="cities-subtitle">{t('admin.cities.subtitle')}</p></div>
+          <div><p className="cities-eyebrow">{t('admin.management')}</p><h1>{t('admin.cities.title')}</h1><p className="cities-subtitle">{t('admin.cities.subtitle')}</p></div>
           <div className="cities-topbar__actions"><MenuConfiguracion /><button className="cities-primary" type="button" onClick={openCreate}><FaPlus /> {t('admin.cities.create')}</button></div>
         </header>
 

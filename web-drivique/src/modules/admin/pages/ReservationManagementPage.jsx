@@ -242,9 +242,6 @@ export default function ReservationManagementPage() {
         {/* Topbar Superior */}
         <header className="cities-topbar">
           <div>
-            <Link className="cities-back" to={esEncargado ? '/encargado' : '/admin'}>
-              <FaArrowLeft /> {t('admin.backToDashboard', 'Volver al Panel')}
-            </Link>
             <p className="cities-eyebrow">
               {esEncargado
                 ? `Encargado de Sucursal (${sucursalEncargado})`
