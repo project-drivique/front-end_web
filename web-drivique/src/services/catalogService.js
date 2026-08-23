@@ -1,4 +1,4 @@
-import vehiculosMock from '../mocks/vehicles.json'
+import { vehicleManagementService } from './vehicleManagementService'
 // Importa el archivo JSON con los vehículos de prueba (mock).
 
 const USAR_MOCK =
@@ -90,7 +90,7 @@ export const catalogService = {
   getVehiculos: async (filtros = {}) => {
     // Obtiene la lista de vehículos, ya sea mock o backend real.
 
-    if (USAR_MOCK) return filtrarMock(vehiculosMock, filtros)
+    if (USAR_MOCK) return filtrarMock(vehicleManagementService.list(), filtros)
     // Si está en modo mock, filtra el JSON localmente y lo devuelve.
 
     const api = await getApi()
@@ -110,7 +110,7 @@ export const catalogService = {
     // Obtiene un vehículo específico por su id.
 
     if (USAR_MOCK) {
-      const vehiculo = vehiculosMock.find(v => v.id === Number(id))
+      const vehiculo = vehicleManagementService.getById(id)
       // Busca en el JSON mock el vehículo cuyo id coincida.
       // Convierte id a número por si llega como string desde la URL.
 
@@ -134,7 +134,7 @@ export const catalogService = {
   getVehiculosDestacados: async () => {
     // Obtiene solo los vehículos destacados.
 
-    if (USAR_MOCK) return vehiculosMock.filter(v => v.destacado)
+    if (USAR_MOCK) return vehicleManagementService.list().filter(v => v.destacado)
     // En mock, filtra los que tengan destacado = true.
 
     const api = await getApi()
