@@ -534,7 +534,7 @@
     "driverLicense": "Licencia de Conducción",
     "driverLicenseHelpText": "Sube tu licencia de conducción vigente y legible en formato PDF (máx 5MB)",
     "reservationRegisteredTitle": "Reserva Registrada",
-    "cashReservationRegisteredDesc": "Tu reserva quedó registrada. Para confirmarla, debes acercarte a la sucursal de {{sucursal}} para realizar el pago en efectivo y retirar el vehículo.",
+    "cashReservationRegisteredDesc": "Tu reserva quedó registrada. Para confirmarla, realiza el pago en efectivo en el punto autorizado {{sucursal}}.",
     "paymentDeadlineTitle": "Plazo para pagar",
     "paymentDeadlineDesc": "Tienes {{horas}} horas desde ahora para acercarte a la sucursal y pagar. Si no pagas dentro de este plazo, la reserva se cancelará automáticamente.",
     "signedContractSentEmail": "El contrato firmado te llegó a tu correo. Muéstralo en la sucursal para realizar el pago.",
@@ -641,6 +641,9 @@
       "licenciaPdfRequired": "Debes subir tu licencia de conducción en formato PDF."
     },
     "cashBranchTitle": "Información de la Sucursal",
+    "cashPaymentBranchLabel": "Punto autorizado para pago en efectivo",
+    "selectCashPaymentBranch": "Selecciona un punto de pago",
+    "noCashPaymentBranches": "No hay sucursales autorizadas para recibir pagos en efectivo.",
     "cashBranchIntro": "Paga en efectivo directamente en nuestra sucursal:",
     "cashBranchCity": "Ciudad",
     "cashBranchAddress": "Dirección",
@@ -1025,6 +1028,12 @@
       "fields": { "name": "Ciudad", "department": "Departamento", "branches": "Sucursales", "airport": "Aeropuerto", "terminal": "Terminal", "actions": "Acciones" },
       "messages": { "created": "La ciudad fue creada correctamente.", "updated": "La ciudad fue actualizada correctamente.", "deleted": "La ciudad fue eliminada correctamente." },
       "errors": { "required": "La ciudad y el departamento son obligatorios.", "duplicate": "Ya existe una ciudad con ese nombre.", "notFound": "La ciudad ya no se encuentra disponible.", "hasBranches": "No se puede eliminar: la ciudad tiene {{count}} sucursales asociadas." }
+    },
+    "branchesManagement": {
+      "title": "Gestión de sucursales", "subtitle": "Organiza la operación, los encargados y los puntos autorizados para pago en efectivo.", "create": "Nueva sucursal", "search": "Buscar sucursal, ciudad, dirección o encargado...", "allCities": "Todas las ciudades", "allCashStates": "Todos los estados de pago", "authorized": "Autorizada", "notAuthorized": "No autorizada", "results": "sucursales en el listado", "exportTitle": "Listado de sucursales - Drivique", "emptyTitle": "No se encontraron sucursales", "emptyText": "Ajusta los filtros o registra una nueva sucursal.", "formLabel": "Información de la sucursal", "createTitle": "Crear sucursal", "editTitle": "Editar sucursal", "deleteTitle": "Eliminar sucursal", "deleteText": "¿Deseas eliminar {{branch}}? Esta acción no se puede deshacer.", "cashLabel": "Autorizada para pago en efectivo", "cashHint": "Aparecerá como punto de pago aunque no tenga vehículos asignados.",
+      "fields": { "name": "Sucursal", "city": "Ciudad", "address": "Dirección", "manager": "Encargado", "cash": "Pago en efectivo", "vehicles": "Vehículos", "reservations": "Reservas" },
+      "messages": { "created": "La sucursal fue creada correctamente.", "updated": "La sucursal fue actualizada correctamente.", "deleted": "La sucursal fue eliminada correctamente." },
+      "errors": { "required": "Todos los campos son obligatorios.", "invalidCity": "Selecciona una ciudad existente.", "invalidManager": "Selecciona un encargado activo.", "duplicate": "Ya existe una sucursal con ese nombre.", "notFound": "La sucursal ya no está disponible.", "hasAssociations": "No se puede eliminar: tiene {{vehicles}} vehículos y {{reservations}} reservas asociadas.", "noManagers": "No hay encargados activos disponibles. Registra uno antes de crear la sucursal." }
     }
   },
   "panel": {
@@ -1068,6 +1077,7 @@
     "endDate": "Fecha fin",
     "paymentMethod": "Método de pago",
     "paymentMethodCash": "Pago físico en sucursal",
+    "cashPaymentBranch": "Punto de pago en efectivo",
     "paymentMethodWompi": "Wompi (modo pruebas)",
     "totalValue": "Valor total",
     "additionalServices": "Servicios adicionales",

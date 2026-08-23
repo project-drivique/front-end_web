@@ -183,6 +183,7 @@ export default function FirmaContrato({ vehiculo, reservaGuardada, onFirmado }) 
               <Campo label={t('contratoFirma.startDate')} value={formatearFecha(reservaDetalles.fechaInicio)} />
               <Campo label={t('contratoFirma.endDate')} value={formatearFecha(reservaDetalles.fechaFin)} />
               <Campo label={t('contratoFirma.paymentMethod')} value={metodoPagoTexto} />
+              {reservaDetalles.metodoPago === 'efectivo' && <Campo label={t('contratoFirma.cashPaymentBranch')} value={reservaDetalles.sucursalPagoEfectivo} />}
               <Campo label={t('contratoFirma.totalValue')} value={formatCurrency(total, moneda)} />
               <Campo label={t('contratoFirma.additionalServices')} value={serviciosTexto} />
               <Campo label={t('contratoFirma.protectionPlan')} value={seguroIdx != null ? vehiculo?.seguros?.[seguroIdx]?.nombre : '—'} />
