@@ -13,7 +13,8 @@ function relatedCityNames(city) {
 
 function countBranches(city) {
   const names = relatedCityNames(city)
-  return branches.filter((branch) => names.has(normalize(branch.ciudad))).length
+  const managedBranches = readJson('drivique_admin_branches', branches)
+  return managedBranches.filter((branch) => names.has(normalize(branch.ciudad))).length
 }
 
 function readJson(key, fallback) {

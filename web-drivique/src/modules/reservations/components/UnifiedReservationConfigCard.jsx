@@ -4,6 +4,7 @@ import { useState } from 'react'
 import ReservationCalendar from './ReservationCalendar'
 import DomicilioModal from './DomicilioModal'
 import { SUCURSALES, CIUDADES } from '../../catalog/constants'
+import { branchManagementService } from '../../../services/branchManagementService'
 
 const HORAS = Array.from({ length: 24 }, (_, i) => {
   const h = i.toString().padStart(2, '0')
@@ -26,6 +27,7 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
 
   // Payment Options
   const metodoPago = reserva?.metodoPago
+  const cashBranches = branchManagementService.getCashAuthorized()
   const paymentOptions = [
     {
       value: 'wompi',
@@ -164,6 +166,12 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
           })}
         </div>
       </div>
+
+      {metodoPago === 'efectivo' && <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 700, color: titleColor }}><FaMapMarkerAlt color={accent} size={14} /> {t('vehiculo.cashPaymentBranchLabel', 'Punto autorizado para pago en efectivo')}</span>
+        <div style={{ padding: '12px 16px', borderRadius: 12, border: `1px solid ${border}`, background: 'transparent' }}><select value={reserva?.sucursalPagoEfectivo || ''} onChange={(event) => onCambio('sucursalPagoEfectivo', event.target.value)} style={selectStyle}><option value="">{t('vehiculo.selectCashPaymentBranch', 'Selecciona un punto de pago')}</option>{cashBranches.map((branch) => <option key={branch.id} value={branch.nombre}>{branch.nombre} · {branch.ciudad}</option>)}</select></div>
+        {cashBranches.length === 0 && <small style={{ color: '#dc2626', fontWeight: 700 }}>{t('vehiculo.noCashPaymentBranches', 'No hay sucursales autorizadas para recibir pagos en efectivo.')}</small>}
+      </div>}
 
       {/* SECCIÓN: LUGAR Y HORA */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
