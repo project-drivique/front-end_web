@@ -1297,5 +1297,28 @@
       "sucursales": "🏢 **Sucursales disponibles:**\n\nContamos con sedes físicas en Neiva, Bogotá, Medellín, Cali y Cartagena. Puedes ver la ubicación exacta y horarios en la sección **Sucursales**.",
       "default": "🤖 Entiendo tu inquietud. Puedes explorar nuestro **Catálogo** para alquilar, revisar **Mis Reservas** o contactar a un asesor por WhatsApp escribiendo **\"agente\"**."
     }
+  },
+  "admin": {
+    "backToDashboard": "Volver al Panel",
+    "management": "Gestión Operativa",
+    "reservationsTitle": "Gestión de Reservas",
+    "reservationsSubtitle": "Control operativo completo de reservas, entregas, devoluciones y cancelaciones.",
+    "createManualReservation": "+ Reserva Manual",
+    "searchReservations": "Buscar por código, cliente, auto, placa...",
+    "allStatuses": "Todos los estados",
+    "allBranches": "Todas las sucursales",
+    "statusConfirmada": "Confirmada",
+    "statusEnCurso": "En curso",
+    "statusFinalizada": "Finalizada",
+    "statusPendiente": "Pendiente",
+    "statusCancelada": "Cancelada",
+    "print": "Imprimir",
+    "reservationsFound": "reservas encontradas",
+    "noReservationsTitle": "No hay reservas registradas",
+    "noReservationsText": "No se encontraron reservas con los filtros aplicados.",
+    "actions": "Acciones",
+    "createdSuccess": "Reserva manual registrada exitosamente.",
+    "updatedSuccess": "Reserva actualizada correctamente.",
+    "cancelledSuccess": "Reserva cancelada correctamente."
   }
 }

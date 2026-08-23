@@ -1319,5 +1319,28 @@
       "sucursales": "🏢 **Filiais disponíveis:**\n\nFiliais em Neiva, Bogotá, Medellín, Cali e Cartagena.",
       "default": "🤖 Entendo sua dúvida. Explore nosso **Catálogo**, consulte **Minhas Reservas** ou digite **\"agente\"**."
     }
+  },
+  "admin": {
+    "backToDashboard": "Voltar ao Painel",
+    "management": "Gestão Operacional",
+    "reservationsTitle": "Gestão de Reservas",
+    "reservationsSubtitle": "Controle operacional completo sobre reservas, retiradas e cancelamentos.",
+    "createManualReservation": "+ Reserva Manual",
+    "searchReservations": "Buscar por código, cliente, carro...",
+    "allStatuses": "Todos os status",
+    "allBranches": "Todas as filiais",
+    "statusConfirmada": "Confirmada",
+    "statusEnCurso": "Em andamento",
+    "statusFinalizada": "Concluída",
+    "statusPendiente": "Pendente",
+    "statusCancelada": "Cancelada",
+    "print": "Imprimir",
+    "reservationsFound": "reservas encontradas",
+    "noReservationsTitle": "Nenhuma reserva encontrada",
+    "noReservationsText": "Nenhuma reserva corresponde aos filtros.",
+    "actions": "Ações",
+    "createdSuccess": "Reserva manual criada com sucesso.",
+    "updatedSuccess": "Reserva atualizada com sucesso.",
+    "cancelledSuccess": "Reserva cancelada com sucesso."
   }
 }
