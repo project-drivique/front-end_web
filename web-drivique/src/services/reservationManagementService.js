@@ -1,6 +1,6 @@
 import { accessAuditService } from './accessAuditService'
 
-const STORAGE_KEY = 'drivique_user_reservations'
+const STORAGE_KEY = 'drivique_reservas'
 
 const INITIAL_RESERVATIONS = [
   {
@@ -129,6 +129,34 @@ const INITIAL_RESERVATIONS = [
   }
 ]
 
+function normalizarReserva(r) {
+  if (!r) return null
+  return {
+    id: String(r.id || r.codigo || `RES-${Math.random().toString(36).substring(2, 6)}`),
+    codigo: String(r.codigo || r.id || 'RES-000'),
+    clienteNombre: r.clienteNombre || r.usuarioEmail || r.usuario?.nombre || 'Cliente Drivique',
+    clienteCorreo: r.clienteCorreo || r.usuarioEmail || r.usuario?.email || 'cliente@email.com',
+    clienteTelefono: r.clienteTelefono || r.telefono || '+57 300 000 0000',
+    vehiculoId: String(r.vehiculoId || 'v1'),
+    vehiculoNombre: r.vehiculoNombre || r.vehiculo?.nombre || 'Vehículo Drivique',
+    vehiculoPlaca: r.vehiculoPlaca || r.vehiculo?.placa || 'KLS-849',
+    vehiculoImagen: r.vehiculoImagen || r.vehiculo?.imagen || 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=600&q=80',
+    sucursal: r.sucursal || r.reservaDetalles?.sucursalRetiro || 'Neiva',
+    fechaInicio: r.fechaInicio || (r.fechaRecogida ? `${r.fechaRecogida}T${r.horaRecogida || '08:00'}` : new Date().toISOString().slice(0, 16)),
+    fechaFin: r.fechaFin || (r.fechaDevolucion ? `${r.fechaDevolucion}T${r.horaDevolucion || '18:00'}` : new Date(Date.now() + 86400000 * 3).toISOString().slice(0, 16)),
+    estado: (r.estado || 'confirmada').toLowerCase(),
+    totalCOP: Number(r.totalCOP || r.precioTotal || r.total || 1200000),
+    contratoFirmado: Boolean(r.contratoFirmado),
+    pagoEstado: r.pagoEstado || 'aprobado',
+    pasarela: r.pasarela || 'Wompi',
+    notas: r.notas || 'Reserva registrada en sistema.',
+    fechaCreacion: r.fechaCreacion || new Date().toISOString(),
+    historialAcciones: Array.isArray(r.historialAcciones) ? r.historialAcciones : [
+      { fecha: r.fechaCreacion || new Date().toISOString(), accion: 'Registro de reserva', usuario: r.clienteCorreo || 'Sistema' }
+    ]
+  }
+}
+
 function readStoredReservations() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
@@ -137,7 +165,11 @@ function readStoredReservations() {
       return INITIAL_RESERVATIONS
     }
     const parsed = JSON.parse(raw)
-    return Array.isArray(parsed) && parsed.length > 0 ? parsed : INITIAL_RESERVATIONS
+    if (!Array.isArray(parsed) || parsed.length === 0) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_RESERVATIONS))
+      return INITIAL_RESERVATIONS
+    }
+    return parsed.map(normalizarReserva).filter(Boolean)
   } catch {
     return INITIAL_RESERVATIONS
   }
@@ -161,7 +193,6 @@ function evaluarTransicionesAutomaticas(listaReservas) {
   let huboCambios = false
 
   const actualizadas = listaReservas.map((res) => {
-    // Si ya está cancelada o finalizada, no cambia
     if (res.estado === 'cancelada' || res.estado === 'finalizada') {
       return res
     }
@@ -215,12 +246,13 @@ export const reservationManagementService = {
     const raw = readStoredReservations()
     const evaluadas = evaluarTransicionesAutomaticas(raw)
 
-    const isManager = user?.rol === 'encargado' || user?.rol === 'branch_manager'
-    const userBranch = user?.sucursalAsignada || user?.sucursal || 'Neiva'
+    const isManager = user?.rol === 'encargado' || user?.rol === 'branch_manager' || user?.rol === 'encargado_sucursal'
+    const userBranch = user?.sucursalAsignada || user?.sucursalId || user?.sucursal || 'Neiva'
 
     if (isManager) {
       return evaluadas.filter(
-        (r) => (r.sucursal || '').toLowerCase() === userBranch.toLowerCase()
+        (r) => (r.sucursal || '').toLowerCase().includes(userBranch.toLowerCase()) ||
+               userBranch.toLowerCase().includes((r.sucursal || '').toLowerCase())
       )
     }
 
@@ -265,11 +297,9 @@ export const reservationManagementService = {
       ],
     }
 
-    // Evaluar estado según fecha de inicio al crearse
     const evaluadas = evaluarTransicionesAutomaticas([nuevaReserva, ...lista])
     writeStoredReservations(evaluadas)
 
-    // Auditoría
     accessAuditService.record({
       correo: currentUser?.correo || 'admin@drivique.com',
       rol: currentUser?.rol || 'administrador',
@@ -288,7 +318,7 @@ export const reservationManagementService = {
     const now = new Date()
 
     const actualizadas = lista.map((res) => {
-      if (res.id === id) {
+      if (res.id === id || res.codigo === id) {
         const historialNuevo = [
           ...(res.historialAcciones || []),
           {
@@ -318,7 +348,6 @@ export const reservationManagementService = {
     const evaluadas = evaluarTransicionesAutomaticas(actualizadas)
     writeStoredReservations(evaluadas)
 
-    // Auditoría
     accessAuditService.record({
       correo: currentUser?.correo || 'admin@drivique.com',
       rol: currentUser?.rol || 'administrador',
@@ -337,7 +366,7 @@ export const reservationManagementService = {
     const now = new Date()
 
     const actualizadas = lista.map((res) => {
-      if (res.id === id) {
+      if (res.id === id || res.codigo === id) {
         const historialNuevo = [
           ...(res.historialAcciones || []),
           {
@@ -360,7 +389,6 @@ export const reservationManagementService = {
 
     writeStoredReservations(actualizadas)
 
-    // Auditoría
     accessAuditService.record({
       correo: currentUser?.correo || 'admin@drivique.com',
       rol: currentUser?.rol || 'administrador',
