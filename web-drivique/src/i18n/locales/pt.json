@@ -5,6 +5,7 @@
     "save": "Guardar alterações",
     "cancel": "Cancelar",
     "edit": "Editar",
+    "delete": "Eliminar",
     "select": "Selecionar",
     "goBack": "Voltar",
     "continue": "Continuar",
@@ -1039,7 +1040,13 @@
     "moduleAvailable": "Módulo disponível de acordo com as suas permissões.",
     "recentAccess": "Acessos administrativos recentes",
     "noAudit": "Ainda não existem registos de acesso.",
-    "auditColumns": { "date": "Data e hora", "email": "E-mail", "role": "Função", "result": "Resultado", "ip": "IP" }
+    "auditColumns": { "date": "Data e hora", "email": "E-mail", "role": "Função", "result": "Resultado", "ip": "IP" },
+    "cities": {
+      "title": "Gestão de cidades", "subtitle": "Gerencie as cidades disponíveis para organizar a rede de agências.", "create": "Nova cidade", "search": "Pesquisar cidade ou departamento...", "filterDepartment": "Filtrar por departamento", "allDepartments": "Todos os departamentos", "export": "Opções de exportação", "print": "Imprimir", "results": "cidades na lista", "exportTitle": "Lista de cidades - Drivique", "emptyTitle": "Nenhuma cidade encontrada", "emptyText": "Ajuste os filtros ou registre uma nova cidade.", "formLabel": "Informações da cidade", "createTitle": "Criar cidade", "editTitle": "Editar cidade", "deleteTitle": "Eliminar cidade", "deleteText": "Eliminar {{city}}? Esta ação não pode ser desfeita.", "hasAirport": "Possui aeroporto", "hasTerminal": "Possui terminal",
+      "fields": { "name": "Cidade", "department": "Departamento", "branches": "Agências", "airport": "Aeroporto", "terminal": "Terminal", "actions": "Ações" },
+      "messages": { "created": "A cidade foi criada com sucesso.", "updated": "A cidade foi atualizada com sucesso.", "deleted": "A cidade foi eliminada com sucesso." },
+      "errors": { "required": "A cidade e o departamento são obrigatórios.", "duplicate": "Já existe uma cidade com esse nome.", "notFound": "A cidade já não está disponível.", "hasBranches": "Não é possível eliminar: a cidade possui {{count}} agências associadas." }
+    }
   },
   "contratoFirma": {
     "badgeLabel": "Documento digital",
