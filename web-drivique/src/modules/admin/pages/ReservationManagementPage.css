@@ -1,0 +1,243 @@
+/* src/modules/admin/pages/ReservationManagementPage.css */
+
+.reservations-admin-table th,
+.reservations-admin-table td {
+  padding: 14px 16px;
+  vertical-align: middle;
+}
+
+/* Badges de Estado de Reserva */
+.reserva-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: capitalize;
+}
+
+.reserva-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+
+.reserva-status-badge.confirmada {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.reserva-status-badge.confirmada .reserva-status-dot {
+  background: #2563eb;
+}
+
+.reserva-status-badge.en_curso {
+  background: #f3e8ff;
+  color: #7e22ce;
+}
+
+.reserva-status-badge.en_curso .reserva-status-dot {
+  background: #9333ea;
+  box-shadow: 0 0 6px #9333ea;
+}
+
+.reserva-status-badge.finalizada {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.reserva-status-badge.finalizada .reserva-status-dot {
+  background: #16a34a;
+}
+
+.reserva-status-badge.pendiente {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.reserva-status-badge.pendiente .reserva-status-dot {
+  background: #d97706;
+}
+
+.reserva-status-badge.cancelada {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.reserva-status-badge.cancelada .reserva-status-dot {
+  background: #dc2626;
+}
+
+/* Modal Detalle de Reserva */
+.reserva-detail-modal {
+  max-width: 640px !important;
+}
+
+.reserva-detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 16px;
+  margin-bottom: 20px;
+}
+
+.reserva-detail-card-box {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 14px 16px;
+}
+
+html.dark .reserva-detail-card-box {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+.reserva-detail-card-box h4 {
+  margin: 0 0 10px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #2563eb;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.reserva-detail-field {
+  margin-bottom: 8px;
+  font-size: 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+.reserva-detail-field small {
+  color: #64748b;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+html.dark .reserva-detail-field small {
+  color: #94a3b8;
+}
+
+.reserva-detail-field strong {
+  color: #0f172a;
+  font-size: 13px;
+}
+
+html.dark .reserva-detail-field strong {
+  color: #f8fafc;
+}
+
+/* Timeline de Historial en Modal */
+.reserva-timeline-wrap {
+  margin-top: 14px;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 14px;
+}
+
+html.dark .reserva-timeline-wrap {
+  border-color: #334155;
+}
+
+.reserva-timeline-item {
+  display: flex;
+  gap: 12px;
+  position: relative;
+  padding-bottom: 12px;
+}
+
+.reserva-timeline-item:last-child {
+  padding-bottom: 0;
+}
+
+.reserva-timeline-dot-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.reserva-timeline-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #2563eb;
+  margin-top: 4px;
+}
+
+.reserva-timeline-line {
+  width: 2px;
+  flex: 1;
+  background: #cbd5e1;
+  margin-top: 4px;
+}
+
+html.dark .reserva-timeline-line {
+  background: #334155;
+}
+
+.reserva-timeline-content p {
+  margin: 0 0 2px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.reserva-timeline-content small {
+  font-size: 10px;
+  color: #64748b;
+}
+
+/* Toolbar Responsive */
+.reservations-toolbar-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.reservations-date-inputs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #64748b;
+}
+
+.reservations-date-inputs input[type='date'] {
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1.5px solid #cbd5e1;
+  background: #ffffff;
+  color: #0f172a;
+  font-size: 12px;
+  outline: none;
+}
+
+html.dark .reservations-date-inputs input[type='date'] {
+  background: #1e293b;
+  border-color: #334155;
+  color: #f8fafc;
+}
+
+/* Media Query Impresión */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .cities-table-wrap,
+  .cities-table-wrap * {
+    visibility: visible;
+  }
+  .cities-table-wrap {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+}

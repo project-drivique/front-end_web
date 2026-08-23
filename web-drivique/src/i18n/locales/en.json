@@ -1321,5 +1321,28 @@
       "sucursales": "🏢 **Available Branches:**\n\nWe have physical branches in Neiva, Bogotá, Medellín, Cali, and Cartagena. View exact locations in **Branches**.",
       "default": "🤖 I understand your question. Explore our **Catalog**, check **My Reservations**, or contact an agent by typing **\"agent\"**."
     }
+  },
+  "admin": {
+    "backToDashboard": "Back to Dashboard",
+    "management": "Operations Management",
+    "reservationsTitle": "Reservations Management",
+    "reservationsSubtitle": "Full operational control over bookings, pickups, returns, and cancellations.",
+    "createManualReservation": "+ Manual Reservation",
+    "searchReservations": "Search by code, customer, car, plate...",
+    "allStatuses": "All statuses",
+    "allBranches": "All branches",
+    "statusConfirmada": "Confirmed",
+    "statusEnCurso": "In progress",
+    "statusFinalizada": "Completed",
+    "statusPendiente": "Pending",
+    "statusCancelada": "Cancelled",
+    "print": "Print",
+    "reservationsFound": "reservations found",
+    "noReservationsTitle": "No reservations found",
+    "noReservationsText": "No reservations match the applied filters.",
+    "actions": "Actions",
+    "createdSuccess": "Manual reservation created successfully.",
+    "updatedSuccess": "Reservation updated successfully.",
+    "cancelledSuccess": "Reservation cancelled successfully."
   }
 }

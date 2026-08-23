@@ -1320,5 +1320,28 @@
       "sucursales": "🏢 **Succursales disponibles :**\n\nSedes à Neiva, Bogotá, Medellín, Cali et Cartagena.",
       "default": "🤖 Je comprends votre question. Explorez le **Catalogue**, vos **Réservations** ou écrivez **\"agent\"** pour parler à un conseiller."
     }
+  },
+  "admin": {
+    "backToDashboard": "Retour au Tableau de bord",
+    "management": "Gestion Opérationnelle",
+    "reservationsTitle": "Gestion des Réservations",
+    "reservationsSubtitle": "Contrôle opérationnel complet des réservations, retraits et annulations.",
+    "createManualReservation": "+ Réservation Manuelle",
+    "searchReservations": "Rechercher par code, client, voiture...",
+    "allStatuses": "Tous les statuts",
+    "allBranches": "Toutes les succursales",
+    "statusConfirmada": "Confirmée",
+    "statusEnCurso": "En cours",
+    "statusFinalizada": "Terminée",
+    "statusPendiente": "En attente",
+    "statusCancelada": "Annulée",
+    "print": "Imprimer",
+    "reservationsFound": "réservations trouvées",
+    "noReservationsTitle": "Aucune réservation trouvée",
+    "noReservationsText": "Aucune réservation ne correspond aux filtres.",
+    "actions": "Actions",
+    "createdSuccess": "Réservation manuelle créée avec succès.",
+    "updatedSuccess": "Réservation mise à jour avec succès.",
+    "cancelledSuccess": "Réservation annulée avec succès."
   }
 }
