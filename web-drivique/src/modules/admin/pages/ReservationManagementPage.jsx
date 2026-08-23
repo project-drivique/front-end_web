@@ -21,20 +21,21 @@ import {
   FaExclamationTriangle,
   FaHistory,
 } from 'react-icons/fa'
-import { useLanding } from '@/modules/landing/LandingContext'
-import { useAuthStore } from '@/store/authStore'
-import { reservationManagementService } from '@/services/reservationManagementService'
-import { branchManagementService } from '@/services/branchManagementService'
-import { catalogService } from '@/services/catalogService'
-import { accessAuditService } from '@/services/accessAuditService'
-import { exportExcel, exportPdf, printTable } from '@/utils/listExportUtils'
-import MenuConfiguracion from '@/components/MenuConfiguracion'
+import { useLanding } from '../../landing/LandingContext'
+import { useAuthStore } from '../../../store/authStore'
+import { reservationManagementService } from '../../../services/reservationManagementService'
+import { branchManagementService } from '../../../services/branchManagementService'
+import { catalogService } from '../../../services/catalogService'
+import { accessAuditService } from '../../../services/accessAuditService'
+import { exportExcel, exportPdf, printTable } from '../../../utils/listExportUtils'
+import { formatCurrency } from '../../../utils/currencyUtils'
+import MenuConfiguracion from '../../../components/MenuConfiguracion'
 import './CityManagementPage.css'
 import './ReservationManagementPage.css'
 
 export default function ReservationManagementPage() {
   const { t } = useTranslation()
-  const { tema, moneda, formatCurrency } = useLanding()
+  const { tema, moneda, tasaUSD } = useLanding()
   const user = useAuthStore((state) => state.usuario)
   const esModoOscuro = tema === 'oscuro'
 
@@ -433,7 +434,7 @@ export default function ReservationManagementPage() {
 
                       <td>
                         <strong style={{ fontSize: 14 }}>
-                          {formatCurrency(r.totalCOP, moneda)}
+                          {formatCurrency(r.totalCOP, moneda, tasaUSD)}
                         </strong>
                       </td>
 
@@ -558,7 +559,7 @@ export default function ReservationManagementPage() {
                 </div>
                 <div className="reserva-detail-field">
                   <small>Monto Total ({moneda})</small>
-                  <strong>{formatCurrency(modalDetalle.totalCOP, moneda)}</strong>
+                  <strong>{formatCurrency(modalDetalle.totalCOP, moneda, tasaUSD)}</strong>
                 </div>
               </div>
             </div>
