@@ -29,6 +29,7 @@
       { "key": "dashboard", "route": "/admin" },
       { "key": "vehicles", "route": "/admin/vehicles" },
       { "key": "users", "route": "/admin/users" },
+      { "key": "roles", "route": "/admin/roles" },
       { "key": "reservations", "route": "/admin/reservations" },
       { "key": "contracts", "route": "/admin/contracts" },
       { "key": "cities", "route": "/admin/cities" },
