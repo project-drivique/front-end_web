@@ -10,6 +10,7 @@ import {
   FaShieldAlt,
   FaSignOutAlt,
   FaUsers,
+  FaUserShield,
 } from 'react-icons/fa'
 import { useAuthStore } from '../../../store/authStore'
 import accessConfig from '../../../mocks/adminAccessConfig.json'
@@ -21,6 +22,7 @@ const MODULE_ICONS = {
   dashboard: FaChartPie,
   vehicles: FaCar,
   users: FaUsers,
+  roles: FaUserShield,
   reservations: FaClipboardList,
   contracts: FaFileContract,
   cities: FaCity,
