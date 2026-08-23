@@ -30,6 +30,7 @@ import { accessAuditService } from '../../../services/accessAuditService'
 import { exportExcel, exportPdf, printTable } from '../../../utils/listExportUtils'
 import { formatCurrency } from '../../../utils/currencyUtils'
 import MenuConfiguracion from '../../../components/MenuConfiguracion'
+import ManagementSidebar from '../components/ManagementSidebar'
 import './CityManagementPage.css'
 import './ReservationManagementPage.css'
 
@@ -234,8 +235,10 @@ export default function ReservationManagementPage() {
   }
 
   return (
-    <main className={`cities-page ${esModoOscuro ? 'cities-page--dark' : ''}`}>
-      <div className="cities-container">
+    <div className={`management-shell ${esModoOscuro ? 'management-shell--dark' : ''}`}>
+      <ManagementSidebar branchOnly={esEncargado} />
+      <main className="management-main" style={{ padding: '24px 32px' }}>
+        <div className="cities-container" style={{ maxWidth: '100%' }}>
         {/* Topbar Superior */}
         <header className="cities-topbar">
           <div>
@@ -905,5 +908,6 @@ export default function ReservationManagementPage() {
         </div>
       )}
     </main>
+    </div>
   )
 }
