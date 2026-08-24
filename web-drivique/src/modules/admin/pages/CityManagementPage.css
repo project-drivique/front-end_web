@@ -13,13 +13,14 @@
   box-sizing: border-box;
 }
 
-.cities-page--dark {
+.cities-page--dark,
+.management-shell--dark {
   --city-bg: #07111f;
-  --city-card: #111c2e;
+  --city-card: #0f1b2d;
   --city-text: #f8fafc;
   --city-muted: #94a3b8;
   --city-border: #26354d;
-  --city-soft: #172554;
+  --city-soft: #132238;
 }
 
 .cities-container {
@@ -493,8 +494,8 @@ html.dark .cities-modal {
   color: var(--city-muted);
 }
 
-.cities-modal form > label input,
-.cities-modal form > label select {
+.cities-modal form input,
+.cities-modal form select {
   display: block;
   width: 100%;
   border: 1.5px solid var(--city-border) !important;
@@ -566,6 +567,82 @@ html.dark .cities-modal {
   color: var(--city-muted);
   font-size: 14px;
   line-height: 1.5;
+}
+
+/* 🛡️ REGLAS BULLETPROOF DE MODO OSCURO PARA TODAS LAS PANTALLAS ADMINISTRATIVAS */
+.management-shell--dark .cities-card {
+  background: #0f1b2d !important;
+  color: #f8fafc !important;
+  border-color: #26354d !important;
+}
+
+.management-shell--dark .cities-table-wrap {
+  border-color: #26354d !important;
+  background: #0f1b2d !important;
+}
+
+.management-shell--dark .cities-table-wrap td {
+  background: #0f1b2d !important;
+  color: #f8fafc !important;
+  border-bottom-color: #26354d !important;
+}
+
+.management-shell--dark .cities-table-wrap tbody tr:nth-child(even) td {
+  background: #132238 !important;
+  color: #f8fafc !important;
+}
+
+.management-shell--dark .cities-table-wrap tbody tr:hover td {
+  background: #1e365d !important;
+  color: #ffffff !important;
+}
+
+.management-shell--dark .cities-modal {
+  background: #0f1b2d !important;
+  border-color: #26354d !important;
+  color: #f8fafc !important;
+  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.7) !important;
+}
+
+.management-shell--dark .cities-modal input,
+.management-shell--dark .cities-modal select,
+.management-shell--dark .cities-modal textarea {
+  background: #132238 !important;
+  color: #f8fafc !important;
+  border-color: #26354d !important;
+}
+
+.management-shell--dark .cities-search {
+  background: #132238 !important;
+  border-color: #26354d !important;
+}
+
+.management-shell--dark .cities-search input {
+  color: #f8fafc !important;
+}
+
+.management-shell--dark .cities-toolbar select {
+  background: #132238 !important;
+  color: #f8fafc !important;
+  border-color: #26354d !important;
+}
+
+.management-shell--dark .cities-export button,
+.management-shell--dark .cities-row-actions button {
+  background: #132238 !important;
+  color: #f8fafc !important;
+  border-color: #26354d !important;
+}
+
+.management-shell--dark .cities-export button:hover,
+.management-shell--dark .cities-row-actions button:hover {
+  background: #2563eb !important;
+  color: #ffffff !important;
+}
+
+.management-shell--dark .cities-row-actions button.is-danger:hover {
+  background: #dc2626 !important;
+  color: #ffffff !important;
 }
 
 @media (max-width: 900px) {

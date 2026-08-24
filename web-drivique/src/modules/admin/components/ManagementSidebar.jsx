@@ -6,6 +6,7 @@ import {
   FaChartPie,
   FaCity,
   FaClipboardList,
+  FaExclamationTriangle,
   FaFileContract,
   FaShieldAlt,
   FaSignOutAlt,
@@ -27,7 +28,21 @@ const MODULE_ICONS = {
   contracts: FaFileContract,
   cities: FaCity,
   branches: FaBuilding,
+  incidents: FaExclamationTriangle,
   audit: FaShieldAlt,
+}
+
+const MODULE_FALLBACK_LABELS = {
+  dashboard: 'Inicio',
+  vehicles: 'Vehículos',
+  users: 'Usuarios',
+  roles: 'Roles y Cuentas',
+  reservations: 'Reservas',
+  contracts: 'Contratos',
+  cities: 'Gestión de ciudades',
+  branches: 'Sucursales',
+  incidents: 'Incidencias',
+  audit: 'Auditoría',
 }
 
 export default function ManagementSidebar({ branchOnly = false }) {
@@ -61,6 +76,22 @@ export default function ManagementSidebar({ branchOnly = false }) {
       <nav className="management-nav" aria-label={t('admin.navigation', 'Navegación')}>
         {navigation.map(({ key, route }) => {
           const Icon = MODULE_ICONS[key] || FaChartPie
+          const fallback = MODULE_FALLBACK_LABELS[key] || key
+          const navLabels = {
+            dashboard: 'admin.nav.dashboard',
+            vehicles: 'admin.nav.vehicles',
+            users: 'admin.nav.users',
+            roles: 'admin.nav.roles',
+            reservations: 'admin.nav.reservations',
+            contracts: 'admin.nav.contracts',
+            cities: 'admin.nav.cities',
+            branches: 'admin.nav.branches',
+            incidents: 'admin.nav.incidents',
+            audit: 'admin.nav.audit',
+          }
+          const transKey = navLabels[key] || `admin.nav.${key}`
+          const label = t(transKey, fallback)
+
           return (
             <NavLink
               key={key}
@@ -69,7 +100,7 @@ export default function ManagementSidebar({ branchOnly = false }) {
               className={({ isActive }) => `management-nav__item ${isActive ? 'is-active' : ''}`}
             >
               <Icon aria-hidden="true" />
-              <span>{t(key === 'cities' ? 'admin.cities.title' : `admin.${key}`)}</span>
+              <span>{label}</span>
             </NavLink>
           )
         })}

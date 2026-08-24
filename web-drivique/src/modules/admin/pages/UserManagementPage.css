@@ -87,9 +87,16 @@
   text-align: center;
 }
 
-html.dark .user-doc-card {
-  background: #1e293b;
-  border-color: #334155;
+html.dark .user-doc-card,
+.management-shell--dark .user-doc-card {
+  background: #132238;
+  border-color: #26354d;
+  color: #f8fafc;
+}
+
+.management-shell--dark .user-doc-placeholder {
+  background: #1e365d;
+  color: #94a3b8;
 }
 
 .user-doc-card strong {
