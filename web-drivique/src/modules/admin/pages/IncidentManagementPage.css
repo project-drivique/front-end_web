@@ -1,0 +1,321 @@
+/* src/modules/admin/pages/IncidentManagementPage.css */
+
+/* ─── BADGES DE PRIORIDAD VISUAL ─────────────────────────────────────────── */
+.priority-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 13px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: capitalize;
+  letter-spacing: 0.4px;
+  white-space: nowrap;
+}
+
+.priority-badge.urgente {
+  background: #fee2e2;
+  color: #991b1b;
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
+  animation: pulsePriority 2s infinite ease-in-out;
+}
+
+@keyframes pulsePriority {
+  0%, 100% { box-shadow: 0 0 4px rgba(239, 68, 68, 0.2); }
+  50% { box-shadow: 0 0 14px rgba(239, 68, 68, 0.55); }
+}
+
+.priority-badge.alta { background: #ffedd5; color: #c2410c; }
+.priority-badge.media { background: #dbeafe; color: #1e40af; }
+.priority-badge.baja { background: #dcfce7; color: #15803d; }
+
+/* ─── BADGES DE ORIGEN ────────────────────────────────────────────────────── */
+.origin-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 11px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 800;
+}
+.origin-badge.cliente { background: #f3e8ff; color: #6b21a8; }
+.origin-badge.administrador { background: #e0f2fe; color: #0369a1; }
+
+/* ─── DARK MODE BADGES ────────────────────────────────────────────────────── */
+.management-shell--dark .priority-badge.urgente { background: rgba(239,68,68,0.2); color: #fca5a5; }
+.management-shell--dark .priority-badge.alta { background: rgba(249,115,22,0.2); color: #fdba74; }
+.management-shell--dark .priority-badge.media { background: rgba(59,130,246,0.2); color: #93c5fd; }
+.management-shell--dark .priority-badge.baja { background: rgba(34,197,94,0.2); color: #86efac; }
+.management-shell--dark .origin-badge.cliente { background: rgba(168,85,247,0.2); color: #d8b4fe; }
+.management-shell--dark .origin-badge.administrador { background: rgba(14,165,233,0.2); color: #7dd3fc; }
+
+/* ─── TIMELINE EN MODAL DE RESPUESTA ─────────────────────────────────────── */
+.incident-timeline {
+  margin-top: 14px;
+  margin-bottom: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 200px;
+  overflow-y: auto;
+  padding-right: 6px;
+  scrollbar-width: thin;
+}
+
+.incident-timeline-item {
+  background: var(--city-soft, #f0f7ff);
+  border-left: 3px solid #2563eb;
+  border-radius: 0 10px 10px 0;
+  padding: 10px 14px;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.incident-timeline-item strong {
+  font-size: 12px;
+  color: #2563eb;
+  display: block;
+  margin-bottom: 3px;
+}
+
+.incident-timeline-item small {
+  color: var(--city-muted, #64748b);
+  font-size: 11px;
+}
+
+.management-shell--dark .incident-timeline-item {
+  background: #132238;
+}
+
+/* ─── FORMULARIO MODAL REDESIGNADO ───────────────────────────────────────── */
+.incident-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.incident-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.incident-field-label {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--city-muted, #64748b);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.incident-field input,
+.incident-field select,
+.incident-field textarea {
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1.5px solid var(--city-border, #e2e8f0);
+  background: var(--city-bg, #f8fafc);
+  color: var(--city-text, #0f172a);
+  font-size: 14px;
+  font-family: inherit;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+}
+
+.incident-field input:focus,
+.incident-field select:focus,
+.incident-field textarea:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.incident-field select {
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+
+.incident-field textarea {
+  resize: vertical;
+  min-height: 90px;
+}
+
+/* ─── DARK MODE PARA FORMULARIO ──────────────────────────────────────────── */
+.management-shell--dark .incident-field input,
+.management-shell--dark .incident-field select,
+.management-shell--dark .incident-field textarea {
+  background: #132238 !important;
+  color: #f8fafc !important;
+  border-color: #26354d !important;
+}
+
+.management-shell--dark .incident-field input:focus,
+.management-shell--dark .incident-field select:focus,
+.management-shell--dark .incident-field textarea:focus {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2) !important;
+}
+
+/* ─── GRID DE DOS COLUMNAS ───────────────────────────────────────────────── */
+.incident-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* ─── AVISO DE NOTIFICACIÓN ──────────────────────────────────────────────── */
+.incident-notice-box {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 12px;
+  color: #1d4ed8;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  line-height: 1.5;
+}
+
+.management-shell--dark .incident-notice-box {
+  background: rgba(37, 99, 235, 0.12);
+  border-color: #2563eb;
+  color: #93c5fd;
+}
+
+/* ─── INFO CARDS EN MODAL ────────────────────────────────────────────────── */
+.incident-info-card {
+  background: var(--city-soft, #f0f7ff);
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.incident-info-card__label {
+  font-size: 11px;
+  font-weight: 800;
+  color: #2563eb;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.incident-info-card p {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--city-text, #0f172a);
+  margin: 0;
+}
+
+.incident-info-card small {
+  font-size: 11px;
+  color: var(--city-muted, #64748b);
+}
+
+.management-shell--dark .incident-info-card {
+  background: #132238;
+}
+
+@media (max-width: 640px) {
+  .incident-grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+@media (max-width: 760px) {
+  .cities-topbar {
+    align-items: center !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    gap: 10px !important;
+  }
+  .cities-topbar > div:first-child {
+    flex: 1 1 0% !important;
+    min-width: 0 !important;
+  }
+  .cities-topbar h1 {
+    font-size: 18px !important;
+    line-height: 1.1 !important;
+    margin: 2px 0 !important;
+    white-space: normal !important;
+  }
+  .cities-subtitle {
+    font-size: 11px !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+  }
+  .cities-topbar__actions {
+    flex: 0 0 auto !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    width: auto !important;
+  }
+  .cities-primary, .cities-danger {
+    padding: 8px 12px !important;
+    font-size: 11px !important;
+    width: auto !important;
+    flex: none !important;
+  }
+  
+  /* TOOLBAR AND FILTERS (Side-by-side) */
+  .cities-toolbar {
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+  .cities-search {
+    flex: 1 1 100% !important; /* Search remains full width */
+  }
+  .cities-toolbar select {
+    flex: 1 1 calc(33% - 8px) !important; /* Side-by-side selects */
+    min-width: 110px !important;
+    padding: 10px 8px !important;
+    font-size: 11px !important;
+  }
+  
+  /* EXPORT BUTTONS */
+  .cities-export {
+    flex: 1 1 100% !important;
+    justify-content: space-between !important;
+    gap: 6px !important;
+    margin-top: 4px !important;
+  }
+  .cities-export button {
+    flex: 1 !important;
+    font-size: 11px !important;
+    padding: 8px 4px !important;
+  }
+  
+  /* DATE INPUTS (Side-by-side) */
+  .reservations-date-inputs {
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    gap: 10px !important;
+    width: 100% !important;
+    margin-top: 4px !important;
+  }
+  .reservations-date-inputs label {
+    flex: 1 !important;
+    font-size: 11px !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 4px !important;
+  }
+  .reservations-date-inputs input {
+    width: 100% !important;
+    font-size: 11px !important;
+    padding: 8px !important;
+  }
+}

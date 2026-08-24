@@ -13,13 +13,14 @@
   box-sizing: border-box;
 }
 
-.cities-page--dark {
+.cities-page--dark,
+.management-shell--dark {
   --city-bg: #07111f;
-  --city-card: #111c2e;
+  --city-card: #0f1b2d;
   --city-text: #f8fafc;
   --city-muted: #94a3b8;
   --city-border: #26354d;
-  --city-soft: #172554;
+  --city-soft: #132238;
 }
 
 .cities-container {
@@ -235,6 +236,8 @@
 /* 🏆 TABLA MEJORADA CON ESTILO ULTRAPRÉMIUM Y ENCABEZADO DEGRADADO */
 .cities-table-wrap {
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overflow-x: auto;
   border-radius: 16px;
   border: 2px solid transparent;
   background: linear-gradient(var(--city-card), var(--city-card)) padding-box,
@@ -442,6 +445,8 @@
 }
 
 .cities-modal {
+  max-height: 90vh;
+  overflow-y: auto;
   width: min(560px, 100%);
   background: #ffffff;
   border: 1px solid #cbd5e1;
@@ -493,8 +498,8 @@ html.dark .cities-modal {
   color: var(--city-muted);
 }
 
-.cities-modal form > label input,
-.cities-modal form > label select {
+.cities-modal form input,
+.cities-modal form select {
   display: block;
   width: 100%;
   border: 1.5px solid var(--city-border) !important;
@@ -568,6 +573,82 @@ html.dark .cities-modal {
   line-height: 1.5;
 }
 
+/* 🛡️ REGLAS BULLETPROOF DE MODO OSCURO PARA TODAS LAS PANTALLAS ADMINISTRATIVAS */
+.management-shell--dark .cities-card {
+  background: #0f1b2d !important;
+  color: #f8fafc !important;
+  border-color: #26354d !important;
+}
+
+.management-shell--dark .cities-table-wrap {
+  border-color: #26354d !important;
+  background: #0f1b2d !important;
+}
+
+.management-shell--dark .cities-table-wrap td {
+  background: #0f1b2d !important;
+  color: #f8fafc !important;
+  border-bottom-color: #26354d !important;
+}
+
+.management-shell--dark .cities-table-wrap tbody tr:nth-child(even) td {
+  background: #132238 !important;
+  color: #f8fafc !important;
+}
+
+.management-shell--dark .cities-table-wrap tbody tr:hover td {
+  background: #1e365d !important;
+  color: #ffffff !important;
+}
+
+.management-shell--dark .cities-modal {
+  background: #0f1b2d !important;
+  border-color: #26354d !important;
+  color: #f8fafc !important;
+  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.7) !important;
+}
+
+.management-shell--dark .cities-modal input,
+.management-shell--dark .cities-modal select,
+.management-shell--dark .cities-modal textarea {
+  background: #132238 !important;
+  color: #f8fafc !important;
+  border-color: #26354d !important;
+}
+
+.management-shell--dark .cities-search {
+  background: #132238 !important;
+  border-color: #26354d !important;
+}
+
+.management-shell--dark .cities-search input {
+  color: #f8fafc !important;
+}
+
+.management-shell--dark .cities-toolbar select {
+  background: #132238 !important;
+  color: #f8fafc !important;
+  border-color: #26354d !important;
+}
+
+.management-shell--dark .cities-export button,
+.management-shell--dark .cities-row-actions button {
+  background: #132238 !important;
+  color: #f8fafc !important;
+  border-color: #26354d !important;
+}
+
+.management-shell--dark .cities-export button:hover,
+.management-shell--dark .cities-row-actions button:hover {
+  background: #2563eb !important;
+  color: #ffffff !important;
+}
+
+.management-shell--dark .cities-row-actions button.is-danger:hover {
+  background: #dc2626 !important;
+  color: #ffffff !important;
+}
+
 @media (max-width: 900px) {
   .cities-toolbar {
     flex-direction: column;
@@ -583,5 +664,96 @@ html.dark .cities-modal {
   .cities-export button {
     flex: 1;
     justify-content: center;
+  }
+}
+
+
+@media (max-width: 760px) {
+  .cities-topbar {
+    align-items: center !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    gap: 10px !important;
+  }
+  .cities-topbar > div:first-child {
+    flex: 1 1 0% !important;
+    min-width: 0 !important;
+  }
+  .cities-topbar h1 {
+    font-size: 18px !important;
+    line-height: 1.1 !important;
+    margin: 2px 0 !important;
+    white-space: normal !important;
+  }
+  .cities-subtitle {
+    font-size: 11px !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+  }
+  .cities-topbar__actions {
+    flex: 0 0 auto !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    width: auto !important;
+  }
+  .cities-primary, .cities-danger {
+    padding: 8px 12px !important;
+    font-size: 11px !important;
+    width: auto !important;
+    flex: none !important;
+  }
+  
+  /* TOOLBAR AND FILTERS (Side-by-side) */
+  .cities-toolbar {
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+  .cities-search {
+    flex: 1 1 100% !important; /* Search remains full width */
+  }
+  .cities-toolbar select {
+    flex: 1 1 calc(33% - 8px) !important; /* Side-by-side selects */
+    min-width: 110px !important;
+    padding: 10px 8px !important;
+    font-size: 11px !important;
+  }
+  
+  /* EXPORT BUTTONS */
+  .cities-export {
+    flex: 1 1 100% !important;
+    justify-content: space-between !important;
+    gap: 6px !important;
+    margin-top: 4px !important;
+  }
+  .cities-export button {
+    flex: 1 !important;
+    font-size: 11px !important;
+    padding: 8px 4px !important;
+  }
+  
+  /* DATE INPUTS (Side-by-side) */
+  .reservations-date-inputs {
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    gap: 10px !important;
+    width: 100% !important;
+    margin-top: 4px !important;
+  }
+  .reservations-date-inputs label {
+    flex: 1 !important;
+    font-size: 11px !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 4px !important;
+  }
+  .reservations-date-inputs input {
+    width: 100% !important;
+    font-size: 11px !important;
+    padding: 8px !important;
   }
 }
