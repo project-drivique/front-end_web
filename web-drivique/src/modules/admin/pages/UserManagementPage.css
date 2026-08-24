@@ -87,9 +87,16 @@
   text-align: center;
 }
 
-html.dark .user-doc-card {
-  background: #1e293b;
-  border-color: #334155;
+html.dark .user-doc-card,
+.management-shell--dark .user-doc-card {
+  background: #132238;
+  border-color: #26354d;
+  color: #f8fafc;
+}
+
+.management-shell--dark .user-doc-placeholder {
+  background: #1e365d;
+  color: #94a3b8;
 }
 
 .user-doc-card strong {
@@ -118,4 +125,95 @@ html.dark .user-doc-card {
   place-items: center;
   font-size: 12px;
   font-weight: 700;
+}
+
+
+@media (max-width: 760px) {
+  .cities-topbar {
+    align-items: center !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    gap: 10px !important;
+  }
+  .cities-topbar > div:first-child {
+    flex: 1 1 0% !important;
+    min-width: 0 !important;
+  }
+  .cities-topbar h1 {
+    font-size: 18px !important;
+    line-height: 1.1 !important;
+    margin: 2px 0 !important;
+    white-space: normal !important;
+  }
+  .cities-subtitle {
+    font-size: 11px !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+  }
+  .cities-topbar__actions {
+    flex: 0 0 auto !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    width: auto !important;
+  }
+  .cities-primary, .cities-danger {
+    padding: 8px 12px !important;
+    font-size: 11px !important;
+    width: auto !important;
+    flex: none !important;
+  }
+  
+  /* TOOLBAR AND FILTERS (Side-by-side) */
+  .cities-toolbar {
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+  .cities-search {
+    flex: 1 1 100% !important; /* Search remains full width */
+  }
+  .cities-toolbar select {
+    flex: 1 1 calc(33% - 8px) !important; /* Side-by-side selects */
+    min-width: 110px !important;
+    padding: 10px 8px !important;
+    font-size: 11px !important;
+  }
+  
+  /* EXPORT BUTTONS */
+  .cities-export {
+    flex: 1 1 100% !important;
+    justify-content: space-between !important;
+    gap: 6px !important;
+    margin-top: 4px !important;
+  }
+  .cities-export button {
+    flex: 1 !important;
+    font-size: 11px !important;
+    padding: 8px 4px !important;
+  }
+  
+  /* DATE INPUTS (Side-by-side) */
+  .reservations-date-inputs {
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    gap: 10px !important;
+    width: 100% !important;
+    margin-top: 4px !important;
+  }
+  .reservations-date-inputs label {
+    flex: 1 !important;
+    font-size: 11px !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 4px !important;
+  }
+  .reservations-date-inputs input {
+    width: 100% !important;
+    font-size: 11px !important;
+    padding: 8px !important;
+  }
 }
