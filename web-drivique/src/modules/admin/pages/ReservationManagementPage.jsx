@@ -323,18 +323,22 @@ export default function ReservationManagementPage() {
 
             {/* Filtros de Fecha Recogida */}
             <div className="reservations-date-inputs">
-              <span>Desde:</span>
-              <input
-                type="date"
-                value={dateFrom}
-                onChange={(e) => setDateFrom(e.target.value)}
-              />
-              <span>Hasta:</span>
-              <input
-                type="date"
-                value={dateTo}
-                onChange={(e) => setDateTo(e.target.value)}
-              />
+              <label style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span>Desde:</span>
+                <input
+                  type="date"
+                  value={dateFrom}
+                  onChange={(e) => setDateFrom(e.target.value)}
+                />
+              </label>
+              <label style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span>Hasta:</span>
+                <input
+                  type="date"
+                  value={dateTo}
+                  onChange={(e) => setDateTo(e.target.value)}
+                />
+              </label>
             </div>
 
             {/* Botones de Exportación e Impresión */}
