@@ -118,6 +118,27 @@
 }
 
 .roles-page--dark .role-card,
+.management-shell--dark .role-card {
+  background: #0f1b2d !important;
+  border-color: #26354d !important;
+  color: #f8fafc !important;
+}
+
+.management-shell--dark .permission-matrix-wrap {
+  background: #0f1b2d !important;
+  border-color: #26354d !important;
+}
+
+.management-shell--dark .permission-matrix-table td {
+  background: #0f1b2d !important;
+  color: #f8fafc !important;
+  border-bottom-color: #26354d !important;
+}
+
+.management-shell--dark .roles-tab-btn.is-active {
+  background: #132238 !important;
+  color: #60a5fa !important;
+}
 html.dark .role-card {
   background: #0f1b2d;
   border-color: #26354d;
