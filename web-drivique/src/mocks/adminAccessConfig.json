@@ -34,12 +34,14 @@
       { "key": "contracts", "route": "/admin/contracts" },
       { "key": "cities", "route": "/admin/cities" },
       { "key": "branches", "route": "/admin/branches" },
+      { "key": "incidents", "route": "/admin/incidents" },
       { "key": "audit", "route": "/admin/audit" }
     ],
     "encargado_sucursal": [
       { "key": "dashboard", "route": "/encargado" },
       { "key": "vehicles", "route": "/encargado/vehicles" },
       { "key": "reservations", "route": "/encargado/reservations" },
+      { "key": "incidents", "route": "/encargado/incidents" },
       { "key": "contracts", "route": "/encargado/contracts" }
     ]
   }
