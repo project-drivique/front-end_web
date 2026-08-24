@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import {
   FaBuilding,
@@ -37,13 +37,13 @@ import "./CityManagementPage.css";
 import "./AdminRolesManagementPage.css";
 
 const MODULE_KEYS = [
-  { key: "vehicles", label: "Vehículos" },
-  { key: "reservations", label: "Reservas" },
-  { key: "users", label: "Usuarios" },
-  { key: "contracts", label: "Contratos" },
-  { key: "cities", label: "Ciudades" },
-  { key: "branches", label: "Sucursales" },
-  { key: "audit", label: "Auditoría" },
+  { key: "vehicles", labelKey: "admin.roles.modules.vehicles" },
+  { key: "reservations", labelKey: "admin.roles.modules.reservations" },
+  { key: "users", labelKey: "admin.roles.modules.users" },
+  { key: "contracts", labelKey: "admin.roles.modules.contracts" },
+  { key: "cities", labelKey: "admin.roles.modules.cities" },
+  { key: "branches", labelKey: "admin.roles.modules.branches" },
+  { key: "audit", labelKey: "admin.roles.modules.audit" },
 ];
 
 export default function AdminRolesManagementPage() {
@@ -404,7 +404,7 @@ export default function AdminRolesManagementPage() {
                     setModalCrearCuenta(true);
                   }}
                 >
-                  <FaUserPlus /> Nueva Cuenta Admin
+                  <FaUserPlus /> {t("admin.roles.newAdminAccount")}
                 </button>
               ) : (
                 <button
@@ -463,7 +463,7 @@ export default function AdminRolesManagementPage() {
                     setModalCrearRol(true);
                   }}
                 >
-                  <FaPlus /> Crear Nuevo Rol
+                  <FaPlus /> {t("admin.roles.createNewRole")}
                 </button>
               )}
             </div>
@@ -486,14 +486,14 @@ export default function AdminRolesManagementPage() {
               className={`roles-tab-btn ${activeTab === "accounts" ? "is-active" : ""}`}
               onClick={() => setActiveTab("accounts")}
             >
-              <FaUserShield /> Cuentas Administrativas ({accountsList.length})
+              <FaUserShield /> {t("admin.roles.adminAccountsTab", { count: accountsList.length })}
             </button>
             <button
               type="button"
               className={`roles-tab-btn ${activeTab === "roles" ? "is-active" : ""}`}
               onClick={() => setActiveTab("roles")}
             >
-              <FaKey /> Roles y Permisos ({rolesList.length})
+              <FaKey /> {t("admin.roles.rolesAndPermissionsTab", { count: rolesList.length })}
             </button>
           </div>
 
@@ -506,7 +506,7 @@ export default function AdminRolesManagementPage() {
                   <FaSearch />
                   <input
                     type="text"
-                    placeholder="Buscar por nombre, correo o teléfono..."
+                    placeholder={t("admin.roles.searchPlaceholder")}
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                   />
@@ -516,7 +516,7 @@ export default function AdminRolesManagementPage() {
                   value={roleFilter}
                   onChange={(e) => setRoleFilter(e.target.value)}
                 >
-                  <option value="all">Todos los roles</option>
+                  <option value="all">{t("admin.roles.allRoles")}</option>
                   {rolesList.map((r) => (
                     <option key={r.id} value={r.id}>
                       {r.nombre}
@@ -528,16 +528,16 @@ export default function AdminRolesManagementPage() {
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
                 >
-                  <option value="all">Todos los estados</option>
-                  <option value="active">Activas</option>
-                  <option value="inactive">Inactivas</option>
+                  <option value="all">{t("admin.roles.allStates")}</option>
+                  <option value="active">{t("admin.roles.active")}</option>
+                  <option value="inactive">{t("admin.roles.inactive")}</option>
                 </select>
 
                 <select
                   value={branchFilter}
                   onChange={(e) => setBranchFilter(e.target.value)}
                 >
-                  <option value="all">Todas las sucursales</option>
+                  <option value="all">{t("admin.roles.allBranches")}</option>
                   {sucursales.map((s) => (
                     <option key={s.id} value={s.nombre}>
                       {s.nombre}
@@ -550,19 +550,19 @@ export default function AdminRolesManagementPage() {
                     type="button"
                     onClick={() => exportExcel(exportDataAccounts)}
                   >
-                    <FaFileExcel /> Excel
+                    <FaFileExcel /> {t("admin.roles.excel")}
                   </button>
                   <button
                     type="button"
                     onClick={() => exportPdf(exportDataAccounts)}
                   >
-                    <FaFilePdf /> PDF
+                    <FaFilePdf /> {t("admin.roles.pdf")}
                   </button>
                   <button
                     type="button"
                     onClick={() => printTable(exportDataAccounts)}
                   >
-                    <FaPrint /> Imprimir
+                    <FaPrint /> {t("admin.roles.print")}
                   </button>
                 </div>
               </div>
@@ -575,7 +575,7 @@ export default function AdminRolesManagementPage() {
               {cuentasFiltradas.length === 0 ? (
                 <div className="cities-empty">
                   <FaUserShield />
-                  <h2>No se encontraron cuentas</h2>
+                  <h2>{t("admin.roles.noAccountsFound")}</h2>
                   <p>
                     Ajusta el término de búsqueda o cambia los filtros
                     seleccionados.
@@ -586,12 +586,12 @@ export default function AdminRolesManagementPage() {
                   <table>
                     <thead>
                       <tr>
-                        <th>Colaborador</th>
-                        <th>Contacto</th>
-                        <th>Rol Asignado</th>
-                        <th>Sucursal</th>
-                        <th>Estado Cuenta</th>
-                        <th>Acciones</th>
+                        <th>{t("admin.roles.colaborador")}</th>
+                        <th>{t("admin.roles.contacto")}</th>
+                        <th>{t("admin.roles.rolAsignado")}</th>
+                        <th>{t("admin.roles.sucursal")}</th>
+                        <th>{t("admin.roles.estadoCuenta")}</th>
+                        <th>{t("admin.roles.acciones")}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -702,7 +702,7 @@ export default function AdminRolesManagementPage() {
                   <FaSearch />
                   <input
                     type="text"
-                    placeholder="Buscar rol por nombre o descripción..."
+                    placeholder={t("admin.roles.searchRolePlaceholder")}
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                   />
@@ -763,7 +763,7 @@ export default function AdminRolesManagementPage() {
               <div className="cities-modal__head">
                 <div>
                   <p className="cities-eyebrow">Alta de Colaborador</p>
-                  <h2>Crear Cuenta Administrativa</h2>
+                  <h2>{t("admin.roles.createAdminAccount")}</h2>
                 </div>
                 <button
                   type="button"
@@ -794,7 +794,7 @@ export default function AdminRolesManagementPage() {
                   <div className="incident-field">
                     <span className="incident-field-label">{t("admin.users.role", "Rol de usuario")}</span>
                     <select value={formCuenta.rolId} onChange={(e) => setFormCuenta({ ...formCuenta, rolId: e.target.value })}>
-                      {rolesData.map((r) => (
+                      {(rolesData || []).map((r) => (
                         <option key={r.id} value={r.id}>{r.nombre}</option>
                       ))}
                     </select>
@@ -830,7 +830,7 @@ export default function AdminRolesManagementPage() {
               <div className="cities-modal__head">
                 <div>
                   <p className="cities-eyebrow">Edición Administrativa</p>
-                  <h2>Editar Cuenta de {modalEditarCuenta.nombre}</h2>
+                  <h2>{t("admin.roles.editAccountOf", { name: modalEditarCuenta.nombre })}</h2>
                 </div>
                 <button
                   type="button"
@@ -861,7 +861,7 @@ export default function AdminRolesManagementPage() {
                   <div className="incident-field">
                     <span className="incident-field-label">{t("admin.users.role", "Rol de usuario")}</span>
                     <select value={formCuenta.rolId} onChange={(e) => setFormCuenta({ ...formCuenta, rolId: e.target.value })}>
-                      {rolesData.map((r) => (
+                      {(rolesData || []).map((r) => (
                         <option key={r.id} value={r.id}>{r.nombre}</option>
                       ))}
                     </select>
@@ -906,7 +906,7 @@ export default function AdminRolesManagementPage() {
             <section className="cities-modal" style={{ maxWidth: 680 }}>
               <div className="cities-modal__head">
                 <div>
-                  <p className="cities-eyebrow">Configuración de Seguridad</p>
+                  <p className="cities-eyebrow">{t("admin.roles.securityConfig")}</p>
                   <h2>
                     {modalEditarRol
                       ? `Permisos de ${modalEditarRol.nombre}`
@@ -928,7 +928,7 @@ export default function AdminRolesManagementPage() {
                 onSubmit={modalEditarRol ? handleEditarRol : handleCrearRol}
               >
                 <label>
-                  Nombre del Rol:
+                  {t("admin.roles.roleNameLabel")}
                   <input
                     type="text"
                     required
@@ -940,7 +940,7 @@ export default function AdminRolesManagementPage() {
                 </label>
 
                 <label>
-                  Descripción:
+                  {t("admin.roles.descriptionLabel")}
                   <input
                     type="text"
                     required
@@ -973,7 +973,7 @@ export default function AdminRolesManagementPage() {
                         };
                         return (
                           <tr key={mod.key}>
-                            <td>{mod.label}</td>
+                            <td>{t(mod.labelKey)}</td>
                             {["ver", "crear", "editar", "eliminar"].map(
                               (action) => (
                                 <td key={action}>
@@ -1027,7 +1027,7 @@ export default function AdminRolesManagementPage() {
               <div className="cities-delete-icon">
                 <FaTrash />
               </div>
-              <h2>Confirmar Eliminación de Cuenta</h2>
+              <h2>{t("admin.roles.confirmAccountDeletion")}</h2>
               <p>
                 ¿Deseas eliminar la cuenta administrativa de{" "}
                 <strong>{modalEliminarCuenta.nombre}</strong> (
@@ -1065,7 +1065,7 @@ export default function AdminRolesManagementPage() {
               <div className="cities-delete-icon">
                 <FaTrash />
               </div>
-              <h2>Confirmar Eliminación de Rol</h2>
+              <h2>{t("admin.roles.confirmRoleDeletion")}</h2>
               <p>
                 ¿Deseas eliminar el rol{" "}
                 <strong>{modalEliminarRol.nombre}</strong>?
