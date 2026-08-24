@@ -794,7 +794,7 @@ export default function AdminRolesManagementPage() {
                   <div className="incident-field">
                     <span className="incident-field-label">{t("admin.users.role", "Rol de usuario")}</span>
                     <select value={formCuenta.rolId} onChange={(e) => setFormCuenta({ ...formCuenta, rolId: e.target.value })}>
-                      {(rolesData || []).map((r) => (
+                      {rolesList.map((r) => (
                         <option key={r.id} value={r.id}>{r.nombre}</option>
                       ))}
                     </select>
@@ -861,7 +861,7 @@ export default function AdminRolesManagementPage() {
                   <div className="incident-field">
                     <span className="incident-field-label">{t("admin.users.role", "Rol de usuario")}</span>
                     <select value={formCuenta.rolId} onChange={(e) => setFormCuenta({ ...formCuenta, rolId: e.target.value })}>
-                      {(rolesData || []).map((r) => (
+                      {rolesList.map((r) => (
                         <option key={r.id} value={r.id}>{r.nombre}</option>
                       ))}
                     </select>
