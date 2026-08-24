@@ -312,10 +312,10 @@ export default function IncidentManagementPage() {
               {/* Botones de Exportación */}
               <div className="cities-export">
                 <button type="button" onClick={() => exportExcel(exportData)}>
-                  <FaFileExcel /> Excel
+                  <FaFileExcel /> {t("admin.roles.excel")}
                 </button>
                 <button type="button" onClick={() => exportPdf(exportData)}>
-                  <FaFilePdf /> PDF
+                  <FaFilePdf /> {t("admin.roles.pdf")}
                 </button>
                 <button type="button" onClick={() => printTable(exportData)}>
                   <FaPrint /> {t('admin.incidents.print', 'Imprimir')}

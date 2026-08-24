@@ -351,7 +351,7 @@ export default function UserManagementPage() {
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
               >
-                <option value="all">Todos los estados</option>
+                <option value="all">{t("admin.users.allStates")}</option>
                 <option value="active">Cuentas Activas</option>
                 <option value="inactive">Cuentas Inactivas</option>
               </select>
@@ -361,22 +361,22 @@ export default function UserManagementPage() {
                 value={docFilter}
                 onChange={(e) => setDocFilter(e.target.value)}
               >
-                <option value="all">Todos los documentos</option>
-                <option value="aprobado">Documentos Aprobados</option>
-                <option value="pendiente">Documentos Pendientes</option>
-                <option value="rechazado">Documentos Rechazados</option>
+                <option value="all">{t("admin.users.allDocuments")}</option>
+                <option value="aprobado">{t("admin.users.approvedDocuments")}</option>
+                <option value="pendiente">{t("admin.users.pendingDocuments")}</option>
+                <option value="rechazado">{t("admin.users.rejectedDocuments")}</option>
               </select>
 
               {/* Botones de Exportación */}
               <div className="cities-export">
                 <button type="button" onClick={() => exportExcel(exportData)}>
-                  <FaFileExcel /> Excel
+                  <FaFileExcel /> {t("admin.roles.excel")}
                 </button>
                 <button type="button" onClick={() => exportPdf(exportData)}>
-                  <FaFilePdf /> PDF
+                  <FaFilePdf /> {t("admin.roles.pdf")}
                 </button>
                 <button type="button" onClick={() => printTable(exportData)}>
-                  <FaPrint /> Imprimir
+                  <FaPrint /> {t("admin.roles.print")}
                 </button>
               </div>
             </div>
@@ -407,7 +407,7 @@ export default function UserManagementPage() {
                       <th>Contacto</th>
                       <th>Rol / Sucursal</th>
                       <th>Estado Cuenta</th>
-                      <th>Verificación Documentos</th>
+                      <th>{t("admin.users.verifications")}</th>
                       <th>Reservas Activas</th>
                       <th>Acciones</th>
                     </tr>
@@ -584,7 +584,7 @@ export default function UserManagementPage() {
               <div className="cities-modal__head">
                 <div>
                   <p className="cities-eyebrow">Verificación de Identidad</p>
-                  <h2>Documentos de {modalDocumentos.nombre}</h2>
+                  <h2>{t("admin.users.documentsOf", { name: modalDocumentos.nombre })}</h2>
                 </div>
                 <button type="button" onClick={() => setModalDocumentos(null)}>
                   Ã—
