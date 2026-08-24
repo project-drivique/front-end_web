@@ -323,18 +323,22 @@ export default function ReservationManagementPage() {
 
             {/* Filtros de Fecha Recogida */}
             <div className="reservations-date-inputs">
-              <span>Desde:</span>
-              <input
-                type="date"
-                value={dateFrom}
-                onChange={(e) => setDateFrom(e.target.value)}
-              />
-              <span>Hasta:</span>
-              <input
-                type="date"
-                value={dateTo}
-                onChange={(e) => setDateTo(e.target.value)}
-              />
+              <label style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span>Desde:</span>
+                <input
+                  type="date"
+                  value={dateFrom}
+                  onChange={(e) => setDateFrom(e.target.value)}
+                />
+              </label>
+              <label style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span>Hasta:</span>
+                <input
+                  type="date"
+                  value={dateTo}
+                  onChange={(e) => setDateTo(e.target.value)}
+                />
+              </label>
             </div>
 
             {/* Botones de Exportación e Impresión */}
@@ -626,7 +630,7 @@ export default function ReservationManagementPage() {
             <div className="cities-modal__head">
               <div>
                 <p className="cities-eyebrow">Atención Directa</p>
-                <h2>Crear Reserva Manual</h2>
+                <h2>{t("admin.reservations.createManual", "Crear Reserva Manual")}</h2>
               </div>
               <button type="button" onClick={() => setModalCrear(false)}>
                 ×
@@ -740,7 +744,7 @@ export default function ReservationManagementPage() {
                     value={formCrear.estado}
                     onChange={(e) => setFormCrear({ ...formCrear, estado: e.target.value })}
                   >
-                    <option value="confirmada">Confirmada</option>
+                    <option value="confirmada">{t("admin.reservations.states.confirmed", "Confirmada")}</option>
                     <option value="en_curso">En curso</option>
                     <option value="pendiente">Pendiente</option>
                   </select>
@@ -826,11 +830,11 @@ export default function ReservationManagementPage() {
                     value={formEditar.estado}
                     onChange={(e) => setFormEditar({ ...formEditar, estado: e.target.value })}
                   >
-                    <option value="confirmada">Confirmada</option>
+                    <option value="confirmada">{t("admin.reservations.states.confirmed", "Confirmada")}</option>
                     <option value="en_curso">En curso</option>
                     <option value="finalizada">Finalizada</option>
                     <option value="pendiente">Pendiente</option>
-                    <option value="cancelada">Cancelada</option>
+                    <option value="cancelada">{t("admin.reservations.states.cancelled", "Cancelada")}</option>
                   </select>
                 </label>
               </div>
@@ -896,7 +900,7 @@ export default function ReservationManagementPage() {
             </div>
             <h2>¿Cancelar Reserva {modalCancelar.codigo}?</h2>
             <p>
-              Esta acción cambiará el estado a <strong>Cancelada</strong> y liberará el vehículo para nuevas solicitudes.
+              Esta acción cambiará el estado a <strong>{t("admin.reservations.states.cancelled", "Cancelada")}</strong> y liberará el vehículo para nuevas solicitudes.
             </p>
 
             <form onSubmit={submitCancelarReserva} style={{ marginTop: 16 }}>
