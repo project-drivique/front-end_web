@@ -21,8 +21,8 @@
     "maxRecords": 100
   },
   "dashboardModules": {
-    "administrador": ["vehicles", "users", "reservations", "contracts", "cities", "branches", "audit"],
-    "encargado_sucursal": ["vehicles", "reservations", "contracts"]
+    "administrador": ["vehicles", "users", "reservations", "contracts", "incidents", "cities", "branches", "audit"],
+    "encargado_sucursal": ["vehicles", "reservations", "contracts", "incidents"]
   },
   "dashboardNavigation": {
     "administrador": [
@@ -32,17 +32,17 @@
       { "key": "roles", "route": "/admin/roles" },
       { "key": "reservations", "route": "/admin/reservations" },
       { "key": "contracts", "route": "/admin/contracts" },
+      { "key": "incidents", "route": "/admin/incidents" },
       { "key": "cities", "route": "/admin/cities" },
       { "key": "branches", "route": "/admin/branches" },
-      { "key": "incidents", "route": "/admin/incidents" },
       { "key": "audit", "route": "/admin/audit" }
     ],
     "encargado_sucursal": [
       { "key": "dashboard", "route": "/encargado" },
       { "key": "vehicles", "route": "/encargado/vehicles" },
       { "key": "reservations", "route": "/encargado/reservations" },
-      { "key": "incidents", "route": "/encargado/incidents" },
-      { "key": "contracts", "route": "/encargado/contracts" }
+      { "key": "contracts", "route": "/encargado/contracts" },
+      { "key": "incidents", "route": "/encargado/incidents" }
     ]
   }
 }

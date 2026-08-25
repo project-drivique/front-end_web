@@ -166,12 +166,26 @@ const INITIAL_INCIDENTS = [
 function readIncidents() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
+    let list = []
     if (!raw) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_INCIDENTS))
-      return INITIAL_INCIDENTS
+      list = INITIAL_INCIDENTS
+    } else {
+      const parsed = JSON.parse(raw)
+      list = Array.isArray(parsed) && parsed.length > 0 ? parsed : INITIAL_INCIDENTS
     }
-    const parsed = JSON.parse(raw)
-    return Array.isArray(parsed) && parsed.length > 0 ? parsed : INITIAL_INCIDENTS
+
+    const vehiclesList = vehicleManagementService.list()
+    return list.map(r => {
+      if (!r.sucursal) {
+        const matchingVehicle = vehiclesList.find(
+          v => (v.placa && r.placa && v.placa.replace(/\s|-/g, '').toLowerCase() === r.placa.replace(/\s|-/g, '').toLowerCase()) || 
+               (v.nombre && r.vehiculo && v.nombre.toLowerCase().includes(r.vehiculo.toLowerCase()))
+        );
+        r.sucursal = matchingVehicle ? matchingVehicle.sucursal : 'Neiva';
+      }
+      return r;
+    });
   } catch {
     return INITIAL_INCIDENTS
   }

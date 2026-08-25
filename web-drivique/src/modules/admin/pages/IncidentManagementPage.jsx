@@ -312,10 +312,10 @@ export default function IncidentManagementPage() {
               {/* Botones de Exportación */}
               <div className="cities-export">
                 <button type="button" onClick={() => exportExcel(exportData)}>
-                  <FaFileExcel /> {t("admin.roles.excel")}
+                  <FaFileExcel /> {t('admin.exportExcel', 'Excel')}
                 </button>
                 <button type="button" onClick={() => exportPdf(exportData)}>
-                  <FaFilePdf /> {t("admin.roles.pdf")}
+                  <FaFilePdf /> {t('admin.exportPdf', 'PDF')}
                 </button>
                 <button type="button" onClick={() => printTable(exportData)}>
                   <FaPrint /> {t('admin.incidents.print', 'Imprimir')}
@@ -332,22 +332,22 @@ export default function IncidentManagementPage() {
             {filtrados.length === 0 ? (
               <div className="cities-empty">
                 <FaExclamationTriangle />
-                <h2>No se encontraron reportes de incidencias</h2>
-                <p>Intenta ajustar los criterios de búsqueda o los filtros seleccionados.</p>
+                <h2>{t('admin.incidents.emptyTitle', 'No se encontraron reportes de incidencias')}</h2>
+                <p>{t('admin.incidents.emptySubtitle', 'Intenta ajustar los criterios de búsqueda o los filtros seleccionados.')}</p>
               </div>
             ) : (
               <div className="cities-table-wrap">
                 <table>
                   <thead>
                     <tr>
-                      <th>Reporte / Código</th>
-                      <th>Vehículo / Placa</th>
-                      <th>Remitente</th>
-                      <th>Sucursal</th>
-                      <th>Origen</th>
-                      <th>Prioridad / Tiempo</th>
-                      <th>Estado</th>
-                      <th>Acciones</th>
+                      <th>{t('admin.incidents.tableCode', 'Reporte / Código')}</th>
+                      <th>{t('admin.incidents.tableVehicle', 'Vehículo / Placa')}</th>
+                      <th>{t('admin.incidents.tableSender', 'Remitente')}</th>
+                      <th>{t('admin.incidents.tableBranch', 'Sucursal')}</th>
+                      <th>{t('admin.incidents.tableOrigin', 'Origen')}</th>
+                      <th>{t('admin.incidents.tablePriority', 'Prioridad / Tiempo')}</th>
+                      <th>{t('admin.incidents.tableStatus', 'Estado')}</th>
+                      <th>{t('admin.incidents.tableActions', 'Acciones')}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -397,12 +397,12 @@ export default function IncidentManagementPage() {
                         <td>
                           <span className={`origin-badge ${r.origen}`}>
                             {r.origen === 'cliente' ? <FaUser /> : <FaUserShield />}
-                            {r.origen === 'cliente' ? 'Cliente' : 'Interno'}
+                            {r.origen === 'cliente' ? t('admin.incidents.client', 'Cliente') : t('admin.incidents.internal', 'Interno')}
                           </span>
                         </td>
 
                         <td>
-                          <span className={`priority-badge ${r.prioridad}`}>
+                          <span className={`priority-badge ${t(`admin.incidents.${r.prioridad}`, r.prioridad)}`}>
                             <FaClock /> {r.prioridad} ({r.tiempoEstimado})
                           </span>
                         </td>
@@ -429,7 +429,7 @@ export default function IncidentManagementPage() {
                                   : '#1e40af',
                             }}
                           >
-                            {r.estado}
+                            {t(`admin.incidents.${r.estado}`, r.estado)}
                           </span>
                         </td>
 
@@ -438,7 +438,7 @@ export default function IncidentManagementPage() {
                             <button
                               type="button"
                               onClick={() => openDetalleModal(r)}
-                              title="Ver Detalle y Responder"
+                              title={t("admin.incidents.viewDetails", "Ver Detalle y Responder")}
                               style={{ color: '#2563eb' }}
                             >
                               <FaEye />
@@ -451,7 +451,7 @@ export default function IncidentManagementPage() {
                                 setErrorModal('')
                                 setModalEliminar(r)
                               }}
-                              title="Eliminar Reporte"
+                              title={t("admin.incidents.deleteReport", "Eliminar Reporte")}
                             >
                               <FaTrash />
                             </button>
@@ -574,7 +574,7 @@ export default function IncidentManagementPage() {
               <div className="cities-modal__head">
                 <div>
                   <p className="cities-eyebrow">{t('admin.incidents.internalHeader', 'Reporte de Flota Interno')}</p>
-                  <h2>{t('admin.incidents.createTitle', 'Crear Incidencia de Vehículo')}</h2>
+                  <h2>{t('admin.incidents.createTitle', 'Report New Incident')}</h2>
                 </div>
                 <button type="button" onClick={() => setModalCrear(false)}>
                   ×
@@ -612,12 +612,12 @@ export default function IncidentManagementPage() {
                         })
                       }}
                     >
-                      <option value="averia_mecanica">Avería mecánica</option>
-                      <option value="falla_electrica">Falla eléctrica / Batería</option>
-                      <option value="pinchazo_neumatico">Pinchazo / Neumático</option>
-                      <option value="limpieza_estetica">Limpieza / Estética</option>
-                      <option value="choque_carroceria">Choque / Carrocería</option>
-                      <option value="mantenimiento_preventivo">Mantenimiento preventivo</option>
+                      <option value="averia_mecanica">{t('admin.incidents.types.averia_mecanica', 'Avería mecánica')}</option>
+                      <option value="falla_electrica">{t('admin.incidents.types.falla_electrica', 'Falla eléctrica / Batería')}</option>
+                      <option value="pinchazo_neumatico">{t('admin.incidents.types.pinchazo_neumatico', 'Pinchazo / Neumático')}</option>
+                      <option value="limpieza_estetica">{t('admin.incidents.types.limpieza_estetica', 'Limpieza / Estética')}</option>
+                      <option value="choque_carroceria">{t('admin.incidents.types.choque_carroceria', 'Choque / Carrocería')}</option>
+                      <option value="mantenimiento_preventivo">{t('admin.incidents.types.mantenimiento_preventivo', 'Mantenimiento preventivo')}</option>
                     </select>
                   </label>
 
@@ -678,9 +678,9 @@ export default function IncidentManagementPage() {
               <div className="cities-delete-icon">
                 <FaTrash />
               </div>
-              <h2>Confirmar Eliminación de Reporte</h2>
+              <h2>{t('admin.incidents.deleteConfirmTitle', 'Confirmar Eliminación de Reporte')}</h2>
               <p>
-                ¿Deseas eliminar el reporte <strong>{modalEliminar.codigo}</strong> (
+                {t('admin.incidents.deleteConfirmDesc1', '¿Deseas eliminar el reporte')} <strong>{modalEliminar.codigo}</strong> (
                 {modalEliminar.vehiculo})?
               </p>
 
@@ -699,7 +699,7 @@ export default function IncidentManagementPage() {
                   }}
                 >
                   <FaExclamationTriangle style={{ marginRight: 6 }} />
-                  Los reportes creados por los clientes no pueden ser eliminados por auditoría y control de atención.
+                  {t('admin.incidents.clientReportDeleteError', 'Los reportes creados por los clientes no pueden ser eliminados por control de auditoría.')}
                 </div>
               )}
 
@@ -718,8 +718,7 @@ export default function IncidentManagementPage() {
                   }}
                 >
                   <FaExclamationTriangle style={{ marginRight: 6 }} />
-                  Un reporte propio solo se puede eliminar cuando está en estado "Recibido". No es posible eliminarlo
-                  una vez que ha pasado a revisión o reparación.
+                  {t('admin.incidents.ownReportStateDeleteError', 'No se puede eliminar un reporte propio que ya ha pasado a estado de revisión o reparación.')}
                 </div>
               )}
 
