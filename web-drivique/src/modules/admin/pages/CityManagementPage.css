@@ -1,6 +1,6 @@
 /* src/modules/admin/pages/CityManagementPage.css */
 
-.cities-page {
+.management-shell {
   --city-bg: #f4f7fb;
   --city-card: #ffffff;
   --city-text: #0f172a;
@@ -13,14 +13,13 @@
   box-sizing: border-box;
 }
 
-.cities-page--dark,
 .management-shell--dark {
   --city-bg: #07111f;
-  --city-card: #0f1b2d;
+  --city-card: #111c2e;
   --city-text: #f8fafc;
   --city-muted: #94a3b8;
   --city-border: #26354d;
-  --city-soft: #132238;
+  --city-soft: #172554;
 }
 
 .cities-container {
@@ -172,7 +171,7 @@
   font-weight: 600;
 }
 
-.cities-toolbar select {
+.cities-toolbar select, .branches-toolbar select, .fleet-toolbar select {
   border: 2px solid transparent;
   background: linear-gradient(var(--city-card), var(--city-card)) padding-box,
     linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) border-box;
@@ -187,8 +186,8 @@
   outline: none;
 }
 
-.cities-toolbar select:hover,
-.cities-toolbar select:focus {
+.cities-toolbar select:hover, .branches-toolbar select:hover, .fleet-toolbar select:hover,
+.cities-toolbar select:focus, .branches-toolbar select:focus, .fleet-toolbar select:focus {
   transform: translateY(-1px);
   box-shadow: 0 8px 22px rgba(37, 99, 235, 0.2);
 }
@@ -236,8 +235,6 @@
 /* 🏆 TABLA MEJORADA CON ESTILO ULTRAPRÉMIUM Y ENCABEZADO DEGRADADO */
 .cities-table-wrap {
   overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  overflow-x: auto;
   border-radius: 16px;
   border: 2px solid transparent;
   background: linear-gradient(var(--city-card), var(--city-card)) padding-box,
@@ -264,7 +261,7 @@
   border-bottom: 2px solid #2563eb;
 }
 
-.cities-page--dark .cities-table-wrap th {
+.management-shell--dark .cities-table-wrap th {
   background: linear-gradient(135deg, #0f172a 0%, #111c2e 100%);
   border-bottom-color: #3b82f6;
 }
@@ -286,7 +283,7 @@
   transition: all 0.2s ease;
 }
 
-.cities-page--dark .cities-table-wrap td {
+.management-shell--dark .cities-table-wrap td {
   background: #0f1b2d;
 }
 
@@ -294,7 +291,7 @@
   background: #e8f2fe;
 }
 
-.cities-page--dark .cities-table-wrap tbody tr:nth-child(even) td {
+.management-shell--dark .cities-table-wrap tbody tr:nth-child(even) td {
   background: #122137;
 }
 
@@ -306,7 +303,7 @@
   background: #dbeafe !important;
 }
 
-.cities-page--dark .cities-table-wrap tbody tr:hover td {
+.management-shell--dark .cities-table-wrap tbody tr:hover td {
   background: #1a3254 !important;
 }
 
@@ -328,7 +325,7 @@
   box-shadow: 0 4px 10px rgba(37, 99, 235, 0.15);
 }
 
-.cities-page--dark .cities-name > span {
+.management-shell--dark .cities-name > span {
   background: linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 100%);
   color: #ffffff;
 }
@@ -445,8 +442,6 @@
 }
 
 .cities-modal {
-  max-height: 90vh;
-  overflow-y: auto;
   width: min(560px, 100%);
   background: #ffffff;
   border: 1px solid #cbd5e1;
@@ -457,7 +452,7 @@
   box-sizing: border-box;
 }
 
-.cities-page--dark .cities-modal,
+.management-shell--dark .cities-modal,
 html.dark .cities-modal {
   background: #111c2e;
   border-color: #26354d;
@@ -490,7 +485,7 @@ html.dark .cities-modal {
   place-items: center;
 }
 
-.cities-modal form > label {
+.cities-modal form label {
   display: block;
   font-size: 12px;
   font-weight: 800;
@@ -498,8 +493,9 @@ html.dark .cities-modal {
   color: var(--city-muted);
 }
 
-.cities-modal form input,
-.cities-modal form select {
+.cities-modal input:not([type="file"]),
+.cities-modal select,
+.cities-modal textarea {
   display: block;
   width: 100%;
   border: 1.5px solid var(--city-border) !important;
@@ -509,6 +505,11 @@ html.dark .cities-modal {
   box-sizing: border-box;
   background: var(--city-bg) !important;
   color: var(--city-text) !important;
+}
+
+.cities-modal textarea {
+  resize: vertical;
+  min-height: 80px;
 }
 
 .cities-checks {
@@ -573,82 +574,6 @@ html.dark .cities-modal {
   line-height: 1.5;
 }
 
-/* 🛡️ REGLAS BULLETPROOF DE MODO OSCURO PARA TODAS LAS PANTALLAS ADMINISTRATIVAS */
-.management-shell--dark .cities-card {
-  background: #0f1b2d !important;
-  color: #f8fafc !important;
-  border-color: #26354d !important;
-}
-
-.management-shell--dark .cities-table-wrap {
-  border-color: #26354d !important;
-  background: #0f1b2d !important;
-}
-
-.management-shell--dark .cities-table-wrap td {
-  background: #0f1b2d !important;
-  color: #f8fafc !important;
-  border-bottom-color: #26354d !important;
-}
-
-.management-shell--dark .cities-table-wrap tbody tr:nth-child(even) td {
-  background: #132238 !important;
-  color: #f8fafc !important;
-}
-
-.management-shell--dark .cities-table-wrap tbody tr:hover td {
-  background: #1e365d !important;
-  color: #ffffff !important;
-}
-
-.management-shell--dark .cities-modal {
-  background: #0f1b2d !important;
-  border-color: #26354d !important;
-  color: #f8fafc !important;
-  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.7) !important;
-}
-
-.management-shell--dark .cities-modal input,
-.management-shell--dark .cities-modal select,
-.management-shell--dark .cities-modal textarea {
-  background: #132238 !important;
-  color: #f8fafc !important;
-  border-color: #26354d !important;
-}
-
-.management-shell--dark .cities-search {
-  background: #132238 !important;
-  border-color: #26354d !important;
-}
-
-.management-shell--dark .cities-search input {
-  color: #f8fafc !important;
-}
-
-.management-shell--dark .cities-toolbar select {
-  background: #132238 !important;
-  color: #f8fafc !important;
-  border-color: #26354d !important;
-}
-
-.management-shell--dark .cities-export button,
-.management-shell--dark .cities-row-actions button {
-  background: #132238 !important;
-  color: #f8fafc !important;
-  border-color: #26354d !important;
-}
-
-.management-shell--dark .cities-export button:hover,
-.management-shell--dark .cities-row-actions button:hover {
-  background: #2563eb !important;
-  color: #ffffff !important;
-}
-
-.management-shell--dark .cities-row-actions button.is-danger:hover {
-  background: #dc2626 !important;
-  color: #ffffff !important;
-}
-
 @media (max-width: 900px) {
   .cities-toolbar {
     flex-direction: column;
@@ -666,94 +591,125 @@ html.dark .cities-modal {
     justify-content: center;
   }
 }
-
-
-@media (max-width: 760px) {
+/* ?? MODALS AND TOOLBARS RESPONSIVE DESIGN (MOBILE) */
+@media (max-width: 768px) {
   .cities-topbar {
-    align-items: center !important;
-    flex-direction: row !important;
-    flex-wrap: nowrap !important;
-    gap: 10px !important;
+    align-items: center;
+    gap: 16px;
   }
-  .cities-topbar > div:first-child {
-    flex: 1 1 0% !important;
-    min-width: 0 !important;
-  }
+  
   .cities-topbar h1 {
-    font-size: 18px !important;
-    line-height: 1.1 !important;
-    margin: 2px 0 !important;
-    white-space: normal !important;
-  }
-  .cities-subtitle {
-    font-size: 11px !important;
-    display: -webkit-box !important;
-    -webkit-line-clamp: 2 !important;
-    -webkit-box-orient: vertical !important;
-    overflow: hidden !important;
-  }
-  .cities-topbar__actions {
-    flex: 0 0 auto !important;
-    display: flex !important;
-    align-items: center !important;
-    gap: 6px !important;
-    width: auto !important;
-  }
-  .cities-primary, .cities-danger {
-    padding: 8px 12px !important;
-    font-size: 11px !important;
-    width: auto !important;
-    flex: none !important;
+    font-size: 22px;
   }
   
-  /* TOOLBAR AND FILTERS (Side-by-side) */
   .cities-toolbar {
-    flex-direction: row !important;
-    flex-wrap: wrap !important;
-    gap: 8px !important;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
   }
-  .cities-search {
-    flex: 1 1 100% !important; /* Search remains full width */
+  
+  .cities-toolbar .cities-search {
+    grid-column: 1 / -1;
   }
+  
   .cities-toolbar select {
-    flex: 1 1 calc(33% - 8px) !important; /* Side-by-side selects */
-    min-width: 110px !important;
-    padding: 10px 8px !important;
-    font-size: 11px !important;
+    grid-column: span 1;
   }
-  
-  /* EXPORT BUTTONS */
+
   .cities-export {
-    flex: 1 1 100% !important;
-    justify-content: space-between !important;
-    gap: 6px !important;
-    margin-top: 4px !important;
-  }
-  .cities-export button {
-    flex: 1 !important;
-    font-size: 11px !important;
-    padding: 8px 4px !important;
+    grid-column: 1 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 8px;
   }
   
-  /* DATE INPUTS (Side-by-side) */
-  .reservations-date-inputs {
-    flex-direction: row !important;
-    flex-wrap: nowrap !important;
-    align-items: center !important;
-    gap: 10px !important;
-    width: 100% !important;
-    margin-top: 4px !important;
+  .cities-export button {
+    flex: 1;
+    min-width: 80px;
+    padding: 10px 8px;
+    font-size: 13px;
   }
-  .reservations-date-inputs label {
-    flex: 1 !important;
-    font-size: 11px !important;
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    gap: 4px !important;
+
+  .cities-modal {
+    width: 100%;
+    padding: 20px;
+    border-radius: 16px;
+    margin: 10px;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  
+  .cities-modal__head h2 {
+    font-size: 18px;
+  }
+  
+  .cities-checks {
+    grid-template-columns: 1fr;
+  }
+  
+  .cities-modal__actions {
+    flex-direction: column;
+  }
+  
+  .cities-modal__actions > button {
+    width: 100%;
+  }
+}
+@media (max-width: 768px) {
+  .cities-search, .cities-toolbar select {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: none !important;
+    box-sizing: border-box !important;
+  }
+}
+/* Reservations Toolbar Mobile Fixes */
+@media (max-width: 768px) {
+  .branches-toolbar {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px !important;
+  }
+  .branches-toolbar .cities-search {
+    grid-column: 1 / -1;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  .branches-toolbar select {
+    grid-column: span 1;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  .reservations-date-inputs {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    align-items: center;
+  }
+  .reservations-date-inputs span {
+    font-size: 13px;
   }
   .reservations-date-inputs input {
+    flex: 1;
+    min-width: 0;
     width: 100% !important;
-    font-size: 11px !important;
-    padding: 8px !important;
+    box-sizing: border-box;
+    padding: 10px !important;
+    border-radius: 12px !important;
+    border: 1.5px solid var(--city-border) !important;
+  }
+  .branches-toolbar .cities-export {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .branches-toolbar .cities-export button {
+    flex: 1;
+    min-width: 80px;
+    padding: 10px 4px;
+    font-size: 12px;
   }
 }
