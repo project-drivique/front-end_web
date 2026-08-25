@@ -191,7 +191,7 @@ export default function ReservationManagementPage() {
   const submitCrearManual = (e) => {
     e.preventDefault()
     reservationManagementService.createManual(formCrear, user)
-    setNotice(t('admin.reservations.createdSuccess', 'Reserva manual registrada exitosamente.'))
+    setNotice(t('admin.reservationsModal.createdSuccess', 'Reserva manual registrada exitosamente.'))
     setModalCrear(false)
     cargarYEvaluarReservas()
   }
@@ -218,7 +218,7 @@ export default function ReservationManagementPage() {
   const submitEditarReserva = (e) => {
     e.preventDefault()
     reservationManagementService.update(formEditar.id, formEditar, user)
-    setNotice(t('admin.reservations.updatedSuccess', 'Reserva actualizada correctamente.'))
+    setNotice(t('admin.reservationsModal.updatedSuccess', 'Reserva actualizada correctamente.'))
     setModalEditar(null)
     cargarYEvaluarReservas()
   }
@@ -229,7 +229,7 @@ export default function ReservationManagementPage() {
   const submitCancelarReserva = (e) => {
     e.preventDefault()
     reservationManagementService.cancel(modalCancelar.id, motivoCancelar, user)
-    setNotice(t('admin.reservations.cancelledSuccess', `Reserva ${modalCancelar.codigo} cancelada.`))
+    setNotice(t('admin.reservationsModal.cancelledSuccess', `Reserva ${modalCancelar.codigo} cancelada.`))
     setModalCancelar(null)
     setMotivoCancelar('')
     cargarYEvaluarReservas()
@@ -281,7 +281,7 @@ export default function ReservationManagementPage() {
 
         {/* Barra de Filtros y Búsqueda */}
         <section className="cities-card">
-          <div className="branches-toolbar" style={{ flexWrap: 'wrap', gap: 12 }}>
+          <div className="branches-toolbar" style={{ display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center', width: '100%' }}>
             {/* Buscador general */}
             <label className="cities-search" style={{ flex: '1 1 240px' }}>
               <FaSearch />
@@ -323,26 +323,22 @@ export default function ReservationManagementPage() {
 
             {/* Filtros de Fecha Recogida */}
             <div className="reservations-date-inputs">
-              <label style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <span>Desde:</span>
-                <input
-                  type="date"
-                  value={dateFrom}
-                  onChange={(e) => setDateFrom(e.target.value)}
-                />
-              </label>
-              <label style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <span>Hasta:</span>
-                <input
-                  type="date"
-                  value={dateTo}
-                  onChange={(e) => setDateTo(e.target.value)}
-                />
-              </label>
+              <span>Desde:</span>
+              <input
+                type="date"
+                value={dateFrom}
+                onChange={(e) => setDateFrom(e.target.value)}
+              />
+              <span>Hasta:</span>
+              <input
+                type="date"
+                value={dateTo}
+                onChange={(e) => setDateTo(e.target.value)}
+              />
             </div>
 
             {/* Botones de Exportación e Impresión */}
-            <div className="cities-export">
+            <div className="cities-export" style={{ display: 'flex', gap: '8px', marginLeft: 'auto' }}>
               <button type="button" onClick={handleExportExcel} title="Exportar a Excel">
                 <FaFileExcel /> Excel
               </button>
@@ -629,8 +625,8 @@ export default function ReservationManagementPage() {
           <section className="cities-modal" role="dialog">
             <div className="cities-modal__head">
               <div>
-                <p className="cities-eyebrow">Atención Directa</p>
-                <h2>{t("admin.reservations.createManual", "Crear Reserva Manual")}</h2>
+                <p className="cities-eyebrow">{t('admin.reservationsModal.directAttention')}</p>
+                <h2>{t('admin.reservationsModal.createManualResTitle')}</h2>
               </div>
               <button type="button" onClick={() => setModalCrear(false)}>
                 ×
@@ -639,33 +635,33 @@ export default function ReservationManagementPage() {
 
             <form onSubmit={submitCrearManual}>
               <label>
-                Nombre del Cliente *
+                {t('admin.reservationsModal.clientName')}
                 <input
                   required
                   value={formCrear.clienteNombre}
                   onChange={(e) => setFormCrear({ ...formCrear, clienteNombre: e.target.value })}
-                  placeholder="Ej: Juan Pérez"
+                  placeholder={t('admin.reservationsModal.clientNamePlaceholder')}
                 />
               </label>
 
               <div className="branches-form-grid">
                 <label>
-                  Correo Electrónico *
+                  {t('admin.reservationsModal.clientEmail')}
                   <input
                     type="email"
                     required
                     value={formCrear.clienteCorreo}
                     onChange={(e) => setFormCrear({ ...formCrear, clienteCorreo: e.target.value })}
-                    placeholder="cliente@email.com"
+                    placeholder={t('admin.reservationsModal.clientEmailPlaceholder')}
                   />
                 </label>
                 <label>
-                  Teléfono *
+                  {t('admin.reservationsModal.clientPhone')}
                   <input
                     required
                     value={formCrear.clienteTelefono}
                     onChange={(e) => setFormCrear({ ...formCrear, clienteTelefono: e.target.value })}
-                    placeholder="+57 300 000 0000"
+                    placeholder={t('admin.reservationsModal.clientPhonePlaceholder')}
                   />
                 </label>
               </div>
@@ -687,7 +683,7 @@ export default function ReservationManagementPage() {
                     {catalogoVehiculos.length > 0 ? (
                       catalogoVehiculos.map((v) => (
                         <option key={v.id} value={v.nombre}>
-                          {v.nombre} ({v.placa || 'Sin placa'})
+                          {v.nombre} ({v.placa || t('admin.reservationsModal.noLicensePlate')})
                         </option>
                       ))
                     ) : (
@@ -701,7 +697,7 @@ export default function ReservationManagementPage() {
                 </label>
 
                 <label>
-                  Sucursal *
+                  {t('admin.reservationsModal.branch')}
                   <select
                     value={formCrear.sucursal}
                     disabled={esEncargado}
@@ -718,7 +714,7 @@ export default function ReservationManagementPage() {
 
               <div className="branches-form-grid">
                 <label>
-                  Fecha y Hora Recogida *
+                  {t('admin.reservationsModal.pickupDate')}
                   <input
                     type="datetime-local"
                     required
@@ -727,7 +723,7 @@ export default function ReservationManagementPage() {
                   />
                 </label>
                 <label>
-                  Fecha y Hora Devolución *
+                  {t('admin.reservationsModal.returnDate')}
                   <input
                     type="datetime-local"
                     required
@@ -739,19 +735,19 @@ export default function ReservationManagementPage() {
 
               <div className="branches-form-grid">
                 <label>
-                  Estado Inicial
+                  {t('admin.reservationsModal.initialStatus')}
                   <select
                     value={formCrear.estado}
                     onChange={(e) => setFormCrear({ ...formCrear, estado: e.target.value })}
                   >
-                    <option value="confirmada">{t("admin.reservations.states.confirmed", "Confirmada")}</option>
-                    <option value="en_curso">En curso</option>
-                    <option value="pendiente">Pendiente</option>
+                    <option value="confirmada">{t('admin.reservationsModal.statusConfirmed')}</option>
+                    <option value="en_curso">{t('admin.reservationsModal.statusInProgress')}</option>
+                    <option value="pendiente">{t('admin.reservationsModal.statusPending')}</option>
                   </select>
                 </label>
 
                 <label>
-                  Monto Total (COP) *
+                  {t('admin.reservationsModal.totalAmountCOP')}
                   <input
                     type="number"
                     required
@@ -762,7 +758,7 @@ export default function ReservationManagementPage() {
               </div>
 
               <label>
-                Notas de Atención
+                {t('admin.reservationsModal.notes')}
                 <input
                   value={formCrear.notas}
                   onChange={(e) => setFormCrear({ ...formCrear, notas: e.target.value })}
@@ -830,11 +826,11 @@ export default function ReservationManagementPage() {
                     value={formEditar.estado}
                     onChange={(e) => setFormEditar({ ...formEditar, estado: e.target.value })}
                   >
-                    <option value="confirmada">{t("admin.reservations.states.confirmed", "Confirmada")}</option>
+                    <option value="confirmada">Confirmada</option>
                     <option value="en_curso">En curso</option>
                     <option value="finalizada">Finalizada</option>
                     <option value="pendiente">Pendiente</option>
-                    <option value="cancelada">{t("admin.reservations.states.cancelled", "Cancelada")}</option>
+                    <option value="cancelada">Cancelada</option>
                   </select>
                 </label>
               </div>
@@ -900,7 +896,7 @@ export default function ReservationManagementPage() {
             </div>
             <h2>¿Cancelar Reserva {modalCancelar.codigo}?</h2>
             <p>
-              Esta acción cambiará el estado a <strong>{t("admin.reservations.states.cancelled", "Cancelada")}</strong> y liberará el vehículo para nuevas solicitudes.
+              Esta acción cambiará el estado a <strong>Cancelada</strong> y liberará el vehículo para nuevas solicitudes.
             </p>
 
             <form onSubmit={submitCancelarReserva} style={{ marginTop: 16 }}>
