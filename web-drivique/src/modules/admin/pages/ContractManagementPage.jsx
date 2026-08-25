@@ -92,8 +92,8 @@ export default function ContractManagementPage() {
     c.clienteDocumento,
     `${c.vehiculoNombre} (${c.vehiculoPlaca})`,
     c.sucursal,
-    c.fechaInicio ? c.fechaInicio.replace("T", " ") : "",
-    c.fechaFin ? c.fechaFin.replace("T", " ") : "",
+    c.fechaInicio ? String(c.fechaInicio).replace("T", " ") : "",
+    c.fechaFin ? String(c.fechaFin).replace("T", " ") : "",
     t(`admin.contractsPage.states.${c.estado}`, c.estado),
     c.totalCOP,
   ]);
@@ -148,8 +148,8 @@ export default function ContractManagementPage() {
           contrato.clienteDocumento,
           `${contrato.vehiculoNombre} (${contrato.vehiculoPlaca})`,
           contrato.sucursal,
-          contrato.fechaInicio.replace("T", " "),
-          contrato.fechaFin.replace("T", " "),
+          contrato.fechaInicio ? String(contrato.fechaInicio).replace("T", " ") : "",
+          contrato.fechaFin ? String(contrato.fechaFin).replace("T", " ") : "",
           t(`admin.contractsPage.states.${contrato.estado}`, contrato.estado),
           contrato.totalCOP,
         ],
@@ -636,7 +636,7 @@ export default function ContractManagementPage() {
                       border: "1px solid var(--city-border)",
                     }}
                   >
-                    {new Date(modalDetalle.fechaFirma).toLocaleString("es-CO")}
+                    {modalDetalle.fechaFirma ? new Date(modalDetalle.fechaFirma).toLocaleString("es-CO") : "Sin firma"}
                   </div>
                 </div>
               </div>
