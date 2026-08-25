@@ -22,6 +22,7 @@ import CityManagementPage from '../modules/admin/pages/CityManagementPage'
 import BranchManagementPage from '../modules/admin/pages/BranchManagementPage'
 import VehicleManagementPage from '../modules/admin/pages/VehicleManagementPage'
 import ReservationManagementPage from '../modules/admin/pages/ReservationManagementPage'
+import ContractManagementPage from '../modules/admin/pages/ContractManagementPage'
 import UserManagementPage from '../modules/admin/pages/UserManagementPage'
 import AdminRolesManagementPage from '../modules/admin/pages/AdminRolesManagementPage'
 import { getRoleHome, hasValidRoleAccess, ROLES } from '../modules/auth/utils/accessControl'
@@ -93,7 +94,7 @@ function RutaRecuperacionCorreo({ children }) {
 function RouteTracker() {
   const location = useLocation()
   useEffect(() => {
-    // No guardar rutas de autenticación, la raíz, o rutas de respuesta de pagos/callback
+    // No guardar rutas de autenticaciÃ³n, la raÃ­z, o rutas de respuesta de pagos/callback
     const ignorar = ['/', '/login', '/registro', '/recuperar', '/nueva-contrasena', '/verificar-2fa', '/verificar-correo', '/verificar-recuperacion', '/respuesta']
     if (!ignorar.includes(location.pathname)) {
       localStorage.setItem('last_path', location.pathname + location.search)
@@ -132,11 +133,13 @@ export default function AppRouter() {
         <Route path="/admin/branches" element={<RutaPorRol roles={[ROLES.ADMIN]}><BranchManagementPage /></RutaPorRol>} />
         <Route path="/admin/vehicles" element={<RutaPorRol roles={[ROLES.ADMIN]}><VehicleManagementPage /></RutaPorRol>} />
         <Route path="/admin/reservations" element={<RutaPorRol roles={[ROLES.ADMIN]}><ReservationManagementPage /></RutaPorRol>} />
+        <Route path="/admin/contracts" element={<RutaPorRol roles={[ROLES.ADMIN]}><ContractManagementPage /></RutaPorRol>} />
         <Route path="/admin/users" element={<RutaPorRol roles={[ROLES.ADMIN]}><UserManagementPage /></RutaPorRol>} />
         <Route path="/admin/roles" element={<RutaPorRol roles={[ROLES.ADMIN]}><AdminRolesManagementPage /></RutaPorRol>} />
         <Route path="/admin/:moduleKey" element={<RutaPorRol roles={[ROLES.ADMIN]}><ManagementModulePage /></RutaPorRol>} />
         <Route path="/encargado" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER]}><BranchManagerPage /></RutaPorRol>} />
         <Route path="/encargado/reservations" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER]}><ReservationManagementPage /></RutaPorRol>} />
+        <Route path="/encargado/contracts" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER]}><ContractManagementPage /></RutaPorRol>} />
         <Route path="/encargado/:moduleKey" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER]}><ManagementModulePage /></RutaPorRol>} />
         <Route path="/perfil" element={<RutaPrivada><ProfilePage /></RutaPrivada>} />
         <Route path="/catalogo" element={<CatalogPage />} />
@@ -155,3 +158,4 @@ export default function AppRouter() {
     </BrowserRouter>
   )
 }
+
