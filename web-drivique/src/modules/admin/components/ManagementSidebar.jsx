@@ -12,6 +12,7 @@ import {
   FaSignOutAlt,
   FaUsers,
   FaUserShield,
+  FaExclamationTriangle,
   FaBars,
   FaTimes
 } from 'react-icons/fa'
@@ -28,6 +29,7 @@ const MODULE_ICONS = {
   roles: FaUserShield,
   reservations: FaClipboardList,
   contracts: FaFileContract,
+  incidents: FaExclamationTriangle,
   cities: FaCity,
   branches: FaBuilding,
   audit: FaShieldAlt,
@@ -95,7 +97,7 @@ export default function ManagementSidebar({ branchOnly = false }) {
               className={({ isActive }) => `management-nav__item ${isActive ? 'is-active' : ''}`}
             >
               <Icon aria-hidden="true" />
-              <span>{t(key === 'cities' ? 'admin.cities.title' : key === 'contracts' ? 'admin.nav.contracts' : `admin.${key}`)}</span>
+              <span>{t(key === 'cities' ? 'admin.cities.title' : key === 'contracts' ? 'admin.nav.contracts' : key === 'incidents' ? 'admin.incidents.title' : `admin.${key}`, key === 'incidents' ? 'Incidencias' : undefined)}</span>
             </NavLink>
           )
         })}
