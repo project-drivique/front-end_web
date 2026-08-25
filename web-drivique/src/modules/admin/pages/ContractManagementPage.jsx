@@ -73,16 +73,16 @@ export default function ContractManagementPage() {
   }, [contratos, search, statusFilter]);
 
   const headersExport = [
-    t("admin.contracts.fields.contractNumber", "No. Contrato"),
-    t("admin.contracts.fields.reservationCode", "Reserva"),
-    t("admin.contracts.fields.clientName", "Cliente"),
-    t("admin.contracts.fields.clientDoc", "Documento"),
-    t("admin.contracts.fields.vehicle", "Vehículo"),
-    t("admin.contracts.fields.branch", "Sucursal"),
-    t("admin.contracts.fields.startDate", "Inicio"),
-    t("admin.contracts.fields.endDate", "Fin"),
-    t("admin.contracts.fields.state", "Estado"),
-    t("admin.contracts.fields.total", "Total COP"),
+    t("admin.contractsPage.fields.contractNumber", "No. Contrato"),
+    t("admin.contractsPage.fields.reservationCode", "Reserva"),
+    t("admin.contractsPage.fields.clientName", "Cliente"),
+    t("admin.contractsPage.fields.clientDoc", "Documento"),
+    t("admin.contractsPage.fields.vehicle", "Vehículo"),
+    t("admin.contractsPage.fields.branch", "Sucursal"),
+    t("admin.contractsPage.fields.startDate", "Inicio"),
+    t("admin.contractsPage.fields.endDate", "Fin"),
+    t("admin.contractsPage.fields.state", "Estado"),
+    t("admin.contractsPage.fields.total", "Total COP"),
   ];
 
   const rowsExport = filtrados.map((c) => [
@@ -94,14 +94,14 @@ export default function ContractManagementPage() {
     c.sucursal,
     c.fechaInicio ? c.fechaInicio.replace("T", " ") : "",
     c.fechaFin ? c.fechaFin.replace("T", " ") : "",
-    t(`admin.contracts.states.${c.estado}`, c.estado),
+    t(`admin.contractsPage.states.${c.estado}`, c.estado),
     c.totalCOP,
   ]);
 
   const exportData = {
     title: esEncargado
-      ? `${t("admin.contracts.title", "Gestión de Contratos")} - ${sucursalEncargado}`
-      : t("admin.contracts.exportTitle", "Listado de Contratos - Drivique"),
+      ? `${t("admin.contractsPage.title", "Gestión de Contratos")} - ${sucursalEncargado}`
+      : t("admin.contractsPage.exportTitle", "Listado de Contratos - Drivique"),
     headers: headersExport,
     rows: rowsExport,
     items: filtrados,
@@ -138,7 +138,7 @@ export default function ContractManagementPage() {
   const handleDownloadSinglePdf = (contrato) => {
     contractManagementService.logAudit("Descargó contrato PDF", contrato, user);
     const singleData = {
-      title: `${t("admin.contracts.detailsTitle", "Detalle de Contrato")} - ${contrato.contratoNumero}`,
+      title: `${t("admin.contractsPage.detailsTitle", "Detalle de Contrato")} - ${contrato.contratoNumero}`,
       headers: headersExport,
       rows: [
         [
@@ -150,7 +150,7 @@ export default function ContractManagementPage() {
           contrato.sucursal,
           contrato.fechaInicio.replace("T", " "),
           contrato.fechaFin.replace("T", " "),
-          t(`admin.contracts.states.${contrato.estado}`, contrato.estado),
+          t(`admin.contractsPage.states.${contrato.estado}`, contrato.estado),
           contrato.totalCOP,
         ],
       ],
@@ -184,10 +184,10 @@ export default function ContractManagementPage() {
                   ? `Encargado de Sucursal (${sucursalEncargado})`
                   : t("admin.management", "Gestión Operativa")}
               </p>
-              <h1>{t("admin.contracts.title", "Gestión de Contratos")}</h1>
+              <h1>{t("admin.contractsPage.title", "Gestión de Contratos")}</h1>
               <p className="cities-subtitle">
                 {t(
-                  "admin.contracts.subtitle",
+                  "admin.contractsPage.subtitle",
                   "Consulta y gestiona los contratos de alquiler, exporta la información e imprime documentos oficiales.",
                 )}
               </p>
@@ -220,7 +220,7 @@ export default function ContractManagementPage() {
                 <input
                   type="text"
                   placeholder={t(
-                    "admin.contracts.search",
+                    "admin.contractsPage.search",
                     "Buscar por reserva o documento...",
                   )}
                   value={search}
@@ -233,16 +233,16 @@ export default function ContractManagementPage() {
                   onChange={(e) => setStatusFilter(e.target.value)}
                 >
                   <option value="all">
-                    {t("admin.contracts.allStates", "Todos los estados")}
+                    {t("admin.contractsPage.allStates", "Todos los estados")}
                   </option>
                   <option value="vigente">
-                    {t("admin.contracts.states.vigente", "Vigente")}
+                    {t("admin.contractsPage.states.vigente", "Vigente")}
                   </option>
                   <option value="cerrado">
-                    {t("admin.contracts.states.cerrado", "Cerrado")}
+                    {t("admin.contractsPage.states.cerrado", "Cerrado")}
                   </option>
                   <option value="firmado">
-                    {t("admin.contracts.states.firmado", "Firmado")}
+                    {t("admin.contractsPage.states.firmado", "Firmado")}
                   </option>
                 </select>
 
@@ -262,7 +262,7 @@ export default function ContractManagementPage() {
                   onClick={handlePrint}
                   title="Imprimir Listado"
                 >
-                  <FaPrint /> Imprimir
+                  <FaPrint /> {t('admin.print', 'Imprimir')}
                 </button>
               </div>
             </div>
@@ -270,23 +270,23 @@ export default function ContractManagementPage() {
             <div className="cities-table-wrap">
               <div className="cities-table-count" style={{ padding: '0 0 12px 0', fontSize: '12px', fontWeight: 600, color: 'var(--city-muted)' }}>
                 {filtrados.length}{" "}
-                {t("admin.contracts.results", "contratos encontrados")}
+                {t("admin.contractsPage.results", "contratos encontrados")}
               </div>
               <table className="cities-table">
               <thead>
                 <tr>
                   <th>
-                    {t("admin.contracts.fields.contractNumber", "No. Contrato")}
+                    {t("admin.contractsPage.fields.contractNumber", "No. Contrato")}
                   </th>
                   <th>
-                    {t("admin.contracts.fields.reservationCode", "Reserva")}
+                    {t("admin.contractsPage.fields.reservationCode", "Reserva")}
                   </th>
-                  <th>{t("admin.contracts.fields.clientName", "Cliente")}</th>
-                  <th>{t("admin.contracts.fields.clientDoc", "Documento")}</th>
-                  <th>{t("admin.contracts.fields.vehicle", "Vehículo")}</th>
-                  <th>{t("admin.contracts.fields.startDate", "Inicio")}</th>
-                  <th>{t("admin.contracts.fields.state", "Estado")}</th>
-                  <th style={{ textAlign: "center" }}>Acciones</th>
+                  <th>{t("admin.contractsPage.fields.clientName", "Cliente")}</th>
+                  <th>{t("admin.contractsPage.fields.clientDoc", "Documento")}</th>
+                  <th>{t("admin.contractsPage.fields.vehicle", "Vehículo")}</th>
+                  <th>{t("admin.contractsPage.fields.startDate", "Inicio")}</th>
+                  <th>{t("admin.contractsPage.fields.state", "Estado")}</th>
+                  <th style={{ textAlign: "center" }}>{t('admin.contractsPage.actions')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -330,7 +330,7 @@ export default function ContractManagementPage() {
                       <td>{c.fechaInicio?.replace("T", " ")}</td>
                       <td>
                         <span className={`res-status res-status--${c.estado}`}>
-                          {t(`admin.contracts.states.${c.estado}`, c.estado)}
+                          {t(`admin.contractsPage.states.${c.estado}`, c.estado)}
                         </span>
                       </td>
                       <td>
@@ -341,7 +341,7 @@ export default function ContractManagementPage() {
                           <button
                             onClick={() => openDetalle(c)}
                             title={t(
-                              "admin.contracts.viewDetails",
+                              "admin.contractsPage.viewDetails",
                               "Ver Detalle",
                             )}
                           >
@@ -351,7 +351,7 @@ export default function ContractManagementPage() {
                             className="is-danger"
                             onClick={() => handleDownloadSinglePdf(c)}
                             title={t(
-                              "admin.contracts.downloadPdf",
+                              "admin.contractsPage.downloadPdf",
                               "Descargar Contrato",
                             )}
                           >
@@ -368,13 +368,13 @@ export default function ContractManagementPage() {
                         <FaFileContract className="cities-empty__icon" />
                         <h3>
                           {t(
-                            "admin.contracts.emptyTitle",
+                            "admin.contractsPage.emptyTitle",
                             "No se encontraron contratos",
                           )}
                         </h3>
                         <p>
                           {t(
-                            "admin.contracts.emptySubtitle",
+                            "admin.contractsPage.emptySubtitle",
                             "Intenta ajustar los criterios de búsqueda.",
                           )}
                         </p>
@@ -401,7 +401,7 @@ export default function ContractManagementPage() {
               <div>
                 <p className="cities-eyebrow">{modalDetalle.contratoNumero}</p>
                 <h2>
-                  {t("admin.contracts.detailsTitle", "Detalle de Contrato")}
+                  {t("admin.contractsPage.detailsTitle", "Detalle de Contrato")}
                 </h2>
               </div>
               <button type="button" onClick={() => setModalDetalle(null)}>
@@ -413,7 +413,7 @@ export default function ContractManagementPage() {
               <div className="incident-grid-2">
                 <div className="incident-field">
                   <span className="incident-field-label">
-                    {t("admin.contracts.fields.reservationCode", "Reserva")}
+                    {t("admin.contractsPage.fields.reservationCode", "Reserva")}
                   </span>
                   <div
                     style={{
@@ -429,7 +429,7 @@ export default function ContractManagementPage() {
                 </div>
                 <div className="incident-field">
                   <span className="incident-field-label">
-                    {t("admin.contracts.fields.state", "Estado")}
+                    {t("admin.contractsPage.fields.state", "Estado")}
                   </span>
                   <div
                     style={{
@@ -444,7 +444,7 @@ export default function ContractManagementPage() {
                       style={{ display: "inline-block" }}
                     >
                       {t(
-                        `admin.contracts.states.${modalDetalle.estado}`,
+                        `admin.contractsPage.states.${modalDetalle.estado}`,
                         modalDetalle.estado,
                       )}
                     </span>
@@ -453,7 +453,7 @@ export default function ContractManagementPage() {
 
                 <div className="incident-field">
                   <span className="incident-field-label">
-                    {t("admin.contracts.fields.clientName", "Cliente")}
+                    {t("admin.contractsPage.fields.clientName", "Cliente")}
                   </span>
                   <div
                     style={{
@@ -474,7 +474,7 @@ export default function ContractManagementPage() {
                 </div>
                 <div className="incident-field">
                   <span className="incident-field-label">
-                    {t("admin.contracts.fields.clientDoc", "Documento")}
+                    {t("admin.contractsPage.fields.clientDoc", "Documento")}
                   </span>
                   <div
                     style={{
@@ -490,7 +490,7 @@ export default function ContractManagementPage() {
 
                 <div className="incident-field">
                   <span className="incident-field-label">
-                    {t("admin.contracts.fields.clientEmail", "Correo")}
+                    {t("admin.contractsPage.fields.clientEmail", "Correo")}
                   </span>
                   <div
                     style={{
@@ -505,7 +505,7 @@ export default function ContractManagementPage() {
                 </div>
                 <div className="incident-field">
                   <span className="incident-field-label">
-                    {t("admin.contracts.fields.clientPhone", "Teléfono")}
+                    {t("admin.contractsPage.fields.clientPhone", "Teléfono")}
                   </span>
                   <div
                     style={{
@@ -521,7 +521,7 @@ export default function ContractManagementPage() {
 
                 <div className="incident-field">
                   <span className="incident-field-label">
-                    {t("admin.contracts.fields.vehicle", "Vehículo")}
+                    {t("admin.contractsPage.fields.vehicle", "Vehículo")}
                   </span>
                   <div
                     style={{
@@ -542,7 +542,7 @@ export default function ContractManagementPage() {
                 </div>
                 <div className="incident-field">
                   <span className="incident-field-label">
-                    {t("admin.contracts.fields.branch", "Sucursal")}
+                    {t("admin.contractsPage.fields.branch", "Sucursal")}
                   </span>
                   <div
                     style={{
@@ -564,7 +564,7 @@ export default function ContractManagementPage() {
 
                 <div className="incident-field">
                   <span className="incident-field-label">
-                    {t("admin.contracts.fields.startDate", "Inicio")}
+                    {t("admin.contractsPage.fields.startDate", "Inicio")}
                   </span>
                   <div
                     style={{
@@ -585,7 +585,7 @@ export default function ContractManagementPage() {
                 </div>
                 <div className="incident-field">
                   <span className="incident-field-label">
-                    {t("admin.contracts.fields.endDate", "Fin")}
+                    {t("admin.contractsPage.fields.endDate", "Fin")}
                   </span>
                   <div
                     style={{
@@ -607,7 +607,7 @@ export default function ContractManagementPage() {
 
                 <div className="incident-field">
                   <span className="incident-field-label">
-                    {t("admin.contracts.fields.total", "Total COP")}
+                    {t("admin.contractsPage.fields.total", "Total COP")}
                   </span>
                   <div
                     style={{
@@ -624,7 +624,7 @@ export default function ContractManagementPage() {
                 <div className="incident-field">
                   <span className="incident-field-label">
                     {t(
-                      "admin.contracts.fields.signatureDate",
+                      "admin.contractsPage.fields.signatureDate",
                       "Fecha de firma",
                     )}
                   </span>
@@ -650,7 +650,7 @@ export default function ContractManagementPage() {
                   onClick={() => setModalDetalle(null)}
                   style={{ flex: 1 }}
                 >
-                  Cerrar
+                  {t('admin.contractsPage.close')}
                 </button>
                 <button
                   type="button"
@@ -665,7 +665,7 @@ export default function ContractManagementPage() {
                   }}
                 >
                   <FaDownload />{" "}
-                  {t("admin.contracts.downloadPdf", "Descargar Contrato")}
+                  {t("admin.contractsPage.downloadPdf", "Descargar Contrato")}
                 </button>
               </div>
             </div>

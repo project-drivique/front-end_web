@@ -230,10 +230,7 @@ export default function UserManagementPage() {
               <p className="cities-eyebrow">{t('admin.management', 'Gestión de Usuarios')}</p>
               <h1>{t('admin.usersTitle', 'Control de Cuentas y Verificación')}</h1>
               <p className="cities-subtitle">
-                {t(
-                  'admin.usersSubtitle',
-                  'Gestión completa de clientes, administradores, roles, estados de cuenta y revisión de documentos.'
-                )}
+                {t('admin.usersPage.subtitle')}
               </p>
             </div>
 
@@ -278,37 +275,37 @@ export default function UserManagementPage() {
 
               {/* Filtro por Rol */}
               <select value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)}>
-                <option value="all">Todos los roles</option>
-                <option value="cliente">Clientes</option>
-                <option value="encargado">Encargados de Sucursal</option>
-                <option value="administrador">Administradores</option>
+                <option value="all">{t('admin.usersPage.allRoles')}</option>
+                <option value="cliente">{t('admin.usersPage.clients')}</option>
+                <option value="encargado">{t('admin.usersPage.branchManagers')}</option>
+                <option value="administrador">{t('admin.usersPage.administrators')}</option>
               </select>
 
               {/* Filtro por Estado de Cuenta */}
               <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
-                <option value="all">Todos los estados</option>
-                <option value="active">Cuentas Activas</option>
-                <option value="inactive">Cuentas Inactivas</option>
+                <option value="all">{t('admin.usersPage.allStatuses')}</option>
+                <option value="active">{t('admin.usersPage.activeAccounts')}</option>
+                <option value="inactive">{t('admin.usersPage.inactiveAccounts')}</option>
               </select>
 
               {/* Filtro por Documentos */}
               <select value={docFilter} onChange={(e) => setDocFilter(e.target.value)}>
-                <option value="all">Todos los documentos</option>
-                <option value="aprobado">Documentos Aprobados</option>
-                <option value="pendiente">Documentos Pendientes</option>
-                <option value="rechazado">Documentos Rechazados</option>
+                <option value="all">{t('admin.usersPage.allDocs')}</option>
+                <option value="aprobado">{t('admin.usersPage.approvedDocs')}</option>
+                <option value="pendiente">{t('admin.usersPage.pendingDocs')}</option>
+                <option value="rechazado">{t('admin.usersPage.rejectedDocs')}</option>
               </select>
 
               {/* Botones de Exportación */}
               <div className="cities-export">
                 <button type="button" onClick={() => exportExcel(exportData)}>
-                  <FaFileExcel /> Excel
+                  <FaFileExcel /> {t('admin.usersPage.excel')}
                 </button>
                 <button type="button" onClick={() => exportPdf(exportData)}>
-                  <FaFilePdf /> PDF
+                  <FaFilePdf /> {t('admin.usersPage.pdf')}
                 </button>
                 <button type="button" onClick={() => printTable(exportData)}>
-                  <FaPrint /> Imprimir
+                  <FaPrint /> {t('admin.usersPage.print')}
                 </button>
               </div>
             </div>
@@ -322,22 +319,22 @@ export default function UserManagementPage() {
             {filtrados.length === 0 ? (
               <div className="cities-empty">
                 <FaUsers />
-                <h2>No se encontraron usuarios</h2>
-                <p>Intenta ajustar el término de búsqueda o los filtros seleccionados.</p>
+                <h2>{t('admin.usersPage.noUsersFound')}</h2>
+                <p>{t('admin.usersPage.adjustFilters')}</p>
               </div>
             ) : (
               <div className="cities-table-wrap">
                 <table>
                   <thead>
                     <tr>
-                      <th>Usuario</th>
-                      <th>Cédula</th>
-                      <th>Contacto</th>
-                      <th>Rol / Sucursal</th>
-                      <th>Estado Cuenta</th>
-                      <th>Verificación Documentos</th>
-                      <th>Reservas Activas</th>
-                      <th>Acciones</th>
+                      <th>{t('admin.usersPage.tableUser')}</th>
+                      <th>{t('admin.usersPage.tableId')}</th>
+                      <th>{t('admin.usersPage.tableContact')}</th>
+                      <th>{t('admin.usersPage.tableRoleBranch')}</th>
+                      <th>{t('admin.usersPage.tableAccountStatus')}</th>
+                      <th>{t('admin.usersPage.tableDocVerify')}</th>
+                      <th>{t('admin.usersPage.tableActiveRes')}</th>
+                      <th>{t('admin.usersPage.tableActions')}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -388,7 +385,7 @@ export default function UserManagementPage() {
                         <td>
                           <span className={`user-account-badge ${u.activo ? 'activo' : 'inactivo'}`}>
                             <span className="user-account-dot" />
-                            {u.activo ? 'Activa' : 'Inactiva'}
+                            {u.activo ? t('admin.usersPage.active') : t('admin.usersPage.inactive')}
                           </span>
                         </td>
 
@@ -418,7 +415,7 @@ export default function UserManagementPage() {
                             <button
                               type="button"
                               onClick={() => openDocumentosModal(u)}
-                              title="Revisar Cédula y Licencia"
+                              title={t('admin.usersPage.reviewDocsAction')}
                               style={{ color: '#2563eb' }}
                             >
                               <FaIdCard />
@@ -428,7 +425,7 @@ export default function UserManagementPage() {
                             <button
                               type="button"
                               onClick={() => openEditarModal(u)}
-                              title="Editar Usuario"
+                              title={t('admin.usersPage.editUserAction')}
                             >
                               <FaEdit />
                             </button>
@@ -437,7 +434,7 @@ export default function UserManagementPage() {
                             <button
                               type="button"
                               onClick={() => handleToggleActivo(u)}
-                              title={u.activo ? 'Desactivar Cuenta' : 'Activar Cuenta'}
+                              title={u.activo ? t('admin.usersPage.deactivateAction') : t('admin.usersPage.activateAction')}
                               style={{ color: u.activo ? '#16a34a' : '#94a3b8' }}
                             >
                               {u.activo ? <FaToggleOn size={18} /> : <FaToggleOff size={18} />}
@@ -451,7 +448,7 @@ export default function UserManagementPage() {
                                 setErrorModal('')
                                 setModalEliminar(u)
                               }}
-                              title="Eliminar Usuario"
+                              title={t('admin.usersPage.deleteUserAction')}
                             >
                               <FaTrash />
                             </button>
@@ -475,8 +472,8 @@ export default function UserManagementPage() {
             <section className="cities-modal user-doc-modal">
               <div className="cities-modal__head">
                 <div>
-                  <p className="cities-eyebrow">Verificación de Identidad</p>
-                  <h2>Documentos de {modalDocumentos.nombre}</h2>
+                  <p className="cities-eyebrow">{t('admin.usersPage.identityVerify')}</p>
+                  <h2>{t('admin.usersPage.docsOf', { nombre: modalDocumentos.nombre })}</h2>
                 </div>
                 <button type="button" onClick={() => setModalDocumentos(null)}>
                   ×
@@ -485,20 +482,20 @@ export default function UserManagementPage() {
 
               <div className="user-doc-grid">
                 <div className="user-doc-card">
-                  <strong>Cédula de Ciudadanía / Pasaporte</strong>
+                  <strong>{t('admin.usersPage.idOrPassport')}</strong>
                   {modalDocumentos.documentoCedula ? (
                     <img src={modalDocumentos.documentoCedula} alt="Cédula" className="user-doc-preview" />
                   ) : (
-                    <div className="user-doc-placeholder">No se ha adjuntado Cédula</div>
+                    <div className="user-doc-placeholder">{t('admin.usersPage.noIdAttached')}</div>
                   )}
                 </div>
 
                 <div className="user-doc-card">
-                  <strong>Licencia de Conducción</strong>
+                  <strong>{t('admin.usersPage.driverLicense')}</strong>
                   {modalDocumentos.documentoLicencia ? (
                     <img src={modalDocumentos.documentoLicencia} alt="Licencia" className="user-doc-preview" />
                   ) : (
-                    <div className="user-doc-placeholder">No se ha adjuntado Licencia</div>
+                    <div className="user-doc-placeholder">{t('admin.usersPage.noLicenseAttached')}</div>
                   )}
                 </div>
               </div>
@@ -550,8 +547,8 @@ export default function UserManagementPage() {
             <section className="cities-modal">
               <div className="cities-modal__head">
                 <div>
-                  <p className="cities-eyebrow">Formulario de Registro</p>
-                  <h2>Crear Nuevo Usuario</h2>
+                  <p className="cities-eyebrow">{t('admin.usersPage.registerFormTitle', 'Formulario de Registro')}</p>
+                  <h2>{t('admin.usersPage.createNewUserTitle')}</h2>
                 </div>
                 <button type="button" onClick={() => setModalCrear(false)}>
                   ×
@@ -560,7 +557,7 @@ export default function UserManagementPage() {
 
               <form onSubmit={handleCrearUsuario}>
                 <label>
-                  Nombre completo:
+                  {t('admin.usersPage.fullNameLabel')}:
                   <input
                     type="text"
                     required
@@ -571,7 +568,7 @@ export default function UserManagementPage() {
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                   <label>
-                    Correo electrónico:
+                    {t('admin.usersPage.emailLabel')}:
                     <input
                       type="email"
                       required
@@ -580,7 +577,7 @@ export default function UserManagementPage() {
                     />
                   </label>
                   <label>
-                    Teléfono:
+                    {t('admin.usersPage.phoneLabel')}:
                     <input
                       type="text"
                       required
@@ -592,7 +589,7 @@ export default function UserManagementPage() {
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                   <label>
-                    Número de Cédula / Documento:
+                    {t('admin.usersPage.idNumberLabel')}:
                     <input
                       type="text"
                       required
@@ -601,21 +598,21 @@ export default function UserManagementPage() {
                     />
                   </label>
                   <label>
-                    Rol de usuario:
+                    {t('admin.usersPage.userRoleLabel')}:
                     <select
                       value={formCrear.rol}
                       onChange={(e) => setFormCrear({ ...formCrear, rol: e.target.value })}
                     >
-                      <option value="cliente">Cliente</option>
-                      <option value="encargado">Encargado de Sucursal</option>
-                      <option value="administrador">Administrador</option>
+                      <option value="cliente">{t('admin.usersPage.clientRole')}</option>
+                      <option value="encargado">{t('admin.usersPage.branchManagerRole')}</option>
+                      <option value="administrador">{t('admin.usersPage.adminRole')}</option>
                     </select>
                   </label>
                 </div>
 
                 {formCrear.rol === 'encargado' && (
                   <label>
-                    Sucursal Asignada:
+                    {t('admin.usersPage.assignedBranchLabel')}:
                     <select
                       value={formCrear.sucursal}
                       onChange={(e) => setFormCrear({ ...formCrear, sucursal: e.target.value })}
@@ -633,10 +630,10 @@ export default function UserManagementPage() {
 
                 <div className="cities-modal__actions">
                   <button type="button" onClick={() => setModalCrear(false)}>
-                    Cancelar
+                    {t('admin.usersPage.cancelBtn')}
                   </button>
                   <button type="submit" className="cities-primary">
-                    Guardar Usuario
+                    {t('admin.usersPage.saveUserBtn')}
                   </button>
                 </div>
               </form>
@@ -653,8 +650,8 @@ export default function UserManagementPage() {
             <section className="cities-modal">
               <div className="cities-modal__head">
                 <div>
-                  <p className="cities-eyebrow">Edición de Perfil</p>
-                  <h2>Editar Datos de {modalEditar.nombre}</h2>
+                  <p className="cities-eyebrow">{t('admin.usersPage.editProfileTitle', 'Edición de Perfil')}</p>
+                  <h2>{t('admin.usersPage.editUserTitleOf', 'Editar Datos de {{nombre}}', { nombre: modalEditar.nombre })}</h2>
                 </div>
                 <button type="button" onClick={() => setModalEditar(null)}>
                   ×
@@ -663,7 +660,7 @@ export default function UserManagementPage() {
 
               <form onSubmit={handleEditarUsuario}>
                 <label>
-                  Nombre completo:
+                  {t('admin.usersPage.fullNameLabel')}:
                   <input
                     type="text"
                     required
@@ -674,7 +671,7 @@ export default function UserManagementPage() {
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                   <label>
-                    Correo electrónico:
+                    {t('admin.usersPage.emailLabel')}:
                     <input
                       type="email"
                       required
@@ -683,7 +680,7 @@ export default function UserManagementPage() {
                     />
                   </label>
                   <label>
-                    Teléfono:
+                    {t('admin.usersPage.phoneLabel')}:
                     <input
                       type="text"
                       required
@@ -695,7 +692,7 @@ export default function UserManagementPage() {
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                   <label>
-                    Cédula:
+                    {t('admin.usersPage.tableId')}:
                     <input
                       type="text"
                       value={formEditar.cedula}
@@ -703,21 +700,21 @@ export default function UserManagementPage() {
                     />
                   </label>
                   <label>
-                    Rol de usuario:
+                    {t('admin.usersPage.userRoleLabel')}:
                     <select
                       value={formEditar.rol}
                       onChange={(e) => setFormEditar({ ...formEditar, rol: e.target.value })}
                     >
-                      <option value="cliente">Cliente</option>
-                      <option value="encargado">Encargado de Sucursal</option>
-                      <option value="administrador">Administrador</option>
+                      <option value="cliente">{t('admin.usersPage.clientRole')}</option>
+                      <option value="encargado">{t('admin.usersPage.branchManagerRole')}</option>
+                      <option value="administrador">{t('admin.usersPage.adminRole')}</option>
                     </select>
                   </label>
                 </div>
 
                 {formEditar.rol === 'encargado' && (
                   <label>
-                    Sucursal Asignada:
+                    {t('admin.usersPage.assignedBranchLabel')}:
                     <select
                       value={formEditar.sucursal}
                       onChange={(e) => setFormEditar({ ...formEditar, sucursal: e.target.value })}
@@ -735,10 +732,10 @@ export default function UserManagementPage() {
 
                 <div className="cities-modal__actions">
                   <button type="button" onClick={() => setModalEditar(null)}>
-                    Cancelar
+                    {t('admin.usersPage.cancelBtn')}
                   </button>
                   <button type="submit" className="cities-primary">
-                    Actualizar Usuario
+                    {t('admin.usersPage.saveUserBtn')}
                   </button>
                 </div>
               </form>
