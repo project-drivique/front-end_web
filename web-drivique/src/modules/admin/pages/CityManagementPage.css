@@ -171,7 +171,7 @@
   font-weight: 600;
 }
 
-.cities-toolbar select {
+.cities-toolbar select, .branches-toolbar select, .fleet-toolbar select {
   border: 2px solid transparent;
   background: linear-gradient(var(--city-card), var(--city-card)) padding-box,
     linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) border-box;
@@ -186,8 +186,8 @@
   outline: none;
 }
 
-.cities-toolbar select:hover,
-.cities-toolbar select:focus {
+.cities-toolbar select:hover, .branches-toolbar select:hover, .fleet-toolbar select:hover,
+.cities-toolbar select:focus, .branches-toolbar select:focus, .fleet-toolbar select:focus {
   transform: translateY(-1px);
   box-shadow: 0 8px 22px rgba(37, 99, 235, 0.2);
 }
@@ -589,5 +589,127 @@ html.dark .cities-modal {
   .cities-export button {
     flex: 1;
     justify-content: center;
+  }
+}
+/* ?? MODALS AND TOOLBARS RESPONSIVE DESIGN (MOBILE) */
+@media (max-width: 768px) {
+  .cities-topbar {
+    align-items: center;
+    gap: 16px;
+  }
+  
+  .cities-topbar h1 {
+    font-size: 22px;
+  }
+  
+  .cities-toolbar {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  
+  .cities-toolbar .cities-search {
+    grid-column: 1 / -1;
+  }
+  
+  .cities-toolbar select {
+    grid-column: span 1;
+  }
+
+  .cities-export {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  
+  .cities-export button {
+    flex: 1;
+    min-width: 80px;
+    padding: 10px 8px;
+    font-size: 13px;
+  }
+
+  .cities-modal {
+    width: 100%;
+    padding: 20px;
+    border-radius: 16px;
+    margin: 10px;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  
+  .cities-modal__head h2 {
+    font-size: 18px;
+  }
+  
+  .cities-checks {
+    grid-template-columns: 1fr;
+  }
+  
+  .cities-modal__actions {
+    flex-direction: column;
+  }
+  
+  .cities-modal__actions > button {
+    width: 100%;
+  }
+}
+@media (max-width: 768px) {
+  .cities-search, .cities-toolbar select {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: none !important;
+    box-sizing: border-box !important;
+  }
+}
+/* Reservations Toolbar Mobile Fixes */
+@media (max-width: 768px) {
+  .branches-toolbar {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px !important;
+  }
+  .branches-toolbar .cities-search {
+    grid-column: 1 / -1;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  .branches-toolbar select {
+    grid-column: span 1;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  .reservations-date-inputs {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    align-items: center;
+  }
+  .reservations-date-inputs span {
+    font-size: 13px;
+  }
+  .reservations-date-inputs input {
+    flex: 1;
+    min-width: 0;
+    width: 100% !important;
+    box-sizing: border-box;
+    padding: 10px !important;
+    border-radius: 12px !important;
+    border: 1.5px solid var(--city-border) !important;
+  }
+  .branches-toolbar .cities-export {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .branches-toolbar .cities-export button {
+    flex: 1;
+    min-width: 80px;
+    padding: 10px 4px;
+    font-size: 12px;
   }
 }

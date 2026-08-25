@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import {
@@ -11,6 +12,8 @@ import {
   FaSignOutAlt,
   FaUsers,
   FaUserShield,
+  FaBars,
+  FaTimes
 } from 'react-icons/fa'
 import { useAuthStore } from '../../../store/authStore'
 import accessConfig from '../../../mocks/adminAccessConfig.json'
@@ -31,6 +34,7 @@ const MODULE_ICONS = {
 }
 
 export default function ManagementSidebar({ branchOnly = false }) {
+  const [isOpen, setIsOpen] = useState(false)
   const { t } = useTranslation()
   const navigate = useNavigate()
   const usuario = useAuthStore((state) => state.usuario)
@@ -47,11 +51,33 @@ export default function ManagementSidebar({ branchOnly = false }) {
   }
 
   return (
-    <aside className="management-sidebar">
-      <div className="management-brand">
-        <span className="management-brand__mark">
-          <img src={logo} alt="Drivique" />
-        </span>
+    <>
+      <div className="management-mobile-topbar">
+        <div className="mobile-brand">
+          <img src={logo} alt="Drivique Logo" />
+          <strong>DRIVIQUE</strong>
+        </div>
+        <button 
+          className="management-mobile-btn" 
+          onClick={() => setIsOpen(!isOpen)}
+          aria-label={isOpen ? "Cerrar menú" : "Abrir menú"}
+        >
+          {isOpen ? <FaTimes /> : <FaBars />}
+        </button>
+      </div>
+
+      {isOpen && (
+        <div 
+          className="management-sidebar-overlay" 
+          onClick={() => setIsOpen(false)}
+        />
+      )}
+
+      <aside className={`management-sidebar ${isOpen ? 'is-open' : ''}`}>
+        <div className="management-brand">
+          <span className="management-brand__mark">
+            <img src={logo} alt="Drivique" />
+          </span>
         <div>
           <strong>Drivique</strong>
           <small>{t('admin.management', 'Gestión')}</small>
@@ -79,5 +105,6 @@ export default function ManagementSidebar({ branchOnly = false }) {
         <FaSignOutAlt /> {t('admin.logout', 'Cerrar sesión')}
       </button>
     </aside>
+    </>
   )
 }
