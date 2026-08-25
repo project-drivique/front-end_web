@@ -69,7 +69,7 @@ export default function ManagementSidebar({ branchOnly = false }) {
               className={({ isActive }) => `management-nav__item ${isActive ? 'is-active' : ''}`}
             >
               <Icon aria-hidden="true" />
-              <span>{t(key === 'cities' ? 'admin.cities.title' : `admin.${key}`)}</span>
+              <span>{t(key === 'cities' ? 'admin.cities.title' : key === 'contracts' ? 'admin.nav.contracts' : `admin.${key}`)}</span>
             </NavLink>
           )
         })}
