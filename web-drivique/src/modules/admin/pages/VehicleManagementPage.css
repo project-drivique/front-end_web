@@ -1,93 +1,29 @@
-.fleet-toolbar{display:grid;grid-template-columns:minmax(220px,1fr) 190px 170px auto;gap:10px}.fleet-toolbar>select,.fleet-modal select{border:1px solid var(--city-border);border-radius:11px;padding:0 11px;background:var(--city-bg);color:var(--city-text);font:inherit}.fleet-table{min-width:1200px!important}.fleet-vehicle{display:flex;align-items:center;gap:10px}.fleet-vehicle img,.fleet-vehicle>span{width:54px;height:40px;border-radius:9px;object-fit:cover;background:var(--city-soft);display:grid;place-items:center;color:#2563eb}.fleet-vehicle div{display:flex;flex-direction:column}.fleet-vehicle small{color:var(--city-muted)}.fleet-state{padding:5px 9px;border-radius:999px;font-size:11px;font-weight:800;white-space:nowrap}.fleet-state.is-disponible{background:#dcfce7;color:#15803d}.fleet-state.is-reservado{background:#fef3c7;color:#92400e}.fleet-state.is-mantenimiento{background:#fee2e2;color:#b91c1c}.fleet-modal{width:min(900px,100%);max-height:92vh;overflow:auto}.fleet-modal fieldset{border:1px solid var(--city-border);border-radius:14px;padding:16px;margin:15px 0}.fleet-modal legend{font-size:12px;font-weight:900;color:#2563eb;padding:0 7px}.fleet-form-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.fleet-modal label{display:block;font-size:12px;font-weight:800}.fleet-modal input:not([type=file]),.fleet-modal textarea{display:block;width:100%;box-sizing:border-box;border:1px solid var(--city-border);background:var(--city-bg);color:var(--city-text);border-radius:10px;padding:10px;margin-top:6px}.fleet-modal textarea{min-height:75px;resize:vertical}.fleet-modal label>small{display:block;color:#2563eb;margin-top:4px}.fleet-insurances{margin-top:14px}.fleet-insurances>div{display:grid;grid-template-columns:1fr 150px;gap:9px}.fleet-insurances>button{margin-top:9px;border:0;background:transparent;color:#2563eb;font-weight:800;cursor:pointer}.fleet-upload{border:1px dashed #60a5fa;border-radius:12px;padding:18px!important;text-align:center;color:#2563eb;cursor:pointer}.fleet-upload input{display:none}.fleet-upload svg{margin-right:8px}.fleet-images{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}.fleet-images>div{position:relative}.fleet-images img{width:120px;height:78px;border-radius:10px;object-fit:cover}.fleet-images button{position:absolute;right:4px;top:4px;border:0;border-radius:50%;background:#fff;color:#b91c1c;width:22px;height:22px;cursor:pointer}@media(max-width:1050px){.fleet-toolbar{grid-template-columns:1fr 1fr}.fleet-toolbar .cities-search,.fleet-toolbar .cities-export{grid-column:1/-1}}@media(max-width:700px){.fleet-toolbar,.fleet-form-grid{grid-template-columns:1fr}.fleet-toolbar .cities-search,.fleet-toolbar .cities-export{grid-column:auto}.fleet-insurances>div{grid-template-columns:1fr}}
+.fleet-toolbar{display:grid;grid-template-columns:minmax(220px,1fr) 190px 170px auto;gap:10px}.fleet-modal select{border:1px solid var(--city-border);border-radius:11px;padding:0 11px;background:var(--city-bg);color:var(--city-text);font:inherit}.fleet-table{min-width:1200px!important}.fleet-vehicle{display:flex;align-items:center;gap:10px}.fleet-vehicle img,.fleet-vehicle>span{width:54px;height:40px;border-radius:9px;object-fit:cover;background:var(--city-soft);display:grid;place-items:center;color:#2563eb}.fleet-vehicle div{display:flex;flex-direction:column}.fleet-vehicle small{color:var(--city-muted)}.fleet-state{padding:5px 9px;border-radius:999px;font-size:11px;font-weight:800;white-space:nowrap}.fleet-state.is-disponible{background:#dcfce7;color:#15803d}.fleet-state.is-reservado{background:#fef3c7;color:#92400e}.fleet-state.is-mantenimiento{background:#fee2e2;color:#b91c1c}.fleet-modal{width:min(900px,100%);max-height:92vh;overflow:auto}.fleet-modal fieldset{border:1px solid var(--city-border);border-radius:14px;padding:16px;margin:15px 0}.fleet-modal legend{font-size:12px;font-weight:900;color:#2563eb;padding:0 7px}.fleet-form-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.fleet-modal label{display:block;font-size:12px;font-weight:800}.fleet-modal input:not([type=file]),.fleet-modal textarea{display:block;width:100%;box-sizing:border-box;border:1px solid var(--city-border);background:var(--city-bg);color:var(--city-text);border-radius:10px;padding:10px;margin-top:6px}.fleet-modal textarea{min-height:75px;resize:vertical}.fleet-modal label>small{display:block;color:#2563eb;margin-top:4px}.fleet-insurances{margin-top:14px}.fleet-insurances>div{display:grid;grid-template-columns:1fr 150px;gap:9px}.fleet-insurances>button{margin-top:9px;border:0;background:transparent;color:#2563eb;font-weight:800;cursor:pointer}.fleet-upload{border:1px dashed #60a5fa;border-radius:12px;padding:18px!important;text-align:center;color:#2563eb;cursor:pointer}.fleet-upload input{display:none}.fleet-upload svg{margin-right:8px}.fleet-images{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}.fleet-images>div{position:relative}.fleet-images img{width:120px;height:78px;border-radius:10px;object-fit:cover}.fleet-images button{position:absolute;right:4px;top:4px;border:0;border-radius:50%;background:#fff;color:#b91c1c;width:22px;height:22px;cursor:pointer}@media(max-width:1050px){.fleet-toolbar{grid-template-columns:1fr 1fr}.fleet-toolbar .cities-search,.fleet-toolbar .cities-export{grid-column:1/-1}}@media(max-width:700px){.fleet-toolbar,.fleet-form-grid{grid-template-columns:1fr}.fleet-toolbar .cities-search,.fleet-toolbar .cities-export{grid-column:auto}.fleet-insurances>div{grid-template-columns:1fr}}
 .fleet-insurances>div{grid-template-columns:minmax(0,1fr) 150px 34px;align-items:end}.fleet-insurances>div>button{height:38px;border:1px solid #fecaca;border-radius:9px;background:#fff;color:#b91c1c;cursor:pointer}@media(max-width:700px){.fleet-insurances>div{grid-template-columns:minmax(0,1fr) minmax(0,1fr) 34px}}
-
-
-@media (max-width: 760px) {
-  .cities-topbar {
-    align-items: center !important;
-    flex-direction: row !important;
-    flex-wrap: nowrap !important;
-    gap: 10px !important;
-  }
-  .cities-topbar > div:first-child {
-    flex: 1 1 0% !important;
-    min-width: 0 !important;
-  }
-  .cities-topbar h1 {
-    font-size: 18px !important;
-    line-height: 1.1 !important;
-    margin: 2px 0 !important;
-    white-space: normal !important;
-  }
-  .cities-subtitle {
-    font-size: 11px !important;
-    display: -webkit-box !important;
-    -webkit-line-clamp: 2 !important;
-    -webkit-box-orient: vertical !important;
-    overflow: hidden !important;
-  }
-  .cities-topbar__actions {
-    flex: 0 0 auto !important;
-    display: flex !important;
-    align-items: center !important;
-    gap: 6px !important;
-    width: auto !important;
-  }
-  .cities-primary, .cities-danger {
-    padding: 8px 12px !important;
-    font-size: 11px !important;
-    width: auto !important;
+@media (max-width: 768px) {
+  .fleet-toolbar .cities-search, .fleet-toolbar select {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
     flex: none !important;
   }
-  
-  /* TOOLBAR AND FILTERS (Side-by-side) */
-  .cities-toolbar {
-    flex-direction: row !important;
-    flex-wrap: wrap !important;
-    gap: 8px !important;
+}
+@media (max-width: 768px) {
+  .fleet-toolbar {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
   }
-  .cities-search {
-    flex: 1 1 100% !important; /* Search remains full width */
+  .fleet-toolbar .cities-search {
+    grid-column: 1 / -1;
   }
-  .cities-toolbar select {
-    flex: 1 1 calc(33% - 8px) !important; /* Side-by-side selects */
-    min-width: 110px !important;
-    padding: 10px 8px !important;
-    font-size: 11px !important;
+  .fleet-toolbar select {
+    grid-column: span 1;
   }
-  
-  /* EXPORT BUTTONS */
-  .cities-export {
-    flex: 1 1 100% !important;
-    justify-content: space-between !important;
-    gap: 6px !important;
-    margin-top: 4px !important;
-  }
-  .cities-export button {
-    flex: 1 !important;
-    font-size: 11px !important;
-    padding: 8px 4px !important;
-  }
-  
-  /* DATE INPUTS (Side-by-side) */
-  .reservations-date-inputs {
-    flex-direction: row !important;
-    flex-wrap: nowrap !important;
-    align-items: center !important;
-    gap: 10px !important;
-    width: 100% !important;
-    margin-top: 4px !important;
-  }
-  .reservations-date-inputs label {
-    flex: 1 !important;
-    font-size: 11px !important;
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    gap: 4px !important;
-  }
-  .reservations-date-inputs input {
-    width: 100% !important;
-    font-size: 11px !important;
-    padding: 8px !important;
+  .fleet-toolbar .cities-export {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
   }
 }

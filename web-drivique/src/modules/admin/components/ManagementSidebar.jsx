@@ -1,20 +1,20 @@
-import { useState, useEffect } from 'react'
-import { NavLink, useNavigate, useLocation } from 'react-router-dom'
+import { useState } from 'react'
+import { NavLink, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import {
-  FaBars,
   FaBuilding,
   FaCar,
   FaChartPie,
   FaCity,
   FaClipboardList,
-  FaExclamationTriangle,
   FaFileContract,
   FaShieldAlt,
   FaSignOutAlt,
-  FaTimes,
   FaUsers,
   FaUserShield,
+  FaExclamationTriangle,
+  FaBars,
+  FaTimes
 } from 'react-icons/fa'
 import { useAuthStore } from '../../../store/authStore'
 import accessConfig from '../../../mocks/adminAccessConfig.json'
@@ -29,38 +29,18 @@ const MODULE_ICONS = {
   roles: FaUserShield,
   reservations: FaClipboardList,
   contracts: FaFileContract,
+  incidents: FaExclamationTriangle,
   cities: FaCity,
   branches: FaBuilding,
-  incidents: FaExclamationTriangle,
   audit: FaShieldAlt,
 }
 
-const MODULE_FALLBACK_LABELS = {
-  dashboard: 'Inicio',
-  vehicles: 'Vehículos',
-  users: 'Usuarios',
-  roles: 'Roles y Cuentas',
-  reservations: 'Reservas',
-  contracts: 'Contratos',
-  cities: 'Gestión de ciudades',
-  branches: 'Sucursales',
-  incidents: 'Incidencias',
-  audit: 'Auditoría',
-}
-
 export default function ManagementSidebar({ branchOnly = false }) {
+  const [isOpen, setIsOpen] = useState(false)
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const location = useLocation()
   const usuario = useAuthStore((state) => state.usuario)
   const logout = useAuthStore((state) => state.logout)
-  
-  const [isMobileOpen, setIsMobileOpen] = useState(false)
-
-  // Cerrar menú al cambiar de ruta
-  useEffect(() => {
-    setIsMobileOpen(false)
-  }, [location.pathname])
 
   const isBranchManager = branchOnly || usuario?.rol === ROLES.BRANCH_MANAGER || usuario?.rol === 'encargado' || usuario?.rol === 'encargado_sucursal'
   const roleKey = isBranchManager ? ROLES.BRANCH_MANAGER : ROLES.ADMIN
@@ -74,31 +54,32 @@ export default function ManagementSidebar({ branchOnly = false }) {
 
   return (
     <>
-      {/* Cabecera Móvil (solo visible en pantallas pequeñas) */}
-      <div className="management-mobile-header">
-        <div className="management-mobile-brand">
-          <img src={logo} alt="Drivique" />
+      <div className="management-mobile-topbar">
+        <div className="mobile-brand">
+          <img src={logo} alt="Drivique Logo" />
           <strong>DRIVIQUE</strong>
         </div>
         <button 
-          className="management-hamburger" 
-          onClick={() => setIsMobileOpen(!isMobileOpen)}
-          aria-label="Alternar menú"
+          className="management-mobile-btn" 
+          onClick={() => setIsOpen(!isOpen)}
+          aria-label={isOpen ? "Cerrar menú" : "Abrir menú"}
         >
-          {isMobileOpen ? <FaTimes /> : <FaBars />}
+          {isOpen ? <FaTimes /> : <FaBars />}
         </button>
       </div>
 
-      {/* Overlay para móviles */}
-      {isMobileOpen && (
-        <div className="management-overlay" onClick={() => setIsMobileOpen(false)}></div>
+      {isOpen && (
+        <div 
+          className="management-sidebar-overlay" 
+          onClick={() => setIsOpen(false)}
+        />
       )}
 
-      <aside className={`management-sidebar ${isMobileOpen ? 'is-open' : ''}`}>
-      <div className="management-brand">
-        <span className="management-brand__mark">
-          <img src={logo} alt="Drivique" />
-        </span>
+      <aside className={`management-sidebar ${isOpen ? 'is-open' : ''}`}>
+        <div className="management-brand">
+          <span className="management-brand__mark">
+            <img src={logo} alt="Drivique" />
+          </span>
         <div>
           <strong>Drivique</strong>
           <small>{t('admin.management', 'Gestión')}</small>
@@ -108,22 +89,6 @@ export default function ManagementSidebar({ branchOnly = false }) {
       <nav className="management-nav" aria-label={t('admin.navigation', 'Navegación')}>
         {navigation.map(({ key, route }) => {
           const Icon = MODULE_ICONS[key] || FaChartPie
-          const fallback = MODULE_FALLBACK_LABELS[key] || key
-          const navLabels = {
-            dashboard: 'admin.nav.dashboard',
-            vehicles: 'admin.nav.vehicles',
-            users: 'admin.nav.users',
-            roles: 'admin.nav.roles',
-            reservations: 'admin.nav.reservations',
-            contracts: 'admin.nav.contracts',
-            cities: 'admin.nav.cities',
-            branches: 'admin.nav.branches',
-            incidents: 'admin.nav.incidents',
-            audit: 'admin.nav.audit',
-          }
-          const transKey = navLabels[key] || `admin.nav.${key}`
-          const label = t(transKey, fallback)
-
           return (
             <NavLink
               key={key}
@@ -132,7 +97,7 @@ export default function ManagementSidebar({ branchOnly = false }) {
               className={({ isActive }) => `management-nav__item ${isActive ? 'is-active' : ''}`}
             >
               <Icon aria-hidden="true" />
-              <span>{label}</span>
+              <span>{t(key === 'cities' ? 'admin.cities.title' : key === 'contracts' ? 'admin.nav.contracts' : key === 'incidents' ? 'admin.incidents.title' : `admin.${key}`, key === 'incidents' ? 'Incidencias' : undefined)}</span>
             </NavLink>
           )
         })}
