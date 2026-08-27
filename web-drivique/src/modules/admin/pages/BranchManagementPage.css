@@ -1,2 +1,92 @@
 .branches-toolbar{display:grid;grid-template-columns:minmax(230px,1fr) 175px 185px auto;gap:10px}.branches-modal select{border:1px solid var(--city-border);border-radius:11px;padding:0 11px;background:var(--city-bg);color:var(--city-text);font:inherit}.branches-table{min-width:1250px!important}.branches-table td:nth-child(3){max-width:240px}.branches-cash,.branches-linked{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:800;color:var(--city-muted);white-space:nowrap}.branches-cash.is-authorized{color:#15803d;background:#dcfce7;border-radius:999px;padding:5px 9px}.branches-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:15px}.branches-form-grid label{font-size:12px;font-weight:800}.branches-form-grid select{display:block;width:100%;padding:11px;margin-top:6px}.branches-cash-check{display:flex!important;align-items:flex-start;gap:10px;border:1px solid #93c5fd;border-radius:12px;background:var(--city-soft);padding:13px;margin-top:18px!important}.branches-cash-check input{margin-top:3px}.branches-cash-check span{display:flex;flex-direction:column}.branches-cash-check small{color:var(--city-muted);font-weight:500;margin-top:3px}.branches-modal{width:min(620px,100%)}.cities-primary:disabled{opacity:.55;cursor:not-allowed}@media(max-width:1100px){.branches-toolbar{grid-template-columns:1fr 1fr}.branches-toolbar .cities-search,.branches-toolbar .cities-export{grid-column:1/-1}}@media(max-width:650px){.branches-toolbar,.branches-form-grid{grid-template-columns:1fr}.branches-toolbar .cities-search,.branches-toolbar .cities-export{grid-column:auto}}
 
+
+@media (max-width: 760px) {
+  .cities-topbar {
+    align-items: center !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    gap: 10px !important;
+  }
+  .cities-topbar > div:first-child {
+    flex: 1 1 0% !important;
+    min-width: 0 !important;
+  }
+  .cities-topbar h1 {
+    font-size: 18px !important;
+    line-height: 1.1 !important;
+    margin: 2px 0 !important;
+    white-space: normal !important;
+  }
+  .cities-subtitle {
+    font-size: 11px !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+  }
+  .cities-topbar__actions {
+    flex: 0 0 auto !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    width: auto !important;
+  }
+  .cities-primary, .cities-danger {
+    padding: 8px 12px !important;
+    font-size: 11px !important;
+    width: auto !important;
+    flex: none !important;
+  }
+  
+  /* TOOLBAR AND FILTERS (Side-by-side) */
+  .cities-toolbar {
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+  .cities-search {
+    flex: 1 1 100% !important; /* Search remains full width */
+  }
+  .cities-toolbar select {
+    flex: 1 1 calc(33% - 8px) !important; /* Side-by-side selects */
+    min-width: 110px !important;
+    padding: 10px 8px !important;
+    font-size: 11px !important;
+  }
+  
+  /* EXPORT BUTTONS */
+  .cities-export {
+    flex: 1 1 100% !important;
+    justify-content: space-between !important;
+    gap: 6px !important;
+    margin-top: 4px !important;
+  }
+  .cities-export button {
+    flex: 1 !important;
+    font-size: 11px !important;
+    padding: 8px 4px !important;
+  }
+  
+  /* DATE INPUTS (Side-by-side) */
+  .reservations-date-inputs {
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    gap: 10px !important;
+    width: 100% !important;
+    margin-top: 4px !important;
+  }
+  .reservations-date-inputs label {
+    flex: 1 !important;
+    font-size: 11px !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 4px !important;
+  }
+  .reservations-date-inputs input {
+    width: 100% !important;
+    font-size: 11px !important;
+    padding: 8px !important;
+  }
+}
