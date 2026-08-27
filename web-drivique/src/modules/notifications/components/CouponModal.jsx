@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import { FaCheckCircle, FaCopy, FaTicketAlt } from 'react-icons/fa'
+import { useTranslation } from 'react-i18next'
 
 export default function CouponModal({ cupon, onClose, onAplicar }) {
+  const { t } = useTranslation()
   const [copiado, setCopiado] = useState(false)
 
   if (!cupon) return null
@@ -53,7 +55,7 @@ export default function CouponModal({ cupon, onClose, onAplicar }) {
             width: 60,
             height: 60,
             borderRadius: '50%',
-            background: '#eff6ff',
+            background: 'var(--bg-item, #eff6ff)',
             color: '#2563eb',
             display: 'flex',
             alignItems: 'center',
@@ -67,10 +69,10 @@ export default function CouponModal({ cupon, onClose, onAplicar }) {
         </div>
 
         <h2 style={{ fontSize: 22, fontWeight: 900, color: 'var(--texto-primary, #0f172a)', margin: '0 0 8px' }}>
-          ¡Cupón Activado con Éxito!
+          {t('promotions.modal.successTitle')}
         </h2>
         <p style={{ fontSize: 13, color: 'var(--texto-second, #64748b)', margin: '0 0 20px', lineHeight: 1.5 }}>
-          Has desbloqueado el cupón de recompensa por tus logros en Drivique.
+          {t('promotions.modal.successText')}
         </p>
 
         {/* Caja del código */}
@@ -87,7 +89,7 @@ export default function CouponModal({ cupon, onClose, onAplicar }) {
             marginBottom: 20,
           }}
         >
-          <span style={{ fontSize: 22, fontWeight: 900, letterSpacing: '0.1em', color: '#1e3a8a' }}>
+          <span style={{ fontSize: 22, fontWeight: 900, letterSpacing: '0.1em', color: 'var(--texto-primary, #1e3a8a)' }}>
             {cupon.codigo}
           </span>
           <button
@@ -108,12 +110,12 @@ export default function CouponModal({ cupon, onClose, onAplicar }) {
             }}
           >
             {copiado ? <FaCheckCircle /> : <FaCopy />}
-            {copiado ? 'Copiado' : 'Copiar'}
+            {copiado ? t('promotions.modal.copied') : t('promotions.modal.copy')}
           </button>
         </div>
 
         <p style={{ fontSize: 12, color: 'var(--texto-second, #64748b)', margin: '0 0 24px' }}>
-          Usa este código en el resumen de reserva para obtener tu descuento.
+          {t('promotions.modal.usageHint')}
         </p>
 
         <button
@@ -131,7 +133,7 @@ export default function CouponModal({ cupon, onClose, onAplicar }) {
             boxShadow: '0 8px 24px rgba(37, 99, 235, 0.25)',
           }}
         >
-          ¡Excelente!
+          {t('promotions.modal.confirm')}
         </button>
       </div>
     </div>
