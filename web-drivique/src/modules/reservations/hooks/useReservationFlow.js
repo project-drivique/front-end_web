@@ -8,6 +8,7 @@ import { documentsService } from '@/services/documentsService'
 import { generarReferenciaUnica, aCentavos, construirUrlCheckout } from '@/services/wompiService'
 import { RECARGOS_LOGISTICOS, SUCURSALES, CIUDADES } from '../../catalog/constants'
 import { branchManagementService } from '../../../services/branchManagementService'
+import { promotionManagementService } from '../../../services/promotionManagementService'
 import VEHICULOS_MOCK from '@/mocks/vehicles.json'
 
 export const TOTAL_PASOS = 3
@@ -42,6 +43,7 @@ export function useReservationFlow() {
   const [pantalla, setPantalla] = useState(savedState?.pantalla || 1)
   const [seguroIdx, setSeguroIdx] = useState(savedState?.seguroIdx !== undefined ? savedState.seguroIdx : null)
   const [serviciosSeleccionados, setServiciosSeleccionados] = useState(savedState?.serviciosSeleccionados || [])
+  const [appliedPromotion, setAppliedPromotion] = useState(null)
   const [reserva, setReserva] = useState(savedState?.reserva || {
     fechaInicio: '', fechaFin: '',
     horaInicio: '', horaFin: '',
@@ -279,6 +281,10 @@ export function useReservationFlow() {
     const subtotalPreIva = subtotal + cargosAdmin + recargoLogistico
     const ivaCop = Math.round(subtotalPreIva * 0.19)
     const totalCop = subtotalPreIva + ivaCop
+    const discountCop = appliedPromotion
+      ? Math.min(totalCop, appliedPromotion.tipoDescuento === 'porcentaje' ? Math.round(totalCop * appliedPromotion.valorDescuento / 100) : appliedPromotion.valorDescuento)
+      : 0
+    const finalTotalCop = totalCop - discountCop
 
     const referencia = generarReferenciaUnica()
 
@@ -311,7 +317,8 @@ export function useReservationFlow() {
       fechaReserva: new Date().toISOString(),
       datosForm,
       reservaDetalles: reserva,
-      total: totalCop,
+      total: finalTotalCop,
+      promocion: appliedPromotion ? { id: appliedPromotion.id, codigo: appliedPromotion.codigo, descuento: discountCop } : null,
       seguroIdx,
       serviciosSeleccionados,
     })
@@ -319,7 +326,7 @@ export function useReservationFlow() {
     if (reservaGuardada.fechaLimitePago) setFechaLimitePago(reservaGuardada.fechaLimitePago)
     sessionStorage.setItem('current_wompi_reference', referencia)
     setReservaCreada(reservaGuardada)
-    setDatosPago({ referencia, amountInCents: aCentavos(totalCop) })
+    setDatosPago({ referencia, amountInCents: aCentavos(finalTotalCop) })
 
     if (reserva.metodoPago === 'efectivo') {
       setContratoFirmado(false)
@@ -378,7 +385,19 @@ export function useReservationFlow() {
   const recargoLogT = (RECARGOS_LOGISTICOS[reserva.sucursalRetiro] || 0) + (RECARGOS_LOGISTICOS[reserva.sucursalDevolucion] || 0)
   const subtotalPreIvaT = subtotalD + subtotalS + subtotalSv + cargosAdminT + recargoLogT
   const ivaT = Math.round(subtotalPreIvaT * 0.19)
-  const totalReserva = subtotalPreIvaT + ivaT
+  const totalReservaBase = subtotalPreIvaT + ivaT
+  const descuentoPromocion = appliedPromotion
+    ? Math.min(totalReservaBase, appliedPromotion.tipoDescuento === 'porcentaje' ? Math.round(totalReservaBase * appliedPromotion.valorDescuento / 100) : appliedPromotion.valorDescuento)
+    : 0
+  const totalReserva = totalReservaBase - descuentoPromocion
+
+  const aplicarPromocion = (codigo) => {
+    const result = promotionManagementService.validateCode(codigo, { total: totalReservaBase, category: vehiculo?.categoria, user: usuario })
+    setAppliedPromotion(result.promotion)
+    return result
+  }
+
+  const quitarPromocion = () => setAppliedPromotion(null)
 
   return {
     vehiculo, pantalla, setPantalla, reserva, setReserva, cambiarReserva,
@@ -398,7 +417,8 @@ export function useReservationFlow() {
     cityObj, opcionesEntrega, opcionesDevolucion,
     irSiguiente, irAtras, handleReservar, handleContratoFirmado,
     handlePagarConWompi, handlePagoEfectivo,
-    totalReserva, diasTotal, TOTAL_PASOS,
+    totalReserva, totalReservaBase, descuentoPromocion, diasTotal, TOTAL_PASOS,
+    appliedPromotion, aplicarPromocion, quitarPromocion,
     usuario,
   }
 }

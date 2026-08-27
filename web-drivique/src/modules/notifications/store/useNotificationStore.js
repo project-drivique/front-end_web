@@ -1,12 +1,14 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import {
   NOTIFICACIONES_GENERALES_INITIAL,
-  CUPONES_INITIAL,
   PROMOS_VEHICULOS_INITIAL,
 } from '../data/notifications.dummy'
+import { useAuthStore } from '../../../store/authStore'
+import { promotionManagementService } from '../../../services/promotionManagementService'
 
 const STORAGE_KEY_NOTIFS = 'drivique_user_notifications'
 const STORAGE_KEY_CUPONES = 'drivique_user_cupones'
+const SESSION_TIME = Date.now()
 
 function leerStorage(key, inicial) {
   if (typeof window === 'undefined') return inicial
@@ -24,16 +26,17 @@ function guardarStorage(key, data) {
   if (typeof window === 'undefined') return
   try {
     localStorage.setItem(key, JSON.stringify(data))
-  } catch {}
+  } catch {
+    return
+  }
 }
 
 export function useNotificationStore() {
+  const usuario = useAuthStore((state) => state.usuario)
   const [notificaciones, setNotificaciones] = useState(() =>
     leerStorage(STORAGE_KEY_NOTIFS, NOTIFICACIONES_GENERALES_INITIAL)
   )
-  const [cupones, setCupones] = useState(() =>
-    leerStorage(STORAGE_KEY_CUPONES, CUPONES_INITIAL)
-  )
+  const [cupones, setCupones] = useState(() => promotionManagementService.listPublished(usuario))
   const [promosVehiculos] = useState(PROMOS_VEHICULOS_INITIAL)
 
   // Guarda en localStorage cuando cambie
@@ -45,9 +48,15 @@ export function useNotificationStore() {
     guardarStorage(STORAGE_KEY_CUPONES, cupones)
   }, [cupones])
 
+  useEffect(() => {
+    const refresh = () => setCupones(promotionManagementService.listPublished(usuario))
+    window.addEventListener(promotionManagementService.eventName, refresh)
+    return () => window.removeEventListener(promotionManagementService.eventName, refresh)
+  }, [usuario])
+
   // Filtrado en tiempo real de notificaciones generales no expiradas
   const notificacionesVigentes = useMemo(() => {
-    const ahora = Date.now()
+    const ahora = SESSION_TIME
     return notificaciones.filter((n) => {
       if (!n.expiracionMs) return true
       return n.expiracionMs > ahora
@@ -56,7 +65,7 @@ export function useNotificationStore() {
 
   // Cupones vigentes (no expirados)
   const cuponesVigentes = useMemo(() => {
-    const ahora = Date.now()
+    const ahora = SESSION_TIME
     return cupones.filter((c) => {
       if (!c.expiracionMs) return true
       return c.expiracionMs > ahora
@@ -65,7 +74,7 @@ export function useNotificationStore() {
 
   // Promos de vehículos vigentes
   const promosVigentes = useMemo(() => {
-    const ahora = Date.now()
+    const ahora = SESSION_TIME
     return promosVehiculos.filter((p) => {
       if (!p.expiracionMs) return true
       return p.expiracionMs > ahora
