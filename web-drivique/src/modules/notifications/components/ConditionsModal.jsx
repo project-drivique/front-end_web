@@ -1,8 +1,10 @@
 import { FaTimes, FaInfoCircle, FaCalendarAlt, FaCar, FaTag } from 'react-icons/fa'
 import { formatCurrency } from '@/utils/currencyUtils'
 import { useLanding } from '@/modules/landing/LandingContext'
+import { useTranslation } from 'react-i18next'
 
 export default function ConditionsModal({ cupon, onClose }) {
+  const { t } = useTranslation()
   const { moneda } = useLanding()
 
   if (!cupon) return null
@@ -62,7 +64,7 @@ export default function ConditionsModal({ cupon, onClose }) {
               width: 44,
               height: 44,
               borderRadius: 14,
-              background: '#eff6ff',
+              background: 'var(--bg-item, #eff6ff)',
               color: '#2563eb',
               display: 'flex',
               alignItems: 'center',
@@ -74,7 +76,7 @@ export default function ConditionsModal({ cupon, onClose }) {
           </div>
           <div>
             <h3 style={{ fontSize: 18, fontWeight: 900, color: 'var(--texto-primary, #0f172a)', margin: 0 }}>
-              Condiciones del Cupón
+              {t('promotions.modal.conditionsTitle')}
             </h3>
             <span style={{ fontSize: 12, color: 'var(--texto-second, #64748b)' }}>
               {cupon.titulo}
@@ -97,24 +99,24 @@ export default function ConditionsModal({ cupon, onClose }) {
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13, color: 'var(--texto-primary, #0f172a)' }}>
             <FaTag color="#2563eb" />
-            <span><strong>Descuento:</strong> {cupon.descuentoTexto}</span>
+            <span><strong>{t('promotions.modal.discount')}:</strong> {cupon.descuentoTexto}</span>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13, color: 'var(--texto-primary, #0f172a)' }}>
             <FaCar color="#2563eb" />
-            <span><strong>Categoría aplicable:</strong> {cupon.categoriaVehiculo}</span>
+            <span><strong>{t('promotions.modal.category')}:</strong> {t(`promotions.categories.${cupon.categoriaVehiculo}`, cupon.categoriaVehiculo)}</span>
           </div>
 
           {cupon.reservaMinima > 0 && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13, color: 'var(--texto-primary, #0f172a)' }}>
               <FaTag color="#2563eb" />
-              <span><strong>Reserva mínima:</strong> {formatCurrency(cupon.reservaMinima, moneda)}</span>
+              <span><strong>{t('promotions.modal.minimum')}:</strong> {formatCurrency(cupon.reservaMinima, moneda)}</span>
             </div>
           )}
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13, color: 'var(--texto-primary, #0f172a)' }}>
             <FaCalendarAlt color="#2563eb" />
-            <span><strong>Otorgado el:</strong> {cupon.fechaOtorgado}</span>
+            <span><strong>{t('promotions.modal.granted')}:</strong> {cupon.fechaOtorgado}</span>
           </div>
         </div>
 
@@ -136,7 +138,7 @@ export default function ConditionsModal({ cupon, onClose }) {
             cursor: 'pointer',
           }}
         >
-          Entendido
+          {t('promotions.modal.understood')}
         </button>
       </div>
     </div>
