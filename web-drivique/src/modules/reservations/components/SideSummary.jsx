@@ -1,11 +1,14 @@
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLanding } from '../../landing/LandingContext'
 import { formatCurrency } from '@/utils/currencyUtils'
 import { RECARGOS_LOGISTICOS } from '../../catalog/constants'
 
-export default function ResumenLateral({ vehiculo, reserva, seguroIdx, serviciosSeleccionados = [], onEditar, onContinuar, pantalla = 1, c }) {
+export default function ResumenLateral({ vehiculo, reserva, seguroIdx, serviciosSeleccionados = [], onEditar, onContinuar, pantalla = 1, c, appliedPromotion, onApplyPromotion, onRemovePromotion }) {
   const { t, i18n } = useTranslation()
   const { moneda } = useLanding();
+  const [promotionCode, setPromotionCode] = useState('')
+  const [promotionError, setPromotionError] = useState('')
 
   const editHabilitado = pantalla >= 3
 
@@ -58,6 +61,19 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, servicios
   const subtotalPreIva = subtotalReserva + recargoLogistico;
   const iva = Math.round(subtotalPreIva * 0.19);
   const total = subtotalPreIva + iva;
+  const discount = appliedPromotion
+    ? Math.min(total, appliedPromotion.tipoDescuento === 'porcentaje' ? Math.round(total * appliedPromotion.valorDescuento / 100) : appliedPromotion.valorDescuento)
+    : 0
+  const finalTotal = total - discount
+
+  const applyCode = () => {
+    try {
+      onApplyPromotion(promotionCode)
+      setPromotionError('')
+    } catch (error) {
+      setPromotionError(t(`promotions.validation.${error.message}`))
+    }
+  }
 
   return (
     <aside className="detalle-resumen-lateral" style={{
@@ -211,13 +227,21 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, servicios
           <span style={{ fontWeight: 800, color: c?.textPrimary || '#0f172a' }}>{formatCurrency(iva, moneda)}</span>
         </div>
 
+        <div className="reservation-promotion-box">
+          <label>{t('promotions.codeLabel')}</label>
+          {appliedPromotion ? <div className="reservation-promotion-applied"><div><strong>{appliedPromotion.codigo}</strong><span>{t('promotions.applied')}</span></div><button type="button" onClick={onRemovePromotion}>{t('promotions.remove')}</button></div> : <div className="reservation-promotion-entry"><input value={promotionCode} onChange={(event) => setPromotionCode(event.target.value.toUpperCase())} placeholder={t('promotions.codePlaceholder')} /><button type="button" onClick={applyCode} disabled={!promotionCode.trim()}>{t('promotions.apply')}</button></div>}
+          {promotionError && <p className="reservation-promotion-error">{promotionError}</p>}
+        </div>
+
+        {discount > 0 && <div className="reservation-discount-row"><span>{t('promotions.discount')}</span><strong>-{formatCurrency(discount, moneda)}</strong></div>}
+
         {/* Total Box */}
         <div style={{ background: c?.subCardBg || '#f8fafc', border: `1px solid ${c?.cardBorder || '#e2e8f0'}`, borderRadius: 12, padding: '16px' }}>
           <p style={{ fontSize: 11, fontWeight: 800, color: c?.accentText || '#1e3a8a', textTransform: 'uppercase', letterSpacing: '0.07em', margin: '0 0 4px' }}>
             {t('vehiculo.finalTotal', 'Total Final')}
           </p>
           <p style={{ fontSize: 24, fontWeight: 900, color: c?.accentText || '#1e3a8a', margin: '0 0 6px' }}>
-            {formatCurrency(total, moneda)}
+            {formatCurrency(finalTotal, moneda)}
           </p>
           <p style={{ fontSize: 10, color: c?.textSecondary || '#64748b', margin: 0 }}>
             {t('vehiculo.totalIncludesVat', 'El total final incluye IVA y cargos adicionales')}
