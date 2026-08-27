@@ -1994,6 +1994,13 @@
       "descriptionPlaceholder": "Describe the failure symptoms or repair work required...",
       "createBtn": "Create Report"
     },
+    "promotions": {
+      "title": "Promotions and coupons", "subtitle": "Create controlled campaigns and manage their application rules.", "create": "New promotion", "search": "Search by code, name or condition...", "filterStatus": "Filter by status", "filterType": "Filter by type", "allStatuses": "All statuses", "allTypes": "All types", "active": "Active", "inactive": "Inactive", "activate": "Activate", "deactivate": "Deactivate", "print": "Print", "results": "promotions found", "emptyTitle": "No promotions", "emptyText": "Create a promotion to publish it to users.", "exportTitle": "Promotions and coupons - Drivique", "formLabel": "Campaign settings", "createTitle": "Create promotion", "editTitle": "Edit promotion", "deleteTitle": "Delete promotion", "deleteText": "Do you want to delete coupon {{code}}?", "publishActive": "Publish as active in Notifications",
+      "fields": { "code": "Code", "name": "Name", "type": "Discount type", "value": "Value", "discount": "Discount", "start": "Valid from", "end": "Valid until", "validity": "Validity", "minimum": "Minimum booking (COP)", "category": "Category", "audience": "Target users", "conditions": "Application conditions", "status": "Status", "actions": "Actions" },
+      "types": { "percentage": "Percentage", "fixed": "Fixed amount" }, "audiences": { "todos": "All users", "nuevos": "New users", "frecuentes": "Frequent customers" },
+      "messages": { "created": "Promotion created and published successfully.", "updated": "Promotion updated.", "activated": "Promotion activated and published.", "deactivated": "Promotion deactivated.", "deleted": "Promotion deleted." },
+      "errors": { "required": "Complete all required fields.", "invalidCode": "The code must contain 4 to 24 letters, numbers, hyphens or underscores.", "duplicate": "A promotion with that code already exists.", "invalidDates": "The end date must be after the start date.", "invalidPercentage": "The percentage must be between 1 and 100.", "invalidValue": "Enter a valid discount amount.", "notFound": "Promotion not found." }
+    },
     "incidentsTitle": "Vehicle Incident Reports",
     "incidentsSubtitle": "Fleet incident control, customer responses, repair prioritization, and traceability.",
     "exportExcel": "Excel",
@@ -2100,6 +2107,7 @@
       "noReviews": "No reviews"
     }
   },
+  "promotions": { "codeLabel": "Do you have a promo code?", "codePlaceholder": "Enter your code", "apply": "Apply", "applied": "Coupon applied", "remove": "Remove", "discount": "Promotional discount", "categories": { "Todos": "All", "SUV": "SUV", "Sedan": "Sedan", "Compacto": "Compact", "Camioneta": "Pickup" }, "modal": { "successTitle": "Coupon activated successfully!", "successText": "You have unlocked this Drivique coupon.", "copied": "Copied", "copy": "Copy", "usageHint": "Use this code in the booking summary to get your discount.", "confirm": "Great!", "conditionsTitle": "Coupon conditions", "discount": "Discount", "category": "Applicable category", "minimum": "Minimum booking", "granted": "Granted on", "understood": "Got it" }, "validation": { "notFound": "The code does not exist.", "inactive": "This promotion is inactive.", "notStarted": "The promotion has not started yet.", "expired": "The promo code has expired.", "audience": "This coupon is not available for your account.", "minimum": "The booking does not meet the promotion minimum.", "category": "The coupon does not apply to this vehicle category." } },
   "placeholder": {
     "title": "This screen is not implemented yet",
     "subtitle": "We are working to have this section ready as soon as possible.",
