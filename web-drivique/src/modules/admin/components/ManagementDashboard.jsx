@@ -1,32 +1,23 @@
 import { useState } from 'react'
-import { NavLink, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { FaBuilding, FaCar, FaChartPie, FaCheckCircle, FaCity, FaClipboardList, FaDollarSign, FaFileContract, FaShieldAlt, FaSignOutAlt, FaUsers } from 'react-icons/fa'
+import { FaCar, FaCheckCircle, FaClipboardList, FaDollarSign } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import { useAuthStore } from '../../../store/authStore'
 import { accessAuditService } from '../../../services/accessAuditService'
 import { adminDashboardService } from '../../../services/adminDashboardService'
 import { formatCurrency } from '../../../utils/currencyUtils'
-import accessConfig from '../../../mocks/adminAccessConfig.json'
-import { ROLES } from '../../auth/utils/accessControl'
 import MenuConfiguracion from '../../../components/MenuConfiguracion'
-import logo from '../../../assets/logocatalog.png'
 import './ManagementDashboard.css'
 
 import ManagementSidebar from './ManagementSidebar'
 
-const MODULE_ICONS = { dashboard: FaChartPie, vehicles: FaCar, users: FaUsers, reservations: FaClipboardList, contracts: FaFileContract, cities: FaCity, branches: FaBuilding, audit: FaShieldAlt }
 const KPI_ICONS = { monthlyRevenue: FaDollarSign, rentedVehicles: FaCar, availableVehicles: FaCheckCircle, todayDeliveries: FaClipboardList }
 
 export default function ManagementDashboard({ branchOnly = false }) {
   const { t, i18n } = useTranslation()
-  const navigate = useNavigate()
   const { tema, moneda, tasaUSD } = useLanding()
   const usuario = useAuthStore((state) => state.usuario)
-  const logout = useAuthStore((state) => state.logout)
   const [summary] = useState(() => adminDashboardService.getSummary(usuario))
-  const roleKey = branchOnly ? ROLES.BRANCH_MANAGER : ROLES.ADMIN
-  const navigation = accessConfig.dashboardNavigation[roleKey] || []
   const audits = branchOnly ? [] : accessAuditService.list().slice(0, 5)
   const metrics = [
     { key: 'monthlyRevenue', value: formatCurrency(summary.monthlyRevenue, moneda, tasaUSD) },
