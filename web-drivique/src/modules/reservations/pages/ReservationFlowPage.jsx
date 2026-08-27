@@ -65,7 +65,7 @@ export default function ReservationFlowPage() {
     docsVerificados,
     irSiguiente, irAtras, handleReservar, handleContratoFirmado,
     handlePagarConWompi,
-    totalReserva,
+    totalReserva, appliedPromotion, aplicarPromocion, quitarPromocion,
     usuario,
   } = flow
 
@@ -267,7 +267,7 @@ export default function ReservationFlowPage() {
                 className={`detalle-resumen-wrapper${resumenMovilAbierto ? ' abierto' : ''}`}
                 style={{ width: isMobile ? '100%' : '360px', flexShrink: 0 }}
               >
-                <SideSummary c={c} 
+                <SideSummary
                   vehiculo={vehiculo}
                   reserva={reserva}
                   seguroIdx={seguroIdx}
@@ -275,6 +275,9 @@ export default function ReservationFlowPage() {
                   onEditar={abrirModalEditar}
                   pantalla={pantalla}
                   onContinuar={pantalla < 3 ? irSiguiente : null}
+                  appliedPromotion={appliedPromotion}
+                  onApplyPromotion={aplicarPromocion}
+                  onRemovePromotion={quitarPromocion}
                   c={c}
                 />
               </div>
