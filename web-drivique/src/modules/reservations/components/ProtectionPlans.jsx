@@ -64,8 +64,8 @@ export default function PlanesProteccion({ seguroIdx, onSeleccionar, c, dias = 1
         border: `1px solid ${c?.cardBorder || '#e2e8f0'}`,
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, margin: '0 0 16px' }}>
-          <FaShieldAlt color={c?.accentText || '#1e3a8a'} size={14} />
-          <h3 style={{ fontSize: 13, fontWeight: 700, color: c?.accentText || '#1e3a8a', margin: 0, textTransform: 'none' }}>
+          <FaShieldAlt color={c?.accentText || 'var(--brand-secondary)'} size={14} />
+          <h3 style={{ fontSize: 13, fontWeight: 700, color: c?.accentText || 'var(--brand-secondary)', margin: 0, textTransform: 'none' }}>
             {t('vehiculo.chooseProtection', 'Elige tu Nivel de Protección')}
           </h3>
         </div>
@@ -83,7 +83,7 @@ export default function PlanesProteccion({ seguroIdx, onSeleccionar, c, dias = 1
                 style={{
                   background: 'transparent',
                   borderRadius: 16,
-                  border: `1px solid ${isActive ? (c?.accentText || '#2563eb') : (c?.cardBorder || '#e2e8f0')}`,
+                  border: `1px solid ${isActive ? (c?.accentText || 'var(--brand-primary)') : (c?.cardBorder || '#e2e8f0')}`,
                   overflow: 'hidden',
                   display: 'flex',
                   flexDirection: 'column',
@@ -93,13 +93,13 @@ export default function PlanesProteccion({ seguroIdx, onSeleccionar, c, dias = 1
               <div style={{ padding: '20px 20px 0' }}>
                 <div style={{ display: 'flex', justifyContent: 'center', gap: 6, marginBottom: 10 }}>
                   {plan.icono.map((Icono, i) => (
-                    <span key={i} style={{ fontSize: 15, color: sel ? '#2563eb' : (c?.textSecondary || 'var(--texto-second)') }}>
+                    <span key={i} style={{ fontSize: 15, color: sel ? 'var(--brand-text)' : (c?.textSecondary || 'var(--texto-second)') }}>
                       <Icono />
                     </span>
                   ))}
                 </div>
                 <h4 style={{ fontSize: '15px', fontWeight: 800, color: c?.textPrimary || 'var(--texto-primary)', textAlign: 'center', margin: '0 0 4px' }}>{plan.nombre}</h4>
-                <p style={{ fontSize: '18px', fontWeight: 900, color: '#1e3a8a', textAlign: 'center', margin: '0 0 16px', letterSpacing: '-0.03em' }}>
+                <p style={{ fontSize: '18px', fontWeight: 900, color: 'var(--brand-text)', textAlign: 'center', margin: '0 0 16px', letterSpacing: '-0.03em' }}>
                   {formatCurrency(plan.precio, moneda)} <span style={{ fontSize: '10px', fontWeight: 600, color: c?.textSecondary || 'var(--texto-second)' }}>/ {t('catalogo.day', 'día')}</span>
                 </p>
                 <hr style={{ border: 'none', borderTop: `1px solid ${c?.cardBorder || 'var(--borde)'}`, margin: '0 0 16px' }} />
@@ -115,7 +115,7 @@ export default function PlanesProteccion({ seguroIdx, onSeleccionar, c, dias = 1
                     <span style={{
                       fontSize: '12px',
                       fontWeight: sel ? 600 : 500,
-                      color: sel ? '#1e3a8a' : (item.tipo === 'x' ? (c?.textSecondary || 'var(--texto-second)') : (c?.textPrimary || 'var(--texto-primary)')),
+                      color: sel ? 'var(--brand-text)' : (item.tipo === 'x' ? (c?.textSecondary || 'var(--texto-second)') : (c?.textPrimary || 'var(--texto-primary)')),
                       lineHeight: 1.4,
                       textDecoration: item.tipo === 'x' ? 'line-through' : 'none'
                     }}>
@@ -136,9 +136,9 @@ export default function PlanesProteccion({ seguroIdx, onSeleccionar, c, dias = 1
                   textTransform: 'uppercase',
                   cursor: 'pointer',
                   transition: 'all 200ms ease',
-                  background: sel ? 'linear-gradient(135deg, #1e3a8a, #2563eb)' : (c?.isDark ? '#1e293b' : '#f1f5f9'),
+                  background: sel ? 'var(--brand-gradient)' : (c?.isDark ? '#1e293b' : '#f1f5f9'),
                   color: sel ? '#ffffff' : (c?.textSecondary || '#64748b'),
-                  boxShadow: sel ? '0 5px 14px rgba(37,99,235,0.22)' : 'none',
+                  boxShadow: sel ? '0 5px 14px rgba(var(--brand-primary-rgb),0.22)' : 'none',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -167,7 +167,7 @@ export default function PlanesProteccion({ seguroIdx, onSeleccionar, c, dias = 1
               : t('vehiculo.totalProtectionPlan', `Total plan de protección ({{diasText}})`, { diasText: `${dias} ${dias === 1 ? t('vehiculo.dayStr', 'día') : t('vehiculo.daysStr', 'días')}` })
             }
           </span>
-          <span style={{ fontSize: 15, fontWeight: 800, color: c?.accentText || '#1e3a8a' }}>
+          <span style={{ fontSize: 15, fontWeight: 800, color: c?.accentText || 'var(--brand-secondary)' }}>
             {formatCurrency(total, moneda)}
           </span>
         </div>

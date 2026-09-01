@@ -16,9 +16,9 @@ const IconoCheck = ({ color = 'currentColor' }) => (
   </svg>
 )
 
-const coloresTema = (esModoOscuro) => ({
-  acentoTexto: esModoOscuro ? '#93c5fd' : '#1e3a8a',
-  acentoFondoSuave: esModoOscuro ? 'rgba(30,58,138,0.22)' : '#eff6ff',
+const coloresTema = () => ({
+  acentoTexto: 'var(--brand-text)',
+  acentoFondoSuave: 'var(--brand-soft)',
 })
 
 export default function MenuConfiguracion({ modoMovilForce = false, buttonStyle = {} }) {

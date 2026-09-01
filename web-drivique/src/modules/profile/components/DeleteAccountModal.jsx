@@ -120,7 +120,7 @@ export default function DeleteAccountModal({ isOpen, onClose, c, esModoOscuro })
               style={{
                 fontSize: '16.5px',
                 fontWeight: 800,
-                color: esModoOscuro ? '#93c5fd' : '#1e3a8a',
+                color: esModoOscuro ? 'var(--brand-text-dark)' : 'var(--brand-secondary)',
                 margin: 0,
                 letterSpacing: '-0.01em',
               }}
@@ -169,7 +169,7 @@ export default function DeleteAccountModal({ isOpen, onClose, c, esModoOscuro })
               }}
               placeholder="••••••••"
               style={inputStyle(!!error)}
-              onFocus={e => e.target.style.borderColor = c?.inputBorderFocus || '#1e3a8a'}
+              onFocus={e => e.target.style.borderColor = c?.inputBorderFocus || 'var(--brand-secondary)'}
               onBlur={e => e.target.style.borderColor = error ? '#f87171' : c?.inputBorder || '#e2e8f0'}
               onKeyDown={e => {
                 if (e.key === 'Enter') handleConfirmDelete()

@@ -1,8 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
-  FaBuilding,
-  FaCheckCircle,
   FaEdit,
   FaExclamationTriangle,
   FaFileExcel,
@@ -11,19 +9,17 @@ import {
   FaPlus,
   FaPrint,
   FaSearch,
-  FaShieldAlt,
-  FaTimesCircle,
   FaToggleOff,
   FaToggleOn,
   FaTrash,
   FaUserPlus,
   FaUserShield,
-  FaUsers,
   FaEnvelope,
   FaPhone,
 } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import { useAuthStore } from '../../../store/authStore'
+import { useBrand } from '../../../contexts/BrandContext'
 import { roleManagementService } from '../../../services/roleManagementService'
 import { branchManagementService } from '../../../services/branchManagementService'
 import { exportExcel, exportPdf, printTable } from '../../../utils/listExportUtils'
@@ -48,6 +44,7 @@ export default function AdminRolesManagementPage() {
   ]
   const { tema } = useLanding()
   const user = useAuthStore((state) => state.usuario)
+  const { brand } = useBrand()
   const esModoOscuro = tema === 'oscuro'
 
   const [activeTab, setActiveTab] = useState('accounts') // 'accounts' | 'roles'
@@ -146,7 +143,7 @@ export default function AdminRolesManagementPage() {
     e.preventDefault()
     try {
       setErrorModal('')
-      const created = roleManagementService.createAccount(formCuenta, user)
+      roleManagementService.createAccount(formCuenta, user)
       setNotice(
         t(
           'admin.roles.accountCreated',
@@ -252,7 +249,7 @@ export default function AdminRolesManagementPage() {
       setNotice(t('admin.roles.roleUpdated', `Permisos del rol ${formRol.nombre} actualizados.`))
       setModalEditarRol(null)
       cargarDatos()
-    } catch (err) {
+    } catch {
       setErrorModal('Error al actualizar el rol.')
     }
   }
@@ -308,7 +305,7 @@ export default function AdminRolesManagementPage() {
   ])
 
   const exportDataAccounts = {
-    title: 'Cuentas Administrativas — Plataforma Drivique',
+    title: `Cuentas Administrativas — Plataforma ${brand.name}`,
     headers: headersExportAccounts,
     rows: rowsExportAccounts,
     items: cuentasFiltradas,
@@ -505,7 +502,7 @@ export default function AdminRolesManagementPage() {
                           </td>
 
                           <td>
-                            <strong style={{ fontSize: 13, color: '#2563eb' }}>{acc.rolNombre}</strong>
+                            <strong style={{ fontSize: 13, color: 'var(--brand-text)' }}>{acc.rolNombre}</strong>
                           </td>
 
                           <td>

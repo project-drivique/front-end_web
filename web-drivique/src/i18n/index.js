@@ -11,7 +11,19 @@ const idiomaGuardado = sessionStorage.getItem('rm_idioma') || 'es'
 // Busca en sessionStorage el idioma guardado anteriormente.
 // Si no existe, usa 'es' como idioma inicial.
 
+const brandNameProcessor = {
+  type: 'postProcessor',
+  name: 'brandName',
+  process(value) {
+    const brandName = document.documentElement.dataset.brand || 'Drivique'
+    return typeof value === 'string'
+      ? value.replace(/Drivique/gi, (match) => match === match.toUpperCase() ? brandName.toUpperCase() : brandName)
+      : value
+  },
+}
+
 i18n
+  .use(brandNameProcessor)
   .use(initReactI18next) 
   // Le dice a i18next que se conecte con React mediante react-i18next.
 
@@ -40,6 +52,7 @@ i18n
     // Si una traducción no existe en el idioma actual, usa español como respaldo.
 
     interpolation: { escapeValue: false }, 
+    postProcess: ['brandName'],
     // Indica que React ya escapa contenido automáticamente, así que i18next no necesita hacerlo.
   })
 

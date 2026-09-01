@@ -11,10 +11,10 @@ export default function TimePickerCard({ reserva, onCambio, c }) {
 
   const bg          = c?.cardBg      || '#fff'
   const border      = c?.cardBorder  || '#e2e8f0'
-  const titleColor  = c?.titleColor  || '#1e3a8a'
+  const titleColor  = c?.titleColor  || 'var(--brand-secondary)'
   const textPrimary = c?.textPrimary || 'var(--texto-primary)'
   const textSecond  = c?.textSecondary || 'var(--texto-second)'
-  const accent      = c?.accentText  || '#2563eb'
+  const accent      = c?.accentText  || 'var(--brand-primary)'
 
   const selectStyle = {
     width: '100%',

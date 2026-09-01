@@ -18,10 +18,30 @@ const escapeXml = (value) =>
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
 
+function getBrandExportTheme() {
+  const root = getComputedStyle(document.documentElement)
+  const read = (name, fallback) => root.getPropertyValue(name).trim() || fallback
+  return {
+    name: document.documentElement.dataset.brand || 'Drivique',
+    primary: read('--brand-primary', '#2563EB'),
+    secondary: read('--brand-secondary', '#1E3A8A'),
+    hover: read('--brand-primary-hover', '#1D4ED8'),
+    soft: read('--brand-soft-strong-light', '#DBEAFE'),
+    text: read('--brand-text-light', '#1E40AF'),
+  }
+}
+
+function withCurrentBrand(value, brand) {
+  return String(value || '')
+    .replace(/Drivique/gi, (match) => match === match.toUpperCase() ? brand.name.toUpperCase() : brand.name)
+}
+
 /**
  * EXPORTAR A EXCEL (.xls SpreadsheetML) CON ESTILOS, COLORES Y FORMATO ORDENADO
  */
 export function exportExcel({ title = 'Reporte Drivique', headers = [], rows = [], filename = 'reporte' }) {
+  const brand = getBrandExportTheme()
+  const reportTitle = withCurrentBrand(title, brand)
   const styles = `
     <Styles>
       <Style ss:ID="Default" ss:Name="Normal">
@@ -34,14 +54,14 @@ export function exportExcel({ title = 'Reporte Drivique', headers = [], rows = [
       </Style>
       <Style ss:ID="TitleStyle">
         <Alignment ss:Horizontal="Left" ss:Vertical="Center"/>
-        <Font ss:FontName="Calibri" ss:Size="16" ss:Bold="1" ss:Color="#1D4ED8"/>
+        <Font ss:FontName="Calibri" ss:Size="16" ss:Bold="1" ss:Color="${brand.hover}"/>
       </Style>
       <Style ss:ID="HeaderStyle">
         <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
         <Font ss:FontName="Calibri" ss:Size="11" ss:Bold="1" ss:Color="#FFFFFF"/>
-        <Interior ss:Color="#1D4ED8" ss:Pattern="Solid"/>
+        <Interior ss:Color="${brand.hover}" ss:Pattern="Solid"/>
         <Borders>
-          <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="2" ss:Color="#1E3A8A"/>
+          <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="2" ss:Color="${brand.secondary}"/>
         </Borders>
       </Style>
       <Style ss:ID="ZebraStyle">
@@ -55,7 +75,7 @@ export function exportExcel({ title = 'Reporte Drivique', headers = [], rows = [
     </Styles>
   `
 
-  const titleRow = `<Row ss:Height="30"><Cell ss:StyleID="TitleStyle"><Data ss:Type="String">${escapeXml(title)}</Data></Cell></Row><Row ss:Height="12"/>`
+  const titleRow = `<Row ss:Height="30"><Cell ss:StyleID="TitleStyle"><Data ss:Type="String">${escapeXml(reportTitle)}</Data></Cell></Row><Row ss:Height="12"/>`
 
   const headerCells = headers
     .map((h) => `<Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">${escapeXml(h)}</Data></Cell>`)
@@ -84,7 +104,7 @@ export function exportExcel({ title = 'Reporte Drivique', headers = [], rows = [
  xmlns:x="urn:schemas-microsoft-com:office:excel"
  xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">
   ${styles}
-  <Worksheet ss:Name="Reporte Drivique">
+  <Worksheet ss:Name="Reporte ${escapeXml(brand.name).slice(0, 23)}">
     <Table>
       ${colWidths}
       ${titleRow}
@@ -100,11 +120,13 @@ export function exportExcel({ title = 'Reporte Drivique', headers = [], rows = [
 /**
  * EXPORTAR A PDF CON DISEÑO ELEGANTE, COLORES DE LA MARCA E IMÁGENES
  */
-export function exportPdf({ title = 'Reporte Drivique', headers = [], rows = [], items = [], filename = 'reporte' }) {
+export function exportPdf({ title = 'Reporte Drivique', headers = [], rows = [], items = [] }) {
   const win = window.open('', '_blank')
   if (!win) throw new Error('popupBlocked')
 
   const nowStr = new Date().toLocaleString('es-CO')
+  const brand = getBrandExportTheme()
+  const reportTitle = withCurrentBrand(title, brand)
 
   const tableHeaderHtml = headers.map((h) => `<th>${escapeXml(h)}</th>`).join('')
 
@@ -145,8 +167,9 @@ export function exportPdf({ title = 'Reporte Drivique', headers = [], rows = [],
 <html lang="es">
 <head>
   <meta charset="utf-8"/>
-  <title>${escapeXml(title)}</title>
+  <title>${escapeXml(reportTitle)}</title>
   <style>
+    :root { --brand-primary:${brand.primary}; --brand-secondary:${brand.secondary}; --brand-primary-hover:${brand.hover}; --brand-soft-strong-light:${brand.soft}; --brand-text-light:${brand.text}; }
     @page { size: A4 landscape; margin: 12mm; }
     body { font-family: 'Segoe UI', Arial, sans-serif; color: #0f172a; margin: 0; padding: 20px; background: #fff; }
     
@@ -154,7 +177,7 @@ export function exportPdf({ title = 'Reporte Drivique', headers = [], rows = [],
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: linear-gradient(135deg, #102d79 0%, #1d4ed8 100%);
+      background: linear-gradient(135deg, var(--brand-secondary) 0%, var(--brand-primary) 100%);
       color: #ffffff;
       padding: 16px 24px;
       border-radius: 12px;
@@ -176,7 +199,7 @@ export function exportPdf({ title = 'Reporte Drivique', headers = [], rows = [],
 
     table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 10px; }
     th {
-      background: #102d79 !important;
+      background: var(--brand-secondary) !important;
       color: #ffffff !important;
       padding: 10px 12px;
       text-align: left;
@@ -199,7 +222,7 @@ export function exportPdf({ title = 'Reporte Drivique', headers = [], rows = [],
       -webkit-print-color-adjust: exact;
       print-color-adjust: exact;
     }
-    .badge-confirmada { background: #dbeafe; color: #1e40af; }
+    .badge-confirmada { background: var(--brand-soft-strong-light); color: var(--brand-text-light); }
     .badge-en_curso { background: #f3e8ff; color: #7e22ce; }
     .badge-finalizada { background: #dcfce7; color: #15803d; }
     .badge-pendiente { background: #fef3c7; color: #b45309; }
@@ -218,11 +241,11 @@ export function exportPdf({ title = 'Reporte Drivique', headers = [], rows = [],
 <body>
   <div class="report-header">
     <div>
-      <h1>Drivique — ${escapeXml(title)}</h1>
+      <h1>${escapeXml(brand.name)} — ${escapeXml(reportTitle)}</h1>
       <p>Sistema Operativo de Gestión e Inspección de Alquiler de Vehículos</p>
     </div>
     <div style="text-align:right;">
-      <strong style="font-size:14px;">DRIVIQUE RENTALS</strong>
+      <strong style="font-size:14px;">${escapeXml(brand.name).toUpperCase()}</strong>
     </div>
   </div>
 
@@ -241,7 +264,7 @@ export function exportPdf({ title = 'Reporte Drivique', headers = [], rows = [],
   </table>
 
   <div class="report-footer">
-    Documento generado automáticamente por el Sistema Drivique. Todos los derechos reservados.
+    Documento generado automáticamente por ${escapeXml(brand.name)}. Todos los derechos reservados.
   </div>
 
   <script>
