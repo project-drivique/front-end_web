@@ -1,7 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { FaRegCalendarAlt } from 'react-icons/fa'
-import { COLOR_MARCA } from '../constants'
 import AlertModal from './AlertModal'
 import { useLanding } from '../../landing/LandingContext'
 
@@ -28,9 +27,9 @@ export default function ChooseDatesModal({ c, visible, onCerrar }) {
     cardBorder: esModoOscuro ? '#334155' : '#e5ebf5',
     textPrimary: esModoOscuro ? '#f8fafc' : '#0f172a',
     textSecondary: esModoOscuro ? '#94a3b8' : '#64748b',
-    accent: esModoOscuro ? '#93c5fd' : COLOR_MARCA,
-    accentBgSoft: esModoOscuro ? 'rgba(37,99,235,0.18)' : '#EFF6FF',
-    accentGradient: `linear-gradient(90deg,${COLOR_MARCA},#2563eb)`,
+    accent: 'var(--brand-text)',
+    accentBgSoft: 'var(--brand-soft)',
+    accentGradient: 'var(--brand-gradient)',
   }
 
   return (

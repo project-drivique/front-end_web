@@ -6,7 +6,7 @@
   --city-text: #0f172a;
   --city-muted: #64748b;
   --city-border: #cbd5e1;
-  --city-soft: #eff6ff;
+  --city-soft: var(--brand-soft-light);
   min-height: 100vh;
   background: var(--city-bg);
   color: var(--city-text);
@@ -38,7 +38,7 @@
 
 .cities-eyebrow {
   margin: 0 0 4px;
-  color: #2563eb !important;
+  color: var(--brand-primary) !important;
   font-size: 11px !important;
   font-weight: 900;
   text-transform: uppercase;
@@ -69,7 +69,7 @@
   border: 0;
   border-radius: 12px;
   padding: 12px 22px;
-  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-primary-hover) 100%);
   color: #ffffff;
   font-weight: 800;
   font-size: 13px;
@@ -78,13 +78,13 @@
   justify-content: center;
   gap: 8px;
   cursor: pointer;
-  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.28);
+  box-shadow: 0 6px 20px rgba(var(--brand-primary-rgb), 0.28);
   transition: all 0.2s ease;
 }
 
 .cities-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(37, 99, 235, 0.4);
+  box-shadow: 0 10px 25px rgba(var(--brand-primary-rgb), 0.4);
 }
 
 .cities-danger {
@@ -102,14 +102,14 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 18px;
-  border: 1.5px solid #93c5fd;
-  background: #eff6ff;
-  color: #1e40af;
+  border: 1.5px solid var(--brand-text-dark);
+  background: var(--brand-soft-light);
+  color: var(--brand-text-light);
   border-radius: 14px;
   padding: 12px 18px;
   font-weight: 700;
   font-size: 13px;
-  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.08);
+  box-shadow: 0 4px 14px rgba(var(--brand-primary-rgb), 0.08);
 }
 
 .cities-notice button {
@@ -144,19 +144,19 @@
   gap: 10px;
   border: 2px solid transparent;
   background: linear-gradient(var(--city-card), var(--city-card)) padding-box,
-    linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) border-box;
+    linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-primary-hover) 100%) border-box;
   border-radius: 14px;
   padding: 0 14px;
-  color: #2563eb;
+  color: var(--brand-primary);
   flex: 1 1 280px;
-  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.12);
+  box-shadow: 0 4px 14px rgba(var(--brand-primary-rgb), 0.12);
   transition: all 0.25s ease;
 }
 
 .cities-search:hover,
 .cities-search:focus-within {
   transform: translateY(-1px);
-  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.22);
+  box-shadow: 0 8px 24px rgba(var(--brand-primary-rgb), 0.22);
 }
 
 .cities-search input {
@@ -174,14 +174,14 @@
 .cities-toolbar select, .branches-toolbar select, .fleet-toolbar select {
   border: 2px solid transparent;
   background: linear-gradient(var(--city-card), var(--city-card)) padding-box,
-    linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) border-box;
+    linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-primary-hover) 100%) border-box;
   border-radius: 14px;
   padding: 12px 14px;
   color: var(--city-text);
   font-weight: 700;
   font-size: 13px;
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.1);
+  box-shadow: 0 4px 14px rgba(var(--brand-primary-rgb), 0.1);
   transition: all 0.25s ease;
   outline: none;
 }
@@ -189,7 +189,7 @@
 .cities-toolbar select:hover, .branches-toolbar select:hover, .fleet-toolbar select:hover,
 .cities-toolbar select:focus, .branches-toolbar select:focus, .fleet-toolbar select:focus {
   transform: translateY(-1px);
-  box-shadow: 0 8px 22px rgba(37, 99, 235, 0.2);
+  box-shadow: 0 8px 22px rgba(var(--brand-primary-rgb), 0.2);
 }
 
 .cities-export {
@@ -202,7 +202,7 @@
 .cities-row-actions button {
   border: 1.5px solid transparent;
   background: linear-gradient(var(--city-card), var(--city-card)) padding-box,
-    linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) border-box;
+    linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-primary-hover) 100%) border-box;
   color: var(--city-text);
   border-radius: 12px;
   padding: 9px 15px;
@@ -212,15 +212,15 @@
   font-weight: 750;
   font-size: 12px;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.08);
+  box-shadow: 0 4px 12px rgba(var(--brand-primary-rgb), 0.08);
   transition: all 0.22s ease;
 }
 
 .cities-export button:hover {
-  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-primary-hover) 100%);
   color: #ffffff;
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+  box-shadow: 0 8px 20px rgba(var(--brand-primary-rgb), 0.3);
 }
 
 .cities-summary {
@@ -238,7 +238,7 @@
   border-radius: 16px;
   border: 2px solid transparent;
   background: linear-gradient(var(--city-card), var(--city-card)) padding-box,
-    linear-gradient(135deg, rgba(37, 99, 235, 0.3) 0%, rgba(29, 78, 216, 0.15) 100%) border-box;
+    linear-gradient(135deg, rgba(var(--brand-primary-rgb), 0.3) 0%, rgba(29, 78, 216, 0.15) 100%) border-box;
   box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
 }
 
@@ -258,12 +258,12 @@
   text-transform: uppercase;
   letter-spacing: 0.8px;
   padding: 16px 18px;
-  border-bottom: 2px solid #2563eb;
+  border-bottom: 2px solid var(--brand-primary);
 }
 
 .management-shell--dark .cities-table-wrap th {
   background: linear-gradient(135deg, #0f172a 0%, #111c2e 100%);
-  border-bottom-color: #3b82f6;
+  border-bottom-color: var(--brand-primary);
 }
 
 .cities-table-wrap th:first-child {
@@ -300,7 +300,7 @@
 }
 
 .cities-table-wrap tbody tr:hover td {
-  background: #dbeafe !important;
+  background: var(--brand-soft-strong-light) !important;
 }
 
 .management-shell--dark .cities-table-wrap tbody tr:hover td {
@@ -317,16 +317,16 @@
   width: 40px;
   height: 40px;
   border-radius: 12px;
-  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-  color: #1d4ed8;
+  background: linear-gradient(135deg, var(--brand-soft-strong-light) 0%, var(--brand-border-light) 100%);
+  color: var(--brand-primary-hover);
   display: grid;
   place-items: center;
   font-size: 16px;
-  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.15);
+  box-shadow: 0 4px 10px rgba(var(--brand-primary-rgb), 0.15);
 }
 
 .management-shell--dark .cities-name > span {
-  background: linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 100%);
+  background: linear-gradient(135deg, var(--brand-secondary) 0%, var(--brand-primary-hover) 100%);
   color: #ffffff;
 }
 
@@ -356,7 +356,7 @@
 }
 
 .cities-branches.has-branches {
-  color: #2563eb;
+  color: var(--brand-primary);
   font-weight: 800;
 }
 
@@ -396,11 +396,11 @@
 }
 
 .cities-row-actions button:hover {
-  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-  border-color: #2563eb;
+  background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-primary-hover) 100%);
+  border-color: var(--brand-primary);
   color: #ffffff;
   transform: scale(1.1);
-  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
+  box-shadow: 0 6px 16px rgba(var(--brand-primary-rgb), 0.3);
 }
 
 .cities-row-actions button.is-danger:hover {
@@ -419,7 +419,7 @@
 
 .cities-empty > svg {
   font-size: 48px;
-  color: #60a5fa;
+  color: var(--brand-accent);
   margin-bottom: 12px;
 }
 

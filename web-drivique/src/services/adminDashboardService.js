@@ -26,7 +26,7 @@ function normalize(value) {
 function sameBranch(value, assignedBranch) {
   const branch = normalize(value)
   const assigned = normalize(assignedBranch)
-  return Boolean(branch && assigned) && (branch === assigned || branch.includes(assigned) || assigned.includes(branch))
+  return Boolean(branch && assigned) && branch === assigned
 }
 
 function reservationBranch(reservation, vehicleById) {
@@ -56,7 +56,7 @@ export const adminDashboardService = {
     const vehicles = vehicleManagementService.list()
     const vehicleById = new Map(vehicles.map((vehicle) => [Number(vehicle.id), vehicle]))
     const isBranchManager = user?.rol === ROLES.BRANCH_MANAGER
-    const assignedBranch = user?.sucursalId || ''
+    const assignedBranch = user?.sucursalId || user?.sucursal || user?.sucursalAsignada || ''
     const scopedVehicles = isBranchManager
       ? vehicles.filter((vehicle) => sameBranch(vehicle.sucursal, assignedBranch))
       : vehicles

@@ -31,16 +31,16 @@ export default function RecoveryStepper({ currentStep }) {
               
               {/* Línea activa (verde) conectando con el anterior */}
               {index > 0 && completado && (
-                 <div style={{ position: 'absolute', top: '14px', right: '50%', width: '100%', height: '2px', background: '#1e3a8a', zIndex: -1 }} />
+                 <div style={{ position: 'absolute', top: '14px', right: '50%', width: '100%', height: '2px', background: 'var(--brand-secondary)', zIndex: -1 }} />
               )}
               {index > 0 && activo && (
-                 <div style={{ position: 'absolute', top: '14px', right: '50%', width: '100%', height: '2px', background: '#1e3a8a', zIndex: -1 }} />
+                 <div style={{ position: 'absolute', top: '14px', right: '50%', width: '100%', height: '2px', background: 'var(--brand-secondary)', zIndex: -1 }} />
               )}
 
               {/* Círculo */}
               <div style={{
                 width: '28px', height: '28px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                background: completado ? '#1e3a8a' : (activo ? 'linear-gradient(90deg, #1e3a8a, #2563eb)' : '#fff'),
+                background: completado ? 'var(--brand-secondary)' : (activo ? 'linear-gradient(90deg, var(--brand-secondary), var(--brand-primary))' : '#fff'),
                 color: (completado || activo) ? '#fff' : '#cbd5e1',
                 border: (completado || activo) ? 'none' : '2px solid #cbd5e1',
                 fontSize: '13px', fontWeight: 800, marginBottom: '8px',
@@ -52,7 +52,7 @@ export default function RecoveryStepper({ currentStep }) {
               {/* Texto */}
               <span style={{
                 fontSize: '11px', fontWeight: activo ? 800 : (completado ? 600 : 500),
-                color: activo ? '#2563eb' : (completado ? '#64748b' : '#94a3b8')
+                color: activo ? 'var(--brand-primary)' : (completado ? '#64748b' : '#94a3b8')
               }}>
                 {paso.label}
               </span>

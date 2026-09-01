@@ -6,10 +6,10 @@ export default function PaymentMethodCard({ reserva, onCambio, c }) {
 
   const bg          = c?.cardBg     || '#fff'
   const border      = c?.cardBorder || '#e2e8f0'
-  const titleColor  = c?.titleColor || '#1e3a8a'
+  const titleColor  = c?.titleColor || 'var(--brand-secondary)'
   const textPrimary = c?.textPrimary  || 'var(--texto-primary)'
   const textSecond  = c?.textSecondary || 'var(--texto-second)'
-  const accent      = c?.accentText || '#2563eb'
+  const accent      = c?.accentText || 'var(--brand-primary)'
 
   const metodoPago = reserva?.metodoPago
 
@@ -53,7 +53,7 @@ export default function PaymentMethodCard({ reserva, onCambio, c }) {
                 padding: '12px 14px',
                 borderRadius: 10,
                 border: `1px solid ${activo ? accent : border}`,
-                background: activo ? (c?.isDark ? 'rgba(37,99,235,0.12)' : '#eff6ff') : 'transparent',
+                background: activo ? (c?.isDark ? 'rgba(var(--brand-primary-rgb),0.12)' : 'var(--brand-soft-light)') : 'transparent',
                 cursor: 'pointer',
                 transition: 'all 0.18s',
               }}

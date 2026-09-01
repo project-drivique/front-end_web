@@ -26,13 +26,13 @@ export default function RecuperarContrasenaPage() {
     pageBg: esModoOscuro ? '#0b1220' : '#f8fafc',
     cardBg: esModoOscuro ? '#0e172a' : '#ffffff',
     cardBorder: esModoOscuro ? '#1e293b' : '#dbe5f3',
-    cardShadow: esModoOscuro ? '0 24px 60px rgba(0,0,0,0.45)' : '0 10px 30px rgba(30,58,138,0.06)',
-    textPrimary: esModoOscuro ? '#ffffff' : '#1e3a8a',
+    cardShadow: esModoOscuro ? '0 24px 60px rgba(0,0,0,0.45)' : '0 10px 30px rgba(var(--brand-secondary-rgb),0.06)',
+    textPrimary: esModoOscuro ? '#ffffff' : 'var(--brand-secondary)',
     textSecondary: esModoOscuro ? '#94a3b8' : '#64748b',
-    labelColor: esModoOscuro ? '#ffffff' : '#1e3a8a',
+    labelColor: esModoOscuro ? '#ffffff' : 'var(--brand-secondary)',
     inputBg: esModoOscuro ? '#172136' : '#ffffff',
     inputBorder: esModoOscuro ? '#23314d' : '#dbe5f3',
-    accentText: esModoOscuro ? '#60a5fa' : '#1e3a8a',
+    accentText: esModoOscuro ? 'var(--brand-accent)' : 'var(--brand-secondary)',
   }
 
   return (
@@ -140,7 +140,7 @@ export default function RecuperarContrasenaPage() {
                 width: '100%',
                 padding: '15px',
                 borderRadius: '12px',
-                background: 'linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%)',
+                background: 'linear-gradient(135deg, var(--brand-secondary) 0%, var(--brand-primary) 100%)',
                 color: '#ffffff',
                 fontSize: '14.5px',
                 fontWeight: 800,
@@ -149,7 +149,7 @@ export default function RecuperarContrasenaPage() {
                 transition: 'all 180ms ease',
                 marginTop: '4px',
                 opacity: cargando ? 0.8 : 1,
-                boxShadow: '0 6px 18px rgba(37,99,235,0.25)'
+                boxShadow: '0 6px 18px rgba(var(--brand-primary-rgb),0.25)'
               }}
               onMouseEnter={e => { if (!cargando) e.currentTarget.style.transform = 'translateY(-1px)' }}
               onMouseLeave={e => { if (!cargando) e.currentTarget.style.transform = 'translateY(0)' }}
@@ -169,7 +169,7 @@ export default function RecuperarContrasenaPage() {
 
       {showModal && (
         <AlertModal
-          icon={<FaExclamationTriangle size={22} color={esModoOscuro ? '#93c5fd' : '#1e3a8a'} />}
+          icon={<FaExclamationTriangle size={22} color={esModoOscuro ? 'var(--brand-text-dark)' : 'var(--brand-secondary)'} />}
           titulo={isNotRegistered ? t('recuperar.notRegisteredTitle', 'Correo no registrado') : t('common.error', 'Error')}
           mensaje={isNotRegistered ? t('recuperar.notRegisteredSub', 'No encontramos ninguna cuenta asociada a este correo.') : error}
           primaryText={t('common.accept', 'Aceptar')}

@@ -64,8 +64,8 @@ export default function ConditionsModal({ cupon, onClose }) {
               width: 44,
               height: 44,
               borderRadius: 14,
-              background: 'var(--bg-item, #eff6ff)',
-              color: '#2563eb',
+              background: 'var(--bg-item, var(--brand-soft-light))',
+              color: 'var(--brand-text)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -98,24 +98,24 @@ export default function ConditionsModal({ cupon, onClose }) {
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13, color: 'var(--texto-primary, #0f172a)' }}>
-            <FaTag color="#2563eb" />
+            <FaTag color="var(--brand-text)" />
             <span><strong>{t('promotions.modal.discount')}:</strong> {cupon.descuentoTexto}</span>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13, color: 'var(--texto-primary, #0f172a)' }}>
-            <FaCar color="#2563eb" />
+            <FaCar color="var(--brand-text)" />
             <span><strong>{t('promotions.modal.category')}:</strong> {t(`promotions.categories.${cupon.categoriaVehiculo}`, cupon.categoriaVehiculo)}</span>
           </div>
 
           {cupon.reservaMinima > 0 && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13, color: 'var(--texto-primary, #0f172a)' }}>
-              <FaTag color="#2563eb" />
+              <FaTag color="var(--brand-text)" />
               <span><strong>{t('promotions.modal.minimum')}:</strong> {formatCurrency(cupon.reservaMinima, moneda)}</span>
             </div>
           )}
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13, color: 'var(--texto-primary, #0f172a)' }}>
-            <FaCalendarAlt color="#2563eb" />
+            <FaCalendarAlt color="var(--brand-text)" />
             <span><strong>{t('promotions.modal.granted')}:</strong> {cupon.fechaOtorgado}</span>
           </div>
         </div>
@@ -130,7 +130,7 @@ export default function ConditionsModal({ cupon, onClose }) {
             width: '100%',
             padding: '12px 20px',
             borderRadius: 12,
-            background: '#2563eb',
+            background: 'var(--brand-primary)',
             color: '#ffffff',
             border: 'none',
             fontSize: 14,

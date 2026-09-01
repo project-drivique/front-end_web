@@ -7,10 +7,10 @@ export default function LocationPickerCard({ vehiculo, reserva, onCambio, c }) {
 
   const bg          = c?.cardBg      || '#fff'
   const border      = c?.cardBorder  || '#e2e8f0'
-  const titleColor  = c?.titleColor  || '#1e3a8a'
+  const titleColor  = c?.titleColor  || 'var(--brand-secondary)'
   const textPrimary = c?.textPrimary || 'var(--texto-primary)'
   const textSecond  = c?.textSecondary || 'var(--texto-second)'
-  const accent      = c?.accentText  || '#2563eb'
+  const accent      = c?.accentText  || 'var(--brand-primary)'
 
   const carBranch = vehiculo?.sucursal
   const branchObj = SUCURSALES.find(s => s.nombre === carBranch)
@@ -98,7 +98,7 @@ export default function LocationPickerCard({ vehiculo, reserva, onCambio, c }) {
 
       {/* Campos de domicilio cuando aplica */}
       {reserva?.sucursalRetiro === 'domicilio' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, padding: '14px 16px', borderRadius: 12, background: '#f8fafc', border: `1px solid #dbeafe` }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, padding: '14px 16px', borderRadius: 12, background: '#f8fafc', border: `1px solid var(--brand-soft-strong-light)` }}>
           <p style={{ fontSize: 12, fontWeight: 700, color: accent, margin: 0 }}>
             {t('vehiculo.domicilioSectionTitle', 'Datos de domicilio')}
           </p>
