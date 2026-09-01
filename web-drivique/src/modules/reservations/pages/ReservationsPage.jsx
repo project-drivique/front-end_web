@@ -19,9 +19,9 @@ const CLASES_ESTADO = Object.fromEntries(filtrosReservas.estados.map(({ valor, c
 const coloresTema = (oscuro) => ({
   navBg: oscuro ? 'rgba(15,23,42,0.92)' : 'rgba(255,255,255,0.98)',
   navBorder: oscuro ? '#1e293b' : '#e8eef8',
-  navShadow: oscuro ? '0 2px 12px rgba(0,0,0,0.25)' : '0 2px 14px rgba(30,58,138,0.06)',
+  navShadow: oscuro ? '0 2px 12px rgba(0,0,0,0.25)' : '0 2px 14px rgba(var(--brand-secondary-rgb),0.06)',
   textPrimary: oscuro ? '#f8fafc' : '#111a3a',
-  accentText: oscuro ? '#93c5fd' : '#1e3a8a',
+  accentText: 'var(--brand-text)',
   heroCardBg: oscuro ? '#111827' : '#ffffff',
   heroCardBorder: oscuro ? '#334155' : '#d9e3f1',
 })

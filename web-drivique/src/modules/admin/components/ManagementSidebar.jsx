@@ -16,11 +16,13 @@ import {
   FaBars,
   FaTimes,
   FaTags,
+  FaPalette,
 } from 'react-icons/fa'
 import { useAuthStore } from '../../../store/authStore'
 import accessConfig from '../../../mocks/adminAccessConfig.json'
 import { ROLES } from '../../auth/utils/accessControl'
 import logo from '../../../assets/logocatalog.png'
+import { useBrand } from '../../../contexts/BrandContext'
 import './ManagementDashboard.css'
 
 const MODULE_ICONS = {
@@ -34,6 +36,7 @@ const MODULE_ICONS = {
   cities: FaCity,
   branches: FaBuilding,
   promotions: FaTags,
+  brand: FaPalette,
   audit: FaShieldAlt,
 }
 
@@ -42,6 +45,7 @@ export default function ManagementSidebar({ branchOnly = false }) {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const usuario = useAuthStore((state) => state.usuario)
+  const { brand } = useBrand()
   const logout = useAuthStore((state) => state.logout)
 
   const isBranchManager = branchOnly || usuario?.rol === ROLES.BRANCH_MANAGER || usuario?.rol === 'encargado' || usuario?.rol === 'encargado_sucursal'
@@ -58,8 +62,8 @@ export default function ManagementSidebar({ branchOnly = false }) {
     <>
       <div className="management-mobile-topbar">
         <div className="mobile-brand">
-          <img src={logo} alt="Drivique Logo" />
-          <strong>DRIVIQUE</strong>
+          <img src={brand.logoDataUrl || logo} alt={brand.name} />
+          <strong>{brand.name.toUpperCase()}</strong>
         </div>
         <button 
           className="management-mobile-btn" 
@@ -80,10 +84,10 @@ export default function ManagementSidebar({ branchOnly = false }) {
       <aside className={`management-sidebar ${isOpen ? 'is-open' : ''}`}>
         <div className="management-brand">
           <span className="management-brand__mark">
-            <img src={logo} alt="Drivique" />
+            <img src={brand.logoDataUrl || logo} alt={brand.name} />
           </span>
         <div>
-          <strong>Drivique</strong>
+          <strong>{brand.name}</strong>
           <small>{t('admin.management', 'Gestión')}</small>
         </div>
       </div>
@@ -99,7 +103,7 @@ export default function ManagementSidebar({ branchOnly = false }) {
               className={({ isActive }) => `management-nav__item ${isActive ? 'is-active' : ''}`}
             >
               <Icon aria-hidden="true" />
-              <span>{t(key === 'cities' ? 'admin.cities.title' : key === 'contracts' ? 'admin.nav.contracts' : key === 'incidents' ? 'admin.incidents.title' : key === 'promotions' ? 'admin.promotions.title' : `admin.${key}`, key === 'incidents' ? 'Incidencias' : undefined)}</span>
+              <span>{t(key === 'cities' ? 'admin.cities.title' : key === 'contracts' ? 'admin.nav.contracts' : key === 'incidents' ? 'admin.incidents.title' : key === 'promotions' ? 'admin.promotions.title' : key === 'brand' ? 'admin.brand.nav' : `admin.${key}`, key === 'incidents' ? 'Incidencias' : undefined)}</span>
             </NavLink>
           )
         })}

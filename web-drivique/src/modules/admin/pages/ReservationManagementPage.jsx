@@ -1,8 +1,6 @@
-import { useState, useEffect, useMemo } from 'react'
-import { Link } from 'react-router-dom'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
-  FaArrowLeft,
   FaCalendarAlt,
   FaCar,
   FaEdit,
@@ -12,13 +10,10 @@ import {
   FaPlus,
   FaPrint,
   FaSearch,
-  FaTimes,
   FaUser,
   FaBuilding,
   FaClock,
   FaBan,
-  FaCheckCircle,
-  FaExclamationTriangle,
   FaHistory,
 } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
@@ -34,6 +29,9 @@ import ManagementSidebar from '../components/ManagementSidebar'
 import './CityManagementPage.css'
 import './ReservationManagementPage.css'
 
+const INITIAL_START_DATE = new Date().toISOString().slice(0, 16)
+const INITIAL_END_DATE = new Date(Date.now() + 86400000 * 3).toISOString().slice(0, 16)
+
 export default function ReservationManagementPage() {
   const { t } = useTranslation()
   const { tema, moneda, tasaUSD } = useLanding()
@@ -41,7 +39,7 @@ export default function ReservationManagementPage() {
   const esModoOscuro = tema === 'oscuro'
 
   const esEncargado = user?.rol === 'encargado' || user?.rol === 'branch_manager' || user?.rol === 'encargado_sucursal'
-  const sucursalEncargado = user?.sucursalAsignada || user?.sucursalId || user?.sucursal || 'Neiva'
+  const sucursalEncargado = user?.sucursalAsignada || user?.sucursalId || user?.sucursal || ''
 
   const [reservas, setReservas] = useState([])
   const [search, setSearch] = useState('')
@@ -62,16 +60,23 @@ export default function ReservationManagementPage() {
   // Datos para selector en formularios
   const [catalogoVehiculos, setCatalogoVehiculos] = useState([])
   const sucursales = useMemo(() => branchManagementService.list(), [])
+  const sucursalesVisibles = useMemo(() => esEncargado
+    ? sucursales.filter((branch) => String(branch.nombre || '').trim().toLocaleLowerCase() === String(sucursalEncargado).trim().toLocaleLowerCase())
+    : sucursales, [esEncargado, sucursalEncargado, sucursales])
+  const vehiculosDisponibles = useMemo(() => catalogoVehiculos.filter((vehicle) => !esEncargado || (
+    Boolean(sucursalEncargado) &&
+    String(vehicle.sucursal || '').trim().toLocaleLowerCase() === String(sucursalEncargado).trim().toLocaleLowerCase()
+  )), [catalogoVehiculos, esEncargado, sucursalEncargado])
 
   // Carga inicial y evaluación automática periódica
-  const cargarYEvaluarReservas = () => {
+  const cargarYEvaluarReservas = useCallback(() => {
     const lista = reservationManagementService.list(user)
     setReservas(lista)
-  }
+  }, [user])
 
   useEffect(() => {
     cargarYEvaluarReservas()
-    catalogService.getVehiculos().then((v) => setCatalogoVehiculos(v)).catch(() => {})
+    catalogService.getVehiculos().then((v) => setCatalogoVehiculos(v)).catch(() => undefined)
 
     // Intervalo para transición automática a "En curso" / "Finalizada" sin intervención manual
     const interval = setInterval(() => {
@@ -79,7 +84,7 @@ export default function ReservationManagementPage() {
     }, 30000)
 
     return () => clearInterval(interval)
-  }, [])
+  }, [cargarYEvaluarReservas])
 
   // Filtrado de reservas
   const filtradas = useMemo(() => {
@@ -107,19 +112,7 @@ export default function ReservationManagementPage() {
   }, [reservas, search, statusFilter, branchFilter, dateFrom, dateTo])
 
   // Configuración de exportación Excel / PDF / Impresión
-  const headersExport = [
-    'Código',
-    'Cliente',
-    'Correo',
-    'Teléfono',
-    'Vehículo',
-    'Placa',
-    'Sucursal',
-    'Fecha Recogida',
-    'Fecha Devolución',
-    'Estado',
-    'Total (COP)',
-  ]
+  const headersExport = ['code', 'client', 'email', 'phone', 'vehicle', 'plate', 'branch', 'pickupDate', 'returnDate', 'state', 'total'].map((key) => t(`admin.reservationsManagement.fields.${key}`))
 
   const rowsExport = filtradas.map((r) => [
     r.codigo,
@@ -136,7 +129,7 @@ export default function ReservationManagementPage() {
   ])
 
   const exportData = {
-    title: esEncargado ? `Gestión de Reservas - Sucursal ${sucursalEncargado}` : 'Gestión Global de Reservas - Drivique',
+    title: esEncargado ? t('admin.reservationsManagement.exportTitleBranch', { branch: sucursalEncargado }) : t('admin.reservationsManagement.exportTitleGlobal'),
     headers: headersExport,
     rows: rowsExport,
     items: filtradas,
@@ -149,7 +142,7 @@ export default function ReservationManagementPage() {
       correo: user?.correo || 'admin@drivique.com',
       rol: user?.rol || 'administrador',
       resultado: 'EXITO',
-      motivo: 'Exportó listado de reservas a Excel',
+      motivo: t('admin.reservationsManagement.audit.exportExcel'),
     })
   }
 
@@ -159,7 +152,7 @@ export default function ReservationManagementPage() {
       correo: user?.correo || 'admin@drivique.com',
       rol: user?.rol || 'administrador',
       resultado: 'EXITO',
-      motivo: 'Exportó listado de reservas a PDF',
+      motivo: t('admin.reservationsManagement.audit.exportPdf'),
     })
   }
 
@@ -169,7 +162,7 @@ export default function ReservationManagementPage() {
       correo: user?.correo || 'admin@drivique.com',
       rol: user?.rol || 'administrador',
       resultado: 'EXITO',
-      motivo: 'Imprimió listado de reservas',
+      motivo: t('admin.reservationsManagement.audit.print'),
     })
   }
 
@@ -178,15 +171,21 @@ export default function ReservationManagementPage() {
     clienteNombre: '',
     clienteCorreo: '',
     clienteTelefono: '',
-    vehiculoNombre: 'Toyota Prado VX',
-    vehiculoPlaca: 'KLS-849',
-    sucursal: esEncargado ? sucursalEncargado : 'Neiva',
-    fechaInicio: new Date().toISOString().slice(0, 16),
-    fechaFin: new Date(Date.now() + 86400000 * 3).toISOString().slice(0, 16),
+    vehiculoNombre: '',
+    vehiculoPlaca: '',
+    sucursal: esEncargado ? sucursalEncargado : '',
+    fechaInicio: INITIAL_START_DATE,
+    fechaFin: INITIAL_END_DATE,
     estado: 'confirmada',
-    totalCOP: 1200000,
-    notas: 'Atención presencial directa en oficina.',
+    totalCOP: 0,
+    notas: '',
   })
+
+  const openCrearModal = () => {
+    const firstVehicle = vehiculosDisponibles[0]
+    setFormCrear((current) => ({ ...current, vehiculoNombre: firstVehicle?.nombre || '', vehiculoPlaca: firstVehicle?.placa || '', sucursal: esEncargado ? sucursalEncargado : (firstVehicle?.sucursal || sucursales[0]?.nombre || '') }))
+    setModalCrear(true)
+  }
 
   const submitCrearManual = (e) => {
     e.preventDefault()
@@ -241,11 +240,11 @@ export default function ReservationManagementPage() {
       <main className="management-main" style={{ padding: '24px 32px' }}>
         <div className="cities-container" style={{ maxWidth: '100%' }}>
         {/* Topbar Superior */}
-        <header className="cities-topbar">
+        <header className="cities-topbar reservations-management-header">
           <div>
             <p className="cities-eyebrow">
               {esEncargado
-                ? `Encargado de Sucursal (${sucursalEncargado})`
+                ? t('admin.reservationsManagement.encargadoSucursal', { branch: sucursalEncargado })
                 : t('admin.management', 'Gestión Operativa')}
             </p>
             <h1>{t('admin.reservationsTitle', 'Gestión de Reservas')}</h1>
@@ -262,7 +261,7 @@ export default function ReservationManagementPage() {
             <button
               className="cities-primary"
               type="button"
-              onClick={() => setModalCrear(true)}
+              onClick={openCrearModal}
             >
               <FaPlus /> {t('admin.createManualReservation', 'Reserva Manual')}
             </button>
@@ -281,9 +280,9 @@ export default function ReservationManagementPage() {
 
         {/* Barra de Filtros y Búsqueda */}
         <section className="cities-card">
-          <div className="branches-toolbar" style={{ display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center', width: '100%' }}>
+          <div className="branches-toolbar reservations-management-toolbar">
             {/* Buscador general */}
-            <label className="cities-search" style={{ flex: '1 1 240px' }}>
+            <label className="cities-search">
               <FaSearch />
               <input
                 value={search}
@@ -296,7 +295,7 @@ export default function ReservationManagementPage() {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              style={{ flex: '0 1 180px' }}
+              className="reservations-filter-select"
             >
               <option value="all">{t('admin.allStatuses', 'Todos los estados')}</option>
               <option value="confirmada">{t('admin.statusConfirmada', 'Confirmada')}</option>
@@ -307,45 +306,39 @@ export default function ReservationManagementPage() {
             </select>
 
             {/* Filtro de Sucursal (Bloqueado si es Encargado) */}
-            <select
-              value={branchFilter}
-              onChange={(e) => setBranchFilter(e.target.value)}
-              disabled={esEncargado}
-              style={{ flex: '0 1 180px', opacity: esEncargado ? 0.7 : 1 }}
-            >
-              {!esEncargado && <option value="all">{t('admin.allBranches', 'Todas las sucursales')}</option>}
-              {sucursales.map((s) => (
-                <option key={s.id} value={s.nombre}>
-                  {s.nombre}
-                </option>
-              ))}
-            </select>
+            {esEncargado ? (
+              <div className="reservations-assigned-branch">
+                <FaBuilding />
+                <span>{sucursalEncargado || t('admin.reservationsManagement.noAssignedBranch')}</span>
+              </div>
+            ) : (
+              <select
+                className="reservations-filter-select"
+                value={branchFilter}
+                onChange={(e) => setBranchFilter(e.target.value)}
+              >
+                <option value="all">{t('admin.allBranches', 'Todas las sucursales')}</option>
+                {sucursalesVisibles.map((s) => (
+                  <option key={s.id} value={s.nombre}>{s.nombre}</option>
+                ))}
+              </select>
+            )}
 
             {/* Filtros de Fecha Recogida */}
             <div className="reservations-date-inputs">
-              <span>Desde:</span>
-              <input
-                type="date"
-                value={dateFrom}
-                onChange={(e) => setDateFrom(e.target.value)}
-              />
-              <span>Hasta:</span>
-              <input
-                type="date"
-                value={dateTo}
-                onChange={(e) => setDateTo(e.target.value)}
-              />
+              <label><span>{t('admin.reservationsManagement.dateFrom')}</span><input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} /></label>
+              <label><span>{t('admin.reservationsManagement.dateTo')}</span><input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} /></label>
             </div>
 
             {/* Botones de Exportación e Impresión */}
-            <div className="cities-export" style={{ display: 'flex', gap: '8px', marginLeft: 'auto' }}>
-              <button type="button" onClick={handleExportExcel} title="Exportar a Excel">
+            <div className="cities-export reservations-export-actions">
+              <button type="button" onClick={handleExportExcel} title={t('admin.reservationsManagement.exportExcelTitle')}>
                 <FaFileExcel /> Excel
               </button>
-              <button type="button" onClick={handleExportPdf} title="Exportar a PDF">
+              <button type="button" onClick={handleExportPdf} title={t('admin.reservationsManagement.exportPdfTitle')}>
                 <FaFilePdf /> PDF
               </button>
-              <button type="button" onClick={handlePrint} title="Imprimir listado">
+              <button type="button" onClick={handlePrint} title={t('admin.reservationsManagement.printTitle')}>
                 <FaPrint /> {t('admin.print', 'Imprimir')}
               </button>
             </div>
@@ -368,13 +361,13 @@ export default function ReservationManagementPage() {
               <table className="branches-table reservations-admin-table">
                 <thead>
                   <tr>
-                    <th>Código</th>
-                    <th>Cliente / Usuario</th>
-                    <th>Vehículo / Placa</th>
-                    <th>Sucursal</th>
-                    <th>Fechas Recogida - Devolución</th>
-                    <th>Estado</th>
-                    <th>Total ({moneda})</th>
+                    <th>{t('admin.reservationsManagement.table.code')}</th>
+                    <th>{t('admin.reservationsManagement.table.clientUser')}</th>
+                    <th>{t('admin.reservationsManagement.table.vehiclePlate')}</th>
+                    <th>{t('admin.reservationsManagement.table.branch')}</th>
+                    <th>{t('admin.reservationsManagement.table.dates')}</th>
+                    <th>{t('admin.reservationsManagement.table.state')}</th>
+                    <th>{t('admin.reservationsManagement.table.totalSuffix')} ({moneda})</th>
                     <th>{t('admin.actions', 'Acciones')}</th>
                   </tr>
                 </thead>
@@ -382,7 +375,7 @@ export default function ReservationManagementPage() {
                   {filtradas.map((r) => (
                     <tr key={r.id}>
                       <td>
-                        <strong style={{ color: '#2563eb' }}>{r.codigo}</strong>
+                        <strong style={{ color: 'var(--brand-text)' }}>{r.codigo}</strong>
                       </td>
 
                       <td>
@@ -418,7 +411,7 @@ export default function ReservationManagementPage() {
                             <strong style={{ display: 'block', fontSize: 13, color: 'var(--city-text)' }}>{r.vehiculoNombre}</strong>
                             {r.vehiculoPlaca && (
                               <small style={{ display: 'block', color: '#64748b', fontSize: 11, fontWeight: 700 }}>
-                                Placa: {r.vehiculoPlaca}
+                                {t('admin.reservationsManagement.table.plateLabel')} {r.vehiculoPlaca}
                               </small>
                             )}
                           </div>
@@ -435,10 +428,10 @@ export default function ReservationManagementPage() {
                       <td>
                         <div style={{ fontSize: 11 }}>
                           <div>
-                            <strong>Inicio:</strong> {r.fechaInicio?.replace('T', ' ')}
+                            <strong>{t('admin.reservationsManagement.table.start')}</strong> {r.fechaInicio?.replace('T', ' ')}
                           </div>
                           <div>
-                            <strong>Fin:</strong> {r.fechaFin?.replace('T', ' ')}
+                            <strong>{t('admin.reservationsManagement.table.end')}</strong> {r.fechaFin?.replace('T', ' ')}
                           </div>
                         </div>
                       </td>
@@ -446,7 +439,7 @@ export default function ReservationManagementPage() {
                       <td>
                         <span className={`reserva-status-badge ${r.estado}`}>
                           <span className="reserva-status-dot" />
-                          {r.estado.replace('_', ' ')}
+                          {t(`admin.reservationsManagement.editModal.state${r.estado === 'en_curso' ? 'Ongoing' : r.estado === 'finalizada' ? 'Finished' : r.estado === 'cancelada' ? 'Cancelled' : r.estado === 'confirmada' ? 'Confirmed' : 'Pending'}`)}
                         </span>
                       </td>
 
@@ -462,7 +455,7 @@ export default function ReservationManagementPage() {
                           <button
                             type="button"
                             onClick={() => setModalDetalle(r)}
-                            title="Ver Detalle Completo"
+                            title={t('admin.reservationsManagement.tooltips.viewDetail')}
                           >
                             <FaEye />
                           </button>
@@ -471,7 +464,7 @@ export default function ReservationManagementPage() {
                           <button
                             type="button"
                             onClick={() => openEditarModal(r)}
-                            title="Editar Reserva"
+                            title={t('admin.reservationsManagement.tooltips.edit')}
                           >
                             <FaEdit />
                           </button>
@@ -482,7 +475,7 @@ export default function ReservationManagementPage() {
                               className="is-danger"
                               type="button"
                               onClick={() => setModalCancelar(r)}
-                              title="Cancelar Reserva"
+                              title={t('admin.reservationsManagement.tooltips.cancel')}
                             >
                               <FaBan />
                             </button>
@@ -507,7 +500,7 @@ export default function ReservationManagementPage() {
           <section className="cities-modal reserva-detail-modal" role="dialog">
             <div className="cities-modal__head">
               <div>
-                <p className="cities-eyebrow">Detalle de Reserva</p>
+                <p className="cities-eyebrow">{t('admin.reservationsManagement.detailModal.eyebrow')}</p>
                 <h2>{modalDetalle.codigo}</h2>
               </div>
               <button type="button" onClick={() => setModalDetalle(null)}>
@@ -519,18 +512,18 @@ export default function ReservationManagementPage() {
               {/* Información del Cliente */}
               <div className="reserva-detail-card-box">
                 <h4>
-                  <FaUser /> Datos del Cliente
+                  <FaUser /> {t('admin.reservationsManagement.detailModal.clientData')}
                 </h4>
                 <div className="reserva-detail-field">
-                  <small>Nombre completo</small>
+                  <small>{t('admin.reservationsManagement.detailModal.fullName')}</small>
                   <strong>{modalDetalle.clienteNombre}</strong>
                 </div>
                 <div className="reserva-detail-field">
-                  <small>Correo electrónico</small>
+                  <small>{t('admin.reservationsManagement.detailModal.email')}</small>
                   <strong>{modalDetalle.clienteCorreo}</strong>
                 </div>
                 <div className="reserva-detail-field">
-                  <small>Teléfono</small>
+                  <small>{t('admin.reservationsManagement.detailModal.phone')}</small>
                   <strong>{modalDetalle.clienteTelefono}</strong>
                 </div>
               </div>
@@ -538,18 +531,18 @@ export default function ReservationManagementPage() {
               {/* Información del Vehículo */}
               <div className="reserva-detail-card-box">
                 <h4>
-                  <FaCar /> Vehículo Asociado
+                  <FaCar /> {t('admin.reservationsManagement.detailModal.vehicleAssociated')}
                 </h4>
                 <div className="reserva-detail-field">
-                  <small>Modelo</small>
+                  <small>{t('admin.reservationsManagement.detailModal.model')}</small>
                   <strong>{modalDetalle.vehiculoNombre}</strong>
                 </div>
                 <div className="reserva-detail-field">
-                  <small>Placa</small>
+                  <small>{t('admin.reservationsManagement.detailModal.plate')}</small>
                   <strong>{modalDetalle.vehiculoPlaca || 'N/A'}</strong>
                 </div>
                 <div className="reserva-detail-field">
-                  <small>Sucursal asignada</small>
+                  <small>{t('admin.reservationsManagement.detailModal.assignedBranch')}</small>
                   <strong>{modalDetalle.sucursal}</strong>
                 </div>
               </div>
@@ -558,25 +551,25 @@ export default function ReservationManagementPage() {
             {/* Tiempos y Estado */}
             <div className="reserva-detail-card-box">
               <h4>
-                <FaClock /> Tiempos de Alquiler y Pago
+                <FaClock /> {t('admin.reservationsManagement.detailModal.rentalTimes')}
               </h4>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                 <div className="reserva-detail-field">
-                  <small>Fecha y Hora Recogida</small>
+                  <small>{t('admin.reservationsManagement.detailModal.pickupDateTime')}</small>
                   <strong>{modalDetalle.fechaInicio?.replace('T', ' ')}</strong>
                 </div>
                 <div className="reserva-detail-field">
-                  <small>Fecha y Hora Devolución</small>
+                  <small>{t('admin.reservationsManagement.detailModal.returnDateTime')}</small>
                   <strong>{modalDetalle.fechaFin?.replace('T', ' ')}</strong>
                 </div>
                 <div className="reserva-detail-field">
-                  <small>Estado actual</small>
+                  <small>{t('admin.reservationsManagement.detailModal.currentState')}</small>
                   <span className={`reserva-status-badge ${modalDetalle.estado}`}>
-                    {modalDetalle.estado.replace('_', ' ')}
+                    {t(`admin.reservationsManagement.editModal.state${modalDetalle.estado === 'en_curso' ? 'Ongoing' : modalDetalle.estado === 'finalizada' ? 'Finished' : modalDetalle.estado === 'cancelada' ? 'Cancelled' : modalDetalle.estado === 'confirmada' ? 'Confirmed' : 'Pending'}`)}
                   </span>
                 </div>
                 <div className="reserva-detail-field">
-                  <small>Monto Total ({moneda})</small>
+                  <small>{t('admin.reservationsManagement.detailModal.totalAmount', { currency: moneda })}</small>
                   <strong>{formatCurrency(modalDetalle.totalCOP, moneda, tasaUSD)}</strong>
                 </div>
               </div>
@@ -585,7 +578,7 @@ export default function ReservationManagementPage() {
             {/* Historial de Transiciones / Auditoría */}
             <div className="reserva-timeline-wrap">
               <h4 style={{ margin: '0 0 12px', fontSize: 13, display: 'flex', alignItems: 'center', gap: 6 }}>
-                <FaHistory style={{ color: '#2563eb' }} /> Historial de Transiciones y Auditoría
+                <FaHistory style={{ color: 'var(--brand-text)' }} /> {t('admin.reservationsManagement.detailModal.historyTitle')}
               </h4>
               <div style={{ maxHeight: 160, overflowY: 'auto' }}>
                 {(modalDetalle.historialAcciones || []).map((h, idx) => (
@@ -609,7 +602,7 @@ export default function ReservationManagementPage() {
 
             <div className="cities-modal__actions" style={{ marginTop: 20 }}>
               <button type="button" onClick={() => setModalDetalle(null)}>
-                Cerrar
+                {t('admin.reservationsManagement.detailModal.close')}
               </button>
             </div>
           </section>
@@ -668,31 +661,25 @@ export default function ReservationManagementPage() {
 
               <div className="branches-form-grid">
                 <label>
-                  Vehículo *
+                  {t('admin.reservationsManagement.createModal.vehicle')}
                   <select
                     value={formCrear.vehiculoNombre}
                     onChange={(e) => {
-                      const veh = catalogoVehiculos.find((v) => v.nombre === e.target.value)
+                      const veh = vehiculosDisponibles.find((v) => v.nombre === e.target.value)
                       setFormCrear({
                         ...formCrear,
                         vehiculoNombre: e.target.value,
-                        vehiculoPlaca: veh?.placa || 'KLS-849',
+                        vehiculoPlaca: veh?.placa || '',
                       })
                     }}
                   >
-                    {catalogoVehiculos.length > 0 ? (
-                      catalogoVehiculos.map((v) => (
+                    {vehiculosDisponibles.length > 0 ? (
+                      vehiculosDisponibles.map((v) => (
                         <option key={v.id} value={v.nombre}>
                           {v.nombre} ({v.placa || t('admin.reservationsModal.noLicensePlate')})
                         </option>
                       ))
-                    ) : (
-                      <>
-                        <option value="Toyota Prado VX">Toyota Prado VX (KLS-849)</option>
-                        <option value="Chevrolet Spark GT">Chevrolet Spark GT (HGF-123)</option>
-                        <option value="Ford Explorer 2024">Ford Explorer 2024 (ERT-456)</option>
-                      </>
-                    )}
+                    ) : <option value="" disabled>{t('admin.reservationsManagement.createModal.noVehicles')}</option>}
                   </select>
                 </label>
 
@@ -703,7 +690,7 @@ export default function ReservationManagementPage() {
                     disabled={esEncargado}
                     onChange={(e) => setFormCrear({ ...formCrear, sucursal: e.target.value })}
                   >
-                    {sucursales.map((s) => (
+                    {sucursalesVisibles.map((s) => (
                       <option key={s.id} value={s.nombre}>
                         {s.nombre}
                       </option>
@@ -767,10 +754,10 @@ export default function ReservationManagementPage() {
 
               <div className="cities-modal__actions">
                 <button type="button" onClick={() => setModalCrear(false)}>
-                  Cancelar
+                  {t('common.cancel')}
                 </button>
-                <button className="cities-primary" type="submit">
-                  Crear Reserva
+                <button className="cities-primary" type="submit" disabled={!vehiculosDisponibles.length || (esEncargado && !sucursalEncargado)}>
+                  {t('admin.reservationsManagement.createModal.create')}
                 </button>
               </div>
             </form>
@@ -787,8 +774,8 @@ export default function ReservationManagementPage() {
           <section className="cities-modal" role="dialog">
             <div className="cities-modal__head">
               <div>
-                <p className="cities-eyebrow">Edición de Datos</p>
-                <h2>Reserva {modalEditar.codigo}</h2>
+                <p className="cities-eyebrow">{t('admin.reservationsManagement.editModal.eyebrow')}</p>
+                <h2>{t('admin.reservationsManagement.editModal.titlePrefix', { code: modalEditar.codigo })}</h2>
               </div>
               <button type="button" onClick={() => setModalEditar(null)}>
                 ×
@@ -797,7 +784,7 @@ export default function ReservationManagementPage() {
 
             <form onSubmit={submitEditarReserva}>
               <label>
-                Nombre del Cliente
+                {t('admin.reservationsManagement.editModal.clientName')}
                 <input
                   value={formEditar.clienteNombre}
                   onChange={(e) => setFormEditar({ ...formEditar, clienteNombre: e.target.value })}
@@ -806,7 +793,7 @@ export default function ReservationManagementPage() {
 
               <div className="branches-form-grid">
                 <label>
-                  Sucursal
+                  {t('admin.reservationsManagement.editModal.branch')}
                   <select
                     value={formEditar.sucursal}
                     disabled={esEncargado}
@@ -821,23 +808,23 @@ export default function ReservationManagementPage() {
                 </label>
 
                 <label>
-                  Estado de Reserva
+                  {t('admin.reservationsManagement.editModal.state')}
                   <select
                     value={formEditar.estado}
                     onChange={(e) => setFormEditar({ ...formEditar, estado: e.target.value })}
                   >
-                    <option value="confirmada">Confirmada</option>
-                    <option value="en_curso">En curso</option>
-                    <option value="finalizada">Finalizada</option>
-                    <option value="pendiente">Pendiente</option>
-                    <option value="cancelada">Cancelada</option>
+                    <option value="confirmada">{t('admin.reservationsManagement.editModal.stateConfirmed')}</option>
+                    <option value="en_curso">{t('admin.reservationsManagement.editModal.stateOngoing')}</option>
+                    <option value="finalizada">{t('admin.reservationsManagement.editModal.stateFinished')}</option>
+                    <option value="pendiente">{t('admin.reservationsManagement.editModal.statePending')}</option>
+                    <option value="cancelada">{t('admin.reservationsManagement.editModal.stateCancelled')}</option>
                   </select>
                 </label>
               </div>
 
               <div className="branches-form-grid">
                 <label>
-                  Fecha Recogida
+                  {t('admin.reservationsManagement.editModal.pickupDate')}
                   <input
                     type="datetime-local"
                     value={formEditar.fechaInicio}
@@ -845,7 +832,7 @@ export default function ReservationManagementPage() {
                   />
                 </label>
                 <label>
-                  Fecha Devolución
+                  {t('admin.reservationsManagement.editModal.returnDate')}
                   <input
                     type="datetime-local"
                     value={formEditar.fechaFin}
@@ -855,7 +842,7 @@ export default function ReservationManagementPage() {
               </div>
 
               <label>
-                Total COP
+                {t('admin.reservationsManagement.editModal.total', { currency: moneda })}
                 <input
                   type="number"
                   value={formEditar.totalCOP}
@@ -864,7 +851,7 @@ export default function ReservationManagementPage() {
               </label>
 
               <label>
-                Notas Operativas
+                {t('admin.reservationsManagement.editModal.notes')}
                 <input
                   value={formEditar.notas}
                   onChange={(e) => setFormEditar({ ...formEditar, notas: e.target.value })}
@@ -873,10 +860,10 @@ export default function ReservationManagementPage() {
 
               <div className="cities-modal__actions">
                 <button type="button" onClick={() => setModalEditar(null)}>
-                  Cancelar
+                  {t('common.cancel')}
                 </button>
                 <button className="cities-primary" type="submit">
-                  Guardar Cambios
+                  {t('admin.reservationsManagement.editModal.save')}
                 </button>
               </div>
             </form>
@@ -894,17 +881,15 @@ export default function ReservationManagementPage() {
             <div className="cities-delete-icon">
               <FaBan />
             </div>
-            <h2>¿Cancelar Reserva {modalCancelar.codigo}?</h2>
-            <p>
-              Esta acción cambiará el estado a <strong>Cancelada</strong> y liberará el vehículo para nuevas solicitudes.
-            </p>
+            <h2>{t('admin.reservationsManagement.cancelModal.titlePrefix', { code: modalCancelar.codigo })}</h2>
+            <p>{t('admin.reservationsManagement.cancelModal.warningText')}</p>
 
             <form onSubmit={submitCancelarReserva} style={{ marginTop: 16 }}>
               <label>
-                Motivo de la Cancelación *
+                {t('admin.reservationsManagement.cancelModal.reasonLabel')}
                 <input
                   required
-                  placeholder="Ej: Solicitado por el cliente / Incumplimiento de requisitos"
+                  placeholder={t('admin.reservationsManagement.cancelModal.reasonPlaceholder')}
                   value={motivoCancelar}
                   onChange={(e) => setMotivoCancelar(e.target.value)}
                 />
@@ -912,10 +897,10 @@ export default function ReservationManagementPage() {
 
               <div className="cities-modal__actions">
                 <button type="button" onClick={() => setModalCancelar(null)}>
-                  Volver
+                  {t('admin.reservationsManagement.cancelModal.back')}
                 </button>
                 <button className="cities-danger" type="submit">
-                  Confirmar Cancelación
+                  {t('admin.reservationsManagement.cancelModal.confirm')}
                 </button>
               </div>
             </form>

@@ -104,7 +104,7 @@ export default function ReservationStepper({ pantalla, esModoOscuro }) {
               <div style={{
                 position: 'absolute', bottom: -1, left: 0, right: 0,
                 height: 3,
-                background: esModoOscuro ? '#3b82f6' : '#1d4ed8',
+                background: 'var(--brand-primary)',
                 boxShadow: esModoOscuro ? '0 0 10px rgba(59,130,246,0.5)' : 'none',
               }} />
             )}

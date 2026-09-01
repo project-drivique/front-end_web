@@ -3,33 +3,31 @@ import { useState, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { Link } from 'react-router-dom'
 import logocatalog from '@/assets/logocatalog.png'
+import { useBrand } from '@/contexts/BrandContext'
 import { useLanding } from './LandingContext'
 import translations, { IDIOMAS, CAT_MAP } from './translations'
 import { catalogService } from '../../services/catalogService'
 import { formatCurrency } from '@/utils/currencyUtils'
 import './LandingPage.css'
 
-const COLOR_MARCA = '#1e3a8a'
-const COLOR_MARCA_HOVER = '#162d6e'
-
-const coloresTema = (esModoOscuro) => ({
-  acentoTexto: esModoOscuro ? '#93c5fd' : COLOR_MARCA,
-  acentoFondoSuave: esModoOscuro ? 'rgba(30,58,138,0.22)' : '#eff6ff',
-  acentoBorde: esModoOscuro ? 'rgba(147,197,253,0.28)' : '#bfdbfe',
-  acentoFondoIcono: esModoOscuro ? 'linear-gradient(135deg,#1e293b,#0f172a)' : 'linear-gradient(135deg,#dbeafe,#bfdbfe)',
+const coloresTema = (esModoOscuro, brandColors) => ({
+  acentoTexto: esModoOscuro ? brandColors.accent : brandColors.secondary,
+  acentoFondoSuave: esModoOscuro ? 'rgba(var(--brand-secondary-rgb),0.22)' : 'var(--brand-soft-light)',
+  acentoBorde: esModoOscuro ? 'rgba(147,197,253,0.28)' : 'var(--brand-border-light)',
+  acentoFondoIcono: esModoOscuro ? 'linear-gradient(135deg,#1e293b,#0f172a)' : 'linear-gradient(135deg,var(--brand-soft-strong-light),var(--brand-border-light))',
   exitoFondo: esModoOscuro ? 'rgba(16,185,129,0.16)' : '#ecfdf5',
   exitoTexto: esModoOscuro ? '#6ee7b7' : '#059669',
   botonSecundarioBorde: esModoOscuro ? '#475569' : '#cbd5e1',
-  botonSecundarioHoverTexto: esModoOscuro ? '#93c5fd' : COLOR_MARCA,
-  botonSecundarioHoverBorde: esModoOscuro ? '#93c5fd' : COLOR_MARCA,
+  botonSecundarioHoverTexto: esModoOscuro ? brandColors.accent : brandColors.secondary,
+  botonSecundarioHoverBorde: esModoOscuro ? brandColors.accent : brandColors.secondary,
   cardHoverFeature: esModoOscuro ? '#1e293b' : 'rgba(239,246,255,0.65)',
-  cardHoverFeatureBorder: esModoOscuro ? 'rgba(147,197,253,0.30)' : '#bfdbfe',
-  numeroPaso: esModoOscuro ? 'rgba(147,197,253,0.18)' : 'rgba(30,58,138,0.15)',
-  loginBorder: esModoOscuro ? 'rgba(148,163,184,0.35)' : 'rgba(30,58,138,0.25)',
-  loginText: esModoOscuro ? '#e2e8f0' : COLOR_MARCA,
-  loginHoverBg: esModoOscuro ? 'rgba(148,163,184,0.08)' : 'rgba(30,58,138,0.05)',
-  statColor: esModoOscuro ? '#93c5fd' : COLOR_MARCA,
-  sectionLabel: esModoOscuro ? '#93c5fd' : COLOR_MARCA,
+  cardHoverFeatureBorder: esModoOscuro ? 'rgba(147,197,253,0.30)' : 'var(--brand-border-light)',
+  numeroPaso: esModoOscuro ? 'rgba(147,197,253,0.18)' : 'rgba(var(--brand-secondary-rgb),0.15)',
+  loginBorder: esModoOscuro ? 'rgba(148,163,184,0.35)' : 'rgba(var(--brand-secondary-rgb),0.25)',
+  loginText: esModoOscuro ? '#e2e8f0' : brandColors.secondary,
+  loginHoverBg: esModoOscuro ? 'rgba(148,163,184,0.08)' : 'rgba(var(--brand-secondary-rgb),0.05)',
+  statColor: esModoOscuro ? brandColors.accent : brandColors.secondary,
+  sectionLabel: esModoOscuro ? brandColors.accent : brandColors.secondary,
   footerText: '#94a3b8',
   footerMuted: '#475569',
   footerBottom: '#334155',
@@ -104,10 +102,11 @@ const ICONOS_FEATURES = [
 
 function MenuConfiguracion({ tx, modoMovil = false }) {
   const { tema, toggleTema, idioma, setIdioma, moneda, setMoneda } = useLanding()
+  const { brand } = useBrand()
   const [abierto, setAbierto] = useState(false)
   const contenedorRef = useRef(null)
   const esModoOscuro = tema === 'oscuro'
-  const c = coloresTema(esModoOscuro)
+  const c = coloresTema(esModoOscuro, brand.colors)
 
   useEffect(() => {
     if (modoMovil) return undefined
@@ -335,9 +334,10 @@ function MenuConfiguracion({ tx, modoMovil = false }) {
 
 export default function LandingPage() {
   const { tema, idioma, moneda } = useLanding()
+  const { brand } = useBrand()
   const tx = translations[idioma] ?? translations.es
   const esModoOscuro = tema === 'oscuro'
-  const c = coloresTema(esModoOscuro)
+  const c = coloresTema(esModoOscuro, brand.colors)
 
   const [autos, setAutos] = useState([])
   const [menuMovilAbierto, setMenuMovilAbierto] = useState(false)
@@ -361,8 +361,8 @@ export default function LandingPage() {
       <nav className="landing-nav">
         <div className="landing-nav-inner">
           <Link to="/" className="catalogo-logo-link" style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 2, flexShrink: 0 }}>
-            <img src={logocatalog} alt="Drivique" className="catalogo-logo" style={{ height: '22px', width: 'auto', display: 'block', objectFit: 'contain' }} />
-            <span className="catalogo-logo-title" style={{ fontSize: '9.5px', fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase', lineHeight: 1, color: c.acentoTexto }}>Drivique</span>
+            <img src={brand.logoDataUrl || logocatalog} alt={brand.name} className="catalogo-logo" style={{ height: '22px', width: 'auto', display: 'block', objectFit: 'contain' }} />
+            <span className="catalogo-logo-title" style={{ fontSize: '9.5px', fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase', lineHeight: 1, color: 'var(--brand-secondary)' }}>{brand.name}</span>
           </Link>
 
           <div className="landing-nav-links" style={{ display: 'flex', alignItems: 'center', gap: 32, flex: 1, justifyContent: 'center' }}>
@@ -427,16 +427,16 @@ export default function LandingPage() {
               style={{
                 padding: '8px 20px',
                 borderRadius: 9999,
-                background: COLOR_MARCA,
+                background: brand.colors.primary,
                 color: '#fff',
                 fontSize: 13,
                 fontWeight: 700,
                 textDecoration: 'none',
                 whiteSpace: 'nowrap',
-                boxShadow: '0 4px 12px rgba(30,58,138,0.25)',
+                boxShadow: '0 4px 12px rgba(var(--brand-secondary-rgb),0.25)',
               }}
-              onMouseEnter={e => e.currentTarget.style.background = COLOR_MARCA_HOVER}
-              onMouseLeave={e => e.currentTarget.style.background = COLOR_MARCA}
+              onMouseEnter={e => e.currentTarget.style.background = brand.colors.secondary}
+              onMouseLeave={e => e.currentTarget.style.background = brand.colors.primary}
             >
               {tx.nav.registro}
             </Link>
@@ -532,7 +532,7 @@ export default function LandingPage() {
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 10, paddingTop: 14, borderTop: '1px solid var(--borde)', flexWrap: 'wrap' }}>
               <MenuConfiguracion tx={tx} modoMovil />
               <Link to="/login" onClick={() => setMenuMovilAbierto(false)} style={{ padding: '8px 20px', borderRadius: 9999, border: `2px solid ${c.loginBorder}`, color: c.loginText, fontSize: 14, fontWeight: 700, textDecoration: 'none' }}>{tx.nav.login}</Link>
-              <Link to="/registro" onClick={() => setMenuMovilAbierto(false)} style={{ padding: '8px 20px', borderRadius: 9999, background: COLOR_MARCA, color: '#fff', fontSize: 13, fontWeight: 700, textDecoration: 'none' }}>{tx.nav.registro}</Link>
+              <Link to="/registro" onClick={() => setMenuMovilAbierto(false)} style={{ padding: '8px 20px', borderRadius: 9999, background: brand.colors.primary, color: '#fff', fontSize: 13, fontWeight: 700, textDecoration: 'none' }}>{tx.nav.registro}</Link>
             </div>
           </div>
         )}
@@ -571,7 +571,7 @@ export default function LandingPage() {
 
             <h1 style={{ fontSize: 'clamp(2.2rem,4vw,3.5rem)', fontWeight: 900, color: 'var(--texto-primary)', lineHeight: 1.1, letterSpacing: '-0.02em', marginBottom: 20 }}>
               {tx.hero.h1a}<br />
-              <span style={{ background: 'linear-gradient(90deg,#1e3a8a,#3b82f6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+              <span style={{ background: 'linear-gradient(90deg,var(--brand-secondary),var(--brand-primary))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                 {tx.hero.h1b}
               </span>
             </h1>
@@ -589,15 +589,15 @@ export default function LandingPage() {
                   gap: 8,
                   padding: '14px 28px',
                   borderRadius: 9999,
-                  background: COLOR_MARCA,
+                  background: brand.colors.primary,
                   color: '#fff',
                   fontWeight: 700,
                   fontSize: 13,
                   textDecoration: 'none',
-                  boxShadow: '0 8px 24px rgba(30,58,138,0.30)',
+                  boxShadow: '0 8px 24px rgba(var(--brand-secondary-rgb),0.30)',
                 }}
-                onMouseEnter={e => e.currentTarget.style.background = COLOR_MARCA_HOVER}
-                onMouseLeave={e => e.currentTarget.style.background = COLOR_MARCA}
+                onMouseEnter={e => e.currentTarget.style.background = brand.colors.secondary}
+                onMouseLeave={e => e.currentTarget.style.background = brand.colors.primary}
               >
                 {tx.hero.cta1} <IconoFlecha />
               </Link>
@@ -706,12 +706,12 @@ export default function LandingPage() {
                   marginTop: 16,
                   padding: 14,
                   borderRadius: 16,
-                  background: 'linear-gradient(90deg,#1e3a8a,#2563eb)',
+                  background: 'linear-gradient(90deg,var(--brand-secondary),var(--brand-primary))',
                   color: '#fff',
                   fontSize: 14,
                   fontWeight: 700,
                   textDecoration: 'none',
-                  boxShadow: '0 4px 16px rgba(30,58,138,0.25)',
+                  boxShadow: '0 4px 16px rgba(var(--brand-secondary-rgb),0.25)',
                 }}
                 onMouseEnter={e => e.currentTarget.style.opacity = '0.9'}
                 onMouseLeave={e => e.currentTarget.style.opacity = '1'}
@@ -771,7 +771,7 @@ export default function LandingPage() {
                   e.currentTarget.style.transform = 'translateY(0)'
                 }}
               >
-                <div style={{ width: 48, height: 48, borderRadius: 14, background: 'linear-gradient(135deg,#1e3a8a,#3b82f6)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', marginBottom: 16 }}>
+                <div style={{ width: 48, height: 48, borderRadius: 14, background: 'linear-gradient(135deg,var(--brand-secondary),var(--brand-primary))', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', marginBottom: 16 }}>
                   {ICONOS_FEATURES[i]}
                 </div>
                 <h3 style={{ fontSize: 15, fontWeight: 800, color: 'var(--texto-primary)', margin: '0 0 8px' }}>{item.titulo}</h3>
@@ -782,10 +782,10 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section className="landing-cta-section" style={{ padding: '80px 48px', background: 'linear-gradient(135deg,#0f1a3d,#1e3a8a,#2563eb)' }}>
+      <section className="landing-cta-section" style={{ padding: '80px 48px', background: 'linear-gradient(135deg,var(--brand-secondary),var(--brand-secondary),var(--brand-primary))' }}>
         <div style={{ maxWidth: 700, margin: '0 auto', textAlign: 'center' }}>
           <h2 style={{ fontSize: '2rem', fontWeight: 900, color: '#fff', margin: '0 0 16px' }}>{tx.cta.titulo}</h2>
-          <p style={{ color: '#93c5fd', fontSize: 16, margin: '0 0 32px' }}>{tx.cta.sub}</p>
+          <p style={{ color: 'var(--brand-text-dark)', fontSize: 16, margin: '0 0 32px' }}>{tx.cta.sub}</p>
 
           <div style={{ display: 'flex', justifyContent: 'center', gap: 16, flexWrap: 'wrap' }}>
             <Link
@@ -794,7 +794,7 @@ export default function LandingPage() {
                 padding: '14px 32px',
                 borderRadius: 9999,
                 background: '#fff',
-                color: COLOR_MARCA,
+                color: brand.colors.secondary,
                 fontWeight: 700,
                 fontSize: 14,
                 textDecoration: 'none',
@@ -833,8 +833,8 @@ export default function LandingPage() {
           <div className="landing-footer-top" style={{ display: 'flex', justifyContent: 'space-between', gap: 48, flexWrap: 'wrap', marginBottom: 40 }}>
             <div style={{ maxWidth: 280 }}>
               <Link to="/" className="catalogo-logo-link" style={{ textDecoration: 'none', display: 'inline-flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2, marginBottom: 16 }}>
-                <img src={logocatalog} alt="Drivique" style={{ height: '22px', width: 'auto', display: 'block', objectFit: 'contain', filter: 'brightness(0) invert(1)', opacity: 0.9 }} />
-                <span className="catalogo-logo-title" style={{ fontSize: '9.5px', fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#ffffff' }}>Drivique</span>
+                <img src={brand.logoDataUrl || logocatalog} alt={brand.name} style={{ height: '22px', width: 'auto', display: 'block', objectFit: 'contain', filter: brand.logoDataUrl ? 'none' : 'brightness(0) invert(1)', opacity: 0.9 }} />
+                <span className="catalogo-logo-title" style={{ fontSize: '9.5px', fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#ffffff' }}>{brand.name}</span>
               </Link>
               <p style={{ fontSize: 14, lineHeight: 1.7, color: c.footerMuted, margin: 0 }}>{tx.footer.desc}</p>
             </div>

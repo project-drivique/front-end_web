@@ -82,8 +82,8 @@ export default function VehicleQuickSpecsCard({ vehiculo, c }) {
             width: 32,
             height: 32,
             borderRadius: 10,
-            background: esModoOscuro ? 'rgba(59,130,246,0.2)' : '#eff6ff',
-            color: esModoOscuro ? '#60a5fa' : '#2563eb',
+            background: esModoOscuro ? 'rgba(59,130,246,0.2)' : 'var(--brand-soft-light)',
+            color: esModoOscuro ? 'var(--brand-accent)' : 'var(--brand-primary)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -98,7 +98,7 @@ export default function VehicleQuickSpecsCard({ vehiculo, c }) {
 
         <span style={{
           background: esModoOscuro ? 'rgba(59,130,246,0.15)' : '#f0f9ff',
-          color: esModoOscuro ? '#93c5fd' : '#0284c7',
+          color: esModoOscuro ? 'var(--brand-text-dark)' : 'var(--brand-text-light)',
           border: `1px solid ${esModoOscuro ? 'rgba(59,130,246,0.3)' : '#bae6fd'}`,
           padding: '4px 12px',
           borderRadius: 9999,
@@ -138,7 +138,7 @@ export default function VehicleQuickSpecsCard({ vehiculo, c }) {
                 borderRadius: 10,
                 background: esModoOscuro ? 'rgba(59,130,246,0.15)' : '#ffffff',
                 border: `1px solid ${esModoOscuro ? 'rgba(255,255,255,0.08)' : '#e2e8f0'}`,
-                color: esModoOscuro ? '#60a5fa' : '#1d4ed8',
+                color: esModoOscuro ? 'var(--brand-accent)' : 'var(--brand-primary-hover)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',

@@ -1,4 +1,4 @@
-export function IconChip({ icon, label, color = '#2563eb' }) {
+export function IconChip({ icon, label, color = 'var(--brand-primary)' }) {
   return (
     <div
       style={{

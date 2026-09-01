@@ -27,13 +27,13 @@ export default function PlaceholderPage() {
         <div style={{
           width: '80px',
           height: '80px',
-          background: '#eff6ff',
+          background: 'var(--brand-soft)',
           borderRadius: '50%',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           margin: '0 auto 24px',
-          color: '#3b82f6'
+          color: 'var(--brand-text)'
         }}>
           <FaTools size={32} />
         </div>
@@ -62,7 +62,7 @@ export default function PlaceholderPage() {
             display: 'inline-flex',
             alignItems: 'center',
             gap: '8px',
-            background: '#2563eb',
+            background: 'var(--brand-primary)',
             color: 'white',
             padding: '12px 24px',
             borderRadius: '12px',
@@ -71,8 +71,8 @@ export default function PlaceholderPage() {
             fontSize: '14px',
             transition: 'background 200ms'
           }}
-          onMouseEnter={(e) => e.currentTarget.style.background = '#1d4ed8'}
-          onMouseLeave={(e) => e.currentTarget.style.background = '#2563eb'}
+          onMouseEnter={(e) => e.currentTarget.style.background = 'var(--brand-primary-hover)'}
+          onMouseLeave={(e) => e.currentTarget.style.background = 'var(--brand-primary)'}
         >
           <FaArrowLeft size={14} />
           {t('placeholder.backBtn', 'Volver al Catálogo')}

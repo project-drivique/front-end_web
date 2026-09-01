@@ -6,12 +6,14 @@ import { formatCurrency } from '@/utils/currencyUtils';
 import { showAlert } from '@/utils/swalConfig';
 import { useLanding } from '../../landing/LandingContext';
 import logo from '@/assets/logo.png';
+import { useBrand } from '@/contexts/BrandContext';
 import VEHICULOS_MOCK from '@/mocks/vehicles.json';
 import ContractSignature from '../../contracts/components/ContractSignature';
 import { useAuthStore } from '../../../store/authStore';
 import MenuConfiguracion from '@/components/MenuConfiguracion';
 
 export default function RespuestaPagoPage() {
+  const { brand } = useBrand();
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { usuario } = useAuthStore();
@@ -45,7 +47,7 @@ export default function RespuestaPagoPage() {
         <div className="sucursales-orb" style={{ position: 'absolute', bottom: -60, left: -60, width: 350, height: 350, borderRadius: '50%', background: 'var(--hero-orb2)', pointerEvents: 'none' }} />
         <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50, background: 'var(--bg-tarjeta)', backdropFilter: 'blur(12px)', borderBottom: '1px solid var(--borde)', boxShadow: '0 4px 20px rgba(0,0,0,0.04)', height: 96 }}>
           <div className="catalogo-header-inner" style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px', height: '100%', display: 'flex', alignItems: 'center', gap: 20 }}>
-            <Link to={usuario ? "/home" : "/"}><img src={logo} alt="Drivique" style={{ height: 80 }} /></Link>
+            <Link to={usuario ? "/home" : "/"}><img src={brand.logoDataUrl || logo} alt={brand.name} style={{ height: 80 }} /></Link>
           </div>
         </nav>
         <div style={{ position: 'relative', paddingTop: 128, paddingBottom: 48, paddingLeft: 24, paddingRight: 24 }}>
@@ -79,10 +81,10 @@ export default function RespuestaPagoPage() {
     <div className="catalogo-page" style={{ minHeight: '100vh', background: 'var(--bg-page)' }}>
       <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50, background: 'var(--bg-tarjeta)', backdropFilter: 'blur(12px)', borderBottom: '1px solid var(--borde)', boxShadow: '0 4px 20px rgba(0,0,0,0.04)', height: 96 }}>
         <div className="catalogo-header-inner" style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px', height: '100%', display: 'flex', alignItems: 'center', gap: 20 }}>
-          <Link to={usuario ? "/home" : "/"}><img src={logo} alt="Drivique" style={{ height: 80 }} /></Link>
+          <Link to={usuario ? "/home" : "/"}><img src={brand.logoDataUrl || logo} alt={brand.name} style={{ height: 80 }} /></Link>
           <div style={{ flex: 1 }} />
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <Link to="/home" style={{ padding: '10px 20px', borderRadius: 9999, border: '2px solid #bfdbfe', color: 'var(--texto-acento)', fontSize: 14, fontWeight: 700, textDecoration: 'none', transition: 'all 200ms ease' }}>{t('common.goHome', 'Ir al Inicio')}</Link>
+            <Link to="/home" style={{ padding: '10px 20px', borderRadius: 9999, border: '2px solid var(--brand-border-light)', color: 'var(--texto-acento)', fontSize: 14, fontWeight: 700, textDecoration: 'none', transition: 'all 200ms ease' }}>{t('common.goHome', 'Ir al Inicio')}</Link>
             <MenuConfiguracion />
           </div>
         </div>
@@ -91,7 +93,7 @@ export default function RespuestaPagoPage() {
       <div style={{ paddingTop: 140, display: 'flex', justifyContent: 'center', paddingBottom: 40, paddingLeft: 24, paddingRight: 24 }}>
         <div className="respuesta-pago-card" style={{ background: 'var(--bg-tarjeta)', borderRadius: 24, padding: 40, width: '100%', maxWidth: 500, boxShadow: '0 12px 36px rgba(0,0,0,0.06)', border: '1px solid var(--borde)', textAlign: 'center' }}>
           
-          <div style={{ width: 80, height: 80, borderRadius: '50%', background: 'linear-gradient(135deg,#1e3a8a,#2563eb)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px', boxShadow: '0 12px 32px rgba(30,58,138,0.28)' }}>
+          <div style={{ width: 80, height: 80, borderRadius: '50%', background: 'var(--brand-gradient)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px', boxShadow: 'var(--brand-shadow)' }}>
             <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
@@ -114,12 +116,12 @@ export default function RespuestaPagoPage() {
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
                 <span style={{ fontSize: 13, color: 'var(--texto-second)', fontWeight: 600 }}>{t('pago.wompiTxId', 'ID de Transacción Wompi')}</span>
-                <span style={{ fontSize: 13, color: '#3b82f6', fontWeight: 800 }}>{transactionId || 'N/A'}</span>
+                <span style={{ fontSize: 13, color: 'var(--brand-text)', fontWeight: 800 }}>{transactionId || 'N/A'}</span>
               </div>
               <div style={{ borderTop: '1px solid #e2e8f0', margin: '16px 0' }}></div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ fontSize: 13, color: 'var(--texto-primary)', fontWeight: 800 }}>{t('pago.amountToPay', 'Monto a Pagar')}</span>
-                <span style={{ fontSize: 18, color: '#1e3a8a', fontWeight: 900 }}>{formatCurrency(reserva.total, moneda)}</span>
+                <span style={{ fontSize: 18, color: 'var(--brand-text)', fontWeight: 900 }}>{formatCurrency(reserva.total, moneda)}</span>
               </div>
             </div>
           ) : (
@@ -128,7 +130,7 @@ export default function RespuestaPagoPage() {
             </div>
           )}
 
-          <Link to="/home" style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '14px 32px', borderRadius: 16, background: 'linear-gradient(90deg,#1e3a8a,#2563eb)', color: '#fff', fontWeight: 900, fontSize: 15, border: 'none', cursor: 'pointer', textDecoration: 'none', boxShadow: '0 8px 24px rgba(37,99,235,0.28)' }}>
+          <Link to="/home" style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '14px 32px', borderRadius: 16, background: 'var(--brand-gradient)', color: 'var(--brand-on-primary)', fontWeight: 900, fontSize: 15, border: 'none', cursor: 'pointer', textDecoration: 'none', boxShadow: 'var(--brand-shadow)' }}>
             {t('pago.backToAccount', 'Volver a Mi Cuenta')}
           </Link>
 
