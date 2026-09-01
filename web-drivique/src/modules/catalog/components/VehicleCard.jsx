@@ -287,8 +287,8 @@ export default function TarjetaVehiculo({
             style={{
               fontSize: '9px',
               fontWeight: 700,
-              color: '#1e40af',
-              background: '#eff6ff',
+              color: 'var(--brand-text-light)',
+              background: 'var(--brand-soft-light)',
               padding: '3px 7px',
               borderRadius: '999px',
               border: '1px solid #cfe0ff',
@@ -363,7 +363,7 @@ export default function TarjetaVehiculo({
         </div>
 
         <div style={{ marginBottom: '10px' }}>
-          <span style={{ fontSize: '18px', fontWeight: 900, color: '#1e3a8a', letterSpacing: '-0.03em' }}>
+          <span style={{ fontSize: '18px', fontWeight: 900, color: 'var(--brand-text)', letterSpacing: '-0.03em' }}>
             {formatCurrency(vehiculo.precio || 60000, moneda)}
           </span>
           <span style={{ fontSize: '10px', color: c.textSecondary, marginLeft: '3px' }}>
@@ -387,7 +387,7 @@ export default function TarjetaVehiculo({
               cursor: puedeReservar ? 'pointer' : 'not-allowed',
               background: puedeReservar ? c.accentGradient : c.paginationDisabledBg,
               color: '#ffffff',
-              boxShadow: puedeReservar ? '0 5px 14px rgba(37,99,235,0.22)' : 'none',
+              boxShadow: puedeReservar ? '0 5px 14px rgba(var(--brand-primary-rgb),0.22)' : 'none',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -404,7 +404,7 @@ export default function TarjetaVehiculo({
             tabIndex={0}
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '8px', cursor: 'pointer' }}
           >
-            <span style={{ fontSize: '11px', fontWeight: 700, color: '#2563eb', textDecoration: 'underline', textUnderlineOffset: '3px' }}>
+            <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--brand-text)', textDecoration: 'underline', textUnderlineOffset: '3px' }}>
               {t('catalogo.details', 'Ver detalles')}
             </span>
           </div>

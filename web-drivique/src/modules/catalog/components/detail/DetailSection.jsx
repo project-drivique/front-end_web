@@ -19,7 +19,7 @@ export default function DetailSection({ icon, title, action, children, first = f
               {icon && (
                 <span style={{
                   width: 26, height: 26, borderRadius: 8,
-                  background: 'rgba(37,99,235,0.1)', color: '#2563eb',
+                  background: 'rgba(var(--brand-primary-rgb),0.1)', color: 'var(--brand-primary)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
                 }}>
                   {icon}

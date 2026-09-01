@@ -19,7 +19,7 @@ function guardarStorageReports(data) {
   if (typeof window === 'undefined') return
   try {
     localStorage.setItem(STORAGE_KEY_REPORTS, JSON.stringify(data))
-  } catch {}
+  } catch { /* El almacenamiento puede no estar disponible en modo privado. */ }
 }
 
 export function useSupportStore() {
@@ -64,7 +64,7 @@ export function useSupportStore() {
           titulo: 'Recibido',
           descripcion: 'Reporte registrado en el sistema.',
           hora: horaActual,
-          color: '#2563eb',
+          color: 'var(--brand-primary)',
         },
       ],
     }
@@ -88,7 +88,7 @@ export function useSupportStore() {
         })
         localStorage.setItem('drivique_user_notifications', JSON.stringify(notifs))
       }
-    } catch {}
+    } catch { /* El reporte permanece creado aunque no se pueda notificar. */ }
 
     return nuevoReporte
   }, [])

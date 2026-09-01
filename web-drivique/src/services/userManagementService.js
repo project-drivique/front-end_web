@@ -1,5 +1,4 @@
 // src/services/userManagementService.js
-import { mockUsersStorage } from './mockUsersStorage'
 import { accessAuditService } from './accessAuditService'
 import { reservationManagementService } from './reservationManagementService'
 
@@ -61,18 +60,6 @@ const INITIAL_USERS = [
     documentoLicencia: null,
     observacionDocumentos: 'Licencia vencida en fecha de expedición.',
     fechaRegistro: '2026-03-12T16:00:00.000Z',
-  },
-  {
-    id: 'usr-105',
-    nombre: 'Encargado Neiva',
-    correo: 'encargado.neiva@drivique.com',
-    telefono: '+57 315 901 2233',
-    cedula: '1075211990',
-    rol: 'encargado',
-    sucursal: 'Neiva',
-    activo: true,
-    documentosEstado: 'aprobado',
-    fechaRegistro: '2026-01-01T08:00:00.000Z',
   },
   {
     id: 'usr-106',
@@ -150,7 +137,7 @@ export const userManagementService = {
       telefono: userData.telefono || '+57 300 000 0000',
       cedula: userData.cedula || 'N/A',
       rol: userData.rol || 'cliente',
-      sucursal: userData.rol === 'encargado' ? userData.sucursal || 'Neiva' : undefined,
+      sucursal: userData.rol === 'encargado' ? userData.sucursal : undefined,
       activo: userData.activo !== false,
       documentosEstado: userData.documentosEstado || 'pendiente',
       documentoCedula: userData.documentoCedula || null,

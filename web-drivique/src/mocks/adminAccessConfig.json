@@ -21,7 +21,7 @@
     "maxRecords": 100
   },
   "dashboardModules": {
-    "administrador": ["vehicles", "users", "reservations", "contracts", "incidents", "cities", "branches", "promotions", "audit"],
+    "administrador": ["vehicles", "users", "reservations", "contracts", "incidents", "cities", "branches", "promotions", "brand", "audit"],
     "encargado_sucursal": ["vehicles", "reservations", "contracts", "incidents"]
   },
   "dashboardNavigation": {
@@ -36,6 +36,7 @@
       { "key": "cities", "route": "/admin/cities" },
       { "key": "branches", "route": "/admin/branches" },
       { "key": "promotions", "route": "/admin/promotions" },
+      { "key": "brand", "route": "/admin/brand" },
       { "key": "audit", "route": "/admin/audit" }
     ],
     "encargado_sucursal": [
