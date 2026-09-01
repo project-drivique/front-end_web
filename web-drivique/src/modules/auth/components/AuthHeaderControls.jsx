@@ -11,10 +11,10 @@ export default function AuthHeaderControls({ backTo = '/login', backLabelKey = '
   const c = {
     btnBg: esModoOscuro ? '#0e172a' : '#ffffff',
     btnBorder: esModoOscuro ? '#1e293b' : '#dbe5f3',
-    btnText: esModoOscuro ? '#60a5fa' : '#1e3a8a',
-    btnShadow: esModoOscuro ? '0 4px 14px rgba(0,0,0,0.3)' : '0 2px 10px rgba(30,58,138,0.04)',
+    btnText: esModoOscuro ? 'var(--brand-accent)' : 'var(--brand-secondary)',
+    btnShadow: esModoOscuro ? '0 4px 14px rgba(0,0,0,0.3)' : '0 2px 10px rgba(var(--brand-secondary-rgb),0.04)',
     btnHoverBg: esModoOscuro ? '#1e2a45' : '#f8fafc',
-    btnHoverBorder: esModoOscuro ? '#3b82f6' : '#cbd5e1',
+    btnHoverBorder: esModoOscuro ? 'var(--brand-primary)' : '#cbd5e1',
   }
 
   return (

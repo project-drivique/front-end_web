@@ -26,7 +26,7 @@ export default function PricingSection({ tarifas, seguros = [], c }) {
 
   const bg = c?.cardBg || '#fff'
   const border = c?.cardBorder || '#e2e8f0'
-  const titleColor = c?.titleColor || '#1e3a8a'
+  const titleColor = c?.titleColor || 'var(--brand-secondary)'
   const subBg = c?.subCardBg || '#f8fafc'
   const subBorder = c?.subCardBorder || '#e2e8f0'
 
@@ -45,14 +45,14 @@ export default function PricingSection({ tarifas, seguros = [], c }) {
       {tarifas && (
         <div style={{ background: bg, padding: 20, borderRadius: 16, border: `1px solid ${border}` }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-            <FaRoad size={14} color={c?.accentText || "#2563eb"} />
+            <FaRoad size={14} color={c?.accentText || "var(--brand-primary)"} />
             <h3 style={{ fontSize: 13, fontWeight: 700, color: titleColor, margin: 0 }}>{t('vehiculo.mileageRates', 'Tarifas por kilometraje')}</h3>
           </div>
 
-          <div style={{ 
-            background: subBg, 
-            border: `1px solid ${subBorder}`, 
-            borderRadius: 12, padding: '0 16px' 
+          <div style={{
+            background: subBg,
+            border: `1px solid ${subBorder}`,
+            borderRadius: 12, padding: '0 16px'
           }}>
             <PriceRow
               label={t('vehiculo.limitedMileage', 'Kilometraje limitado')}
@@ -71,14 +71,14 @@ export default function PricingSection({ tarifas, seguros = [], c }) {
       {seguros.length > 0 && (
         <div style={{ background: bg, padding: 20, borderRadius: 16, border: `1px solid ${border}` }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-            <FaShieldAlt size={14} color={c?.accentText || "#2563eb"} />
+            <FaShieldAlt size={14} color={c?.accentText || "var(--brand-primary)"} />
             <h3 style={{ fontSize: 13, fontWeight: 700, color: titleColor, margin: 0 }}>{t('vehiculo.insurance', 'Seguros')}</h3>
           </div>
 
-          <div style={{ 
-            background: subBg, 
-            border: `1px solid ${subBorder}`, 
-            borderRadius: 12, padding: '0 16px' 
+          <div style={{
+            background: subBg,
+            border: `1px solid ${subBorder}`,
+            borderRadius: 12, padding: '0 16px'
           }}>
             {seguros.map((seg, i) => (
               <PriceRow
@@ -93,4 +93,4 @@ export default function PricingSection({ tarifas, seguros = [], c }) {
 
     </div>
   )
-}
+}

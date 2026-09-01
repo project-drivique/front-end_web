@@ -15,7 +15,7 @@ export default function DomicilioModal({
   const bg = c?.cardBg || '#fff'
   const textPrimary = c?.textPrimary || '#0f172a'
   const textSecond = c?.textSecondary || '#64748b'
-  const accent = c?.accentText || '#2563eb'
+  const accent = c?.accentText || 'var(--brand-primary)'
   const border = c?.cardBorder || '#e2e8f0'
   
   const isMobile = useIsMobile()
@@ -108,7 +108,7 @@ export default function DomicilioModal({
         {/* Header */}
         <div style={{ padding: isMobile ? '20px' : '24px 24px 20px', borderBottom: `1px solid ${border}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <div style={{ width: 40, height: 40, borderRadius: 12, background: 'rgba(37, 99, 235, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: accent }}>
+            <div style={{ width: 40, height: 40, borderRadius: 12, background: 'rgba(var(--brand-primary-rgb), 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: accent }}>
               <FaHome size={20} />
             </div>
             <div>
@@ -209,7 +209,7 @@ export default function DomicilioModal({
           </div>
 
           {!isReadOnly && reserva?.sucursalRetiro === 'domicilio' && (
-            <label style={{ display: 'flex', gap: 10, alignItems: 'flex-start', marginTop: 10, padding: '12px 16px', cursor: 'pointer', background: 'rgba(37, 99, 235, 0.05)', borderRadius: 12, border: `1px solid rgba(37, 99, 235, 0.2)` }}>
+            <label style={{ display: 'flex', gap: 10, alignItems: 'flex-start', marginTop: 10, padding: '12px 16px', cursor: 'pointer', background: 'rgba(var(--brand-primary-rgb), 0.05)', borderRadius: 12, border: `1px solid rgba(var(--brand-primary-rgb), 0.2)` }}>
               <input
                 type="checkbox"
                 checked={localDatos.mismoLugar}
@@ -229,7 +229,7 @@ export default function DomicilioModal({
           {isReadOnly ? (
             <button 
               onClick={onClose}
-              style={{ flex: 1, padding: '12px', borderRadius: 12, background: accent, border: 'none', color: '#fff', fontSize: 14, fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 12px rgba(37, 99, 235, 0.3)' }}
+              style={{ flex: 1, padding: '12px', borderRadius: 12, background: accent, border: 'none', color: '#fff', fontSize: 14, fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 12px rgba(var(--brand-primary-rgb), 0.3)' }}
             >
               {t('common.close', 'Cerrar')}
             </button>
@@ -243,7 +243,7 @@ export default function DomicilioModal({
               </button>
               <button 
                 onClick={handleGuardar}
-                style={{ padding: '12px 24px', borderRadius: 12, background: 'linear-gradient(90deg, #1e3a8a, #2563eb)', color: '#fff', fontWeight: 800, fontSize: 14, border: 'none', cursor: 'pointer', boxShadow: '0 4px 12px rgba(37, 99, 235, 0.2)' }}
+                style={{ padding: '12px 24px', borderRadius: 12, background: 'var(--brand-gradient)', color: 'var(--brand-on-primary)', fontWeight: 800, fontSize: 14, border: 'none', cursor: 'pointer', boxShadow: 'var(--brand-shadow)' }}
               >
                 {t('common.save', 'Guardar cambios')}
               </button>

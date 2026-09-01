@@ -42,7 +42,7 @@ export default function FavoritesPage() {
       if (Array.isArray(legacy1)) legacy1.forEach(id => setFavs.add(String(id)))
       const legacy2 = JSON.parse(localStorage.getItem('favoritosVehiculos') || '[]')
       if (Array.isArray(legacy2)) legacy2.forEach(id => setFavs.add(String(id)))
-    } catch {}
+    } catch { /* Se ignoran datos heredados dañados y se usa el estado actual. */ }
 
     return Array.from(setFavs)
   }, [favoritos])
@@ -96,14 +96,14 @@ export default function FavoritesPage() {
           localStorage.setItem(key, JSON.stringify(filtrado))
         }
       })
-    } catch {}
+    } catch { /* La eliminación principal ya se realizó en el almacén actual. */ }
   }
 
   const c = {
     navBg: esModoOscuro ? '#0f172a' : '#ffffff',
     navBorder: esModoOscuro ? '#334155' : '#e2e8f0',
     navShadow: '0 4px 20px rgba(0,0,0,0.04)',
-    accentText: esModoOscuro ? '#93c5fd' : '#1e3a8a',
+    accentText: 'var(--brand-text)',
   }
 
   return (
@@ -221,13 +221,13 @@ export default function FavoritesPage() {
 
                     <div className="favorito-specs-list">
                       <span className="favorito-spec-item">
-                        <FaCog style={{ color: '#2563eb' }} /> {v.transmision || 'Automática'}
+                        <FaCog style={{ color: 'var(--brand-text)' }} /> {v.transmision || 'Automática'}
                       </span>
                       <span className="favorito-spec-item">
-                        <FaUsers style={{ color: '#2563eb' }} /> {v.pasajeros || v.capacidad || 5} {t('vehiculo.seats', 'Plazas')}
+                        <FaUsers style={{ color: 'var(--brand-text)' }} /> {v.pasajeros || v.capacidad || 5} {t('vehiculo.seats', 'Plazas')}
                       </span>
                       <span className="favorito-spec-item">
-                        <FaGasPump style={{ color: '#2563eb' }} /> {v.combustible || 'Gasolina'}
+                        <FaGasPump style={{ color: 'var(--brand-text)' }} /> {v.combustible || 'Gasolina'}
                       </span>
                     </div>
                   </div>

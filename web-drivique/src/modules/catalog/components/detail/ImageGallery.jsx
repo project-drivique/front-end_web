@@ -149,7 +149,7 @@ export default function GaleriaImagenes({ imagenes = [], nombreVehiculo = 'Vehí
             onClick={() => setIndiceActivo(idx)}
             style={{
               flex: 1, height: compact ? 80 : 64, borderRadius: 8, overflow: 'hidden', cursor: 'pointer',
-              border: indiceActivo === idx ? '2px solid #2563eb' : '2px solid transparent',
+              border: indiceActivo === idx ? '2px solid var(--brand-primary)' : '2px solid transparent',
               transition: 'border-color 0.2s', opacity: indiceActivo === idx ? 1 : 0.7
             }}
           >

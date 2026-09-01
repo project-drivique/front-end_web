@@ -1,6 +1,7 @@
 const STORAGE_KEY = 'drivique_mock_users'
 const SCHEMA_KEY = 'drivique_mock_users_schema'
-const CURRENT_SCHEMA = '2'
+const CURRENT_SCHEMA = '4'
+const LEGACY_MANAGER_EMAILS = new Set(['encargado.neiva@drivique.com'])
 
 function leerUsuarios() {
   try {
@@ -28,9 +29,28 @@ export const mockUsersStorage = {
     return usuario
   },
   asegurarConfigurados(configurados = []) {
-    const usuarios = leerUsuarios()
+    let usuarios = leerUsuarios()
     const requiereMigracion = localStorage.getItem(SCHEMA_KEY) !== CURRENT_SCHEMA
     let cambio = false
+    if (requiereMigracion) {
+      const correosEncargadosConfigurados = new Set(
+        configurados
+          .filter((usuario) => usuario?.rol === 'encargado_sucursal')
+          .map((usuario) => String(usuario.correo || '').toLowerCase()),
+      )
+      const sinEncargadosHeredados = usuarios.filter((usuario) => {
+        const correo = String(usuario.correo || '').toLowerCase()
+        if (LEGACY_MANAGER_EMAILS.has(correo)) return false
+        if (usuario?.rol === 'encargado_sucursal' || usuario?.rol === 'encargado' || usuario?.rol === 'branch_manager') {
+          return correosEncargadosConfigurados.has(correo)
+        }
+        return true
+      })
+      if (sinEncargadosHeredados.length !== usuarios.length) {
+        usuarios = sinEncargadosHeredados
+        cambio = true
+      }
+    }
     configurados.filter((usuario) => usuario?.correo && usuario?.contrasena).forEach((usuario) => {
       const indice = usuarios.findIndex((actual) => actual.correo.toLowerCase() === usuario.correo.toLowerCase())
       if (indice < 0) {
