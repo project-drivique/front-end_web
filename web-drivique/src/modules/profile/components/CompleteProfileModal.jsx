@@ -104,7 +104,7 @@ export default function CompleteProfileModal({
           background: c.modalBg,
           borderRadius: '20px',
           border: `1px solid ${c.cardBorder}`,
-          boxShadow: esModoOscuro ? '0 20px 50px rgba(0,0,0,0.6)' : '0 20px 50px rgba(30,58,138,0.15)',
+          boxShadow: esModoOscuro ? '0 20px 50px rgba(0,0,0,0.6)' : '0 20px 50px rgba(var(--brand-secondary-rgb),0.15)',
           overflow: 'hidden',
           display: 'flex',
           flexDirection: 'column',
@@ -124,7 +124,7 @@ export default function CompleteProfileModal({
           }}
         >
           <div>
-            <h2 style={{ fontSize: '18px', fontWeight: 800, color: esModoOscuro ? '#93c5fd' : '#1e3a8a', margin: 0 }}>
+            <h2 style={{ fontSize: '18px', fontWeight: 800, color: esModoOscuro ? 'var(--brand-text-dark)' : 'var(--brand-secondary)', margin: 0 }}>
               {esPerfilIncompleto ? t('perfil.completeProfileTitle', 'Completar Perfil') : t('perfil.editProfileTitle', 'Editar Perfil')}
             </h2>
             <p style={{ fontSize: '12.5px', color: c.textMuted, margin: '3px 0 0' }}>
@@ -183,7 +183,7 @@ export default function CompleteProfileModal({
               }}
             >
               <div style={{ paddingBottom: '8px', borderBottom: `1px solid ${c.modalDivider}` }}>
-                <h3 style={{ fontSize: '14px', fontWeight: 700, color: esModoOscuro ? '#93c5fd' : '#1e3a8a', margin: 0 }}>
+                <h3 style={{ fontSize: '14px', fontWeight: 700, color: esModoOscuro ? 'var(--brand-text-dark)' : 'var(--brand-secondary)', margin: 0 }}>
                   {t('perfil.personalInfo', 'Datos Personales')}
                 </h3>
               </div>
@@ -191,7 +191,7 @@ export default function CompleteProfileModal({
               {/* Nombres Completo */}
               <div>
                 <label style={labelStyle}>
-                  <FaUser style={{ color: esModoOscuro ? '#93c5fd' : '#1e3a8a', fontSize: '11px', marginRight: '6px' }} />
+                  <FaUser style={{ color: esModoOscuro ? 'var(--brand-text-dark)' : 'var(--brand-secondary)', fontSize: '11px', marginRight: '6px' }} />
                   {t('perfil.firstName', 'Nombres completos')}
                 </label>
                 <input
@@ -212,7 +212,7 @@ export default function CompleteProfileModal({
               {/* Apellidos Completo */}
               <div>
                 <label style={labelStyle}>
-                  <FaUser style={{ color: esModoOscuro ? '#93c5fd' : '#1e3a8a', fontSize: '11px', marginRight: '6px' }} />
+                  <FaUser style={{ color: esModoOscuro ? 'var(--brand-text-dark)' : 'var(--brand-secondary)', fontSize: '11px', marginRight: '6px' }} />
                   {t('perfil.lastName', 'Apellidos completos')}
                 </label>
                 <input
@@ -233,7 +233,7 @@ export default function CompleteProfileModal({
               {/* Fecha de nacimiento */}
               <div>
                 <label style={labelStyle}>
-                  <FaCalendarAlt style={{ color: esModoOscuro ? '#93c5fd' : '#1e3a8a', fontSize: '11px', marginRight: '6px' }} />
+                  <FaCalendarAlt style={{ color: esModoOscuro ? 'var(--brand-text-dark)' : 'var(--brand-secondary)', fontSize: '11px', marginRight: '6px' }} />
                   {t('perfil.birthDate', 'Fecha de nacimiento')}
                 </label>
                 <input
@@ -261,7 +261,7 @@ export default function CompleteProfileModal({
               }}
             >
               <div style={{ paddingBottom: '8px', borderBottom: `1px solid ${c.modalDivider}` }}>
-                <h3 style={{ fontSize: '14px', fontWeight: 700, color: esModoOscuro ? '#93c5fd' : '#1e3a8a', margin: 0 }}>
+                <h3 style={{ fontSize: '14px', fontWeight: 700, color: esModoOscuro ? 'var(--brand-text-dark)' : 'var(--brand-secondary)', margin: 0 }}>
                   {t('perfil.contactData', 'Datos de Contacto')}
                 </h3>
               </div>
@@ -269,7 +269,7 @@ export default function CompleteProfileModal({
               {/* Correo electrónico */}
               <div>
                 <label style={labelStyle}>
-                  <FaEnvelope style={{ color: esModoOscuro ? '#93c5fd' : '#1e3a8a', fontSize: '11px', marginRight: '6px' }} />
+                  <FaEnvelope style={{ color: esModoOscuro ? 'var(--brand-text-dark)' : 'var(--brand-secondary)', fontSize: '11px', marginRight: '6px' }} />
                   {t('perfil.email', 'Correo electrónico')}
                 </label>
                 <input
@@ -287,7 +287,7 @@ export default function CompleteProfileModal({
               {/* Nacionalidad */}
               <div>
                 <label style={labelStyle}>
-                  <FaGlobe style={{ color: esModoOscuro ? '#93c5fd' : '#1e3a8a', fontSize: '11px', marginRight: '6px' }} />
+                  <FaGlobe style={{ color: esModoOscuro ? 'var(--brand-text-dark)' : 'var(--brand-secondary)', fontSize: '11px', marginRight: '6px' }} />
                   {t('perfil.nationality', 'Nacionalidad')}
                 </label>
                 <select
@@ -310,7 +310,7 @@ export default function CompleteProfileModal({
               {/* Teléfono */}
               <div>
                 <label style={labelStyle}>
-                  <FaPhone style={{ color: esModoOscuro ? '#93c5fd' : '#1e3a8a', fontSize: '11px', marginRight: '6px' }} />
+                  <FaPhone style={{ color: esModoOscuro ? 'var(--brand-text-dark)' : 'var(--brand-secondary)', fontSize: '11px', marginRight: '6px' }} />
                   {t('perfil.phone', 'Teléfono')}
                 </label>
                 <div
@@ -333,7 +333,7 @@ export default function CompleteProfileModal({
                         height: '100%',
                         background: esModoOscuro ? '#1e293b' : '#f1f5f9',
                         borderRight: `1px solid ${c.inputBorder}`,
-                        color: esModoOscuro ? '#93c5fd' : '#1e3a8a',
+                        color: esModoOscuro ? 'var(--brand-text-dark)' : 'var(--brand-secondary)',
                         fontSize: '12px',
                         fontWeight: 800,
                         display: 'flex',
@@ -385,7 +385,7 @@ export default function CompleteProfileModal({
               }}
             >
               <div style={{ paddingBottom: '8px', borderBottom: `1px solid ${c.modalDivider}` }}>
-                <h3 style={{ fontSize: '14px', fontWeight: 700, color: esModoOscuro ? '#93c5fd' : '#1e3a8a', margin: 0 }}>
+                <h3 style={{ fontSize: '14px', fontWeight: 700, color: esModoOscuro ? 'var(--brand-text-dark)' : 'var(--brand-secondary)', margin: 0 }}>
                   {t('perfil.identityDoc', 'Documento de Identidad')}
                 </h3>
               </div>
@@ -393,7 +393,7 @@ export default function CompleteProfileModal({
               {/* Tipo de documento */}
               <div>
                 <label style={labelStyle}>
-                  <FaIdCard style={{ color: esModoOscuro ? '#93c5fd' : '#1e3a8a', fontSize: '11px', marginRight: '6px' }} />
+                  <FaIdCard style={{ color: esModoOscuro ? 'var(--brand-text-dark)' : 'var(--brand-secondary)', fontSize: '11px', marginRight: '6px' }} />
                   {t('perfil.docType', 'Tipo de documento')}
                 </label>
                 <select
@@ -414,7 +414,7 @@ export default function CompleteProfileModal({
               {/* Número de documento */}
               <div>
                 <label style={labelStyle}>
-                  <FaHashtag style={{ color: esModoOscuro ? '#93c5fd' : '#1e3a8a', fontSize: '11px', marginRight: '6px' }} />
+                  <FaHashtag style={{ color: esModoOscuro ? 'var(--brand-text-dark)' : 'var(--brand-secondary)', fontSize: '11px', marginRight: '6px' }} />
                   {t('perfil.docNumber', 'Número de documento')}
                 </label>
                 <div
@@ -437,7 +437,7 @@ export default function CompleteProfileModal({
                         height: '100%',
                         background: esModoOscuro ? '#1e293b' : '#f1f5f9',
                         borderRight: `1px solid ${c.inputBorder}`,
-                        color: esModoOscuro ? '#93c5fd' : '#1e3a8a',
+                        color: esModoOscuro ? 'var(--brand-text-dark)' : 'var(--brand-secondary)',
                         fontSize: '12px',
                         fontWeight: 800,
                         display: 'flex',
@@ -519,7 +519,7 @@ export default function CompleteProfileModal({
             style={{
               padding: '10px 26px',
               borderRadius: '10px',
-              background: c.btnPrimary || '#1e3a8a',
+              background: c.btnPrimary || 'var(--brand-secondary)',
               color: '#ffffff',
               border: 'none',
               fontWeight: 700,

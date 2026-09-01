@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import {
   FaHeadphones,
@@ -26,6 +26,7 @@ import {
 } from 'react-icons/fa'
 import { useLanding } from '@/modules/landing/LandingContext'
 import { useAuthStore } from '@/store/authStore'
+import { useBrand } from '@/contexts/BrandContext'
 import { useHistorialReservas } from '@/modules/reservations/hooks/useReservations'
 import CatalogTopHeader from '@/modules/catalog/components/CatalogTopHeader'
 import { useSupportStore } from '../store/useSupportStore'
@@ -36,8 +37,8 @@ import './SupportPage.css'
 export default function SupportPage() {
   const { t } = useTranslation()
   const location = useLocation()
-  const navigate = useNavigate()
   const { usuario } = useAuthStore()
+  const { brand } = useBrand()
   const { tema } = useLanding()
   const esModoOscuro = tema === 'oscuro'
 
@@ -79,7 +80,7 @@ export default function SupportPage() {
     tipoIncidenciaId: 'averia_mecanica',
     descripcion: '',
     evidenciasCount: 0,
-    contactoNombre: usuario?.nombre ? `${usuario.nombre} ${usuario.apellido || ''}`.trim() : 'Cliente Drivique',
+    contactoNombre: usuario?.nombre ? `${usuario.nombre} ${usuario.apellido || ''}`.trim() : `Cliente ${brand.name}`,
     contactoTelefono: usuario?.telefono || '+57 314 478 9702',
     contactoEmail: usuario?.correo || usuario?.email || 'cliente@drivique.com',
   })
@@ -175,7 +176,7 @@ export default function SupportPage() {
     navBg: esModoOscuro ? '#0f172a' : '#ffffff',
     navBorder: esModoOscuro ? '#334155' : '#e2e8f0',
     navShadow: '0 4px 20px rgba(0,0,0,0.04)',
-    accentText: esModoOscuro ? '#93c5fd' : '#1e3a8a',
+    accentText: 'var(--brand-text)',
   }
 
   // Renderizado de iconos para chips de incidencia
@@ -324,7 +325,7 @@ export default function SupportPage() {
           <div>
             {/* Banner de Información */}
             <div className="form-info-banner">
-              <FaInfoCircle style={{ fontSize: 20, color: '#2563eb', flexShrink: 0 }} />
+              <FaInfoCircle style={{ fontSize: 20, color: 'var(--brand-text)', flexShrink: 0 }} />
               <span>
                 {t(
                   'soporte.formBanner',
@@ -360,7 +361,7 @@ export default function SupportPage() {
             {/* Card del Formulario */}
             <form className="formulario-incidencia-card" onSubmit={handleEnviarReporte}>
               <div className="form-header-row">
-                <FaWrench style={{ color: '#2563eb', fontSize: 22 }} />
+                <FaWrench style={{ color: 'var(--brand-text)', fontSize: 22 }} />
                 <h3>{t('soporte.formTitle', 'Formulario de Incidencia')}</h3>
               </div>
 
@@ -482,7 +483,7 @@ export default function SupportPage() {
               {/* Datos de contacto para seguimiento */}
               <div className="contacto-seccion-header">
                 <h4>
-                  <FaUser style={{ color: '#2563eb' }} />
+                  <FaUser style={{ color: 'var(--brand-text)' }} />
                   {t('soporte.contactoHeader', 'Datos de contacto para seguimiento')}
                 </h4>
                 <p>
@@ -570,7 +571,7 @@ export default function SupportPage() {
                         return { text: 'En revisión', bg: '#fef3c7', color: '#b45309', dot: '#d97706' }
                       case 'recibido':
                       default:
-                        return { text: 'Recibido', bg: '#dbeafe', color: '#1e40af', dot: '#2563eb' }
+                        return { text: 'Recibido', bg: 'var(--brand-soft-strong-light)', color: 'var(--brand-text-light)', dot: 'var(--brand-primary)' }
                     }
                   }
 

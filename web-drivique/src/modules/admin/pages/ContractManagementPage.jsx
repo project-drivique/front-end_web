@@ -1,8 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
-import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
-  FaArrowLeft,
   FaFileContract,
   FaEye,
   FaFileExcel,
@@ -18,6 +16,7 @@ import {
 } from "react-icons/fa";
 import { useLanding } from "../../landing/LandingContext";
 import { useAuthStore } from "../../../store/authStore";
+import { useBrand } from "../../../contexts/BrandContext";
 import { contractManagementService } from "../../../services/contractManagementService";
 import {
   exportExcel,
@@ -28,11 +27,13 @@ import { formatCurrency } from "../../../utils/currencyUtils";
 import MenuConfiguracion from "../../../components/MenuConfiguracion";
 import ManagementSidebar from "../components/ManagementSidebar";
 import "./CityManagementPage.css";
+import "./ContractManagementPage.css";
 
 export default function ContractManagementPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { tema } = useLanding();
   const user = useAuthStore((state) => state.usuario);
+  const { brand } = useBrand();
   const esModoOscuro = tema === "oscuro";
 
   const esEncargado =
@@ -40,7 +41,7 @@ export default function ContractManagementPage() {
     user?.rol === "branch_manager" ||
     user?.rol === "encargado_sucursal";
   const sucursalEncargado =
-    user?.sucursalAsignada || user?.sucursalId || user?.sucursal || "Neiva";
+    user?.sucursalAsignada || user?.sucursalId || user?.sucursal || "";
 
   const [contratos, setContratos] = useState([]);
   const [search, setSearch] = useState("");
@@ -49,14 +50,9 @@ export default function ContractManagementPage() {
   const [modalDetalle, setModalDetalle] = useState(null);
   const [notice, setNotice] = useState("");
 
-  const cargarContratos = () => {
-    const lista = contractManagementService.list(user);
-    setContratos(lista);
-  };
-
   useEffect(() => {
-    cargarContratos();
-  }, []);
+    setContratos(contractManagementService.list(user));
+  }, [user]);
 
   const filtrados = useMemo(() => {
     const term = search.trim().toLowerCase();
@@ -101,7 +97,7 @@ export default function ContractManagementPage() {
   const exportData = {
     title: esEncargado
       ? `${t("admin.contractsPage.title", "Gestión de Contratos")} - ${sucursalEncargado}`
-      : t("admin.contractsPage.exportTitle", "Listado de Contratos - Drivique"),
+      : t("admin.contractsPage.exportTitle", `Listado de Contratos - ${brand.name}`).replaceAll("Drivique", brand.name),
     headers: headersExport,
     rows: rowsExport,
     items: filtrados,
@@ -111,8 +107,8 @@ export default function ContractManagementPage() {
   const handleExportExcel = () => {
     exportExcel(exportData);
     contractManagementService.logAudit(
-      "Exportó listado de contratos a Excel",
-      { id: "ALL", contratoNumero: "Listado" },
+      t("admin.contractsPage.audit.exportExcel"),
+      { id: "ALL", contratoNumero: t("admin.contractsPage.listLabel") },
       user,
     );
   };
@@ -120,8 +116,8 @@ export default function ContractManagementPage() {
   const handleExportPdf = () => {
     exportPdf(exportData);
     contractManagementService.logAudit(
-      "Exportó listado de contratos a PDF",
-      { id: "ALL", contratoNumero: "Listado" },
+      t("admin.contractsPage.audit.exportPdf"),
+      { id: "ALL", contratoNumero: t("admin.contractsPage.listLabel") },
       user,
     );
   };
@@ -129,14 +125,14 @@ export default function ContractManagementPage() {
   const handlePrint = () => {
     printTable(exportData);
     contractManagementService.logAudit(
-      "Imprimió listado de contratos",
-      { id: "ALL", contratoNumero: "Listado" },
+      t("admin.contractsPage.audit.print"),
+      { id: "ALL", contratoNumero: t("admin.contractsPage.listLabel") },
       user,
     );
   };
 
   const handleDownloadSinglePdf = (contrato) => {
-    contractManagementService.logAudit("Descargó contrato PDF", contrato, user);
+    contractManagementService.logAudit(t("admin.contractsPage.audit.download"), contrato, user);
     const singleData = {
       title: `${t("admin.contractsPage.detailsTitle", "Detalle de Contrato")} - ${contrato.contratoNumero}`,
       headers: headersExport,
@@ -158,12 +154,12 @@ export default function ContractManagementPage() {
       filename: `${contrato.contratoNumero}-${contrato.clienteDocumento}`,
     };
     exportPdf(singleData);
-    setNotice(`Contrato ${contrato.contratoNumero} descargado.`);
+    setNotice(t("admin.contractsPage.downloadSuccess", { contract: contrato.contratoNumero, defaultValue: `Contrato ${contrato.contratoNumero} descargado.` }));
   };
 
   const openDetalle = (contrato) => {
     contractManagementService.logAudit(
-      "Consultó detalle de contrato",
+      t("admin.contractsPage.audit.view"),
       contrato,
       user,
     );
@@ -172,7 +168,7 @@ export default function ContractManagementPage() {
 
   return (
     <div
-      className={`management-shell ${esModoOscuro ? "management-shell--dark" : ""}`}
+      className={`management-shell contracts-page ${esModoOscuro ? "management-shell--dark" : ""}`}
     >
       <ManagementSidebar branchOnly={esEncargado} />
       <main className="management-main" style={{ padding: "24px 32px" }}>
@@ -181,7 +177,7 @@ export default function ContractManagementPage() {
             <div>
               <p className="cities-eyebrow">
                 {esEncargado
-                  ? `Encargado de Sucursal (${sucursalEncargado})`
+                  ? `${t("admin.branchRole")} (${sucursalEncargado})`
                   : t("admin.management", "Gestión Operativa")}
               </p>
               <h1>{t("admin.contractsPage.title", "Gestión de Contratos")}</h1>
@@ -197,24 +193,10 @@ export default function ContractManagementPage() {
             </div>
           </header>
 
-          {notice && (
-            <div
-              style={{
-                padding: "12px 16px",
-                background: "var(--city-bg)",
-                border: "1px solid var(--city-border)",
-                borderRadius: 8,
-                marginBottom: 20,
-                color: "var(--city-primary)",
-                fontWeight: 500,
-              }}
-            >
-              {notice}
-            </div>
-          )}
+          {notice && <div className="cities-notice" role="status"><span>{notice}</span><button type="button" onClick={() => setNotice("")} aria-label={t("common.close")}>×</button></div>}
 
           <section className="cities-card">
-            <div className="cities-toolbar">
+            <div className="cities-toolbar contracts-toolbar">
               <div className="cities-search">
                 <FaSearch />
                 <input
@@ -227,51 +209,45 @@ export default function ContractManagementPage() {
                   onChange={(e) => setSearch(e.target.value)}
                 />
               </div>
-              <div className="cities-export">
-                <select
-                  value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value)}
-                >
-                  <option value="all">
-                    {t("admin.contractsPage.allStates", "Todos los estados")}
-                  </option>
-                  <option value="vigente">
-                    {t("admin.contractsPage.states.vigente", "Vigente")}
-                  </option>
-                  <option value="cerrado">
-                    {t("admin.contractsPage.states.cerrado", "Cerrado")}
-                  </option>
-                  <option value="firmado">
-                    {t("admin.contractsPage.states.firmado", "Firmado")}
-                  </option>
-                </select>
+              <select
+                className="contracts-status-filter"
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                aria-label={t("admin.contractsPage.allStates", "Todos los estados")}
+              >
+                <option value="all">{t("admin.contractsPage.allStates", "Todos los estados")}</option>
+                <option value="vigente">{t("admin.contractsPage.states.vigente", "Vigente")}</option>
+                <option value="cerrado">{t("admin.contractsPage.states.cerrado", "Cerrado")}</option>
+                <option value="firmado">{t("admin.contractsPage.states.firmado", "Firmado")}</option>
+              </select>
+              <div className="cities-export contracts-export">
 
                 <button
                   onClick={handleExportExcel}
-                  title="Exportar a Excel"
+                  title={t("admin.contractsPage.exportExcel")}
                 >
                   <FaFileExcel style={{ color: "#27ae60" }} /> Excel
                 </button>
                 <button
                   onClick={handleExportPdf}
-                  title="Exportar a PDF"
+                  title={t("admin.contractsPage.exportPdf")}
                 >
                   <FaFilePdf style={{ color: "#e74c3c" }} /> PDF
                 </button>
                 <button
                   onClick={handlePrint}
-                  title="Imprimir Listado"
+                  title={t("admin.contractsPage.printList")}
                 >
                   <FaPrint /> {t('admin.print', 'Imprimir')}
                 </button>
               </div>
             </div>
 
-            <div className="cities-table-wrap">
-              <div className="cities-table-count" style={{ padding: '0 0 12px 0', fontSize: '12px', fontWeight: 600, color: 'var(--city-muted)' }}>
+            <div className="contracts-summary">
                 {filtrados.length}{" "}
                 {t("admin.contractsPage.results", "contratos encontrados")}
-              </div>
+            </div>
+            <div className="cities-table-wrap contracts-table-wrap">
               <table className="cities-table">
               <thead>
                 <tr>
@@ -293,36 +269,19 @@ export default function ContractManagementPage() {
                 {filtrados.length > 0 ? (
                   filtrados.map((c) => (
                     <tr key={c.id}>
-                      <td
-                        style={{
-                          fontWeight: 600,
-                          color: "var(--city-primary)",
-                        }}
-                      >
+                      <td className="contracts-code">
                         {c.contratoNumero}
                       </td>
                       <td>{c.reservaCodigo}</td>
                       <td>
-                        <div
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 8,
-                          }}
-                        >
+                        <div className="contracts-cell-with-icon">
                           <FaUser style={{ color: "var(--city-text-muted)" }} />
                           {c.clienteNombre}
                         </div>
                       </td>
                       <td>{c.clienteDocumento}</td>
                       <td>
-                        <div
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 8,
-                          }}
-                        >
+                        <div className="contracts-cell-with-icon">
                           <FaCar style={{ color: "var(--city-text-muted)" }} />
                           {c.vehiculoPlaca}
                         </div>
@@ -396,7 +355,7 @@ export default function ContractManagementPage() {
             e.target === e.currentTarget && setModalDetalle(null)
           }
         >
-          <section className="cities-modal" style={{ maxWidth: 800 }}>
+          <section className="cities-modal contracts-detail-modal">
             <div className="cities-modal__head">
               <div>
                 <p className="cities-eyebrow">{modalDetalle.contratoNumero}</p>
@@ -409,8 +368,8 @@ export default function ContractManagementPage() {
               </button>
             </div>
 
-            <div className="incident-form" style={{ marginTop: 20 }}>
-              <div className="incident-grid-2">
+            <div className="contracts-detail-body">
+              <div className="incident-grid-2 contracts-detail-grid">
                 <div className="incident-field">
                   <span className="incident-field-label">
                     {t("admin.contractsPage.fields.reservationCode", "Reserva")}
@@ -636,7 +595,7 @@ export default function ContractManagementPage() {
                       border: "1px solid var(--city-border)",
                     }}
                   >
-                    {modalDetalle.fechaFirma ? new Date(modalDetalle.fechaFirma).toLocaleString("es-CO") : "Sin firma"}
+                    {modalDetalle.fechaFirma ? new Date(modalDetalle.fechaFirma).toLocaleString(i18n.resolvedLanguage || i18n.language) : t("admin.contractsPage.unsigned")}
                   </div>
                 </div>
               </div>

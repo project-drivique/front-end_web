@@ -3,6 +3,7 @@ import { FaArrowLeft, FaUserCircle, FaBars, FaTimes } from 'react-icons/fa'
 import { useTranslation } from 'react-i18next'
 import { useState } from 'react'
 import logo from '@/assets/logocatalog.png'
+import { useBrand } from '@/contexts/BrandContext'
 import MenuConfiguracion from '@/components/MenuConfiguracion'
 import { useAuthStore } from '@/store/authStore'
 import './CatalogTopHeader.css'
@@ -32,6 +33,7 @@ export default function CatalogTopHeader({
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { usuario } = useAuthStore();
   const { conteoNoLeidas } = useNotificationStore();
+  const { brand } = useBrand();
 
   const menuOptions = [
     { name: t('catalog.menu.catalog', 'Catálogo'), path: '/home' },
@@ -53,8 +55,8 @@ export default function CatalogTopHeader({
     >
       <div className={innerClassName}>
         <Link to={modoRegistrado ? '/home' : '/catalogo'} className="catalogo-logo-link">
-          <img src={logo} alt="Drivique" className="catalogo-logo" />
-          <span className="catalogo-logo-title" style={{ color: c.accentText }}>Drivique</span>
+          <img src={brand.logoDataUrl || logo} alt={brand.name} className="catalogo-logo" />
+          <span className="catalogo-logo-title" style={{ color: 'var(--brand-secondary)' }}>{brand.name}</span>
         </Link>
 
         {modoRegistrado && (
@@ -68,7 +70,7 @@ export default function CatalogTopHeader({
                   key={option.name}
                   to={option.path}
                   style={{
-                    color: isActive ? '#2563eb' : 'var(--texto-nav)',
+                    color: isActive ? 'var(--brand-primary)' : 'var(--texto-nav)',
                     fontWeight: 600,
                     fontSize: 13,
                     textDecoration: 'none',
@@ -82,7 +84,7 @@ export default function CatalogTopHeader({
                     gap: '6px'
                   }}
                   onMouseEnter={e => {
-                    if (!isActive) e.currentTarget.style.color = '#2563eb';
+                    if (!isActive) e.currentTarget.style.color = 'var(--brand-primary)';
                   }}
                   onMouseLeave={e => {
                     if (!isActive) e.currentTarget.style.color = 'var(--texto-nav)';
@@ -113,7 +115,7 @@ export default function CatalogTopHeader({
                       left: 0,
                       width: '100%',
                       height: '3px',
-                      background: '#2563eb',
+                      background: 'var(--brand-primary)',
                       borderRadius: '3px'
                     }} />
                   )}
@@ -166,8 +168,8 @@ export default function CatalogTopHeader({
                   width: '32px',
                   height: '32px',
                   borderRadius: '50%',
-                  background: '#1e40af',
-                  color: '#ffffff',
+                  background: 'var(--brand-primary)',
+                  color: 'var(--brand-on-primary)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -208,7 +210,7 @@ export default function CatalogTopHeader({
                   to={option.path}
                   onClick={() => setIsMobileMenuOpen(false)}
                   style={{
-                    color: isActive ? '#2563eb' : c.textPrimary,
+                    color: isActive ? 'var(--brand-text)' : c.textPrimary,
                     fontWeight: isActive ? 700 : 500,
                     borderBottom: `1px solid ${c.navBorder}`
                   }}

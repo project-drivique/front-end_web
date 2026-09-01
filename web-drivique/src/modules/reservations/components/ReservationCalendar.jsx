@@ -146,7 +146,7 @@ export default function CalendarioReservas({ vehiculoId, fechaInicio, fechaFin, 
             btnColor = 'transparent'
             btnCursor = 'default'
           } else if (seleccionado) {
-            btnBg = '#2563eb'
+            btnBg = 'var(--brand-primary)'
             btnColor = '#fff'
           } else if (pasado) {
             btnColor = '#94a3b8'
@@ -158,7 +158,7 @@ export default function CalendarioReservas({ vehiculoId, fechaInicio, fechaFin, 
           }
 
           if (dentroDelRango) {
-            rowBg = 'rgba(37, 99, 235, 0.08)'
+            rowBg = 'rgba(var(--brand-primary-rgb), 0.08)'
           }
           if (esInicio && fechaFin) roundedLeft = true
           if (esFin) roundedRight = true
@@ -184,7 +184,7 @@ export default function CalendarioReservas({ vehiculoId, fechaInicio, fechaFin, 
                   borderRadius: '50%',
                   background: btnBg,
                   color: btnColor,
-                  border: isToday(dia) && !seleccionado ? '2px solid #bfdbfe' : btnBorder,
+                  border: isToday(dia) && !seleccionado ? '2px solid var(--brand-border-light)' : btnBorder,
                   cursor: btnCursor,
                   opacity: btnOpacity,
                   fontSize: 13,
@@ -196,8 +196,8 @@ export default function CalendarioReservas({ vehiculoId, fechaInicio, fechaFin, 
                 }}
                 onMouseEnter={e => {
                   if (clicable && !seleccionado) {
-                    e.currentTarget.style.background = '#eff6ff'
-                    e.currentTarget.style.color = '#1e40af'
+                    e.currentTarget.style.background = 'var(--brand-soft-light)'
+                    e.currentTarget.style.color = 'var(--brand-text-light)'
                   }
                 }}
                 onMouseLeave={e => {
@@ -244,7 +244,7 @@ export default function CalendarioReservas({ vehiculoId, fechaInicio, fechaFin, 
           {t('vehiculo.calendarMaintenance', 'Mantenimiento')}
         </span>
         <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#2563eb', display: 'block' }} />
+          <span style={{ width: 10, height: 10, borderRadius: '50%', background: 'var(--brand-primary)', display: 'block' }} />
           {t('vehiculo.calendarSelected', 'Seleccionado')}
         </span>
       </div>

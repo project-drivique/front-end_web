@@ -37,8 +37,8 @@ export default function TipoKilometraje({ vehiculo, tipoKm, onSeleccionar, c, di
         border: `1px solid ${c?.cardBorder || '#e2e8f0'}`,
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, margin: '0 0 16px' }}>
-          <FaTachometerAlt color={c?.accentText || '#1e3a8a'} size={14} />
-          <h3 style={{ fontSize: 13, fontWeight: 700, color: c?.accentText || '#1e3a8a', margin: 0, textTransform: 'none' }}>
+          <FaTachometerAlt color={c?.accentText || 'var(--brand-secondary)'} size={14} />
+          <h3 style={{ fontSize: 13, fontWeight: 700, color: c?.accentText || 'var(--brand-secondary)', margin: 0, textTransform: 'none' }}>
             {t('vehiculo.kmTypeTitle', 'Tipo de Kilometraje')}
           </h3>
         </div>
@@ -55,7 +55,7 @@ export default function TipoKilometraje({ vehiculo, tipoKm, onSeleccionar, c, di
                   cursor: 'pointer',
                   background: 'transparent',
                   borderRadius: 16,
-                  border: `1px solid ${activo ? (c?.accentText || '#2563eb') : (c?.cardBorder || '#e2e8f0')}`,
+                  border: `1px solid ${activo ? (c?.accentText || 'var(--brand-primary)') : (c?.cardBorder || '#e2e8f0')}`,
                   overflow: 'hidden',
                   display: 'flex',
                   flexDirection: 'column',
@@ -68,12 +68,12 @@ export default function TipoKilometraje({ vehiculo, tipoKm, onSeleccionar, c, di
               <h4 style={{ fontSize: '15px', fontWeight: 800, color: c?.textPrimary || 'var(--texto-primary)', margin: '0 0 8px' }}>
                 {op.titulo}
               </h4>
-              <p style={{ fontSize: '12px', fontWeight: 500, color: activo ? '#1e3a8a' : (c?.textSecondary || 'var(--texto-second)'), lineHeight: 1.4, margin: '0 0 16px', flex: 1 }}>
+              <p style={{ fontSize: '12px', fontWeight: 500, color: activo ? 'var(--brand-text)' : (c?.textSecondary || 'var(--texto-second)'), lineHeight: 1.4, margin: '0 0 16px', flex: 1 }}>
                 {op.descripcion}
               </p>
               
               <div style={{ width: '100%', marginTop: 'auto' }}>
-                <p style={{ fontSize: '18px', fontWeight: 900, color: '#1e3a8a', margin: '0 0 16px', letterSpacing: '-0.03em' }}>
+                <p style={{ fontSize: '18px', fontWeight: 900, color: 'var(--brand-text)', margin: '0 0 16px', letterSpacing: '-0.03em' }}>
                   {formatCurrency(op.precio, moneda)} <span style={{ fontSize: '10px', fontWeight: 600, color: c?.textSecondary || 'var(--texto-second)' }}>/ {t('catalogo.day', 'día')}</span>
                 </p>
                 <div style={{
@@ -85,7 +85,7 @@ export default function TipoKilometraje({ vehiculo, tipoKm, onSeleccionar, c, di
                   border: 'none',
                   letterSpacing: '0.02em',
                   textTransform: 'uppercase',
-                  background: activo ? 'linear-gradient(135deg, #1e3a8a, #2563eb)' : (c?.isDark ? '#1e293b' : '#f1f5f9'),
+                  background: activo ? 'var(--brand-gradient)' : (c?.isDark ? '#1e293b' : '#f1f5f9'),
                   color: activo ? '#ffffff' : (c?.textSecondary || '#64748b'),
                   display: 'flex',
                   alignItems: 'center',
@@ -116,7 +116,7 @@ export default function TipoKilometraje({ vehiculo, tipoKm, onSeleccionar, c, di
               : t('vehiculo.totalMileageType', `Total tipo de kilometraje ({{diasText}})`, { diasText: `${dias} ${dias === 1 ? t('vehiculo.dayStr', 'día') : t('vehiculo.daysStr', 'días')}` })
             }
           </span>
-          <span style={{ fontSize: 15, fontWeight: 800, color: c?.accentText || '#1e3a8a' }}>
+          <span style={{ fontSize: 15, fontWeight: 800, color: c?.accentText || 'var(--brand-secondary)' }}>
             {formatCurrency(total, moneda)}
           </span>
         </div>

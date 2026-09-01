@@ -4,7 +4,6 @@ import {
   FaCheckCircle,
   FaEdit,
   FaExclamationTriangle,
-  FaFileAlt,
   FaFileExcel,
   FaFilePdf,
   FaPrint,
@@ -13,8 +12,6 @@ import {
   FaToggleOff,
   FaToggleOn,
   FaTrash,
-  FaUserCheck,
-  FaUserCog,
   FaUserPlus,
   FaUsers,
   FaBuilding,
@@ -24,6 +21,7 @@ import {
 } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import { useAuthStore } from '../../../store/authStore'
+import { useBrand } from '../../../contexts/BrandContext'
 import { userManagementService } from '../../../services/userManagementService'
 import { branchManagementService } from '../../../services/branchManagementService'
 import { exportExcel, exportPdf, printTable } from '../../../utils/listExportUtils'
@@ -36,6 +34,7 @@ export default function UserManagementPage() {
   const { t } = useTranslation()
   const { tema } = useLanding()
   const user = useAuthStore((state) => state.usuario)
+  const { brand } = useBrand()
   const esModoOscuro = tema === 'oscuro'
 
   const [usersList, setUsersList] = useState([])
@@ -139,7 +138,7 @@ export default function UserManagementPage() {
       setNotice(t('admin.users.updatedSuccess', `Datos de ${formEditar.nombre} actualizados.`))
       setModalEditar(null)
       cargarUsuarios()
-    } catch (err) {
+    } catch {
       setErrorModal(t('admin.users.updateError', 'Error al actualizar usuario.'))
     }
   }
@@ -212,7 +211,7 @@ export default function UserManagementPage() {
   ])
 
   const exportData = {
-    title: 'Gestión de Usuarios — Plataforma Drivique',
+    title: `Gestión de Usuarios — Plataforma ${brand.name}`,
     headers: headersExport,
     rows: rowsExport,
     items: filtrados,
@@ -375,7 +374,7 @@ export default function UserManagementPage() {
                           <div style={{ fontSize: 12 }}>
                             <strong style={{ textTransform: 'capitalize' }}>{u.rol}</strong>
                             {u.sucursal && (
-                              <small style={{ display: 'block', color: '#2563eb', fontWeight: 800 }}>
+                              <small style={{ display: 'block', color: 'var(--brand-text)', fontWeight: 800 }}>
                                 <FaBuilding style={{ marginRight: 3 }} /> {u.sucursal}
                               </small>
                             )}
@@ -416,7 +415,7 @@ export default function UserManagementPage() {
                               type="button"
                               onClick={() => openDocumentosModal(u)}
                               title={t('admin.usersPage.reviewDocsAction')}
-                              style={{ color: '#2563eb' }}
+                              style={{ color: 'var(--brand-text)' }}
                             >
                               <FaIdCard />
                             </button>

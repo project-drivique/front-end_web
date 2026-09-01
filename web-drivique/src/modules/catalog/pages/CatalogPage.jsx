@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next'
 import { useLanding } from '../../landing/LandingContext'
 import { useAuthStore } from '../../../store/authStore'
 import { getRoleHome } from '../../auth/utils/accessControl'
-import { COLOR_MARCA } from '../constants'
 import { useCatalogo } from '../hooks/useCatalog'
 
 import CatalogTopHeader from '../components/CatalogTopHeader'
@@ -30,20 +29,20 @@ const coloresTema = (esModoOscuro) => ({
   pageBg: esModoOscuro ? '#0f172a' : '#eaeff8',
   navBg: esModoOscuro ? '#0f172a' : '#ffffff',
   navBorder: esModoOscuro ? '#1e293b' : '#e8eef8',
-  navShadow: esModoOscuro ? '0 2px 12px rgba(0,0,0,0.25)' : '0 2px 14px rgba(30,58,138,0.06)',
+  navShadow: esModoOscuro ? '0 2px 12px rgba(0,0,0,0.25)' : '0 2px 14px rgba(var(--brand-secondary-rgb),0.06)',
   panelBg: esModoOscuro ? '#111827' : '#ffffff',
   panelBgSoft: esModoOscuro ? '#1e293b' : '#f8fafc',
   panelBorder: esModoOscuro ? '#334155' : '#e5ebf5',
   panelBorderStrong: esModoOscuro ? '#475569' : '#dce5f3',
-  panelShadow: esModoOscuro ? '0 6px 24px rgba(0,0,0,0.25)' : '0 4px 18px rgba(30,58,138,0.06)',
+  panelShadow: esModoOscuro ? '0 6px 24px rgba(0,0,0,0.25)' : '0 4px 18px rgba(var(--brand-secondary-rgb),0.06)',
   heroCardBg: esModoOscuro ? '#111827' : '#ffffff',
   heroCardBorder: esModoOscuro ? '#334155' : '#dbe5f3',
-  heroCardShadow: esModoOscuro ? '0 6px 24px rgba(0,0,0,0.25)' : '0 4px 18px rgba(30,58,138,0.06)',
+  heroCardShadow: esModoOscuro ? '0 6px 24px rgba(0,0,0,0.25)' : '0 4px 18px rgba(var(--brand-secondary-rgb),0.06)',
   textPrimary: esModoOscuro ? '#f8fafc' : '#111a3a',
   textSecondary: esModoOscuro ? '#94a3b8' : '#64748b',
-  accentText: esModoOscuro ? '#93c5fd' : COLOR_MARCA,
-  accentBgSoft: esModoOscuro ? 'rgba(37,99,235,0.15)' : '#eff6ff',
-  accentBorder: esModoOscuro ? '#475569' : '#cfe0fb',
+  accentText: 'var(--brand-text)',
+  accentBgSoft: 'var(--brand-soft)',
+  accentBorder: 'var(--brand-border)',
   inputBg: esModoOscuro ? '#0f172a' : '#ffffff',
   inputText: esModoOscuro ? '#e2e8f0' : '#18234a',
   inputBorder: esModoOscuro ? '#334155' : '#d9e3f1',
@@ -54,15 +53,15 @@ const coloresTema = (esModoOscuro) => ({
   paginationIdleText: esModoOscuro ? '#cbd5e1' : '#52617e',
   paginationDisabledBg: esModoOscuro ? '#172033' : '#f3f6fb',
   paginationDisabledText: esModoOscuro ? '#64748b' : '#a1aec3',
-  accentGradient: `linear-gradient(90deg, ${COLOR_MARCA}, #2563eb)`,
+  accentGradient: 'var(--brand-gradient)',
   chipBg: esModoOscuro ? '#1e293b' : '#f1f4f9',
   chipText: esModoOscuro ? '#cbd5e1' : '#24304f',
-  chipActiveBg: esModoOscuro ? '#2563eb' : COLOR_MARCA,
-  chipActiveText: '#ffffff',
+  chipActiveBg: 'var(--brand-primary)',
+  chipActiveText: 'var(--brand-on-primary)',
   cardBorder: esModoOscuro ? '#334155' : '#e4eaf3',
   cardBorderHover: esModoOscuro ? '#475569' : '#cbdcf7',
-  cardShadow: esModoOscuro ? '0 4px 18px rgba(0,0,0,0.24)' : '0 3px 12px rgba(30,58,138,0.06)',
-  cardShadowHover: esModoOscuro ? '0 10px 30px rgba(0,0,0,0.30)' : '0 12px 28px rgba(37,99,235,0.12)',
+  cardShadow: esModoOscuro ? '0 4px 18px rgba(0,0,0,0.24)' : '0 3px 12px rgba(var(--brand-secondary-rgb),0.06)',
+  cardShadowHover: esModoOscuro ? '0 10px 30px rgba(0,0,0,0.30)' : '0 12px 28px rgba(var(--brand-primary-rgb),0.12)',
   imageFallbackBg: esModoOscuro ? '#1e293b' : '#f1f5f9',
   imageFallbackIcon: esModoOscuro ? '#475569' : '#cbd5e1',
   textSoft: esModoOscuro ? '#64748b' : '#94a3b8',
@@ -249,7 +248,7 @@ export default function CatalogoPage() {
                   justifyContent: 'center',
                   flexShrink: 0,
                   cursor: 'pointer',
-                  boxShadow: '0 2px 10px rgba(30, 58, 138, 0.04)',
+                  boxShadow: '0 2px 10px rgba(var(--brand-secondary-rgb), 0.04)',
                 }}
                 title="Seleccionar ciudad, sucursal y fechas"
               >

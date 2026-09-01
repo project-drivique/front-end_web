@@ -27,6 +27,7 @@ import IncidentManagementPage from '../modules/admin/pages/IncidentManagementPag
 import UserManagementPage from '../modules/admin/pages/UserManagementPage'
 import AdminRolesManagementPage from '../modules/admin/pages/AdminRolesManagementPage'
 import PromotionManagementPage from '../modules/admin/pages/PromotionManagementPage'
+import BrandManagementPage from '../modules/admin/pages/BrandManagementPage'
 import { getRoleHome, hasValidRoleAccess, ROLES } from '../modules/auth/utils/accessControl'
 import BranchesPage from '../modules/catalog/pages/BranchesPage'
 import ProfilePage from '../modules/profile/pages/ProfilePage'
@@ -140,8 +141,10 @@ export default function AppRouter() {
         <Route path="/admin/users" element={<RutaPorRol roles={[ROLES.ADMIN]}><UserManagementPage /></RutaPorRol>} />
         <Route path="/admin/roles" element={<RutaPorRol roles={[ROLES.ADMIN]}><AdminRolesManagementPage /></RutaPorRol>} />
         <Route path="/admin/promotions" element={<RutaPorRol roles={[ROLES.ADMIN]}><PromotionManagementPage /></RutaPorRol>} />
+        <Route path="/admin/brand" element={<RutaPorRol roles={[ROLES.ADMIN]}><BrandManagementPage /></RutaPorRol>} />
         <Route path="/admin/:moduleKey" element={<RutaPorRol roles={[ROLES.ADMIN]}><ManagementModulePage /></RutaPorRol>} />
         <Route path="/encargado" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER]}><BranchManagerPage /></RutaPorRol>} />
+        <Route path="/encargado/vehicles" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER]}><VehicleManagementPage /></RutaPorRol>} />
         <Route path="/encargado/reservations" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER]}><ReservationManagementPage /></RutaPorRol>} />
         <Route path="/encargado/contracts" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER]}><ContractManagementPage /></RutaPorRol>} />
         <Route path="/encargado/incidents" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER]}><IncidentManagementPage /></RutaPorRol>} />

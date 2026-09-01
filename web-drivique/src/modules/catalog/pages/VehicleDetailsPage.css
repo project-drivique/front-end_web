@@ -32,7 +32,7 @@
   align-items: center;
   gap: 8px;
   font-size: 14px;
-  color: #2563eb;
+  color: var(--brand-primary);
   font-weight: 700;
   background: none;
   border: none;
@@ -58,8 +58,8 @@
 .vehiculo-main-container {
   background: var(--bg-tarjeta);
   border-radius: 20px;
-  border: 1px solid rgba(37,99,235,0.12);
-  box-shadow: 0 4px 24px rgba(30,58,138,0.07);
+  border: 1px solid rgba(var(--brand-primary-rgb),0.12);
+  box-shadow: 0 4px 24px rgba(var(--brand-secondary-rgb),0.07);
   padding: 32px;
 }
 
@@ -89,8 +89,8 @@
 }
 
 .vehiculo-tab-btn.active {
-  color: #2563eb;
-  border-bottom-color: #2563eb;
+  color: var(--brand-primary);
+  border-bottom-color: var(--brand-primary);
 }
 
 .vehiculo-tab-content {
@@ -117,7 +117,7 @@
 .vehiculo-price-value {
   font-size: 28px;
   font-weight: 800;
-  color: #1e3a8a;
+  color: var(--brand-secondary);
   display: flex;
   align-items: baseline;
   gap: 4px;
@@ -136,8 +136,8 @@
   justify-content: center;
   padding: 14px;
   border-radius: 12px;
-  background: #1e40af;
-  color: #fff;
+  background: var(--brand-primary);
+  color: var(--brand-on-primary);
   font-weight: 700;
   font-size: 14px;
   border: none;
@@ -146,5 +146,5 @@
   transition: all 0.2s;
 }
 .vehiculo-reserve-btn:hover {
-  background: #1e3a8a;
+  background: var(--brand-secondary);
 }
