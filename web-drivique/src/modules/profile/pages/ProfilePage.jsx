@@ -11,7 +11,7 @@ import DeleteAccountModal from '../components/DeleteAccountModal'
 import CompleteProfileModal from '../components/CompleteProfileModal'
 import MenuConfiguracion from '@/components/MenuConfiguracion'
 import { FaEdit, FaUser, FaEnvelope, FaPhone, FaArrowLeft, FaSignOutAlt, FaIdCard, FaGlobe, FaCalendarAlt, FaHashtag, FaTrashAlt } from 'react-icons/fa'
-import { getNombreTipoDoc, getSiglaDoc, TIPOS_DOCUMENTO as TIPOS_DOC } from '@/utils/documentUtils'
+import { getNombreTipoDoc } from '@/utils/documentUtils'
 import paisesMock from '@/mocks/nationalities.json'
 import '@/modules/catalog/pages/CatalogPage.css'
 import '@/modules/catalog/pages/VehicleDetailsPage.css'
@@ -45,7 +45,7 @@ export default function PerfilPage() {
       showCancelButton: true,
       confirmButtonText: t('perfil.accept', 'Aceptar'),
       cancelButtonText: t('perfil.cancel', 'Cancelar'),
-      confirmButtonColor: '#2563eb',
+      confirmButtonColor: 'var(--brand-primary)',
       cancelButtonColor: '#64748b',
     }).then((result) => {
       if (result.isConfirmed) {
@@ -66,20 +66,20 @@ export default function PerfilPage() {
     subCardBorder: esModoOscuro ? '#334155' : '#e2e8f0',
     textPrimary: esModoOscuro ? '#f8fafc' : '#111a3a',
     textSecondary: esModoOscuro ? '#94a3b8' : '#64748b',
-    accentText: esModoOscuro ? '#93c5fd' : '#1e3a8a',
-    titleColor: esModoOscuro ? '#93c5fd' : '#1e3a8a',
-    accentBgSoft: esModoOscuro ? 'rgba(37,99,235,0.18)' : '#eff6ff',
-    accentGradient: 'linear-gradient(90deg, #1e3a8a, #2563eb)',
+    accentText: 'var(--brand-text)',
+    titleColor: 'var(--brand-text)',
+    accentBgSoft: 'var(--brand-soft)',
+    accentGradient: 'var(--brand-gradient)',
     navBg: esModoOscuro ? 'rgba(15,23,42,0.92)' : 'rgba(255,255,255,0.98)',
     navBorder: esModoOscuro ? '#1e293b' : '#e8eef8',
-    navShadow: esModoOscuro ? '0 2px 12px rgba(0,0,0,0.25)' : '0 2px 14px rgba(30,58,138,0.06)',
+    navShadow: esModoOscuro ? '0 2px 12px rgba(0,0,0,0.25)' : '0 2px 14px rgba(var(--brand-secondary-rgb),0.06)',
     title: esModoOscuro ? '#f8fafc' : '#111a3a',
     text: esModoOscuro ? '#e2e8f0' : '#1e293b',
     textMuted: esModoOscuro ? '#94a3b8' : '#64748b',
     labelText: esModoOscuro ? '#94a3b8' : '#64748b',
     inputBg: esModoOscuro ? '#0f172a' : '#f8fafc',
     inputBorder: esModoOscuro ? '#334155' : '#e2e8f0',
-    inputBorderFocus: esModoOscuro ? '#60a5fa' : '#93c5fd',
+    inputBorderFocus: 'var(--brand-primary)',
     inputErrorBg: esModoOscuro ? 'rgba(127,29,29,0.18)' : '#fef2f2',
     inputErrorBorder: '#f87171',
     inputText: esModoOscuro ? '#e2e8f0' : '#1e293b',
@@ -89,10 +89,10 @@ export default function PerfilPage() {
     readonlyText: esModoOscuro ? '#e2e8f0' : '#1e293b',
     innerCardBg: esModoOscuro ? '#111827' : '#ffffff',
     innerCardBorder: esModoOscuro ? '#334155' : '#e2e8f0',
-    innerCardShadow: esModoOscuro ? '0 4px 20px rgba(0,0,0,0.30)' : '0 2px 10px rgba(30,58,138,0.04)',
-    badgeBg: esModoOscuro ? 'rgba(37,99,235,0.18)' : '#eff6ff',
-    badgeText: esModoOscuro ? '#93c5fd' : '#1e3a8a',
-    btnPrimary: 'linear-gradient(90deg,#1e3a8a,#2563eb)',
+    innerCardShadow: esModoOscuro ? '0 4px 20px rgba(0,0,0,0.30)' : '0 2px 10px rgba(var(--brand-secondary-rgb),0.04)',
+    badgeBg: 'var(--brand-soft)',
+    badgeText: 'var(--brand-text)',
+    btnPrimary: 'var(--brand-gradient)',
     btnSecBg: esModoOscuro ? '#1e293b' : '#ffffff',
     btnSecBorder: esModoOscuro ? '#334155' : '#e2e8f0',
     btnSecText: esModoOscuro ? '#cbd5e1' : '#64748b',
@@ -195,15 +195,15 @@ export default function PerfilPage() {
         </div>
 
         {/* Contenedor Maestro Unificado */}
-        <div className="vehiculo-main-container perfil-master-wrapper" style={{ background: c.cardBg, border: `1px solid ${c.cardBorder}`, boxShadow: esModoOscuro ? '0 4px 24px rgba(0,0,0,0.40)' : '0 4px 24px rgba(30,58,138,0.07)', borderRadius: '20px', padding: '24px' }}>
+        <div className="vehiculo-main-container perfil-master-wrapper" style={{ background: c.cardBg, border: `1px solid ${c.cardBorder}`, boxShadow: esModoOscuro ? '0 4px 24px rgba(0,0,0,0.40)' : '0 4px 24px rgba(var(--brand-secondary-rgb),0.07)', borderRadius: '20px', padding: '24px' }}>
           
           {/* 1. Header de Perfil Usuario (Banner Azul Corporativo Drivique) */}
           <div
             className="perfil-banner-card"
             style={{
               background: esModoOscuro
-                ? 'linear-gradient(135deg, #0f1a3d 0%, #1e3a8a 100%)'
-                : 'linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%)',
+                ? 'linear-gradient(135deg, var(--brand-secondary) 0%, var(--brand-secondary) 100%)'
+                : 'linear-gradient(135deg, var(--brand-secondary) 0%, var(--brand-primary) 100%)',
               borderRadius: '16px',
               padding: '24px 28px',
               display: 'flex',
@@ -212,7 +212,7 @@ export default function PerfilPage() {
               position: 'relative',
               overflow: 'hidden',
               marginBottom: '24px',
-              boxShadow: esModoOscuro ? '0 8px 30px rgba(0,0,0,0.4)' : '0 8px 30px rgba(30, 58, 138, 0.25)',
+              boxShadow: esModoOscuro ? '0 8px 30px rgba(0,0,0,0.4)' : '0 8px 30px rgba(var(--brand-secondary-rgb), 0.25)',
             }}
           >
             {/* Formas Geométricas Decorativas de Fondo (Círculos Traslúcidos Elegantes) */}
@@ -309,7 +309,7 @@ export default function PerfilPage() {
                   padding: '11px 24px',
                   borderRadius: '10px',
                   background: '#ffffff',
-                  color: '#1e3a8a',
+                  color: 'var(--brand-secondary)',
                   border: 'none',
                   fontWeight: 800,
                   fontSize: '13.5px',
@@ -330,7 +330,7 @@ export default function PerfilPage() {
                   e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.18)'
                 }}
               >
-                <FaEdit style={{ fontSize: '13px', color: '#1e3a8a' }} />
+                <FaEdit style={{ fontSize: '13px', color: 'var(--brand-secondary)' }} />
                 {esPerfilIncompleto
                   ? t('perfil.completeProfileBtn', 'Completar perfil')
                   : t('perfil.editProfileBtn', 'Editar perfil')}
@@ -344,7 +344,7 @@ export default function PerfilPage() {
             {/* Tarjeta 1: Datos Personales */}
             <div style={{ background: c.innerCardBg, borderRadius: '14px', border: `1px solid ${c.innerCardBorder}`, boxShadow: c.innerCardShadow, padding: '22px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <div style={{ paddingBottom: '12px', borderBottom: `1px solid ${esModoOscuro ? 'rgba(255, 255, 255, 0.08)' : 'rgba(226, 232, 240, 0.8)'}` }}>
-                <h2 style={{ fontSize: '15px', fontWeight: 700, color: esModoOscuro ? '#93c5fd' : '#1e3a8a', margin: 0, letterSpacing: '-0.01em' }}>
+                <h2 style={{ fontSize: '15px', fontWeight: 700, color: esModoOscuro ? 'var(--brand-text-dark)' : 'var(--brand-secondary)', margin: 0, letterSpacing: '-0.01em' }}>
                   {t('perfil.personalInfo', 'Datos Personales')}
                 </h2>
               </div>
@@ -352,7 +352,7 @@ export default function PerfilPage() {
               {/* Nombres Completo */}
               <div>
                 <label style={{ ...labelStyle, display: 'flex', alignItems: 'center' }}>
-                  <FaUser style={{ color: c.accentText || '#1e3a8a', fontSize: '12px', marginRight: '6px' }} />
+                  <FaUser style={{ color: c.accentText || 'var(--brand-secondary)', fontSize: '12px', marginRight: '6px' }} />
                   {t('perfil.firstName', 'Nombres completos')}
                 </label>
                 <div style={readonlyStyle}>
@@ -365,7 +365,7 @@ export default function PerfilPage() {
               {/* Apellidos Completo */}
               <div>
                 <label style={{ ...labelStyle, display: 'flex', alignItems: 'center' }}>
-                  <FaUser style={{ color: c.accentText || '#1e3a8a', fontSize: '12px', marginRight: '6px' }} />
+                  <FaUser style={{ color: c.accentText || 'var(--brand-secondary)', fontSize: '12px', marginRight: '6px' }} />
                   {t('perfil.lastName', 'Apellidos completos')}
                 </label>
                 <div style={readonlyStyle}>
@@ -378,7 +378,7 @@ export default function PerfilPage() {
               {/* Fecha de nacimiento */}
               <div>
                 <label style={{ ...labelStyle, display: 'flex', alignItems: 'center' }}>
-                  <FaCalendarAlt style={{ color: c.accentText || '#1e3a8a', fontSize: '12px', marginRight: '6px' }} />
+                  <FaCalendarAlt style={{ color: c.accentText || 'var(--brand-secondary)', fontSize: '12px', marginRight: '6px' }} />
                   {t('perfil.birthDate', 'Fecha de nacimiento')}
                 </label>
                 <div style={readonlyStyle}>
@@ -392,7 +392,7 @@ export default function PerfilPage() {
             {/* Tarjeta 2: Datos de Contacto */}
             <div style={{ background: c.innerCardBg, borderRadius: '14px', border: `1px solid ${c.innerCardBorder}`, boxShadow: c.innerCardShadow, padding: '22px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <div style={{ paddingBottom: '12px', borderBottom: `1px solid ${esModoOscuro ? 'rgba(255, 255, 255, 0.08)' : 'rgba(226, 232, 240, 0.8)'}` }}>
-                <h2 style={{ fontSize: '15px', fontWeight: 700, color: esModoOscuro ? '#93c5fd' : '#1e3a8a', margin: 0, letterSpacing: '-0.01em' }}>
+                <h2 style={{ fontSize: '15px', fontWeight: 700, color: esModoOscuro ? 'var(--brand-text-dark)' : 'var(--brand-secondary)', margin: 0, letterSpacing: '-0.01em' }}>
                   {t('perfil.contactData', 'Datos de Contacto')}
                 </h2>
               </div>
@@ -400,7 +400,7 @@ export default function PerfilPage() {
               {/* Correo electrónico */}
               <div>
                 <label style={{ ...labelStyle, display: 'flex', alignItems: 'center' }}>
-                  <FaEnvelope style={{ color: c.accentText || '#1e3a8a', fontSize: '12px', marginRight: '6px' }} />
+                  <FaEnvelope style={{ color: c.accentText || 'var(--brand-secondary)', fontSize: '12px', marginRight: '6px' }} />
                   {t('perfil.email', 'Correo electrónico')}
                 </label>
                 <div style={{ ...readonlyStyle, padding: '0 14px' }}>
@@ -413,7 +413,7 @@ export default function PerfilPage() {
               {/* Nacionalidad */}
               <div>
                 <label style={{ ...labelStyle, display: 'flex', alignItems: 'center' }}>
-                  <FaGlobe style={{ color: c.accentText || '#1e3a8a', fontSize: '12px', marginRight: '6px' }} />
+                  <FaGlobe style={{ color: c.accentText || 'var(--brand-secondary)', fontSize: '12px', marginRight: '6px' }} />
                   {t('perfil.nationality', 'Nacionalidad')}
                 </label>
                 <div style={{ ...readonlyStyle, padding: '0 14px' }}>
@@ -426,7 +426,7 @@ export default function PerfilPage() {
               {/* Teléfono */}
               <div>
                 <label style={{ ...labelStyle, display: 'flex', alignItems: 'center' }}>
-                  <FaPhone style={{ color: c.accentText || '#1e3a8a', fontSize: '12px', marginRight: '6px' }} />
+                  <FaPhone style={{ color: c.accentText || 'var(--brand-secondary)', fontSize: '12px', marginRight: '6px' }} />
                   {t('perfil.phone', 'Teléfono')}
                 </label>
                 <div style={{ ...readonlyStyle, padding: '0 14px' }}>
@@ -440,7 +440,7 @@ export default function PerfilPage() {
             {/* Tarjeta 3: Documento de Identidad */}
             <div style={{ background: c.innerCardBg, borderRadius: '14px', border: `1px solid ${c.innerCardBorder}`, boxShadow: c.innerCardShadow, padding: '22px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <div style={{ paddingBottom: '12px', borderBottom: `1px solid ${esModoOscuro ? 'rgba(255, 255, 255, 0.08)' : 'rgba(226, 232, 240, 0.8)'}` }}>
-                <h2 style={{ fontSize: '15px', fontWeight: 700, color: esModoOscuro ? '#93c5fd' : '#1e3a8a', margin: 0, letterSpacing: '-0.01em' }}>
+                <h2 style={{ fontSize: '15px', fontWeight: 700, color: esModoOscuro ? 'var(--brand-text-dark)' : 'var(--brand-secondary)', margin: 0, letterSpacing: '-0.01em' }}>
                   {t('perfil.identityDoc', 'Documento de Identidad')}
                 </h2>
               </div>
@@ -448,7 +448,7 @@ export default function PerfilPage() {
               {/* Tipo de documento */}
               <div>
                 <label style={{ ...labelStyle, display: 'flex', alignItems: 'center' }}>
-                  <FaIdCard style={{ color: c.accentText || '#1e3a8a', fontSize: '12px', marginRight: '6px' }} />
+                  <FaIdCard style={{ color: c.accentText || 'var(--brand-secondary)', fontSize: '12px', marginRight: '6px' }} />
                   {t('perfil.docType', 'Tipo de documento')}
                 </label>
                 <div style={readonlyStyle}>
@@ -461,7 +461,7 @@ export default function PerfilPage() {
               {/* Número de documento */}
               <div>
                 <label style={{ ...labelStyle, display: 'flex', alignItems: 'center' }}>
-                  <FaHashtag style={{ color: c.accentText || '#1e3a8a', fontSize: '12px', marginRight: '6px' }} />
+                  <FaHashtag style={{ color: c.accentText || 'var(--brand-secondary)', fontSize: '12px', marginRight: '6px' }} />
                   {t('perfil.docNumber', 'Número de documento')}
                 </label>
                 <div style={readonlyStyle}>
@@ -496,7 +496,7 @@ export default function PerfilPage() {
               }}
             >
               <div style={{ paddingBottom: '12px', borderBottom: `1px solid ${esModoOscuro ? 'rgba(255, 255, 255, 0.08)' : 'rgba(226, 232, 240, 0.8)'}` }}>
-                <h2 style={{ fontSize: '15px', fontWeight: 700, color: esModoOscuro ? '#93c5fd' : '#1e3a8a', margin: 0, letterSpacing: '-0.01em' }}>
+                <h2 style={{ fontSize: '15px', fontWeight: 700, color: esModoOscuro ? 'var(--brand-text-dark)' : 'var(--brand-secondary)', margin: 0, letterSpacing: '-0.01em' }}>
                   {t('catalogo.logout', 'Cerrar Sesión')}
                 </h2>
               </div>
@@ -546,7 +546,7 @@ export default function PerfilPage() {
               }}
             >
               <div style={{ paddingBottom: '12px', borderBottom: `1px solid ${esModoOscuro ? 'rgba(255, 255, 255, 0.08)' : 'rgba(226, 232, 240, 0.8)'}` }}>
-                <h2 style={{ fontSize: '15px', fontWeight: 700, color: esModoOscuro ? '#93c5fd' : '#1e3a8a', margin: 0, letterSpacing: '-0.01em' }}>
+                <h2 style={{ fontSize: '15px', fontWeight: 700, color: esModoOscuro ? 'var(--brand-text-dark)' : 'var(--brand-secondary)', margin: 0, letterSpacing: '-0.01em' }}>
                   {t('perfil.deleteAccountTitle', 'Eliminar Cuenta')}
                 </h2>
               </div>

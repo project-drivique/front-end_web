@@ -2,6 +2,7 @@ import { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FaFileSignature, FaCheckCircle } from 'react-icons/fa';
 import logo from '@/assets/logo.png';
+import { useBrand } from '@/contexts/BrandContext';
 import firmaDrivique from '@/assets/drivique-signature.png';
 import { useLanding } from '../../landing/LandingContext';
 import { formatCurrency } from '@/utils/currencyUtils';
@@ -38,6 +39,7 @@ const Campo = ({ label, value }) => (
 );
 
 export default function FirmaContrato({ vehiculo, reservaGuardada, onFirmado }) {
+  const { brand } = useBrand();
   const { t, i18n } = useTranslation();
   const { moneda } = useLanding();
   const canvasRef = useRef(null);
@@ -117,7 +119,7 @@ export default function FirmaContrato({ vehiculo, reservaGuardada, onFirmado }) 
         background: 'var(--bg-tarjeta)', border: '1px solid var(--borde)', borderRadius: 24,
         overflow: 'hidden', boxShadow: 'var(--sombra-tarjeta)',
       }}>
-        <div style={{ height: 8, background: 'linear-gradient(90deg,#1e3a8a,#2563eb,#93c5fd)' }} />
+        <div style={{ height: 8, background: 'linear-gradient(90deg,var(--brand-secondary),var(--brand-primary),var(--brand-accent))' }} />
 
         <div className="contrato-contenido" style={{
           display: 'flex', justifyContent: 'space-between', gap: 28, flexWrap: 'wrap',
@@ -125,7 +127,7 @@ export default function FirmaContrato({ vehiculo, reservaGuardada, onFirmado }) 
         }}>
           <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
             <div style={{ width: 64, height: 64, borderRadius: 16, border: '1px solid var(--borde)', background: 'var(--bg-tarjeta)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', flexShrink: 0 }}>
-              <img src={logo} alt="Drivique" style={{ width: '100%', height: '100%', objectFit: 'contain', padding: 8 }} />
+              <img src={brand.logoDataUrl || logo} alt={brand.name} style={{ width: '100%', height: '100%', objectFit: 'contain', padding: 8 }} />
             </div>
             <div>
               <h2 style={{ margin: '0 0 6px', fontSize: 24, color: 'var(--texto-primary)', letterSpacing: '-0.02em' }}>
@@ -137,7 +139,7 @@ export default function FirmaContrato({ vehiculo, reservaGuardada, onFirmado }) 
           </div>
 
           <aside style={{ minWidth: 240, background: 'var(--bg-item)', border: '1px solid var(--borde)', borderRadius: 16, padding: '16px 16px 12px' }}>
-            <span style={{ display: 'inline-block', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#1e3a8a', background: '#dbeafe', borderRadius: 999, padding: '5px 10px', marginBottom: 10, fontWeight: 700 }}>
+            <span style={{ display: 'inline-block', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--brand-text)', background: 'var(--brand-soft)', borderRadius: 999, padding: '5px 10px', marginBottom: 10, fontWeight: 700 }}>
               {t('contratoFirma.badgeLabel')}
             </span>
             <p style={{ margin: '6px 0', fontSize: 13, color: 'var(--texto-primary)' }}><strong>{t('contratoFirma.contractCode')}:</strong> {codigoContrato}</p>
@@ -256,12 +258,12 @@ export default function FirmaContrato({ vehiculo, reservaGuardada, onFirmado }) 
               <div style={{ background: 'var(--bg-item)', border: '1px solid var(--borde)', borderRadius: 20, padding: 18 }}>
                 <h4 style={{ margin: '0 0 12px', fontSize: 15, color: 'var(--texto-primary)' }}>{t('contratoFirma.platformSignature')}</h4>
                 <div style={{
-                  height: 160, borderRadius: 14, background: 'var(--bg-tarjeta)', border: '2px dashed #93c5fd',
+                  height: 160, borderRadius: 14, background: 'var(--bg-tarjeta)', border: '2px dashed var(--brand-border)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 6, marginBottom: 12,
                 }}>
                   <img src={firmaDrivique} alt="Firma Drivique" style={{ maxHeight: 84, maxWidth: '78%', objectFit: 'contain' }} />
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, color: '#1e3a8a', fontWeight: 700 }}>
-                    <FaCheckCircle color="#1e3a8a" size={14} /> Firmado digitalmente
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--brand-text)', fontWeight: 700 }}>
+                    <FaCheckCircle color="var(--brand-text)" size={14} /> Firmado digitalmente
                   </span>
                 </div>
                 <p style={{ margin: '4px 0', fontSize: 13, color: 'var(--texto-primary)' }}><strong>{t('contratoFirma.responsible')}:</strong> {t('contratoFirma.platformResponsible')}</p>
@@ -276,9 +278,9 @@ export default function FirmaContrato({ vehiculo, reservaGuardada, onFirmado }) 
               disabled={firmando}
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: 10, padding: '16px 36px', borderRadius: 16,
-                background: firmando ? '#94a3b8' : 'linear-gradient(90deg,#1e3a8a,#2563eb)',
+                background: firmando ? '#94a3b8' : 'var(--brand-gradient)',
                 color: '#fff', fontWeight: 900, fontSize: 15, border: 'none',
-                cursor: firmando ? 'default' : 'pointer', boxShadow: '0 8px 24px rgba(37,99,235,0.28)',
+                cursor: firmando ? 'default' : 'pointer', boxShadow: '0 8px 24px rgba(var(--brand-primary-rgb),0.28)',
                 transition: 'all 200ms ease',
               }}
             >

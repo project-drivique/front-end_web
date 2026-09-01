@@ -22,7 +22,7 @@ export default function CambiarContrasena({ c, esModoOscuro }) {
         title: t('perfil.passwordUpdatedTitle', '¡Contraseña actualizada!'),
         text: t('perfil.passwordUpdatedText', 'Tu contraseña se ha actualizado correctamente.'),
         confirmButtonText: 'Entendido',
-        confirmButtonColor: '#1e3a8a',
+        confirmButtonColor: 'var(--brand-secondary)',
       })
     }
   }, [exito, t])
@@ -67,7 +67,7 @@ export default function CambiarContrasena({ c, esModoOscuro }) {
         }}
       >
         <div style={{ paddingBottom: '12px', borderBottom: `1px solid ${esModoOscuro ? 'rgba(255, 255, 255, 0.08)' : 'rgba(226, 232, 240, 0.8)'}` }}>
-          <h2 style={{ fontSize: '15px', fontWeight: 700, color: esModoOscuro ? '#93c5fd' : '#1e3a8a', margin: 0, letterSpacing: '-0.01em' }}>
+          <h2 style={{ fontSize: '15px', fontWeight: 700, color: esModoOscuro ? 'var(--brand-text-dark)' : 'var(--brand-secondary)', margin: 0, letterSpacing: '-0.01em' }}>
             {t('perfil.security', 'Seguridad y Contraseña')}
           </h2>
         </div>
@@ -82,7 +82,7 @@ export default function CambiarContrasena({ c, esModoOscuro }) {
             width: '100%',
             padding: '11px',
             borderRadius: '10px',
-            background: c.btnPrimary || '#1e3a8a',
+            background: c.btnPrimary || 'var(--brand-secondary)',
             color: '#ffffff',
             border: 'none',
             fontWeight: 700,
@@ -139,7 +139,7 @@ export default function CambiarContrasena({ c, esModoOscuro }) {
             {/* Modal Header */}
             <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', paddingBottom: '12px', borderBottom: `1px solid ${esModoOscuro ? 'rgba(255, 255, 255, 0.08)' : 'rgba(226, 232, 240, 0.8)'}` }}>
               <div>
-                <h3 style={{ fontSize: '16.5px', fontWeight: 800, color: esModoOscuro ? '#93c5fd' : '#1e3a8a', margin: 0, letterSpacing: '-0.01em' }}>
+                <h3 style={{ fontSize: '16.5px', fontWeight: 800, color: esModoOscuro ? 'var(--brand-text-dark)' : 'var(--brand-secondary)', margin: 0, letterSpacing: '-0.01em' }}>
                   {t('perfil.changePasswordTitle', 'Cambiar contraseña')}
                 </h3>
                 <p style={{ fontSize: '12.5px', color: c.textMuted || '#64748b', margin: '2px 0 0' }}>
@@ -175,7 +175,7 @@ export default function CambiarContrasena({ c, esModoOscuro }) {
                     value={form.actual}
                     onChange={e => actualizarCampo('actual', e.target.value)}
                     style={inputStyle(!!errores.actual)}
-                    onFocus={e => e.target.style.borderColor = c.inputBorderFocus || '#1e3a8a'}
+                    onFocus={e => e.target.style.borderColor = c.inputBorderFocus || 'var(--brand-secondary)'}
                     onBlur={e => e.target.style.borderColor = errores.actual ? '#f87171' : c.inputBorder || '#e2e8f0'}
                   />
                   <button
@@ -209,7 +209,7 @@ export default function CambiarContrasena({ c, esModoOscuro }) {
                     value={form.nueva}
                     onChange={e => actualizarCampo('nueva', e.target.value)}
                     style={inputStyle(!!errores.nueva)}
-                    onFocus={e => e.target.style.borderColor = c.inputBorderFocus || '#1e3a8a'}
+                    onFocus={e => e.target.style.borderColor = c.inputBorderFocus || 'var(--brand-secondary)'}
                     onBlur={e => e.target.style.borderColor = errores.nueva ? '#f87171' : c.inputBorder || '#e2e8f0'}
                   />
                   <button
@@ -243,7 +243,7 @@ export default function CambiarContrasena({ c, esModoOscuro }) {
                     value={form.confirmar}
                     onChange={e => actualizarCampo('confirmar', e.target.value)}
                     style={inputStyle(!!errores.confirmar)}
-                    onFocus={e => e.target.style.borderColor = c.inputBorderFocus || '#1e3a8a'}
+                    onFocus={e => e.target.style.borderColor = c.inputBorderFocus || 'var(--brand-secondary)'}
                     onBlur={e => e.target.style.borderColor = errores.confirmar ? '#f87171' : c.inputBorder || '#e2e8f0'}
                   />
                   <button
@@ -294,7 +294,7 @@ export default function CambiarContrasena({ c, esModoOscuro }) {
                 style={{
                   padding: '11px',
                   borderRadius: '10px',
-                  background: c.btnPrimary || '#1e3a8a',
+                  background: c.btnPrimary || 'var(--brand-secondary)',
                   color: '#ffffff',
                   border: 'none',
                   fontWeight: 700,

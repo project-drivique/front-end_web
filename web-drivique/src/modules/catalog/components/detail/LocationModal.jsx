@@ -114,7 +114,7 @@ export default function LocationModal({ visible, onClose, sucursalInfo, c }) {
           <button
             onClick={onClose}
             style={{
-              background: 'linear-gradient(90deg, #1e3a8a, #2563eb)', color: '#fff', border: 'none', borderRadius: '8px',
+              background: 'var(--brand-gradient)', color: 'var(--brand-on-primary)', border: 'none', borderRadius: '8px',
               padding: '10px 20px', fontSize: 14, fontWeight: 700, cursor: 'pointer'
             }}
           >
