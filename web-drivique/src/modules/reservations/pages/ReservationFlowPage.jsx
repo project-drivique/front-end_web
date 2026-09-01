@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { FaMoneyBillWave, FaCreditCard, FaArrowLeft } from 'react-icons/fa'
 import logo from '@/assets/logo.png'
+import { useBrand } from '@/contexts/BrandContext'
 import { formatCurrency } from '@/utils/currencyUtils'
 import { useLanding } from '../../landing/LandingContext'
 import { HORAS_LIMITE_PAGO_EFECTIVO } from '@/services/reservationService'
@@ -28,6 +29,7 @@ const IcoArrow = () => (
 )
 
 export default function ReservationFlowPage() {
+  const { brand } = useBrand()
   const { t } = useTranslation()
   const { tema, moneda } = useLanding()
   const navigate = useNavigate()
@@ -41,7 +43,7 @@ export default function ReservationFlowPage() {
     subCardBorder: esModoOscuro ? '#334155'  : '#e2e8f0',
     textPrimary:   esModoOscuro ? '#f8fafc'  : '#0f172a',
     textSecondary: esModoOscuro ? '#94a3b8'  : '#64748b',
-    accentText:    esModoOscuro ? '#93c5fd'  : '#1e3a8a',
+    accentText:    'var(--brand-text)',
     isDark:        esModoOscuro,
   }
   
@@ -72,7 +74,7 @@ export default function ReservationFlowPage() {
   if (!vehiculo) return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 14 }}>
       <p style={{ fontSize: 20, fontWeight: 800, color: 'var(--texto-primary)' }}>{t('vehiculo.notFound')}</p>
-      <Link to={usuario ? '/home' : '/catalogo'} style={{ color: '#1e3a8a', fontWeight: 700, fontSize: 14 }}>← {t('vehiculo.backToCatalog')}</Link>
+      <Link to={usuario ? '/home' : '/catalogo'} style={{ color: 'var(--brand-text)', fontWeight: 700, fontSize: 14 }}>← {t('vehiculo.backToCatalog')}</Link>
     </div>
   )
 
@@ -107,7 +109,7 @@ export default function ReservationFlowPage() {
         <div style={{ position: 'absolute', bottom: -60, left: -60, width: 350, height: 350, borderRadius: '50%', background: 'var(--hero-orb2)', pointerEvents: 'none', opacity: 0.5 }} />
 
         <div style={{ position: 'relative', textAlign: 'center', maxWidth: 560, width: '100%', background: c.cardBg, borderRadius: 28, boxShadow: '0 24px 70px rgba(15,23,42,0.16)', border: `1px solid ${c.cardBorder}`, padding: isMobile ? '32px 20px' : '48px 40px' }}>
-          <img src={logo} alt="Drivique" style={{ width: 116, height: 116, borderRadius: '50%', objectFit: 'contain', background: '#fff', padding: 16, margin: '0 auto 28px', boxShadow: '0 14px 34px rgba(30,58,138,0.24)', border: `1px solid ${c.cardBorder}` }} />
+          <img src={brand.logoDataUrl || logo} alt={brand.name} style={{ width: 116, height: 116, borderRadius: '50%', objectFit: 'contain', background: '#fff', padding: 16, margin: '0 auto 28px', boxShadow: '0 14px 34px rgba(var(--brand-secondary-rgb),0.24)', border: `1px solid ${c.cardBorder}` }} />
           <h2 style={{ fontSize: 30, fontWeight: 900, color: c.textPrimary, margin: '0 0 14px', letterSpacing: '-0.02em' }}>
             {t('vehiculo.reservationRegisteredTitle', 'Reserva Registrada')}
           </h2>
@@ -131,7 +133,7 @@ export default function ReservationFlowPage() {
                     showAlert({ icon: 'success', title: t('vehiculo.reservationCompletedTitle', '¡Reserva Completada!'), text: t('vehiculo.reservationCompletedText', 'Tu reserva presencial ha sido registrada.'), confirmButtonText: t('common.accept', 'Aceptar') })
                       .then(() => navigate('/reservas'))
                   }}
-                  style={{ display: 'inline-flex', alignItems: 'center', gap: 12, padding: '18px 36px', borderRadius: 16, background: 'linear-gradient(90deg,#1e3a8a,#2563eb)', color: '#fff', fontWeight: 900, fontSize: 15, border: 'none', cursor: 'pointer', boxShadow: '0 8px 24px rgba(37,99,235,0.28)' }}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: 12, padding: '18px 36px', borderRadius: 16, background: 'var(--brand-gradient)', color: 'var(--brand-on-primary)', fontWeight: 900, fontSize: 15, border: 'none', cursor: 'pointer', boxShadow: 'var(--brand-shadow)' }}
                 >
                   <FaMoneyBillWave size={20} />
                   <span>{t('vehiculo.confirmAndViewReservations', 'Confirmar y Ver Mis Reservas')}</span>
@@ -153,10 +155,10 @@ export default function ReservationFlowPage() {
                     style={{
                       display: 'inline-flex', alignItems: 'center', gap: 12,
                       padding: '18px 40px', borderRadius: 16,
-                      background: redirigiendoPago ? '#94a3b8' : hoverWompi ? 'linear-gradient(90deg,#162d6e,#1d4fd8)' : 'linear-gradient(90deg,#1e3a8a,#2563eb)',
+                      background: redirigiendoPago ? '#94a3b8' : hoverWompi ? 'var(--brand-gradient-hover)' : 'var(--brand-gradient)',
                       color: '#fff', fontWeight: 900, fontSize: 15, border: 'none',
                       cursor: redirigiendoPago ? 'default' : 'pointer',
-                      boxShadow: '0 8px 24px rgba(37,99,235,0.28)',
+                      boxShadow: '0 8px 24px rgba(var(--brand-primary-rgb),0.28)',
                       transition: 'all 200ms ease', width: '100%', maxWidth: 320,
                     }}
                   >
@@ -199,7 +201,7 @@ export default function ReservationFlowPage() {
         </div>
 
         {/* Tarjeta principal */}
-        <div style={{ background: c.cardBg, border: `1px solid ${c.cardBorder}`, borderRadius: 16, padding: isMobile ? 16 : 32, boxShadow: esModoOscuro ? '0 4px 24px rgba(0,0,0,0.40)' : '0 4px 24px rgba(30,58,138,0.07)' }}>
+        <div style={{ background: c.cardBg, border: `1px solid ${c.cardBorder}`, borderRadius: 16, padding: isMobile ? 16 : 32, boxShadow: esModoOscuro ? '0 4px 24px rgba(0,0,0,0.40)' : '0 4px 24px rgba(var(--brand-secondary-rgb),0.07)' }}>
 
           <ReservationStepper pantalla={pantalla} setPantalla={setPantalla} esModoOscuro={esModoOscuro} />
 
@@ -287,7 +289,7 @@ export default function ReservationFlowPage() {
             {pantalla < 3 && (
               <div className="detalle-continuar-movil" style={{ display: 'none', width: '100%', marginTop: 24 }}>
                 {errorPaso1 && <p style={{ color: '#dc2626', fontSize: 13, fontWeight: 700, marginBottom: 12, textAlign: 'center' }}>{errorPaso1}</p>}
-                <button onClick={irSiguiente} style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, padding: '16px 40px', borderRadius: 16, background: 'linear-gradient(90deg,#1e3a8a,#2563eb)', color: '#fff', fontWeight: 900, fontSize: 15, border: 'none', cursor: 'pointer', boxShadow: '0 8px 24px rgba(37,99,235,0.28)' }}>
+                <button onClick={irSiguiente} style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, padding: '16px 40px', borderRadius: 16, background: 'var(--brand-gradient)', color: 'var(--brand-on-primary)', fontWeight: 900, fontSize: 15, border: 'none', cursor: 'pointer', boxShadow: 'var(--brand-shadow)' }}>
                   {pantalla === 2 ? t('vehiculo.continueData') : t('common.continue')} <IcoArrow />
                 </button>
               </div>
@@ -295,10 +297,10 @@ export default function ReservationFlowPage() {
 
             {/* Footer confirmar móvil (paso 3) */}
             {pantalla === 3 && (
-              <div className="confirmar-reserva-movil" style={{ display: 'none', width: '100%', marginTop: 24, background: 'linear-gradient(135deg,#0f1a3d,#1e3a8a)', borderRadius: 24, padding: '22px 24px', boxShadow: '0 12px 32px rgba(30,58,138,0.25)' }}>
-                <p style={{ fontSize: 12, color: '#bfdbfe', fontWeight: 700, margin: '0 0 4px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t('vehiculo.totalToPay')}</p>
+              <div className="confirmar-reserva-movil" style={{ display: 'none', width: '100%', marginTop: 24, background: 'var(--brand-gradient)', borderRadius: 24, padding: '22px 24px', boxShadow: 'var(--brand-shadow)' }}>
+                <p style={{ fontSize: 12, color: 'var(--brand-border-light)', fontWeight: 700, margin: '0 0 4px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t('vehiculo.totalToPay')}</p>
                 <p style={{ fontSize: 26, fontWeight: 900, color: '#fff', margin: '0 0 16px' }}>{formatCurrency(totalReserva, moneda)}</p>
-                <button onClick={handleReservar} style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, padding: '15px 24px', borderRadius: 16, background: 'var(--bg-tarjeta)', color: '#1e3a8a', fontWeight: 900, fontSize: 15, border: 'none', cursor: 'pointer' }}>
+                <button onClick={handleReservar} style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, padding: '15px 24px', borderRadius: 16, background: 'var(--bg-tarjeta)', color: 'var(--brand-text)', fontWeight: 900, fontSize: 15, border: 'none', cursor: 'pointer' }}>
                   {t('vehiculo.confirmReserve')}
                 </button>
               </div>

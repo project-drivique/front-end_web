@@ -31,16 +31,16 @@ export default function VerifyRecoverPage() {
   }, [error])
 
   const c = {
-    pageBg: esModoOscuro ? '#0f172a' : 'radial-gradient(circle at top left, #dbeafe 0%, #eff6ff 28%, #f8fbff 100%)',
+    pageBg: esModoOscuro ? '#0f172a' : 'radial-gradient(circle at top left, var(--brand-soft-strong-light) 0%, var(--brand-soft-light) 28%, #f8fbff 100%)',
     cardBg: esModoOscuro ? '#0e172a' : '#ffffff',
     cardBorder: esModoOscuro ? '#1e293b' : '#dbe5f3',
-    cardShadow: esModoOscuro ? '0 24px 60px rgba(0,0,0,0.5)' : '0 10px 30px rgba(30,58,138,0.08)',
+    cardShadow: esModoOscuro ? '0 24px 60px rgba(0,0,0,0.5)' : '0 10px 30px rgba(var(--brand-secondary-rgb),0.08)',
     textPrimary: esModoOscuro ? '#ffffff' : '#0f172a',
     textSecondary: esModoOscuro ? '#94a3b8' : '#64748b',
     inputBg: esModoOscuro ? '#172136' : '#ffffff',
     inputBorder: esModoOscuro ? '#23314d' : '#dbe5f3',
-    accentText: esModoOscuro ? '#60a5fa' : '#1e3a8a',
-    buttonBg: esModoOscuro ? 'linear-gradient(90deg, #1e3a8a, #2563eb)' : 'linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%)',
+    accentText: esModoOscuro ? 'var(--brand-accent)' : 'var(--brand-secondary)',
+    buttonBg: esModoOscuro ? 'linear-gradient(90deg, var(--brand-secondary), var(--brand-primary))' : 'linear-gradient(135deg, var(--brand-secondary) 0%, var(--brand-primary) 100%)',
   }
 
   return (
@@ -73,20 +73,20 @@ export default function VerifyRecoverPage() {
           textAlign: 'center',
           transition: 'all 300ms ease'
         }}>
-          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '5px', background: 'linear-gradient(90deg, #1d4ed8, #2563eb, #60a5fa)' }} />
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '5px', background: 'linear-gradient(90deg, var(--brand-primary-hover), var(--brand-primary), var(--brand-accent))' }} />
 
           <div style={{
             width: '76px',
             height: '76px',
             borderRadius: '22px',
-            background: esModoOscuro ? 'rgba(96, 165, 250, 0.12)' : 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)',
+            background: esModoOscuro ? 'rgba(var(--brand-accent-rgb), 0.12)' : 'linear-gradient(135deg, var(--brand-soft-light) 0%, var(--brand-soft-strong-light) 100%)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             margin: '0 auto 20px',
-            border: esModoOscuro ? '1px solid rgba(96, 165, 250, 0.25)' : '1px solid #bfdbfe'
+            border: esModoOscuro ? '1px solid rgba(var(--brand-accent-rgb), 0.25)' : '1px solid var(--brand-border-light)'
           }}>
-            <FaShieldAlt size={36} color={esModoOscuro ? '#60a5fa' : '#1d4ed8'} />
+            <FaShieldAlt size={36} color={esModoOscuro ? 'var(--brand-accent)' : 'var(--brand-primary-hover)'} />
           </div>
 
           <div style={{ marginBottom: '24px', textAlign: 'center' }}>
@@ -138,7 +138,7 @@ export default function VerifyRecoverPage() {
                     background: c.inputBg,
                     outline: 'none',
                     transition: 'all 180ms ease',
-                    boxShadow: codigo[i] ? '0 0 0 2px rgba(37,99,235,0.15)' : 'none'
+                    boxShadow: codigo[i] ? '0 0 0 2px rgba(var(--brand-primary-rgb),0.15)' : 'none'
                   }}
                 />
               ))}
@@ -147,7 +147,7 @@ export default function VerifyRecoverPage() {
             <div style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
               <div style={{
                 padding: '8px 16px',
-                background: expirado ? (esModoOscuro ? 'rgba(239,68,68,0.2)' : '#fef2f2') : (esModoOscuro ? 'rgba(37,99,235,0.2)' : '#eff6ff'),
+                background: expirado ? (esModoOscuro ? 'rgba(239,68,68,0.2)' : '#fef2f2') : (esModoOscuro ? 'rgba(var(--brand-primary-rgb),0.2)' : 'var(--brand-soft-light)'),
                 borderRadius: '9999px',
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -177,7 +177,7 @@ export default function VerifyRecoverPage() {
                 transition: 'all 180ms ease',
                 opacity: (cargando || codigo.length < LARGO_CODIGO || expirado) ? 0.6 : 1,
                 marginBottom: '16px',
-                boxShadow: '0 6px 18px rgba(37,99,235,0.25)'
+                boxShadow: '0 6px 18px rgba(var(--brand-primary-rgb),0.25)'
               }}
             >
               {cargando ? t('verificarRecuperacion.verifying', 'Verificando...') : t('verificarRecuperacion.submit', 'Verificar código')}
@@ -237,7 +237,7 @@ export default function VerifyRecoverPage() {
 
       {showModal && (
         <AlertModal
-          icon={<FaExclamationTriangle size={22} color={esModoOscuro ? '#93c5fd' : '#1e3a8a'} />}
+          icon={<FaExclamationTriangle size={22} color={esModoOscuro ? 'var(--brand-text-dark)' : 'var(--brand-secondary)'} />}
           titulo={t('common.error', 'Error')}
           mensaje={error}
           primaryText={t('common.accept', 'Aceptar')}

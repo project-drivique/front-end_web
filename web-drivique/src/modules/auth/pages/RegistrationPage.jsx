@@ -7,6 +7,7 @@ import { useSocialRegistration } from '../hooks/useSocialRegistration'
 import { useAuthStore } from '../../../store/authStore'
 import { useLanding } from '@/modules/landing/LandingContext'
 import logo from '@/assets/logocatalog.png'
+import { useBrand } from '@/contexts/BrandContext'
 import { showAlert } from '@/utils/swalConfig'
 import {
   FaTimes,
@@ -19,15 +20,15 @@ import {
 import AuthHeaderControls from '../components/AuthHeaderControls'
 import { getRoleHome } from '../utils/accessControl'
 
-const COLOR_MARCA = '#1e3a8a'
+const COLOR_MARCA = 'var(--brand-secondary)'
 
 const coloresRegistro = (esModoOscuro) => ({
   pageBg: esModoOscuro ? '#0f172a' : '#f8fafc',
   panelCard: esModoOscuro ? '#0e172a' : '#ffffff',
   panelCardBorder: esModoOscuro ? '#1e293b' : '#dbe5f3',
-  panelCardShadow: esModoOscuro ? '0 10px 40px rgba(0,0,0,0.35)' : '0 10px 30px rgba(30,58,138,0.06)',
-  title: esModoOscuro ? '#ffffff' : '#1e3a8a',
-  labelColor: esModoOscuro ? '#ffffff' : '#1e3a8a',
+  panelCardShadow: esModoOscuro ? '0 10px 40px rgba(0,0,0,0.35)' : '0 10px 30px rgba(var(--brand-secondary-rgb),0.06)',
+  title: esModoOscuro ? '#ffffff' : 'var(--brand-secondary)',
+  labelColor: esModoOscuro ? '#ffffff' : 'var(--brand-secondary)',
   text: esModoOscuro ? '#ffffff' : '#1e293b',
   textSoft: esModoOscuro ? '#94a3b8' : '#475569',
   textMuted: esModoOscuro ? '#94a3b8' : '#64748b',
@@ -36,15 +37,15 @@ const coloresRegistro = (esModoOscuro) => ({
   inputBg: esModoOscuro ? '#172136' : '#ffffff',
   inputText: esModoOscuro ? '#ffffff' : '#1e293b',
   inputBorder: esModoOscuro ? '#23314d' : '#dbe5f3',
-  inputBorderHover: esModoOscuro ? '#60a5fa' : '#cbd5e1',
+  inputBorderHover: esModoOscuro ? 'var(--brand-accent)' : '#cbd5e1',
   inputPlaceholder: esModoOscuro ? '#64748b' : '#94a3b8',
 
   inputErrorBg: esModoOscuro ? 'rgba(127,29,29,0.18)' : '#fef2f2',
   inputErrorBorder: esModoOscuro ? '#f87171' : '#f87171',
 
-  accent: esModoOscuro ? '#93c5fd' : COLOR_MARCA,
-  accentSoft: esModoOscuro ? 'rgba(30,58,138,0.24)' : '#eff6ff',
-  accentBorder: esModoOscuro ? 'rgba(147,197,253,0.26)' : '#bfdbfe',
+  accent: esModoOscuro ? 'var(--brand-text-dark)' : COLOR_MARCA,
+  accentSoft: esModoOscuro ? 'rgba(var(--brand-secondary-rgb),0.24)' : 'var(--brand-soft-light)',
+  accentBorder: esModoOscuro ? 'rgba(var(--brand-accent-rgb),0.26)' : 'var(--brand-border-light)',
 
   divider: esModoOscuro ? '#1e293b' : '#f1f5f9',
 
@@ -86,10 +87,10 @@ const coloresRegistro = (esModoOscuro) => ({
   modalLegalStrong: esModoOscuro ? '#cbd5e1' : '#64748b',
 
   volver: esModoOscuro ? '#94a3b8' : '#64748b',
-  volverHover: esModoOscuro ? '#93c5fd' : COLOR_MARCA,
+  volverHover: esModoOscuro ? 'var(--brand-text-dark)' : COLOR_MARCA,
 
   termsText: esModoOscuro ? '#cbd5e1' : '#475569',
-  checkboxAccent: esModoOscuro ? '#93c5fd' : COLOR_MARCA,
+  checkboxAccent: esModoOscuro ? 'var(--brand-text-dark)' : COLOR_MARCA,
 
   secondaryBtnBg: esModoOscuro ? '#111827' : '#ffffff',
   secondaryBtnBorder: esModoOscuro ? '#334155' : '#e2e8f0',
@@ -124,10 +125,10 @@ function ModalTerminos({ onCerrar, onAceptar, c }) {
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 999, background: c.modalOverlay, backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}>
       <div style={{ background: c.modalBg, borderRadius: '20px', width: '100%', maxWidth: '620px', maxHeight: '88vh', display: 'flex', flexDirection: 'column', boxShadow: '0 24px 64px rgba(0,0,0,0.35)', overflow: 'hidden', border: `1px solid ${c.modalDivider}` }}>
-        <div style={{ padding: '22px 28px', background: 'linear-gradient(135deg,#0f1a3d,#1e3a8a)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px' }}>
+        <div style={{ padding: '22px 28px', background: 'linear-gradient(135deg,var(--brand-secondary),var(--brand-secondary))', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px' }}>
           <div>
             <h2 style={{ color: '#fff', fontSize: '1rem', fontWeight: 800, margin: '0 0 3px' }}>{t('registro.modal.title')}</h2>
-            <p style={{ color: 'rgba(191,219,254,0.82)', fontSize: '12px', margin: 0 }}>{t('registro.modal.subtitle')}</p>
+            <p style={{ color: 'rgba(255,255,255,0.82)', fontSize: '12px', margin: 0 }}>{t('registro.modal.subtitle')}</p>
           </div>
           <button onClick={onCerrar} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', cursor: 'pointer', color: '#fff', borderRadius: '8px', padding: '6px 10px', fontSize: '18px', lineHeight: 1, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <FaTimes />
@@ -169,13 +170,13 @@ function ModalTerminos({ onCerrar, onAceptar, c }) {
             style={{
               padding: '10px 24px',
               borderRadius: '10px',
-              background: 'linear-gradient(90deg,#1e3a8a,#2563eb)',
+              background: 'linear-gradient(90deg,var(--brand-secondary),var(--brand-primary))',
               color: '#fff',
               fontWeight: 700,
               fontSize: '13px',
               border: 'none',
               cursor: 'pointer',
-              boxShadow: '0 4px 12px rgba(30,58,138,0.25)'
+              boxShadow: '0 4px 12px rgba(var(--brand-secondary-rgb),0.25)'
             }}
           >
             {t('registro.modal.accept')}
@@ -342,6 +343,7 @@ function BotonesSocial({ onGoogle, onFacebook, cargandoGoogle, cargandoFacebook,
 }
 
 export default function RegistroPage() {
+  const { brand } = useBrand()
   const { t } = useTranslation()
   const navigate = useNavigate()
   const exitoRef = useRef(null)
@@ -480,23 +482,23 @@ export default function RegistroPage() {
           }
         `}</style>
 
-        <div className="lg-left" style={{ display: 'flex', flexDirection: 'column', background: esModoOscuro ? 'linear-gradient(160deg, #070d1e 0%, #0f172a 55%, #1e293b 100%)' : 'linear-gradient(160deg,#060e2e 0%,#0c1f5c 50%,#1e3a8a 100%)', position: 'relative', overflow: 'hidden', flexShrink: 0 }}>
+        <div className="lg-left" style={{ display: 'flex', flexDirection: 'column', background: esModoOscuro ? 'linear-gradient(160deg,color-mix(in srgb,var(--brand-secondary) 48%,#070b12) 0%,color-mix(in srgb,var(--brand-secondary) 66%,#0f172a) 55%,color-mix(in srgb,var(--brand-primary) 52%,#111827) 100%)' : 'linear-gradient(160deg,color-mix(in srgb,var(--brand-secondary) 72%,#080b12) 0%,var(--brand-secondary) 52%,color-mix(in srgb,var(--brand-primary) 78%,#111827) 100%)', position: 'relative', overflow: 'hidden', flexShrink: 0 }}>
           <div style={{ position: 'absolute', top: '-100px', left: '-100px', width: '400px', height: '400px', borderRadius: '50%', border: '1px solid rgba(255,255,255,0.05)', background: 'rgba(255,255,255,0.02)' }} />
-          <div style={{ position: 'absolute', bottom: '-80px', right: '-80px', width: '340px', height: '340px', borderRadius: '50%', background: 'rgba(99,102,241,0.08)' }} />
+          <div style={{ position: 'absolute', bottom: '-80px', right: '-80px', width: '340px', height: '340px', borderRadius: '50%', background: 'rgba(var(--brand-accent-rgb),0.12)' }} />
 
           <div style={{ position: 'relative', zIndex: 1, flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 36px', textAlign: 'center', gap: '24px' }}>
             <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-              <img src={logo} alt="Drivique" style={{ height: '48px', width: 'auto', display: 'block', filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.25))' }} />
+              <img src={brand.logoDataUrl || logo} alt={brand.name} style={{ height: '48px', width: 'auto', display: 'block', filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.25))' }} />
               <span style={{
                 fontFamily: 'Outfit, Inter, sans-serif',
                 fontWeight: 900,
                 fontSize: '18px',
                 letterSpacing: '0.14em',
-                color: '#93c5fd',
+                color: 'var(--brand-text-dark)',
                 textTransform: 'uppercase',
-                textShadow: '0 2px 10px rgba(147,197,253,0.35)'
+                textShadow: '0 2px 10px rgba(var(--brand-accent-rgb),0.35)'
               }}>
-                DRIVIQUE
+                {brand.name}
               </span>
             </div>
             {/* Contenedor glassmórfico de la información */}
@@ -518,7 +520,7 @@ export default function RegistroPage() {
               transition: 'all 300ms ease'
             }}>
               <div>
-                <p style={{ color: 'rgba(191,219,254,0.7)', fontSize: '13px', lineHeight: 1.6, maxWidth: '260px', margin: '0 auto' }}>
+                <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: '13px', lineHeight: 1.6, maxWidth: '260px', margin: '0 auto' }}>
                   {t('registro.leftPanel.subtitle')}
                 </p>
               </div>
@@ -542,7 +544,7 @@ export default function RegistroPage() {
           </div>
 
           <div style={{ position: 'relative', zIndex: 1, padding: '12px 36px', borderTop: '1px solid rgba(255,255,255,0.08)', textAlign: 'center' }}>
-            <p style={{ color: 'rgba(147,197,253,0.35)', fontSize: '11px', margin: 0 }}>Drivique © 2026</p>
+            <p style={{ color: 'rgba(var(--brand-accent-rgb),0.5)', fontSize: '11px', margin: 0 }}>{brand.name} © 2026</p>
           </div>
         </div>
 
@@ -682,14 +684,14 @@ export default function RegistroPage() {
                     width: '100%',
                     padding: '14px',
                     borderRadius: '12px',
-                    background: exitoFinal ? 'linear-gradient(90deg,#15803d,#16a34a)' : 'linear-gradient(90deg,#1e3a8a,#2563eb)',
+                    background: exitoFinal ? 'linear-gradient(90deg,#15803d,#16a34a)' : 'linear-gradient(90deg,var(--brand-secondary),var(--brand-primary))',
                     color: '#fff',
                     fontWeight: 700,
                     fontSize: '14px',
                     border: 'none',
                     cursor: (cargando || exitoFinal) ? 'not-allowed' : 'pointer',
                     opacity: (cargando || exitoFinal) ? 0.8 : 1,
-                    boxShadow: '0 4px 16px rgba(30,58,138,0.25)',
+                    boxShadow: '0 4px 16px rgba(var(--brand-secondary-rgb),0.25)',
                     transition: 'all 300ms',
                   }}
                 >

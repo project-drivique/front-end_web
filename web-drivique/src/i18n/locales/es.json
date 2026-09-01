@@ -1541,6 +1541,7 @@
     },
     "reservationsManagement": {
       "encargadoSucursal": "Encargado de Sucursal ({{branch}})",
+      "noAssignedBranch": "Sin sucursal asignada",
       "exportExcelTitle": "Exportar a Excel",
       "exportPdfTitle": "Exportar a PDF",
       "printTitle": "Imprimir listado",
@@ -1592,6 +1593,7 @@
         "phonePlaceholder": "+57 300 000 0000",
         "vehicle": "Vehículo *",
         "noPlate": "Sin placa",
+        "noVehicles": "No hay vehículos disponibles en esta sucursal",
         "branch": "Sucursal *",
         "pickupDateTime": "Fecha y Hora Recogida *",
         "returnDateTime": "Fecha y Hora Devolución *",
@@ -1630,6 +1632,7 @@
       },
       "exportTitleBranch": "Gestión de Reservas - Sucursal {{branch}}",
       "exportTitleGlobal": "Gestión Global de Reservas - Drivique",
+      "audit": { "exportExcel": "Exportó el listado de reservas a Excel", "exportPdf": "Exportó el listado de reservas a PDF", "print": "Imprimió el listado de reservas" },
       "fields": {
         "code": "Código",
         "client": "Cliente",
@@ -1839,6 +1842,8 @@
       "detailsTitle": "Detalle de Contrato",
       "actions": "Acciones",
       "close": "Cerrar",
+      "exportExcel": "Exportar a Excel", "exportPdf": "Exportar a PDF", "printList": "Imprimir listado", "listLabel": "Listado", "unsigned": "Sin firma", "downloadSuccess": "Contrato {{contract}} descargado.",
+      "audit": { "exportExcel": "Exportó el listado de contratos a Excel", "exportPdf": "Exportó el listado de contratos a PDF", "print": "Imprimió el listado de contratos", "download": "Descargó el contrato PDF", "view": "Consultó el detalle del contrato" },
       "fields": {
         "contractNumber": "No. Contrato",
         "reservationCode": "Reserva",
@@ -1969,7 +1974,9 @@
     "incidentsTitle": "Reportes de Incidencias de Vehículos",
     "incidentsSubtitle": "Control de incidencias de la flota, respuestas a clientes, priorización de reparación y trazabilidad.",
     "exportExcel": "Excel",
-    "exportPdf": "PDF"
+    "exportPdf": "PDF",
+    "brandPalette": { "label": "Paletas de colores disponibles", "hint": "Elige una combinación lista para usar o personaliza sus colores.", "customHint": "¿Quieres ajustarla? Selecciona visualmente cada color o escribe su código.", "ocean": "Azul océano", "forest": "Verde bosque", "sunset": "Atardecer", "violet": "Violeta", "rose": "Rosa", "graphite": "Grafito" },
+    "brand": { "nav": "Configuración de marca", "eyebrow": "Identidad visual", "title": "Configuración de marca", "subtitle": "Personaliza el nombre, logo y colores corporativos de toda la plataforma.", "identity": "Identidad de la marca", "identityHint": "Define el nombre comercial y el logo principal.", "name": "Nombre comercial", "logo": "Cargar nuevo logo", "logoHint": "PNG, JPG, WebP o SVG · máximo 1 MB", "palette": "Paleta corporativa", "paletteHint": "Selecciona tres colores diferentes para la interfaz.", "colors": { "primary": "Primario", "secondary": "Secundario", "accent": "Acento" }, "preview": "Vista previa — cambios sin aplicar", "previewEyebrow": "Nueva identidad", "previewTitle": "Explora la plataforma", "previewText": "Así se verán el nombre, logo, botones y acentos principales.", "previewButton": "Acción principal", "nameFallback": "Nombre de marca", "restorePrevious": "Restaurar anterior", "restoreOriginal": "Restaurar original", "apply": "Aplicar cambios", "messages": { "saved": "La nueva marca se aplicó correctamente.", "previous": "Se restauró la configuración anterior.", "original": "Se restauró la marca original." }, "errors": { "invalidName": "El nombre debe tener entre 2 y 40 caracteres.", "invalidColors": "Los tres colores deben tener formato hexadecimal válido.", "duplicateColors": "Selecciona tres colores corporativos diferentes.", "logoType": "Selecciona un logo PNG, JPG, WebP o SVG.", "logoSize": "El logo no puede superar 1 MB.", "logoRead": "No fue posible leer el archivo seleccionado.", "noPrevious": "Todavía no existe una configuración anterior para restaurar." } }
   },
   "panel": {
     "welcome": "Bienvenido de vuelta",

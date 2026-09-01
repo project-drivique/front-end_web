@@ -10,6 +10,16 @@ export const VEHICLE_STATES = Object.freeze({ AVAILABLE: 'disponible', RESERVED:
 
 function readArray(key, fallback = []) { try { const value = JSON.parse(localStorage.getItem(key) || 'null'); return Array.isArray(value) ? value : fallback } catch { return fallback } }
 const normalizePlate = (value) => String(value || '').trim().toUpperCase().replace(/\s+/g, '')
+const normalizeBranch = (value) => String(value || '').trim().toLocaleLowerCase()
+
+function assertBranchScope(user, ...branchNames) {
+  const managerRoles = new Set(['encargado', 'encargado_sucursal', 'branch_manager'])
+  if (!managerRoles.has(user?.rol)) return
+  const assignedBranch = user?.sucursalId || user?.sucursal || user?.sucursalAsignada
+  if (!assignedBranch || branchNames.some((branch) => normalizeBranch(branch) !== normalizeBranch(assignedBranch))) {
+    throw new Error('invalidBranch')
+  }
+}
 
 function configuredVehicles() {
   return initialVehicles.map((vehicle) => ({ ...vehicle, estadoFlota: vehicle.estadoFlota || (vehicle.disponible === false ? VEHICLE_STATES.MAINTENANCE : VEHICLE_STATES.AVAILABLE) }))
@@ -67,6 +77,7 @@ export const vehicleManagementService = {
   activeReservationCount(id) { return activeReservations(id).length },
   create(data, user) {
     const vehicles = readArray(STORAGE_KEY, configuredVehicles())
+    assertBranchScope(user, data.sucursal)
     const clean = validate(data, vehicles)
     const id = vehicles.reduce((max, vehicle) => Math.max(max, Number(vehicle.id) || 0), 0) + 1
     const branch = branchManagementService.list().find((item) => item.nombre === clean.sucursal)
@@ -75,12 +86,14 @@ export const vehicleManagementService = {
   },
   update(id, data, user) {
     const vehicles = readArray(STORAGE_KEY, configuredVehicles()); const current = vehicles.find((vehicle) => Number(vehicle.id) === Number(id)); if (!current) throw new Error('notFound')
+    assertBranchScope(user, current.sucursal, data.sucursal)
     const clean = validate(data, vehicles, current.id); const branch = branchManagementService.list().find((item) => item.nombre === clean.sucursal)
     const updated = { ...current, ...clean, precio: Number(data.precioLimitado), caracteristicas: data.caracteristicas || [], equipamientoTecnologico: data.equipamientoTecnologico || [], tarifas: { kmLimitado: { km: Number(data.kmLimitado), precio: Number(data.precioLimitado), excedente: Number(data.precioExcedente) }, kmIlimitado: { precio: Number(data.precioIlimitado) } }, seguros: data.seguros || [], imagenes: data.imagenes || [], sucursalInfo: { ...current.sucursalInfo, nombre: branch.nombre, direccion: branch.direccion } }
     localStorage.setItem(STORAGE_KEY, JSON.stringify(vehicles.map((vehicle) => vehicle.id === current.id ? updated : vehicle))); recordAudit('editar', updated, user); return enrich(updated)
   },
   remove(id, user) {
     const vehicles = readArray(STORAGE_KEY, configuredVehicles()); const vehicle = vehicles.find((item) => Number(item.id) === Number(id)); if (!vehicle) throw new Error('notFound')
+    assertBranchScope(user, vehicle.sucursal)
     const count = activeReservations(id).length; if (count) { const error = new Error('hasActiveReservations'); error.count = count; throw error }
     localStorage.setItem(STORAGE_KEY, JSON.stringify(vehicles.filter((item) => Number(item.id) !== Number(id)))); recordAudit('eliminar', vehicle, user)
   },

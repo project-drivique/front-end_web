@@ -36,10 +36,10 @@ export const showAlert = (options) => {
     )
 
     const iconType = options.icon || 'info'
-    let IconComponent = <FaInfoCircle size={22} color={esModoOscuro ? '#60a5fa' : '#1e3a8a'} />
-    if (iconType === 'success') IconComponent = <FaCheckCircle size={22} color={esModoOscuro ? '#4ade80' : '#16a34a'} />
-    else if (iconType === 'error' || iconType === 'warning') IconComponent = <FaExclamationTriangle size={22} color={esModoOscuro ? '#93c5fd' : '#1e3a8a'} />
-    else if (iconType === 'question') IconComponent = <FaQuestionCircle size={22} color={esModoOscuro ? '#93c5fd' : '#1e3a8a'} />
+    let IconComponent = <FaInfoCircle size={22} color={esModoOscuro ? 'var(--brand-accent)' : 'var(--brand-secondary)'} />
+    if (iconType === 'success') IconComponent = <FaCheckCircle size={22} color="var(--brand-text)" />
+    else if (iconType === 'error' || iconType === 'warning') IconComponent = <FaExclamationTriangle size={22} color={esModoOscuro ? 'var(--brand-text-dark)' : 'var(--brand-secondary)'} />
+    else if (iconType === 'question') IconComponent = <FaQuestionCircle size={22} color={esModoOscuro ? 'var(--brand-text-dark)' : 'var(--brand-secondary)'} />
 
     const mensajeContent = options.html 
       ? <span dangerouslySetInnerHTML={{ __html: options.html }} /> 

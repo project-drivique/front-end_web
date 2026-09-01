@@ -1564,6 +1564,7 @@
     },
     "reservationsManagement": {
       "encargadoSucursal": "Gestor de Sucursal ({{branch}})",
+      "noAssignedBranch": "Nenhuma sucursal atribuída",
       "exportExcelTitle": "Exportar para Excel",
       "exportPdfTitle": "Exportar para PDF",
       "printTitle": "Imprimir lista",
@@ -1615,6 +1616,7 @@
         "phonePlaceholder": "+351 900 000 000",
         "vehicle": "Veículo *",
         "noPlate": "Sem matrícula",
+        "noVehicles": "Não há veículos disponíveis nesta filial",
         "branch": "Sucursal *",
         "pickupDateTime": "Data e Hora de Recolha *",
         "returnDateTime": "Data e Hora de Devolução *",
@@ -1653,6 +1655,7 @@
       },
       "exportTitleBranch": "Gestão de Reservas - Sucursal {{branch}}",
       "exportTitleGlobal": "Gestão Global de Reservas - Drivique",
+      "audit": { "exportExcel": "Exportou a lista de reservas para Excel", "exportPdf": "Exportou a lista de reservas para PDF", "print": "Imprimiu a lista de reservas" },
       "fields": {
         "code": "Código",
         "client": "Cliente",
@@ -1862,6 +1865,8 @@
       "detailsTitle": "Detalhes do Contrato",
       "actions": "Ações",
       "close": "Fechar",
+      "exportExcel": "Exportar para Excel", "exportPdf": "Exportar para PDF", "printList": "Imprimir lista", "listLabel": "Lista", "unsigned": "Não assinado", "downloadSuccess": "Contrato {{contract}} baixado.",
+      "audit": { "exportExcel": "Exportou a lista de contratos para Excel", "exportPdf": "Exportou a lista de contratos para PDF", "print": "Imprimiu a lista de contratos", "download": "Baixou o contrato em PDF", "view": "Consultou os detalhes do contrato" },
       "fields": {
         "contractNumber": "Nº Contrato",
         "reservationCode": "Reserva",
@@ -1992,7 +1997,9 @@
     "incidentsTitle": "Relatórios de Incidentes de Veículos",
     "incidentsSubtitle": "Controle de incidentes de frota, respostas a clientes, priorização de reparo e rastreabilidade.",
     "exportExcel": "Excel",
-    "exportPdf": "PDF"
+    "exportPdf": "PDF",
+    "brandPalette": { "label": "Paletas de cores disponíveis", "hint": "Escolha uma combinação pronta ou personalize suas cores.", "customHint": "Quer ajustar? Selecione visualmente cada cor ou digite seu código.", "ocean": "Azul oceano", "forest": "Verde floresta", "sunset": "Pôr do sol", "violet": "Violeta", "rose": "Rosa", "graphite": "Grafite" },
+    "brand": { "nav": "Configuração da marca", "eyebrow": "Identidade visual", "title": "Configuração da marca", "subtitle": "Personalize o nome, logotipo e cores corporativas em toda a plataforma.", "identity": "Identidade da marca", "identityHint": "Defina o nome comercial e o logotipo principal.", "name": "Nome comercial", "logo": "Carregar logotipo", "logoHint": "PNG, JPG, WebP ou SVG · máximo 1 MB", "palette": "Paleta corporativa", "paletteHint": "Escolha três cores diferentes.", "colors": { "primary": "Primária", "secondary": "Secundária", "accent": "Destaque" }, "preview": "Pré-visualização — alterações não aplicadas", "previewEyebrow": "Nova identidade", "previewTitle": "Explore a plataforma", "previewText": "Assim serão exibidos o nome, logotipo, botões e destaques.", "previewButton": "Ação principal", "nameFallback": "Nome da marca", "restorePrevious": "Restaurar anterior", "restoreOriginal": "Restaurar original", "apply": "Aplicar alterações", "messages": { "saved": "A nova marca foi aplicada.", "previous": "A configuração anterior foi restaurada.", "original": "A marca original foi restaurada." }, "errors": { "invalidName": "O nome deve ter entre 2 e 40 caracteres.", "invalidColors": "As três cores devem ser hexadecimais válidas.", "duplicateColors": "Escolha três cores corporativas diferentes.", "logoType": "Selecione um logotipo PNG, JPG, WebP ou SVG.", "logoSize": "O logotipo não pode exceder 1 MB.", "logoRead": "Não foi possível ler o arquivo.", "noPrevious": "Ainda não existe configuração anterior." } }
   },
   "contratoFirma": {
     "badgeLabel": "Documento digital",
