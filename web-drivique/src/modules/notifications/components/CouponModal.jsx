@@ -55,14 +55,14 @@ export default function CouponModal({ cupon, onClose, onAplicar }) {
             width: 60,
             height: 60,
             borderRadius: '50%',
-            background: 'var(--bg-item, #eff6ff)',
-            color: '#2563eb',
+            background: 'var(--bg-item, var(--brand-soft-light))',
+            color: 'var(--brand-text)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             margin: '0 auto 16px',
             fontSize: 28,
-            boxShadow: '0 8px 24px rgba(37, 99, 235, 0.18)',
+            boxShadow: '0 8px 24px rgba(var(--brand-primary-rgb), 0.18)',
           }}
         >
           <FaTicketAlt />
@@ -79,7 +79,7 @@ export default function CouponModal({ cupon, onClose, onAplicar }) {
         <div
           style={{
             background: 'var(--bg-item, #f8fafc)',
-            border: '2px dashed #60a5fa',
+            border: '2px dashed var(--brand-border)',
             borderRadius: 16,
             padding: '16px 20px',
             display: 'flex',
@@ -89,13 +89,13 @@ export default function CouponModal({ cupon, onClose, onAplicar }) {
             marginBottom: 20,
           }}
         >
-          <span style={{ fontSize: 22, fontWeight: 900, letterSpacing: '0.1em', color: 'var(--texto-primary, #1e3a8a)' }}>
+          <span style={{ fontSize: 22, fontWeight: 900, letterSpacing: '0.1em', color: 'var(--texto-primary, var(--brand-secondary))' }}>
             {cupon.codigo}
           </span>
           <button
             onClick={handleCopiar}
             style={{
-              background: copiado ? '#10b981' : '#2563eb',
+              background: copiado ? '#10b981' : 'var(--brand-primary)',
               color: '#ffffff',
               border: 'none',
               borderRadius: 10,
@@ -124,13 +124,13 @@ export default function CouponModal({ cupon, onClose, onAplicar }) {
             width: '100%',
             padding: '13px 20px',
             borderRadius: 14,
-            background: 'linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%)',
+            background: 'var(--brand-gradient)',
             color: '#ffffff',
             border: 'none',
             fontSize: 14,
             fontWeight: 800,
             cursor: 'pointer',
-            boxShadow: '0 8px 24px rgba(37, 99, 235, 0.25)',
+            boxShadow: '0 8px 24px rgba(var(--brand-primary-rgb), 0.25)',
           }}
         >
           {t('promotions.modal.confirm')}

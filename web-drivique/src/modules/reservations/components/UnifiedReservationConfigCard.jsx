@@ -16,10 +16,10 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
 
   const bg         = c?.cardBg     || '#fff'
   const border     = c?.cardBorder || '#e2e8f0'
-  const titleColor = c?.titleColor || '#1e3a8a'
+  const titleColor = c?.titleColor || 'var(--brand-secondary)'
   const textSecond = c?.textSecondary || 'var(--texto-second)'
   const textPrimary = c?.textPrimary || 'var(--texto-primary)'
-  const accent     = c?.accentText || '#2563eb'
+  const accent     = c?.accentText || 'var(--brand-primary)'
   const isDark     = c?.isDark || false
 
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -140,7 +140,7 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
                   padding: '16px 20px',
                   borderRadius: 12,
                   border: `1px solid ${activo ? accent : border}`,
-                  background: activo ? (isDark ? 'rgba(37,99,235,0.12)' : '#eff6ff') : 'transparent',
+                  background: activo ? (isDark ? 'rgba(var(--brand-primary-rgb),0.12)' : 'var(--brand-soft-light)') : 'transparent',
                   cursor: 'pointer',
                   transition: 'all 0.2s',
                 }}
@@ -198,7 +198,7 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
                   setIsModalReadOnly(false)
                   setIsModalOpen(true)
                 }}
-                style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4, fontSize: 11, color: accent, fontWeight: 700, cursor: 'pointer', padding: '4px 8px', background: 'rgba(37,99,235,0.1)', borderRadius: 6, width: 'fit-content' }}
+                style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4, fontSize: 11, color: accent, fontWeight: 700, cursor: 'pointer', padding: '4px 8px', background: 'rgba(var(--brand-primary-rgb),0.1)', borderRadius: 6, width: 'fit-content' }}
               >
                 <FaPencilAlt size={10} />
                 {hasDomicilioData
@@ -234,7 +234,7 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
                     setIsModalOpen(true)
                   }
                 }}
-                style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4, fontSize: 11, color: accent, fontWeight: 700, cursor: 'pointer', padding: '4px 8px', background: 'rgba(37,99,235,0.1)', borderRadius: 6, width: 'fit-content' }}
+                style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4, fontSize: 11, color: accent, fontWeight: 700, cursor: 'pointer', padding: '4px 8px', background: 'rgba(var(--brand-primary-rgb),0.1)', borderRadius: 6, width: 'fit-content' }}
               >
                 {reserva?.sucursalRetiro === 'domicilio' ? <FaEye size={12} /> : <FaPencilAlt size={10} />}
                 {hasDomicilioData
@@ -327,7 +327,7 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
         </div>
 
         {durationText && (
-          <div style={{ marginTop: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', borderRadius: 12, background: 'rgba(37,99,235,0.05)', border: `1px solid rgba(37,99,235,0.15)` }}>
+          <div style={{ marginTop: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', borderRadius: 12, background: 'rgba(var(--brand-primary-rgb),0.05)', border: `1px solid rgba(var(--brand-primary-rgb),0.15)` }}>
             <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, color: textSecond }}>
               <FaHourglassHalf color={textSecond} size={14} /> {t('vehiculo.rentalDuration', 'Duración del alquiler:')}
             </span>

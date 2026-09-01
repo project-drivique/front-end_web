@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { FaArrowLeft, FaBuilding, FaCity, FaEdit, FaFileExcel, FaFilePdf, FaPlus, FaPrint, FaSearch, FaTrash } from 'react-icons/fa'
+import { FaBuilding, FaCity, FaEdit, FaFileExcel, FaFilePdf, FaPlus, FaPrint, FaSearch, FaTrash } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import { useAuthStore } from '../../../store/authStore'
 import { cityManagementService } from '../../../services/cityManagementService'

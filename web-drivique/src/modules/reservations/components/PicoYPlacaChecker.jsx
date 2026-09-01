@@ -6,9 +6,9 @@ export default function PicoYPlacaChecker({ c }) {
 
   const bg = c?.cardBg || '#fff'
   const border = c?.cardBorder || '#e2e8f0'
-  const titleColor = c?.titleColor || '#1e3a8a'
+  const titleColor = c?.titleColor || 'var(--brand-secondary)'
   const textColor = c?.textSecondary || '#64748b'
-  const accent = c?.accentText || '#2563eb'
+  const accent = c?.accentText || 'var(--brand-primary)'
 
   return (
     <div style={{

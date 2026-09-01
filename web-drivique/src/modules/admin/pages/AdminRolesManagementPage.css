@@ -26,12 +26,12 @@
 }
 
 .roles-tab-btn:hover {
-  color: #2563eb;
+  color: var(--brand-primary);
   background: var(--city-soft);
 }
 
 .roles-tab-btn.is-active {
-  color: #2563eb;
+  color: var(--brand-primary);
   background: var(--city-soft);
 }
 
@@ -42,7 +42,7 @@
   left: 0;
   right: 0;
   height: 4px;
-  background: linear-gradient(90deg, #2563eb 0%, #1d4ed8 100%);
+  background: linear-gradient(90deg, var(--brand-primary) 0%, var(--brand-primary-hover) 100%);
   border-radius: 4px;
 }
 
@@ -62,7 +62,7 @@
 }
 
 .permission-matrix-table th {
-  background: linear-gradient(135deg, #102d79 0%, #1d4ed8 100%);
+  background: linear-gradient(135deg, var(--brand-secondary) 0%, var(--brand-primary-hover) 100%);
   color: #ffffff;
   padding: 12px 14px;
   text-align: center;
@@ -93,7 +93,7 @@
   width: 18px;
   height: 18px;
   cursor: pointer;
-  accent-color: #2563eb;
+  accent-color: var(--brand-primary);
 }
 
 /* Tarjetas de Roles */
@@ -110,7 +110,7 @@
   background-clip: padding-box;
   border-radius: 20px;
   padding: 22px;
-  box-shadow: 0 10px 30px rgba(37, 99, 235, 0.08);
+  box-shadow: 0 10px 30px rgba(var(--brand-primary-rgb), 0.08);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -137,7 +137,7 @@
 
 .management-shell--dark .roles-tab-btn.is-active {
   background: #132238 !important;
-  color: #60a5fa !important;
+  color: var(--brand-accent) !important;
 }
 html.dark .role-card {
   background: #0f1b2d;
@@ -146,7 +146,7 @@ html.dark .role-card {
 
 .role-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 16px 35px rgba(37, 99, 235, 0.18);
+  box-shadow: 0 16px 35px rgba(var(--brand-primary-rgb), 0.18);
 }
 
 .role-card__head {
@@ -160,7 +160,7 @@ html.dark .role-card {
   margin: 0;
   font-size: 18px;
   font-weight: 900;
-  color: #1d4ed8;
+  color: var(--brand-primary-hover);
 }
 
 html.dark .role-card__head h3 {
@@ -172,8 +172,8 @@ html.dark .role-card__head h3 {
   border-radius: 999px;
   font-size: 10px;
   font-weight: 800;
-  background: #dbeafe;
-  color: #1e40af;
+  background: var(--brand-soft-strong-light);
+  color: var(--brand-text-light);
 }
 
 .role-card p {

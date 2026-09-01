@@ -43,8 +43,8 @@ export default function PicoYPlacaCard({ placa = '', c }) {
               width: 36,
               height: 36,
               borderRadius: 10,
-              background: c?.accentBgSoft || 'rgba(30,58,138,0.1)',
-              color: c?.accentText || '#1e3a8a',
+              background: c?.accentBgSoft || 'rgba(var(--brand-secondary-rgb),0.1)',
+              color: c?.accentText || 'var(--brand-secondary)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -67,7 +67,7 @@ export default function PicoYPlacaCard({ placa = '', c }) {
         <div
           style={{
             background: 'var(--bg-page)',
-            border: `1.5px solid ${c?.accentText || '#1e3a8a'}`,
+            border: `1.5px solid ${c?.accentText || 'var(--brand-secondary)'}`,
             borderRadius: 8,
             padding: '4px 10px',
             fontSize: 12,
@@ -85,7 +85,7 @@ export default function PicoYPlacaCard({ placa = '', c }) {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: 12 }}>
         {/* Último dígito */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'var(--bg-page)', padding: '10px 12px', borderRadius: 8, border: `1px solid ${c?.subCardBorder || 'var(--borde)'}` }}>
-          <FaHashtag style={{ color: c?.accentText || '#1e3a8a', fontSize: 14 }} />
+          <FaHashtag style={{ color: c?.accentText || 'var(--brand-secondary)', fontSize: 14 }} />
           <div>
             <span style={{ display: 'block', fontSize: 11, color: c?.textSecondary || '#64748b', fontWeight: 600 }}>
               {t('vehiculo.picoYPlaca.ultimoDigito', 'Último dígito')}
@@ -96,7 +96,7 @@ export default function PicoYPlacaCard({ placa = '', c }) {
 
         {/* Día restringido */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'var(--bg-page)', padding: '10px 12px', borderRadius: 8, border: `1px solid ${c?.subCardBorder || 'var(--borde)'}` }}>
-          <FaCalendarDay style={{ color: c?.accentText || '#1e3a8a', fontSize: 14 }} />
+          <FaCalendarDay style={{ color: c?.accentText || 'var(--brand-secondary)', fontSize: 14 }} />
           <div>
             <span style={{ display: 'block', fontSize: 11, color: c?.textSecondary || '#64748b', fontWeight: 600 }}>
               {t('vehiculo.picoYPlaca.diaRestriccion', 'Día restringido')}
@@ -107,7 +107,7 @@ export default function PicoYPlacaCard({ placa = '', c }) {
 
         {/* Horarios */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'var(--bg-page)', padding: '10px 12px', borderRadius: 8, border: `1px solid ${c?.subCardBorder || 'var(--borde)'}`, gridColumn: 'span 2' }}>
-          <FaClock style={{ color: c?.accentText || '#1e3a8a', fontSize: 14 }} />
+          <FaClock style={{ color: c?.accentText || 'var(--brand-secondary)', fontSize: 14 }} />
           <div>
             <span style={{ display: 'block', fontSize: 11, color: c?.textSecondary || '#64748b', fontWeight: 600 }}>
               {t('vehiculo.picoYPlaca.horarioRestriccion', 'Horario habitual')}

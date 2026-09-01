@@ -110,7 +110,7 @@ export default function ModalFiltrosMovil({ abierto, onCerrar, c, resultado = []
               fontSize: '14px',
               border: 'none',
               cursor: 'pointer',
-              boxShadow: '0 4px 14px rgba(30,58,138,0.25)',
+              boxShadow: '0 4px 14px rgba(var(--brand-secondary-rgb),0.25)',
             }}
           >
             {!cargando ? `${t('catalogo.viewResults')} (${resultado.length})` : t('catalogo.viewResults')}
