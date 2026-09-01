@@ -92,7 +92,7 @@ export const INITIAL_REPORTS = [
         titulo: 'Recibido',
         descripcion: 'Reporte registrado en el sistema.',
         hora: '11:20',
-        color: '#2563eb',
+        color: 'var(--brand-primary)',
       },
       {
         estadoKey: 'en_revision',
@@ -131,7 +131,7 @@ export const INITIAL_REPORTS = [
         titulo: 'Recibido',
         descripcion: 'Reporte registrado en el sistema.',
         hora: '09:00',
-        color: '#2563eb',
+        color: 'var(--brand-primary)',
       },
       {
         estadoKey: 'resuelto',

@@ -71,7 +71,7 @@ export default function PaginacionCatalogo({ pagina, setPagina, totalPaginas, c 
           fontWeight: 800,
           fontSize: '13px',
           cursor: pagina === totalPaginas ? 'not-allowed' : 'pointer',
-          boxShadow: pagina === totalPaginas ? 'none' : '0 4px 12px rgba(37,99,235,0.18)',
+          boxShadow: pagina === totalPaginas ? 'none' : '0 4px 12px rgba(var(--brand-primary-rgb),0.18)',
         }}
       >
         {t('catalogo.next')} 

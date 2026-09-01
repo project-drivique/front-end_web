@@ -9,8 +9,8 @@ const TEMA_LIGHT = {
   textPrimary: 'var(--texto-primary)',
   textSecondary: 'var(--texto-second)',
   accent: 'var(--texto-acento)',
-  accentBgSoft: 'var(--bg-item)',
-  accentGradient: 'linear-gradient(135deg, #1e3a8a, #2563eb)',
+  accentBgSoft: 'var(--brand-soft)',
+  accentGradient: 'var(--brand-gradient)',
 }
 
 const TEMA_DARK = {
@@ -120,10 +120,10 @@ export default function AlertModal({
     flex: secondaryText ? 1 : undefined,
     width: secondaryText ? undefined : '100%',
     background: t.accentGradient,
-    color: '#ffffff',
+    color: 'var(--brand-on-primary)',
     fontWeight: secondaryText ? 700 : 800,
     border: 'none',
-    boxShadow: '0 4px 14px rgba(30,58,138,0.25)',
+    boxShadow: '0 4px 14px rgba(var(--brand-secondary-rgb),0.25)',
   }
 
   const contenido = (

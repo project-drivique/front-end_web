@@ -16,7 +16,7 @@ export default function BranchInfo({ sucursalInfo, c }) {
 
   const bg = c?.cardBg || '#fff'
   const border = c?.cardBorder || '#e2e8f0'
-  const titleColor = c?.titleColor || '#1e3a8a'
+  const titleColor = c?.titleColor || 'var(--brand-secondary)'
   const textPrimary = c?.textPrimary || 'var(--texto-primary)'
   const textSecondary = c?.textSecondary || 'var(--texto-second)'
 
@@ -26,7 +26,7 @@ export default function BranchInfo({ sucursalInfo, c }) {
   return (
     <div style={{ background: bg, padding: 20, borderRadius: 16, border: `1px solid ${border}`, display: 'flex', flexDirection: 'column', gap: 16 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 0 }}>
-        <FaMapMarkerAlt color={c?.accentText || "#2563eb"} size={14} />
+        <FaMapMarkerAlt color={c?.accentText || "var(--brand-primary)"} size={14} />
         <h3 style={{ fontSize: 13, fontWeight: 700, color: titleColor, margin: 0 }}>{t('vehiculo.branch', 'Sucursal')}</h3>
       </div>
       
@@ -54,8 +54,8 @@ export default function BranchInfo({ sucursalInfo, c }) {
             onClick={() => setModalVisible(true)}
             style={{
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-              fontSize: 13, fontWeight: 700, color: c?.accentText || '#1e3a8a', background: 'transparent',
-              border: `1px solid ${c?.accentText || '#1e3a8a'}`, borderRadius: 8, padding: '10px 16px', cursor: 'pointer',
+              fontSize: 13, fontWeight: 700, color: c?.accentText || 'var(--brand-secondary)', background: 'transparent',
+              border: `1px solid ${c?.accentText || 'var(--brand-secondary)'}`, borderRadius: 8, padding: '10px 16px', cursor: 'pointer',
               marginTop: 8, transition: 'all 0.2s', width: '100%'
             }}
           >

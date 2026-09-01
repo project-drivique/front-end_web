@@ -24,9 +24,12 @@ import './i18n/index.js'
 // Solo con importarlo ya se inicializa i18n en la app.
 
 import App from './App.jsx'
+import './styles/admin-system.css'
+import './styles/brand-system.css'
 // Importa el componente principal de la aplicación.
 
 import { LandingProvider } from './modules/landing/LandingContext.jsx'
+import { BrandProvider } from './contexts/BrandContext.jsx'
 // Importa un provider personalizado para manejar
 // estado o contexto relacionado con la landing page.
 
@@ -51,6 +54,7 @@ createRoot(document.getElementById('root')).render(
     <QueryClientProvider client={queryClient}>
       {/* Hace disponible React Query en toda la app */}
 
+      <BrandProvider>
       <LandingProvider>
         {/* Hace disponible el contexto de landing a todos los hijos */}
 
@@ -58,6 +62,7 @@ createRoot(document.getElementById('root')).render(
         {/* Componente raíz de la aplicación */}
 
       </LandingProvider>
+      </BrandProvider>
     </QueryClientProvider>
   </StrictMode>,
 )

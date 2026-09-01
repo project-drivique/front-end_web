@@ -1,0 +1,188 @@
+/* Sistema visual único para Administración y Encargados. Se carga al final para
+   normalizar módulos históricos sin alterar su lógica funcional. */
+.management-shell {
+  --adm-bg: #f6f8fc;
+  --adm-card: #ffffff;
+  --adm-card-alt: #f8fafc;
+  --adm-text: #101828;
+  --adm-muted: #667085;
+  --adm-border: #e2e8f0;
+  --adm-soft: var(--brand-primary-soft);
+  --adm-shadow: 0 10px 30px rgba(15, 23, 42, .06);
+  --adm-shadow-lg: 0 20px 50px rgba(15, 23, 42, .10);
+  --city-bg: var(--adm-bg);
+  --city-card: var(--adm-card);
+  --city-text: var(--adm-text);
+  --city-muted: var(--adm-muted);
+  --city-border: var(--adm-border);
+  --city-soft: var(--adm-soft);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  background: var(--adm-bg) !important;
+  color: var(--adm-text);
+}
+
+.management-shell--dark {
+  --adm-bg: #0b1220;
+  --adm-card: #111b2e;
+  --adm-card-alt: #162238;
+  --adm-text: #f8fafc;
+  --adm-muted: #a3adc2;
+  --adm-border: #29364d;
+  --adm-soft: color-mix(in srgb, var(--brand-primary) 20%, transparent);
+  --adm-shadow: 0 14px 34px rgba(0, 0, 0, .22);
+  --adm-shadow-lg: 0 24px 64px rgba(0, 0, 0, .32);
+}
+
+.management-shell *, .management-shell *::before, .management-shell *::after { box-sizing: border-box; }
+.management-main { padding: 30px clamp(20px, 3vw, 42px) 54px !important; }
+.cities-container { width: 100%; max-width: 1500px !important; margin-inline: auto; }
+
+/* Jerarquía tipográfica */
+.management-shell h1,
+.management-shell .cities-topbar h1,
+.management-shell .brand-page__header h1 {
+  margin: 3px 0 7px;
+  color: var(--adm-text);
+  font-size: clamp(28px, 2.6vw, 38px) !important;
+  line-height: 1.12;
+  font-weight: 800 !important;
+  letter-spacing: -.035em !important;
+}
+.management-shell h2 { color: var(--adm-text); line-height: 1.25; font-weight: 750; letter-spacing: -.02em; }
+.management-shell p, .management-shell label, .management-shell input,
+.management-shell select, .management-shell textarea, .management-shell button { font-family: inherit; }
+.management-eyebrow, .cities-eyebrow, .brand-page__header>div>p, .management-heading>p {
+  color: var(--brand-primary) !important;
+  font-size: 11px !important;
+  line-height: 1.3;
+  font-weight: 800 !important;
+  letter-spacing: .11em !important;
+}
+.cities-subtitle, .management-header>div>p:not(.management-eyebrow), .brand-page__header span {
+  max-width: 760px; color: var(--adm-muted) !important; font-size: 14px; line-height: 1.55;
+}
+
+/* Navegación */
+.management-sidebar { padding: 22px 14px; box-shadow: 3px 0 24px rgba(15,23,42,.16); }
+.management-brand { gap: 11px; padding: 2px 8px 22px; }
+.management-brand__mark { width: 44px; height: 44px; border-radius: 12px; box-shadow: 0 5px 14px rgba(0,0,0,.15); }
+.management-brand strong { font-size: 18px; font-weight: 800; }
+.management-brand small { color: rgba(255,255,255,.7); font-size: 10px; }
+.management-nav { gap: 4px; }
+.management-nav__item, .management-logout { min-height: 43px; padding: 10px 13px; border-radius: 10px; font-size: 13px; font-weight: 650; }
+.management-nav__item:hover { transform: none; background: rgba(255,255,255,.12); }
+.management-nav__item.is-active { transform: none; background: rgba(255,255,255,.18) !important; border: 1px solid rgba(255,255,255,.24) !important; box-shadow: none; }
+
+/* Encabezados y controles */
+.cities-topbar, .management-header, .brand-page__header { align-items: center; margin-bottom: 22px; }
+.cities-topbar__actions, .management-header__actions { gap: 10px; flex-wrap: wrap; }
+.cities-card, .management-overview, .management-audit, .brand-editor, .brand-preview,
+.roles-card, .incident-card, .reservation-card {
+  background: var(--adm-card) !important;
+  border: 1px solid var(--adm-border) !important;
+  border-radius: 16px !important;
+  box-shadow: var(--adm-shadow) !important;
+}
+.cities-card { padding: 20px !important; }
+.cities-toolbar, .branches-toolbar, .fleet-toolbar, .contracts-toolbar { gap: 10px !important; margin-bottom: 16px; }
+.cities-search, .cities-toolbar select, .branches-toolbar select, .fleet-toolbar select,
+.contracts-status-filter, .reservation-filters input, .reservation-filters select {
+  min-height: 44px !important;
+  border: 1px solid var(--adm-border) !important;
+  border-radius: 10px !important;
+  background: var(--adm-card-alt) !important;
+  color: var(--adm-text) !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+.cities-search { padding-inline: 13px !important; color: var(--brand-primary) !important; }
+.cities-search:focus-within, .cities-toolbar select:focus, .branches-toolbar select:focus,
+.fleet-toolbar select:focus, .management-shell input:focus, .management-shell textarea:focus {
+  border-color: var(--brand-primary) !important;
+  box-shadow: 0 0 0 3px var(--brand-primary-soft) !important;
+  outline: none;
+}
+
+/* Botones */
+.cities-primary, .management-action, .brand-primary {
+  min-height: 44px; padding: 10px 16px !important; border-radius: 10px !important;
+  background: var(--brand-primary) !important; border: 1px solid var(--brand-primary) !important;
+  color: #fff !important; font-size: 13px !important; font-weight: 750 !important;
+  box-shadow: 0 5px 14px color-mix(in srgb, var(--brand-primary) 24%, transparent) !important;
+  transform: none !important;
+}
+.cities-primary:hover, .management-action:hover, .brand-primary:hover { filter: brightness(.94); transform: translateY(-1px) !important; }
+.cities-export { display: flex; gap: 8px; flex-wrap: wrap; }
+.cities-export button, .brand-secondary, .cities-modal__actions>button:not(.cities-primary):not(.cities-danger) {
+  min-height: 42px; padding: 9px 13px !important; border: 1px solid var(--adm-border) !important;
+  border-radius: 10px !important; background: var(--adm-card) !important; color: var(--adm-text) !important;
+  box-shadow: none !important; font-size: 12px; font-weight: 700; transform: none !important;
+}
+.cities-export button:hover, .brand-secondary:hover { border-color: var(--brand-primary) !important; color: var(--brand-primary) !important; background: var(--adm-soft) !important; }
+.management-shell button:focus-visible, .management-shell a:focus-visible { outline: 3px solid var(--brand-primary-soft); outline-offset: 2px; }
+
+/* Tablas */
+.cities-table-wrap, .management-table-wrap { border: 1px solid var(--adm-border) !important; border-radius: 12px !important; box-shadow: none !important; overflow: auto; }
+.management-shell table { border-collapse: separate; border-spacing: 0; }
+.management-shell th {
+  padding: 12px 14px !important; background: var(--adm-card-alt) !important; color: var(--adm-muted) !important;
+  border-bottom: 1px solid var(--adm-border) !important; font-size: 10px !important; font-weight: 800 !important;
+  letter-spacing: .07em !important; text-transform: uppercase;
+}
+.management-shell td { padding: 13px 14px !important; background: var(--adm-card) !important; color: var(--adm-text); border-bottom: 1px solid var(--adm-border) !important; font-size: 13px !important; }
+.management-shell tbody tr:last-child td { border-bottom: 0 !important; }
+.management-shell tbody tr:hover td { background: var(--adm-card-alt) !important; }
+.cities-row-actions button { border-radius: 9px !important; background: var(--adm-card-alt) !important; border: 1px solid var(--adm-border) !important; color: var(--brand-primary) !important; }
+
+/* Formularios, modales y estados */
+.cities-modal-backdrop { background: rgba(15,23,42,.58) !important; backdrop-filter: blur(5px); }
+.cities-modal, .fleet-modal, .contracts-detail-modal {
+  background: var(--adm-card) !important; color: var(--adm-text) !important;
+  border: 1px solid var(--adm-border) !important; border-radius: 18px !important; box-shadow: var(--adm-shadow-lg) !important;
+}
+.cities-modal input, .cities-modal select, .cities-modal textarea, .fleet-modal input:not([type=file]),
+.fleet-modal select, .fleet-modal textarea {
+  min-height: 43px; border: 1px solid var(--adm-border) !important; border-radius: 10px !important;
+  background: var(--adm-card-alt) !important; color: var(--adm-text) !important; font-size: 13px;
+}
+.cities-notice { border: 1px solid color-mix(in srgb,var(--brand-primary) 35%,var(--adm-border)) !important; background: var(--adm-soft) !important; color: var(--adm-text) !important; box-shadow: none !important; }
+.management-shell input[type="checkbox"], .management-shell input[type="radio"] { accent-color: var(--brand-primary); }
+.cities-summary, .contracts-summary { color: var(--adm-muted) !important; font-size: 11px !important; }
+
+/* Dashboard */
+.management-kpis { gap: 14px; }
+.management-kpi { padding: 18px; border: 1px solid var(--adm-border); border-radius: 15px; background: var(--adm-card); box-shadow: var(--adm-shadow); }
+.management-kpi::before { height: 3px; background: var(--brand-primary); }
+.management-kpi:hover { transform: translateY(-2px); box-shadow: var(--adm-shadow-lg); }
+.management-kpi__icon, .management-user>span { background: var(--brand-primary); box-shadow: none; }
+.management-kpi strong { font-size: clamp(22px,2vw,28px); font-weight: 800; }
+.management-user { border: 1px solid var(--adm-border); background: var(--adm-card); box-shadow: none; border-radius: 12px; }
+
+/* La marca gobierna los acentos de todos los módulos administrativos. */
+.management-shell a:not(.management-nav__item), .management-shell legend,
+.management-shell .contracts-code, .management-shell .incident-field svg,
+.management-shell .contracts-cell-with-icon svg, .management-shell .fleet-modal label>small,
+.management-shell .fleet-insurances>button { color: var(--brand-primary) !important; }
+
+@media (max-width: 1024px) {
+  .management-main { padding: 88px 18px 44px !important; }
+  .cities-topbar, .management-header, .brand-page__header { align-items: flex-start; }
+  .mobile-brand img { width: 38px !important; height: 38px !important; padding: 5px; border-radius: 10px; background: #fff; object-fit: contain; }
+  .mobile-brand strong { color: var(--adm-text) !important; font-size: 15px !important; font-weight: 800 !important; }
+}
+@media (max-width: 720px) {
+  .management-main { padding-inline: 13px !important; }
+  .cities-topbar, .management-header, .brand-page__header { flex-direction: column; gap: 14px; }
+  .cities-topbar__actions, .management-header__actions { width: 100%; }
+  .cities-topbar__actions .cities-primary { flex: 1; }
+  .cities-card { padding: 14px !important; border-radius: 14px !important; }
+  .cities-export { display: grid; grid-template-columns:repeat(3,minmax(0,1fr)); width:100%; }
+  .cities-export button { justify-content:center; padding-inline:8px !important; }
+  .management-shell h1, .management-shell .cities-topbar h1, .management-shell .brand-page__header h1 { font-size: 27px !important; }
+}
+@media (max-width: 430px) {
+  .cities-export { grid-template-columns:1fr; }
+  .cities-topbar__actions { display:grid; grid-template-columns:44px minmax(0,1fr); }
+}

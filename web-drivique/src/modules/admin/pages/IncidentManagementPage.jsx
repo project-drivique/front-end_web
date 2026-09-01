@@ -1,31 +1,25 @@
-﻿import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   FaBuilding,
   FaCar,
-  FaCheckCircle,
   FaClock,
-  FaEdit,
-  FaEnvelope,
   FaExclamationCircle,
   FaExclamationTriangle,
   FaEye,
   FaFileExcel,
   FaFilePdf,
   FaPaperPlane,
-  FaPhone,
   FaPlus,
   FaPrint,
   FaSearch,
-  FaShieldAlt,
-  FaTimesCircle,
   FaTrash,
   FaUser,
   FaUserShield,
-  FaWrench,
 } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import { useAuthStore } from '../../../store/authStore'
+import { useBrand } from '../../../contexts/BrandContext'
 import { incidentManagementService } from '../../../services/incidentManagementService'
 import { vehicleManagementService } from '../../../services/vehicleManagementService'
 import { branchManagementService } from '../../../services/branchManagementService'
@@ -37,14 +31,17 @@ import './IncidentManagementPage.css'
 
 export default function IncidentManagementPage() {
   const { t } = useTranslation()
-  const { tema, divisa, tasaUSD } = useLanding()
+  const { tema } = useLanding()
   const user = useAuthStore((state) => state.usuario)
+  const { brand } = useBrand()
   const esModoOscuro = tema === 'oscuro'
 
   const esEncargado =
     user?.rol === 'encargado' ||
     user?.rol === 'encargado_sucursal' ||
     user?.rol === 'branch_manager'
+  const sucursalEncargado = user?.sucursalId || user?.sucursal || user?.sucursalAsignada || ''
+  const branchKey = String(sucursalEncargado).trim().toLocaleLowerCase()
 
   const [incidents, setIncidents] = useState([])
   const [search, setSearch] = useState('')
@@ -74,13 +71,17 @@ export default function IncidentManagementPage() {
   const [nuevoEstadoModal, setNuevoEstadoModal] = useState('recibido')
 
   const sucursales = useMemo(
-    () => branchManagementService.list().sort((a, b) => a.nombre.localeCompare(b.nombre)),
-    []
+    () => branchManagementService.list()
+      .filter((branch) => !esEncargado || String(branch.nombre || '').trim().toLocaleLowerCase() === branchKey)
+      .sort((a, b) => a.nombre.localeCompare(b.nombre)),
+    [branchKey, esEncargado]
   )
 
   const vehiculos = useMemo(
-    () => vehicleManagementService.list().sort((a, b) => a.nombre.localeCompare(b.nombre)),
-    []
+    () => vehicleManagementService.list()
+      .filter((vehicle) => !esEncargado || String(vehicle.sucursal || '').trim().toLocaleLowerCase() === branchKey)
+      .sort((a, b) => a.nombre.localeCompare(b.nombre)),
+    [branchKey, esEncargado]
   )
 
   const cargarIncidencias = () => {
@@ -88,8 +89,8 @@ export default function IncidentManagementPage() {
   }
 
   useEffect(() => {
-    cargarIncidencias()
-  }, [])
+    setIncidents(incidentManagementService.listForUser(user))
+  }, [user])
 
   // Filtrado dinámico
   const filtrados = useMemo(() => {
@@ -129,7 +130,7 @@ export default function IncidentManagementPage() {
         tiempoEstimado: '2 a 4 horas',
       })
       cargarIncidencias()
-    } catch (err) {
+    } catch {
       setErrorModal(t('admin.incidents.createError', 'Error al crear el reporte de incidencia.'))
     }
   }
@@ -146,7 +147,7 @@ export default function IncidentManagementPage() {
     if (!modalDetalle) return
     try {
       setErrorModal('')
-      const updated = incidentManagementService.updateStatusAndRespond(
+      incidentManagementService.updateStatusAndRespond(
         modalDetalle.id,
         { nuevoEstado: nuevoEstadoModal, respuestaTexto },
         user
@@ -159,7 +160,7 @@ export default function IncidentManagementPage() {
       )
       setModalDetalle(null)
       cargarIncidencias()
-    } catch (err) {
+    } catch {
       setErrorModal(t('admin.incidents.updateError', 'Error al actualizar y responder el reporte.'))
     }
   }
@@ -207,7 +208,7 @@ export default function IncidentManagementPage() {
   ])
 
   const exportData = {
-    title: 'Reportes de Incidencias de Vehículos — Drivique',
+    title: `Reportes de Incidencias de Vehículos — ${brand.name}`,
     headers: headersExport,
     rows: rowsExport,
     items: filtrados,
@@ -389,7 +390,7 @@ export default function IncidentManagementPage() {
                         </td>
 
                         <td>
-                          <span style={{ fontSize: 12, fontWeight: 700, color: '#2563eb' }}>
+                          <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--brand-text)' }}>
                             <FaBuilding style={{ marginRight: 3 }} /> {r.sucursal}
                           </span>
                         </td>
@@ -418,7 +419,7 @@ export default function IncidentManagementPage() {
                                   ? '#f3e8ff'
                                   : r.estado === 'en_revision'
                                   ? '#fef3c7'
-                                  : '#dbeafe',
+                                  : 'var(--brand-soft-strong-light)',
                               color:
                                 r.estado === 'resuelto'
                                   ? '#15803d'
@@ -426,7 +427,7 @@ export default function IncidentManagementPage() {
                                   ? '#6b21a8'
                                   : r.estado === 'en_revision'
                                   ? '#b45309'
-                                  : '#1e40af',
+                                  : 'var(--brand-text-light)',
                             }}
                           >
                             {t(`admin.incidents.${r.estado}`, r.estado)}
@@ -439,7 +440,7 @@ export default function IncidentManagementPage() {
                               type="button"
                               onClick={() => openDetalleModal(r)}
                               title={t("admin.incidents.viewDetails", "Ver Detalle y Responder")}
-                              style={{ color: '#2563eb' }}
+                              style={{ color: 'var(--brand-text)' }}
                             >
                               <FaEye />
                             </button>
@@ -512,7 +513,7 @@ export default function IncidentManagementPage() {
               <span className="incident-field-label" style={{ display: 'block', marginBottom: 8 }}>{t('admin.incidents.historyTitle', 'Historial de respuestas')}</span>
               <div className="incident-timeline">
                 {(modalDetalle.historial || []).map((h, i) => (
-                  <div key={i} className="incident-timeline-item" style={{ borderLeftColor: h.color || '#2563eb' }}>
+                  <div key={i} className="incident-timeline-item" style={{ borderLeftColor: h.color || 'var(--brand-primary)' }}>
                     <strong>{h.titulo} \u2014 {h.autor}</strong>
                     <p style={{ margin: '4px 0', fontSize: 12 }}>{h.descripcion}</p>
                     <small>{h.hora} ({new Date(h.fecha).toLocaleDateString()})</small>

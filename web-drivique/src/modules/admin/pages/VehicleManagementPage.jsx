@@ -64,6 +64,8 @@ const textToList = (text) =>
     .map((nombre) => nombre.trim())
     .filter(Boolean)
     .map((nombre) => ({ nombre, icono: "FaCheckCircle" }));
+const normalizeBranch = (value) =>
+  String(value || "").trim().toLocaleLowerCase();
 
 export default function VehicleManagementPage() {
   const { t } = useTranslation();
@@ -88,18 +90,14 @@ export default function VehicleManagementPage() {
     user?.rol === "branch_manager";
   const sucursalAsignada =
     user?.sucursal || user?.sucursalId || user?.sucursalAsignada;
+  const assignedBranchKey = normalizeBranch(sucursalAsignada);
 
   const filtered = useMemo(() => {
     const term = search.trim().toLocaleLowerCase();
     return vehicles
       .filter((vehicle) => {
         // Si es encargado de sucursal, solo gestiona vehículos de su sucursal asignada
-        if (esEncargado && sucursalAsignada) {
-          const vSuc = (vehicle.sucursal || "").toLowerCase();
-          const userSuc = sucursalAsignada.toLowerCase();
-          const matchBranch = vSuc.includes(userSuc) || userSuc.includes(vSuc);
-          if (!matchBranch) return false;
-        }
+        if (esEncargado && normalizeBranch(vehicle.sucursal) !== assignedBranchKey) return false;
 
         const matchBranchFilter =
           branchFilter === "all" || vehicle.sucursal === branchFilter;
@@ -120,7 +118,7 @@ export default function VehicleManagementPage() {
     stateFilter,
     vehicles,
     esEncargado,
-    sucursalAsignada,
+    assignedBranchKey,
   ]);
   const headers = [
     t("admin.vehiclesManagement.fields.vehicle"),
@@ -156,11 +154,15 @@ export default function VehicleManagementPage() {
     setError("");
   };
   const openCreate = () => {
-    setForm({ ...EMPTY, sucursal: branches[0]?.nombre || "" });
+    setForm({
+      ...EMPTY,
+      sucursal: esEncargado ? sucursalAsignada || "" : branches[0]?.nombre || "",
+    });
     setModal({ type: "form" });
     setError("");
   };
   const openEdit = (vehicle) => {
+    if (esEncargado && normalizeBranch(vehicle.sucursal) !== assignedBranchKey) return;
     setForm({
       ...vehicle,
       estadoFlota: vehicle.estadoFlota,
@@ -180,6 +182,7 @@ export default function VehicleManagementPage() {
     event.preventDefault();
     const payload = {
       ...form,
+      sucursal: esEncargado ? sucursalAsignada : form.sucursal,
       caracteristicas: textToList(form.caracteristicasTexto),
     };
     try {
@@ -200,6 +203,7 @@ export default function VehicleManagementPage() {
     }
   };
   const remove = () => {
+    if (esEncargado && normalizeBranch(modal.vehicle.sucursal) !== assignedBranchKey) return;
     try {
       vehicleManagementService.remove(modal.vehicle.id, user);
       setVehicles(vehicleManagementService.list());
@@ -273,6 +277,7 @@ export default function VehicleManagementPage() {
                 className="cities-primary"
                 type="button"
                 onClick={openCreate}
+                disabled={esEncargado && !sucursalAsignada}
               >
                 <FaPlus /> {t("admin.vehiclesManagement.create")}
               </button>
@@ -291,7 +296,7 @@ export default function VehicleManagementPage() {
             </div>
           )}
           <section className="cities-card">
-            <div className="fleet-toolbar">
+            <div className={`fleet-toolbar ${esEncargado ? "fleet-toolbar--manager" : ""}`}>
               <label className="cities-search">
                 <FaSearch />
                 <input
@@ -300,19 +305,21 @@ export default function VehicleManagementPage() {
                   placeholder={t("admin.vehiclesManagement.search")}
                 />
               </label>
-              <select
-                value={branchFilter}
-                onChange={(event) => setBranchFilter(event.target.value)}
-              >
-                <option value="all">
-                  {t("admin.vehiclesManagement.allBranches")}
-                </option>
-                {branches.map((branch) => (
-                  <option key={branch.id} value={branch.nombre}>
-                    {branch.nombre}
+              {!esEncargado && (
+                <select
+                  value={branchFilter}
+                  onChange={(event) => setBranchFilter(event.target.value)}
+                >
+                  <option value="all">
+                    {t("admin.vehiclesManagement.allBranches")}
                   </option>
-                ))}
-              </select>
+                  {branches.map((branch) => (
+                    <option key={branch.id} value={branch.nombre}>
+                      {branch.nombre}
+                    </option>
+                  ))}
+                </select>
+              )}
               <select
                 value={stateFilter}
                 onChange={(event) => setStateFilter(event.target.value)}
@@ -328,13 +335,13 @@ export default function VehicleManagementPage() {
               </select>
               <div className="cities-export">
                 <button type="button" onClick={() => exportExcel(exportData)}>
-                  <FaFileExcel /> Excel
+                  <FaFileExcel aria-hidden="true" /> Excel
                 </button>
                 <button type="button" onClick={() => exportPdf(exportData)}>
-                  <FaFilePdf /> PDF
+                  <FaFilePdf aria-hidden="true" /> PDF
                 </button>
                 <button type="button" onClick={() => printTable(exportData)}>
-                  <FaPrint /> {t("admin.cities.print")}
+                  <FaPrint aria-hidden="true" /> {t("admin.cities.print")}
                 </button>
               </div>
             </div>
@@ -466,7 +473,7 @@ export default function VehicleManagementPage() {
                   </div>
                   <form onSubmit={save} className="incident-form">
                     <div className="incident-field" style={{ marginBottom: 4 }}>
-                      <span className="incident-field-label" style={{ fontSize: 13, color: '#2563eb', borderBottom: '1.5px solid var(--city-border)', paddingBottom: 6 }}>
+                      <span className="incident-field-label" style={{ fontSize: 13, color: 'var(--brand-text)', borderBottom: '1.5px solid var(--city-border)', paddingBottom: 6 }}>
                         {t("admin.vehiclesManagement.sections.general")}
                       </span>
                     </div>
@@ -478,12 +485,30 @@ export default function VehicleManagementPage() {
                       <div className="incident-field">
                         <span className="incident-field-label">{t("admin.vehiclesManagement.fields.plate")}</span>
                         <input value={form.placa} onChange={(e) => setForm({ ...form, placa: e.target.value.toUpperCase() })} />
-                        <small style={{ color: '#2563eb', fontSize: 11, fontWeight: 800, marginTop: 4 }}>
+                        <small style={{ color: 'var(--brand-text)', fontSize: 11, fontWeight: 800, marginTop: 4 }}>
                           {pico.dia ? `${t("admin.vehiclesManagement.picoResult")}: ${t(`vehiculo.picoYPlaca.dias.${pico.dia}`)}` : t("admin.vehiclesManagement.picoPending")}
                         </small>
                       </div>
+                      <div className="incident-field">
+                        <span className="incident-field-label">
+                          {t("admin.vehiclesManagement.fields.branch")}
+                        </span>
+                        {esEncargado ? (
+                          <input value={sucursalAsignada || ""} readOnly />
+                        ) : (
+                          <select
+                            value={form.sucursal}
+                            onChange={(e) => setForm({ ...form, sucursal: e.target.value })}
+                          >
+                            {branches.map((branch) => (
+                              <option key={branch.id} value={branch.nombre}>
+                                {branch.nombre}
+                              </option>
+                            ))}
+                          </select>
+                        )}
+                      </div>
                       {[
-                        ["sucursal", "branch"],
                         ["categoria", "category"],
                         ["transmision", "transmission"],
                         ["combustible", "fuel"],
@@ -501,7 +526,7 @@ export default function VehicleManagementPage() {
                     </div>
 
                     <div className="incident-field" style={{ margin: '16px 0 4px' }}>
-                      <span className="incident-field-label" style={{ fontSize: 13, color: '#2563eb', borderBottom: '1.5px solid var(--city-border)', paddingBottom: 6 }}>
+                      <span className="incident-field-label" style={{ fontSize: 13, color: 'var(--brand-text)', borderBottom: '1.5px solid var(--city-border)', paddingBottom: 6 }}>
                         {t("admin.vehiclesManagement.sections.features")}
                       </span>
                     </div>
@@ -532,7 +557,7 @@ export default function VehicleManagementPage() {
                     </div>
 
                     <div className="incident-field" style={{ margin: '16px 0 4px' }}>
-                      <span className="incident-field-label" style={{ fontSize: 13, color: '#2563eb', borderBottom: '1.5px solid var(--city-border)', paddingBottom: 6 }}>
+                      <span className="incident-field-label" style={{ fontSize: 13, color: 'var(--brand-text)', borderBottom: '1.5px solid var(--city-border)', paddingBottom: 6 }}>
                         {t("admin.vehiclesManagement.sections.rates")}
                       </span>
                     </div>
@@ -558,7 +583,7 @@ export default function VehicleManagementPage() {
                             <input value={insurance.nombre} onChange={(e) => updateInsurance(index, "nombre", e.target.value)} />
                           </div>
                           <div className="incident-field">
-                            <span className="incident-field-label">Precio</span>
+                            <span className="incident-field-label">{t("admin.vehiclesManagement.fields.price")}</span>
                             <input type="number" value={insurance.precio} onChange={(e) => updateInsurance(index, "precio", e.target.value)} />
                           </div>
                           <button type="button" onClick={() => setForm({ ...form, seguros: form.seguros.filter((_, current) => current !== index) })} aria-label={t("common.delete")} style={{ height: 42, borderRadius: 10, border: '1px solid #fecaca', background: '#fff', color: '#b91c1c', cursor: 'pointer', marginBottom: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, fontWeight: 'bold' }}>
@@ -566,17 +591,17 @@ export default function VehicleManagementPage() {
                           </button>
                         </div>
                       ))}
-                      <button type="button" onClick={addInsurance} style={{ alignSelf: 'flex-start', background: 'transparent', border: 'none', color: '#2563eb', fontWeight: 800, cursor: 'pointer', marginTop: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <button type="button" onClick={addInsurance} style={{ alignSelf: 'flex-start', background: 'transparent', border: 'none', color: 'var(--brand-text)', fontWeight: 800, cursor: 'pointer', marginTop: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
                         <FaPlus /> {t("admin.vehiclesManagement.addInsurance")}
                       </button>
                     </div>
 
                     <div className="incident-field" style={{ margin: '16px 0 4px' }}>
-                      <span className="incident-field-label" style={{ fontSize: 13, color: '#2563eb', borderBottom: '1.5px solid var(--city-border)', paddingBottom: 6 }}>
+                      <span className="incident-field-label" style={{ fontSize: 13, color: 'var(--brand-text)', borderBottom: '1.5px solid var(--city-border)', paddingBottom: 6 }}>
                         {t("admin.vehiclesManagement.sections.images")}
                       </span>
                     </div>
-                    <label className="fleet-upload" style={{ border: '1.5px dashed #60a5fa', borderRadius: 12, padding: 24, textAlign: 'center', color: '#2563eb', cursor: 'pointer', display: 'block' }}>
+                    <label className="fleet-upload" style={{ border: '1.5px dashed var(--brand-border)', borderRadius: 12, padding: 24, textAlign: 'center', color: 'var(--brand-text)', cursor: 'pointer', display: 'block' }}>
                       <FaImage size={24} style={{ marginBottom: 8 }} />
                       <div style={{ fontSize: 13, fontWeight: 700 }}>{t("admin.vehiclesManagement.uploadImages")}</div>
                       <input type="file" accept="image/*" multiple onChange={loadImages} style={{ display: 'none' }} />

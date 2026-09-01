@@ -335,7 +335,7 @@ export const roleManagementService = {
         existingNotifs.unshift(nuevaNotificacion)
         localStorage.setItem(NOTIFS_KEY, JSON.stringify(existingNotifs))
       }
-    } catch (e) {
+    } catch {
       console.log('Notificación registrada')
     }
 

@@ -13,7 +13,7 @@ export default function ReportDetailModal({ reporte, onClose }) {
         return { text: 'En revisión', bg: '#fef3c7', color: '#b45309', dot: '#d97706' }
       case 'recibido':
       default:
-        return { text: 'Recibido', bg: '#dbeafe', color: '#1e40af', dot: '#2563eb' }
+        return { text: 'Recibido', bg: 'var(--brand-soft-strong-light)', color: 'var(--brand-text-light)', dot: 'var(--brand-primary)' }
     }
   }
 
@@ -54,7 +54,7 @@ export default function ReportDetailModal({ reporte, onClose }) {
             <h3 style={{ fontSize: 18, fontWeight: 900, color: 'var(--texto-primary, #0f172a)', margin: '0 0 6px' }}>
               Detalle de Reporte {reporte.codigo}
             </h3>
-            <div style={{ fontSize: 14, fontWeight: 800, color: '#2563eb' }}>
+            <div style={{ fontSize: 14, fontWeight: 800, color: 'var(--brand-text)' }}>
               {reporte.tipoIncidenciaNombre}
             </div>
           </div>
@@ -160,10 +160,10 @@ export default function ReportDetailModal({ reporte, onClose }) {
                   width: 12,
                   height: 12,
                   borderRadius: '50%',
-                  background: item.color || '#2563eb',
+                  background: item.color || 'var(--brand-primary)',
                   marginTop: 3,
                   flexShrink: 0,
-                  boxShadow: `0 0 8px ${item.color || '#2563eb'}`,
+                  boxShadow: `0 0 8px ${item.color || 'var(--brand-primary)'}`,
                 }}
               />
               <div style={{ flex: 1 }}>
@@ -194,7 +194,7 @@ export default function ReportDetailModal({ reporte, onClose }) {
             marginBottom: 20,
           }}
         >
-          <FaShieldAlt style={{ fontSize: 20, color: '#2563eb', flexShrink: 0 }} />
+          <FaShieldAlt style={{ fontSize: 20, color: 'var(--brand-text)', flexShrink: 0 }} />
           <span style={{ fontSize: 12, color: 'var(--texto-second, #475569)', lineHeight: 1.4 }}>
             El estado de este informe es validado y actualizado directamente por el equipo administrador en la central de soporte.
           </span>
@@ -206,13 +206,13 @@ export default function ReportDetailModal({ reporte, onClose }) {
             width: '100%',
             padding: '12px 20px',
             borderRadius: 14,
-            background: '#2563eb',
+            background: 'var(--brand-primary)',
             color: '#ffffff',
             border: 'none',
             fontSize: 14,
             fontWeight: 800,
             cursor: 'pointer',
-            boxShadow: '0 4px 14px rgba(37, 99, 235, 0.25)',
+            boxShadow: '0 4px 14px rgba(var(--brand-primary-rgb), 0.25)',
           }}
         >
           Cerrar

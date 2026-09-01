@@ -58,13 +58,13 @@ export default function NuevaContrasenaPage() {
     pageBg: esModoOscuro ? '#0b1220' : '#f8fafc',
     cardBg: esModoOscuro ? '#0e172a' : '#ffffff',
     cardBorder: esModoOscuro ? '#1e293b' : '#dbe5f3',
-    cardShadow: esModoOscuro ? '0 24px 60px rgba(0,0,0,0.45)' : '0 10px 30px rgba(30,58,138,0.06)',
-    textPrimary: esModoOscuro ? '#ffffff' : '#1e3a8a',
+    cardShadow: esModoOscuro ? '0 24px 60px rgba(0,0,0,0.45)' : '0 10px 30px rgba(var(--brand-secondary-rgb),0.06)',
+    textPrimary: esModoOscuro ? '#ffffff' : 'var(--brand-secondary)',
     textSecondary: esModoOscuro ? '#94a3b8' : '#64748b',
-    labelColor: esModoOscuro ? '#ffffff' : '#1e3a8a',
+    labelColor: esModoOscuro ? '#ffffff' : 'var(--brand-secondary)',
     inputBg: esModoOscuro ? '#172136' : '#ffffff',
     inputBorder: esModoOscuro ? '#23314d' : '#dbe5f3',
-    accentText: esModoOscuro ? '#60a5fa' : '#1e3a8a',
+    accentText: esModoOscuro ? 'var(--brand-accent)' : 'var(--brand-secondary)',
   }
 
   return (
@@ -115,13 +115,13 @@ export default function NuevaContrasenaPage() {
                   width: '100%',
                   padding: '15px',
                   borderRadius: '12px',
-                  background: 'linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%)',
+                  background: 'linear-gradient(135deg, var(--brand-secondary) 0%, var(--brand-primary) 100%)',
                   color: '#fff',
                   fontWeight: 800,
                   fontSize: '14.5px',
                   textDecoration: 'none',
                   textAlign: 'center',
-                  boxShadow: '0 6px 18px rgba(37,99,235,0.25)',
+                  boxShadow: '0 6px 18px rgba(var(--brand-primary-rgb),0.25)',
                   boxSizing: 'border-box'
                 }}
               >
@@ -257,7 +257,7 @@ export default function NuevaContrasenaPage() {
                     width: '100%',
                     padding: '15px',
                     borderRadius: '12px',
-                    background: 'linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%)',
+                    background: 'linear-gradient(135deg, var(--brand-secondary) 0%, var(--brand-primary) 100%)',
                     color: '#ffffff',
                     fontSize: '14.5px',
                     fontWeight: 800,
@@ -266,7 +266,7 @@ export default function NuevaContrasenaPage() {
                     transition: 'all 180ms ease',
                     opacity: (cargando || !esValida) ? 0.6 : 1,
                     marginTop: '4px',
-                    boxShadow: '0 6px 18px rgba(37,99,235,0.25)'
+                    boxShadow: '0 6px 18px rgba(var(--brand-primary-rgb),0.25)'
                   }}
                 >
                   {cargando ? t('nuevaContrasena.resetting', 'Restableciendo...') : t('nuevaContrasena.submit', 'Restablecer contraseña')}
@@ -280,7 +280,7 @@ export default function NuevaContrasenaPage() {
 
       {showModal && (
         <AlertModal
-          icon={<FaExclamationTriangle size={22} color={esModoOscuro ? '#93c5fd' : '#1e3a8a'} />}
+          icon={<FaExclamationTriangle size={22} color={esModoOscuro ? 'var(--brand-text-dark)' : 'var(--brand-secondary)'} />}
           titulo={t('common.error', 'Error')}
           mensaje={error}
           primaryText={t('common.accept', 'Aceptar')}

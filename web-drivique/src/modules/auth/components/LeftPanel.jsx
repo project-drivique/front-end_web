@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { FaCalendarAlt, FaCreditCard, FaFileAlt, FaCheck } from 'react-icons/fa'
 import { useLanding } from '@/modules/landing/LandingContext'
 import logo from '@/assets/logocatalog.png'
+import { useBrand } from '@/contexts/BrandContext'
 
 const BADGES = [
   { key: 'catalogo.myReservations', icon: FaCalendarAlt },
@@ -14,10 +15,11 @@ export default function PanelIzquierdo() {
   const { tema } = useLanding()
   const esModoOscuro = tema === 'oscuro'
   const checks = [t('panel.check1'), t('panel.check2'), t('panel.check3')]
+  const { brand } = useBrand()
 
   const bgPanel = esModoOscuro
-    ? 'linear-gradient(160deg, #070d1e 0%, #0f172a 55%, #1e293b 100%)'
-    : 'linear-gradient(160deg, #060e2e 0%, #0c1f5c 50%, #1e3a8a 100%)'
+    ? 'linear-gradient(160deg, color-mix(in srgb,var(--brand-secondary) 48%,#070b12) 0%, color-mix(in srgb,var(--brand-secondary) 66%,#0f172a) 55%, color-mix(in srgb,var(--brand-primary) 52%,#111827) 100%)'
+    : 'linear-gradient(160deg, color-mix(in srgb,var(--brand-secondary) 72%,#080b12) 0%, var(--brand-secondary) 52%, color-mix(in srgb,var(--brand-primary) 78%,#111827) 100%)'
 
   return (
     <div
@@ -49,23 +51,23 @@ export default function PanelIzquierdo() {
 
       {/* Orbes decorativos */}
       <div style={{ position: 'absolute', top: '-100px', left: '-100px', width: '400px', height: '400px', borderRadius: '50%', border: '1px solid rgba(255,255,255,0.05)', background: 'rgba(255,255,255,0.02)' }} />
-      <div style={{ position: 'absolute', bottom: '-80px', right: '-80px', width: '340px', height: '340px', borderRadius: '50%', background: 'rgba(99,102,241,0.08)' }} />
+      <div style={{ position: 'absolute', bottom: '-80px', right: '-80px', width: '340px', height: '340px', borderRadius: '50%', background: 'rgba(var(--brand-accent-rgb),0.12)' }} />
 
       <div style={{ position: 'relative', zIndex: 1, flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 36px', textAlign: 'center', gap: '24px' }}>
         
         {/* Logo & Brand Header */}
         <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-          <img src={logo} alt="Drivique" style={{ height: '48px', width: 'auto', display: 'block', filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.25))' }} />
+          <img src={brand.logoDataUrl || logo} alt={brand.name} style={{ height: '48px', width: 'auto', display: 'block', filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.25))' }} />
           <span style={{
             fontFamily: 'Outfit, Inter, sans-serif',
             fontWeight: 900,
             fontSize: '18px',
             letterSpacing: '0.14em',
-            color: '#93c5fd',
+            color: 'var(--brand-text-dark)',
             textTransform: 'uppercase',
-            textShadow: '0 2px 10px rgba(147,197,253,0.35)'
+            textShadow: '0 2px 10px rgba(var(--brand-accent-rgb),0.35)'
           }}>
-            DRIVIQUE
+            {brand.name.toUpperCase()}
           </span>
         </div>
 
@@ -88,7 +90,7 @@ export default function PanelIzquierdo() {
           transition: 'all 300ms ease'
         }}>
           <div>
-            <p style={{ color: esModoOscuro ? '#94a3b8' : 'rgba(191,219,254,0.85)', fontSize: 13.5, lineHeight: 1.6, maxWidth: 280, margin: '0 auto', fontWeight: 500 }}>
+            <p style={{ color: esModoOscuro ? '#cbd5e1' : 'rgba(255,255,255,0.82)', fontSize: 13.5, lineHeight: 1.6, maxWidth: 280, margin: '0 auto', fontWeight: 500 }}>
               {t('panel.subtitle')}
             </p>
           </div>
@@ -113,7 +115,7 @@ export default function PanelIzquierdo() {
           <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 10, paddingTop: '16px', borderTop: esModoOscuro ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(255,255,255,0.1)' }}>
             {checks.map(item => (
               <p key={item} style={{ color: '#ffffff', fontSize: 13, fontWeight: 600, margin: 0, textAlign: 'left', display: 'flex', alignItems: 'center', gap: 10 }}>
-                <FaCheck color="#93c5fd" size={13} /> {item}
+                <FaCheck color="var(--brand-text-dark)" size={13} /> {item}
               </p>
             ))}
           </div>
@@ -121,7 +123,7 @@ export default function PanelIzquierdo() {
       </div>
 
       <div style={{ position: 'relative', zIndex: 1, padding: '12px 36px', borderTop: '1px solid rgba(255,255,255,0.08)', textAlign: 'center' }}>
-        <p style={{ color: 'rgba(147,197,253,0.35)', fontSize: 11, margin: 0 }}>{t('panel.copyright')}</p>
+        <p style={{ color: 'rgba(255,255,255,0.42)', fontSize: 11, margin: 0 }}>{t('panel.copyright')}</p>
       </div>
     </div>
   )
