@@ -24,11 +24,11 @@ const coloresTema = (esModoOscuro) => ({
   panelShadow: esModoOscuro ? '0 20px 60px rgba(0,0,0,0.45)' : '0 20px 60px rgba(15,23,42,0.06)',
   textPrimary: esModoOscuro ? '#f8fafc' : '#0f172a',
   textSecondary: esModoOscuro ? '#94a3b8' : '#64748b',
-  accentText: esModoOscuro ? '#93c5fd' : '#1e3a8a',
-  accentBgSoft: esModoOscuro ? 'rgba(37,99,235,0.18)' : '#eff6ff',
+  accentText: 'var(--brand-text)',
+  accentBgSoft: 'var(--brand-soft)',
   itemBg: esModoOscuro ? '#1e293b' : '#f8fafc',
   cardBorder: esModoOscuro ? '#334155' : '#e2e8f0',
-  cardBorderHover: esModoOscuro ? '#60a5fa' : '#1e3a8a',
+  cardBorderHover: 'var(--brand-primary)',
   subCardBg: esModoOscuro ? '#0f172a' : '#f8fafc',
   paginationDisabledBg: esModoOscuro ? '#1e293b' : '#f1f5f9',
   paginationDisabledText: esModoOscuro ? '#475569' : '#94a3b8',
@@ -78,7 +78,7 @@ function BrandLogo({ marca }) {
     return (
       <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
         <div style={{ width: 0, height: 0, borderTop: '10px solid transparent', borderBottom: '10px solid transparent', borderLeft: '14px solid #f97316' }} />
-        <span style={{ color: '#1e3a8a', fontWeight: 900, fontSize: 22, letterSpacing: '-0.02em', fontFamily: 'sans-serif' }}>Budget</span>
+        <span style={{ color: 'var(--brand-secondary)', fontWeight: 900, fontSize: 22, letterSpacing: '-0.02em', fontFamily: 'sans-serif' }}>Budget</span>
       </div>
     )
   }
@@ -736,7 +736,7 @@ export default function SucursalesPage() {
                     background: c.panelBg,
                     borderRadius: '20px',
                     border: `1.5px solid ${esActivo ? c.accentText : c.cardBorder}`,
-                    boxShadow: esActivo ? '0 12px 32px rgba(37,99,235,0.20)' : '0 6px 20px rgba(15,23,42,0.04)',
+                    boxShadow: esActivo ? '0 12px 32px rgba(var(--brand-primary-rgb),0.20)' : '0 6px 20px rgba(15,23,42,0.04)',
                     padding: '22px 20px 20px',
                     display: 'flex',
                     flexDirection: 'column',
@@ -748,12 +748,12 @@ export default function SucursalesPage() {
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.transform = 'translateY(-5px)'
-                    e.currentTarget.style.boxShadow = '0 14px 32px rgba(37,99,235,0.15)'
+                    e.currentTarget.style.boxShadow = '0 14px 32px rgba(var(--brand-primary-rgb),0.15)'
                     e.currentTarget.style.borderColor = c.cardBorderHover
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.transform = 'translateY(0)'
-                    e.currentTarget.style.boxShadow = esActivo ? '0 12px 32px rgba(37,99,235,0.20)' : '0 6px 20px rgba(15,23,42,0.04)'
+                    e.currentTarget.style.boxShadow = esActivo ? '0 12px 32px rgba(var(--brand-primary-rgb),0.20)' : '0 6px 20px rgba(15,23,42,0.04)'
                     e.currentTarget.style.borderColor = esActivo ? c.accentText : c.cardBorder
                   }}
                 >
@@ -846,7 +846,7 @@ export default function SucursalesPage() {
                       type="button"
                       onClick={() => verCarrosSucursal(suc)}
                       style={{
-                        background: 'linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%)',
+                        background: 'var(--brand-gradient)',
                         color: '#ffffff',
                         border: 'none',
                         borderRadius: '10px',
@@ -854,16 +854,16 @@ export default function SucursalesPage() {
                         fontSize: 13,
                         fontWeight: 700,
                         cursor: 'pointer',
-                        boxShadow: '0 4px 14px rgba(37,99,235,0.25)',
+                        boxShadow: '0 4px 14px rgba(var(--brand-primary-rgb),0.25)',
                         transition: 'all 150ms ease',
                       }}
                       onMouseEnter={(e) => {
                         e.currentTarget.style.transform = 'translateY(-1px) scale(1.03)'
-                        e.currentTarget.style.boxShadow = '0 6px 18px rgba(37,99,235,0.35)'
+                        e.currentTarget.style.boxShadow = '0 6px 18px rgba(var(--brand-primary-rgb),0.35)'
                       }}
                       onMouseLeave={(e) => {
                         e.currentTarget.style.transform = 'translateY(0) scale(1)'
-                        e.currentTarget.style.boxShadow = '0 4px 14px rgba(37,99,235,0.25)'
+                        e.currentTarget.style.boxShadow = '0 4px 14px rgba(var(--brand-primary-rgb),0.25)'
                       }}
                     >
                       {t('sucursales.viewCars', 'Ver carros')}
@@ -894,7 +894,7 @@ export default function SucursalesPage() {
                 background: c.panelBg,
                 borderRadius: '22px',
                 border: `1.5px solid ${c.accentText}`,
-                boxShadow: '0 12px 36px rgba(37,99,235,0.12)',
+                boxShadow: '0 12px 36px rgba(var(--brand-primary-rgb),0.12)',
                 padding: '28px',
               }}
             >

@@ -30,7 +30,7 @@ export default function EstadoVacio({ c, onLimpiar, titulo, mensaje, textoBoton 
           alignItems: 'center',
           justifyContent: 'center',
           margin: '0 auto 12px',
-          background: c.accentBgSoft || '#eff6ff',
+          background: c.accentBgSoft || 'var(--brand-soft-light)',
         }}
       >
         <FaSearch size={22} color={c.accentText} />
@@ -48,12 +48,12 @@ export default function EstadoVacio({ c, onLimpiar, titulo, mensaje, textoBoton 
           height: '36px',
           padding: '0 20px',
           borderRadius: '9999px',
-          background: c.accentGradient || 'linear-gradient(90deg,#1e3a8a,#2563eb)',
+          background: c.accentGradient || 'linear-gradient(90deg,var(--brand-secondary),var(--brand-primary))',
           color: '#ffffff',
           fontWeight: 800,
           fontSize: '12px',
           border: 'none',
-          boxShadow: '0 4px 14px rgba(30,58,138,0.25)',
+          boxShadow: '0 4px 14px rgba(var(--brand-secondary-rgb),0.25)',
           cursor: 'pointer',
         }}
       >

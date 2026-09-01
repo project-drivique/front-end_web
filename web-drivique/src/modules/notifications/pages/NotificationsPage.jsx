@@ -38,11 +38,11 @@ export default function NotificationsPage() {
     notificaciones,
     cupones,
     promosVehiculos,
-    conteoNoLeidas,
     marcarLeida,
     marcarTodasLeidas,
     aplicarCupon,
   } = useNotificationStore()
+  const [renderTime] = useState(() => Date.now())
 
   // Conteo no leídas pestaña generales
   const noLeidasGeneralesCount = useMemo(() => {
@@ -58,7 +58,7 @@ export default function NotificationsPage() {
   const renderIconoNotif = (tipo) => {
     switch (tipo) {
       case 'reserva_confirmada':
-        return <FaCheckCircle style={{ color: '#2563eb' }} />
+        return <FaCheckCircle style={{ color: 'var(--brand-text)' }} />
       case 'pago_validado':
         return <FaCreditCard style={{ color: '#10b981' }} />
       case 'documentos_verificados':
@@ -66,7 +66,7 @@ export default function NotificationsPage() {
       case 'soporte_respuesta':
         return <FaComments style={{ color: '#8b5cf6' }} />
       case 'alquiler_finalizado':
-        return <FaCar style={{ color: '#3b82f6' }} />
+        return <FaCar style={{ color: 'var(--brand-text)' }} />
       case 'politica_actualizacion':
       default:
         return <FaExclamationCircle style={{ color: '#f59e0b' }} />
@@ -93,12 +93,12 @@ export default function NotificationsPage() {
   // Cálculo de chip de vencimiento en días
   const calcularChipVencimiento = (expiracionMs) => {
     if (!expiracionMs) return null
-    const diffMs = expiracionMs - Date.now()
+    const diffMs = expiracionMs - renderTime
     if (diffMs <= 0) return null
 
     const diasRestantes = Math.ceil(diffMs / (1000 * 60 * 60 * 24))
 
-    let texto = ''
+    let texto
     let esUrgente = diasRestantes <= 2
 
     if (diasRestantes <= 1) {
@@ -119,7 +119,7 @@ export default function NotificationsPage() {
     navBg: esModoOscuro ? '#0f172a' : '#ffffff',
     navBorder: esModoOscuro ? '#334155' : '#e2e8f0',
     navShadow: '0 4px 20px rgba(0,0,0,0.04)',
-    accentText: esModoOscuro ? '#93c5fd' : '#1e3a8a',
+    accentText: 'var(--brand-text)',
   }
 
   return (
@@ -241,7 +241,7 @@ export default function NotificationsPage() {
                     <div className="cupon-ticket-left">
                       <div>
                         <div className="cupon-top-info">
-                          <FaTicketAlt color="#2563eb" size={16} />
+                          <FaTicketAlt color="var(--brand-text)" size={16} />
                           <h3 className="cupon-logro-titulo">{cup.titulo}</h3>
                         </div>
 

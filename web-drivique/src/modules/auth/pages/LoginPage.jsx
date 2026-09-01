@@ -235,7 +235,7 @@ export default function LoginPage() {
               disabled={bloqueado || cargando || exitoFinal}
               style={{
                 width: '100%', padding: 14, borderRadius: tok.borderRadius.input,
-                background: 'linear-gradient(90deg,#1e3a8a,#2563eb)',
+                background: 'linear-gradient(90deg,var(--brand-secondary),var(--brand-primary))',
                 color: '#fff', fontWeight: 700, fontSize: tok.fontSize.body,
                 border: 'none', cursor: (cargando || bloqueado || exitoFinal) ? 'not-allowed' : 'pointer',
                 opacity: (bloqueado || cargando || exitoFinal) ? 0.55 : 1,
@@ -284,8 +284,8 @@ export default function LoginPage() {
       {modalConfig && (
         <AlertModal
           icon={
-            modalConfig.type === 'success' ? <FaCheckCircle size={22} color={esModoOscuro ? '#4ade80' : '#16a34a'} /> :
-            <FaExclamationTriangle size={22} color={esModoOscuro ? '#93c5fd' : '#1e3a8a'} />
+            modalConfig.type === 'success' ? <FaCheckCircle size={22} color="var(--brand-text)" /> :
+            <FaExclamationTriangle size={22} color={esModoOscuro ? 'var(--brand-text-dark)' : 'var(--brand-secondary)'} />
           }
           titulo={modalConfig.title}
           mensaje={modalConfig.text}

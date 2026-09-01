@@ -113,7 +113,7 @@ const FirmaCanvas = forwardRef(function FirmaCanvas({ onCambio }, ref) {
           display: 'block',
           background: '#ffffff',
           borderRadius: 14,
-          border: '2px dashed #93c5fd',
+          border: '2px dashed var(--brand-border)',
           touchAction: 'none',
           cursor: 'crosshair',
         }}

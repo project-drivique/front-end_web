@@ -63,7 +63,15 @@ function associations(branch) {
 }
 
 export const branchManagementService = {
-  list() { return readArray(STORAGE_KEY, configuredBranches()).map((branch) => ({ ...branch })) },
+  list() {
+    const managers = mockUsersStorage.listar().filter((user) => user.rol === accessConfig.roles.branchManager)
+    return readArray(STORAGE_KEY, configuredBranches()).map((branch) => {
+      const currentManagerExists = managers.some((manager) => manager.correo === branch.encargadoId)
+      if (currentManagerExists) return { ...branch }
+      const assigned = managers.find((manager) => compact(manager.sucursalId || manager.sucursal) === compact(branch.nombre))
+      return { ...branch, encargadoId: assigned?.correo || '' }
+    })
+  },
   managers() { return mockUsersStorage.listar().filter((user) => user.rol === accessConfig.roles.branchManager && user.activo !== false) },
   getCashAuthorized() { return this.list().filter((branch) => branch.autorizadoPagoEfectivo) },
   associations,

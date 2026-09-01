@@ -7,8 +7,8 @@ export default function DateStep({ vehiculo, reserva, onCambio, c }) {
 
   const bg         = c?.cardBg     || '#fff'
   const border     = c?.cardBorder || '#e2e8f0'
-  const titleColor = c?.titleColor || '#1e3a8a'
-  const accent     = c?.accentText || '#2563eb'
+  const titleColor = c?.titleColor || 'var(--brand-secondary)'
+  const accent     = c?.accentText || 'var(--brand-primary)'
   const textSecond = c?.textSecondary || 'var(--texto-second)'
   const textPrimary = c?.textPrimary || 'var(--texto-primary)'
 

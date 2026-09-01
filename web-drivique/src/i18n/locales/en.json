@@ -1576,6 +1576,7 @@
     },
     "reservationsManagement": {
       "encargadoSucursal": "Branch Manager ({{branch}})",
+      "noAssignedBranch": "No branch assigned",
       "exportExcelTitle": "Export to Excel",
       "exportPdfTitle": "Export to PDF",
       "printTitle": "Print list",
@@ -1627,6 +1628,7 @@
         "phonePlaceholder": "+1 555 000 0000",
         "vehicle": "Vehicle *",
         "noPlate": "No plate",
+        "noVehicles": "No vehicles are available at this branch",
         "branch": "Branch *",
         "pickupDateTime": "Pickup Date and Time *",
         "returnDateTime": "Return Date and Time *",
@@ -1665,6 +1667,7 @@
       },
       "exportTitleBranch": "Reservation Management - {{branch}} Branch",
       "exportTitleGlobal": "Global Reservation Management - Drivique",
+      "audit": { "exportExcel": "Exported the reservation list to Excel", "exportPdf": "Exported the reservation list to PDF", "print": "Printed the reservation list" },
       "fields": {
         "code": "Code",
         "client": "Client",
@@ -1874,6 +1877,8 @@
       "detailsTitle": "Contract Details",
       "actions": "Actions",
       "close": "Close",
+      "exportExcel": "Export to Excel", "exportPdf": "Export to PDF", "printList": "Print list", "listLabel": "List", "unsigned": "Not signed", "downloadSuccess": "Contract {{contract}} downloaded.",
+      "audit": { "exportExcel": "Exported the contract list to Excel", "exportPdf": "Exported the contract list to PDF", "print": "Printed the contract list", "download": "Downloaded the contract PDF", "view": "Viewed the contract details" },
       "fields": {
         "contractNumber": "Contract No.",
         "reservationCode": "Reservation",
@@ -2004,7 +2009,9 @@
     "incidentsTitle": "Vehicle Incident Reports",
     "incidentsSubtitle": "Fleet incident control, customer responses, repair prioritization, and traceability.",
     "exportExcel": "Excel",
-    "exportPdf": "PDF"
+    "exportPdf": "PDF",
+    "brandPalette": { "label": "Available color palettes", "hint": "Choose a ready-to-use combination or customize its colors.", "customHint": "Want to adjust it? Pick each color visually or enter its code.", "ocean": "Ocean blue", "forest": "Forest green", "sunset": "Sunset", "violet": "Violet", "rose": "Rose", "graphite": "Graphite" },
+    "brand": { "nav": "Brand settings", "eyebrow": "Visual identity", "title": "Brand settings", "subtitle": "Customize the business name, logo and corporate colors across the platform.", "identity": "Brand identity", "identityHint": "Set the business name and primary logo.", "name": "Business name", "logo": "Upload new logo", "logoHint": "PNG, JPG, WebP or SVG · 1 MB maximum", "palette": "Corporate palette", "paletteHint": "Choose three different interface colors.", "colors": { "primary": "Primary", "secondary": "Secondary", "accent": "Accent" }, "preview": "Preview — unapplied changes", "previewEyebrow": "New identity", "previewTitle": "Explore the platform", "previewText": "This is how the name, logo, buttons and main accents will look.", "previewButton": "Primary action", "nameFallback": "Brand name", "restorePrevious": "Restore previous", "restoreOriginal": "Restore original", "apply": "Apply changes", "messages": { "saved": "The new brand was applied successfully.", "previous": "The previous settings were restored.", "original": "The original brand was restored." }, "errors": { "invalidName": "The name must contain 2 to 40 characters.", "invalidColors": "All three colors must use a valid hexadecimal format.", "duplicateColors": "Choose three different corporate colors.", "logoType": "Select a PNG, JPG, WebP or SVG logo.", "logoSize": "The logo cannot exceed 1 MB.", "logoRead": "The selected file could not be read.", "noPrevious": "There is no previous configuration to restore yet." } }
   },
   "contratoFirma": {
     "badgeLabel": "Digital document",

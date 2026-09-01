@@ -49,8 +49,8 @@ export default function PlansSummaryCard({ vehiculo, reserva, seguroIdx, servici
         flexDirection: 'column'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, margin: '0 0 20px' }}>
-          <FaClipboardList color={c?.accentText || '#1e3a8a'} size={14} />
-          <h3 style={{ fontSize: 13, fontWeight: 700, color: c?.accentText || '#1e3a8a', margin: 0, textTransform: 'none' }}>
+          <FaClipboardList color={c?.accentText || 'var(--brand-secondary)'} size={14} />
+          <h3 style={{ fontSize: 13, fontWeight: 700, color: c?.accentText || 'var(--brand-secondary)', margin: 0, textTransform: 'none' }}>
             {t('vehiculo.plansSummary', 'Resumen de planes')}
           </h3>
         </div>
@@ -90,7 +90,7 @@ export default function PlansSummaryCard({ vehiculo, reserva, seguroIdx, servici
         {/* Total Highlighted Box */}
         <div style={{
           marginTop: 20,
-          background: c?.isDark ? 'rgba(37,99,235,0.1)' : '#f8fafc',
+          background: c?.isDark ? 'rgba(var(--brand-primary-rgb),0.1)' : '#f8fafc',
           borderRadius: 8,
           padding: '16px',
           display: 'flex',
@@ -100,7 +100,7 @@ export default function PlansSummaryCard({ vehiculo, reserva, seguroIdx, servici
           <span style={{ fontSize: 12, fontWeight: 700, color: c?.textPrimary || '#0f172a' }}>
             {t('vehiculo.totalPlansExtras', 'Total de planes y extras')} ({dias} {dias !== 1 ? t('vehiculo.days', 'días') : t('vehiculo.day', 'día')})
           </span>
-          <span style={{ fontSize: 16, fontWeight: 800, color: c?.accentText || '#1e3a8a' }}>
+          <span style={{ fontSize: 16, fontWeight: 800, color: c?.accentText || 'var(--brand-secondary)' }}>
             {formatCurrency(totalMultiplicado, moneda)}
           </span>
         </div>

@@ -15,7 +15,7 @@ function readContratos() {
 export const contractManagementService = {
   list: (user) => {
     // 1. Obtener todas las reservas base
-    const reservations = reservationManagementService.list()
+    const reservations = reservationManagementService.list(user)
     // 2. Obtener contratos reales firmados/generados por los clientes
     const contratosAlmacenados = readContratos()
 
@@ -34,7 +34,7 @@ export const contractManagementService = {
             clienteNombre: r.clienteNombre,
             clienteCorreo: r.clienteCorreo,
             clienteTelefono: r.clienteTelefono,
-            clienteDocumento: r.clienteDocumento || `10${Math.floor(Math.random() * 90000000) + 10000000}`,
+            clienteDocumento: r.clienteDocumento || '',
             vehiculoPlaca: r.vehiculoPlaca,
             vehiculoNombre: r.vehiculoNombre,
             sucursal: r.sucursal,
@@ -56,7 +56,7 @@ export const contractManagementService = {
           clienteNombre: r.clienteNombre,
           clienteCorreo: r.clienteCorreo,
           clienteTelefono: r.clienteTelefono,
-          clienteDocumento: r.clienteDocumento || `10${Math.floor(Math.random() * 90000000) + 10000000}`,
+          clienteDocumento: r.clienteDocumento || '',
           vehiculoPlaca: r.vehiculoPlaca,
           vehiculoNombre: r.vehiculoNombre,
           sucursal: r.sucursal,
@@ -72,9 +72,9 @@ export const contractManagementService = {
     // 4. El encargado solo ve los contratos de su sucursal
     if (user?.rol === 'encargado' || user?.rol === 'encargado_sucursal' || user?.rol === 'branch_manager') {
       const sucursalAsignada = user?.sucursal || user?.sucursalId || user?.sucursalAsignada
-      if (sucursalAsignada) {
-        contracts = contracts.filter((c) => c.sucursal.toLowerCase().includes(sucursalAsignada.toLowerCase()))
-      }
+      if (!sucursalAsignada) return []
+      const assignedKey = String(sucursalAsignada).trim().toLocaleLowerCase()
+      contracts = contracts.filter((c) => String(c.sucursal || '').trim().toLocaleLowerCase() === assignedKey)
     }
 
     return contracts

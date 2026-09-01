@@ -40,10 +40,10 @@ export default function VehicleDetailsPage() {
     subCardBorder: esModoOscuro ? '#334155' : '#e2e8f0',
     textPrimary: esModoOscuro ? '#f8fafc' : '#0f172a',
     textSecondary: esModoOscuro ? '#94a3b8' : '#64748b',
-    accentText: esModoOscuro ? '#93c5fd' : '#1e3a8a',
-    titleColor: esModoOscuro ? '#93c5fd' : '#1e3a8a',
-    accentBgSoft: esModoOscuro ? 'rgba(37,99,235,0.18)' : '#eff6ff',
-    accentGradient: 'linear-gradient(90deg, #1e3a8a, #2563eb)'
+    accentText: 'var(--brand-text)',
+    titleColor: 'var(--brand-text)',
+    accentBgSoft: 'var(--brand-soft)',
+    accentGradient: 'var(--brand-gradient)'
   }
 
   const vehiculo = VEHICULOS_MOCK.find(v => v.id === Number(id))
@@ -90,7 +90,7 @@ export default function VehicleDetailsPage() {
           <MenuConfiguracion />
         </div>
 
-        <div className="vehiculo-main-container" style={{ background: c.cardBg, border: `1px solid ${c.cardBorder}`, boxShadow: esModoOscuro ? '0 4px 24px rgba(0,0,0,0.40)' : '0 4px 24px rgba(30,58,138,0.07)' }}>
+        <div className="vehiculo-main-container" style={{ background: c.cardBg, border: `1px solid ${c.cardBorder}`, boxShadow: esModoOscuro ? '0 4px 24px rgba(0,0,0,0.40)' : '0 4px 24px rgba(var(--brand-secondary-rgb),0.07)' }}>
           
           {/* Header Layout */}
           <div style={{ marginBottom: 24 }}>

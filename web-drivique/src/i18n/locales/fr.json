@@ -1565,6 +1565,7 @@
     },
     "reservationsManagement": {
       "encargadoSucursal": "Responsable de succursale ({{branch}})",
+      "noAssignedBranch": "Aucune succursale attribuée",
       "exportExcelTitle": "Exporter vers Excel",
       "exportPdfTitle": "Exporter vers PDF",
       "printTitle": "Imprimer la liste",
@@ -1616,6 +1617,7 @@
         "phonePlaceholder": "+33 6 00 00 00 00",
         "vehicle": "Véhicule *",
         "noPlate": "Sans plaque",
+        "noVehicles": "Aucun véhicule disponible dans cette agence",
         "branch": "Succursale *",
         "pickupDateTime": "Date et heure de prise *",
         "returnDateTime": "Date et heure de retour *",
@@ -1654,6 +1656,7 @@
       },
       "exportTitleBranch": "Gestion des réservations - Succursale {{branch}}",
       "exportTitleGlobal": "Gestion globale des réservations - Drivique",
+      "audit": { "exportExcel": "A exporté la liste des réservations vers Excel", "exportPdf": "A exporté la liste des réservations en PDF", "print": "A imprimé la liste des réservations" },
       "fields": {
         "code": "Code",
         "client": "Client",
@@ -1863,6 +1866,8 @@
       "detailsTitle": "Détails du Contrat",
       "actions": "Actions",
       "close": "Fermer",
+      "exportExcel": "Exporter vers Excel", "exportPdf": "Exporter en PDF", "printList": "Imprimer la liste", "listLabel": "Liste", "unsigned": "Non signé", "downloadSuccess": "Contrat {{contract}} téléchargé.",
+      "audit": { "exportExcel": "A exporté la liste des contrats vers Excel", "exportPdf": "A exporté la liste des contrats en PDF", "print": "A imprimé la liste des contrats", "download": "A téléchargé le contrat PDF", "view": "A consulté le détail du contrat" },
       "fields": {
         "contractNumber": "No. Contrat",
         "reservationCode": "Réservation",
@@ -1993,7 +1998,9 @@
     "incidentsTitle": "Rapports d'incidents de véhicules",
     "incidentsSubtitle": "Contrôle des incidents de la flotte, réponses clients, priorisation des réparations et traçabilité.",
     "exportExcel": "Excel",
-    "exportPdf": "PDF"
+    "exportPdf": "PDF",
+    "brandPalette": { "label": "Palettes de couleurs disponibles", "hint": "Choisissez une combinaison prête à l’emploi ou personnalisez ses couleurs.", "customHint": "Vous souhaitez l’ajuster ? Choisissez visuellement chaque couleur ou saisissez son code.", "ocean": "Bleu océan", "forest": "Vert forêt", "sunset": "Coucher de soleil", "violet": "Violet", "rose": "Rose", "graphite": "Graphite" },
+    "brand": { "nav": "Configuration de marque", "eyebrow": "Identité visuelle", "title": "Configuration de marque", "subtitle": "Personnalisez le nom, le logo et les couleurs de toute la plateforme.", "identity": "Identité de marque", "identityHint": "Définissez le nom commercial et le logo principal.", "name": "Nom commercial", "logo": "Charger un logo", "logoHint": "PNG, JPG, WebP ou SVG · 1 Mo maximum", "palette": "Palette d’entreprise", "paletteHint": "Choisissez trois couleurs différentes.", "colors": { "primary": "Primaire", "secondary": "Secondaire", "accent": "Accent" }, "preview": "Aperçu — modifications non appliquées", "previewEyebrow": "Nouvelle identité", "previewTitle": "Explorez la plateforme", "previewText": "Aperçu du nom, du logo, des boutons et des accents.", "previewButton": "Action principale", "nameFallback": "Nom de marque", "restorePrevious": "Restaurer précédente", "restoreOriginal": "Restaurer originale", "apply": "Appliquer", "messages": { "saved": "La nouvelle marque a été appliquée.", "previous": "La configuration précédente a été restaurée.", "original": "La marque originale a été restaurée." }, "errors": { "invalidName": "Le nom doit contenir entre 2 et 40 caractères.", "invalidColors": "Les trois couleurs doivent être hexadécimales valides.", "duplicateColors": "Choisissez trois couleurs différentes.", "logoType": "Sélectionnez un logo PNG, JPG, WebP ou SVG.", "logoSize": "Le logo ne peut pas dépasser 1 Mo.", "logoRead": "Impossible de lire le fichier.", "noPrevious": "Aucune configuration précédente à restaurer." } }
   },
   "contratoFirma": {
     "badgeLabel": "Document numérique",
