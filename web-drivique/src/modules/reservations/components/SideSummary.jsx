@@ -87,7 +87,7 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, servicios
       alignSelf: 'flex-start',
     }}>
       {/* Header estilo tarjeta */}
-      <div style={{ padding: '24px 20px', background: 'linear-gradient(135deg, #1e3a8a, #2563eb)', color: '#fff' }}>
+      <div style={{ padding: '24px 20px', background: 'var(--brand-gradient)', color: 'var(--brand-on-primary)' }}>
         <h3 style={{ margin: 0, fontSize: 13, fontWeight: 700, color: '#fff', textTransform: 'none' }}>
           {t('vehiculo.reserveSummary', 'Resumen de tu reserva')}
         </h3>
@@ -96,11 +96,11 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, servicios
 
       <div style={{ padding: '20px', borderBottom: `1px solid ${c?.cardBorder || 'var(--borde)'}` }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-          <h4 style={{ fontSize: 11, fontWeight: 800, color: c?.accentText || '#1e3a8a', textTransform: 'uppercase', letterSpacing: '0.07em', margin: 0 }}>
+          <h4 style={{ fontSize: 11, fontWeight: 800, color: c?.accentText || 'var(--brand-secondary)', textTransform: 'uppercase', letterSpacing: '0.07em', margin: 0 }}>
             {t('vehiculo.datesAndLocations', 'Fechas y Lugares')}
           </h4>
           {editHabilitado && (
-            <button onClick={() => onEditar('retiro')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 11, color: c?.accentText || '#2563eb', fontWeight: 700, padding: 0 }}>
+            <button onClick={() => onEditar('retiro')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 11, color: c?.accentText || 'var(--brand-primary)', fontWeight: 700, padding: 0 }}>
               {t('vehiculo.edit', 'Editar')}
             </button>
           )}
@@ -122,7 +122,7 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, servicios
               {translateLocation(reserva.sucursalRetiro)}
             </p>
             {reserva.sucursalRetiro === 'domicilio' && (reserva.domicilioDireccion || reserva.domicilioBarrio) && (
-              <p style={{ fontSize: 11, color: c?.accentText || '#2563eb', fontWeight: 700, margin: '4px 0 0', wordBreak: 'break-word', lineHeight: 1.3 }}>
+              <p style={{ fontSize: 11, color: c?.accentText || 'var(--brand-primary)', fontWeight: 700, margin: '4px 0 0', wordBreak: 'break-word', lineHeight: 1.3 }}>
                 📍 {[reserva.domicilioDireccion, reserva.domicilioBarrio, reserva.domicilioCiudad].filter(Boolean).join(', ')}
               </p>
             )}
@@ -145,7 +145,7 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, servicios
               {translateLocation(reserva.sucursalDevolucion)}
             </p>
             {reserva.sucursalDevolucion === 'domicilio' && (reserva.domicilioDireccion || reserva.domicilioBarrio) && (
-              <p style={{ fontSize: 11, color: c?.accentText || '#2563eb', fontWeight: 700, margin: '4px 0 0', wordBreak: 'break-word', lineHeight: 1.3 }}>
+              <p style={{ fontSize: 11, color: c?.accentText || 'var(--brand-primary)', fontWeight: 700, margin: '4px 0 0', wordBreak: 'break-word', lineHeight: 1.3 }}>
                 📍 {[reserva.domicilioDireccion, reserva.domicilioBarrio, reserva.domicilioCiudad].filter(Boolean).join(', ')}
               </p>
             )}
@@ -155,11 +155,11 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, servicios
 
       <div style={{ padding: '20px', borderBottom: `1px solid ${c?.cardBorder || 'var(--borde)'}` }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-          <h4 style={{ fontSize: 11, fontWeight: 800, color: c?.accentText || '#1e3a8a', textTransform: 'uppercase', letterSpacing: '0.07em', margin: 0 }}>
+          <h4 style={{ fontSize: 11, fontWeight: 800, color: c?.accentText || 'var(--brand-secondary)', textTransform: 'uppercase', letterSpacing: '0.07em', margin: 0 }}>
             {t('vehiculo.protectionExtras', 'Tu protección y extras')}
           </h4>
           {editHabilitado && (
-            <button onClick={() => onEditar('grupo')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 11, color: c?.accentText || '#2563eb', fontWeight: 700, padding: 0 }}>
+            <button onClick={() => onEditar('grupo')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 11, color: c?.accentText || 'var(--brand-primary)', fontWeight: 700, padding: 0 }}>
               {t('vehiculo.edit', 'Editar')}
             </button>
           )}
@@ -186,7 +186,7 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, servicios
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
             <p style={{ fontSize: 11, fontWeight: 600, color: c?.textSecondary || '#64748b', textTransform: 'uppercase', margin: 0 }}>{t('vehiculo.additionalServices', 'Servicios adicionales')}</p>
             {editHabilitado && (
-              <button onClick={() => onEditar('servicios')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 11, color: c?.accentText || '#2563eb', fontWeight: 700, padding: 0 }}>
+              <button onClick={() => onEditar('servicios')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 11, color: c?.accentText || 'var(--brand-primary)', fontWeight: 700, padding: 0 }}>
                 {t('vehiculo.edit', 'Editar')}
               </button>
             )}
@@ -237,10 +237,10 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, servicios
 
         {/* Total Box */}
         <div style={{ background: c?.subCardBg || '#f8fafc', border: `1px solid ${c?.cardBorder || '#e2e8f0'}`, borderRadius: 12, padding: '16px' }}>
-          <p style={{ fontSize: 11, fontWeight: 800, color: c?.accentText || '#1e3a8a', textTransform: 'uppercase', letterSpacing: '0.07em', margin: '0 0 4px' }}>
+          <p style={{ fontSize: 11, fontWeight: 800, color: c?.accentText || 'var(--brand-secondary)', textTransform: 'uppercase', letterSpacing: '0.07em', margin: '0 0 4px' }}>
             {t('vehiculo.finalTotal', 'Total Final')}
           </p>
-          <p style={{ fontSize: 24, fontWeight: 900, color: c?.accentText || '#1e3a8a', margin: '0 0 6px' }}>
+          <p style={{ fontSize: 24, fontWeight: 900, color: c?.accentText || 'var(--brand-secondary)', margin: '0 0 6px' }}>
             {formatCurrency(finalTotal, moneda)}
           </p>
           <p style={{ fontSize: 10, color: c?.textSecondary || '#64748b', margin: 0 }}>
@@ -252,7 +252,7 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, servicios
            <div style={{ marginTop: 20 }}>
               <button 
                 onClick={onContinuar}
-                style={{ width: '100%', padding: '14px', background: 'linear-gradient(135deg, #1e3a8a, #2563eb)', color: '#fff', borderRadius: 12, border: 'none', fontWeight: 800, cursor: 'pointer' }}>
+                style={{ width: '100%', padding: '14px', background: 'var(--brand-gradient)', color: 'var(--brand-on-primary)', borderRadius: 12, border: 'none', fontWeight: 800, cursor: 'pointer' }}>
                 {t('common.continue', 'Continuar')}
               </button>
            </div>

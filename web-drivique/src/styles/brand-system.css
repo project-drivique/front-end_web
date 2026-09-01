@@ -1,0 +1,214 @@
+/* Motor de marca global. Los valores iniciales reproducen exactamente la
+   identidad azul original; BrandContext reemplaza únicamente estos tokens. */
+:root {
+  --brand-primary: #2563eb;
+  --brand-secondary: #1e3a8a;
+  --brand-accent: #60a5fa;
+  --brand-primary-rgb: 37, 99, 235;
+  --brand-secondary-rgb: 30, 58, 138;
+  --brand-accent-rgb: 96, 165, 250;
+  --brand-on-primary: #ffffff;
+  --brand-on-secondary: #ffffff;
+  --brand-on-accent: #0f172a;
+  --brand-primary-hover: #1d4ed8;
+  --brand-primary-active: #1e40af;
+  --brand-secondary-hover: #162d6e;
+  --brand-text-light: #1e3a8a;
+  --brand-text-dark: #93c5fd;
+  --brand-border-light: #93c5fd;
+  --brand-border-dark: #3c6599;
+  --brand-soft-light: #eff6ff;
+  --brand-soft-strong-light: #dbeafe;
+  --brand-soft-dark: #132344;
+  --brand-soft-strong-dark: #183766;
+  --brand-text: var(--brand-text-light);
+  --brand-border: var(--brand-border-light);
+  --brand-soft: var(--brand-soft-light);
+  --brand-soft-strong: var(--brand-soft-strong-light);
+  --brand-primary-soft: var(--brand-soft);
+  --brand-gradient: linear-gradient(135deg, var(--brand-secondary), var(--brand-primary));
+  --brand-gradient-hover: linear-gradient(135deg, var(--brand-secondary-hover), var(--brand-primary-hover));
+  --brand-shadow: 0 8px 24px rgba(var(--brand-primary-rgb), .22);
+  --brand-focus: 0 0 0 3px rgba(var(--brand-primary-rgb), .20);
+  --texto-acento: var(--brand-text);
+}
+
+html.dark {
+  --brand-text: var(--brand-text-dark);
+  --brand-border: var(--brand-border-dark);
+  --brand-soft: var(--brand-soft-dark);
+  --brand-soft-strong: var(--brand-soft-strong-dark);
+  color-scheme: dark;
+}
+
+html:not(.dark) { color-scheme: light; }
+::selection { background: var(--brand-primary); color: var(--brand-on-primary); }
+
+/* Estados de foco consistentes en todas las pantallas. */
+:where(a, button, input, select, textarea):focus-visible {
+  outline: 2px solid var(--brand-primary) !important;
+  outline-offset: 2px;
+}
+:where(input, select, textarea):focus {
+  border-color: var(--brand-primary) !important;
+  box-shadow: var(--brand-focus) !important;
+}
+input[type="checkbox"], input[type="radio"], input[type="range"] { accent-color: var(--brand-primary); }
+
+/* Navegación autenticada y catálogo. */
+.catalogo-logo-title,
+.catalogo-header-nav a:hover,
+.catalogo-header-nav a.active,
+.catalogo-mobile-link.active,
+.catalogo-header-back:hover,
+.catalogo-results-count strong,
+.catalogo-sort-label,
+.catalogo-filter-title,
+.catalogo-price,
+.vehiculo-price,
+.vehiculo-price-value {
+  color: var(--brand-text) !important;
+}
+.catalogo-mobile-menu-btn,
+.catalogo-pagination button.is-active,
+.catalogo-chip.is-active,
+.catalogo-filter-chip.is-active,
+.catalogo-search-button,
+.catalogo-free-search-button,
+.btn-reservar,
+.vehiculo-reserve-button,
+.vehicle-reserve-btn {
+  background: var(--brand-primary) !important;
+  border-color: var(--brand-primary) !important;
+  color: var(--brand-on-primary) !important;
+  box-shadow: var(--brand-shadow) !important;
+}
+.catalogo-mobile-menu-btn:hover,
+.catalogo-search-button:hover,
+.catalogo-free-search-button:hover,
+.btn-reservar:hover,
+.vehiculo-reserve-button:hover,
+.vehicle-reserve-btn:hover { background: var(--brand-primary-hover) !important; }
+.catalogo-search-sticky,
+.catalogo-filter-chip.is-active,
+.catalogo-chip.is-active { border-color: var(--brand-border) !important; }
+.catalogo-header-profile,
+.catalogo-header-profile:hover {
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+/* Reservas y flujo de pago/contrato. */
+.reservas-page .eyebrow,
+.reservas-page .reserva-id,
+.reservas-page .reserva-total,
+.reservas-page .reserva-meta svg,
+.reservas-page .detalle-fila-icon,
+.reservas-page .detalle-contrato-titulo h3,
+.reserva-stepper .active,
+.reserva-stepper .completed,
+.contrato-desbloqueado .contrato-vista-head strong,
+.contrato-descarga-icon,
+.contrato-vista-progreso {
+  color: var(--brand-text) !important;
+}
+.reservas-page .filtro-select:focus-within,
+.reservas-page .reserva-card:hover,
+.detalle-resumen-card,
+.contrato-desbloqueado { border-color: var(--brand-border) !important; }
+.reservas-page .btn-primario,
+.reservas-page .btn-detalle,
+.reservas-page .clave-validar,
+.reservas-page .contrato-descargar,
+.reservation-flow-primary,
+.confirmar-reserva-movil,
+.reserva-stepper .step-circle.active,
+.reserva-stepper .step-circle.completed {
+  background: var(--brand-gradient) !important;
+  color: var(--brand-on-primary) !important;
+  border-color: var(--brand-primary) !important;
+  box-shadow: var(--brand-shadow) !important;
+}
+.reservas-page .btn-link,
+.reservas-page .clave-ojo,
+.reservas-page .btn-reporte:hover { color: var(--brand-text) !important; }
+.reservas-page .modal-icon,
+.reservas-page .detalle-fila-icon,
+.reserva-stepper .step-circle:not(.active):not(.completed) { background: var(--brand-soft) !important; }
+
+/* Perfil. */
+.perfil-banner-card { background: var(--brand-gradient) !important; }
+.perfil-banner-card, .perfil-banner-card * { color: var(--brand-on-secondary) !important; }
+.perfil-container h2,
+.perfil-container h3,
+.perfil-container .perfil-card-icon,
+.perfil-container .perfil-field-icon,
+.perfil-container .catalogo-header-back { color: var(--brand-text) !important; }
+.perfil-container .perfil-badge,
+.perfil-container .perfil-icon-box { background: var(--brand-soft) !important; color: var(--brand-text) !important; }
+.perfil-container .perfil-primary-button,
+.perfil-container button[type="submit"]:not(.danger-button) { background: var(--brand-gradient) !important; color: var(--brand-on-primary) !important; }
+
+/* Notificaciones y soporte. */
+.notificaciones-header-title p,
+.soporte-header-title p,
+.notificaciones-tab-btn.activa,
+.soporte-tab-btn.activa,
+.seccion-subtitulo-soporte,
+.notificacion-icono svg,
+.notificaciones-vacio-icon,
+.soporte-chip-icon,
+.reporte-codigo { color: var(--brand-text) !important; }
+.notificaciones-tab-btn.activa,
+.soporte-tab-btn.activa { border-color: var(--brand-primary) !important; }
+.notificaciones-tab-badge,
+.soporte-tab-badge,
+.notif-marcar-todas,
+.soporte-btn-primario,
+.cupon-aplicar-btn,
+.coupon-copy-button { background: var(--brand-primary) !important; color: var(--brand-on-primary) !important; }
+.notificacion-card:hover,
+.cupon-card:hover,
+.soporte-canal-card:hover,
+.reporte-card:hover { border-color: var(--brand-border) !important; }
+.notificacion-icono,
+.soporte-chip.activo,
+.cupon-icono { background: var(--brand-soft) !important; }
+
+/* Componentes compartidos, diálogos y alertas. */
+.swal2-project-confirm,
+.placeholder-primary,
+.modal-primary,
+.alert-primary,
+.chatbot-send-btn,
+.chatbot-toggle-btn { background: var(--brand-primary) !important; color: var(--brand-on-primary) !important; }
+.swal2-project-confirm:hover,
+.placeholder-primary:hover,
+.modal-primary:hover,
+.alert-primary:hover { background: var(--brand-primary-hover) !important; }
+.swal2-project-title,
+.chatbot-title-wrap h4,
+.chatbot-quick-action:hover { color: var(--brand-text) !important; }
+
+/* Administración y encargado: refuerzo para CSS histórico con azules fijos. */
+.management-sidebar { background: var(--brand-gradient) !important; }
+.management-kpi::before,
+.management-mobile-btn,
+.management-kpi__icon,
+.management-user > span { background: var(--brand-primary) !important; color: var(--brand-on-primary) !important; }
+.management-shell :is(.cities-eyebrow,.management-eyebrow,.management-heading p,.brand-page__header p),
+.management-shell :is(.cities-search,.contracts-code,.fleet-modal legend,.fleet-modal label>small),
+.management-shell :is(.contracts-cell-with-icon svg,.incident-field svg) { color: var(--brand-text) !important; }
+.management-shell :is(.cities-primary,.management-action,.brand-primary) {
+  background: var(--brand-primary) !important;
+  color: var(--brand-on-primary) !important;
+  border-color: var(--brand-primary) !important;
+}
+.management-shell :is(.cities-primary,.management-action,.brand-primary):hover { background: var(--brand-primary-hover) !important; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
+}

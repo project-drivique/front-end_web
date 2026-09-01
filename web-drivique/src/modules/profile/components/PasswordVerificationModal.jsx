@@ -56,7 +56,7 @@ export default function ModalVerificacionContrasena({
       }}>
         <div style={{
           padding: '20px 24px',
-          background: 'linear-gradient(135deg,#0f1a3d,#1e3a8a)',
+          background: 'linear-gradient(135deg,var(--brand-secondary),var(--brand-secondary))',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
@@ -177,7 +177,7 @@ export default function ModalVerificacionContrasena({
                   flex: 1,
                   padding: '10px',
                   borderRadius: '8px',
-                  background: 'linear-gradient(90deg,#1e3a8a,#2563eb)',
+                  background: 'linear-gradient(90deg,var(--brand-secondary),var(--brand-primary))',
                   border: 'none',
                   color: '#fff',
                   fontWeight: 600,

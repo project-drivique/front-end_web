@@ -94,7 +94,7 @@ export default function EditReservationModal({
         boxShadow: c?.isDark ? '0 24px 70px rgba(0,0,0,0.5)' : '0 24px 70px rgba(15,23,42,0.25)', overflow: 'hidden',
       }}>
         {/* Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: isMobile ? '20px' : '24px 28px', borderBottom: `1px solid ${c?.cardBorder || 'var(--borde)'}`, background: c?.isDark ? 'rgba(255,255,255,0.02)' : 'linear-gradient(135deg,#1e3a8a,#2563eb)' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: isMobile ? '20px' : '24px 28px', borderBottom: `1px solid ${c?.cardBorder || 'var(--borde)'}`, background: c?.isDark ? 'rgba(255,255,255,0.02)' : 'var(--brand-gradient)' }}>
           <h3 style={{ fontSize: 19, fontWeight: 900, color: '#fff', margin: 0, letterSpacing: '-0.01em' }}>
             {titleMap[modalEditarSeccion]}
           </h3>
@@ -167,7 +167,7 @@ export default function EditReservationModal({
           <button onClick={cerrar} style={{ padding: '12px 24px', borderRadius: 14, border: `1px solid ${c?.cardBorder || 'var(--borde)'}`, background: c?.cardBg || 'var(--bg-tarjeta)', color: c?.textPrimary || 'var(--texto-primary)', fontWeight: 700, fontSize: 14, cursor: 'pointer' }}>
             {t('common.cancel', 'Cancelar')}
           </button>
-          <button onClick={guardar} style={{ padding: '12px 24px', borderRadius: 14, background: 'linear-gradient(90deg,#1e3a8a,#2563eb)', color: '#fff', fontWeight: 900, fontSize: 14, border: 'none', cursor: 'pointer', boxShadow: '0 8px 20px rgba(37,99,235,0.22)' }}>
+          <button onClick={guardar} style={{ padding: '12px 24px', borderRadius: 14, background: 'var(--brand-gradient)', color: 'var(--brand-on-primary)', fontWeight: 900, fontSize: 14, border: 'none', cursor: 'pointer', boxShadow: 'var(--brand-shadow)' }}>
             {t('common.save', 'Guardar cambios')}
           </button>
         </div>

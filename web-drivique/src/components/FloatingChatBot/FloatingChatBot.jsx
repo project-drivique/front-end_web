@@ -10,11 +10,13 @@ import {
 } from 'react-icons/fa'
 import { useLanding } from '@/modules/landing/LandingContext'
 import { getBotQuickActions, procesarPreguntaBot } from '@/data/chatbotKnowledge'
+import { useBrand } from '@/contexts/BrandContext'
 import './FloatingChatBot.css'
 
 export default function FloatingChatBot() {
   const { t } = useTranslation()
   const { moneda } = useLanding()
+  const { brand } = useBrand()
 
   const [abierto, setAbierto] = useState(false)
   const [minimizado, setMinimizado] = useState(false)
@@ -26,8 +28,8 @@ export default function FloatingChatBot() {
       sender: 'bot',
       texto: t(
         'chatbot.welcomeMsg',
-        '👋 ¡Hola! Soy el asistente virtual interactivo de Drivique 24/7.\n¿En qué puedo ayudarte hoy?'
-      ),
+        `👋 ¡Hola! Soy el asistente virtual interactivo de ${brand.name} 24/7.\n¿En qué puedo ayudarte hoy?`
+      ).replaceAll('Drivique', brand.name),
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     },
   ])
@@ -36,6 +38,7 @@ export default function FloatingChatBot() {
   const [escribiendo, setEscribiendo] = useState(false)
 
   const messagesEndRef = useRef(null)
+  const nextMessageId = useRef(2)
 
   const quickActions = getBotQuickActions(t)
 
@@ -66,7 +69,7 @@ export default function FloatingChatBot() {
     const hora = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 
     const nuevoMensajeUsuario = {
-      id: Date.now(),
+      id: nextMessageId.current++,
       sender: 'user',
       texto: textoFinal,
       time: hora,
@@ -85,7 +88,7 @@ export default function FloatingChatBot() {
         setMensajes((prev) => [
           ...prev,
           {
-            id: Date.now() + 1,
+            id: nextMessageId.current++,
             sender: 'bot',
             texto: respuestaTexto,
             time: horaBot,
@@ -112,7 +115,7 @@ export default function FloatingChatBot() {
       <button
         className="floating-chatbot-trigger"
         onClick={toggleChat}
-        title={t('chatbot.toggleTitle', 'Asistente de Soporte Drivique')}
+        title={t('chatbot.toggleTitle', `Asistente de Soporte ${brand.name}`).replaceAll('Drivique', brand.name)}
         aria-label="Abrir Chatbot de soporte"
       >
         <FaComments />
@@ -129,7 +132,7 @@ export default function FloatingChatBot() {
                 <FaRobot />
               </div>
               <div className="chatbot-title-wrap">
-                <h4>Drivique Bot 24/7</h4>
+                <h4>{brand.name} Bot 24/7</h4>
                 <div className="chatbot-status-row">
                   <span className="chatbot-status-dot" />
                   <span>{t('chatbot.onlineStatus', 'En línea | Asistente Virtual')}</span>

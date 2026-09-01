@@ -2,7 +2,6 @@ import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 import { FaLock } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
-import { COLOR_MARCA } from '../constants'
 
 export default function BannerRegistro({ visible, onCerrar, mensaje }) {
   const { t } = useTranslation()
@@ -59,7 +58,7 @@ export default function BannerRegistro({ visible, onCerrar, mensaje }) {
               padding: '14px',
               border: 'none',
               cursor: 'pointer',
-              background: `linear-gradient(90deg,${COLOR_MARCA},#2563eb)`,
+              background: 'var(--brand-gradient)',
               color: '#FFFFFF',
               fontSize: '16px',
               fontWeight: 700,
@@ -77,7 +76,7 @@ export default function BannerRegistro({ visible, onCerrar, mensaje }) {
               border: 'none',
               cursor: 'pointer',
               background: '#F1F5F9',
-              color: '#2563EB',
+              color: 'var(--brand-text)',
               fontSize: '16px',
               fontWeight: 600,
             }}
