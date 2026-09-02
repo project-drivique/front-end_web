@@ -17,6 +17,7 @@ import {
   FaTimes,
   FaTags,
   FaPalette,
+  FaFileAlt,
 } from 'react-icons/fa'
 import { useAuthStore } from '../../../store/authStore'
 import accessConfig from '../../../mocks/adminAccessConfig.json'
@@ -37,6 +38,7 @@ const MODULE_ICONS = {
   branches: FaBuilding,
   promotions: FaTags,
   brand: FaPalette,
+  reports: FaFileAlt,
   audit: FaShieldAlt,
 }
 
@@ -103,7 +105,7 @@ export default function ManagementSidebar({ branchOnly = false }) {
               className={({ isActive }) => `management-nav__item ${isActive ? 'is-active' : ''}`}
             >
               <Icon aria-hidden="true" />
-              <span>{t(key === 'cities' ? 'admin.cities.title' : key === 'contracts' ? 'admin.nav.contracts' : key === 'incidents' ? 'admin.incidents.title' : key === 'promotions' ? 'admin.promotions.title' : key === 'brand' ? 'admin.brand.nav' : `admin.${key}`, key === 'incidents' ? 'Incidencias' : undefined)}</span>
+              <span>{t(key === 'cities' ? 'admin.cities.title' : key === 'contracts' ? 'admin.nav.contracts' : key === 'incidents' ? 'admin.incidents.title' : key === 'promotions' ? 'admin.promotions.title' : key === 'brand' ? 'admin.brand.nav' : key === 'reports' ? 'admin.reports.nav' : `admin.${key}`, key === 'incidents' ? 'Incidencias' : key === 'reports' ? 'Reportes' : undefined)}</span>
             </NavLink>
           )
         })}
