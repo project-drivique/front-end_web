@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { FaMoneyBillWave, FaCreditCard, FaArrowLeft } from 'react-icons/fa'
+import { FaMoneyBillWave, FaCreditCard, FaArrowLeft, FaTimes } from 'react-icons/fa'
 import logo from '@/assets/logo.png'
 import { useBrand } from '@/contexts/BrandContext'
 import { formatCurrency } from '@/utils/currencyUtils'
@@ -48,6 +49,7 @@ export default function ReservationFlowPage() {
   }
   
   const isMobile = useIsMobile()
+  const [modalResumenMovil, setModalResumenMovil] = useState(false)
 
   const flow = useReservationFlow()
   const {
@@ -205,6 +207,37 @@ export default function ReservationFlowPage() {
 
           <ReservationStepper pantalla={pantalla} setPantalla={setPantalla} esModoOscuro={esModoOscuro} />
 
+          {/* Botón superior de resumen de reserva para celulares/pantallas móviles */}
+          {pantalla > 1 && (
+            <div className="resumen-movil-bar-trigger">
+              <button
+                type="button"
+                className="btn-resumen-movil-toggle"
+                onClick={() => setModalResumenMovil(true)}
+              >
+                <div className="resumen-movil-toggle-left">
+                  <span className="resumen-movil-toggle-icon">📋</span>
+                  <div style={{ textAlign: 'left' }}>
+                    <span className="resumen-movil-toggle-title">
+                      {t('reservas.viewSummary', 'Ver resumen de reserva')}
+                    </span>
+                    <span className="resumen-movil-toggle-sub">
+                      {vehiculo.nombre}
+                    </span>
+                  </div>
+                </div>
+                <div className="resumen-movil-toggle-right">
+                  <strong className="resumen-movil-toggle-price">
+                    {formatCurrency(totalReserva, moneda)}
+                  </strong>
+                  <span className="resumen-movil-toggle-badge">
+                    {t('reservas.openSummary', 'Ver detalle ↗')}
+                  </span>
+                </div>
+              </button>
+            </div>
+          )}
+
           <div className="detalle-layout" style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: 32, alignItems: 'flex-start' }}>
             <div className="detalle-columna-principal" style={{ flex: 1, minWidth: 0 }}>
 
@@ -262,7 +295,7 @@ export default function ReservationFlowPage() {
               )}
             </div>
 
-            {/* ── SideSummary (pasos 2 y 3, en columna lateral) ── */}
+            {/* ── SideSummary (pasos 2 y 3, en columna lateral desktop) ── */}
             {pantalla > 1 && (
               <div
                 ref={resumenMovilRef}
@@ -334,6 +367,70 @@ export default function ReservationFlowPage() {
             onCerrar={() => setModalDetallesOpen(false)}
             c={c}
           />
+
+          {/* Modal de Resumen de Reserva para Celulares / Pantallas Móviles */}
+          {modalResumenMovil && (
+            <div
+              className="modal-resumen-movil-backdrop"
+              onClick={() => setModalResumenMovil(false)}
+            >
+              <div
+                className="modal-resumen-movil-content"
+                style={{
+                  background: c.cardBg,
+                  borderColor: c.cardBorder,
+                  color: c.textPrimary,
+                }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="modal-resumen-movil-header">
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span style={{ fontSize: 20 }}>📋</span>
+                    <h3 style={{ margin: 0, fontSize: 17, fontWeight: 900, color: c.textPrimary }}>
+                      {t('reservas.summaryTitle', 'Resumen de tu Reserva')}
+                    </h3>
+                  </div>
+                  <button
+                    type="button"
+                    className="modal-resumen-movil-close"
+                    onClick={() => setModalResumenMovil(false)}
+                    style={{ background: c.subCardBg, color: c.textSecondary, border: `1px solid ${c.cardBorder}` }}
+                  >
+                    <FaTimes />
+                  </button>
+                </div>
+
+                <div className="modal-resumen-movil-body">
+                  <SideSummary
+                    vehiculo={vehiculo}
+                    reserva={reserva}
+                    seguroIdx={seguroIdx}
+                    serviciosSeleccionados={serviciosSeleccionados}
+                    onEditar={(seccion) => {
+                      setModalResumenMovil(false)
+                      abrirModalEditar(seccion)
+                    }}
+                    pantalla={pantalla}
+                    onContinuar={null}
+                    appliedPromotion={appliedPromotion}
+                    onApplyPromotion={aplicarPromocion}
+                    onRemovePromotion={quitarPromocion}
+                    c={c}
+                  />
+                </div>
+
+                <div className="modal-resumen-movil-footer">
+                  <button
+                    type="button"
+                    className="btn-cerrar-modal-resumen"
+                    onClick={() => setModalResumenMovil(false)}
+                  >
+                    {t('common.continue', 'Continuar')}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

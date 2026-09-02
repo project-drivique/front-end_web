@@ -141,12 +141,22 @@ input[type="checkbox"], input[type="radio"], input[type="range"] { accent-color:
 
 /* Perfil. */
 .perfil-banner-card { background: var(--brand-gradient) !important; }
-.perfil-banner-card, .perfil-banner-card * { color: var(--brand-on-secondary) !important; }
-.perfil-container h2,
-.perfil-container h3,
-.perfil-container .perfil-card-icon,
-.perfil-container .perfil-field-icon,
-.perfil-container .catalogo-header-back { color: var(--brand-text) !important; }
+.perfil-banner-card h1,
+.perfil-banner-card p,
+.perfil-banner-card .perfil-banner-user-tag,
+.perfil-banner-card .perfil-banner-avatar { color: var(--brand-on-secondary) !important; }
+.perfil-banner-card .btn-editar-perfil-banner,
+.perfil-banner-card .btn-editar-perfil-banner * {
+  background: #ffffff !important;
+  color: var(--brand-secondary, #1e3a8a) !important;
+}
+.perfil-banner-card .btn-editar-perfil-banner:hover {
+  background: #f8fafc !important;
+  color: var(--brand-primary, #2563eb) !important;
+}
+.perfil-banner-card .btn-editar-perfil-banner:hover * {
+  color: var(--brand-primary, #2563eb) !important;
+}
 .perfil-container .perfil-badge,
 .perfil-container .perfil-icon-box { background: var(--brand-soft) !important; color: var(--brand-text) !important; }
 .perfil-container .perfil-primary-button,
@@ -155,15 +165,26 @@ input[type="checkbox"], input[type="radio"], input[type="range"] { accent-color:
 /* Notificaciones y soporte. */
 .notificaciones-header-title p,
 .soporte-header-title p,
-.notificaciones-tab-btn.activa,
-.soporte-tab-btn.activa,
 .seccion-subtitulo-soporte,
 .notificacion-icono svg,
 .notificaciones-vacio-icon,
 .soporte-chip-icon,
 .reporte-codigo { color: var(--brand-text) !important; }
 .notificaciones-tab-btn.activa,
-.soporte-tab-btn.activa { border-color: var(--brand-primary) !important; }
+.soporte-tab-btn.activa {
+  background: var(--brand-primary) !important;
+  color: var(--brand-on-primary, #ffffff) !important;
+  border-color: var(--brand-primary) !important;
+}
+.notificaciones-tab-btn.activa *,
+.soporte-tab-btn.activa * {
+  color: var(--brand-on-primary, #ffffff) !important;
+}
+.notificaciones-tab-btn.activa .notificacion-tab-badge,
+.soporte-tab-btn.activa .soporte-tab-badge {
+  background: #ffffff !important;
+  color: var(--brand-primary) !important;
+}
 .notificaciones-tab-badge,
 .soporte-tab-badge,
 .notif-marcar-todas,

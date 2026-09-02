@@ -2474,7 +2474,9 @@
       "SUV": "SUV",
       "Sedan": "Berline",
       "Compacto": "Compacte",
-      "Camioneta": "Camionnette"
+      "Camioneta": "Camionnette",
+      "Deportivo": "Sport",
+      "Económico": "Économique"
     },
     "modal": {
       "successTitle": "Coupon activé avec succès !",
@@ -2497,7 +2499,8 @@
       "expired": "Le code promotionnel a expiré.",
       "audience": "Ce coupon n'est pas disponible pour votre compte.",
       "minimum": "La réservation n'atteint pas le montant minimum.",
-      "category": "Le coupon ne s'applique pas à cette catégorie."
+      "category": "Le coupon ne s'applique pas à cette catégorie.",
+      "vehicleMismatch": "Le coupon n'est pas valable pour ce véhicule spécifique."
     }
   },
   "placeholder": {

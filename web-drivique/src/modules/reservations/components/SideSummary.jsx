@@ -233,7 +233,34 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, servicios
           {promotionError && <p className="reservation-promotion-error">{promotionError}</p>}
         </div>
 
-        {discount > 0 && <div className="reservation-discount-row"><span>{t('promotions.discount')}</span><strong>-{formatCurrency(discount, moneda)}</strong></div>}
+        {discount > 0 && (
+          <div
+            className="reservation-discount-row"
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              background: '#ecfdf5',
+              border: '1px solid #6ee7b7',
+              borderRadius: 10,
+              padding: '10px 14px',
+              marginBottom: 16,
+              color: '#047857',
+              fontWeight: 800,
+              fontSize: '13px',
+            }}
+          >
+            <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              🏷️ {t('promotions.discount', 'Descuento')}
+              <small style={{ fontWeight: 700, opacity: 0.9 }}>
+                ({appliedPromotion?.tipoDescuento === 'porcentaje' ? `-${appliedPromotion.valorDescuento}%` : 'Descuento'})
+              </small>
+            </span>
+            <strong style={{ fontSize: '15px', color: '#065f46' }}>
+              -{formatCurrency(discount, moneda)}
+            </strong>
+          </div>
+        )}
 
         {/* Total Box */}
         <div style={{ background: c?.subCardBg || '#f8fafc', border: `1px solid ${c?.cardBorder || '#e2e8f0'}`, borderRadius: 12, padding: '16px' }}>

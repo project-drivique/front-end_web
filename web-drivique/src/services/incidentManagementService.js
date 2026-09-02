@@ -46,9 +46,14 @@ function readIncidents() {
   }
 }
 
+const INCIDENT_EVENT = 'drivique:incidents-updated'
+
 function writeIncidents(data) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent(INCIDENT_EVENT, { detail: data }))
+    }
   } catch (err) {
     console.error('Error guardando reportes de incidencias:', err)
   }
@@ -76,6 +81,8 @@ function addSystemNotification(titulo, mensaje) {
 }
 
 export const incidentManagementService = {
+  eventName: INCIDENT_EVENT,
+
   list() {
     return readIncidents()
   },

@@ -1,9 +1,11 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { FaCheckCircle, FaCopy, FaTicketAlt } from 'react-icons/fa'
 import { useTranslation } from 'react-i18next'
 
 export default function CouponModal({ cupon, onClose, onAplicar }) {
   const { t } = useTranslation()
+  const navigate = useNavigate()
   const [copiado, setCopiado] = useState(false)
 
   if (!cupon) return null
@@ -19,6 +21,11 @@ export default function CouponModal({ cupon, onClose, onAplicar }) {
   const handleConfirmar = () => {
     if (onAplicar) onAplicar(cupon.codigo)
     onClose()
+    if (cupon.vehiculoId) {
+      navigate(`/catalogo/${cupon.vehiculoId}?promo=${cupon.codigo}`)
+    } else {
+      navigate('/catalogo')
+    }
   }
 
   return (
