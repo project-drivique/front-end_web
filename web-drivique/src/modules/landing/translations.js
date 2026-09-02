@@ -13,13 +13,21 @@ export const CAT_MAP = {
   'SUV': { es: 'SUV', en: 'SUV', fr: 'SUV', pt: 'SUV', br: 'SUV' },
 }
 
+export const LANDING_UI = {
+  es: { light: 'Claro', dark: 'Oscuro', faqTitle: 'Preguntas frecuentes', contactTitle: 'Canales de contacto', privacyTitle: 'Política de privacidad', lawTitle: 'Ley 1581 de 2012', securityTitle: 'Seguridad de la cuenta', closeDetails: 'Cerrar información', securityLink: 'Seguridad de la cuenta' },
+  en: { light: 'Light', dark: 'Dark', faqTitle: 'Frequently asked questions', contactTitle: 'Contact channels', privacyTitle: 'Privacy policy', lawTitle: 'Law 1581 of 2012', securityTitle: 'Account security', closeDetails: 'Close information', securityLink: 'Account security' },
+  fr: { light: 'Clair', dark: 'Sombre', faqTitle: 'Questions fréquentes', contactTitle: 'Canaux de contact', privacyTitle: 'Politique de confidentialité', lawTitle: 'Loi 1581 de 2012', securityTitle: 'Sécurité du compte', closeDetails: 'Fermer les informations', securityLink: 'Sécurité du compte' },
+  pt: { light: 'Claro', dark: 'Escuro', faqTitle: 'Perguntas frequentes', contactTitle: 'Canais de contacto', privacyTitle: 'Política de privacidade', lawTitle: 'Lei 1581 de 2012', securityTitle: 'Segurança da conta', closeDetails: 'Fechar informação', securityLink: 'Segurança da conta' },
+  br: { light: 'Claro', dark: 'Escuro', faqTitle: 'Perguntas frequentes', contactTitle: 'Canais de contato', privacyTitle: 'Política de privacidade', lawTitle: 'Lei 1581 de 2012', securityTitle: 'Segurança da conta', closeDetails: 'Fechar informações', securityLink: 'Segurança da conta' },
+}
+
 const traducciones = {
   es: {
     nav: {
       vehiculos: 'Vehículos', sucursales: 'Sucursales', servicios: 'Servicios',
       tarifas: 'Tarifas', soporte: 'Soporte', login: 'Iniciar sesión',
       registro: 'Registrarse', config: 'Configuración',
-      tema: 'Tema', claro: '☀️ Claro', oscuro: '🌙 Oscuro', idioma: 'Idioma',
+      tema: 'Tema', claro: 'Claro', oscuro: 'Oscuro', idioma: 'Idioma',
     },
     hero: {
       badge: 'Disponible en Colombia 🇨🇴',
@@ -28,7 +36,7 @@ const traducciones = {
       cta1: 'Comenzar ahora', cta2: 'Iniciar sesión',
       stat1: 'Vehículos', stat2: 'Soporte', stat3: 'Digital',
       cardTitle: 'Disponibles ahora', cardOnline: 'En línea', verFlota: 'Ver toda la flota',
-      perDay: '/día',
+      perDay: '/día', passengers: 'pasajeros', previousVehicle: 'Vehículo anterior', nextVehicle: 'Vehículo siguiente',
     },
     como: {
       label: 'Proceso simple', titulo: '¿Cómo funciona?',
@@ -57,6 +65,27 @@ const traducciones = {
       sub: 'Únete a cientos de conductores que ya confían en Drivique.',
       btn1: 'Crear cuenta gratis', btn2: 'Ya tengo cuenta',
     },
+    app: {
+      label: 'Experiencia movil',
+      titulo: 'Tambien puedes gestionar tu actividad desde la App Drivique',
+      sub: 'Consulta reservas, pagos, contratos y notificaciones desde una interfaz pensada para el celular.',
+      cta: 'Entrar a mi cuenta',
+      previewTitle: 'Resumen de viaje',
+      status: 'Contrato listo',
+      items: ['Reserva activa', 'Pago confirmado', 'Contrato digital'],
+    },
+    requirements: {
+      label: 'Antes de reservar',
+      titulo: 'Requisitos para alquiler',
+      sub: 'Ten estos datos listos para validar tu cuenta, firmar el contrato y retirar el vehiculo sin demoras.',
+      items: [
+        { titulo: 'Documento vigente', desc: 'Cedula o documento de identidad registrado en tu perfil.' },
+        { titulo: 'Licencia de conducir', desc: 'Archivo de licencia cargado y legible para la verificacion.' },
+        { titulo: 'Medio de pago', desc: 'Pago en linea o punto de efectivo autorizado segun la sucursal.' },
+        { titulo: 'Contrato digital', desc: 'Firma y conserva el contrato generado para tu reserva.' },
+      ],
+      cta: 'Crear cuenta',
+    },
     footer: {
       desc: 'Plataforma digital de alquiler de vehículos desarrollada en Colombia. Segura, eficiente y accesible.',
       cols: [
@@ -73,7 +102,7 @@ const traducciones = {
       vehiculos: 'Vehicles', sucursales: 'Branches', servicios: 'Services',
       tarifas: 'Rates', soporte: 'Support', login: 'Log in',
       registro: 'Sign up', config: 'Settings',
-      tema: 'Theme', claro: '☀️ Light', oscuro: '🌙 Dark', idioma: 'Language',
+      tema: 'Theme', claro: 'Light', oscuro: 'Dark', idioma: 'Language',
     },
     hero: {
       badge: 'Available in Colombia 🇨🇴',
@@ -82,7 +111,7 @@ const traducciones = {
       cta1: 'Get started', cta2: 'Log in',
       stat1: 'Vehicles', stat2: 'Support', stat3: 'Digital',
       cardTitle: 'Available now', cardOnline: 'Online', verFlota: 'View full fleet',
-      perDay: '/day',
+      perDay: '/day', passengers: 'passengers', previousVehicle: 'Previous vehicle', nextVehicle: 'Next vehicle',
     },
     como: {
       label: 'Simple process', titulo: 'How does it work?',
@@ -111,6 +140,27 @@ const traducciones = {
       sub: 'Join hundreds of drivers who already trust Drivique.',
       btn1: 'Create free account', btn2: 'I already have an account',
     },
+    app: {
+      label: 'Mobile experience',
+      titulo: 'You can also manage your activity from the Drivique App',
+      sub: 'Check bookings, payments, contracts and notifications from a phone-first interface.',
+      cta: 'Access my account',
+      previewTitle: 'Trip summary',
+      status: 'Contract ready',
+      items: ['Active booking', 'Payment confirmed', 'Digital contract'],
+    },
+    requirements: {
+      label: 'Before booking',
+      titulo: 'Rental requirements',
+      sub: 'Keep these details ready to validate your account, sign the contract and pick up the vehicle without delays.',
+      items: [
+        { titulo: 'Valid ID', desc: 'ID document registered in your profile.' },
+        { titulo: 'Driver license', desc: 'Readable license file uploaded for verification.' },
+        { titulo: 'Payment method', desc: 'Online payment or authorized cash point depending on the branch.' },
+        { titulo: 'Digital contract', desc: 'Sign and keep the contract generated for your booking.' },
+      ],
+      cta: 'Create account',
+    },
     footer: {
       desc: 'Digital vehicle rental platform developed in Colombia. Safe, efficient and accessible.',
       cols: [
@@ -127,7 +177,7 @@ const traducciones = {
       vehiculos: 'Véhicules', sucursales: 'Agences', servicios: 'Services',
       tarifas: 'Tarifs', soporte: 'Support', login: 'Se connecter',
       registro: "S'inscrire", config: 'Paramètres',
-      tema: 'Thème', claro: '☀️ Clair', oscuro: '🌙 Sombre', idioma: 'Langue',
+      tema: 'Thème', claro: 'Clair', oscuro: 'Sombre', idioma: 'Langue',
     },
     hero: {
       badge: 'Disponible en Colombie 🇨🇴',
@@ -136,7 +186,7 @@ const traducciones = {
       cta1: 'Commencer', cta2: 'Se connecter',
       stat1: 'Véhicules', stat2: 'Support', stat3: 'Numérique',
       cardTitle: 'Disponibles maintenant', cardOnline: 'En ligne', verFlota: 'Voir toute la flotte',
-      perDay: '/jour',
+      perDay: '/jour', passengers: 'passagers', previousVehicle: 'Véhicule précédent', nextVehicle: 'Véhicule suivant',
     },
     como: {
       label: 'Processus simple', titulo: 'Comment ça marche ?',
@@ -165,6 +215,27 @@ const traducciones = {
       sub: 'Rejoignez des centaines de conducteurs qui font confiance à Drivique.',
       btn1: 'Créer un compte gratuit', btn2: "J'ai déjà un compte",
     },
+    app: {
+      label: 'Expérience mobile',
+      titulo: "Vous pouvez aussi gérer votre activité depuis l'App Drivique",
+      sub: 'Consultez réservations, paiements, contrats et notifications depuis une interface pensée pour mobile.',
+      cta: 'Accéder à mon compte',
+      previewTitle: 'Résumé du trajet',
+      status: 'Contrat prêt',
+      items: ['Réservation active', 'Paiement confirmé', 'Contrat numérique'],
+    },
+    requirements: {
+      label: 'Avant de reserver',
+      titulo: 'Conditions de location',
+      sub: 'Gardez ces donnees pretes pour valider votre compte, signer le contrat et retirer le vehicule sans retard.',
+      items: [
+        { titulo: 'Piece d identite valide', desc: 'Document d identite enregistre dans votre profil.' },
+        { titulo: 'Permis de conduire', desc: 'Fichier du permis lisible charge pour verification.' },
+        { titulo: 'Mode de paiement', desc: 'Paiement en ligne ou point de paiement en especes autorise selon l agence.' },
+        { titulo: 'Contrat numerique', desc: 'Signez et conservez le contrat genere pour votre reservation.' },
+      ],
+      cta: 'Creer un compte',
+    },
     footer: {
       desc: 'Plateforme numérique de location de véhicules développée en Colombie. Sûre, efficace et accessible.',
       cols: [
@@ -181,7 +252,7 @@ const traducciones = {
       vehiculos: 'Veículos', sucursales: 'Agências', servicios: 'Serviços',
       tarifas: 'Tarifas', soporte: 'Suporte', login: 'Entrar',
       registro: 'Registar', config: 'Configurações',
-      tema: 'Tema', claro: '☀️ Claro', oscuro: '🌙 Escuro', idioma: 'Idioma',
+      tema: 'Tema', claro: 'Claro', oscuro: 'Escuro', idioma: 'Idioma',
     },
     hero: {
       badge: 'Disponível na Colômbia 🇨🇴',
@@ -190,7 +261,7 @@ const traducciones = {
       cta1: 'Começar agora', cta2: 'Entrar',
       stat1: 'Veículos', stat2: 'Suporte', stat3: 'Digital',
       cardTitle: 'Disponíveis agora', cardOnline: 'Online', verFlota: 'Ver toda a frota',
-      perDay: '/dia',
+      perDay: '/dia', passengers: 'passageiros', previousVehicle: 'Veículo anterior', nextVehicle: 'Veículo seguinte',
     },
     como: {
       label: 'Processo simples', titulo: 'Como funciona?',
@@ -219,6 +290,27 @@ const traducciones = {
       sub: 'Junte-se a centenas de condutores que já confiam na Drivique.',
       btn1: 'Criar conta grátis', btn2: 'Já tenho conta',
     },
+    app: {
+      label: 'Experiência móvel',
+      titulo: 'Também pode gerir a sua atividade na App Drivique',
+      sub: 'Consulte reservas, pagamentos, contratos e notificações numa interface pensada para telemóvel.',
+      cta: 'Entrar na minha conta',
+      previewTitle: 'Resumo da viagem',
+      status: 'Contrato pronto',
+      items: ['Reserva ativa', 'Pagamento confirmado', 'Contrato digital'],
+    },
+    requirements: {
+      label: 'Antes de reservar',
+      titulo: 'Requisitos para aluguel',
+      sub: 'Tenha estes dados prontos para validar a conta, assinar o contrato e levantar o veiculo sem atrasos.',
+      items: [
+        { titulo: 'Documento valido', desc: 'Documento de identidade registado no seu perfil.' },
+        { titulo: 'Carta de conducao', desc: 'Ficheiro da carta legivel carregado para verificacao.' },
+        { titulo: 'Metodo de pagamento', desc: 'Pagamento online ou ponto de numerario autorizado conforme a agencia.' },
+        { titulo: 'Contrato digital', desc: 'Assine e guarde o contrato gerado para a sua reserva.' },
+      ],
+      cta: 'Criar conta',
+    },
     footer: {
       desc: 'Plataforma digital de aluguer de veículos desenvolvida na Colômbia. Segura, eficiente e acessível.',
       cols: [
@@ -235,7 +327,7 @@ const traducciones = {
       vehiculos: 'Veículos', sucursales: 'Filiais', servicios: 'Serviços',
       tarifas: 'Tarifas', soporte: 'Suporte', login: 'Entrar',
       registro: 'Cadastrar', config: 'Configurações',
-      tema: 'Tema', claro: '☀️ Claro', oscuro: '🌙 Escuro', idioma: 'Idioma',
+      tema: 'Tema', claro: 'Claro', oscuro: 'Escuro', idioma: 'Idioma',
     },
     hero: {
       badge: 'Disponível na Colômbia 🇨🇴',
@@ -244,7 +336,7 @@ const traducciones = {
       cta1: 'Começar agora', cta2: 'Entrar',
       stat1: 'Veículos', stat2: 'Suporte', stat3: 'Digital',
       cardTitle: 'Disponíveis agora', cardOnline: 'Online', verFlota: 'Ver toda a frota',
-      perDay: '/dia',
+      perDay: '/dia', passengers: 'passageiros', previousVehicle: 'Veículo anterior', nextVehicle: 'Veículo seguinte',
     },
     como: {
       label: 'Processo simples', titulo: 'Como funciona?',
@@ -272,6 +364,27 @@ const traducciones = {
       titulo: 'Pronto para dirigir sem complicações?',
       sub: 'Junte-se a centenas de motoristas que já confiam na Drivique.',
       btn1: 'Criar conta grátis', btn2: 'Já tenho conta',
+    },
+    app: {
+      label: 'Experiência mobile',
+      titulo: 'Você também pode gerenciar sua atividade pelo App Drivique',
+      sub: 'Consulte reservas, pagamentos, contratos e notificações em uma interface pensada para celular.',
+      cta: 'Entrar na minha conta',
+      previewTitle: 'Resumo da viagem',
+      status: 'Contrato pronto',
+      items: ['Reserva ativa', 'Pagamento confirmado', 'Contrato digital'],
+    },
+    requirements: {
+      label: 'Antes de reservar',
+      titulo: 'Requisitos para aluguel',
+      sub: 'Tenha estes dados prontos para validar sua conta, assinar o contrato e retirar o veiculo sem atrasos.',
+      items: [
+        { titulo: 'Documento valido', desc: 'Documento de identidade cadastrado no seu perfil.' },
+        { titulo: 'Carteira de motorista', desc: 'Arquivo da carteira legivel enviado para verificacao.' },
+        { titulo: 'Forma de pagamento', desc: 'Pagamento online ou ponto de dinheiro autorizado conforme a filial.' },
+        { titulo: 'Contrato digital', desc: 'Assine e mantenha o contrato gerado para sua reserva.' },
+      ],
+      cta: 'Criar conta',
     },
     footer: {
       desc: 'Plataforma digital de aluguel de veículos desenvolvida na Colômbia. Segura, eficiente e acessível.',
