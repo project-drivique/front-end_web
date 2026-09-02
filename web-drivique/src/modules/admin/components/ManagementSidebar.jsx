@@ -42,6 +42,22 @@ const MODULE_ICONS = {
   audit: FaShieldAlt,
 }
 
+const NAV_LABELS = {
+  dashboard: 'Panel de Control',
+  vehicles: 'Flota y Vehículos',
+  users: 'Usuarios',
+  roles: 'Roles y Permisos',
+  reservations: 'Reservas',
+  contracts: 'Contratos',
+  incidents: 'Incidencias',
+  cities: 'Ciudades',
+  branches: 'Sucursales',
+  promotions: 'Promociones',
+  brand: 'Marca',
+  reports: 'Reportes',
+  audit: 'Auditoría',
+}
+
 export default function ManagementSidebar({ branchOnly = false }) {
   const [isOpen, setIsOpen] = useState(false)
   const { t } = useTranslation()
@@ -97,6 +113,7 @@ export default function ManagementSidebar({ branchOnly = false }) {
       <nav className="management-nav" aria-label={t('admin.navigation', 'Navegación')}>
         {navigation.map(({ key, route }) => {
           const Icon = MODULE_ICONS[key] || FaChartPie
+          const labelFallback = NAV_LABELS[key] || key
           return (
             <NavLink
               key={key}
@@ -105,7 +122,7 @@ export default function ManagementSidebar({ branchOnly = false }) {
               className={({ isActive }) => `management-nav__item ${isActive ? 'is-active' : ''}`}
             >
               <Icon aria-hidden="true" />
-              <span>{t(key === 'cities' ? 'admin.cities.title' : key === 'contracts' ? 'admin.nav.contracts' : key === 'incidents' ? 'admin.incidents.title' : key === 'promotions' ? 'admin.promotions.title' : key === 'brand' ? 'admin.brand.nav' : key === 'reports' ? 'admin.reports.nav' : `admin.${key}`, key === 'incidents' ? 'Incidencias' : key === 'reports' ? 'Reportes' : undefined)}</span>
+              <span>{t(`admin.nav.${key}`, labelFallback)}</span>
             </NavLink>
           )
         })}

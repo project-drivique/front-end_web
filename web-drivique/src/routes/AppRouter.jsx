@@ -29,6 +29,7 @@ import AdminRolesManagementPage from '../modules/admin/pages/AdminRolesManagemen
 import PromotionManagementPage from '../modules/admin/pages/PromotionManagementPage'
 import BrandManagementPage from '../modules/admin/pages/BrandManagementPage'
 import ReportsManagementPage from '../modules/admin/pages/ReportsManagementPage'
+import AuditLogManagementPage from '../modules/admin/pages/AuditLogManagementPage'
 import { getRoleHome, hasValidRoleAccess, ROLES } from '../modules/auth/utils/accessControl'
 import BranchesPage from '../modules/catalog/pages/BranchesPage'
 import ProfilePage from '../modules/profile/pages/ProfilePage'
@@ -113,7 +114,13 @@ function ContextualChatBot() {
     || pathname.startsWith('/admin/')
     || pathname === '/encargado'
     || pathname.startsWith('/encargado/')
-  return isManagementRoute ? null : <FloatingChatBot />
+  const isAuthRoute = pathname === '/login'
+    || pathname === '/registro'
+    || pathname === '/recuperar'
+    || pathname === '/nueva-contrasena'
+    || pathname.startsWith('/verificar-')
+
+  return (isManagementRoute || isAuthRoute) ? null : <FloatingChatBot />
 }
 
 export default function AppRouter() {
@@ -144,6 +151,7 @@ export default function AppRouter() {
         <Route path="/admin/promotions" element={<RutaPorRol roles={[ROLES.ADMIN]}><PromotionManagementPage /></RutaPorRol>} />
         <Route path="/admin/brand" element={<RutaPorRol roles={[ROLES.ADMIN]}><BrandManagementPage /></RutaPorRol>} />
         <Route path="/admin/reports" element={<RutaPorRol roles={[ROLES.ADMIN]}><ReportsManagementPage /></RutaPorRol>} />
+        <Route path="/admin/audit" element={<RutaPorRol roles={[ROLES.ADMIN]}><AuditLogManagementPage /></RutaPorRol>} />
         <Route path="/admin/:moduleKey" element={<RutaPorRol roles={[ROLES.ADMIN]}><ManagementModulePage /></RutaPorRol>} />
         <Route path="/encargado" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER]}><BranchManagerPage /></RutaPorRol>} />
         <Route path="/encargado/vehicles" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER]}><VehicleManagementPage /></RutaPorRol>} />
@@ -151,6 +159,7 @@ export default function AppRouter() {
         <Route path="/encargado/contracts" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER]}><ContractManagementPage /></RutaPorRol>} />
         <Route path="/encargado/incidents" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER]}><IncidentManagementPage /></RutaPorRol>} />
         <Route path="/encargado/reports" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER]}><ReportsManagementPage branchOnly={true} /></RutaPorRol>} />
+        <Route path="/encargado/audit" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER]}><AuditLogManagementPage branchOnly={true} /></RutaPorRol>} />
         <Route path="/encargado/:moduleKey" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER]}><ManagementModulePage /></RutaPorRol>} />
         <Route path="/perfil" element={<RutaPrivada><ProfilePage /></RutaPrivada>} />
         <Route path="/catalogo" element={<CatalogPage />} />

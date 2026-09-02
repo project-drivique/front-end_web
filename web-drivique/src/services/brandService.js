@@ -53,16 +53,21 @@ function auditSnapshot(config) {
 
 function audit(user, action, before, after) {
   accessAuditService.record({
+    tipo: 'SISTEMA_CONFIGURACION',
+    modulo: 'Personalización de Marca',
+    accion: `Actualización de configuración de marca (${action === 'aplicar' ? 'Aplicó cambios de paleta' : action})`,
+    actor: user?.nombre || user?.correo || 'Administrador Drivique',
     correo: user?.correo || '',
     rol: user?.rol || 'administrador',
+    sucursal: 'Global / Sistema',
     resultado: 'EXITO',
-    // No duplicar el logo base64 en auditoría: agotaría localStorage con pocos cambios.
-    motivo: JSON.stringify({
+    motivo: `Cambio de marca registrado por ${user?.correo || 'administrador'}`,
+    detalles: {
       modulo: 'marca',
       accion: action,
       anterior: auditSnapshot(before),
       nueva: auditSnapshot(after),
-    }),
+    },
   })
 }
 

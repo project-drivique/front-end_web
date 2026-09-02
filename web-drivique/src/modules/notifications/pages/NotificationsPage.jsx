@@ -44,10 +44,20 @@ export default function NotificationsPage() {
   } = useNotificationStore()
   const [renderTime] = useState(() => Date.now())
 
+  // Notificaciones válidas con contenido de texto
+  const notificacionesVisibles = useMemo(() => {
+    return (notificaciones || []).filter((n) => {
+      if (!n || typeof n !== 'object') return false
+      const tit = n.tituloKey ? t(n.tituloKey, n.tituloFallback || n.titulo || n.title || '') : (n.titulo || n.tituloFallback || n.title || '')
+      const msg = n.mensajeKey ? t(n.mensajeKey, n.mensajeFallback || n.mensaje || n.message || '') : (n.mensaje || n.mensajeFallback || n.message || '')
+      return Boolean((tit && tit.trim()) || (msg && msg.trim()))
+    })
+  }, [notificaciones, t])
+
   // Conteo no leídas pestaña generales
   const noLeidasGeneralesCount = useMemo(() => {
-    return notificaciones.filter((n) => !n.leida).length
-  }, [notificaciones])
+    return notificacionesVisibles.filter((n) => !n.leida).length
+  }, [notificacionesVisibles])
 
   // Conteo cupones sin aplicar pestaña promociones
   const sinAplicarCuponesCount = useMemo(() => {
@@ -161,7 +171,7 @@ export default function NotificationsPage() {
         {pestanaActiva === 'generales' && (
           <div>
             {/* Header de la pestaña: botón marcar todas leídas */}
-            {notificaciones.length > 0 && noLeidasGeneralesCount > 0 && (
+            {notificacionesVisibles.length > 0 && noLeidasGeneralesCount > 0 && (
               <div className="notif-generales-header-row">
                 <span></span>
                 <button className="btn-marcar-todas-leidas" onClick={marcarTodasLeidas}>
@@ -171,7 +181,7 @@ export default function NotificationsPage() {
             )}
 
             {/* Sin notificaciones */}
-            {notificaciones.length === 0 ? (
+            {notificacionesVisibles.length === 0 ? (
               <div className="notificaciones-vacio">
                 <FaInbox className="notificaciones-vacio-icon" />
                 <h3>{t('notificaciones.sinNotificacionesTitle', 'Sin notificaciones generales')}</h3>
@@ -179,29 +189,34 @@ export default function NotificationsPage() {
               </div>
             ) : (
               <div className="notificaciones-lista">
-                {notificaciones.map((n) => {
+                {notificacionesVisibles.map((n) => {
                   const chipVencimiento = calcularChipVencimiento(n.expiracionMs)
+                  const titulo = (n.tituloKey ? t(n.tituloKey, n.tituloFallback || n.titulo || n.title || '') : (n.titulo || n.tituloFallback || n.title || '')).trim()
+                  const mensaje = (n.mensajeKey ? t(n.mensajeKey, n.mensajeFallback || n.mensaje || n.message || '') : (n.mensaje || n.mensajeFallback || n.message || '')).trim()
+
                   return (
                     <div
-                      key={n.id}
+                      key={n.id || Math.random()}
                       className={`notificacion-card-item ${!n.leida ? 'no-leida' : ''}`}
-                      onClick={() => marcarLeida(n.id)}
+                      onClick={() => n.id && marcarLeida(n.id)}
                     >
                       <div className="notif-icono-wrap">{renderIconoNotif(n.tipo)}</div>
 
                       <div className="notif-contenido">
                         <div className="notif-top-row">
                           <h3 className="notif-titulo">
-                            {t(n.tituloKey, n.tituloFallback)}
+                            {titulo || t('notificaciones.title', 'Notificación')}
                           </h3>
                           {!n.leida && <span className="notif-punto-no-leida" />}
                         </div>
 
-                        <div className="notif-fecha-row">
-                          <span>{formatearFechaHora(n.fechaIso)}</span>
-                        </div>
+                        {n.fechaIso && (
+                          <div className="notif-fecha-row">
+                            <span>{formatearFechaHora(n.fechaIso)}</span>
+                          </div>
+                        )}
 
-                        <p className="notif-mensaje">{t(n.mensajeKey, n.mensajeFallback)}</p>
+                        {mensaje && <p className="notif-mensaje">{mensaje}</p>}
 
                         {chipVencimiento}
                       </div>
@@ -242,7 +257,18 @@ export default function NotificationsPage() {
                       <div>
                         <div className="cupon-top-info">
                           <FaTicketAlt color="var(--brand-text)" size={16} />
-                          <h3 className="cupon-logro-titulo">{cup.titulo}</h3>
+                          <div>
+                            <h3 className="cupon-logro-titulo">{cup.titulo}</h3>
+                            {cup.vehiculoNombre ? (
+                              <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--brand-primary, #2563eb)', display: 'block', marginTop: '2px' }}>
+                                🚗 Válido para: {cup.vehiculoNombre}
+                              </span>
+                            ) : cup.categoriaVehiculo && cup.categoriaVehiculo !== 'Todos' ? (
+                              <span style={{ fontSize: '11px', fontWeight: 700, color: '#059669', display: 'block', marginTop: '2px' }}>
+                                🏷️ Categoría: {cup.categoriaVehiculo}
+                              </span>
+                            ) : null}
+                          </div>
                         </div>
 
                         {/* Thumbnails del catálogo real */}
@@ -261,12 +287,10 @@ export default function NotificationsPage() {
                       </div>
 
                       <div className="cupon-footer-meta">
-                        {cup.porAgotarse && (
-                          <span className="badge-por-agotarse">
-                            {t('notificaciones.porAgotarse', '¡Por agotarse!')}
-                          </span>
-                        )}
-                        <span className="cupon-fecha-otorgado">{cup.fechaOtorgado}</span>
+                        {calcularChipVencimiento(cup.expiracionMs)}
+                        <span className="cupon-fecha-otorgado">
+                          {t('notificaciones.validoHasta', 'Vence')}: {cup.fechaFin}
+                        </span>
                         <button
                           className="cupon-condiciones-link"
                           onClick={() => setCondicionesCuponModal(cup)}
@@ -319,28 +343,93 @@ export default function NotificationsPage() {
                 {promosVehiculos.map((promo) => {
                   const vehiculo = VEHICULOS_MOCK.find((v) => v.id === promo.vehiculoId)
                   const chipVencimiento = calcularChipVencimiento(promo.expiracionMs)
+                  const precioBase = vehiculo?.precio || 80000
+                  const pct = promo.descuentoPorcentaje || 15
+                  const precioRebajado = Math.round(precioBase * (1 - pct / 100))
 
                   return (
                     <div
                       key={promo.id}
                       className="promo-vehiculo-card"
-                      onClick={() => navigate(`/catalogo/${promo.vehiculoId}`)}
+                      onClick={() => navigate(`/catalogo/${promo.vehiculoId}?descuento=${pct}`)}
                     >
-                      <div className="promo-vehiculo-img-wrap">
+                      <div className="promo-vehiculo-img-wrap" style={{ position: 'relative' }}>
                         {vehiculo?.imagenes?.[0] ? (
                           <img src={vehiculo.imagenes[0]} alt={promo.titulo} />
                         ) : (
                           <FaCar style={{ fontSize: 40, color: '#94a3b8' }} />
                         )}
+                        <span
+                          style={{
+                            position: 'absolute',
+                            top: '8px',
+                            left: '8px',
+                            background: 'var(--brand-gradient, var(--brand-primary, #2563eb))',
+                            color: 'var(--brand-on-primary, #ffffff)',
+                            fontSize: '10px',
+                            fontWeight: 800,
+                            padding: '3px 8px',
+                            borderRadius: '6px',
+                            boxShadow: 'var(--brand-shadow, 0 2px 8px rgba(0,0,0,0.25))',
+                            zIndex: 2,
+                            letterSpacing: '0.02em',
+                          }}
+                        >
+                          🔥 -{pct}%
+                        </span>
                       </div>
 
                       <div className="promo-vehiculo-content">
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', marginBottom: '6px' }}>
+                          <span style={{ fontSize: '10px', fontWeight: 800, color: '#059669', background: '#ecfdf5', padding: '2px 8px', borderRadius: '20px', border: '1px solid #c8efd9' }}>
+                            {vehiculo?.categoria || 'Destacado'}
+                          </span>
+                        </div>
+
                         <h4 className="promo-vehiculo-titulo">{promo.titulo}</h4>
+
+                        <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', margin: '6px 0 10px', flexWrap: 'wrap' }}>
+                          <span style={{ fontSize: '12px', color: '#94a3b8', textDecoration: 'line-through', fontWeight: 600 }}>
+                            {formatCurrency(precioBase, moneda)}
+                          </span>
+                          <span style={{ fontSize: '18px', fontWeight: 900, color: '#059669' }}>
+                            {formatCurrency(precioRebajado, moneda)}
+                          </span>
+                          <span style={{ fontSize: '11px', color: '#64748b' }}>/día</span>
+                        </div>
 
                         <div className="promo-vehiculo-footer">
                           <span>{promo.fechaPublicacion}</span>
                           {chipVencimiento}
                         </div>
+
+                        <button
+                          type="button"
+                          className="btn-reservar-promo-destacada"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            navigate(`/catalogo/${promo.vehiculoId}?descuento=${pct}`)
+                          }}
+                          style={{
+                            marginTop: 12,
+                            width: '100%',
+                            padding: '10px 14px',
+                            borderRadius: 10,
+                            background: 'var(--brand-gradient, var(--brand-primary, #2563eb))',
+                            color: 'var(--brand-on-primary, #ffffff)',
+                            border: 'none',
+                            fontWeight: 800,
+                            fontSize: '13px',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: 6,
+                            boxShadow: 'var(--brand-shadow, 0 4px 12px rgba(0,0,0,0.15))',
+                          }}
+                        >
+                          <FaCar /> {t('catalogo.reserveNow', 'Reservar ahora')}
+                        </button>
                       </div>
                     </div>
                   )

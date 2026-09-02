@@ -29,6 +29,18 @@ export function useSupportStore() {
     guardarStorageReports(reportes)
   }, [reportes])
 
+  useEffect(() => {
+    const handleUpdate = () => {
+      setReportes(leerStorageReports())
+    }
+    window.addEventListener('drivique:incidents-updated', handleUpdate)
+    window.addEventListener('storage', handleUpdate)
+    return () => {
+      window.removeEventListener('drivique:incidents-updated', handleUpdate)
+      window.removeEventListener('storage', handleUpdate)
+    }
+  }, [])
+
   // Conteo de informes erróneos / reportes activos (no resueltos)
   const conteoReportesActivos = useMemo(() => {
     return reportes.filter((r) => r.estado !== 'resuelto').length
@@ -56,20 +68,31 @@ export function useSupportStore() {
       contactoEmail: formData.contactoEmail,
       tiempoEstimado: tiempoEst,
       estado: 'recibido',
+      origen: 'cliente',
       fechaIso: new Date().toISOString(),
       evidenciasCount: formData.evidenciasCount || 0,
       historial: [
         {
           estadoKey: 'recibido',
           titulo: 'Recibido',
-          descripcion: 'Reporte registrado en el sistema.',
+          descripcion: 'Reporte registrado en el sistema por el cliente.',
           hora: horaActual,
+          fecha: new Date().toISOString(),
           color: 'var(--brand-primary)',
         },
       ],
     }
 
-    setReportes((prev) => [nuevoReporte, ...prev])
+    setReportes((prev) => {
+      const nextList = [nuevoReporte, ...prev]
+      try {
+        localStorage.setItem(STORAGE_KEY_REPORTS, JSON.stringify(nextList))
+        window.dispatchEvent(new CustomEvent('drivique:incidents-updated', { detail: nextList }))
+      } catch (e) {
+        console.error(e)
+      }
+      return nextList
+    })
 
     // Agrega notificación automática al almacén de notificaciones si existe
     try {

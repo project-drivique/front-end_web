@@ -33,11 +33,46 @@ function vencerReservasEfectivo(reservas) {
   return { actualizadas, cambiaron };
 }
 
+const hoyMs = Date.now()
+const fechaInicioAyer = new Date(hoyMs - 86400000).toISOString().slice(0, 10)
+const fechaFinEnTresDias = new Date(hoyMs + 86400000 * 3).toISOString().slice(0, 10)
+
+const INITIAL_RESERVATIONS_SEED = [
+  {
+    referencia: 'RES-2026-9102',
+    vehiculoId: 2,
+    total: 348000,
+    estado: 'ACTIVA',
+    fechaLimitePago: null,
+    horasLimitePago: null,
+    reservaDetalles: {
+      fechaInicio: fechaInicioAyer,
+      fechaFin: fechaFinEnTresDias,
+      horaInicio: '09:00',
+      horaFin: '18:00',
+      sucursalRetiro: 'Bogotá - Calle 100',
+      sucursalDevolucion: 'Bogotá - Calle 100',
+      metodoPago: 'tarjeta',
+    },
+    datosForm: {
+      nombres: 'Carlos',
+      apellidos: 'Mendoza',
+      correo: 'cliente@drivique.com',
+      telefono: '+57 314 478 9702',
+      numDoc: '1020304050',
+    },
+  },
+]
+
 export const reservationService = {
   getReservas: () => {
     try {
       const data = localStorage.getItem(STORAGE_KEY);
-      const reservas = data ? JSON.parse(data) : [];
+      let reservas = data ? JSON.parse(data) : [];
+      if (!Array.isArray(reservas) || reservas.length === 0) {
+        reservas = INITIAL_RESERVATIONS_SEED;
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(reservas));
+      }
       const { actualizadas, cambiaron } = vencerReservasEfectivo(reservas);
       if (cambiaron) {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(actualizadas));
@@ -45,7 +80,7 @@ export const reservationService = {
       return actualizadas;
     } catch (error) {
       console.error("Error leyendo reservas", error);
-      return [];
+      return INITIAL_RESERVATIONS_SEED;
     }
   },
 
