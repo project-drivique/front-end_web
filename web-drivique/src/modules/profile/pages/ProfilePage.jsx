@@ -243,6 +243,7 @@ export default function PerfilPage() {
 
             {/* Avatar en Círculo Blanco / Cristal */}
             <div
+              className="perfil-banner-avatar"
               style={{
                 width: 62,
                 height: 62,
@@ -280,6 +281,7 @@ export default function PerfilPage() {
                 </h1>
               )}
               <span
+                className="perfil-banner-user-tag"
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
@@ -304,12 +306,14 @@ export default function PerfilPage() {
 
             {!modoEdicion && (
               <button
+                type="button"
+                className="btn-editar-perfil-banner"
                 onClick={habilitarEdicion}
                 style={{
                   padding: '11px 24px',
                   borderRadius: '10px',
                   background: '#ffffff',
-                  color: 'var(--brand-secondary)',
+                  color: 'var(--brand-secondary, #1e3a8a)',
                   border: 'none',
                   fontWeight: 800,
                   fontSize: '13.5px',
@@ -330,10 +334,12 @@ export default function PerfilPage() {
                   e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.18)'
                 }}
               >
-                <FaEdit style={{ fontSize: '13px', color: 'var(--brand-secondary)' }} />
-                {esPerfilIncompleto
-                  ? t('perfil.completeProfileBtn', 'Completar perfil')
-                  : t('perfil.editProfileBtn', 'Editar perfil')}
+                <FaEdit style={{ fontSize: '13px', color: 'inherit' }} />
+                <span>
+                  {esPerfilIncompleto
+                    ? t('perfil.completeProfileBtn', 'Completar perfil')
+                    : t('perfil.editProfileBtn', 'Editar perfil')}
+                </span>
               </button>
             )}
           </div>

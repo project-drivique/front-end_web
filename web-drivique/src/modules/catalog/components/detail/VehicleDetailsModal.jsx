@@ -141,8 +141,8 @@ export default function VehicleDetailsModal({ vehiculo, visible, onCerrar, c }) 
           <RentalRequirements c={c} />
 
           {vehiculo.comentarios && vehiculo.comentarios.length > 0 && (
-            <div style={{ borderTop: `1px solid ${c?.cardBorder || 'var(--borde)'}`, paddingTop: 20 }}>
-              <ReviewsSection comentarios={vehiculo.comentarios} calificacion={vehiculo.calificacion} />
+            <div style={{ marginTop: 24 }}>
+              <ReviewsSection comentarios={vehiculo.comentarios} calificacion={vehiculo.calificacion} c={c} />
             </div>
           )}
         </div>

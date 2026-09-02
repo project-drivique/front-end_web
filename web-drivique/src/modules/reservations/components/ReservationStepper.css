@@ -1,0 +1,201 @@
+/* ==========================================================================
+   ReservationStepper.css — Responsive Stepper for Booking Flow
+   ========================================================================== */
+
+.res-stepper-container {
+  width: 100%;
+  margin-bottom: 24px;
+  position: relative;
+  border-bottom: 1px solid var(--borde, rgba(0, 0, 0, 0.08));
+}
+
+.res-stepper-container--dark {
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+.res-stepper-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  width: 100%;
+  align-items: stretch;
+}
+
+.res-stepper-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px 16px;
+  position: relative;
+  min-width: 0;
+  cursor: default;
+  user-select: none;
+  transition: all 0.2s ease;
+}
+
+/* Badge circular con número o icono */
+.res-stepper-badge {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 800;
+  transition: all 0.2s ease;
+}
+
+.res-stepper-badge--completed {
+  background: #10b981;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
+}
+
+.res-stepper-badge--active {
+  background: var(--brand-gradient);
+  color: var(--brand-on-primary, #ffffff);
+  box-shadow: var(--brand-shadow, 0 2px 10px rgba(var(--brand-primary-rgb, 37, 99, 235), 0.3));
+}
+
+.res-stepper-badge--pending {
+  background: rgba(148, 163, 184, 0.15);
+  color: #64748b;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+}
+
+.res-stepper-container--dark .res-stepper-badge--pending {
+  background: rgba(255, 255, 255, 0.06);
+  color: #94a3b8;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Textos del paso */
+.res-stepper-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  text-align: left;
+  overflow: hidden;
+}
+
+.res-stepper-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--texto-second, #64748b);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: -0.01em;
+}
+
+.res-stepper-item--active .res-stepper-title {
+  font-weight: 800;
+  color: var(--texto-primary, #0f172a);
+}
+
+.res-stepper-container--dark .res-stepper-item--active .res-stepper-title {
+  color: #f8fafc;
+}
+
+.res-stepper-item--completed .res-stepper-title {
+  font-weight: 700;
+  color: var(--texto-primary, #1e293b);
+}
+
+.res-stepper-container--dark .res-stepper-item--completed .res-stepper-title {
+  color: #e2e8f0;
+}
+
+.res-stepper-sub {
+  font-size: 11.5px;
+  font-weight: 400;
+  color: var(--texto-second, #64748b);
+  margin-top: 3px;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.res-stepper-container--dark .res-stepper-sub {
+  color: #94a3b8;
+}
+
+/* Barra inferior activa */
+.res-stepper-bar-active {
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--brand-primary);
+  border-radius: 3px 3px 0 0;
+  box-shadow: 0 0 10px rgba(var(--brand-primary-rgb, 37, 99, 235), 0.4);
+}
+
+/* ==========================================================================
+   Responsive Breakpoints
+   ========================================================================== */
+
+/* En tablets medianas (<= 820px): ocultar subtítulos largos */
+@media (max-width: 820px) {
+  .res-stepper-sub {
+    display: none !important;
+  }
+  .res-stepper-grid {
+    gap: 8px;
+  }
+  .res-stepper-item {
+    padding: 10px 8px 14px;
+    gap: 8px;
+    justify-content: center;
+  }
+  .res-stepper-title {
+    font-size: 12px;
+  }
+  .res-stepper-badge {
+    width: 24px;
+    height: 24px;
+    font-size: 11px;
+  }
+}
+
+/* En teléfonos móviles (<= 560px): formato compacto y 100% responsive */
+@media (max-width: 560px) {
+  .res-stepper-container {
+    margin-bottom: 16px;
+    padding-bottom: 2px;
+  }
+  .res-stepper-grid {
+    gap: 4px;
+  }
+  .res-stepper-item {
+    padding: 8px 4px 12px;
+    gap: 6px;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .res-stepper-text {
+    align-items: center;
+    text-align: center;
+  }
+  .res-stepper-title {
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .res-stepper-badge {
+    width: 22px;
+    height: 22px;
+    font-size: 10.5px;
+  }
+}
+
+@media (max-width: 380px) {
+  .res-stepper-title {
+    font-size: 10px;
+  }
+}

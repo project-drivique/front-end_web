@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useLanding } from '../../landing/LandingContext'
+import { useAuthStore } from '../../../store/authStore'
+import { promotionManagementService } from '../../../services/promotionManagementService'
 import { formatCurrency } from '@/utils/currencyUtils'
 
 import { FaHeart, FaRegHeart, FaCogs, FaGasPump, FaCar, FaStar, FaMapMarkerAlt, FaChevronRight, FaChevronLeft } from 'react-icons/fa'
@@ -124,7 +126,7 @@ export default function TarjetaVehiculo({
     navigate(`/catalogo/${vehiculo.id}`)
   }
 
-  const handleReservar = e => {
+  const handleReservar = (e) => {
     e.stopPropagation()
     if (!puedeReservar) return
     if (invitado) {
@@ -134,7 +136,7 @@ export default function TarjetaVehiculo({
     navigate(`/reservas/${vehiculo.id}`)
   }
 
-  const handleFavoritoClick = e => {
+  const handleFavoritoClick = (e) => {
     e.stopPropagation()
     if (invitado) {
       onGuestFavorito()
@@ -143,92 +145,100 @@ export default function TarjetaVehiculo({
     onFavorito()
   }
 
-  // FUNCIÓN: retrocede a la imagen anterior (con wrap-around: de la primera pasa a la última)
   const irImagenAnterior = (e) => {
     e.stopPropagation()
-    setFotoActiva(i => (i - 1 + totalImagenes) % totalImagenes)
+    setFotoActiva((prev) => (prev === 0 ? totalImagenes - 1 : prev - 1))
   }
 
-  // FUNCIÓN: avanza a la siguiente imagen (con wrap-around: de la última vuelve a la primera)
   const irImagenSiguiente = (e) => {
     e.stopPropagation()
-    setFotoActiva(i => (i + 1) % totalImagenes)
+    setFotoActiva((prev) => (prev === totalImagenes - 1 ? 0 : prev + 1))
   }
 
-  const estrellas = Array.from({ length: 5 }, (_, i) => i < Math.round(rating))
-  const imagenActual = imagenes[fotoActiva] || ''
+  const estrellas = Array.from({ length: 5 }, (_, i) => i < Math.floor(rating))
 
-  // ESTILO reutilizable para los botones flecha (< >) sobre la imagen
-  const botonFlechaStyle = (lado) => ({
+  const botonFlechaStyle = (posicion) => ({
     position: 'absolute',
     top: '50%',
-    [lado]: '6px',
+    [posicion]: '6px',
     transform: 'translateY(-50%)',
-    width: '22px',
-    height: '22px',
+    width: '24px',
+    height: '24px',
     borderRadius: '50%',
+    background: 'rgba(15,23,42,0.65)',
+    color: '#ffffff',
     border: 'none',
     cursor: 'pointer',
-    background: 'rgba(15,23,42,0.5)',
-    color: '#fff',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 0,
     zIndex: 2,
+    backdropFilter: 'blur(4px)',
   })
 
   return (
     <article
+      onClick={handleVerDetalles}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       style={{
         background: c.panelBg,
-        borderRadius: '14px',
+        borderRadius: '16px',
+        overflow: 'hidden',
         border: `1px solid ${hover ? c.cardBorderHover : c.cardBorder}`,
         boxShadow: hover ? c.cardShadowHover : c.cardShadow,
-        overflow: 'hidden',
-        transform: hover ? 'translateY(-2px)' : 'translateY(0)',
-        transition: 'all 180ms ease',
-        opacity: puedeReservar ? 1 : 0.72,
         display: 'flex',
         flexDirection: 'column',
-        width: '100%',
-        minWidth: 0,
+        cursor: 'pointer',
+        transition: 'all 0.22s ease',
+        transform: hover ? 'translateY(-3px)' : 'none',
+        position: 'relative',
+        boxSizing: 'border-box',
         height: '100%',
+        opacity: puedeReservar ? 1 : 0.72,
       }}
     >
-
-      {/* IMAGEN: altura reducida para que la tarjeta sea más compacta */}
-      {/* IMAGEN: un poco más alta para que no se vea amontonada al ser tarjetas más angostas */}
-      <div style={{ position: 'relative', height: '150px', background: c.imageFallbackBg, overflow: 'hidden', flexShrink: 0 }}>
-        {imagenActual ? (
-          <img
-            src={imagenActual}
-            alt={vehiculo.nombre}
-            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-          />
-        ) : (
-          <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <FaCar size={30} color={c.imageFallbackIcon} />
-          </div>
-        )}
+      <div
+        style={{
+          position: 'relative',
+          height: '140px',
+          background: c.imageFallbackBg || '#f1f5f9',
+          overflow: 'hidden',
+          flexShrink: 0,
+        }}
+      >
+        <img
+          src={imagenes[fotoActiva]}
+          alt={vehiculo.nombre}
+          loading="lazy"
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            display: 'block',
+            transition: 'transform 0.3s ease',
+            transform: hover ? 'scale(1.04)' : 'scale(1)',
+          }}
+        />
 
         <span
           style={{
             position: 'absolute',
-            top: '8px',
-            left: '8px',
-            fontSize: '9px',
-            fontWeight: 700,
-            padding: '4px 8px',
-            borderRadius: '999px',
+            top: '7px',
+            left: '7px',
             background: badgeBg,
             color: badgeColor,
             border: `1px solid ${badgeBorder}`,
+            fontSize: '9px',
+            fontWeight: 800,
+            padding: '2px 7px',
+            borderRadius: '999px',
+            letterSpacing: '0.02em',
+            zIndex: 2,
+            boxShadow: '0 2px 6px rgba(0,0,0,0.06)',
+            whiteSpace: 'nowrap',
           }}
         >
-          <span style={{ display: 'inline-block', width: '5px', height: '5px', borderRadius: '50%', background: badgeColor, marginRight: '4px' }} />
           {badgeTexto}
         </span>
 
@@ -249,39 +259,26 @@ export default function TarjetaVehiculo({
             alignItems: 'center',
             justifyContent: 'center',
             boxShadow: '0 3px 10px rgba(0,0,0,0.13)',
-            zIndex: 2,
+            zIndex: 3,
           }}
           aria-label={esFavorito ? 'Quitar de favoritos' : 'Agregar a favoritos'}
         >
           {esFavorito ? <FaHeart color="#ef4444" size={13} /> : <FaRegHeart color="#94a3b8" size={13} />}
         </button>
 
-        {/* NAVEGACIÓN DE IMÁGENES: flechas < > en vez de puntos, solo si hay más de 1 foto */}
         {totalImagenes > 1 && (
           <>
-            <button
-              type="button"
-              onClick={irImagenAnterior}
-              aria-label="Imagen anterior"
-              style={botonFlechaStyle('left')}
-            >
+            <button type="button" onClick={irImagenAnterior} aria-label="Imagen anterior" style={botonFlechaStyle('left')}>
               <FaChevronLeft size={10} />
             </button>
-            <button
-              type="button"
-              onClick={irImagenSiguiente}
-              aria-label="Imagen siguiente"
-              style={botonFlechaStyle('right')}
-            >
+            <button type="button" onClick={irImagenSiguiente} aria-label="Imagen siguiente" style={botonFlechaStyle('right')}>
               <FaChevronRight size={10} />
             </button>
           </>
         )}
       </div>
 
-      {/* CONTENIDO */}
       <div style={{ padding: '10px 12px 12px', display: 'flex', flexDirection: 'column', flex: 1 }}>
-
         <div style={{ display: 'flex', gap: '5px', alignItems: 'center', marginBottom: '7px', flexWrap: 'nowrap', minWidth: 0 }}>
           <span
             style={{
@@ -344,9 +341,7 @@ export default function TarjetaVehiculo({
             <FaCogs color={c.textMuted} size={11} />
             {TRANS_KEYS[vehiculo.transmision] ? t(TRANS_KEYS[vehiculo.transmision]) : vehiculo.transmision}
           </span>
-
           <span style={{ color: c.cardBorderHover, fontSize: '11px' }}>|</span>
-
           <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', color: c.textSecondary, fontWeight: 600 }}>
             <FaGasPump color={c.textMuted} size={11} />
             {FUEL_KEYS[vehiculo.combustible] ? t(FUEL_KEYS[vehiculo.combustible]) : vehiculo.combustible}
