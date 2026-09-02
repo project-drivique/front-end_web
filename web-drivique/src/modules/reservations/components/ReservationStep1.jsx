@@ -68,11 +68,10 @@ export default function ReservationStep1({ vehiculo, c, reserva, cambiarReserva,
       {/* Separador */}
       <hr style={{ border: 0, borderTop: `1px solid ${c.cardBorder}`, margin: '4px 0' }} />
 
-      {/* Grid inferior: configuración + resumen lateral */}
+      {/* Grid inferior: configuración + resumen lateral (en desktop a la derecha, en móvil oculto) */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-
-        {/* Configuración (2 columnas) */}
-        <div className="lg:col-span-2">
+        {/* Configuración (2 columnas en desktop, ancho completo en móvil) */}
+        <div className="lg:col-span-2 flex flex-col gap-4">
           <UnifiedReservationConfigCard
             vehiculo={vehiculo}
             reserva={reserva}
@@ -81,8 +80,8 @@ export default function ReservationStep1({ vehiculo, c, reserva, cambiarReserva,
           />
         </div>
 
-        {/* Resumen lateral (1 columna) — solo informativo en paso 1 */}
-        <div className="lg:col-span-1">
+        {/* Resumen lateral: SOLO VISIBLE EN DESKTOP (en móvil se usa el botón superior) */}
+        <div className="hidden lg:block lg:col-span-1">
           <SideSummary
             vehiculo={vehiculo}
             reserva={reserva}

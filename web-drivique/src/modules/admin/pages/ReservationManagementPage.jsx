@@ -539,6 +539,15 @@ export default function ReservationManagementPage() {
                 <h4>
                   <FaCar /> {t('admin.reservationsManagement.detailModal.vehicleAssociated')}
                 </h4>
+                {modalDetalle.vehiculoImagen && (
+                  <div style={{ marginBottom: 12 }}>
+                    <img
+                      src={modalDetalle.vehiculoImagen}
+                      alt={modalDetalle.vehiculoNombre}
+                      style={{ width: '100%', height: 110, objectFit: 'cover', borderRadius: 10, border: '1px solid var(--city-border)', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}
+                    />
+                  </div>
+                )}
                 <div className="reserva-detail-field">
                   <small>{t('admin.reservationsManagement.detailModal.model')}</small>
                   <strong>{modalDetalle.vehiculoNombre}</strong>

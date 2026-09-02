@@ -157,6 +157,15 @@ function ModalDetalle({ reserva, moneda, onClose }) {
       <h2 id="detalle-reserva-titulo">{t('reservas.reservationWithStatus', { status: estado.texto.toLowerCase() })}</h2>
       <p>{reserva.vehiculo?.nombre || t('reservas.vehicleUnavailable')}</p>
     </div>
+    {(reserva.vehiculo?.imagenes?.[0] || vehiculoOriginal?.imagenes?.[0]) && (
+      <div style={{ padding: '0 24px 12px', display: 'flex', justifyContent: 'center' }}>
+        <img
+          src={reserva.vehiculo?.imagenes?.[0] || vehiculoOriginal?.imagenes?.[0]}
+          alt={reserva.vehiculo?.nombre}
+          style={{ width: '100%', maxHeight: 160, objectFit: 'cover', borderRadius: 14, border: '1px solid var(--city-border, #e2e8f0)', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}
+        />
+      </div>
+    )}
     <div className="detalle-resumen-lista">
       <div className="detalle-resumen-fila"><span className="detalle-fila-icon"><FaCar /></span><span className="detalle-fila-label">{t('reservas.vehicle')}</span><strong>{reserva.vehiculo?.nombre || t('reservas.vehicleUnavailable')}</strong></div>
       <div className="detalle-resumen-fila"><span className="detalle-fila-icon"><FaCalendarAlt /></span><span className="detalle-fila-label">{t('reservas.pickupDate')}</span><strong>{fechaBonita(reserva.fechaInicio, i18n.resolvedLanguage)}</strong></div>

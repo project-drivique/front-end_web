@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useLogin } from '../hooks/useLogin'
 import { useSocialRegistration } from '../hooks/useSocialRegistration'
 import { useLanding } from '../../landing/LandingContext'
-import { FaExclamationTriangle, FaCheckCircle, FaEye, FaEyeSlash } from 'react-icons/fa'
+import { FaExclamationTriangle, FaCheckCircle, FaEye, FaEyeSlash, FaInfoCircle, FaTimes, FaArrowRight } from 'react-icons/fa'
 import { coloresLogin, loginTokens } from '../styles/loginStyles'
 import SpinnerButton from '../components/SpinnerButton'
 import LeftPanel from '../components/LeftPanel'
@@ -37,6 +37,7 @@ export default function LoginPage() {
   const esModoOscuro = tema === 'oscuro'
   const c = coloresLogin(esModoOscuro)
   const tok = loginTokens
+  const [modalWelcomeOpen, setModalWelcomeOpen] = useState(false)
 
   const BOTONES_SOCIALES = [
     { id: 'google',   label: t('login.googleBtn'),   labelCargando: t('login.connectingGoogle'),   Icono: IconoGoogle },
@@ -137,10 +138,51 @@ export default function LoginPage() {
       {/* ── Panel derecho (formulario) ── */}
       <div style={{ flex: 1, background: c.pageBg, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 24px' }} className="auth-contenedor">
 
-        {/* Botón volver */}
+        {/* Botón volver y botón de info móvil */}
         <div style={{ width: '100%', maxWidth: 400 }}>
           <AuthHeaderControls backTo="/" backLabelKey="common.backToHome" backLabelFallback="Volver al inicio" />
+
+          {/* Botón superior de información sobre Drivique en móviles */}
+          <div className="auth-mobile-welcome-trigger">
+            <button
+              type="button"
+              className="btn-auth-welcome-toggle"
+              onClick={() => setModalWelcomeOpen(true)}
+            >
+              <div className="btn-auth-welcome-left">
+                <span className="btn-auth-welcome-icon">
+                  <FaInfoCircle size={12} />
+                </span>
+                <span>{t('panel.welcomeTitle', 'Beneficios de tu cuenta')}</span>
+              </div>
+              <span className="btn-auth-welcome-badge">
+                {t('panel.viewInfo', 'Ver')} <FaArrowRight size={8} />
+              </span>
+            </button>
+          </div>
         </div>
+
+        {/* Modal de información para móvil */}
+        {modalWelcomeOpen && (
+          <div
+            className="auth-mobile-modal-backdrop"
+            onClick={() => setModalWelcomeOpen(false)}
+          >
+            <div
+              className="auth-mobile-modal-card"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                type="button"
+                className="auth-mobile-modal-close"
+                onClick={() => setModalWelcomeOpen(false)}
+              >
+                <FaTimes size={13} />
+              </button>
+              <LeftPanel isModal={true} />
+            </div>
+          </div>
+        )}
 
         {/* Card */}
         <div style={{ width: '100%', maxWidth: 400, background: c.cardBg, borderRadius: tok.borderRadius.card, boxShadow: c.cardShadow, border: `1px solid ${c.cardBorder}`, padding: 40 }} className="auth-card">

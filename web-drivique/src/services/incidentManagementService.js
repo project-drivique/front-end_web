@@ -34,12 +34,20 @@ function readIncidents() {
 
     const vehiclesList = vehicleManagementService.list()
     return list.map(r => {
-      if (r.sucursal) return { ...r }
+      const vBrand = (r.vehiculo || '').split(' ')[0].toLowerCase()
       const matchingVehicle = vehiclesList.find(
-          v => (v.placa && r.placa && v.placa.replace(/\s|-/g, '').toLowerCase() === r.placa.replace(/\s|-/g, '').toLowerCase()) || 
-               (v.nombre && r.vehiculo && v.nombre.toLowerCase().includes(r.vehiculo.toLowerCase()))
+          v => (v.id && r.vehiculoId && String(v.id) === String(r.vehiculoId)) ||
+               (v.placa && r.placa && v.placa.replace(/\s|-/g, '').toLowerCase() === r.placa.replace(/\s|-/g, '').toLowerCase()) || 
+               (v.nombre && r.vehiculo && v.nombre.toLowerCase().includes(r.vehiculo.toLowerCase())) ||
+               (r.vehiculo && v.nombre && r.vehiculo.toLowerCase().includes(v.nombre.toLowerCase())) ||
+               (vBrand && v.nombre && v.nombre.toLowerCase().includes(vBrand))
         )
-      return { ...r, sucursal: matchingVehicle?.sucursal || '' }
+      const fallbackImg = vehiclesList[0]?.imagenes?.[0] || 'https://pplx-res.cloudinary.com/image/upload/pplx_search_images/a2cb0b378c25efdb1e116246f84149744c2f4081.jpg'
+      return {
+        ...r,
+        sucursal: r.sucursal || matchingVehicle?.sucursal || '',
+        vehiculoImagen: r.vehiculoImagen || matchingVehicle?.imagenes?.[0] || matchingVehicle?.imagen || fallbackImg
+      }
     });
   } catch {
     return []

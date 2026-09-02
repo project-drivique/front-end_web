@@ -114,7 +114,13 @@ function ContextualChatBot() {
     || pathname.startsWith('/admin/')
     || pathname === '/encargado'
     || pathname.startsWith('/encargado/')
-  return isManagementRoute ? null : <FloatingChatBot />
+  const isAuthRoute = pathname === '/login'
+    || pathname === '/registro'
+    || pathname === '/recuperar'
+    || pathname === '/nueva-contrasena'
+    || pathname.startsWith('/verificar-')
+
+  return (isManagementRoute || isAuthRoute) ? null : <FloatingChatBot />
 }
 
 export default function AppRouter() {
