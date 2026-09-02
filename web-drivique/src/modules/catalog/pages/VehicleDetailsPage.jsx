@@ -209,9 +209,9 @@ export default function VehicleDetailsPage() {
 
           </div>
 
-          {/* Reseñas (separado por línea) */}
-          <div className="detalle-resenas-wrapper" style={{ borderTop: '1px solid var(--borde)', marginTop: 40, paddingTop: 40 }}>
-            <ReviewsSection comentarios={vehiculo.comentarios} calificacion={vehiculo.calificacion} />
+          {/* Reseñas */}
+          <div className="detalle-resenas-wrapper" style={{ marginTop: 32 }}>
+            <ReviewsSection comentarios={vehiculo.comentarios} calificacion={vehiculo.calificacion} c={c} />
           </div>
 
         </div>

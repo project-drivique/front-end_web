@@ -59,6 +59,12 @@ function cleanData(data, promotions, editingId) {
   if (tipoDescuento === 'porcentaje' && (valorDescuento <= 0 || valorDescuento > 100)) throw new Error('invalidPercentage')
   if (tipoDescuento === 'fijo' && valorDescuento <= 0) throw new Error('invalidValue')
 
+  let vehiculoImagen = data.vehiculoImagen || ''
+  if (!vehiculoImagen && (vehiculoId || vehiculoNombre)) {
+    const matched = VEHICULOS_MOCK.find((v) => (vehiculoId && Number(v.id) === Number(vehiculoId)) || (vehiculoNombre && v.nombre === vehiculoNombre))
+    vehiculoImagen = matched?.imagenes?.[0] || matched?.imagen || ''
+  }
+
   return {
     codigo,
     nombre,
@@ -70,6 +76,7 @@ function cleanData(data, promotions, editingId) {
     categoriaVehiculo,
     vehiculoId,
     vehiculoNombre,
+    vehiculoImagen,
     audiencia,
     condiciones,
   }
@@ -87,7 +94,14 @@ export const promotionManagementService = {
   eventName: PUBLICATION_EVENT,
 
   list() {
-    return readJson(STORAGE_KEY, initialPromotions).map((item) => ({ ...item }))
+    return readJson(STORAGE_KEY, initialPromotions).map((item) => {
+      let vehiculoImagen = item.vehiculoImagen || ''
+      if (!vehiculoImagen && (item.vehiculoId || item.vehiculoNombre)) {
+        const matched = VEHICULOS_MOCK.find((v) => (item.vehiculoId && Number(v.id) === Number(item.vehiculoId)) || (item.vehiculoNombre && v.nombre === item.vehiculoNombre))
+        vehiculoImagen = matched?.imagenes?.[0] || matched?.imagen || ''
+      }
+      return { ...item, vehiculoImagen }
+    })
   },
 
   create(data, user) {

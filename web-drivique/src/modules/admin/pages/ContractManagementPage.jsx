@@ -24,6 +24,7 @@ import {
   printTable,
 } from "../../../utils/listExportUtils";
 import { formatCurrency } from "../../../utils/currencyUtils";
+import VEHICULOS_MOCK from "../../../mocks/vehicles.json";
 import MenuConfiguracion from "../../../components/MenuConfiguracion";
 import ManagementSidebar from "../components/ManagementSidebar";
 import "./CityManagementPage.css";
@@ -49,6 +50,21 @@ export default function ContractManagementPage() {
 
   const [modalDetalle, setModalDetalle] = useState(null);
   const [notice, setNotice] = useState("");
+
+  const getVehiculoImagen = (c) => {
+    if (!c) return "";
+    if (c.vehiculoImagen) return c.vehiculoImagen;
+    const vBrand = (c.vehiculoNombre || "").split(" ")[0].toLowerCase();
+    const match = VEHICULOS_MOCK.find(
+      (v) =>
+        (v.id && c.vehiculoId && String(v.id) === String(c.vehiculoId)) ||
+        (v.placa && c.vehiculoPlaca && v.placa.replace(/\s|-/g, "").toLowerCase() === c.vehiculoPlaca.replace(/\s|-/g, "").toLowerCase()) ||
+        (v.nombre && c.vehiculoNombre && v.nombre.toLowerCase().includes(c.vehiculoNombre.toLowerCase())) ||
+        (c.vehiculoNombre && v.nombre && c.vehiculoNombre.toLowerCase().includes(v.nombre.toLowerCase())) ||
+        (vBrand && v.nombre && v.nombre.toLowerCase().includes(vBrand))
+    );
+    return match?.imagenes?.[0] || match?.imagen || VEHICULOS_MOCK[0]?.imagenes?.[0] || "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/a2cb0b378c25efdb1e116246f84149744c2f4081.jpg";
+  };
 
   useEffect(() => {
     setContratos(contractManagementService.list(user));
@@ -281,9 +297,31 @@ export default function ContractManagementPage() {
                       </td>
                       <td>{c.clienteDocumento || '1030507090'}</td>
                       <td>
-                        <div className="contracts-cell-with-icon">
-                          <FaCar style={{ color: "var(--city-text-muted)" }} />
-                          <span>{c.vehiculoPlaca || 'KLS-849'}</span>
+                        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                          <img
+                            src={getVehiculoImagen(c)}
+                            alt={c.vehiculoNombre || "Vehículo"}
+                            style={{
+                              width: 48,
+                              height: 34,
+                              borderRadius: 8,
+                              objectFit: "cover",
+                              border: "1px solid var(--city-border, #cbd5e1)",
+                              boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
+                              flexShrink: 0,
+                            }}
+                            onError={(e) => {
+                              e.currentTarget.onerror = null;
+                              e.currentTarget.src =
+                                "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/a2cb0b378c25efdb1e116246f84149744c2f4081.jpg";
+                            }}
+                          />
+                          <div>
+                            <strong style={{ display: "block", fontSize: 13, color: "var(--city-text)" }}>
+                              {c.vehiculoNombre || "Vehículo Drivique"}
+                            </strong>
+                            <small style={{ color: "#64748b", fontWeight: 600 }}>{c.vehiculoPlaca || "KLS-849"}</small>
+                          </div>
                         </div>
                       </td>
                       <td>{c.fechaInicio ? c.fechaInicio.replace("T", " ") : new Date().toISOString().slice(0, 10)}</td>
@@ -478,25 +516,47 @@ export default function ContractManagementPage() {
                   </div>
                 </div>
 
-                <div className="incident-field">
+                <div className="incident-field" style={{ gridColumn: "span 2" }}>
                   <span className="incident-field-label">
-                    {t("admin.contractsPage.fields.vehicle", "Vehículo")}
+                    {t("admin.contractsPage.fields.vehicle", "Vehículo Asociado")}
                   </span>
                   <div
                     style={{
-                      padding: "10px 14px",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 14,
+                      padding: "12px 16px",
                       background: "var(--city-bg)",
-                      borderRadius: 8,
+                      borderRadius: 12,
                       border: "1px solid var(--city-border)",
                     }}
                   >
-                    <FaCar
+                    <img
+                      src={getVehiculoImagen(modalDetalle)}
+                      alt={modalDetalle.vehiculoNombre || "Vehículo"}
                       style={{
-                        marginRight: 8,
-                        color: "var(--city-text-muted)",
+                        width: 72,
+                        height: 48,
+                        objectFit: "cover",
+                        borderRadius: 8,
+                        border: "1px solid #cbd5e1",
+                        flexShrink: 0,
+                        boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+                      }}
+                      onError={(e) => {
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src =
+                          "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/a2cb0b378c25efdb1e116246f84149744c2f4081.jpg";
                       }}
                     />
-                    {modalDetalle.vehiculoNombre} ({modalDetalle.vehiculoPlaca})
+                    <div>
+                      <strong style={{ display: "block", fontSize: 14, color: "var(--city-text)" }}>
+                        {modalDetalle.vehiculoNombre}
+                      </strong>
+                      <span style={{ fontSize: 12, color: "#64748b", fontWeight: 600 }}>
+                        Placa: <strong style={{ color: "var(--brand-text)" }}>{modalDetalle.vehiculoPlaca}</strong> • {modalDetalle.sucursal}
+                      </span>
+                    </div>
                   </div>
                 </div>
                 <div className="incident-field">

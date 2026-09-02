@@ -240,10 +240,33 @@ export default function PromotionManagementPage() {
                           <small className="promotion-condition">{item.condiciones}</small>
                         </td>
                         <td>
-                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontWeight: 700, fontSize: '12px', color: item.vehiculoNombre ? 'var(--brand-primary)' : 'inherit' }}>
-                            {item.vehiculoNombre ? <FaCar /> : null}
-                            {labelTarget(item)}
-                          </span>
+                          {item.vehiculoId || item.vehiculoNombre ? (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                              {item.vehiculoImagen || VEHICULOS_MOCK.find(v => (item.vehiculoId && Number(v.id) === Number(item.vehiculoId)) || (item.vehiculoNombre && v.nombre === item.vehiculoNombre))?.imagenes?.[0] ? (
+                                <img
+                                  src={item.vehiculoImagen || VEHICULOS_MOCK.find(v => (item.vehiculoId && Number(v.id) === Number(item.vehiculoId)) || (item.vehiculoNombre && v.nombre === item.vehiculoNombre))?.imagenes?.[0]}
+                                  alt={labelTarget(item)}
+                                  style={{ width: 46, height: 32, borderRadius: 8, objectFit: 'cover', border: '1px solid var(--city-border, #cbd5e1)', flexShrink: 0 }}
+                                  onError={(e) => { e.currentTarget.style.display = 'none' }}
+                                />
+                              ) : (
+                                <span style={{ width: 46, height: 32, borderRadius: 8, background: 'rgba(var(--brand-primary-rgb),0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--brand-primary)', flexShrink: 0 }}>
+                                  <FaCar size={15} />
+                                </span>
+                              )}
+                              <div>
+                                <strong style={{ display: 'block', fontSize: 13, color: 'var(--city-text)' }}>{labelTarget(item)}</strong>
+                                <small style={{ color: 'var(--city-muted, #64748b)', fontSize: 11 }}>Vehículo específico</small>
+                              </div>
+                            </div>
+                          ) : (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                              <span style={{ width: 34, height: 26, borderRadius: 6, background: 'rgba(var(--brand-primary-rgb),0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--brand-primary)', flexShrink: 0 }}>
+                                <FaCar size={13} />
+                              </span>
+                              <span style={{ fontWeight: 600, fontSize: 12, color: 'var(--city-text)' }}>{labelTarget(item)}</span>
+                            </div>
+                          )}
                         </td>
                         <td>
                           <span className="promotion-discount">{labelDiscount(item)}</span>
@@ -390,6 +413,20 @@ export default function PromotionManagementPage() {
                         ))}
                       </select>
                     </label>
+                    {form.vehiculoId && (() => {
+                      const selectedV = VEHICULOS_MOCK.find((v) => Number(v.id) === Number(form.vehiculoId))
+                      const imgUrl = selectedV?.imagenes?.[0]
+                      if (!imgUrl) return null
+                      return (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 14px', background: 'var(--city-soft, rgba(0,0,0,0.03))', borderRadius: 12, border: '1px solid var(--city-border, #e2e8f0)', marginTop: -6, marginBottom: 6 }}>
+                          <img src={imgUrl} alt={selectedV.nombre} style={{ width: 64, height: 42, borderRadius: 8, objectFit: 'cover', border: '1px solid #cbd5e1' }} />
+                          <div>
+                            <strong style={{ display: 'block', fontSize: 13 }}>{selectedV.nombre}</strong>
+                            <small style={{ color: 'var(--city-muted, #64748b)', fontSize: 11 }}>{selectedV.categoria} • {selectedV.placa}</small>
+                          </div>
+                        </div>
+                      )
+                    })()}
                     <label>
                       {t('admin.promotions.fields.start')}
                       <input

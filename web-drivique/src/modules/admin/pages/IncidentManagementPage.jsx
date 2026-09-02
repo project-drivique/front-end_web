@@ -92,6 +92,21 @@ export default function IncidentManagementPage() {
     setIncidents(incidentManagementService.listForUser(user))
   }, [user])
 
+  const getVehiculoImagen = (r) => {
+    if (!r) return ''
+    if (r.vehiculoImagen) return r.vehiculoImagen
+    const vBrand = (r.vehiculo || '').split(' ')[0].toLowerCase()
+    const match = vehiculos.find(
+      (v) =>
+        (v.id && r.vehiculoId && String(v.id) === String(r.vehiculoId)) ||
+        (v.placa && r.placa && v.placa.replace(/\s|-/g, '').toLowerCase() === r.placa.replace(/\s|-/g, '').toLowerCase()) ||
+        (v.nombre && r.vehiculo && v.nombre.toLowerCase().includes(r.vehiculo.toLowerCase())) ||
+        (r.vehiculo && v.nombre && r.vehiculo.toLowerCase().includes(v.nombre.toLowerCase())) ||
+        (vBrand && v.nombre && v.nombre.toLowerCase().includes(vBrand))
+    )
+    return match?.imagenes?.[0] || match?.imagen || vehiculos[0]?.imagenes?.[0] || 'https://pplx-res.cloudinary.com/image/upload/pplx_search_images/a2cb0b378c25efdb1e116246f84149744c2f4081.jpg'
+  }
+
   // Filtrado dinámico
   const filtrados = useMemo(() => {
     const term = search.trim().toLowerCase()
@@ -367,17 +382,19 @@ export default function IncidentManagementPage() {
                         </td>
 
                         <td>
-                          <div className="fleet-vehicle">
-                            {r.vehiculoImagen ? (
-                              <img src={r.vehiculoImagen} alt="" style={{ width: 44, height: 32, borderRadius: 8 }} />
-                            ) : (
-                              <span>
-                                <FaCar />
-                              </span>
-                            )}
+                          <div className="fleet-vehicle" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                            <img
+                              src={getVehiculoImagen(r)}
+                              alt={r.vehiculo}
+                              style={{ width: 52, height: 36, borderRadius: 8, objectFit: 'cover', border: '1px solid var(--city-border, #cbd5e1)', boxShadow: '0 2px 6px rgba(0,0,0,0.08)', flexShrink: 0 }}
+                              onError={(e) => {
+                                e.currentTarget.onerror = null
+                                e.currentTarget.src = 'https://pplx-res.cloudinary.com/image/upload/pplx_search_images/a2cb0b378c25efdb1e116246f84149744c2f4081.jpg'
+                              }}
+                            />
                             <div>
-                              <strong>{r.vehiculo}</strong>
-                              <small>{r.placa}</small>
+                              <strong style={{ display: 'block', fontSize: 13, color: 'var(--city-text)' }}>{r.vehiculo}</strong>
+                              <small style={{ color: '#64748b', fontWeight: 600 }}>{r.placa}</small>
                             </div>
                           </div>
                         </td>
@@ -482,6 +499,23 @@ export default function IncidentManagementPage() {
                 <button type="button" onClick={() => setModalDetalle(null)}>
                   ×
                 </button>
+              </div>
+
+              {/* Banner de Vehículo con Imagen */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 14, margin: '14px 0', padding: '12px 16px', background: 'var(--city-soft)', borderRadius: 14, border: '1px solid var(--city-border)' }}>
+                <img
+                  src={getVehiculoImagen(modalDetalle)}
+                  alt={modalDetalle.vehiculo}
+                  style={{ width: 76, height: 50, objectFit: 'cover', borderRadius: 10, border: '1px solid #cbd5e1', flexShrink: 0, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}
+                  onError={(e) => {
+                    e.currentTarget.onerror = null
+                    e.currentTarget.src = 'https://pplx-res.cloudinary.com/image/upload/pplx_search_images/a2cb0b378c25efdb1e116246f84149744c2f4081.jpg'
+                  }}
+                />
+                <div>
+                  <h3 style={{ margin: '0 0 3px', fontSize: 16, fontWeight: 800, color: 'var(--city-text)' }}>{modalDetalle.vehiculo}</h3>
+                  <span style={{ fontSize: 13, color: '#64748b', fontWeight: 600 }}>Placa: <strong style={{ color: 'var(--brand-text)' }}>{modalDetalle.placa}</strong> • {modalDetalle.sucursal}</span>
+                </div>
               </div>
 
               <div className="incident-grid-2" style={{ margin: '18px 0' }}>

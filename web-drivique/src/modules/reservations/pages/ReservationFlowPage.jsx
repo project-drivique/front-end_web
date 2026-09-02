@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { FaMoneyBillWave, FaCreditCard, FaArrowLeft, FaTimes } from 'react-icons/fa'
+import { FaMoneyBillWave, FaCreditCard, FaArrowLeft, FaTimes, FaClipboardList, FaArrowRight } from 'react-icons/fa'
 import logo from '@/assets/logo.png'
 import { useBrand } from '@/contexts/BrandContext'
 import { formatCurrency } from '@/utils/currencyUtils'
@@ -207,36 +207,38 @@ export default function ReservationFlowPage() {
 
           <ReservationStepper pantalla={pantalla} setPantalla={setPantalla} esModoOscuro={esModoOscuro} />
 
-          {/* Botón superior de resumen de reserva para celulares/pantallas móviles */}
-          {pantalla > 1 && (
-            <div className="resumen-movil-bar-trigger">
-              <button
-                type="button"
-                className="btn-resumen-movil-toggle"
-                onClick={() => setModalResumenMovil(true)}
-              >
-                <div className="resumen-movil-toggle-left">
-                  <span className="resumen-movil-toggle-icon">📋</span>
-                  <div style={{ textAlign: 'left' }}>
-                    <span className="resumen-movil-toggle-title">
-                      {t('reservas.viewSummary', 'Ver resumen de reserva')}
-                    </span>
-                    <span className="resumen-movil-toggle-sub">
-                      {vehiculo.nombre}
-                    </span>
-                  </div>
+          {/* Botón superior de resumen de reserva: siempre visible arriba en móvil */}
+          <div className="resumen-movil-bar-trigger">
+            <button
+              type="button"
+              className="btn-resumen-movil-toggle"
+              onClick={() => setModalResumenMovil(true)}
+            >
+              <div className="resumen-movil-toggle-left">
+                <div className="resumen-movil-icon-wrapper">
+                  <FaClipboardList size={16} />
                 </div>
-                <div className="resumen-movil-toggle-right">
-                  <strong className="resumen-movil-toggle-price">
-                    {formatCurrency(totalReserva, moneda)}
-                  </strong>
-                  <span className="resumen-movil-toggle-badge">
-                    {t('reservas.openSummary', 'Ver detalle ↗')}
+                <div style={{ textAlign: 'left' }}>
+                  <span className="resumen-movil-toggle-title">
+                    {t('reservas.viewSummary', 'Resumen de reserva')}
+                  </span>
+                  <span className="resumen-movil-toggle-sub">
+                    {vehiculo.nombre} {reserva.fechaInicio ? `· ${reserva.fechaInicio} al ${reserva.fechaFin || ''}` : ''}
                   </span>
                 </div>
-              </button>
-            </div>
-          )}
+              </div>
+              <div className="resumen-movil-toggle-right">
+                <strong className="resumen-movil-toggle-price">
+                  {formatCurrency(totalReserva, moneda)}
+                </strong>
+                <span className="resumen-movil-toggle-badge">
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                    {t('reservas.openSummary', 'Ver resumen')} <FaArrowRight size={8} />
+                  </span>
+                </span>
+              </div>
+            </button>
+          </div>
 
           <div className="detalle-layout" style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: 32, alignItems: 'flex-start' }}>
             <div className="detalle-columna-principal" style={{ flex: 1, minWidth: 0 }}>
@@ -384,8 +386,10 @@ export default function ReservationFlowPage() {
                 onClick={(e) => e.stopPropagation()}
               >
                 <div className="modal-resumen-movil-header">
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <span style={{ fontSize: 20 }}>📋</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <div className="resumen-movil-icon-wrapper">
+                      <FaClipboardList size={16} />
+                    </div>
                     <h3 style={{ margin: 0, fontSize: 17, fontWeight: 900, color: c.textPrimary }}>
                       {t('reservas.summaryTitle', 'Resumen de tu Reserva')}
                     </h3>

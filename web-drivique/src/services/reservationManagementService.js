@@ -1,4 +1,5 @@
 import { accessAuditService } from './accessAuditService'
+import initialVehicles from '../mocks/vehicles.json'
 
 const STORAGE_KEY = 'drivique_reservas'
 const STORAGE_SCHEMA_KEY = 'drivique_reservas_schema'
@@ -83,6 +84,18 @@ function normalizarReserva(r) {
   if (estadoNorm === 'activa') estadoNorm = 'en_curso'
   if (estadoNorm === 'pendiente_efectivo') estadoNorm = 'pendiente'
 
+  const vId = String(r.vehiculoId || '')
+  const vNom = r.vehiculoNombre || r.vehiculo?.nombre || ''
+  const vPlaca = r.vehiculoPlaca || r.vehiculo?.placa || ''
+  const matchingMockVehicle = initialVehicles.find((v) =>
+    (vId && String(v.id) === vId) ||
+    (vPlaca && v.placa && v.placa.replace(/\s|-/g, '').toLowerCase() === vPlaca.replace(/\s|-/g, '').toLowerCase()) ||
+    (vNom && v.nombre && v.nombre.toLowerCase().includes(vNom.toLowerCase())) ||
+    (vNom && v.nombre && vNom.toLowerCase().includes(v.nombre.toLowerCase()))
+  )
+
+  const vehiculoImagen = r.vehiculoImagen || r.vehiculo?.imagen || r.vehiculo?.imagenes?.[0] || matchingMockVehicle?.imagenes?.[0] || ''
+
   return {
     id: String(r.id || codigo),
     codigo,
@@ -90,11 +103,11 @@ function normalizarReserva(r) {
     clienteCorreo,
     clienteTelefono,
     clienteDocumento,
-    vehiculoId: String(r.vehiculoId || '2'),
-    vehiculoNombre: r.vehiculoNombre || r.vehiculo?.nombre || 'Mazda CX-5 2024',
-    vehiculoPlaca: r.vehiculoPlaca || r.vehiculo?.placa || 'KLS-849',
-    vehiculoImagen: r.vehiculoImagen || r.vehiculo?.imagen || '',
-    sucursal: r.sucursal || r.reservaDetalles?.sucursalRetiro || 'Bogotá - Calle 100',
+    vehiculoId: String(r.vehiculoId || matchingMockVehicle?.id || '2'),
+    vehiculoNombre: vNom || matchingMockVehicle?.nombre || 'Mazda CX-5 2024',
+    vehiculoPlaca: vPlaca || matchingMockVehicle?.placa || 'KLS-849',
+    vehiculoImagen,
+    sucursal: r.sucursal || r.reservaDetalles?.sucursalRetiro || matchingMockVehicle?.sucursal || 'Bogotá - Calle 100',
     fechaInicio: fInicio,
     fechaFin: fFin,
     estado: estadoNorm,

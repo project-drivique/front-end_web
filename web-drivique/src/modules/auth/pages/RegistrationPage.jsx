@@ -15,7 +15,9 @@ import {
   FaCreditCard,
   FaFileAlt,
   FaHeadset,
-  FaCheckCircle
+  FaCheckCircle,
+  FaInfoCircle,
+  FaArrowRight
 } from 'react-icons/fa'
 import AuthHeaderControls from '../components/AuthHeaderControls'
 import { getRoleHome } from '../utils/accessControl'
@@ -361,6 +363,7 @@ export default function RegistroPage() {
   const [verPass, setVerPass] = useState(false)
   const [verConfirmar, setVerConfirmar] = useState(false)
   const [modalAbierto, setModalAbierto] = useState(false)
+  const [modalWelcomeOpen, setModalWelcomeOpen] = useState(false)
   const [errores, setErrores] = useState({})
 
   const {
@@ -466,15 +469,14 @@ export default function RegistroPage() {
             flex-direction: column-reverse !important;
           }
           .lg-left {
-            width: 100% !important;
-            border-bottom: ${esModoOscuro ? '1px solid #334155' : '1px solid rgba(255,255,255,0.12)'};
-            display: flex !important;
+            display: none !important;
           }
           @media(min-width:1024px) {
             .auth-responsive-layout {
               flex-direction: row !important;
             }
             .lg-left {
+              display: flex !important;
               width: 42% !important;
               border-bottom: none !important;
               border-right: ${esModoOscuro ? '1px solid #334155' : '1px solid rgba(255,255,255,0.12)'} !important;
@@ -482,7 +484,7 @@ export default function RegistroPage() {
           }
         `}</style>
 
-        <div className="lg-left" style={{ display: 'flex', flexDirection: 'column', background: esModoOscuro ? 'linear-gradient(160deg,color-mix(in srgb,var(--brand-secondary) 48%,#070b12) 0%,color-mix(in srgb,var(--brand-secondary) 66%,#0f172a) 55%,color-mix(in srgb,var(--brand-primary) 52%,#111827) 100%)' : 'linear-gradient(160deg,color-mix(in srgb,var(--brand-secondary) 72%,#080b12) 0%,var(--brand-secondary) 52%,color-mix(in srgb,var(--brand-primary) 78%,#111827) 100%)', position: 'relative', overflow: 'hidden', flexShrink: 0 }}>
+        <div className="lg-left" style={{ flexDirection: 'column', background: esModoOscuro ? 'linear-gradient(160deg,color-mix(in srgb,var(--brand-secondary) 48%,#070b12) 0%,color-mix(in srgb,var(--brand-secondary) 66%,#0f172a) 55%,color-mix(in srgb,var(--brand-primary) 52%,#111827) 100%)' : 'linear-gradient(160deg,color-mix(in srgb,var(--brand-secondary) 72%,#080b12) 0%,var(--brand-secondary) 52%,color-mix(in srgb,var(--brand-primary) 78%,#111827) 100%)', position: 'relative', overflow: 'hidden', flexShrink: 0 }}>
           <div style={{ position: 'absolute', top: '-100px', left: '-100px', width: '400px', height: '400px', borderRadius: '50%', border: '1px solid rgba(255,255,255,0.05)', background: 'rgba(255,255,255,0.02)' }} />
           <div style={{ position: 'absolute', bottom: '-80px', right: '-80px', width: '340px', height: '340px', borderRadius: '50%', background: 'rgba(var(--brand-accent-rgb),0.12)' }} />
 
@@ -552,7 +554,77 @@ export default function RegistroPage() {
           <div className="auth-contenedor" style={{ minHeight: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '32px 24px' }}>
             <div style={{ width: '100%', maxWidth: '460px' }}>
               <AuthHeaderControls backTo="/" backLabelKey="common.backToHome" backLabelFallback="Volver al inicio" />
+
+              {/* Botón superior de información sobre Drivique en móviles */}
+              <div className="auth-mobile-welcome-trigger">
+                <button
+                  type="button"
+                  className="btn-auth-welcome-toggle"
+                  onClick={() => setModalWelcomeOpen(true)}
+                >
+                  <div className="btn-auth-welcome-left">
+                    <span className="btn-auth-welcome-icon">
+                      <FaInfoCircle size={12} />
+                    </span>
+                    <span>{t('registro.leftPanel.welcomeTitle', 'Beneficios de registrarte')}</span>
+                  </div>
+                  <span className="btn-auth-welcome-badge">
+                    {t('panel.viewInfo', 'Ver')} <FaArrowRight size={8} />
+                  </span>
+                </button>
+              </div>
             </div>
+
+            {/* Modal informativo móvil */}
+            {modalWelcomeOpen && (
+              <div
+                className="auth-mobile-modal-backdrop"
+                onClick={() => setModalWelcomeOpen(false)}
+              >
+                <div
+                  className="auth-mobile-modal-card"
+                  onClick={(e) => e.stopPropagation()}
+                  style={{
+                    background: esModoOscuro ? 'linear-gradient(160deg,#070b12 0%,#0f172a 55%,#111827 100%)' : 'linear-gradient(160deg,var(--brand-secondary) 0%,color-mix(in srgb,var(--brand-primary) 78%,#111827) 100%)',
+                    padding: '36px 24px 28px',
+                    color: '#ffffff',
+                    position: 'relative'
+                  }}
+                >
+                  <button
+                    type="button"
+                    className="auth-mobile-modal-close"
+                    onClick={() => setModalWelcomeOpen(false)}
+                  >
+                    <FaTimes size={13} />
+                  </button>
+
+                  <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
+                    <img src={brand.logoDataUrl || logo} alt={brand.name} style={{ height: '42px', width: 'auto' }} />
+                    <span style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 900, fontSize: '16px', letterSpacing: '0.14em', color: 'var(--brand-text-dark)', textTransform: 'uppercase' }}>
+                      {brand.name}
+                    </span>
+                    <p style={{ color: 'rgba(255,255,255,0.85)', fontSize: '13px', margin: '4px 0 0', lineHeight: 1.5 }}>
+                      {t('registro.leftPanel.subtitle')}
+                    </p>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    {[
+                      { icon: FaCheckCircle, text: t('registro.leftPanel.feature1') },
+                      { icon: FaCreditCard, text: t('registro.leftPanel.feature2') },
+                      { icon: FaFileAlt, text: t('registro.leftPanel.feature3') },
+                      { icon: FaHeadset, text: t('registro.leftPanel.feature4') },
+                    ].map(({ icon: Icono, text }) => (
+                      <div key={text} style={{ display: 'flex', alignItems: 'center', gap: '10px', background: 'rgba(255,255,255,0.08)', borderRadius: '12px', padding: '10px 14px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                        <span style={{ fontSize: '15px', color: '#fff' }}><Icono /></span>
+                        <p style={{ color: '#fff', fontSize: '13px', fontWeight: 600, margin: 0 }}>{text}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
 
             <div className="auth-card" style={{ width: '100%', maxWidth: '460px', background: c.panelCard, borderRadius: '24px', boxShadow: c.panelCardShadow, border: `1px solid ${c.panelCardBorder}`, padding: '36px' }}>
               <div style={{ marginBottom: '24px', textAlign: 'center' }}>
