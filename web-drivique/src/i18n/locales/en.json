@@ -1137,7 +1137,7 @@
     "branchTitle": "Branch dashboard",
     "welcome": "Welcome, {{name}}",
     "assignedBranch": "Assigned branch",
-    "audit": "Audit",
+    "audit": "Audit Logs",
     "moduleAvailable": "Module available according to your permissions.",
     "recentAccess": "Recent administrative access",
     "noAudit": "There are no access records yet.",
@@ -1323,7 +1323,8 @@
     "updatedSuccess": "Reservation updated successfully.",
     "cancelledSuccess": "Reservation {{code}} cancelled successfully.",
     "nav": {
-      "contracts": "Contracts"
+      "contracts": "Contracts",
+      "audit": "Audit Logs"
     },
     "usersTitle": "Account Control and Verification",
     "usersSubtitle": "Full management of customers, administrators, roles, account status and document review.",
@@ -2370,6 +2371,106 @@
         "promotions_title": "Promotions & Discount Coupons Report",
         "promotions_desc": "Catalog of active coupons and promotions with discount percentages, validity period, redemption limits, and status."
       }
+    },
+    "audit_module": {
+      "eyebrow": "Forensic Supervision & Security",
+      "title": "Audit & Activity Log",
+      "subtitle": "Immutable log of all events, access logs, 2FA verifications, CRUD operations, and state changes across the platform.",
+      "readOnly": "Read Only",
+      "branchScope": "Assigned Branch Scope: {{branch}}",
+      "branchScopeDesc": "You can only view events recorded for your authorized branch.",
+      "globalScope": "Global System Scope (Full Supervision)",
+      "globalScopeDesc": "Complete oversight across all locations and platform modules.",
+      "totalEvents": "Total Events",
+      "totalEventsSub": "Audited traceability",
+      "successfulEvents": "Successful",
+      "successfulEventsSub": "Valid operations",
+      "failedEvents": "Failures / Alerts",
+      "failedEventsSub": "Failed / denied attempts",
+      "securityEvents": "Access & 2FA",
+      "securityEventsSub": "Sessions & OTP",
+      "filtersTitle": "Filters & Controls",
+      "searchPlaceholder": "Search by user, email, IP, action or ID...",
+      "moreFilters": "More filters",
+      "lessFilters": "Fewer filters",
+      "allEventTypes": "All event types",
+      "allResults": "All results",
+      "allRoles": "All roles",
+      "allBranches": "All branches",
+      "globalSystem": "Global / System",
+      "actorRole": "Actor Role",
+      "branchLabel": "Branch",
+      "dateFrom": "From",
+      "dateTo": "To",
+      "resetFilters": "Clear",
+      "exportExcel": "Excel",
+      "exportPdf": "PDF",
+      "print": "Print",
+      "resultsFound": "records found",
+      "table": {
+        "dateTime": "Date / Time",
+        "moduleType": "Module / Type",
+        "actorUser": "Actor / User",
+        "branch": "Branch",
+        "ipDevice": "IP / Device",
+        "action": "Action Taken",
+        "result": "Result",
+        "detail": "Detail",
+        "note": "Note:"
+      },
+      "results": {
+        "success": "SUCCESS",
+        "failure": "FAILURE",
+        "denied": "DENIED",
+        "warning": "WARNING"
+      },
+      "roles": {
+        "admin": "Administrator",
+        "manager": "Branch Manager",
+        "user": "User / Customer",
+        "guest": "Guest"
+      },
+      "types": {
+        "all": "All event types",
+        "auth": "Authentication & Access",
+        "security2fa": "Security & 2FA",
+        "vehicles": "Fleet & Vehicle Management",
+        "reservations": "Reservation Management",
+        "contracts": "Contract Management",
+        "incidents": "Incident Management",
+        "users": "User Management",
+        "roles": "Roles & Permissions",
+        "promotions": "Promotions & Discounts",
+        "reports": "Reports & Exportation",
+        "system": "System Configuration",
+        "navigation": "Navigation & Catalog"
+      },
+      "empty": {
+        "title": "No audit records found",
+        "desc": "Try adjusting your search criteria or date range.",
+        "reset": "Reset filters"
+      },
+      "modal": {
+        "eyebrow": "FORENSIC AUDIT RECORD",
+        "copyId": "Copy ID",
+        "copied": "Copied",
+        "copyJson": "Copy JSON",
+        "dateTime": "Date and Time",
+        "moduleType": "Module / Type",
+        "actorUser": "Actor / User",
+        "branch": "Branch",
+        "ipAddress": "IP Address",
+        "device": "Device",
+        "action": "Recorded Action",
+        "reason": "Reason or Cause",
+        "currencyConversion": "Currency Conversion (COP ⇄ USD)",
+        "copLabel": "Colombian Pesos",
+        "usdLabel": "US Dollars",
+        "rateApplied": "Exchange rate applied: 1 USD ≈ {{rate}} COP",
+        "jsonMetadata": "Event Metadata (JSON)",
+        "watermark": "This audit record is immutable and cannot be altered or deleted in compliance with platform traceability standards.",
+        "close": "Close"
+      }
     }
   },
   "contratoFirma": {
@@ -2485,7 +2586,9 @@
       "SUV": "SUV",
       "Sedan": "Sedan",
       "Compacto": "Compact",
-      "Camioneta": "Pickup"
+      "Camioneta": "Pickup",
+      "Deportivo": "Sport",
+      "Económico": "Economy"
     },
     "modal": {
       "successTitle": "Coupon activated successfully!",
@@ -2508,7 +2611,8 @@
       "expired": "The promo code has expired.",
       "audience": "This coupon is not available for your account.",
       "minimum": "The booking does not meet the promotion minimum.",
-      "category": "The coupon does not apply to this vehicle category."
+      "category": "The coupon does not apply to this vehicle category.",
+      "vehicleMismatch": "The coupon is not valid for this specific vehicle."
     }
   },
   "placeholder": {

@@ -10,7 +10,7 @@ const BADGES = [
   { key: 'contratos.title',         icon: FaFileAlt     },
 ]
 
-export default function PanelIzquierdo() {
+export default function PanelIzquierdo({ isModal = false }) {
   const { t } = useTranslation()
   const { tema } = useLanding()
   const esModoOscuro = tema === 'oscuro'
@@ -24,30 +24,33 @@ export default function PanelIzquierdo() {
   return (
     <div
       style={{
-        display: 'flex',
+        display: isModal ? 'flex' : undefined,
         flexDirection: 'column',
         background: bgPanel,
         position: 'relative',
         overflow: 'hidden',
         transition: 'all 300ms ease',
         boxSizing: 'border-box',
-        flexShrink: 0
+        flexShrink: 0,
+        borderRadius: isModal ? '24px' : undefined,
       }}
-      className="auth-panel-left"
+      className={isModal ? 'auth-panel-modal' : 'auth-panel-left'}
     >
-      <style>{`
-        .auth-panel-left {
-          width: 100%;
-          border-bottom: ${esModoOscuro ? '1px solid #1e293b' : '1px solid rgba(255,255,255,0.12)'};
-        }
-        @media(min-width:1024px) {
+      {!isModal && (
+        <style>{`
           .auth-panel-left {
-            width: 42% !important;
-            border-bottom: none !important;
-            border-right: ${esModoOscuro ? '1px solid #1e293b' : '1px solid rgba(255,255,255,0.12)'} !important;
+            display: none;
           }
-        }
-      `}</style>
+          @media(min-width:1024px) {
+            .auth-panel-left {
+              display: flex !important;
+              width: 42% !important;
+              border-bottom: none !important;
+              border-right: ${esModoOscuro ? '1px solid #1e293b' : '1px solid rgba(255,255,255,0.12)'} !important;
+            }
+          }
+        `}</style>
+      )}
 
       {/* Orbes decorativos */}
       <div style={{ position: 'absolute', top: '-100px', left: '-100px', width: '400px', height: '400px', borderRadius: '50%', border: '1px solid rgba(255,255,255,0.05)', background: 'rgba(255,255,255,0.02)' }} />

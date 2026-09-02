@@ -43,7 +43,67 @@ export function useReservationFlow() {
   const [pantalla, setPantalla] = useState(savedState?.pantalla || 1)
   const [seguroIdx, setSeguroIdx] = useState(savedState?.seguroIdx !== undefined ? savedState.seguroIdx : null)
   const [serviciosSeleccionados, setServiciosSeleccionados] = useState(savedState?.serviciosSeleccionados || [])
-  const [appliedPromotion, setAppliedPromotion] = useState(null)
+  const [appliedPromotion, setAppliedPromotion] = useState(() => {
+    try {
+      const params = new URLSearchParams(window.location.search)
+      const desc = Number(params.get('descuento'))
+      if (desc && desc > 0 && desc <= 100) {
+        return {
+          id: `PROMO-AUTO-${desc}`,
+          codigo: `PROMO-${desc}%`,
+          nombre: `Descuento ${desc}%`,
+          tipoDescuento: 'porcentaje',
+          valorDescuento: desc,
+          reservaMinima: 0,
+          activa: true,
+        }
+      }
+      const codeFromUrl = params.get('promo') || params.get('cupon')
+      if (codeFromUrl) {
+        const found = promotionManagementService.list().find(
+          (p) => p.codigo === codeFromUrl.toUpperCase() && p.activa
+        )
+        if (found) return found
+      }
+    } catch {
+      // ignore
+    }
+    return null
+  })
+
+  useEffect(() => {
+    if (!appliedPromotion && vehiculo) {
+      const params = new URLSearchParams(window.location.search)
+      const desc = Number(params.get('descuento'))
+      if (desc && desc > 0 && desc <= 100) {
+        setAppliedPromotion({
+          id: `PROMO-AUTO-${desc}`,
+          codigo: `PROMO-${desc}%`,
+          nombre: `Descuento ${desc}%`,
+          tipoDescuento: 'porcentaje',
+          valorDescuento: desc,
+          reservaMinima: 0,
+          activa: true,
+        })
+        return
+      }
+      const codeFromUrl = params.get('promo') || params.get('cupon')
+      if (codeFromUrl) {
+        try {
+          const res = promotionManagementService.validateCode(codeFromUrl, {
+            total: 1000000,
+            category: vehiculo.categoria,
+            vehicleId: vehiculo.id,
+            vehicleName: vehiculo.nombre,
+            user: usuario,
+          })
+          if (res.promotion) setAppliedPromotion(res.promotion)
+        } catch (e) {
+          console.warn('Could not auto-apply URL promo', e)
+        }
+      }
+    }
+  }, [vehiculo, usuario, appliedPromotion])
   const [reserva, setReserva] = useState(savedState?.reserva || {
     fechaInicio: '', fechaFin: '',
     horaInicio: '', horaFin: '',

@@ -18,7 +18,7 @@ export default function ManagementDashboard({ branchOnly = false }) {
   const { tema, moneda, tasaUSD } = useLanding()
   const usuario = useAuthStore((state) => state.usuario)
   const [summary] = useState(() => adminDashboardService.getSummary(usuario))
-  const audits = branchOnly ? [] : accessAuditService.list().slice(0, 5)
+  const audits = accessAuditService.listForUser(usuario).slice(0, 5)
   const metrics = [
     { key: 'monthlyRevenue', value: formatCurrency(summary.monthlyRevenue, moneda, tasaUSD) },
     { key: 'rentedVehicles', value: summary.rentedVehicles },
@@ -102,45 +102,47 @@ export default function ManagementDashboard({ branchOnly = false }) {
           </div>
         </section>
 
-        {!branchOnly && (
-          <section className="management-audit">
-            <div>
-              <p className="management-eyebrow">{t('admin.audit', 'Auditoría')}</p>
-              <h2>{t('admin.recentAccess', 'Registros Recientes de Auditoría y Acceso')}</h2>
-            </div>
-            {audits.length === 0 ? (
-              <p className="management-empty">{t('admin.noAudit', 'No hay registros de auditoría recientes.')}</p>
-            ) : (
-              <div className="management-table-wrap">
-                <table>
-                  <thead>
-                    <tr>
-                      {['date', 'email', 'role', 'result', 'ip'].map((key) => {
-                        const colLabels = { date: 'Fecha y Hora', email: 'Correo Usuario', role: 'Rol', result: 'Resultado', ip: 'Dirección IP' }
-                        return <th key={key}>{t(`admin.auditColumns.${key}`, colLabels[key] || key)}</th>
-                      })}
+        <section className="management-audit">
+          <div>
+            <p className="management-eyebrow">{t('admin.audit', 'Auditoría')}</p>
+            <h2>
+              {branchOnly
+                ? t('admin.recentBranchAccess', 'Registros Recientes de Auditoría de tu Sucursal')
+                : t('admin.recentAccess', 'Registros Recientes de Auditoría y Acceso')}
+            </h2>
+          </div>
+          {audits.length === 0 ? (
+            <p className="management-empty">{t('admin.noAudit', 'No hay registros de auditoría recientes.')}</p>
+          ) : (
+            <div className="management-table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    {['date', 'email', 'role', 'result', 'ip'].map((key) => {
+                      const colLabels = { date: 'Fecha y Hora', email: 'Correo Usuario', role: 'Rol', result: 'Resultado', ip: 'Dirección IP' }
+                      return <th key={key}>{t(`admin.auditColumns.${key}`, colLabels[key] || key)}</th>
+                    })}
+                  </tr>
+                </thead>
+                <tbody>
+                  {audits.map((record) => (
+                    <tr key={record.id}>
+                      <td>{new Date(record.fecha).toLocaleString(i18n.language)}</td>
+                      <td>{record.correo}</td>
+                      <td>{record.rol}</td>
+                      <td>
+                        <span className={`management-result management-result--${record.resultado}`}>
+                          {record.resultado}
+                        </span>
+                      </td>
+                      <td>{record.ip}</td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {audits.map((record) => (
-                      <tr key={record.id}>
-                        <td>{new Date(record.fecha).toLocaleString(i18n.language)}</td>
-                        <td>{record.correo}</td>
-                        <td>{record.rol}</td>
-                        <td>
-                          <span className={`management-result management-result--${record.resultado}`}>
-                            {record.resultado}
-                          </span>
-                        </td>
-                        <td>{record.ip}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </section>
-        )}
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </section>
       </main>
     </div>
   )

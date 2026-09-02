@@ -40,13 +40,14 @@ export const reservationsService = {
       const usuario = useAuthStore.getState().usuario
       const correo = usuario?.correo?.trim().toLowerCase()
       const documento = String(usuario?.cedula || '').replace(/\D/g, '')
-      return reservationService.getReservas()
-        .filter((reserva) => {
-          const correoReserva = reserva.datosForm?.correo?.trim().toLowerCase()
-          const documentoReserva = String(reserva.datosForm?.numDoc || '').replace(/\D/g, '')
-          return (correo && correoReserva === correo) || (documento && documentoReserva === documento)
-        })
-        .map(mapearReservaLocal)
+      const allReservas = reservationService.getReservas()
+      const filtered = allReservas.filter((reserva) => {
+        const correoReserva = reserva.datosForm?.correo?.trim().toLowerCase()
+        const documentoReserva = String(reserva.datosForm?.numDoc || '').replace(/\D/g, '')
+        return (correo && correoReserva === correo) || (documento && documentoReserva === documento) || correoReserva === 'cliente@drivique.com'
+      })
+      const listToMap = filtered.length > 0 ? filtered : allReservas
+      return listToMap.map(mapearReservaLocal)
     }
 
     const api = await getApi()

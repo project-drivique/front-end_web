@@ -1,4 +1,5 @@
 import { accessAuditService } from './accessAuditService'
+import initialVehicles from '../mocks/vehicles.json'
 
 const STORAGE_KEY = 'drivique_reservas'
 const STORAGE_SCHEMA_KEY = 'drivique_reservas_schema'
@@ -17,28 +18,107 @@ function assertReservationScope(user, reservation, requestedBranch = reservation
 
 function normalizarReserva(r) {
   if (!r) return null
+  const codigo = String(
+    r.codigo ||
+    r.referencia ||
+    (r.id && !String(r.id).startsWith('RES-') ? `RES-${r.id}` : r.id) ||
+    'RES-2026-9102'
+  )
+
+  const df = r.datosForm || {}
+  const dfNombre = [df.nombres, df.apellidos].filter(Boolean).join(' ').trim()
+
+  const clienteNombre = String(
+    r.clienteNombre ||
+    dfNombre ||
+    r.usuario?.nombre ||
+    r.nombre ||
+    'Carlos Mendoza'
+  )
+
+  const clienteCorreo = String(
+    r.clienteCorreo ||
+    df.correo ||
+    r.usuario?.email ||
+    r.usuarioEmail ||
+    r.email ||
+    'cliente@drivique.com'
+  ).toLowerCase().trim()
+
+  const clienteTelefono = String(
+    r.clienteTelefono ||
+    df.telefono ||
+    r.telefono ||
+    '+57 314 478 9702'
+  )
+
+  const clienteDocumento = String(
+    r.clienteDocumento ||
+    df.numDoc ||
+    df.documento ||
+    r.usuario?.documento ||
+    r.cedula ||
+    r.documento ||
+    '1020304050'
+  )
+
+  let fInicio = r.fechaInicio
+  if (!fInicio && r.reservaDetalles?.fechaInicio) {
+    fInicio = `${r.reservaDetalles.fechaInicio}T${r.reservaDetalles.horaInicio || '08:00'}`
+  } else if (!fInicio && r.fechaRecogida) {
+    fInicio = `${r.fechaRecogida}T${r.horaRecogida || '08:00'}`
+  } else if (!fInicio) {
+    fInicio = new Date().toISOString().slice(0, 16)
+  }
+
+  let fFin = r.fechaFin
+  if (!fFin && r.reservaDetalles?.fechaFin) {
+    fFin = `${r.reservaDetalles.fechaFin}T${r.reservaDetalles.horaFin || '18:00'}`
+  } else if (!fFin && r.fechaDevolucion) {
+    fFin = `${r.fechaDevolucion}T${r.horaDevolucion || '18:00'}`
+  } else if (!fFin) {
+    fFin = new Date(Date.now() + 86400000 * 3).toISOString().slice(0, 16)
+  }
+
+  let estadoNorm = String(r.estado || 'confirmada').toLowerCase()
+  if (estadoNorm === 'activa') estadoNorm = 'en_curso'
+  if (estadoNorm === 'pendiente_efectivo') estadoNorm = 'pendiente'
+
+  const vId = String(r.vehiculoId || '')
+  const vNom = r.vehiculoNombre || r.vehiculo?.nombre || ''
+  const vPlaca = r.vehiculoPlaca || r.vehiculo?.placa || ''
+  const matchingMockVehicle = initialVehicles.find((v) =>
+    (vId && String(v.id) === vId) ||
+    (vPlaca && v.placa && v.placa.replace(/\s|-/g, '').toLowerCase() === vPlaca.replace(/\s|-/g, '').toLowerCase()) ||
+    (vNom && v.nombre && v.nombre.toLowerCase().includes(vNom.toLowerCase())) ||
+    (vNom && v.nombre && vNom.toLowerCase().includes(v.nombre.toLowerCase()))
+  )
+
+  const vehiculoImagen = r.vehiculoImagen || r.vehiculo?.imagen || r.vehiculo?.imagenes?.[0] || matchingMockVehicle?.imagenes?.[0] || ''
+
   return {
-    id: String(r.id || r.codigo || `RES-${Math.random().toString(36).substring(2, 6)}`),
-    codigo: String(r.codigo || r.id || ''),
-    clienteNombre: r.clienteNombre || r.usuarioEmail || r.usuario?.nombre || '',
-    clienteCorreo: r.clienteCorreo || r.usuarioEmail || r.usuario?.email || '',
-    clienteTelefono: r.clienteTelefono || r.telefono || '',
-    vehiculoId: String(r.vehiculoId || ''),
-    vehiculoNombre: r.vehiculoNombre || r.vehiculo?.nombre || '',
-    vehiculoPlaca: r.vehiculoPlaca || r.vehiculo?.placa || '',
-    vehiculoImagen: r.vehiculoImagen || r.vehiculo?.imagen || '',
-    sucursal: r.sucursal || r.reservaDetalles?.sucursalRetiro || '',
-    fechaInicio: r.fechaInicio || (r.fechaRecogida ? `${r.fechaRecogida}T${r.horaRecogida || '08:00'}` : new Date().toISOString().slice(0, 16)),
-    fechaFin: r.fechaFin || (r.fechaDevolucion ? `${r.fechaDevolucion}T${r.horaDevolucion || '18:00'}` : new Date(Date.now() + 86400000 * 3).toISOString().slice(0, 16)),
-    estado: (r.estado || 'confirmada').toLowerCase(),
-    totalCOP: Number(r.totalCOP || r.precioTotal || r.total || 0),
-    contratoFirmado: Boolean(r.contratoFirmado),
+    id: String(r.id || codigo),
+    codigo,
+    clienteNombre,
+    clienteCorreo,
+    clienteTelefono,
+    clienteDocumento,
+    vehiculoId: String(r.vehiculoId || matchingMockVehicle?.id || '2'),
+    vehiculoNombre: vNom || matchingMockVehicle?.nombre || 'Mazda CX-5 2024',
+    vehiculoPlaca: vPlaca || matchingMockVehicle?.placa || 'KLS-849',
+    vehiculoImagen,
+    sucursal: r.sucursal || r.reservaDetalles?.sucursalRetiro || matchingMockVehicle?.sucursal || 'Bogotá - Calle 100',
+    fechaInicio: fInicio,
+    fechaFin: fFin,
+    estado: estadoNorm,
+    totalCOP: Number(r.totalCOP || r.total || r.precioTotal || 348000),
+    contratoFirmado: Boolean(r.contratoFirmado || r.estado === 'ACTIVA' || estadoNorm === 'en_curso'),
     pagoEstado: r.pagoEstado || 'aprobado',
-    pasarela: r.pasarela || 'Wompi',
+    pasarela: r.pasarela || r.reservaDetalles?.metodoPago || 'Wompi',
     notas: r.notas || '',
     fechaCreacion: r.fechaCreacion || new Date().toISOString(),
     historialAcciones: Array.isArray(r.historialAcciones) ? r.historialAcciones : [
-      { fecha: r.fechaCreacion || new Date().toISOString(), accion: 'Registro de reserva', usuario: r.clienteCorreo || 'Sistema' }
+      { fecha: r.fechaCreacion || new Date().toISOString(), accion: 'Registro de reserva', usuario: clienteCorreo }
     ]
   }
 }

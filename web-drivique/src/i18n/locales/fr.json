@@ -1312,7 +1312,8 @@
     "updatedSuccess": "Réservation mise à jour avec succès.",
     "cancelledSuccess": "Réservation {{code}} annulée avec succès.",
     "nav": {
-      "contracts": "Contrats"
+      "contracts": "Contrats",
+      "audit": "Audit"
     },
     "usersTitle": "Contrôle des comptes et vérification",
     "usersSubtitle": "Gestion complète des clients, administrateurs, rôles, statuts de compte et vérification des documents.",
@@ -2359,6 +2360,106 @@
         "promotions_title": "Performance des Promotions et Coupons",
         "promotions_desc": "Catalogue des coupons actifs, remises appliquées et limites d'utilisation."
       }
+    },
+    "audit_module": {
+      "eyebrow": "Surveillance Forensique et Sécurité",
+      "title": "Audit et Journal d'Activité",
+      "subtitle": "Registre immuable de tous les événements, accès, vérifications 2FA, actions CRUD et changements d'état.",
+      "readOnly": "Lecture Seule",
+      "branchScope": "Portée de la Succursale Assignée: {{branch}}",
+      "branchScopeDesc": "Vous ne pouvez consulter que les événements enregistrés pour votre succursale autorisée.",
+      "globalScope": "Portée Globale du Système (Supervision Totale)",
+      "globalScopeDesc": "Supervision complète de tous les sites et modules de la plateforme.",
+      "totalEvents": "Total Événements",
+      "totalEventsSub": "Traçabilité auditée",
+      "successfulEvents": "Réussis",
+      "successfulEventsSub": "Opérations valides",
+      "failedEvents": "Échecs / Alertes",
+      "failedEventsSub": "Tentatives échouées / refusées",
+      "securityEvents": "Accès & 2FA",
+      "securityEventsSub": "Sessions et OTP",
+      "filtersTitle": "Filtres et Contrôles",
+      "searchPlaceholder": "Rechercher par utilisateur, e-mail, IP, action ou ID...",
+      "moreFilters": "Plus de filtres",
+      "lessFilters": "Moins de filtres",
+      "allEventTypes": "Tous les types d'événements",
+      "allResults": "Tous les résultats",
+      "allRoles": "Tous les rôles",
+      "allBranches": "Toutes les succursales",
+      "globalSystem": "Global / Système",
+      "actorRole": "Rôle de l'Acteur",
+      "branchLabel": "Succursale",
+      "dateFrom": "Du",
+      "dateTo": "Au",
+      "resetFilters": "Effacer",
+      "exportExcel": "Excel",
+      "exportPdf": "PDF",
+      "print": "Imprimer",
+      "resultsFound": "enregistrements trouvés",
+      "table": {
+        "dateTime": "Date / Heure",
+        "moduleType": "Module / Type",
+        "actorUser": "Acteur / Utilisateur",
+        "branch": "Succursale",
+        "ipDevice": "IP / Appareil",
+        "action": "Action Effectuée",
+        "result": "Résultat",
+        "detail": "Détail",
+        "note": "Note:"
+      },
+      "results": {
+        "success": "SUCCÈS",
+        "failure": "ÉCHEC",
+        "denied": "REFUSÉ",
+        "warning": "AVERTISSEMENT"
+      },
+      "roles": {
+        "admin": "Administrateur",
+        "manager": "Responsable de Succursale",
+        "user": "Utilisateur / Client",
+        "guest": "Visiteur"
+      },
+      "types": {
+        "all": "Tous les types d'événements",
+        "auth": "Authentification et Accès",
+        "security2fa": "Sécurité et 2FA",
+        "vehicles": "Gestion de Flotte et Véhicules",
+        "reservations": "Gestion des Réservations",
+        "contracts": "Gestion des Contrats",
+        "incidents": "Gestion des Incidents",
+        "users": "Gestion des Utilisateurs",
+        "roles": "Rôles et Permissions",
+        "promotions": "Promotions et Réductions",
+        "reports": "Rapports et Exportation",
+        "system": "Configuration du Système",
+        "navigation": "Navigation et Catalogue"
+      },
+      "empty": {
+        "title": "Aucun enregistrement d'audit trouvé",
+        "desc": "Essayez d'ajuster vos critères de recherche ou la plage de dates.",
+        "reset": "Réinitialiser les filtres"
+      },
+      "modal": {
+        "eyebrow": "ENREGISTREMENT D'AUDIT FORENSIQUE",
+        "copyId": "Copier l'ID",
+        "copied": "Copié",
+        "copyJson": "Copier JSON",
+        "dateTime": "Date et Heure",
+        "moduleType": "Module / Type",
+        "actorUser": "Acteur / Utilisateur",
+        "branch": "Succursale",
+        "ipAddress": "Adresse IP",
+        "device": "Appareil",
+        "action": "Action Enregistrée",
+        "reason": "Motif ou Cause",
+        "currencyConversion": "Conversion Monétaire (COP ⇄ USD)",
+        "copLabel": "Pesos Colombiens",
+        "usdLabel": "Dollars Américains",
+        "rateApplied": "Taux de change appliqué: 1 USD ≈ {{rate}} COP",
+        "jsonMetadata": "Métadonnées de l'Événement (JSON)",
+        "watermark": "Cet enregistrement d'audit est immuable et ne peut être altéré ou supprimé conformément aux normes de traçabilité de la plateforme.",
+        "close": "Fermer"
+      }
     }
   },
   "contratoFirma": {
@@ -2474,7 +2575,9 @@
       "SUV": "SUV",
       "Sedan": "Berline",
       "Compacto": "Compacte",
-      "Camioneta": "Camionnette"
+      "Camioneta": "Camionnette",
+      "Deportivo": "Sport",
+      "Económico": "Économique"
     },
     "modal": {
       "successTitle": "Coupon activé avec succès !",
@@ -2497,7 +2600,8 @@
       "expired": "Le code promotionnel a expiré.",
       "audience": "Ce coupon n'est pas disponible pour votre compte.",
       "minimum": "La réservation n'atteint pas le montant minimum.",
-      "category": "Le coupon ne s'applique pas à cette catégorie."
+      "category": "Le coupon ne s'applique pas à cette catégorie.",
+      "vehicleMismatch": "Le coupon n'est pas valable pour ce véhicule spécifique."
     }
   },
   "placeholder": {
