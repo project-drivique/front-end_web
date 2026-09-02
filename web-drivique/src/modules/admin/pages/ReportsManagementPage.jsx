@@ -474,7 +474,10 @@ export default function ReportsManagementPage({ branchOnly = false }) {
   }, [history])
 
   return (
-    <div className={`reports-page-wrapper management-shell ${esModoOscuro ? 'management-shell--dark' : ''}`}>
+    <div
+      className={`reports-page-wrapper management-shell ${esModoOscuro ? 'management-shell--dark' : ''}`}
+      data-theme={tema}
+    >
       <ManagementSidebar branchOnly={branchOnly} />
 
       <main className="reports-main-content">

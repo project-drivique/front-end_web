@@ -10,13 +10,25 @@ const STORAGE_KEY_NOTIFS = 'drivique_user_notifications'
 const STORAGE_KEY_CUPONES = 'drivique_user_cupones'
 const SESSION_TIME = Date.now()
 
+function esNotificacionValida(n) {
+  if (!n || typeof n !== 'object') return false
+  const tieneTitulo = Boolean(n.titulo || n.tituloKey || n.tituloFallback || n.title)
+  const tieneMensaje = Boolean(n.mensaje || n.mensajeKey || n.mensajeFallback || n.message)
+  return tieneTitulo || tieneMensaje
+}
+
 function leerStorage(key, inicial) {
   if (typeof window === 'undefined') return inicial
   try {
     const raw = localStorage.getItem(key)
     if (!raw) return inicial
     const parsed = JSON.parse(raw)
-    return Array.isArray(parsed) ? parsed : inicial
+    if (!Array.isArray(parsed)) return inicial
+    if (key === STORAGE_KEY_NOTIFS) {
+      const filtradas = parsed.filter(esNotificacionValida)
+      return filtradas.length > 0 ? filtradas : inicial
+    }
+    return parsed
   } catch {
     return inicial
   }
@@ -54,10 +66,11 @@ export function useNotificationStore() {
     return () => window.removeEventListener(promotionManagementService.eventName, refresh)
   }, [usuario])
 
-  // Filtrado en tiempo real de notificaciones generales no expiradas
+  // Filtrado en tiempo real de notificaciones generales no expiradas y válidas
   const notificacionesVigentes = useMemo(() => {
     const ahora = SESSION_TIME
     return notificaciones.filter((n) => {
+      if (!esNotificacionValida(n)) return false
       if (!n.expiracionMs) return true
       return n.expiracionMs > ahora
     })
