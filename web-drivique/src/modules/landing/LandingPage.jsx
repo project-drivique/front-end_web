@@ -2,12 +2,40 @@
 import { useState, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
+import {
+  FaArrowRight,
+  FaBars,
+  FaCarSide,
+  FaChevronLeft,
+  FaChevronRight,
+  FaCheck,
+  FaCreditCard,
+  FaEnvelope,
+  FaFileContract,
+  FaFileSignature,
+  FaFileUpload,
+  FaIdCard,
+  FaKey,
+  FaMapMarkerAlt,
+  FaMobileAlt,
+  FaQuestionCircle,
+  FaCog,
+  FaShieldAlt,
+  FaStar,
+  FaMoon,
+  FaSun,
+  FaTag,
+  FaTimes,
+  FaWhatsapp,
+} from 'react-icons/fa'
 import logocatalog from '@/assets/logocatalog.png'
 import { useBrand } from '@/contexts/BrandContext'
 import { useLanding } from './LandingContext'
-import translations, { IDIOMAS, CAT_MAP } from './translations'
+import translations, { IDIOMAS, CAT_MAP, LANDING_UI } from './translations'
 import { catalogService } from '../../services/catalogService'
 import { formatCurrency } from '@/utils/currencyUtils'
+import { CANALES_ATENCION, FAQS_INITIAL } from '@/modules/support/data/support.dummy'
 import './LandingPage.css'
 
 const coloresTema = (esModoOscuro, brandColors) => ({
@@ -22,7 +50,7 @@ const coloresTema = (esModoOscuro, brandColors) => ({
   botonSecundarioHoverBorde: esModoOscuro ? brandColors.accent : brandColors.secondary,
   cardHoverFeature: esModoOscuro ? '#1e293b' : 'rgba(239,246,255,0.65)',
   cardHoverFeatureBorder: esModoOscuro ? 'rgba(147,197,253,0.30)' : 'var(--brand-border-light)',
-  numeroPaso: esModoOscuro ? 'rgba(147,197,253,0.18)' : 'rgba(var(--brand-secondary-rgb),0.15)',
+  numeroPaso: esModoOscuro ? 'var(--brand-text-dark)' : 'var(--brand-primary)',
   loginBorder: esModoOscuro ? 'rgba(148,163,184,0.35)' : 'rgba(var(--brand-secondary-rgb),0.25)',
   loginText: esModoOscuro ? '#e2e8f0' : brandColors.secondary,
   loginHoverBg: esModoOscuro ? 'rgba(148,163,184,0.08)' : 'rgba(var(--brand-secondary-rgb),0.05)',
@@ -34,70 +62,30 @@ const coloresTema = (esModoOscuro, brandColors) => ({
   socialBorder: '#1e293b',
 })
 
-/* ─────────── Iconos SVG ─────────── */
-const IconoAuto = ({ color = 'currentColor' }) => (
-  <svg style={{ width: 28, height: 28, color }} fill="none" stroke="currentColor" strokeWidth="1.6" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
-  </svg>
-)
+/* ─────────── Iconos de interfaz ─────────── */
+const IconoAuto = ({ color = 'currentColor' }) => <FaCarSide style={{ width: 28, height: 28, color }} aria-hidden="true" />
 
-const IconoEngranaje = () => (
-  <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z" />
-    <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-  </svg>
-)
+const IconoEngranaje = () => <FaCog size={18} aria-hidden="true" />
 
-const IconoCheck = ({ color = 'currentColor' }) => (
-  <svg width="14" height="14" fill="none" stroke={color} strokeWidth="2.5" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-  </svg>
-)
+const IconoCheck = ({ color = 'currentColor' }) => <FaCheck size={14} color={color} aria-hidden="true" />
 
-const IconoCoche = () => (
-  <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
-  </svg>
-)
+const IconoCoche = () => <FaCarSide size={18} aria-hidden="true" />
 
-const IconoPin = () => (
-  <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0zM19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
-  </svg>
-)
+const IconoPin = () => <FaMapMarkerAlt size={18} aria-hidden="true" />
 
-const IconoLlave = () => (
-  <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z" />
-  </svg>
-)
+const IconoLlave = () => <FaKey size={18} aria-hidden="true" />
 
-const IconoEtiqueta = () => (
-  <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z" />
-    <path strokeLinecap="round" strokeLinejoin="round" d="M6 6h.008v.008H6V6z" />
-  </svg>
-)
+const IconoEtiqueta = () => <FaTag size={18} aria-hidden="true" />
 
-const IconoAuricular = () => (
-  <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 18.75a60.07 60.07 0 0116.5 0M4.5 8.25V6.108c0-1.135.845-2.098 1.976-2.192.373-.03.748-.057 1.123-.08M19.5 8.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08M13.5 18.75c0-1.036.84-1.875 1.875-1.875h.75c1.035 0 1.875.84 1.875 1.875v.375c0 1.036-.84 1.875-1.875 1.875h-.75A1.875 1.875 0 0113.5 19.125v-.375zm-8.25 0c0-1.036.84-1.875 1.875-1.875h.75c1.035 0 1.875.84 1.875 1.875v.375c0 1.035-.84 1.875-1.875 1.875h-.75A1.875 1.875 0 015.25 19.125v-.375z" />
-  </svg>
-)
-
-const IconoFlecha = () => (
-  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-  </svg>
-)
+const IconoFlecha = () => <FaArrowRight size={16} aria-hidden="true" />
 
 const ICONOS_FEATURES = [
-  <svg style={{ width: 24, height: 24 }} fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" /></svg>,
-  <svg style={{ width: 24, height: 24 }} fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" /></svg>,
-  <svg style={{ width: 24, height: 24 }} fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>,
-  <svg style={{ width: 24, height: 24 }} fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0zM19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" /></svg>,
-  <svg style={{ width: 24, height: 24 }} fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 8.25h3m-3 3h3m-3 3h3" /></svg>,
-  <svg style={{ width: 24, height: 24 }} fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.562.562 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" /></svg>,
+  FaCarSide,
+  FaCreditCard,
+  FaFileContract,
+  FaMapMarkerAlt,
+  FaMobileAlt,
+  FaStar,
 ]
 
 function MenuConfiguracion({ tx, modoMovil = false }) {
@@ -132,9 +120,9 @@ function MenuConfiguracion({ tx, modoMovil = false }) {
 
       <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
         {[
-          { valor: 'claro', etiqueta: tx.nav.claro },
-          { valor: 'oscuro', etiqueta: tx.nav.oscuro },
-        ].map(({ valor, etiqueta }) => {
+          { valor: 'claro', etiqueta: LANDING_UI[idioma]?.light ?? LANDING_UI.es.light, Icono: FaSun },
+          { valor: 'oscuro', etiqueta: LANDING_UI[idioma]?.dark ?? LANDING_UI.es.dark, Icono: FaMoon },
+        ].map(({ valor, etiqueta, Icono }) => {
           const activo = tema === valor
           return (
             <button
@@ -153,6 +141,7 @@ function MenuConfiguracion({ tx, modoMovil = false }) {
                 color: activo ? c.acentoTexto : 'var(--texto-second)',
               }}
             >
+              <Icono size={13} aria-hidden="true" style={{ marginRight: 6, verticalAlign: '-2px' }} />
               {etiqueta}
             </button>
           )
@@ -333,18 +322,92 @@ function MenuConfiguracion({ tx, modoMovil = false }) {
 }
 
 export default function LandingPage() {
+  const { t } = useTranslation()
   const { tema, idioma, moneda } = useLanding()
   const { brand } = useBrand()
   const tx = translations[idioma] ?? translations.es
+  const footerUi = LANDING_UI[idioma] ?? LANDING_UI.es
   const esModoOscuro = tema === 'oscuro'
   const c = coloresTema(esModoOscuro, brand.colors)
 
   const [autos, setAutos] = useState([])
+  const [autoActivo, setAutoActivo] = useState(0)
+  const [carruselPausado, setCarruselPausado] = useState(false)
   const [menuMovilAbierto, setMenuMovilAbierto] = useState(false)
+  const [footerDialog, setFooterDialog] = useState(null)
 
   useEffect(() => {
     catalogService.getVehiculosDestacados().then(data => setAutos(data)).catch(() => {})
   }, [])
+
+  useEffect(() => {
+    if (autos.length < 2 || carruselPausado || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return undefined
+    const intervalo = window.setInterval(() => {
+      setAutoActivo(actual => (actual + 1) % autos.length)
+    }, 5500)
+    return () => window.clearInterval(intervalo)
+  }, [autos.length, carruselPausado])
+
+  const seleccionarAuto = (indice) => setAutoActivo((indice + autos.length) % autos.length)
+  const autoDestacado = autos[autoActivo]
+  const clausulasLegales = t('registro.modal.clausulas', { returnObjects: true })
+  const clausulas = Array.isArray(clausulasLegales) ? clausulasLegales : []
+
+  const abrirDocumentoLegal = (tipo) => {
+    const privacidad = clausulas.filter((item) => item.num === '2')
+    const seguridad = clausulas.filter((item) => item.num === '4')
+    const documentos = {
+      terms: { title: t('registro.modal.title'), icon: FaFileContract, items: clausulas },
+      privacy: { title: footerUi.privacyTitle, icon: FaShieldAlt, items: privacidad },
+      law: { title: footerUi.lawTitle, icon: FaFileContract, items: privacidad },
+      security: { title: footerUi.securityTitle, icon: FaShieldAlt, items: seguridad },
+    }
+    setFooterDialog(documentos[tipo])
+  }
+
+  const abrirPreguntas = () => setFooterDialog({
+    title: footerUi.faqTitle,
+    icon: FaQuestionCircle,
+    items: FAQS_INITIAL.map((faq) => ({
+      titulo: t(faq.preguntaKey, faq.preguntaFallback),
+      texto: t(faq.respuestaKey, faq.respuestaFallback),
+    })),
+  })
+
+  const abrirContacto = () => setFooterDialog({
+    title: footerUi.contactTitle,
+    icon: FaEnvelope,
+    channels: CANALES_ATENCION,
+  })
+
+  useEffect(() => {
+    if (!footerDialog) return undefined
+    const overflowAnterior = document.body.style.overflow
+    const cerrarConEscape = (event) => {
+      if (event.key === 'Escape') setFooterDialog(null)
+    }
+    document.body.style.overflow = 'hidden'
+    document.addEventListener('keydown', cerrarConEscape)
+    return () => {
+      document.body.style.overflow = overflowAnterior
+      document.removeEventListener('keydown', cerrarConEscape)
+    }
+  }, [footerDialog])
+
+  const accionFooter = (columna, indice) => {
+    if (columna === 0) {
+      const rutas = ['/catalogo', '/login', '/catalogo', '/login']
+      return { tipo: 'ruta', destino: rutas[indice] }
+    }
+    if (columna === 1) {
+      if (indice === 0) return { tipo: 'boton', accion: abrirPreguntas }
+      if (indice === 1) return { tipo: 'boton', accion: abrirContacto }
+      if (indice === 2) return { tipo: 'externo', destino: 'mailto:soporte@drivique.com?subject=Queja%20o%20sugerencia' }
+      return { tipo: 'externo', destino: CANALES_ATENCION.find(canal => canal.id === 'whatsapp')?.link }
+    }
+    const documentos = ['terms', 'privacy', 'law', 'security']
+    return { tipo: 'boton', accion: () => abrirDocumentoLegal(documentos[indice]) }
+  }
 
   const estiloEnlaceNav = {
     fontSize: 13,
@@ -385,9 +448,8 @@ export default function LandingPage() {
             </Link>
 
             {[
-              [tx.nav.servicios, '#como-funciona'],
+              [tx.nav.servicios, '#servicios'],
               [tx.nav.tarifas, '#tarifas'],
-              [tx.nav.soporte, '#soporte'],
             ].map(([label, href]) => (
               <a
                 key={href}
@@ -462,11 +524,7 @@ export default function LandingPage() {
               flexShrink: 0,
             }}
           >
-            <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-              {menuMovilAbierto
-                ? <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                : <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />}
-            </svg>
+            {menuMovilAbierto ? <FaTimes size={22} aria-hidden="true" /> : <FaBars size={22} aria-hidden="true" />}
           </button>
         </div>
 
@@ -511,9 +569,8 @@ export default function LandingPage() {
             ))}
 
             {[
-              { href: '#como-funciona', label: tx.nav.servicios, icono: <IconoLlave /> },
+              { href: '#servicios', label: tx.nav.servicios, icono: <IconoLlave /> },
               { href: '#tarifas', label: tx.nav.tarifas, icono: <IconoEtiqueta /> },
-              { href: '#soporte', label: tx.nav.soporte, icono: <IconoAuricular /> },
             ].map(item => (
               <a
                 key={item.href}
@@ -550,7 +607,7 @@ export default function LandingPage() {
         <div style={{ position: 'absolute', top: -80, right: -80, width: 500, height: 500, borderRadius: '50%', background: 'var(--hero-orb1)', pointerEvents: 'none' }} />
         <div style={{ position: 'absolute', bottom: -60, left: -60, width: 350, height: 350, borderRadius: '50%', background: 'var(--hero-orb2)', pointerEvents: 'none' }} />
 
-        <div className="landing-hero-inner" style={{ position: 'relative', width: '100%', maxWidth: 1280, margin: '0 auto', padding: '80px 48px', display: 'flex', alignItems: 'center', gap: 64, flexWrap: 'wrap' }}>
+        <div className="landing-hero-inner" style={{ position: 'relative', width: '100%', maxWidth: 1480, margin: '0 auto', padding: '72px 48px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 48, flexWrap: 'wrap' }}>
           <div style={{ flex: '1 1 400px', minWidth: 300 }}>
             <span style={{
               display: 'inline-flex',
@@ -638,192 +695,192 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <div style={{ flex: '1 1 340px', maxWidth: 420 }}>
-            <div style={{ background: 'var(--bg-tarjeta)', borderRadius: 24, boxShadow: 'var(--sombra-tarjeta)', border: '1px solid var(--borde)', padding: 28 }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
-                <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--texto-second)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: 0 }}>
-                  {tx.hero.cardTitle}
-                </p>
+          <div
+            id="tarifas"
+            className="landing-fleet-showcase"
+            onMouseEnter={() => setCarruselPausado(true)}
+            onMouseLeave={() => setCarruselPausado(false)}
+            onFocusCapture={() => setCarruselPausado(true)}
+            onBlurCapture={() => setCarruselPausado(false)}
+          >
+            <div className="landing-fleet-card" aria-live="polite">
+              {autoDestacado ? (
+                <>
+                  <div className="landing-fleet-card__header">
+                    <span>{tx.hero.cardTitle}</span>
+                    <span className="landing-fleet-card__live"><i /> {tx.hero.cardOnline}</span>
+                  </div>
 
-                <span style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 6,
-                  fontSize: 12,
-                  fontWeight: 700,
-                  color: c.exitoTexto,
-                  background: c.exitoFondo,
-                  padding: '4px 10px',
-                  borderRadius: 9999,
-                }}>
-                  <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10b981' }} />
-                  {tx.hero.cardOnline}
-                </span>
+                  <div className="landing-fleet-card__stage">
+                    <Link to={`/catalogo/${autoDestacado.id}`} className="landing-fleet-card__media" aria-label={autoDestacado.nombre}>
+                      {autoDestacado.imagenes?.[0] ? (
+                        <img src={autoDestacado.imagenes[0]} alt={autoDestacado.nombre} loading="eager" />
+                      ) : (
+                        <span className="landing-fleet-card__fallback"><IconoAuto color={c.acentoTexto} /></span>
+                      )}
+                    </Link>
+
+                    <div className="landing-fleet-card__content">
+                      <div className="landing-fleet-card__heading">
+                        <span className="landing-fleet-card__category">{CAT_MAP[autoDestacado.categoria]?.[idioma] || autoDestacado.categoria}</span>
+                        <h2>{autoDestacado.nombre}</h2>
+                        <p>{autoDestacado.transmision} · {autoDestacado.combustible} · {autoDestacado.pasajeros} {tx.hero.passengers}</p>
+                      </div>
+                      <div className="landing-fleet-card__price">
+                        <strong>{formatCurrency(autoDestacado.precio, moneda)}</strong>
+                        <span>{tx.hero.perDay || '/día'}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="landing-fleet-card__controls">
+                    <button type="button" onClick={() => seleccionarAuto(autoActivo - 1)} aria-label={tx.hero.previousVehicle}><FaChevronLeft aria-hidden="true" /></button>
+                    <div className="landing-fleet-card__rail" role="tablist" aria-label={tx.hero.cardTitle}>
+                      {autos.slice(0, 4).map((auto, indice) => (
+                        <button key={auto.id} type="button" role="tab" aria-selected={indice === autoActivo} className={indice === autoActivo ? 'is-active' : ''} onClick={() => seleccionarAuto(indice)}>
+                          {auto.imagenes?.[0] ? <img src={auto.imagenes[0]} alt="" /> : <IconoAuto color={c.acentoTexto} />}
+                          <span>{CAT_MAP[auto.categoria]?.[idioma] || auto.categoria}</span>
+                        </button>
+                      ))}
+                    </div>
+                    <button type="button" onClick={() => seleccionarAuto(autoActivo + 1)} aria-label={tx.hero.nextVehicle}><FaChevronRight aria-hidden="true" /></button>
+                  </div>
+
+                  <Link to="/catalogo" className="landing-fleet-card__cta">{tx.hero.verFlota} <IconoFlecha /></Link>
+                </>
+              ) : (
+                <div className="landing-fleet-card__loading" aria-label={tx.hero.cardTitle}><span /><span /><span /></div>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="como-funciona" className="landing-steps-section landing-section">
+        <div className="landing-steps-section__inner">
+          <div className="landing-steps-heading">
+            <span>{tx.como.label}</span>
+            <h2>{tx.como.titulo}</h2>
+            <p>{tx.como.sub}</p>
+          </div>
+
+          <div className="landing-steps-grid">
+            {tx.como.pasos.map((paso) => (
+              <div key={paso.num} className="landing-step-card">
+                <p className="landing-step-card__number">{paso.num}</p>
+                <h3>{paso.titulo}</h3>
+                <p>{paso.desc}</p>
               </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
-              {autos.map(auto => (
-                <div
-                  key={auto.id}
-                  style={{ display: 'flex', alignItems: 'center', gap: 16, padding: 14, borderRadius: 16, background: 'var(--bg-item)', marginBottom: 10, cursor: 'pointer', transition: 'background 150ms' }}
-                  onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-item-hover)'}
-                  onMouseLeave={e => e.currentTarget.style.background = 'var(--bg-item)'}
-                >
-                  <div style={{
-                    width: 48,
-                    height: 48,
-                    borderRadius: 12,
-                    background: c.acentoFondoIcono,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0,
-                    color: c.acentoTexto,
-                  }}>
-                    <IconoAuto color={c.acentoTexto} />
-                  </div>
+      <section id="servicios" className="landing-features-section landing-section">
+        <div className="landing-features-section__inner">
+          <div className="landing-features-heading">
+            <span>{tx.features.label}</span>
+            <h2>{tx.features.titulo}</h2>
+            <p>{tx.features.sub}</p>
+          </div>
 
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--texto-primary)', margin: 0 }}>
-                      {CAT_MAP[auto.categoria]?.[idioma] || auto.categoria}
-                    </p>
-                    <p style={{ fontSize: 12, color: 'var(--texto-second)', margin: '2px 0 0' }}>{auto.nombre}</p>
-                  </div>
-
-                  <span style={{ fontSize: 15, fontWeight: 900, color: c.acentoTexto, whiteSpace: 'nowrap' }}>
-                    {formatCurrency(auto.precio, moneda)}{tx.hero.perDay || '/día'}
-                  </span>
-                </div>
-              ))}
-
-              <Link
-                to="/catalogo"
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: 8,
-                  width: '100%',
-                  marginTop: 16,
-                  padding: 14,
-                  borderRadius: 16,
-                  background: 'linear-gradient(90deg,var(--brand-secondary),var(--brand-primary))',
-                  color: '#fff',
-                  fontSize: 14,
-                  fontWeight: 700,
-                  textDecoration: 'none',
-                  boxShadow: '0 4px 16px rgba(var(--brand-secondary-rgb),0.25)',
-                }}
-                onMouseEnter={e => e.currentTarget.style.opacity = '0.9'}
-                onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+          <div className="landing-features-grid">
+            {tx.features.items.map((item, i) => {
+              const FeatureIcon = ICONOS_FEATURES[i] ?? FaCheck
+              return (
+              <div
+                key={i}
+                className={i === 2 ? 'landing-feature-card landing-feature-card--highlight' : 'landing-feature-card'}
               >
-                {tx.hero.verFlota} <IconoFlecha />
+                <div className="landing-feature-card__icon">
+                  <FeatureIcon size={24} aria-hidden="true" />
+                </div>
+                <h3>{item.titulo}</h3>
+                <p>{item.desc}</p>
+              </div>
+              )
+            })}
+          </div>
+        </div>
+      </section>
+
+      <section className="landing-app-section landing-section">
+        <div className="landing-app-section__inner">
+          <div className="landing-phone" aria-hidden="true">
+            <div className="landing-phone__screen">
+              <div className="landing-phone__status">
+                <span>9:30</span>
+                <span>100%</span>
+              </div>
+              <div className="landing-phone__brand">
+                <img src={brand.logoDataUrl || logocatalog} alt="" />
+                <strong>{brand.name}</strong>
+              </div>
+              <div className="landing-phone__card">
+                <span>{tx.app.previewTitle}</span>
+                <h3>{autoDestacado?.nombre || 'Drivique'}</h3>
+                <p>{autoDestacado ? formatCurrency(autoDestacado.precio, moneda) : formatCurrency(0, moneda)}{tx.hero.perDay}</p>
+              </div>
+              <div className="landing-phone__list">
+                {tx.app.items.map((item, index) => {
+                  const ItemIcon = [FaCarSide, FaCreditCard, FaFileContract][index] ?? FaCheck
+                  return (
+                    <div key={item}>
+                      <ItemIcon />
+                      <span>{item}</span>
+                      <FaCheck />
+                    </div>
+                  )
+                })}
+              </div>
+              <div className="landing-phone__pill">{tx.app.status}</div>
+            </div>
+          </div>
+
+          <div className="landing-app-copy">
+            <span>{tx.app.label}</span>
+            <h2>{tx.app.titulo}</h2>
+            <p>{tx.app.sub}</p>
+            <div className="landing-app-actions">
+              <Link to="/login" className="landing-app-primary">
+                <FaMobileAlt aria-hidden="true" />
+                {tx.app.cta}
+              </Link>
+              <Link to="/catalogo" className="landing-app-secondary">
+                {tx.hero.verFlota}
+                <FaArrowRight aria-hidden="true" />
               </Link>
             </div>
           </div>
         </div>
       </section>
 
-      <section id="como-funciona" className="landing-section" style={{ padding: '80px 0', background: 'var(--bg-seccion1)' }}>
-        <div className="landing-section-inner" style={{ maxWidth: 1280, margin: '0 auto', padding: '0 48px' }}>
-          <div style={{ textAlign: 'center', marginBottom: 56 }}>
-            <span style={{ color: c.sectionLabel, fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', display: 'block', marginBottom: 8 }}>
-              {tx.como.label}
-            </span>
-            <h2 style={{ fontSize: '2rem', fontWeight: 900, color: 'var(--texto-primary)', margin: '0 0 12px', lineHeight: 1.2 }}>{tx.como.titulo}</h2>
-            <p style={{ color: 'var(--texto-second)', fontSize: 15, margin: 0 }}>{tx.como.sub}</p>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(220px,1fr))', gap: 24 }}>
-            {tx.como.pasos.map((paso) => (
-              <div key={paso.num} style={{ background: 'var(--bg-tarjeta)', borderRadius: 20, padding: 28, boxShadow: '0 2px 12px rgba(0,0,0,0.06)', border: '1px solid var(--borde)' }}>
-                <p style={{ fontSize: '3rem', fontWeight: 900, color: c.numeroPaso, margin: '0 0 12px', lineHeight: 1 }}>{paso.num}</p>
-                <h3 style={{ fontSize: 16, fontWeight: 800, color: 'var(--texto-primary)', margin: '0 0 8px' }}>{paso.titulo}</h3>
-                <p style={{ fontSize: 14, color: 'var(--texto-second)', lineHeight: 1.6, margin: 0 }}>{paso.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section id="servicios" className="landing-section" style={{ padding: '80px 0', background: 'var(--bg-seccion2)' }}>
-        <div className="landing-section-inner" style={{ maxWidth: 1280, margin: '0 auto', padding: '0 48px' }}>
-          <div style={{ textAlign: 'center', marginBottom: 56 }}>
-            <span style={{ color: c.sectionLabel, fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', display: 'block', marginBottom: 8 }}>
-              {tx.features.label}
-            </span>
-            <h2 style={{ fontSize: '2rem', fontWeight: 900, color: 'var(--texto-primary)', margin: '0 0 12px', lineHeight: 1.2 }}>{tx.features.titulo}</h2>
-            <p style={{ color: 'var(--texto-second)', fontSize: 15, margin: 0 }}>{tx.features.sub}</p>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(280px,1fr))', gap: 24 }}>
-            {tx.features.items.map((item, i) => (
-              <div
-                key={i}
-                style={{ padding: 28, borderRadius: 20, border: '1px solid var(--borde)', cursor: 'default', transition: 'all 200ms', background: 'var(--bg-seccion2)' }}
-                onMouseEnter={e => {
-                  e.currentTarget.style.borderColor = c.cardHoverFeatureBorder
-                  e.currentTarget.style.background = c.cardHoverFeature
-                  e.currentTarget.style.transform = 'translateY(-4px)'
-                }}
-                onMouseLeave={e => {
-                  e.currentTarget.style.borderColor = 'var(--borde)'
-                  e.currentTarget.style.background = 'var(--bg-seccion2)'
-                  e.currentTarget.style.transform = 'translateY(0)'
-                }}
-              >
-                <div style={{ width: 48, height: 48, borderRadius: 14, background: 'linear-gradient(135deg,var(--brand-secondary),var(--brand-primary))', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', marginBottom: 16 }}>
-                  {ICONOS_FEATURES[i]}
-                </div>
-                <h3 style={{ fontSize: 15, fontWeight: 800, color: 'var(--texto-primary)', margin: '0 0 8px' }}>{item.titulo}</h3>
-                <p style={{ fontSize: 14, color: 'var(--texto-second)', lineHeight: 1.6, margin: 0 }}>{item.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="landing-cta-section" style={{ padding: '80px 48px', background: 'linear-gradient(135deg,var(--brand-secondary),var(--brand-secondary),var(--brand-primary))' }}>
-        <div style={{ maxWidth: 700, margin: '0 auto', textAlign: 'center' }}>
-          <h2 style={{ fontSize: '2rem', fontWeight: 900, color: '#fff', margin: '0 0 16px' }}>{tx.cta.titulo}</h2>
-          <p style={{ color: 'var(--brand-text-dark)', fontSize: 16, margin: '0 0 32px' }}>{tx.cta.sub}</p>
-
-          <div style={{ display: 'flex', justifyContent: 'center', gap: 16, flexWrap: 'wrap' }}>
-            <Link
-              to="/registro"
-              style={{
-                padding: '14px 32px',
-                borderRadius: 9999,
-                background: '#fff',
-                color: brand.colors.secondary,
-                fontWeight: 700,
-                fontSize: 14,
-                textDecoration: 'none',
-                boxShadow: '0 8px 24px rgba(0,0,0,0.20)',
-                transition: 'transform 150ms',
-              }}
-              onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.04)'}
-              onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
-            >
-              {tx.cta.btn1}
+      <section className="landing-requirements-section landing-section">
+        <div className="landing-requirements-section__inner">
+          <div className="landing-requirements-copy">
+            <span>{tx.requirements.label}</span>
+            <h2>{tx.requirements.titulo}</h2>
+            <p>{tx.requirements.sub}</p>
+            <Link to="/registro" className="landing-requirements-cta">
+              {tx.requirements.cta}
+              <IconoFlecha />
             </Link>
+          </div>
 
-            <Link
-              to="/login"
-              style={{
-                padding: '14px 32px',
-                borderRadius: 9999,
-                border: '2px solid rgba(255,255,255,0.4)',
-                color: '#fff',
-                fontWeight: 600,
-                fontSize: 14,
-                textDecoration: 'none',
-                transition: 'background 150ms',
-              }}
-              onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
-              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-            >
-              {tx.cta.btn2}
-            </Link>
+          <div className="landing-requirements-grid">
+            {tx.requirements.items.map((item, index) => {
+              const RequirementIcon = [FaIdCard, FaFileUpload, FaCreditCard, FaFileSignature][index] ?? FaCheck
+              return (
+                <article key={item.titulo} className="landing-requirement-card">
+                  <span className="landing-requirement-card__step">{String(index + 1).padStart(2, '0')}</span>
+                  <div className="landing-requirement-card__icon">
+                    <RequirementIcon aria-hidden="true" />
+                  </div>
+                  <h3>{item.titulo}</h3>
+                  <p>{item.desc}</p>
+                </article>
+              )
+            })}
           </div>
         </div>
       </section>
@@ -840,19 +897,20 @@ export default function LandingPage() {
             </div>
 
             <div className="landing-footer-cols" style={{ display: 'flex', gap: 48, flexWrap: 'wrap' }}>
-              {tx.footer.cols.map(col => (
+              {tx.footer.cols.map((col, columna) => (
                 <div key={col.title}>
                   <p style={{ color: '#fff', fontWeight: 700, fontSize: 14, margin: '0 0 16px' }}>{col.title}</p>
-                  {col.links.map(enlace => (
-                    <p
-                      key={enlace}
-                      style={{ fontSize: 13, margin: '0 0 10px', cursor: 'pointer', color: c.footerText, transition: 'color 150ms' }}
-                      onMouseEnter={e => e.currentTarget.style.color = '#fff'}
-                      onMouseLeave={e => e.currentTarget.style.color = c.footerText}
-                    >
-                      {enlace}
-                    </p>
-                  ))}
+                  {col.links.map((enlace, indice) => {
+                    const accion = accionFooter(columna, indice)
+                    const textoEnlace = columna === 2 && indice === 3 ? footerUi.securityLink : enlace
+                    if (accion.tipo === 'ruta') return (
+                      <Link key={enlace} to={accion.destino} className="landing-footer-link">{textoEnlace}<FaArrowRight /></Link>
+                    )
+                    if (accion.tipo === 'externo') return (
+                      <a key={enlace} href={accion.destino} className="landing-footer-link" target={accion.destino?.startsWith('http') ? '_blank' : undefined} rel="noreferrer">{textoEnlace}<FaArrowRight /></a>
+                    )
+                    return <button key={enlace} type="button" className="landing-footer-link" onClick={accion.accion}>{textoEnlace}<FaArrowRight /></button>
+                  })}
                 </div>
               ))}
             </div>
@@ -861,35 +919,44 @@ export default function LandingPage() {
           <div className="landing-footer-bottom" style={{ borderTop: `1px solid ${c.socialBorder}`, paddingTop: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
             <p style={{ fontSize: 12, color: c.footerBottom, margin: 0 }}>{tx.footer.copy}</p>
 
-            <div style={{ display: 'flex', gap: 10 }}>
-              {['F', 'I', 'W'].map((inicial, i) => (
-                <a
-                  key={i}
-                  href="#"
-                  style={{
-                    width: 36,
-                    height: 36,
-                    borderRadius: '50%',
-                    border: `1px solid ${c.socialBorder}`,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: c.footerMuted,
-                    textDecoration: 'none',
-                    fontSize: 11,
-                    fontWeight: 700,
-                    transition: 'all 150ms'
-                  }}
-                  onMouseEnter={e => { e.currentTarget.style.color = '#fff'; e.currentTarget.style.borderColor = '#475569' }}
-                  onMouseLeave={e => { e.currentTarget.style.color = c.footerMuted; e.currentTarget.style.borderColor = c.socialBorder }}
-                >
-                  {inicial}
-                </a>
-              ))}
+            <div className="landing-footer-socials">
+              <a href={CANALES_ATENCION.find(canal => canal.id === 'whatsapp')?.link} target="_blank" rel="noreferrer" aria-label="WhatsApp"><FaWhatsapp /></a>
+              <a href="mailto:soporte@drivique.com" aria-label={footerUi.contactTitle}><FaEnvelope /></a>
+              <button type="button" onClick={abrirPreguntas} aria-label={footerUi.faqTitle}><FaQuestionCircle /></button>
             </div>
           </div>
         </div>
       </footer>
+
+      {footerDialog && createPortal((() => {
+        const DialogIcon = footerDialog.icon
+        return (
+          <div className="landing-info-modal" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setFooterDialog(null) }}>
+            <section className="landing-info-modal__card" role="dialog" aria-modal="true" aria-labelledby="landing-info-title">
+              <header className="landing-info-modal__header">
+                <span className="landing-info-modal__icon">{DialogIcon && <DialogIcon />}</span>
+                <h2 id="landing-info-title">{footerDialog.title}</h2>
+                <button type="button" onClick={() => setFooterDialog(null)} aria-label={footerUi.closeDetails}><FaTimes /></button>
+              </header>
+              <div className="landing-info-modal__content">
+                {footerDialog.items?.map((item, index) => (
+                  <article className="landing-info-modal__item" key={`${item.num || index}-${item.titulo}`}>
+                    <h3>{item.num ? `${item.num}. ` : ''}{item.titulo}</h3>
+                    <p>{item.texto}</p>
+                  </article>
+                ))}
+                {footerDialog.channels?.map((canal) => (
+                  <a className="landing-info-modal__channel" key={canal.id} href={canal.link} target={canal.link.startsWith('http') ? '_blank' : undefined} rel="noreferrer">
+                    {canal.tipo === 'whatsapp' ? <FaWhatsapp /> : <FaEnvelope />}
+                    <span><strong>{t(canal.tituloKey, canal.tituloFallback)}</strong><small>{t(canal.subtituloKey, canal.subtituloFallback)}</small></span>
+                    <FaArrowRight />
+                  </a>
+                ))}
+              </div>
+            </section>
+          </div>
+        )
+      })(), document.body)}
     </div>
   )
 }
