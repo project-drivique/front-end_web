@@ -2485,7 +2485,9 @@
       "SUV": "SUV",
       "Sedan": "Sedan",
       "Compacto": "Compact",
-      "Camioneta": "Pickup"
+      "Camioneta": "Pickup",
+      "Deportivo": "Sport",
+      "Económico": "Economy"
     },
     "modal": {
       "successTitle": "Coupon activated successfully!",
@@ -2508,7 +2510,8 @@
       "expired": "The promo code has expired.",
       "audience": "This coupon is not available for your account.",
       "minimum": "The booking does not meet the promotion minimum.",
-      "category": "The coupon does not apply to this vehicle category."
+      "category": "The coupon does not apply to this vehicle category.",
+      "vehicleMismatch": "The coupon is not valid for this specific vehicle."
     }
   },
   "placeholder": {

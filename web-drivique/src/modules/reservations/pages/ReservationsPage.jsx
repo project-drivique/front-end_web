@@ -175,6 +175,9 @@ function ModalDetalle({ reserva, moneda, onClose }) {
 function TarjetaReserva({ reserva, moneda, onValorar, onReportar, onVerDetalle }) {
   const { t, i18n } = useTranslation()
   const estado = { texto: t(`reservas.statuses.${reserva.estado}`, { defaultValue: t('reservas.statuses.pendiente') }), clase: CLASES_ESTADO[reserva.estado] || CLASES_ESTADO.pendiente }, sede = reserva.vehiculo?.sucursal || t('reservas.defaultBranch')
+  const estadoNorm = String(reserva.estado || '').toLowerCase()
+  const estaEnCurso = estadoNorm === 'activa' || estadoNorm === 'en_curso' || estadoNorm === 'en curso'
+
   return <article className="reserva-card"><div className="reserva-imagen-wrap">
     {reserva.vehiculo?.imagenes?.[0] ? <img src={reserva.vehiculo.imagenes[0]} alt={reserva.vehiculo.nombre} /> : <div className="imagen-vacia"><FaCar /></div>}
     <span className={`estado-badge ${estado.clase}`}>{estado.texto}</span></div><div className="reserva-info">
@@ -183,7 +186,16 @@ function TarjetaReserva({ reserva, moneda, onValorar, onReportar, onVerDetalle }
       <div><FaRegCalendarCheck /><span><small>{t('reservas.return')}</small>{fechaBonita(reserva.fechaFin, i18n.resolvedLanguage)}</span></div><div className="meta-sede"><FaMapMarkerAlt /><span><small>{t('reservas.branch')}</small>{sede}</span></div></div>
     {reserva.estado === 'finalizada' && <div className="valoracion-resumen">{reserva.valoracion ? <div><Estrellas value={reserva.valoracion.estrellas} disabled /><p>“{reserva.valoracion.comentario || t('reservas.noComment')}”</p></div> : <div><strong>{t('reservas.howWasTrip')}</strong><span>{t('reservas.feedbackHelps')}</span></div>}
       <button className="btn-link" onClick={() => onValorar(reserva)}>{reserva.valoracion ? t('reservas.editRating') : t('reservas.rateVehicle')}</button></div>}
-    <div className="reserva-actions"><button className="btn-reporte" onClick={() => onReportar(reserva)}><FaFlag /> {t('reservas.makeReport')}</button><button className="btn-detalle" onClick={() => onVerDetalle(reserva)}>{t('reservas.viewDetail')}</button></div>
+    <div className="reserva-actions">
+      {estaEnCurso && (
+        <button className="btn-reporte" onClick={() => onReportar(reserva)}>
+          <FaFlag /> {t('reservas.makeReport')}
+        </button>
+      )}
+      <button className="btn-detalle" onClick={() => onVerDetalle(reserva)}>
+        {t('reservas.viewDetail')}
+      </button>
+    </div>
   </div></article>
 }
 

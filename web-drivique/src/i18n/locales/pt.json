@@ -2473,7 +2473,9 @@
       "SUV": "SUV",
       "Sedan": "Sedã",
       "Compacto": "Compacto",
-      "Camioneta": "Caminhonete"
+      "Camioneta": "Caminhonete",
+      "Deportivo": "Esportivo",
+      "Económico": "Econômico"
     },
     "modal": {
       "successTitle": "Cupom ativado com sucesso!",
@@ -2496,7 +2498,8 @@
       "expired": "O código promocional expirou.",
       "audience": "Este cupom não está disponível para sua conta.",
       "minimum": "A reserva não atinge o valor mínimo.",
-      "category": "O cupom não se aplica a esta categoria."
+      "category": "O cupom não se aplica a esta categoria.",
+      "vehicleMismatch": "O cupom não é válido para este veículo específico."
     }
   },
   "placeholder": {

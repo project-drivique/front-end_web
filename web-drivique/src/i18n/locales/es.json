@@ -2459,7 +2459,9 @@
       "SUV": "SUV",
       "Sedan": "Sedán",
       "Compacto": "Compacto",
-      "Camioneta": "Camioneta"
+      "Camioneta": "Camioneta",
+      "Deportivo": "Deportivo",
+      "Económico": "Económico"
     },
     "modal": {
       "successTitle": "¡Cupón activado con éxito!",
@@ -2482,7 +2484,8 @@
       "expired": "El código promocional expiró.",
       "audience": "Este cupón no está disponible para tu cuenta.",
       "minimum": "La reserva no alcanza el valor mínimo de la promoción.",
-      "category": "El cupón no aplica para esta categoría de vehículo."
+      "category": "El cupón no aplica para esta categoría de vehículo.",
+      "vehicleMismatch": "El cupón no aplica para este vehículo específico."
     }
   },
   "placeholder": {
