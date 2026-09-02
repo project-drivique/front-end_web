@@ -21,8 +21,8 @@
     "maxRecords": 100
   },
   "dashboardModules": {
-    "administrador": ["vehicles", "users", "reservations", "contracts", "incidents", "cities", "branches", "promotions", "brand", "audit"],
-    "encargado_sucursal": ["vehicles", "reservations", "contracts", "incidents"]
+    "administrador": ["vehicles", "users", "reservations", "contracts", "incidents", "cities", "branches", "promotions", "brand", "reports", "audit"],
+    "encargado_sucursal": ["vehicles", "reservations", "contracts", "incidents", "reports"]
   },
   "dashboardNavigation": {
     "administrador": [
@@ -37,6 +37,7 @@
       { "key": "branches", "route": "/admin/branches" },
       { "key": "promotions", "route": "/admin/promotions" },
       { "key": "brand", "route": "/admin/brand" },
+      { "key": "reports", "route": "/admin/reports" },
       { "key": "audit", "route": "/admin/audit" }
     ],
     "encargado_sucursal": [
@@ -44,7 +45,8 @@
       { "key": "vehicles", "route": "/encargado/vehicles" },
       { "key": "reservations", "route": "/encargado/reservations" },
       { "key": "contracts", "route": "/encargado/contracts" },
-      { "key": "incidents", "route": "/encargado/incidents" }
+      { "key": "incidents", "route": "/encargado/incidents" },
+      { "key": "reports", "route": "/encargado/reports" }
     ]
   }
 }
