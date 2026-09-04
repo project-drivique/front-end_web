@@ -21,7 +21,7 @@
     "maxRecords": 100
   },
   "dashboardModules": {
-    "administrador": ["vehicles", "users", "reservations", "contracts", "incidents", "cities", "branches", "promotions", "brand", "reports", "audit"],
+    "administrador": ["vehicles", "users", "roles", "reservations", "contracts", "incidents", "cities", "branches", "promotions", "brand", "reports", "audit"],
     "encargado_sucursal": ["vehicles", "reservations", "contracts", "incidents", "reports", "audit"]
   },
   "dashboardNavigation": {

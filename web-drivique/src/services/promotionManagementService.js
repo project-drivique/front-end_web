@@ -10,7 +10,8 @@ const readJson = (key, fallback = []) => {
     const raw = localStorage.getItem(key)
     if (!raw) return fallback
     const parsed = JSON.parse(raw)
-    return Array.isArray(parsed) ? parsed : fallback
+    if (Array.isArray(parsed) && parsed.length > 0) return parsed
+    return fallback
   } catch {
     return fallback
   }

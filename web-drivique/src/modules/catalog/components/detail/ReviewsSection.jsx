@@ -13,11 +13,11 @@ const REVIEW_TEXT_MAP = {
   "Espacio de sobra para toda la familia. La volveré a alquilar.": "vehiculo.reviews.rev8"
 }
 
-export default function ReviewsSection({ comentarios = [], calificacion = 0, c }) {
+export default function ReviewsSection({ comentarios = [], calificacion = 0, c, embedded = false }) {
   const { t, i18n } = useTranslation()
   const [mostrarTodas, setMostrarTodas] = useState(false)
 
-  const bg = c?.cardBg || 'var(--bg-tarjeta, #ffffff)'
+  const bg = embedded ? 'transparent' : (c?.cardBg || 'var(--bg-tarjeta, #ffffff)')
   const border = c?.cardBorder || 'var(--borde, #e2e8f0)'
   const textPrimary = c?.textPrimary || 'var(--texto-primary, #0f172a)'
   const textSecondary = c?.textSecondary || 'var(--texto-second, #64748b)'
@@ -41,10 +41,11 @@ export default function ReviewsSection({ comentarios = [], calificacion = 0, c }
         className="resenas-card-wrap"
         style={{
           background: bg,
-          border: `1px solid ${border}`,
-          borderRadius: 20,
-          padding: 24,
-          boxShadow: isDark ? '0 8px 24px rgba(0,0,0,0.3)' : '0 6px 20px rgba(0,0,0,0.03)',
+          border: embedded ? 'none' : `1px solid ${border}`,
+          borderTop: embedded ? `1px solid ${border}` : undefined,
+          borderRadius: embedded ? 0 : 20,
+          padding: embedded ? '32px 0 0' : 24,
+          boxShadow: embedded ? 'none' : (isDark ? '0 8px 24px rgba(0,0,0,0.3)' : '0 6px 20px rgba(0,0,0,0.03)'),
         }}
       >
         <h4 style={{ fontSize: 15, fontWeight: 800, color: textPrimary, margin: '0 0 16px', letterSpacing: '-0.01em' }}>
@@ -95,10 +96,11 @@ export default function ReviewsSection({ comentarios = [], calificacion = 0, c }
       className="resenas-card-wrap"
       style={{
         background: bg,
-        border: `1px solid ${border}`,
-        borderRadius: 20,
-        padding: 24,
-        boxShadow: isDark ? '0 8px 24px rgba(0,0,0,0.3)' : '0 6px 20px rgba(0,0,0,0.03)',
+        border: embedded ? 'none' : `1px solid ${border}`,
+        borderTop: embedded ? `1px solid ${border}` : undefined,
+        borderRadius: embedded ? 0 : 20,
+        padding: embedded ? '32px 0 0' : 24,
+        boxShadow: embedded ? 'none' : (isDark ? '0 8px 24px rgba(0,0,0,0.3)' : '0 6px 20px rgba(0,0,0,0.03)'),
       }}
     >
       <h3 style={{ fontSize: 16, fontWeight: 800, color: textPrimary, margin: '0 0 20px', letterSpacing: '-0.01em' }}>

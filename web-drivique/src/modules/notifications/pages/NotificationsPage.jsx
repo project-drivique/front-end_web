@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import {
   FaBell,
@@ -24,13 +24,18 @@ import CouponModal from '../components/CouponModal'
 import ConditionsModal from '../components/ConditionsModal'
 import './NotificationsPage.css'
 
-export default function NotificationsPage() {
+export default function NotificationsPage({ defaultTab }) {
   const { t } = useTranslation()
   const navigate = useNavigate()
+  const location = useLocation()
   const { moneda, tema } = useLanding()
   const esModoOscuro = tema === 'oscuro'
 
-  const [pestanaActiva, setPestanaActiva] = useState('generales') // 'generales' | 'promociones'
+  const searchParams = new URLSearchParams(location.search)
+  const tabFromQuery = searchParams.get('tab')
+  const initialTab = defaultTab || tabFromQuery || (location.pathname.includes('cupon') || location.pathname.includes('promo') ? 'promociones' : 'generales')
+
+  const [pestanaActiva, setPestanaActiva] = useState(initialTab) // 'generales' | 'promociones'
   const [cuponSeleccionadoModal, setCuponSeleccionadoModal] = useState(null)
   const [condicionesCuponModal, setCondicionesCuponModal] = useState(null)
 
