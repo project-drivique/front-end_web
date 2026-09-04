@@ -1,6 +1,6 @@
-import { Link, useParams, useNavigate, useSearchParams } from 'react-router-dom'
+import { Link, useParams, useNavigate, useSearchParams, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useAuthStore } from '../../../store/authStore'
 import { useLanding } from '../../landing/LandingContext'
 import { promotionManagementService } from '../../../services/promotionManagementService'
@@ -26,6 +26,7 @@ export default function VehicleDetailsPage() {
   const { t } = useTranslation()
   const { id } = useParams()
   const [searchParams] = useSearchParams()
+  const location = useLocation()
   const navigate = useNavigate()
   const token = useAuthStore((s) => s.token)
   const usuario = useAuthStore((s) => s.usuario)
@@ -33,6 +34,11 @@ export default function VehicleDetailsPage() {
   const { tema, moneda } = useLanding()
   const esModoOscuro = tema === 'oscuro'
   const [bannerVisible, setBannerVisible] = useState(false)
+
+  // Scroll to top upon entering vehicle details page
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+  }, [id])
 
   const c = {
     pageBg: esModoOscuro ? '#0f172a' : '#eaeff8',
@@ -46,6 +52,30 @@ export default function VehicleDetailsPage() {
     titleColor: 'var(--brand-text)',
     accentBgSoft: 'var(--brand-soft)',
     accentGradient: 'var(--brand-gradient)'
+  }
+
+  const fromParam = searchParams.get('from')
+  const fromState = location.state?.from
+
+  const esDesdeSucursales =
+    fromParam === 'sucursales' ||
+    fromState === '/sucursales' ||
+    (typeof fromState === 'string' && fromState.includes('/sucursales'))
+
+  const textoBotonVolver = esDesdeSucursales
+    ? t('sucursales.backToBranches', 'Volver a la sucursal')
+    : t('catalogo.backToCatalog', 'Volver al catálogo')
+
+  const handleVolver = () => {
+    if (esDesdeSucursales) {
+      const sucursalTarget = searchParams.get('sucursal') || location.state?.sucursal || vehiculo?.sucursal || sessionStorage.getItem('drivique_sucursal_activa')
+      const q = sucursalTarget ? `?sucursal=${encodeURIComponent(sucursalTarget)}` : ''
+      navigate(`/sucursales${q}`, {
+        state: { sucursal: sucursalTarget, from: '/sucursales' }
+      })
+    } else {
+      navigate(esAutenticado ? '/home' : '/catalogo')
+    }
   }
 
   const vehiculo = VEHICULOS_MOCK.find(v => v.id === Number(id))
@@ -79,7 +109,9 @@ export default function VehicleDetailsPage() {
   if (!vehiculo) return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 14, background: c.pageBg, color: c.textPrimary }}>
       <p style={{ fontSize: 20, fontWeight: 800, color: c.textPrimary }}>{t('vehiculo.notFound')}</p>
-      <Link to={esAutenticado ? '/home' : '/catalogo'} style={{ color: c.accentText, fontWeight: 700, fontSize: 14 }}>← {t('vehiculo.backToCatalog')}</Link>
+      <button onClick={handleVolver} style={{ background: 'none', border: 'none', color: c.accentText, fontWeight: 700, fontSize: 14, cursor: 'pointer' }}>
+        ← {textoBotonVolver}
+      </button>
     </div>
   )
 
@@ -95,12 +127,12 @@ export default function VehicleDetailsPage() {
   return (
     <div className="catalogo-page vehiculo-detail-page-wrap" style={{ minHeight: '100vh', background: c.pageBg, color: c.textPrimary }}>
       
-      {/* Top Bar: Back to Catalog Pill Button + Menu Configuración */}
+      {/* Top Bar: Back Pill Button (Dynamic) + Menu Configuración */}
       <div className="vehiculo-top-bar">
         <button
           type="button"
           className="catalogo-header-back vehiculo-back-pill-btn"
-          onClick={() => navigate(esAutenticado ? '/home' : '/catalogo')}
+          onClick={handleVolver}
           style={{
             background: c.cardBg,
             border: `1px solid ${c.cardBorder}`,
@@ -118,7 +150,7 @@ export default function VehicleDetailsPage() {
           }}
         >
           <FaArrowLeft size={12} />
-          <span>{t('catalogo.backToCatalog', 'Volver al catálogo')}</span>
+          <span>{textoBotonVolver}</span>
         </button>
 
         <MenuConfiguracion />
