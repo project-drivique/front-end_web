@@ -1018,6 +1018,7 @@
   "sucursales": {
     "title": "Nuestras sucursales",
     "subtitle": "Encuentra la sucursal más cercana",
+    "backToBranches": "Volver a la sucursal",
     "search": "Buscar sucursal...",
     "address": "Dirección",
     "schedule": "Horario",
