@@ -1042,8 +1042,9 @@
     "error": "Error loading contracts"
   },
   "sucursales": {
-    "title": "Our branches",
-    "subtitle": "Find the nearest branch",
+    "title": "Our Branches",
+    "subtitle": "Find your nearest branch",
+    "backToBranches": "Back to branches",
     "search": "Search branch...",
     "address": "Address",
     "schedule": "Schedule",
