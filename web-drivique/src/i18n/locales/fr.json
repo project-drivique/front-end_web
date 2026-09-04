@@ -1031,8 +1031,9 @@
     "error": "Erreur lors du chargement des contrats"
   },
   "sucursales": {
-    "title": "Nos agences",
-    "subtitle": "Trouvez l'agence la plus proche",
+    "title": "Nos succursales",
+    "subtitle": "Trouvez la succursale la plus proche",
+    "backToBranches": "Retour aux succursales",
     "search": "Rechercher une agence...",
     "address": "Adresse",
     "schedule": "Horaires",
