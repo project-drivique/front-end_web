@@ -24,15 +24,16 @@
   border-radius: 10px;
   font-size: 13px;
   font-weight: 700;
-  color: var(--texto-primary, #1e293b);
+  color: var(--brand-text, var(--brand-primary, #1e293b));
   cursor: pointer;
   transition: all 0.2s ease;
   text-decoration: none;
 }
 
 .vehiculo-back-pill-btn:hover {
-  background: var(--bg-item, #f8fafc);
-  border-color: var(--borde-hover, #cbd5e1);
+  background: var(--brand-soft, #f8fafc);
+  border-color: var(--brand-primary, #cbd5e1);
+  color: var(--brand-text, var(--brand-primary, #1e293b));
   transform: translateY(-1px);
 }
 
