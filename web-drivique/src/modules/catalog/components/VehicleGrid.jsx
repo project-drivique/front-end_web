@@ -1,7 +1,8 @@
 import VehicleCard from './VehicleCard'
 
 export default function GridVehiculos({
-  vehiculosPagina = [],
+  vehiculosPagina,
+  vehiculos,
   esFavorito = () => false,
   toggleFavorito = () => {},
   c,
@@ -10,17 +11,20 @@ export default function GridVehiculos({
   onGuestBlocked = () => {},
   onGuestFavorito = () => {},
 }) {
+  const lista = (vehiculosPagina && vehiculosPagina.length > 0) ? vehiculosPagina : (vehiculos || [])
+
   return (
     <div
       className="vehicle-grid"
       style={{
         display: 'grid',
-        gap: '14px',
+        gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
+        gap: '16px',
         alignItems: 'stretch',
         width: '100%',
       }}
     >
-      {vehiculosPagina.map((vehiculo) => (
+      {lista.map((vehiculo) => (
         <VehicleCard
           key={vehiculo.id}
           vehiculo={vehiculo}

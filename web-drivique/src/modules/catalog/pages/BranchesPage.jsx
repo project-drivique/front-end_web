@@ -1,13 +1,17 @@
-import { useState, useMemo, useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, useMemo, useRef, useEffect } from 'react'
+import { useNavigate, useSearchParams, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useLanding } from '../../landing/LandingContext'
+import { useAuthStore } from '../../../store/authStore'
 import { formatCurrency } from '@/utils/currencyUtils'
 import { useCatalogo } from '../hooks/useCatalog'
 import VehicleGrid from '../components/VehicleGrid'
 import LoadingState from '../components/LoadingState'
 import ErrorState from '../components/ErrorState'
 import CatalogPagination from '../components/CatalogPagination'
+import GuestReserveModal from '../components/GuestReserveModal'
+import GuestFavoriteModal from '../components/GuestFavoriteModal'
+import './CatalogPage.css'
 import {
   FaMapMarkerAlt,
   FaClock,
@@ -24,12 +28,19 @@ const coloresTema = (esModoOscuro) => ({
   panelShadow: esModoOscuro ? '0 20px 60px rgba(0,0,0,0.45)' : '0 20px 60px rgba(15,23,42,0.06)',
   textPrimary: esModoOscuro ? '#f8fafc' : '#0f172a',
   textSecondary: esModoOscuro ? '#94a3b8' : '#64748b',
+  textMuted: esModoOscuro ? '#64748b' : '#94a3b8',
   accentText: 'var(--brand-text)',
   accentBgSoft: 'var(--brand-soft)',
+  accentGradient: 'var(--brand-gradient)',
   itemBg: esModoOscuro ? '#1e293b' : '#f8fafc',
   cardBorder: esModoOscuro ? '#334155' : '#e2e8f0',
   cardBorderHover: 'var(--brand-primary)',
+  cardShadow: esModoOscuro ? '0 4px 16px rgba(0,0,0,0.3)' : '0 4px 16px rgba(15,23,42,0.04)',
+  cardShadowHover: esModoOscuro ? '0 12px 28px rgba(0,0,0,0.45)' : '0 12px 28px rgba(15,23,42,0.1)',
   subCardBg: esModoOscuro ? '#0f172a' : '#f8fafc',
+  heroCardBg: esModoOscuro ? '#1e293b' : '#ffffff',
+  heroCardBorder: esModoOscuro ? '#334155' : '#e2e8f0',
+  imageFallbackBg: esModoOscuro ? '#1e293b' : '#f1f5f9',
   paginationDisabledBg: esModoOscuro ? '#1e293b' : '#f1f5f9',
   paginationDisabledText: esModoOscuro ? '#475569' : '#94a3b8',
   paginationIdleBg: esModoOscuro ? '#1e293b' : '#ffffff',
@@ -588,10 +599,15 @@ export default function SucursalesPage() {
   const { t, i18n } = useTranslation()
   const { tema, moneda } = useLanding()
   const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const location = useLocation()
+  const usuario = useAuthStore((state) => state.usuario)
   const esModoOscuro = tema === 'oscuro'
   const c = coloresTema(esModoOscuro)
   const [sucursalActiva, setSucursalActiva] = useState(null)
   const [pagina, setPagina] = useState(1)
+  const [reservaModalAbierto, setReservaModalAbierto] = useState(false)
+  const [favoritoModalAbierto, setFavoritoModalAbierto] = useState(false)
   const SUCURSALES_POR_PAGINA = 8
   const totalPaginas = Math.ceil(SUCURSALES_GRID.length / SUCURSALES_POR_PAGINA)
 
@@ -599,6 +615,40 @@ export default function SucursalesPage() {
   const { vehiculos, cargando, error, reintentar } = useCatalogo()
 
   const lang = (i18n.language || 'es').substring(0, 2)
+
+  // Rehydrate selected branch if returning from vehicle details or URL/session
+  useEffect(() => {
+    const sucursalTarget = searchParams.get('sucursal') || location.state?.sucursal || sessionStorage.getItem('drivique_sucursal_activa')
+    if (!sucursalTarget) return
+
+    const found = SUCURSALES_GRID.find(s => 
+      s.alias === sucursalTarget || 
+      s.id === sucursalTarget || 
+      s.nombre === sucursalTarget ||
+      s.alias.toLowerCase() === sucursalTarget.toLowerCase() ||
+      s.nombre.toLowerCase() === sucursalTarget.toLowerCase()
+    )
+
+    if (found) {
+      const index = SUCURSALES_GRID.findIndex(s => s.alias === found.alias)
+      if (index !== -1) {
+        const targetPage = Math.floor(index / SUCURSALES_POR_PAGINA) + 1
+        setPagina(targetPage)
+      }
+      setSucursalActiva(found)
+    }
+  }, [searchParams, location.state])
+
+  // Scroll to fleet panel whenever a branch is activated or rehydrated
+  useEffect(() => {
+    if (sucursalActiva && resultadosRef.current) {
+      const scrollIt = () => {
+        resultadosRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }
+      const timer = setTimeout(scrollIt, 120)
+      return () => clearTimeout(timer)
+    }
+  }, [sucursalActiva])
 
   const getNombre = (suc) => {
     if (suc.nombreKeys && suc.nombreKeys[lang]) return suc.nombreKeys[lang]
@@ -619,14 +669,41 @@ export default function SucursalesPage() {
     const map = {}
     SUCURSALES_GRID.forEach(s => { map[s.alias] = [] })
     vehiculos.forEach(v => {
-      if (map[v.sucursal]) map[v.sucursal].push(v)
+      const sucNombre = v.sucursal || v.sucursalInfo?.nombre || ''
+      if (map[sucNombre]) {
+        map[sucNombre].push(v)
+      } else {
+        const key = Object.keys(map).find(k => 
+          k === sucNombre || 
+          k.toLowerCase() === sucNombre.toLowerCase() ||
+          k.toLowerCase().includes(sucNombre.toLowerCase()) ||
+          sucNombre.toLowerCase().includes(k.toLowerCase())
+        )
+        if (key) map[key].push(v)
+      }
     })
     return map
   }, [vehiculos])
 
   const flotaFiltrada = useMemo(() => {
     if (!sucursalActiva) return []
-    return vehiculosSucursalCache[sucursalActiva.alias] || vehiculos.slice(0, 3)
+    if (vehiculosSucursalCache[sucursalActiva.alias]?.length > 0) {
+      return vehiculosSucursalCache[sucursalActiva.alias]
+    }
+    const alias = (sucursalActiva.alias || '').toLowerCase()
+    const nombre = (sucursalActiva.nombre || '').toLowerCase()
+    return vehiculos.filter(v => {
+      const vSucursal = (v.sucursal || '').toLowerCase()
+      const vSucursalInfo = (v.sucursalInfo?.nombre || '').toLowerCase()
+      return (
+        vSucursal === alias ||
+        vSucursal === nombre ||
+        vSucursalInfo === alias ||
+        vSucursalInfo === nombre ||
+        (alias && vSucursal.includes(alias)) ||
+        (nombre && vSucursal.includes(nombre))
+      )
+    })
   }, [sucursalActiva, vehiculosSucursalCache, vehiculos])
 
   const sucursalesPagina = useMemo(() => {
@@ -657,9 +734,16 @@ export default function SucursalesPage() {
 
   const verCarrosSucursal = (suc) => {
     setSucursalActiva(suc)
+    sessionStorage.setItem('drivique_sucursal_activa', suc.alias)
+    setSearchParams({ sucursal: suc.alias }, { replace: true })
     setTimeout(() => {
       resultadosRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
     }, 120)
+  }
+
+  const volverInicio = () => {
+    sessionStorage.removeItem('drivique_sucursal_activa')
+    navigate('/')
   }
 
   return (
@@ -671,7 +755,7 @@ export default function SucursalesPage() {
         <div style={{ marginBottom: 24 }}>
           <button 
             className="catalogo-header-back" 
-            onClick={() => navigate('/')}
+            onClick={volverInicio}
             style={{
               background: c.panelBg,
               border: `1px solid ${c.cardBorder}`,
@@ -915,11 +999,18 @@ export default function SucursalesPage() {
               </div>
 
               {cargando ? (
-                <LoadingState text={t('catalogo.loading')} />
+                <LoadingState text={t('catalogo.loading', 'Cargando vehículos...')} />
               ) : error ? (
                 <ErrorState mensaje={error} onReintentar={reintentar} />
               ) : flotaFiltrada.length > 0 ? (
-                <VehicleGrid vehiculos={flotaFiltrada} c={c} />
+                <VehicleGrid
+                  vehiculosPagina={flotaFiltrada}
+                  vehiculos={flotaFiltrada}
+                  c={c}
+                  invitado={!usuario}
+                  onGuestBlocked={() => setReservaModalAbierto(true)}
+                  onGuestFavorito={() => setFavoritoModalAbierto(true)}
+                />
               ) : (
                 <div style={{ textAlign: 'center', padding: '36px 20px', background: c.itemBg, borderRadius: '16px', border: `1px solid ${c.cardBorder}` }}>
                   <FaCar size={36} color={c.accentText} style={{ marginBottom: '12px' }} />
@@ -931,6 +1022,17 @@ export default function SucursalesPage() {
           )}
         </div>
       </div>
+
+      <GuestReserveModal
+        c={c}
+        visible={reservaModalAbierto}
+        onCerrar={() => setReservaModalAbierto(false)}
+      />
+      <GuestFavoriteModal
+        c={c}
+        visible={favoritoModalAbierto}
+        onCerrar={() => setFavoritoModalAbierto(false)}
+      />
     </div>
   )
 }
