@@ -99,12 +99,22 @@ export default function VehicleDetailsPage() {
       <div className="vehiculo-top-bar">
         <button
           type="button"
-          className="vehiculo-back-pill-btn"
+          className="catalogo-header-back vehiculo-back-pill-btn"
           onClick={() => navigate(esAutenticado ? '/home' : '/catalogo')}
           style={{
             background: c.cardBg,
             border: `1px solid ${c.cardBorder}`,
-            color: c.textPrimary,
+            color: c.accentText,
+            cursor: 'pointer',
+            padding: '8px 16px',
+            borderRadius: '10px',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 8,
+            fontWeight: 700,
+            fontSize: 13,
+            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)',
+            transition: 'all 0.2s ease',
           }}
         >
           <FaArrowLeft size={12} />
