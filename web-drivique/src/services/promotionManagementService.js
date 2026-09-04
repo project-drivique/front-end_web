@@ -95,7 +95,19 @@ export const promotionManagementService = {
   eventName: PUBLICATION_EVENT,
 
   list() {
-    return readJson(STORAGE_KEY, initialPromotions).map((item) => {
+    const raw = readJson(STORAGE_KEY, [])
+    const combined = [...initialPromotions]
+    if (Array.isArray(raw)) {
+      raw.forEach((item) => {
+        const idx = combined.findIndex((p) => p.codigo === item.codigo || p.id === item.id)
+        if (idx !== -1) {
+          combined[idx] = { ...combined[idx], ...item }
+        } else {
+          combined.push(item)
+        }
+      })
+    }
+    return combined.map((item) => {
       let vehiculoImagen = item.vehiculoImagen || ''
       if (!vehiculoImagen && (item.vehiculoId || item.vehiculoNombre)) {
         const matched = VEHICULOS_MOCK.find((v) => (item.vehiculoId && Number(v.id) === Number(item.vehiculoId)) || (item.vehiculoNombre && v.nombre === item.vehiculoNombre))
