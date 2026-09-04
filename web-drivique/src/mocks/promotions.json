@@ -57,6 +57,25 @@
     "actualizadaEn": "2026-01-01T00:00:00.000Z"
   },
   {
+    "id": "PROMO-MUSTANG-25",
+    "codigo": "MUSTANG25",
+    "nombre": "Ford Mustang GT Deportivo VIP",
+    "tipoDescuento": "porcentaje",
+    "valorDescuento": 25,
+    "fechaInicio": "2026-01-01",
+    "fechaFin": "2026-12-31",
+    "reservaMinima": 0,
+    "categoriaVehiculo": "Deportivo",
+    "vehiculoId": 4,
+    "vehiculoNombre": "Ford Mustang GT 2023",
+    "vehiculoImagen": "",
+    "audiencia": "todos",
+    "condiciones": "Descuento del 25% exclusivo para reservas del Ford Mustang GT 2023.",
+    "activa": true,
+    "creadaEn": "2026-01-01T00:00:00.000Z",
+    "actualizadaEn": "2026-01-01T00:00:00.000Z"
+  },
+  {
     "id": "PROMO-VIP-50K",
     "codigo": "DRIVIQUE50K",
     "nombre": "Bono Fijo de Alquiler",
