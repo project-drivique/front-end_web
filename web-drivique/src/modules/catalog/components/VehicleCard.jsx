@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useLanding } from '../../landing/LandingContext'
 import { useAuthStore } from '../../../store/authStore'
@@ -91,6 +91,7 @@ export default function TarjetaVehiculo({
 }) {
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
+  const location = useLocation()
   const { moneda } = useLanding()
   const sucursalDisplay = getBranchDisplay(vehiculo.sucursal, i18n.language)
 
@@ -123,7 +124,15 @@ export default function TarjetaVehiculo({
   }
 
   const handleVerDetalles = () => {
-    navigate(`/catalogo/${vehiculo.id}`)
+    const isSucursales = location.pathname.includes('/sucursales')
+    if (isSucursales) {
+      sessionStorage.setItem('drivique_sucursales_scroll', String(window.scrollY))
+    }
+    const sucursalQuery = isSucursales ? `&sucursal=${encodeURIComponent(vehiculo.sucursal || '')}` : ''
+    const query = isSucursales ? `?from=sucursales${sucursalQuery}` : ''
+    navigate(`/catalogo/${vehiculo.id}${query}`, {
+      state: { from: location.pathname, sucursal: vehiculo.sucursal }
+    })
   }
 
   const handleReservar = (e) => {
