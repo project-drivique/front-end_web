@@ -1032,6 +1032,7 @@
   "sucursales": {
     "title": "As nossas agências",
     "subtitle": "Encontre a agência mais próxima",
+    "backToBranches": "Voltar às filiais",
     "search": "Pesquisar agência...",
     "address": "Morada",
     "schedule": "Horário",
