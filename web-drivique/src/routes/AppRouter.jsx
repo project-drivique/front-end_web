@@ -169,6 +169,8 @@ export default function AppRouter() {
         <Route path="/reservas" element={<RutaPrivada><ReservationsPage /></RutaPrivada>} />
         <Route path="/favoritos" element={<RutaPrivada><FavoritesPage /></RutaPrivada>} />
         <Route path="/notificaciones" element={<RutaPrivada><NotificationsPage /></RutaPrivada>} />
+        <Route path="/cupones" element={<RutaPrivada><NotificationsPage defaultTab="promociones" /></RutaPrivada>} />
+        <Route path="/promociones" element={<RutaPrivada><NotificationsPage defaultTab="promociones" /></RutaPrivada>} />
         <Route path="/soporte" element={<RutaPrivada><SupportPage /></RutaPrivada>} />
         <Route path="/respuesta" element={<PaymentResponsePage />} />
 

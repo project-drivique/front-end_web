@@ -93,128 +93,118 @@ export default function VehicleDetailsPage() {
   }
 
   return (
-    <div className="catalogo-page" style={{ minHeight: '100vh', background: c.pageBg, color: c.textPrimary }}>
+    <div className="catalogo-page vehiculo-detail-page-wrap" style={{ minHeight: '100vh', background: c.pageBg, color: c.textPrimary }}>
       
-      <div className="detalle-contenido-inner" style={{ maxWidth: 1360, margin: '0 auto', padding: '24px 24px 60px' }}>
-        
-        {/* Breadcrumb / Regresar */}
-        <div style={{ marginBottom: 20 }}>
-          <button 
-            onClick={() => navigate(-1)} 
-            style={{ 
-              background: 'none', border: 'none', cursor: 'pointer', 
-              display: 'flex', alignItems: 'center', gap: 8, 
-              color: c.textSecondary, fontWeight: 700, fontSize: 13,
-              padding: '6px 12px', borderRadius: 8,
-              transition: 'background 0.2s',
-            }}
-            onMouseEnter={(e) => e.currentTarget.style.background = c.subCardBg}
-            onMouseLeave={(e) => e.currentTarget.style.background = 'none'}
-          >
-            <FaArrowLeft size={12} /> {t('vehiculo.back', 'Volver')}
-          </button>
-        </div>
+      {/* Top Bar: Back to Catalog Pill Button + Menu Configuración */}
+      <div className="vehiculo-top-bar">
+        <button
+          type="button"
+          className="vehiculo-back-pill-btn"
+          onClick={() => navigate(esAutenticado ? '/home' : '/catalogo')}
+          style={{
+            background: c.cardBg,
+            border: `1px solid ${c.cardBorder}`,
+            color: c.textPrimary,
+          }}
+        >
+          <FaArrowLeft size={12} />
+          <span>{t('catalogo.backToCatalog', 'Volver al catálogo')}</span>
+        </button>
 
-        {/* Bloque principal del detalle */}
-        <div className="vehiculo-detail-container">
+        <MenuConfiguracion />
+      </div>
+
+      {/* Contenedor Padre Unificado */}
+      <div
+        className="vehiculo-detail-parent-card"
+        style={{
+          background: c.cardBg,
+          border: `1px solid ${c.cardBorder}`,
+        }}
+      >
+        {/* Título del vehículo */}
+        <h1 style={{ fontSize: 28, fontWeight: 900, color: c.textPrimary, margin: '0 0 24px 0', letterSpacing: '-0.02em' }}>
+          {vehiculo.nombre}
+        </h1>
+        
+        {/* Top Grid: 3 columns */}
+        <div className="vehiculo-detail-grid">
           
-          {/* Header del vehículo */}
-          <div className="vehiculo-detail-header" style={{ marginBottom: 24 }}>
-            <h1 style={{ fontSize: 28, fontWeight: 900, color: c.textPrimary, margin: '0 0 8px 0', letterSpacing: '-0.02em' }}>
-              {vehiculo.nombre}
-            </h1>
-            <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
-              <span style={{ fontSize: 12, fontWeight: 700, color: c.accentText, background: c.accentBgSoft, padding: '4px 10px', borderRadius: 20 }}>
-                {vehiculo.categoria}
-              </span>
-              <span style={{ fontSize: 12, fontWeight: 700, color: '#059669', background: '#ecfdf5', padding: '4px 10px', borderRadius: 20, border: '1px solid #c8efd9' }}>
-                {vehiculo.sucursal}
-              </span>
+          {/* Col 1: Galería + Características */}
+          <div className="vehiculo-col-left" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <ImageGallery 
+              imagenes={vehiculo.imagenes || []} 
+              nombreVehiculo={vehiculo.nombre} 
+              calificacion={vehiculo.comentarios?.length ? vehiculo.calificacion : 0} 
+              c={c}
+            />
+            
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+              <VehicleCharacteristics vehiculo={vehiculo} c={c} />
             </div>
           </div>
-          
-          {/* Top Grid: 3 columns */}
-          <div className="vehiculo-detail-grid">
+
+          {/* Col 2: Info central + Equipamiento */}
+          <div className="vehiculo-col-center" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <DescriptionSection descripcion={vehiculo.descripcion} id={vehiculo.id} c={c} />
             
-            {/* Col 1: Galería + Características */}
-            <div className="vehiculo-col-left" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <ImageGallery 
-                imagenes={vehiculo.imagenes || []} 
-                nombreVehiculo={vehiculo.nombre} 
-                calificacion={vehiculo.comentarios?.length ? vehiculo.calificacion : 0} 
+            <BranchInfo sucursalInfo={vehiculo.sucursalInfo} c={c} />
+            
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+              <EquipmentSection 
+                caracteristicas={vehiculo.caracteristicas} 
+                equipamiento={vehiculo.equipamientoTecnologico} 
                 c={c}
               />
-              
-              <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                <VehicleCharacteristics vehiculo={vehiculo} c={c} />
-              </div>
             </div>
-
-            {/* Col 2: Info central + Equipamiento */}
-            <div className="vehiculo-col-center" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <DescriptionSection descripcion={vehiculo.descripcion} id={vehiculo.id} c={c} />
-              
-              <BranchInfo sucursalInfo={vehiculo.sucursalInfo} c={c} />
-              
-              <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                <EquipmentSection 
-                  caracteristicas={vehiculo.caracteristicas} 
-                  equipamiento={vehiculo.equipamientoTecnologico} 
-                  c={c}
-                />
-              </div>
-            </div>
-
-            {/* Col 3: Tarifas y Reservar */}
-            <div className="vehiculo-col-right" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <PricingSection tarifas={vehiculo.tarifas} seguros={vehiculo.seguros} c={c} />
-
-              <RentalRequirements c={c} />
-
-              <div className="vehiculo-reserve-card" style={{ margin: 0, flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', background: c.cardBg, border: `1px solid ${c.cardBorder}` }}>
-                {promo && (
-                  <div
-                    style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: 6,
-                      background: 'var(--brand-soft)',
-                      border: '1px solid var(--brand-border, rgba(var(--brand-primary-rgb), 0.2))',
-                      padding: '5px 12px',
-                      borderRadius: 8,
-                      marginBottom: 10,
-                      alignSelf: 'flex-start',
-                    }}
-                  >
-                    <span style={{ fontSize: 11.5, fontWeight: 900, color: 'var(--brand-text, var(--brand-primary))' }}>
-                      🔥 -{promo.valorDescuento}% {t('promotions.discount', 'Descuento')}
-                    </span>
-                  </div>
-                )}
-                <div className="vehiculo-price-label" style={{ color: c.textSecondary }}>{t('catalogo.pricePerDay', 'Precio por día ($COP)')}</div>
-                <div className="vehiculo-price-value" style={{ color: promo ? '#059669' : c.accentText, display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
-                  {promo && (
-                    <span style={{ fontSize: 14, textDecoration: 'line-through', color: c.textSecondary, fontWeight: 600 }}>
-                      {formatCurrency(vehiculo.precio, moneda)}
-                    </span>
-                  )}
-                  <span>{formatCurrency(precioFinal, moneda)}</span>
-                  <span style={{ color: c.textSecondary, fontSize: 12 }}>{t('catalogo.perDay', '/día')}</span>
-                </div>
-                <button className="vehiculo-reserve-btn" onClick={handleReservar}>
-                  <FaCar /> {t('catalogo.reserveNow', 'Reservar ahora')}
-                </button>
-              </div>
-            </div>
-
           </div>
 
-          {/* Reseñas */}
-          <div className="detalle-resenas-wrapper" style={{ marginTop: 32 }}>
-            <ReviewsSection comentarios={vehiculo.comentarios} calificacion={vehiculo.calificacion} c={c} />
+          {/* Col 3: Tarifas y Reservar */}
+          <div className="vehiculo-col-right" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <PricingSection tarifas={vehiculo.tarifas} seguros={vehiculo.seguros} c={c} />
+
+            <RentalRequirements c={c} />
+
+            <div className="vehiculo-reserve-card" style={{ margin: 0, flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', background: c.cardBg, border: `1px solid ${c.cardBorder}` }}>
+              {promo && (
+                <div
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    background: 'var(--brand-soft)',
+                    border: '1px solid var(--brand-border, rgba(var(--brand-primary-rgb), 0.2))',
+                    padding: '5px 12px',
+                    borderRadius: 8,
+                    marginBottom: 10,
+                    alignSelf: 'flex-start',
+                  }}
+                >
+                  <span style={{ fontSize: 11.5, fontWeight: 900, color: 'var(--brand-text, var(--brand-primary))' }}>
+                    🔥 -{promo.valorDescuento}% {t('promotions.discount', 'Descuento')}
+                  </span>
+                </div>
+              )}
+              <div className="vehiculo-price-label" style={{ color: c.textSecondary }}>{t('catalogo.pricePerDay', 'Precio por día ($COP)')}</div>
+              <div className="vehiculo-price-value" style={{ color: promo ? '#059669' : c.accentText, display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
+                {promo && (
+                  <span style={{ fontSize: 14, textDecoration: 'line-through', color: c.textSecondary, fontWeight: 600 }}>
+                    {formatCurrency(vehiculo.precio, moneda)}
+                  </span>
+                )}
+                <span>{formatCurrency(precioFinal, moneda)}</span>
+                <span style={{ color: c.textSecondary, fontSize: 12 }}>{t('catalogo.perDay', '/día')}</span>
+              </div>
+              <button className="vehiculo-reserve-btn" onClick={handleReservar}>
+                <FaCar /> {t('catalogo.reserveNow', 'Reservar ahora')}
+              </button>
+            </div>
           </div>
 
         </div>
+
+        {/* Reseñas integradas */}
+        <ReviewsSection comentarios={vehiculo.comentarios} calificacion={vehiculo.calificacion} c={c} embedded />
 
       </div>
 
