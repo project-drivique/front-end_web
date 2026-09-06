@@ -80,102 +80,283 @@ export default function ReservationFlowPage() {
     </div>
   )
 
-  // ─── Pantalla: Firma de contrato (efectivo) ───────────────────────────────
-  if (reservaCreada && reserva.metodoPago === 'efectivo' && !contratoFirmado) return (
-    <div className="catalogo-page" style={{ minHeight: 'calc(100vh / 0.9)', background: 'var(--hero-fondo)', position: 'relative', overflow: 'hidden' }}>
-      <div style={{ position: 'absolute', top: -80, right: -80, width: 500, height: 500, borderRadius: '50%', background: 'var(--hero-orb1)', pointerEvents: 'none' }} />
-      <div style={{ position: 'absolute', bottom: -60, left: -60, width: 350, height: 350, borderRadius: '50%', background: 'var(--hero-orb2)', pointerEvents: 'none' }} />
-      <div style={{ position: 'relative', paddingTop: 48, paddingBottom: 48, paddingLeft: 24, paddingRight: 24 }}>
-        <div style={{ textAlign: 'center', maxWidth: 700, margin: '0 auto 28px' }}>
-          <h1 style={{ fontSize: 24, fontWeight: 900, color: 'var(--texto-primary)', margin: '0 0 8px' }}>
-            {t('contratoFirma.pageTitleCash')}
-          </h1>
-          <p style={{ fontSize: 14, color: 'var(--texto-second)', margin: 0 }}>{t('contratoFirma.pageSubtitle')}</p>
-        </div>
-        <ContractSignature vehiculo={vehiculo} reservaGuardada={reservaCreada} onFirmado={handleContratoFirmado} />
-      </div>
-    </div>
-  )
+  // ─── Modal: Reserva Registrada (Efectivo en Sucursal) ─────────────────────
+  if (reservaCreada && reserva.metodoPago === 'efectivo') {
+    const sucursalPago = reserva.sucursalPagoEfectivo || vehiculo?.sucursal || 'Alquiler Neiva - Centro'
+    return (
+      <div style={{
+        position: 'fixed',
+        inset: 0,
+        backgroundColor: 'rgba(15, 23, 42, 0.65)',
+        backdropFilter: 'blur(5px)',
+        zIndex: 99999,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 16
+      }}>
+        <div style={{
+          background: c.cardBg || '#ffffff',
+          borderRadius: 28,
+          maxWidth: 420,
+          width: '100%',
+          padding: '28px 24px',
+          textAlign: 'center',
+          boxShadow: '0 25px 60px -15px rgba(0, 0, 0, 0.35)',
+          border: `1px solid ${c.cardBorder || '#e2e8f0'}`,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          boxSizing: 'border-box'
+        }}>
+          {/* Logo Badge Circular */}
+          <div style={{
+            width: 68,
+            height: 68,
+            borderRadius: '50%',
+            background: '#ffffff',
+            border: '1.5px solid #e2e8f0',
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 12,
+            marginBottom: 16
+          }}>
+            <img
+              src={brand.logoDataUrl || logo}
+              alt={brand.name || 'Drivique'}
+              style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+            />
+          </div>
 
-  // ─── Pantalla: Éxito / Pago ───────────────────────────────────────────────
-  if (exito) return (
-    <div className="catalogo-page" style={{ minHeight: 'calc(100vh / 0.9)', background: c.pageBg, color: c.textPrimary, position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-      <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', padding: '24px 24px 0', maxWidth: 1360, margin: '0 auto', width: '100%', zIndex: 10 }}>
-        <button onClick={() => navigate('/home')} style={{ background: 'none', border: 'none', display: 'flex', alignItems: 'center', gap: 8, color: c.textSecondary, fontWeight: 700, cursor: 'pointer', padding: 0 }}>
-          <FaArrowLeft size={12} /> {t('common.goBack')}
-        </button>
-      </div>
-
-      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24, position: 'relative' }}>
-        <div style={{ position: 'absolute', top: -80, right: -80, width: 500, height: 500, borderRadius: '50%', background: 'var(--hero-orb1)', pointerEvents: 'none', opacity: 0.5 }} />
-        <div style={{ position: 'absolute', bottom: -60, left: -60, width: 350, height: 350, borderRadius: '50%', background: 'var(--hero-orb2)', pointerEvents: 'none', opacity: 0.5 }} />
-
-        <div style={{ position: 'relative', textAlign: 'center', maxWidth: 560, width: '100%', background: c.cardBg, borderRadius: 28, boxShadow: '0 24px 70px rgba(15,23,42,0.16)', border: `1px solid ${c.cardBorder}`, padding: isMobile ? '32px 20px' : '48px 40px' }}>
-          <img src={brand.logoDataUrl || logo} alt={brand.name} style={{ width: 116, height: 116, borderRadius: '50%', objectFit: 'contain', background: '#fff', padding: 16, margin: '0 auto 28px', boxShadow: '0 14px 34px rgba(var(--brand-secondary-rgb),0.24)', border: `1px solid ${c.cardBorder}` }} />
-          <h2 style={{ fontSize: 30, fontWeight: 900, color: c.textPrimary, margin: '0 0 14px', letterSpacing: '-0.02em' }}>
+          {/* Titulo */}
+          <h2 style={{
+            fontSize: 22,
+            fontWeight: 900,
+            color: c.textPrimary || '#0f172a',
+            margin: '0 0 10px',
+            letterSpacing: '-0.02em'
+          }}>
             {t('vehiculo.reservationRegisteredTitle', 'Reserva Registrada')}
           </h2>
 
-          {reserva.metodoPago === 'efectivo' ? (
-            <>
-              <p style={{ fontSize: 16, color: c.textSecondary, lineHeight: 1.6, margin: '0 0 20px' }}>
-                {t('vehiculo.cashReservationRegisteredDesc', { sucursal: reserva.sucursalPagoEfectivo })}
-              </p>
-              <div style={{ background: '#fffbeb', border: '1px solid #fde68a', borderRadius: 16, padding: '16px 20px', marginBottom: 20, textAlign: 'left' }}>
-                <p style={{ fontSize: 13, fontWeight: 900, color: '#92400e', margin: '0 0 4px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                  {t('vehiculo.paymentDeadlineTitle', 'Plazo para pagar')}
-                </p>
-                <p style={{ fontSize: 14, color: '#92400e', margin: 0, lineHeight: 1.5 }}>
-                  {t('vehiculo.paymentDeadlineDesc', 'Tienes {{horas}} horas desde ahora para acercarte a la sucursal.', { horas: HORAS_LIMITE_PAGO_EFECTIVO })}
-                </p>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'center' }}>
-                <button
-                  onClick={() => {
-                    showAlert({ icon: 'success', title: t('vehiculo.reservationCompletedTitle', '¡Reserva Completada!'), text: t('vehiculo.reservationCompletedText', 'Tu reserva presencial ha sido registrada.'), confirmButtonText: t('common.accept', 'Aceptar') })
-                      .then(() => navigate('/reservas'))
-                  }}
-                  style={{ display: 'inline-flex', alignItems: 'center', gap: 12, padding: '18px 36px', borderRadius: 16, background: 'var(--brand-gradient)', color: 'var(--brand-on-primary)', fontWeight: 900, fontSize: 15, border: 'none', cursor: 'pointer', boxShadow: 'var(--brand-shadow)' }}
-                >
-                  <FaMoneyBillWave size={20} />
-                  <span>{t('vehiculo.confirmAndViewReservations', 'Confirmar y Ver Mis Reservas')}</span>
-                </button>
-              </div>
-            </>
-          ) : (
-            <>
-              <p style={{ fontSize: 16, color: c.textSecondary, lineHeight: 1.6, margin: '0 0 20px' }}>
-                {t('vehiculo.wompiReservationRegisteredDesc', 'Tu reserva quedó guardada. Completa el pago digital seguro con Wompi.')}
-              </p>
-              {datosPago && (
-                <div style={{ display: 'flex', justifyContent: 'center' }}>
-                  <button
-                    onClick={handlePagarConWompi}
-                    onMouseEnter={() => setHoverWompi(true)}
-                    onMouseLeave={() => setHoverWompi(false)}
-                    disabled={redirigiendoPago}
-                    style={{
-                      display: 'inline-flex', alignItems: 'center', gap: 12,
-                      padding: '18px 40px', borderRadius: 16,
-                      background: redirigiendoPago ? '#94a3b8' : hoverWompi ? 'var(--brand-gradient-hover)' : 'var(--brand-gradient)',
-                      color: '#fff', fontWeight: 900, fontSize: 15, border: 'none',
-                      cursor: redirigiendoPago ? 'default' : 'pointer',
-                      boxShadow: '0 8px 24px rgba(var(--brand-primary-rgb),0.28)',
-                      transition: 'all 200ms ease', width: '100%', maxWidth: 320,
-                    }}
-                  >
-                    <FaCreditCard size={20} />
-                    <span>{redirigiendoPago ? t('vehiculo.redirecting', 'Redirigiendo…') : t('vehiculo.payWithWompi', 'Pagar con Wompi')}</span>
-                  </button>
-                </div>
-              )}
-              {errorPago && <p style={{ color: '#dc2626', fontSize: 13, fontWeight: 700, marginTop: 16 }}>{errorPago}</p>}
-            </>
-          )}
+          {/* Subtitulo */}
+          <p style={{
+            fontSize: 13,
+            color: c.textSecondary || '#64748b',
+            lineHeight: 1.5,
+            margin: '0 0 20px',
+            padding: '0 8px'
+          }}>
+            {t('vehiculo.cashReservationRegisteredDesc', {
+              defaultValue: `Tu reserva quedó registrada. Para confirmarla, realiza el pago en efectivo en el punto autorizado ${sucursalPago}.`,
+              sucursal: sucursalPago
+            })}
+          </p>
+
+          {/* Tarjeta de Resumen */}
+          <div style={{
+            width: '100%',
+            background: c.isDark ? 'rgba(255,255,255,0.04)' : '#f8fafc',
+            border: `1px solid ${c.cardBorder || '#e2e8f0'}`,
+            borderRadius: 16,
+            padding: '16px 18px',
+            textAlign: 'left',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 10,
+            marginBottom: 16,
+            boxSizing: 'border-box'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 13 }}>
+              <span style={{ color: c.textSecondary || '#64748b', fontWeight: 600 }}>Referencia:</span>
+              <span style={{
+                fontWeight: 800,
+                color: 'var(--brand-primary, #2563eb)',
+                fontSize: 12.5,
+                letterSpacing: '0.02em'
+              }}>
+                {reservaCreada.referencia}
+              </span>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 13 }}>
+              <span style={{ color: c.textSecondary || '#64748b', fontWeight: 600 }}>Sucursal:</span>
+              <span style={{ fontWeight: 700, color: c.textPrimary || '#0f172a' }}>
+                {sucursalPago}
+              </span>
+            </div>
+
+            <div style={{ height: 1, background: c.cardBorder || '#e2e8f0', margin: '2px 0' }} />
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{
+                fontSize: 12,
+                fontWeight: 800,
+                color: c.textSecondary || '#64748b',
+                textTransform: 'uppercase',
+                letterSpacing: '0.04em'
+              }}>
+                TOTAL A PAGAR:
+              </span>
+              <span style={{
+                fontSize: 18,
+                fontWeight: 900,
+                color: 'var(--brand-primary, #2563eb)'
+              }}>
+                {formatCurrency(reservaCreada.total, moneda)}
+              </span>
+            </div>
+          </div>
+
+          {/* Tarjeta de Advertencia Plazo */}
+          <div style={{
+            width: '100%',
+            background: '#fefce8',
+            border: '1.5px solid #fef08a',
+            borderRadius: 16,
+            padding: '14px 16px',
+            textAlign: 'left',
+            marginBottom: 20,
+            boxSizing: 'border-box'
+          }}>
+            <p style={{
+              fontSize: 11,
+              fontWeight: 800,
+              color: '#854d0e',
+              margin: '0 0 6px',
+              textTransform: 'uppercase',
+              letterSpacing: '0.04em'
+            }}>
+              PLAZO PARA PAGAR
+            </p>
+            <p style={{
+              fontSize: 12,
+              color: '#854d0e',
+              margin: 0,
+              lineHeight: 1.45,
+              fontWeight: 500
+            }}>
+              Tienes 72 horas desde ahora para acercarte a la sucursal y pagar. Si no pagas dentro de este plazo, la reserva se cancelará automáticamente.
+            </p>
+          </div>
+
+          {/* Botones de Accion */}
+          <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <button
+              type="button"
+              onClick={() => {
+                sessionStorage.removeItem(`drivique_reservation_state_${vehiculo.id}`)
+                navigate('/reservas')
+              }}
+              style={{
+                width: '100%',
+                height: 48,
+                borderRadius: 14,
+                background: 'var(--brand-primary, #2563eb)',
+                color: '#ffffff',
+                border: 'none',
+                fontWeight: 800,
+                fontSize: 14,
+                cursor: 'pointer',
+                boxShadow: '0 4px 14px rgba(37, 99, 235, 0.25)',
+                transition: 'all 0.2s',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              Ir a Mis Reservas
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                sessionStorage.removeItem(`drivique_reservation_state_${vehiculo.id}`)
+                navigate('/home')
+              }}
+              style={{
+                width: '100%',
+                height: 46,
+                borderRadius: 14,
+                background: c.cardBg || '#ffffff',
+                color: c.textPrimary || '#0f172a',
+                border: `1.5px solid ${c.cardBorder || '#e2e8f0'}`,
+                fontWeight: 700,
+                fontSize: 14,
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              Volver al Inicio
+            </button>
+          </div>
         </div>
       </div>
-    </div>
-  )
+    )
+  }
+
+  // ─── Modal / Pantalla: Pago Digital (Wompi) ────────────────────────────────
+  if (exito && reserva.metodoPago !== 'efectivo') {
+    return (
+      <div className="catalogo-page" style={{ minHeight: 'calc(100vh / 0.9)', background: c.pageBg, color: c.textPrimary, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px 16px' }}>
+        <div style={{ background: c.cardBg, border: `1px solid ${c.cardBorder}`, borderRadius: 24, padding: isMobile ? 24 : 40, maxWidth: 520, width: '100%', textAlign: 'center', boxShadow: '0 10px 40px rgba(0,0,0,0.1)' }}>
+          <div style={{ width: 72, height: 72, borderRadius: '50%', background: '#ffffff', border: '1.5px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 14, margin: '0 auto 20px' }}>
+            <img src={brand.logoDataUrl || logo} alt={brand.name || 'Drivique'} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+          </div>
+          <h2 style={{ fontSize: 24, fontWeight: 900, color: c.textPrimary, margin: '0 0 12px' }}>
+            {t('vehiculo.reservationRegisteredTitle', 'Reserva Registrada')}
+          </h2>
+          <p style={{ fontSize: 15, color: c.textSecondary, lineHeight: 1.6, margin: '0 0 24px' }}>
+            {t('vehiculo.wompiReservationRegisteredDesc', 'Tu reserva quedó guardada. Completa el pago digital seguro con Wompi.')}
+          </p>
+          {datosPago && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center' }}>
+              <button
+                onClick={handlePagarConWompi}
+                onMouseEnter={() => setHoverWompi(true)}
+                onMouseLeave={() => setHoverWompi(false)}
+                disabled={redirigiendoPago}
+                style={{
+                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 12,
+                  padding: '16px 32px', borderRadius: 16,
+                  background: redirigiendoPago ? '#94a3b8' : hoverWompi ? 'var(--brand-gradient-hover)' : 'var(--brand-gradient)',
+                  color: '#fff', fontWeight: 900, fontSize: 15, border: 'none',
+                  cursor: redirigiendoPago ? 'default' : 'pointer',
+                  boxShadow: '0 8px 24px rgba(var(--brand-primary-rgb),0.28)',
+                  transition: 'all 200ms ease', width: '100%', maxWidth: 320,
+                }}
+              >
+                <FaCreditCard size={18} />
+                <span>{redirigiendoPago ? t('vehiculo.redirecting', 'Redirigiendo…') : t('vehiculo.payWithWompi', 'Pagar con Wompi')}</span>
+              </button>
+              <button
+                onClick={() => {
+                  sessionStorage.removeItem(`drivique_reservation_state_${vehiculo.id}`)
+                  navigate('/reservas')
+                }}
+                style={{
+                  padding: '12px 24px', borderRadius: 12,
+                  background: 'transparent',
+                  color: c.textSecondary,
+                  border: `1px solid ${c.cardBorder}`,
+                  fontWeight: 700, fontSize: 13,
+                  cursor: 'pointer', width: '100%', maxWidth: 320,
+                }}
+              >
+                Pagar más tarde (Ir a Mis Reservas)
+              </button>
+            </div>
+          )}
+          {errorPago && <p style={{ color: '#dc2626', fontSize: 13, fontWeight: 700, marginTop: 16 }}>{errorPago}</p>}
+        </div>
+      </div>
+    )
+  }
 
   // ─── Flujo principal ──────────────────────────────────────────────────────
   return (

@@ -383,7 +383,7 @@ export function useReservationFlow() {
       referencia,
       vehiculoId: vehiculo.id,
       vehiculoNombre: vehiculo.nombre,
-      estado: 'PENDIENTE',
+      estado: reserva.metodoPago === 'efectivo' ? 'PENDIENTE_EFECTIVO' : 'PENDIENTE',
       fechaReserva: new Date().toISOString(),
       datosForm,
       reservaDetalles: reserva,
@@ -397,12 +397,7 @@ export function useReservationFlow() {
     sessionStorage.setItem('current_wompi_reference', referencia)
     setReservaCreada(reservaGuardada)
     setDatosPago({ referencia, amountInCents: aCentavos(finalTotalCop) })
-
-    if (reserva.metodoPago === 'efectivo') {
-      setContratoFirmado(false)
-    } else {
-      setExito(true)
-    }
+    setExito(true)
 
     // Limpiar sessionStorage al completar reserva exitosamente
     sessionStorage.removeItem(storageKey)

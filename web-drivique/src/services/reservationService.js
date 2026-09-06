@@ -6,8 +6,8 @@
 const STORAGE_KEY = 'drivique_reservas';
 
 // Tiempo que tiene el usuario para acercarse a la sucursal a pagar en
-// efectivo antes de que la reserva se cancele automáticamente.
-export const HORAS_LIMITE_PAGO_EFECTIVO = 4;
+// efectivo antes de que la reserva se cancele automáticamente (72 horas).
+export const HORAS_LIMITE_PAGO_EFECTIVO = 72;
 
 function calcularFechaLimitePago() {
   return new Date(Date.now() + HORAS_LIMITE_PAGO_EFECTIVO * 60 * 60 * 1000).toISOString();
