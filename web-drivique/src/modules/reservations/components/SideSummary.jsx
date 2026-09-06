@@ -831,7 +831,7 @@ export default function ResumenLateral({
                         <div style={{
                           width: '35%',
                           minWidth: 120,
-                          background: c?.isDark ? 'rgba(var(--brand-primary-rgb), 0.08)' : 'rgba(239, 246, 255, 0.45)',
+                          background: c?.isDark ? 'rgba(225, 29, 72, 0.08)' : 'rgba(225, 29, 72, 0.04)',
                           display: 'flex',
                           flexDirection: 'column',
                           alignItems: 'center',
@@ -881,7 +881,7 @@ export default function ResumenLateral({
                       {isExpanded && (
                         <div style={{
                           borderTop: `1.5px dashed ${c?.cardBorder || '#e2e8f0'}`,
-                          background: c?.isDark ? 'rgba(255,255,255,0.03)' : '#f8fafc',
+                          background: c?.isDark ? 'rgba(225, 29, 72, 0.03)' : '#fff9fa',
                           padding: '18px 22px 24px',
                           display: 'flex',
                           flexDirection: 'column',
