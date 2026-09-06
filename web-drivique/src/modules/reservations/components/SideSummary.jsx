@@ -672,7 +672,7 @@ export default function ResumenLateral({
             </div>
 
             {/* Coupons List */}
-            <div style={{ padding: '16px 20px 20px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 14, flex: 1 }}>
+            <div style={{ padding: '16px 20px 24px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 14, flex: 1, minHeight: 0 }}>
               {cuponesDisponibles.length === 0 ? (
                 <div style={{ textAlign: 'center', padding: '36px 16px', color: c?.textSecondary || '#64748b' }}>
                   <FaTicketAlt size={36} style={{ opacity: 0.35, margin: '0 auto 12px' }} />
@@ -704,7 +704,9 @@ export default function ResumenLateral({
                           ? '0 6px 16px rgba(225, 29, 72, 0.08)'
                           : '0 2px 8px rgba(0,0,0,0.03)',
                         overflow: 'hidden',
-                        transition: 'all 0.2s ease'
+                        flexShrink: 0,
+                        display: 'flex',
+                        flexDirection: 'column'
                       }}
                     >
                       {/* Ticket top row */}
@@ -811,16 +813,18 @@ export default function ResumenLateral({
                             background: c?.isDark ? '#0f172a' : '#f1f5f9',
                             border: `1px solid ${c?.cardBorder || '#e2e8f0'}`
                           }} />
-                          <div style={{
-                            position: 'absolute',
-                            bottom: -8,
-                            left: -8,
-                            width: 16,
-                            height: 16,
-                            borderRadius: '50%',
-                            background: c?.isDark ? '#0f172a' : '#f1f5f9',
-                            border: `1px solid ${c?.cardBorder || '#e2e8f0'}`
-                          }} />
+                          {!isExpanded && (
+                            <div style={{
+                              position: 'absolute',
+                              bottom: -8,
+                              left: -8,
+                              width: 16,
+                              height: 16,
+                              borderRadius: '50%',
+                              background: c?.isDark ? '#0f172a' : '#f1f5f9',
+                              border: `1px solid ${c?.cardBorder || '#e2e8f0'}`
+                            }} />
+                          )}
                         </div>
 
                         {/* Right side: Discount & Apply */}
@@ -878,16 +882,17 @@ export default function ResumenLateral({
                         <div style={{
                           borderTop: `1.5px dashed ${c?.cardBorder || '#e2e8f0'}`,
                           background: c?.isDark ? 'rgba(255,255,255,0.03)' : '#f8fafc',
-                          padding: '16px 20px',
+                          padding: '18px 22px 24px',
                           display: 'flex',
                           flexDirection: 'column',
-                          gap: 10
+                          gap: 12,
+                          boxSizing: 'border-box'
                         }}>
                           {/* Red Title & Description */}
                           <div>
                             <h5 style={{
-                              margin: '0 0 4px',
-                              fontSize: 13.5,
+                              margin: '0 0 6px',
+                              fontSize: 14,
                               fontWeight: 800,
                               color: 'var(--brand-primary, #e11d48)'
                             }}>
@@ -895,9 +900,9 @@ export default function ResumenLateral({
                             </h5>
                             <p style={{
                               margin: 0,
-                              fontSize: 12.5,
+                              fontSize: 13,
                               color: c?.textSecondary || '#475569',
-                              lineHeight: 1.5
+                              lineHeight: 1.55
                             }}>
                               {promo.descripcion ||
                                 (promo.tipoDescuento === 'porcentaje'
@@ -907,21 +912,21 @@ export default function ResumenLateral({
                           </div>
 
                           {/* Terms header */}
-                          <strong style={{ fontSize: 13, fontWeight: 800, color: c?.textPrimary || '#0f172a' }}>
+                          <strong style={{ fontSize: 13.5, fontWeight: 800, color: c?.textPrimary || '#0f172a' }}>
                             {t('promotions.termsAndConditionsHeader', 'Términos y condiciones:')}
                           </strong>
 
                           {/* Bullets */}
                           <ul style={{
                             margin: 0,
-                            paddingLeft: 18,
+                            paddingLeft: 20,
                             listStyleType: 'disc',
                             display: 'flex',
                             flexDirection: 'column',
-                            gap: 8,
+                            gap: 9,
                             fontSize: 12.5,
                             color: c?.textSecondary || '#475569',
-                            lineHeight: 1.5
+                            lineHeight: 1.55
                           }}>
                             <li>{t('promotions.termsDigitalPayments', 'Válido para pagos digitales e iniciales.')}</li>
                             <li>{t('promotions.termsNonTransferable', 'No transferible a otros usuarios.')}</li>
