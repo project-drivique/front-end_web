@@ -153,21 +153,14 @@ export default function DatosPersonales({
 
   const handleTermsScroll = (e) => {
     const { scrollTop, scrollHeight, clientHeight } = e.target;
-    if (scrollTop + clientHeight >= scrollHeight - 25) {
+    if (scrollHeight > clientHeight && scrollTop + clientHeight >= scrollHeight - 25) {
       setHasScrolledToBottom(true);
     }
   };
 
   useEffect(() => {
     if (verTyC) {
-      setTimeout(() => {
-        if (termsScrollRef.current) {
-          const { scrollHeight, clientHeight } = termsScrollRef.current;
-          if (scrollHeight <= clientHeight + 20) {
-            setHasScrolledToBottom(true);
-          }
-        }
-      }, 100);
+      setHasScrolledToBottom(false);
     }
   }, [verTyC]);
 
@@ -949,48 +942,11 @@ export default function DatosPersonales({
                 </div>
               </div>
 
-              {/* Scroll Helper / Status Badge */}
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                paddingTop: 2
-              }}>
-                {!hasScrolledToBottom && !terminosLeidos ? (
-                  <span style={{
-                    fontSize: 11.5,
-                    fontWeight: 700,
-                    color: 'var(--brand-primary, #e11d48)',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 6,
-                    background: c?.isDark ? 'rgba(225,29,72,0.1)' : '#fff1f2',
-                    padding: '4px 12px',
-                    borderRadius: 20
-                  }}>
-                    ↓ Desplaza hacia abajo para ver todos los puntos (1 al 9)
-                  </span>
-                ) : (
-                  <span style={{
-                    fontSize: 11.5,
-                    fontWeight: 700,
-                    color: '#10b981',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 6,
-                    background: c?.isDark ? 'rgba(16,185,129,0.1)' : '#ecfdf5',
-                    padding: '4px 12px',
-                    borderRadius: 20
-                  }}>
-                    ✓ Has leído todos los términos y condiciones
-                  </span>
-                )}
-              </div>
             </div>
 
             {/* Footer Buttons */}
             <div style={{
-              padding: '12px 24px 20px',
+              padding: '16px 24px 20px',
               borderTop: `1px solid ${c?.cardBorder || '#e2e8f0'}`,
               display: 'flex',
               gap: 12,
@@ -1017,7 +973,7 @@ export default function DatosPersonales({
 
               <button
                 type="button"
-                disabled={!hasScrolledToBottom && !terminosLeidos}
+                disabled={!hasScrolledToBottom}
                 onClick={() => {
                   setTerminosLeidos(true);
                   onCambio('terminos', true);
@@ -1028,16 +984,16 @@ export default function DatosPersonales({
                   height: 48,
                   borderRadius: 12,
                   border: 'none',
-                  background: (hasScrolledToBottom || terminosLeidos)
+                  background: hasScrolledToBottom
                     ? 'var(--brand-gradient, #e11d48)'
                     : (c?.isDark ? '#334155' : '#e2e8f0'),
-                  color: (hasScrolledToBottom || terminosLeidos)
+                  color: hasScrolledToBottom
                     ? '#ffffff'
                     : (c?.isDark ? '#64748b' : '#94a3b8'),
                   fontWeight: 700,
                   fontSize: 14,
-                  cursor: (hasScrolledToBottom || terminosLeidos) ? 'pointer' : 'not-allowed',
-                  boxShadow: (hasScrolledToBottom || terminosLeidos)
+                  cursor: hasScrolledToBottom ? 'pointer' : 'not-allowed',
+                  boxShadow: hasScrolledToBottom
                     ? '0 4px 14px rgba(225, 29, 72, 0.25)'
                     : 'none',
                   transition: 'all 0.2s'
