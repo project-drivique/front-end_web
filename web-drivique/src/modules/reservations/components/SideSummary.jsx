@@ -46,7 +46,7 @@ export default function ResumenLateral({
 
   const [cuponesDisponibles, setCuponesDisponibles] = useState(() => {
     try {
-      return promotionManagementService.listPublished(null) || [];
+      return promotionManagementService.listPublishedForVehicle(vehiculo, null) || [];
     } catch {
       return [];
     }
@@ -55,14 +55,15 @@ export default function ResumenLateral({
   useEffect(() => {
     const handleUpdate = () => {
       try {
-        setCuponesDisponibles(promotionManagementService.listPublished(null) || []);
+        setCuponesDisponibles(promotionManagementService.listPublishedForVehicle(vehiculo, null) || []);
       } catch {
         setCuponesDisponibles([]);
       }
     };
+    handleUpdate();
     window.addEventListener(promotionManagementService.eventName, handleUpdate);
     return () => window.removeEventListener(promotionManagementService.eventName, handleUpdate);
-  }, []);
+  }, [vehiculo]);
 
   const editHabilitado = pantalla >= 3
 

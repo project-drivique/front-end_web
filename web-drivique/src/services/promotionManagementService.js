@@ -233,29 +233,36 @@ export const promotionManagementService = {
       .sort((a, b) => (b.destacada ? 1 : 0) - (a.destacada ? 1 : 0))
   },
 
+  listPublishedForVehicle(vehicle, user = null) {
+    const published = this.listPublished(user)
+    if (!vehicle) return published
+    return published.filter((item) => {
+      // 1. Si la promo está restringida a un vehículo específico
+      if (item.vehiculoId || item.vehiculoNombre) {
+        const matchesId = item.vehiculoId && Number(item.vehiculoId) === Number(vehicle.id)
+        const matchesName =
+          item.vehiculoNombre &&
+          vehicle.nombre &&
+          (vehicle.nombre.toLowerCase().includes(item.vehiculoNombre.toLowerCase()) ||
+            item.vehiculoNombre.toLowerCase().includes(vehicle.nombre.toLowerCase()))
+        return matchesId || matchesName
+      }
+      // 2. Si la promo está restringida a una categoría específica
+      if (item.categoriaVehiculo && item.categoriaVehiculo !== 'Todos') {
+        return Boolean(
+          vehicle.categoria &&
+            item.categoriaVehiculo.toLowerCase() === vehicle.categoria.toLowerCase()
+        )
+      }
+      // 3. Si es global (aplica para todos los vehículos)
+      return true
+    })
+  },
+
   getPromotionForVehicle(vehicle, user = null) {
     if (!vehicle) return null
-    const published = this.listPublished(user)
-    
-    // 1. Coincidencia por vehículo específico
-    const specificPromo = published.find((p) =>
-      (p.vehiculoId && Number(p.vehiculoId) === Number(vehicle.id)) ||
-      (p.vehiculoNombre && vehicle.nombre && vehicle.nombre.toLowerCase().includes(p.vehiculoNombre.toLowerCase()))
-    )
-    if (specificPromo) return specificPromo
-
-    // 2. Coincidencia por categoría específica
-    const catPromo = published.find((p) =>
-      p.categoriaVehiculo &&
-      p.categoriaVehiculo !== 'Todos' &&
-      vehicle.categoria &&
-      p.categoriaVehiculo.toLowerCase() === vehicle.categoria.toLowerCase()
-    )
-    if (catPromo) return catPromo
-
-    // 3. Promoción global para todos los vehículos
-    const globalPromo = published.find((p) => p.categoriaVehiculo === 'Todos' && !p.vehiculoId)
-    return globalPromo || null
+    const published = this.listPublishedForVehicle(vehicle, user)
+    return published[0] || null
   },
 
   validateCode(code, context = {}) {
