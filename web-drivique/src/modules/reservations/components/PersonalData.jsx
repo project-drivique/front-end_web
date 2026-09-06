@@ -252,12 +252,12 @@ export default function DatosPersonales({
     : 0;
   const total = totalSinDesc - discount;
 
-  const inputStyle = err => ({
+  const inputStyle = () => ({
     width: '100%',
     padding: '12px 16px',
     borderRadius: 12,
-    border: `1.5px solid ${err ? '#ef4444' : (c?.cardBorder || '#e2e8f0')}`,
-    background: err ? (c?.isDark ? 'rgba(239,68,68,0.1)' : '#fef2f2') : (c?.isDark ? 'rgba(255,255,255,0.05)' : '#f8fafc'),
+    border: `1.5px solid ${c?.cardBorder || '#e2e8f0'}`,
+    background: c?.isDark ? 'rgba(255,255,255,0.05)' : '#f8fafc',
     color: c?.textPrimary || 'inherit',
     fontSize: 14,
     boxSizing: 'border-box',
