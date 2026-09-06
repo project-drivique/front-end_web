@@ -42,7 +42,7 @@ export default function ResumenLateral({
   const [codigoCupon, setCodigoCupon] = useState('')
   const [promoError, setPromoError] = useState('')
   const [modalCupones, setModalCupones] = useState(false)
-  const [viewingCondicionesPromo, setViewingCondicionesPromo] = useState(null)
+  const [expandedPromoId, setExpandedPromoId] = useState(null)
 
   const [cuponesDisponibles, setCuponesDisponibles] = useState(() => {
     try {
@@ -322,7 +322,7 @@ export default function ResumenLateral({
                   <button
                     type="button"
                     onClick={() => {
-                      setViewingCondicionesPromo(appliedPromotion);
+                      setExpandedPromoId(appliedPromotion.id || appliedPromotion.codigo);
                       setModalCupones(true);
                     }}
                     style={{
@@ -596,7 +596,7 @@ export default function ResumenLateral({
         </div>
       </aside>
 
-      {/* Modal 1: Cupones Disponibles / Condiciones */}
+      {/* Modal 1: Cupones Disponibles */}
       {modalCupones && (
         <div
           style={{
@@ -612,14 +612,14 @@ export default function ResumenLateral({
           }}
           onClick={() => {
             setModalCupones(false);
-            setViewingCondicionesPromo(null);
+            setExpandedPromoId(null);
           }}
         >
           <div
             style={{
               background: c?.cardBg || '#ffffff',
               borderRadius: 22,
-              maxWidth: viewingCondicionesPromo ? 480 : 520,
+              maxWidth: 540,
               width: '100%',
               maxHeight: '88vh',
               overflow: 'hidden',
@@ -645,16 +645,14 @@ export default function ResumenLateral({
                 fontWeight: 800,
                 color: c?.textPrimary || '#0f172a'
               }}>
-                {viewingCondicionesPromo
-                  ? t('promotions.couponConditionsTitle', 'Condiciones del Cupón')
-                  : t('promotions.availableCouponsTitle', 'Cupones Disponibles')}
+                {t('promotions.availableCouponsTitle', 'Cupones Disponibles')}
               </h3>
 
               <button
                 type="button"
                 onClick={() => {
                   setModalCupones(false);
-                  setViewingCondicionesPromo(null);
+                  setExpandedPromoId(null);
                 }}
                 style={{
                   background: 'none',
@@ -673,195 +671,44 @@ export default function ResumenLateral({
               </button>
             </div>
 
-            {viewingCondicionesPromo ? (
-              /* Complete, Rich Terms & Conditions Screen */
-              <div style={{ display: 'flex', flexDirection: 'column', overflowY: 'auto', flex: 1 }}>
-                <div style={{ padding: '22px 26px 20px', flex: 1 }}>
-                  {/* Red Title */}
-                  <h4 style={{
-                    margin: '0 0 6px',
-                    fontSize: 17,
-                    fontWeight: 800,
-                    color: 'var(--brand-primary, #e11d48)'
-                  }}>
-                    {viewingCondicionesPromo.nombre || viewingCondicionesPromo.titulo || viewingCondicionesPromo.codigo}
-                  </h4>
-
-                  {/* Subtitle / Description */}
-                  <p style={{
-                    margin: '0 0 20px',
-                    fontSize: 13.5,
-                    color: c?.textSecondary || '#475569',
-                    lineHeight: 1.55
-                  }}>
-                    {viewingCondicionesPromo.descripcion ||
-                      (viewingCondicionesPromo.tipoDescuento === 'porcentaje'
-                        ? `Descuento del ${viewingCondicionesPromo.valorDescuento}% exclusivo para reservas del ${viewingCondicionesPromo.vehiculoNombre || (vehiculo?.nombre ? vehiculo.nombre : 'vehículo seleccionado')}.`
-                        : `Descuento de $${Number(viewingCondicionesPromo.valorDescuento).toLocaleString('es-CO')} COP exclusivo para reservas del ${viewingCondicionesPromo.vehiculoNombre || (vehiculo?.nombre ? vehiculo.nombre : 'vehículo seleccionado')}.`)}
+            {/* Coupons List */}
+            <div style={{ padding: '16px 20px 20px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 14, flex: 1 }}>
+              {cuponesDisponibles.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '36px 16px', color: c?.textSecondary || '#64748b' }}>
+                  <FaTicketAlt size={36} style={{ opacity: 0.35, margin: '0 auto 12px' }} />
+                  <p style={{ margin: 0, fontSize: 14, fontWeight: 600 }}>
+                    {t('promotions.emptyTitle', 'No hay cupones activos disponibles para este vehículo en este momento')}
                   </p>
-
-                  {/* Terms & Conditions Header */}
-                  <h5 style={{
-                    margin: '0 0 14px',
-                    fontSize: 14,
-                    fontWeight: 800,
-                    color: c?.textPrimary || '#0f172a'
-                  }}>
-                    {t('promotions.termsAndConditionsHeader', 'Términos y condiciones:')}
-                  </h5>
-
-                  {/* Full Terms & Conditions List */}
-                  <ul style={{
-                    margin: 0,
-                    paddingLeft: 20,
-                    listStyleType: 'disc',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: 10,
-                    fontSize: 13,
-                    color: c?.textSecondary || '#475569',
-                    lineHeight: 1.55
-                  }}>
-                    <li>{t('promotions.termsDigitalPayments', 'Válido para pagos digitales e iniciales.')}</li>
-                    <li>{t('promotions.termsNonTransferable', 'No transferible a otros usuarios.')}</li>
-                    <li>{t('promotions.termsOnePerReservation', 'Solo se puede aplicar un cupón por reserva.')}</li>
-                    <li>
-                      {t('promotions.termsValidCategories', 'Categorías válidas:')}{' '}
-                      <strong style={{ color: c?.textPrimary || '#0f172a' }}>
-                        {(viewingCondicionesPromo.categoriaVehiculo || 'TODOS').toUpperCase()}
-                      </strong>
-                      {viewingCondicionesPromo.vehiculoNombre ? ` (Exclusivo: ${viewingCondicionesPromo.vehiculoNombre})` : ''}
-                    </li>
-                    {viewingCondicionesPromo.audiencia && viewingCondicionesPromo.audiencia !== 'todos' && (
-                      <li>
-                        Exclusivo para{' '}
-                        <strong style={{ color: c?.textPrimary || '#0f172a' }}>
-                          {viewingCondicionesPromo.audiencia === 'nuevos' ? 'nuevos usuarios' : 'clientes frecuentes'}
-                        </strong>.
-                      </li>
-                    )}
-                    {viewingCondicionesPromo.reservaMinima > 0 ? (
-                      <li>
-                        {t('promotions.termsMinAmount', 'Requiere un monto mínimo de reserva de')} ${Number(viewingCondicionesPromo.reservaMinima).toLocaleString('es-CO')} COP. {t('promotions.termsNonCumulative', 'No acumulable con otras promociones.')}
-                      </li>
-                    ) : (
-                      <li>
-                        {t('promotions.termsGeneralConditions', 'Válido para vehículos de la flota. No acumulable con otras promociones.')}
-                      </li>
-                    )}
-                    <li>
-                      {t('promotions.termsExpires', 'Vence:')}{' '}
-                      <strong style={{ color: c?.textPrimary || '#0f172a' }}>
-                        {formatearFechaExp(viewingCondicionesPromo.fechaFin)}
-                      </strong>
-                    </li>
-                    {viewingCondicionesPromo.condiciones && (
-                      <li>
-                        Condiciones especiales:{' '}
-                        <strong style={{ color: c?.textPrimary || '#0f172a' }}>
-                          {viewingCondicionesPromo.condiciones}
-                        </strong>
-                      </li>
-                    )}
-                  </ul>
                 </div>
+              ) : (
+                cuponesDisponibles.map(promo => {
+                  const promoKey = promo.id || promo.codigo;
+                  const isExpanded = expandedPromoId === promoKey;
+                  const promoThumbnails = (promo.imagenes && promo.imagenes.length > 0)
+                    ? promo.imagenes.slice(0, 3)
+                    : (vehiculo?.imagenes?.length ? vehiculo.imagenes.slice(0, 3) : (promo.vehiculoImagen ? [promo.vehiculoImagen] : []));
+                  const valorDescFormatted = promo.tipoDescuento === 'porcentaje'
+                    ? `${promo.valorDescuento}% OFF`
+                    : `$${Number(promo.valorDescuento).toLocaleString('es-CO')} OFF`;
 
-                {/* Footer Action Button */}
-                <div style={{
-                  padding: '16px 26px 24px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 10
-                }}>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const codigo = viewingCondicionesPromo.codigo;
-                      setModalCupones(false);
-                      setViewingCondicionesPromo(null);
-                      if (onApplyPromotion && (!appliedPromotion || appliedPromotion.codigo !== codigo)) {
-                        try {
-                          onApplyPromotion(codigo);
-                          setPromoError('');
-                        } catch (err) {
-                          setPromoError(getErrorMessage(err));
-                        }
-                      }
-                    }}
-                    style={{
-                      width: '100%',
-                      background: 'var(--brand-gradient, #e11d48)',
-                      color: '#ffffff',
-                      border: 'none',
-                      borderRadius: 12,
-                      padding: '14px 20px',
-                      fontWeight: 800,
-                      fontSize: 14,
-                      cursor: 'pointer',
-                      boxShadow: '0 4px 14px rgba(225, 29, 72, 0.25)',
-                      transition: 'transform 0.15s ease'
-                    }}
-                  >
-                    Entendido
-                  </button>
-
-                  {cuponesDisponibles.length > 0 && (
-                    <button
-                      type="button"
-                      onClick={() => setViewingCondicionesPromo(null)}
+                  return (
+                    <div
+                      key={promoKey}
                       style={{
-                        background: 'none',
-                        border: 'none',
-                        color: c?.textSecondary || '#64748b',
-                        fontSize: 12.5,
-                        fontWeight: 700,
-                        cursor: 'pointer',
-                        padding: '4px',
-                        textAlign: 'center'
+                        borderRadius: 16,
+                        border: promo.destacada
+                          ? `1.5px solid rgba(225, 29, 72, 0.35)`
+                          : `1.5px solid ${c?.cardBorder || '#e2e8f0'}`,
+                        background: c?.cardBg || '#ffffff',
+                        boxShadow: promo.destacada
+                          ? '0 6px 16px rgba(225, 29, 72, 0.08)'
+                          : '0 2px 8px rgba(0,0,0,0.03)',
+                        overflow: 'hidden',
+                        transition: 'all 0.2s ease'
                       }}
                     >
-                      ← Volver a cupones disponibles
-                    </button>
-                  )}
-                </div>
-              </div>
-            ) : (
-              /* Coupons List */
-              <div style={{ padding: '0 20px 20px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 14, flex: 1 }}>
-                {cuponesDisponibles.length === 0 ? (
-                  <div style={{ textAlign: 'center', padding: '36px 16px', color: c?.textSecondary || '#64748b' }}>
-                    <FaTicketAlt size={36} style={{ opacity: 0.35, margin: '0 auto 12px' }} />
-                    <p style={{ margin: 0, fontSize: 14, fontWeight: 600 }}>
-                      {t('promotions.emptyTitle', 'No hay cupones activos disponibles para este vehículo en este momento')}
-                    </p>
-                  </div>
-                ) : (
-                  cuponesDisponibles.map(promo => {
-                    const promoKey = promo.id || promo.codigo;
-                    const promoThumbnails = (promo.imagenes && promo.imagenes.length > 0)
-                      ? promo.imagenes.slice(0, 3)
-                      : (vehiculo?.imagenes?.length ? vehiculo.imagenes.slice(0, 3) : (promo.vehiculoImagen ? [promo.vehiculoImagen] : []));
-                    const valorDescFormatted = promo.tipoDescuento === 'porcentaje'
-                      ? `${promo.valorDescuento}% OFF`
-                      : `$${Number(promo.valorDescuento).toLocaleString('es-CO')} OFF`;
-
-                    return (
-                      <div
-                        key={promoKey}
-                        style={{
-                          display: 'flex',
-                          borderRadius: 16,
-                          border: promo.destacada
-                            ? `1.5px solid rgba(225, 29, 72, 0.35)`
-                            : `1.5px solid ${c?.cardBorder || '#e2e8f0'}`,
-                          background: c?.cardBg || '#ffffff',
-                          boxShadow: promo.destacada
-                            ? '0 6px 16px rgba(225, 29, 72, 0.08)'
-                            : '0 2px 8px rgba(0,0,0,0.03)',
-                          overflow: 'hidden',
-                          position: 'relative'
-                        }}
-                      >
+                      {/* Ticket top row */}
+                      <div style={{ display: 'flex', position: 'relative' }}>
                         {/* Left ticket details */}
                         <div style={{ flex: 1, padding: '14px 16px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minWidth: 0 }}>
                           <div>
@@ -917,14 +764,14 @@ export default function ResumenLateral({
                             </div>
                           )}
 
-                          {/* Bottom row: Exp date & View Condiciones */}
+                          {/* Bottom row: Exp date & Toggle Condiciones */}
                           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginTop: 4 }}>
                             <span style={{ fontSize: 11, color: c?.textSecondary || '#64748b' }}>
                               Exp: {formatearFechaExp(promo.fechaFin)}
                             </span>
                             <button
                               type="button"
-                              onClick={() => setViewingCondicionesPromo(promo)}
+                              onClick={() => setExpandedPromoId(isExpanded ? null : promoKey)}
                               style={{
                                 background: 'none',
                                 border: 'none',
@@ -935,10 +782,12 @@ export default function ResumenLateral({
                                 cursor: 'pointer',
                                 display: 'inline-flex',
                                 alignItems: 'center',
-                                gap: 2
+                                gap: 3
                               }}
                             >
-                              {t('promotions.conditions', 'Condiciones')} ›
+                              {isExpanded
+                                ? t('promotions.hideConditions', 'Ocultar condiciones ▴')
+                                : t('promotions.viewConditions', 'Condiciones ▾')}
                             </button>
                           </div>
                         </div>
@@ -996,6 +845,7 @@ export default function ResumenLateral({
                             type="button"
                             onClick={() => {
                               setModalCupones(false);
+                              setExpandedPromoId(null);
                               if (onApplyPromotion) {
                                 try {
                                   onApplyPromotion(promo.codigo);
@@ -1022,11 +872,106 @@ export default function ResumenLateral({
                           </button>
                         </div>
                       </div>
-                    );
-                  })
-                )}
-              </div>
-            )}
+
+                      {/* Expandable Conditions Section below the card */}
+                      {isExpanded && (
+                        <div style={{
+                          borderTop: `1.5px dashed ${c?.cardBorder || '#e2e8f0'}`,
+                          background: c?.isDark ? 'rgba(255,255,255,0.03)' : '#f8fafc',
+                          padding: '16px 20px',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: 10
+                        }}>
+                          {/* Red Title & Description */}
+                          <div>
+                            <h5 style={{
+                              margin: '0 0 4px',
+                              fontSize: 13.5,
+                              fontWeight: 800,
+                              color: 'var(--brand-primary, #e11d48)'
+                            }}>
+                              {promo.nombre || promo.titulo || promo.codigo}
+                            </h5>
+                            <p style={{
+                              margin: 0,
+                              fontSize: 12.5,
+                              color: c?.textSecondary || '#475569',
+                              lineHeight: 1.5
+                            }}>
+                              {promo.descripcion ||
+                                (promo.tipoDescuento === 'porcentaje'
+                                  ? `Descuento del ${promo.valorDescuento}% exclusivo para reservas del ${promo.vehiculoNombre || (vehiculo?.nombre ? vehiculo.nombre : 'vehículo seleccionado')}.`
+                                  : `Descuento de $${Number(promo.valorDescuento).toLocaleString('es-CO')} COP exclusivo para reservas del ${promo.vehiculoNombre || (vehiculo?.nombre ? vehiculo.nombre : 'vehículo seleccionado')}.`)}
+                            </p>
+                          </div>
+
+                          {/* Terms header */}
+                          <strong style={{ fontSize: 13, fontWeight: 800, color: c?.textPrimary || '#0f172a' }}>
+                            {t('promotions.termsAndConditionsHeader', 'Términos y condiciones:')}
+                          </strong>
+
+                          {/* Bullets */}
+                          <ul style={{
+                            margin: 0,
+                            paddingLeft: 18,
+                            listStyleType: 'disc',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: 8,
+                            fontSize: 12.5,
+                            color: c?.textSecondary || '#475569',
+                            lineHeight: 1.5
+                          }}>
+                            <li>{t('promotions.termsDigitalPayments', 'Válido para pagos digitales e iniciales.')}</li>
+                            <li>{t('promotions.termsNonTransferable', 'No transferible a otros usuarios.')}</li>
+                            <li>{t('promotions.termsOnePerReservation', 'Solo se puede aplicar un cupón por reserva.')}</li>
+                            <li>
+                              {t('promotions.termsValidCategories', 'Categorías válidas:')}{' '}
+                              <strong style={{ color: c?.textPrimary || '#0f172a' }}>
+                                {(promo.categoriaVehiculo || 'TODOS').toUpperCase()}
+                              </strong>
+                              {promo.vehiculoNombre ? ` (Exclusivo: ${promo.vehiculoNombre})` : ''}
+                            </li>
+                            {promo.audiencia && promo.audiencia !== 'todos' && (
+                              <li>
+                                Exclusivo para{' '}
+                                <strong style={{ color: c?.textPrimary || '#0f172a' }}>
+                                  {promo.audiencia === 'nuevos' ? 'nuevos usuarios' : 'clientes frecuentes'}
+                                </strong>.
+                              </li>
+                            )}
+                            {promo.reservaMinima > 0 ? (
+                              <li>
+                                {t('promotions.termsMinAmount', 'Requiere un monto mínimo de reserva de')} ${Number(promo.reservaMinima).toLocaleString('es-CO')} COP. {t('promotions.termsNonCumulative', 'No acumulable con otras promociones.')}
+                              </li>
+                            ) : (
+                              <li>
+                                {t('promotions.termsGeneralConditions', 'Válido para vehículos de la flota. No acumulable con otras promociones.')}
+                              </li>
+                            )}
+                            <li>
+                              {t('promotions.termsExpires', 'Vence:')}{' '}
+                              <strong style={{ color: c?.textPrimary || '#0f172a' }}>
+                                {formatearFechaExp(promo.fechaFin)}
+                              </strong>
+                            </li>
+                            {promo.condiciones && (
+                              <li>
+                                Condiciones especiales:{' '}
+                                <strong style={{ color: c?.textPrimary || '#0f172a' }}>
+                                  {promo.condiciones}
+                                </strong>
+                              </li>
+                            )}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })
+              )}
+            </div>
           </div>
         </div>
       )}
