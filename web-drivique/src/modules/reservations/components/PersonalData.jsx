@@ -430,7 +430,7 @@ export default function DatosPersonales({
       </div>
 
       <div style={sectionCardStyle}>
-        <h3 style={{ fontSize: 14, fontWeight: 500, color: c?.accentText || 'var(--brand-secondary)', margin: '0 0 16px' }}>
+        <h3 style={{ fontSize: 14, fontWeight: 700, color: c?.accentText || 'var(--brand-secondary)', margin: '0 0 16px' }}>
           {t('promotions.codeLabelOptional', 'Cupón de descuento (Opcional)')}
         </h3>
 
@@ -462,7 +462,7 @@ export default function DatosPersonales({
                 </svg>
               </div>
               <div>
-                <div style={{ fontSize: 14, fontWeight: 600, color: c?.textPrimary || '#0f172a', letterSpacing: '0.04em' }}>
+                <div style={{ fontSize: 14, fontWeight: 700, color: c?.textPrimary || '#0f172a', letterSpacing: '0.04em' }}>
                   {appliedPromotion.codigo}
                 </div>
                 <div style={{ fontSize: 12, color: c?.textSecondary || '#64748b', fontWeight: 500, marginTop: 2 }}>
@@ -563,8 +563,8 @@ export default function DatosPersonales({
                 background: 'none',
                 border: 'none',
                 color: c?.accentText || 'var(--brand-secondary)',
-                fontWeight: 500,
-                fontSize: 14,
+                fontWeight: 600,
+                fontSize: 13.5,
                 cursor: 'pointer',
                 padding: 0,
                 fontFamily: 'inherit',
@@ -581,11 +581,11 @@ export default function DatosPersonales({
 
       <div style={sectionCardStyle}>
         <div style={headerStyle}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={c?.accentText || 'var(--brand-secondary)'} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={c?.accentText || 'var(--brand-secondary)'} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
             <path d="m9 12 2 2 4-4" />
           </svg>
-          <h3 style={{ fontSize: 14, fontWeight: 500, color: c?.accentText || 'var(--brand-secondary)', margin: 0, textTransform: 'none' }}>
+          <h3 style={{ fontSize: 14, fontWeight: 700, color: c?.accentText || 'var(--brand-secondary)', margin: 0, textTransform: 'none' }}>
             {t('vehiculo.policiesAndSecurity', 'Políticas y seguridad')}
           </h3>
         </div>
@@ -597,17 +597,19 @@ export default function DatosPersonales({
             checked={datosForm.terminos}
             onChange={e => onCambio('terminos', e.target.checked)}
             style={{
-              width: 18,
-              height: 18,
+              width: 17,
+              height: 17,
               cursor: 'pointer',
               marginTop: 2,
               flexShrink: 0,
               accentColor: c?.accentText || 'var(--brand-secondary)',
-              borderRadius: 6
+              borderRadius: 4
             }}
           />
-          <label htmlFor="tyc" style={{ fontSize: 13.5, color: c?.textPrimary || '#0f172a', cursor: 'pointer', lineHeight: 1.5 }}>
-            {t('vehiculo.termsAgreementText', 'Acepto los términos, condiciones del contrato de alquiler y la política de privacidad')} *{' '}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <label htmlFor="tyc" style={{ fontSize: 13, fontWeight: 600, color: c?.textPrimary || '#0f172a', cursor: 'pointer', lineHeight: 1.4 }}>
+              {t('vehiculo.termsAgreementText', 'Acepto los términos, condiciones del contrato de alquiler y la política de privacidad')} *
+            </label>
             <button
               type="button"
               onClick={(e) => {
@@ -618,19 +620,20 @@ export default function DatosPersonales({
                 background: 'none',
                 border: 'none',
                 color: c?.accentText || 'var(--brand-secondary)',
-                fontWeight: 500,
-                fontSize: 13.5,
+                fontWeight: 600,
+                fontSize: 13,
                 cursor: 'pointer',
                 padding: 0,
+                textAlign: 'left',
                 textDecoration: 'none',
-                display: 'inline'
+                width: 'fit-content'
               }}
             >
               {t('vehiculo.viewTermsAndConditions', 'Ver términos y condiciones')}
             </button>
-          </label>
+          </div>
         </div>
-        {errores.terminos && <p style={{ color: '#ef4444', fontSize: 12, margin: '8px 0 0 30px', fontWeight: 600 }}>{errores.terminos}</p>}
+        {errores.terminos && <p style={{ color: '#ef4444', fontSize: 12, margin: '8px 0 0 29px', fontWeight: 600 }}>{errores.terminos}</p>}
       </div>
 
       {verTyC && (
