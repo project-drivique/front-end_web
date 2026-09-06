@@ -279,6 +279,9 @@ function ModalDetalle({ reserva, moneda, onClose }) {
     )}
 
     <div className="detalle-resumen-lista">
+      <div className="detalle-resumen-fila"><span className="detalle-fila-icon"><FaCar /></span><span className="detalle-fila-label">{t('reservas.vehicle')}</span><strong>{reserva.vehiculo?.nombre || t('reservas.vehicleUnavailable')}</strong></div>
+      <div className="detalle-resumen-fila"><span className="detalle-fila-icon"><FaCalendarAlt /></span><span className="detalle-fila-label">{t('reservas.pickupDate')}</span><strong>{fechaBonita(reserva.fechaInicio, i18n.resolvedLanguage)}</strong></div>
+      <div className="detalle-resumen-fila"><span className="detalle-fila-icon"><FaRegCalendarCheck /></span><span className="detalle-fila-label">{t('reservas.returnDate')}</span><strong>{fechaBonita(reserva.fechaFin, i18n.resolvedLanguage)}</strong></div>
       <div className="detalle-resumen-fila"><span className="detalle-fila-icon"><FaMapMarkerAlt /></span><span className="detalle-fila-label">{t('reservas.pickupLocation')}</span><strong>{reserva.vehiculo?.sucursal || t('reservas.defaultBranch')}</strong></div>
       <div className="detalle-resumen-fila"><span className="detalle-fila-icon"><FaShieldAlt /></span><span className="detalle-fila-label">{t('reservas.protection')}</span><strong>{proteccion}</strong></div>
       <div className="detalle-resumen-fila"><span className="detalle-fila-icon"><FaScroll /></span><span className="detalle-fila-label">{t('reservas.reference')}</span><strong className="detalle-referencia" title={reserva.id}>{reserva.id}</strong></div>
@@ -408,9 +411,8 @@ function TarjetaReserva({ reserva, moneda, onValorar, onReportar, onVerDetalle }
           <FaFlag /> {t('reservas.makeReport')}
         </button>
       )}
-
       <button className="btn-detalle" onClick={() => onVerDetalle(reserva)}>
-        <FaEye style={{ marginRight: 4 }} /> {t('reservas.viewDetail')}
+        {t('reservas.viewDetail')}
       </button>
     </div>
   </div></article>
