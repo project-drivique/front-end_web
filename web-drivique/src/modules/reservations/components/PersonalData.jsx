@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useLanding } from '../../landing/LandingContext';
 import { formatCurrency } from '@/utils/currencyUtils';
@@ -147,6 +148,7 @@ export default function DatosPersonales({
   datosForm,
   onCambio,
   onReservar,
+  onCancelar,
   errores,
   docsVerificados,
   appliedPromotion,
@@ -154,6 +156,7 @@ export default function DatosPersonales({
   onRemovePromotion,
   c
 }) {
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const { moneda } = useLanding();
   const [verTyC, setVerTyC] = useState(false);
@@ -752,6 +755,143 @@ export default function DatosPersonales({
           </div>
         </div>
         {errores.terminos && <p style={{ color: '#ef4444', fontSize: 12, margin: '8px 0 0 29px', fontWeight: 600 }}>{errores.terminos}</p>}
+      </div>
+
+      {/* ── Aviso informativo de confirmación ── */}
+      <div style={{
+        background: c?.isDark ? 'rgba(var(--brand-primary-rgb),0.08)' : '#fff1f2',
+        border: `1px solid ${c?.isDark ? 'rgba(244,63,94,0.3)' : '#fecdd3'}`,
+        borderRadius: 16,
+        padding: '16px 20px',
+        display: 'flex',
+        alignItems: 'flex-start',
+        gap: 14
+      }}>
+        <div style={{
+          width: 22,
+          height: 22,
+          borderRadius: '50%',
+          border: `1.5px solid ${c?.accentText || '#e11d48'}`,
+          color: c?.accentText || '#e11d48',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: 12,
+          fontWeight: 800,
+          flexShrink: 0,
+          marginTop: 1
+        }}>
+          i
+        </div>
+        <p style={{
+          margin: 0,
+          fontSize: 13,
+          lineHeight: 1.5,
+          color: c?.isDark ? '#fda4af' : '#9f1239',
+          fontWeight: 500
+        }}>
+          {t('vehiculo.confirmNoticeText', 'Al confirmar la reserva, quedará guardada automáticamente en tu cuenta. Tendrás un plazo de 72 horas para completar el pago antes de su cancelación automática.')}
+        </p>
+      </div>
+
+      {/* ── Tarjeta Total a Pagar y Acciones ── */}
+      <div style={{
+        background: 'var(--brand-gradient)',
+        borderRadius: 24,
+        padding: '28px 24px',
+        boxShadow: 'var(--brand-shadow)',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        textAlign: 'center',
+        color: '#ffffff'
+      }}>
+        <span style={{
+          fontSize: 12.5,
+          fontWeight: 800,
+          color: 'rgba(255, 255, 255, 0.9)',
+          textTransform: 'uppercase',
+          letterSpacing: '0.08em',
+          margin: '0 0 6px'
+        }}>
+          {t('vehiculo.totalToPay', 'TOTAL A PAGAR')}
+        </span>
+
+        <span style={{
+          fontSize: 32,
+          fontWeight: 900,
+          color: '#ffffff',
+          lineHeight: 1.1,
+          margin: '0 0 4px',
+          letterSpacing: '-0.02em'
+        }}>
+          {formatCurrency(total, moneda)}
+        </span>
+
+        <span style={{
+          fontSize: 12,
+          fontWeight: 500,
+          color: 'rgba(255, 255, 255, 0.85)',
+          margin: '0 0 22px'
+        }}>
+          *Incluye impuestos y cargos administrativos
+        </span>
+
+        <button
+          type="button"
+          onClick={onReservar}
+          style={{
+            width: '100%',
+            height: 48,
+            background: '#ffffff',
+            color: c?.accentText || 'var(--brand-secondary)',
+            border: 'none',
+            borderRadius: 14,
+            fontWeight: 800,
+            fontSize: 15,
+            cursor: 'pointer',
+            boxShadow: '0 4px 14px rgba(0, 0, 0, 0.12)',
+            transition: 'all 0.2s',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
+          onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'}
+          onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
+        >
+          {t('vehiculo.confirmReserve', 'Confirmar reserva')}
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            if (onCancelar) {
+              onCancelar();
+            } else {
+              navigate('/catalogo');
+            }
+          }}
+          style={{
+            width: '100%',
+            height: 46,
+            background: 'rgba(255, 255, 255, 0.12)',
+            color: '#ffffff',
+            border: '1px solid rgba(255, 255, 255, 0.35)',
+            borderRadius: 14,
+            fontWeight: 700,
+            fontSize: 14,
+            cursor: 'pointer',
+            marginTop: 10,
+            transition: 'all 0.2s',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
+          onMouseEnter={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)'}
+          onMouseLeave={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.12)'}
+        >
+          {t('vehiculo.cancelReserve', 'Cancelar reserva')}
+        </button>
       </div>
 
       {verTyC && (
