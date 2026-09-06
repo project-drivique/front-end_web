@@ -1022,7 +1022,7 @@ export default function ResumenLateral({
                 fontWeight: 800,
                 color: c?.textPrimary || '#0f172a'
               }}>
-                {t('promotions.termsAndConditionsHeader', 'Términos y condiciones')} ({viewingCondicionesPromo.codigo}):
+                {t('promotions.termsAndConditionsHeader', 'Términos y condiciones:')}
               </h5>
 
               {/* Full Terms & Conditions List */}
@@ -1037,6 +1037,7 @@ export default function ResumenLateral({
                 color: c?.textSecondary || '#475569',
                 lineHeight: 1.55
               }}>
+                <li>Código: {viewingCondicionesPromo.codigo}</li>
                 <li>{t('promotions.termsDigitalPayments', 'Válido para pagos digitales e iniciales.')}</li>
                 <li>{t('promotions.termsNonTransferable', 'No transferible a otros usuarios.')}</li>
                 <li>{t('promotions.termsOnePerReservation', 'Solo se puede aplicar un cupón por reserva.')}</li>
