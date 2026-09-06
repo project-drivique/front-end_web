@@ -953,7 +953,7 @@ export default function ResumenLateral({
                 fontWeight: 800,
                 color: c?.textPrimary || '#0f172a'
               }}>
-                {t('promotions.termsAndConditionsHeader', 'Términos y condiciones:')}
+                {t('promotions.termsAndConditionsHeader', 'Términos y condiciones')} ({viewingCondicionesPromo.codigo}):
               </h5>
 
               {/* Full Terms & Conditions List */}
@@ -973,17 +973,12 @@ export default function ResumenLateral({
                 <li>{t('promotions.termsOnePerReservation', 'Solo se puede aplicar un cupón por reserva.')}</li>
                 <li>
                   {t('promotions.termsValidCategories', 'Categorías válidas:')}{' '}
-                  <strong style={{ color: c?.textPrimary || '#0f172a' }}>
-                    {(viewingCondicionesPromo.categoriaVehiculo || 'TODOS').toUpperCase()}
-                  </strong>
+                  {(viewingCondicionesPromo.categoriaVehiculo || 'TODOS').toUpperCase()}
                   {viewingCondicionesPromo.vehiculoNombre ? ` (Exclusivo: ${viewingCondicionesPromo.vehiculoNombre})` : ''}
                 </li>
                 {viewingCondicionesPromo.audiencia && viewingCondicionesPromo.audiencia !== 'todos' && (
                   <li>
-                    Exclusivo para{' '}
-                    <strong style={{ color: c?.textPrimary || '#0f172a' }}>
-                      {viewingCondicionesPromo.audiencia === 'nuevos' ? 'nuevos usuarios' : 'clientes frecuentes'}
-                    </strong>.
+                    Exclusivo para {viewingCondicionesPromo.audiencia === 'nuevos' ? 'nuevos usuarios' : 'clientes frecuentes'}.
                   </li>
                 )}
                 {viewingCondicionesPromo.reservaMinima > 0 ? (
@@ -997,16 +992,11 @@ export default function ResumenLateral({
                 )}
                 <li>
                   {t('promotions.termsExpires', 'Vence:')}{' '}
-                  <strong style={{ color: c?.textPrimary || '#0f172a' }}>
-                    {formatearFechaExp(viewingCondicionesPromo.fechaFin)}
-                  </strong>
+                  {formatearFechaExp(viewingCondicionesPromo.fechaFin)}
                 </li>
                 {viewingCondicionesPromo.condiciones && (
                   <li>
-                    Condiciones especiales:{' '}
-                    <strong style={{ color: c?.textPrimary || '#0f172a' }}>
-                      {viewingCondicionesPromo.condiciones}
-                    </strong>
+                    Condiciones especiales: {viewingCondicionesPromo.condiciones}
                   </li>
                 )}
               </ul>
@@ -1057,17 +1047,20 @@ export default function ResumenLateral({
                   setModalCupones(true);
                 }}
                 style={{
-                  background: 'none',
-                  border: 'none',
-                  color: c?.textSecondary || '#64748b',
-                  fontSize: 12.5,
+                  width: '100%',
+                  background: c?.isDark ? 'rgba(255, 255, 255, 0.05)' : '#f1f5f9',
+                  color: c?.textPrimary || '#334155',
+                  border: `1.5px solid ${c?.cardBorder || '#e2e8f0'}`,
+                  borderRadius: 12,
+                  padding: '12px 20px',
+                  fontSize: 13.5,
                   fontWeight: 700,
                   cursor: 'pointer',
-                  padding: '4px',
-                  textAlign: 'center'
+                  textAlign: 'center',
+                  transition: 'all 0.15s ease'
                 }}
               >
-                ← Volver a cupones disponibles
+                Volver
               </button>
             </div>
           </div>
