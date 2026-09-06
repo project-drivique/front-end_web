@@ -454,7 +454,7 @@ export default function DatosPersonales({
       </div>
 
       <div style={sectionCardStyle}>
-        <h3 style={{ fontSize: 14, fontWeight: 700, color: c?.accentText || 'var(--brand-secondary)', margin: '0 0 16px' }}>
+        <h3 style={{ fontSize: 14, fontWeight: 700, color: c?.accentText || 'var(--brand-secondary)', margin: '0 0 16px', textTransform: 'none', fontFamily: 'inherit' }}>
           {t('promotions.codeLabelOptional', 'Cupón de descuento (Opcional)')}
         </h3>
 
@@ -587,8 +587,8 @@ export default function DatosPersonales({
                 background: 'none',
                 border: 'none',
                 color: c?.accentText || 'var(--brand-secondary)',
-                fontWeight: 600,
-                fontSize: 13.5,
+                fontWeight: 700,
+                fontSize: 14,
                 cursor: 'pointer',
                 padding: 0,
                 fontFamily: 'inherit',
@@ -609,7 +609,7 @@ export default function DatosPersonales({
             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
             <path d="m9 12 2 2 4-4" />
           </svg>
-          <h3 style={{ fontSize: 14, fontWeight: 700, color: c?.accentText || 'var(--brand-secondary)', margin: 0, textTransform: 'none' }}>
+          <h3 style={{ fontSize: 14, fontWeight: 700, color: c?.accentText || 'var(--brand-secondary)', margin: 0, textTransform: 'none', fontFamily: 'inherit' }}>
             {t('vehiculo.policiesAndSecurity', 'Políticas y seguridad')}
           </h3>
         </div>
@@ -666,13 +666,14 @@ export default function DatosPersonales({
                 background: 'none',
                 border: 'none',
                 color: c?.accentText || 'var(--brand-secondary)',
-                fontWeight: 600,
-                fontSize: 13,
+                fontWeight: 700,
+                fontSize: 14,
                 cursor: 'pointer',
                 padding: 0,
                 textAlign: 'left',
                 textDecoration: 'none',
-                width: 'fit-content'
+                width: 'fit-content',
+                fontFamily: 'inherit'
               }}
             >
               {t('vehiculo.viewTermsAndConditions', 'Ver términos y condiciones')}
