@@ -394,27 +394,6 @@ function TarjetaReserva({ reserva, moneda, onValorar, onReportar, onVerDetalle }
   const estadoNorm = String(reserva.estado || '').toLowerCase()
   const estaEnCurso = estadoNorm === 'activa' || estadoNorm === 'en_curso' || estadoNorm === 'en curso'
 
-  const esEfectivo = reserva.metodoPago === 'efectivo' || estadoNorm.includes('efectivo')
-  const esPendienteWompi = !esEfectivo && (estadoNorm === 'pendiente' || estadoNorm === 'pendiente_validacion')
-
-  const [redirigiendo, setRedirigiendo] = useState(false)
-
-  const handlePagarWompiDirecto = async (e) => {
-    e.stopPropagation()
-    setRedirigiendo(true)
-    try {
-      const url = await construirUrlCheckout({
-        reference: reserva.id,
-        amountInCents: aCentavos(reserva.total || 0),
-        redirectUrl: `${window.location.origin}/respuesta`,
-      })
-      window.location.href = url
-    } catch (err) {
-      console.error(err)
-      setRedirigiendo(false)
-    }
-  }
-
   return <article className="reserva-card"><div className="reserva-imagen-wrap">
     {reserva.vehiculo?.imagenes?.[0] ? <img src={reserva.vehiculo.imagenes[0]} alt={reserva.vehiculo.nombre} /> : <div className="imagen-vacia"><FaCar /></div>}
     <span className={`estado-badge ${estado.clase}`}>{estado.texto}</span></div><div className="reserva-info">
@@ -427,34 +406,6 @@ function TarjetaReserva({ reserva, moneda, onValorar, onReportar, onVerDetalle }
       {estaEnCurso && (
         <button className="btn-reporte" onClick={() => onReportar(reserva)}>
           <FaFlag /> {t('reservas.makeReport')}
-        </button>
-      )}
-
-      {esPendienteWompi && (
-        <button
-          type="button"
-          onClick={handlePagarWompiDirecto}
-          disabled={redirigiendo}
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 8,
-            minHeight: 38,
-            padding: '9px 18px',
-            border: 'none',
-            borderRadius: 10,
-            background: 'var(--brand-primary, #2563eb)',
-            color: '#ffffff',
-            fontSize: 11.5,
-            fontWeight: 800,
-            cursor: 'pointer',
-            boxShadow: '0 4px 12px rgba(37, 99, 235, 0.25)',
-            transition: 'all 0.18s ease',
-          }}
-        >
-          <FaCreditCard />
-          {redirigiendo ? 'Conectando…' : 'Pagar con Wompi'}
         </button>
       )}
 
