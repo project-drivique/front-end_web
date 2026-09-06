@@ -277,7 +277,6 @@ export default function ResumenLateral({
         {/* ── Cupón de Descuento (Opcional) ── */}
         <div style={{ padding: '20px', borderBottom: `1px solid ${c?.cardBorder || 'var(--borde)'}` }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-            <FaTicketAlt color={c?.accentText || 'var(--brand-secondary)'} size={13} />
             <h4 style={{ fontSize: 11, fontWeight: 800, color: c?.accentText || 'var(--brand-secondary)', textTransform: 'uppercase', letterSpacing: '0.07em', margin: 0 }}>
               {t('promotions.codeLabelOptional', 'Cupón de descuento (Opcional)')}
             </h4>
@@ -469,7 +468,7 @@ export default function ResumenLateral({
                   border: 'none',
                   color: c?.accentText || 'var(--brand-secondary)',
                   fontWeight: 700,
-                  fontSize: 12.5,
+                  fontSize: 11,
                   cursor: 'pointer',
                   padding: 0,
                   fontFamily: 'inherit',

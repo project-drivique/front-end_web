@@ -468,7 +468,7 @@ export default function DatosPersonales({
                 border: 'none',
                 color: c?.accentText || 'var(--brand-secondary)',
                 fontWeight: 700,
-                fontSize: 14,
+                fontSize: 11,
                 cursor: 'pointer',
                 padding: 0,
                 textAlign: 'left',
