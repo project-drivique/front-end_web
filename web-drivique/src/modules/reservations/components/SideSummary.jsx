@@ -648,20 +648,43 @@ export default function ResumenLateral({
                       style={{
                         display: 'flex',
                         borderRadius: 16,
-                        border: `1.5px solid ${c?.cardBorder || '#e2e8f0'}`,
+                        border: promo.destacada
+                          ? `1.5px solid #f59e0b`
+                          : `1.5px solid ${c?.cardBorder || '#e2e8f0'}`,
                         background: c?.cardBg || '#ffffff',
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.03)',
+                        boxShadow: promo.destacada
+                          ? '0 6px 18px rgba(245, 158, 11, 0.15)'
+                          : '0 4px 12px rgba(0,0,0,0.03)',
                         overflow: 'hidden',
                         position: 'relative'
                       }}
                     >
                       {/* Left ticket details */}
                       <div style={{ flex: 1, padding: '14px 16px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minWidth: 0 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                          <FaTicketAlt size={14} color={c?.accentText || 'var(--brand-secondary)'} />
-                          <span style={{ fontSize: 13.5, fontWeight: 800, color: c?.textPrimary || '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                            {promo.nombre || promo.titulo}
-                          </span>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginBottom: 8 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
+                            <FaTicketAlt size={14} color={c?.accentText || 'var(--brand-secondary)'} />
+                            <span style={{ fontSize: 13.5, fontWeight: 800, color: c?.textPrimary || '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                              {promo.nombre || promo.titulo}
+                            </span>
+                          </div>
+                          {promo.destacada && (
+                            <span style={{
+                              fontSize: 10,
+                              fontWeight: 800,
+                              background: '#fef3c7',
+                              color: '#b45309',
+                              border: '1px solid #fde68a',
+                              borderRadius: 6,
+                              padding: '2px 6px',
+                              flexShrink: 0,
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: 3
+                            }}>
+                              ⭐ DESTACADO
+                            </span>
+                          )}
                         </div>
 
                         {/* Vehicle thumbnails */}

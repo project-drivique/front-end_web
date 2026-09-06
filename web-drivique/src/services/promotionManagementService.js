@@ -52,6 +52,7 @@ function cleanData(data, promotions, editingId) {
   const vehiculoNombre = String(data.vehiculoNombre || '').trim()
   const audiencia = String(data.audiencia || 'todos')
   const condiciones = String(data.condiciones || '').trim()
+  const destacada = Boolean(data.destacada)
 
   if (!codigo || !nombre || !fechaInicio || !fechaFin || !condiciones || !valorDescuento) throw new Error('required')
   if (!/^[A-Z0-9_-]{3,24}$/.test(codigo)) throw new Error('invalidCode')
@@ -80,6 +81,7 @@ function cleanData(data, promotions, editingId) {
     vehiculoImagen,
     audiencia,
     condiciones,
+    destacada,
   }
 }
 
@@ -113,7 +115,7 @@ export const promotionManagementService = {
         const matched = VEHICULOS_MOCK.find((v) => (item.vehiculoId && Number(v.id) === Number(item.vehiculoId)) || (item.vehiculoNombre && v.nombre === item.vehiculoNombre))
         vehiculoImagen = matched?.imagenes?.[0] || matched?.imagen || ''
       }
-      return { ...item, vehiculoImagen }
+      return { ...item, vehiculoImagen, destacada: Boolean(item.destacada) }
     })
   },
 
@@ -154,6 +156,16 @@ export const promotionManagementService = {
     const updated = { ...current, activa: !current.activa, actualizadaEn: nowIso() }
     persist(promotions.map((item) => (item.id === id ? updated : item)))
     audit(updated.activa ? 'activar' : 'desactivar', updated, user)
+    return updated
+  },
+
+  toggleFeatured(id, user) {
+    const promotions = this.list()
+    const current = promotions.find((item) => item.id === id)
+    if (!current) throw new Error('notFound')
+    const updated = { ...current, destacada: !current.destacada, actualizadaEn: nowIso() }
+    persist(promotions.map((item) => (item.id === id ? updated : item)))
+    audit(updated.destacada ? 'destacar' : 'quitar-destacado', updated, user)
     return updated
   },
 
@@ -218,6 +230,7 @@ export const promotionManagementService = {
           imagenes,
         }
       })
+      .sort((a, b) => (b.destacada ? 1 : 0) - (a.destacada ? 1 : 0))
   },
 
   getPromotionForVehicle(vehicle, user = null) {
