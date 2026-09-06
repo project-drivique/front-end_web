@@ -679,17 +679,18 @@ export default function ResumenLateral({
           >
             {/* Header */}
             <div style={{
-              padding: '18px 24px 14px',
+              padding: '20px 24px',
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
-              borderBottom: `1px solid ${c?.cardBorder || '#f1f5f9'}`
+              background: 'var(--brand-gradient, #e11d48)',
+              color: '#ffffff'
             }}>
               <h3 style={{
                 margin: 0,
                 fontSize: 17,
                 fontWeight: 800,
-                color: c?.textPrimary || '#0f172a'
+                color: '#ffffff'
               }}>
                 {t('promotions.availableCouponsTitle', 'Cupones Disponibles')}
               </h3>
@@ -698,16 +699,19 @@ export default function ResumenLateral({
                 type="button"
                 onClick={() => setModalCupones(false)}
                 style={{
-                  background: 'none',
+                  background: 'rgba(255, 255, 255, 0.18)',
                   border: 'none',
-                  fontSize: 20,
+                  fontSize: 15,
                   lineHeight: 1,
                   cursor: 'pointer',
-                  color: c?.textSecondary || '#64748b',
-                  padding: 4,
+                  color: '#ffffff',
+                  width: 28,
+                  height: 28,
+                  borderRadius: '50%',
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'center'
+                  justifyContent: 'center',
+                  transition: 'background 0.2s'
                 }}
               >
                 ✕
@@ -955,17 +959,18 @@ export default function ResumenLateral({
           >
             {/* Header */}
             <div style={{
-              padding: '18px 24px 14px',
+              padding: '20px 24px',
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
-              borderBottom: `1px solid ${c?.cardBorder || '#f1f5f9'}`
+              background: 'var(--brand-gradient, #e11d48)',
+              color: '#ffffff'
             }}>
               <h3 style={{
                 margin: 0,
                 fontSize: 17,
                 fontWeight: 800,
-                color: c?.textPrimary || '#0f172a'
+                color: '#ffffff'
               }}>
                 {t('promotions.couponConditionsTitle', 'Condiciones del Cupón')}
               </h3>
@@ -974,16 +979,19 @@ export default function ResumenLateral({
                 type="button"
                 onClick={() => setViewingCondicionesPromo(null)}
                 style={{
-                  background: 'none',
+                  background: 'rgba(255, 255, 255, 0.18)',
                   border: 'none',
-                  fontSize: 20,
+                  fontSize: 15,
                   lineHeight: 1,
                   cursor: 'pointer',
-                  color: c?.textSecondary || '#64748b',
-                  padding: 4,
+                  color: '#ffffff',
+                  width: 28,
+                  height: 28,
+                  borderRadius: '50%',
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'center'
+                  justifyContent: 'center',
+                  transition: 'background 0.2s'
                 }}
               >
                 ✕
