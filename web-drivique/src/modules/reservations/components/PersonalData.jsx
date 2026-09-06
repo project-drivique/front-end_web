@@ -865,7 +865,11 @@ export default function DatosPersonales({
               style={{
                 padding: '20px 24px',
                 overflowY: 'auto',
-                flex: 1,
+                flex: '1 1 auto',
+                minHeight: 0,
+                maxHeight: '54vh',
+                scrollbarWidth: 'thin',
+                scrollbarColor: `${c?.cardBorder || '#cbd5e1'} transparent`,
                 display: 'flex',
                 flexDirection: 'column'
               }}
