@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { FaCalendarAlt, FaCar, FaCheckCircle, FaChevronDown, FaDownload, FaEye, FaEyeSlash, FaFileContract, FaFlag, FaKey, FaMapMarkerAlt, FaMoneyBillWave, FaRegCalendarCheck, FaScroll, FaShieldAlt, FaStar, FaTimes } from 'react-icons/fa'
+import { FaCalendarAlt, FaCar, FaCheckCircle, FaChevronDown, FaDownload, FaEye, FaEyeSlash, FaFileContract, FaFlag, FaKey, FaMapMarkerAlt, FaMoneyBillWave, FaRegCalendarCheck, FaScroll, FaShieldAlt, FaStar, FaTimes, FaInfoCircle } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/store/authStore'
@@ -12,6 +12,7 @@ import CatalogTopHeader from '@/modules/catalog/components/CatalogTopHeader'
 import { descargarContratoOriginal, prepararVistaContrato } from '@/modules/contracts/utils/downloadSignedContract'
 import { reservationService } from '@/services/reservationService'
 import FirmaContrato from '@/modules/contracts/components/ContractSignature'
+import { SUCURSALES } from '@/modules/catalog/constants'
 import './ReservationsPage.css'
 
 const CLASES_ESTADO = Object.fromEntries(filtrosReservas.estados.map(({ valor, clase }) => [valor, clase]))
@@ -71,6 +72,10 @@ function Contrato({ reserva }) {
   const [preparandoVista, setPreparandoVista] = useState(false)
   const [vistaPreparada, setVistaPreparada] = useState(false)
   const tieneContratoFirmado = Boolean(contratoFirmado?.firmaUsuarioDataUrl)
+
+  const esEfectivo = reservaOriginal?.reservaDetalles?.metodoPago === 'efectivo' || reserva.metodoPago === 'efectivo'
+  const esPendienteEfectivo = reserva.estado === 'PENDIENTE_EFECTIVO' || reservaOriginal?.estado === 'PENDIENTE_EFECTIVO' || (esEfectivo && reserva.estado === 'pendiente')
+
   const validar = () => {
     if (!identificacion) {
       setError(t('reservas.noIdentification'))
@@ -125,9 +130,9 @@ function Contrato({ reserva }) {
   }, [desbloqueado, vistaPreparada, reservaOriginal, vehiculoOriginal, contratoFirmado, reserva.id])
   return <div className={`contrato ${abierto ? 'abierto' : ''}`}>
     <button className="contrato-toggle" onClick={() => setAbierto(v => !v)} aria-expanded={abierto}><span className="contrato-icon"><FaFileContract /></span>
-      <span><strong>{t('reservas.rentalContract')}</strong><small>{!tieneContratoFirmado ? t('reservas.pendingSignature') : desbloqueado ? (contratoFirmado.codigo || reserva.numeroContrato) : t('reservas.protectedIdentification')}</small></span><FaChevronDown className="chevron" /></button>
+      <span><strong>{t('reservas.rentalContract')}</strong><small>{!tieneContratoFirmado ? (esPendienteEfectivo ? 'Pendiente de pago en sucursal' : t('reservas.pendingSignature')) : desbloqueado ? (contratoFirmado.codigo || reserva.numeroContrato) : t('reservas.protectedIdentification')}</small></span><FaChevronDown className="chevron" /></button>
     {abierto && <div className="contrato-contenido">{!tieneContratoFirmado
-      ? <div className="contrato-listo contrato-pendiente"><div><strong>{t('reservas.contractUnavailable')}</strong><span>{t('reservas.contractAvailableAfterSigning')}</span></div>
+      ? <div className="contrato-listo contrato-pendiente"><div><strong>{esPendienteEfectivo ? 'Contrato pendiente de pago en sucursal' : t('reservas.contractUnavailable')}</strong><span>{esPendienteEfectivo ? 'Una vez la sucursal confirme el pago en efectivo, podrás leer y firmar el contrato de alquiler para descargarlo.' : t('reservas.contractAvailableAfterSigning')}</span></div>
         <button className="btn-secundario btn-descarga-bloqueada" type="button" disabled title={t('reservas.availableAfterSigning')}><FaDownload /> {t('reservas.downloadContract')}</button></div>
       : !desbloqueado ? <><p>{t('reservas.enterIdentification')}</p>
       <div className={`clave-row ${error ? 'con-error' : ''}`}><FaKey className="clave-icono" /><input type={mostrarClave ? 'text' : 'password'} inputMode="numeric" autoComplete="off" value={clave} onChange={e => { setClave(e.target.value); setError('') }} onKeyDown={e => e.key === 'Enter' && validar()} placeholder={t('reservas.identificationNumber')} aria-label={t('reservas.identificationNumber')} /><button className={`clave-ojo ${mostrarClave ? 'activo' : ''}`} type="button" onClick={() => setMostrarClave(v => !v)} aria-label={mostrarClave ? t('reservas.hideIdentification') : t('reservas.showIdentification')} title={mostrarClave ? t('reservas.hideIdentification') : t('reservas.showIdentification')} aria-pressed={mostrarClave}>{mostrarClave ? <FaEye /> : <FaEyeSlash />}</button><button className="clave-validar" type="button" onClick={validar}>{t('reservas.validate')}</button></div>
@@ -149,6 +154,14 @@ function ModalDetalle({ reserva, moneda, onClose }) {
   const vehiculoOriginal = contrato?.contratoOriginal?.vehiculo || reserva.vehiculo
   const seguroIdx = reservaOriginal?.seguroIdx
   const proteccion = seguroIdx != null ? vehiculoOriginal?.seguros?.[seguroIdx]?.nombre : t('reservas.unspecified')
+
+  const esEfectivo = reservaOriginal?.reservaDetalles?.metodoPago === 'efectivo' || reserva.metodoPago === 'efectivo'
+  const esPendienteEfectivo = reserva.estado === 'PENDIENTE_EFECTIVO' || reservaOriginal?.estado === 'PENDIENTE_EFECTIVO' || (esEfectivo && reserva.estado === 'pendiente')
+  const sucursalPago = reservaOriginal?.reservaDetalles?.sucursalPagoEfectivo || reserva.vehiculo?.sucursal || 'Alquiler Neiva - Centro'
+  const branchObj = SUCURSALES.find(s => s.nombre === sucursalPago)
+  const ciudadPago = branchObj?.ciudad || reserva.vehiculo?.ciudad || 'Neiva'
+  const direccionPago = branchObj?.direccion || 'Calle 9 # 8-25, Centro'
+
   return <div className="modal-backdrop" onMouseDown={onClose}><section className="detalle-modal" role="dialog" aria-modal="true" aria-labelledby="detalle-reserva-titulo" onMouseDown={e => e.stopPropagation()}>
     <div className="detalle-modal-acento" />
     <button className="modal-cerrar" onClick={onClose} aria-label={t('reservas.closeDetail')}><FaTimes /></button>
@@ -166,6 +179,60 @@ function ModalDetalle({ reserva, moneda, onClose }) {
         />
       </div>
     )}
+
+    {/* Tarjeta de Instrucciones de Pago en Efectivo (Si aplica) */}
+    {esPendienteEfectivo && (
+      <div style={{ padding: '0 24px 16px' }}>
+        <div style={{
+          background: 'rgba(37, 99, 235, 0.04)',
+          border: '1.5px solid rgba(37, 99, 235, 0.18)',
+          borderRadius: 16,
+          padding: '16px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 8,
+          marginBottom: 10
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13 }}>
+            <span style={{ color: 'var(--texto-second, #64748b)', fontWeight: 600 }}>Referencia:</span>
+            <strong style={{ color: 'var(--brand-primary, #2563eb)' }}>{reserva.id}</strong>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13 }}>
+            <span style={{ color: 'var(--texto-second, #64748b)', fontWeight: 600 }}>Sucursal:</span>
+            <strong>{sucursalPago}</strong>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13 }}>
+            <span style={{ color: 'var(--texto-second, #64748b)', fontWeight: 600 }}>Ciudad: :</span>
+            <strong>{ciudadPago}</strong>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13 }}>
+            <span style={{ color: 'var(--texto-second, #64748b)', fontWeight: 600 }}>Dirección: :</span>
+            <strong>{direccionPago}</strong>
+          </div>
+          <div style={{ height: 1, background: 'rgba(37, 99, 235, 0.12)', margin: '4px 0' }} />
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: 12, fontWeight: 800, color: 'var(--texto-second, #64748b)' }}>TOTAL A PAGAR:</span>
+            <strong style={{ fontSize: 17, color: 'var(--brand-primary, #2563eb)' }}>{formatCurrency(reserva.total || 0, moneda)}</strong>
+          </div>
+        </div>
+
+        <div style={{
+          background: '#fefce8',
+          border: '1.5px solid #fef08a',
+          borderRadius: 14,
+          padding: '12px 14px',
+          textAlign: 'left'
+        }}>
+          <p style={{ margin: '0 0 4px', fontSize: 11, fontWeight: 800, color: '#854d0e', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+            PLAZO PARA PAGAR
+          </p>
+          <p style={{ margin: 0, fontSize: 12, color: '#854d0e', lineHeight: 1.45, fontWeight: 500 }}>
+            Tienes 72 horas desde ahora para acercarte a la sucursal y pagar. Si no pagas dentro de este plazo, la reserva se cancelará automáticamente.
+          </p>
+        </div>
+      </div>
+    )}
+
     <div className="detalle-resumen-lista">
       <div className="detalle-resumen-fila"><span className="detalle-fila-icon"><FaCar /></span><span className="detalle-fila-label">{t('reservas.vehicle')}</span><strong>{reserva.vehiculo?.nombre || t('reservas.vehicleUnavailable')}</strong></div>
       <div className="detalle-resumen-fila"><span className="detalle-fila-icon"><FaCalendarAlt /></span><span className="detalle-fila-label">{t('reservas.pickupDate')}</span><strong>{fechaBonita(reserva.fechaInicio, i18n.resolvedLanguage)}</strong></div>
