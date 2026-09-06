@@ -42,7 +42,7 @@ export default function ResumenLateral({
   const [codigoCupon, setCodigoCupon] = useState('')
   const [promoError, setPromoError] = useState('')
   const [modalCupones, setModalCupones] = useState(false)
-  const [selectedPromoCondiciones, setSelectedPromoCondiciones] = useState(null)
+  const [expandedPromoId, setExpandedPromoId] = useState(null)
 
   const [cuponesDisponibles, setCuponesDisponibles] = useState(() => {
     try {
@@ -631,300 +631,239 @@ export default function ResumenLateral({
                 <div style={{ textAlign: 'center', padding: '36px 16px', color: c?.textSecondary || '#64748b' }}>
                   <FaTicketAlt size={36} style={{ opacity: 0.35, margin: '0 auto 12px' }} />
                   <p style={{ margin: 0, fontSize: 14, fontWeight: 600 }}>
-                    {t('promotions.emptyTitle', 'No hay cupones activos disponibles en este momento')}
+                    {t('promotions.emptyTitle', 'No hay cupones activos disponibles para este vehículo en este momento')}
                   </p>
                 </div>
               ) : (
                 cuponesDisponibles.map(promo => {
+                  const promoKey = promo.id || promo.codigo;
+                  const isExpanded = expandedPromoId === promoKey;
                   const promoThumbnails = (promo.imagenes && promo.imagenes.length > 0)
                     ? promo.imagenes.slice(0, 3)
-                    : (promo.vehiculoImagen ? [promo.vehiculoImagen] : []);
+                    : (vehiculo?.imagenes?.length ? vehiculo.imagenes.slice(0, 3) : (promo.vehiculoImagen ? [promo.vehiculoImagen] : []));
                   const valorDescFormatted = promo.tipoDescuento === 'porcentaje'
                     ? `${promo.valorDescuento}% OFF`
                     : `$${Number(promo.valorDescuento).toLocaleString('es-CO')} OFF`;
 
                   return (
                     <div
-                      key={promo.id || promo.codigo}
+                      key={promoKey}
                       style={{
                         display: 'flex',
+                        flexDirection: 'column',
                         borderRadius: 16,
                         border: promo.destacada
-                          ? `1.5px solid #f59e0b`
+                          ? `1.5px solid rgba(225, 29, 72, 0.35)`
                           : `1.5px solid ${c?.cardBorder || '#e2e8f0'}`,
                         background: c?.cardBg || '#ffffff',
                         boxShadow: promo.destacada
-                          ? '0 6px 18px rgba(245, 158, 11, 0.15)'
-                          : '0 4px 12px rgba(0,0,0,0.03)',
+                          ? '0 6px 16px rgba(225, 29, 72, 0.08)'
+                          : '0 2px 8px rgba(0,0,0,0.03)',
                         overflow: 'hidden',
-                        position: 'relative'
+                        transition: 'all 0.2s ease',
                       }}
                     >
-                      {/* Left ticket details */}
-                      <div style={{ flex: 1, padding: '14px 16px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minWidth: 0 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginBottom: 8 }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
-                            <FaTicketAlt size={14} color={c?.accentText || 'var(--brand-secondary)'} />
-                            <span style={{ fontSize: 13.5, fontWeight: 800, color: c?.textPrimary || '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      <div style={{ display: 'flex', width: '100%', minHeight: 110 }}>
+                        {/* Left ticket details */}
+                        <div style={{ flex: 1, padding: '14px 16px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minWidth: 0 }}>
+                          <div>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginBottom: 4 }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                                <FaTicketAlt size={13} color="var(--brand-primary, #e11d48)" />
+                                <span style={{ fontSize: 11, fontWeight: 700, color: c?.textSecondary || '#64748b', letterSpacing: '0.04em' }}>
+                                  {promo.codigo}
+                                </span>
+                              </div>
+                              {promo.destacada && (
+                                <span style={{
+                                  fontSize: 10,
+                                  fontWeight: 800,
+                                  background: 'rgba(225, 29, 72, 0.08)',
+                                  color: 'var(--brand-primary, #e11d48)',
+                                  border: '1px solid rgba(225, 29, 72, 0.25)',
+                                  borderRadius: 10,
+                                  padding: '2px 7px',
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: 3,
+                                  flexShrink: 0
+                                }}>
+                                  ⭐ DESTACADO
+                                </span>
+                              )}
+                            </div>
+                            <h4 style={{ margin: '2px 0 0', fontSize: 13.5, fontWeight: 800, color: c?.textPrimary || '#0f172a', lineHeight: 1.3 }}>
                               {promo.nombre || promo.titulo}
-                            </span>
+                            </h4>
                           </div>
-                          {promo.destacada && (
-                            <span style={{
-                              fontSize: 10,
-                              fontWeight: 800,
-                              background: '#fef3c7',
-                              color: '#b45309',
-                              border: '1px solid #fde68a',
-                              borderRadius: 6,
-                              padding: '2px 6px',
-                              flexShrink: 0,
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              gap: 3
-                            }}>
-                              ⭐ DESTACADO
-                            </span>
+
+                          {/* Vehicle thumbnails */}
+                          {promoThumbnails.length > 0 && (
+                            <div style={{ display: 'flex', gap: 6, margin: '8px 0' }}>
+                              {promoThumbnails.map((imgUrl, i) => (
+                                <img
+                                  key={i}
+                                  src={imgUrl}
+                                  alt="Car preview"
+                                  style={{
+                                    width: 52,
+                                    height: 34,
+                                    objectFit: 'cover',
+                                    borderRadius: 6,
+                                    border: `1px solid ${c?.cardBorder || '#e2e8f0'}`,
+                                    background: '#f1f5f9'
+                                  }}
+                                  onError={e => { e.currentTarget.style.display = 'none'; }}
+                                />
+                              ))}
+                            </div>
                           )}
+
+                          {/* Bottom row: Exp date & Toggle Condiciones */}
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginTop: 4 }}>
+                            <span style={{ fontSize: 11, color: c?.textSecondary || '#64748b' }}>
+                              Exp: {formatearFechaExp(promo.fechaFin)}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => setExpandedPromoId(prev => prev === promoKey ? null : promoKey)}
+                              style={{
+                                background: 'none',
+                                border: 'none',
+                                padding: 0,
+                                color: 'var(--brand-primary, #e11d48)',
+                                fontSize: 11.5,
+                                fontWeight: 800,
+                                cursor: 'pointer',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: 4
+                              }}
+                            >
+                              {isExpanded ? 'Ocultar condiciones ▴' : 'Condiciones ▾'}
+                            </button>
+                          </div>
                         </div>
 
-                        {/* Vehicle thumbnails */}
-                        {promoThumbnails.length > 0 && (
-                          <div style={{ display: 'flex', gap: 6, margin: '6px 0 10px' }}>
-                            {promoThumbnails.map((imgUrl, i) => (
-                              <img
-                                key={i}
-                                src={imgUrl}
-                                alt="Car preview"
-                                style={{
-                                  width: 54,
-                                  height: 36,
-                                  objectFit: 'cover',
-                                  borderRadius: 6,
-                                  border: `1px solid ${c?.cardBorder || '#e2e8f0'}`,
-                                  background: '#f1f5f9'
-                                }}
-                                onError={e => { e.currentTarget.style.display = 'none'; }}
-                              />
-                            ))}
-                          </div>
-                        )}
+                        {/* Dotted border line with notches */}
+                        <div style={{
+                          position: 'relative',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          width: 0,
+                          borderLeft: `1.5px dashed ${c?.cardBorder || '#cbd5e1'}`
+                        }}>
+                          <div style={{
+                            position: 'absolute',
+                            top: -8,
+                            left: -8,
+                            width: 16,
+                            height: 16,
+                            borderRadius: '50%',
+                            background: c?.isDark ? '#0f172a' : '#f1f5f9',
+                            border: `1px solid ${c?.cardBorder || '#e2e8f0'}`
+                          }} />
+                          <div style={{
+                            position: 'absolute',
+                            bottom: -8,
+                            left: -8,
+                            width: 16,
+                            height: 16,
+                            borderRadius: '50%',
+                            background: c?.isDark ? '#0f172a' : '#f1f5f9',
+                            border: `1px solid ${c?.cardBorder || '#e2e8f0'}`
+                          }} />
+                        </div>
 
-                        {/* Bottom row: Exp date & Condiciones */}
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
-                          <span style={{ fontSize: 11, color: c?.textSecondary || '#64748b' }}>
-                            Exp: {formatearFechaExp(promo.fechaFin)}
+                        {/* Right side: Discount & Apply */}
+                        <div style={{
+                          width: '35%',
+                          minWidth: 120,
+                          background: c?.isDark ? 'rgba(var(--brand-primary-rgb), 0.08)' : 'rgba(239, 246, 255, 0.45)',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          padding: '14px 10px',
+                          textAlign: 'center'
+                        }}>
+                          <span style={{ fontSize: 17, fontWeight: 900, color: 'var(--brand-primary, #e11d48)', lineHeight: 1.1 }}>
+                            {valorDescFormatted}
+                          </span>
+                          <span style={{ fontSize: 10.5, color: c?.textSecondary || '#64748b', margin: '4px 0 10px', lineHeight: 1.2 }}>
+                            {t('promotions.discountOnReservation', 'Descuento en tu reserva')}
                           </span>
                           <button
                             type="button"
-                            onClick={() => setSelectedPromoCondiciones(promo)}
+                            onClick={() => {
+                              setModalCupones(false);
+                              if (onApplyPromotion) {
+                                try {
+                                  onApplyPromotion(promo.codigo);
+                                  setPromoError('');
+                                } catch (err) {
+                                  setPromoError(getErrorMessage(err));
+                                }
+                              }
+                            }}
                             style={{
-                              background: 'none',
+                              background: 'var(--brand-gradient)',
+                              color: '#ffffff',
                               border: 'none',
-                              padding: 0,
-                              color: c?.accentText || 'var(--brand-secondary)',
+                              borderRadius: 8,
+                              padding: '7px 18px',
                               fontSize: 12,
                               fontWeight: 800,
-                              cursor: 'pointer'
+                              cursor: 'pointer',
+                              boxShadow: '0 2px 6px rgba(var(--brand-secondary-rgb), 0.25)',
+                              transition: 'all 0.2s'
                             }}
                           >
-                            {t('promotions.conditions', 'Condiciones')}
+                            {t('promotions.apply', 'Aplicar')}
                           </button>
                         </div>
                       </div>
 
-                      {/* Dotted border line with notches */}
-                      <div style={{
-                        position: 'relative',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: 0,
-                        borderLeft: `1.5px dashed ${c?.cardBorder || '#cbd5e1'}`
-                      }}>
+                      {/* Expandable Inline Conditions Drawer */}
+                      {isExpanded && (
                         <div style={{
-                          position: 'absolute',
-                          top: -8,
-                          left: -8,
-                          width: 16,
-                          height: 16,
-                          borderRadius: '50%',
-                          background: c?.isDark ? '#0f172a' : '#f1f5f9',
-                          border: `1px solid ${c?.cardBorder || '#e2e8f0'}`
-                        }} />
-                        <div style={{
-                          position: 'absolute',
-                          bottom: -8,
-                          left: -8,
-                          width: 16,
-                          height: 16,
-                          borderRadius: '50%',
-                          background: c?.isDark ? '#0f172a' : '#f1f5f9',
-                          border: `1px solid ${c?.cardBorder || '#e2e8f0'}`
-                        }} />
-                      </div>
-
-                      {/* Right side: Discount & Apply */}
-                      <div style={{
-                        width: '36%',
-                        minWidth: 120,
-                        background: c?.isDark ? 'rgba(var(--brand-primary-rgb), 0.08)' : 'rgba(239, 246, 255, 0.45)',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        padding: '14px 10px',
-                        textAlign: 'center'
-                      }}>
-                        <span style={{ fontSize: 17, fontWeight: 900, color: c?.accentText || 'var(--brand-secondary)', lineHeight: 1.1 }}>
-                          {valorDescFormatted}
-                        </span>
-                        <span style={{ fontSize: 10.5, color: c?.textSecondary || '#64748b', margin: '4px 0 10px', lineHeight: 1.2 }}>
-                          {t('promotions.discountOnReservation', 'Descuento en tu reserva')}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setModalCupones(false);
-                            if (onApplyPromotion) {
-                              try {
-                                onApplyPromotion(promo.codigo);
-                                setPromoError('');
-                              } catch (err) {
-                                setPromoError(getErrorMessage(err));
-                              }
-                            }
-                          }}
-                          style={{
-                            background: 'var(--brand-gradient)',
-                            color: '#ffffff',
-                            border: 'none',
-                            borderRadius: 8,
-                            padding: '7px 18px',
-                            fontSize: 12,
-                            fontWeight: 800,
-                            cursor: 'pointer',
-                            boxShadow: '0 2px 6px rgba(var(--brand-secondary-rgb), 0.25)',
-                            transition: 'all 0.2s'
-                          }}
-                        >
-                          {t('promotions.apply', 'Aplicar')}
-                        </button>
-                      </div>
+                          padding: '12px 16px 14px',
+                          background: c?.isDark ? 'rgba(255,255,255,0.03)' : '#f8fafc',
+                          borderTop: `1px solid ${c?.cardBorder || '#e2e8f0'}`,
+                          fontSize: 12,
+                          color: c?.textSecondary || '#64748b',
+                          lineHeight: 1.5,
+                        }}>
+                          <p style={{ margin: '0 0 8px', fontWeight: 600, color: c?.textPrimary || '#0f172a', fontSize: 12.5 }}>
+                            {promo.condiciones || 'Válido para reservas en Drivique cumpliendo los términos generales de la flota.'}
+                          </p>
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6, fontSize: 11.5, marginTop: 6, paddingTop: 6, borderTop: `1px dashed ${c?.cardBorder || '#e2e8f0'}` }}>
+                            <div>
+                              <span style={{ color: c?.textSecondary || '#64748b' }}>Categoría: </span>
+                              <strong style={{ color: c?.textPrimary || '#0f172a' }}>{promo.categoriaVehiculo || 'Todos'}</strong>
+                            </div>
+                            <div>
+                              <span style={{ color: c?.textSecondary || '#64748b' }}>Monto mínimo: </span>
+                              <strong style={{ color: c?.textPrimary || '#0f172a' }}>
+                                {promo.reservaMinima > 0 ? `$${Number(promo.reservaMinima).toLocaleString('es-CO')}` : 'Sin mínimo'}
+                              </strong>
+                            </div>
+                            <div>
+                              <span style={{ color: c?.textSecondary || '#64748b' }}>Vigencia: </span>
+                              <strong style={{ color: c?.textPrimary || '#0f172a' }}>{formatearFechaExp(promo.fechaFin)}</strong>
+                            </div>
+                            <div>
+                              <span style={{ color: c?.textSecondary || '#64748b' }}>Condición: </span>
+                              <strong style={{ color: c?.textPrimary || '#0f172a' }}>No acumulable</strong>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   );
                 })
               )}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Modal 2: Condiciones del Cupón */}
-      {selectedPromoCondiciones && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            backgroundColor: 'rgba(15, 23, 42, 0.65)',
-            backdropFilter: 'blur(4px)',
-            zIndex: 10000,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: 20
-          }}
-          onClick={() => setSelectedPromoCondiciones(null)}
-        >
-          <div
-            style={{
-              background: c?.cardBg || '#ffffff',
-              borderRadius: 20,
-              maxWidth: 440,
-              width: '100%',
-              maxHeight: '85vh',
-              overflow: 'hidden',
-              display: 'flex',
-              flexDirection: 'column',
-              boxShadow: '0 25px 50px -12px rgba(0,0,0,0.35)',
-              border: `1px solid ${c?.cardBorder || '#e2e8f0'}`
-            }}
-            onClick={e => e.stopPropagation()}
-          >
-            <div style={{ padding: '20px 24px', borderBottom: `1px solid ${c?.cardBorder || '#e2e8f0'}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h3 style={{ margin: 0, fontSize: 17, fontWeight: 800, color: c?.textPrimary || '#0f172a' }}>
-                {t('promotions.couponConditionsTitle', 'Condiciones del Cupón')}
-              </h3>
-              <button
-                type="button"
-                onClick={() => setSelectedPromoCondiciones(null)}
-                style={{ background: 'none', border: 'none', fontSize: 18, cursor: 'pointer', color: c?.textSecondary || '#64748b' }}
-              >
-                ✕
-              </button>
-            </div>
-
-            <div style={{ padding: '20px 24px', overflowY: 'auto', flex: 1 }}>
-              <h4 style={{ margin: '0 0 6px', fontSize: 16, fontWeight: 800, color: c?.accentText || 'var(--brand-secondary)' }}>
-                {selectedPromoCondiciones.nombre || selectedPromoCondiciones.titulo}
-              </h4>
-              <p style={{ margin: '0 0 16px', fontSize: 13, color: c?.textSecondary || '#64748b', lineHeight: 1.5 }}>
-                {selectedPromoCondiciones.condiciones || 'Otorgado a nuestros clientes más fieles por su continuo soporte y confianza en Drivique.'}
-              </p>
-
-              <div style={{ height: 1, background: c?.cardBorder || '#e2e8f0', margin: '16px 0' }} />
-
-              <h5 style={{ margin: '0 0 12px', fontSize: 13.5, fontWeight: 800, color: c?.textPrimary || '#0f172a' }}>
-                {t('promotions.termsAndConditionsHeader', 'Términos y condiciones:')}
-              </h5>
-
-              <ul style={{ margin: 0, paddingLeft: 18, listStyleType: 'disc', display: 'flex', flexDirection: 'column', gap: 8, fontSize: 12.5, color: c?.textSecondary || '#64748b', lineHeight: 1.5 }}>
-                <li>{t('promotions.termsDigitalPayments', 'Válido para pagos digitales e iniciales.')}</li>
-                <li>{t('promotions.termsNonTransferable', 'No transferible a otros usuarios.')}</li>
-                <li>{t('promotions.termsOnePerReservation', 'Solo se puede aplicar un cupón por reserva.')}</li>
-                <li>
-                  {t('promotions.termsValidCategories', 'Categorías válidas:')}{' '}
-                  <strong style={{ color: c?.textPrimary || '#0f172a' }}>
-                    {(selectedPromoCondiciones.categoriaVehiculo || 'TODOS').toUpperCase()}
-                  </strong>
-                </li>
-                {selectedPromoCondiciones.reservaMinima > 0 ? (
-                  <li>
-                    {t('promotions.termsMinAmount', 'Requiere un monto mínimo de reserva de')} ${Number(selectedPromoCondiciones.reservaMinima).toLocaleString('es-CO')} COP. {t('promotions.termsNonCumulative', 'No acumulable con otras promociones.')}
-                  </li>
-                ) : (
-                  <li>
-                    {t('promotions.termsGeneralConditions', 'Válido para vehículos de la flota. No acumulable con otras promociones.')}
-                  </li>
-                )}
-                <li>
-                  {t('promotions.termsExpires', 'Vence:')}{' '}
-                  <strong style={{ color: c?.textPrimary || '#0f172a' }}>
-                    {formatearFechaExp(selectedPromoCondiciones.fechaFin)}
-                  </strong>
-                </li>
-              </ul>
-            </div>
-
-            <div style={{ padding: '16px 24px', borderTop: `1px solid ${c?.cardBorder || '#e2e8f0'}` }}>
-              <button
-                type="button"
-                onClick={() => setSelectedPromoCondiciones(null)}
-                style={{
-                  width: '100%',
-                  background: 'var(--brand-gradient)',
-                  color: '#ffffff',
-                  border: 'none',
-                  borderRadius: 12,
-                  padding: '12px 24px',
-                  fontWeight: 800,
-                  fontSize: 14,
-                  cursor: 'pointer',
-                  boxShadow: '0 4px 12px rgba(var(--brand-secondary-rgb), 0.25)'
-                }}
-              >
-                {t('common.understood', 'Entendido')}
-              </button>
             </div>
           </div>
         </div>
