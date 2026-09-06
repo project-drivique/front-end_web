@@ -288,8 +288,8 @@ export default function ResumenLateral({
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              background: c?.isDark ? 'rgba(37, 99, 235, 0.08)' : '#f8faff',
-              border: `1.5px solid ${c?.isDark ? 'rgba(59, 130, 246, 0.4)' : '#bfdbfe'}`,
+              background: c?.isDark ? 'rgba(255, 255, 255, 0.03)' : (c?.subCardBg || '#f8fafc'),
+              border: `1.5px solid ${c?.cardBorder || '#e2e8f0'}`,
               borderRadius: 12,
               padding: '12px 14px',
               gap: 10
@@ -299,7 +299,7 @@ export default function ResumenLateral({
                   width: 24,
                   height: 24,
                   borderRadius: '50%',
-                  background: c?.accentText || 'var(--brand-secondary)',
+                  background: 'var(--brand-primary, #e11d48)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -319,25 +319,6 @@ export default function ResumenLateral({
                       ? `${appliedPromotion.valorDescuento}% OFF aplicado`
                       : `$${Number(appliedPromotion.valorDescuento).toLocaleString('es-CO')} OFF aplicado`}
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setViewingCondicionesPromo(appliedPromotion);
-                    }}
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      padding: 0,
-                      color: 'var(--brand-primary, #e11d48)',
-                      fontSize: 11,
-                      fontWeight: 700,
-                      cursor: 'pointer',
-                      marginTop: 3,
-                      display: 'inline-block'
-                    }}
-                  >
-                    {t('promotions.viewConditions', 'Ver condiciones')} ›
-                  </button>
                 </div>
               </div>
               <button
