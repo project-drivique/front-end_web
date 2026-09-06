@@ -555,85 +555,119 @@ export default function ResumenLateral({
 
         {/* ── Desglose de tarifa ── */}
         <div style={{ padding: '20px' }}>
-          <h4 style={{ fontSize: 11, fontWeight: 800, color: c?.textPrimary || '#0f172a', textTransform: 'uppercase', letterSpacing: '0.07em', margin: '0 0 16px' }}>
-            {t('vehiculo.fareBreakdown', 'Desglose de tarifa')}
+          <h4 style={{ fontSize: 12, fontWeight: 800, color: c?.textPrimary || '#0f172a', textTransform: 'uppercase', letterSpacing: '0.04em', margin: '0 0 16px' }}>
+            {t('vehiculo.fareBreakdown', 'DESGLOSE DE TARIFA')}
           </h4>
           
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: c?.textSecondary || '#64748b', marginBottom: 12 }}>
-            <span>{dias > 1 ? t('vehiculo.dailyRatesCount', 'Diarias ({{dias}} días)', { dias }) : t('vehiculo.dailyRates', 'Diarias')}</span>
-            <span style={{ fontWeight: 800, color: c?.textPrimary || '#0f172a' }}>{formatCurrency(subtotalDiario, moneda)}</span>
-          </div>
-          
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: c?.textSecondary || '#64748b', marginBottom: 12 }}>
-            <span>{t('vehiculo.mileageType', 'Kilometraje')}</span>
-            <span style={{ fontWeight: 800, color: c?.textPrimary || '#0f172a' }}>
-              {reserva.tipoKm ? (reserva.tipoKm === 'ilimitado' ? t('vehiculo.unlimited', 'Ilimitado') : t('vehiculo.limited', 'Limitado')) : '-'}
-            </span>
-          </div>
-          
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: c?.textSecondary || '#64748b', marginBottom: 12 }}>
-            <span>{t('vehiculo.protections', 'Protecciones')}</span>
-            <span style={{ fontWeight: 800, color: c?.textPrimary || '#0f172a' }}>{subtotalSeguro > 0 ? formatCurrency(subtotalSeguro, moneda) : '-'}</span>
-          </div>
-          
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: c?.textSecondary || '#64748b', marginBottom: 12 }}>
-            <span>{t('vehiculo.additionalServices', 'Servicios adicionales')}</span>
-            <span style={{ fontWeight: 800, color: c?.textPrimary || '#0f172a' }}>{subtotalServicios > 0 ? formatCurrency(subtotalServicios, moneda) : '—'}</span>
-          </div>
-          
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: c?.textSecondary || '#64748b', marginBottom: 12, paddingBottom: 12, borderBottom: `1px solid ${c?.cardBorder || 'var(--borde)'}` }}>
-            <span>{t('vehiculo.adminCharges', 'Cargos administrativos (10%)')}</span>
-            <span style={{ fontWeight: 800, color: c?.textPrimary || '#0f172a' }}>{formatCurrency(cargosAdmin, moneda)}</span>
-          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: c?.textSecondary || '#64748b' }}>
+              <span>{dias > 1 ? t('vehiculo.dailyRatesCount', 'Diarias ({{dias}} días)', { dias }) : t('vehiculo.dailyRates', 'Diarias')}</span>
+              <span style={{ fontWeight: 800, color: c?.textPrimary || '#0f172a' }}>{formatCurrency(subtotalDiario, moneda)}</span>
+            </div>
+            
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: c?.textSecondary || '#64748b' }}>
+              <span>
+                {reserva.tipoKm === 'ilimitado'
+                  ? t('vehiculo.unlimitedMileage', 'Kilometraje ilimitado')
+                  : (reserva.tipoKm === 'limitado' ? t('vehiculo.limitedMileage', 'Kilometraje limitado') : t('vehiculo.mileage', 'Kilometraje'))}
+              </span>
+              <span style={{ fontWeight: 800, color: c?.textPrimary || '#0f172a' }}>
+                {formatCurrency(subtotalDiario, moneda)}
+              </span>
+            </div>
+            
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: c?.textSecondary || '#64748b' }}>
+              <span>
+                {seguroIdx !== null && vehiculo.seguros?.[seguroIdx]
+                  ? translateProtection(vehiculo.seguros[seguroIdx].nombre)
+                  : t('vehiculo.mandatoryProtection', 'Protección Obligatoria')}
+              </span>
+              <span style={{ fontWeight: 800, color: c?.textPrimary || '#0f172a' }}>
+                {formatCurrency(subtotalSeguro, moneda)}
+              </span>
+            </div>
+            
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: c?.textSecondary || '#64748b' }}>
+              <span style={{ textTransform: 'uppercase' }}>
+                {t('vehiculo.additionalServicesUpper', 'SERVICIOS ADICIONALES')}
+              </span>
+              <span style={{ fontWeight: 800, color: c?.textPrimary || '#0f172a' }}>
+                {subtotalServicios > 0 ? formatCurrency(subtotalServicios, moneda) : '—'}
+              </span>
+            </div>
+            
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              fontSize: 13,
+              color: c?.textSecondary || '#64748b',
+              paddingBottom: 14,
+              borderBottom: `1px solid ${c?.cardBorder || '#e2e8f0'}`
+            }}>
+              <span>{t('vehiculo.adminCharges', 'Cargos Administrativos (10%)')}</span>
+              <span style={{ fontWeight: 800, color: c?.textPrimary || '#0f172a' }}>{formatCurrency(cargosAdmin, moneda)}</span>
+            </div>
 
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: c?.textSecondary || '#64748b', marginBottom: 20 }}>
-            <span>{t('vehiculo.vat', 'IVA (19%)')}</span>
-            <span style={{ fontWeight: 800, color: c?.textPrimary || '#0f172a' }}>{formatCurrency(iva, moneda)}</span>
-          </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: c?.textSecondary || '#64748b' }}>
+              <span>{t('vehiculo.vat', 'IVA (19%)')}</span>
+              <span style={{ fontWeight: 800, color: c?.textPrimary || '#0f172a' }}>{formatCurrency(iva, moneda)}</span>
+            </div>
 
-          {discount > 0 && (
-            <div
-              className="reservation-discount-row"
-              style={{
+            {discount > 0 && (
+              <div style={{
                 display: 'flex',
                 justifyContent: 'space-between',
-                alignItems: 'center',
-                background: '#ecfdf5',
-                border: '1px solid #6ee7b7',
-                borderRadius: 10,
-                padding: '10px 14px',
-                marginBottom: 16,
-                color: '#047857',
-                fontWeight: 800,
-                fontSize: '13px',
-              }}
-            >
-              <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                🏷️ {t('promotions.discount', 'Descuento')}
-                <small style={{ fontWeight: 700, opacity: 0.9 }}>
-                  ({appliedPromotion?.tipoDescuento === 'porcentaje' ? `-${appliedPromotion.valorDescuento}%` : 'Descuento'})
-                </small>
-              </span>
-              <strong style={{ fontSize: '15px', color: '#065f46' }}>
-                -{formatCurrency(discount, moneda)}
-              </strong>
-            </div>
-          )}
+                fontSize: 13,
+                color: '#10b981',
+                fontWeight: 700
+              }}>
+                <span>
+                  {t('promotions.discount', 'Descuento')} ({appliedPromotion?.codigo || 'PROMO'})
+                </span>
+                <span style={{ fontWeight: 800 }}>
+                  -{formatCurrency(discount, moneda)}
+                </span>
+              </div>
+            )}
+          </div>
 
           {/* Total Box */}
-          <div style={{ background: c?.subCardBg || '#f8fafc', border: `1px solid ${c?.cardBorder || '#e2e8f0'}`, borderRadius: 12, padding: '16px' }}>
-            <p style={{ fontSize: 11, fontWeight: 800, color: c?.accentText || 'var(--brand-secondary)', textTransform: 'uppercase', letterSpacing: '0.07em', margin: '0 0 4px' }}>
-              {t('vehiculo.finalTotal', 'Total Final')}
+          <div style={{
+            background: c?.subCardBg || '#f8fafc',
+            border: `1px solid ${c?.cardBorder || '#e2e8f0'}`,
+            borderRadius: 16,
+            padding: '16px 20px',
+            marginTop: 18
+          }}>
+            <p style={{
+              fontSize: 11,
+              fontWeight: 800,
+              color: 'var(--brand-primary, #2563eb)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.05em',
+              margin: '0 0 6px'
+            }}>
+              {t('vehiculo.finalTotal', 'TOTAL FINAL')}
             </p>
-            <p style={{ fontSize: 24, fontWeight: 900, color: c?.accentText || 'var(--brand-secondary)', margin: '0 0 6px' }}>
+            <p style={{
+              fontSize: 26,
+              fontWeight: 900,
+              color: c?.textPrimary || '#0f172a',
+              letterSpacing: '-0.02em',
+              margin: '0 0 6px'
+            }}>
               {formatCurrency(finalTotal, moneda)}
             </p>
-            <p style={{ fontSize: 10, color: c?.textSecondary || '#64748b', margin: 0 }}>
+            <p style={{
+              fontSize: 11.5,
+              color: c?.textSecondary || '#94a3b8',
+              margin: 0
+            }}>
               {t('vehiculo.totalIncludesVat', 'El total final incluye IVA y cargos adicionales')}
             </p>
           </div>
           
-          {pantalla < 3 && (
+          {pantalla < 3 && onContinuar && (
             <div style={{ marginTop: 20 }}>
               <button 
                 onClick={onContinuar}

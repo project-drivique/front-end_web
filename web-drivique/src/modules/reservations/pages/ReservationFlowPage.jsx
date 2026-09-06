@@ -423,7 +423,7 @@ export default function ReservationFlowPage() {
                     className="btn-cerrar-modal-resumen"
                     onClick={() => setModalResumenMovil(false)}
                   >
-                    {t('common.continue', 'Continuar')}
+                    {t('common.close', 'Cerrar')}
                   </button>
                 </div>
               </div>
