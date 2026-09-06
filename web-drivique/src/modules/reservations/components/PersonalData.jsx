@@ -869,28 +869,28 @@ export default function DatosPersonales({
               <div style={{
                 background: c?.isDark ? 'rgba(37,99,235,0.1)' : '#f0f4ff',
                 border: `1px solid ${c?.isDark ? 'rgba(59,130,246,0.3)' : '#dbeafe'}`,
-                padding: '16px',
+                padding: '16px 18px',
                 borderRadius: 14
               }}>
                 <p style={{
                   fontSize: 11.5,
                   fontWeight: 800,
-                  color: c?.accentText || '#1d4ed8',
+                  color: '#1d4ed8',
                   margin: '0 0 6px',
                   textTransform: 'uppercase',
                   letterSpacing: '0.04em'
                 }}>
                   {t('vehiculo.importantPoliciesTitle', 'POLÍTICAS IMPORTANTES DEL CONTRATO')}
                 </p>
-                <p style={{ fontSize: 12.5, color: c?.textPrimary || '#0f172a', margin: 0, lineHeight: 1.5 }}>
-                  <strong>Política de No Reembolso:</strong> Una vez confirmada y pagada la reserva, no se realizan devoluciones de dinero bajo ninguna circunstancia. El cliente podrá reprogramar su fecha de alquiler notificando con al menos 48 horas de anticipación.
+                <p style={{ fontSize: 12.5, color: c?.textPrimary || '#0f172a', margin: 0, lineHeight: 1.55 }}>
+                  <strong style={{ color: c?.textPrimary || '#0f172a' }}>Política de No Reembolso:</strong> Una vez confirmada y pagada la reserva, no se realizan devoluciones de dinero bajo ninguna circunstancia. El cliente podrá reprogramar su fecha de alquiler notificando con al menos 48 horas de anticipación.
                 </p>
               </div>
 
               {/* Title Section */}
               <div>
                 <p style={{
-                  fontSize: 11.5,
+                  fontSize: 11,
                   fontWeight: 800,
                   color: c?.textSecondary || '#94a3b8',
                   textTransform: 'uppercase',
@@ -934,7 +934,7 @@ export default function DatosPersonales({
 
             {/* Footer Buttons */}
             <div style={{
-              padding: '14px 24px 20px',
+              padding: '16px 24px 20px',
               borderTop: `1px solid ${c?.cardBorder || '#e2e8f0'}`,
               display: 'flex',
               gap: 12,
@@ -945,13 +945,13 @@ export default function DatosPersonales({
                 onClick={() => setVerTyC(false)}
                 style={{
                   flex: 1,
-                  height: 46,
+                  height: 48,
                   borderRadius: 12,
                   border: `1.5px solid ${c?.cardBorder || '#e2e8f0'}`,
                   background: c?.cardBg || '#ffffff',
                   color: c?.textPrimary || '#0f172a',
                   fontWeight: 700,
-                  fontSize: 13.5,
+                  fontSize: 14,
                   cursor: 'pointer',
                   transition: 'all 0.2s'
                 }}
@@ -968,21 +968,21 @@ export default function DatosPersonales({
                   setVerTyC(false);
                 }}
                 style={{
-                  flex: 2,
-                  height: 46,
+                  flex: 1.5,
+                  height: 48,
                   borderRadius: 12,
                   border: 'none',
                   background: (hasScrolledToBottom || terminosLeidos)
-                    ? 'var(--brand-gradient)'
+                    ? 'var(--brand-gradient, #e11d48)'
                     : (c?.isDark ? '#334155' : '#e2e8f0'),
                   color: (hasScrolledToBottom || terminosLeidos)
                     ? '#ffffff'
                     : (c?.isDark ? '#64748b' : '#94a3b8'),
                   fontWeight: 700,
-                  fontSize: 13.5,
+                  fontSize: 14,
                   cursor: (hasScrolledToBottom || terminosLeidos) ? 'pointer' : 'not-allowed',
                   boxShadow: (hasScrolledToBottom || terminosLeidos)
-                    ? '0 4px 12px rgba(var(--brand-secondary-rgb), 0.25)'
+                    ? '0 4px 14px rgba(225, 29, 72, 0.25)'
                     : 'none',
                   transition: 'all 0.2s'
                 }}
