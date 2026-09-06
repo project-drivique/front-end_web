@@ -798,100 +798,120 @@ export default function DatosPersonales({
       <div style={{
         background: 'var(--brand-gradient)',
         borderRadius: 24,
-        padding: '28px 24px',
+        padding: '24px 28px',
         boxShadow: 'var(--brand-shadow)',
         display: 'flex',
-        flexDirection: 'column',
+        justifyContent: 'space-between',
         alignItems: 'center',
-        textAlign: 'center',
+        flexWrap: 'wrap',
+        gap: 20,
         color: '#ffffff'
       }}>
-        <span style={{
-          fontSize: 12.5,
-          fontWeight: 800,
-          color: 'rgba(255, 255, 255, 0.9)',
-          textTransform: 'uppercase',
-          letterSpacing: '0.08em',
-          margin: '0 0 6px'
+        {/* Left Column: Total to pay info */}
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'flex-start',
+          textAlign: 'left',
+          flex: '1 1 240px'
         }}>
-          {t('vehiculo.totalToPay', 'TOTAL A PAGAR')}
-        </span>
-
-        <span style={{
-          fontSize: 32,
-          fontWeight: 900,
-          color: '#ffffff',
-          lineHeight: 1.1,
-          margin: '0 0 4px',
-          letterSpacing: '-0.02em'
-        }}>
-          {formatCurrency(total, moneda)}
-        </span>
-
-        <span style={{
-          fontSize: 12,
-          fontWeight: 500,
-          color: 'rgba(255, 255, 255, 0.85)',
-          margin: '0 0 22px'
-        }}>
-          *Incluye impuestos y cargos administrativos
-        </span>
-
-        <button
-          type="button"
-          onClick={onReservar}
-          style={{
-            width: '100%',
-            height: 48,
-            background: '#ffffff',
-            color: c?.accentText || 'var(--brand-secondary)',
-            border: 'none',
-            borderRadius: 14,
+          <span style={{
+            fontSize: 12,
             fontWeight: 800,
-            fontSize: 15,
-            cursor: 'pointer',
-            boxShadow: '0 4px 14px rgba(0, 0, 0, 0.12)',
-            transition: 'all 0.2s',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}
-          onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'}
-          onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
-        >
-          {t('vehiculo.confirmReserve', 'Confirmar reserva')}
-        </button>
+            color: 'rgba(255, 255, 255, 0.9)',
+            textTransform: 'uppercase',
+            letterSpacing: '0.08em',
+            margin: '0 0 4px'
+          }}>
+            {t('vehiculo.totalToPay', 'TOTAL A PAGAR')}
+          </span>
 
-        <button
-          type="button"
-          onClick={() => {
-            if (onCancelar) {
-              onCancelar();
-            } else {
-              navigate('/catalogo');
-            }
-          }}
-          style={{
-            width: '100%',
-            height: 46,
-            background: 'rgba(255, 255, 255, 0.12)',
+          <span style={{
+            fontSize: 32,
+            fontWeight: 900,
             color: '#ffffff',
-            border: '1px solid rgba(255, 255, 255, 0.35)',
-            borderRadius: 14,
-            fontWeight: 700,
-            fontSize: 14,
-            cursor: 'pointer',
-            marginTop: 10,
-            transition: 'all 0.2s',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}
-          onMouseEnter={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)'}
-          onMouseLeave={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.12)'}
-        >
-          {t('vehiculo.cancelReserve', 'Cancelar reserva')}
-        </button>
+            lineHeight: 1.1,
+            margin: '0 0 4px',
+            letterSpacing: '-0.02em'
+          }}>
+            {formatCurrency(total, moneda)}
+          </span>
+
+          <span style={{
+            fontSize: 11.5,
+            fontWeight: 500,
+            color: 'rgba(255, 255, 255, 0.85)'
+          }}>
+            *Incluye impuestos y cargos administrativos
+          </span>
+        </div>
+
+        {/* Right Column: Action Buttons */}
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 8,
+          flex: '1 1 240px',
+          minWidth: 200,
+          maxWidth: 320
+        }}>
+          <button
+            type="button"
+            onClick={onReservar}
+            style={{
+              width: '100%',
+              height: 48,
+              background: '#ffffff',
+              color: c?.accentText || 'var(--brand-secondary)',
+              border: 'none',
+              borderRadius: 14,
+              fontWeight: 800,
+              fontSize: 15,
+              cursor: 'pointer',
+              boxShadow: '0 4px 14px rgba(0, 0, 0, 0.12)',
+              transition: 'all 0.2s',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 8
+            }}
+            onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'}
+            onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
+          >
+            <span>{t('vehiculo.confirmReserve', 'Confirmar reserva')}</span>
+            <span style={{ fontSize: 16 }}>→</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              if (onCancelar) {
+                onCancelar();
+              } else {
+                navigate('/catalogo');
+              }
+            }}
+            style={{
+              width: '100%',
+              height: 42,
+              background: 'rgba(255, 255, 255, 0.12)',
+              color: '#ffffff',
+              border: '1px solid rgba(255, 255, 255, 0.35)',
+              borderRadius: 14,
+              fontWeight: 700,
+              fontSize: 13.5,
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+            onMouseEnter={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)'}
+            onMouseLeave={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.12)'}
+          >
+            {t('vehiculo.cancelReserve', 'Cancelar reserva')}
+          </button>
+        </div>
       </div>
 
       {verTyC && (
@@ -1428,43 +1448,6 @@ export default function DatosPersonales({
         </div>
       )}
 
-      <div className="confirmar-reserva-bloque" style={{ 
-        background: 'var(--brand-gradient)',
-        borderRadius: 16, 
-        padding: '24px 32px', 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center', 
-        gap: 24, 
-        flexWrap: 'wrap', 
-        boxShadow: '0 12px 32px rgba(var(--brand-secondary-rgb),0.25)'
-      }}>
-        <div>
-          <p style={{ fontSize: 12, color: 'var(--brand-border-light)', fontWeight: 700, margin: '0 0 4px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t('vehiculo.totalToPay')}</p>
-          <p style={{ fontSize: 32, fontWeight: 900, color: '#fff', margin: 0 }}>{formatCurrency(total, moneda)}</p>
-          <p style={{ fontSize: 11, color: 'var(--brand-border-light)', margin: '6px 0 0' }}>{t('vehiculo.taxesIncluded')}</p>
-        </div>
-        <button
-          onClick={onReservar}
-          style={{ 
-            padding: '16px 40px', 
-            borderRadius: 12, 
-            background: '#ffffff', 
-            color: 'var(--brand-text)',
-            fontWeight: 900, 
-            fontSize: 16, 
-            border: 'none', 
-            cursor: 'pointer', 
-            boxShadow: '0 8px 24px rgba(0,0,0,0.18)', 
-            whiteSpace: 'nowrap', 
-            transition: 'transform 200ms ease' 
-          }}
-          onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
-          onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
-        >
-          {t('vehiculo.confirmReserve')} →
-        </button>
-      </div>
     </div>
   );
 }

@@ -332,17 +332,6 @@ export default function ReservationFlowPage() {
                 </button>
               </div>
             )}
-
-            {/* Footer confirmar móvil (paso 3) */}
-            {pantalla === 3 && (
-              <div className="confirmar-reserva-movil" style={{ display: 'none', width: '100%', marginTop: 24, background: 'var(--brand-gradient)', borderRadius: 24, padding: '22px 24px', boxShadow: 'var(--brand-shadow)' }}>
-                <p style={{ fontSize: 12, color: 'var(--brand-border-light)', fontWeight: 700, margin: '0 0 4px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t('vehiculo.totalToPay')}</p>
-                <p style={{ fontSize: 26, fontWeight: 900, color: '#fff', margin: '0 0 16px' }}>{formatCurrency(totalReserva, moneda)}</p>
-                <button onClick={handleReservar} style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, padding: '15px 24px', borderRadius: 16, background: 'var(--bg-tarjeta)', color: 'var(--brand-text)', fontWeight: 900, fontSize: 15, border: 'none', cursor: 'pointer' }}>
-                  {t('vehiculo.confirmReserve')}
-                </button>
-              </div>
-            )}
           </div>
 
           {/* Modal de edición */}
