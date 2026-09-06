@@ -6,6 +6,13 @@ import { formatCurrency } from '@/utils/currencyUtils';
 import { getNombreTipoDoc } from '@/utils/documentUtils';
 import { RECARGOS_LOGISTICOS } from '../../catalog/constants';
 import { FaUser, FaIdCard, FaTimes } from 'react-icons/fa';
+import paisesMock from '@/mocks/nationalities.json';
+
+const getPrefijoPais = (nacionalidad) => {
+  if (!nacionalidad) return '+57';
+  const p = paisesMock.find(item => item.nombre.toLowerCase() === String(nacionalidad).toLowerCase());
+  return p?.prefijo || '+57';
+};
 
 const DocumentUploader = ({ label, helpText, error, file, loading, onUpload, onClear, required = true, c }) => {
   const isDark = c?.isDark;
@@ -204,6 +211,23 @@ export default function DatosPersonales({
   };
 
 
+  const prefijoActual = useMemo(() => {
+    return getPrefijoPais(datosForm.nacionalidad || 'Colombia');
+  }, [datosForm.nacionalidad]);
+
+  const handleCambioNacionalidad = (nuevoPais) => {
+    onCambio('nacionalidad', nuevoPais);
+    if (nuevoPais.toLowerCase() === 'colombia') {
+      if (!['CC', 'CE', 'PASAPORTE', 'PPT', 'PEP'].includes(datosForm.tipoDoc)) {
+        onCambio('tipoDoc', 'CC');
+      }
+    } else {
+      if (datosForm.tipoDoc === 'CC' || !datosForm.tipoDoc) {
+        onCambio('tipoDoc', 'PASAPORTE');
+      }
+    }
+  };
+
   const tarifas = vehiculo.tarifas || {};
   const kmLimit = tarifas.kmLimitado || { precio: 0, km: 0 };
   const kmIlimit = tarifas.kmIlimitado || { precio: 0 };
@@ -283,7 +307,7 @@ export default function DatosPersonales({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: c?.textSecondary || '#64748b', marginBottom: 6 }}>
-              {t('vehiculo.name')} *
+              {t('vehiculo.name', 'Nombre completo')} *
             </label>
             <input
               type="text"
@@ -297,21 +321,26 @@ export default function DatosPersonales({
 
           <div>
             <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: c?.textSecondary || '#64748b', marginBottom: 6 }}>
-              {t('vehiculo.nationality')} *
+              {t('vehiculo.nationality', 'Nacionalidad')} *
             </label>
-            <input
-              type="text"
-              value={datosForm.nacionalidad}
-              onChange={e => onCambio('nacionalidad', e.target.value)}
-              placeholder="Ej. Colombiana"
+            <select
+              value={datosForm.nacionalidad || 'Colombia'}
+              onChange={e => handleCambioNacionalidad(e.target.value)}
               style={inputStyle(errores.nacionalidad)}
-            />
+            >
+              {[...paisesMock].filter(p => p.nombre !== 'Otro').map(p => (
+                <option key={p.nombre} value={p.nombre}>
+                  {p.nombre}
+                </option>
+              ))}
+              <option value="Otro">Otro</option>
+            </select>
             {errores.nacionalidad && <p style={{ color: '#ef4444', fontSize: 12, margin: '4px 0 0', fontWeight: 600 }}>{errores.nacionalidad}</p>}
           </div>
 
           <div>
             <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: c?.textSecondary || '#64748b', marginBottom: 6 }}>
-              {t('vehiculo.email')} *
+              {t('vehiculo.email', 'Correo electrónico')} *
             </label>
             <input
               type="email"
@@ -325,38 +354,73 @@ export default function DatosPersonales({
 
           <div>
             <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: c?.textSecondary || '#64748b', marginBottom: 6 }}>
-              {t('vehiculo.phoneNumber')} *
+              {t('vehiculo.phoneNumber', 'Teléfono celular')} *
             </label>
-            <input
-              type="tel"
-              value={datosForm.celular}
-              onChange={e => onCambio('celular', e.target.value.replace(/\D/g, '').slice(0, 10))}
-              placeholder="Ej. 3001234567"
-              style={inputStyle(errores.celular)}
-            />
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              <div style={{
+                height: 46,
+                minWidth: 64,
+                padding: '0 10px',
+                borderRadius: 12,
+                border: `1.5px solid ${c?.cardBorder || '#e2e8f0'}`,
+                background: c?.isDark ? 'rgba(255,255,255,0.05)' : '#ffffff',
+                color: c?.textPrimary || '#0f172a',
+                fontSize: 14,
+                fontWeight: 700,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+                userSelect: 'none'
+              }}>
+                {prefijoActual}
+              </div>
+              <input
+                type="tel"
+                value={datosForm.celular}
+                onChange={e => onCambio('celular', e.target.value.replace(/\D/g, '').slice(0, 12))}
+                placeholder="Ej. 3144214909"
+                style={{
+                  ...inputStyle(errores.celular),
+                  flex: 1
+                }}
+              />
+            </div>
             {errores.celular && <p style={{ color: '#ef4444', fontSize: 12, margin: '4px 0 0', fontWeight: 600 }}>{errores.celular}</p>}
           </div>
 
           <div>
             <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: c?.textSecondary || '#64748b', marginBottom: 6 }}>
-              {t('vehiculo.docType')} *
+              {t('vehiculo.docType', 'Tipo de documento')} *
             </label>
             <select
-              value={datosForm.tipoDoc}
+              value={datosForm.tipoDoc || (datosForm.nacionalidad?.toLowerCase() === 'colombia' ? 'CC' : 'PASAPORTE')}
               onChange={e => onCambio('tipoDoc', e.target.value)}
               style={inputStyle(errores.tipoDoc)}
             >
-              <option value="CC">{getNombreTipoDoc('CC')}</option>
-              <option value="CE">{getNombreTipoDoc('CE')}</option>
-              <option value="PASAPORTE">{getNombreTipoDoc('PASAPORTE')}</option>
-              <option value="PEP">{getNombreTipoDoc('PEP')}</option>
-              <option value="PPT">{getNombreTipoDoc('PPT')}</option>
+              {datosForm.nacionalidad?.toLowerCase() === 'colombia' ? (
+                <>
+                  <option value="CC">{t('vehiculo.docTypes.cc', 'Cédula de ciudadanía')}</option>
+                  <option value="CE">{t('vehiculo.docTypes.ce', 'Cédula de extranjería')}</option>
+                  <option value="PASAPORTE">{t('vehiculo.docTypes.passport', 'Pasaporte')}</option>
+                  <option value="PPT">{t('vehiculo.docTypes.ppt', 'Permiso por Protección Temporal (PPT)')}</option>
+                  <option value="PEP">{t('vehiculo.docTypes.pep', 'Permiso Especial de Permanencia (PEP)')}</option>
+                </>
+              ) : (
+                <>
+                  <option value="PASAPORTE">{t('vehiculo.docTypes.passport', 'Pasaporte')}</option>
+                  <option value="DNI">{t('vehiculo.docTypes.dni', 'Documento Nacional de Identidad (DNI)')}</option>
+                  <option value="CE">{t('vehiculo.docTypes.ce', 'Cédula de extranjería')}</option>
+                  <option value="CC">{t('vehiculo.docTypes.cc', 'Cédula de ciudadanía')}</option>
+                  <option value="PPT">{t('vehiculo.docTypes.ppt', 'Permiso por Protección Temporal (PPT)')}</option>
+                </>
+              )}
             </select>
           </div>
 
           <div>
             <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: c?.textSecondary || '#64748b', marginBottom: 6 }}>
-              {t('vehiculo.docNumber')} *
+              {t('vehiculo.docNumber', 'Número de documento')} *
             </label>
             <input
               type="text"
