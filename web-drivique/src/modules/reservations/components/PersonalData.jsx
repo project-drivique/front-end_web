@@ -145,6 +145,7 @@ export default function DatosPersonales({
   const [hasScrolledToBottom, setHasScrolledToBottom] = useState(false);
   const termsScrollRef = useRef(null);
 
+  const [modalCancelar, setModalCancelar] = useState(false);
   const [cedulaError, setCedulaError] = useState('');
   const [licenciaError, setLicenciaError] = useState('');
   const [cedulaCargando, setCedulaCargando] = useState(false);
@@ -609,13 +610,7 @@ export default function DatosPersonales({
 
           <button
             type="button"
-            onClick={() => {
-              if (onCancelar) {
-                onCancelar();
-              } else {
-                navigate('/catalogo');
-              }
-            }}
+            onClick={() => setModalCancelar(true)}
             style={{
               width: '100%',
               height: 42,
@@ -638,6 +633,154 @@ export default function DatosPersonales({
           </button>
         </div>
       </div>
+
+      {/* Modal Confirmación Cancelar Reserva */}
+      {modalCancelar && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(15, 23, 42, 0.65)',
+            backdropFilter: 'blur(4px)',
+            zIndex: 9999,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 20
+          }}
+          onClick={() => setModalCancelar(false)}
+        >
+          <div
+            style={{
+              background: c?.cardBg || '#ffffff',
+              borderRadius: 24,
+              maxWidth: 440,
+              width: '100%',
+              padding: '36px 28px 28px',
+              textAlign: 'center',
+              boxShadow: '0 25px 50px -12px rgba(0,0,0,0.35)',
+              border: `1px solid ${c?.cardBorder || '#e2e8f0'}`,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center'
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            {/* Warning Icon Badge */}
+            <div style={{
+              width: 76,
+              height: 76,
+              borderRadius: '50%',
+              background: c?.isDark ? 'rgba(var(--brand-primary-rgb), 0.12)' : 'rgba(var(--brand-secondary-rgb), 0.08)',
+              border: `2px solid ${c?.isDark ? 'rgba(var(--brand-primary-rgb), 0.25)' : 'rgba(var(--brand-secondary-rgb), 0.18)'}`,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginBottom: 20
+            }}>
+              <div style={{
+                width: 48,
+                height: 48,
+                borderRadius: '50%',
+                border: `2.5px solid ${c?.accentText || 'var(--brand-secondary)'}`,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: c?.accentText || 'var(--brand-secondary)',
+                fontSize: 24,
+                fontWeight: 900
+              }}>
+                !
+              </div>
+            </div>
+
+            {/* Title */}
+            <h3 style={{
+              margin: '0 0 10px',
+              fontSize: 20,
+              fontWeight: 800,
+              color: c?.textPrimary || '#0f172a',
+              letterSpacing: '-0.01em'
+            }}>
+              {t('vehiculo.cancelModalTitle', '¿Cancelar proceso de reserva?')}
+            </h3>
+
+            {/* Description */}
+            <p style={{
+              margin: '0 0 28px',
+              fontSize: 13.5,
+              color: c?.textSecondary || '#64748b',
+              lineHeight: 1.5,
+              maxWidth: 320
+            }}>
+              {t('vehiculo.cancelModalDesc', 'Se descartarán los datos ingresados en este proceso y regresarás al catálogo de vehículos.')}
+            </p>
+
+            {/* Buttons Row */}
+            <div style={{
+              display: 'flex',
+              gap: 12,
+              width: '100%'
+            }}>
+              <button
+                type="button"
+                onClick={() => setModalCancelar(false)}
+                style={{
+                  flex: 1,
+                  height: 46,
+                  borderRadius: 14,
+                  border: `1.5px solid ${c?.cardBorder || '#cbd5e1'}`,
+                  background: c?.cardBg || '#ffffff',
+                  color: c?.textPrimary || '#0f172a',
+                  fontWeight: 700,
+                  fontSize: 13.5,
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+                onMouseEnter={e => e.currentTarget.style.background = c?.isDark ? 'rgba(255,255,255,0.06)' : '#f8fafc'}
+                onMouseLeave={e => e.currentTarget.style.background = c?.cardBg || '#ffffff'}
+              >
+                {t('vehiculo.cancelModalNo', 'No, continuar')}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setModalCancelar(false);
+                  if (onCancelar) {
+                    onCancelar();
+                  } else {
+                    navigate('/catalogo');
+                  }
+                }}
+                style={{
+                  flex: 1,
+                  height: 46,
+                  borderRadius: 14,
+                  border: 'none',
+                  background: 'var(--brand-gradient)',
+                  color: '#ffffff',
+                  fontWeight: 800,
+                  fontSize: 13.5,
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 14px rgba(var(--brand-secondary-rgb), 0.25)',
+                  transition: 'all 0.2s',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+                onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'}
+                onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
+              >
+                {t('vehiculo.cancelModalYes', 'Sí, cancelar reserva')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {verTyC && (
         <div
