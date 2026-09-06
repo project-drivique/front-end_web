@@ -256,6 +256,9 @@ export default function ReservationFlowPage() {
                   abrirModalEditar={abrirModalEditar}
                   pantalla={pantalla}
                   onContinuar={irSiguiente}
+                  appliedPromotion={appliedPromotion}
+                  onApplyPromotion={aplicarPromocion}
+                  onRemovePromotion={quitarPromocion}
                 />
               )}
 
