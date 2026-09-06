@@ -744,11 +744,11 @@ export default function ResumenLateral({
                         display: 'flex',
                         borderRadius: 16,
                         border: promo.destacada
-                          ? `1.5px solid rgba(225, 29, 72, 0.35)`
+                          ? `1.5px solid rgba(225, 29, 72, 0.4)`
                           : `1.5px solid ${c?.cardBorder || '#e2e8f0'}`,
                         background: c?.cardBg || '#ffffff',
                         boxShadow: promo.destacada
-                          ? '0 6px 16px rgba(225, 29, 72, 0.08)'
+                          ? '0 6px 18px rgba(225, 29, 72, 0.1)'
                           : '0 2px 8px rgba(0,0,0,0.03)',
                         overflow: 'hidden',
                         position: 'relative'
@@ -758,11 +758,20 @@ export default function ResumenLateral({
                       <div style={{ flex: 1, padding: '14px 16px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minWidth: 0 }}>
                         <div>
                           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginBottom: 4 }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                              <FaTicketAlt size={13} color="var(--brand-primary, #e11d48)" />
-                              <span style={{ fontSize: 11, fontWeight: 700, color: c?.textSecondary || '#64748b', letterSpacing: '0.04em' }}>
-                                {promo.codigo}
-                              </span>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 7, minWidth: 0, flex: 1 }}>
+                              <FaTicketAlt size={13} color="var(--brand-primary, #e11d48)" style={{ flexShrink: 0 }} />
+                              <h4 style={{
+                                margin: 0,
+                                fontSize: 13.5,
+                                fontWeight: 800,
+                                color: c?.textPrimary || '#0f172a',
+                                lineHeight: 1.3,
+                                whiteSpace: 'nowrap',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis'
+                              }}>
+                                {promo.nombre || promo.titulo}
+                              </h4>
                             </div>
                             {promo.destacada && (
                               <span style={{
@@ -778,39 +787,41 @@ export default function ResumenLateral({
                                 gap: 3,
                                 flexShrink: 0
                               }}>
-                                ⭐ DESTACADO
+                                ⭐ Destacado
                               </span>
                             )}
                           </div>
-                          <h4 style={{ margin: '2px 0 0', fontSize: 13.5, fontWeight: 800, color: c?.textPrimary || '#0f172a', lineHeight: 1.3 }}>
-                            {promo.nombre || promo.titulo}
-                          </h4>
                         </div>
 
                         {/* Vehicle thumbnails */}
-                        {promoThumbnails.length > 0 && (
-                          <div style={{ display: 'flex', gap: 6, margin: '8px 0' }}>
-                            {promoThumbnails.map((imgUrl, i) => (
+                        <div style={{ display: 'flex', gap: 6, margin: '6px 0 8px', height: 38, alignItems: 'center' }}>
+                          {promoThumbnails.length > 0 ? (
+                            promoThumbnails.map((imgUrl, i) => (
                               <img
                                 key={i}
                                 src={imgUrl}
                                 alt="Car preview"
                                 style={{
-                                  width: 52,
-                                  height: 34,
+                                  width: 56,
+                                  height: 38,
                                   objectFit: 'cover',
-                                  borderRadius: 6,
+                                  borderRadius: 7,
                                   border: `1px solid ${c?.cardBorder || '#e2e8f0'}`,
-                                  background: '#f1f5f9'
+                                  background: '#f8fafc',
+                                  flexShrink: 0
                                 }}
                                 onError={e => { e.currentTarget.style.display = 'none'; }}
                               />
-                            ))}
-                          </div>
-                        )}
+                            ))
+                          ) : (
+                            <div style={{ height: 38, display: 'flex', alignItems: 'center', color: c?.textSecondary || '#94a3b8', fontSize: 11 }}>
+                              🚗 {promo.categoriaVehiculo ? `Categoría: ${promo.categoriaVehiculo.toUpperCase()}` : 'Todos los vehículos'}
+                            </div>
+                          )}
+                        </div>
 
                         {/* Bottom row: Exp date & View Condiciones */}
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginTop: 4 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginTop: 2 }}>
                           <span style={{ fontSize: 11, color: c?.textSecondary || '#64748b' }}>
                             Exp: {formatearFechaExp(promo.fechaFin)}
                           </span>
@@ -829,11 +840,10 @@ export default function ResumenLateral({
                               fontWeight: 800,
                               cursor: 'pointer',
                               display: 'inline-flex',
-                              alignItems: 'center',
-                              gap: 2
+                              alignItems: 'center'
                             }}
                           >
-                            {t('promotions.conditions', 'Condiciones')} ›
+                            {t('promotions.conditions', 'Condiciones')}
                           </button>
                         </div>
                       </div>
@@ -871,8 +881,8 @@ export default function ResumenLateral({
 
                       {/* Right side: Discount & Apply */}
                       <div style={{
-                        width: '35%',
-                        minWidth: 120,
+                        width: '36%',
+                        minWidth: 125,
                         background: c?.isDark ? 'rgba(225, 29, 72, 0.08)' : 'rgba(225, 29, 72, 0.04)',
                         display: 'flex',
                         flexDirection: 'column',
@@ -884,8 +894,8 @@ export default function ResumenLateral({
                         <span style={{ fontSize: 17, fontWeight: 900, color: 'var(--brand-primary, #e11d48)', lineHeight: 1.1 }}>
                           {valorDescFormatted}
                         </span>
-                        <span style={{ fontSize: 10.5, color: c?.textSecondary || '#64748b', margin: '4px 0 10px', lineHeight: 1.2 }}>
-                          {t('promotions.discountOnReservation', 'Descuento en tu reserva')}
+                        <span style={{ fontSize: 10.5, color: c?.textSecondary || '#64748b', margin: '4px 0 10px', lineHeight: 1.2, fontWeight: 500 }}>
+                          {promo.vehiculoNombre || (promo.categoriaVehiculo ? `Categoría ${promo.categoriaVehiculo.toUpperCase()}` : t('promotions.allVehicles', 'Todos los vehículos'))}
                         </span>
                         <button
                           type="button"
@@ -901,7 +911,7 @@ export default function ResumenLateral({
                             }
                           }}
                           style={{
-                            background: 'var(--brand-gradient)',
+                            background: 'var(--brand-gradient, #e11d48)',
                             color: '#ffffff',
                             border: 'none',
                             borderRadius: 8,
@@ -909,7 +919,7 @@ export default function ResumenLateral({
                             fontSize: 12,
                             fontWeight: 800,
                             cursor: 'pointer',
-                            boxShadow: '0 2px 6px rgba(var(--brand-secondary-rgb), 0.25)',
+                            boxShadow: '0 2px 6px rgba(225, 29, 72, 0.25)',
                             transition: 'all 0.2s'
                           }}
                         >
