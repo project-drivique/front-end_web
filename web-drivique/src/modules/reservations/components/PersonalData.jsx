@@ -30,7 +30,7 @@ const DocumentUploader = ({ label, helpText, error, file, loading, onUpload, onC
   
   return (
     <div className="doc-uploader-card" style={{
-      border: `2px ${file ? 'solid' : 'dashed'} ${error ? '#f87171' : (file ? (c?.accentText || 'var(--brand-primary)') : (c?.cardBorder || '#e2e8f0'))}`,
+      border: `1.5px dashed ${error ? '#f87171' : (isDark ? 'rgba(59, 130, 246, 0.35)' : '#bfdbfe')}`,
       borderRadius: 16,
       padding: '24px 20px',
       textAlign: 'center',
