@@ -646,17 +646,17 @@ export default function DatosPersonales({
         <div style={{
           display: 'flex',
           flexDirection: 'column',
-          gap: 8,
+          gap: 10,
           flex: '0 0 auto',
           width: '100%',
-          maxWidth: 210
+          maxWidth: 220
         }}>
           <button
             type="button"
             onClick={onReservar}
             style={{
               width: '100%',
-              height: 42,
+              height: 44,
               background: '#ffffff',
               color: c?.accentText || 'var(--brand-secondary)',
               border: 'none',
@@ -668,7 +668,9 @@ export default function DatosPersonales({
               transition: 'all 0.2s',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center'
+              justifyContent: 'center',
+              padding: '0 16px',
+              boxSizing: 'border-box'
             }}
             onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'}
             onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
@@ -681,18 +683,20 @@ export default function DatosPersonales({
             onClick={() => setModalCancelar(true)}
             style={{
               width: '100%',
-              height: 36,
+              height: 44,
               background: 'rgba(255, 255, 255, 0.12)',
               color: '#ffffff',
               border: '1px solid rgba(255, 255, 255, 0.35)',
               borderRadius: 12,
-              fontWeight: 700,
-              fontSize: 12.5,
+              fontWeight: 800,
+              fontSize: 14,
               cursor: 'pointer',
               transition: 'all 0.2s',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center'
+              justifyContent: 'center',
+              padding: '0 16px',
+              boxSizing: 'border-box'
             }}
             onMouseEnter={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)'}
             onMouseLeave={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.12)'}
