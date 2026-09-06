@@ -284,6 +284,7 @@ export default function DatosPersonales({
           <p style={{ margin: 0, fontSize: 12.5, color: c?.textSecondary || '#64748b', lineHeight: 1.4 }}>
             {t('vehiculo.personalDataSubtitle', 'Completa tus datos de contacto para la reserva y el contrato digital')}
           </p>
+          <div style={{ height: 1, background: c?.cardBorder || '#e2e8f0', margin: '14px 0 0' }} />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
