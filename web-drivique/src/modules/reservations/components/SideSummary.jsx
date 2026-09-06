@@ -41,6 +41,7 @@ export default function ResumenLateral({
   const { moneda } = useLanding();
   const [codigoCupon, setCodigoCupon] = useState('')
   const [promoError, setPromoError] = useState('')
+  const [promoAlert, setPromoAlert] = useState('')
   const [modalCupones, setModalCupones] = useState(false)
   const [viewingCondicionesPromo, setViewingCondicionesPromo] = useState(null)
 
@@ -141,6 +142,7 @@ export default function ResumenLateral({
   };
 
   const handleAplicarCupon = () => {
+    setPromoAlert('');
     if (!codigoCupon.trim() || !onApplyPromotion) return;
     try {
       onApplyPromotion(codigoCupon.trim().toUpperCase());
@@ -352,6 +354,7 @@ export default function ResumenLateral({
                 onChange={e => {
                   setCodigoCupon(e.target.value.toUpperCase());
                   setPromoError('');
+                  setPromoAlert('');
                 }}
                 onKeyDown={e => {
                   if (e.key === 'Enter') {
@@ -459,11 +462,77 @@ export default function ResumenLateral({
             </div>
           )}
 
+          {promoAlert && (
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              background: c?.isDark ? 'rgba(234, 179, 8, 0.12)' : '#fefce8',
+              border: `1px solid ${c?.isDark ? 'rgba(234, 179, 8, 0.35)' : '#fef08a'}`,
+              borderRadius: 10,
+              padding: '8px 12px',
+              marginTop: 10,
+              gap: 8
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0, flex: 1 }}>
+                <div style={{
+                  width: 16,
+                  height: 16,
+                  borderRadius: '50%',
+                  background: '#eab308',
+                  color: '#ffffff',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: 10,
+                  fontWeight: 900,
+                  flexShrink: 0
+                }}>
+                  ℹ
+                </div>
+                <span style={{
+                  fontSize: 11.5,
+                  fontWeight: 600,
+                  color: c?.isDark ? '#fef08a' : '#854d0e',
+                  lineHeight: 1.3
+                }}>
+                  {promoAlert}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setPromoAlert('')}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  color: c?.isDark ? '#fef08a' : '#854d0e',
+                  fontSize: 13,
+                  padding: 2,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0
+                }}
+              >
+                ✕
+              </button>
+            </div>
+          )}
+
           {!appliedPromotion && (
             <div style={{ textAlign: 'center', marginTop: 12 }}>
               <button
                 type="button"
-                onClick={() => setModalCupones(true)}
+                onClick={() => {
+                  setPromoError('');
+                  setPromoAlert('');
+                  if (!cuponesDisponibles || cuponesDisponibles.length === 0) {
+                    setPromoAlert(t('promotions.noCouponsForVehicle', 'No hay cupones disponibles para este vehículo en este momento.'));
+                  } else {
+                    setModalCupones(true);
+                  }
+                }}
                 style={{
                   background: 'none',
                   border: 'none',
