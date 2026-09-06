@@ -578,29 +578,28 @@ export default function DatosPersonales({
           display: 'flex',
           flexDirection: 'column',
           gap: 8,
-          flex: '1 1 240px',
-          minWidth: 200,
-          maxWidth: 320
+          flex: '0 0 auto',
+          width: '100%',
+          maxWidth: 210
         }}>
           <button
             type="button"
             onClick={onReservar}
             style={{
               width: '100%',
-              height: 48,
+              height: 42,
               background: '#ffffff',
               color: c?.accentText || 'var(--brand-secondary)',
               border: 'none',
-              borderRadius: 14,
+              borderRadius: 12,
               fontWeight: 800,
-              fontSize: 15,
+              fontSize: 14,
               cursor: 'pointer',
               boxShadow: '0 4px 14px rgba(0, 0, 0, 0.12)',
               transition: 'all 0.2s',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center',
-              gap: 8
+              justifyContent: 'center'
             }}
             onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'}
             onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
@@ -613,13 +612,13 @@ export default function DatosPersonales({
             onClick={() => setModalCancelar(true)}
             style={{
               width: '100%',
-              height: 42,
+              height: 36,
               background: 'rgba(255, 255, 255, 0.12)',
               color: '#ffffff',
               border: '1px solid rgba(255, 255, 255, 0.35)',
-              borderRadius: 14,
+              borderRadius: 12,
               fontWeight: 700,
-              fontSize: 13.5,
+              fontSize: 12.5,
               cursor: 'pointer',
               transition: 'all 0.2s',
               display: 'flex',
@@ -646,17 +645,17 @@ export default function DatosPersonales({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            padding: 20
+            padding: 16
           }}
           onClick={() => setModalCancelar(false)}
         >
           <div
             style={{
               background: c?.cardBg || '#ffffff',
-              borderRadius: 24,
-              maxWidth: 440,
+              borderRadius: 20,
+              maxWidth: 350,
               width: '100%',
-              padding: '36px 28px 28px',
+              padding: '24px 20px 20px',
               textAlign: 'center',
               boxShadow: '0 25px 50px -12px rgba(0,0,0,0.35)',
               border: `1px solid ${c?.cardBorder || '#e2e8f0'}`,
@@ -668,26 +667,26 @@ export default function DatosPersonales({
           >
             {/* Warning Icon Badge */}
             <div style={{
-              width: 76,
-              height: 76,
+              width: 56,
+              height: 56,
               borderRadius: '50%',
               background: c?.isDark ? 'rgba(var(--brand-primary-rgb), 0.12)' : 'rgba(var(--brand-secondary-rgb), 0.08)',
-              border: `2px solid ${c?.isDark ? 'rgba(var(--brand-primary-rgb), 0.25)' : 'rgba(var(--brand-secondary-rgb), 0.18)'}`,
+              border: `1.5px solid ${c?.isDark ? 'rgba(var(--brand-primary-rgb), 0.25)' : 'rgba(var(--brand-secondary-rgb), 0.18)'}`,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              marginBottom: 20
+              marginBottom: 14
             }}>
               <div style={{
-                width: 48,
-                height: 48,
+                width: 36,
+                height: 36,
                 borderRadius: '50%',
-                border: `2.5px solid ${c?.accentText || 'var(--brand-secondary)'}`,
+                border: `2px solid ${c?.accentText || 'var(--brand-secondary)'}`,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 color: c?.accentText || 'var(--brand-secondary)',
-                fontSize: 24,
+                fontSize: 18,
                 fontWeight: 900
               }}>
                 !
@@ -696,8 +695,8 @@ export default function DatosPersonales({
 
             {/* Title */}
             <h3 style={{
-              margin: '0 0 10px',
-              fontSize: 20,
+              margin: '0 0 6px',
+              fontSize: 16.5,
               fontWeight: 800,
               color: c?.textPrimary || '#0f172a',
               letterSpacing: '-0.01em'
@@ -707,11 +706,11 @@ export default function DatosPersonales({
 
             {/* Description */}
             <p style={{
-              margin: '0 0 28px',
-              fontSize: 13.5,
+              margin: '0 0 20px',
+              fontSize: 12.5,
               color: c?.textSecondary || '#64748b',
-              lineHeight: 1.5,
-              maxWidth: 320
+              lineHeight: 1.45,
+              maxWidth: 280
             }}>
               {t('vehiculo.cancelModalDesc', 'Se descartarán los datos ingresados en este proceso y regresarás al catálogo de vehículos.')}
             </p>
@@ -719,7 +718,7 @@ export default function DatosPersonales({
             {/* Buttons Row */}
             <div style={{
               display: 'flex',
-              gap: 12,
+              gap: 10,
               width: '100%'
             }}>
               <button
@@ -727,13 +726,13 @@ export default function DatosPersonales({
                 onClick={() => setModalCancelar(false)}
                 style={{
                   flex: 1,
-                  height: 46,
-                  borderRadius: 14,
+                  height: 38,
+                  borderRadius: 10,
                   border: `1.5px solid ${c?.cardBorder || '#cbd5e1'}`,
                   background: c?.cardBg || '#ffffff',
                   color: c?.textPrimary || '#0f172a',
                   fontWeight: 700,
-                  fontSize: 13.5,
+                  fontSize: 12.5,
                   cursor: 'pointer',
                   transition: 'all 0.2s',
                   display: 'flex',
@@ -758,15 +757,15 @@ export default function DatosPersonales({
                 }}
                 style={{
                   flex: 1,
-                  height: 46,
-                  borderRadius: 14,
+                  height: 38,
+                  borderRadius: 10,
                   border: 'none',
                   background: 'var(--brand-gradient)',
                   color: '#ffffff',
                   fontWeight: 800,
-                  fontSize: 13.5,
+                  fontSize: 12.5,
                   cursor: 'pointer',
-                  boxShadow: '0 4px 14px rgba(var(--brand-secondary-rgb), 0.25)',
+                  boxShadow: '0 4px 12px rgba(var(--brand-secondary-rgb), 0.25)',
                   transition: 'all 0.2s',
                   display: 'flex',
                   alignItems: 'center',
