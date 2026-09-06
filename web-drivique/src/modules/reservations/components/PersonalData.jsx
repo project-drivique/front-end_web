@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLanding } from '../../landing/LandingContext';
 import { formatCurrency } from '@/utils/currencyUtils';
@@ -157,6 +157,10 @@ export default function DatosPersonales({
   const { t } = useTranslation();
   const { moneda } = useLanding();
   const [verTyC, setVerTyC] = useState(false);
+  const [terminosLeidos, setTerminosLeidos] = useState(false);
+  const [hasScrolledToBottom, setHasScrolledToBottom] = useState(false);
+  const termsScrollRef = useRef(null);
+
   const [modalCupones, setModalCupones] = useState(false);
   const [selectedPromoCondiciones, setSelectedPromoCondiciones] = useState(null);
 
@@ -187,6 +191,26 @@ export default function DatosPersonales({
     window.addEventListener(promotionManagementService.eventName, handleUpdate);
     return () => window.removeEventListener(promotionManagementService.eventName, handleUpdate);
   }, []);
+
+  const handleTermsScroll = (e) => {
+    const { scrollTop, scrollHeight, clientHeight } = e.target;
+    if (scrollTop + clientHeight >= scrollHeight - 25) {
+      setHasScrolledToBottom(true);
+    }
+  };
+
+  useEffect(() => {
+    if (verTyC) {
+      setTimeout(() => {
+        if (termsScrollRef.current) {
+          const { scrollHeight, clientHeight } = termsScrollRef.current;
+          if (scrollHeight <= clientHeight + 20) {
+            setHasScrolledToBottom(true);
+          }
+        }
+      }, 100);
+    }
+  }, [verTyC]);
 
   const handleUpload = (tipo, e) => {
     const file = e.target.files?.[0];
@@ -594,8 +618,21 @@ export default function DatosPersonales({
           <input
             type="checkbox"
             id="tyc"
-            checked={datosForm.terminos}
-            onChange={e => onCambio('terminos', e.target.checked)}
+            checked={Boolean(datosForm.terminos)}
+            onChange={e => {
+              if (!terminosLeidos) {
+                e.preventDefault();
+                setVerTyC(true);
+                return;
+              }
+              onCambio('terminos', e.target.checked);
+            }}
+            onClick={e => {
+              if (!terminosLeidos) {
+                e.preventDefault();
+                setVerTyC(true);
+              }
+            }}
             style={{
               width: 17,
               height: 17,
@@ -607,7 +644,16 @@ export default function DatosPersonales({
             }}
           />
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <label htmlFor="tyc" style={{ fontSize: 13, fontWeight: 600, color: c?.textPrimary || '#0f172a', cursor: 'pointer', lineHeight: 1.4 }}>
+            <label
+              htmlFor="tyc"
+              onClick={e => {
+                if (!terminosLeidos) {
+                  e.preventDefault();
+                  setVerTyC(true);
+                }
+              }}
+              style={{ fontSize: 13, fontWeight: 600, color: c?.textPrimary || '#0f172a', cursor: 'pointer', lineHeight: 1.4 }}
+            >
               {t('vehiculo.termsAgreementText', 'Acepto los términos, condiciones del contrato de alquiler y la política de privacidad')} *
             </label>
             <button
@@ -647,17 +693,17 @@ export default function DatosPersonales({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            padding: 20
+            padding: 16
           }}
           onClick={() => setVerTyC(false)}
         >
           <div
             style={{
               background: c?.cardBg || '#ffffff',
-              borderRadius: 20,
-              maxWidth: 580,
+              borderRadius: 24,
+              maxWidth: 540,
               width: '100%',
-              maxHeight: '85vh',
+              maxHeight: '88vh',
               overflow: 'hidden',
               display: 'flex',
               flexDirection: 'column',
@@ -666,47 +712,174 @@ export default function DatosPersonales({
             }}
             onClick={e => e.stopPropagation()}
           >
-            <div style={{ padding: '20px 24px', borderBottom: `1px solid ${c?.cardBorder || '#e2e8f0'}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h3 style={{ margin: 0, fontSize: 17, fontWeight: 800, color: c?.accentText || 'var(--brand-secondary)' }}>
-                {t('vehiculo.policiesAndSecurity', 'Políticas y seguridad')}
+            {/* Top pill handle */}
+            <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 12, paddingBottom: 4 }}>
+              <div style={{ width: 44, height: 4.5, borderRadius: 3, background: c?.isDark ? '#475569' : '#cbd5e1' }} />
+            </div>
+
+            {/* Header */}
+            <div style={{ padding: '10px 24px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h3 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: c?.textPrimary || '#0f172a' }}>
+                {t('vehiculo.termsModalTitle', 'Términos y condiciones de alquiler')}
               </h3>
               <button
                 type="button"
                 onClick={() => setVerTyC(false)}
-                style={{ background: 'none', border: 'none', fontSize: 18, cursor: 'pointer', color: c?.textSecondary || '#64748b' }}
+                style={{
+                  background: c?.isDark ? 'rgba(255,255,255,0.08)' : '#f1f5f9',
+                  border: 'none',
+                  width: 32,
+                  height: 32,
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  color: c?.textSecondary || '#64748b',
+                  fontSize: 15,
+                  fontWeight: 700
+                }}
               >
                 ✕
               </button>
             </div>
-            <div style={{ padding: '20px 24px', overflowY: 'auto', flex: 1 }}>
-              <div style={{ background: c?.isDark ? 'rgba(var(--brand-primary-rgb),0.15)' : 'var(--brand-soft-light)', padding: 14, borderRadius: 12, marginBottom: 16 }}>
-                <p style={{ fontSize: 12, fontWeight: 800, color: c?.accentText || 'var(--brand-secondary)', margin: '0 0 4px', textTransform: 'uppercase' }}>
-                  {t('vehiculo.importantPolicies', 'Políticas Importantes del Contrato')}
+
+            {/* Scrollable Terms Content */}
+            <div
+              ref={termsScrollRef}
+              onScroll={handleTermsScroll}
+              style={{
+                padding: '0 24px 20px',
+                overflowY: 'auto',
+                flex: 1,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 16
+              }}
+            >
+              {/* Important Policy Box */}
+              <div style={{
+                background: c?.isDark ? 'rgba(37,99,235,0.1)' : '#f0f4ff',
+                border: `1px solid ${c?.isDark ? 'rgba(59,130,246,0.3)' : '#dbeafe'}`,
+                padding: '16px',
+                borderRadius: 14
+              }}>
+                <p style={{
+                  fontSize: 11.5,
+                  fontWeight: 800,
+                  color: c?.accentText || '#1d4ed8',
+                  margin: '0 0 6px',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.04em'
+                }}>
+                  {t('vehiculo.importantPoliciesTitle', 'POLÍTICAS IMPORTANTES DEL CONTRATO')}
                 </p>
-                <p style={{ fontSize: 13, color: c?.textPrimary || '#0f172a', margin: 0, lineHeight: 1.5 }}>
-                  {t('vehiculo.noRefundPolicy', 'Política de No Reembolso: Una vez confirmada y pagada la reserva, no se realizan devoluciones de dinero bajo ninguna circunstancia. El cliente podrá reprogramar su fecha de alquiler notificando con al menos 48 horas de anticipación.')}
+                <p style={{ fontSize: 12.5, color: c?.textPrimary || '#0f172a', margin: 0, lineHeight: 1.5 }}>
+                  <strong>Política de No Reembolso:</strong> Una vez confirmada y pagada la reserva, no se realizan devoluciones de dinero bajo ninguna circunstancia. El cliente podrá reprogramar su fecha de alquiler notificando con al menos 48 horas de anticipación.
                 </p>
               </div>
-              <pre style={{ fontSize: 12.5, color: c?.textSecondary || '#64748b', lineHeight: 1.7, whiteSpace: 'pre-wrap', margin: 0, fontFamily: 'inherit' }}>
-                {t('vehiculo.termsFullText')}
-              </pre>
+
+              {/* Title Section */}
+              <div>
+                <p style={{
+                  fontSize: 11.5,
+                  fontWeight: 800,
+                  color: c?.textSecondary || '#94a3b8',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.06em',
+                  margin: '0 0 12px'
+                }}>
+                  {t('vehiculo.termsSectionTitle', 'TÉRMINOS Y CONDICIONES DE ALQUILER DRIVIQUE')}
+                </p>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 14, fontSize: 12.5, color: c?.textSecondary || '#64748b', lineHeight: 1.6 }}>
+                  <p style={{ margin: 0 }}>
+                    <strong style={{ color: c?.textPrimary || '#0f172a' }}>1. OBJETO DEL CONTRATO:</strong> El arrendador entrega al arrendatario el vehículo descrito en las condiciones óptimas de funcionamiento para su uso personal o comercial autorizado.
+                  </p>
+                  <p style={{ margin: 0 }}>
+                    <strong style={{ color: c?.textPrimary || '#0f172a' }}>2. USO DEL VEHÍCULO:</strong> Queda estrictamente prohibido utilizar el vehículo para fines ilícitos, subarrendar, transporte de carga pesada no autorizada o conducir bajo los efectos del alcohol o sustancias psicoactivas. El vehículo debe ser usado únicamente dentro del territorio colombiano.
+                  </p>
+                  <p style={{ margin: 0 }}>
+                    <strong style={{ color: c?.textPrimary || '#0f172a' }}>3. DOCUMENTACIÓN OBLIGATORIA:</strong> El conductor debe presentar documento de identidad original válido y licencia de conducción vigente al momento de la entrega del vehículo.
+                  </p>
+                  <p style={{ margin: 0 }}>
+                    <strong style={{ color: c?.textPrimary || '#0f172a' }}>4. POLÍTICA DE CANCELACIÓN Y NO REEMBOLSO:</strong> No se realizarán devoluciones de dinero. Las cancelaciones se gestionan mediante saldo a favor para futuras reservas.
+                  </p>
+                  <p style={{ margin: 0 }}>
+                    <strong style={{ color: c?.textPrimary || '#0f172a' }}>5. DURACIÓN Y MODIFICACIONES:</strong> La duración de la renta será la acordada en la reserva. Cualquier cambio en fechas, horas o sucursal de entrega/devolución debe ser coordinado con antelación y puede generar ajustes en la tarifa.
+                  </p>
+                  <p style={{ margin: 0 }}>
+                    <strong style={{ color: c?.textPrimary || '#0f172a' }}>6. KILOMETRAJE Y EXCEDENTES:</strong> En plan Limitado se incluye un cupo de km por día; el kilómetro adicional excedente tendrá un valor de $1.500 COP/km calculado al devolver el auto. En plan Ilimitado no aplica cobro por distancia recorrida.
+                  </p>
+                  <p style={{ margin: 0 }}>
+                    <strong style={{ color: c?.textPrimary || '#0f172a' }}>7. PAGOS Y TARIFAS:</strong> El valor pactado incluye la renta diaria del vehículo, coberturas de protección seleccionadas, cargos administrativos e impuestos de ley.
+                  </p>
+                  <p style={{ margin: 0 }}>
+                    <strong style={{ color: c?.textPrimary || '#0f172a' }}>8. DAÑOS Y RESPONSABILIDAD:</strong> El arrendatario es responsable del cuidado del vehículo durante el periodo contratado. En caso de siniestro o eventualidad, se deberá notificar de forma inmediata a Drivique y a las autoridades competentes.
+                  </p>
+                  <p style={{ margin: 0 }}>
+                    <strong style={{ color: c?.textPrimary || '#0f172a' }}>9. LEGISLACIÓN APLICABLE:</strong> El presente contrato de alquiler se rige en su totalidad por las leyes de la República de Colombia.
+                  </p>
+                </div>
+              </div>
             </div>
-            <div style={{ padding: '16px 24px', borderTop: `1px solid ${c?.cardBorder || '#e2e8f0'}`, display: 'flex', justifyContent: 'flex-end' }}>
+
+            {/* Footer Buttons */}
+            <div style={{
+              padding: '14px 24px 20px',
+              borderTop: `1px solid ${c?.cardBorder || '#e2e8f0'}`,
+              display: 'flex',
+              gap: 12,
+              alignItems: 'center'
+            }}>
               <button
                 type="button"
                 onClick={() => setVerTyC(false)}
                 style={{
-                  background: 'var(--brand-gradient)',
-                  color: '#ffffff',
-                  border: 'none',
-                  borderRadius: 10,
-                  padding: '9px 24px',
-                  fontWeight: 800,
-                  fontSize: 13,
-                  cursor: 'pointer'
+                  flex: 1,
+                  height: 46,
+                  borderRadius: 12,
+                  border: `1.5px solid ${c?.cardBorder || '#e2e8f0'}`,
+                  background: c?.cardBg || '#ffffff',
+                  color: c?.textPrimary || '#0f172a',
+                  fontWeight: 700,
+                  fontSize: 13.5,
+                  cursor: 'pointer',
+                  transition: 'all 0.2s'
                 }}
               >
                 {t('common.close', 'Cerrar')}
+              </button>
+
+              <button
+                type="button"
+                disabled={!hasScrolledToBottom && !terminosLeidos}
+                onClick={() => {
+                  setTerminosLeidos(true);
+                  onCambio('terminos', true);
+                  setVerTyC(false);
+                }}
+                style={{
+                  flex: 2,
+                  height: 46,
+                  borderRadius: 12,
+                  border: 'none',
+                  background: (hasScrolledToBottom || terminosLeidos)
+                    ? 'var(--brand-gradient)'
+                    : (c?.isDark ? '#334155' : '#e2e8f0'),
+                  color: (hasScrolledToBottom || terminosLeidos)
+                    ? '#ffffff'
+                    : (c?.isDark ? '#64748b' : '#94a3b8'),
+                  fontWeight: 700,
+                  fontSize: 13.5,
+                  cursor: (hasScrolledToBottom || terminosLeidos) ? 'pointer' : 'not-allowed',
+                  boxShadow: (hasScrolledToBottom || terminosLeidos)
+                    ? '0 4px 12px rgba(var(--brand-secondary-rgb), 0.25)'
+                    : 'none',
+                  transition: 'all 0.2s'
+                }}
+              >
+                {t('common.understood', 'Entendido')}
               </button>
             </div>
           </div>
