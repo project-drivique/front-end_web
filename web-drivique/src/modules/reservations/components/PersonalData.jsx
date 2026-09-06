@@ -860,29 +860,34 @@ export default function DatosPersonales({
 
             {/* Scrollable Terms Content */}
             <div
-              ref={termsScrollRef}
-              onScroll={handleTermsScroll}
               style={{
-                padding: '20px 24px',
-                overflowY: 'auto',
-                flex: 1,
-                minHeight: 0,
+                padding: '16px 20px 10px',
                 display: 'flex',
-                flexDirection: 'column'
+                flexDirection: 'column',
+                gap: 8,
+                minHeight: 0
               }}
             >
-              {/* Unified Terms Card */}
-              <div style={{
-                borderRadius: 16,
-                border: `1px solid ${c?.cardBorder || '#e2e8f0'}`,
-                background: c?.cardBg || '#ffffff',
-                overflow: 'hidden'
-              }}>
+              {/* Unified Terms Card with Visible Scrollbar */}
+              <div
+                ref={termsScrollRef}
+                onScroll={handleTermsScroll}
+                className="terms-modal-scroll"
+                style={{
+                  borderRadius: 16,
+                  border: `1.5px solid ${c?.cardBorder || '#e2e8f0'}`,
+                  background: c?.cardBg || '#ffffff',
+                  maxHeight: '380px',
+                  display: 'flex',
+                  flexDirection: 'column'
+                }}
+              >
                 {/* Important Policy Top Banner */}
                 <div style={{
                   background: c?.isDark ? 'rgba(225, 29, 72, 0.08)' : '#fff1f2',
                   borderBottom: `1px solid ${c?.isDark ? 'rgba(225, 29, 72, 0.25)' : '#fecdd3'}`,
-                  padding: '16px 20px'
+                  padding: '16px 20px',
+                  flexShrink: 0
                 }}>
                   <p style={{
                     fontSize: 11.5,
@@ -943,11 +948,49 @@ export default function DatosPersonales({
                   </div>
                 </div>
               </div>
+
+              {/* Scroll Helper / Status Badge */}
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                paddingTop: 2
+              }}>
+                {!hasScrolledToBottom && !terminosLeidos ? (
+                  <span style={{
+                    fontSize: 11.5,
+                    fontWeight: 700,
+                    color: 'var(--brand-primary, #e11d48)',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    background: c?.isDark ? 'rgba(225,29,72,0.1)' : '#fff1f2',
+                    padding: '4px 12px',
+                    borderRadius: 20
+                  }}>
+                    ↓ Desplaza hacia abajo para ver todos los puntos (1 al 9)
+                  </span>
+                ) : (
+                  <span style={{
+                    fontSize: 11.5,
+                    fontWeight: 700,
+                    color: '#10b981',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    background: c?.isDark ? 'rgba(16,185,129,0.1)' : '#ecfdf5',
+                    padding: '4px 12px',
+                    borderRadius: 20
+                  }}>
+                    ✓ Has leído todos los términos y condiciones
+                  </span>
+                )}
+              </div>
             </div>
 
             {/* Footer Buttons */}
             <div style={{
-              padding: '16px 24px 20px',
+              padding: '12px 24px 20px',
               borderTop: `1px solid ${c?.cardBorder || '#e2e8f0'}`,
               display: 'flex',
               gap: 12,
