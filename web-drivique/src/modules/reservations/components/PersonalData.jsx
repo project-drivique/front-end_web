@@ -826,7 +826,13 @@ export default function DatosPersonales({
             </div>
 
             {/* Header */}
-            <div style={{ padding: '10px 24px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{
+              padding: '12px 24px 16px',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              borderBottom: `1px solid ${c?.cardBorder || '#e2e8f0'}`
+            }}>
               <h3 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: c?.textPrimary || '#0f172a' }}>
                 {t('vehiculo.termsModalTitle', 'Términos y condiciones de alquiler')}
               </h3>
@@ -857,84 +863,83 @@ export default function DatosPersonales({
               ref={termsScrollRef}
               onScroll={handleTermsScroll}
               style={{
-                padding: '0 24px 20px',
+                padding: '20px 24px',
                 overflowY: 'auto',
                 flex: 1,
                 display: 'flex',
-                flexDirection: 'column',
-                gap: 16
+                flexDirection: 'column'
               }}
             >
-              {/* Important Policy Box */}
+              {/* Unified Terms Card */}
               <div style={{
-                background: c?.isDark ? 'rgba(225, 29, 72, 0.08)' : '#fff1f2',
-                border: `1px solid ${c?.isDark ? 'rgba(225, 29, 72, 0.3)' : '#fecdd3'}`,
-                padding: '16px 18px',
-                borderRadius: 14
+                borderRadius: 16,
+                border: `1px solid ${c?.cardBorder || '#e2e8f0'}`,
+                background: c?.cardBg || '#ffffff',
+                overflow: 'hidden'
               }}>
-                <p style={{
-                  fontSize: 11.5,
-                  fontWeight: 800,
-                  color: 'var(--brand-primary, #e11d48)',
-                  margin: '0 0 6px',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.04em'
-                }}>
-                  {t('vehiculo.importantPoliciesTitle', 'POLÍTICAS IMPORTANTES DEL CONTRATO')}
-                </p>
-                <p style={{ fontSize: 12.5, color: c?.textPrimary || '#0f172a', margin: 0, lineHeight: 1.55 }}>
-                  <strong style={{ color: c?.textPrimary || '#0f172a' }}>Política de No Reembolso:</strong> Una vez confirmada y pagada la reserva, no se realizan devoluciones de dinero bajo ninguna circunstancia. El cliente podrá reprogramar su fecha de alquiler notificando con al menos 48 horas de anticipación.
-                </p>
-              </div>
-
-              {/* Title Section */}
-              <div>
-                <p style={{
-                  fontSize: 11,
-                  fontWeight: 800,
-                  color: c?.textSecondary || '#94a3b8',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.06em',
-                  margin: '0 0 10px'
-                }}>
-                  {t('vehiculo.termsSectionTitle', 'TÉRMINOS Y CONDICIONES DE ALQUILER DRIVIQUE')}
-                </p>
-
+                {/* Important Policy Top Banner */}
                 <div style={{
-                  width: '100%',
-                  height: 1,
-                  background: c?.cardBorder || '#e2e8f0',
-                  marginBottom: 16
-                }} />
+                  background: c?.isDark ? 'rgba(225, 29, 72, 0.08)' : '#fff1f2',
+                  borderBottom: `1px solid ${c?.isDark ? 'rgba(225, 29, 72, 0.25)' : '#fecdd3'}`,
+                  padding: '16px 20px'
+                }}>
+                  <p style={{
+                    fontSize: 11.5,
+                    fontWeight: 800,
+                    color: 'var(--brand-primary, #e11d48)',
+                    margin: '0 0 6px',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.04em'
+                  }}>
+                    {t('vehiculo.importantPoliciesTitle', 'POLÍTICAS IMPORTANTES DEL CONTRATO')}
+                  </p>
+                  <p style={{ fontSize: 12.5, color: c?.textPrimary || '#0f172a', margin: 0, lineHeight: 1.55 }}>
+                    <strong style={{ color: c?.textPrimary || '#0f172a' }}>Política de No Reembolso:</strong> Una vez confirmada y pagada la reserva, no se realizan devoluciones de dinero bajo ninguna circunstancia. El cliente podrá reprogramar su fecha de alquiler notificando con al menos 48 horas de anticipación.
+                  </p>
+                </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 14, fontSize: 12.5, color: c?.textSecondary || '#64748b', lineHeight: 1.6 }}>
-                  <p style={{ margin: 0 }}>
-                    <strong style={{ color: c?.textPrimary || '#0f172a' }}>1. OBJETO DEL CONTRATO:</strong> El arrendador entrega al arrendatario el vehículo descrito en las condiciones óptimas de funcionamiento para su uso personal o comercial autorizado.
+                {/* Clauses Section */}
+                <div style={{ padding: '20px' }}>
+                  <p style={{
+                    fontSize: 11,
+                    fontWeight: 800,
+                    color: c?.textSecondary || '#94a3b8',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.06em',
+                    margin: '0 0 16px'
+                  }}>
+                    {t('vehiculo.termsSectionTitle', 'TÉRMINOS Y CONDICIONES DE ALQUILER DRIVIQUE')}
                   </p>
-                  <p style={{ margin: 0 }}>
-                    <strong style={{ color: c?.textPrimary || '#0f172a' }}>2. USO DEL VEHÍCULO:</strong> Queda estrictamente prohibido utilizar el vehículo para fines ilícitos, subarrendar, transporte de carga pesada no autorizada o conducir bajo los efectos del alcohol o sustancias psicoactivas. El vehículo debe ser usado únicamente dentro del territorio colombiano.
-                  </p>
-                  <p style={{ margin: 0 }}>
-                    <strong style={{ color: c?.textPrimary || '#0f172a' }}>3. DOCUMENTACIÓN OBLIGATORIA:</strong> El conductor debe presentar documento de identidad original válido y licencia de conducción vigente al momento de la entrega del vehículo.
-                  </p>
-                  <p style={{ margin: 0 }}>
-                    <strong style={{ color: c?.textPrimary || '#0f172a' }}>4. POLÍTICA DE CANCELACIÓN Y NO REEMBOLSO:</strong> No se realizarán devoluciones de dinero. Las cancelaciones se gestionan mediante saldo a favor para futuras reservas.
-                  </p>
-                  <p style={{ margin: 0 }}>
-                    <strong style={{ color: c?.textPrimary || '#0f172a' }}>5. DURACIÓN Y MODIFICACIONES:</strong> La duración de la renta será la acordada en la reserva. Cualquier cambio en fechas, horas o sucursal de entrega/devolución debe ser coordinado con antelación y puede generar ajustes en la tarifa.
-                  </p>
-                  <p style={{ margin: 0 }}>
-                    <strong style={{ color: c?.textPrimary || '#0f172a' }}>6. KILOMETRAJE Y EXCEDENTES:</strong> En plan Limitado se incluye un cupo de km por día; el kilómetro adicional excedente tendrá un valor de $1.500 COP/km calculado al devolver el auto. En plan Ilimitado no aplica cobro por distancia recorrida.
-                  </p>
-                  <p style={{ margin: 0 }}>
-                    <strong style={{ color: c?.textPrimary || '#0f172a' }}>7. PAGOS Y TARIFAS:</strong> El valor pactado incluye la renta diaria del vehículo, coberturas de protección seleccionadas, cargos administrativos e impuestos de ley.
-                  </p>
-                  <p style={{ margin: 0 }}>
-                    <strong style={{ color: c?.textPrimary || '#0f172a' }}>8. DAÑOS Y RESPONSABILIDAD:</strong> El arrendatario es responsable del cuidado del vehículo durante el periodo contratado. En caso de siniestro o eventualidad, se deberá notificar de forma inmediata a Drivique y a las autoridades competentes.
-                  </p>
-                  <p style={{ margin: 0 }}>
-                    <strong style={{ color: c?.textPrimary || '#0f172a' }}>9. LEGISLACIÓN APLICABLE:</strong> El presente contrato de alquiler se rige en su totalidad por las leyes de la República de Colombia.
-                  </p>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 14, fontSize: 12.5, color: c?.textSecondary || '#64748b', lineHeight: 1.6 }}>
+                    <p style={{ margin: 0 }}>
+                      <strong style={{ color: c?.textPrimary || '#0f172a' }}>1. OBJETO DEL CONTRATO:</strong> El arrendador entrega al arrendatario el vehículo descrito en las condiciones óptimas de funcionamiento para su uso personal o comercial autorizado.
+                    </p>
+                    <p style={{ margin: 0 }}>
+                      <strong style={{ color: c?.textPrimary || '#0f172a' }}>2. USO DEL VEHÍCULO:</strong> Queda estrictamente prohibido utilizar el vehículo para fines ilícitos, subarrendar, transporte de carga pesada no autorizada o conducir bajo los efectos del alcohol o sustancias psicoactivas. El vehículo debe ser usado únicamente dentro del territorio colombiano.
+                    </p>
+                    <p style={{ margin: 0 }}>
+                      <strong style={{ color: c?.textPrimary || '#0f172a' }}>3. DOCUMENTACIÓN OBLIGATORIA:</strong> El conductor debe presentar documento de identidad original válido y licencia de conducción vigente al momento de la entrega del vehículo.
+                    </p>
+                    <p style={{ margin: 0 }}>
+                      <strong style={{ color: c?.textPrimary || '#0f172a' }}>4. POLÍTICA DE CANCELACIÓN Y NO REEMBOLSO:</strong> No se realizarán devoluciones de dinero. Las cancelaciones se gestionan mediante saldo a favor para futuras reservas.
+                    </p>
+                    <p style={{ margin: 0 }}>
+                      <strong style={{ color: c?.textPrimary || '#0f172a' }}>5. DURACIÓN Y MODIFICACIONES:</strong> La duración de la renta será la acordada en la reserva. Cualquier cambio en fechas, horas o sucursal de entrega/devolución debe ser coordinado con antelación y puede generar ajustes en la tarifa.
+                    </p>
+                    <p style={{ margin: 0 }}>
+                      <strong style={{ color: c?.textPrimary || '#0f172a' }}>6. KILOMETRAJE Y EXCEDENTES:</strong> En plan Limitado se incluye un cupo de km por día; el kilómetro adicional excedente tendrá un valor de $1.500 COP/km calculado al devolver el auto. En plan Ilimitado no aplica cobro por distancia recorrida.
+                    </p>
+                    <p style={{ margin: 0 }}>
+                      <strong style={{ color: c?.textPrimary || '#0f172a' }}>7. PAGOS Y TARIFAS:</strong> El valor pactado incluye la renta diaria del vehículo, coberturas de protección seleccionadas, cargos administrativos e impuestos de ley.
+                    </p>
+                    <p style={{ margin: 0 }}>
+                      <strong style={{ color: c?.textPrimary || '#0f172a' }}>8. DAÑOS Y RESPONSABILIDAD:</strong> El arrendatario es responsable del cuidado del vehículo durante el periodo contratado. En caso de siniestro o eventualidad, se deberá notificar de forma inmediata a Drivique y a las autoridades competentes.
+                    </p>
+                    <p style={{ margin: 0 }}>
+                      <strong style={{ color: c?.textPrimary || '#0f172a' }}>9. LEGISLACIÓN APLICABLE:</strong> El presente contrato de alquiler se rige en su totalidad por las leyes de la República de Colombia.
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
