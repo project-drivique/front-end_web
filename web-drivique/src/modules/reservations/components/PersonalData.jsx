@@ -878,8 +878,7 @@ export default function DatosPersonales({
             onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'}
             onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
           >
-            <span>{t('vehiculo.confirmReserve', 'Confirmar reserva')}</span>
-            <span style={{ fontSize: 16 }}>→</span>
+            {t('vehiculo.confirmReserve', 'Confirmar reserva')}
           </button>
 
           <button
