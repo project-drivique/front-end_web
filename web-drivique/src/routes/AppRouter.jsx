@@ -22,6 +22,7 @@ import CityManagementPage from '../modules/admin/pages/CityManagementPage'
 import BranchManagementPage from '../modules/admin/pages/BranchManagementPage'
 import VehicleManagementPage from '../modules/admin/pages/VehicleManagementPage'
 import ReservationManagementPage from '../modules/admin/pages/ReservationManagementPage'
+import CashCollectionPage from '../modules/admin/pages/CashCollectionPage'
 import ContractManagementPage from '../modules/admin/pages/ContractManagementPage'
 import IncidentManagementPage from '../modules/admin/pages/IncidentManagementPage'
 import UserManagementPage from '../modules/admin/pages/UserManagementPage'
@@ -144,6 +145,7 @@ export default function AppRouter() {
         <Route path="/admin/branches" element={<RutaPorRol roles={[ROLES.ADMIN]}><BranchManagementPage /></RutaPorRol>} />
         <Route path="/admin/vehicles" element={<RutaPorRol roles={[ROLES.ADMIN]}><VehicleManagementPage /></RutaPorRol>} />
         <Route path="/admin/reservations" element={<RutaPorRol roles={[ROLES.ADMIN]}><ReservationManagementPage /></RutaPorRol>} />
+        <Route path="/admin/cobro-sucursal" element={<RutaPorRol roles={[ROLES.ADMIN]}><CashCollectionPage /></RutaPorRol>} />
         <Route path="/admin/contracts" element={<RutaPorRol roles={[ROLES.ADMIN]}><ContractManagementPage /></RutaPorRol>} />
         <Route path="/admin/incidents" element={<RutaPorRol roles={[ROLES.ADMIN]}><IncidentManagementPage /></RutaPorRol>} />
         <Route path="/admin/users" element={<RutaPorRol roles={[ROLES.ADMIN]}><UserManagementPage /></RutaPorRol>} />
@@ -156,6 +158,7 @@ export default function AppRouter() {
         <Route path="/encargado" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER]}><BranchManagerPage /></RutaPorRol>} />
         <Route path="/encargado/vehicles" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER]}><VehicleManagementPage /></RutaPorRol>} />
         <Route path="/encargado/reservations" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER]}><ReservationManagementPage /></RutaPorRol>} />
+        <Route path="/encargado/cobro-sucursal" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER]}><CashCollectionPage branchOnly={true} /></RutaPorRol>} />
         <Route path="/encargado/contracts" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER]}><ContractManagementPage /></RutaPorRol>} />
         <Route path="/encargado/incidents" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER]}><IncidentManagementPage /></RutaPorRol>} />
         <Route path="/encargado/reports" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER]}><ReportsManagementPage branchOnly={true} /></RutaPorRol>} />

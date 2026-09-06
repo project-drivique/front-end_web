@@ -18,6 +18,7 @@ import {
   FaTags,
   FaPalette,
   FaFileAlt,
+  FaCashRegister,
 } from 'react-icons/fa'
 import { useAuthStore } from '../../../store/authStore'
 import accessConfig from '../../../mocks/adminAccessConfig.json'
@@ -32,6 +33,7 @@ const MODULE_ICONS = {
   users: FaUsers,
   roles: FaUserShield,
   reservations: FaClipboardList,
+  cashCollection: FaCashRegister,
   contracts: FaFileContract,
   incidents: FaExclamationTriangle,
   cities: FaCity,
@@ -48,6 +50,7 @@ const NAV_LABELS = {
   users: 'Usuarios',
   roles: 'Roles y Permisos',
   reservations: 'Reservas',
+  cashCollection: 'Cobro en Sucursal',
   contracts: 'Contratos',
   incidents: 'Incidencias',
   cities: 'Ciudades',

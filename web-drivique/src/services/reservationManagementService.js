@@ -376,4 +376,55 @@ export const reservationManagementService = {
 
     return true
   },
+
+  /**
+   * Confirmar pago en efectivo en mostrador/sucursal
+   */
+  confirmCashPayment(idOrCode, currentUser, notes = '') {
+    const rawList = readStoredReservations()
+    const now = new Date()
+    const target = rawList.find((res) => {
+      const codigo = String(res.codigo || res.referencia || res.id || '').toLowerCase()
+      return codigo === String(idOrCode).trim().toLowerCase() || String(res.id) === String(idOrCode).trim()
+    })
+    if (!target) throw new Error('notFound')
+    assertReservationScope(currentUser, target, target.sucursal)
+
+    const actualizadas = rawList.map((res) => {
+      const codigo = String(res.codigo || res.referencia || res.id || '').toLowerCase()
+      if (codigo === String(idOrCode).trim().toLowerCase() || String(res.id) === String(idOrCode).trim()) {
+        const historialNuevo = [
+          ...(res.historialAcciones || []),
+          {
+            fecha: now.toISOString(),
+            accion: `Cobro en efectivo confirmado en sucursal ${target.sucursal || ''} por $${res.totalCOP || res.total || 0}`,
+            usuario: currentUser?.correo || currentUser?.nombre || 'Encargado de Sucursal',
+          },
+        ]
+
+        return {
+          ...res,
+          estado: 'confirmada',
+          pagoEstado: 'aprobado',
+          metodoPagoConfirmado: 'efectivo',
+          fechaPagoConfirmado: now.toISOString(),
+          cajeroConfirmacion: currentUser?.nombre || currentUser?.correo || 'Encargado de Sucursal',
+          notas: notes ? `${res.notas || ''} | Caja: ${notes}`.trim() : res.notas,
+          historialAcciones: historialNuevo,
+        }
+      }
+      return res
+    })
+
+    writeStoredReservations(actualizadas)
+
+    accessAuditService.record({
+      correo: currentUser?.correo || 'admin@drivique.com',
+      rol: currentUser?.rol || 'encargado_sucursal',
+      resultado: 'EXITO',
+      motivo: `Pago en efectivo confirmado para reserva ${target.codigo || target.id} ($${target.totalCOP || target.total || 0})`,
+    })
+
+    return actualizadas.find((r) => String(r.id) === String(target.id) || String(r.codigo) === String(target.codigo))
+  },
 }
