@@ -240,8 +240,8 @@ export default function ReservationFlowPage() {
             </button>
           </div>
 
-          <div className="detalle-layout" style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: 32, alignItems: 'flex-start' }}>
-            <div className="detalle-columna-principal" style={{ flex: 1, minWidth: 0 }}>
+          <div className={`detalle-layout ${pantalla === 1 ? 'w-full' : 'grid grid-cols-1 lg:grid-cols-3 gap-6 items-start'}`}>
+            <div className={`detalle-columna-principal ${pantalla === 1 ? 'w-full' : 'lg:col-span-2 min-w-0 flex flex-col gap-6'}`}>
 
               {/* ── Paso 1 ── */}
               {pantalla === 1 && (
@@ -304,8 +304,7 @@ export default function ReservationFlowPage() {
             {pantalla > 1 && (
               <div
                 ref={resumenMovilRef}
-                className={`detalle-resumen-wrapper${resumenMovilAbierto ? ' abierto' : ''}`}
-                style={{ width: isMobile ? '100%' : '360px', flexShrink: 0 }}
+                className={`detalle-resumen-wrapper lg:col-span-1 min-w-0${resumenMovilAbierto ? ' abierto' : ''}`}
               >
                 <SideSummary
                   vehiculo={vehiculo}
