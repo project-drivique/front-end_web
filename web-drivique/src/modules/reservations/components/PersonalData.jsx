@@ -1,22 +1,40 @@
-import { useState } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLanding } from '../../landing/LandingContext';
 import { formatCurrency } from '@/utils/currencyUtils';
 import { getNombreTipoDoc } from '@/utils/documentUtils';
 import { RECARGOS_LOGISTICOS } from '../../catalog/constants';
-import { FaUser, FaIdCard, FaShieldAlt } from 'react-icons/fa';
+import { FaUser, FaIdCard, FaShieldAlt, FaTicketAlt, FaTrashAlt, FaTimes } from 'react-icons/fa';
+import { promotionManagementService } from '../../../services/promotionManagementService';
 
+const formatearFechaExp = (fechaStr) => {
+  if (!fechaStr) return '';
+  try {
+    const parts = fechaStr.split('-');
+    if (parts.length === 3) {
+      const year = parts[0];
+      const monthIdx = parseInt(parts[1], 10) - 1;
+      const day = parseInt(parts[2], 10);
+      const meses = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+      return `${day} de ${meses[monthIdx] || parts[1]} de ${year}`;
+    }
+    const d = new Date(fechaStr + 'T00:00:00');
+    return d.toLocaleDateString('es-CO', { day: 'numeric', month: 'short', year: 'numeric' });
+  } catch {
+    return fechaStr;
+  }
+};
 
 const DocumentUploader = ({ label, helpText, error, file, loading, onUpload, onClear, required = true, c }) => {
   const isDark = c?.isDark;
   
   return (
     <div className="doc-uploader-card" style={{
-      border: `2px ${file ? 'solid' : 'dashed'} ${error ? '#fca5a5' : (file ? (c?.accentText || 'var(--brand-primary)') : (c?.cardBorder || '#e2e8f0'))}`,
+      border: `2px ${file ? 'solid' : 'dashed'} ${error ? '#f87171' : (file ? (c?.accentText || 'var(--brand-primary)') : (c?.cardBorder || '#e2e8f0'))}`,
       borderRadius: 16,
       padding: '24px 20px',
       textAlign: 'center',
-      background: error ? (isDark ? 'rgba(239,68,68,0.1)' : '#fef2f2') : (file ? (isDark ? 'rgba(var(--brand-primary-rgb),0.05)' : 'var(--brand-soft-light)') : (c?.cardBg || '#ffffff')),
+      background: c?.cardBg || '#ffffff',
       transition: 'all 200ms ease',
       display: 'flex',
       flexDirection: 'column',
@@ -46,22 +64,22 @@ const DocumentUploader = ({ label, helpText, error, file, loading, onUpload, onC
           display: 'flex',
           alignItems: 'center',
           gap: 12,
-          background: isDark ? 'rgba(22,163,74,0.1)' : '#f0fdf4',
-          border: `1px solid ${isDark ? '#166534' : '#bbf7d0'}`,
+          background: isDark ? 'rgba(244,63,94,0.12)' : '#fff1f2',
+          border: `1px solid ${isDark ? 'rgba(244,63,94,0.35)' : '#fecdd3'}`,
           padding: '10px 16px',
           borderRadius: 12,
           width: '100%',
           minWidth: 0,
           boxSizing: 'border-box'
         }}>
-          <svg className="doc-uploader-file-icon" width="24" height="24" fill="none" stroke="#16a34a" strokeWidth="2.5" viewBox="0 0 24 24">
+          <svg className="doc-uploader-file-icon" width="24" height="24" fill="none" stroke="#e11d48" strokeWidth="2.5" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
           </svg>
           <div style={{ flex: 1, minWidth: 0, textAlign: 'left' }}>
-            <div style={{ fontSize: 13, fontWeight: 700, color: isDark ? '#4ade80' : '#166534', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: isDark ? '#fda4af' : '#9f1239', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {file.name}
             </div>
-            <div style={{ fontSize: 11, color: isDark ? '#22c55e' : '#15803d' }}>
+            <div style={{ fontSize: 11, color: isDark ? '#fb7185' : '#be123c' }}>
               {(file.size / 1024 / 1024).toFixed(2)} MB
             </div>
           </div>
@@ -118,18 +136,57 @@ const DocumentUploader = ({ label, helpText, error, file, loading, onUpload, onC
         <p style={{ color: '#ef4444', fontSize: 12, margin: '6px 0 0', fontWeight: 600 }}>{error}</p>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default function DatosPersonales({ vehiculo, reserva, seguroIdx, serviciosSeleccionados = [], datosForm, onCambio, onReservar, errores, docsVerificados, c }) {
-  const { t } = useTranslation()
+export default function DatosPersonales({
+  vehiculo,
+  reserva,
+  seguroIdx,
+  serviciosSeleccionados = [],
+  datosForm,
+  onCambio,
+  onReservar,
+  errores,
+  docsVerificados,
+  appliedPromotion,
+  onApplyPromotion,
+  onRemovePromotion,
+  c
+}) {
+  const { t } = useTranslation();
   const { moneda } = useLanding();
   const [verTyC, setVerTyC] = useState(false);
+  const [modalCupones, setModalCupones] = useState(false);
+  const [selectedPromoCondiciones, setSelectedPromoCondiciones] = useState(null);
+
+  const [codigoCupon, setCodigoCupon] = useState('');
+  const [promoError, setPromoError] = useState('');
 
   const [cedulaError, setCedulaError] = useState('');
   const [licenciaError, setLicenciaError] = useState('');
   const [cedulaCargando, setCedulaCargando] = useState(false);
   const [licenciaCargando, setLicenciaCargando] = useState(false);
+
+  const [cuponesDisponibles, setCuponesDisponibles] = useState(() => {
+    try {
+      return promotionManagementService.listPublished(null) || [];
+    } catch {
+      return [];
+    }
+  });
+
+  useEffect(() => {
+    const handleUpdate = () => {
+      try {
+        setCuponesDisponibles(promotionManagementService.listPublished(null) || []);
+      } catch {
+        setCuponesDisponibles([]);
+      }
+    };
+    window.addEventListener(promotionManagementService.eventName, handleUpdate);
+    return () => window.removeEventListener(promotionManagementService.eventName, handleUpdate);
+  }, []);
 
   const handleUpload = (tipo, e) => {
     const file = e.target.files?.[0];
@@ -170,17 +227,26 @@ export default function DatosPersonales({ vehiculo, reserva, seguroIdx, servicio
     }
   };
 
+  const handleAplicarCupon = () => {
+    if (!codigoCupon.trim() || !onApplyPromotion) return;
+    try {
+      onApplyPromotion(codigoCupon.trim().toUpperCase());
+      setPromoError('');
+    } catch (error) {
+      setPromoError(t(`promotions.validation.${error.message}`, error.message || 'Código inválido o no aplicable.'));
+    }
+  };
 
   const tarifas = vehiculo.tarifas || {};
   const kmLimit = tarifas.kmLimitado || { precio: 0, km: 0 };
   const kmIlimit = tarifas.kmIlimitado || { precio: 0 };
-  const precio = reserva.tipoKm === 'ilimitado' ? kmIlimit.precio : kmLimit.precio;
-
+  const precio = reserva.tipoKm === 'ilimitado'
+    ? kmIlimit.precio
+    : (reserva.tipoKm === 'limitado' ? kmLimit.precio : (vehiculo.precio || kmLimit.precio || 0));
 
   const dias = reserva.fechaInicio && reserva.fechaFin
     ? Math.max(1, Math.ceil((new Date(reserva.fechaFin) - new Date(reserva.fechaInicio)) / 86400000))
     : 1;
-
 
   const precioSeg = seguroIdx !== null ? (vehiculo.seguros[seguroIdx]?.precio ?? 0) : 0;
   const precioServicios = (vehiculo.servicios || [])
@@ -196,220 +262,784 @@ export default function DatosPersonales({ vehiculo, reserva, seguroIdx, servicio
   const recargoDevolucion = RECARGOS_LOGISTICOS[reserva.sucursalDevolucion] || 0;
   const recargoLogistico = recargoRetiro + recargoDevolucion;
 
-  const total = subtotal + subtotalSeg + subtotalServicios + cargos + recargoLogistico;
+  const subtotalPreIva = subtotal + subtotalSeg + subtotalServicios + cargos + recargoLogistico;
+  const iva = Math.round(subtotalPreIva * 0.19);
+  const totalSinDesc = subtotalPreIva + iva;
+  const discount = appliedPromotion
+    ? Math.min(totalSinDesc, appliedPromotion.tipoDescuento === 'porcentaje' ? Math.round(totalSinDesc * appliedPromotion.valorDescuento / 100) : appliedPromotion.valorDescuento)
+    : 0;
+  const total = totalSinDesc - discount;
 
-
-  const inp = (err) => ({
-    width: '100%', padding: '14px', borderRadius: 12, boxSizing: 'border-box',
-    border: `1px solid ${err ? '#fca5a5' : (c?.cardBorder || '#e2e8f0')}`,
+  const inputStyle = err => ({
+    width: '100%',
+    padding: '12px 16px',
+    borderRadius: 12,
+    border: `1.5px solid ${err ? '#ef4444' : (c?.cardBorder || '#e2e8f0')}`,
     background: err ? (c?.isDark ? 'rgba(239,68,68,0.1)' : '#fef2f2') : (c?.isDark ? 'rgba(255,255,255,0.05)' : '#f8fafc'),
-    fontSize: 14, color: c?.textPrimary || '#0f172a', outline: 'none',
-    transition: 'border-color 200ms ease, box-shadow 200ms ease'
+    color: c?.textPrimary || 'inherit',
+    fontSize: 14,
+    boxSizing: 'border-box',
+    outline: 'none',
+    transition: 'all 200ms ease'
   });
-
-
-  const lbl = { display: 'block', fontSize: 12, fontWeight: 700, color: c?.textPrimary || '#0f172a', marginBottom: 6, letterSpacing: '0.02em' };
 
   const sectionCardStyle = {
     background: c?.cardBg || '#ffffff',
     borderRadius: 16,
-    border: `1px solid ${c?.cardBorder || '#e2e8f0'}`,
     padding: '24px',
-    marginBottom: 20,
-    boxShadow: c?.isDark ? '0 4px 12px rgba(0,0,0,0.2)' : '0 4px 12px rgba(0,0,0,0.02)'
+    border: `1px solid ${c?.cardBorder || '#e2e8f0'}`,
   };
 
   const headerStyle = {
     display: 'flex',
     alignItems: 'center',
     gap: 8,
-    marginBottom: 20
+    margin: '0 0 16px',
   };
 
   return (
-    <div>
-      {/* Datos Personales */}
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
       <div style={sectionCardStyle}>
         <div style={headerStyle}>
           <FaUser color={c?.accentText || 'var(--brand-secondary)'} size={14} />
           <h3 style={{ fontSize: 14, fontWeight: 700, color: c?.accentText || 'var(--brand-secondary)', margin: 0, textTransform: 'none' }}>
-            {t('vehiculo.personalData')}
+            {t('vehiculo.driverData', 'Datos del conductor')}
           </h3>
         </div>
-        
-        <p style={{ fontSize: 13, color: c?.textSecondary || '#64748b', margin: '0 0 20px', lineHeight: 1.5 }}>
-          {t('vehiculo.personalDataSubtitle')}
-        </p>
 
-        <div className="datos-personales-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px 24px' }}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label style={lbl}>{t('vehiculo.name')} *</label>
-            <input value={datosForm.nombre} onChange={e => onCambio('nombre', e.target.value)} placeholder="Ej: Juan Pérez García" style={inp(errores.nombre)} />
-            {errores.nombre && <p style={{ color: '#ef4444', fontSize: 11, margin: '6px 0 0', fontWeight: 600 }}>{errores.nombre}</p>}
+            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: c?.textSecondary || '#64748b', marginBottom: 6 }}>
+              {t('vehiculo.name')} *
+            </label>
+            <input
+              type="text"
+              value={datosForm.nombre}
+              onChange={e => onCambio('nombre', e.target.value)}
+              placeholder="Ej. Juan Pérez"
+              style={inputStyle(errores.nombre)}
+            />
+            {errores.nombre && <p style={{ color: '#ef4444', fontSize: 12, margin: '4px 0 0', fontWeight: 600 }}>{errores.nombre}</p>}
           </div>
+
           <div>
-            <label style={lbl}>{t('vehiculo.nationality')} *</label>
-            <select value={datosForm.nacionalidad} onChange={e => onCambio('nacionalidad', e.target.value)} style={{ ...inp(false), cursor: 'pointer' }}>
-              <option value="Colombia">Colombia</option>
-              <option value="Estados Unidos">Estados Unidos</option>
-              <option value="Alemania">Alemania</option>
-              <option value="Francia">Francia</option>
-              <option value="España">España</option>
-              <option value="Italia">Italia</option>
-              <option value="Reino Unido">Reino Unido</option>
-              <option value="Canadá">Canadá</option>
-              <option value="Brasil">Brasil</option>
-              <option value="Argentina">Argentina</option>
-              <option value="México">México</option>
-              <option value="Venezuela">Venezuela</option>
-              <option value="Ecuador">Ecuador</option>
-              <option value="Perú">Perú</option>
-              <option value="Chile">Chile</option>
-              <option value="Australia">Australia</option>
-              <option value="Japón">Japón</option>
-              <option value="China">China</option>
-              <option value="India">India</option>
-              <option value="Otro">Otro</option>
+            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: c?.textSecondary || '#64748b', marginBottom: 6 }}>
+              {t('vehiculo.nationality')} *
+            </label>
+            <input
+              type="text"
+              value={datosForm.nacionalidad}
+              onChange={e => onCambio('nacionalidad', e.target.value)}
+              placeholder="Ej. Colombiana"
+              style={inputStyle(errores.nacionalidad)}
+            />
+            {errores.nacionalidad && <p style={{ color: '#ef4444', fontSize: 12, margin: '4px 0 0', fontWeight: 600 }}>{errores.nacionalidad}</p>}
+          </div>
+
+          <div>
+            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: c?.textSecondary || '#64748b', marginBottom: 6 }}>
+              {t('vehiculo.email')} *
+            </label>
+            <input
+              type="email"
+              value={datosForm.correo}
+              onChange={e => onCambio('correo', e.target.value)}
+              placeholder="Ej. juan@correo.com"
+              style={inputStyle(errores.correo)}
+            />
+            {errores.correo && <p style={{ color: '#ef4444', fontSize: 12, margin: '4px 0 0', fontWeight: 600 }}>{errores.correo}</p>}
+          </div>
+
+          <div>
+            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: c?.textSecondary || '#64748b', marginBottom: 6 }}>
+              {t('vehiculo.phoneNumber')} *
+            </label>
+            <input
+              type="tel"
+              value={datosForm.celular}
+              onChange={e => onCambio('celular', e.target.value.replace(/\D/g, '').slice(0, 10))}
+              placeholder="Ej. 3001234567"
+              style={inputStyle(errores.celular)}
+            />
+            {errores.celular && <p style={{ color: '#ef4444', fontSize: 12, margin: '4px 0 0', fontWeight: 600 }}>{errores.celular}</p>}
+          </div>
+
+          <div>
+            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: c?.textSecondary || '#64748b', marginBottom: 6 }}>
+              {t('vehiculo.docType')} *
+            </label>
+            <select
+              value={datosForm.tipoDoc}
+              onChange={e => onCambio('tipoDoc', e.target.value)}
+              style={inputStyle(errores.tipoDoc)}
+            >
+              <option value="CC">{getNombreTipoDoc('CC')}</option>
+              <option value="CE">{getNombreTipoDoc('CE')}</option>
+              <option value="PASAPORTE">{getNombreTipoDoc('PASAPORTE')}</option>
+              <option value="PEP">{getNombreTipoDoc('PEP')}</option>
+              <option value="PPT">{getNombreTipoDoc('PPT')}</option>
             </select>
           </div>
+
           <div>
-            <label style={lbl}>{t('vehiculo.email')} *</label>
-            <input type="email" value={datosForm.correo} onChange={e => onCambio('correo', e.target.value)} placeholder="ejemplo@correo.com" style={inp(errores.correo)} />
-            {errores.correo && <p style={{ color: '#ef4444', fontSize: 11, margin: '6px 0 0', fontWeight: 600 }}>{errores.correo}</p>}
-          </div>
-          <div>
-            <label style={lbl}>{t('vehiculo.phoneNumber')} *</label>
-            <div style={{ display: 'flex', gap: 8 }}>
-              <div style={{ 
-                background: c?.isDark ? 'rgba(255,255,255,0.05)' : '#f8fafc', 
-                border: `1px solid ${c?.cardBorder || '#e2e8f0'}`, 
-                borderRadius: 12, padding: '14px', fontSize: 14, color: c?.textSecondary || '#64748b', fontWeight: 800, whiteSpace: 'nowrap' 
-              }}>+57</div>
-              <input type="tel" value={datosForm.celular} onChange={e => onCambio('celular', e.target.value.replace(/\D/g, ''))} placeholder="3001234567" style={{ ...inp(errores.celular), flex: 1 }} />
-            </div>
-            {errores.celular && <p style={{ color: '#ef4444', fontSize: 11, margin: '6px 0 0', fontWeight: 600 }}>{errores.celular}</p>}
-          </div>
-          <div>
-            <label style={lbl}>{t('vehiculo.docType')} *</label>
-            <select value={datosForm.tipoDoc} onChange={e => onCambio('tipoDoc', e.target.value)} style={{ ...inp(false), cursor: 'pointer' }}>
-              <option value="CC">Cédula de Ciudadanía (CC)</option>
-              <option value="TI">Tarjeta de Identidad (TI)</option>
-              <option value="CE">Cédula de Extranjería (CE)</option>
-              <option value="PAS">Pasaporte (PAS)</option>
-            </select>
-          </div>
-          <div>
-            <label style={lbl}>{t('vehiculo.docNumber')} *</label>
-            <input value={datosForm.numDoc} onChange={e => onCambio('numDoc', e.target.value)} placeholder="123456789" style={inp(errores.numDoc)} />
-            {errores.numDoc && <p style={{ color: '#ef4444', fontSize: 11, margin: '6px 0 0', fontWeight: 600 }}>{errores.numDoc}</p>}
+            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: c?.textSecondary || '#64748b', marginBottom: 6 }}>
+              {t('vehiculo.docNumber')} *
+            </label>
+            <input
+              type="text"
+              value={datosForm.numDoc}
+              onChange={e => onCambio('numDoc', e.target.value)}
+              placeholder="Ej. 1020304050"
+              style={inputStyle(errores.numDoc)}
+            />
+            {errores.numDoc && <p style={{ color: '#ef4444', fontSize: 12, margin: '4px 0 0', fontWeight: 600 }}>{errores.numDoc}</p>}
           </div>
         </div>
       </div>
 
-      {/* Verificación Documental */}
       <div style={sectionCardStyle}>
         <div style={headerStyle}>
           <FaIdCard color={c?.accentText || 'var(--brand-secondary)'} size={14} />
           <h3 style={{ fontSize: 14, fontWeight: 700, color: c?.accentText || 'var(--brand-secondary)', margin: 0, textTransform: 'none' }}>
-            {docsVerificados ? t('vehiculo.docVerification', 'Verificación Documental') : t('vehiculo.mandatoryDocVerification', 'Verificación Documental Obligatoria')}
+            {t('vehiculo.mandatoryDocs', 'Documentos obligatorios')}
           </h3>
         </div>
-        
-        <p style={{ fontSize: 13, color: c?.textSecondary || '#64748b', marginBottom: 20, lineHeight: 1.5 }}>
-          {docsVerificados
-            ? t('vehiculo.docVerifiedSubtitle', 'Ya verificamos tus documentos en una reserva anterior. Si quieres, puedes reemplazarlos subiendo nuevos archivos PDF.')
-            : 'Sube los documentos requeridos para verificar tu identidad y habilitar la reserva del vehículo.'}
-        </p>
 
-        {docsVerificados && (
-          <div style={{
-            display: 'flex', gap: 10, background: c?.isDark ? 'rgba(22,163,74,0.1)' : '#f0fdf4', border: `1px solid ${c?.isDark ? '#166534' : '#bbf7d0'}`,
-            borderRadius: 12, padding: 14, marginBottom: 20
-          }}>
-            <svg width="20" height="20" fill="none" stroke="#16a34a" strokeWidth="2.5" viewBox="0 0 24 24" style={{ flexShrink: 0, marginTop: 2 }}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
-            </svg>
-            <span style={{ fontSize: 13, color: c?.isDark ? '#4ade80' : '#166534', lineHeight: 1.5, fontWeight: 700, textAlign: 'left' }}>
-              {t('vehiculo.docsAlreadyRegistered', 'Documentos ya registrados: Ya has subido tu cédula y licencia de conducción anteriormente. No es obligatorio volver a cargarlos, pero si lo deseas puedes reemplazarlos subiendo nuevos archivos PDF.')}
-            </span>
-          </div>
-        )}
-
-        <div className="doc-uploader-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: 24, marginBottom: 12 }}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <DocumentUploader
-            label={getNombreTipoDoc(datosForm.tipoDoc) || 'Documento de Identidad'}
-            helpText={`Sube tu ${(getNombreTipoDoc(datosForm.tipoDoc) || 'documento de identidad').toLowerCase()} en un solo archivo PDF (ambos lados incluidos, máx 5MB)`}
+            label={t('vehiculo.nationalId', 'Cédula de Ciudadanía')}
+            helpText={t('vehiculo.nationalIdHelpText', 'Sube tu cédula de ciudadanía en un solo archivo PDF (ambos lados incluidos, máx 5MB)')}
             error={errores.cedulaPdf || cedulaError}
             file={datosForm.cedulaPdf}
             loading={cedulaCargando}
             onUpload={(e) => handleUpload('cedula', e)}
             onClear={() => onCambio('cedulaPdf', null)}
-            required={!docsVerificados}
             c={c}
           />
-
           <DocumentUploader
             label={t('vehiculo.driverLicense', 'Licencia de Conducción')}
-            helpText={t('vehiculo.driverLicenseHelpText', 'Sube tu licencia de conducción vigente y legible en formato PDF (máx 5MB)')}
+            helpText={t('vehiculo.driverLicenseHelpText', 'Sube tu licencia de conducción vigente en un archivo PDF (máx 5MB)')}
             error={errores.licenciaPdf || licenciaError}
             file={datosForm.licenciaPdf}
             loading={licenciaCargando}
             onUpload={(e) => handleUpload('licencia', e)}
             onClear={() => onCambio('licenciaPdf', null)}
-            required={!docsVerificados}
             c={c}
           />
         </div>
-
-        <div style={{ display: 'flex', gap: 10, background: c?.isDark ? 'rgba(var(--brand-primary-rgb),0.05)' : 'var(--brand-soft-light)', border: `1px solid ${c?.isDark ? 'var(--brand-secondary)' : 'var(--brand-border-light)'}`, borderRadius: 12, padding: 14, marginTop: 16 }}>
-          <svg width="20" height="20" fill="none" stroke={c?.accentText || 'var(--brand-secondary)'} strokeWidth="2.5" viewBox="0 0 24 24" style={{ shrink: 0, marginTop: 2 }}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 111.083.87l-.417.834M12 18.75h.007V19h-.007v-.025zM21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <span style={{ fontSize: 12, color: c?.accentText || 'var(--brand-secondary)', lineHeight: 1.5, fontWeight: 600 }}>
-            {t('vehiculo.documentVerificationNote')}
-          </span>
-        </div>
       </div>
 
-      {/* Términos y Condiciones */}
       <div style={sectionCardStyle}>
-        <div style={headerStyle}>
-          <FaShieldAlt color={c?.accentText || 'var(--brand-secondary)'} size={14} />
-          <h3 style={{ fontSize: 14, fontWeight: 700, color: c?.accentText || 'var(--brand-secondary)', margin: 0, textTransform: 'none' }}>
-            Políticas y Seguridad
-          </h3>
-        </div>
+        <h3 style={{ fontSize: 14, fontWeight: 500, color: c?.accentText || 'var(--brand-secondary)', margin: '0 0 16px' }}>
+          {t('promotions.codeLabelOptional', 'Cupón de descuento (Opcional)')}
+        </h3>
 
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: errores.terminos ? 8 : 16 }}>
-          <input type="checkbox" id="tyc" checked={datosForm.terminos} onChange={e => onCambio('terminos', e.target.checked)} style={{ width: 18, height: 18, cursor: 'pointer', marginTop: 2, flexShrink: 0, accentColor: c?.accentText || 'var(--brand-secondary)' }} />
-          <label htmlFor="tyc" style={{ fontSize: 14, color: c?.textPrimary || '#0f172a', cursor: 'pointer', lineHeight: 1.5 }}>
-            {t('vehiculo.termsConsent')} <span style={{ color: c?.accentText || 'var(--brand-secondary)', fontWeight: 800 }}>{t('vehiculo.privacyPolicy')}</span> *
-          </label>
-        </div>
-        {errores.terminos && <p style={{ color: '#ef4444', fontSize: 12, margin: '0 0 12px 28px', fontWeight: 600 }}>{errores.terminos}</p>}
-
-        <button onClick={() => setVerTyC(v => !v)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: c?.accentText || 'var(--brand-primary)', fontSize: 14, fontWeight: 800, padding: '0 0 0 28px', transition: 'opacity 200ms ease' }} onMouseEnter={e => e.currentTarget.style.opacity = '0.8'} onMouseLeave={e => e.currentTarget.style.opacity = '1'}>
-          {verTyC ? `▼ ${t('vehiculo.hideTerms')}` : `▶ ${t('vehiculo.readTerms')}`}
-        </button>
-
-        {verTyC && (
-          <div style={{ marginTop: 16, borderRadius: 12, overflow: 'hidden', border: `1px solid ${c?.cardBorder || '#e2e8f0'}`, background: c?.isDark ? 'rgba(255,255,255,0.02)' : '#f8fafc' }}>
-            <div style={{ background: c?.isDark ? 'rgba(var(--brand-primary-rgb),0.2)' : 'var(--brand-soft-light)', padding: '16px', display: 'flex', gap: 12, alignItems: 'flex-start', borderBottom: `1px solid ${c?.cardBorder || '#e2e8f0'}` }}>
+        {appliedPromotion ? (
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            background: c?.isDark ? 'rgba(37, 99, 235, 0.08)' : '#f8faff',
+            border: `1.5px solid ${c?.isDark ? 'rgba(59, 130, 246, 0.4)' : '#bfdbfe'}`,
+            borderRadius: 14,
+            padding: '14px 18px',
+            gap: 12
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+              <div style={{
+                width: 26,
+                height: 26,
+                borderRadius: '50%',
+                background: c?.accentText || '#1d4ed8',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#ffffff',
+                flexShrink: 0
+              }}>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              </div>
               <div>
-                <p style={{ fontSize: 12, fontWeight: 800, color: c?.accentText || 'var(--brand-secondary)', margin: '0 0 4px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t('vehiculo.importantPolicies')}</p>
-                <p style={{ fontSize: 13, color: c?.textPrimary || '#0f172a', margin: 0, lineHeight: 1.5 }}>
-                  <strong>{t('vehiculo.noRefundPolicy')}</strong>
-                </p>
+                <div style={{ fontSize: 14, fontWeight: 600, color: c?.textPrimary || '#0f172a', letterSpacing: '0.04em' }}>
+                  {appliedPromotion.codigo}
+                </div>
+                <div style={{ fontSize: 12, color: c?.textSecondary || '#64748b', fontWeight: 500, marginTop: 2 }}>
+                  {appliedPromotion.tipoDescuento === 'porcentaje'
+                    ? `${appliedPromotion.valorDescuento}% OFF aplicado`
+                    : `$${Number(appliedPromotion.valorDescuento).toLocaleString('es-CO')} OFF aplicado`}
+                </div>
               </div>
             </div>
-            <div style={{ padding: 18 }}>
-              <pre style={{ fontSize: 12, color: c?.textSecondary || '#64748b', lineHeight: 1.7, whiteSpace: 'pre-wrap', margin: 0, fontFamily: 'inherit' }}>{t('vehiculo.termsFullText')}</pre>
-            </div>
+            <button
+              type="button"
+              onClick={onRemovePromotion}
+              title={t('promotions.remove', 'Quitar')}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: c?.textSecondary || '#94a3b8',
+                padding: 6,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'color 0.2s',
+                borderRadius: 8
+              }}
+              onMouseEnter={e => e.currentTarget.style.color = '#ef4444'}
+              onMouseLeave={e => e.currentTarget.style.color = c?.textSecondary || '#94a3b8'}
+            >
+              <FaTrashAlt size={16} />
+            </button>
+          </div>
+        ) : (
+          <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+            <input
+              type="text"
+              value={codigoCupon}
+              onChange={e => {
+                setCodigoCupon(e.target.value.toUpperCase());
+                setPromoError('');
+              }}
+              onKeyDown={e => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  handleAplicarCupon();
+                }
+              }}
+              placeholder={t('promotions.codePlaceholder', 'Ingresa un código')}
+              style={{
+                flex: 1,
+                height: 44,
+                padding: '0 16px',
+                borderRadius: 12,
+                border: `1.5px solid ${promoError ? '#ef4444' : (c?.cardBorder || '#e2e8f0')}`,
+                background: c?.isDark ? 'rgba(255,255,255,0.05)' : '#f8fafc',
+                color: c?.textPrimary || '#0f172a',
+                fontSize: 14,
+                fontWeight: 600,
+                letterSpacing: '0.04em',
+                outline: 'none',
+                boxSizing: 'border-box'
+              }}
+            />
+            <button
+              type="button"
+              onClick={handleAplicarCupon}
+              disabled={!codigoCupon.trim()}
+              style={{
+                height: 44,
+                padding: '0 26px',
+                borderRadius: 12,
+                background: codigoCupon.trim() ? 'var(--brand-gradient)' : (c?.isDark ? '#334155' : '#94a3b8'),
+                color: '#ffffff',
+                fontWeight: 700,
+                fontSize: 12.5,
+                letterSpacing: '0.05em',
+                border: 'none',
+                cursor: codigoCupon.trim() ? 'pointer' : 'not-allowed',
+                transition: 'all 0.2s',
+                textTransform: 'uppercase',
+                flexShrink: 0
+              }}
+            >
+              {t('promotions.apply', 'APLICAR')}
+            </button>
+          </div>
+        )}
+
+        {promoError && (
+          <p style={{ color: '#ef4444', fontSize: 12, fontWeight: 600, margin: '8px 0 0' }}>{promoError}</p>
+        )}
+
+        {!appliedPromotion && (
+          <div style={{ textAlign: 'center', marginTop: 18 }}>
+            <button
+              type="button"
+              onClick={() => setModalCupones(true)}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: c?.accentText || 'var(--brand-secondary)',
+                fontWeight: 500,
+                fontSize: 14,
+                cursor: 'pointer',
+                padding: 0,
+                fontFamily: 'inherit',
+                transition: 'opacity 0.2s',
+              }}
+              onMouseEnter={e => e.currentTarget.style.opacity = '0.8'}
+              onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+            >
+              {t('promotions.viewAvailableCoupons', 'Ver cupones disponibles')}
+            </button>
           </div>
         )}
       </div>
 
-      {/* Confirmar Reserva */}
+      <div style={sectionCardStyle}>
+        <div style={headerStyle}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={c?.accentText || 'var(--brand-secondary)'} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            <path d="m9 12 2 2 4-4" />
+          </svg>
+          <h3 style={{ fontSize: 14, fontWeight: 500, color: c?.accentText || 'var(--brand-secondary)', margin: 0, textTransform: 'none' }}>
+            {t('vehiculo.policiesAndSecurity', 'Políticas y seguridad')}
+          </h3>
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+          <input
+            type="checkbox"
+            id="tyc"
+            checked={datosForm.terminos}
+            onChange={e => onCambio('terminos', e.target.checked)}
+            style={{
+              width: 18,
+              height: 18,
+              cursor: 'pointer',
+              marginTop: 2,
+              flexShrink: 0,
+              accentColor: c?.accentText || 'var(--brand-secondary)',
+              borderRadius: 6
+            }}
+          />
+          <label htmlFor="tyc" style={{ fontSize: 13.5, color: c?.textPrimary || '#0f172a', cursor: 'pointer', lineHeight: 1.5 }}>
+            {t('vehiculo.termsAgreementText', 'Acepto los términos, condiciones del contrato de alquiler y la política de privacidad')} *{' '}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                setVerTyC(true);
+              }}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: c?.accentText || 'var(--brand-secondary)',
+                fontWeight: 500,
+                fontSize: 13.5,
+                cursor: 'pointer',
+                padding: 0,
+                textDecoration: 'none',
+                display: 'inline'
+              }}
+            >
+              {t('vehiculo.viewTermsAndConditions', 'Ver términos y condiciones')}
+            </button>
+          </label>
+        </div>
+        {errores.terminos && <p style={{ color: '#ef4444', fontSize: 12, margin: '8px 0 0 30px', fontWeight: 600 }}>{errores.terminos}</p>}
+      </div>
+
+      {verTyC && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(15, 23, 42, 0.65)',
+            backdropFilter: 'blur(4px)',
+            zIndex: 9999,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 20
+          }}
+          onClick={() => setVerTyC(false)}
+        >
+          <div
+            style={{
+              background: c?.cardBg || '#ffffff',
+              borderRadius: 20,
+              maxWidth: 580,
+              width: '100%',
+              maxHeight: '85vh',
+              overflow: 'hidden',
+              display: 'flex',
+              flexDirection: 'column',
+              boxShadow: '0 25px 50px -12px rgba(0,0,0,0.35)',
+              border: `1px solid ${c?.cardBorder || '#e2e8f0'}`
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div style={{ padding: '20px 24px', borderBottom: `1px solid ${c?.cardBorder || '#e2e8f0'}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h3 style={{ margin: 0, fontSize: 17, fontWeight: 800, color: c?.accentText || 'var(--brand-secondary)' }}>
+                {t('vehiculo.policiesAndSecurity', 'Políticas y seguridad')}
+              </h3>
+              <button
+                type="button"
+                onClick={() => setVerTyC(false)}
+                style={{ background: 'none', border: 'none', fontSize: 18, cursor: 'pointer', color: c?.textSecondary || '#64748b' }}
+              >
+                ✕
+              </button>
+            </div>
+            <div style={{ padding: '20px 24px', overflowY: 'auto', flex: 1 }}>
+              <div style={{ background: c?.isDark ? 'rgba(var(--brand-primary-rgb),0.15)' : 'var(--brand-soft-light)', padding: 14, borderRadius: 12, marginBottom: 16 }}>
+                <p style={{ fontSize: 12, fontWeight: 800, color: c?.accentText || 'var(--brand-secondary)', margin: '0 0 4px', textTransform: 'uppercase' }}>
+                  {t('vehiculo.importantPolicies', 'Políticas Importantes del Contrato')}
+                </p>
+                <p style={{ fontSize: 13, color: c?.textPrimary || '#0f172a', margin: 0, lineHeight: 1.5 }}>
+                  {t('vehiculo.noRefundPolicy', 'Política de No Reembolso: Una vez confirmada y pagada la reserva, no se realizan devoluciones de dinero bajo ninguna circunstancia. El cliente podrá reprogramar su fecha de alquiler notificando con al menos 48 horas de anticipación.')}
+                </p>
+              </div>
+              <pre style={{ fontSize: 12.5, color: c?.textSecondary || '#64748b', lineHeight: 1.7, whiteSpace: 'pre-wrap', margin: 0, fontFamily: 'inherit' }}>
+                {t('vehiculo.termsFullText')}
+              </pre>
+            </div>
+            <div style={{ padding: '16px 24px', borderTop: `1px solid ${c?.cardBorder || '#e2e8f0'}`, display: 'flex', justifyContent: 'flex-end' }}>
+              <button
+                type="button"
+                onClick={() => setVerTyC(false)}
+                style={{
+                  background: 'var(--brand-gradient)',
+                  color: '#ffffff',
+                  border: 'none',
+                  borderRadius: 10,
+                  padding: '9px 24px',
+                  fontWeight: 800,
+                  fontSize: 13,
+                  cursor: 'pointer'
+                }}
+              >
+                {t('common.close', 'Cerrar')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal 1: Cupones Disponibles */}
+      {modalCupones && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(15, 23, 42, 0.65)',
+            backdropFilter: 'blur(4px)',
+            zIndex: 9999,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 16
+          }}
+          onClick={() => setModalCupones(false)}
+        >
+          <div
+            style={{
+              background: c?.cardBg || '#ffffff',
+              borderRadius: 24,
+              maxWidth: 540,
+              width: '100%',
+              maxHeight: '85vh',
+              overflow: 'hidden',
+              display: 'flex',
+              flexDirection: 'column',
+              boxShadow: '0 25px 50px -12px rgba(0,0,0,0.35)',
+              border: `1px solid ${c?.cardBorder || '#e2e8f0'}`,
+              position: 'relative'
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            {/* Top handle pill */}
+            <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 12, paddingBottom: 6 }}>
+              <div style={{ width: 44, height: 4.5, borderRadius: 3, background: c?.isDark ? '#475569' : '#cbd5e1' }} />
+            </div>
+
+            <div style={{ padding: '8px 24px 16px', display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'relative' }}>
+              <h3 style={{ margin: 0, fontSize: 17, fontWeight: 800, color: c?.accentText || 'var(--brand-secondary)', textAlign: 'center' }}>
+                {t('promotions.availableCouponsTitle', 'Cupones Disponibles')}
+              </h3>
+              <button
+                type="button"
+                onClick={() => setModalCupones(false)}
+                style={{ position: 'absolute', right: 20, background: 'none', border: 'none', fontSize: 18, cursor: 'pointer', color: c?.textSecondary || '#64748b' }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <div style={{ padding: '0 20px 20px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 14 }}>
+              {cuponesDisponibles.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '36px 16px', color: c?.textSecondary || '#64748b' }}>
+                  <FaTicketAlt size={36} style={{ opacity: 0.35, margin: '0 auto 12px' }} />
+                  <p style={{ margin: 0, fontSize: 14, fontWeight: 600 }}>
+                    {t('promotions.emptyTitle', 'No hay cupones activos disponibles en este momento')}
+                  </p>
+                </div>
+              ) : (
+                cuponesDisponibles.map(promo => {
+                  const promoThumbnails = (promo.imagenes && promo.imagenes.length > 0)
+                    ? promo.imagenes.slice(0, 3)
+                    : (promo.vehiculoImagen ? [promo.vehiculoImagen] : []);
+                  const valorDescFormatted = promo.tipoDescuento === 'porcentaje'
+                    ? `${promo.valorDescuento}% OFF`
+                    : `$${Number(promo.valorDescuento).toLocaleString('es-CO')} OFF`;
+
+                  return (
+                    <div
+                      key={promo.id || promo.codigo}
+                      style={{
+                        display: 'flex',
+                        borderRadius: 16,
+                        border: `1.5px solid ${c?.cardBorder || '#e2e8f0'}`,
+                        background: c?.cardBg || '#ffffff',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.03)',
+                        overflow: 'hidden',
+                        position: 'relative'
+                      }}
+                    >
+                      {/* Left ticket details */}
+                      <div style={{ flex: 1, padding: '14px 16px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minWidth: 0 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                          <FaTicketAlt size={14} color={c?.accentText || 'var(--brand-secondary)'} />
+                          <span style={{ fontSize: 13.5, fontWeight: 800, color: c?.textPrimary || '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            {promo.nombre || promo.titulo}
+                          </span>
+                        </div>
+
+                        {/* Vehicle thumbnails */}
+                        {promoThumbnails.length > 0 && (
+                          <div style={{ display: 'flex', gap: 6, margin: '6px 0 10px' }}>
+                            {promoThumbnails.map((imgUrl, i) => (
+                              <img
+                                key={i}
+                                src={imgUrl}
+                                alt="Car preview"
+                                style={{
+                                  width: 54,
+                                  height: 36,
+                                  objectFit: 'cover',
+                                  borderRadius: 6,
+                                  border: `1px solid ${c?.cardBorder || '#e2e8f0'}`,
+                                  background: '#f1f5f9'
+                                }}
+                                onError={e => { e.currentTarget.style.display = 'none'; }}
+                              />
+                            ))}
+                          </div>
+                        )}
+
+                        {/* Bottom row: Exp date & Condiciones */}
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+                          <span style={{ fontSize: 11, color: c?.textSecondary || '#64748b' }}>
+                            Exp: {formatearFechaExp(promo.fechaFin)}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => setSelectedPromoCondiciones(promo)}
+                            style={{
+                              background: 'none',
+                              border: 'none',
+                              padding: 0,
+                              color: c?.accentText || 'var(--brand-secondary)',
+                              fontSize: 12,
+                              fontWeight: 800,
+                              cursor: 'pointer'
+                            }}
+                          >
+                            {t('promotions.conditions', 'Condiciones')}
+                          </button>
+                        </div>
+                      </div>
+
+                    {/* Dotted border line with notches */}
+                    <div style={{
+                      position: 'relative',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: 0,
+                      borderLeft: `1.5px dashed ${c?.cardBorder || '#cbd5e1'}`
+                    }}>
+                      <div style={{
+                        position: 'absolute',
+                        top: -8,
+                        left: -8,
+                        width: 16,
+                        height: 16,
+                        borderRadius: '50%',
+                        background: c?.isDark ? '#0f172a' : '#f1f5f9',
+                        border: `1px solid ${c?.cardBorder || '#e2e8f0'}`
+                      }} />
+                      <div style={{
+                        position: 'absolute',
+                        bottom: -8,
+                        left: -8,
+                        width: 16,
+                        height: 16,
+                        borderRadius: '50%',
+                        background: c?.isDark ? '#0f172a' : '#f1f5f9',
+                        border: `1px solid ${c?.cardBorder || '#e2e8f0'}`
+                      }} />
+                    </div>
+
+                    {/* Right side: Discount & Apply */}
+                    <div style={{
+                      width: '36%',
+                      minWidth: 120,
+                      background: c?.isDark ? 'rgba(var(--brand-primary-rgb), 0.08)' : 'rgba(239, 246, 255, 0.45)',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      padding: '14px 10px',
+                      textAlign: 'center'
+                    }}>
+                      <span style={{ fontSize: 17, fontWeight: 900, color: c?.accentText || 'var(--brand-secondary)', lineHeight: 1.1 }}>
+                        {valorDescFormatted}
+                      </span>
+                      <span style={{ fontSize: 10.5, color: c?.textSecondary || '#64748b', margin: '4px 0 10px', lineHeight: 1.2 }}>
+                        {t('promotions.discountOnReservation', 'Descuento en tu reserva')}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setModalCupones(false);
+                          if (onApplyPromotion) {
+                            try {
+                              onApplyPromotion(promo.codigo);
+                              setPromoError('');
+                            } catch (err) {
+                              setPromoError(err.message);
+                            }
+                          }
+                        }}
+                        style={{
+                          background: 'var(--brand-gradient)',
+                          color: '#ffffff',
+                          border: 'none',
+                          borderRadius: 8,
+                          padding: '7px 18px',
+                          fontSize: 12,
+                          fontWeight: 800,
+                          cursor: 'pointer',
+                          boxShadow: '0 2px 6px rgba(var(--brand-secondary-rgb), 0.25)',
+                          transition: 'all 0.2s'
+                        }}
+                      >
+                        {t('promotions.apply', 'Aplicar')}
+                      </button>
+                    </div>
+                  </div>
+                );
+              }))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal 2: Condiciones del Cupón */}
+      {selectedPromoCondiciones && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(15, 23, 42, 0.65)',
+            backdropFilter: 'blur(4px)',
+            zIndex: 10000,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 20
+          }}
+          onClick={() => setSelectedPromoCondiciones(null)}
+        >
+          <div
+            style={{
+              background: c?.cardBg || '#ffffff',
+              borderRadius: 20,
+              maxWidth: 440,
+              width: '100%',
+              maxHeight: '85vh',
+              overflow: 'hidden',
+              display: 'flex',
+              flexDirection: 'column',
+              boxShadow: '0 25px 50px -12px rgba(0,0,0,0.35)',
+              border: `1px solid ${c?.cardBorder || '#e2e8f0'}`
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div style={{ padding: '20px 24px', borderBottom: `1px solid ${c?.cardBorder || '#e2e8f0'}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h3 style={{ margin: 0, fontSize: 17, fontWeight: 800, color: c?.textPrimary || '#0f172a' }}>
+                {t('promotions.couponConditionsTitle', 'Condiciones del Cupón')}
+              </h3>
+              <button
+                type="button"
+                onClick={() => setSelectedPromoCondiciones(null)}
+                style={{ background: 'none', border: 'none', fontSize: 18, cursor: 'pointer', color: c?.textSecondary || '#64748b' }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <div style={{ padding: '20px 24px', overflowY: 'auto', flex: 1 }}>
+              <h4 style={{ margin: '0 0 6px', fontSize: 16, fontWeight: 800, color: c?.accentText || 'var(--brand-secondary)' }}>
+                {selectedPromoCondiciones.nombre || selectedPromoCondiciones.titulo}
+              </h4>
+              <p style={{ margin: '0 0 16px', fontSize: 13, color: c?.textSecondary || '#64748b', lineHeight: 1.5 }}>
+                {selectedPromoCondiciones.condiciones || 'Otorgado a nuestros clientes más fieles por su continuo soporte y confianza en Drivique.'}
+              </p>
+
+              <div style={{ height: 1, background: c?.cardBorder || '#e2e8f0', margin: '16px 0' }} />
+
+              <h5 style={{ margin: '0 0 12px', fontSize: 13.5, fontWeight: 800, color: c?.textPrimary || '#0f172a' }}>
+                {t('promotions.termsAndConditionsHeader', 'Términos y condiciones:')}
+              </h5>
+
+              <ul style={{ margin: 0, paddingLeft: 18, listStyleType: 'disc', display: 'flex', flexDirection: 'column', gap: 8, fontSize: 12.5, color: c?.textSecondary || '#64748b', lineHeight: 1.5 }}>
+                <li>{t('promotions.termsDigitalPayments', 'Válido para pagos digitales e iniciales.')}</li>
+                <li>{t('promotions.termsNonTransferable', 'No transferible a otros usuarios.')}</li>
+                <li>{t('promotions.termsOnePerReservation', 'Solo se puede aplicar un cupón por reserva.')}</li>
+                <li>
+                  {t('promotions.termsValidCategories', 'Categorías válidas:')}{' '}
+                  <strong style={{ color: c?.textPrimary || '#0f172a' }}>
+                    {(selectedPromoCondiciones.categoriaVehiculo || 'TODOS').toUpperCase()}
+                  </strong>
+                </li>
+                {selectedPromoCondiciones.reservaMinima > 0 ? (
+                  <li>
+                    {t('promotions.termsMinAmount', 'Requiere un monto mínimo de reserva de')} ${Number(selectedPromoCondiciones.reservaMinima).toLocaleString('es-CO')} COP. {t('promotions.termsNonCumulative', 'No acumulable con otras promociones.')}
+                  </li>
+                ) : (
+                  <li>
+                    {t('promotions.termsGeneralConditions', 'Válido para vehículos de la flota. No acumulable con otras promociones.')}
+                  </li>
+                )}
+                <li>
+                  {t('promotions.termsExpires', 'Vence:')}{' '}
+                  <strong style={{ color: c?.textPrimary || '#0f172a' }}>
+                    {formatearFechaExp(selectedPromoCondiciones.fechaFin)}
+                  </strong>
+                </li>
+              </ul>
+            </div>
+
+            <div style={{ padding: '16px 24px', borderTop: `1px solid ${c?.cardBorder || '#e2e8f0'}` }}>
+              <button
+                type="button"
+                onClick={() => setSelectedPromoCondiciones(null)}
+                style={{
+                  width: '100%',
+                  background: 'var(--brand-gradient)',
+                  color: '#ffffff',
+                  border: 'none',
+                  borderRadius: 12,
+                  padding: '12px 24px',
+                  fontWeight: 800,
+                  fontSize: 14,
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 12px rgba(var(--brand-secondary-rgb), 0.25)'
+                }}
+              >
+                {t('common.understood', 'Entendido')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="confirmar-reserva-bloque" style={{ 
         background: 'var(--brand-gradient)',
         borderRadius: 16, 

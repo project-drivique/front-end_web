@@ -38,7 +38,9 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, servicios
   const kmLimit = tarifas.kmLimitado || { precio: 0, km: 0 };
   const kmIlimit = tarifas.kmIlimitado || { precio: 0 };
 
-  const precio = reserva.tipoKm === 'ilimitado' ? kmIlimit.precio : kmLimit.precio;
+  const precio = reserva.tipoKm === 'ilimitado'
+    ? kmIlimit.precio
+    : (reserva.tipoKm === 'limitado' ? kmLimit.precio : (vehiculo.precio || kmLimit.precio || 0));
 
   const dias = reserva.fechaInicio && reserva.fechaFin
     ? Math.max(1, Math.ceil((new Date(reserva.fechaFin) - new Date(reserva.fechaInicio)) / 86400000))
@@ -203,12 +205,19 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, servicios
         </h4>
         
         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: c?.textSecondary || '#64748b', marginBottom: 12 }}>
-          <span>{reserva.tipoKm === 'ilimitado' ? t('vehiculo.unlimitedKm', 'Kilometraje ilimitado') : t('vehiculo.limitedKm', 'Kilometraje limitado')}</span>
+          <span>{dias > 1 ? t('vehiculo.dailyRatesCount', 'Diarias ({{dias}} días)', { dias }) : t('vehiculo.dailyRates', 'Diarias')}</span>
           <span style={{ fontWeight: 800, color: c?.textPrimary || '#0f172a' }}>{formatCurrency(subtotalDiario, moneda)}</span>
         </div>
         
         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: c?.textSecondary || '#64748b', marginBottom: 12 }}>
-          <span>{translateProtection(seguroIdx !== null && vehiculo.seguros[seguroIdx] ? vehiculo.seguros[seguroIdx].nombre : null)}</span>
+          <span>{t('vehiculo.mileageType', 'Kilometraje')}</span>
+          <span style={{ fontWeight: 800, color: c?.textPrimary || '#0f172a' }}>
+            {reserva.tipoKm ? (reserva.tipoKm === 'ilimitado' ? t('vehiculo.unlimited', 'Ilimitado') : t('vehiculo.limited', 'Limitado')) : '-'}
+          </span>
+        </div>
+        
+        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: c?.textSecondary || '#64748b', marginBottom: 12 }}>
+          <span>{t('vehiculo.protections', 'Protecciones')}</span>
           <span style={{ fontWeight: 800, color: c?.textPrimary || '#0f172a' }}>{subtotalSeguro > 0 ? formatCurrency(subtotalSeguro, moneda) : '-'}</span>
         </div>
         
@@ -225,12 +234,6 @@ export default function ResumenLateral({ vehiculo, reserva, seguroIdx, servicios
         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: c?.textSecondary || '#64748b', marginBottom: 20 }}>
           <span>{t('vehiculo.vat', 'IVA (19%)')}</span>
           <span style={{ fontWeight: 800, color: c?.textPrimary || '#0f172a' }}>{formatCurrency(iva, moneda)}</span>
-        </div>
-
-        <div className="reservation-promotion-box">
-          <label>{t('promotions.codeLabel')}</label>
-          {appliedPromotion ? <div className="reservation-promotion-applied"><div><strong>{appliedPromotion.codigo}</strong><span>{t('promotions.applied')}</span></div><button type="button" onClick={onRemovePromotion}>{t('promotions.remove')}</button></div> : <div className="reservation-promotion-entry"><input value={promotionCode} onChange={(event) => setPromotionCode(event.target.value.toUpperCase())} placeholder={t('promotions.codePlaceholder')} /><button type="button" onClick={applyCode} disabled={!promotionCode.trim()}>{t('promotions.apply')}</button></div>}
-          {promotionError && <p className="reservation-promotion-error">{promotionError}</p>}
         </div>
 
         {discount > 0 && (

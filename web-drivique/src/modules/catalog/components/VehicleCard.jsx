@@ -142,6 +142,7 @@ export default function TarjetaVehiculo({
       onGuestBlocked()
       return
     }
+    sessionStorage.removeItem(`drivique_reservation_state_${vehiculo.id}`)
     navigate(`/reservas/${vehiculo.id}`)
   }
 

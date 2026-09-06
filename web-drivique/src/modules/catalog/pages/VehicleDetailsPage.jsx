@@ -120,6 +120,7 @@ export default function VehicleDetailsPage() {
       setBannerVisible(true)
       return
     }
+    sessionStorage.removeItem(`drivique_reservation_state_${vehiculo.id}`)
     const q = promo ? (promo.codigo ? `?promo=${promo.codigo}` : promo.valorDescuento ? `?descuento=${promo.valorDescuento}` : '') : ''
     navigate(`/reservas/${vehiculo.id}${q}`)
   }

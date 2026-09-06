@@ -285,6 +285,9 @@ export default function ReservationFlowPage() {
                   onReservar={handleReservar}
                   errores={errores}
                   docsVerificados={docsVerificados}
+                  appliedPromotion={appliedPromotion}
+                  onApplyPromotion={aplicarPromocion}
+                  onRemovePromotion={quitarPromocion}
                   c={c}
                 />
               )}

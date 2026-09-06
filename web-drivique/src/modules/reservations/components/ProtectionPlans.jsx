@@ -14,9 +14,15 @@ const IcoWarn = () => (
     <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/>
   </svg>
 )
-const IcoX = ({ sz = 15, color = '#dc2626' }) => (
-  <svg width={sz} height={sz} fill="none" stroke={color} strokeWidth="2.8" viewBox="0 0 24 24">
+const IcoX = ({ sz = 15, color = '#94a3b8' }) => (
+  <svg width={sz} height={sz} fill="none" stroke={color} strokeWidth="2.4" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/>
+  </svg>
+)
+
+const ShieldIcon = ({ filled = true }) => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill={filled ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
   </svg>
 )
 
@@ -29,25 +35,26 @@ export default function PlanesProteccion({ seguroIdx, onSeleccionar, c, dias = 1
     {
       nombre: t('catalogo.basicProtection', 'Protección Obligatoria'),
       precio: 29000,
-      icono: [FaShieldAlt, FaRegHeart, FaRegHeart],
+      shields: [true, false, false],
       items: [
-        { tipo: 'check', texto: t('vehiculo.plan1Item1', 'Cobertura básica de daños') },
-        { tipo: 'check', texto: t('vehiculo.plan1Item2', 'Asistencia en carretera 24/7') },
-        { tipo: 'check', texto: t('vehiculo.plan1Item3', 'Deducible estándar') },
-        { tipo: 'warn',  texto: t('vehiculo.plan1Item4', 'No cubre robo total') },
-        { tipo: 'x',     texto: t('vehiculo.plan1Item5', 'Sin protección de cristales y llantas') },
+        { tipo: 'check', texto: t('vehiculo.plan1Item1', 'Responsabilidad civil extracontractual (hasta $840 millones)') },
+        { tipo: 'check', texto: t('vehiculo.plan1Item2', 'Cobertura básica por colisión y daños') },
+        { tipo: 'check', texto: t('vehiculo.plan1Item3', 'Asistencia en carretera 24/7') },
+        { tipo: 'warn',  texto: t('vehiculo.plan1Item4', 'Deducible obligatorio de hasta $4.760.000 por siniestro') },
+        { tipo: 'x',     texto: t('vehiculo.plan1Item5', 'Sin cobertura de cristales, llantas ni hurto total') },
       ],
     },
     {
       nombre: t('catalogo.fullProtection', 'Protección Total'),
       precio: 67000,
-      icono: [FaShieldAlt, FaShieldAlt, FaShieldAlt],
+      shields: [true, true, true],
       items: [
-        { tipo: 'check', texto: t('vehiculo.plan2Item1', 'Cobertura total contra todo riesgo') },
-        { tipo: 'check', texto: t('vehiculo.plan2Item2', 'Asistencia VIP prioritaria 24/7') },
-        { tipo: 'check', texto: t('vehiculo.plan2Item3', 'Cero deducible por daños') },
-        { tipo: 'check', texto: t('vehiculo.plan2Item4', 'Protección total de cristales y llantas') },
-        { tipo: 'x',     texto: t('vehiculo.plan2Item5', 'Sin costo por remolque') },
+        { tipo: 'check', texto: t('vehiculo.plan2Item1', 'Cobertura total contra todo riesgo (Colisión y Hurto)') },
+        { tipo: 'check', texto: t('vehiculo.plan2Item2', '$0 Deducible (Cero deducible por daños o choque)') },
+        { tipo: 'check', texto: t('vehiculo.plan2Item3', 'Protección total de cristales, espejos y llantas') },
+        { tipo: 'check', texto: t('vehiculo.plan2Item4', 'Responsabilidad civil extracontractual ampliada') },
+        { tipo: 'check', texto: t('vehiculo.plan2Item5', 'Asistencia VIP prioritaria 24/7 con grúa ilimitada') },
+        { tipo: 'x',     texto: t('vehiculo.plan2Item6', 'No cubre uso indebido ni conducción no autorizada') },
       ],
     },
   ];
@@ -92,9 +99,9 @@ export default function PlanesProteccion({ seguroIdx, onSeleccionar, c, dias = 1
               >
               <div style={{ padding: '20px 20px 0' }}>
                 <div style={{ display: 'flex', justifyContent: 'center', gap: 6, marginBottom: 10 }}>
-                  {plan.icono.map((Icono, i) => (
-                    <span key={i} style={{ fontSize: 15, color: sel ? 'var(--brand-text)' : (c?.textSecondary || 'var(--texto-second)') }}>
-                      <Icono />
+                  {plan.shields.map((isFilled, i) => (
+                    <span key={i} style={{ fontSize: 16, color: sel ? 'var(--brand-text)' : (isFilled ? (c?.textSecondary || '#64748b') : (c?.cardBorder || '#94a3b8')) }}>
+                      <ShieldIcon filled={isFilled} />
                     </span>
                   ))}
                 </div>
