@@ -251,13 +251,30 @@ export default function DatosPersonales({
     }
   };
 
+  const getErrorMessage = (err) => {
+    const code = err?.message;
+    if (code === 'notFound' || code === 'expired' || code === 'inactive' || code === 'notStarted') {
+      return t('promotions.validation.notFoundOrExpired', 'El código ingresado no existe o ya expiró.');
+    }
+    if (code === 'minimum') {
+      return t('promotions.validation.minimum', 'El monto de la reserva no alcanza el mínimo requerido para este cupón.');
+    }
+    if (code === 'category' || code === 'vehicleMismatch') {
+      return t('promotions.validation.vehicleMismatch', 'Este cupón no aplica para el vehículo seleccionado.');
+    }
+    if (code === 'audience') {
+      return t('promotions.validation.audience', 'Tu usuario no cumple las condiciones para aplicar este cupón.');
+    }
+    return t('promotions.validation.notFoundOrExpired', 'El código ingresado no existe o ya expiró.');
+  };
+
   const handleAplicarCupon = () => {
     if (!codigoCupon.trim() || !onApplyPromotion) return;
     try {
       onApplyPromotion(codigoCupon.trim().toUpperCase());
       setPromoError('');
     } catch (error) {
-      setPromoError(t(`promotions.validation.${error.message}`, error.message || 'Código inválido o no aplicable.'));
+      setPromoError(getErrorMessage(error));
     }
   };
 
@@ -575,7 +592,61 @@ export default function DatosPersonales({
         )}
 
         {promoError && (
-          <p style={{ color: '#ef4444', fontSize: 12, fontWeight: 600, margin: '8px 0 0' }}>{promoError}</p>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            background: c?.isDark ? 'rgba(239, 68, 68, 0.12)' : '#fff1f2',
+            border: `1px solid ${c?.isDark ? 'rgba(239, 68, 68, 0.35)' : '#fecdd3'}`,
+            borderRadius: 12,
+            padding: '10px 14px',
+            marginTop: 12,
+            gap: 10
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0, flex: 1 }}>
+              <div style={{
+                width: 18,
+                height: 18,
+                borderRadius: '50%',
+                background: '#ef4444',
+                color: '#ffffff',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: 11,
+                fontWeight: 900,
+                flexShrink: 0
+              }}>
+                !
+              </div>
+              <span style={{
+                fontSize: 12.5,
+                fontWeight: 600,
+                color: c?.isDark ? '#fca5a5' : '#b91c1c',
+                lineHeight: 1.3
+              }}>
+                {promoError}
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setPromoError('')}
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                color: c?.isDark ? '#f87171' : '#e11d48',
+                fontSize: 14,
+                padding: 4,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0
+              }}
+            >
+              ✕
+            </button>
+          </div>
         )}
 
         {!appliedPromotion && (
