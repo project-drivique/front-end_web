@@ -867,15 +867,15 @@ export default function DatosPersonales({
             >
               {/* Important Policy Box */}
               <div style={{
-                background: c?.isDark ? 'rgba(37,99,235,0.1)' : '#f0f4ff',
-                border: `1px solid ${c?.isDark ? 'rgba(59,130,246,0.3)' : '#dbeafe'}`,
+                background: c?.isDark ? 'rgba(225, 29, 72, 0.08)' : '#fff1f2',
+                border: `1px solid ${c?.isDark ? 'rgba(225, 29, 72, 0.3)' : '#fecdd3'}`,
                 padding: '16px 18px',
                 borderRadius: 14
               }}>
                 <p style={{
                   fontSize: 11.5,
                   fontWeight: 800,
-                  color: '#1d4ed8',
+                  color: 'var(--brand-primary, #e11d48)',
                   margin: '0 0 6px',
                   textTransform: 'uppercase',
                   letterSpacing: '0.04em'
@@ -895,10 +895,17 @@ export default function DatosPersonales({
                   color: c?.textSecondary || '#94a3b8',
                   textTransform: 'uppercase',
                   letterSpacing: '0.06em',
-                  margin: '0 0 12px'
+                  margin: '0 0 10px'
                 }}>
                   {t('vehiculo.termsSectionTitle', 'TÉRMINOS Y CONDICIONES DE ALQUILER DRIVIQUE')}
                 </p>
+
+                <div style={{
+                  width: '100%',
+                  height: 1,
+                  background: c?.cardBorder || '#e2e8f0',
+                  marginBottom: 16
+                }} />
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 14, fontSize: 12.5, color: c?.textSecondary || '#64748b', lineHeight: 1.6 }}>
                   <p style={{ margin: 0 }}>
