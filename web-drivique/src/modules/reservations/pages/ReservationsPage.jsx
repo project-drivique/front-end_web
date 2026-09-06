@@ -168,12 +168,21 @@ function ModalDetalle({ reserva, moneda, onClose }) {
 
   const [pagandoWompi, setPagandoWompi] = useState(false)
 
-  const handlePagarWompi = async () => {
+  const handlePagarWompi = async (e) => {
+    if (e) {
+      e.preventDefault()
+      e.stopPropagation()
+    }
     setPagandoWompi(true)
     try {
+      const ref = reserva.id || reserva.referencia || reservaOriginal?.referencia
+      sessionStorage.setItem('current_wompi_reference', ref)
+      const rawTotal = reserva.total ?? reservaOriginal?.total ?? 0
+      const totalNum = typeof rawTotal === 'number' ? rawTotal : parseFloat(String(rawTotal).replace(/[^0-9.-]+/g, '')) || 0
+      const centavos = aCentavos(totalNum)
       const url = await construirUrlCheckout({
-        reference: reserva.id,
-        amountInCents: aCentavos(reserva.total || 0),
+        reference: ref,
+        amountInCents: centavos,
         redirectUrl: `${window.location.origin}/respuesta`,
       })
       window.location.href = url
