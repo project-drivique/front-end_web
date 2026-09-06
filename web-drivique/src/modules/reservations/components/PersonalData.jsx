@@ -450,7 +450,7 @@ export default function DatosPersonales({
               borderRadius: 4
             }}
           />
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+          <div style={{ flex: 1, minWidth: 0, fontSize: 13, fontWeight: 600, color: c?.textPrimary || '#0f172a', lineHeight: 1.45 }}>
             <label
               htmlFor="tyc"
               onClick={e => {
@@ -459,10 +459,10 @@ export default function DatosPersonales({
                   setVerTyC(true);
                 }
               }}
-              style={{ fontSize: 13, fontWeight: 600, color: c?.textPrimary || '#0f172a', cursor: 'pointer', lineHeight: 1.4 }}
+              style={{ cursor: 'pointer' }}
             >
               {t('vehiculo.termsAgreementText', 'Acepto los términos, condiciones del contrato de alquiler y la política de privacidad')} *
-            </label>
+            </label>{' '}
             <button
               type="button"
               onClick={(e) => {
@@ -474,14 +474,17 @@ export default function DatosPersonales({
                 border: 'none',
                 color: c?.accentText || 'var(--brand-secondary)',
                 fontWeight: 700,
-                fontSize: 11,
+                fontSize: 12.5,
                 cursor: 'pointer',
                 padding: 0,
-                textAlign: 'left',
                 textDecoration: 'none',
-                width: 'fit-content',
-                fontFamily: 'inherit'
+                fontFamily: 'inherit',
+                display: 'inline',
+                verticalAlign: 'baseline',
+                marginLeft: 6
               }}
+              onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
+              onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}
             >
               {t('vehiculo.viewTermsAndConditions', 'Ver términos y condiciones')}
             </button>
