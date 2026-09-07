@@ -869,10 +869,10 @@ export default function DatosPersonales({
           <div
             style={{
               background: c?.cardBg || '#ffffff',
-              borderRadius: 24,
-              maxWidth: 420,
+              borderRadius: 20,
+              maxWidth: 360,
               width: '100%',
-              padding: '36px 28px 28px',
+              padding: '28px 24px 22px',
               textAlign: 'center',
               boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
               border: `1px solid ${c?.isDark ? 'rgba(255,255,255,0.1)' : '#e2e8f0'}`,
@@ -884,16 +884,16 @@ export default function DatosPersonales({
           >
             {/* Warning Icon Badge */}
             <div style={{
-              width: 72,
-              height: 72,
+              width: 60,
+              height: 60,
               borderRadius: '50%',
               background: c?.isDark ? 'rgba(59, 130, 246, 0.15)' : '#EFF6FF',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              marginBottom: 20
+              marginBottom: 16
             }}>
-              <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke={c?.isDark ? '#60A5FA' : '#1D4ED8'} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke={c?.isDark ? '#60A5FA' : '#1D4ED8'} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="12" r="10" />
                 <line x1="12" y1="8" x2="12" y2="12" strokeWidth="2.4" />
                 <line x1="12" y1="16" x2="12.01" y2="16" strokeWidth="3" />
@@ -902,8 +902,8 @@ export default function DatosPersonales({
 
             {/* Title */}
             <h3 style={{
-              margin: '0 0 10px',
-              fontSize: 19,
+              margin: '0 0 8px',
+              fontSize: 17,
               fontWeight: 800,
               color: c?.textPrimary || '#0f172a',
               letterSpacing: '-0.01em'
@@ -913,11 +913,11 @@ export default function DatosPersonales({
 
             {/* Description */}
             <p style={{
-              margin: '0 0 28px',
-              fontSize: 13.5,
+              margin: '0 0 22px',
+              fontSize: 12.5,
               color: c?.textSecondary || '#64748b',
-              lineHeight: 1.5,
-              maxWidth: 320
+              lineHeight: 1.45,
+              maxWidth: 290
             }}>
               {t('vehiculo.cancelModalDesc', 'Se descartarán los datos ingresados en este proceso y regresarás al catálogo de vehículos.')}
             </p>
@@ -925,7 +925,7 @@ export default function DatosPersonales({
             {/* Buttons Row */}
             <div style={{
               display: 'flex',
-              gap: 12,
+              gap: 10,
               width: '100%'
             }}>
               <button
@@ -933,13 +933,13 @@ export default function DatosPersonales({
                 onClick={() => setModalCancelar(false)}
                 style={{
                   flex: 1,
-                  height: 44,
-                  borderRadius: 12,
+                  height: 40,
+                  borderRadius: 10,
                   border: `2px solid ${c?.isDark ? '#60A5FA' : '#1D4ED8'}`,
                   background: 'transparent',
                   color: c?.isDark ? '#93C5FD' : '#1D4ED8',
                   fontWeight: 700,
-                  fontSize: 13.5,
+                  fontSize: 12.5,
                   cursor: 'pointer',
                   transition: 'all 0.2s',
                   display: 'flex',
@@ -964,13 +964,13 @@ export default function DatosPersonales({
                 }}
                 style={{
                   flex: 1,
-                  height: 44,
-                  borderRadius: 12,
+                  height: 40,
+                  borderRadius: 10,
                   border: 'none',
                   background: c?.isDark ? '#2563EB' : '#1D4ED8',
                   color: '#ffffff',
                   fontWeight: 700,
-                  fontSize: 13.5,
+                  fontSize: 12.5,
                   cursor: 'pointer',
                   transition: 'all 0.2s',
                   display: 'flex',
