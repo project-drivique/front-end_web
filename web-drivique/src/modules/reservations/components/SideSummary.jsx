@@ -332,7 +332,7 @@ export default function ResumenLateral({
                     </svg>
                   </div>
                   <div style={{ minWidth: 0 }}>
-                    <div style={{ fontSize: 13, fontWeight: 800, color: c?.textPrimary || '#0f172a', letterSpacing: '0.04em', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+                    <div style={{ fontSize: 13, fontWeight: 800, color: c?.accentText || 'var(--brand-secondary)', letterSpacing: '0.04em', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
                       {appliedPromotion.codigo}
                     </div>
                     <div style={{ fontSize: 11, color: c?.textSecondary || '#64748b', fontWeight: 600, marginTop: 2 }}>

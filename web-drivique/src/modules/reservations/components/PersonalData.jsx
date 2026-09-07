@@ -82,7 +82,7 @@ const DocumentUploader = ({ label, helpText, error, file, loading, onUpload, onC
             <div style={{
               fontSize: 13.5,
               fontWeight: 800,
-              color: c?.textPrimary || '#0f172a',
+              color: c?.accentText || 'var(--brand-secondary)',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
               whiteSpace: 'nowrap'
