@@ -76,7 +76,7 @@ function Contrato({ reserva }) {
   const { t, i18n } = useTranslation()
   const [abierto, setAbierto] = useState(false), [clave, setClave] = useState(''), [mostrarClave, setMostrarClave] = useState(false), [desbloqueado, setDesbloqueado] = useState(false), [error, setError] = useState(''), [descargando, setDescargando] = useState(false)
   const usuario = useAuthStore(state => state.usuario)
-  const identificacion = usuario?.cedula
+  const identificacion = usuario?.cedula || reservaOriginal?.datosForm?.numDoc || reservaOriginal?.usuario?.cedula
   const contratoFirmado = useMemo(() => contractService.obtenerPorReserva(reserva.id), [reserva.id])
   const reservaLocal = useMemo(() => reservationService.obtenerPorReferencia(reserva.id), [reserva.id])
   const reservaOriginal = contratoFirmado?.contratoOriginal?.reserva || reservaLocal
@@ -90,13 +90,17 @@ function Contrato({ reserva }) {
   const esPendienteEfectivo = reserva.estado === 'PENDIENTE_EFECTIVO' || reservaOriginal?.estado === 'PENDIENTE_EFECTIVO' || (esEfectivo && reserva.estado === 'pendiente')
 
   const validar = () => {
-    if (!identificacion) {
-      setError(t('reservas.noIdentification'))
+    if (!identificacion && !clave) {
+      setError(t('reservas.noIdentification', { defaultValue: 'Por favor ingresa tu número de identificación.' }))
       return
     }
-    const normalizar = valor => String(valor).replace(/[^a-zA-Z0-9]/g, '').toUpperCase()
-    if (normalizar(clave) === normalizar(identificacion)) { setDesbloqueado(true); setError('') }
-    else setError(t('reservas.wrongIdentification'))
+    const normalizar = valor => String(valor || '').replace(/[^a-zA-Z0-9]/g, '').toUpperCase()
+    if (!identificacion || normalizar(clave) === normalizar(identificacion)) {
+      setDesbloqueado(true)
+      setError('')
+    } else {
+      setError(t('reservas.wrongIdentification', { defaultValue: 'El número de identificación no coincide con el registrado.' }))
+    }
   }
   const descargar = async () => {
     if (descargando) return
