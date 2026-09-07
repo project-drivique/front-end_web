@@ -242,7 +242,7 @@ export default function ReservationFlowPage() {
               <div className="detalle-continuar-movil" style={{ display: 'none', width: '100%', marginTop: 24 }}>
                 {errorPaso1 && <p style={{ color: '#dc2626', fontSize: 13, fontWeight: 700, marginBottom: 12, textAlign: 'center' }}>{errorPaso1}</p>}
                 <button onClick={irSiguiente} style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, padding: '16px 40px', borderRadius: 16, background: 'var(--brand-gradient)', color: 'var(--brand-on-primary)', fontWeight: 900, fontSize: 15, border: 'none', cursor: 'pointer', boxShadow: 'var(--brand-shadow)' }}>
-                  {pantalla === 2 ? t('vehiculo.continueData', 'Continuar con mis datos') : t('common.continue', 'Continuar')}
+                  {t('common.continue', 'Continuar')}
                 </button>
               </div>
             )}
