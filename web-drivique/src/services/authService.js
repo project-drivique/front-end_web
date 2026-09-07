@@ -123,19 +123,19 @@ function prepararUsuariosLocales() {
 
   const migrado = mockUsersStorage.asegurarConfigurados([
     {
-      correo: import.meta.env.VITE_MOCK_USER_EMAIL,
-      contrasena: import.meta.env.VITE_MOCK_USER_PASSWORD,
-      nombre: import.meta.env.VITE_MOCK_USER_NAME || '',
-      apellido: import.meta.env.VITE_MOCK_USER_LASTNAME || '',
-      rol: ROLES.USER, activo: true, permisos: [], telefono: '', cedula: '', fechaNacimiento: '',
-      nacionalidad: '', tipoDocumento: '', emailVerificado: true,
+      correo: import.meta.env.VITE_MOCK_USER_EMAIL || 'usuario@drivique.com',
+      contrasena: import.meta.env.VITE_MOCK_USER_PASSWORD || 'Usuario123*',
+      nombre: import.meta.env.VITE_MOCK_USER_NAME || 'Juan',
+      apellido: import.meta.env.VITE_MOCK_USER_LASTNAME || 'Pérez',
+      rol: ROLES.USER, activo: true, permisos: [], telefono: '3001234567', cedula: '1075228306', fechaNacimiento: '1995-05-15',
+      nacionalidad: 'Colombia', tipoDocumento: 'CC', emailVerificado: true,
     },
     {
-      correo: import.meta.env.VITE_MOCK_ADMIN_EMAIL,
-      contrasena: import.meta.env.VITE_MOCK_ADMIN_PASSWORD,
-      nombre: import.meta.env.VITE_MOCK_ADMIN_NAME || '',
-      apellido: '', rol: ROLES.ADMIN, activo: true, permisos: [PERMISSIONS.ADMIN_PANEL], telefono: '', cedula: '',
-      fechaNacimiento: '', nacionalidad: '', tipoDocumento: '', emailVerificado: true,
+      correo: import.meta.env.VITE_MOCK_ADMIN_EMAIL || 'admin@drivique.com',
+      contrasena: import.meta.env.VITE_MOCK_ADMIN_PASSWORD || 'Admin123*',
+      nombre: import.meta.env.VITE_MOCK_ADMIN_NAME || 'Administrador General',
+      apellido: '', rol: ROLES.ADMIN, activo: true, permisos: [PERMISSIONS.ADMIN_PANEL], telefono: '3009876543', cedula: '80123456',
+      fechaNacimiento: '1990-01-01', nacionalidad: 'Colombia', tipoDocumento: 'CC', emailVerificado: true,
     },
     ...branchManagers,
   ])
