@@ -158,11 +158,51 @@ function Contrato({ reserva }) {
 }
 
 function ModalDetalle({ reserva, moneda, onClose }) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  const estado = { texto: t(`reservas.statuses.${reserva.estado}`, { defaultValue: t('reservas.statuses.pendiente') }), clase: CLASES_ESTADO[reserva.estado] || CLASES_ESTADO.pendiente }
   const contrato = contractService.obtenerPorReserva(reserva.id)
+  const reservaOriginal = contrato?.contratoOriginal?.reserva || reservationService.obtenerPorReferencia(reserva.id)
   const vehiculoOriginal = contrato?.contratoOriginal?.vehiculo || reserva.vehiculo
   const nombreAuto = reserva.vehiculo?.nombre || vehiculoOriginal?.nombre || (reserva.vehiculo?.marca ? `${reserva.vehiculo.marca} ${reserva.vehiculo.modelo || ''}` : 'Vehículo')
   const imagenAuto = reserva.vehiculo?.imagenes?.[0] || vehiculoOriginal?.imagenes?.[0] || reserva.vehiculo?.imagen || vehiculoOriginal?.imagen
+  const seguroIdx = reservaOriginal?.seguroIdx
+  const proteccion = seguroIdx != null ? vehiculoOriginal?.seguros?.[seguroIdx]?.nombre : t('reservas.unspecified')
+
+  const esEfectivo = reservaOriginal?.reservaDetalles?.metodoPago === 'efectivo' || reserva.metodoPago === 'efectivo'
+  const esPendienteEfectivo = reserva.estado === 'PENDIENTE_EFECTIVO' || reservaOriginal?.estado === 'PENDIENTE_EFECTIVO' || (esEfectivo && (reserva.estado === 'pendiente' || !reserva.estado))
+  const esPendienteWompi = !esEfectivo && (reserva.estado === 'pendiente' || reserva.estado === 'PENDIENTE')
+  const esWompiAprobado = !esEfectivo && (reserva.estado === 'confirmada' || reserva.estado === 'activa' || reserva.estado === 'en_curso' || reserva.estado === 'finalizada')
+
+  const sucursalPago = reservaOriginal?.reservaDetalles?.sucursalPagoEfectivo || reserva.vehiculo?.sucursal || 'National Downtown Barranquilla'
+  const branchObj = SUCURSALES.find(s => s.nombre === sucursalPago)
+  const ciudadPago = branchObj?.ciudad || reserva.vehiculo?.ciudad || 'Barranquilla'
+  const direccionPago = branchObj?.direccion || 'Calle 72 # 40-30, Centro'
+
+  const [pagandoWompi, setPagandoWompi] = useState(false)
+
+  const handlePagarWompi = async (e) => {
+    if (e) {
+      e.preventDefault()
+      e.stopPropagation()
+    }
+    setPagandoWompi(true)
+    try {
+      const ref = reserva.id || reserva.referencia || reservaOriginal?.referencia
+      sessionStorage.setItem('current_wompi_reference', ref)
+      const rawTotal = reserva.total ?? reservaOriginal?.total ?? 0
+      const totalNum = typeof rawTotal === 'number' ? rawTotal : parseFloat(String(rawTotal).replace(/[^0-9.-]+/g, '')) || 0
+      const centavos = aCentavos(totalNum)
+      const url = await construirUrlCheckout({
+        reference: ref,
+        amountInCents: centavos,
+        redirectUrl: `${window.location.origin}/respuesta`,
+      })
+      window.location.href = url
+    } catch (err) {
+      console.error('Error al generar enlace Wompi:', err)
+      setPagandoWompi(false)
+    }
+  }
 
   return (
     <div className="modal-backdrop" onMouseDown={onClose}>
@@ -172,88 +212,383 @@ function ModalDetalle({ reserva, moneda, onClose }) {
         aria-modal="true"
         aria-labelledby="detalle-reserva-titulo"
         onMouseDown={(e) => e.stopPropagation()}
-        style={{ maxWidth: '540px', width: '100%', padding: '24px' }}
+        style={{
+          position: 'relative',
+          maxWidth: '560px',
+          width: '100%',
+          maxHeight: '92vh',
+          overflowY: 'auto',
+          background: '#ffffff',
+          borderRadius: '24px',
+          padding: '24px 24px 28px',
+          boxShadow: '0 25px 60px rgba(15, 23, 42, 0.25)',
+          border: '1px solid #e2e8f0'
+        }}
       >
-        <button className="modal-cerrar" onClick={onClose} aria-label={t('reservas.closeDetail', { defaultValue: 'Cerrar' })}>
-          <FaTimes />
+        <div className="detalle-modal-acento" />
+        
+        <button
+          className="modal-cerrar"
+          onClick={onClose}
+          aria-label={t('reservas.closeDetail', { defaultValue: 'Cerrar' })}
+          style={{
+            position: 'absolute',
+            top: '16px',
+            right: '16px',
+            width: '32px',
+            height: '32px',
+            borderRadius: '8px',
+            border: '1px solid #e2e8f0',
+            background: '#ffffff',
+            color: '#64748b',
+            display: 'grid',
+            placeItems: 'center',
+            cursor: 'pointer',
+            zIndex: 10
+          }}
+        >
+          <FaTimes size={14} />
         </button>
 
-        {/* 1. Título principal separado con una raya */}
-        <div style={{ textAlign: 'center', marginBottom: '16px' }}>
+        {/* Encabezado sin el primer icono (quitado según solicitud) */}
+        <div style={{ textAlign: 'center', padding: '8px 24px 16px' }}>
           <h2
             id="detalle-reserva-titulo"
             style={{
               fontSize: '22px',
               fontWeight: 800,
-              color: 'var(--texto-primary, #0f172a)',
-              margin: '0 0 16px',
+              color: '#0f172a',
+              margin: '0 0 4px',
               letterSpacing: '-0.02em'
             }}
           >
-            Detalles de la Reserva
+            {t('reservas.reservationWithStatus', { status: estado.texto.toLowerCase(), defaultValue: `Reserva ${estado.texto.toLowerCase()}` })}
           </h2>
-          <hr style={{ border: 'none', borderTop: '1px solid #e2e8f0', margin: '0' }} />
-        </div>
-
-        {/* 2. Subtítulo de estado */}
-        <div style={{ textAlign: 'center', marginTop: '16px', marginBottom: '6px' }}>
-          <h3
-            style={{
-              fontSize: '18px',
-              fontWeight: 800,
-              color: '#1D4ED8',
-              margin: '0 0 6px',
-              letterSpacing: '-0.01em'
-            }}
-          >
-            Pendiente de pago en efectivo
-          </h3>
-          {/* 3. Nombre del carro */}
           <p
             style={{
-              fontSize: '15px',
-              fontWeight: 700,
-              color: 'var(--texto-second, #475569)',
-              margin: '0 0 18px'
+              fontSize: '13.5px',
+              color: '#64748b',
+              margin: 0,
+              fontWeight: 500
             }}
           >
             {nombreAuto}
           </p>
         </div>
 
-        {/* 4. Foto del carro completa y bien visible */}
-        <div
-          style={{
-            background: '#EFF6FF',
-            border: '1px solid #BFDBFE',
-            borderRadius: '18px',
-            padding: '16px 20px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            minHeight: '200px',
-            maxHeight: '260px',
-            overflow: 'hidden',
-            boxShadow: '0 2px 10px rgba(29, 78, 216, 0.04)'
-          }}
-        >
-          {imagenAuto ? (
+        {/* Imagen del carro completa */}
+        {imagenAuto && (
+          <div
+            style={{
+              marginBottom: '16px',
+              borderRadius: '16px',
+              overflow: 'hidden',
+              background: '#f8fafc',
+              border: '1px solid #e2e8f0',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              maxHeight: '220px'
+            }}
+          >
             <img
               src={imagenAuto}
               alt={nombreAuto}
               style={{
                 width: '100%',
                 maxHeight: '220px',
-                objectFit: 'contain',
+                objectFit: 'cover',
                 display: 'block'
               }}
             />
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, color: '#60A5FA' }}>
-              <FaCar size={48} />
-              <span style={{ fontSize: '13px', fontWeight: 600 }}>Foto no disponible</span>
+          </div>
+        )}
+
+        {/* Tarjeta de Instrucciones de Pago en Efectivo */}
+        {esPendienteEfectivo && (
+          <div style={{ marginBottom: '16px' }}>
+            <div
+              style={{
+                background: '#EFF6FF',
+                border: '1.5px solid #BFDBFE',
+                borderRadius: '16px',
+                padding: '16px 18px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '8px',
+                marginBottom: '12px'
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '13px' }}>
+                <span style={{ color: '#64748b', fontWeight: 600 }}>Referencia:</span>
+                <strong style={{ color: '#1D4ED8', fontWeight: 800 }}>{reserva.id}</strong>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '13px' }}>
+                <span style={{ color: '#64748b', fontWeight: 600 }}>Sucursal:</span>
+                <strong style={{ color: '#0f172a', fontWeight: 700 }}>{sucursalPago}</strong>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '13px' }}>
+                <span style={{ color: '#64748b', fontWeight: 600 }}>Ciudad:</span>
+                <strong style={{ color: '#0f172a', fontWeight: 700 }}>{ciudadPago}</strong>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '13px' }}>
+                <span style={{ color: '#64748b', fontWeight: 600 }}>Dirección:</span>
+                <strong style={{ color: '#0f172a', fontWeight: 700 }}>{direccionPago}</strong>
+              </div>
+              <div style={{ height: '1px', background: '#BFDBFE', margin: '4px 0' }} />
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: '12px', fontWeight: 800, color: '#475569', letterSpacing: '0.02em' }}>TOTAL A PAGAR:</span>
+                <strong style={{ fontSize: '18px', fontWeight: 900, color: '#1D4ED8' }}>{formatCurrency(reserva.total || 0, moneda)}</strong>
+              </div>
             </div>
-          )}
+
+            {/* Plazo para pagar (amarillo) */}
+            <div
+              style={{
+                background: '#FEFCE8',
+                border: '1.5px solid #FEF08A',
+                borderRadius: '14px',
+                padding: '12px 14px',
+                textAlign: 'left'
+              }}
+            >
+              <p
+                style={{
+                  margin: '0 0 4px',
+                  fontSize: '11px',
+                  fontWeight: 800,
+                  color: '#854D0E',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.04em'
+                }}
+              >
+                PLAZO PARA PAGAR
+              </p>
+              <p
+                style={{
+                  margin: 0,
+                  fontSize: '12px',
+                  color: '#854D0E',
+                  lineHeight: 1.45,
+                  fontWeight: 500
+                }}
+              >
+                Tienes 72 horas desde ahora para acercarte a la sucursal y pagar. Si no pagas dentro de este plazo, la reserva se cancelará automáticamente.
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Tarjeta de Pago Aprobado Wompi */}
+        {esWompiAprobado && (
+          <div style={{ marginBottom: '16px' }}>
+            <div
+              style={{
+                background: '#f0fdf4',
+                border: '1.5px solid #86efac',
+                borderRadius: '16px',
+                padding: '14px 18px',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <FaCheckCircle color="#16a34a" size={18} />
+                <div>
+                  <strong style={{ display: 'block', fontSize: '13px', color: '#166534' }}>Pago Digital Aprobado por Wompi</strong>
+                  <span style={{ fontSize: '11.5px', color: '#15803d' }}>Transacción procesada correctamente</span>
+                </div>
+              </div>
+              <strong style={{ fontSize: '15px', color: '#166534' }}>{formatCurrency(reserva.total || 0, moneda)}</strong>
+            </div>
+          </div>
+        )}
+
+        {/* Cuadrícula de datos de la reserva en 2 columnas */}
+        <div
+          style={{
+            background: '#ffffff',
+            border: '1px solid #e2e8f0',
+            borderRadius: '18px',
+            padding: '14px 16px',
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gap: '12px 16px',
+            marginBottom: '16px',
+            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.03)'
+          }}
+        >
+          {/* Vehículo */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#EFF6FF', color: '#1D4ED8', display: 'grid', placeItems: 'center', flexShrink: 0, fontSize: '14px' }}>
+              <FaCar />
+            </div>
+            <div style={{ minWidth: 0, overflow: 'hidden' }}>
+              <span style={{ display: 'block', fontSize: '10.5px', color: '#64748b', fontWeight: 600 }}>{t('reservas.vehicle', { defaultValue: 'Vehículo' })}</span>
+              <strong style={{ display: 'block', fontSize: '12.5px', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{nombreAuto}</strong>
+            </div>
+          </div>
+
+          {/* Fecha de retiro */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#EFF6FF', color: '#1D4ED8', display: 'grid', placeItems: 'center', flexShrink: 0, fontSize: '14px' }}>
+              <FaCalendarAlt />
+            </div>
+            <div style={{ minWidth: 0, overflow: 'hidden' }}>
+              <span style={{ display: 'block', fontSize: '10.5px', color: '#64748b', fontWeight: 600 }}>{t('reservas.pickupDate', { defaultValue: 'Fecha de retiro' })}</span>
+              <strong style={{ display: 'block', fontSize: '12.5px', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{fechaBonita(reserva.fechaInicio, i18n.resolvedLanguage)}</strong>
+            </div>
+          </div>
+
+          {/* Fecha de devolución */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#EFF6FF', color: '#1D4ED8', display: 'grid', placeItems: 'center', flexShrink: 0, fontSize: '14px' }}>
+              <FaRegCalendarCheck />
+            </div>
+            <div style={{ minWidth: 0, overflow: 'hidden' }}>
+              <span style={{ display: 'block', fontSize: '10.5px', color: '#64748b', fontWeight: 600 }}>{t('reservas.returnDate', { defaultValue: 'Fecha de devolución' })}</span>
+              <strong style={{ display: 'block', fontSize: '12.5px', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{fechaBonita(reserva.fechaFin, i18n.resolvedLanguage)}</strong>
+            </div>
+          </div>
+
+          {/* Lugar de retiro */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#EFF6FF', color: '#1D4ED8', display: 'grid', placeItems: 'center', flexShrink: 0, fontSize: '14px' }}>
+              <FaMapMarkerAlt />
+            </div>
+            <div style={{ minWidth: 0, overflow: 'hidden' }}>
+              <span style={{ display: 'block', fontSize: '10.5px', color: '#64748b', fontWeight: 600 }}>{t('reservas.pickupLocation', { defaultValue: 'Lugar de retiro' })}</span>
+              <strong style={{ display: 'block', fontSize: '12.5px', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} title={reserva.vehiculo?.sucursal || sucursalPago}>{reserva.vehiculo?.sucursal || sucursalPago}</strong>
+            </div>
+          </div>
+
+          {/* Protección */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#EFF6FF', color: '#1D4ED8', display: 'grid', placeItems: 'center', flexShrink: 0, fontSize: '14px' }}>
+              <FaShieldAlt />
+            </div>
+            <div style={{ minWidth: 0, overflow: 'hidden' }}>
+              <span style={{ display: 'block', fontSize: '10.5px', color: '#64748b', fontWeight: 600 }}>{t('reservas.protection', { defaultValue: 'Protección' })}</span>
+              <strong style={{ display: 'block', fontSize: '12.5px', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{proteccion}</strong>
+            </div>
+          </div>
+
+          {/* Referencia */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#EFF6FF', color: '#1D4ED8', display: 'grid', placeItems: 'center', flexShrink: 0, fontSize: '14px' }}>
+              <FaScroll />
+            </div>
+            <div style={{ minWidth: 0, overflow: 'hidden' }}>
+              <span style={{ display: 'block', fontSize: '10.5px', color: '#64748b', fontWeight: 600 }}>{t('reservas.reference', { defaultValue: 'Referencia' })}</span>
+              <strong style={{ display: 'block', fontSize: '11px', color: '#1D4ED8', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} title={reserva.id}>{reserva.id}</strong>
+            </div>
+          </div>
+
+          {/* Total */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#EFF6FF', color: '#1D4ED8', display: 'grid', placeItems: 'center', flexShrink: 0, fontSize: '14px' }}>
+              <FaMoneyBillWave />
+            </div>
+            <div style={{ minWidth: 0, overflow: 'hidden' }}>
+              <span style={{ display: 'block', fontSize: '10.5px', color: '#64748b', fontWeight: 600 }}>{t('reservas.total', { defaultValue: 'Total' })}</span>
+              <strong style={{ display: 'block', fontSize: '12.5px', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{formatCurrency(reserva.total || 0, moneda)}</strong>
+            </div>
+          </div>
+
+          {/* Estado */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#f0fdf4', color: '#16a34a', display: 'grid', placeItems: 'center', flexShrink: 0, fontSize: '14px' }}>
+              <FaCheckCircle />
+            </div>
+            <div style={{ minWidth: 0, overflow: 'hidden' }}>
+              <span style={{ display: 'block', fontSize: '10.5px', color: '#64748b', fontWeight: 600 }}>{t('reservas.status', { defaultValue: 'Estado' })}</span>
+              <strong style={{ display: 'block', fontSize: '12.5px', color: '#15803d', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{estado.texto}</strong>
+            </div>
+          </div>
+        </div>
+
+        {/* Tarjeta de Pago Digital Pendiente Wompi (si aplica) */}
+        {esPendienteWompi && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginBottom: 16 }}>
+            <div
+              style={{
+                background: '#ffffff',
+                border: '1.5px solid #e2e8f0',
+                borderRadius: 20,
+                padding: '20px',
+                textAlign: 'center',
+                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.04)',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center'
+              }}
+            >
+              <h3 style={{ fontSize: 17, fontWeight: 800, color: '#0f172a', margin: '0 0 8px' }}>
+                Pago Digital Pendiente
+              </h3>
+              <p style={{ fontSize: 13, color: '#64748b', lineHeight: 1.5, margin: '0 0 16px', maxWidth: 320 }}>
+                Tu reserva está guardada como pendiente. Completa el pago en Wompi para confirmar y habilitar tu contrato de alquiler.
+              </p>
+
+              <button
+                type="button"
+                onClick={handlePagarWompi}
+                disabled={pagandoWompi}
+                style={{
+                  width: '100%',
+                  height: 46,
+                  borderRadius: 12,
+                  background: '#1D4ED8',
+                  color: '#ffffff',
+                  border: 'none',
+                  fontWeight: 800,
+                  fontSize: 14,
+                  cursor: pagandoWompi ? 'default' : 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 10,
+                  boxShadow: '0 4px 14px rgba(29, 78, 216, 0.28)'
+                }}
+              >
+                <FaCreditCard size={16} />
+                <span>{pagandoWompi ? 'Redirigiendo a Wompi…' : 'Pagar con Wompi'}</span>
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Sección de Contrato de Alquiler */}
+        {!esPendienteWompi && (
+          <section style={{ marginBottom: 16 }}>
+            <Contrato reserva={reserva} />
+          </section>
+        )}
+
+        {/* Botón de cierre */}
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16 }}>
+          <button
+            type="button"
+            onClick={onClose}
+            style={{
+              minWidth: 160,
+              padding: '10px 24px',
+              borderRadius: 12,
+              border: '1px solid #cbd5e1',
+              background: '#f8fafc',
+              color: '#334155',
+              fontSize: 13,
+              fontWeight: 700,
+              cursor: 'pointer',
+              transition: 'all 0.2s ease'
+            }}
+            onMouseOver={(e) => { e.currentTarget.style.background = '#e2e8f0' }}
+            onMouseOut={(e) => { e.currentTarget.style.background = '#f8fafc' }}
+          >
+            {t('reservas.closeDetail', { defaultValue: 'Cerrar' })}
+          </button>
         </div>
       </section>
     </div>
