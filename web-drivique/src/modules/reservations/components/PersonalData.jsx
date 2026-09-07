@@ -649,7 +649,7 @@ export default function DatosPersonales({
               borderRadius: 4
             }}
           />
-          <div style={{ flex: 1, minWidth: 0, fontSize: 13, fontWeight: 600, color: c?.textPrimary || '#0f172a', lineHeight: 1.45 }}>
+          <div style={{ flex: 1, minWidth: 0, fontSize: 13, fontWeight: 400, color: c?.textPrimary || '#0f172a', lineHeight: 1.45 }}>
             <label
               htmlFor="tyc"
               onClick={e => {
