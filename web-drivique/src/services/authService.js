@@ -123,6 +123,14 @@ function prepararUsuariosLocales() {
 
   const migrado = mockUsersStorage.asegurarConfigurados([
     {
+      correo: 'cliente@drivique.com',
+      contrasena: 'Cliente123*',
+      nombre: 'Carlos',
+      apellido: 'Mendoza',
+      rol: ROLES.USER, activo: true, permisos: [], telefono: '3104567890', cedula: '1075228306', fechaNacimiento: '1992-08-20',
+      nacionalidad: 'Colombia', tipoDocumento: 'CC', emailVerificado: true,
+    },
+    {
       correo: import.meta.env.VITE_MOCK_USER_EMAIL || 'usuario@drivique.com',
       contrasena: import.meta.env.VITE_MOCK_USER_PASSWORD || 'Usuario123*',
       nombre: import.meta.env.VITE_MOCK_USER_NAME || 'Juan',
