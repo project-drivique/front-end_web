@@ -219,7 +219,7 @@ export function useReservationFlow() {
   const [errorPaso1, setErrorPaso1] = useState('')
   const [datosForm, setDatosForm] = useState(savedState?.datosForm || {
     nombre: '', correo: '', celular: '',
-    nacionalidad: 'Colombia', tipoDoc: 'CC', numDoc: '',
+    nacionalidad: '', tipoDoc: '', numDoc: '',
     vuelo: false, numVuelo: '', terminos: false,
     cedulaPdf: null, licenciaPdf: null,
   })
@@ -269,8 +269,8 @@ export function useReservationFlow() {
       correo: usuario.correo || prev.correo,
       celular: celular || prev.celular,
       numDoc: usuario.cedula || prev.numDoc,
-      nacionalidad: usuario.nacionalidad || prev.nacionalidad || 'Colombia',
-      tipoDoc: usuario.tipoDocumento || prev.tipoDoc || 'CC',
+      nacionalidad: usuario.nacionalidad || prev.nacionalidad || '',
+      tipoDoc: usuario.tipoDocumento || prev.tipoDoc || '',
     }))
   }, [usuario])
 
@@ -323,13 +323,15 @@ export function useReservationFlow() {
     }
 
     const e = {}
-    if (!datosForm.nombre.trim()) e.nombre = t('vehiculo.errors.nameRequired')
-    if (!datosForm.correo.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(datosForm.correo)) e.correo = t('vehiculo.errors.emailInvalid')
-    if (!datosForm.celular.trim() || datosForm.celular.length < 10) e.celular = t('vehiculo.errors.phoneInvalid')
-    if (!datosForm.numDoc.trim()) e.numDoc = t('vehiculo.errors.docRequired')
+    if (!datosForm.nombre.trim()) e.nombre = t('vehiculo.errors.nameRequired', 'El nombre es obligatorio.')
+    if (!datosForm.nacionalidad?.trim()) e.nacionalidad = t('vehiculo.errors.nationalityRequired', 'Debes seleccionar tu nacionalidad.')
+    if (!datosForm.tipoDoc?.trim()) e.tipoDoc = t('vehiculo.errors.docTypeRequired', 'Debes seleccionar el tipo de documento.')
+    if (!datosForm.numDoc.trim()) e.numDoc = t('vehiculo.errors.docRequired', 'El número de documento es obligatorio.')
+    if (!datosForm.correo.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(datosForm.correo)) e.correo = t('vehiculo.errors.emailInvalid', 'El correo electrónico no es válido.')
+    if (!datosForm.celular.trim() || datosForm.celular.length < 10) e.celular = t('vehiculo.errors.phoneInvalid', 'El número celular debe tener al menos 10 dígitos.')
     if (!docsVerificados && !datosForm.cedulaPdf) e.cedulaPdf = t('vehiculo.errors.cedulaPdfRequired', 'Debes subir tu cédula en formato PDF.')
     if (!docsVerificados && !datosForm.licenciaPdf) e.licenciaPdf = t('vehiculo.errors.licenciaPdfRequired', 'Debes subir tu licencia de conducción en formato PDF.')
-    if (!datosForm.terminos) e.terminos = t('vehiculo.errors.termsRequired')
+    if (!datosForm.terminos) e.terminos = t('vehiculo.errors.termsRequired', 'Debes aceptar los términos y condiciones.')
     setErrores(e)
     if (Object.keys(e).length > 0) return
 

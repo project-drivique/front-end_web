@@ -9,9 +9,9 @@ import { FaUser, FaIdCard, FaTimes } from 'react-icons/fa';
 import paisesMock from '@/mocks/nationalities.json';
 
 const getPrefijoPais = (nacionalidad) => {
-  if (!nacionalidad) return '+57';
+  if (!nacionalidad) return '';
   const p = paisesMock.find(item => item.nombre.toLowerCase() === String(nacionalidad).toLowerCase());
-  return p?.prefijo || '+57';
+  return p?.prefijo || '';
 };
 
 const DocumentUploader = ({ label, helpText, error, file, loading, onUpload, onClear, required = true, c }) => {
@@ -212,7 +212,7 @@ export default function DatosPersonales({
 
 
   const prefijoActual = useMemo(() => {
-    return getPrefijoPais(datosForm.nacionalidad || 'Colombia');
+    return getPrefijoPais(datosForm.nacionalidad);
   }, [datosForm.nacionalidad]);
 
   const handleCambioNacionalidad = (nuevoPais) => {
@@ -315,16 +315,17 @@ export default function DatosPersonales({
               {t('vehiculo.nationality', 'Nacionalidad')} *
             </label>
             <select
-              value={datosForm.nacionalidad || 'Colombia'}
+              value={datosForm.nacionalidad || ''}
               onChange={e => handleCambioNacionalidad(e.target.value)}
               style={inputStyle(errores.nacionalidad)}
             >
+              <option value="">{t('common.select', 'Seleccionar')}</option>
               {[...paisesMock].filter(p => p.nombre !== 'Otro').map(p => (
                 <option key={p.nombre} value={p.nombre}>
                   {p.nombre}
                 </option>
               ))}
-              <option value="Otro">Otro</option>
+              <option value="Otro">{t('common.other', 'Otro')}</option>
             </select>
             {errores.nacionalidad && <p style={{ color: '#ef4444', fontSize: 12, margin: '4px 0 0', fontWeight: 600 }}>{errores.nacionalidad}</p>}
           </div>
@@ -348,24 +349,26 @@ export default function DatosPersonales({
               {t('vehiculo.phoneNumber', 'Teléfono celular')} *
             </label>
             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-              <div style={{
-                height: 46,
-                minWidth: 64,
-                padding: '0 10px',
-                borderRadius: 12,
-                border: `1.5px solid ${c?.cardBorder || '#e2e8f0'}`,
-                background: c?.isDark ? 'rgba(255,255,255,0.05)' : '#f8fafc',
-                color: c?.textSecondary || '#64748b',
-                fontSize: 13.5,
-                fontWeight: 600,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexShrink: 0,
-                userSelect: 'none'
-              }}>
-                {prefijoActual}
-              </div>
+              {prefijoActual && (
+                <div style={{
+                  height: 46,
+                  minWidth: 64,
+                  padding: '0 10px',
+                  borderRadius: 12,
+                  border: `1.5px solid ${c?.cardBorder || '#e2e8f0'}`,
+                  background: c?.isDark ? 'rgba(255,255,255,0.05)' : '#f8fafc',
+                  color: c?.textSecondary || '#64748b',
+                  fontSize: 13.5,
+                  fontWeight: 600,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                  userSelect: 'none'
+                }}>
+                  {prefijoActual}
+                </div>
+              )}
               <input
                 type="tel"
                 value={datosForm.celular}
@@ -385,10 +388,11 @@ export default function DatosPersonales({
               {t('vehiculo.docType', 'Tipo de documento')} *
             </label>
             <select
-              value={datosForm.tipoDoc || 'CC'}
+              value={datosForm.tipoDoc || ''}
               onChange={e => onCambio('tipoDoc', e.target.value)}
               style={inputStyle(errores.tipoDoc)}
             >
+              <option value="">{t('common.select', 'Seleccionar')}</option>
               <option value="CC">{t('vehiculo.docTypes.cc', 'Cédula de ciudadanía')}</option>
               <option value="CE">{t('vehiculo.docTypes.ce', 'Cédula de extranjería')}</option>
               <option value="PASAPORTE">{t('vehiculo.docTypes.passport', 'Pasaporte')}</option>
@@ -396,6 +400,7 @@ export default function DatosPersonales({
               <option value="PPT">{t('vehiculo.docTypes.ppt', 'Permiso por Protección Temporal (PPT)')}</option>
               <option value="PEP">{t('vehiculo.docTypes.pep', 'Permiso Especial de Permanencia (PEP)')}</option>
             </select>
+            {errores.tipoDoc && <p style={{ color: '#ef4444', fontSize: 12, margin: '4px 0 0', fontWeight: 600 }}>{errores.tipoDoc}</p>}
           </div>
 
           <div>
@@ -403,24 +408,26 @@ export default function DatosPersonales({
               {t('vehiculo.docNumber', 'Número de documento')} *
             </label>
             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-              <div style={{
-                height: 46,
-                minWidth: 54,
-                padding: '0 10px',
-                borderRadius: 12,
-                border: `1.5px solid ${c?.cardBorder || '#e2e8f0'}`,
-                background: c?.isDark ? 'rgba(255,255,255,0.05)' : '#f8fafc',
-                color: c?.textSecondary || '#64748b',
-                fontSize: 13.5,
-                fontWeight: 600,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexShrink: 0,
-                userSelect: 'none'
-              }}>
-                {getSiglaDoc(datosForm.tipoDoc || 'CC')}
-              </div>
+              {datosForm.tipoDoc && getSiglaDoc(datosForm.tipoDoc) ? (
+                <div style={{
+                  height: 46,
+                  minWidth: 54,
+                  padding: '0 10px',
+                  borderRadius: 12,
+                  border: `1.5px solid ${c?.cardBorder || '#e2e8f0'}`,
+                  background: c?.isDark ? 'rgba(255,255,255,0.05)' : '#f8fafc',
+                  color: c?.textSecondary || '#64748b',
+                  fontSize: 13.5,
+                  fontWeight: 600,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                  userSelect: 'none'
+                }}>
+                  {getSiglaDoc(datosForm.tipoDoc)}
+                </div>
+              ) : null}
               <input
                 type="text"
                 value={datosForm.numDoc}
