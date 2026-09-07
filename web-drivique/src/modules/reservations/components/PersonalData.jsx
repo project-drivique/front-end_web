@@ -528,17 +528,17 @@ export default function DatosPersonales({
       </div>
 
       <div style={sectionCardStyle}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 20 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <svg width="22" height="16" viewBox="0 0 24 18" fill="none" stroke={c?.accentText || '#002f6c'} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <rect width="22" height="16" x="1" y="1" rx="3"/>
-              <line x1="1" x2="23" y1="6" y2="6"/>
+        <div style={{ margin: '0 0 16px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={c?.accentText || 'var(--brand-secondary)'} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+              <rect width="20" height="14" x="2" y="5" rx="2"/>
+              <line x1="2" x2="22" y1="10" y2="10"/>
             </svg>
-            <h3 style={{ fontSize: 16, fontWeight: 800, color: c?.accentText || '#002f6c', margin: 0, letterSpacing: '-0.01em', textTransform: 'none' }}>
+            <h3 style={{ fontSize: 14, fontWeight: 700, color: c?.accentText || 'var(--brand-secondary)', margin: 0, textTransform: 'none', fontFamily: 'inherit' }}>
               {t('vehiculo.mandatoryDocsVerification', 'Verificación Documental Obligatoria')}
             </h3>
           </div>
-          <p style={{ fontSize: 13, color: c?.textSecondary || '#64748b', margin: 0, lineHeight: 1.45 }}>
+          <p style={{ margin: 0, fontSize: 12.5, color: c?.textSecondary || '#64748b', lineHeight: 1.4 }}>
             {t('vehiculo.mandatoryDocsSub', 'Sube los documentos requeridos para verificar tu identidad y habilitar la reserva del vehículo.')}
           </p>
         </div>
