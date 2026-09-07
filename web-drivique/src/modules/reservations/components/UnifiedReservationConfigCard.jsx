@@ -217,7 +217,7 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
               >
                 <FaPencilAlt size={10} />
                 {hasDomicilioData
-                  ? 'Editar'
+                  ? t('vehiculo.edit', 'Editar')
                   : t('vehiculo.fillAddressBtn', 'Ingresar dirección')}
               </div>
             )}
@@ -253,7 +253,7 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
               >
                 {reserva?.sucursalRetiro === 'domicilio' ? <FaEye size={12} /> : <FaPencilAlt size={10} />}
                 {hasDomicilioData
-                  ? (reserva?.sucursalRetiro === 'domicilio' ? 'Ver' : 'Editar')
+                  ? (reserva?.sucursalRetiro === 'domicilio' ? t('vehiculo.view', 'Ver') : t('vehiculo.edit', 'Editar'))
                   : t('vehiculo.fillAddressBtn', 'Ingresar dirección')}
               </div>
             )}
@@ -309,6 +309,7 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
             vehiculoId={vehiculo.id}
             fechaInicio={reserva.fechaInicio}
             fechaFin={reserva.fechaFin}
+            c={c}
             onCambiarFechas={({ fechaInicio, fechaFin }) => {
               onCambio('fechaInicio', fechaInicio)
               onCambio('fechaFin', fechaFin)

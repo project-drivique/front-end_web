@@ -10,6 +10,7 @@ import { HORAS_LIMITE_PAGO_EFECTIVO } from '@/services/reservationService'
 import { SUCURSALES } from '../../catalog/constants'
 import { showAlert } from '@/utils/swalConfig'
 import { useNavigate } from 'react-router-dom'
+import MenuConfiguracion from '@/components/MenuConfiguracion'
 
 import { useReservationFlow } from '../hooks/useReservationFlow'
 import { useIsMobile } from '../../../hooks/useIsMobile'
@@ -93,7 +94,7 @@ export default function ReservationFlowPage() {
       <div className="detalle-contenido-inner" style={{ maxWidth: 1360, margin: '0 auto', padding: '24px 24px 60px' }}>
 
         {/* Top bar */}
-        <div style={{ marginBottom: 24, display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
+        <div style={{ marginBottom: 24, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <button
             className="catalogo-header-back"
             onClick={irAtras}
@@ -110,6 +111,7 @@ export default function ReservationFlowPage() {
           >
             <FaArrowLeft size={12} /> {pantalla === 1 ? t('vehiculo.backToCatalog') : t('common.goBack')}
           </button>
+          <MenuConfiguracion />
         </div>
 
         {/* Tarjeta principal */}
