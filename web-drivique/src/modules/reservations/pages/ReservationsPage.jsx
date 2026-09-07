@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { FaCalendarAlt, FaCar, FaCheckCircle, FaChevronDown, FaDownload, FaEye, FaEyeSlash, FaFileContract, FaFlag, FaKey, FaLock, FaMapMarkerAlt, FaMoneyBillWave, FaRegCalendarCheck, FaScroll, FaShieldAlt, FaStar, FaTimes, FaInfoCircle, FaCreditCard } from 'react-icons/fa'
+import { Link, useNavigate, useLocation, useSearchParams } from 'react-router-dom'
+import { FaCalendarAlt, FaCar, FaCheckCircle, FaChevronDown, FaDownload, FaEye, FaEyeSlash, FaFileContract, FaFlag, FaKey, FaLock, FaMapMarkerAlt, FaMoneyBillWave, FaRegCalendarCheck, FaScroll, FaShieldAlt, FaStar, FaTimes, FaInfoCircle, FaCreditCard, FaFileSignature, FaPenNib } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/store/authStore'
@@ -11,7 +11,6 @@ import filtrosReservas from '@/mocks/reservationsFilters.json'
 import CatalogTopHeader from '@/modules/catalog/components/CatalogTopHeader'
 import { descargarContratoOriginal, prepararVistaContrato } from '@/modules/contracts/utils/downloadSignedContract'
 import { reservationService } from '@/services/reservationService'
-import FirmaContrato from '@/modules/contracts/components/ContractSignature'
 import { SUCURSALES } from '@/modules/catalog/constants'
 import { construirUrlCheckout, aCentavos } from '@/services/wompiService'
 import logo from '@/assets/logo.png'
@@ -72,24 +71,24 @@ function ModalValoracion({ reserva, onClose, onSave }) {
   </section></div>
 }
 
-function Contrato({ reserva }) {
+function ContratoVerCard({ reserva, contratoFirmado, reservaParaContrato, vehiculoParaContrato, identificacion, autoDesbloquear = false }) {
   const { t, i18n } = useTranslation()
   const [clave, setClave] = useState('')
   const [mostrarClave, setMostrarClave] = useState(false)
-  const [desbloqueado, setDesbloqueado] = useState(false)
+  const tieneContratoFirmado = Boolean(contratoFirmado?.firmaUsuarioDataUrl)
+  const [desbloqueado, setDesbloqueado] = useState(() => Boolean(autoDesbloquear && tieneContratoFirmado))
   const [error, setError] = useState('')
   const [descargando, setDescargando] = useState(false)
-  
-  const usuario = useAuthStore(state => state.usuario)
-  const contratoFirmado = useMemo(() => contractService.obtenerPorReserva(reserva.id), [reserva.id])
-  const reservaLocal = useMemo(() => reservationService.obtenerPorReferencia(reserva.id), [reserva.id])
-  const reservaOriginal = contratoFirmado?.contratoOriginal?.reserva || reservaLocal
-  const vehiculoOriginal = contratoFirmado?.contratoOriginal?.vehiculo || reserva.vehiculo
-  const identificacion = usuario?.cedula || reservaOriginal?.datosForm?.numDoc || reservaOriginal?.usuario?.cedula
   const contratoVisualRef = useRef(null)
   const [preparandoVista, setPreparandoVista] = useState(false)
   const [vistaPreparada, setVistaPreparada] = useState(false)
-  const tieneContratoFirmado = Boolean(contratoFirmado?.firmaUsuarioDataUrl)
+  const usuario = useAuthStore(state => state.usuario)
+
+  useEffect(() => {
+    if (autoDesbloquear && tieneContratoFirmado) {
+      setDesbloqueado(true)
+    }
+  }, [autoDesbloquear, tieneContratoFirmado])
 
   const validar = () => {
     if (!tieneContratoFirmado) return
@@ -110,31 +109,28 @@ function Contrato({ reserva }) {
     if (descargando) return
     setDescargando(true)
     try {
-      if (!reservaOriginal || !vehiculoOriginal) throw new Error(t('reservas.originalDataMissing'))
-      const docReserva = String(reservaOriginal?.datosForm?.numDoc || '').replace(/\D/g, '')
+      if (!reservaParaContrato || !vehiculoParaContrato) throw new Error(t('reservas.originalDataMissing'))
+      const docReserva = String(reservaParaContrato?.datosForm?.numDoc || '').replace(/\D/g, '')
       const docUsuario = String(usuario?.cedula || '').replace(/\D/g, '')
-      if (!reservaOriginal || !docReserva || docReserva !== docUsuario) throw new Error(t('reservas.notReservationOwner'))
+      if (docReserva && docUsuario && docReserva !== docUsuario) throw new Error(t('reservas.notReservationOwner'))
       let contratoDescarga = contratoFirmado
-      if (!contratoFirmado.contratoOriginal) {
+      if (!contratoFirmado?.contratoOriginal) {
         contratoDescarga = contractService.completarContratoOriginal(reserva.id, {
-          reserva: JSON.parse(JSON.stringify(reservaOriginal)),
-          vehiculo: JSON.parse(JSON.stringify(vehiculoOriginal)),
+          reserva: JSON.parse(JSON.stringify(reservaParaContrato)),
+          vehiculo: JSON.parse(JSON.stringify(vehiculoParaContrato)),
           idioma: i18n.resolvedLanguage || i18n.language || 'es',
-          guardadoEn: contratoFirmado.firmadoEn || new Date().toISOString(),
+          guardadoEn: contratoFirmado?.firmadoEn || new Date().toISOString(),
           migradoDesdeReserva: true,
         })
       }
-      await descargarContratoOriginal({
-        contrato: contratoDescarga,
-        elementoContrato: contratoVisualRef.current,
-      })
+      await descargarContratoOriginal({ contrato: contratoDescarga, elementoContrato: contratoVisualRef.current })
       setError('')
     } catch (e) { setError(e.message) }
     finally { setDescargando(false) }
   }
 
   useEffect(() => {
-    if (!desbloqueado || vistaPreparada || !reservaOriginal || !vehiculoOriginal) return
+    if (!desbloqueado || vistaPreparada || !reservaParaContrato || !vehiculoParaContrato) return
     let activo = true
     const preparar = async () => {
       setPreparandoVista(true)
@@ -149,34 +145,13 @@ function Contrato({ reserva }) {
     }
     preparar()
     return () => { activo = false }
-  }, [desbloqueado, vistaPreparada, reservaOriginal, vehiculoOriginal, contratoFirmado, reserva.id])
+  }, [desbloqueado, vistaPreparada, reservaParaContrato, vehiculoParaContrato, contratoFirmado, reserva.id])
 
+  // Vista desbloqueada: mostrar contrato completo + descarga
   if (desbloqueado && tieneContratoFirmado) {
     return (
-      <div
-        style={{
-          background: '#ffffff',
-          border: '1px solid #e2e8f0',
-          borderRadius: '22px',
-          padding: '20px',
-          marginBottom: '18px',
-          boxShadow: '0 4px 18px rgba(0, 0, 0, 0.03)',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '14px'
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '12px 16px',
-            border: '1px solid #bbf7d0',
-            borderRadius: '14px',
-            background: '#f0fdf4'
-          }}
-        >
+      <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '22px', padding: '20px', marginBottom: '18px', boxShadow: '0 4px 18px rgba(0,0,0,0.03)', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', border: '1px solid #bbf7d0', borderRadius: '14px', background: '#f0fdf4' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
             <strong style={{ fontSize: '13px', color: '#15803d', fontWeight: 800 }}>
               {t('reservas.originalSignedContract', { defaultValue: 'Contrato firmado original' })}
@@ -185,40 +160,15 @@ function Contrato({ reserva }) {
               {contratoFirmado.codigo || reserva.numeroContrato || reserva.id}
             </span>
           </div>
-          <button
-            type="button"
-            onClick={() => setDesbloqueado(false)}
-            style={{
-              border: '1px solid #cbd5e1',
-              borderRadius: '8px',
-              background: '#ffffff',
-              color: '#475569',
-              fontSize: '11px',
-              fontWeight: 700,
-              padding: '4px 10px',
-              cursor: 'pointer'
-            }}
-          >
+          <button type="button" onClick={() => setDesbloqueado(false)}
+            style={{ border: '1px solid #cbd5e1', borderRadius: '8px', background: '#ffffff', color: '#475569', fontSize: '11px', fontWeight: 700, padding: '4px 10px', cursor: 'pointer' }}>
             Bloquear
           </button>
         </div>
-
-        <div className="contrato-vista-html" ref={contratoVisualRef}>
-          <FirmaContrato vehiculo={vehiculoOriginal} reservaGuardada={reservaOriginal} />
-        </div>
-
-        {preparandoVista && (
-          <div className="contrato-vista-progreso">
-            {t('reservas.optimizingDocument', { defaultValue: 'Optimizando documento...' })}
-          </div>
-        )}
-
+        <div className="contrato-vista-html" ref={contratoVisualRef} />
+        {preparandoVista && <div className="contrato-vista-progreso">{t('reservas.optimizingDocument', { defaultValue: 'Optimizando documento...' })}</div>}
         <div className="contrato-acciones-doc">
-          <button
-            className="contrato-descargar"
-            onClick={descargar}
-            disabled={descargando || preparandoVista || !vistaPreparada}
-          >
+          <button className="contrato-descargar" onClick={descargar} disabled={descargando || preparandoVista || !vistaPreparada}>
             <span className="contrato-descarga-icon"><FaDownload /></span>
             <span>
               <strong>{descargando ? t('reservas.preparingDocument') : t('reservas.downloadContract')}</strong>
@@ -231,74 +181,22 @@ function Contrato({ reserva }) {
     )
   }
 
+  // Vista bloqueada: siempre presente (bloqueada si no firmado, desbloqueable si firmado)
   return (
-    <div
-      style={{
-        background: '#ffffff',
-        border: '1px solid #e2e8f0',
-        borderRadius: '22px',
-        padding: '28px 24px 24px',
-        marginBottom: '18px',
-        boxShadow: '0 4px 18px rgba(0, 0, 0, 0.03)',
-        textAlign: 'center',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        boxSizing: 'border-box'
-      }}
-    >
-      {/* Icono circular de candado */}
-      <div
-        style={{
-          width: '64px',
-          height: '64px',
-          borderRadius: '50%',
-          background: '#EFF6FF',
-          display: 'grid',
-          placeItems: 'center',
-          marginBottom: '16px',
-          flexShrink: 0
-        }}
-      >
-        <FaLock size={24} color="#94A3B8" />
+    <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '22px', padding: '24px', marginBottom: '18px', boxShadow: '0 4px 18px rgba(0,0,0,0.03)', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', boxSizing: 'border-box' }}>
+      <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: tieneContratoFirmado ? '#f0fdf4' : '#f8fafc', display: 'grid', placeItems: 'center', marginBottom: '14px', flexShrink: 0 }}>
+        <FaLock size={22} color={tieneContratoFirmado ? '#16a34a' : '#94A3B8'} />
       </div>
-
-      {/* Titulo */}
-      <h3
-        style={{
-          fontSize: '20px',
-          fontWeight: 800,
-          color: '#0f172a',
-          margin: '0 0 10px',
-          letterSpacing: '-0.01em'
-        }}
-      >
-        Contrato protegido
+      <h3 style={{ fontSize: '17px', fontWeight: 800, color: '#0f172a', margin: '0 0 6px', letterSpacing: '-0.01em' }}>
+        {tieneContratoFirmado ? 'Ver contrato firmado' : 'Contrato protegido'}
       </h3>
-
-      {/* Explicación */}
-      <p
-        style={{
-          fontSize: '13.5px',
-          color: '#64748b',
-          lineHeight: 1.5,
-          margin: '0 0 22px',
-          maxWidth: '430px',
-          fontWeight: 500
-        }}
-      >
-        Para desbloquear el contrato con tu clave, primero se debe confirmar el pago y completar la firma digital del contrato.
+      <p style={{ fontSize: '13px', color: '#64748b', lineHeight: 1.5, margin: '0 0 18px', maxWidth: '400px', fontWeight: 500 }}>
+        {tieneContratoFirmado
+          ? 'Ingresa tu número de cédula o identificación registrada para ver o descargar tu contrato.'
+          : 'El contrato estará disponible para ver una vez hayas completado la firma digital.'}
       </p>
-
-      {/* Formulario de clave */}
-      <div style={{ width: '100%', maxWidth: '440px', boxSizing: 'border-box' }}>
-        <div
-          style={{
-            position: 'relative',
-            width: '100%',
-            marginBottom: error ? '8px' : '16px'
-          }}
-        >
+      <div style={{ width: '100%', maxWidth: '400px', boxSizing: 'border-box' }}>
+        <div style={{ position: 'relative', width: '100%', marginBottom: error ? '8px' : '14px' }}>
           <input
             id="input-clave-contrato"
             type={mostrarClave ? 'text' : 'password'}
@@ -306,109 +204,180 @@ function Contrato({ reserva }) {
             disabled={!tieneContratoFirmado}
             onChange={(e) => { setClave(e.target.value); setError('') }}
             onKeyDown={(e) => e.key === 'Enter' && validar()}
-            placeholder="Ingrese su clave"
-            aria-label="Ingrese su clave"
+            placeholder="Ingresa tu cédula o identificación"
+            aria-label="Ingresa tu cédula o identificación"
             style={{
-              width: '100%',
-              height: '50px',
-              borderRadius: '14px',
+              width: '100%', height: '46px', borderRadius: '12px',
               border: error ? '1.5px solid #EF4444' : '1.5px solid #E2E8F0',
-              padding: '0 46px 0 16px',
-              fontSize: '14px',
-              color: '#0f172a',
+              padding: '0 44px 0 14px', fontSize: '13.5px', color: '#0f172a',
               background: !tieneContratoFirmado ? '#F8FAFC' : '#ffffff',
               cursor: !tieneContratoFirmado ? 'not-allowed' : 'text',
-              boxSizing: 'border-box',
-              outline: 'none',
-              transition: 'border-color 0.2s ease, box-shadow 0.2s ease'
+              boxSizing: 'border-box', outline: 'none', transition: 'border-color 0.2s ease'
             }}
-            onFocus={(e) => {
-              if (!error && tieneContratoFirmado) e.target.style.borderColor = '#3B82F6'
-            }}
-            onBlur={(e) => {
-              if (!error && tieneContratoFirmado) e.target.style.borderColor = '#E2E8F0'
-            }}
+            onFocus={(e) => { if (!error && tieneContratoFirmado) e.target.style.borderColor = '#3B82F6' }}
+            onBlur={(e) => { if (!error && tieneContratoFirmado) e.target.style.borderColor = '#E2E8F0' }}
           />
-
-          <button
-            type="button"
-            disabled={!tieneContratoFirmado}
-            onClick={() => setMostrarClave(v => !v)}
+          <button type="button" disabled={!tieneContratoFirmado} onClick={() => setMostrarClave(v => !v)}
             aria-label={mostrarClave ? 'Ocultar clave' : 'Mostrar clave'}
-            style={{
-              position: 'absolute',
-              right: '12px',
-              top: '50%',
-              transform: 'translateY(-50%)',
-              background: 'none',
-              border: 'none',
-              color: '#94A3B8',
-              cursor: !tieneContratoFirmado ? 'not-allowed' : 'pointer',
-              display: 'grid',
-              placeItems: 'center',
-              padding: '6px',
-              fontSize: '17px',
-              opacity: !tieneContratoFirmado ? 0.6 : 1
-            }}
-          >
+            style={{ position: 'absolute', right: '11px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#94A3B8', cursor: !tieneContratoFirmado ? 'not-allowed' : 'pointer', display: 'grid', placeItems: 'center', padding: '6px', fontSize: '16px', opacity: !tieneContratoFirmado ? 0.5 : 1 }}>
             {mostrarClave ? <FaEyeSlash /> : <FaEye />}
           </button>
         </div>
-
-        {error && (
-          <p
-            style={{
-              color: '#EF4444',
-              fontSize: '12px',
-              fontWeight: 600,
-              textAlign: 'left',
-              margin: '0 0 14px 4px'
-            }}
-          >
-            {error}
-          </p>
-        )}
-
-        {/* Botón Ver contrato */}
-        <button
-          type="button"
-          onClick={validar}
-          disabled={!tieneContratoFirmado}
+        {error && <p style={{ color: '#EF4444', fontSize: '12px', fontWeight: 600, textAlign: 'left', margin: '0 0 12px 4px' }}>{error}</p>}
+        <button type="button" onClick={validar} disabled={!tieneContratoFirmado}
           style={{
-            width: '100%',
-            height: '50px',
-            borderRadius: '14px',
-            border: 'none',
-            fontSize: '14px',
-            fontWeight: 700,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '8px',
-            transition: 'all 0.2s ease',
+            width: '100%', height: '46px', borderRadius: '12px', border: 'none',
+            fontSize: '13.5px', fontWeight: 700, display: 'flex', alignItems: 'center',
+            justifyContent: 'center', gap: '8px', transition: 'all 0.2s ease',
             ...(!tieneContratoFirmado
-              ? {
-                  background: '#F1F5F9',
-                  color: '#94A3B8',
-                  cursor: 'not-allowed'
-                }
-              : {
-                  background: '#1D4ED8',
-                  color: '#ffffff',
-                  cursor: 'pointer',
-                  boxShadow: '0 4px 14px rgba(29, 78, 216, 0.25)'
-                })
-          }}
-        >
-          <FaLock size={15} color={!tieneContratoFirmado ? '#94A3B8' : '#ffffff'} />
-          <span>Ver contrato</span>
+              ? { background: '#F1F5F9', color: '#94A3B8', cursor: 'not-allowed' }
+              : { background: '#16a34a', color: '#ffffff', cursor: 'pointer', boxShadow: '0 4px 14px rgba(22,163,74,0.25)' })
+          }}>
+          <FaFileContract size={14} color={!tieneContratoFirmado ? '#94A3B8' : '#ffffff'} />
+          <span>Ver contrato firmado</span>
         </button>
       </div>
     </div>
   )
 }
 
-function ModalDetalle({ reserva, moneda, onClose }) {
+function Contrato({ reserva, autoDesbloquear = false }) {
+  const navigate = useNavigate()
+  const usuario = useAuthStore(state => state.usuario)
+  const [contratoLocal, setContratoLocal] = useState(() => contractService.obtenerPorReserva(reserva.id))
+
+  const contratoFirmado = contratoLocal || contractService.obtenerPorReserva(reserva.id)
+  const reservaAlmacenada = useMemo(() => reservationService.obtenerPorReferencia(reserva.id), [reserva.id])
+
+  const tieneContratoFirmado = Boolean(contratoFirmado?.firmaUsuarioDataUrl)
+  const estadoNorm = String(reserva.estado || '').toLowerCase()
+  const esConfirmada = estadoNorm === 'confirmada' || estadoNorm === 'activa' || estadoNorm === 'en_curso' || estadoNorm === 'en curso' || estadoNorm === 'finalizada'
+
+  const reservaParaContrato = useMemo(() => {
+    const base = contratoFirmado?.contratoOriginal?.reserva || reservaAlmacenada || reserva || {}
+    const df = base.datosForm || {}
+    const rd = base.reservaDetalles || {}
+    const nombreCliente = df.nombre || [df.nombres, df.apellidos].filter(Boolean).join(' ').trim() || base.clienteNombre || usuario?.nombre || 'Cliente Drivique'
+    const correoCliente = df.correo || base.clienteCorreo || usuario?.correo || usuario?.email || 'cliente@drivique.com'
+    const telCliente = df.celular || df.telefono || base.clienteTelefono || usuario?.telefono || '+57 300 000 0000'
+    const docCliente = df.numDoc || df.documento || base.clienteDocumento || usuario?.cedula || '1020304050'
+    const ref = base.referencia || base.codigo || base.id || reserva.id
+    return {
+      ...base, referencia: ref,
+      total: base.total || base.totalCOP || reserva.total || 0,
+      seguroIdx: base.seguroIdx ?? reserva.seguroIdx ?? 0,
+      serviciosSeleccionados: base.serviciosSeleccionados || reserva.serviciosSeleccionados || [],
+      datosForm: {
+        ...df,
+        nombre: nombreCliente,
+        correo: correoCliente,
+        celular: telCliente,
+        telefono: telCliente,
+        tipoDoc: df.tipoDoc || 'CC',
+        numDoc: docCliente,
+        licenciaPdf: df.licenciaPdf || null
+      },
+      reservaDetalles: {
+        ...rd,
+        fechaInicio: rd.fechaInicio || reserva.fechaInicio,
+        fechaFin: rd.fechaFin || reserva.fechaFin,
+        horaInicio: rd.horaInicio || '08:00',
+        horaFin: rd.horaFin || '18:00',
+        sucursalRetiro: rd.sucursalRetiro || reserva.sucursal || reserva.vehiculo?.sucursal || 'Alquiler Neiva - Centro',
+        sucursalDevolucion: rd.sucursalDevolucion || reserva.sucursal || reserva.vehiculo?.sucursal || 'Alquiler Neiva - Centro',
+        metodoPago: rd.metodoPago || reserva.pasarela || (reserva.metodoPago === 'efectivo' ? 'efectivo' : 'tarjeta'),
+        sucursalPagoEfectivo: rd.sucursalPagoEfectivo || reserva.sucursal || reserva.vehiculo?.sucursal || 'Alquiler Neiva - Centro'
+      }
+    }
+  }, [reserva, contratoFirmado, reservaAlmacenada, usuario])
+
+  const vehiculoParaContrato = useMemo(() => {
+    const base = contratoFirmado?.contratoOriginal?.vehiculo || reserva.vehiculo || {}
+    return {
+      ...base,
+      nombre: base.nombre || (base.marca ? `${base.marca} ${base.modelo || ''}` : 'Vehículo Drivique'),
+      placa: base.placa || 'Asignación al entregar',
+      color: base.color || 'Plata',
+      año: base.año || base.anio || 2024,
+      sucursal: base.sucursal || reserva.sucursal || 'Alquiler Neiva - Centro',
+      servicios: base.servicios || [],
+      seguros: base.seguros || [{ nombre: 'Protección Básica Estándar' }]
+    }
+  }, [reserva, contratoFirmado])
+
+  const identificacion = useMemo(() => {
+    return reservaParaContrato?.datosForm?.numDoc || reserva.clienteDocumento || usuario?.cedula || ''
+  }, [reservaParaContrato, reserva, usuario])
+
+  // Si la reserva NO está confirmada: solo tarjeta de Ver Contrato (bloqueada)
+  if (!esConfirmada) {
+    return (
+      <ContratoVerCard
+        reserva={reserva}
+        contratoFirmado={contratoFirmado}
+        reservaParaContrato={reservaParaContrato}
+        vehiculoParaContrato={vehiculoParaContrato}
+        identificacion={identificacion}
+        autoDesbloquear={autoDesbloquear}
+      />
+    )
+  }
+
+  // Reserva CONFIRMADA: mostrar ambas tarjetas
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+      {/* Tarjeta 1: Firmar contrato (solo si aún no está firmado) */}
+      {!tieneContratoFirmado && (
+        <div style={{
+          background: '#ffffff', border: '1.5px solid #BFDBFE', borderRadius: '22px',
+          padding: '24px 20px', boxShadow: '0 4px 20px rgba(37,99,235,0.08)',
+          display: 'flex', alignItems: 'center', gap: '16px', boxSizing: 'border-box'
+        }}>
+          <div style={{ width: '52px', height: '52px', borderRadius: '14px', background: '#EFF6FF', display: 'grid', placeItems: 'center', flexShrink: 0 }}>
+            <FaFileSignature size={22} color="#1D4ED8" />
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <strong style={{ display: 'block', fontSize: '14px', fontWeight: 800, color: '#0f172a', marginBottom: '3px' }}>
+              Firma tu contrato digital
+            </strong>
+            <span style={{ display: 'block', fontSize: '12.5px', color: '#64748b', lineHeight: 1.4 }}>
+              Tu pago fue confirmado. Lee el contrato y firma digitalmente para finalizar.
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={() => navigate(`/contrato/${reserva.id}`, { state: { reserva, vehiculo: reserva.vehiculo } })}
+            style={{
+              flexShrink: 0, height: '42px', padding: '0 18px', borderRadius: '12px',
+              border: 'none', background: '#1D4ED8', color: '#ffffff', fontSize: '13px',
+              fontWeight: 800, display: 'inline-flex', alignItems: 'center', gap: '7px',
+              cursor: 'pointer', boxShadow: '0 4px 12px rgba(29,78,216,0.25)', whiteSpace: 'nowrap',
+              transition: 'all 0.2s ease'
+            }}
+            onMouseOver={(e) => { e.currentTarget.style.background = '#1E40AF' }}
+            onMouseOut={(e) => { e.currentTarget.style.background = '#1D4ED8' }}
+          >
+            <FaPenNib size={13} />
+            Leer y firmar
+          </button>
+        </div>
+      )}
+
+      {/* Tarjeta 2: Ver contrato (siempre presente) */}
+      <ContratoVerCard
+        reserva={reserva}
+        contratoFirmado={contratoFirmado}
+        reservaParaContrato={reservaParaContrato}
+        vehiculoParaContrato={vehiculoParaContrato}
+        identificacion={identificacion}
+        autoDesbloquear={autoDesbloquear}
+      />
+    </div>
+  )
+}
+
+
+function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
   const { t, i18n } = useTranslation()
   const { brand } = useBrand() || {}
   const estado = { texto: t(`reservas.statuses.${reserva.estado}`, { defaultValue: t('reservas.statuses.pendiente') }), clase: CLASES_ESTADO[reserva.estado] || CLASES_ESTADO.pendiente }
@@ -912,8 +881,8 @@ function ModalDetalle({ reserva, moneda, onClose }) {
           </div>
         )}
 
-        {/* Tarjeta de Ver Contrato (Diseño exacto de la captura) */}
-        <Contrato reserva={reserva} />
+        {/* Tarjeta de Contrato (Listo para firmar, firma activa o protegido) */}
+        <Contrato reserva={reserva} autoDesbloquear={autoDesbloquear} />
 
         {/* Botón de cierre */}
         <div style={{ display: 'flex', justifyContent: 'center', marginTop: 12 }}>
@@ -949,6 +918,11 @@ function TarjetaReserva({ reserva, moneda, onValorar, onReportar, onVerDetalle }
   const estado = { texto: t(`reservas.statuses.${reserva.estado}`, { defaultValue: t('reservas.statuses.pendiente') }), clase: CLASES_ESTADO[reserva.estado] || CLASES_ESTADO.pendiente }, sede = reserva.vehiculo?.sucursal || t('reservas.defaultBranch')
   const estadoNorm = String(reserva.estado || '').toLowerCase()
   const estaEnCurso = estadoNorm === 'activa' || estadoNorm === 'en_curso' || estadoNorm === 'en curso'
+  const esConfirmada = estadoNorm === 'confirmada' || estaEnCurso
+
+  const contratoFirmado = contractService.obtenerPorReserva(reserva.id)
+  const tieneContratoFirmado = Boolean(contratoFirmado?.firmaUsuarioDataUrl)
+  const requiereFirma = esConfirmada && !tieneContratoFirmado
 
   return <article className="reserva-card"><div className="reserva-imagen-wrap">
     {reserva.vehiculo?.imagenes?.[0] ? <img src={reserva.vehiculo.imagenes[0]} alt={reserva.vehiculo.nombre} /> : <div className="imagen-vacia"><FaCar /></div>}
@@ -974,8 +948,34 @@ function TarjetaReserva({ reserva, moneda, onValorar, onReportar, onVerDetalle }
 export default function ReservationsPage() {
   const { t } = useTranslation()
   const { moneda, tema } = useLanding(), navigate = useNavigate()
+  const location = useLocation()
+  const [searchParams] = useSearchParams()
   const { reservas, cargando, error, guardarValoracion } = useHistorialReservas()
   const [mes, setMes] = useState('todos'), [estadoFiltro, setEstadoFiltro] = useState('todos'), [valorando, setValorando] = useState(null), [detalle, setDetalle] = useState(null)
+
+  const detalleIdUrl = searchParams.get('detalle') || location.state?.detalleId
+  const autoDesbloquear = searchParams.get('desbloquear') === 'true' || location.state?.autoDesbloquear === true
+
+  useEffect(() => {
+    if (detalleIdUrl && reservas.length > 0 && (!detalle || String(detalle.id) !== String(detalleIdUrl))) {
+      const encontrada = reservas.find(r => String(r.id) === String(detalleIdUrl) || r.codigo === detalleIdUrl || r.referencia === detalleIdUrl)
+      if (encontrada) {
+        setDetalle(encontrada)
+      }
+    }
+  }, [detalleIdUrl, reservas, detalle])
+
+  const handleVerDetalle = (reserva) => {
+    setDetalle(reserva)
+  }
+
+  const handleCerrarDetalle = () => {
+    setDetalle(null)
+    if (searchParams.get('detalle') || searchParams.get('desbloquear')) {
+      navigate('/reservas', { replace: true })
+    }
+  }
+
   const filtradas = useMemo(() => reservas.filter(r =>
     (mes === 'todos' || r.fechaInicio?.slice(5, 7) === mes) &&
     (estadoFiltro === 'todos' || r.estado === estadoFiltro)
@@ -992,7 +992,7 @@ export default function ReservationsPage() {
     </div>
     {!cargando && !error && <p className="resultados-label">{t('reservas.resultsFound', { count: filtradas.length })}</p>}
     {cargando && <div className="estado-pagina">{t('reservas.loading')}</div>}{!cargando && error && <div className="estado-pagina error">{error}</div>}
-    {!cargando && !error && filtradas.length === 0 && <div className="estado-pagina vacio"><div><FaCalendarAlt /></div><h2>{reservas.length ? t('reservas.noFilteredResults') : t('reservas.noReservations')}</h2><p>{reservas.length ? t('reservas.changeFilters') : t('reservas.noReservationsSubtitle')}</p>{reservas.length ? <button className="btn-primario" onClick={() => { setMes('todos'); setEstadoFiltro('todos') }}>{t('reservas.clearFilters')}</button> : <Link className="btn-primario" to="/home">{t('reservas.exploreVehicles')}</Link>}</div>}
-    <section className="reservas-lista">{filtradas.map(r => <TarjetaReserva key={r.id} reserva={r} moneda={moneda} onValorar={setValorando} onReportar={reportar} onVerDetalle={setDetalle} />)}</section>
-  </main>{valorando && <ModalValoracion reserva={valorando} onClose={() => setValorando(null)} onSave={guardarValoracion} />}{detalle && <ModalDetalle reserva={detalle} moneda={moneda} onClose={() => setDetalle(null)} />}</div>
+  {!cargando && !error && filtradas.length === 0 && <div className="estado-pagina vacio"><div><FaCalendarAlt /></div><h2>{reservas.length ? t('reservas.noFilteredResults') : t('reservas.noReservations')}</h2><p>{reservas.length ? t('reservas.changeFilters') : t('reservas.noReservationsSubtitle')}</p>{reservas.length ? <button className="btn-primario" onClick={() => { setMes('todos'); setEstadoFiltro('todos') }}>{t('reservas.clearFilters')}</button> : <Link className="btn-primario" to="/home">{t('reservas.exploreVehicles')}</Link>}</div>}
+    <section className="reservas-lista">{filtradas.map(r => <TarjetaReserva key={r.id} reserva={r} moneda={moneda} onValorar={setValorando} onReportar={reportar} onVerDetalle={handleVerDetalle} />)}</section>
+  </main>{valorando && <ModalValoracion reserva={valorando} onClose={() => setValorando(null)} onSave={guardarValoracion} />}{detalle && <ModalDetalle reserva={detalle} moneda={moneda} autoDesbloquear={autoDesbloquear} onClose={handleCerrarDetalle} />}</div>
 }
