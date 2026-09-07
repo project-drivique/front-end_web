@@ -357,10 +357,10 @@ export default function ReservationFlowPage() {
             }}>
               <div style={{
                 background: c.cardBg || '#ffffff',
-                borderRadius: 28,
-                maxWidth: 420,
+                borderRadius: 24,
+                maxWidth: 400,
                 width: '100%',
-                padding: '28px 24px',
+                padding: '30px 24px 24px',
                 textAlign: 'center',
                 boxShadow: '0 25px 60px -15px rgba(0, 0, 0, 0.35)',
                 border: `1px solid ${c.cardBorder || '#e2e8f0'}`,
@@ -371,12 +371,12 @@ export default function ReservationFlowPage() {
               }}>
                 {/* Logo Badge Circular */}
                 <div style={{
-                  width: 68,
-                  height: 68,
+                  width: 72,
+                  height: 72,
                   borderRadius: '50%',
                   background: '#ffffff',
                   border: '1.5px solid #e2e8f0',
-                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)',
+                  boxShadow: '0 4px 16px rgba(0, 0, 0, 0.06)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -392,22 +392,22 @@ export default function ReservationFlowPage() {
 
                 {/* Titulo */}
                 <h2 style={{
-                  fontSize: 22,
-                  fontWeight: 900,
+                  fontSize: 20,
+                  fontWeight: 800,
                   color: c.textPrimary || '#0f172a',
-                  margin: '0 0 10px',
-                  letterSpacing: '-0.02em'
+                  margin: '0 0 8px',
+                  letterSpacing: '-0.01em'
                 }}>
                   {t('vehiculo.reservationRegisteredTitle', 'Reserva Registrada')}
                 </h2>
 
                 {/* Subtitulo */}
                 <p style={{
-                  fontSize: 13,
+                  fontSize: 12.5,
                   color: c.textSecondary || '#64748b',
                   lineHeight: 1.5,
-                  margin: '0 0 20px',
-                  padding: '0 8px'
+                  margin: '0 0 18px',
+                  padding: '0 4px'
                 }}>
                   {t('vehiculo.cashReservationRegisteredDesc', {
                     defaultValue: `Tu reserva quedó registrada. Para confirmarla, realiza el pago en efectivo en el punto autorizado ${sucursalPago}.`,
@@ -420,20 +420,20 @@ export default function ReservationFlowPage() {
                   width: '100%',
                   background: c.isDark ? 'rgba(255,255,255,0.04)' : '#f8fafc',
                   border: `1px solid ${c.cardBorder || '#e2e8f0'}`,
-                  borderRadius: 16,
-                  padding: '16px 18px',
+                  borderRadius: 14,
+                  padding: '14px 16px',
                   textAlign: 'left',
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: 10,
-                  marginBottom: 16,
+                  gap: 8,
+                  marginBottom: 14,
                   boxSizing: 'border-box'
                 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 13 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 12.5 }}>
                     <span style={{ color: c.textSecondary || '#64748b', fontWeight: 600 }}>Referencia:</span>
                     <span style={{
                       fontWeight: 800,
-                      color: 'var(--brand-primary, #2563eb)',
+                      color: '#1D4ED8',
                       fontSize: 12.5,
                       letterSpacing: '0.02em'
                     }}>
@@ -441,32 +441,18 @@ export default function ReservationFlowPage() {
                     </span>
                   </div>
 
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 13 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 12.5 }}>
                     <span style={{ color: c.textSecondary || '#64748b', fontWeight: 600 }}>Sucursal:</span>
                     <span style={{ fontWeight: 700, color: c.textPrimary || '#0f172a' }}>
                       {sucursalPago}
                     </span>
                   </div>
 
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 13 }}>
-                    <span style={{ color: c.textSecondary || '#64748b', fontWeight: 600 }}>Ciudad: :</span>
-                    <span style={{ fontWeight: 700, color: c.textPrimary || '#0f172a' }}>
-                      {ciudadPago}
-                    </span>
-                  </div>
-
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 13 }}>
-                    <span style={{ color: c.textSecondary || '#64748b', fontWeight: 600 }}>Dirección: :</span>
-                    <span style={{ fontWeight: 700, color: c.textPrimary || '#0f172a' }}>
-                      {direccionPago}
-                    </span>
-                  </div>
-
-                  <div style={{ height: 1, background: c.cardBorder || '#e2e8f0', margin: '2px 0' }} />
+                  <div style={{ height: 1, background: c.cardBorder || '#e2e8f0', margin: '4px 0' }} />
 
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span style={{
-                      fontSize: 12,
+                      fontSize: 11.5,
                       fontWeight: 800,
                       color: c.textSecondary || '#64748b',
                       textTransform: 'uppercase',
@@ -475,9 +461,9 @@ export default function ReservationFlowPage() {
                       TOTAL A PAGAR:
                     </span>
                     <span style={{
-                      fontSize: 18,
+                      fontSize: 17,
                       fontWeight: 900,
-                      color: 'var(--brand-primary, #2563eb)'
+                      color: '#1D4ED8'
                     }}>
                       {formatCurrency(reservaCreada.total, moneda)}
                     </span>
@@ -487,27 +473,27 @@ export default function ReservationFlowPage() {
                 {/* Tarjeta de Advertencia Plazo */}
                 <div style={{
                   width: '100%',
-                  background: '#fefce8',
-                  border: '1.5px solid #fef08a',
-                  borderRadius: 16,
-                  padding: '14px 16px',
+                  background: '#FEFCE8',
+                  border: '1.5px solid #FDE047',
+                  borderRadius: 14,
+                  padding: '12px 16px',
                   textAlign: 'left',
-                  marginBottom: 20,
+                  marginBottom: 18,
                   boxSizing: 'border-box'
                 }}>
                   <p style={{
                     fontSize: 11,
                     fontWeight: 800,
-                    color: '#854d0e',
-                    margin: '0 0 6px',
+                    color: '#854D0E',
+                    margin: '0 0 4px',
                     textTransform: 'uppercase',
                     letterSpacing: '0.04em'
                   }}>
                     PLAZO PARA PAGAR
                   </p>
                   <p style={{
-                    fontSize: 12,
-                    color: '#854d0e',
+                    fontSize: 11.5,
+                    color: '#713F12',
                     margin: 0,
                     lineHeight: 1.45,
                     fontWeight: 500
@@ -526,15 +512,15 @@ export default function ReservationFlowPage() {
                     }}
                     style={{
                       width: '100%',
-                      height: 48,
-                      borderRadius: 14,
-                      background: 'var(--brand-primary, #2563eb)',
+                      height: 46,
+                      borderRadius: 12,
+                      background: c.isDark ? '#2563EB' : '#1D4ED8',
                       color: '#ffffff',
                       border: 'none',
-                      fontWeight: 800,
+                      fontWeight: 700,
                       fontSize: 14,
                       cursor: 'pointer',
-                      boxShadow: '0 4px 14px rgba(37, 99, 235, 0.25)',
+                      boxShadow: '0 6px 16px rgba(29, 78, 216, 0.25)',
                       transition: 'all 0.2s',
                       display: 'flex',
                       alignItems: 'center',
@@ -552,8 +538,8 @@ export default function ReservationFlowPage() {
                     }}
                     style={{
                       width: '100%',
-                      height: 46,
-                      borderRadius: 14,
+                      height: 44,
+                      borderRadius: 12,
                       background: c.cardBg || '#ffffff',
                       color: c.textPrimary || '#0f172a',
                       border: `1.5px solid ${c.cardBorder || '#e2e8f0'}`,
