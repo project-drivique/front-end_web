@@ -292,20 +292,6 @@ function Contrato({ reserva }) {
 
       {/* Formulario de clave */}
       <div style={{ width: '100%', maxWidth: '440px', boxSizing: 'border-box' }}>
-        <label
-          htmlFor="input-clave-contrato"
-          style={{
-            display: 'block',
-            textAlign: 'left',
-            fontSize: '13.5px',
-            fontWeight: 700,
-            color: '#475569',
-            marginBottom: '8px'
-          }}
-        >
-          Ingrese su clave
-        </label>
-
         <div
           style={{
             position: 'relative',
@@ -320,7 +306,8 @@ function Contrato({ reserva }) {
             disabled={!tieneContratoFirmado}
             onChange={(e) => { setClave(e.target.value); setError('') }}
             onKeyDown={(e) => e.key === 'Enter' && validar()}
-            placeholder=""
+            placeholder="Ingrese su clave"
+            aria-label="Ingrese su clave"
             style={{
               width: '100%',
               height: '50px',
