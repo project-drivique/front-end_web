@@ -280,129 +280,141 @@ function ModalDetalle({ reserva, moneda, onClose }) {
           </p>
         </div>
 
-        {/* Imagen del carro completa */}
-        {imagenAuto && (
-          <div
-            style={{
-              marginBottom: '16px',
-              borderRadius: '16px',
-              overflow: 'hidden',
-              background: '#f8fafc',
-              border: '1px solid #e2e8f0',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              maxHeight: '220px'
-            }}
-          >
-            <img
-              src={imagenAuto}
-              alt={nombreAuto}
-              style={{
-                width: '100%',
-                maxHeight: '220px',
-                objectFit: 'cover',
-                display: 'block'
-              }}
-            />
-          </div>
-        )}
-
-        {/* Cuadrícula de datos de la reserva en 2 columnas (Diseño exacto de tarjeta) */}
+        {/* Tarjeta Padre: Contenedor de Galería y Datos */}
         <div
           style={{
             background: '#ffffff',
             border: '1px solid #e2e8f0',
-            borderRadius: '20px',
-            padding: '4px 16px',
-            display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
+            borderRadius: '22px',
+            padding: '16px',
             marginBottom: '18px',
-            boxShadow: '0 4px 16px rgba(0, 0, 0, 0.03)'
+            boxShadow: '0 4px 18px rgba(0, 0, 0, 0.03)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '14px'
           }}
         >
-          {/* Fila 1: Vehículo / Fecha de retiro */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '14px 12px 14px 4px', borderBottom: '1px solid #f1f5f9', borderRight: '1px solid #f1f5f9', minWidth: 0 }}>
-            <div style={{ width: '38px', height: '38px', borderRadius: '12px', background: '#EFF6FF', color: '#1D4ED8', display: 'grid', placeItems: 'center', flexShrink: 0, fontSize: '15px' }}>
-              <FaCar />
+          {/* 1. Tarjeta de galería / Imagen del carro */}
+          {imagenAuto && (
+            <div
+              style={{
+                borderRadius: '16px',
+                overflow: 'hidden',
+                background: '#f8fafc',
+                border: '1px solid #e2e8f0',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                maxHeight: '220px'
+              }}
+            >
+              <img
+                src={imagenAuto}
+                alt={nombreAuto}
+                style={{
+                  width: '100%',
+                  maxHeight: '220px',
+                  objectFit: 'cover',
+                  display: 'block'
+                }}
+              />
             </div>
-            <div style={{ minWidth: 0, overflow: 'hidden' }}>
-              <span style={{ display: 'block', fontSize: '11px', color: '#64748b', fontWeight: 600 }}>{t('reservas.vehicle', { defaultValue: 'Vehículo' })}</span>
-              <strong style={{ display: 'block', fontSize: '13px', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{nombreAuto}</strong>
-            </div>
-          </div>
+          )}
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '14px 4px 14px 12px', borderBottom: '1px solid #f1f5f9', minWidth: 0 }}>
-            <div style={{ width: '38px', height: '38px', borderRadius: '12px', background: '#EFF6FF', color: '#1D4ED8', display: 'grid', placeItems: 'center', flexShrink: 0, fontSize: '15px' }}>
-              <FaCalendarAlt />
+          {/* 2. Tarjeta de datos de la reserva (2 columnas) */}
+          <div
+            style={{
+              background: '#ffffff',
+              border: '1px solid #e2e8f0',
+              borderRadius: '18px',
+              padding: '4px 14px',
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr'
+            }}
+          >
+            {/* Fila 1: Vehículo / Fecha de retiro */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '14px 12px 14px 4px', borderBottom: '1px solid #f1f5f9', borderRight: '1px solid #f1f5f9', minWidth: 0 }}>
+              <div style={{ width: '38px', height: '38px', borderRadius: '12px', background: '#EFF6FF', color: '#1D4ED8', display: 'grid', placeItems: 'center', flexShrink: 0, fontSize: '15px' }}>
+                <FaCar />
+              </div>
+              <div style={{ minWidth: 0, overflow: 'hidden' }}>
+                <span style={{ display: 'block', fontSize: '11px', color: '#64748b', fontWeight: 600 }}>{t('reservas.vehicle', { defaultValue: 'Vehículo' })}</span>
+                <strong style={{ display: 'block', fontSize: '13px', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{nombreAuto}</strong>
+              </div>
             </div>
-            <div style={{ minWidth: 0, overflow: 'hidden' }}>
-              <span style={{ display: 'block', fontSize: '11px', color: '#64748b', fontWeight: 600 }}>{t('reservas.pickupDate', { defaultValue: 'Fecha de retiro' })}</span>
-              <strong style={{ display: 'block', fontSize: '13px', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{fechaBonita(reserva.fechaInicio, i18n.resolvedLanguage)}</strong>
-            </div>
-          </div>
 
-          {/* Fila 2: Fecha de devolución / Lugar de retiro */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '14px 12px 14px 4px', borderBottom: '1px solid #f1f5f9', borderRight: '1px solid #f1f5f9', minWidth: 0 }}>
-            <div style={{ width: '38px', height: '38px', borderRadius: '12px', background: '#EFF6FF', color: '#1D4ED8', display: 'grid', placeItems: 'center', flexShrink: 0, fontSize: '15px' }}>
-              <FaRegCalendarCheck />
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '14px 4px 14px 12px', borderBottom: '1px solid #f1f5f9', minWidth: 0 }}>
+              <div style={{ width: '38px', height: '38px', borderRadius: '12px', background: '#EFF6FF', color: '#1D4ED8', display: 'grid', placeItems: 'center', flexShrink: 0, fontSize: '15px' }}>
+                <FaCalendarAlt />
+              </div>
+              <div style={{ minWidth: 0, overflow: 'hidden' }}>
+                <span style={{ display: 'block', fontSize: '11px', color: '#64748b', fontWeight: 600 }}>{t('reservas.pickupDate', { defaultValue: 'Fecha de retiro' })}</span>
+                <strong style={{ display: 'block', fontSize: '13px', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{fechaBonita(reserva.fechaInicio, i18n.resolvedLanguage)}</strong>
+              </div>
             </div>
-            <div style={{ minWidth: 0, overflow: 'hidden' }}>
-              <span style={{ display: 'block', fontSize: '11px', color: '#64748b', fontWeight: 600 }}>{t('reservas.returnDate', { defaultValue: 'Fecha de devolución' })}</span>
-              <strong style={{ display: 'block', fontSize: '13px', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{fechaBonita(reserva.fechaFin, i18n.resolvedLanguage)}</strong>
-            </div>
-          </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '14px 4px 14px 12px', borderBottom: '1px solid #f1f5f9', minWidth: 0 }}>
-            <div style={{ width: '38px', height: '38px', borderRadius: '12px', background: '#EFF6FF', color: '#1D4ED8', display: 'grid', placeItems: 'center', flexShrink: 0, fontSize: '15px' }}>
-              <FaMapMarkerAlt />
+            {/* Fila 2: Fecha de devolución / Lugar de retiro */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '14px 12px 14px 4px', borderBottom: '1px solid #f1f5f9', borderRight: '1px solid #f1f5f9', minWidth: 0 }}>
+              <div style={{ width: '38px', height: '38px', borderRadius: '12px', background: '#EFF6FF', color: '#1D4ED8', display: 'grid', placeItems: 'center', flexShrink: 0, fontSize: '15px' }}>
+                <FaRegCalendarCheck />
+              </div>
+              <div style={{ minWidth: 0, overflow: 'hidden' }}>
+                <span style={{ display: 'block', fontSize: '11px', color: '#64748b', fontWeight: 600 }}>{t('reservas.returnDate', { defaultValue: 'Fecha de devolución' })}</span>
+                <strong style={{ display: 'block', fontSize: '13px', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{fechaBonita(reserva.fechaFin, i18n.resolvedLanguage)}</strong>
+              </div>
             </div>
-            <div style={{ minWidth: 0, overflow: 'hidden' }}>
-              <span style={{ display: 'block', fontSize: '11px', color: '#64748b', fontWeight: 600 }}>{t('reservas.pickupLocation', { defaultValue: 'Lugar de retiro' })}</span>
-              <strong style={{ display: 'block', fontSize: '13px', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} title={reserva.vehiculo?.sucursal || sucursalPago}>{reserva.vehiculo?.sucursal || sucursalPago}</strong>
-            </div>
-          </div>
 
-          {/* Fila 3: Protección / Referencia */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '14px 12px 14px 4px', borderBottom: '1px solid #f1f5f9', borderRight: '1px solid #f1f5f9', minWidth: 0 }}>
-            <div style={{ width: '38px', height: '38px', borderRadius: '12px', background: '#EFF6FF', color: '#1D4ED8', display: 'grid', placeItems: 'center', flexShrink: 0, fontSize: '15px' }}>
-              <FaShieldAlt />
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '14px 4px 14px 12px', borderBottom: '1px solid #f1f5f9', minWidth: 0 }}>
+              <div style={{ width: '38px', height: '38px', borderRadius: '12px', background: '#EFF6FF', color: '#1D4ED8', display: 'grid', placeItems: 'center', flexShrink: 0, fontSize: '15px' }}>
+                <FaMapMarkerAlt />
+              </div>
+              <div style={{ minWidth: 0, overflow: 'hidden' }}>
+                <span style={{ display: 'block', fontSize: '11px', color: '#64748b', fontWeight: 600 }}>{t('reservas.pickupLocation', { defaultValue: 'Lugar de retiro' })}</span>
+                <strong style={{ display: 'block', fontSize: '13px', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} title={reserva.vehiculo?.sucursal || sucursalPago}>{reserva.vehiculo?.sucursal || sucursalPago}</strong>
+              </div>
             </div>
-            <div style={{ minWidth: 0, overflow: 'hidden' }}>
-              <span style={{ display: 'block', fontSize: '11px', color: '#64748b', fontWeight: 600 }}>{t('reservas.protection', { defaultValue: 'Protección' })}</span>
-              <strong style={{ display: 'block', fontSize: '13px', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{proteccion}</strong>
-            </div>
-          </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '14px 4px 14px 12px', borderBottom: '1px solid #f1f5f9', minWidth: 0 }}>
-            <div style={{ width: '38px', height: '38px', borderRadius: '12px', background: '#EFF6FF', color: '#1D4ED8', display: 'grid', placeItems: 'center', flexShrink: 0, fontSize: '15px' }}>
-              <FaScroll />
+            {/* Fila 3: Protección / Referencia */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '14px 12px 14px 4px', borderBottom: '1px solid #f1f5f9', borderRight: '1px solid #f1f5f9', minWidth: 0 }}>
+              <div style={{ width: '38px', height: '38px', borderRadius: '12px', background: '#EFF6FF', color: '#1D4ED8', display: 'grid', placeItems: 'center', flexShrink: 0, fontSize: '15px' }}>
+                <FaShieldAlt />
+              </div>
+              <div style={{ minWidth: 0, overflow: 'hidden' }}>
+                <span style={{ display: 'block', fontSize: '11px', color: '#64748b', fontWeight: 600 }}>{t('reservas.protection', { defaultValue: 'Protección' })}</span>
+                <strong style={{ display: 'block', fontSize: '13px', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{proteccion}</strong>
+              </div>
             </div>
-            <div style={{ minWidth: 0, overflow: 'hidden' }}>
-              <span style={{ display: 'block', fontSize: '11px', color: '#64748b', fontWeight: 600 }}>{t('reservas.reference', { defaultValue: 'Referencia' })}</span>
-              <strong style={{ display: 'block', fontSize: '11.5px', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} title={reserva.id}>{reserva.id}</strong>
-            </div>
-          </div>
 
-          {/* Fila 4: Total / Estado */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '14px 12px 14px 4px', borderRight: '1px solid #f1f5f9', minWidth: 0 }}>
-            <div style={{ width: '38px', height: '38px', borderRadius: '12px', background: '#EFF6FF', color: '#1D4ED8', display: 'grid', placeItems: 'center', flexShrink: 0, fontSize: '15px' }}>
-              <FaMoneyBillWave />
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '14px 4px 14px 12px', borderBottom: '1px solid #f1f5f9', minWidth: 0 }}>
+              <div style={{ width: '38px', height: '38px', borderRadius: '12px', background: '#EFF6FF', color: '#1D4ED8', display: 'grid', placeItems: 'center', flexShrink: 0, fontSize: '15px' }}>
+                <FaScroll />
+              </div>
+              <div style={{ minWidth: 0, overflow: 'hidden' }}>
+                <span style={{ display: 'block', fontSize: '11px', color: '#64748b', fontWeight: 600 }}>{t('reservas.reference', { defaultValue: 'Referencia' })}</span>
+                <strong style={{ display: 'block', fontSize: '11.5px', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} title={reserva.id}>{reserva.id}</strong>
+              </div>
             </div>
-            <div style={{ minWidth: 0, overflow: 'hidden' }}>
-              <span style={{ display: 'block', fontSize: '11px', color: '#64748b', fontWeight: 600 }}>{t('reservas.total', { defaultValue: 'Total' })}</span>
-              <strong style={{ display: 'block', fontSize: '13.5px', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{formatCurrency(reserva.total || 0, moneda)}</strong>
-            </div>
-          </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '14px 4px 14px 12px', minWidth: 0 }}>
-            <div style={{ width: '38px', height: '38px', borderRadius: '12px', background: '#EFF6FF', color: '#1D4ED8', display: 'grid', placeItems: 'center', flexShrink: 0, fontSize: '15px' }}>
-              <FaCheckCircle />
+            {/* Fila 4: Total / Estado */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '14px 12px 14px 4px', borderRight: '1px solid #f1f5f9', minWidth: 0 }}>
+              <div style={{ width: '38px', height: '38px', borderRadius: '12px', background: '#EFF6FF', color: '#1D4ED8', display: 'grid', placeItems: 'center', flexShrink: 0, fontSize: '15px' }}>
+                <FaMoneyBillWave />
+              </div>
+              <div style={{ minWidth: 0, overflow: 'hidden' }}>
+                <span style={{ display: 'block', fontSize: '11px', color: '#64748b', fontWeight: 600 }}>{t('reservas.total', { defaultValue: 'Total' })}</span>
+                <strong style={{ display: 'block', fontSize: '13.5px', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{formatCurrency(reserva.total || 0, moneda)}</strong>
+              </div>
             </div>
-            <div style={{ minWidth: 0, overflow: 'hidden' }}>
-              <span style={{ display: 'block', fontSize: '11px', color: '#64748b', fontWeight: 600 }}>{t('reservas.status', { defaultValue: 'Estado' })}</span>
-              <strong style={{ display: 'block', fontSize: '13px', color: '#15803d', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{estado.texto}</strong>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '14px 4px 14px 12px', minWidth: 0 }}>
+              <div style={{ width: '38px', height: '38px', borderRadius: '12px', background: '#EFF6FF', color: '#1D4ED8', display: 'grid', placeItems: 'center', flexShrink: 0, fontSize: '15px' }}>
+                <FaCheckCircle />
+              </div>
+              <div style={{ minWidth: 0, overflow: 'hidden' }}>
+                <span style={{ display: 'block', fontSize: '11px', color: '#64748b', fontWeight: 600 }}>{t('reservas.status', { defaultValue: 'Estado' })}</span>
+                <strong style={{ display: 'block', fontSize: '13px', color: '#15803d', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{estado.texto}</strong>
+              </div>
             </div>
           </div>
         </div>
