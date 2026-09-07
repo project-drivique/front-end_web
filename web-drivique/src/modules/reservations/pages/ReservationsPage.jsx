@@ -159,6 +159,10 @@ function Contrato({ reserva }) {
 
 function ModalDetalle({ reserva, moneda, onClose }) {
   const { t } = useTranslation()
+  const contrato = contractService.obtenerPorReserva(reserva.id)
+  const vehiculoOriginal = contrato?.contratoOriginal?.vehiculo || reserva.vehiculo
+  const nombreAuto = reserva.vehiculo?.nombre || vehiculoOriginal?.nombre || (reserva.vehiculo?.marca ? `${reserva.vehiculo.marca} ${reserva.vehiculo.modelo || ''}` : 'Vehículo')
+  const imagenAuto = reserva.vehiculo?.imagenes?.[0] || vehiculoOriginal?.imagenes?.[0] || reserva.vehiculo?.imagen || vehiculoOriginal?.imagen
 
   return (
     <div className="modal-backdrop" onMouseDown={onClose}>
@@ -168,18 +172,88 @@ function ModalDetalle({ reserva, moneda, onClose }) {
         aria-modal="true"
         aria-labelledby="detalle-reserva-titulo"
         onMouseDown={(e) => e.stopPropagation()}
+        style={{ maxWidth: '540px', width: '100%', padding: '24px' }}
       >
         <button className="modal-cerrar" onClick={onClose} aria-label={t('reservas.closeDetail', { defaultValue: 'Cerrar' })}>
           <FaTimes />
         </button>
 
-        <div style={{ padding: '24px 20px', textAlign: 'center' }}>
-          <h2 id="detalle-reserva-titulo" style={{ fontSize: '20px', fontWeight: 800, color: 'var(--texto-primary, #0f172a)', margin: '0 0 8px' }}>
+        {/* 1. Título principal separado con una raya */}
+        <div style={{ textAlign: 'center', marginBottom: '16px' }}>
+          <h2
+            id="detalle-reserva-titulo"
+            style={{
+              fontSize: '22px',
+              fontWeight: 800,
+              color: 'var(--texto-primary, #0f172a)',
+              margin: '0 0 16px',
+              letterSpacing: '-0.02em'
+            }}
+          >
             Detalles de la Reserva
           </h2>
-          <p style={{ fontSize: '13px', color: 'var(--texto-second, #64748b)', margin: 0 }}>
-            {reserva.vehiculo?.nombre || 'Vehículo'} · Ref: {reserva.id}
+          <hr style={{ border: 'none', borderTop: '1px solid #e2e8f0', margin: '0' }} />
+        </div>
+
+        {/* 2. Subtítulo de estado */}
+        <div style={{ textAlign: 'center', marginTop: '16px', marginBottom: '6px' }}>
+          <h3
+            style={{
+              fontSize: '18px',
+              fontWeight: 800,
+              color: '#1D4ED8',
+              margin: '0 0 6px',
+              letterSpacing: '-0.01em'
+            }}
+          >
+            Pendiente de pago en efectivo
+          </h3>
+          {/* 3. Nombre del carro */}
+          <p
+            style={{
+              fontSize: '15px',
+              fontWeight: 700,
+              color: 'var(--texto-second, #475569)',
+              margin: '0 0 18px'
+            }}
+          >
+            {nombreAuto}
           </p>
+        </div>
+
+        {/* 4. Foto del carro completa y bien visible */}
+        <div
+          style={{
+            background: '#EFF6FF',
+            border: '1px solid #BFDBFE',
+            borderRadius: '18px',
+            padding: '16px 20px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            minHeight: '200px',
+            maxHeight: '260px',
+            overflow: 'hidden',
+            boxShadow: '0 2px 10px rgba(29, 78, 216, 0.04)'
+          }}
+        >
+          {imagenAuto ? (
+            <img
+              src={imagenAuto}
+              alt={nombreAuto}
+              style={{
+                width: '100%',
+                maxHeight: '220px',
+                objectFit: 'contain',
+                display: 'block'
+              }}
+            />
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, color: '#60A5FA' }}>
+              <FaCar size={48} />
+              <span style={{ fontSize: '13px', fontWeight: 600 }}>Foto no disponible</span>
+            </div>
+          )}
         </div>
       </section>
     </div>
