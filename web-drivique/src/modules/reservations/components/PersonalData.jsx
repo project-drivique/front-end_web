@@ -356,17 +356,11 @@ export default function DatosPersonales({
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
       <div style={sectionCardStyle}>
-        <div style={{ margin: '0 0 16px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-            <FaUser color={c?.accentText || 'var(--brand-secondary)'} size={15} />
-            <h3 style={{ fontSize: 14.5, fontWeight: 700, color: c?.accentText || 'var(--brand-secondary)', margin: 0, textTransform: 'none' }}>
-              {t('vehiculo.personalData', 'Datos personales')}
-            </h3>
-          </div>
-          <p style={{ margin: 0, fontSize: 12.5, color: c?.textSecondary || '#64748b', lineHeight: 1.4 }}>
-            {t('vehiculo.personalDataSubtitle', 'Completa tus datos de contacto para la reserva y el contrato digital')}
-          </p>
-          <div style={{ height: 1, background: c?.cardBorder || '#e2e8f0', margin: '14px 0 0' }} />
+        <div style={headerStyle}>
+          <FaUser color={c?.accentText || 'var(--brand-secondary)'} size={14} />
+          <h3 style={{ fontSize: 13, fontWeight: 700, color: c?.accentText || 'var(--brand-secondary)', margin: 0, textTransform: 'none' }}>
+            {t('vehiculo.personalData', 'Datos personales')}
+          </h3>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -529,16 +523,11 @@ export default function DatosPersonales({
       </div>
 
       <div style={sectionCardStyle}>
-        <div style={{ margin: '0 0 16px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-            <FaIdCard color={c?.accentText || 'var(--brand-secondary)'} size={15} />
-            <h3 style={{ fontSize: 14, fontWeight: 700, color: c?.accentText || 'var(--brand-secondary)', margin: 0, textTransform: 'none', fontFamily: 'inherit' }}>
-              {t('vehiculo.mandatoryDocsVerification', 'Verificación Documental Obligatoria')}
-            </h3>
-          </div>
-          <p style={{ margin: 0, fontSize: 12.5, color: c?.textSecondary || '#64748b', lineHeight: 1.4 }}>
-            {t('vehiculo.mandatoryDocsSub', 'Sube los documentos requeridos para verificar tu identidad y habilitar la reserva del vehículo.')}
-          </p>
+        <div style={headerStyle}>
+          <FaIdCard color={c?.accentText || 'var(--brand-secondary)'} size={14} />
+          <h3 style={{ fontSize: 13, fontWeight: 700, color: c?.accentText || 'var(--brand-secondary)', margin: 0, textTransform: 'none' }}>
+            {t('vehiculo.mandatoryDocsVerification', 'Verificación Documental Obligatoria')}
+          </h3>
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -615,11 +604,11 @@ export default function DatosPersonales({
 
       <div style={sectionCardStyle}>
         <div style={headerStyle}>
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={c?.accentText || 'var(--brand-secondary)'} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={c?.accentText || 'var(--brand-secondary)'} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
             <path d="m9 12 2 2 4-4" />
           </svg>
-          <h3 style={{ fontSize: 14, fontWeight: 700, color: c?.accentText || 'var(--brand-secondary)', margin: 0, textTransform: 'none', fontFamily: 'inherit' }}>
+          <h3 style={{ fontSize: 13, fontWeight: 700, color: c?.accentText || 'var(--brand-secondary)', margin: 0, textTransform: 'none' }}>
             {t('vehiculo.policiesAndSecurity', 'Políticas y seguridad')}
           </h3>
         </div>
