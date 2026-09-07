@@ -559,7 +559,7 @@ export default function DatosPersonales({
                 color: c?.isDark ? '#93C5FD' : '#1E40AF',
                 lineHeight: 1.45
               }}>
-                <strong style={{ fontWeight: 800 }}>{t('vehiculo.docsAlreadyRegisteredTitle', 'Documentos ya registrados:')}</strong>{' '}
+                {t('vehiculo.docsAlreadyRegisteredTitle', 'Documentos ya registrados:')}{' '}
                 {t('vehiculo.docsAlreadyRegisteredDesc', 'Ya has subido tu cédula y licencia de conducción anteriormente. No es obligatorio volver a cargarlos, pero si lo deseas puedes reemplazarlos subiendo nuevos archivos PDF.')}
               </p>
             </div>

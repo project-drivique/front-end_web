@@ -819,59 +819,101 @@ function ModalDetalle({ reserva, moneda, onClose }) {
 
         {/* Tarjeta de Pago Digital Pendiente Wompi (si aplica) */}
         {esPendienteWompi && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginBottom: 18 }}>
-            <div
+          <div
+            style={{
+              background: '#ffffff',
+              border: '1px solid #e2e8f0',
+              borderRadius: '22px',
+              padding: '28px 24px 24px',
+              textAlign: 'center',
+              marginBottom: '18px',
+              boxShadow: '0 4px 18px rgba(0, 0, 0, 0.03)',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              boxSizing: 'border-box'
+            }}
+          >
+            <h3
               style={{
-                background: '#ffffff',
-                border: '1.5px solid #e2e8f0',
-                borderRadius: 20,
-                padding: '20px',
-                textAlign: 'center',
-                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.04)',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center'
+                fontSize: '20px',
+                fontWeight: 800,
+                color: '#0f172a',
+                margin: '0 0 10px',
+                letterSpacing: '-0.01em'
               }}
             >
-              <h3 style={{ fontSize: 17, fontWeight: 800, color: '#0f172a', margin: '0 0 8px' }}>
-                Pago Digital Pendiente
-              </h3>
-              <p style={{ fontSize: 13, color: '#64748b', lineHeight: 1.5, margin: '0 0 16px', maxWidth: 320 }}>
-                Tu reserva está guardada como pendiente. Completa el pago en Wompi para confirmar y habilitar tu contrato de alquiler.
-              </p>
+              Pago Digital Pendiente
+            </h3>
+            <p
+              style={{
+                fontSize: '13.5px',
+                color: '#64748b',
+                lineHeight: 1.5,
+                margin: '0 0 18px',
+                maxWidth: '430px',
+                fontWeight: 500
+              }}
+            >
+              Tu reserva está guardada como pendiente. Completa el pago seguro en Wompi para confirmar y habilitar tu contrato de alquiler.
+            </p>
 
-              <button
-                type="button"
-                onClick={handlePagarWompi}
-                disabled={pagandoWompi}
-                style={{
-                  width: '100%',
-                  height: 46,
-                  borderRadius: 12,
-                  background: '#1D4ED8',
-                  color: '#ffffff',
-                  border: 'none',
-                  fontWeight: 800,
-                  fontSize: 14,
-                  cursor: pagandoWompi ? 'default' : 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: 10,
-                  boxShadow: '0 4px 14px rgba(29, 78, 216, 0.28)'
-                }}
-              >
-                <FaCreditCard size={16} />
-                <span>{pagandoWompi ? 'Redirigiendo a Wompi…' : 'Pagar con Wompi'}</span>
-              </button>
+            {/* Caja de Total a pagar */}
+            <div
+              style={{
+                width: '100%',
+                maxWidth: '440px',
+                background: '#EFF6FF',
+                border: '1.5px solid #BFDBFE',
+                borderRadius: '14px',
+                padding: '14px 18px',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '16px',
+                boxSizing: 'border-box'
+              }}
+            >
+              <span style={{ fontSize: '12px', fontWeight: 800, color: '#475569', letterSpacing: '0.02em' }}>
+                TOTAL A PAGAR:
+              </span>
+              <strong style={{ fontSize: '19px', fontWeight: 900, color: '#1D4ED8' }}>
+                {formatCurrency(reserva.total || 0, moneda)}
+              </strong>
             </div>
+
+            {/* Botón Pagar con Wompi */}
+            <button
+              type="button"
+              onClick={handlePagarWompi}
+              disabled={pagandoWompi}
+              style={{
+                width: '100%',
+                maxWidth: '440px',
+                height: '50px',
+                borderRadius: '14px',
+                background: '#1D4ED8',
+                color: '#ffffff',
+                border: 'none',
+                fontWeight: 800,
+                fontSize: '14px',
+                cursor: pagandoWompi ? 'default' : 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '10px',
+                boxShadow: '0 4px 14px rgba(29, 78, 216, 0.25)',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              <FaCreditCard size={16} />
+              <span>{pagandoWompi ? 'Redirigiendo a Wompi…' : 'Pagar con Wompi'}</span>
+            </button>
           </div>
         )}
 
         {/* Tarjeta de Ver Contrato (Diseño exacto de la captura) */}
-        {!esPendienteWompi && (
-          <Contrato reserva={reserva} />
-        )}
+        <Contrato reserva={reserva} />
 
         {/* Botón de cierre */}
         <div style={{ display: 'flex', justifyContent: 'center', marginTop: 12 }}>
