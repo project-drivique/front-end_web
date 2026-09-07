@@ -445,7 +445,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
                         <FaPrint /> Imprimir Comprobante de Caja
                       </button>
                     </div>
-                  ) : (
+                  ) : isBranchManager ? (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
                       <div>
                         <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'var(--texto-second, #64748b)', marginBottom: 6 }}>
@@ -478,6 +478,15 @@ export default function CashCollectionPage({ branchOnly = false }) {
                         <FaMoneyBillWave />
                         {procesandoPago ? 'Procesando Cobro…' : `Confirmar Pago en Efectivo (${formatCurrency(reservaSeleccionada.totalCOP, moneda)})`}
                       </button>
+                    </div>
+                  ) : (
+                    <div style={{ padding: 14, borderRadius: 12, background: '#f8fafc', border: '1px solid #e2e8f0', color: '#475569', fontSize: 13, lineHeight: 1.5 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#1D4ED8', fontWeight: 800, marginBottom: 4 }}>
+                        <FaShieldAlt /> Modo Auditoría (Solo Lectura)
+                      </div>
+                      <p style={{ margin: 0, fontSize: 12.5 }}>
+                        La recepción física del dinero y la confirmación del pago en efectivo es responsabilidad exclusiva del <strong>Encargado de la Sucursal ({reservaSeleccionada.sucursal || 'Sede'})</strong> en ventanilla.
+                      </p>
                     </div>
                   )}
                 </div>
