@@ -36,8 +36,8 @@ const DocumentUploader = ({ label, helpText, error, file, loading, onUpload, onC
       boxSizing: 'border-box',
     }}>
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
-        <span className="doc-uploader-label" style={{ fontSize: 14.5, fontWeight: 800, color: c?.textPrimary || '#0f172a' }}>{label}{required ? ' *' : ''}</span>
-        <span className="doc-uploader-help" style={{ fontSize: 12, color: c?.textSecondary || '#64748b', maxWidth: '340px', lineHeight: 1.45, textAlign: 'center' }}>{helpText}</span>
+        <span className="doc-uploader-label" style={{ fontSize: 15, fontWeight: 800, color: c?.textPrimary || '#0f172a' }}>{label}{required ? ' *' : ''}</span>
+        <span className="doc-uploader-help" style={{ fontSize: 12, color: c?.textSecondary || '#64748b', maxWidth: '420px', lineHeight: 1.45, textAlign: 'center', margin: '0 0 4px' }}>{helpText}</span>
       </div>
 
       {loading ? (
@@ -132,22 +132,22 @@ const DocumentUploader = ({ label, helpText, error, file, loading, onUpload, onC
         <label className="doc-uploader-btn" style={{
           display: 'inline-flex',
           alignItems: 'center',
-          gap: 8,
-          padding: '10px 22px',
+          gap: 10,
+          padding: '10px 24px',
           background: isDark ? 'rgba(255,255,255,0.06)' : '#ffffff',
-          border: `1.5px solid ${isDark ? '#334155' : '#cbd5e1'}`,
+          border: `1.5px solid ${isDark ? '#475569' : '#0f172a'}`,
           borderRadius: 12,
-          fontSize: 13,
-          fontWeight: 700,
-          color: c?.textPrimary || '#1e293b',
+          fontSize: 13.5,
+          fontWeight: 800,
+          color: c?.textPrimary || '#0f172a',
           cursor: 'pointer',
-          boxShadow: '0 2px 6px rgba(0,0,0,0.03)',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
           transition: 'all 150ms ease'
         }}>
-          <svg width="19" height="19" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242" />
-            <path d="M12 12v9" />
-            <path d="m16 16-4-4-4 4" />
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" />
+            <polyline points="9 15 12 12 15 15" />
+            <line x1="12" y1="12" x2="12" y2="19" />
           </svg>
           <span>Subir PDF (máx 5MB)</span>
           <input
@@ -528,17 +528,17 @@ export default function DatosPersonales({
       </div>
 
       <div style={sectionCardStyle}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 18 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={c?.accentText || 'var(--brand-secondary)'} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-              <rect width="20" height="14" x="2" y="5" rx="2"/>
-              <line x1="2" x2="22" y1="10" y2="10"/>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 20 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <svg width="22" height="16" viewBox="0 0 24 18" fill="none" stroke={c?.accentText || '#002f6c'} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <rect width="22" height="16" x="1" y="1" rx="3"/>
+              <line x1="1" x2="23" y1="6" y2="6"/>
             </svg>
-            <h3 style={{ fontSize: 14.5, fontWeight: 800, color: c?.accentText || 'var(--brand-secondary)', margin: 0, textTransform: 'none' }}>
+            <h3 style={{ fontSize: 16, fontWeight: 800, color: c?.accentText || '#002f6c', margin: 0, letterSpacing: '-0.01em', textTransform: 'none' }}>
               {t('vehiculo.mandatoryDocsVerification', 'Verificación Documental Obligatoria')}
             </h3>
           </div>
-          <p style={{ fontSize: 12.5, color: c?.textSecondary || '#64748b', margin: 0, lineHeight: 1.4 }}>
+          <p style={{ fontSize: 13, color: c?.textSecondary || '#64748b', margin: 0, lineHeight: 1.45 }}>
             {t('vehiculo.mandatoryDocsSub', 'Sube los documentos requeridos para verificar tu identidad y habilitar la reserva del vehículo.')}
           </p>
         </div>
@@ -574,37 +574,36 @@ export default function DatosPersonales({
 
           {/* Privacy & Legal Notice Banner */}
           <div style={{
-            background: c?.isDark ? 'rgba(59, 130, 246, 0.1)' : '#eff6ff',
-            border: `1px solid ${c?.isDark ? 'rgba(59, 130, 246, 0.28)' : '#bfdbfe'}`,
-            borderRadius: 14,
-            padding: '14px 18px',
+            background: c?.isDark ? 'rgba(59, 130, 246, 0.1)' : '#f0f7ff',
+            border: `1.5px solid ${c?.isDark ? 'rgba(59, 130, 246, 0.28)' : '#bfdbfe'}`,
+            borderRadius: 16,
+            padding: '16px 20px',
             display: 'flex',
             alignItems: 'center',
-            gap: 12
+            gap: 14
           }}>
             <div style={{
-              width: 22,
-              height: 22,
+              width: 28,
+              height: 28,
               borderRadius: '50%',
-              background: c?.isDark ? 'rgba(59, 130, 246, 0.2)' : '#dbeafe',
-              border: `2px solid ${c?.isDark ? '#60a5fa' : '#3b82f6'}`,
+              border: `2.5px solid ${c?.isDark ? '#60a5fa' : '#3b82f6'}`,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               flexShrink: 0
             }}>
               <div style={{
-                width: 8,
-                height: 8,
+                width: 10,
+                height: 10,
                 borderRadius: '50%',
                 background: c?.isDark ? '#60a5fa' : '#3b82f6'
               }} />
             </div>
             <p style={{
               margin: 0,
-              fontSize: 12.5,
+              fontSize: 13,
               fontWeight: 600,
-              color: c?.isDark ? '#93c5fd' : '#1e40af',
+              color: c?.isDark ? '#93c5fd' : '#1d4ed8',
               lineHeight: 1.45
             }}>
               {t('vehiculo.docsSecurityNotice', 'Tus documentos se usan exclusivamente para la elaboración del contrato digital de alquiler y la verificación de identidad.')}
