@@ -28,26 +28,31 @@ export function useHistorialReservas() {
     try {
       const data = await reservationsService.getReservas()
       const conVehiculo = await Promise.all(
-        data.map(async (r) => {
-          const vehiculo = await catalogService.getVehiculoById(r.vehiculoId).catch(() => null)
+        (data || []).map(async (r) => {
+          const vehiculo = r.vehiculoId ? await catalogService.getVehiculoById(r.vehiculoId).catch(() => null) : null
           const fechaInicio = r.fechaInicio || r.reservaDetalles?.fechaInicio
           const fechaFin = r.fechaFin || r.reservaDetalles?.fechaFin
           return {
             ...r,
             fechaInicio,
             fechaFin,
-            vehiculo,
+            vehiculo: vehiculo || r.vehiculo || null,
             estadoRaw: r.estado || null,
             estado: estadoReserva(r)
           }
         })
       )
-      const valoraciones = reservationsService.getValoracionesLocales()
+      const valoraciones = reservationsService.getValoracionesLocales ? reservationsService.getValoracionesLocales() : {}
       setReservas(conVehiculo
         .map(r => ({ ...r, valoracion: valoraciones[r.id] || r.valoracion || null }))
-        .sort((a, b) => new Date(b.fechaInicio) - new Date(a.fechaInicio)))
-    } catch {
-      setError(t('reservas.error'))
+        .sort((a, b) => {
+          const timeA = a.fechaInicio ? new Date(a.fechaInicio).getTime() : 0
+          const timeB = b.fechaInicio ? new Date(b.fechaInicio).getTime() : 0
+          return timeB - timeA
+        }))
+    } catch (err) {
+      console.error('[useHistorialReservas] Error:', err)
+      setError(t('reservas.error', 'No se pudieron cargar las reservas'))
     } finally {
       setCargando(false)
     }

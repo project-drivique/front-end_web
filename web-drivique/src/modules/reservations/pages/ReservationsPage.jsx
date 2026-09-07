@@ -28,9 +28,19 @@ const coloresTema = (oscuro) => ({
   heroCardBorder: oscuro ? '#334155' : '#d9e3f1',
 })
 
-const fechaBonita = (fecha, idioma) => new Intl.DateTimeFormat(idioma, {
-  day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC',
-}).format(new Date(`${fecha}T00:00:00Z`)).replace('.', '')
+const fechaBonita = (fecha, idioma) => {
+  if (!fecha) return '—'
+  try {
+    const str = String(fecha).trim()
+    const d = str.includes('T') ? new Date(str) : new Date(`${str}T00:00:00Z`)
+    if (isNaN(d.getTime())) return str
+    return new Intl.DateTimeFormat(idioma || 'es', {
+      day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC',
+    }).format(d).replace('.', '')
+  } catch {
+    return String(fecha || '—')
+  }
+}
 
 function Estrellas({ value, onChange, disabled = false }) {
   const { t } = useTranslation()

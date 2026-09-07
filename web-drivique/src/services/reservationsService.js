@@ -21,15 +21,20 @@ async function getApi() {
  */
 function mapearReservaLocal(r) {
   return {
-    id: r.referencia,
+    ...r,
+    id: r.referencia || r.id,
+    referencia: r.referencia || r.id,
     vehiculoId: r.vehiculoId,
-    fechaInicio: r.reservaDetalles?.fechaInicio,
-    fechaFin: r.reservaDetalles?.fechaFin,
+    vehiculoNombre: r.vehiculoNombre,
+    fechaInicio: r.reservaDetalles?.fechaInicio || r.fechaInicio,
+    fechaFin: r.reservaDetalles?.fechaFin || r.fechaFin,
     estado: r.estado,
     total: r.total,
     fechaLimitePago: r.fechaLimitePago || null,
     horasLimitePago: r.horasLimitePago || null,
-    metodoPago: r.reservaDetalles?.metodoPago || null,
+    metodoPago: r.reservaDetalles?.metodoPago || r.metodoPago || null,
+    datosForm: r.datosForm || null,
+    reservaDetalles: r.reservaDetalles || null,
     esLocal: true,
   }
 }
