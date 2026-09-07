@@ -869,13 +869,13 @@ export default function DatosPersonales({
           <div
             style={{
               background: c?.cardBg || '#ffffff',
-              borderRadius: 20,
-              maxWidth: 350,
+              borderRadius: 24,
+              maxWidth: 420,
               width: '100%',
-              padding: '24px 20px 20px',
+              padding: '36px 28px 28px',
               textAlign: 'center',
-              boxShadow: '0 25px 50px -12px rgba(0,0,0,0.35)',
-              border: `1px solid ${c?.cardBorder || '#e2e8f0'}`,
+              boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
+              border: `1px solid ${c?.isDark ? 'rgba(255,255,255,0.1)' : '#e2e8f0'}`,
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center'
@@ -884,36 +884,26 @@ export default function DatosPersonales({
           >
             {/* Warning Icon Badge */}
             <div style={{
-              width: 56,
-              height: 56,
+              width: 72,
+              height: 72,
               borderRadius: '50%',
-              background: c?.isDark ? 'rgba(var(--brand-primary-rgb), 0.12)' : 'rgba(var(--brand-secondary-rgb), 0.08)',
-              border: `1.5px solid ${c?.isDark ? 'rgba(var(--brand-primary-rgb), 0.25)' : 'rgba(var(--brand-secondary-rgb), 0.18)'}`,
+              background: c?.isDark ? 'rgba(59, 130, 246, 0.15)' : '#EFF6FF',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              marginBottom: 14
+              marginBottom: 20
             }}>
-              <div style={{
-                width: 36,
-                height: 36,
-                borderRadius: '50%',
-                border: `2px solid ${c?.accentText || 'var(--brand-secondary)'}`,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: c?.accentText || 'var(--brand-secondary)',
-                fontSize: 18,
-                fontWeight: 900
-              }}>
-                !
-              </div>
+              <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke={c?.isDark ? '#60A5FA' : '#1D4ED8'} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" strokeWidth="2.4" />
+                <line x1="12" y1="16" x2="12.01" y2="16" strokeWidth="3" />
+              </svg>
             </div>
 
             {/* Title */}
             <h3 style={{
-              margin: '0 0 6px',
-              fontSize: 16.5,
+              margin: '0 0 10px',
+              fontSize: 19,
               fontWeight: 800,
               color: c?.textPrimary || '#0f172a',
               letterSpacing: '-0.01em'
@@ -923,11 +913,11 @@ export default function DatosPersonales({
 
             {/* Description */}
             <p style={{
-              margin: '0 0 20px',
-              fontSize: 12.5,
+              margin: '0 0 28px',
+              fontSize: 13.5,
               color: c?.textSecondary || '#64748b',
-              lineHeight: 1.45,
-              maxWidth: 280
+              lineHeight: 1.5,
+              maxWidth: 320
             }}>
               {t('vehiculo.cancelModalDesc', 'Se descartarán los datos ingresados en este proceso y regresarás al catálogo de vehículos.')}
             </p>
@@ -935,7 +925,7 @@ export default function DatosPersonales({
             {/* Buttons Row */}
             <div style={{
               display: 'flex',
-              gap: 10,
+              gap: 12,
               width: '100%'
             }}>
               <button
@@ -943,21 +933,21 @@ export default function DatosPersonales({
                 onClick={() => setModalCancelar(false)}
                 style={{
                   flex: 1,
-                  height: 38,
-                  borderRadius: 10,
-                  border: `1.5px solid ${c?.cardBorder || '#cbd5e1'}`,
-                  background: c?.cardBg || '#ffffff',
-                  color: c?.textPrimary || '#0f172a',
+                  height: 44,
+                  borderRadius: 12,
+                  border: `2px solid ${c?.isDark ? '#60A5FA' : '#1D4ED8'}`,
+                  background: 'transparent',
+                  color: c?.isDark ? '#93C5FD' : '#1D4ED8',
                   fontWeight: 700,
-                  fontSize: 12.5,
+                  fontSize: 13.5,
                   cursor: 'pointer',
                   transition: 'all 0.2s',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center'
                 }}
-                onMouseEnter={e => e.currentTarget.style.background = c?.isDark ? 'rgba(255,255,255,0.06)' : '#f8fafc'}
-                onMouseLeave={e => e.currentTarget.style.background = c?.cardBg || '#ffffff'}
+                onMouseEnter={e => e.currentTarget.style.background = c?.isDark ? 'rgba(96, 165, 250, 0.1)' : '#EFF6FF'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
               >
                 {t('vehiculo.cancelModalNo', 'No, continuar')}
               </button>
@@ -974,22 +964,21 @@ export default function DatosPersonales({
                 }}
                 style={{
                   flex: 1,
-                  height: 38,
-                  borderRadius: 10,
+                  height: 44,
+                  borderRadius: 12,
                   border: 'none',
-                  background: 'var(--brand-gradient)',
+                  background: c?.isDark ? '#2563EB' : '#1D4ED8',
                   color: '#ffffff',
-                  fontWeight: 800,
-                  fontSize: 12.5,
+                  fontWeight: 700,
+                  fontSize: 13.5,
                   cursor: 'pointer',
-                  boxShadow: '0 4px 12px rgba(var(--brand-secondary-rgb), 0.25)',
                   transition: 'all 0.2s',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center'
                 }}
-                onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'}
-                onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
+                onMouseEnter={e => e.currentTarget.style.background = '#1E40AF'}
+                onMouseLeave={e => e.currentTarget.style.background = c?.isDark ? '#2563EB' : '#1D4ED8'}
               >
                 {t('vehiculo.cancelModalYes', 'Sí, cancelar reserva')}
               </button>
