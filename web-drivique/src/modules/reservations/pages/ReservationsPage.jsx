@@ -158,256 +158,32 @@ function Contrato({ reserva }) {
 }
 
 function ModalDetalle({ reserva, moneda, onClose }) {
-  const { t, i18n } = useTranslation()
-  const estado = { texto: t(`reservas.statuses.${reserva.estado}`, { defaultValue: t('reservas.statuses.pendiente') }), clase: CLASES_ESTADO[reserva.estado] || CLASES_ESTADO.pendiente }
-  const contrato = contractService.obtenerPorReserva(reserva.id)
-  const reservaOriginal = contrato?.contratoOriginal?.reserva || reservationService.obtenerPorReferencia(reserva.id)
-  const vehiculoOriginal = contrato?.contratoOriginal?.vehiculo || reserva.vehiculo
-  const seguroIdx = reservaOriginal?.seguroIdx
-  const proteccion = seguroIdx != null ? vehiculoOriginal?.seguros?.[seguroIdx]?.nombre : t('reservas.unspecified')
+  const { t } = useTranslation()
 
-  const esEfectivo = reservaOriginal?.reservaDetalles?.metodoPago === 'efectivo' || reserva.metodoPago === 'efectivo'
-  const esPendienteEfectivo = reserva.estado === 'PENDIENTE_EFECTIVO' || reservaOriginal?.estado === 'PENDIENTE_EFECTIVO' || (esEfectivo && reserva.estado === 'pendiente')
-  const esPendienteWompi = !esEfectivo && (reserva.estado === 'pendiente' || reserva.estado === 'PENDIENTE')
-  const esWompiAprobado = !esEfectivo && (reserva.estado === 'confirmada' || reserva.estado === 'activa' || reserva.estado === 'en_curso' || reserva.estado === 'finalizada')
-
-  const sucursalPago = reservaOriginal?.reservaDetalles?.sucursalPagoEfectivo || reserva.vehiculo?.sucursal || 'Alquiler Neiva - Centro'
-  const branchObj = SUCURSALES.find(s => s.nombre === sucursalPago)
-  const ciudadPago = branchObj?.ciudad || reserva.vehiculo?.ciudad || 'Neiva'
-  const direccionPago = branchObj?.direccion || 'Calle 9 # 8-25, Centro'
-
-  const [pagandoWompi, setPagandoWompi] = useState(false)
-
-  const handlePagarWompi = async (e) => {
-    if (e) {
-      e.preventDefault()
-      e.stopPropagation()
-    }
-    setPagandoWompi(true)
-    try {
-      const ref = reserva.id || reserva.referencia || reservaOriginal?.referencia
-      sessionStorage.setItem('current_wompi_reference', ref)
-      const rawTotal = reserva.total ?? reservaOriginal?.total ?? 0
-      const totalNum = typeof rawTotal === 'number' ? rawTotal : parseFloat(String(rawTotal).replace(/[^0-9.-]+/g, '')) || 0
-      const centavos = aCentavos(totalNum)
-      const url = await construirUrlCheckout({
-        reference: ref,
-        amountInCents: centavos,
-        redirectUrl: `${window.location.origin}/respuesta`,
-      })
-      window.location.href = url
-    } catch (err) {
-      console.error('Error al generar enlace Wompi:', err)
-      setPagandoWompi(false)
-    }
-  }
-
-  return <div className="modal-backdrop" onMouseDown={onClose}><section className="detalle-modal" role="dialog" aria-modal="true" aria-labelledby="detalle-reserva-titulo" onMouseDown={e => e.stopPropagation()}>
-    <div className="detalle-modal-acento" />
-    <button className="modal-cerrar" onClick={onClose} aria-label={t('reservas.closeDetail')}><FaTimes /></button>
-    <div className="detalle-modal-head">
-      <span className={`detalle-estado-icon ${estado.clase}`}><FaCheckCircle /></span>
-      <h2 id="detalle-reserva-titulo">{t('reservas.reservationWithStatus', { status: estado.texto.toLowerCase() })}</h2>
-      <p>{reserva.vehiculo?.nombre || t('reservas.vehicleUnavailable')}</p>
-    </div>
-    {(reserva.vehiculo?.imagenes?.[0] || vehiculoOriginal?.imagenes?.[0]) && (
-      <div style={{ padding: '0 24px 12px', display: 'flex', justifyContent: 'center' }}>
-        <img
-          src={reserva.vehiculo?.imagenes?.[0] || vehiculoOriginal?.imagenes?.[0]}
-          alt={reserva.vehiculo?.nombre}
-          style={{ width: '100%', maxHeight: 160, objectFit: 'cover', borderRadius: 14, border: '1px solid var(--city-border, #e2e8f0)', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}
-        />
-      </div>
-    )}
-
-    {/* Tarjeta de Instrucciones de Pago en Efectivo (Si aplica) */}
-    {esPendienteEfectivo && (
-      <div style={{ padding: '0 24px 16px' }}>
-        <div style={{
-          background: 'rgba(37, 99, 235, 0.04)',
-          border: '1.5px solid rgba(37, 99, 235, 0.18)',
-          borderRadius: 16,
-          padding: '16px',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 8,
-          marginBottom: 10
-        }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13 }}>
-            <span style={{ color: 'var(--texto-second, #64748b)', fontWeight: 600 }}>Referencia:</span>
-            <strong style={{ color: 'var(--brand-primary, #2563eb)' }}>{reserva.id}</strong>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13 }}>
-            <span style={{ color: 'var(--texto-second, #64748b)', fontWeight: 600 }}>Sucursal:</span>
-            <strong>{sucursalPago}</strong>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13 }}>
-            <span style={{ color: 'var(--texto-second, #64748b)', fontWeight: 600 }}>Ciudad: :</span>
-            <strong>{ciudadPago}</strong>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13 }}>
-            <span style={{ color: 'var(--texto-second, #64748b)', fontWeight: 600 }}>Dirección: :</span>
-            <strong>{direccionPago}</strong>
-          </div>
-          <div style={{ height: 1, background: 'rgba(37, 99, 235, 0.12)', margin: '4px 0' }} />
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: 12, fontWeight: 800, color: 'var(--texto-second, #64748b)' }}>TOTAL A PAGAR:</span>
-            <strong style={{ fontSize: 17, color: 'var(--brand-primary, #2563eb)' }}>{formatCurrency(reserva.total || 0, moneda)}</strong>
-          </div>
-        </div>
-
-        <div style={{
-          background: '#fefce8',
-          border: '1.5px solid #fef08a',
-          borderRadius: 14,
-          padding: '12px 14px',
-          textAlign: 'left'
-        }}>
-          <p style={{ margin: '0 0 4px', fontSize: 11, fontWeight: 800, color: '#854d0e', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-            PLAZO PARA PAGAR
-          </p>
-          <p style={{ margin: 0, fontSize: 12, color: '#854d0e', lineHeight: 1.45, fontWeight: 500 }}>
-            Tienes 72 horas desde ahora para acercarte a la sucursal y pagar. Si no pagas dentro de este plazo, la reserva se cancelará automáticamente.
-          </p>
-        </div>
-      </div>
-    )}
-
-    {/* Tarjeta de Pago Aprobado Wompi */}
-    {esWompiAprobado && (
-      <div style={{ padding: '0 24px 16px' }}>
-        <div style={{
-          background: '#f0fdf4',
-          border: '1.5px solid #86efac',
-          borderRadius: 16,
-          padding: '14px 18px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <FaCheckCircle color="#16a34a" size={18} />
-            <div>
-              <strong style={{ display: 'block', fontSize: 13, color: '#166534' }}>Pago Digital Aprobado por Wompi</strong>
-              <span style={{ fontSize: 11.5, color: '#15803d' }}>Transacción procesada correctamente</span>
-            </div>
-          </div>
-          <strong style={{ fontSize: 15, color: '#166534' }}>{formatCurrency(reserva.total || 0, moneda)}</strong>
-        </div>
-      </div>
-    )}
-
-    <div className="detalle-resumen-lista">
-      <div className="detalle-resumen-fila"><span className="detalle-fila-icon"><FaCar /></span><span className="detalle-fila-label">{t('reservas.vehicle')}</span><strong>{reserva.vehiculo?.nombre || t('reservas.vehicleUnavailable')}</strong></div>
-      <div className="detalle-resumen-fila"><span className="detalle-fila-icon"><FaCalendarAlt /></span><span className="detalle-fila-label">{t('reservas.pickupDate')}</span><strong>{fechaBonita(reserva.fechaInicio, i18n.resolvedLanguage)}</strong></div>
-      <div className="detalle-resumen-fila"><span className="detalle-fila-icon"><FaRegCalendarCheck /></span><span className="detalle-fila-label">{t('reservas.returnDate')}</span><strong>{fechaBonita(reserva.fechaFin, i18n.resolvedLanguage)}</strong></div>
-      <div className="detalle-resumen-fila"><span className="detalle-fila-icon"><FaMapMarkerAlt /></span><span className="detalle-fila-label">{t('reservas.pickupLocation')}</span><strong>{reserva.vehiculo?.sucursal || t('reservas.defaultBranch')}</strong></div>
-      <div className="detalle-resumen-fila"><span className="detalle-fila-icon"><FaShieldAlt /></span><span className="detalle-fila-label">{t('reservas.protection')}</span><strong>{proteccion}</strong></div>
-      <div className="detalle-resumen-fila"><span className="detalle-fila-icon"><FaScroll /></span><span className="detalle-fila-label">{t('reservas.reference')}</span><strong className="detalle-referencia" title={reserva.id}>{reserva.id}</strong></div>
-      <div className="detalle-resumen-fila"><span className="detalle-fila-icon"><FaMoneyBillWave /></span><span className="detalle-fila-label">{t('reservas.total')}</span><strong>{formatCurrency(reserva.total || 0, moneda)}</strong></div>
-      <div className={`detalle-resumen-fila detalle-fila-estado ${estado.clase}`}><span className="detalle-fila-icon"><FaCheckCircle /></span><span className="detalle-fila-label">{t('reservas.status')}</span><strong>{estado.texto}</strong></div>
-    </div>
-
-    {/* Tarjeta de Pago Digital Pendiente (Diseño exacto Imagen 2) */}
-    {esPendienteWompi ? (
-      <div style={{ padding: '0 24px 20px', display: 'flex', flexDirection: 'column', gap: 14 }}>
-        <div style={{
-          background: 'var(--bg-tarjeta, #ffffff)',
-          border: '1.5px solid var(--borde, #e2e8f0)',
-          borderRadius: 20,
-          padding: '24px 20px',
-          textAlign: 'center',
-          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.04)',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center'
-        }}>
-          <h3 style={{
-            fontSize: 18,
-            fontWeight: 800,
-            color: 'var(--texto-primary, #0f172a)',
-            margin: '0 0 10px',
-            letterSpacing: '-0.01em'
-          }}>
-            Pago Digital Pendiente
-          </h3>
-          <p style={{
-            fontSize: 13,
-            color: 'var(--texto-second, #64748b)',
-            lineHeight: 1.5,
-            margin: '0 0 20px',
-            maxWidth: 320
-          }}>
-            Tu reserva está guardada como pendiente. Completa el pago en Wompi para confirmar y habilitar tu contrato de alquiler.
-          </p>
-
-          <button
-            type="button"
-            onClick={handlePagarWompi}
-            disabled={pagandoWompi}
-            style={{
-              width: '100%',
-              height: 48,
-              borderRadius: 14,
-              background: 'var(--brand-primary, #2563eb)',
-              color: '#ffffff',
-              border: 'none',
-              fontWeight: 800,
-              fontSize: 14,
-              cursor: pagandoWompi ? 'default' : 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 10,
-              boxShadow: '0 6px 18px rgba(37, 99, 235, 0.28)',
-              transition: 'all 0.2s ease',
-            }}
-          >
-            <FaCreditCard size={17} />
-            <span>{pagandoWompi ? 'Redirigiendo a Wompi…' : 'Pagar con Wompi'}</span>
-          </button>
-        </div>
-
-        {/* Botón Descargar Contrato Deshabilitado */}
-        <button
-          type="button"
-          disabled
-          style={{
-            width: '100%',
-            height: 48,
-            borderRadius: 14,
-            background: 'linear-gradient(135deg, #94a3b8 0%, #64748b 100%)',
-            color: 'rgba(255, 255, 255, 0.9)',
-            border: 'none',
-            fontWeight: 700,
-            fontSize: 14,
-            cursor: 'not-allowed',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 10,
-            opacity: 0.75,
-            boxShadow: 'none'
-          }}
-        >
-          <FaFileContract size={16} />
-          <span>Descargar contrato</span>
+  return (
+    <div className="modal-backdrop" onMouseDown={onClose}>
+      <section
+        className="detalle-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="detalle-reserva-titulo"
+        onMouseDown={(e) => e.stopPropagation()}
+      >
+        <button className="modal-cerrar" onClick={onClose} aria-label={t('reservas.closeDetail', { defaultValue: 'Cerrar' })}>
+          <FaTimes />
         </button>
-      </div>
-    ) : (
-      <section className="detalle-contrato-seccion">
-        <div className="detalle-contrato-titulo">
-          <h3>{t('reservas.rentalContract')}</h3>
-          <p>{t('reservas.viewAndDownloadOriginal')}</p>
-        </div>
-        <Contrato reserva={reserva} />
-      </section>
-    )}
 
-    <div className="detalle-modal-actions">
-      <button className="detalle-cerrar-btn" onClick={onClose}>{t('reservas.closeDetail')}</button>
+        <div style={{ padding: '24px 20px', textAlign: 'center' }}>
+          <h2 id="detalle-reserva-titulo" style={{ fontSize: '20px', fontWeight: 800, color: 'var(--texto-primary, #0f172a)', margin: '0 0 8px' }}>
+            Detalles de la Reserva
+          </h2>
+          <p style={{ fontSize: '13px', color: 'var(--texto-second, #64748b)', margin: 0 }}>
+            {reserva.vehiculo?.nombre || 'Vehículo'} · Ref: {reserva.id}
+          </p>
+        </div>
+      </section>
     </div>
-  </section></div>
+  )
 }
 
 function TarjetaReserva({ reserva, moneda, onValorar, onReportar, onVerDetalle }) {
