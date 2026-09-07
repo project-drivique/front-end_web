@@ -276,7 +276,10 @@ export default function ResumenLateral({
                 {serviciosElegidos.map(s => (
                   <div key={s.nombre} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 14 }}>
                     <span style={{ color: c?.textPrimary || '#0f172a', fontWeight: 800 }}>
-                      {s.nombre}
+                      {s.nombre}{' '}
+                      <span style={{ color: c?.textSecondary || '#64748b', fontWeight: 600, fontSize: 12 }}>
+                        ({dias} {dias === 1 ? t('vehiculo.day', 'día') : t('vehiculo.days', 'días')})
+                      </span>
                     </span>
                     <span style={{ color: c?.textPrimary || '#0f172a', fontWeight: 800 }}>
                       {formatCurrency(s.precio * dias, moneda)}
