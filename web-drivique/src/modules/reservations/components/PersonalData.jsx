@@ -5,7 +5,7 @@ import { useLanding } from '../../landing/LandingContext';
 import { formatCurrency } from '@/utils/currencyUtils';
 import { getNombreTipoDoc, getSiglaDoc } from '@/utils/documentUtils';
 import { RECARGOS_LOGISTICOS } from '../../catalog/constants';
-import { FaUser, FaIdCard, FaTimes } from 'react-icons/fa';
+import { FaUser, FaIdCard, FaTimes, FaCheckCircle, FaCloudUploadAlt, FaTrashAlt } from 'react-icons/fa';
 import paisesMock from '@/mocks/nationalities.json';
 
 const getPrefijoPais = (nacionalidad) => {
@@ -73,9 +73,7 @@ const DocumentUploader = ({ label, helpText, error, file, loading, onUpload, onC
             justifyContent: 'center',
             flexShrink: 0
           }}>
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
+            <FaCheckCircle size={14} color="#ffffff" />
           </div>
 
           <div style={{ flex: 1, minWidth: 0, textAlign: 'left' }}>
@@ -121,13 +119,7 @@ const DocumentUploader = ({ label, helpText, error, file, loading, onUpload, onC
             onMouseEnter={e => e.currentTarget.style.opacity = '1'}
             onMouseLeave={e => e.currentTarget.style.opacity = '0.85'}
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M3 6h18" />
-              <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-              <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-              <line x1="10" x2="10" y1="11" y2="17" />
-              <line x1="14" x2="14" y1="11" y2="17" />
-            </svg>
+            <FaTrashAlt size={14} />
           </button>
         </div>
       ) : (
@@ -146,11 +138,7 @@ const DocumentUploader = ({ label, helpText, error, file, loading, onUpload, onC
           boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
           transition: 'all 150ms ease'
         }}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={c?.accentText || 'var(--brand-secondary)'} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" />
-            <polyline points="9 15 12 12 15 15" />
-            <line x1="12" y1="12" x2="12" y2="19" />
-          </svg>
+          <FaCloudUploadAlt size={18} color={c?.accentText || 'var(--brand-secondary)'} />
           <span>Subir PDF (máx 5MB)</span>
           <input
             type="file"
@@ -534,15 +522,49 @@ export default function DatosPersonales({
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
             <FaIdCard color={c?.accentText || 'var(--brand-secondary)'} size={15} />
             <h3 style={{ fontSize: 14, fontWeight: 700, color: c?.accentText || 'var(--brand-secondary)', margin: 0, textTransform: 'none' }}>
-              {t('vehiculo.mandatoryDocsVerification', 'Verificación Documental Obligatoria')}
+              {docsVerificados
+                ? t('vehiculo.docsVerification', 'Verificación Documental')
+                : t('vehiculo.mandatoryDocsVerification', 'Verificación Documental Obligatoria')}
             </h3>
           </div>
           <p style={{ margin: 0, fontSize: 12.5, color: c?.textSecondary || '#64748b', lineHeight: 1.4 }}>
-            {t('vehiculo.mandatoryDocsSub', 'Sube los documentos requeridos para verificar tu identidad y habilitar la reserva del vehículo.')}
+            {docsVerificados
+              ? t('vehiculo.docsAlreadyVerifiedSub', 'Ya verificamos tus documentos en una reserva anterior. Si quieres, puedes reemplazarlos subiendo nuevos archivos PDF.')
+              : t('vehiculo.mandatoryDocsSub', 'Sube los documentos requeridos para verificar tu identidad y habilitar la reserva del vehículo.')}
           </p>
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          {docsVerificados && (
+            <div style={{
+              background: c?.isDark ? 'rgba(59, 130, 246, 0.08)' : '#EFF6FF',
+              border: `1px solid ${c?.isDark ? 'rgba(59, 130, 246, 0.25)' : '#BFDBFE'}`,
+              borderRadius: 14,
+              padding: '14px 16px',
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: 12
+            }}>
+              <div style={{
+                color: '#1D4ED8',
+                fontSize: 18,
+                marginTop: 2,
+                flexShrink: 0
+              }}>
+                <FaCheckCircle />
+              </div>
+              <p style={{
+                margin: 0,
+                fontSize: 12.5,
+                color: c?.isDark ? '#93C5FD' : '#1E40AF',
+                lineHeight: 1.45
+              }}>
+                <strong style={{ fontWeight: 800 }}>{t('vehiculo.docsAlreadyRegisteredTitle', 'Documentos ya registrados:')}</strong>{' '}
+                {t('vehiculo.docsAlreadyRegisteredDesc', 'Ya has subido tu cédula y licencia de conducción anteriormente. No es obligatorio volver a cargarlos, pero si lo deseas puedes reemplazarlos subiendo nuevos archivos PDF.')}
+              </p>
+            </div>
+          )}
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <DocumentUploader
               label={nombreDocSeleccionado}
@@ -557,6 +579,7 @@ export default function DatosPersonales({
               error={errores.cedulaPdf || cedulaError}
               file={datosForm.cedulaPdf}
               loading={cedulaCargando}
+              required={!docsVerificados}
               onUpload={(e) => handleUpload('cedula', e)}
               onClear={() => onCambio('cedulaPdf', null)}
               c={c}
@@ -567,6 +590,7 @@ export default function DatosPersonales({
               error={errores.licenciaPdf || licenciaError}
               file={datosForm.licenciaPdf}
               loading={licenciaCargando}
+              required={!docsVerificados}
               onUpload={(e) => handleUpload('licencia', e)}
               onClear={() => onCambio('licenciaPdf', null)}
               c={c}
