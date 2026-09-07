@@ -264,7 +264,9 @@ function ModalDetalle({ reserva, moneda, onClose }) {
               letterSpacing: '-0.02em'
             }}
           >
-            {t('reservas.reservationWithStatus', { status: estado.texto.toLowerCase(), defaultValue: `Reserva ${estado.texto.toLowerCase()}` })}
+            {esPendienteEfectivo
+              ? 'Pendiente de pago en efectivo'
+              : (esPendienteWompi ? 'Pendiente de pago digital' : t('reservas.reservationWithStatus', { status: estado.texto.toLowerCase(), defaultValue: `Reserva ${estado.texto.toLowerCase()}` }))}
           </h2>
           <p
             style={{
