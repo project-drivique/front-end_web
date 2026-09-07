@@ -249,7 +249,7 @@ export default function ResumenLateral({
           <div style={{ marginBottom: 12 }}>
             <p style={{ fontSize: 11, fontWeight: 600, color: c?.textSecondary || '#64748b', textTransform: 'uppercase', margin: '0 0 4px' }}>{t('vehiculo.protections', 'Protecciones')}</p>
             <p style={{ fontSize: 14, fontWeight: 800, color: c?.textPrimary || '#0f172a', margin: '0' }}>
-              {translateProtection(seguroIdx !== null ? vehiculo.seguros[seguroIdx]?.nombre : null)}
+              {seguroIdx !== null && vehiculo.seguros?.[seguroIdx] ? translateProtection(vehiculo.seguros[seguroIdx]?.nombre) : '—'}
             </p>
           </div>
           
@@ -257,7 +257,7 @@ export default function ResumenLateral({
           <div style={{ marginBottom: 12 }}>
             <p style={{ fontSize: 11, fontWeight: 600, color: c?.textSecondary || '#64748b', textTransform: 'uppercase', margin: '0 0 4px' }}>{t('vehiculo.mileageType', 'Tipo de kilometraje')}</p>
             <p style={{ fontSize: 14, fontWeight: 800, color: c?.textPrimary || '#0f172a', margin: '0' }}>
-              {reserva.tipoKm === 'ilimitado' ? t('vehiculo.unlimited', 'Ilimitado') : (reserva.tipoKm === 'limitado' ? t('vehiculo.limited', 'Limitado') : t('vehiculo.notSelected', 'No seleccionado'))}
+              {reserva.tipoKm === 'ilimitado' ? t('vehiculo.unlimited', 'Ilimitado') : (reserva.tipoKm === 'limitado' ? t('vehiculo.limited', 'Limitado') : '—')}
             </p>
           </div>
           
@@ -272,7 +272,7 @@ export default function ResumenLateral({
               )}
             </div>
             <p style={{ fontSize: 13, color: c?.textPrimary || '#0f172a', fontWeight: serviciosElegidos.length > 0 ? 800 : 400, margin: 0 }}>
-              {serviciosElegidos.length > 0 ? formatCurrency(subtotalServicios, moneda) : t('vehiculo.noneSelected', 'Ninguno seleccionado')}
+              {serviciosElegidos.length > 0 ? formatCurrency(subtotalServicios, moneda) : '—'}
             </p>
           </div>
         </div>
@@ -585,7 +585,7 @@ export default function ResumenLateral({
                   : t('vehiculo.mandatoryProtection', 'Protección Obligatoria')}
               </span>
               <span style={{ fontWeight: 800, color: c?.textPrimary || '#0f172a' }}>
-                {formatCurrency(subtotalSeguro, moneda)}
+                {seguroIdx !== null ? formatCurrency(subtotalSeguro, moneda) : '—'}
               </span>
             </div>
             
