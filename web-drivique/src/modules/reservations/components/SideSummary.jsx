@@ -574,7 +574,7 @@ export default function ResumenLateral({
                   : (reserva.tipoKm === 'limitado' ? t('vehiculo.limitedMileage', 'Kilometraje limitado') : t('vehiculo.mileage', 'Kilometraje'))}
               </span>
               <span style={{ fontWeight: 800, color: c?.textPrimary || '#0f172a' }}>
-                {reserva.tipoKm ? t('vehiculo.included', 'Incluido') : '—'}
+                {reserva.tipoKm ? formatCurrency(subtotalDiario, moneda) : '—'}
               </span>
             </div>
             
@@ -590,8 +590,8 @@ export default function ResumenLateral({
             </div>
             
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: c?.textSecondary || '#64748b' }}>
-              <span style={{ textTransform: 'uppercase' }}>
-                {t('vehiculo.additionalServicesUpper', 'SERVICIOS ADICIONALES')}
+              <span>
+                {t('vehiculo.additionalServices', 'Servicios adicionales')}
               </span>
               <span style={{ fontWeight: 800, color: c?.textPrimary || '#0f172a' }}>
                 {subtotalServicios > 0 ? formatCurrency(subtotalServicios, moneda) : '—'}
