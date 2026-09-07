@@ -309,213 +309,145 @@ function ModalDetalle({ reserva, moneda, onClose }) {
           </div>
         )}
 
-        {/* Tarjeta de Instrucciones de Pago en Efectivo */}
+        {/* Plazo para pagar (amarillo si es pendiente de efectivo) */}
         {esPendienteEfectivo && (
-          <div style={{ marginBottom: '16px' }}>
-            <div
+          <div
+            style={{
+              background: '#FEFCE8',
+              border: '1.5px solid #FEF08A',
+              borderRadius: '16px',
+              padding: '14px 16px',
+              textAlign: 'left',
+              marginBottom: '16px'
+            }}
+          >
+            <p
               style={{
-                background: '#EFF6FF',
-                border: '1.5px solid #BFDBFE',
-                borderRadius: '16px',
-                padding: '16px 18px',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '8px',
-                marginBottom: '12px'
+                margin: '0 0 4px',
+                fontSize: '11px',
+                fontWeight: 800,
+                color: '#854D0E',
+                textTransform: 'uppercase',
+                letterSpacing: '0.04em'
               }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '13px' }}>
-                <span style={{ color: '#64748b', fontWeight: 600 }}>Referencia:</span>
-                <strong style={{ color: '#1D4ED8', fontWeight: 800 }}>{reserva.id}</strong>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '13px' }}>
-                <span style={{ color: '#64748b', fontWeight: 600 }}>Sucursal:</span>
-                <strong style={{ color: '#0f172a', fontWeight: 700 }}>{sucursalPago}</strong>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '13px' }}>
-                <span style={{ color: '#64748b', fontWeight: 600 }}>Ciudad:</span>
-                <strong style={{ color: '#0f172a', fontWeight: 700 }}>{ciudadPago}</strong>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '13px' }}>
-                <span style={{ color: '#64748b', fontWeight: 600 }}>Dirección:</span>
-                <strong style={{ color: '#0f172a', fontWeight: 700 }}>{direccionPago}</strong>
-              </div>
-              <div style={{ height: '1px', background: '#BFDBFE', margin: '4px 0' }} />
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '12px', fontWeight: 800, color: '#475569', letterSpacing: '0.02em' }}>TOTAL A PAGAR:</span>
-                <strong style={{ fontSize: '18px', fontWeight: 900, color: '#1D4ED8' }}>{formatCurrency(reserva.total || 0, moneda)}</strong>
-              </div>
-            </div>
-
-            {/* Plazo para pagar (amarillo) */}
-            <div
+              PLAZO PARA PAGAR
+            </p>
+            <p
               style={{
-                background: '#FEFCE8',
-                border: '1.5px solid #FEF08A',
-                borderRadius: '14px',
-                padding: '12px 14px',
-                textAlign: 'left'
+                margin: 0,
+                fontSize: '12px',
+                color: '#854D0E',
+                lineHeight: 1.45,
+                fontWeight: 500
               }}
             >
-              <p
-                style={{
-                  margin: '0 0 4px',
-                  fontSize: '11px',
-                  fontWeight: 800,
-                  color: '#854D0E',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.04em'
-                }}
-              >
-                PLAZO PARA PAGAR
-              </p>
-              <p
-                style={{
-                  margin: 0,
-                  fontSize: '12px',
-                  color: '#854D0E',
-                  lineHeight: 1.45,
-                  fontWeight: 500
-                }}
-              >
-                Tienes 72 horas desde ahora para acercarte a la sucursal y pagar. Si no pagas dentro de este plazo, la reserva se cancelará automáticamente.
-              </p>
-            </div>
+              Tienes 72 horas desde ahora para acercarte a la sucursal y pagar. Si no pagas dentro de este plazo, la reserva se cancelará automáticamente.
+            </p>
           </div>
         )}
 
-        {/* Tarjeta de Pago Aprobado Wompi */}
-        {esWompiAprobado && (
-          <div style={{ marginBottom: '16px' }}>
-            <div
-              style={{
-                background: '#f0fdf4',
-                border: '1.5px solid #86efac',
-                borderRadius: '16px',
-                padding: '14px 18px',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center'
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <FaCheckCircle color="#16a34a" size={18} />
-                <div>
-                  <strong style={{ display: 'block', fontSize: '13px', color: '#166534' }}>Pago Digital Aprobado por Wompi</strong>
-                  <span style={{ fontSize: '11.5px', color: '#15803d' }}>Transacción procesada correctamente</span>
-                </div>
-              </div>
-              <strong style={{ fontSize: '15px', color: '#166534' }}>{formatCurrency(reserva.total || 0, moneda)}</strong>
-            </div>
-          </div>
-        )}
-
-        {/* Cuadrícula de datos de la reserva en 2 columnas */}
+        {/* Cuadrícula de datos de la reserva en 2 columnas (Diseño exacto de tarjeta) */}
         <div
           style={{
             background: '#ffffff',
             border: '1px solid #e2e8f0',
-            borderRadius: '18px',
-            padding: '14px 16px',
+            borderRadius: '20px',
+            padding: '4px 16px',
             display: 'grid',
             gridTemplateColumns: '1fr 1fr',
-            gap: '12px 16px',
-            marginBottom: '16px',
-            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.03)'
+            marginBottom: '18px',
+            boxShadow: '0 4px 16px rgba(0, 0, 0, 0.03)'
           }}
         >
-          {/* Vehículo */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
-            <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#EFF6FF', color: '#1D4ED8', display: 'grid', placeItems: 'center', flexShrink: 0, fontSize: '14px' }}>
+          {/* Fila 1: Vehículo / Fecha de retiro */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '14px 12px 14px 4px', borderBottom: '1px solid #f1f5f9', borderRight: '1px solid #f1f5f9', minWidth: 0 }}>
+            <div style={{ width: '38px', height: '38px', borderRadius: '12px', background: '#EFF6FF', color: '#1D4ED8', display: 'grid', placeItems: 'center', flexShrink: 0, fontSize: '15px' }}>
               <FaCar />
             </div>
             <div style={{ minWidth: 0, overflow: 'hidden' }}>
-              <span style={{ display: 'block', fontSize: '10.5px', color: '#64748b', fontWeight: 600 }}>{t('reservas.vehicle', { defaultValue: 'Vehículo' })}</span>
-              <strong style={{ display: 'block', fontSize: '12.5px', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{nombreAuto}</strong>
+              <span style={{ display: 'block', fontSize: '11px', color: '#64748b', fontWeight: 600 }}>{t('reservas.vehicle', { defaultValue: 'Vehículo' })}</span>
+              <strong style={{ display: 'block', fontSize: '13px', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{nombreAuto}</strong>
             </div>
           </div>
 
-          {/* Fecha de retiro */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
-            <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#EFF6FF', color: '#1D4ED8', display: 'grid', placeItems: 'center', flexShrink: 0, fontSize: '14px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '14px 4px 14px 12px', borderBottom: '1px solid #f1f5f9', minWidth: 0 }}>
+            <div style={{ width: '38px', height: '38px', borderRadius: '12px', background: '#EFF6FF', color: '#1D4ED8', display: 'grid', placeItems: 'center', flexShrink: 0, fontSize: '15px' }}>
               <FaCalendarAlt />
             </div>
             <div style={{ minWidth: 0, overflow: 'hidden' }}>
-              <span style={{ display: 'block', fontSize: '10.5px', color: '#64748b', fontWeight: 600 }}>{t('reservas.pickupDate', { defaultValue: 'Fecha de retiro' })}</span>
-              <strong style={{ display: 'block', fontSize: '12.5px', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{fechaBonita(reserva.fechaInicio, i18n.resolvedLanguage)}</strong>
+              <span style={{ display: 'block', fontSize: '11px', color: '#64748b', fontWeight: 600 }}>{t('reservas.pickupDate', { defaultValue: 'Fecha de retiro' })}</span>
+              <strong style={{ display: 'block', fontSize: '13px', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{fechaBonita(reserva.fechaInicio, i18n.resolvedLanguage)}</strong>
             </div>
           </div>
 
-          {/* Fecha de devolución */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
-            <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#EFF6FF', color: '#1D4ED8', display: 'grid', placeItems: 'center', flexShrink: 0, fontSize: '14px' }}>
+          {/* Fila 2: Fecha de devolución / Lugar de retiro */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '14px 12px 14px 4px', borderBottom: '1px solid #f1f5f9', borderRight: '1px solid #f1f5f9', minWidth: 0 }}>
+            <div style={{ width: '38px', height: '38px', borderRadius: '12px', background: '#EFF6FF', color: '#1D4ED8', display: 'grid', placeItems: 'center', flexShrink: 0, fontSize: '15px' }}>
               <FaRegCalendarCheck />
             </div>
             <div style={{ minWidth: 0, overflow: 'hidden' }}>
-              <span style={{ display: 'block', fontSize: '10.5px', color: '#64748b', fontWeight: 600 }}>{t('reservas.returnDate', { defaultValue: 'Fecha de devolución' })}</span>
-              <strong style={{ display: 'block', fontSize: '12.5px', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{fechaBonita(reserva.fechaFin, i18n.resolvedLanguage)}</strong>
+              <span style={{ display: 'block', fontSize: '11px', color: '#64748b', fontWeight: 600 }}>{t('reservas.returnDate', { defaultValue: 'Fecha de devolución' })}</span>
+              <strong style={{ display: 'block', fontSize: '13px', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{fechaBonita(reserva.fechaFin, i18n.resolvedLanguage)}</strong>
             </div>
           </div>
 
-          {/* Lugar de retiro */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
-            <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#EFF6FF', color: '#1D4ED8', display: 'grid', placeItems: 'center', flexShrink: 0, fontSize: '14px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '14px 4px 14px 12px', borderBottom: '1px solid #f1f5f9', minWidth: 0 }}>
+            <div style={{ width: '38px', height: '38px', borderRadius: '12px', background: '#EFF6FF', color: '#1D4ED8', display: 'grid', placeItems: 'center', flexShrink: 0, fontSize: '15px' }}>
               <FaMapMarkerAlt />
             </div>
             <div style={{ minWidth: 0, overflow: 'hidden' }}>
-              <span style={{ display: 'block', fontSize: '10.5px', color: '#64748b', fontWeight: 600 }}>{t('reservas.pickupLocation', { defaultValue: 'Lugar de retiro' })}</span>
-              <strong style={{ display: 'block', fontSize: '12.5px', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} title={reserva.vehiculo?.sucursal || sucursalPago}>{reserva.vehiculo?.sucursal || sucursalPago}</strong>
+              <span style={{ display: 'block', fontSize: '11px', color: '#64748b', fontWeight: 600 }}>{t('reservas.pickupLocation', { defaultValue: 'Lugar de retiro' })}</span>
+              <strong style={{ display: 'block', fontSize: '13px', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} title={reserva.vehiculo?.sucursal || sucursalPago}>{reserva.vehiculo?.sucursal || sucursalPago}</strong>
             </div>
           </div>
 
-          {/* Protección */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
-            <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#EFF6FF', color: '#1D4ED8', display: 'grid', placeItems: 'center', flexShrink: 0, fontSize: '14px' }}>
+          {/* Fila 3: Protección / Referencia */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '14px 12px 14px 4px', borderBottom: '1px solid #f1f5f9', borderRight: '1px solid #f1f5f9', minWidth: 0 }}>
+            <div style={{ width: '38px', height: '38px', borderRadius: '12px', background: '#EFF6FF', color: '#1D4ED8', display: 'grid', placeItems: 'center', flexShrink: 0, fontSize: '15px' }}>
               <FaShieldAlt />
             </div>
             <div style={{ minWidth: 0, overflow: 'hidden' }}>
-              <span style={{ display: 'block', fontSize: '10.5px', color: '#64748b', fontWeight: 600 }}>{t('reservas.protection', { defaultValue: 'Protección' })}</span>
-              <strong style={{ display: 'block', fontSize: '12.5px', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{proteccion}</strong>
+              <span style={{ display: 'block', fontSize: '11px', color: '#64748b', fontWeight: 600 }}>{t('reservas.protection', { defaultValue: 'Protección' })}</span>
+              <strong style={{ display: 'block', fontSize: '13px', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{proteccion}</strong>
             </div>
           </div>
 
-          {/* Referencia */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
-            <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#EFF6FF', color: '#1D4ED8', display: 'grid', placeItems: 'center', flexShrink: 0, fontSize: '14px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '14px 4px 14px 12px', borderBottom: '1px solid #f1f5f9', minWidth: 0 }}>
+            <div style={{ width: '38px', height: '38px', borderRadius: '12px', background: '#EFF6FF', color: '#1D4ED8', display: 'grid', placeItems: 'center', flexShrink: 0, fontSize: '15px' }}>
               <FaScroll />
             </div>
             <div style={{ minWidth: 0, overflow: 'hidden' }}>
-              <span style={{ display: 'block', fontSize: '10.5px', color: '#64748b', fontWeight: 600 }}>{t('reservas.reference', { defaultValue: 'Referencia' })}</span>
-              <strong style={{ display: 'block', fontSize: '11px', color: '#1D4ED8', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} title={reserva.id}>{reserva.id}</strong>
+              <span style={{ display: 'block', fontSize: '11px', color: '#64748b', fontWeight: 600 }}>{t('reservas.reference', { defaultValue: 'Referencia' })}</span>
+              <strong style={{ display: 'block', fontSize: '11.5px', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} title={reserva.id}>{reserva.id}</strong>
             </div>
           </div>
 
-          {/* Total */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
-            <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#EFF6FF', color: '#1D4ED8', display: 'grid', placeItems: 'center', flexShrink: 0, fontSize: '14px' }}>
+          {/* Fila 4: Total / Estado */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '14px 12px 14px 4px', borderRight: '1px solid #f1f5f9', minWidth: 0 }}>
+            <div style={{ width: '38px', height: '38px', borderRadius: '12px', background: '#EFF6FF', color: '#1D4ED8', display: 'grid', placeItems: 'center', flexShrink: 0, fontSize: '15px' }}>
               <FaMoneyBillWave />
             </div>
             <div style={{ minWidth: 0, overflow: 'hidden' }}>
-              <span style={{ display: 'block', fontSize: '10.5px', color: '#64748b', fontWeight: 600 }}>{t('reservas.total', { defaultValue: 'Total' })}</span>
-              <strong style={{ display: 'block', fontSize: '12.5px', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{formatCurrency(reserva.total || 0, moneda)}</strong>
+              <span style={{ display: 'block', fontSize: '11px', color: '#64748b', fontWeight: 600 }}>{t('reservas.total', { defaultValue: 'Total' })}</span>
+              <strong style={{ display: 'block', fontSize: '13.5px', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{formatCurrency(reserva.total || 0, moneda)}</strong>
             </div>
           </div>
 
-          {/* Estado */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
-            <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#f0fdf4', color: '#16a34a', display: 'grid', placeItems: 'center', flexShrink: 0, fontSize: '14px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '14px 4px 14px 12px', minWidth: 0 }}>
+            <div style={{ width: '38px', height: '38px', borderRadius: '12px', background: '#EFF6FF', color: '#1D4ED8', display: 'grid', placeItems: 'center', flexShrink: 0, fontSize: '15px' }}>
               <FaCheckCircle />
             </div>
             <div style={{ minWidth: 0, overflow: 'hidden' }}>
-              <span style={{ display: 'block', fontSize: '10.5px', color: '#64748b', fontWeight: 600 }}>{t('reservas.status', { defaultValue: 'Estado' })}</span>
-              <strong style={{ display: 'block', fontSize: '12.5px', color: '#15803d', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{estado.texto}</strong>
+              <span style={{ display: 'block', fontSize: '11px', color: '#64748b', fontWeight: 600 }}>{t('reservas.status', { defaultValue: 'Estado' })}</span>
+              <strong style={{ display: 'block', fontSize: '13px', color: '#15803d', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{estado.texto}</strong>
             </div>
           </div>
         </div>
 
         {/* Tarjeta de Pago Digital Pendiente Wompi (si aplica) */}
         {esPendienteWompi && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginBottom: 16 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginBottom: 18 }}>
             <div
               style={{
                 background: '#ffffff',
@@ -566,32 +498,50 @@ function ModalDetalle({ reserva, moneda, onClose }) {
 
         {/* Sección de Contrato de Alquiler */}
         {!esPendienteWompi && (
-          <section style={{ marginBottom: 16 }}>
+          <section
+            style={{
+              background: '#ffffff',
+              border: '1px solid #e2e8f0',
+              borderRadius: '20px',
+              padding: '18px 20px',
+              marginBottom: '18px',
+              boxShadow: '0 4px 16px rgba(0, 0, 0, 0.03)'
+            }}
+          >
+            <div style={{ marginBottom: '12px' }}>
+              <h3 style={{ fontSize: '16px', fontWeight: 800, color: '#1E3A8A', margin: '0 0 4px' }}>
+                {t('reservas.rentalContract', { defaultValue: 'Contrato de alquiler' })}
+              </h3>
+              <p style={{ fontSize: '11.5px', color: '#64748b', margin: 0 }}>
+                {t('reservas.viewAndDownloadOriginal', { defaultValue: 'Consulta y descarga el documento original firmado.' })}
+              </p>
+            </div>
             <Contrato reserva={reserva} />
           </section>
         )}
 
         {/* Botón de cierre */}
-        <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16 }}>
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: 12 }}>
           <button
             type="button"
             onClick={onClose}
             style={{
               minWidth: 160,
               padding: '10px 24px',
-              borderRadius: 12,
+              borderRadius: '12px',
               border: '1px solid #cbd5e1',
-              background: '#f8fafc',
-              color: '#334155',
-              fontSize: 13,
-              fontWeight: 700,
+              background: '#ffffff',
+              color: '#1e293b',
+              fontSize: '13px',
+              fontWeight: 800,
               cursor: 'pointer',
-              transition: 'all 0.2s ease'
+              transition: 'all 0.2s ease',
+              boxShadow: '0 2px 6px rgba(0, 0, 0, 0.04)'
             }}
-            onMouseOver={(e) => { e.currentTarget.style.background = '#e2e8f0' }}
-            onMouseOut={(e) => { e.currentTarget.style.background = '#f8fafc' }}
+            onMouseOver={(e) => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.borderColor = '#94a3b8' }}
+            onMouseOut={(e) => { e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.borderColor = '#cbd5e1' }}
           >
-            {t('reservas.closeDetail', { defaultValue: 'Cerrar' })}
+            {t('reservas.closeDetail', { defaultValue: 'Cerrar detalle' })}
           </button>
         </div>
       </section>
