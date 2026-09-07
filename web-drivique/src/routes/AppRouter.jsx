@@ -49,6 +49,42 @@ function RutaPrivada({ children }) {
   return esValido ? children : <Navigate to="/" replace />
 }
 
+function RutaLanding() {
+  const token = useAuthStore((s) => s.token)
+  const usuario = useAuthStore((s) => s.usuario)
+  const hydrated = useHydration()
+  if (!hydrated) return null
+  const esValido = token && token !== 'null' && token !== 'undefined'
+  if (esValido) {
+    return <Navigate to={getRoleHome(usuario?.rol)} replace />
+  }
+  return <LandingPage />
+}
+
+function RutaCatalogo() {
+  const token = useAuthStore((s) => s.token)
+  const usuario = useAuthStore((s) => s.usuario)
+  const hydrated = useHydration()
+  if (!hydrated) return null
+  const esValido = token && token !== 'null' && token !== 'undefined'
+  if (esValido) {
+    return <Navigate to={getRoleHome(usuario?.rol)} replace />
+  }
+  return <CatalogPage />
+}
+
+function RutaPublicaAuth({ children }) {
+  const token = useAuthStore((s) => s.token)
+  const usuario = useAuthStore((s) => s.usuario)
+  const hydrated = useHydration()
+  if (!hydrated) return null
+  const esValido = token && token !== 'null' && token !== 'undefined'
+  if (esValido) {
+    return <Navigate to={getRoleHome(usuario?.rol)} replace />
+  }
+  return children
+}
+
 function RutaPorRol({ children, roles }) {
   const token = useAuthStore((s) => s.token)
   const usuario = useAuthStore((s) => s.usuario)
@@ -100,7 +136,7 @@ function RutaRecuperacionCorreo({ children }) {
 function RouteTracker() {
   const location = useLocation()
   useEffect(() => {
-    // No guardar rutas de autenticaciÃ³n, la raÃ­z, o rutas de respuesta de pagos/callback
+    // No guardar rutas de autenticación, la raíz, o rutas de respuesta de pagos/callback
     const ignorar = ['/', '/login', '/registro', '/recuperar', '/nueva-contrasena', '/verificar-2fa', '/verificar-correo', '/verificar-recuperacion', '/respuesta']
     if (!ignorar.includes(location.pathname)) {
       localStorage.setItem('last_path', location.pathname + location.search)
@@ -129,12 +165,12 @@ export default function AppRouter() {
     <BrowserRouter>
       <RouteTracker />
       <Routes>
-        <Route path="/" element={<LandingPage />} />
+        <Route path="/" element={<RutaLanding />} />
 
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/registro" element={<RegistrationPage />} />
-        <Route path="/recuperar" element={<RecoverPasswordPage />} />
-        <Route path="/nueva-contrasena" element={<NewPasswordPage />} />
+        <Route path="/login" element={<RutaPublicaAuth><LoginPage /></RutaPublicaAuth>} />
+        <Route path="/registro" element={<RutaPublicaAuth><RegistrationPage /></RutaPublicaAuth>} />
+        <Route path="/recuperar" element={<RutaPublicaAuth><RecoverPasswordPage /></RutaPublicaAuth>} />
+        <Route path="/nueva-contrasena" element={<RutaPublicaAuth><NewPasswordPage /></RutaPublicaAuth>} />
         <Route path="/verificar-2fa" element={<Ruta2FA><Verify2FAPage /></Ruta2FA>} />
         <Route path="/verificar-correo" element={<RutaVerificacionCorreo><VerifyEmailPage /></RutaVerificacionCorreo>} />
         <Route path="/verificar-recuperacion" element={<RutaRecuperacionCorreo><VerifyRecoverPage /></RutaRecuperacionCorreo>} />
@@ -165,7 +201,7 @@ export default function AppRouter() {
         <Route path="/encargado/audit" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER]}><AuditLogManagementPage branchOnly={true} /></RutaPorRol>} />
         <Route path="/encargado/:moduleKey" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER]}><ManagementModulePage /></RutaPorRol>} />
         <Route path="/perfil" element={<RutaPrivada><ProfilePage /></RutaPrivada>} />
-        <Route path="/catalogo" element={<CatalogPage />} />
+        <Route path="/catalogo" element={<RutaCatalogo />} />
         <Route path="/catalogo/:id" element={<VehicleDetailsPage />} />
         <Route path="/sucursales" element={<BranchesPage />} />
         <Route path="/reservas/:id" element={<RutaPrivada><ReservationFlowPage /></RutaPrivada>} />
