@@ -587,7 +587,7 @@ export default function DatosPersonales({
               width: 20,
               height: 20,
               borderRadius: '50%',
-              border: `1.8px solid ${c?.isDark ? '#60a5fa' : '#2563eb'}`,
+              border: `1.8px solid ${c?.accentText || 'var(--brand-secondary)'}`,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -597,14 +597,14 @@ export default function DatosPersonales({
                 width: 6,
                 height: 6,
                 borderRadius: '50%',
-                background: c?.isDark ? '#60a5fa' : '#2563eb'
+                background: c?.accentText || 'var(--brand-secondary)'
               }} />
             </div>
             <p style={{
               margin: 0,
               fontSize: 12.5,
-              fontWeight: 500,
-              color: c?.isDark ? '#93c5fd' : '#1e40af',
+              fontWeight: 600,
+              color: c?.accentText || 'var(--brand-secondary)',
               lineHeight: 1.45
             }}>
               {t('vehiculo.docsSecurityNotice', 'Tus documentos se usan exclusivamente para la elaboración del contrato digital de alquiler y la verificación de identidad.')}
@@ -727,8 +727,8 @@ export default function DatosPersonales({
           margin: 0,
           fontSize: 13,
           lineHeight: 1.5,
-          color: c?.isDark ? '#93c5fd' : '#1e40af',
-          fontWeight: 500
+          color: c?.accentText || 'var(--brand-secondary)',
+          fontWeight: 600
         }}>
           {t('vehiculo.confirmNoticeText', 'Al confirmar la reserva, quedará guardada automáticamente en tu cuenta. Tendrás un plazo de 72 horas para completar el pago antes de su cancelación automática.')}
         </p>
