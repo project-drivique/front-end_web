@@ -309,8 +309,8 @@ export default function ResumenLateral({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                background: c?.isDark ? 'rgba(255, 255, 255, 0.03)' : (c?.subCardBg || '#f8fafc'),
-                border: `1.5px solid ${c?.cardBorder || '#e2e8f0'}`,
+                background: c?.isDark ? 'rgba(59, 130, 246, 0.08)' : '#EFF6FF',
+                border: `1.5px solid ${c?.isDark ? 'rgba(59, 130, 246, 0.25)' : '#BFDBFE'}`,
                 borderRadius: 12,
                 padding: '12px 14px',
                 gap: 10

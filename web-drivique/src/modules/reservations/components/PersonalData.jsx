@@ -19,7 +19,7 @@ const DocumentUploader = ({ label, helpText, error, file, loading, onUpload, onC
   
   return (
     <div className="doc-uploader-card" style={{
-      border: `1.5px dashed ${error ? '#ef4444' : (isDark ? '#60a5fa' : (c?.accentText || '#1e40af'))}`,
+      border: `1.5px dashed ${error ? '#ef4444' : (isDark ? '#60A5FA' : '#93C5FD')}`,
       borderRadius: 16,
       padding: '24px 20px',
       textAlign: 'center',
@@ -54,8 +54,8 @@ const DocumentUploader = ({ label, helpText, error, file, loading, onUpload, onC
           display: 'flex',
           alignItems: 'center',
           gap: 12,
-          background: isDark ? 'rgba(59, 130, 246, 0.08)' : '#f0f7ff',
-          border: `1px solid ${isDark ? 'rgba(59, 130, 246, 0.25)' : '#bfdbfe'}`,
+          background: isDark ? 'rgba(59, 130, 246, 0.08)' : '#EFF6FF',
+          border: `1px solid ${isDark ? 'rgba(59, 130, 246, 0.25)' : '#BFDBFE'}`,
           padding: '10px 16px',
           borderRadius: 14,
           width: '100%',
@@ -575,8 +575,8 @@ export default function DatosPersonales({
 
           {/* Privacy & Legal Notice Banner */}
           <div style={{
-            background: c?.isDark ? 'rgba(59, 130, 246, 0.08)' : '#f0f7ff',
-            border: `1px solid ${c?.isDark ? 'rgba(59, 130, 246, 0.25)' : '#bfdbfe'}`,
+            background: c?.isDark ? 'rgba(59, 130, 246, 0.08)' : '#EFF6FF',
+            border: `1px solid ${c?.isDark ? 'rgba(59, 130, 246, 0.25)' : '#BFDBFE'}`,
             borderRadius: 14,
             padding: '12px 18px',
             display: 'flex',
@@ -699,8 +699,8 @@ export default function DatosPersonales({
 
       {/* ── Aviso informativo de confirmación ── */}
       <div style={{
-        background: c?.isDark ? 'rgba(59, 130, 246, 0.08)' : '#f0f7ff',
-        border: `1px solid ${c?.isDark ? 'rgba(59, 130, 246, 0.25)' : '#bfdbfe'}`,
+        background: c?.isDark ? 'rgba(59, 130, 246, 0.08)' : '#EFF6FF',
+        border: `1px solid ${c?.isDark ? 'rgba(59, 130, 246, 0.25)' : '#BFDBFE'}`,
         borderRadius: 16,
         padding: '16px 20px',
         display: 'flex',
@@ -1092,8 +1092,8 @@ export default function DatosPersonales({
               >
                 {/* Important Policy Top Banner */}
                 <div style={{
-                  background: c?.isDark ? 'rgba(59, 130, 246, 0.08)' : '#f0f7ff',
-                  borderBottom: `1px solid ${c?.isDark ? 'rgba(59, 130, 246, 0.25)' : '#bfdbfe'}`,
+                  background: c?.isDark ? 'rgba(59, 130, 246, 0.08)' : '#EFF6FF',
+                  borderBottom: `1px solid ${c?.isDark ? 'rgba(59, 130, 246, 0.25)' : '#BFDBFE'}`,
                   padding: '16px 20px',
                   flexShrink: 0
                 }}>
