@@ -271,9 +271,24 @@ export default function ResumenLateral({
                 </button>
               )}
             </div>
-            <p style={{ fontSize: 13, color: c?.textPrimary || '#0f172a', fontWeight: serviciosElegidos.length > 0 ? 800 : 400, margin: 0 }}>
-              {serviciosElegidos.length > 0 ? formatCurrency(subtotalServicios, moneda) : '—'}
-            </p>
+            {serviciosElegidos.length > 0 ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 4 }}>
+                {serviciosElegidos.map(s => (
+                  <div key={s.nombre} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 13 }}>
+                    <span style={{ color: c?.textPrimary || '#0f172a', fontWeight: 600 }}>
+                      • {s.nombre}
+                    </span>
+                    <span style={{ color: c?.textPrimary || '#0f172a', fontWeight: 700 }}>
+                      {formatCurrency(s.precio * dias, moneda)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p style={{ fontSize: 14, fontWeight: 800, color: c?.textPrimary || '#0f172a', margin: '2px 0 0' }}>
+                —
+              </p>
+            )}
           </div>
         </div>
 
