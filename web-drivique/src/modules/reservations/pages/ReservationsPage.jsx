@@ -14,6 +14,8 @@ import { reservationService } from '@/services/reservationService'
 import FirmaContrato from '@/modules/contracts/components/ContractSignature'
 import { SUCURSALES } from '@/modules/catalog/constants'
 import { construirUrlCheckout, aCentavos } from '@/services/wompiService'
+import logo from '@/assets/logo.png'
+import { useBrand } from '@/contexts/BrandContext'
 import './ReservationsPage.css'
 
 const CLASES_ESTADO = Object.fromEntries(filtrosReservas.estados.map(({ valor, clase }) => [valor, clase]))
@@ -159,6 +161,7 @@ function Contrato({ reserva }) {
 
 function ModalDetalle({ reserva, moneda, onClose }) {
   const { t, i18n } = useTranslation()
+  const { brand } = useBrand() || {}
   const estado = { texto: t(`reservas.statuses.${reserva.estado}`, { defaultValue: t('reservas.statuses.pendiente') }), clase: CLASES_ESTADO[reserva.estado] || CLASES_ESTADO.pendiente }
   const contrato = contractService.obtenerPorReserva(reserva.id)
   const reservaOriginal = contrato?.contratoOriginal?.reserva || reservationService.obtenerPorReferencia(reserva.id)
@@ -173,10 +176,10 @@ function ModalDetalle({ reserva, moneda, onClose }) {
   const esPendienteWompi = !esEfectivo && (reserva.estado === 'pendiente' || reserva.estado === 'PENDIENTE')
   const esWompiAprobado = !esEfectivo && (reserva.estado === 'confirmada' || reserva.estado === 'activa' || reserva.estado === 'en_curso' || reserva.estado === 'finalizada')
 
-  const sucursalPago = reservaOriginal?.reservaDetalles?.sucursalPagoEfectivo || reserva.vehiculo?.sucursal || 'National Downtown Barranquilla'
+  const sucursalPago = reservaOriginal?.reservaDetalles?.sucursalPagoEfectivo || reserva.vehiculo?.sucursal || 'Alquiler Neiva - Centro'
   const branchObj = SUCURSALES.find(s => s.nombre === sucursalPago)
-  const ciudadPago = branchObj?.ciudad || reserva.vehiculo?.ciudad || 'Barranquilla'
-  const direccionPago = branchObj?.direccion || 'Calle 72 # 40-30, Centro'
+  const ciudadPago = branchObj?.ciudad || reserva.vehiculo?.ciudad || 'Neiva'
+  const direccionPago = branchObj?.direccion || 'Calle 9 # 8-25, Centro'
 
   const [pagandoWompi, setPagandoWompi] = useState(false)
 
@@ -419,41 +422,149 @@ function ModalDetalle({ reserva, moneda, onClose }) {
           </div>
         </div>
 
-        {/* Plazo para pagar (amarillo si es pendiente de efectivo) - ubicado antes de contrato */}
+        {/* Tarjeta de Pago en Efectivo por Sucursal (Diseño exacto de la captura) */}
         {esPendienteEfectivo && (
           <div
             style={{
-              background: '#FEFCE8',
-              border: '1.5px solid #FEF08A',
-              borderRadius: '16px',
-              padding: '14px 16px',
-              textAlign: 'left',
-              marginBottom: '18px'
+              background: '#ffffff',
+              border: '1px solid #e2e8f0',
+              borderRadius: '22px',
+              padding: '28px 20px 20px',
+              textAlign: 'center',
+              marginBottom: '18px',
+              boxShadow: '0 4px 18px rgba(0, 0, 0, 0.03)',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center'
             }}
           >
-            <p
+            {/* Logo Badge Circular */}
+            <div
               style={{
-                margin: '0 0 4px',
-                fontSize: '11px',
+                width: 68,
+                height: 68,
+                borderRadius: '50%',
+                background: '#ffffff',
+                border: '1.5px solid #e2e8f0',
+                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.06)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: 12,
+                marginBottom: 16
+              }}
+            >
+              <img
+                src={brand?.logoDataUrl || logo}
+                alt={brand?.name || 'Drivique'}
+                style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+              />
+            </div>
+
+            {/* Titulo */}
+            <h3
+              style={{
+                fontSize: '20px',
                 fontWeight: 800,
-                color: '#854D0E',
-                textTransform: 'uppercase',
-                letterSpacing: '0.04em'
+                color: '#0f172a',
+                margin: '0 0 8px',
+                letterSpacing: '-0.01em'
               }}
             >
-              PLAZO PARA PAGAR
-            </p>
+              {t('vehiculo.reservationRegisteredTitle', { defaultValue: 'Reserva Registrada' })}
+            </h3>
+
+            {/* Subtitulo */}
             <p
               style={{
-                margin: 0,
-                fontSize: '12px',
-                color: '#854D0E',
-                lineHeight: 1.45,
-                fontWeight: 500
+                fontSize: '13px',
+                color: '#64748b',
+                lineHeight: 1.5,
+                margin: '0 0 18px',
+                padding: '0 6px'
               }}
             >
-              Tienes 72 horas desde ahora para acercarte a la sucursal y pagar. Si no pagas dentro de este plazo, la reserva se cancelará automáticamente.
+              {t('vehiculo.cashReservationRegisteredDesc', {
+                defaultValue: `Tu reserva quedó registrada. Para confirmarla, realiza el pago en efectivo en el punto autorizado ${sucursalPago}.`,
+                sucursal: sucursalPago
+              })}
             </p>
+
+            {/* Tarjeta de Resumen con datos */}
+            <div
+              style={{
+                width: '100%',
+                background: '#EFF6FF',
+                border: '1.5px solid #BFDBFE',
+                borderRadius: '16px',
+                padding: '16px 18px',
+                textAlign: 'left',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '8px',
+                marginBottom: '14px',
+                boxSizing: 'border-box'
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '13px' }}>
+                <span style={{ color: '#64748b', fontWeight: 600 }}>Referencia:</span>
+                <strong style={{ color: '#1D4ED8', fontWeight: 800 }}>{reserva.id}</strong>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '13px' }}>
+                <span style={{ color: '#64748b', fontWeight: 600 }}>Sucursal:</span>
+                <strong style={{ color: '#0f172a', fontWeight: 700 }}>{sucursalPago}</strong>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '13px' }}>
+                <span style={{ color: '#64748b', fontWeight: 600 }}>Ciudad:</span>
+                <strong style={{ color: '#0f172a', fontWeight: 700 }}>{ciudadPago}</strong>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '13px' }}>
+                <span style={{ color: '#64748b', fontWeight: 600 }}>Dirección:</span>
+                <strong style={{ color: '#0f172a', fontWeight: 700 }}>{direccionPago}</strong>
+              </div>
+              <div style={{ height: '1px', background: '#BFDBFE', margin: '4px 0' }} />
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: '12px', fontWeight: 800, color: '#475569', letterSpacing: '0.02em' }}>TOTAL A PAGAR:</span>
+                <strong style={{ fontSize: '18px', fontWeight: 900, color: '#1D4ED8' }}>{formatCurrency(reserva.total || 0, moneda)}</strong>
+              </div>
+            </div>
+
+            {/* Plazo para pagar (amarillo) */}
+            <div
+              style={{
+                width: '100%',
+                background: '#FEFCE8',
+                border: '1.5px solid #FEF08A',
+                borderRadius: '14px',
+                padding: '12px 14px',
+                textAlign: 'left',
+                boxSizing: 'border-box'
+              }}
+            >
+              <p
+                style={{
+                  margin: '0 0 4px',
+                  fontSize: '11px',
+                  fontWeight: 800,
+                  color: '#854D0E',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.04em'
+                }}
+              >
+                PLAZO PARA PAGAR
+              </p>
+              <p
+                style={{
+                  margin: 0,
+                  fontSize: '12px',
+                  color: '#854D0E',
+                  lineHeight: 1.45,
+                  fontWeight: 500
+                }}
+              >
+                Tienes 72 horas desde ahora para acercarte a la sucursal y pagar. Si no pagas dentro de este plazo, la reserva se cancelará automáticamente.
+              </p>
+            </div>
           </div>
         )}
 
