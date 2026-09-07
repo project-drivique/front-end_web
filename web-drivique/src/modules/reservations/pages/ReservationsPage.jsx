@@ -218,6 +218,8 @@ function ModalDetalle({ reserva, moneda, onClose }) {
           width: '100%',
           maxHeight: '92vh',
           overflowY: 'auto',
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none',
           background: '#ffffff',
           borderRadius: '24px',
           padding: '24px 24px 28px',
