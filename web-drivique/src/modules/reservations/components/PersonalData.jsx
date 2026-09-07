@@ -33,6 +33,7 @@ const DocumentUploader = ({ label, helpText, error, file, loading, onUpload, onC
       position: 'relative',
       minWidth: 0,
       maxWidth: '100%',
+      height: '100%',
       boxSizing: 'border-box',
     }}>
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
@@ -541,33 +542,35 @@ export default function DatosPersonales({
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          <DocumentUploader
-            label={nombreDocSeleccionado}
-            helpText={
-              datosForm.tipoDoc === 'PASAPORTE'
-                ? t('vehiculo.passportHelpText', 'Sube tu pasaporte vigente en formato PDF (página de datos y foto, máx 5MB)')
-                : (datosForm.tipoDoc
-                    ? t('vehiculo.docHelpTextDynamic', 'Sube tu {{doc}} en un solo archivo PDF (ambos lados incluidos si aplica, máx 5MB)', { doc: nombreDocSeleccionado })
-                    : t('vehiculo.nationalIdHelpText', 'Sube tu Cédula de Ciudadanía (CC) en un solo archivo PDF (ambos lados incluidos si aplica, máx 5MB)')
-                  )
-            }
-            error={errores.cedulaPdf || cedulaError}
-            file={datosForm.cedulaPdf}
-            loading={cedulaCargando}
-            onUpload={(e) => handleUpload('cedula', e)}
-            onClear={() => onCambio('cedulaPdf', null)}
-            c={c}
-          />
-          <DocumentUploader
-            label={t('vehiculo.driverLicense', 'Licencia de Conducción')}
-            helpText={t('vehiculo.driverLicenseHelpText', 'Sube tu licencia de conducción vigente y legible en formato PDF (máx 5MB)')}
-            error={errores.licenciaPdf || licenciaError}
-            file={datosForm.licenciaPdf}
-            loading={licenciaCargando}
-            onUpload={(e) => handleUpload('licencia', e)}
-            onClear={() => onCambio('licenciaPdf', null)}
-            c={c}
-          />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <DocumentUploader
+              label={nombreDocSeleccionado}
+              helpText={
+                datosForm.tipoDoc === 'PASAPORTE'
+                  ? t('vehiculo.passportHelpText', 'Sube tu pasaporte vigente en formato PDF (página de datos y foto, máx 5MB)')
+                  : (datosForm.tipoDoc
+                      ? t('vehiculo.docHelpTextDynamic', 'Sube tu {{doc}} en un solo archivo PDF (ambos lados incluidos si aplica, máx 5MB)', { doc: nombreDocSeleccionado })
+                      : t('vehiculo.nationalIdHelpText', 'Sube tu Cédula de Ciudadanía (CC) en un solo archivo PDF (ambos lados incluidos si aplica, máx 5MB)')
+                    )
+              }
+              error={errores.cedulaPdf || cedulaError}
+              file={datosForm.cedulaPdf}
+              loading={cedulaCargando}
+              onUpload={(e) => handleUpload('cedula', e)}
+              onClear={() => onCambio('cedulaPdf', null)}
+              c={c}
+            />
+            <DocumentUploader
+              label={t('vehiculo.driverLicense', 'Licencia de Conducción')}
+              helpText={t('vehiculo.driverLicenseHelpText', 'Sube tu licencia de conducción vigente y legible en formato PDF (máx 5MB)')}
+              error={errores.licenciaPdf || licenciaError}
+              file={datosForm.licenciaPdf}
+              loading={licenciaCargando}
+              onUpload={(e) => handleUpload('licencia', e)}
+              onClear={() => onCambio('licenciaPdf', null)}
+              c={c}
+            />
+          </div>
 
           {/* Privacy & Legal Notice Banner */}
           <div style={{
