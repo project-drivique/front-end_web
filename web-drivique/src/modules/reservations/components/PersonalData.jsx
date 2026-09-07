@@ -530,11 +530,16 @@ export default function DatosPersonales({
       </div>
 
       <div style={sectionCardStyle}>
-        <div style={headerStyle}>
-          <FaIdCard color={c?.accentText || 'var(--brand-secondary)'} size={14} />
-          <h3 style={{ fontSize: 13, fontWeight: 700, color: c?.accentText || 'var(--brand-secondary)', margin: 0, textTransform: 'none' }}>
-            {t('vehiculo.mandatoryDocsVerification', 'Verificación Documental Obligatoria')}
-          </h3>
+        <div style={{ margin: '0 0 16px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+            <FaIdCard color={c?.accentText || 'var(--brand-secondary)'} size={15} />
+            <h3 style={{ fontSize: 14, fontWeight: 700, color: c?.accentText || 'var(--brand-secondary)', margin: 0, textTransform: 'none' }}>
+              {t('vehiculo.mandatoryDocsVerification', 'Verificación Documental Obligatoria')}
+            </h3>
+          </div>
+          <p style={{ margin: 0, fontSize: 12.5, color: c?.textSecondary || '#64748b', lineHeight: 1.4 }}>
+            {t('vehiculo.mandatoryDocsSub', 'Sube los documentos requeridos para verificar tu identidad y habilitar la reserva del vehículo.')}
+          </p>
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
