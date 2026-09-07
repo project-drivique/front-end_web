@@ -627,7 +627,7 @@ export default function DatosPersonales({
             <p style={{
               margin: 0,
               fontSize: 12.5,
-              fontWeight: 700,
+              fontWeight: 500,
               color: c?.accentText || 'var(--brand-secondary)',
               lineHeight: 1.45
             }}>
@@ -752,7 +752,7 @@ export default function DatosPersonales({
           fontSize: 13,
           lineHeight: 1.5,
           color: c?.accentText || 'var(--brand-secondary)',
-          fontWeight: 700
+          fontWeight: 500
         }}>
           {t('vehiculo.confirmNoticeText', 'Al confirmar la reserva, quedará guardada automáticamente en tu cuenta. Tendrás un plazo de 72 horas para completar el pago antes de su cancelación automática.')}
         </p>
