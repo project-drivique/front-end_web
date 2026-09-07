@@ -507,7 +507,13 @@ export default function ReservationFlowPage() {
                   <button
                     type="button"
                     onClick={() => {
-                      sessionStorage.removeItem(`drivique_reservation_state_${vehiculo.id}`)
+                      try {
+                        if (vehiculo?.id) {
+                          sessionStorage.removeItem(`drivique_reservation_state_${vehiculo.id}`)
+                        }
+                      } catch (err) {
+                        console.error(err)
+                      }
                       navigate('/reservas')
                     }}
                     style={{
@@ -533,7 +539,13 @@ export default function ReservationFlowPage() {
                   <button
                     type="button"
                     onClick={() => {
-                      sessionStorage.removeItem(`drivique_reservation_state_${vehiculo.id}`)
+                      try {
+                        if (vehiculo?.id) {
+                          sessionStorage.removeItem(`drivique_reservation_state_${vehiculo.id}`)
+                        }
+                      } catch (err) {
+                        console.error(err)
+                      }
                       navigate('/home')
                     }}
                     style={{
