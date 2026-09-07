@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { FaInfoCircle } from 'react-icons/fa';
 import { reservationService } from '@/services/reservationService';
 import { formatCurrency } from '@/utils/currencyUtils';
 import { showAlert } from '@/utils/swalConfig';
@@ -93,10 +94,8 @@ export default function RespuestaPagoPage() {
       <div style={{ paddingTop: 140, display: 'flex', justifyContent: 'center', paddingBottom: 40, paddingLeft: 24, paddingRight: 24 }}>
         <div className="respuesta-pago-card" style={{ background: 'var(--bg-tarjeta)', borderRadius: 24, padding: 40, width: '100%', maxWidth: 500, boxShadow: '0 12px 36px rgba(0,0,0,0.06)', border: '1px solid var(--borde)', textAlign: 'center' }}>
           
-          <div style={{ width: 80, height: 80, borderRadius: '50%', background: 'var(--brand-gradient)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px', boxShadow: 'var(--brand-shadow)' }}>
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
+          <div style={{ width: 80, height: 80, borderRadius: '50%', background: 'var(--brand-gradient)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px', boxShadow: 'var(--brand-shadow)', color: '#fff', fontSize: '32px' }}>
+            <FaInfoCircle />
           </div>
           
           <h2 style={{ fontSize: 26, fontWeight: 900, color: 'var(--texto-primary)', margin: '0 0 12px' }}>{t('pago.paymentInProcess', 'Pago en Proceso')}</h2>
