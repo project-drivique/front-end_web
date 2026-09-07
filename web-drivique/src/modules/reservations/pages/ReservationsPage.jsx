@@ -317,9 +317,10 @@ function Contrato({ reserva }) {
             id="input-clave-contrato"
             type={mostrarClave ? 'text' : 'password'}
             value={clave}
+            disabled={!tieneContratoFirmado}
             onChange={(e) => { setClave(e.target.value); setError('') }}
             onKeyDown={(e) => e.key === 'Enter' && validar()}
-            placeholder="Ingrese su clave"
+            placeholder=""
             style={{
               width: '100%',
               height: '50px',
@@ -328,21 +329,23 @@ function Contrato({ reserva }) {
               padding: '0 46px 0 16px',
               fontSize: '14px',
               color: '#0f172a',
-              background: '#ffffff',
+              background: !tieneContratoFirmado ? '#F8FAFC' : '#ffffff',
+              cursor: !tieneContratoFirmado ? 'not-allowed' : 'text',
               boxSizing: 'border-box',
               outline: 'none',
               transition: 'border-color 0.2s ease, box-shadow 0.2s ease'
             }}
             onFocus={(e) => {
-              if (!error) e.target.style.borderColor = '#3B82F6'
+              if (!error && tieneContratoFirmado) e.target.style.borderColor = '#3B82F6'
             }}
             onBlur={(e) => {
-              if (!error) e.target.style.borderColor = '#E2E8F0'
+              if (!error && tieneContratoFirmado) e.target.style.borderColor = '#E2E8F0'
             }}
           />
 
           <button
             type="button"
+            disabled={!tieneContratoFirmado}
             onClick={() => setMostrarClave(v => !v)}
             aria-label={mostrarClave ? 'Ocultar clave' : 'Mostrar clave'}
             style={{
@@ -353,11 +356,12 @@ function Contrato({ reserva }) {
               background: 'none',
               border: 'none',
               color: '#94A3B8',
-              cursor: 'pointer',
+              cursor: !tieneContratoFirmado ? 'not-allowed' : 'pointer',
               display: 'grid',
               placeItems: 'center',
               padding: '6px',
-              fontSize: '17px'
+              fontSize: '17px',
+              opacity: !tieneContratoFirmado ? 0.6 : 1
             }}
           >
             {mostrarClave ? <FaEyeSlash /> : <FaEye />}
