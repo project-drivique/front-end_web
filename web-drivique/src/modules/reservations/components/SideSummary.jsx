@@ -798,11 +798,11 @@ export default function ResumenLateral({
                         display: 'flex',
                         borderRadius: 16,
                         border: promo.destacada
-                          ? `1.5px solid rgba(225, 29, 72, 0.4)`
+                          ? `1.5px solid ${c?.isDark ? 'rgba(59, 130, 246, 0.4)' : '#bfdbfe'}`
                           : `1.5px solid ${c?.cardBorder || '#e2e8f0'}`,
                         background: c?.cardBg || '#ffffff',
                         boxShadow: promo.destacada
-                          ? '0 6px 18px rgba(225, 29, 72, 0.1)'
+                          ? '0 4px 14px rgba(37, 99, 235, 0.08)'
                           : '0 2px 8px rgba(0,0,0,0.03)',
                         overflow: 'hidden',
                         position: 'relative'
@@ -813,7 +813,7 @@ export default function ResumenLateral({
                         <div>
                           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginBottom: 4 }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 7, minWidth: 0, flex: 1 }}>
-                              <FaTicketAlt size={13} color="var(--brand-primary, #e11d48)" style={{ flexShrink: 0 }} />
+                              <FaTicketAlt size={13} color={c?.accentText || 'var(--brand-secondary)'} style={{ flexShrink: 0 }} />
                               <h4 style={{
                                 margin: 0,
                                 fontSize: 13.5,
@@ -831,9 +831,9 @@ export default function ResumenLateral({
                               <span style={{
                                 fontSize: 10,
                                 fontWeight: 800,
-                                background: 'rgba(225, 29, 72, 0.08)',
-                                color: 'var(--brand-primary, #e11d48)',
-                                border: '1px solid rgba(225, 29, 72, 0.25)',
+                                background: c?.isDark ? 'rgba(59, 130, 246, 0.12)' : '#eff6ff',
+                                color: c?.accentText || 'var(--brand-secondary)',
+                                border: `1px solid ${c?.isDark ? 'rgba(59, 130, 246, 0.3)' : '#bfdbfe'}`,
                                 borderRadius: 10,
                                 padding: '2px 7px',
                                 display: 'inline-flex',
@@ -889,7 +889,7 @@ export default function ResumenLateral({
                               background: 'none',
                               border: 'none',
                               padding: 0,
-                              color: 'var(--brand-primary, #e11d48)',
+                              color: c?.accentText || 'var(--brand-secondary)',
                               fontSize: 12,
                               fontWeight: 800,
                               cursor: 'pointer',
@@ -937,7 +937,7 @@ export default function ResumenLateral({
                       <div style={{
                         width: '36%',
                         minWidth: 125,
-                        background: c?.isDark ? 'rgba(225, 29, 72, 0.08)' : 'rgba(225, 29, 72, 0.04)',
+                        background: c?.isDark ? 'rgba(59, 130, 246, 0.06)' : '#f8fbff',
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
@@ -945,7 +945,7 @@ export default function ResumenLateral({
                         padding: '14px 10px',
                         textAlign: 'center'
                       }}>
-                        <span style={{ fontSize: 17, fontWeight: 900, color: 'var(--brand-primary, #e11d48)', lineHeight: 1.1 }}>
+                        <span style={{ fontSize: 17, fontWeight: 900, color: c?.accentText || 'var(--brand-secondary)', lineHeight: 1.1 }}>
                           {valorDescFormatted}
                         </span>
                         <span style={{ fontSize: 10.5, color: c?.textSecondary || '#64748b', margin: '4px 0 10px', lineHeight: 1.2, fontWeight: 500 }}>
@@ -965,7 +965,7 @@ export default function ResumenLateral({
                             }
                           }}
                           style={{
-                            background: 'var(--brand-gradient, #e11d48)',
+                            background: 'var(--brand-gradient, #1d4ed8)',
                             color: '#ffffff',
                             border: 'none',
                             borderRadius: 8,
@@ -973,7 +973,7 @@ export default function ResumenLateral({
                             fontSize: 12,
                             fontWeight: 800,
                             cursor: 'pointer',
-                            boxShadow: '0 2px 6px rgba(225, 29, 72, 0.25)',
+                            boxShadow: '0 2px 6px rgba(37, 99, 235, 0.25)',
                             transition: 'all 0.2s'
                           }}
                         >
