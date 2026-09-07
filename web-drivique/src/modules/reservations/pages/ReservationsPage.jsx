@@ -309,44 +309,6 @@ function ModalDetalle({ reserva, moneda, onClose }) {
           </div>
         )}
 
-        {/* Plazo para pagar (amarillo si es pendiente de efectivo) */}
-        {esPendienteEfectivo && (
-          <div
-            style={{
-              background: '#FEFCE8',
-              border: '1.5px solid #FEF08A',
-              borderRadius: '16px',
-              padding: '14px 16px',
-              textAlign: 'left',
-              marginBottom: '16px'
-            }}
-          >
-            <p
-              style={{
-                margin: '0 0 4px',
-                fontSize: '11px',
-                fontWeight: 800,
-                color: '#854D0E',
-                textTransform: 'uppercase',
-                letterSpacing: '0.04em'
-              }}
-            >
-              PLAZO PARA PAGAR
-            </p>
-            <p
-              style={{
-                margin: 0,
-                fontSize: '12px',
-                color: '#854D0E',
-                lineHeight: 1.45,
-                fontWeight: 500
-              }}
-            >
-              Tienes 72 horas desde ahora para acercarte a la sucursal y pagar. Si no pagas dentro de este plazo, la reserva se cancelará automáticamente.
-            </p>
-          </div>
-        )}
-
         {/* Cuadrícula de datos de la reserva en 2 columnas (Diseño exacto de tarjeta) */}
         <div
           style={{
@@ -444,6 +406,44 @@ function ModalDetalle({ reserva, moneda, onClose }) {
             </div>
           </div>
         </div>
+
+        {/* Plazo para pagar (amarillo si es pendiente de efectivo) - ubicado antes de contrato */}
+        {esPendienteEfectivo && (
+          <div
+            style={{
+              background: '#FEFCE8',
+              border: '1.5px solid #FEF08A',
+              borderRadius: '16px',
+              padding: '14px 16px',
+              textAlign: 'left',
+              marginBottom: '18px'
+            }}
+          >
+            <p
+              style={{
+                margin: '0 0 4px',
+                fontSize: '11px',
+                fontWeight: 800,
+                color: '#854D0E',
+                textTransform: 'uppercase',
+                letterSpacing: '0.04em'
+              }}
+            >
+              PLAZO PARA PAGAR
+            </p>
+            <p
+              style={{
+                margin: 0,
+                fontSize: '12px',
+                color: '#854D0E',
+                lineHeight: 1.45,
+                fontWeight: 500
+              }}
+            >
+              Tienes 72 horas desde ahora para acercarte a la sucursal y pagar. Si no pagas dentro de este plazo, la reserva se cancelará automáticamente.
+            </p>
+          </div>
+        )}
 
         {/* Tarjeta de Pago Digital Pendiente Wompi (si aplica) */}
         {esPendienteWompi && (
