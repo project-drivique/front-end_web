@@ -248,6 +248,12 @@ export default function DatosPersonales({
     }
   };
 
+  const nombreDocSeleccionado = useMemo(() => {
+    if (!datosForm.tipoDoc) return t('vehiculo.identityDocument', 'Documento de Identidad');
+    const encontrado = docsDisponibles.find(d => d.value === datosForm.tipoDoc);
+    return encontrado?.label || getNombreTipoDoc(datosForm.tipoDoc) || t('vehiculo.identityDocument', 'Documento de Identidad');
+  }, [datosForm.tipoDoc, docsDisponibles, t]);
+
   const tarifas = vehiculo.tarifas || {};
   const kmLimit = tarifas.kmLimitado || { precio: 0, km: 0 };
   const kmIlimit = tarifas.kmIlimitado || { precio: 0 };
@@ -493,8 +499,15 @@ export default function DatosPersonales({
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <DocumentUploader
-            label={t('vehiculo.nationalId', 'Cédula de Ciudadanía')}
-            helpText={t('vehiculo.nationalIdHelpText', 'Sube tu cédula de ciudadanía en un solo archivo PDF (ambos lados incluidos, máx 5MB)')}
+            label={nombreDocSeleccionado}
+            helpText={
+              datosForm.tipoDoc === 'PASAPORTE'
+                ? t('vehiculo.passportHelpText', 'Sube tu pasaporte vigente en formato PDF (página de datos y foto, máx 5MB)')
+                : (datosForm.tipoDoc
+                    ? t('vehiculo.docHelpTextDynamic', 'Sube tu {{doc}} en un solo archivo PDF (ambos lados incluidos si aplica, máx 5MB)', { doc: nombreDocSeleccionado })
+                    : t('vehiculo.nationalIdHelpText', 'Sube tu documento de identidad en un solo archivo PDF (ambos lados incluidos, máx 5MB)')
+                  )
+            }
             error={errores.cedulaPdf || cedulaError}
             file={datosForm.cedulaPdf}
             loading={cedulaCargando}
