@@ -54,9 +54,9 @@ const DocumentUploader = ({ label, helpText, error, file, loading, onUpload, onC
           display: 'flex',
           alignItems: 'center',
           gap: 12,
-          background: isDark ? 'rgba(59, 130, 246, 0.08)' : '#f8fbff',
-          border: `1px solid ${isDark ? 'rgba(59, 130, 246, 0.2)' : '#e0f2fe'}`,
-          padding: '12px 16px',
+          background: isDark ? 'rgba(59, 130, 246, 0.08)' : '#f0f7ff',
+          border: `1px solid ${isDark ? 'rgba(59, 130, 246, 0.25)' : '#bfdbfe'}`,
+          padding: '10px 16px',
           borderRadius: 14,
           width: '100%',
           minWidth: 0,
@@ -64,16 +64,16 @@ const DocumentUploader = ({ label, helpText, error, file, loading, onUpload, onC
         }}>
           {/* Blue checkmark circle */}
           <div style={{
-            width: 24,
-            height: 24,
+            width: 22,
+            height: 22,
             borderRadius: '50%',
-            background: '#1d4ed8',
+            background: '#2563eb',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             flexShrink: 0
           }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="20 6 9 17 4 12" />
             </svg>
           </div>
@@ -564,35 +564,35 @@ export default function DatosPersonales({
 
           {/* Privacy & Legal Notice Banner */}
           <div style={{
-            background: c?.isDark ? 'rgba(59, 130, 246, 0.08)' : '#f8fbff',
-            border: `1px solid ${c?.isDark ? 'rgba(59, 130, 246, 0.2)' : '#e0f2fe'}`,
-            borderRadius: 16,
-            padding: '16px 20px',
+            background: c?.isDark ? 'rgba(59, 130, 246, 0.08)' : '#f0f7ff',
+            border: `1px solid ${c?.isDark ? 'rgba(59, 130, 246, 0.25)' : '#bfdbfe'}`,
+            borderRadius: 14,
+            padding: '12px 18px',
             display: 'flex',
             alignItems: 'center',
-            gap: 14
+            gap: 12
           }}>
             <div style={{
-              width: 28,
-              height: 28,
+              width: 20,
+              height: 20,
               borderRadius: '50%',
-              border: `2.5px solid ${c?.isDark ? '#60a5fa' : '#3b82f6'}`,
+              border: `1.8px solid ${c?.isDark ? '#60a5fa' : '#2563eb'}`,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               flexShrink: 0
             }}>
               <div style={{
-                width: 10,
-                height: 10,
+                width: 6,
+                height: 6,
                 borderRadius: '50%',
-                background: c?.isDark ? '#60a5fa' : '#3b82f6'
+                background: c?.isDark ? '#60a5fa' : '#2563eb'
               }} />
             </div>
             <p style={{
               margin: 0,
-              fontSize: 13,
-              fontWeight: 600,
+              fontSize: 12.5,
+              fontWeight: 500,
               color: c?.isDark ? '#93c5fd' : '#1e40af',
               lineHeight: 1.45
             }}>
