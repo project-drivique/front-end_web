@@ -215,8 +215,37 @@ export default function DatosPersonales({
     return getPrefijoPais(datosForm.nacionalidad);
   }, [datosForm.nacionalidad]);
 
+  const docsDisponibles = useMemo(() => {
+    if (!datosForm.nacionalidad) return [];
+    if (datosForm.nacionalidad.toLowerCase() === 'colombia') {
+      return [
+        { value: 'CC', label: t('vehiculo.docTypes.cc', 'Cédula de ciudadanía') },
+        { value: 'CE', label: t('vehiculo.docTypes.ce', 'Cédula de extranjería') },
+        { value: 'PASAPORTE', label: t('vehiculo.docTypes.passport', 'Pasaporte') },
+        { value: 'PPT', label: t('vehiculo.docTypes.ppt', 'Permiso por Protección Temporal (PPT)') },
+        { value: 'PEP', label: t('vehiculo.docTypes.pep', 'Permiso Especial de Permanencia (PEP)') },
+      ];
+    }
+    return [
+      { value: 'PASAPORTE', label: t('vehiculo.docTypes.passport', 'Pasaporte') },
+      { value: 'DNI', label: t('vehiculo.docTypes.dni', 'Documento Nacional de Identidad (DNI)') },
+      { value: 'CE', label: t('vehiculo.docTypes.ce', 'Cédula de extranjería') },
+    ];
+  }, [datosForm.nacionalidad, t]);
+
   const handleCambioNacionalidad = (nuevoPais) => {
     onCambio('nacionalidad', nuevoPais);
+    if (nuevoPais) {
+      const esCol = nuevoPais.toLowerCase() === 'colombia';
+      const validos = esCol
+        ? ['CC', 'CE', 'PASAPORTE', 'PPT', 'PEP']
+        : ['PASAPORTE', 'DNI', 'CE'];
+      if (!validos.includes(datosForm.tipoDoc)) {
+        onCambio('tipoDoc', '');
+      }
+    } else {
+      onCambio('tipoDoc', '');
+    }
   };
 
   const tarifas = vehiculo.tarifas || {};
@@ -349,7 +378,7 @@ export default function DatosPersonales({
               {t('vehiculo.phoneNumber', 'Teléfono celular')} *
             </label>
             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-              {prefijoActual && (
+              {prefijoActual ? (
                 <div style={{
                   height: 46,
                   minWidth: 64,
@@ -368,15 +397,18 @@ export default function DatosPersonales({
                 }}>
                   {prefijoActual}
                 </div>
-              )}
+              ) : null}
               <input
                 type="tel"
+                disabled={!datosForm.nacionalidad}
                 value={datosForm.celular}
                 onChange={e => onCambio('celular', e.target.value.replace(/\D/g, '').slice(0, 12))}
-                placeholder="Ej. 3144214909"
+                placeholder={!datosForm.nacionalidad ? t('vehiculo.selectNationalityFirst', 'Primero selecciona tu nacionalidad') : 'Ej. 3144214909'}
                 style={{
                   ...inputStyle(errores.celular),
-                  flex: 1
+                  flex: 1,
+                  opacity: !datosForm.nacionalidad ? 0.6 : 1,
+                  cursor: !datosForm.nacionalidad ? 'not-allowed' : 'text'
                 }}
               />
             </div>
@@ -388,17 +420,21 @@ export default function DatosPersonales({
               {t('vehiculo.docType', 'Tipo de documento')} *
             </label>
             <select
+              disabled={!datosForm.nacionalidad}
               value={datosForm.tipoDoc || ''}
               onChange={e => onCambio('tipoDoc', e.target.value)}
-              style={inputStyle(errores.tipoDoc)}
+              style={{
+                ...inputStyle(errores.tipoDoc),
+                opacity: !datosForm.nacionalidad ? 0.6 : 1,
+                cursor: !datosForm.nacionalidad ? 'not-allowed' : 'pointer'
+              }}
             >
               <option value="">{t('common.select', 'Seleccionar')}</option>
-              <option value="CC">{t('vehiculo.docTypes.cc', 'Cédula de ciudadanía')}</option>
-              <option value="CE">{t('vehiculo.docTypes.ce', 'Cédula de extranjería')}</option>
-              <option value="PASAPORTE">{t('vehiculo.docTypes.passport', 'Pasaporte')}</option>
-              <option value="DNI">{t('vehiculo.docTypes.dni', 'Documento Nacional de Identidad (DNI)')}</option>
-              <option value="PPT">{t('vehiculo.docTypes.ppt', 'Permiso por Protección Temporal (PPT)')}</option>
-              <option value="PEP">{t('vehiculo.docTypes.pep', 'Permiso Especial de Permanencia (PEP)')}</option>
+              {docsDisponibles.map(doc => (
+                <option key={doc.value} value={doc.value}>
+                  {doc.label}
+                </option>
+              ))}
             </select>
             {errores.tipoDoc && <p style={{ color: '#ef4444', fontSize: 12, margin: '4px 0 0', fontWeight: 600 }}>{errores.tipoDoc}</p>}
           </div>
@@ -430,12 +466,15 @@ export default function DatosPersonales({
               ) : null}
               <input
                 type="text"
+                disabled={!datosForm.tipoDoc}
                 value={datosForm.numDoc}
                 onChange={e => onCambio('numDoc', e.target.value)}
-                placeholder="Ej. 1075228306"
+                placeholder={!datosForm.tipoDoc ? t('vehiculo.selectDocTypeFirst', 'Primero selecciona el tipo de documento') : 'Ej. 1075228306'}
                 style={{
                   ...inputStyle(errores.numDoc),
-                  flex: 1
+                  flex: 1,
+                  opacity: !datosForm.tipoDoc ? 0.6 : 1,
+                  cursor: !datosForm.tipoDoc ? 'not-allowed' : 'text'
                 }}
               />
             </div>
