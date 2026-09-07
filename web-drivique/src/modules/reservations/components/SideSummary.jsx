@@ -276,7 +276,7 @@ export default function ResumenLateral({
                 {serviciosElegidos.map(s => (
                   <div key={s.nombre} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 14 }}>
                     <span style={{ color: c?.textPrimary || '#0f172a', fontWeight: 800 }}>
-                      • {s.nombre}
+                      {s.nombre}
                     </span>
                     <span style={{ color: c?.textPrimary || '#0f172a', fontWeight: 800 }}>
                       {formatCurrency(s.precio * dias, moneda)}
