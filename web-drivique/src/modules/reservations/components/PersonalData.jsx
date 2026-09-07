@@ -135,16 +135,16 @@ const DocumentUploader = ({ label, helpText, error, file, loading, onUpload, onC
           gap: 10,
           padding: '10px 24px',
           background: isDark ? 'rgba(255,255,255,0.06)' : '#ffffff',
-          border: `1.5px solid ${isDark ? '#475569' : '#0f172a'}`,
-          borderRadius: 12,
+          border: `1.5px solid ${isDark ? 'rgba(255,255,255,0.15)' : (c?.cardBorder || '#e2e8f0')}`,
+          borderRadius: 14,
           fontSize: 13.5,
-          fontWeight: 800,
-          color: c?.textPrimary || '#0f172a',
+          fontWeight: 700,
+          color: c?.accentText || 'var(--brand-secondary)',
           cursor: 'pointer',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
           transition: 'all 150ms ease'
         }}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={c?.accentText || 'var(--brand-secondary)'} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" />
             <polyline points="9 15 12 12 15 15" />
             <line x1="12" y1="12" x2="12" y2="19" />
@@ -530,10 +530,7 @@ export default function DatosPersonales({
       <div style={sectionCardStyle}>
         <div style={{ margin: '0 0 16px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={c?.accentText || 'var(--brand-secondary)'} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-              <rect width="20" height="14" x="2" y="5" rx="2"/>
-              <line x1="2" x2="22" y1="10" y2="10"/>
-            </svg>
+            <FaIdCard color={c?.accentText || 'var(--brand-secondary)'} size={15} />
             <h3 style={{ fontSize: 14, fontWeight: 700, color: c?.accentText || 'var(--brand-secondary)', margin: 0, textTransform: 'none', fontFamily: 'inherit' }}>
               {t('vehiculo.mandatoryDocsVerification', 'Verificación Documental Obligatoria')}
             </h3>
