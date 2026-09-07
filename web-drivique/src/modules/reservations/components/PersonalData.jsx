@@ -19,7 +19,7 @@ const DocumentUploader = ({ label, helpText, error, file, loading, onUpload, onC
   
   return (
     <div className="doc-uploader-card" style={{
-      border: `1.5px dashed ${error ? '#ef4444' : (c?.accentText || '#e11d48')}`,
+      border: `1.5px dashed ${error ? '#ef4444' : (isDark ? 'rgba(59, 130, 246, 0.45)' : '#93c5fd')}`,
       borderRadius: 16,
       padding: '24px 20px',
       textAlign: 'center',
@@ -36,8 +36,8 @@ const DocumentUploader = ({ label, helpText, error, file, loading, onUpload, onC
       boxSizing: 'border-box',
     }}>
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
-        <span className="doc-uploader-label" style={{ fontSize: 14, fontWeight: 800, color: c?.textPrimary || '#0f172a' }}>{label}{required ? ' *' : ''}</span>
-        <span className="doc-uploader-help" style={{ fontSize: 11, color: c?.textSecondary || '#64748b', maxWidth: '240px', lineHeight: 1.4 }}>{helpText}</span>
+        <span className="doc-uploader-label" style={{ fontSize: 14.5, fontWeight: 800, color: c?.textPrimary || '#0f172a' }}>{label}{required ? ' *' : ''}</span>
+        <span className="doc-uploader-help" style={{ fontSize: 12, color: c?.textSecondary || '#64748b', maxWidth: '340px', lineHeight: 1.45, textAlign: 'center' }}>{helpText}</span>
       </div>
 
       {loading ? (
@@ -97,21 +97,23 @@ const DocumentUploader = ({ label, helpText, error, file, loading, onUpload, onC
           display: 'inline-flex',
           alignItems: 'center',
           gap: 8,
-          padding: '12px 24px',
-          background: isDark ? 'rgba(var(--brand-primary-rgb),0.15)' : 'var(--brand-soft-light)',
-          border: `1px solid ${c?.accentText || 'var(--brand-primary)'}`,
+          padding: '10px 22px',
+          background: isDark ? 'rgba(255,255,255,0.06)' : '#ffffff',
+          border: `1.5px solid ${isDark ? '#334155' : '#cbd5e1'}`,
           borderRadius: 12,
           fontSize: 13,
           fontWeight: 700,
-          color: c?.accentText || 'var(--brand-secondary)',
+          color: c?.textPrimary || '#1e293b',
           cursor: 'pointer',
           boxShadow: '0 2px 6px rgba(0,0,0,0.03)',
           transition: 'all 150ms ease'
         }}>
-          <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+          <svg width="19" height="19" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242" />
+            <path d="M12 12v9" />
+            <path d="m16 16-4-4-4 4" />
           </svg>
-          <span>Subir PDF</span>
+          <span>Subir PDF (máx 5MB)</span>
           <input
             type="file"
             accept=".pdf"
@@ -219,17 +221,17 @@ export default function DatosPersonales({
     if (!datosForm.nacionalidad) return [];
     if (datosForm.nacionalidad.toLowerCase() === 'colombia') {
       return [
-        { value: 'CC', label: t('vehiculo.docTypes.cc', 'Cédula de ciudadanía') },
-        { value: 'CE', label: t('vehiculo.docTypes.ce', 'Cédula de extranjería') },
-        { value: 'PASAPORTE', label: t('vehiculo.docTypes.passport', 'Pasaporte') },
+        { value: 'CC', label: t('vehiculo.docTypes.cc', 'Cédula de Ciudadanía (CC)') },
+        { value: 'CE', label: t('vehiculo.docTypes.ce', 'Cédula de Extranjería (CE)') },
+        { value: 'PASAPORTE', label: t('vehiculo.docTypes.passport', 'Pasaporte (PAS)') },
         { value: 'PPT', label: t('vehiculo.docTypes.ppt', 'Permiso por Protección Temporal (PPT)') },
         { value: 'PEP', label: t('vehiculo.docTypes.pep', 'Permiso Especial de Permanencia (PEP)') },
       ];
     }
     return [
-      { value: 'PASAPORTE', label: t('vehiculo.docTypes.passport', 'Pasaporte') },
+      { value: 'PASAPORTE', label: t('vehiculo.docTypes.passport', 'Pasaporte (PAS)') },
       { value: 'DNI', label: t('vehiculo.docTypes.dni', 'Documento Nacional de Identidad (DNI)') },
-      { value: 'CE', label: t('vehiculo.docTypes.ce', 'Cédula de extranjería') },
+      { value: 'CE', label: t('vehiculo.docTypes.ce', 'Cédula de Extranjería (CE)') },
     ];
   }, [datosForm.nacionalidad, t]);
 
@@ -490,14 +492,22 @@ export default function DatosPersonales({
       </div>
 
       <div style={sectionCardStyle}>
-        <div style={headerStyle}>
-          <FaIdCard color={c?.accentText || 'var(--brand-secondary)'} size={14} />
-          <h3 style={{ fontSize: 14, fontWeight: 700, color: c?.accentText || 'var(--brand-secondary)', margin: 0, textTransform: 'none' }}>
-            {t('vehiculo.mandatoryDocs', 'Documentos obligatorios')}
-          </h3>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 18 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={c?.accentText || 'var(--brand-secondary)'} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <rect width="20" height="14" x="2" y="5" rx="2"/>
+              <line x1="2" x2="22" y1="10" y2="10"/>
+            </svg>
+            <h3 style={{ fontSize: 14.5, fontWeight: 800, color: c?.accentText || 'var(--brand-secondary)', margin: 0, textTransform: 'none' }}>
+              {t('vehiculo.mandatoryDocsVerification', 'Verificación Documental Obligatoria')}
+            </h3>
+          </div>
+          <p style={{ fontSize: 12.5, color: c?.textSecondary || '#64748b', margin: 0, lineHeight: 1.4 }}>
+            {t('vehiculo.mandatoryDocsSub', 'Sube los documentos requeridos para verificar tu identidad y habilitar la reserva del vehículo.')}
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           <DocumentUploader
             label={nombreDocSeleccionado}
             helpText={
@@ -505,7 +515,7 @@ export default function DatosPersonales({
                 ? t('vehiculo.passportHelpText', 'Sube tu pasaporte vigente en formato PDF (página de datos y foto, máx 5MB)')
                 : (datosForm.tipoDoc
                     ? t('vehiculo.docHelpTextDynamic', 'Sube tu {{doc}} en un solo archivo PDF (ambos lados incluidos si aplica, máx 5MB)', { doc: nombreDocSeleccionado })
-                    : t('vehiculo.nationalIdHelpText', 'Sube tu documento de identidad en un solo archivo PDF (ambos lados incluidos, máx 5MB)')
+                    : t('vehiculo.nationalIdHelpText', 'Sube tu Cédula de Ciudadanía (CC) en un solo archivo PDF (ambos lados incluidos si aplica, máx 5MB)')
                   )
             }
             error={errores.cedulaPdf || cedulaError}
@@ -517,7 +527,7 @@ export default function DatosPersonales({
           />
           <DocumentUploader
             label={t('vehiculo.driverLicense', 'Licencia de Conducción')}
-            helpText={t('vehiculo.driverLicenseHelpText', 'Sube tu licencia de conducción vigente en un archivo PDF (máx 5MB)')}
+            helpText={t('vehiculo.driverLicenseHelpText', 'Sube tu licencia de conducción vigente y legible en formato PDF (máx 5MB)')}
             error={errores.licenciaPdf || licenciaError}
             file={datosForm.licenciaPdf}
             loading={licenciaCargando}
@@ -525,6 +535,45 @@ export default function DatosPersonales({
             onClear={() => onCambio('licenciaPdf', null)}
             c={c}
           />
+
+          {/* Privacy & Legal Notice Banner */}
+          <div style={{
+            background: c?.isDark ? 'rgba(59, 130, 246, 0.1)' : '#eff6ff',
+            border: `1px solid ${c?.isDark ? 'rgba(59, 130, 246, 0.28)' : '#bfdbfe'}`,
+            borderRadius: 14,
+            padding: '14px 18px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 12
+          }}>
+            <div style={{
+              width: 22,
+              height: 22,
+              borderRadius: '50%',
+              background: c?.isDark ? 'rgba(59, 130, 246, 0.2)' : '#dbeafe',
+              border: `2px solid ${c?.isDark ? '#60a5fa' : '#3b82f6'}`,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0
+            }}>
+              <div style={{
+                width: 8,
+                height: 8,
+                borderRadius: '50%',
+                background: c?.isDark ? '#60a5fa' : '#3b82f6'
+              }} />
+            </div>
+            <p style={{
+              margin: 0,
+              fontSize: 12.5,
+              fontWeight: 600,
+              color: c?.isDark ? '#93c5fd' : '#1e40af',
+              lineHeight: 1.45
+            }}>
+              {t('vehiculo.docsSecurityNotice', 'Tus documentos se usan exclusivamente para la elaboración del contrato digital de alquiler y la verificación de identidad.')}
+            </p>
+          </div>
         </div>
       </div>
 
