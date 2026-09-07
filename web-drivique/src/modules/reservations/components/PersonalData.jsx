@@ -19,7 +19,7 @@ const DocumentUploader = ({ label, helpText, error, file, loading, onUpload, onC
   
   return (
     <div className="doc-uploader-card" style={{
-      border: `1.5px dashed ${error ? '#ef4444' : (isDark ? 'rgba(59, 130, 246, 0.45)' : '#93c5fd')}`,
+      border: `1.5px dashed ${error ? '#ef4444' : (isDark ? 'rgba(59, 130, 246, 0.25)' : '#cbd5e1')}`,
       borderRadius: 16,
       padding: '24px 20px',
       textAlign: 'center',
@@ -54,8 +54,8 @@ const DocumentUploader = ({ label, helpText, error, file, loading, onUpload, onC
           display: 'flex',
           alignItems: 'center',
           gap: 12,
-          background: isDark ? 'rgba(59, 130, 246, 0.12)' : '#f0f7ff',
-          border: `1px solid ${isDark ? 'rgba(59, 130, 246, 0.3)' : '#bfdbfe'}`,
+          background: isDark ? 'rgba(59, 130, 246, 0.08)' : '#f8fbff',
+          border: `1px solid ${isDark ? 'rgba(59, 130, 246, 0.2)' : '#e0f2fe'}`,
           padding: '12px 16px',
           borderRadius: 14,
           width: '100%',
@@ -563,8 +563,8 @@ export default function DatosPersonales({
 
           {/* Privacy & Legal Notice Banner */}
           <div style={{
-            background: c?.isDark ? 'rgba(59, 130, 246, 0.1)' : '#f0f7ff',
-            border: `1.5px solid ${c?.isDark ? 'rgba(59, 130, 246, 0.28)' : '#bfdbfe'}`,
+            background: c?.isDark ? 'rgba(59, 130, 246, 0.08)' : '#f8fbff',
+            border: `1px solid ${c?.isDark ? 'rgba(59, 130, 246, 0.2)' : '#e0f2fe'}`,
             borderRadius: 16,
             padding: '16px 20px',
             display: 'flex',
@@ -592,7 +592,7 @@ export default function DatosPersonales({
               margin: 0,
               fontSize: 13,
               fontWeight: 600,
-              color: c?.isDark ? '#93c5fd' : '#1d4ed8',
+              color: c?.isDark ? '#93c5fd' : '#1e40af',
               lineHeight: 1.45
             }}>
               {t('vehiculo.docsSecurityNotice', 'Tus documentos se usan exclusivamente para la elaboración del contrato digital de alquiler y la verificación de identidad.')}
@@ -687,8 +687,8 @@ export default function DatosPersonales({
 
       {/* ── Aviso informativo de confirmación ── */}
       <div style={{
-        background: c?.isDark ? 'rgba(var(--brand-primary-rgb),0.08)' : '#fff1f2',
-        border: `1px solid ${c?.isDark ? 'rgba(244,63,94,0.3)' : '#fecdd3'}`,
+        background: c?.isDark ? 'rgba(59, 130, 246, 0.08)' : '#f0f7ff',
+        border: `1px solid ${c?.isDark ? 'rgba(59, 130, 246, 0.25)' : '#bfdbfe'}`,
         borderRadius: 16,
         padding: '16px 20px',
         display: 'flex',
@@ -699,8 +699,8 @@ export default function DatosPersonales({
           width: 22,
           height: 22,
           borderRadius: '50%',
-          border: `1.5px solid ${c?.accentText || '#e11d48'}`,
-          color: c?.accentText || '#e11d48',
+          border: `1.5px solid ${c?.accentText || 'var(--brand-secondary)'}`,
+          color: c?.accentText || 'var(--brand-secondary)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -715,7 +715,7 @@ export default function DatosPersonales({
           margin: 0,
           fontSize: 13,
           lineHeight: 1.5,
-          color: c?.isDark ? '#fda4af' : '#9f1239',
+          color: c?.isDark ? '#93c5fd' : '#1e40af',
           fontWeight: 500
         }}>
           {t('vehiculo.confirmNoticeText', 'Al confirmar la reserva, quedará guardada automáticamente en tu cuenta. Tendrás un plazo de 72 horas para completar el pago antes de su cancelación automática.')}
@@ -1080,15 +1080,15 @@ export default function DatosPersonales({
               >
                 {/* Important Policy Top Banner */}
                 <div style={{
-                  background: c?.isDark ? 'rgba(225, 29, 72, 0.08)' : '#fff1f2',
-                  borderBottom: `1px solid ${c?.isDark ? 'rgba(225, 29, 72, 0.25)' : '#fecdd3'}`,
+                  background: c?.isDark ? 'rgba(59, 130, 246, 0.08)' : '#f0f7ff',
+                  borderBottom: `1px solid ${c?.isDark ? 'rgba(59, 130, 246, 0.25)' : '#bfdbfe'}`,
                   padding: '16px 20px',
                   flexShrink: 0
                 }}>
                   <p style={{
                     fontSize: 11.5,
                     fontWeight: 800,
-                    color: 'var(--brand-primary, #e11d48)',
+                    color: c?.accentText || 'var(--brand-secondary)',
                     margin: '0 0 6px',
                     textTransform: 'uppercase',
                     letterSpacing: '0.04em'
@@ -1188,7 +1188,7 @@ export default function DatosPersonales({
                   borderRadius: 12,
                   border: 'none',
                   background: hasScrolledToBottom
-                    ? 'var(--brand-gradient, #e11d48)'
+                    ? 'var(--brand-gradient, #1d4ed8)'
                     : (c?.isDark ? '#334155' : '#e2e8f0'),
                   color: hasScrolledToBottom
                     ? '#ffffff'
@@ -1197,7 +1197,7 @@ export default function DatosPersonales({
                   fontSize: 14,
                   cursor: hasScrolledToBottom ? 'pointer' : 'not-allowed',
                   boxShadow: hasScrolledToBottom
-                    ? '0 4px 14px rgba(225, 29, 72, 0.25)'
+                    ? '0 4px 14px rgba(29, 78, 216, 0.25)'
                     : 'none',
                   transition: 'all 0.2s'
                 }}
