@@ -574,7 +574,7 @@ export default function ResumenLateral({
                   : (reserva.tipoKm === 'limitado' ? t('vehiculo.limitedMileage', 'Kilometraje limitado') : t('vehiculo.mileage', 'Kilometraje'))}
               </span>
               <span style={{ fontWeight: 800, color: c?.textPrimary || '#0f172a' }}>
-                {formatCurrency(subtotalDiario, moneda)}
+                {reserva.tipoKm ? t('vehiculo.included', 'Incluido') : '—'}
               </span>
             </div>
             
