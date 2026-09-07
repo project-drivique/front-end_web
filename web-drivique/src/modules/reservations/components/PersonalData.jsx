@@ -53,42 +53,78 @@ const DocumentUploader = ({ label, helpText, error, file, loading, onUpload, onC
           display: 'flex',
           alignItems: 'center',
           gap: 12,
-          background: isDark ? 'rgba(244,63,94,0.12)' : '#fff1f2',
-          border: `1px solid ${isDark ? 'rgba(244,63,94,0.35)' : '#fecdd3'}`,
-          padding: '10px 16px',
-          borderRadius: 12,
+          background: isDark ? 'rgba(59, 130, 246, 0.12)' : '#f0f7ff',
+          border: `1px solid ${isDark ? 'rgba(59, 130, 246, 0.3)' : '#bfdbfe'}`,
+          padding: '12px 16px',
+          borderRadius: 14,
           width: '100%',
           minWidth: 0,
           boxSizing: 'border-box'
         }}>
-          <svg className="doc-uploader-file-icon" width="24" height="24" fill="none" stroke="#e11d48" strokeWidth="2.5" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
-          </svg>
+          {/* Blue checkmark circle */}
+          <div style={{
+            width: 24,
+            height: 24,
+            borderRadius: '50%',
+            background: '#1d4ed8',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexShrink: 0
+          }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+          </div>
+
           <div style={{ flex: 1, minWidth: 0, textAlign: 'left' }}>
-            <div style={{ fontSize: 13, fontWeight: 700, color: isDark ? '#fda4af' : '#9f1239', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <div style={{
+              fontSize: 13.5,
+              fontWeight: 800,
+              color: c?.textPrimary || '#0f172a',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap'
+            }}>
               {file.name}
             </div>
-            <div style={{ fontSize: 11, color: isDark ? '#fb7185' : '#be123c' }}>
+            <div style={{
+              fontSize: 11.5,
+              fontWeight: 500,
+              color: c?.textSecondary || '#64748b',
+              marginTop: 2
+            }}>
               {(file.size / 1024 / 1024).toFixed(2)} MB
             </div>
           </div>
+
+          {/* Trash delete button */}
           <button
             type="button"
             onClick={onClear}
+            title="Eliminar archivo"
             style={{
               background: 'none',
               border: 'none',
               cursor: 'pointer',
-              color: '#dc2626',
-              padding: 4,
+              color: c?.textSecondary || '#64748b',
+              padding: 6,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               flexShrink: 0,
+              borderRadius: 8,
+              transition: 'color 0.2s'
             }}
+            onMouseEnter={e => e.currentTarget.style.color = '#ef4444'}
+            onMouseLeave={e => e.currentTarget.style.color = c?.textSecondary || '#64748b'}
           >
-            <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M3 6h18" />
+              <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+              <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+              <line x1="10" x2="10" y1="11" y2="17" />
+              <line x1="14" x2="14" y1="11" y2="17" />
             </svg>
           </button>
         </div>
