@@ -24,94 +24,89 @@ html.dark .detalle-modal-head h2,html.dark .detalle-resumen-fila strong,html.dar
 /* ============================================================
    ESTRUCTURA DE TARJETA PADRE Y SUBTARJETA DE CONTRATO
    ============================================================ */
-.contrato-card-padre {
-  background: var(--bg-tarjeta, #ffffff);
-  border: 1.5px solid var(--borde, #e2e8f0);
-  border-radius: 24px;
-  padding: 16px;
-  margin-bottom: 20px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.03);
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.contrato-card-padre:hover {
-  border-color: var(--brand-border-light, #bfdbfe);
-  box-shadow: 0 12px 28px rgba(var(--brand-primary-rgb), 0.06);
-}
-
-/* SUBTARJETA INTERIOR (La que lleva el contenido) */
-.contrato-subtarjeta {
+/* ============================================================
+   TARJETA DE CONTRATO (BLOQUEADA / DESBLOQUEADA)
+   ============================================================ */
+.contrato-card {
   width: 100%;
-  background: var(--brand-soft-light, #eff6ff);
-  border: 1.5px solid var(--brand-border-light, #bfdbfe);
-  border-radius: 18px;
+  background: var(--bg-tarjeta, #ffffff);
+  border: 1px solid var(--borde, #e2e8f0);
+  border-radius: 22px;
   padding: 28px 24px 24px;
+  margin-bottom: 18px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  box-sizing: border-box;
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.02);
-  transition: all 0.25s ease;
+  transition: none;
 }
 
-.contrato-subtarjeta-icon-wrap {
+/* El borde NUNCA queda con color al hacer click, focus o hover */
+.contrato-card:hover,
+.contrato-card:focus,
+.contrato-card:focus-within,
+.contrato-card:active {
+  border-color: var(--borde, #e2e8f0) !important;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03) !important;
+  outline: none !important;
+}
+
+.contrato-icon-wrap {
   width: 58px;
   height: 58px;
   border-radius: 50%;
-  background: #ffffff;
-  border: 2px solid var(--brand-border-light, #bfdbfe);
+  background: #f1f5f9;
+  color: #94a3b8;
   display: grid;
   place-items: center;
-  margin-bottom: 14px;
+  margin-bottom: 16px;
   flex-shrink: 0;
-  box-shadow: 0 4px 14px rgba(var(--brand-primary-rgb), 0.12);
-  transition: transform 0.2s ease;
+  transition: all 0.2s ease;
 }
 
-.contrato-subtarjeta:hover .contrato-subtarjeta-icon-wrap {
-  transform: scale(1.05);
+.contrato-card.desbloqueada .contrato-icon-wrap {
+  background: var(--brand-soft-light, #eff6ff);
+  color: var(--brand-primary, #2563eb);
 }
 
-.contrato-subtarjeta-titulo {
-  font-size: 18px;
+.contrato-card-titulo {
+  font-size: 19px;
   font-weight: 800;
   color: var(--texto-primary, #0f172a);
-  margin: 0 0 6px;
+  margin: 0 0 8px;
   letter-spacing: -0.01em;
 }
 
-.contrato-subtarjeta-desc {
+.contrato-card-desc {
   font-size: 13.5px;
   color: var(--texto-second, #64748b);
-  line-height: 1.55;
+  line-height: 1.5;
   margin: 0 0 20px;
-  max-width: 400px;
+  max-width: 420px;
   font-weight: 500;
 }
 
-.contrato-subtarjeta-form {
+.contrato-card-form {
   width: 100%;
-  max-width: 400px;
+  max-width: 420px;
   display: flex;
   flex-direction: column;
   gap: 12px;
   box-sizing: border-box;
 }
 
-.contrato-subtarjeta-input-box {
+.contrato-input-box {
   position: relative;
   width: 100%;
 }
 
-.contrato-subtarjeta-input {
+.contrato-card-input {
   width: 100%;
   height: 48px;
   border-radius: 12px;
-  border: 1.5px solid var(--brand-border-light, #cbd5e1);
+  border: 1.5px solid var(--borde, #e2e8f0);
   padding: 0 46px 0 16px;
   font-size: 14px;
   color: var(--texto-primary, #0f172a);
@@ -121,25 +116,26 @@ html.dark .detalle-modal-head h2,html.dark .detalle-resumen-fila strong,html.dar
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.contrato-subtarjeta-input:focus {
-  border-color: var(--brand-primary, #2563eb);
-  box-shadow: 0 0 0 4px var(--brand-soft-light, rgba(37, 99, 235, 0.12));
-}
-
-.contrato-subtarjeta-input:disabled {
+.contrato-card.bloqueada .contrato-card-input {
   background: #f8fafc;
+  border-color: #e2e8f0;
+  color: #94a3b8;
   cursor: not-allowed;
-  opacity: 0.7;
 }
 
-.contrato-subtarjeta-eye {
+.contrato-card.desbloqueada .contrato-card-input:focus {
+  border-color: var(--brand-primary, #2563eb);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.contrato-eye-btn {
   position: absolute;
   right: 12px;
   top: 50%;
   transform: translateY(-50%);
   background: none;
   border: none;
-  color: var(--brand-primary, #64748b);
+  color: #94a3b8;
   cursor: pointer;
   display: grid;
   place-items: center;
@@ -148,16 +144,16 @@ html.dark .detalle-modal-head h2,html.dark .detalle-resumen-fila strong,html.dar
   transition: color 0.2s;
 }
 
-.contrato-subtarjeta-eye:hover {
+.contrato-card.desbloqueada .contrato-eye-btn:hover {
   color: var(--brand-primary, #2563eb);
 }
 
-.contrato-subtarjeta-eye:disabled {
-  opacity: 0.4;
+.contrato-eye-btn:disabled {
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
-.contrato-subtarjeta-error {
+.contrato-error-msg {
   color: #ef4444;
   font-size: 12px;
   font-weight: 700;
@@ -165,7 +161,8 @@ html.dark .detalle-modal-head h2,html.dark .detalle-resumen-fila strong,html.dar
   margin: -4px 0 2px 4px;
 }
 
-.contrato-subtarjeta-btn {
+/* Botón de acción */
+.contrato-action-btn {
   width: 100%;
   height: 48px;
   border-radius: 12px;
@@ -176,69 +173,85 @@ html.dark .detalle-modal-head h2,html.dark .detalle-resumen-fila strong,html.dar
   align-items: center;
   justify-content: center;
   gap: 10px;
-  transition: all 0.2s ease;
   box-sizing: border-box;
+  transition: all 0.2s ease;
 }
 
-.contrato-subtarjeta-btn.activo,
-.contrato-subtarjeta-btn.activo:not(:disabled) {
-  background: var(--brand-primary, #2563eb) !important;
-  color: var(--brand-on-primary, #ffffff) !important;
+/* Estado bloqueado: fondo gris suave, texto gris, sin borde de color, idéntico a la imagen */
+.contrato-action-btn.bloqueado,
+.contrato-action-btn.bloqueado:disabled {
+  background: #f1f5f9 !important;
+  color: #94a3b8 !important;
   border: none !important;
-  cursor: pointer;
-  box-shadow: 0 4px 14px var(--brand-shadow, rgba(37, 99, 235, 0.25));
+  cursor: not-allowed !important;
+  box-shadow: none !important;
 }
 
-.contrato-subtarjeta-btn.activo:hover {
+/* Estado desbloqueado: BOTÓN AZUL DEGRADADO */
+.contrato-action-btn.activo,
+.contrato-action-btn.activo:not(:disabled) {
+  background: linear-gradient(135deg, var(--brand-primary, #2563eb) 0%, #1d4ed8 100%) !important;
+  color: #ffffff !important;
+  border: none !important;
+  cursor: pointer !important;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3) !important;
+}
+
+.contrato-action-btn.activo:hover {
   filter: brightness(0.93);
   transform: translateY(-1px);
 }
 
-.contrato-subtarjeta-btn.bloqueado,
-.contrato-subtarjeta-btn.bloqueado:disabled {
-  background: var(--brand-soft-strong-light, rgba(37, 99, 235, 0.12)) !important;
-  color: var(--brand-primary, #2563eb) !important;
-  border: 1.5px dashed var(--brand-border-light, rgba(37, 99, 235, 0.35)) !important;
-  cursor: not-allowed;
-  opacity: 0.95;
-}
-
-/* Modo oscuro */
-html.dark .contrato-subtarjeta-btn.bloqueado,
-html.dark .contrato-subtarjeta-btn.bloqueado:disabled {
-  background: rgba(var(--brand-primary-rgb), 0.18) !important;
-  color: var(--brand-border-light, #93c5fd) !important;
-  border-color: rgba(var(--brand-primary-rgb), 0.4) !important;
-}
-
-html.dark .contrato-card-padre {
+/* MODO OSCURO */
+html.dark .contrato-card {
   background: #172033;
-  border-color: #334155;
+  border-color: #334155 !important;
 }
 
-html.dark .contrato-subtarjeta {
-  background: rgba(var(--brand-primary-rgb), 0.08);
-  border-color: rgba(var(--brand-primary-rgb), 0.25);
+html.dark .contrato-card:hover,
+html.dark .contrato-card:focus,
+html.dark .contrato-card:focus-within,
+html.dark .contrato-card:active {
+  border-color: #334155 !important;
 }
 
-html.dark .contrato-subtarjeta-icon-wrap {
+html.dark .contrato-icon-wrap {
   background: #1e293b;
-  border-color: rgba(var(--brand-primary-rgb), 0.3);
+  color: #64748b;
 }
 
-html.dark .contrato-subtarjeta-titulo {
+html.dark .contrato-card.desbloqueada .contrato-icon-wrap {
+  background: rgba(var(--brand-primary-rgb), 0.15);
+  color: var(--brand-border-light, #93c5fd);
+}
+
+html.dark .contrato-card-titulo {
   color: #f8fafc;
 }
 
-html.dark .contrato-subtarjeta-desc {
+html.dark .contrato-card-desc {
   color: #94a3b8;
 }
 
-html.dark .contrato-subtarjeta-input {
+html.dark .contrato-card-input {
   background: #0f172a;
   color: #f8fafc;
   border-color: #334155;
 }
+
+html.dark .contrato-card.bloqueada .contrato-card-input {
+  background: #111827;
+  color: #64748b;
+  border-color: #1f2937;
+}
+
+html.dark .contrato-action-btn.bloqueado,
+html.dark .contrato-action-btn.bloqueado:disabled {
+  background: #1e293b !important;
+  color: #64748b !important;
+}
+
+
 
 
 
