@@ -57,16 +57,16 @@ export default function EditReservationModal({
           title: t('vehiculo.cashBranchTitle'),
           background: 'var(--bg-tarjeta)',
           color: 'var(--texto-primary)',
-          html: `<div style="text-align:left;font-size:14px;line-height:1.6;color:var(--texto-primary);">
-            <p style="margin:0 0 10px;">${t('vehiculo.cashBranchIntro')}</p>
-            <div style="background:var(--bg-item);border:1px solid var(--borde);border-radius:12px;padding:14px 16px;">
-              <p style="margin:0 0 4px;font-weight:800;color:var(--texto-acento);">${sucursal.nombre}</p>
-              <p style="margin:0 0 4px;color:var(--texto-second);"><strong>${t('vehiculo.cashBranchCity')}:</strong> ${sucursal.ciudad}</p>
-              <p style="margin:0;color:var(--texto-second);"><strong>${t('vehiculo.cashBranchAddress')}:</strong> ${sucursal.direccion || t('vehiculo.cashBranchNoAddress')}</p>
+          html: `<div style="font-size:13.5px;line-height:1.5;color:var(--texto-primary);">
+            <p style="margin:0 0 14px;color:var(--texto-second);text-align:center;font-size:13px;line-height:1.45;">${t('vehiculo.cashBranchIntro')}</p>
+            <div style="text-align:left;background:var(--bg-item);border:1px solid var(--borde);border-radius:12px;padding:12px 14px;">
+              <p style="margin:0 0 4px;font-weight:700;color:var(--texto-primary);font-size:14px;">${sucursal.nombre}</p>
+              <p style="margin:0 0 2px;color:var(--texto-second);font-size:12.5px;"><strong>${t('vehiculo.cashBranchCity')}:</strong> ${sucursal.ciudad}</p>
+              <p style="margin:0;color:var(--texto-second);font-size:12.5px;"><strong>${t('vehiculo.cashBranchAddress')}:</strong> ${sucursal.direccion || t('vehiculo.cashBranchNoAddress')}</p>
             </div>
           </div>`,
           confirmButtonText: t('common.close'),
-          width: 480,
+          width: 340,
         })
       }
     }
@@ -120,7 +120,7 @@ export default function EditReservationModal({
                 onCambio={(campo, valor) => setLocalReserva(prev => {
                   const act = { ...prev, [campo]: valor }
                   if (campo === 'metodoPago' && valor === 'efectivo') {
-                    act.sucursalPagoEfectivo = branchManagementService.getCashAuthorized()[0]?.nombre || ''
+                    act.sucursalPagoEfectivo = vehiculo?.sucursal || ''
                     act.sucursalRetiro = vehiculo ? vehiculo.sucursal : ''
                     act.sucursalDevolucion = vehiculo ? vehiculo.sucursal : ''
                     act.domicilioBarrio = ''; act.domicilioDireccion = ''

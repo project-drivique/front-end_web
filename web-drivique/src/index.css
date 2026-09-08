@@ -361,3 +361,110 @@ html.dark .campo-select {
     max-width: 100% !important;
   }
 }
+
+/* ── Modal Términos y Condiciones Scrollbar Visible ── */
+.terms-modal-scroll {
+  overflow-y: scroll !important;
+  scrollbar-width: thin !important;
+  scrollbar-color: #cbd5e1 #f8fafc !important;
+}
+
+.terms-modal-scroll::-webkit-scrollbar {
+  width: 7px !important;
+}
+
+.terms-modal-scroll::-webkit-scrollbar-track {
+  background: #f1f5f9 !important;
+  border-radius: 8px !important;
+}
+
+.terms-modal-scroll::-webkit-scrollbar-thumb {
+  background: #cbd5e1 !important;
+  border-radius: 8px !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+.terms-modal-scroll::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8 !important;
+}
+
+.dark .terms-modal-scroll {
+  scrollbar-color: #475569 #0f172a !important;
+}
+
+.dark .terms-modal-scroll::-webkit-scrollbar-track {
+  background: #1e293b !important;
+}
+
+.dark .terms-modal-scroll::-webkit-scrollbar-thumb {
+  background: #475569 !important;
+  border: 1px solid #334155 !important;
+}
+
+.dark .terms-modal-scroll::-webkit-scrollbar-thumb:hover {
+  background: #64748b !important;
+}
+
+/* ── Estilos globales de impresión de contrato ── */
+@media print {
+  @page {
+    size: A4;
+    margin: 10mm;
+  }
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+    color: #0f172a !important;
+  }
+  body.imprimiendo-contrato {
+    background: #ffffff !important;
+    overflow: visible !important;
+  }
+  body.imprimiendo-contrato > *:not(.raiz-impresion-contrato) {
+    display: none !important;
+  }
+  .raiz-impresion-contrato {
+    box-sizing: border-box;
+    display: block !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    visibility: visible !important;
+  }
+  .raiz-impresion-contrato * {
+    visibility: visible !important;
+  }
+  .raiz-impresion-contrato .contrato-a-imprimir {
+    display: block !important;
+    width: 100% !important;
+    max-width: none !important;
+    max-height: none !important;
+    overflow: visible !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: #ffffff !important;
+  }
+  .raiz-impresion-contrato .contrato-a-imprimir button,
+  .contrato-contenedor-externo button,
+  header,
+  nav,
+  footer:not(.contrato-footer-print) {
+    display: none !important;
+  }
+  .raiz-impresion-contrato .contrato-a-imprimir * {
+    --bg-tarjeta: #ffffff !important;
+    --bg-item: #f8fafc !important;
+    --borde: #dbe3ef !important;
+    --texto-primary: #0f172a !important;
+    --texto-second: #64748b !important;
+    --sombra-tarjeta: none !important;
+  }
+  .contrato-campo, section, footer, .firma-box, .tarjeta-contrato {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+}
+
+

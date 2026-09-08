@@ -72,15 +72,15 @@ export default function CatalogoPage() {
   const navigate = useNavigate()
   const token = useAuthStore((s) => s.token)
   const usuario = useAuthStore((s) => s.usuario)
+  const esAutenticado = Boolean(token && token !== 'null' && token !== 'undefined' && usuario)
   const { t } = useTranslation()
   const { tema } = useLanding()
 
   useEffect(() => {
-    const esTokenValido = token && token !== 'null' && token !== 'undefined'
-    if (esTokenValido) {
+    if (esAutenticado && usuario?.rol && usuario?.rol !== 'usuario') {
       navigate(getRoleHome(usuario?.rol), { replace: true })
     }
-  }, [token, usuario, navigate])
+  }, [esAutenticado, usuario, navigate])
 
   const esModoOscuro = tema === 'oscuro'
   const c = coloresTema(esModoOscuro)
@@ -184,7 +184,9 @@ export default function CatalogoPage() {
         c={c}
         headerRef={headerRef}
         innerClassName="catalogo-header-inner"
-        mostrarVolverInicio
+        mostrarVolverInicio={!esAutenticado}
+        mostrarPerfil={esAutenticado}
+        modoRegistrado={esAutenticado}
       >
         <CatalogSearchBar
           c={c}
@@ -214,7 +216,7 @@ export default function CatalogoPage() {
               errorBusqueda={errorBusqueda}
               textoLibre={textoLibre}
               setTextoLibre={setTextoLibre}
-              invitado={true}
+              invitado={!esAutenticado}
               onAbrirBusquedaInvitado={() => setModalFechasAbierto(true)}
               sinCoincidenciasTexto={sinCoincidenciasTexto}
               sinDisponibilidadFechas={sinDisponibilidadFechas}
@@ -346,7 +348,7 @@ export default function CatalogoPage() {
                     esFavorito={() => false}
                     toggleFavorito={() => {}}
                     c={c}
-                    invitado={true}
+                    invitado={!esAutenticado}
                     onGuestBlocked={() => setReservaModalAbierto(true)}
                     onGuestFavorito={() => setFavoritoModalAbierto(true)}
                   />
@@ -374,7 +376,7 @@ export default function CatalogoPage() {
         filtros={filtros}
         setFiltro={setFiltro}
         limpiar={limpiar}
-        invitado={true}
+        invitado={!esAutenticado}
         onBuscarInvitado={handleBuscarInvitado}
         mostrarFavoritos={false}
         resultado={resultado}

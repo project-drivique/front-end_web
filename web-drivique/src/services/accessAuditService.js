@@ -1,15 +1,59 @@
 import accessConfig from '../mocks/adminAccessConfig.json'
+import { mockUsersStorage } from './mockUsersStorage'
 
 const STORAGE_KEY = 'drivique_access_audit'
 const MAX_RECORDS = accessConfig.audit?.maxRecords || 500
 const AUDIT_EVENT = 'drivique:audit-updated'
 
-const normalizeBranch = (value) => String(value || '').trim().toLowerCase()
+export function cleanBranchText(val) {
+  return String(val || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
+export function hasMatchingBranch(branchA, branchB) {
+  const a = cleanBranchText(branchA)
+  const b = cleanBranchText(branchB)
+  if (!a || !b) return false
+  if (a === b) return true
+  if (a.includes(b) || b.includes(a)) return true
+
+  const STOP_WORDS = new Set(['de', 'la', 'el', 'los', 'las', 'en', 'y', 'del', 'alamo', 'national', 'localiza', 'alquiler'])
+  const wordsA = a.split(' ').filter(w => w.length > 2 && !STOP_WORDS.has(w))
+  const wordsB = b.split(' ').filter(w => w.length > 2 && !STOP_WORDS.has(w))
+
+  const matches = wordsA.filter(w => wordsB.includes(w))
+  if (matches.length >= 2) return true
+  if (matches.length === 1 && (wordsA.length === 1 || wordsB.length === 1)) return true
+
+  return false
+}
+
 const isBranchManager = (user) => ['encargado', 'encargado_sucursal', 'branch_manager'].includes(user?.rol)
 const assignedBranch = (user) => user?.sucursalId || user?.sucursal || user?.sucursalAsignada || ''
 
 // Lista inicial de registros de auditoría representativos y realistas
 const INITIAL_AUDIT_SEED = [
+  {
+    id: 'AUD-20260907-9901',
+    fecha: new Date(Date.now() - 1000 * 60 * 5).toISOString(),
+    tipo: 'COBRO_SUCURSAL',
+    modulo: 'Cobro en Sucursal',
+    accion: 'Cobro en efectivo confirmado en mostrador',
+    actor: 'Encargado Alamo Medellín Poblado',
+    correo: 'enc06@drivique.com',
+    rol: 'encargado_sucursal',
+    sucursal: 'Alamo Medellín Poblado',
+    ip: '190.158.45.88',
+    dispositivo: 'Chrome 128 / Windows 11',
+    resultado: 'EXITO',
+    motivo: 'Cobro en efectivo recibido y validado en caja de sucursal',
+    detalles: { referencia: 'RES-1788806368641-R9505FB', total: 406314, metodoPago: 'efectivo', sucursal: 'Alamo Medellín Poblado' },
+  },
   {
     id: 'AUD-20260902-8821',
     fecha: new Date(Date.now() - 1000 * 60 * 12).toISOString(),
@@ -262,6 +306,21 @@ function normalizeRecord(r) {
     accion = motivo || 'Operación registrada en la plataforma'
   }
 
+  const correoNorm = String(r.correo || '').trim().toLowerCase()
+  let sucursalFinal = cleanEmojiAndText(r.sucursal || 'Global / Sistema')
+
+  // Si la sucursal está vacía o es Global, intentar inferirla del usuario registrado
+  if ((!sucursalFinal || sucursalFinal === 'Global / Sistema') && correoNorm) {
+    try {
+      const u = mockUsersStorage.buscarPorCorreo(correoNorm)
+      if (u?.sucursal) {
+        sucursalFinal = cleanEmojiAndText(u.sucursal)
+      }
+    } catch {
+      // ignore
+    }
+  }
+
   return {
     id: r.id || `AUD-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
     fecha: r.fecha || new Date().toISOString(),
@@ -269,9 +328,9 @@ function normalizeRecord(r) {
     modulo: cleanEmojiAndText(r.modulo || (tipoNorm ? tipoNorm.replace(/_/g, ' ') : 'Seguridad / Acceso')),
     accion: cleanEmojiAndText(accion),
     actor: cleanEmojiAndText(r.actor || r.nombre || r.correo || 'Usuario del Sistema'),
-    correo: String(r.correo || '').trim().toLowerCase() || 'sistema@drivique.com',
+    correo: correoNorm || 'sistema@drivique.com',
     rol: cleanEmojiAndText(r.rol || 'administrador'),
-    sucursal: cleanEmojiAndText(r.sucursal || 'Global / Sistema'),
+    sucursal: sucursalFinal,
     ip: r.ip || '127.0.0.1',
     dispositivo: r.dispositivo || 'Navegador Web / Plataforma',
     resultado: normalizedResult,
@@ -329,18 +388,20 @@ export const accessAuditService = {
     if (!currentUser || !isBranchManager(currentUser)) return all
 
     const branchName = assignedBranch(currentUser)
-    const userBranch = normalizeBranch(branchName)
-
-    if (!userBranch) {
-      return all
-    }
+    const userEmail = String(currentUser?.correo || '').trim().toLowerCase()
 
     return all.filter((r) => {
-      const recBranch = normalizeBranch(r.sucursal)
-      return (
-        recBranch.includes(userBranch) ||
-        userBranch.includes(recBranch)
-      )
+      // 1. Si la acción fue ejecutada por el propio usuario, siempre la ve en su panel
+      if (userEmail && String(r.correo || '').trim().toLowerCase() === userEmail) {
+        return true
+      }
+
+      // 2. Si la sucursal del evento coincide con la del encargado
+      if (branchName && hasMatchingBranch(r.sucursal, branchName)) {
+        return true
+      }
+
+      return false
     })
   },
 
@@ -354,8 +415,8 @@ export const accessAuditService = {
     accion = '',
     actor = '',
     correo = '',
-    rol = 'desconocido',
-    sucursal = 'Global / Sistema',
+    rol = '',
+    sucursal = '',
     ip = null,
     dispositivo = null,
     resultado = 'EXITO',
@@ -363,16 +424,46 @@ export const accessAuditService = {
     detalles = null,
   }) {
     const now = new Date()
+    const correoNorm = String(correo || '').trim().toLowerCase()
+
+    let sucursalFinal = sucursal
+    let actorFinal = actor
+    let rolFinal = rol
+
+    // Inferir datos del usuario si no se proveyeron explícitamente
+    if (correoNorm) {
+      try {
+        const u = mockUsersStorage.buscarPorCorreo(correoNorm)
+        if (u) {
+          if (!sucursalFinal || sucursalFinal === 'Global / Sistema') {
+            sucursalFinal = u.sucursal || u.sucursalId || u.sucursalAsignada || 'Global / Sistema'
+          }
+          if (!actorFinal) {
+            actorFinal = u.nombre ? `${u.nombre} ${u.apellido || ''}`.trim() : u.correo
+          }
+          if (!rolFinal) {
+            rolFinal = u.rol
+          }
+        }
+      } catch {
+        // ignore
+      }
+    }
+
+    if (!sucursalFinal) sucursalFinal = 'Global / Sistema'
+    if (!actorFinal) actorFinal = correoNorm || 'Usuario del sistema'
+    if (!rolFinal) rolFinal = 'desconocido'
+
     const rawRecord = {
       id: `AUD-${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}-${Math.floor(1000 + Math.random() * 9000)}`,
       fecha: now.toISOString(),
       tipo: String(tipo).toUpperCase(),
       modulo,
       accion: accion || motivo || 'Registro de actividad',
-      actor: actor || correo || 'Usuario del sistema',
-      correo: String(correo || '').trim().toLowerCase(),
-      rol,
-      sucursal: sucursal || 'Global / Sistema',
+      actor: actorFinal,
+      correo: correoNorm,
+      rol: rolFinal,
+      sucursal: sucursalFinal,
       ip: ip || (typeof window !== 'undefined' ? window.location.hostname || '127.0.0.1' : '127.0.0.1'),
       dispositivo: dispositivo || (typeof navigator !== 'undefined' ? `${navigator.userAgent.slice(0, 40)}...` : 'Navegador Web'),
       resultado: String(resultado).toUpperCase(),

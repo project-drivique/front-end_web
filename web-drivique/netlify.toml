@@ -1,0 +1,9 @@
+# Configuración de Netlify si se define web-drivique como directorio base
+[build]
+  publish = "dist"
+  command = "npm run build"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

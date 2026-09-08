@@ -1,0 +1,366 @@
+import { useEffect, useState, useMemo, useRef } from 'react'
+import { Link, useNavigate, useParams, useLocation } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
+import { FaArrowLeft, FaFileSignature, FaShieldAlt, FaCar, FaCheckCircle } from 'react-icons/fa'
+import { useAuthStore } from '@/store/authStore'
+import { useLanding } from '@/modules/landing/LandingContext'
+import { contractService } from '@/services/contractService'
+import { reservationService } from '@/services/reservationService'
+import { reservationsService } from '@/services/reservationsService'
+import { catalogService } from '@/services/catalogService'
+import { documentsService } from '@/services/documentsService'
+import VEHICULOS_MOCK from '@/mocks/vehicles.json'
+import ContractSignature from '../components/ContractSignature'
+import { descargarContratoOriginal } from '@/modules/contracts/utils/downloadSignedContract'
+import { showAlert } from '@/utils/swalConfig'
+import MenuConfiguracion from '@/components/MenuConfiguracion'
+import logo from '@/assets/logo.png'
+import { useBrand } from '@/contexts/BrandContext'
+
+export default function ContractSigningPage() {
+  const { id } = useParams()
+  const { brand } = useBrand()
+  const { t, i18n } = useTranslation()
+  const navigate = useNavigate()
+  const location = useLocation()
+  const usuario = useAuthStore(state => state.usuario)
+  const { tema } = useLanding()
+  const esModoOscuro = tema === 'oscuro'
+
+  const [cargando, setCargando] = useState(true)
+  const [reserva, setReserva] = useState(() => location.state?.reserva || null)
+  const [vehiculo, setVehiculo] = useState(() => location.state?.vehiculo || location.state?.reserva?.vehiculo || null)
+
+  useEffect(() => {
+    let activo = true
+    const cargarDatos = async () => {
+      // Si ya vino la reserva completa en state, no mostramos spinner innecesario
+      if (location.state?.reserva) {
+        setCargando(false)
+        return
+      }
+
+      setCargando(true)
+      try {
+        // 1. Buscar en contractService o reservationService
+        const contratoFirmado = contractService.obtenerPorReserva(id)
+        let resData = contratoFirmado?.contratoOriginal?.reserva || reservationService.obtenerPorReferencia(id)
+
+        if (!resData) {
+          const list = await reservationsService.getReservas()
+          resData = (list || []).find(r => String(r.id) === String(id) || r.codigo === id || r.referencia === id)
+        }
+
+        let vehData = contratoFirmado?.contratoOriginal?.vehiculo || resData?.vehiculo
+
+        if (!vehData && resData?.vehiculoId) {
+          vehData = await catalogService.getVehiculoById(resData.vehiculoId).catch(() => null)
+        }
+
+        if (!vehData && resData?.vehiculoId) {
+          vehData = VEHICULOS_MOCK.find(v => String(v.id) === String(resData.vehiculoId))
+        }
+
+        if (activo) {
+          setReserva(resData || null)
+          setVehiculo(vehData || VEHICULOS_MOCK[0] || null)
+        }
+      } catch (err) {
+        console.error('Error cargando reserva para firmar contrato:', err)
+      } finally {
+        if (activo) setCargando(false)
+      }
+    }
+
+    cargarDatos()
+    return () => { activo = false }
+  }, [id, location.state])
+
+  // Adaptar datos de reserva para el contrato
+  const reservaParaContrato = useMemo(() => {
+    if (!reserva) return null
+    const df = reserva.datosForm || {}
+    const rd = reserva.reservaDetalles || {}
+
+    const nombreCliente = df.nombre || [df.nombres, df.apellidos].filter(Boolean).join(' ').trim() || reserva.clienteNombre || usuario?.nombre || 'Cliente Drivique'
+    const correoCliente = df.correo || reserva.clienteCorreo || usuario?.correo || usuario?.email || 'cliente@drivique.com'
+    const telCliente = df.celular || df.telefono || reserva.clienteTelefono || usuario?.telefono || '+57 300 000 0000'
+    const docCliente = df.numDoc || df.documento || reserva.clienteDocumento || usuario?.cedula || '1020304050'
+    const tipoDocCliente = df.tipoDoc || usuario?.tipoDocumento || 'CC'
+    const ref = reserva.referencia || reserva.codigo || reserva.id || id
+
+    const userDocs = documentsService.obtenerDocumentos(usuario?.id || usuario?.correo || correoCliente)
+    const licName = df.licenciaPdf?.name || (typeof df.licenciaPdf === 'string' && df.licenciaPdf) || userDocs?.licencia?.nombre || (docCliente ? `Licencia-${docCliente}.pdf` : 'Licencia-Conduccion-Verificada.pdf')
+    const cedName = df.cedulaPdf?.name || (typeof df.cedulaPdf === 'string' && df.cedulaPdf) || userDocs?.cedula?.nombre || (docCliente ? `Cedula-${docCliente}.pdf` : 'Cedula-Verificada.pdf')
+
+    const fInicio = rd.fechaInicio || reserva.fechaInicio || new Date().toISOString().slice(0, 10)
+    const fFin = rd.fechaFin || reserva.fechaFin || new Date(Date.now() + 86400000 * 3).toISOString().slice(0, 10)
+    const hInicio = rd.horaInicio || reserva.horaInicio || '08:00'
+    const hFin = rd.horaFin || reserva.horaFin || '18:00'
+    const sucRet = rd.sucursalRetiro || reserva.sucursalRetiro || reserva.sucursal || vehiculo?.sucursal || 'Alquiler Neiva - Centro'
+    const sucDev = rd.sucursalDevolucion || reserva.sucursalDevolucion || reserva.sucursal || vehiculo?.sucursal || 'Alquiler Neiva - Centro'
+    const metPago = rd.metodoPago || reserva.metodoPago || reserva.pasarela || 'tarjeta'
+    const sucPagoEf = rd.sucursalPagoEfectivo || reserva.sucursalPagoEfectivo || reserva.sucursal || vehiculo?.sucursal || 'Alquiler Neiva - Centro'
+
+    return {
+      ...reserva,
+      referencia: ref,
+      codigo: ref,
+      id: ref,
+      total: reserva.total || reserva.totalCOP || 0,
+      seguroIdx: reserva.seguroIdx ?? 0,
+      serviciosSeleccionados: reserva.serviciosSeleccionados || [],
+      datosForm: {
+        ...df,
+        nombre: nombreCliente,
+        correo: correoCliente,
+        celular: telCliente,
+        telefono: telCliente,
+        tipoDoc: tipoDocCliente,
+        numDoc: docCliente,
+        cedulaPdf: cedName,
+        licenciaPdf: licName,
+        direccion: df.direccion || usuario?.direccion || ''
+      },
+      reservaDetalles: {
+        ...rd,
+        fechaInicio: fInicio,
+        fechaFin: fFin,
+        horaInicio: hInicio,
+        horaFin: hFin,
+        sucursalRetiro: sucRet,
+        sucursalDevolucion: sucDev,
+        metodoPago: metPago,
+        sucursalPagoEfectivo: sucPagoEf,
+        domicilioCiudad: rd.domicilioCiudad || reserva.domicilioCiudad,
+        domicilioBarrio: rd.domicilioBarrio || reserva.domicilioBarrio,
+        domicilioDireccion: rd.domicilioDireccion || reserva.domicilioDireccion,
+        domicilioReferencias: rd.domicilioReferencias || reserva.domicilioReferencias
+      }
+    }
+  }, [reserva, vehiculo, usuario, id])
+
+  const vehiculoParaContrato = useMemo(() => {
+    const vMock = VEHICULOS_MOCK.find(v => String(v.id) === String(reserva?.vehiculoId || reserva?.vehiculo?.id || vehiculo?.id)) || VEHICULOS_MOCK[0]
+    const base = vehiculo || reserva?.vehiculo || vMock || {}
+    return {
+      ...vMock,
+      ...base,
+      nombre: base.nombre || vMock.nombre || (base.marca ? `${base.marca} ${base.modelo || ''}` : 'Vehículo Drivique'),
+      placa: base.placa || vMock.placa || 'ABC-123',
+      color: base.color || vMock.color || 'Plata',
+      año: base.año || base.anio || vMock.año || 2024,
+      sucursal: base.sucursal || reserva?.sucursal || reserva?.reservaDetalles?.sucursalRetiro || vMock.sucursal || 'Alquiler Neiva - Centro',
+      servicios: base.servicios || vMock.servicios || [],
+      seguros: base.seguros || vMock.seguros || [{ nombre: 'Protección Básica Estándar' }]
+    }
+  }, [vehiculo, reserva])
+
+  const contratoVisualRef = useRef(null)
+  const targetId = reserva?.referencia || reserva?.codigo || reserva?.id || (id ? id.split('_')[0] : id)
+
+  const contratoFirmado = useMemo(() => {
+    return contractService.obtenerPorReserva(targetId) ||
+           contractService.obtenerPorReserva(id) ||
+           (reserva?.referencia ? contractService.obtenerPorReserva(reserva.referencia) : null) ||
+           (reserva?.id ? contractService.obtenerPorReserva(reserva.id) : null)
+  }, [targetId, id, reserva])
+
+  const esSoloLectura = Boolean(contratoFirmado?.firmaUsuarioDataUrl) || Boolean(location.state?.soloLectura)
+
+  const handleDescargar = async () => {
+    try {
+      let contratoDescarga = contratoFirmado
+      if (!contratoDescarga?.contratoOriginal) {
+        contratoDescarga = contractService.completarContratoOriginal(targetId, {
+          reserva: JSON.parse(JSON.stringify(reservaParaContrato)),
+          vehiculo: JSON.parse(JSON.stringify(vehiculoParaContrato)),
+          idioma: i18n.resolvedLanguage || i18n.language || 'es',
+          guardadoEn: contratoFirmado?.firmadoEn || new Date().toISOString(),
+          migradoDesdeReserva: true,
+        })
+      }
+      await descargarContratoOriginal({
+        contrato: contratoDescarga,
+        elementoContrato: contratoVisualRef.current,
+      })
+    } catch (err) {
+      console.error('Error al descargar contrato en PDF:', err)
+    }
+  }
+
+  const handleFirmado = async (contrato) => {
+    await showAlert({
+      icon: 'success',
+      title: '¡Contrato Firmado con Éxito!',
+      text: 'Tu contrato de alquiler ha sido firmado digitalmente y asegurado en tu cuenta. Ya puedes ver o descargar tu copia protegida en Mis Reservas.',
+      confirmButtonText: 'Ir a Mis Reservas',
+    })
+    navigate(`/reservas?detalle=${encodeURIComponent(targetId)}`, {
+      state: { detalleId: targetId }
+    })
+  }
+
+  if (cargando) {
+    return (
+      <div style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', background: esModoOscuro ? '#0f172a' : '#f8fafc', color: esModoOscuro ? '#fff' : '#0f172a' }}>
+        <p style={{ fontSize: 16, fontWeight: 700 }}>Cargando contrato de reserva...</p>
+      </div>
+    )
+  }
+
+  if (!reservaParaContrato || !vehiculoParaContrato) {
+    return (
+      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16, background: esModoOscuro ? '#0f172a' : '#f8fafc' }}>
+        <h2 style={{ fontSize: 22, fontWeight: 800, color: esModoOscuro ? '#f8fafc' : '#0f172a' }}>
+          No se encontró la reserva especificada
+        </h2>
+        <p style={{ color: '#64748b', fontSize: 14 }}>
+          No pudimos localizar la reserva con referencia {id}.
+        </p>
+        <Link
+          to="/reservas"
+          style={{
+            padding: '10px 20px',
+            borderRadius: '12px',
+            background: 'var(--brand-primary, #2563eb)',
+            color: 'var(--brand-on-primary, #fff)',
+            fontWeight: 700,
+            textDecoration: 'none',
+            boxShadow: '0 4px 12px var(--brand-shadow, rgba(37,99,235,0.25))'
+          }}
+        >
+          Volver a Mis Reservas
+        </Link>
+      </div>
+    )
+  }
+
+  return (
+    <div style={{ minHeight: '100vh', background: esModoOscuro ? '#0f172a' : '#f1f5f9', position: 'relative' }}>
+      {/* Barra superior de navegación */}
+      <nav
+        style={{
+          position: 'sticky',
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 50,
+          background: esModoOscuro ? 'rgba(15, 23, 42, 0.95)' : 'rgba(255, 255, 255, 0.98)',
+          backdropFilter: 'blur(12px)',
+          borderBottom: esModoOscuro ? '1px solid #1e293b' : '1px solid #e2e8f0',
+          boxShadow: '0 2px 12px rgba(0, 0, 0, 0.04)',
+          height: 80
+        }}
+      >
+        <div
+          style={{
+            maxWidth: 1200,
+            margin: '0 auto',
+            padding: '0 24px',
+            height: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 16
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
+            <button
+              type="button"
+              onClick={() => navigate(`/reservas?detalle=${encodeURIComponent(targetId)}`)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 8,
+                padding: '8px 14px',
+                borderRadius: '10px',
+                border: esModoOscuro ? '1px solid #334155' : '1px solid #cbd5e1',
+                background: esModoOscuro ? '#1e293b' : '#ffffff',
+                color: esModoOscuro ? '#f8fafc' : '#334155',
+                fontSize: 13,
+                fontWeight: 700,
+                cursor: 'pointer'
+              }}
+            >
+              <FaArrowLeft size={12} /> Volver a Mis Reservas
+            </button>
+            <Link to={usuario ? "/home" : "/"}>
+              <img src={brand.logoDataUrl || logo} alt={brand.name || 'Drivique'} style={{ height: 42, objectFit: 'contain' }} />
+            </Link>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <MenuConfiguracion />
+          </div>
+        </div>
+      </nav>
+
+      {/* Contenedor Principal */}
+      <main style={{ maxWidth: 1040, margin: '0 auto', padding: '32px 20px 60px' }}>
+        {/* Cabecera explicativa */}
+        <div style={{ textAlign: 'center', marginBottom: 28 }}>
+          <div
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8,
+              padding: '6px 14px',
+              borderRadius: 9999,
+              background: esSoloLectura ? 'rgba(34, 197, 94, 0.1)' : 'var(--brand-soft-light, #EFF6FF)',
+              border: esSoloLectura ? '1px solid rgba(34, 197, 94, 0.25)' : '1px solid var(--brand-border-light, #BFDBFE)',
+              color: esSoloLectura ? '#16a34a' : 'var(--brand-primary, #2563eb)',
+              fontSize: 12,
+              fontWeight: 800,
+              textTransform: 'uppercase',
+              letterSpacing: '0.06em',
+              marginBottom: 12
+            }}
+          >
+            {esSoloLectura ? <FaCheckCircle size={13} /> : <FaShieldAlt size={13} />}
+            <span>{esSoloLectura ? 'Contrato Oficial Firmado' : 'Firma Digital Oficial'}</span>
+          </div>
+
+          <h1
+            style={{
+              fontSize: 28,
+              fontWeight: 900,
+              color: esModoOscuro ? '#f8fafc' : '#0f172a',
+              margin: '0 0 10px',
+              letterSpacing: '-0.02em'
+            }}
+          >
+            {esSoloLectura ? 'Contrato de Alquiler Registrado' : 'Lectura y Firma de Contrato de Alquiler'}
+          </h1>
+          <p
+            style={{
+              fontSize: 14.5,
+              color: '#64748b',
+              margin: 0,
+              maxWidth: 620,
+              marginInline: 'auto',
+              lineHeight: 1.55
+            }}
+          >
+            {esSoloLectura
+              ? `Documento oficial firmado para la reserva ${targetId}. Puedes revisar los datos registrados, las cláusulas legales y descargar una copia en PDF.`
+              : `Tu reserva ${targetId} ya fue confirmada. Lee detenidamente los términos y condiciones de alquiler y dibuja tu firma digital en el recuadro inferior para completar el proceso.`}
+          </p>
+        </div>
+
+        {/* Visor de Contrato y Canvas de Firma o Modo Solo Lectura */}
+        <div ref={contratoVisualRef} style={{ width: '100%' }}>
+          <ContractSignature
+            vehiculo={vehiculoParaContrato}
+            reservaGuardada={reservaParaContrato}
+            onFirmado={handleFirmado}
+            soloLectura={esSoloLectura}
+            contratoFirmado={contratoFirmado}
+            onDescargar={handleDescargar}
+            onVolver={() => navigate(`/reservas?detalle=${encodeURIComponent(targetId)}`)}
+          />
+        </div>
+      </main>
+    </div>
+  )
+}

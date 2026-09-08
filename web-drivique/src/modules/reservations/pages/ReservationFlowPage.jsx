@@ -7,8 +7,10 @@ import { useBrand } from '@/contexts/BrandContext'
 import { formatCurrency } from '@/utils/currencyUtils'
 import { useLanding } from '../../landing/LandingContext'
 import { HORAS_LIMITE_PAGO_EFECTIVO } from '@/services/reservationService'
+import { SUCURSALES } from '../../catalog/constants'
 import { showAlert } from '@/utils/swalConfig'
 import { useNavigate } from 'react-router-dom'
+import MenuConfiguracion from '@/components/MenuConfiguracion'
 
 import { useReservationFlow } from '../hooks/useReservationFlow'
 import { useIsMobile } from '../../../hooks/useIsMobile'
@@ -23,11 +25,25 @@ import ContractSignature from '../../contracts/components/ContractSignature'
 
 import '../../catalog/pages/CatalogPage.css'
 
-const IcoArrow = () => (
-  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-  </svg>
-)
+const formatearFechaHoraReserva = (fecha) => {
+  if (!fecha) return '—'
+  try {
+    const d = new Date(fecha)
+    if (isNaN(d.getTime())) return String(fecha)
+    const pad = (n) => String(n).padStart(2, '0')
+    const dia = pad(d.getDate())
+    const mes = pad(d.getMonth() + 1)
+    const anio = d.getFullYear()
+    const horas = pad(d.getHours())
+    const minutos = pad(d.getMinutes())
+    const segundos = pad(d.getSeconds())
+    return `${dia}/${mes}/${anio} ${horas}:${minutos}:${segundos}`
+  } catch {
+    return String(fecha || '—')
+  }
+}
+
+const IcoArrow = () => <FaArrowRight size={14} />
 
 export default function ReservationFlowPage() {
   const { brand } = useBrand()
@@ -80,102 +96,11 @@ export default function ReservationFlowPage() {
     </div>
   )
 
-  // ─── Pantalla: Firma de contrato (efectivo) ───────────────────────────────
-  if (reservaCreada && reserva.metodoPago === 'efectivo' && !contratoFirmado) return (
-    <div className="catalogo-page" style={{ minHeight: 'calc(100vh / 0.9)', background: 'var(--hero-fondo)', position: 'relative', overflow: 'hidden' }}>
-      <div style={{ position: 'absolute', top: -80, right: -80, width: 500, height: 500, borderRadius: '50%', background: 'var(--hero-orb1)', pointerEvents: 'none' }} />
-      <div style={{ position: 'absolute', bottom: -60, left: -60, width: 350, height: 350, borderRadius: '50%', background: 'var(--hero-orb2)', pointerEvents: 'none' }} />
-      <div style={{ position: 'relative', paddingTop: 48, paddingBottom: 48, paddingLeft: 24, paddingRight: 24 }}>
-        <div style={{ textAlign: 'center', maxWidth: 700, margin: '0 auto 28px' }}>
-          <h1 style={{ fontSize: 24, fontWeight: 900, color: 'var(--texto-primary)', margin: '0 0 8px' }}>
-            {t('contratoFirma.pageTitleCash')}
-          </h1>
-          <p style={{ fontSize: 14, color: 'var(--texto-second)', margin: 0 }}>{t('contratoFirma.pageSubtitle')}</p>
-        </div>
-        <ContractSignature vehiculo={vehiculo} reservaGuardada={reservaCreada} onFirmado={handleContratoFirmado} />
-      </div>
-    </div>
-  )
-
-  // ─── Pantalla: Éxito / Pago ───────────────────────────────────────────────
-  if (exito) return (
-    <div className="catalogo-page" style={{ minHeight: 'calc(100vh / 0.9)', background: c.pageBg, color: c.textPrimary, position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-      <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', padding: '24px 24px 0', maxWidth: 1360, margin: '0 auto', width: '100%', zIndex: 10 }}>
-        <button onClick={() => navigate('/home')} style={{ background: 'none', border: 'none', display: 'flex', alignItems: 'center', gap: 8, color: c.textSecondary, fontWeight: 700, cursor: 'pointer', padding: 0 }}>
-          <FaArrowLeft size={12} /> {t('common.goBack')}
-        </button>
-      </div>
-
-      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24, position: 'relative' }}>
-        <div style={{ position: 'absolute', top: -80, right: -80, width: 500, height: 500, borderRadius: '50%', background: 'var(--hero-orb1)', pointerEvents: 'none', opacity: 0.5 }} />
-        <div style={{ position: 'absolute', bottom: -60, left: -60, width: 350, height: 350, borderRadius: '50%', background: 'var(--hero-orb2)', pointerEvents: 'none', opacity: 0.5 }} />
-
-        <div style={{ position: 'relative', textAlign: 'center', maxWidth: 560, width: '100%', background: c.cardBg, borderRadius: 28, boxShadow: '0 24px 70px rgba(15,23,42,0.16)', border: `1px solid ${c.cardBorder}`, padding: isMobile ? '32px 20px' : '48px 40px' }}>
-          <img src={brand.logoDataUrl || logo} alt={brand.name} style={{ width: 116, height: 116, borderRadius: '50%', objectFit: 'contain', background: '#fff', padding: 16, margin: '0 auto 28px', boxShadow: '0 14px 34px rgba(var(--brand-secondary-rgb),0.24)', border: `1px solid ${c.cardBorder}` }} />
-          <h2 style={{ fontSize: 30, fontWeight: 900, color: c.textPrimary, margin: '0 0 14px', letterSpacing: '-0.02em' }}>
-            {t('vehiculo.reservationRegisteredTitle', 'Reserva Registrada')}
-          </h2>
-
-          {reserva.metodoPago === 'efectivo' ? (
-            <>
-              <p style={{ fontSize: 16, color: c.textSecondary, lineHeight: 1.6, margin: '0 0 20px' }}>
-                {t('vehiculo.cashReservationRegisteredDesc', { sucursal: reserva.sucursalPagoEfectivo })}
-              </p>
-              <div style={{ background: '#fffbeb', border: '1px solid #fde68a', borderRadius: 16, padding: '16px 20px', marginBottom: 20, textAlign: 'left' }}>
-                <p style={{ fontSize: 13, fontWeight: 900, color: '#92400e', margin: '0 0 4px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                  {t('vehiculo.paymentDeadlineTitle', 'Plazo para pagar')}
-                </p>
-                <p style={{ fontSize: 14, color: '#92400e', margin: 0, lineHeight: 1.5 }}>
-                  {t('vehiculo.paymentDeadlineDesc', 'Tienes {{horas}} horas desde ahora para acercarte a la sucursal.', { horas: HORAS_LIMITE_PAGO_EFECTIVO })}
-                </p>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'center' }}>
-                <button
-                  onClick={() => {
-                    showAlert({ icon: 'success', title: t('vehiculo.reservationCompletedTitle', '¡Reserva Completada!'), text: t('vehiculo.reservationCompletedText', 'Tu reserva presencial ha sido registrada.'), confirmButtonText: t('common.accept', 'Aceptar') })
-                      .then(() => navigate('/reservas'))
-                  }}
-                  style={{ display: 'inline-flex', alignItems: 'center', gap: 12, padding: '18px 36px', borderRadius: 16, background: 'var(--brand-gradient)', color: 'var(--brand-on-primary)', fontWeight: 900, fontSize: 15, border: 'none', cursor: 'pointer', boxShadow: 'var(--brand-shadow)' }}
-                >
-                  <FaMoneyBillWave size={20} />
-                  <span>{t('vehiculo.confirmAndViewReservations', 'Confirmar y Ver Mis Reservas')}</span>
-                </button>
-              </div>
-            </>
-          ) : (
-            <>
-              <p style={{ fontSize: 16, color: c.textSecondary, lineHeight: 1.6, margin: '0 0 20px' }}>
-                {t('vehiculo.wompiReservationRegisteredDesc', 'Tu reserva quedó guardada. Completa el pago digital seguro con Wompi.')}
-              </p>
-              {datosPago && (
-                <div style={{ display: 'flex', justifyContent: 'center' }}>
-                  <button
-                    onClick={handlePagarConWompi}
-                    onMouseEnter={() => setHoverWompi(true)}
-                    onMouseLeave={() => setHoverWompi(false)}
-                    disabled={redirigiendoPago}
-                    style={{
-                      display: 'inline-flex', alignItems: 'center', gap: 12,
-                      padding: '18px 40px', borderRadius: 16,
-                      background: redirigiendoPago ? '#94a3b8' : hoverWompi ? 'var(--brand-gradient-hover)' : 'var(--brand-gradient)',
-                      color: '#fff', fontWeight: 900, fontSize: 15, border: 'none',
-                      cursor: redirigiendoPago ? 'default' : 'pointer',
-                      boxShadow: '0 8px 24px rgba(var(--brand-primary-rgb),0.28)',
-                      transition: 'all 200ms ease', width: '100%', maxWidth: 320,
-                    }}
-                  >
-                    <FaCreditCard size={20} />
-                    <span>{redirigiendoPago ? t('vehiculo.redirecting', 'Redirigiendo…') : t('vehiculo.payWithWompi', 'Pagar con Wompi')}</span>
-                  </button>
-                </div>
-              )}
-              {errorPago && <p style={{ color: '#dc2626', fontSize: 13, fontWeight: 700, marginTop: 16 }}>{errorPago}</p>}
-            </>
-          )}
-        </div>
-      </div>
-    </div>
-  )
+  // ─── Variables para datos de sucursal de pago en efectivo ─────────────────
+  const sucursalPago = reservaCreada?.reservaDetalles?.sucursalPagoEfectivo || reserva.sucursalPagoEfectivo || vehiculo?.sucursal || 'Alquiler Neiva - Centro'
+  const branchObj = SUCURSALES.find(s => s.nombre === sucursalPago)
+  const ciudadPago = branchObj?.ciudad || vehiculo?.ciudad || 'Neiva'
+  const direccionPago = branchObj?.direccion || 'Calle 9 # 8-25, Centro'
 
   // ─── Flujo principal ──────────────────────────────────────────────────────
   return (
@@ -183,7 +108,7 @@ export default function ReservationFlowPage() {
       <div className="detalle-contenido-inner" style={{ maxWidth: 1360, margin: '0 auto', padding: '24px 24px 60px' }}>
 
         {/* Top bar */}
-        <div style={{ marginBottom: 24, display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
+        <div style={{ marginBottom: 24, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <button
             className="catalogo-header-back"
             onClick={irAtras}
@@ -200,6 +125,7 @@ export default function ReservationFlowPage() {
           >
             <FaArrowLeft size={12} /> {pantalla === 1 ? t('vehiculo.backToCatalog') : t('common.goBack')}
           </button>
+          <MenuConfiguracion />
         </div>
 
         {/* Tarjeta principal */}
@@ -240,8 +166,8 @@ export default function ReservationFlowPage() {
             </button>
           </div>
 
-          <div className="detalle-layout" style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: 32, alignItems: 'flex-start' }}>
-            <div className="detalle-columna-principal" style={{ flex: 1, minWidth: 0 }}>
+          <div className={`detalle-layout ${pantalla === 1 ? 'w-full' : 'grid grid-cols-1 lg:grid-cols-3 gap-6 items-start'}`}>
+            <div className={`detalle-columna-principal ${pantalla === 1 ? 'w-full' : 'lg:col-span-2 min-w-0 flex flex-col gap-6'}`}>
 
               {/* ── Paso 1 ── */}
               {pantalla === 1 && (
@@ -256,6 +182,9 @@ export default function ReservationFlowPage() {
                   abrirModalEditar={abrirModalEditar}
                   pantalla={pantalla}
                   onContinuar={irSiguiente}
+                  appliedPromotion={appliedPromotion}
+                  onApplyPromotion={aplicarPromocion}
+                  onRemovePromotion={quitarPromocion}
                 />
               )}
 
@@ -285,6 +214,9 @@ export default function ReservationFlowPage() {
                   onReservar={handleReservar}
                   errores={errores}
                   docsVerificados={docsVerificados}
+                  appliedPromotion={appliedPromotion}
+                  onApplyPromotion={aplicarPromocion}
+                  onRemovePromotion={quitarPromocion}
                   c={c}
                 />
               )}
@@ -301,8 +233,7 @@ export default function ReservationFlowPage() {
             {pantalla > 1 && (
               <div
                 ref={resumenMovilRef}
-                className={`detalle-resumen-wrapper${resumenMovilAbierto ? ' abierto' : ''}`}
-                style={{ width: isMobile ? '100%' : '360px', flexShrink: 0 }}
+                className={`detalle-resumen-wrapper lg:col-span-1 min-w-0${resumenMovilAbierto ? ' abierto' : ''}`}
               >
                 <SideSummary
                   vehiculo={vehiculo}
@@ -325,18 +256,7 @@ export default function ReservationFlowPage() {
               <div className="detalle-continuar-movil" style={{ display: 'none', width: '100%', marginTop: 24 }}>
                 {errorPaso1 && <p style={{ color: '#dc2626', fontSize: 13, fontWeight: 700, marginBottom: 12, textAlign: 'center' }}>{errorPaso1}</p>}
                 <button onClick={irSiguiente} style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, padding: '16px 40px', borderRadius: 16, background: 'var(--brand-gradient)', color: 'var(--brand-on-primary)', fontWeight: 900, fontSize: 15, border: 'none', cursor: 'pointer', boxShadow: 'var(--brand-shadow)' }}>
-                  {pantalla === 2 ? t('vehiculo.continueData') : t('common.continue')} <IcoArrow />
-                </button>
-              </div>
-            )}
-
-            {/* Footer confirmar móvil (paso 3) */}
-            {pantalla === 3 && (
-              <div className="confirmar-reserva-movil" style={{ display: 'none', width: '100%', marginTop: 24, background: 'var(--brand-gradient)', borderRadius: 24, padding: '22px 24px', boxShadow: 'var(--brand-shadow)' }}>
-                <p style={{ fontSize: 12, color: 'var(--brand-border-light)', fontWeight: 700, margin: '0 0 4px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t('vehiculo.totalToPay')}</p>
-                <p style={{ fontSize: 26, fontWeight: 900, color: '#fff', margin: '0 0 16px' }}>{formatCurrency(totalReserva, moneda)}</p>
-                <button onClick={handleReservar} style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, padding: '15px 24px', borderRadius: 16, background: 'var(--bg-tarjeta)', color: 'var(--brand-text)', fontWeight: 900, fontSize: 15, border: 'none', cursor: 'pointer' }}>
-                  {t('vehiculo.confirmReserve')}
+                  {t('common.continue', 'Continuar')}
                 </button>
               </div>
             )}
@@ -429,9 +349,371 @@ export default function ReservationFlowPage() {
                     className="btn-cerrar-modal-resumen"
                     onClick={() => setModalResumenMovil(false)}
                   >
-                    {t('common.continue', 'Continuar')}
+                    {t('common.close', 'Cerrar')}
                   </button>
                 </div>
+              </div>
+            </div>
+          )}
+
+          {/* ─── Modal: Reserva Registrada (Efectivo en Sucursal) ─── */}
+          {reservaCreada && reserva.metodoPago === 'efectivo' && (
+            <div style={{
+              position: 'fixed',
+              inset: 0,
+              backgroundColor: 'rgba(15, 23, 42, 0.65)',
+              backdropFilter: 'blur(5px)',
+              zIndex: 99999,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: 16
+            }}>
+              <div style={{
+                background: c.cardBg || '#ffffff',
+                borderRadius: 24,
+                maxWidth: 400,
+                width: '100%',
+                padding: '30px 24px 24px',
+                textAlign: 'center',
+                boxShadow: '0 25px 60px -15px rgba(0, 0, 0, 0.35)',
+                border: `1px solid ${c.cardBorder || '#e2e8f0'}`,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                boxSizing: 'border-box'
+              }}>
+                {/* Logo Badge Circular */}
+                <div style={{
+                  width: 72,
+                  height: 72,
+                  borderRadius: '50%',
+                  background: '#ffffff',
+                  border: '1.5px solid #e2e8f0',
+                  boxShadow: '0 4px 16px rgba(0, 0, 0, 0.06)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: 12,
+                  marginBottom: 16
+                }}>
+                  <img
+                    src={brand.logoDataUrl || logo}
+                    alt={brand.name || 'Drivique'}
+                    style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                  />
+                </div>
+
+                {/* Titulo */}
+                <h2 style={{
+                  fontSize: 20,
+                  fontWeight: 800,
+                  color: c.textPrimary || '#0f172a',
+                  margin: '0 0 8px',
+                  letterSpacing: '-0.01em'
+                }}>
+                  {t('vehiculo.reservationRegisteredTitle', 'Reserva Registrada')}
+                </h2>
+
+                {/* Subtitulo */}
+                <p style={{
+                  fontSize: 12.5,
+                  color: c.textSecondary || '#64748b',
+                  lineHeight: 1.5,
+                  margin: '0 0 18px',
+                  padding: '0 4px'
+                }}>
+                  {t('vehiculo.cashReservationRegisteredDesc', {
+                    defaultValue: `Tu reserva quedó registrada. Para confirmarla, realiza el pago en efectivo en el punto autorizado ${sucursalPago}.`,
+                    sucursal: sucursalPago
+                  })}
+                </p>
+
+                {/* Tarjeta de Resumen */}
+                <div style={{
+                  width: '100%',
+                  background: c.isDark ? 'rgba(255,255,255,0.04)' : '#f8fafc',
+                  border: `1px solid ${c.cardBorder || '#e2e8f0'}`,
+                  borderRadius: 14,
+                  padding: '14px 16px',
+                  textAlign: 'left',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 8,
+                  marginBottom: 14,
+                  boxSizing: 'border-box'
+                }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 12.5 }}>
+                    <span style={{ color: c.textSecondary || '#64748b', fontWeight: 600 }}>Referencia:</span>
+                    <span style={{
+                      fontWeight: 800,
+                      color: 'var(--brand-primary, #1D4ED8)',
+                      fontSize: 12.5,
+                      letterSpacing: '0.02em'
+                    }}>
+                      {reservaCreada.referencia}
+                    </span>
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 12.5 }}>
+                    <span style={{ color: c.textSecondary || '#64748b', fontWeight: 600 }}>Sucursal:</span>
+                    <span style={{ fontWeight: 700, color: c.textPrimary || '#0f172a' }}>
+                      {sucursalPago}
+                    </span>
+                  </div>
+
+                  <div style={{ height: 1, background: c.cardBorder || '#e2e8f0', margin: '4px 0' }} />
+
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{
+                      fontSize: 11.5,
+                      fontWeight: 800,
+                      color: c.textSecondary || '#64748b',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.04em'
+                    }}>
+                      TOTAL A PAGAR:
+                    </span>
+                    <span style={{
+                      fontSize: 17,
+                      fontWeight: 900,
+                      color: 'var(--brand-primary, #1D4ED8)'
+                    }}>
+                      {formatCurrency(reservaCreada.total, moneda)}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Tarjeta de Advertencia Plazo */}
+                <div style={{
+                  width: '100%',
+                  background: '#FEFCE8',
+                  border: '1.5px solid #FDE047',
+                  borderRadius: 14,
+                  padding: '12px 16px',
+                  textAlign: 'left',
+                  marginBottom: 18,
+                  boxSizing: 'border-box'
+                }}>
+                  <p style={{
+                    fontSize: 11,
+                    fontWeight: 800,
+                    color: '#854D0E',
+                    margin: '0 0 4px',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.04em'
+                  }}>
+                    PLAZO PARA PAGAR
+                  </p>
+                  <p style={{
+                    fontSize: 11.5,
+                    color: '#713F12',
+                    margin: 0,
+                    lineHeight: 1.45,
+                    fontWeight: 500
+                  }}>
+                    Tienes 72 horas desde ahora para acercarte a la sucursal y pagar. Si no pagas dentro de este plazo, la reserva se cancelará automáticamente.
+                  </p>
+                </div>
+
+                {/* Botones de Accion */}
+                <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      try {
+                        if (vehiculo?.id) {
+                          sessionStorage.removeItem(`drivique_reservation_state_${vehiculo.id}`)
+                        }
+                      } catch (err) {
+                        console.error(err)
+                      }
+                      navigate('/reservas')
+                    }}
+                    style={{
+                      width: '100%',
+                      height: 46,
+                      borderRadius: 12,
+                      background: 'var(--brand-primary, #1D4ED8)',
+                      color: 'var(--brand-on-primary, #ffffff)',
+                      border: 'none',
+                      fontWeight: 700,
+                      fontSize: 14,
+                      cursor: 'pointer',
+                      boxShadow: '0 6px 16px var(--brand-shadow, rgba(29, 78, 216, 0.25))',
+                      transition: 'all 0.2s',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}
+                  >
+                    Ir a Mis Reservas
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      try {
+                        if (vehiculo?.id) {
+                          sessionStorage.removeItem(`drivique_reservation_state_${vehiculo.id}`)
+                        }
+                      } catch (err) {
+                        console.error(err)
+                      }
+                      navigate('/home')
+                    }}
+                    style={{
+                      width: '100%',
+                      height: 44,
+                      borderRadius: 12,
+                      background: c.cardBg || '#ffffff',
+                      color: c.textPrimary || '#0f172a',
+                      border: `1.5px solid ${c.cardBorder || '#e2e8f0'}`,
+                      fontWeight: 700,
+                      fontSize: 14,
+                      cursor: 'pointer',
+                      transition: 'all 0.2s',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}
+                  >
+                    Volver al Inicio
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ─── Modal: Reserva Registrada (Pago Digital Wompi) ─── */}
+          {reservaCreada && reserva.metodoPago !== 'efectivo' && (
+            <div style={{
+              position: 'fixed',
+              inset: 0,
+              backgroundColor: 'rgba(15, 23, 42, 0.65)',
+              backdropFilter: 'blur(5px)',
+              zIndex: 99999,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: 16
+            }}>
+              <div style={{
+                background: c.cardBg || '#ffffff',
+                borderRadius: 28,
+                maxWidth: 400,
+                width: '100%',
+                padding: '32px 24px',
+                textAlign: 'center',
+                boxShadow: '0 25px 60px -15px rgba(0, 0, 0, 0.35)',
+                border: `1px solid ${c.cardBorder || '#e2e8f0'}`,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                boxSizing: 'border-box'
+              }}>
+                {/* Logo Badge Circular */}
+                <div style={{
+                  width: 72,
+                  height: 72,
+                  borderRadius: '50%',
+                  background: '#ffffff',
+                  border: '1.5px solid #e2e8f0',
+                  boxShadow: '0 4px 14px rgba(0, 0, 0, 0.05)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: 12,
+                  marginBottom: 20
+                }}>
+                  <img
+                    src={brand.logoDataUrl || logo}
+                    alt={brand.name || 'Drivique'}
+                    style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                  />
+                </div>
+
+                {/* Titulo */}
+                <h2 style={{
+                  fontSize: 22,
+                  fontWeight: 900,
+                  color: c.textPrimary || '#0f172a',
+                  margin: '0 0 12px',
+                  letterSpacing: '-0.02em'
+                }}>
+                  {t('vehiculo.reservationRegisteredTitle', 'Reserva Registrada')}
+                </h2>
+
+                {/* Subtitulo */}
+                <p style={{
+                  fontSize: 13.5,
+                  color: c.textSecondary || '#64748b',
+                  lineHeight: 1.55,
+                  margin: '0 0 28px',
+                  padding: '0 8px',
+                  fontWeight: 500
+                }}>
+                  Tu reserva quedó guardada como pendiente. Para confirmarla, completa el pago digital seguro con Wompi (Pruebas).
+                </p>
+
+                {/* Botones de Accion */}
+                <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  <button
+                    type="button"
+                    onClick={handlePagarConWompi}
+                    disabled={redirigiendoPago}
+                    style={{
+                      width: '100%',
+                      height: 50,
+                      borderRadius: 16,
+                      background: redirigiendoPago ? '#94a3b8' : 'var(--brand-primary, #2563eb)',
+                      color: '#ffffff',
+                      border: 'none',
+                      fontWeight: 800,
+                      fontSize: 15,
+                      cursor: redirigiendoPago ? 'default' : 'pointer',
+                      boxShadow: '0 6px 20px rgba(37, 99, 235, 0.3)',
+                      transition: 'all 0.2s',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 10
+                    }}
+                  >
+                    <FaCreditCard size={18} />
+                    <span>{redirigiendoPago ? t('vehiculo.redirecting', 'Redirigiendo…') : 'Pagar con Wompi'}</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      sessionStorage.removeItem(`drivique_reservation_state_${vehiculo.id}`)
+                      navigate('/reservas')
+                    }}
+                    style={{
+                      width: '100%',
+                      height: 48,
+                      borderRadius: 16,
+                      background: c.cardBg || '#ffffff',
+                      color: c.textPrimary || '#334155',
+                      border: `1.5px solid ${c.cardBorder || '#e2e8f0'}`,
+                      fontWeight: 700,
+                      fontSize: 14.5,
+                      cursor: 'pointer',
+                      transition: 'all 0.2s',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}
+                  >
+                    Pagar más tarde
+                  </button>
+                </div>
+                {errorPago && (
+                  <p style={{ color: '#dc2626', fontSize: 13, fontWeight: 700, marginTop: 14 }}>
+                    {errorPago}
+                  </p>
+                )}
               </div>
             </div>
           )}

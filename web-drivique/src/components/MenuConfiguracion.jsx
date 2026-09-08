@@ -95,7 +95,7 @@ export default function MenuConfiguracion({ modoMovilForce = false, buttonStyle 
       </div>
 
       <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--texto-second)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 8px' }}>
-        Moneda
+        {tx.nav.moneda || 'Moneda'}
       </p>
 
       <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>

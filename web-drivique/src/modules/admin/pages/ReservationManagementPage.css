@@ -325,19 +325,19 @@ html.dark .reserva-timeline-line {
 
 /* Media Query Impresión */
 @media print {
-  body * {
+  .reservations-management-page ~ * {
     visibility: hidden;
   }
-  .cities-table-wrap,
-  .cities-table-wrap * {
-    visibility: visible;
+  .reservations-management-page {
+    visibility: visible !important;
   }
-  .cities-table-wrap {
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-    position: absolute;
-    left: 0;
-    top: 0;
+  .reservations-management-page .cities-table-wrap,
+  .reservations-management-page .cities-table-wrap * {
+    visibility: visible !important;
+  }
+  .reservations-management-page .cities-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
     width: 100%;
   }
 }

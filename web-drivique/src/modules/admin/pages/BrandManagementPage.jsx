@@ -1,11 +1,11 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { FaCheck, FaImage, FaPalette, FaSave, FaUndo } from 'react-icons/fa'
 import { useAuthStore } from '../../../store/authStore'
 import { useBrand } from '../../../contexts/BrandContext'
 import { useLanding } from '../../landing/LandingContext'
 import { brandService } from '../../../services/brandService'
-import { createBrandTokens } from '../../../utils/brandThemeUtils'
+import { createBrandTokens, applyBrand } from '../../../utils/brandThemeUtils'
 import ManagementSidebar from '../components/ManagementSidebar'
 import MenuConfiguracion from '../../../components/MenuConfiguracion'
 import defaultLogo from '../../../assets/logocatalog.png'
@@ -31,10 +31,27 @@ export default function BrandManagementPage() {
   const [notice, setNotice] = useState('')
   const previewTokens = useMemo(() => createBrandTokens(draft.colors), [draft.colors])
 
-  const updateColor = (key, value) => setDraft((current) => ({ ...current, colors: { ...current.colors, [key]: value } }))
+  const updateColor = (key, value) => {
+    const updated = { ...draft, colors: { ...draft.colors, [key]: value } }
+    setDraft(updated)
+    if (/^#[0-9a-f]{6}$/i.test(value)) {
+      applyBrand(updated)
+      try {
+        brandService.save(updated, user)
+        setNotice('Color de marca actualizado y aplicado automáticamente.')
+      } catch {}
+    }
+  }
+
   const selectPalette = (colors) => {
-    setDraft((current) => ({ ...current, colors: { ...colors } }))
+    const updated = { ...draft, colors: { ...colors } }
+    setDraft(updated)
+    applyBrand(updated)
     setError('')
+    try {
+      brandService.save(updated, user)
+      setNotice('Color de marca actualizado y aplicado automáticamente.')
+    } catch {}
   }
 
   const loadLogo = (event) => {
@@ -53,6 +70,7 @@ export default function BrandManagementPage() {
       setError('')
       const updated = action()
       setDraft(updated)
+      applyBrand(updated)
       setNotice(t(successKey))
     } catch (caught) {
       setError(t(`admin.brand.errors.${caught.message}`))

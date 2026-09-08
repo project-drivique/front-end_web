@@ -36,6 +36,9 @@ export default function PicoYPlacaChecker({ c }) {
           href="https://www.pyphoy.com/"
           target="_blank"
           rel="noopener noreferrer"
+          onClick={(e) => {
+            e.stopPropagation()
+          }}
           style={{
             display: 'inline-flex',
             alignItems: 'center',
