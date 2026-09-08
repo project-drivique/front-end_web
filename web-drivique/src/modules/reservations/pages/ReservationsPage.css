@@ -480,8 +480,8 @@ html.dark .contrato-action-btn.bloqueado:disabled {
 
 .modal-cash-summary {
   width: 100%;
-  background: var(--brand-soft-light, #eff6ff);
-  border: 1.5px solid var(--brand-border-light, #bfdbfe);
+  background: var(--bg-item, #f8fafc);
+  border: 1px solid var(--borde, #e2e8f0);
   border-radius: 16px;
   padding: 16px 18px;
   text-align: left;
@@ -516,7 +516,7 @@ html.dark .contrato-action-btn.bloqueado:disabled {
 
 .modal-cash-divider {
   height: 1px;
-  background: var(--brand-border-light, #bfdbfe);
+  background: var(--borde, #e2e8f0);
   margin: 4px 0;
 }
 
@@ -601,8 +601,8 @@ html.dark .contrato-action-btn.bloqueado:disabled {
 .modal-wompi-total-box {
   width: 100%;
   max-width: 440px;
-  background: var(--brand-soft-light, #eff6ff);
-  border: 1.5px solid var(--brand-border-light, #bfdbfe);
+  background: var(--bg-item, #f8fafc);
+  border: 1px solid var(--borde, #e2e8f0);
   border-radius: 14px;
   padding: 14px 18px;
   display: flex;
@@ -780,8 +780,8 @@ html.dark .modal-cash-desc {
 }
 
 html.dark .modal-cash-summary {
-  background: rgba(var(--brand-primary-rgb), 0.1);
-  border-color: rgba(var(--brand-primary-rgb), 0.3);
+  background: #1e293b;
+  border-color: #334155;
 }
 
 html.dark .modal-cash-row-label {
@@ -793,7 +793,7 @@ html.dark .modal-cash-row-val {
 }
 
 html.dark .modal-cash-divider {
-  background: rgba(var(--brand-primary-rgb), 0.3);
+  background: #334155;
 }
 
 html.dark .modal-cash-total-label {
@@ -827,8 +827,8 @@ html.dark .modal-wompi-desc {
 }
 
 html.dark .modal-wompi-total-box {
-  background: rgba(var(--brand-primary-rgb), 0.1);
-  border-color: rgba(var(--brand-primary-rgb), 0.3);
+  background: #1e293b;
+  border-color: #334155;
 }
 
 html.dark .modal-wompi-total-label {
