@@ -71,9 +71,8 @@ function ModalValoracion({ reserva, onClose, onSave }) {
   </section></div>
 }
 
-function ContratoVerCard({ reserva, contratoFirmado, reservaParaContrato, vehiculoParaContrato, identificacion, autoDesbloquear = false, esConfirmada = false }) {
+function ContratoVerCard({ reserva, contratoFirmado, reservaParaContrato, vehiculoParaContrato, identificacion, autoDesbloquear = false }) {
   const { t, i18n } = useTranslation()
-  const navigate = useNavigate()
   const [clave, setClave] = useState('')
   const [mostrarClave, setMostrarClave] = useState(false)
   const tieneContratoFirmado = Boolean(contratoFirmado?.firmaUsuarioDataUrl)
@@ -259,31 +258,6 @@ function ContratoVerCard({ reserva, contratoFirmado, reservaParaContrato, vehicu
             <FaFileContract size={15} />
             <span>{t('reservas.viewSignedContract', { defaultValue: 'Ver contrato firmado' })}</span>
           </button>
-
-          {esConfirmada && !tieneContratoFirmado && (
-            <button
-              type="button"
-              onClick={() => navigate(`/contrato/${reserva.id}`, { state: { reserva, vehiculo: reserva.vehiculo } })}
-              className="contrato-firmar-link"
-              style={{
-                background: 'transparent',
-                border: 'none',
-                color: 'var(--brand-primary, #2563eb)',
-                fontSize: '13px',
-                fontWeight: 700,
-                cursor: 'pointer',
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '6px',
-                marginTop: '4px',
-                textDecoration: 'underline'
-              }}
-            >
-              <FaPenNib size={12} />
-              <span>{t('reservas.readAndSign', { defaultValue: 'Leer y firmar contrato digital' })}</span>
-            </button>
-          )}
         </div>
       </div>
     </div>
@@ -367,7 +341,6 @@ function Contrato({ reserva, autoDesbloquear = false }) {
       vehiculoParaContrato={vehiculoParaContrato}
       identificacion={identificacion}
       autoDesbloquear={autoDesbloquear}
-      esConfirmada={esConfirmada}
     />
   )
 }

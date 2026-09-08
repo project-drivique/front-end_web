@@ -306,28 +306,7 @@ html.dark .contrato-subtarjeta-input {
   border-color: #334155;
 }
 
-/* ============================================================
-   ENLACE DE ACCESO A FIRMA DE CONTRATO
-   ============================================================ */
-.contrato-firmar-link {
-  background: transparent;
-  border: none;
-  color: var(--brand-primary, #2563eb);
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  margin-top: 4px;
-  text-decoration: underline;
-  transition: opacity 0.2s ease;
-}
 
-.contrato-firmar-link:hover {
-  opacity: 0.8;
-}
 
 /* ============================================================
    TARJETA DESBLOQUEADA DE CONTRATO
