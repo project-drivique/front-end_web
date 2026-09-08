@@ -405,21 +405,12 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
     if (sub.includes('pse')) return 'Pago Wompi - PSE'
     if (sub.includes('tarjeta') || sub.includes('card') || sub.includes('credito') || sub.includes('debito')) return 'Pago Wompi - Tarjeta'
 
-    if (sub) {
+    if (sub && sub !== 'wompi' && sub !== 'digital') {
       return `Pago Wompi - ${sub.charAt(0).toUpperCase() + sub.slice(1)}`
     }
 
-    // Resolver método específico seleccionado por el usuario en Wompi
-    const refUpper = String(reserva.id || reserva.referencia || '').toUpperCase()
-    let canal = 'Nequi'
-    if (refUpper.includes('DAV')) canal = 'Daviplata'
-    else if (refUpper.includes('EFECT') || refUpper.includes('CORRESP')) canal = 'Efectivo Bancolombia'
-    else if (refUpper.includes('BAN') || refUpper.includes('BC')) canal = 'Bancolombia'
-    else if (refUpper.includes('PSE')) canal = 'PSE'
-    else if (refUpper.includes('TAR') || refUpper.includes('CARD')) canal = 'Tarjeta'
-    else canal = 'Nequi'
-
-    return `Pago Wompi - ${canal}`
+    // Mientras no se haya seleccionado el método en Wompi
+    return 'Pago Wompi'
   }
 
   const medioPagoTexto = resolverMedioPago()
