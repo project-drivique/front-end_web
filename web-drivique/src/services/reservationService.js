@@ -48,8 +48,9 @@ export const reservationService = {
         reservas = INITIAL_RESERVATIONS_SEED;
         localStorage.setItem(STORAGE_KEY, JSON.stringify(reservas));
       } else {
-        // Limpiar reservas residuales eliminadas (RES-2026-9102)
-        reservas = reservas.filter(r => r.referencia !== 'RES-2026-9102' && r.id !== 'RES-2026-9102');
+        // Limpiar reservas residuales y semillas anteriores
+        const legacySeedIds = new Set(['RES-2026-9102', 'RES-1788806368641-R95O5FB', 'RES-1788806368641-R9505FB']);
+        reservas = reservas.filter(r => !legacySeedIds.has(r.referencia) && !legacySeedIds.has(r.id) && !legacySeedIds.has(r.codigo));
       }
       const { actualizadas, cambiaron } = vencerReservasEfectivo(reservas);
       if (cambiaron || (data && JSON.parse(data).length !== reservas.length)) {
