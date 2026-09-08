@@ -9,6 +9,7 @@ import { contractService } from '@/services/contractService'
 import { useHistorialReservas } from '../hooks/useReservations'
 import filtrosReservas from '@/mocks/reservationsFilters.json'
 import CatalogTopHeader from '@/modules/catalog/components/CatalogTopHeader'
+import FirmaContrato from '@/modules/contracts/components/ContractSignature'
 import { descargarContratoOriginal, prepararVistaContrato } from '@/modules/contracts/utils/downloadSignedContract'
 import { reservationService } from '@/services/reservationService'
 import { SUCURSALES } from '@/modules/catalog/constants'
@@ -73,7 +74,7 @@ function ModalValoracion({ reserva, onClose, onSave }) {
   </section></div>
 }
 
-function ContratoVerCard({ reserva, contratoFirmado, reservaParaContrato, vehiculoParaContrato, identificacion, autoDesbloquear = false }) {
+function ContratoVerCard({ reserva, contratoFirmado, reservaParaContrato, vehiculoParaContrato, identificacion, autoDesbloquear = false, onDesbloquear }) {
   const { t, i18n } = useTranslation()
   const [clave, setClave] = useState('')
   const [mostrarClave, setMostrarClave] = useState(false)
@@ -110,7 +111,11 @@ function ContratoVerCard({ reserva, contratoFirmado, reservaParaContrato, vehicu
     )
 
     if (coincideDoc || coincideUsuario || coincideRef || coincideContrato || esDuenio || clave.trim().length >= 3) {
-      setDesbloqueado(true)
+      if (onDesbloquear) {
+        onDesbloquear()
+      } else {
+        setDesbloqueado(true)
+      }
       setError('')
     } else {
       setError(t('reservas.wrongIdentification', { defaultValue: 'La clave ingresada no coincide.' }))
@@ -330,7 +335,7 @@ function ContratoVerCard({ reserva, contratoFirmado, reservaParaContrato, vehicu
   )
 }
 
-function Contrato({ reserva, autoDesbloquear = false }) {
+function Contrato({ reserva, autoDesbloquear = false, onDesbloquear }) {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const usuario = useAuthStore(state => state.usuario)
@@ -441,6 +446,7 @@ function Contrato({ reserva, autoDesbloquear = false }) {
       vehiculoParaContrato={vehiculoParaContrato}
       identificacion={identificacion}
       autoDesbloquear={autoDesbloquear}
+      onDesbloquear={onDesbloquear}
     />
   )
 }
@@ -449,6 +455,10 @@ function Contrato({ reserva, autoDesbloquear = false }) {
 function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
   const { t, i18n } = useTranslation()
   const { brand } = useBrand() || {}
+  const usuario = useAuthStore(state => state.usuario)
+  const [claveDesbloqueada, setClaveDesbloqueada] = useState(autoDesbloquear)
+  const contratoVisualRef = useRef(null)
+
   const estado = { texto: t(`reservas.statuses.${reserva.estado}`, { defaultValue: t('reservas.statuses.pendiente') }), clase: CLASES_ESTADO[reserva.estado] || CLASES_ESTADO.pendiente }
   const refBusquedaModal = reserva.referencia || reserva.codigo || reserva.id
   const contrato = contractService.obtenerPorReserva(refBusquedaModal) || contractService.obtenerPorReserva(reserva.id)
@@ -472,6 +482,61 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
   const ciudadPago = branchObj?.ciudad || reserva.vehiculo?.ciudad || 'Neiva'
   const direccionPago = branchObj?.direccion || 'Calle 9 # 8-25, Centro'
 
+  // Normalización completa de la reserva para el contrato oficial
+  const reservaParaContrato = useMemo(() => {
+    const base = contrato?.contratoOriginal?.reserva || reservaOriginal || reserva || {}
+    const df = base.datosForm || {}
+    const rd = base.reservaDetalles || {}
+    const nombreCliente = df.nombre || [df.nombres, df.apellidos].filter(Boolean).join(' ').trim() || base.clienteNombre || usuario?.nombre || 'Cliente Drivique'
+    const correoCliente = df.correo || base.clienteCorreo || usuario?.correo || usuario?.email || 'cliente@drivique.com'
+    const telCliente = df.celular || df.telefono || base.clienteTelefono || usuario?.telefono || '+57 300 000 0000'
+    const docCliente = df.numDoc || df.documento || base.clienteDocumento || usuario?.cedula || '1020304050'
+    const ref = base.referencia || base.codigo || base.id || reserva.id
+    return {
+      ...base,
+      referencia: ref,
+      total: base.total || base.totalCOP || reserva.total || 0,
+      seguroIdx: base.seguroIdx ?? reserva.seguroIdx ?? 0,
+      serviciosSeleccionados: base.serviciosSeleccionados || reserva.serviciosSeleccionados || [],
+      datosForm: {
+        ...df,
+        nombre: nombreCliente,
+        correo: correoCliente,
+        celular: telCliente,
+        telefono: telCliente,
+        tipoDoc: df.tipoDoc || 'CC',
+        numDoc: docCliente,
+        licenciaPdf: df.licenciaPdf || null
+      },
+      reservaDetalles: {
+        ...rd,
+        fechaInicio: rd.fechaInicio || reserva.fechaInicio,
+        fechaFin: rd.fechaFin || reserva.fechaFin,
+        horaInicio: rd.horaInicio || '08:00',
+        horaFin: rd.horaFin || '18:00',
+        sucursalRetiro: rd.sucursalRetiro || reserva.sucursal || reserva.vehiculo?.sucursal || 'Alquiler Neiva - Centro',
+        sucursalDevolucion: rd.sucursalDevolucion || reserva.sucursal || reserva.vehiculo?.sucursal || 'Alquiler Neiva - Centro',
+        metodoPago: rd.metodoPago || reserva.pasarela || (reserva.metodoPago === 'efectivo' ? 'efectivo' : 'tarjeta'),
+        sucursalPagoEfectivo: rd.sucursalPagoEfectivo || reserva.sucursal || reserva.vehiculo?.sucursal || 'Alquiler Neiva - Centro'
+      }
+    }
+  }, [reserva, contrato, reservaOriginal, usuario])
+
+  // Normalización completa del vehículo para el contrato oficial
+  const vehiculoParaContrato = useMemo(() => {
+    const base = contrato?.contratoOriginal?.vehiculo || vehiculoOriginal || reserva.vehiculo || {}
+    return {
+      ...base,
+      nombre: base.nombre || (base.marca ? `${base.marca} ${base.modelo || ''}` : 'Vehículo Drivique'),
+      placa: base.placa || 'Asignación al entregar',
+      color: base.color || 'Plata',
+      año: base.año || base.anio || 2024,
+      sucursal: base.sucursal || reserva.sucursal || 'Alquiler Neiva - Centro',
+      servicios: base.servicios || [],
+      seguros: base.seguros || [{ nombre: 'Protección Básica Estándar' }]
+    }
+  }, [reserva, contrato, vehiculoOriginal])
+
   // Resolver Lugar de Retiro y Devolución
   const resolverLugar = (loc, dom) => {
     if (!loc) return sucursalPago
@@ -492,7 +557,7 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
   const lugarRetiro = resolverLugar(lugarRetiroRaw, domicilioRetiro)
   const lugarDevolucion = resolverLugar(lugarDevolucionRaw, domicilioDevolucion)
 
-  // Resolver Medio / Canal de Pago (Efectivo en sucursal, Wompi - Nequi, Daviplata, Bancolombia, etc.)
+  // Resolver Medio / Canal de Pago
   const resolverMedioPago = () => {
     const rawEfectivo =
       esEfectivo ||
@@ -534,7 +599,6 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
       return `Pago Wompi - ${sub.charAt(0).toUpperCase() + sub.slice(1)}`
     }
 
-    // Mientras no se haya seleccionado el método en Wompi
     return 'Pago Wompi'
   }
 
@@ -590,6 +654,70 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
       })
       window.location.reload()
     }
+  }
+
+  const handleDescargarPdf = async () => {
+    try {
+      let contratoDescarga = contrato
+      if (!contratoDescarga?.contratoOriginal) {
+        contratoDescarga = contractService.completarContratoOriginal(reserva.id, {
+          reserva: JSON.parse(JSON.stringify(reservaParaContrato)),
+          vehiculo: JSON.parse(JSON.stringify(vehiculoParaContrato)),
+          idioma: i18n.resolvedLanguage || i18n.language || 'es',
+          guardadoEn: contrato?.firmadoEn || new Date().toISOString(),
+          migradoDesdeReserva: true,
+        })
+      }
+      await descargarContratoOriginal({
+        contrato: contratoDescarga,
+        elementoContrato: contratoVisualRef.current,
+      })
+    } catch (err) {
+      console.error('Error al descargar PDF:', err)
+    }
+  }
+
+  // Si la clave fue validada con éxito, se muestra la pantalla completa del contrato oficial en modo solo lectura
+  if (contrato && claveDesbloqueada) {
+    return (
+      <div className="modal-backdrop" onMouseDown={onClose}>
+        <section
+          className="detalle-modal modal-contrato-lectura"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Contrato de Alquiler"
+          style={{
+            maxWidth: '1040px',
+            width: '96%',
+            maxHeight: '94vh',
+            overflowY: 'auto',
+            padding: '28px 24px',
+            borderRadius: '24px',
+            position: 'relative',
+            background: 'var(--bg-tarjeta, #ffffff)'
+          }}
+          onMouseDown={(e) => e.stopPropagation()}
+        >
+          <button
+            className="modal-cerrar"
+            onClick={onClose}
+            aria-label={t('reservas.closeDetail', { defaultValue: 'Cerrar' })}
+          >
+            <FaTimes size={14} />
+          </button>
+          <div ref={contratoVisualRef} style={{ width: '100%' }}>
+            <FirmaContrato
+              vehiculo={vehiculoParaContrato}
+              reservaGuardada={reservaParaContrato}
+              soloLectura={true}
+              contratoFirmado={contrato}
+              onDescargar={handleDescargarPdf}
+              onVolver={() => setClaveDesbloqueada(false)}
+            />
+          </div>
+        </section>
+      </div>
+    )
   }
 
   return (
@@ -866,7 +994,11 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
         )}
 
         {/* Tarjeta de Contrato (Listo para firmar, firma activa o protegido) */}
-        <Contrato reserva={reserva} autoDesbloquear={autoDesbloquear} />
+        <Contrato
+          reserva={reserva}
+          autoDesbloquear={autoDesbloquear}
+          onDesbloquear={() => setClaveDesbloqueada(true)}
+        />
 
         {/* Botón de cierre */}
         <div style={{ display: 'flex', justifyContent: 'center', width: '100%', marginTop: 16 }}>

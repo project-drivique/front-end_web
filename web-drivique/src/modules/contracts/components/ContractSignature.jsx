@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FaFileSignature, FaCheckCircle } from 'react-icons/fa';
+import { FaFileSignature, FaCheckCircle, FaDownload, FaArrowLeft } from 'react-icons/fa';
 import logo from '@/assets/logo.png';
 import { useBrand } from '@/contexts/BrandContext';
 import firmaDrivique from '@/assets/drivique-signature.png';
@@ -38,7 +38,15 @@ const Campo = ({ label, value }) => (
   </div>
 );
 
-export default function FirmaContrato({ vehiculo, reservaGuardada, onFirmado }) {
+export default function FirmaContrato({
+  vehiculo,
+  reservaGuardada,
+  onFirmado,
+  soloLectura = false,
+  contratoFirmado = null,
+  onDescargar = null,
+  onVolver = null,
+}) {
   const { brand } = useBrand();
   const { t, i18n } = useTranslation();
   const { moneda } = useLanding();
@@ -52,7 +60,7 @@ export default function FirmaContrato({ vehiculo, reservaGuardada, onFirmado }) 
     ? `${reservaDetalles.domicilioDireccion || ''}, ${reservaDetalles.domicilioBarrio || ''}, ${reservaDetalles.domicilioCiudad || ''} (Ref: ${reservaDetalles.domicilioReferencias || ''})`
     : t('contratoFirma.notProvided');
 
-  const codigoContrato = useMemo(() => contractService.obtenerOCrearCodigo(referencia), [referencia]);
+  const codigoContrato = contratoFirmado?.codigo || useMemo(() => contractService.obtenerOCrearCodigo(referencia), [referencia]);
   const localeFecha = LOCALES_FECHA[i18n.language] || 'es-CO';
   const { marca, modelo } = separarMarcaModelo(vehiculo?.nombre);
   const sucursalRetiroNombre = reservaDetalles.sucursalRetiro === 'domicilio'
@@ -114,7 +122,7 @@ export default function FirmaContrato({ vehiculo, reservaGuardada, onFirmado }) 
   };
 
   return (
-    <div className="contrato-contenedor-externo" style={{ maxWidth: 980, margin: '0 auto', background: '#f8fafc' }}>
+    <div className="contrato-contenedor-externo" style={{ maxWidth: 980, margin: '0 auto', background: 'transparent' }}>
       <div style={{
         background: 'var(--bg-tarjeta)', border: '1px solid var(--borde)', borderRadius: 24,
         overflow: 'hidden', boxShadow: 'var(--sombra-tarjeta)',
@@ -247,8 +255,24 @@ export default function FirmaContrato({ vehiculo, reservaGuardada, onFirmado }) 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 18 }}>
               <div style={{ background: 'var(--bg-item)', border: '1px solid var(--borde)', borderRadius: 20, padding: 18 }}>
                 <h4 style={{ margin: '0 0 12px', fontSize: 15, color: 'var(--texto-primary)' }}>{t('contratoFirma.userSignature')}</h4>
-                <SignatureCanvas ref={canvasRef} onCambio={(vacia) => { if (!vacia) setErrorFirma(''); }} />
-                {errorFirma && <p style={{ color: '#ef4444', fontSize: 12, fontWeight: 700, margin: '8px 0 0' }}>{errorFirma}</p>}
+                {soloLectura ? (
+                  <div style={{
+                    height: 160, borderRadius: 14, background: 'var(--bg-tarjeta)', border: '1px solid var(--borde)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 6, marginBottom: 12, padding: 8
+                  }}>
+                    {contratoFirmado?.firmaUsuarioDataUrl ? (
+                      <img src={contratoFirmado.firmaUsuarioDataUrl} alt="Firma del Arrendatario" style={{ maxHeight: 110, maxWidth: '85%', objectFit: 'contain' }} />
+                    ) : (
+                      <span style={{ fontSize: 13, color: '#16a34a', fontWeight: 700 }}>✓ Firma Digital Registrada</span>
+                    )}
+                    <span style={{ fontSize: 11, color: 'var(--brand-text)', fontWeight: 700 }}>Firmado por el arrendatario</span>
+                  </div>
+                ) : (
+                  <>
+                    <SignatureCanvas ref={canvasRef} onCambio={(vacia) => { if (!vacia) setErrorFirma(''); }} />
+                    {errorFirma && <p style={{ color: '#ef4444', fontSize: 12, fontWeight: 700, margin: '8px 0 0' }}>{errorFirma}</p>}
+                  </>
+                )}
                 <div style={{ marginTop: 12 }}>
                   <p style={{ margin: '4px 0', fontSize: 13, color: 'var(--texto-primary)' }}><strong>{t('contratoFirma.fullName')}:</strong> {datosForm.nombre}</p>
                   <p style={{ margin: '4px 0', fontSize: 13, color: 'var(--texto-primary)' }}><strong>{t('contratoFirma.document')}:</strong> {`${getNombreTipoDoc(datosForm.tipoDoc)}: ${datosForm.numDoc || ''}`.trim()}</p>
@@ -272,27 +296,60 @@ export default function FirmaContrato({ vehiculo, reservaGuardada, onFirmado }) 
             </div>
           </section>
 
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 28 }}>
-            <button
-              onClick={handleFirmar}
-              disabled={firmando}
-              style={{
-                display: 'inline-flex', alignItems: 'center', gap: 10, padding: '16px 36px', borderRadius: 16,
-                background: firmando ? '#94a3b8' : 'var(--brand-gradient)',
-                color: '#fff', fontWeight: 900, fontSize: 15, border: 'none',
-                cursor: firmando ? 'default' : 'pointer', boxShadow: '0 8px 24px rgba(var(--brand-primary-rgb),0.28)',
-                transition: 'all 200ms ease',
-              }}
-            >
-              {firmando
-                ? <svg className="animate-spin" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                  </svg>
-                : <FaFileSignature size={18} />}
-              <span>{firmando ? t('contratoFirma.signing') : t('contratoFirma.signAndContinue')}</span>
-            </button>
-          </div>
+          {soloLectura ? (
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 28, gap: 14, flexWrap: 'wrap' }}>
+              {onVolver && (
+                <button
+                  type="button"
+                  onClick={onVolver}
+                  style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 8, padding: '14px 28px', borderRadius: 14,
+                    background: 'var(--bg-tarjeta)', color: 'var(--texto-primary)', border: '1px solid var(--borde)',
+                    fontWeight: 700, fontSize: 14, cursor: 'pointer', transition: 'all 0.2s ease'
+                  }}
+                >
+                  <FaArrowLeft size={14} />
+                  <span>Volver a la reserva</span>
+                </button>
+              )}
+              {onDescargar && (
+                <button
+                  type="button"
+                  onClick={onDescargar}
+                  style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 10, padding: '14px 32px', borderRadius: 14,
+                    background: 'var(--brand-gradient)', color: '#fff', fontWeight: 900, fontSize: 14, border: 'none',
+                    cursor: 'pointer', boxShadow: 'var(--brand-shadow)'
+                  }}
+                >
+                  <FaDownload size={16} />
+                  <span>Descargar contrato (PDF)</span>
+                </button>
+              )}
+            </div>
+          ) : (
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 28 }}>
+              <button
+                onClick={handleFirmar}
+                disabled={firmando}
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 10, padding: '16px 36px', borderRadius: 16,
+                  background: firmando ? '#94a3b8' : 'var(--brand-gradient)',
+                  color: '#fff', fontWeight: 900, fontSize: 15, border: 'none',
+                  cursor: firmando ? 'default' : 'pointer', boxShadow: '0 8px 24px rgba(var(--brand-primary-rgb),0.28)',
+                  transition: 'all 200ms ease',
+                }}
+              >
+                {firmando
+                  ? <svg className="animate-spin" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                  : <FaFileSignature size={18} />}
+                <span>{firmando ? t('contratoFirma.signing') : t('contratoFirma.signAndContinue')}</span>
+              </button>
+            </div>
+          )}
 
           <footer style={{ marginTop: 24, paddingTop: 16, borderTop: '1px solid var(--borde)', display: 'flex', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap', color: 'var(--texto-second)', fontSize: 12 }}>
             <div>
