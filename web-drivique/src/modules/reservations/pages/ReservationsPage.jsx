@@ -215,8 +215,21 @@ function Contrato({ reserva, autoDesbloquear = false, onDesbloquear }) {
   const reservaAlmacenada = useMemo(() => reservationService.obtenerPorReferencia(refBusqueda) || reservationService.obtenerPorReferencia(reserva.id), [refBusqueda, reserva.id])
 
   const tieneContratoFirmado = Boolean(contratoFirmado?.firmaUsuarioDataUrl)
-  const estadoNorm = String(reserva.estado || '').toLowerCase()
-  const esConfirmada = estadoNorm === 'confirmada' || estadoNorm === 'activa' || estadoNorm === 'en_curso' || estadoNorm === 'en curso' || estadoNorm === 'finalizada'
+  const rawEstado = reservaAlmacenada?.estado || reserva.estado || ''
+  const estadoNorm = String(rawEstado).toLowerCase()
+  const esConfirmada =
+    estadoNorm === 'confirmada' ||
+    estadoNorm === 'activa' ||
+    estadoNorm === 'en_curso' ||
+    estadoNorm === 'en curso' ||
+    estadoNorm === 'finalizada' ||
+    estadoNorm === 'completada' ||
+    estadoNorm === 'pagada' ||
+    estadoNorm === 'pago_confirmado' ||
+    reserva.pagoEstado === 'aprobado' ||
+    reservaAlmacenada?.pagoEstado === 'aprobado' ||
+    Boolean(reserva.fechaPagoConfirmado) ||
+    Boolean(reservaAlmacenada?.fechaPagoConfirmado)
 
   const reservaParaContrato = useMemo(() => {
     const base = contratoFirmado?.contratoOriginal?.reserva || reservaAlmacenada || reserva || {}
@@ -257,7 +270,7 @@ function Contrato({ reserva, autoDesbloquear = false, onDesbloquear }) {
   }, [reserva, contratoFirmado, reservaAlmacenada, usuario])
 
   const vehiculoParaContrato = useMemo(() => {
-    const base = contratoFirmado?.contratoOriginal?.vehiculo || reserva.vehiculo || {}
+    const base = contratoFirmado?.contratoOriginal?.vehiculo || reservaAlmacenada?.vehiculo || reserva.vehiculo || {}
     return {
       ...base,
       nombre: base.nombre || (base.marca ? `${base.marca} ${base.modelo || ''}` : 'Vehículo Drivique'),
@@ -268,13 +281,25 @@ function Contrato({ reserva, autoDesbloquear = false, onDesbloquear }) {
       servicios: base.servicios || [],
       seguros: base.seguros || [{ nombre: 'Protección Básica Estándar' }]
     }
-  }, [reserva, contratoFirmado])
+  }, [reserva, contratoFirmado, reservaAlmacenada])
 
   const identificacion = useMemo(() => {
     return reservaParaContrato?.datosForm?.numDoc || reserva.clienteDocumento || usuario?.cedula || ''
   }, [reservaParaContrato, reserva, usuario])
 
-  if (esConfirmada && !tieneContratoFirmado) {
+  if (tieneContratoFirmado) {
+    return (
+      <ContratoVerCard
+        reserva={reserva}
+        contratoFirmado={contratoFirmado}
+        reservaParaContrato={reservaParaContrato}
+        vehiculoParaContrato={vehiculoParaContrato}
+        identificacion={identificacion}
+      />
+    )
+  }
+
+  if (esConfirmada) {
     return (
       <div className="contrato-firmar-padre">
         <div className="contrato-firmar-subtarjeta">
@@ -289,7 +314,7 @@ function Contrato({ reserva, autoDesbloquear = false, onDesbloquear }) {
           </p>
           <button
             type="button"
-            onClick={() => navigate(`/contrato/${encodeURIComponent(reserva.referencia || reserva.codigo || reserva.id)}`, { state: { reserva } })}
+            onClick={() => navigate(`/contrato/${encodeURIComponent(refBusqueda)}`, { state: { reserva: reservaParaContrato || reserva, vehiculo: vehiculoParaContrato || reserva.vehiculo } })}
             className="contrato-firmar-btn"
           >
             <FaFileSignature size={15} />
@@ -301,13 +326,19 @@ function Contrato({ reserva, autoDesbloquear = false, onDesbloquear }) {
   }
 
   return (
-    <ContratoVerCard
-      reserva={reserva}
-      contratoFirmado={contratoFirmado}
-      reservaParaContrato={reservaParaContrato}
-      vehiculoParaContrato={vehiculoParaContrato}
-      identificacion={identificacion}
-    />
+    <div className="contrato-card bloqueada">
+      <div className="contrato-subcard">
+        <div className="contrato-icon-wrap">
+          <FaLock size={22} />
+        </div>
+        <h3 className="contrato-card-titulo">
+          {t('reservas.contractProtected', { defaultValue: 'Contrato protegido' })}
+        </h3>
+        <p className="contrato-card-desc">
+          {t('reservas.contractPendingPaymentNotice', { defaultValue: 'El contrato digital se habilitará para tu firma digital tan pronto se confirme el pago de la reserva.' })}
+        </p>
+      </div>
+    </div>
   )
 }
 
@@ -317,21 +348,42 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
   const { brand } = useBrand() || {}
   const usuario = useAuthStore(state => state.usuario)
 
-  const estado = { texto: t(`reservas.statuses.${reserva.estado}`, { defaultValue: t('reservas.statuses.pendiente') }), clase: CLASES_ESTADO[reserva.estado] || CLASES_ESTADO.pendiente }
   const refBusquedaModal = reserva.referencia || reserva.codigo || reserva.id
   const contrato = contractService.obtenerPorReserva(refBusquedaModal) || contractService.obtenerPorReserva(reserva.id)
   const reservaOriginal = contrato?.contratoOriginal?.reserva || reservationService.obtenerPorReferencia(refBusquedaModal) || reservationService.obtenerPorReferencia(reserva.id)
   const vehiculoOriginal = contrato?.contratoOriginal?.vehiculo || reserva.vehiculo
+
+  const esEfectivo = reservaOriginal?.reservaDetalles?.metodoPago === 'efectivo' || reserva.metodoPago === 'efectivo'
+  const rawEstadoModal = reservaOriginal?.estado || reserva.estado || ''
+  const estadoNormModal = String(rawEstadoModal).toLowerCase()
+  const esConfirmadaModal =
+    estadoNormModal === 'confirmada' ||
+    estadoNormModal === 'activa' ||
+    estadoNormModal === 'en_curso' ||
+    estadoNormModal === 'en curso' ||
+    estadoNormModal === 'finalizada' ||
+    estadoNormModal === 'completada' ||
+    estadoNormModal === 'pagada' ||
+    reservaOriginal?.pagoEstado === 'aprobado' ||
+    reserva.pagoEstado === 'aprobado' ||
+    Boolean(reservaOriginal?.fechaPagoConfirmado) ||
+    Boolean(reserva.fechaPagoConfirmado)
+
+  const estadoClaveModal = esConfirmadaModal
+    ? (estadoNormModal === 'activa' || estadoNormModal === 'en_curso' || estadoNormModal === 'en curso' ? 'activa' : (estadoNormModal === 'finalizada' ? 'finalizada' : 'confirmada'))
+    : (reserva.estado || 'pendiente')
+
+  const estado = {
+    texto: t(`reservas.statuses.${estadoClaveModal}`, { defaultValue: t(`reservas.statuses.${reserva.estado}`, { defaultValue: t('reservas.statuses.pendiente') }) }),
+    clase: CLASES_ESTADO[estadoClaveModal] || CLASES_ESTADO[reserva.estado] || CLASES_ESTADO.pendiente
+  }
+
   const nombreAuto = reserva.vehiculo?.nombre || vehiculoOriginal?.nombre || (reserva.vehiculo?.marca ? `${reserva.vehiculo.marca} ${reserva.vehiculo.modelo || ''}` : 'Vehículo')
   const imagenAuto = reserva.vehiculo?.imagenes?.[0] || vehiculoOriginal?.imagenes?.[0] || reserva.vehiculo?.imagen || vehiculoOriginal?.imagen
   const seguroIdx = reservaOriginal?.seguroIdx
   const proteccion = seguroIdx != null ? vehiculoOriginal?.seguros?.[seguroIdx]?.nombre : t('reservas.unspecified')
 
-  const esEfectivo = reservaOriginal?.reservaDetalles?.metodoPago === 'efectivo' || reserva.metodoPago === 'efectivo'
-  const estadoEfectivoReserva = reservaOriginal?.estado || reserva.estado
-  const estadoNormModal = String(estadoEfectivoReserva || '').toLowerCase()
-  const esConfirmadaModal = estadoNormModal === 'confirmada' || estadoNormModal === 'activa' || estadoNormModal === 'en_curso' || estadoNormModal === 'finalizada'
-  const esPendienteEfectivo = reserva.estado === 'PENDIENTE_EFECTIVO' || reservaOriginal?.estado === 'PENDIENTE_EFECTIVO' || (esEfectivo && !esConfirmadaModal && (estadoNormModal === 'pendiente' || !reserva.estado))
+  const esPendienteEfectivo = !esConfirmadaModal && (reserva.estado === 'PENDIENTE_EFECTIVO' || reservaOriginal?.estado === 'PENDIENTE_EFECTIVO' || (esEfectivo && (estadoNormModal === 'pendiente' || !reserva.estado)))
   const esPendienteWompi = !esEfectivo && !esConfirmadaModal && (estadoNormModal === 'pendiente')
   const esWompiAprobado = !esEfectivo && esConfirmadaModal
 
@@ -814,20 +866,42 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
 
 function TarjetaReserva({ reserva, moneda, onValorar, onReportar, onVerDetalle }) {
   const { t, i18n } = useTranslation()
-  const estado = { texto: t(`reservas.statuses.${reserva.estado}`, { defaultValue: t('reservas.statuses.pendiente') }), clase: CLASES_ESTADO[reserva.estado] || CLASES_ESTADO.pendiente }, sede = reserva.vehiculo?.sucursal || t('reservas.defaultBranch')
-  const estadoNorm = String(reserva.estado || '').toLowerCase()
+  const navigate = useNavigate()
+  const refBusqueda = reserva.referencia || reserva.codigo || reserva.id
+  const reservaAlmacenada = reservationService.obtenerPorReferencia(refBusqueda) || reservationService.obtenerPorReferencia(reserva.id)
+  const rawEstado = reservaAlmacenada?.estado || reserva.estado || ''
+  const estadoNorm = String(rawEstado).toLowerCase()
   const estaEnCurso = estadoNorm === 'activa' || estadoNorm === 'en_curso' || estadoNorm === 'en curso'
-  const esConfirmada = estadoNorm === 'confirmada' || estaEnCurso
+  const esConfirmada =
+    estadoNorm === 'confirmada' ||
+    estaEnCurso ||
+    estadoNorm === 'finalizada' ||
+    estadoNorm === 'completada' ||
+    estadoNorm === 'pagada' ||
+    reserva.pagoEstado === 'aprobado' ||
+    reservaAlmacenada?.pagoEstado === 'aprobado' ||
+    Boolean(reserva.fechaPagoConfirmado) ||
+    Boolean(reservaAlmacenada?.fechaPagoConfirmado)
 
-  const contratoFirmado = contractService.obtenerPorReserva(reserva.id)
+  const contratoFirmado = contractService.obtenerPorReserva(refBusqueda) || contractService.obtenerPorReserva(reserva.id)
   const tieneContratoFirmado = Boolean(contratoFirmado?.firmaUsuarioDataUrl)
   const requiereFirma = esConfirmada && !tieneContratoFirmado
+
+  const estadoClave = esConfirmada
+    ? (estaEnCurso ? 'activa' : (estadoNorm === 'finalizada' ? 'finalizada' : 'confirmada'))
+    : (reserva.estado || 'pendiente')
+
+  const estado = {
+    texto: t(`reservas.statuses.${estadoClave}`, { defaultValue: t(`reservas.statuses.${reserva.estado}`, { defaultValue: t('reservas.statuses.pendiente') }) }),
+    clase: CLASES_ESTADO[estadoClave] || CLASES_ESTADO[reserva.estado] || CLASES_ESTADO.pendiente
+  }
+  const sede = reserva.vehiculo?.sucursal || reservaAlmacenada?.vehiculo?.sucursal || t('reservas.defaultBranch')
 
   const totalTarjeta = useMemo(() => {
     const rawTotal = Number(reserva.total || reserva.totalCOP || 0)
     if (rawTotal > 0) return rawTotal
 
-    const rawStored = reservationService.obtenerPorReferencia(reserva.id || reserva.referencia || reserva.codigo)
+    const rawStored = reservaAlmacenada || reservationService.obtenerPorReferencia(reserva.id || reserva.referencia || reserva.codigo)
     if (rawStored?.total) return Number(rawStored.total)
     if (rawStored?.totalCOP) return Number(rawStored.totalCOP)
 
@@ -840,7 +914,7 @@ function TarjetaReserva({ reserva, moneda, onValorar, onReportar, onVerDetalle }
       return diffDays * precioDia
     }
     return 0
-  }, [reserva])
+  }, [reserva, reservaAlmacenada])
 
   return <article className="reserva-card"><div className="reserva-imagen-wrap">
     {reserva.vehiculo?.imagenes?.[0] ? <img src={reserva.vehiculo.imagenes[0]} alt={reserva.vehiculo.nombre} /> : <div className="imagen-vacia"><FaCar /></div>}
@@ -851,6 +925,15 @@ function TarjetaReserva({ reserva, moneda, onValorar, onReportar, onVerDetalle }
     {reserva.estado === 'finalizada' && <div className="valoracion-resumen">{reserva.valoracion ? <div><Estrellas value={reserva.valoracion.estrellas} disabled /><p>“{reserva.valoracion.comentario || t('reservas.noComment')}”</p></div> : <div><strong>{t('reservas.howWasTrip')}</strong><span>{t('reservas.feedbackHelps')}</span></div>}
       <button className="btn-link" onClick={() => onValorar(reserva)}>{reserva.valoracion ? t('reservas.editRating') : t('reservas.rateVehicle')}</button></div>}
     <div className="reserva-actions">
+      {requiereFirma && (
+        <button
+          type="button"
+          className="btn-firmar-directo"
+          onClick={() => navigate(`/contrato/${encodeURIComponent(refBusqueda)}`, { state: { reserva } })}
+        >
+          <FaFileSignature /> {t('reservas.signContractNow', { defaultValue: 'Firmar contrato' })}
+        </button>
+      )}
       {estaEnCurso && (
         <button className="btn-reporte" onClick={() => onReportar(reserva)}>
           <FaFlag /> {t('reservas.makeReport')}
