@@ -31,10 +31,28 @@ export default function RespuestaPagoPage() {
       const all = reservationService.getReservas();
       encontrada = all.find(r => r.paymentId === transactionId) || (all.length > 0 ? all[all.length - 1] : null);
     }
-    if (encontrada) {
-      const actualRef = encontrada.referencia || encontrada.codigo || encontrada.id;
-      reservationService.actualizarEstado(actualRef, 'PENDIENTE_VALIDACION', transactionId);
-      setReserva({ ...encontrada, estado: 'PENDIENTE_VALIDACION', paymentId: transactionId });
+
+    const procesarPagoYRedirigir = (targetReserva, pType) => {
+      const actualRef = targetReserva.referencia || targetReserva.codigo || targetReserva.id;
+      reservationService.actualizarEstado(actualRef, 'CONFIRMADA', transactionId);
+
+      if (pType) {
+        let metodo = 'Nequi';
+        if (pType === 'NEQUI') metodo = 'Nequi';
+        else if (pType === 'DAVIPLATA') metodo = 'Daviplata';
+        else if (pType === 'CARD') metodo = 'Tarjeta';
+        else if (pType === 'PSE') metodo = 'PSE';
+        else if (pType === 'BANCOLOMBIA_COLLECT') metodo = 'Efectivo Bancolombia';
+        else if (pType.includes('BANCOLOMBIA')) metodo = 'Bancolombia';
+
+        reservationService.actualizarMedioPago(actualRef, metodo);
+      }
+
+      navigate(`/contrato/${encodeURIComponent(actualRef)}`, {
+        replace: true,
+        state: { reserva: targetReserva, transactionId }
+      });
+    };
 
     if (transactionId) {
       fetch(`https://sandbox.wompi.co/v1/transactions/${transactionId}`)
@@ -46,39 +64,29 @@ export default function RespuestaPagoPage() {
           let targetReserva = encontrada;
           if (!targetReserva && wompiRef) {
             targetReserva = reservationService.obtenerPorReferencia(wompiRef);
-            if (targetReserva) {
-              setReserva(targetReserva);
-            }
           }
-
           if (targetReserva) {
-            const actualRef = targetReserva.referencia || targetReserva.codigo || targetReserva.id;
-            reservationService.actualizarEstado(actualRef, 'PENDIENTE_VALIDACION', transactionId);
-            setReserva(prev => ({ ...(prev || targetReserva), estado: 'PENDIENTE_VALIDACION', paymentId: transactionId }));
-
-            if (pType) {
-              let metodo = 'Nequi';
-              if (pType === 'NEQUI') metodo = 'Nequi';
-              else if (pType === 'DAVIPLATA') metodo = 'Daviplata';
-              else if (pType === 'CARD') metodo = 'Tarjeta';
-              else if (pType === 'PSE') metodo = 'PSE';
-              else if (pType === 'BANCOLOMBIA_COLLECT') metodo = 'Efectivo Bancolombia';
-              else if (pType.includes('BANCOLOMBIA')) metodo = 'Bancolombia';
-
-              reservationService.actualizarMedioPago(actualRef, metodo);
-              setReserva(prev => prev ? { ...prev, medioPago: metodo } : prev);
-            }
+            procesarPagoYRedirigir(targetReserva, pType);
+          } else if (encontrada) {
+            procesarPagoYRedirigir(encontrada, pType);
           }
         })
-        .catch(() => {});
+        .catch(() => {
+          if (encontrada) {
+            procesarPagoYRedirigir(encontrada, null);
+          }
+        });
+    } else if (encontrada) {
+      procesarPagoYRedirigir(encontrada, null);
     }
-    }
-  }, [transactionId, searchParams]);
+  }, [transactionId, searchParams, navigate]);
 
-  const vehiculoReserva = reserva ? VEHICULOS_MOCK.find(v => v.id === reserva.vehiculoId) : null;
+  const vehiculoReserva = reserva
+    ? (reserva.vehiculo || VEHICULOS_MOCK.find(v => String(v.id) === String(reserva.vehiculoId || reserva.vehiculo?.id)) || VEHICULOS_MOCK[0])
+    : null;
 
-  // Regla del flujo: si el pago es por Wompi, el contrato se muestra solo
-  // después de la confirmación (simulada) del pago, justo aquí.
+  const actualRef = reserva?.referencia || reserva?.codigo || reserva?.id;
+
   if (reserva && vehiculoReserva && !contratoFirmado) {
     return (
       <div style={{ minHeight: '100vh', background: 'var(--hero-fondo)', position: 'relative', overflow: 'hidden' }}>
@@ -103,10 +111,12 @@ export default function RespuestaPagoPage() {
               setContratoFirmado(true);
               showAlert({
                 icon: 'success',
-                title: 'Reserva Exitosa',
-                text: 'Tu pago fue registrado correctamente y tu reserva ha quedado confirmada.',
-                confirmButtonText: 'Aceptar',
-              }).then(() => navigate('/reservas'));
+                title: '¡Contrato Firmado con Éxito!',
+                text: 'Tu contrato ha sido firmado correctamente. Ya puedes verlo y descargarlo en Mis Reservas.',
+                confirmButtonText: 'Ir a Mis Reservas',
+              }).then(() => navigate(`/reservas?detalle=${encodeURIComponent(actualRef || '')}&desbloquear=true`, {
+                state: { detalleId: actualRef, autoDesbloquear: true }
+              }));
             }}
           />
         </div>

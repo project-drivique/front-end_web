@@ -247,10 +247,18 @@ function Contrato({ reserva, autoDesbloquear = false }) {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const usuario = useAuthStore(state => state.usuario)
-  const [contratoLocal, setContratoLocal] = useState(() => contractService.obtenerPorReserva(reserva.id))
+  const refBusqueda = reserva.referencia || reserva.codigo || reserva.id
+  const [contratoLocal, setContratoLocal] = useState(() => contractService.obtenerPorReserva(refBusqueda) || contractService.obtenerPorReserva(reserva.id))
 
-  const contratoFirmado = contratoLocal || contractService.obtenerPorReserva(reserva.id)
-  const reservaAlmacenada = useMemo(() => reservationService.obtenerPorReferencia(reserva.id), [reserva.id])
+  useEffect(() => {
+    const c = contractService.obtenerPorReserva(refBusqueda) || contractService.obtenerPorReserva(reserva.id)
+    if (c) {
+      setContratoLocal(c)
+    }
+  }, [refBusqueda, reserva.id, autoDesbloquear])
+
+  const contratoFirmado = contratoLocal || contractService.obtenerPorReserva(refBusqueda) || contractService.obtenerPorReserva(reserva.id)
+  const reservaAlmacenada = useMemo(() => reservationService.obtenerPorReferencia(refBusqueda) || reservationService.obtenerPorReferencia(reserva.id), [refBusqueda, reserva.id])
 
   const tieneContratoFirmado = Boolean(contratoFirmado?.firmaUsuarioDataUrl)
   const estadoNorm = String(reserva.estado || '').toLowerCase()
@@ -329,8 +337,9 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
   const { t, i18n } = useTranslation()
   const { brand } = useBrand() || {}
   const estado = { texto: t(`reservas.statuses.${reserva.estado}`, { defaultValue: t('reservas.statuses.pendiente') }), clase: CLASES_ESTADO[reserva.estado] || CLASES_ESTADO.pendiente }
-  const contrato = contractService.obtenerPorReserva(reserva.id)
-  const reservaOriginal = contrato?.contratoOriginal?.reserva || reservationService.obtenerPorReferencia(reserva.id)
+  const refBusquedaModal = reserva.referencia || reserva.codigo || reserva.id
+  const contrato = contractService.obtenerPorReserva(refBusquedaModal) || contractService.obtenerPorReserva(reserva.id)
+  const reservaOriginal = contrato?.contratoOriginal?.reserva || reservationService.obtenerPorReferencia(refBusquedaModal) || reservationService.obtenerPorReferencia(reserva.id)
   const vehiculoOriginal = contrato?.contratoOriginal?.vehiculo || reserva.vehiculo
   const nombreAuto = reserva.vehiculo?.nombre || vehiculoOriginal?.nombre || (reserva.vehiculo?.marca ? `${reserva.vehiculo.marca} ${reserva.vehiculo.modelo || ''}` : 'Vehículo')
   const imagenAuto = reserva.vehiculo?.imagenes?.[0] || vehiculoOriginal?.imagenes?.[0] || reserva.vehiculo?.imagen || vehiculoOriginal?.imagen
@@ -761,9 +770,17 @@ export default function ReservationsPage() {
   const autoDesbloquear = searchParams.get('desbloquear') === 'true' || location.state?.autoDesbloquear === true
 
   useEffect(() => {
-    if (detalleIdUrl && reservas.length > 0 && (!detalle || String(detalle.id) !== String(detalleIdUrl))) {
-      const encontrada = reservas.find(r => String(r.id) === String(detalleIdUrl) || r.codigo === detalleIdUrl || r.referencia === detalleIdUrl)
-      if (encontrada) {
+    if (detalleIdUrl && reservas.length > 0) {
+      const cleanId = String(detalleIdUrl).split('_')[0].trim().toUpperCase()
+      const encontrada = reservas.find(r => 
+        String(r.id).toUpperCase() === cleanId || 
+        String(r.codigo || '').toUpperCase() === cleanId || 
+        String(r.referencia || '').toUpperCase() === cleanId ||
+        String(r.id) === String(detalleIdUrl) ||
+        r.codigo === detalleIdUrl ||
+        r.referencia === detalleIdUrl
+      )
+      if (encontrada && (!detalle || String(detalle.id) !== String(encontrada.id))) {
         setDetalle(encontrada)
       }
     }

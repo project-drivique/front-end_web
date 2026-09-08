@@ -138,8 +138,9 @@ export default function ContractSigningPage() {
       text: 'Tu contrato de alquiler ha sido firmado digitalmente y asegurado en tu cuenta. Ya puedes ver o descargar tu copia protegida en Mis Reservas.',
       confirmButtonText: 'Ir a Mis Reservas',
     })
-    navigate(`/reservas?detalle=${encodeURIComponent(id)}&desbloquear=true`, {
-      state: { detalleId: id, autoDesbloquear: true }
+    const targetId = reserva?.referencia || reserva?.codigo || reserva?.id || (id ? id.split('_')[0] : id)
+    navigate(`/reservas?detalle=${encodeURIComponent(targetId)}&desbloquear=true`, {
+      state: { detalleId: targetId, autoDesbloquear: true }
     })
   }
 
