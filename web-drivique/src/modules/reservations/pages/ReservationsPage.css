@@ -432,13 +432,23 @@ html.dark .contrato-action-btn.bloqueado:disabled {
   background: var(--bg-tarjeta, #ffffff);
   border: 1px solid var(--borde, #e2e8f0);
   border-radius: 22px;
-  padding: 28px 20px 20px;
+  padding: 16px;
   text-align: center;
   margin-bottom: 18px;
   box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
+  box-sizing: border-box;
+}
+
+.modal-cash-subcard {
+  width: 100%;
+  background: var(--bg-item, #f8fafc);
+  border: 1px solid var(--borde, #e2e8f0);
+  border-radius: 18px;
+  padding: 24px 18px 18px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  text-align: center;
   box-sizing: border-box;
 }
 
@@ -571,13 +581,23 @@ html.dark .contrato-action-btn.bloqueado:disabled {
   background: var(--bg-tarjeta, #ffffff);
   border: 1px solid var(--borde, #e2e8f0);
   border-radius: 22px;
-  padding: 28px 24px 24px;
+  padding: 16px;
   text-align: center;
   margin-bottom: 18px;
   box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
+  box-sizing: border-box;
+}
+
+.modal-wompi-subcard {
+  width: 100%;
+  background: var(--bg-item, #f8fafc);
+  border: 1px solid var(--borde, #e2e8f0);
+  border-radius: 18px;
+  padding: 24px 18px 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  text-align: center;
   box-sizing: border-box;
 }
 
@@ -601,7 +621,7 @@ html.dark .contrato-action-btn.bloqueado:disabled {
 .modal-wompi-total-box {
   width: 100%;
   max-width: 440px;
-  background: var(--bg-item, #f8fafc);
+  background: var(--bg-tarjeta, #ffffff);
   border: 1px solid var(--borde, #e2e8f0);
   border-radius: 14px;
   padding: 14px 18px;
@@ -766,8 +786,13 @@ html.dark .modal-cash-card {
   border-color: #334155;
 }
 
-html.dark .modal-cash-logo-badge {
+html.dark .modal-cash-subcard {
   background: #1e293b;
+  border-color: #334155;
+}
+
+html.dark .modal-cash-logo-badge {
+  background: #172033;
   border-color: #334155;
 }
 
@@ -780,7 +805,7 @@ html.dark .modal-cash-desc {
 }
 
 html.dark .modal-cash-summary {
-  background: #1e293b;
+  background: #172033;
   border-color: #334155;
 }
 
@@ -818,6 +843,11 @@ html.dark .modal-wompi-card {
   border-color: #334155;
 }
 
+html.dark .modal-wompi-subcard {
+  background: #1e293b;
+  border-color: #334155;
+}
+
 html.dark .modal-wompi-titulo {
   color: #f8fafc;
 }
@@ -827,7 +857,7 @@ html.dark .modal-wompi-desc {
 }
 
 html.dark .modal-wompi-total-box {
-  background: #1e293b;
+  background: #172033;
   border-color: #334155;
 }
 

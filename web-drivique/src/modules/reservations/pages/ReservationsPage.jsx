@@ -508,62 +508,65 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
         {/* Tarjeta de Pago en Efectivo por Sucursal */}
         {esPendienteEfectivo && (
           <div className="modal-cash-card">
-            {/* Logo Badge Circular */}
-            <div className="modal-cash-logo-badge">
-              <img
-                src={brand?.logoDataUrl || logo}
-                alt={brand?.name || 'Drivique'}
-              />
-            </div>
+            {/* SUBTARJETA QUE CONTIENE TODO EL CONTENIDO DESDE EL LOGO HASTA EL PLAZO */}
+            <div className="modal-cash-subcard">
+              {/* Logo Badge Circular */}
+              <div className="modal-cash-logo-badge">
+                <img
+                  src={brand?.logoDataUrl || logo}
+                  alt={brand?.name || 'Drivique'}
+                />
+              </div>
 
-            {/* Titulo */}
-            <h3 className="modal-cash-titulo">
-              {t('vehiculo.reservationRegisteredTitle', { defaultValue: 'Reserva Registrada' })}
-            </h3>
+              {/* Titulo */}
+              <h3 className="modal-cash-titulo">
+                {t('vehiculo.reservationRegisteredTitle', { defaultValue: 'Reserva Registrada' })}
+              </h3>
 
-            {/* Subtitulo */}
-            <p className="modal-cash-desc">
-              {t('vehiculo.cashReservationRegisteredDesc', {
-                defaultValue: `Tu reserva quedó registrada. Para confirmarla, realiza el pago en efectivo en el punto autorizado ${sucursalPago}.`,
-                sucursal: sucursalPago
-              })}
-            </p>
-
-            {/* Tarjeta de Resumen con datos */}
-            <div className="modal-cash-summary">
-              <div className="modal-cash-row">
-                <span className="modal-cash-row-label">{t('reservas.reference', { defaultValue: 'Referencia:' })}</span>
-                <strong className="modal-cash-ref-val">{reserva.id}</strong>
-              </div>
-              <div className="modal-cash-row">
-                <span className="modal-cash-row-label">{t('reservas.branch', { defaultValue: 'Sucursal:' })}</span>
-                <strong className="modal-cash-row-val">{sucursalPago}</strong>
-              </div>
-              <div className="modal-cash-row">
-                <span className="modal-cash-row-label">{t('reservas.city', { defaultValue: 'Ciudad:' })}</span>
-                <strong className="modal-cash-row-val">{ciudadPago}</strong>
-              </div>
-              <div className="modal-cash-row">
-                <span className="modal-cash-row-label">{t('reservas.address', { defaultValue: 'Dirección:' })}</span>
-                <strong className="modal-cash-row-val">{direccionPago}</strong>
-              </div>
-              <div className="modal-cash-divider" />
-              <div className="modal-cash-row total">
-                <span className="modal-cash-total-label">{t('reservas.totalToPay', { defaultValue: 'TOTAL A PAGAR:' })}</span>
-                <strong className="modal-cash-total-val">{formatCurrency(reserva.total || 0, moneda)}</strong>
-              </div>
-            </div>
-
-            {/* Plazo para pagar */}
-            <div className="modal-cash-deadline-box">
-              <p className="modal-cash-deadline-title">
-                {t('reservas.paymentDeadline', { defaultValue: 'PLAZO PARA PAGAR' })}
-              </p>
-              <p className="modal-cash-deadline-text">
-                {t('reservas.cashDeadlineNotice', {
-                  defaultValue: 'Tienes 72 horas desde ahora para acercarte a la sucursal y pagar. Si no pagas dentro de este plazo, la reserva se cancelará automáticamente.'
+              {/* Subtitulo */}
+              <p className="modal-cash-desc">
+                {t('vehiculo.cashReservationRegisteredDesc', {
+                  defaultValue: `Tu reserva quedó registrada. Para confirmarla, realiza el pago en efectivo en el punto autorizado ${sucursalPago}.`,
+                  sucursal: sucursalPago
                 })}
               </p>
+
+              {/* Tarjeta de Resumen con datos */}
+              <div className="modal-cash-summary">
+                <div className="modal-cash-row">
+                  <span className="modal-cash-row-label">{t('reservas.reference', { defaultValue: 'Referencia:' })}</span>
+                  <strong className="modal-cash-ref-val">{reserva.id}</strong>
+                </div>
+                <div className="modal-cash-row">
+                  <span className="modal-cash-row-label">{t('reservas.branch', { defaultValue: 'Sucursal:' })}</span>
+                  <strong className="modal-cash-row-val">{sucursalPago}</strong>
+                </div>
+                <div className="modal-cash-row">
+                  <span className="modal-cash-row-label">{t('reservas.city', { defaultValue: 'Ciudad:' })}</span>
+                  <strong className="modal-cash-row-val">{ciudadPago}</strong>
+                </div>
+                <div className="modal-cash-row">
+                  <span className="modal-cash-row-label">{t('reservas.address', { defaultValue: 'Dirección:' })}</span>
+                  <strong className="modal-cash-row-val">{direccionPago}</strong>
+                </div>
+                <div className="modal-cash-divider" />
+                <div className="modal-cash-row total">
+                  <span className="modal-cash-total-label">{t('reservas.totalToPay', { defaultValue: 'TOTAL A PAGAR:' })}</span>
+                  <strong className="modal-cash-total-val">{formatCurrency(reserva.total || 0, moneda)}</strong>
+                </div>
+              </div>
+
+              {/* Plazo para pagar */}
+              <div className="modal-cash-deadline-box">
+                <p className="modal-cash-deadline-title">
+                  {t('reservas.paymentDeadline', { defaultValue: 'PLAZO PARA PAGAR' })}
+                </p>
+                <p className="modal-cash-deadline-text">
+                  {t('reservas.cashDeadlineNotice', {
+                    defaultValue: 'Tienes 72 horas desde ahora para acercarte a la sucursal y pagar. Si no pagas dentro de este plazo, la reserva se cancelará automáticamente.'
+                  })}
+                </p>
+              </div>
             </div>
           </div>
         )}
@@ -571,35 +574,37 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
         {/* Tarjeta de Pago Digital Pendiente Wompi (si aplica) */}
         {esPendienteWompi && (
           <div className="modal-wompi-card">
-            <h3 className="modal-wompi-titulo">
-              {t('reservas.pendingDigitalPayment', { defaultValue: 'Pago Digital Pendiente' })}
-            </h3>
-            <p className="modal-wompi-desc">
-              {t('reservas.digitalPendingDesc', {
-                defaultValue: 'Tu reserva está guardada como pendiente. Completa el pago seguro en Wompi para confirmar y habilitar tu contrato de alquiler.'
-              })}
-            </p>
+            <div className="modal-wompi-subcard">
+              <h3 className="modal-wompi-titulo">
+                {t('reservas.pendingDigitalPayment', { defaultValue: 'Pago Digital Pendiente' })}
+              </h3>
+              <p className="modal-wompi-desc">
+                {t('reservas.digitalPendingDesc', {
+                  defaultValue: 'Tu reserva está guardada como pendiente. Completa el pago seguro en Wompi para confirmar y habilitar tu contrato de alquiler.'
+                })}
+              </p>
 
-            {/* Caja de Total a pagar */}
-            <div className="modal-wompi-total-box">
-              <span className="modal-wompi-total-label">
-                {t('reservas.totalToPay', { defaultValue: 'TOTAL A PAGAR:' })}
-              </span>
-              <strong className="modal-wompi-total-val">
-                {formatCurrency(reserva.total || 0, moneda)}
-              </strong>
+              {/* Caja de Total a pagar */}
+              <div className="modal-wompi-total-box">
+                <span className="modal-wompi-total-label">
+                  {t('reservas.totalToPay', { defaultValue: 'TOTAL A PAGAR:' })}
+                </span>
+                <strong className="modal-wompi-total-val">
+                  {formatCurrency(reserva.total || 0, moneda)}
+                </strong>
+              </div>
+
+              {/* Botón Pagar con Wompi */}
+              <button
+                type="button"
+                onClick={handlePagarWompi}
+                disabled={pagandoWompi}
+                className="modal-wompi-btn"
+              >
+                <FaCreditCard size={16} />
+                <span>{pagandoWompi ? t('reservas.redirectingToWompi', { defaultValue: 'Redirigiendo a Wompi…' }) : t('reservas.payWithWompi', { defaultValue: 'Pagar con Wompi' })}</span>
+              </button>
             </div>
-
-            {/* Botón Pagar con Wompi */}
-            <button
-              type="button"
-              onClick={handlePagarWompi}
-              disabled={pagandoWompi}
-              className="modal-wompi-btn"
-            >
-              <FaCreditCard size={16} />
-              <span>{pagandoWompi ? t('reservas.redirectingToWompi', { defaultValue: 'Redirigiendo a Wompi…' }) : t('reservas.payWithWompi', { defaultValue: 'Pagar con Wompi' })}</span>
-            </button>
           </div>
         )}
 
