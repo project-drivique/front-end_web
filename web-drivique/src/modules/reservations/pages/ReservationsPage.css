@@ -636,6 +636,88 @@ html.dark .contrato-action-btn.bloqueado:disabled {
 }
 
 /* ============================================================
+   TARJETA FIRMAR CONTRATO (LISTO PARA FIRMAR)
+   ============================================================ */
+.contrato-firmar-padre {
+  background: var(--bg-tarjeta, #ffffff);
+  border: 1px solid var(--borde, #e2e8f0);
+  border-radius: 22px;
+  padding: 16px;
+  text-align: center;
+  margin-bottom: 18px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
+  box-sizing: border-box;
+}
+
+.contrato-firmar-subtarjeta {
+  width: 100%;
+  background: var(--bg-tarjeta, #ffffff);
+  border: 1px solid var(--borde, #e2e8f0);
+  border-radius: 18px;
+  padding: 24px 18px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.contrato-firmar-icon-wrap {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(var(--brand-primary-rgb, 37, 99, 235), 0.1);
+  color: var(--brand-primary, #1d4ed8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+  border: 1px solid rgba(var(--brand-primary-rgb, 37, 99, 235), 0.2);
+}
+
+.contrato-firmar-titulo {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--texto-primary, #0f172a);
+  margin: 0 0 10px;
+  letter-spacing: -0.01em;
+}
+
+.contrato-firmar-desc {
+  font-size: 13.5px;
+  color: var(--texto-second, #64748b);
+  line-height: 1.5;
+  margin: 0 0 18px;
+  max-width: 440px;
+  font-weight: 500;
+}
+
+.contrato-firmar-btn {
+  width: 100%;
+  max-width: 440px;
+  height: 50px;
+  border-radius: 14px;
+  background: var(--brand-gradient, linear-gradient(135deg, var(--brand-secondary, #1e3a8a), var(--brand-primary, #2563eb)));
+  color: #ffffff;
+  border: none;
+  font-weight: 800;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-shadow: 0 4px 14px var(--brand-shadow, rgba(29, 78, 216, 0.25));
+  transition: all 0.2s ease;
+}
+
+.contrato-firmar-btn:hover {
+  filter: brightness(0.95);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.35);
+}
+
+/* ============================================================
    TARJETA PAGO DIGITAL WOMPI MODAL
    ============================================================ */
 .modal-wompi-card {

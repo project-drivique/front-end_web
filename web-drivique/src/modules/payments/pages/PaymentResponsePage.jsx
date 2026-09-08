@@ -48,9 +48,9 @@ export default function RespuestaPagoPage() {
         reservationService.actualizarMedioPago(actualRef, metodo);
       }
 
-      navigate(`/contrato/${encodeURIComponent(actualRef)}`, {
+      navigate(`/reservas?detalle=${encodeURIComponent(actualRef)}`, {
         replace: true,
-        state: { reserva: targetReserva, transactionId }
+        state: { detalleId: actualRef }
       });
     };
 

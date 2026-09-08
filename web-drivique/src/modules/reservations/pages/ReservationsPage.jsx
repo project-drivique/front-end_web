@@ -320,6 +320,32 @@ function Contrato({ reserva, autoDesbloquear = false }) {
     return reservaParaContrato?.datosForm?.numDoc || reserva.clienteDocumento || usuario?.cedula || ''
   }, [reservaParaContrato, reserva, usuario])
 
+  if (esConfirmada && !tieneContratoFirmado) {
+    return (
+      <div className="contrato-firmar-padre">
+        <div className="contrato-firmar-subtarjeta">
+          <div className="contrato-firmar-icon-wrap">
+            <FaFileSignature size={22} />
+          </div>
+          <h3 className="contrato-firmar-titulo">
+            {t('reservas.readyToSign', { defaultValue: 'Listo para firmar contrato' })}
+          </h3>
+          <p className="contrato-firmar-desc">
+            {t('reservas.readyToSignDesc', { defaultValue: 'Tu pago ha sido confirmado con éxito. Completa la firma digital de tu contrato para acceder al documento protegido.' })}
+          </p>
+          <button
+            type="button"
+            onClick={() => navigate(`/contrato/${encodeURIComponent(reserva.referencia || reserva.codigo || reserva.id)}`, { state: { reserva } })}
+            className="contrato-firmar-btn"
+          >
+            <FaFileSignature size={15} />
+            <span>{t('reservas.signContractNow', { defaultValue: 'Firmar contrato de alquiler' })}</span>
+          </button>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <ContratoVerCard
       reserva={reserva}
@@ -347,9 +373,12 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
   const proteccion = seguroIdx != null ? vehiculoOriginal?.seguros?.[seguroIdx]?.nombre : t('reservas.unspecified')
 
   const esEfectivo = reservaOriginal?.reservaDetalles?.metodoPago === 'efectivo' || reserva.metodoPago === 'efectivo'
-  const esPendienteEfectivo = reserva.estado === 'PENDIENTE_EFECTIVO' || reservaOriginal?.estado === 'PENDIENTE_EFECTIVO' || (esEfectivo && (reserva.estado === 'pendiente' || !reserva.estado))
-  const esPendienteWompi = !esEfectivo && (reserva.estado === 'pendiente' || reserva.estado === 'PENDIENTE')
-  const esWompiAprobado = !esEfectivo && (reserva.estado === 'confirmada' || reserva.estado === 'activa' || reserva.estado === 'en_curso' || reserva.estado === 'finalizada')
+  const estadoEfectivoReserva = reservaOriginal?.estado || reserva.estado
+  const estadoNormModal = String(estadoEfectivoReserva || '').toLowerCase()
+  const esConfirmadaModal = estadoNormModal === 'confirmada' || estadoNormModal === 'activa' || estadoNormModal === 'en_curso' || estadoNormModal === 'finalizada'
+  const esPendienteEfectivo = reserva.estado === 'PENDIENTE_EFECTIVO' || reservaOriginal?.estado === 'PENDIENTE_EFECTIVO' || (esEfectivo && !esConfirmadaModal && (estadoNormModal === 'pendiente' || !reserva.estado))
+  const esPendienteWompi = !esEfectivo && !esConfirmadaModal && (estadoNormModal === 'pendiente')
+  const esWompiAprobado = !esEfectivo && esConfirmadaModal
 
   const sucursalPago = reservaOriginal?.reservaDetalles?.sucursalPagoEfectivo || reserva.vehiculo?.sucursal || 'Alquiler Neiva - Centro'
   const branchObj = SUCURSALES.find(s => s.nombre === sucursalPago)
@@ -780,7 +809,7 @@ export default function ReservationsPage() {
         r.codigo === detalleIdUrl ||
         r.referencia === detalleIdUrl
       )
-      if (encontrada && (!detalle || String(detalle.id) !== String(encontrada.id))) {
+      if (encontrada && (!detalle || String(detalle.id) !== String(encontrada.id) || detalle.estado !== encontrada.estado)) {
         setDetalle(encontrada)
       }
     }
