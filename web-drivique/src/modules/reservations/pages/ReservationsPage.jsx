@@ -184,60 +184,60 @@ function ContratoVerCard({ reserva, contratoFirmado, reservaParaContrato, vehicu
     )
   }
 
-  // Vista de contrato (bloqueada si no firmado, desbloqueable con botón degradado si firmado)
+  // Vista de contrato (dentro de tarjeta padre y subtarjeta blanca con borde neutral)
   return (
     <div className={`contrato-card ${tieneContratoFirmado ? 'desbloqueada' : 'bloqueada'}`}>
-      <div className="contrato-icon-wrap">
-        <FaLock size={22} />
-      </div>
-
-      <h3 className="contrato-card-titulo">
-        {tieneContratoFirmado
-          ? t('reservas.viewSignedContract', { defaultValue: 'Ver contrato firmado' })
-          : t('reservas.contractProtected', { defaultValue: 'Contrato protegido' })}
-      </h3>
-
-      <p className="contrato-card-desc">
-        {tieneContratoFirmado
-          ? t('reservas.enterIdToViewContract', { defaultValue: 'Ingresa tu número de cédula o identificación registrada para ver o descargar tu contrato en PDF.' })
-          : t('reservas.availableAfterSigning', { defaultValue: 'El contrato estará disponible para ver una vez hayas completado la firma digital.' })}
-      </p>
-
-      <div className="contrato-card-form">
-        <div className="contrato-input-box">
-          <input
-            id="input-clave-contrato"
-            type={mostrarClave ? 'text' : 'password'}
-            value={clave}
-            disabled={!tieneContratoFirmado}
-            onChange={(e) => { setClave(e.target.value); setError('') }}
-            onKeyDown={(e) => e.key === 'Enter' && validar()}
-            placeholder={t('reservas.enterIdentificationPlaceholder', { defaultValue: 'Ingresa tu cédula o identificación' })}
-            aria-label={t('reservas.enterIdentificationPlaceholder', { defaultValue: 'Ingresa tu cédula o identificación' })}
-            className="contrato-card-input"
-          />
-          <button
-            type="button"
-            disabled={!tieneContratoFirmado}
-            onClick={() => setMostrarClave(v => !v)}
-            aria-label={mostrarClave ? t('reservas.hidePassword', { defaultValue: 'Ocultar clave' }) : t('reservas.showPassword', { defaultValue: 'Mostrar clave' })}
-            className="contrato-eye-btn"
-          >
-            {mostrarClave ? <FaEyeSlash /> : <FaEye />}
-          </button>
+      <div className="contrato-subcard">
+        <div className="contrato-icon-wrap">
+          <FaLock size={22} />
         </div>
 
-        {error && <p className="contrato-error-msg">{error}</p>}
+        <h3 className="contrato-card-titulo">
+          {t('reservas.contractProtected', { defaultValue: 'Contrato protegido' })}
+        </h3>
 
-        <button
-          type="button"
-          onClick={validar}
-          disabled={!tieneContratoFirmado}
-          className={`contrato-action-btn ${tieneContratoFirmado ? 'activo' : 'bloqueado'}`}
-        >
-          <FaFileContract size={15} />
-          <span>{t('reservas.viewSignedContract', { defaultValue: 'Ver contrato firmado' })}</span>
-        </button>
+        <p className="contrato-card-desc">
+          {tieneContratoFirmado
+            ? t('reservas.enterIdToViewContract', { defaultValue: 'Ingresa tu clave para ver o descargar tu contrato en PDF.' })
+            : t('reservas.contractLockedExplanation', { defaultValue: 'Para desbloquear el contrato con tu clave, primero se debe confirmar el pago y completar la firma digital del contrato.' })}
+        </p>
+
+        <div className="contrato-card-form">
+          <div className="contrato-input-box">
+            <input
+              id="input-clave-contrato"
+              type={mostrarClave ? 'text' : 'password'}
+              value={clave}
+              disabled={!tieneContratoFirmado}
+              onChange={(e) => { setClave(e.target.value); setError('') }}
+              onKeyDown={(e) => e.key === 'Enter' && validar()}
+              placeholder={t('reservas.enterPasswordPlaceholder', { defaultValue: 'Ingrese su clave' })}
+              aria-label={t('reservas.enterPasswordPlaceholder', { defaultValue: 'Ingrese su clave' })}
+              className="contrato-card-input"
+            />
+            <button
+              type="button"
+              disabled={!tieneContratoFirmado}
+              onClick={() => setMostrarClave(v => !v)}
+              aria-label={mostrarClave ? t('reservas.hidePassword', { defaultValue: 'Ocultar clave' }) : t('reservas.showPassword', { defaultValue: 'Mostrar clave' })}
+              className="contrato-eye-btn"
+            >
+              {mostrarClave ? <FaEyeSlash /> : <FaEye />}
+            </button>
+          </div>
+
+          {error && <p className="contrato-error-msg">{error}</p>}
+
+          <button
+            type="button"
+            onClick={validar}
+            disabled={!tieneContratoFirmado}
+            className={`contrato-action-btn ${tieneContratoFirmado ? 'activo' : 'bloqueado'}`}
+          >
+            <FaLock size={15} />
+            <span>{t('reservas.viewContract', { defaultValue: 'Ver contrato' })}</span>
+          </button>
+        </div>
       </div>
     </div>
   )

@@ -25,22 +25,17 @@ html.dark .detalle-modal-head h2,html.dark .detalle-resumen-fila strong,html.dar
    ESTRUCTURA DE TARJETA PADRE Y SUBTARJETA DE CONTRATO
    ============================================================ */
 /* ============================================================
-   TARJETA DE CONTRATO (BLOQUEADA / DESBLOQUEADA)
+   TARJETA DE CONTRATO (TARJETA PADRE + SUBTARJETA BLANCA)
    ============================================================ */
 .contrato-card {
   width: 100%;
   background: var(--bg-tarjeta, #ffffff);
   border: 1px solid var(--borde, #e2e8f0);
   border-radius: 22px;
-  padding: 28px 24px 24px;
+  padding: 16px;
   margin-bottom: 18px;
   box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
   box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  transition: none;
 }
 
 /* El borde NUNCA queda con color al hacer click, focus o hover */
@@ -50,6 +45,27 @@ html.dark .detalle-modal-head h2,html.dark .detalle-resumen-fila strong,html.dar
 .contrato-card:active {
   border-color: var(--borde, #e2e8f0) !important;
   box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03) !important;
+  outline: none !important;
+}
+
+.contrato-subcard {
+  width: 100%;
+  background: var(--bg-tarjeta, #ffffff);
+  border: 1px solid var(--borde, #e2e8f0);
+  border-radius: 18px;
+  padding: 26px 20px 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.contrato-subcard:hover,
+.contrato-subcard:focus,
+.contrato-subcard:focus-within,
+.contrato-subcard:active {
+  border-color: var(--borde, #e2e8f0) !important;
   outline: none !important;
 }
 
@@ -117,10 +133,15 @@ html.dark .detalle-modal-head h2,html.dark .detalle-resumen-fila strong,html.dar
 }
 
 .contrato-card.bloqueada .contrato-card-input {
-  background: #f8fafc;
+  background: #ffffff;
   border-color: #e2e8f0;
   color: #94a3b8;
   cursor: not-allowed;
+}
+
+.contrato-card-input::placeholder {
+  color: #cbd5e1;
+  font-weight: 500;
 }
 
 .contrato-card.desbloqueada .contrato-card-input:focus {
@@ -208,10 +229,19 @@ html.dark .contrato-card {
   border-color: #334155 !important;
 }
 
+html.dark .contrato-subcard {
+  background: #1e293b;
+  border-color: #334155 !important;
+}
+
 html.dark .contrato-card:hover,
 html.dark .contrato-card:focus,
 html.dark .contrato-card:focus-within,
-html.dark .contrato-card:active {
+html.dark .contrato-card:active,
+html.dark .contrato-subcard:hover,
+html.dark .contrato-subcard:focus,
+html.dark .contrato-subcard:focus-within,
+html.dark .contrato-subcard:active {
   border-color: #334155 !important;
 }
 
