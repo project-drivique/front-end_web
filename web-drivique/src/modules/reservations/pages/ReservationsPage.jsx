@@ -347,6 +347,73 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
   const ciudadPago = branchObj?.ciudad || reserva.vehiculo?.ciudad || 'Neiva'
   const direccionPago = branchObj?.direccion || 'Calle 9 # 8-25, Centro'
 
+  // Resolver Lugar de Retiro y Devolución
+  const resolverLugar = (loc, dom) => {
+    if (!loc) return sucursalPago
+    if (loc === 'domicilio') {
+      return dom ? `A Domicilio (${dom})` : 'A Domicilio'
+    }
+    if (loc === 'aeropuerto') return 'Aeropuerto'
+    if (loc === 'terminal') return 'Terminal'
+    return loc
+  }
+
+  const lugarRetiroRaw = reserva.sucursalRetiro || reservaOriginal?.sucursalRetiro || reservaOriginal?.reservaDetalles?.sucursalRetiro || reserva.vehiculo?.sucursal || vehiculoOriginal?.sucursal || sucursalPago
+  const domicilioRetiro = reserva.domicilioDireccion || reservaOriginal?.domicilioDireccion || reservaOriginal?.reservaDetalles?.domicilioDireccion
+
+  const lugarDevolucionRaw = reserva.sucursalDevolucion || reservaOriginal?.sucursalDevolucion || reservaOriginal?.reservaDetalles?.sucursalDevolucion || lugarRetiroRaw
+  const domicilioDevolucion = reserva.domicilioDevolucionDireccion || reservaOriginal?.domicilioDevolucionDireccion || domicilioRetiro
+
+  const lugarRetiro = resolverLugar(lugarRetiroRaw, domicilioRetiro)
+  const lugarDevolucion = resolverLugar(lugarDevolucionRaw, domicilioDevolucion)
+
+  // Resolver Medio / Canal de Pago (Efectivo en sucursal, Wompi - Nequi, Daviplata, Bancolombia, etc.)
+  const resolverMedioPago = () => {
+    const rawEfectivo =
+      esEfectivo ||
+      reserva.metodoPago === 'efectivo' ||
+      reservaOriginal?.reservaDetalles?.metodoPago === 'efectivo' ||
+      reserva.metodoPagoConfirmado === 'efectivo' ||
+      reservaOriginal?.metodoPagoConfirmado === 'efectivo' ||
+      reserva.estado === 'PENDIENTE_EFECTIVO' ||
+      reservaOriginal?.estado === 'PENDIENTE_EFECTIVO' ||
+      reserva.pasarela === 'efectivo'
+
+    if (rawEfectivo) {
+      return 'Efectivo en sucursal'
+    }
+
+    const sub = String(
+      reserva.medioPago ||
+      reserva.subMetodoPago ||
+      reserva.metodoPagoDetalle ||
+      reserva.tipoPago ||
+      reserva.wompiMetodo ||
+      reserva.pasarelaMetodo ||
+      reserva.formaPago ||
+      reservaOriginal?.medioPago ||
+      reservaOriginal?.subMetodoPago ||
+      reservaOriginal?.reservaDetalles?.subMetodoPago ||
+      reservaOriginal?.reservaDetalles?.medioPago ||
+      ''
+    ).toLowerCase().trim()
+
+    if (sub.includes('nequi')) return 'Wompi (Nequi)'
+    if (sub.includes('daviplata')) return 'Wompi (Daviplata)'
+    if (sub.includes('efectivo') && sub.includes('bancolombia')) return 'Wompi (Efectivo Bancolombia)'
+    if (sub.includes('bancolombia')) return 'Wompi (Bancolombia)'
+    if (sub.includes('pse')) return 'Wompi (PSE)'
+    if (sub.includes('tarjeta') || sub.includes('card') || sub.includes('credito') || sub.includes('debito')) return 'Wompi (Tarjeta Crédito/Débito)'
+
+    if (sub) {
+      return `Wompi (${sub.charAt(0).toUpperCase() + sub.slice(1)})`
+    }
+
+    return 'Wompi (Nequi, Daviplata, Bancolombia)'
+  }
+
+  const medioPagoTexto = resolverMedioPago()
+
   const [pagandoWompi, setPagandoWompi] = useState(false)
 
   const handlePagarWompi = async (e) => {
@@ -457,11 +524,32 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
               </div>
               <div className="modal-dato-texto">
                 <span className="modal-dato-label">{t('reservas.pickupLocation', { defaultValue: 'Lugar de retiro' })}</span>
-                <strong className="modal-dato-val" title={reserva.vehiculo?.sucursal || sucursalPago}>{reserva.vehiculo?.sucursal || sucursalPago}</strong>
+                <strong className="modal-dato-val" title={lugarRetiro}>{lugarRetiro}</strong>
               </div>
             </div>
 
-            {/* Fila 3: Protección / Referencia */}
+            {/* Fila 3: Lugar de devolución / Medio de pago */}
+            <div className="modal-reserva-dato-celda celda-borde-r celda-borde-b">
+              <div className="modal-dato-icon">
+                <FaMapMarkerAlt />
+              </div>
+              <div className="modal-dato-texto">
+                <span className="modal-dato-label">{t('reservas.returnLocation', { defaultValue: 'Lugar de devolución' })}</span>
+                <strong className="modal-dato-val" title={lugarDevolucion}>{lugarDevolucion}</strong>
+              </div>
+            </div>
+
+            <div className="modal-reserva-dato-celda celda-borde-b">
+              <div className="modal-dato-icon">
+                <FaCreditCard />
+              </div>
+              <div className="modal-dato-texto">
+                <span className="modal-dato-label">{t('reservas.paymentMethod', { defaultValue: 'Medio de pago' })}</span>
+                <strong className="modal-dato-val" title={medioPagoTexto}>{medioPagoTexto}</strong>
+              </div>
+            </div>
+
+            {/* Fila 4: Protección / Referencia */}
             <div className="modal-reserva-dato-celda celda-borde-r celda-borde-b">
               <div className="modal-dato-icon">
                 <FaShieldAlt />
@@ -482,7 +570,7 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
               </div>
             </div>
 
-            {/* Fila 4: Total / Estado */}
+            {/* Fila 5: Total / Estado */}
             <div className="modal-reserva-dato-celda celda-borde-r">
               <div className="modal-dato-icon brand-tint">
                 <FaMoneyBillWave />
