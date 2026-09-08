@@ -842,6 +842,7 @@
     "backToReservations": "Volver a mis reservas",
     "reservationWithStatus": "Reserva {{status}}",
     "vehicleUnavailable": "Vehículo no disponible",
+    "bookingDateTime": "Fecha y hora de reserva",
     "pickupDate": "Fecha de retiro",
     "returnDate": "Fecha de devolución",
     "pickupLocation": "Lugar de retiro",

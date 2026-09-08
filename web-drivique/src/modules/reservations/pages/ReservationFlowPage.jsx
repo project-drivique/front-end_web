@@ -25,6 +25,24 @@ import ContractSignature from '../../contracts/components/ContractSignature'
 
 import '../../catalog/pages/CatalogPage.css'
 
+const formatearFechaHoraReserva = (fecha) => {
+  if (!fecha) return '—'
+  try {
+    const d = new Date(fecha)
+    if (isNaN(d.getTime())) return String(fecha)
+    const pad = (n) => String(n).padStart(2, '0')
+    const dia = pad(d.getDate())
+    const mes = pad(d.getMonth() + 1)
+    const anio = d.getFullYear()
+    const horas = pad(d.getHours())
+    const minutos = pad(d.getMinutes())
+    const segundos = pad(d.getSeconds())
+    return `${dia}/${mes}/${anio} ${horas}:${minutos}:${segundos}`
+  } catch {
+    return String(fecha || '—')
+  }
+}
+
 const IcoArrow = () => <FaArrowRight size={14} />
 
 export default function ReservationFlowPage() {
@@ -434,6 +452,13 @@ export default function ReservationFlowPage() {
                       letterSpacing: '0.02em'
                     }}>
                       {reservaCreada.referencia}
+                    </span>
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 12.5 }}>
+                    <span style={{ color: c.textSecondary || '#64748b', fontWeight: 600 }}>Fecha y hora:</span>
+                    <span style={{ fontWeight: 700, color: c.textPrimary || '#0f172a' }}>
+                      {formatearFechaHoraReserva(reservaCreada.fechaCreacion || reservaCreada.fechaReserva || Date.now())}
                     </span>
                   </div>
 

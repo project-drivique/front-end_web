@@ -27,7 +27,7 @@ import ManagementSidebar from '../components/ManagementSidebar'
 import './CashCollectionPage.css'
 
 export default function CashCollectionPage({ branchOnly = false }) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { tema, moneda } = useLanding()
   const user = useAuthStore((state) => state.usuario)
   const isBranchManager = branchOnly || user?.rol === 'encargado' || user?.rol === 'branch_manager' || user?.rol === 'encargado_sucursal'

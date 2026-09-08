@@ -146,16 +146,21 @@ export const reservationService = {
    */
   guardarReserva: (reserva) => {
     const reservas = reservationService.getReservas();
+    const ahoraIso = new Date().toISOString();
 
     const esEfectivo = reserva.reservaDetalles?.metodoPago === 'efectivo';
-    const reservaFinal = esEfectivo
-      ? {
-          ...reserva,
-          estado: 'PENDIENTE_EFECTIVO',
-          fechaLimitePago: calcularFechaLimitePago(),
-          horasLimitePago: HORAS_LIMITE_PAGO_EFECTIVO,
-        }
-      : reserva;
+    const reservaFinal = {
+      ...reserva,
+      fechaCreacion: reserva.fechaCreacion || reserva.fechaReserva || ahoraIso,
+      fechaReserva: reserva.fechaReserva || reserva.fechaCreacion || ahoraIso,
+      ...(esEfectivo
+        ? {
+            estado: 'PENDIENTE_EFECTIVO',
+            fechaLimitePago: calcularFechaLimitePago(),
+            horasLimitePago: HORAS_LIMITE_PAGO_EFECTIVO,
+          }
+        : {})
+    };
 
     reservas.push(reservaFinal);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(reservas));

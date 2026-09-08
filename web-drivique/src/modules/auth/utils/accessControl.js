@@ -20,9 +20,11 @@ export function getRoleHome(role) {
 export function hasValidRoleAccess(user) {
   if (!user || user.activo === false) return false
   const permissions = Array.isArray(user.permisos) ? user.permisos : []
-  if (user.rol === ROLES.ADMIN) return permissions.includes(PERMISSIONS.ADMIN_PANEL)
-  if (user.rol === ROLES.BRANCH_MANAGER) {
-    return Boolean(user.sucursalId) && permissions.includes(PERMISSIONS.BRANCH_PANEL)
+  if (user.rol === ROLES.ADMIN || user.rol === 'administrador' || user.rol === 'admin') {
+    return permissions.length === 0 || permissions.includes(PERMISSIONS.ADMIN_PANEL)
+  }
+  if (user.rol === ROLES.BRANCH_MANAGER || user.rol === 'encargado' || user.rol === 'encargado_sucursal' || user.rol === 'branch_manager') {
+    return Boolean(user.sucursalId || user.sucursal || user.sucursalAsignada)
   }
   return true
 }

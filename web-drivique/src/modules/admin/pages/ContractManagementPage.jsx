@@ -113,7 +113,7 @@ export default function ContractManagementPage() {
   const exportData = {
     title: esEncargado
       ? `${t("admin.contractsPage.title", "Gestión de Contratos")} - ${sucursalEncargado}`
-      : t("admin.contractsPage.exportTitle", `Listado de Contratos - ${brand.name}`).replaceAll("Drivique", brand.name),
+      : t("admin.contractsPage.exportTitle", `Listado de Contratos - ${brand?.name || 'Drivique'}`).replaceAll("Drivique", brand?.name || 'Drivique'),
     headers: headersExport,
     rows: rowsExport,
     items: filtrados,

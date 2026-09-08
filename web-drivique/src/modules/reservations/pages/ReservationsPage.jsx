@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useLocation, useSearchParams } from 'react-router-dom'
-import { FaCalendarAlt, FaCar, FaCheckCircle, FaChevronDown, FaDownload, FaEye, FaEyeSlash, FaFileContract, FaFlag, FaKey, FaLock, FaMapMarkerAlt, FaMoneyBillWave, FaRegCalendarCheck, FaScroll, FaShieldAlt, FaStar, FaTimes, FaInfoCircle, FaCreditCard, FaFileSignature, FaPenNib } from 'react-icons/fa'
+import { FaCalendarAlt, FaCar, FaCheckCircle, FaChevronDown, FaDownload, FaEye, FaEyeSlash, FaFileContract, FaFlag, FaKey, FaLock, FaMapMarkerAlt, FaMoneyBillWave, FaRegCalendarCheck, FaScroll, FaShieldAlt, FaStar, FaTimes, FaInfoCircle, FaCreditCard, FaFileSignature, FaPenNib, FaClock } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/store/authStore'
@@ -31,6 +31,24 @@ const coloresTema = (oscuro) => ({
   heroCardBg: oscuro ? '#111827' : '#ffffff',
   heroCardBorder: oscuro ? '#334155' : '#d9e3f1',
 })
+
+const formatearFechaHoraReserva = (fecha) => {
+  if (!fecha) return '—'
+  try {
+    const d = new Date(fecha)
+    if (isNaN(d.getTime())) return String(fecha)
+    const pad = (n) => String(n).padStart(2, '0')
+    const dia = pad(d.getDate())
+    const mes = pad(d.getMonth() + 1)
+    const anio = d.getFullYear()
+    const horas = pad(d.getHours())
+    const minutos = pad(d.getMinutes())
+    const segundos = pad(d.getSeconds())
+    return `${dia}/${mes}/${anio} ${horas}:${minutos}:${segundos}`
+  } catch {
+    return String(fecha || '—')
+  }
+}
 
 const fechaBonita = (fecha, idioma) => {
   if (!fecha) return '—'
@@ -646,6 +664,17 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
                 <strong className="modal-dato-val status-val">{estado.texto}</strong>
               </div>
             </div>
+
+            {/* Fila 6: Fecha y hora de reserva */}
+            <div className="modal-reserva-dato-celda" style={{ gridColumn: 'span 2' }}>
+              <div className="modal-dato-icon">
+                <FaClock />
+              </div>
+              <div className="modal-dato-texto">
+                <span className="modal-dato-label">{t('reservas.bookingDateTime', { defaultValue: 'Fecha y hora de reserva' })}</span>
+                <strong className="modal-dato-val">{formatearFechaHoraReserva(reserva.fechaCreacion || reserva.fechaReserva || reserva.createdAt || reservaAlmacenada?.fechaCreacion || reservaAlmacenada?.fechaReserva)}</strong>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -680,6 +709,10 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
                 <div className="modal-cash-row">
                   <span className="modal-cash-row-label">{t('reservas.reference', { defaultValue: 'Referencia:' })}</span>
                   <strong className="modal-cash-ref-val">{reserva.id}</strong>
+                </div>
+                <div className="modal-cash-row">
+                  <span className="modal-cash-row-label">{t('reservas.bookingDateTime', { defaultValue: 'Fecha y hora:' })}</span>
+                  <strong className="modal-cash-row-val">{formatearFechaHoraReserva(reserva.fechaCreacion || reserva.fechaReserva || reserva.createdAt || reservaAlmacenada?.fechaCreacion || reservaAlmacenada?.fechaReserva)}</strong>
                 </div>
                 <div className="modal-cash-row">
                   <span className="modal-cash-row-label">{t('reservas.branch', { defaultValue: 'Sucursal:' })}</span>
@@ -771,16 +804,6 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
 
         <Contrato reserva={reserva} autoDesbloquear={autoDesbloquear} />
 
-        {/* Botón de cierre */}
-        <div style={{ display: 'flex', justifyContent: 'center', width: '100%', marginTop: 16 }}>
-          <button
-            type="button"
-            onClick={onClose}
-            className="detalle-cerrar-btn-custom"
-          >
-            {t('reservas.backToReservations', { defaultValue: 'Volver a mis reservas' })}
-          </button>
-        </div>
       </section>
     </div>
   )

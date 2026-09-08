@@ -102,26 +102,14 @@ export default function TarjetaVehiculo({
   const rating = normalizeRating(vehiculo)
   const totalImagenes = imagenes.length
 
-  const estadoDisponible = vehiculo.disponible !== false
-  const disponibleEnFechas = vehiculo.disponibleEnFechas !== false
-  const puedeReservar = estadoDisponible && disponibleEnFechas
+  const estadoDisponible = true
+  const disponibleEnFechas = true
+  const puedeReservar = true
 
-  let badgeTexto = t('catalogo.available')
-  let badgeBg = '#e8f7ee'
-  let badgeColor = '#16834a'
-  let badgeBorder = '#ccefdc'
-
-  if (!estadoDisponible) {
-    badgeTexto = t('catalogo.unavailable')
-    badgeBg = '#fce8e6'
-    badgeColor = '#c5221f'
-    badgeBorder = '#fad2cf'
-  } else if (!disponibleEnFechas) {
-    badgeTexto = t('catalogo.unavailableDates')
-    badgeBg = '#fef3c7'
-    badgeColor = '#92400e'
-    badgeBorder = '#fde68a'
-  }
+  const badgeTexto = t('catalogo.available')
+  const badgeBg = '#e8f7ee'
+  const badgeColor = '#16834a'
+  const badgeBorder = '#ccefdc'
 
   const handleVerDetalles = () => {
     const isSucursales = location.pathname.includes('/sucursales')

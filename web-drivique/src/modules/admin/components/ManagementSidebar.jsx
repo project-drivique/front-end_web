@@ -79,12 +79,15 @@ export default function ManagementSidebar({ branchOnly = false }) {
     navigate('/login', { replace: true })
   }
 
+  const brandName = brand?.name || 'Drivique'
+  const brandLogo = brand?.logoDataUrl || logo
+
   return (
     <>
       <div className="management-mobile-topbar">
         <div className="mobile-brand">
-          <img src={brand.logoDataUrl || logo} alt={brand.name} />
-          <strong>{brand.name.toUpperCase()}</strong>
+          <img src={brandLogo} alt={brandName} />
+          <strong>{brandName.toUpperCase()}</strong>
         </div>
         <button 
           className="management-mobile-btn" 
@@ -105,10 +108,10 @@ export default function ManagementSidebar({ branchOnly = false }) {
       <aside className={`management-sidebar ${isOpen ? 'is-open' : ''}`}>
         <div className="management-brand">
           <span className="management-brand__mark">
-            <img src={brand.logoDataUrl || logo} alt={brand.name} />
+            <img src={brandLogo} alt={brandName} />
           </span>
         <div>
-          <strong>{brand.name}</strong>
+          <strong>{brandName}</strong>
           <small>{t('admin.management', 'Gestión')}</small>
         </div>
       </div>

@@ -93,7 +93,13 @@ function RutaPorRol({ children, roles }) {
   if (!hydrated) return null
   const esValido = token && token !== 'null' && token !== 'undefined'
   if (!esValido) return <Navigate to="/login" replace />
-  return roles.includes(usuario?.rol) && hasValidRoleAccess(usuario)
+  const isMatch = roles.some(
+    (r) =>
+      r === usuario?.rol ||
+      (r === ROLES.BRANCH_MANAGER && (usuario?.rol === 'encargado_sucursal' || usuario?.rol === 'encargado' || usuario?.rol === 'branch_manager')) ||
+      (r === ROLES.ADMIN && (usuario?.rol === 'administrador' || usuario?.rol === 'admin'))
+  )
+  return isMatch && hasValidRoleAccess(usuario)
     ? children
     : <Navigate to="/login" replace />
 }

@@ -804,13 +804,9 @@ export default function ResumenLateral({
                       style={{
                         display: 'flex',
                         borderRadius: 16,
-                        border: promo.destacada
-                          ? `1.5px solid ${c?.isDark ? 'rgba(59, 130, 246, 0.4)' : '#bfdbfe'}`
-                          : `1.5px solid ${c?.cardBorder || '#e2e8f0'}`,
+                        border: `1.5px solid ${c?.cardBorder || '#e2e8f0'}`,
                         background: c?.cardBg || '#ffffff',
-                        boxShadow: promo.destacada
-                          ? '0 4px 14px rgba(37, 99, 235, 0.08)'
-                          : '0 2px 8px rgba(0,0,0,0.03)',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
                         overflow: 'hidden',
                         position: 'relative'
                       }}
@@ -834,23 +830,6 @@ export default function ResumenLateral({
                                 {promo.nombre || promo.titulo}
                               </h4>
                             </div>
-                            {promo.destacada && (
-                              <span style={{
-                                fontSize: 10,
-                                fontWeight: 800,
-                                background: c?.isDark ? 'rgba(59, 130, 246, 0.12)' : '#eff6ff',
-                                color: c?.accentText || 'var(--brand-secondary)',
-                                border: `1px solid ${c?.isDark ? 'rgba(59, 130, 246, 0.3)' : '#bfdbfe'}`,
-                                borderRadius: 10,
-                                padding: '2px 7px',
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: 3,
-                                flexShrink: 0
-                              }}>
-                                ⭐ Destacado
-                              </span>
-                            )}
                           </div>
                         </div>
 

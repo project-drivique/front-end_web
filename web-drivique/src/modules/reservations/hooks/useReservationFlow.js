@@ -386,6 +386,7 @@ export function useReservationFlow() {
       vehiculoId: vehiculo.id,
       vehiculoNombre: vehiculo.nombre,
       estado: reserva.metodoPago === 'efectivo' ? 'PENDIENTE_EFECTIVO' : 'PENDIENTE',
+      fechaCreacion: new Date().toISOString(),
       fechaReserva: new Date().toISOString(),
       datosForm,
       reservaDetalles: reserva,
