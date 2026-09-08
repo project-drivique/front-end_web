@@ -164,7 +164,9 @@ export const reservationService = {
 
   obtenerPorReferencia: (referencia) => {
     if (!referencia) return null;
-    const refUpper = String(referencia).trim().toUpperCase();
+    const refStr = String(referencia).trim();
+    const refClean = refStr.includes('_') ? refStr.split('_')[0] : refStr;
+    const refUpper = refClean.toUpperCase();
     const refNoZeros = refUpper.replace(/0/g, 'O');
     const reservas = reservationService.getReservas();
     return reservas.find(r => {
@@ -184,7 +186,12 @@ export const reservationService = {
 
   actualizarEstado: (referencia, nuevoEstado, paymentId = null) => {
     const reservas = reservationService.getReservas();
-    const index = reservas.findIndex(r => r.referencia === referencia || r.codigo === referencia || r.id === referencia);
+    const refStr = String(referencia || '').trim();
+    const refClean = refStr.includes('_') ? refStr.split('_')[0] : refStr;
+    const index = reservas.findIndex(r => 
+      r.referencia === refClean || r.codigo === refClean || r.id === refClean ||
+      r.referencia === refStr || r.codigo === refStr || r.id === refStr
+    );
     if (index !== -1) {
       reservas[index].estado = nuevoEstado;
       if (nuevoEstado === 'CONFIRMADA' || nuevoEstado === 'confirmada') {
@@ -203,7 +210,12 @@ export const reservationService = {
 
   actualizarMedioPago: (referencia, medioPago) => {
     const reservas = reservationService.getReservas();
-    const index = reservas.findIndex(r => r.referencia === referencia || r.codigo === referencia || r.id === referencia);
+    const refStr = String(referencia || '').trim();
+    const refClean = refStr.includes('_') ? refStr.split('_')[0] : refStr;
+    const index = reservas.findIndex(r => 
+      r.referencia === refClean || r.codigo === refClean || r.id === refClean ||
+      r.referencia === refStr || r.codigo === refStr || r.id === refStr
+    );
     if (index !== -1) {
       reservas[index].medioPago = medioPago;
       if (reservas[index].reservaDetalles) {

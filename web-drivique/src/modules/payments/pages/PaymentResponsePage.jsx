@@ -36,11 +36,26 @@ export default function RespuestaPagoPage() {
       reservationService.actualizarEstado(actualRef, 'PENDIENTE_VALIDACION', transactionId);
       setReserva({ ...encontrada, estado: 'PENDIENTE_VALIDACION', paymentId: transactionId });
 
-      if (transactionId) {
-        fetch(`https://sandbox.wompi.co/v1/transactions/${transactionId}`)
-          .then(res => res.json())
-          .then(data => {
-            const pType = data?.data?.payment_method_type;
+    if (transactionId) {
+      fetch(`https://sandbox.wompi.co/v1/transactions/${transactionId}`)
+        .then(res => res.json())
+        .then(data => {
+          const pType = data?.data?.payment_method_type;
+          const wompiRef = data?.data?.reference;
+
+          let targetReserva = encontrada;
+          if (!targetReserva && wompiRef) {
+            targetReserva = reservationService.obtenerPorReferencia(wompiRef);
+            if (targetReserva) {
+              setReserva(targetReserva);
+            }
+          }
+
+          if (targetReserva) {
+            const actualRef = targetReserva.referencia || targetReserva.codigo || targetReserva.id;
+            reservationService.actualizarEstado(actualRef, 'PENDIENTE_VALIDACION', transactionId);
+            setReserva(prev => ({ ...(prev || targetReserva), estado: 'PENDIENTE_VALIDACION', paymentId: transactionId }));
+
             if (pType) {
               let metodo = 'Nequi';
               if (pType === 'NEQUI') metodo = 'Nequi';
@@ -53,9 +68,10 @@ export default function RespuestaPagoPage() {
               reservationService.actualizarMedioPago(actualRef, metodo);
               setReserva(prev => prev ? { ...prev, medioPago: metodo } : prev);
             }
-          })
-          .catch(() => {});
-      }
+          }
+        })
+        .catch(() => {});
+    }
     }
   }, [transactionId, searchParams]);
 

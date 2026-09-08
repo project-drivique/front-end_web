@@ -424,13 +424,15 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
     }
     setPagandoWompi(true)
     try {
-      const ref = reserva.id || reserva.referencia || reservaOriginal?.referencia
-      sessionStorage.setItem('current_wompi_reference', ref)
+      const baseRef = reserva.id || reserva.referencia || reservaOriginal?.referencia
+      const attemptRef = `${baseRef}_${Date.now()}`
+      sessionStorage.setItem('current_wompi_reference', baseRef)
+      sessionStorage.setItem('current_wompi_attempt_ref', attemptRef)
       const rawTotal = reserva.total ?? reservaOriginal?.total ?? 0
       const totalNum = typeof rawTotal === 'number' ? rawTotal : parseFloat(String(rawTotal).replace(/[^0-9.-]+/g, '')) || 0
       const centavos = aCentavos(totalNum)
       const url = await construirUrlCheckout({
-        reference: ref,
+        reference: attemptRef,
         amountInCents: centavos,
         redirectUrl: `${window.location.origin}/respuesta`,
       })

@@ -415,8 +415,12 @@ export function useReservationFlow() {
     setErrorPago('')
     setRedirigiendoPago(true)
     try {
+      const baseRef = datosPago.referencia
+      const attemptRef = `${baseRef}_${Date.now()}`
+      sessionStorage.setItem('current_wompi_reference', baseRef)
+      sessionStorage.setItem('current_wompi_attempt_ref', attemptRef)
       const url = await construirUrlCheckout({
-        reference: datosPago.referencia,
+        reference: attemptRef,
         amountInCents: datosPago.amountInCents,
         redirectUrl: `${window.location.origin}/respuesta`,
       })
