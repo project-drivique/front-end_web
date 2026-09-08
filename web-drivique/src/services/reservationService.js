@@ -199,5 +199,19 @@ export const reservationService = {
       return true;
     }
     return false;
+  },
+
+  actualizarMedioPago: (referencia, medioPago) => {
+    const reservas = reservationService.getReservas();
+    const index = reservas.findIndex(r => r.referencia === referencia || r.codigo === referencia || r.id === referencia);
+    if (index !== -1) {
+      reservas[index].medioPago = medioPago;
+      if (reservas[index].reservaDetalles) {
+        reservas[index].reservaDetalles.medioPago = medioPago;
+      }
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(reservas));
+      return true;
+    }
+    return false;
   }
 };

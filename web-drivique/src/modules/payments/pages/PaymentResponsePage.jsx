@@ -35,6 +35,27 @@ export default function RespuestaPagoPage() {
       const actualRef = encontrada.referencia || encontrada.codigo || encontrada.id;
       reservationService.actualizarEstado(actualRef, 'PENDIENTE_VALIDACION', transactionId);
       setReserva({ ...encontrada, estado: 'PENDIENTE_VALIDACION', paymentId: transactionId });
+
+      if (transactionId) {
+        fetch(`https://sandbox.wompi.co/v1/transactions/${transactionId}`)
+          .then(res => res.json())
+          .then(data => {
+            const pType = data?.data?.payment_method_type;
+            if (pType) {
+              let metodo = 'Nequi';
+              if (pType === 'NEQUI') metodo = 'Nequi';
+              else if (pType === 'DAVIPLATA') metodo = 'Daviplata';
+              else if (pType === 'CARD') metodo = 'Tarjeta';
+              else if (pType === 'PSE') metodo = 'PSE';
+              else if (pType === 'BANCOLOMBIA_COLLECT') metodo = 'Efectivo Bancolombia';
+              else if (pType.includes('BANCOLOMBIA')) metodo = 'Bancolombia';
+
+              reservationService.actualizarMedioPago(actualRef, metodo);
+              setReserva(prev => prev ? { ...prev, medioPago: metodo } : prev);
+            }
+          })
+          .catch(() => {});
+      }
     }
   }, [transactionId, searchParams]);
 

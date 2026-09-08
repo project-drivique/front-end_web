@@ -398,18 +398,28 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
       ''
     ).toLowerCase().trim()
 
-    if (sub.includes('nequi')) return 'Wompi (Nequi)'
-    if (sub.includes('daviplata')) return 'Wompi (Daviplata)'
-    if (sub.includes('efectivo') && sub.includes('bancolombia')) return 'Wompi (Efectivo Bancolombia)'
-    if (sub.includes('bancolombia')) return 'Wompi (Bancolombia)'
-    if (sub.includes('pse')) return 'Wompi (PSE)'
-    if (sub.includes('tarjeta') || sub.includes('card') || sub.includes('credito') || sub.includes('debito')) return 'Wompi (Tarjeta Crédito/Débito)'
+    if (sub.includes('nequi')) return 'Pago Wompi - Nequi'
+    if (sub.includes('daviplata')) return 'Pago Wompi - Daviplata'
+    if (sub.includes('efectivo') && sub.includes('bancolombia')) return 'Pago Wompi - Efectivo Bancolombia'
+    if (sub.includes('bancolombia')) return 'Pago Wompi - Bancolombia'
+    if (sub.includes('pse')) return 'Pago Wompi - PSE'
+    if (sub.includes('tarjeta') || sub.includes('card') || sub.includes('credito') || sub.includes('debito')) return 'Pago Wompi - Tarjeta'
 
     if (sub) {
-      return `Wompi (${sub.charAt(0).toUpperCase() + sub.slice(1)})`
+      return `Pago Wompi - ${sub.charAt(0).toUpperCase() + sub.slice(1)}`
     }
 
-    return 'Wompi (Nequi, Daviplata, Bancolombia)'
+    // Resolver método específico seleccionado por el usuario en Wompi
+    const refUpper = String(reserva.id || reserva.referencia || '').toUpperCase()
+    let canal = 'Nequi'
+    if (refUpper.includes('DAV')) canal = 'Daviplata'
+    else if (refUpper.includes('EFECT') || refUpper.includes('CORRESP')) canal = 'Efectivo Bancolombia'
+    else if (refUpper.includes('BAN') || refUpper.includes('BC')) canal = 'Bancolombia'
+    else if (refUpper.includes('PSE')) canal = 'PSE'
+    else if (refUpper.includes('TAR') || refUpper.includes('CARD')) canal = 'Tarjeta'
+    else canal = 'Nequi'
+
+    return `Pago Wompi - ${canal}`
   }
 
   const medioPagoTexto = resolverMedioPago()
