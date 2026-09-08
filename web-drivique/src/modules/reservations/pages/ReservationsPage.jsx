@@ -14,7 +14,7 @@ import { descargarContratoOriginal, prepararVistaContrato } from '@/modules/cont
 import { reservationService } from '@/services/reservationService'
 import { SUCURSALES } from '@/modules/catalog/constants'
 import { construirUrlCheckout, aCentavos } from '@/services/wompiService'
-import logo from '@/assets/logo.png'
+import logocatalog from '@/assets/logocatalog.png'
 import firmaDrivique from '@/assets/drivique-signature.png'
 import { useBrand } from '@/contexts/BrandContext'
 import { showAlert } from '@/utils/swalConfig'
@@ -294,9 +294,9 @@ function Contrato({ reserva, autoDesbloquear = false, onDesbloquear }) {
         <div className="contrato-firmar-subtarjeta">
           <div className="contrato-firmar-icon-wrap">
             <img
-              src={brand?.logoDataUrl || logo}
+              src={brand?.logoDataUrl || logocatalog}
               alt={brand?.name || 'Drivique'}
-              style={{ width: '28px', height: '28px', objectFit: 'contain' }}
+              style={{ width: '32px', height: '32px', objectFit: 'contain' }}
             />
           </div>
           <h3 className="contrato-firmar-titulo">
@@ -732,7 +732,7 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
               {/* Logo Badge Circular */}
               <div className="modal-cash-logo-badge">
                 <img
-                  src={brand?.logoDataUrl || logo}
+                  src={brand?.logoDataUrl || logocatalog}
                   alt={brand?.name || 'Drivique'}
                 />
               </div>
