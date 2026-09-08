@@ -863,6 +863,7 @@
     "notReservationOwner": "This reservation does not belong to the authenticated user.",
     "unspecified": "Not specified",
     "closeDetail": "Close details",
+    "backToReservations": "Back to my reservations",
     "reservationWithStatus": "{{status}} reservation",
     "vehicleUnavailable": "Vehicle unavailable",
     "pickupDate": "Pickup date",

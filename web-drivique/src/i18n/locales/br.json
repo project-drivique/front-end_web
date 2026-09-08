@@ -851,6 +851,7 @@
     "notReservationOwner": "Esta reserva não pertence ao usuário autenticado.",
     "unspecified": "Não especificada",
     "closeDetail": "Fechar detalhes",
+    "backToReservations": "Voltar às minhas reservas",
     "reservationWithStatus": "Reserva {{status}}",
     "vehicleUnavailable": "Veículo indisponível",
     "pickupDate": "Data de retirada",
