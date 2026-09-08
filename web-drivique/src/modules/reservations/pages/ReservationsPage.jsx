@@ -380,6 +380,24 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
     }
   }, [reserva, contrato, reservaOriginal, usuario])
 
+  const totalCalculado = useMemo(() => {
+    const rawTotal = Number(reserva.total || reservaOriginal?.total || reservaOriginal?.totalCOP || reservaParaContrato?.total || reserva.totalCOP || 0)
+    if (rawTotal > 0) return rawTotal
+
+    const v = reserva.vehiculo || vehiculoOriginal
+    const precioDia = v?.precioDiario || v?.precio || 0
+    const fInicio = reserva.fechaInicio || reserva.reservaDetalles?.fechaInicio
+    const fFin = reserva.fechaFin || reserva.reservaDetalles?.fechaFin
+    if (precioDia && fInicio && fFin) {
+      const d1 = new Date(fInicio)
+      const d2 = new Date(fFin)
+      const diffTime = Math.abs(d2.getTime() - d1.getTime())
+      const diffDays = Math.max(1, Math.ceil(diffTime / (1000 * 60 * 60 * 24)))
+      return diffDays * precioDia
+    }
+    return rawTotal
+  }, [reserva, reservaOriginal, reservaParaContrato, vehiculoOriginal])
+
   // Normalización completa del vehículo para el contrato oficial
   const vehiculoParaContrato = useMemo(() => {
     const base = contrato?.contratoOriginal?.vehiculo || vehiculoOriginal || reserva.vehiculo || {}
@@ -651,7 +669,7 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
               </div>
               <div className="modal-dato-texto">
                 <span className="modal-dato-label">{t('reservas.total', { defaultValue: 'Total' })}</span>
-                <strong className="modal-dato-val">{formatCurrency(reserva.total || 0, moneda)}</strong>
+                <strong className="modal-dato-val">{formatCurrency(totalCalculado, moneda)}</strong>
               </div>
             </div>
 
@@ -662,17 +680,6 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
               <div className="modal-dato-texto">
                 <span className="modal-dato-label">{t('reservas.status', { defaultValue: 'Estado' })}</span>
                 <strong className="modal-dato-val status-val">{estado.texto}</strong>
-              </div>
-            </div>
-
-            {/* Fila 6: Fecha y hora de reserva */}
-            <div className="modal-reserva-dato-celda" style={{ gridColumn: 'span 2' }}>
-              <div className="modal-dato-icon">
-                <FaClock />
-              </div>
-              <div className="modal-dato-texto">
-                <span className="modal-dato-label">{t('reservas.bookingDateTime', { defaultValue: 'Fecha y hora de reserva' })}</span>
-                <strong className="modal-dato-val">{formatearFechaHoraReserva(reserva.fechaCreacion || reserva.fechaReserva || reserva.createdAt || reservaAlmacenada?.fechaCreacion || reservaAlmacenada?.fechaReserva)}</strong>
               </div>
             </div>
           </div>
@@ -711,10 +718,6 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
                   <strong className="modal-cash-ref-val">{reserva.id}</strong>
                 </div>
                 <div className="modal-cash-row">
-                  <span className="modal-cash-row-label">{t('reservas.bookingDateTime', { defaultValue: 'Fecha y hora:' })}</span>
-                  <strong className="modal-cash-row-val">{formatearFechaHoraReserva(reserva.fechaCreacion || reserva.fechaReserva || reserva.createdAt || reservaAlmacenada?.fechaCreacion || reservaAlmacenada?.fechaReserva)}</strong>
-                </div>
-                <div className="modal-cash-row">
                   <span className="modal-cash-row-label">{t('reservas.branch', { defaultValue: 'Sucursal:' })}</span>
                   <strong className="modal-cash-row-val">{sucursalPago}</strong>
                 </div>
@@ -729,7 +732,7 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
                 <div className="modal-cash-divider" />
                 <div className="modal-cash-row total">
                   <span className="modal-cash-total-label">{t('reservas.totalToPay', { defaultValue: 'TOTAL A PAGAR:' })}</span>
-                  <strong className="modal-cash-total-val">{formatCurrency(reserva.total || 0, moneda)}</strong>
+                  <strong className="modal-cash-total-val">{formatCurrency(totalCalculado, moneda)}</strong>
                 </div>
               </div>
 
@@ -820,10 +823,29 @@ function TarjetaReserva({ reserva, moneda, onValorar, onReportar, onVerDetalle }
   const tieneContratoFirmado = Boolean(contratoFirmado?.firmaUsuarioDataUrl)
   const requiereFirma = esConfirmada && !tieneContratoFirmado
 
+  const totalTarjeta = useMemo(() => {
+    const rawTotal = Number(reserva.total || reserva.totalCOP || 0)
+    if (rawTotal > 0) return rawTotal
+
+    const rawStored = reservationService.obtenerPorReferencia(reserva.id || reserva.referencia || reserva.codigo)
+    if (rawStored?.total) return Number(rawStored.total)
+    if (rawStored?.totalCOP) return Number(rawStored.totalCOP)
+
+    const precioDia = reserva.vehiculo?.precioDiario || reserva.vehiculo?.precio || 0
+    if (precioDia && reserva.fechaInicio && reserva.fechaFin) {
+      const d1 = new Date(reserva.fechaInicio)
+      const d2 = new Date(reserva.fechaFin)
+      const diffTime = Math.abs(d2.getTime() - d1.getTime())
+      const diffDays = Math.max(1, Math.ceil(diffTime / (1000 * 60 * 60 * 24)))
+      return diffDays * precioDia
+    }
+    return 0
+  }, [reserva])
+
   return <article className="reserva-card"><div className="reserva-imagen-wrap">
     {reserva.vehiculo?.imagenes?.[0] ? <img src={reserva.vehiculo.imagenes[0]} alt={reserva.vehiculo.nombre} /> : <div className="imagen-vacia"><FaCar /></div>}
     <span className={`estado-badge ${estado.clase}`}>{estado.texto}</span></div><div className="reserva-info">
-    <div className="reserva-head"><div><span className="reserva-id">{t('reservas.reservationNumber', { id: reserva.id })}</span><h2>{reserva.vehiculo?.nombre || t('reservas.vehicleUnavailable')}</h2></div><strong className="reserva-total">{formatCurrency(reserva.total || 0, moneda)}</strong></div>
+    <div className="reserva-head"><div><span className="reserva-id">{t('reservas.reservationNumber', { id: reserva.id })}</span><h2>{reserva.vehiculo?.nombre || t('reservas.vehicleUnavailable')}</h2></div><strong className="reserva-total">{formatCurrency(totalTarjeta, moneda)}</strong></div>
     <div className="reserva-meta"><div><FaCalendarAlt /><span><small>{t('reservas.pickup')}</small>{fechaBonita(reserva.fechaInicio, i18n.resolvedLanguage)}</span></div><span className="linea-fechas" />
       <div><FaRegCalendarCheck /><span><small>{t('reservas.return')}</small>{fechaBonita(reserva.fechaFin, i18n.resolvedLanguage)}</span></div><div className="meta-sede"><FaMapMarkerAlt /><span><small>{t('reservas.branch')}</small>{sede}</span></div></div>
     {reserva.estado === 'finalizada' && <div className="valoracion-resumen">{reserva.valoracion ? <div><Estrellas value={reserva.valoracion.estrellas} disabled /><p>“{reserva.valoracion.comentario || t('reservas.noComment')}”</p></div> : <div><strong>{t('reservas.howWasTrip')}</strong><span>{t('reservas.feedbackHelps')}</span></div>}

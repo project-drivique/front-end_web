@@ -456,13 +456,6 @@ export default function ReservationFlowPage() {
                   </div>
 
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 12.5 }}>
-                    <span style={{ color: c.textSecondary || '#64748b', fontWeight: 600 }}>Fecha y hora:</span>
-                    <span style={{ fontWeight: 700, color: c.textPrimary || '#0f172a' }}>
-                      {formatearFechaHoraReserva(reservaCreada.fechaCreacion || reservaCreada.fechaReserva || Date.now())}
-                    </span>
-                  </div>
-
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 12.5 }}>
                     <span style={{ color: c.textSecondary || '#64748b', fontWeight: 600 }}>Sucursal:</span>
                     <span style={{ fontWeight: 700, color: c.textPrimary || '#0f172a' }}>
                       {sucursalPago}
