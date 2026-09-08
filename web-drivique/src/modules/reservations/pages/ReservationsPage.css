@@ -666,16 +666,24 @@ html.dark .contrato-action-btn.bloqueado:disabled {
 }
 
 .contrato-firmar-icon-wrap {
-  width: 52px;
-  height: 52px;
+  width: 68px;
+  height: 68px;
   border-radius: 50%;
-  background: rgba(var(--brand-primary-rgb, 37, 99, 235), 0.1);
-  color: var(--brand-primary, #1d4ed8);
+  background: var(--bg-tarjeta, #ffffff);
+  border: 1.5px solid var(--borde, #e2e8f0);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 14px;
-  border: 1px solid rgba(var(--brand-primary-rgb, 37, 99, 235), 0.2);
+  padding: 12px;
+  margin-bottom: 16px;
+  box-sizing: border-box;
+}
+
+.contrato-firmar-icon-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .contrato-firmar-titulo {

@@ -125,7 +125,9 @@ export const reservationService = {
       reservas[index].estado = nuevoEstado;
       if (nuevoEstado === 'CONFIRMADA' || nuevoEstado === 'confirmada') {
         reservas[index].pagoEstado = 'aprobado';
-        reservas[index].metodoPagoConfirmado = 'efectivo';
+        if (!reservas[index].metodoPagoConfirmado) {
+          reservas[index].metodoPagoConfirmado = reservas[index].metodoPago === 'efectivo' ? 'efectivo' : 'wompi';
+        }
         if (!reservas[index].fechaPagoConfirmado) {
           reservas[index].fechaPagoConfirmado = new Date().toISOString();
         }
@@ -147,6 +149,7 @@ export const reservationService = {
     );
     if (index !== -1) {
       reservas[index].medioPago = medioPago;
+      reservas[index].metodoPagoConfirmado = medioPago?.toLowerCase().includes('efectivo') && !medioPago?.toLowerCase().includes('wompi') ? 'efectivo' : 'wompi';
       if (reservas[index].reservaDetalles) {
         reservas[index].reservaDetalles.medioPago = medioPago;
       }

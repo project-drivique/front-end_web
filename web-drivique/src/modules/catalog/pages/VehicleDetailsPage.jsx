@@ -5,6 +5,7 @@ import { useAuthStore } from '../../../store/authStore'
 import { useLanding } from '../../landing/LandingContext'
 import { promotionManagementService } from '../../../services/promotionManagementService'
 import { formatCurrency } from '@/utils/currencyUtils'
+import { vehicleManagementService } from '../../../services/vehicleManagementService'
 import VEHICULOS_MOCK from '@/mocks/vehicles.json'
 
 import ImageGallery from '../components/detail/ImageGallery'
@@ -78,7 +79,20 @@ export default function VehicleDetailsPage() {
     }
   }
 
-  const vehiculo = VEHICULOS_MOCK.find(v => v.id === Number(id))
+  const baseVehiculo = vehicleManagementService.getById(id) || VEHICULOS_MOCK.find(v => Number(v.id) === Number(id))
+  const vehiculo = baseVehiculo ? {
+    ...baseVehiculo,
+    caracteristicas: baseVehiculo.caracteristicas || [],
+    equipamientoTecnologico: baseVehiculo.equipamientoTecnologico || [],
+    seguros: baseVehiculo.seguros || [{ nombre: 'Protección Básica Estándar', precio: 0, descripcion: 'Cobertura estándar' }],
+    servicios: baseVehiculo.servicios || [],
+    imagenes: baseVehiculo.imagenes || (baseVehiculo.imagen ? [baseVehiculo.imagen] : []),
+    sucursalInfo: baseVehiculo.sucursalInfo || {
+      nombre: baseVehiculo.sucursal || 'Alquiler Neiva - Centro',
+      direccion: 'Calle 9 # 8-25, Centro',
+      horario: 'Lun a dom, 6:00 am - 10:00 pm'
+    }
+  } : null
 
   const descuentoParam = searchParams.get('descuento') ? Number(searchParams.get('descuento')) : null
   const promoCode = searchParams.get('promo')

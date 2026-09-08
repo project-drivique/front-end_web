@@ -38,8 +38,16 @@ export default function CalendarioReservas({ vehiculoId, fechaInicio, fechaFin, 
   const esPasado = useCallback((fechaISO) => fechaISO < hoyISO, [])
 
   const hayConflictoEnRango = useCallback((desde, hasta) => {
-    return eachDayOfInterval({ start: new Date(desde), end: new Date(hasta) })
-      .some(d => estaOcupado(format(d, 'yyyy-MM-dd')))
+    try {
+      if (!desde || !hasta) return false
+      const dStart = new Date(desde)
+      const dEnd = new Date(hasta)
+      if (isNaN(dStart.getTime()) || isNaN(dEnd.getTime()) || dStart > dEnd) return false
+      return eachDayOfInterval({ start: dStart, end: dEnd })
+        .some(d => estaOcupado(format(d, 'yyyy-MM-dd')))
+    } catch {
+      return false
+    }
   }, [estaOcupado])
 
   const handleClickDia = useCallback((date) => {

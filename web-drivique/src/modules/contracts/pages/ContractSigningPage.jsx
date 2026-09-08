@@ -8,6 +8,7 @@ import { contractService } from '@/services/contractService'
 import { reservationService } from '@/services/reservationService'
 import { reservationsService } from '@/services/reservationsService'
 import { catalogService } from '@/services/catalogService'
+import { documentsService } from '@/services/documentsService'
 import VEHICULOS_MOCK from '@/mocks/vehicles.json'
 import ContractSignature from '../components/ContractSignature'
 import { descargarContratoOriginal } from '@/modules/contracts/utils/downloadSignedContract'
@@ -19,7 +20,7 @@ import { useBrand } from '@/contexts/BrandContext'
 export default function ContractSigningPage() {
   const { id } = useParams()
   const { brand } = useBrand()
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const navigate = useNavigate()
   const location = useLocation()
   const usuario = useAuthStore(state => state.usuario)
@@ -85,12 +86,27 @@ export default function ContractSigningPage() {
     const correoCliente = df.correo || reserva.clienteCorreo || usuario?.correo || usuario?.email || 'cliente@drivique.com'
     const telCliente = df.celular || df.telefono || reserva.clienteTelefono || usuario?.telefono || '+57 300 000 0000'
     const docCliente = df.numDoc || df.documento || reserva.clienteDocumento || usuario?.cedula || '1020304050'
-    const tipoDocCliente = df.tipoDoc || 'CC'
+    const tipoDocCliente = df.tipoDoc || usuario?.tipoDocumento || 'CC'
     const ref = reserva.referencia || reserva.codigo || reserva.id || id
+
+    const userDocs = documentsService.obtenerDocumentos(usuario?.id || usuario?.correo || correoCliente)
+    const licName = df.licenciaPdf?.name || (typeof df.licenciaPdf === 'string' && df.licenciaPdf) || userDocs?.licencia?.nombre || (docCliente ? `Licencia-${docCliente}.pdf` : 'Licencia-Conduccion-Verificada.pdf')
+    const cedName = df.cedulaPdf?.name || (typeof df.cedulaPdf === 'string' && df.cedulaPdf) || userDocs?.cedula?.nombre || (docCliente ? `Cedula-${docCliente}.pdf` : 'Cedula-Verificada.pdf')
+
+    const fInicio = rd.fechaInicio || reserva.fechaInicio || new Date().toISOString().slice(0, 10)
+    const fFin = rd.fechaFin || reserva.fechaFin || new Date(Date.now() + 86400000 * 3).toISOString().slice(0, 10)
+    const hInicio = rd.horaInicio || reserva.horaInicio || '08:00'
+    const hFin = rd.horaFin || reserva.horaFin || '18:00'
+    const sucRet = rd.sucursalRetiro || reserva.sucursalRetiro || reserva.sucursal || vehiculo?.sucursal || 'Alquiler Neiva - Centro'
+    const sucDev = rd.sucursalDevolucion || reserva.sucursalDevolucion || reserva.sucursal || vehiculo?.sucursal || 'Alquiler Neiva - Centro'
+    const metPago = rd.metodoPago || reserva.metodoPago || reserva.pasarela || 'tarjeta'
+    const sucPagoEf = rd.sucursalPagoEfectivo || reserva.sucursalPagoEfectivo || reserva.sucursal || vehiculo?.sucursal || 'Alquiler Neiva - Centro'
 
     return {
       ...reserva,
       referencia: ref,
+      codigo: ref,
+      id: ref,
       total: reserva.total || reserva.totalCOP || 0,
       seguroIdx: reserva.seguroIdx ?? 0,
       serviciosSeleccionados: reserva.serviciosSeleccionados || [],
@@ -102,33 +118,41 @@ export default function ContractSigningPage() {
         telefono: telCliente,
         tipoDoc: tipoDocCliente,
         numDoc: docCliente,
-        licenciaPdf: df.licenciaPdf || null
+        cedulaPdf: cedName,
+        licenciaPdf: licName,
+        direccion: df.direccion || usuario?.direccion || ''
       },
       reservaDetalles: {
         ...rd,
-        fechaInicio: rd.fechaInicio || reserva.fechaInicio,
-        fechaFin: rd.fechaFin || reserva.fechaFin,
-        horaInicio: rd.horaInicio || '08:00',
-        horaFin: rd.horaFin || '18:00',
-        sucursalRetiro: rd.sucursalRetiro || reserva.sucursal || vehiculo?.sucursal || 'Alquiler Neiva - Centro',
-        sucursalDevolucion: rd.sucursalDevolucion || reserva.sucursal || vehiculo?.sucursal || 'Alquiler Neiva - Centro',
-        metodoPago: rd.metodoPago || reserva.pasarela || (reserva.metodoPago === 'efectivo' ? 'efectivo' : 'tarjeta'),
-        sucursalPagoEfectivo: rd.sucursalPagoEfectivo || reserva.sucursal || vehiculo?.sucursal || 'Alquiler Neiva - Centro'
+        fechaInicio: fInicio,
+        fechaFin: fFin,
+        horaInicio: hInicio,
+        horaFin: hFin,
+        sucursalRetiro: sucRet,
+        sucursalDevolucion: sucDev,
+        metodoPago: metPago,
+        sucursalPagoEfectivo: sucPagoEf,
+        domicilioCiudad: rd.domicilioCiudad || reserva.domicilioCiudad,
+        domicilioBarrio: rd.domicilioBarrio || reserva.domicilioBarrio,
+        domicilioDireccion: rd.domicilioDireccion || reserva.domicilioDireccion,
+        domicilioReferencias: rd.domicilioReferencias || reserva.domicilioReferencias
       }
     }
   }, [reserva, vehiculo, usuario, id])
 
   const vehiculoParaContrato = useMemo(() => {
-    const base = vehiculo || reserva?.vehiculo || {}
+    const vMock = VEHICULOS_MOCK.find(v => String(v.id) === String(reserva?.vehiculoId || reserva?.vehiculo?.id || vehiculo?.id)) || VEHICULOS_MOCK[0]
+    const base = vehiculo || reserva?.vehiculo || vMock || {}
     return {
+      ...vMock,
       ...base,
-      nombre: base.nombre || (base.marca ? `${base.marca} ${base.modelo || ''}` : 'Vehículo Drivique'),
-      placa: base.placa || 'Asignación al entregar',
-      color: base.color || 'Plata',
-      año: base.año || base.anio || 2024,
-      sucursal: base.sucursal || reserva?.sucursal || 'Alquiler Neiva - Centro',
-      servicios: base.servicios || [],
-      seguros: base.seguros || [{ nombre: 'Protección Básica Estándar' }]
+      nombre: base.nombre || vMock.nombre || (base.marca ? `${base.marca} ${base.modelo || ''}` : 'Vehículo Drivique'),
+      placa: base.placa || vMock.placa || 'ABC-123',
+      color: base.color || vMock.color || 'Plata',
+      año: base.año || base.anio || vMock.año || 2024,
+      sucursal: base.sucursal || reserva?.sucursal || reserva?.reservaDetalles?.sucursalRetiro || vMock.sucursal || 'Alquiler Neiva - Centro',
+      servicios: base.servicios || vMock.servicios || [],
+      seguros: base.seguros || vMock.seguros || [{ nombre: 'Protección Básica Estándar' }]
     }
   }, [vehiculo, reserva])
 

@@ -12,6 +12,7 @@ import CatalogTopHeader from '@/modules/catalog/components/CatalogTopHeader'
 import FirmaContrato from '@/modules/contracts/components/ContractSignature'
 import { descargarContratoOriginal, prepararVistaContrato } from '@/modules/contracts/utils/downloadSignedContract'
 import { reservationService } from '@/services/reservationService'
+import { documentsService } from '@/services/documentsService'
 import { SUCURSALES } from '@/modules/catalog/constants'
 import { construirUrlCheckout, aCentavos } from '@/services/wompiService'
 import logo from '@/assets/logo.png'
@@ -241,8 +242,16 @@ function Contrato({ reserva, autoDesbloquear = false, onDesbloquear }) {
     const telCliente = df.celular || df.telefono || base.clienteTelefono || usuario?.telefono || '+57 300 000 0000'
     const docCliente = df.numDoc || df.documento || base.clienteDocumento || usuario?.cedula || '1020304050'
     const ref = base.referencia || base.codigo || base.id || reserva.id
+
+    const userDocs = documentsService.obtenerDocumentos(usuario?.id || usuario?.correo || correoCliente)
+    const licName = df.licenciaPdf?.name || (typeof df.licenciaPdf === 'string' && df.licenciaPdf) || userDocs?.licencia?.nombre || (docCliente ? `Licencia-${docCliente}.pdf` : 'Licencia-Conduccion-Verificada.pdf')
+    const cedName = df.cedulaPdf?.name || (typeof df.cedulaPdf === 'string' && df.cedulaPdf) || userDocs?.cedula?.nombre || (docCliente ? `Cedula-${docCliente}.pdf` : 'Cedula-Verificada.pdf')
+
     return {
-      ...base, referencia: ref,
+      ...base,
+      referencia: ref,
+      codigo: ref,
+      id: ref,
       total: base.total || base.totalCOP || reserva.total || 0,
       seguroIdx: base.seguroIdx ?? reserva.seguroIdx ?? 0,
       serviciosSeleccionados: base.serviciosSeleccionados || reserva.serviciosSeleccionados || [],
@@ -252,9 +261,11 @@ function Contrato({ reserva, autoDesbloquear = false, onDesbloquear }) {
         correo: correoCliente,
         celular: telCliente,
         telefono: telCliente,
-        tipoDoc: df.tipoDoc || 'CC',
+        tipoDoc: df.tipoDoc || usuario?.tipoDocumento || 'CC',
         numDoc: docCliente,
-        licenciaPdf: df.licenciaPdf || null
+        cedulaPdf: cedName,
+        licenciaPdf: licName,
+        direccion: df.direccion || usuario?.direccion || ''
       },
       reservaDetalles: {
         ...rd,
@@ -262,10 +273,10 @@ function Contrato({ reserva, autoDesbloquear = false, onDesbloquear }) {
         fechaFin: rd.fechaFin || reserva.fechaFin,
         horaInicio: rd.horaInicio || '08:00',
         horaFin: rd.horaFin || '18:00',
-        sucursalRetiro: rd.sucursalRetiro || reserva.sucursal || reserva.vehiculo?.sucursal || 'Alquiler Neiva - Centro',
-        sucursalDevolucion: rd.sucursalDevolucion || reserva.sucursal || reserva.vehiculo?.sucursal || 'Alquiler Neiva - Centro',
-        metodoPago: rd.metodoPago || reserva.pasarela || (reserva.metodoPago === 'efectivo' ? 'efectivo' : 'tarjeta'),
-        sucursalPagoEfectivo: rd.sucursalPagoEfectivo || reserva.sucursal || reserva.vehiculo?.sucursal || 'Alquiler Neiva - Centro'
+        sucursalRetiro: rd.sucursalRetiro || reserva.sucursalRetiro || reserva.sucursal || reserva.vehiculo?.sucursal || 'Alquiler Neiva - Centro',
+        sucursalDevolucion: rd.sucursalDevolucion || reserva.sucursalDevolucion || reserva.sucursal || reserva.vehiculo?.sucursal || 'Alquiler Neiva - Centro',
+        metodoPago: rd.metodoPago || reserva.metodoPago || reserva.pasarela || (reserva.metodoPago === 'efectivo' ? 'efectivo' : 'tarjeta'),
+        sucursalPagoEfectivo: rd.sucursalPagoEfectivo || reserva.sucursalPagoEfectivo || reserva.sucursal || reserva.vehiculo?.sucursal || 'Alquiler Neiva - Centro'
       }
     }
   }, [reserva, contratoFirmado, reservaAlmacenada, usuario])
@@ -275,7 +286,7 @@ function Contrato({ reserva, autoDesbloquear = false, onDesbloquear }) {
     return {
       ...base,
       nombre: base.nombre || (base.marca ? `${base.marca} ${base.modelo || ''}` : 'Vehículo Drivique'),
-      placa: base.placa || 'Asignación al entregar',
+      placa: base.placa || 'ABC-123',
       color: base.color || 'Plata',
       año: base.año || base.anio || 2024,
       sucursal: base.sucursal || reserva.sucursal || 'Alquiler Neiva - Centro',
@@ -288,44 +299,44 @@ function Contrato({ reserva, autoDesbloquear = false, onDesbloquear }) {
     return reservaParaContrato?.datosForm?.numDoc || reserva.clienteDocumento || usuario?.cedula || ''
   }, [reservaParaContrato, reserva, usuario])
 
-  if (esConfirmada && !tieneContratoFirmado) {
-    return (
-      <div className="contrato-firmar-padre">
-        <div className="contrato-firmar-subtarjeta">
-          <div className="contrato-firmar-icon-wrap">
-            <img
-              src={brand?.logoDataUrl || logo}
-              alt={brand?.name || 'Drivique'}
-              style={{ width: '28px', height: '28px', objectFit: 'contain' }}
-            />
-          </div>
-          <h3 className="contrato-firmar-titulo">
-            {t('reservas.readyToSign', { defaultValue: 'Listo para firmar contrato' })}
-          </h3>
-          <p className="contrato-firmar-desc">
-            {t('reservas.readyToSignDesc', { defaultValue: 'Tu pago ha sido confirmado con éxito. Completa la firma digital de tu contrato para acceder al documento protegido.' })}
-          </p>
-          <button
-            type="button"
-            onClick={() => navigate(`/contrato/${encodeURIComponent(refBusqueda)}`, { state: { reserva: reservaParaContrato || reserva, vehiculo: vehiculoParaContrato || reserva.vehiculo } })}
-            className="contrato-firmar-btn"
-          >
-            <FaFileSignature size={15} />
-            <span>{t('reservas.signContractNow', { defaultValue: 'Firmar contrato' })}</span>
-          </button>
-        </div>
-      </div>
-    )
-  }
-
   return (
-    <ContratoVerCard
-      reserva={reserva}
-      contratoFirmado={contratoFirmado}
-      reservaParaContrato={reservaParaContrato}
-      vehiculoParaContrato={vehiculoParaContrato}
-      identificacion={identificacion}
-    />
+    <>
+      {esConfirmada && !tieneContratoFirmado && (
+        <div className="contrato-firmar-padre" style={{ marginBottom: '20px' }}>
+          <div className="contrato-firmar-subtarjeta">
+            <div className="contrato-firmar-icon-wrap">
+              <img
+                src={brand?.logoDataUrl || logo}
+                alt={brand?.name || 'Drivique'}
+                style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+              />
+            </div>
+            <h3 className="contrato-firmar-titulo">
+              {t('reservas.readyToSign', { defaultValue: 'Listo para firmar contrato' })}
+            </h3>
+            <p className="contrato-firmar-desc">
+              {t('reservas.readyToSignDesc', { defaultValue: 'Tu pago ha sido confirmado con éxito. Completa la firma digital de tu contrato para acceder al documento protegido.' })}
+            </p>
+            <button
+              type="button"
+              onClick={() => navigate(`/contrato/${encodeURIComponent(refBusqueda)}`, { state: { reserva: reservaParaContrato || reserva, vehiculo: vehiculoParaContrato || reserva.vehiculo } })}
+              className="contrato-firmar-btn"
+            >
+              <FaFileSignature size={15} />
+              <span>{t('reservas.signContractNow', { defaultValue: 'Firmar contrato' })}</span>
+            </button>
+          </div>
+        </div>
+      )}
+
+      <ContratoVerCard
+        reserva={reserva}
+        contratoFirmado={contratoFirmado}
+        reservaParaContrato={reservaParaContrato}
+        vehiculoParaContrato={vehiculoParaContrato}
+        identificacion={identificacion}
+      />
+    </>
   )
 }
 
@@ -389,9 +400,16 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
     const telCliente = df.celular || df.telefono || base.clienteTelefono || usuario?.telefono || '+57 300 000 0000'
     const docCliente = df.numDoc || df.documento || base.clienteDocumento || usuario?.cedula || '1020304050'
     const ref = base.referencia || base.codigo || base.id || reserva.id
+
+    const userDocs = documentsService.obtenerDocumentos(usuario?.id || usuario?.correo || correoCliente)
+    const licName = df.licenciaPdf?.name || (typeof df.licenciaPdf === 'string' && df.licenciaPdf) || userDocs?.licencia?.nombre || (docCliente ? `Licencia-${docCliente}.pdf` : 'Licencia-Conduccion-Verificada.pdf')
+    const cedName = df.cedulaPdf?.name || (typeof df.cedulaPdf === 'string' && df.cedulaPdf) || userDocs?.cedula?.nombre || (docCliente ? `Cedula-${docCliente}.pdf` : 'Cedula-Verificada.pdf')
+
     return {
       ...base,
       referencia: ref,
+      codigo: ref,
+      id: ref,
       total: base.total || base.totalCOP || reserva.total || 0,
       seguroIdx: base.seguroIdx ?? reserva.seguroIdx ?? 0,
       serviciosSeleccionados: base.serviciosSeleccionados || reserva.serviciosSeleccionados || [],
@@ -401,9 +419,11 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
         correo: correoCliente,
         celular: telCliente,
         telefono: telCliente,
-        tipoDoc: df.tipoDoc || 'CC',
+        tipoDoc: df.tipoDoc || usuario?.tipoDocumento || 'CC',
         numDoc: docCliente,
-        licenciaPdf: df.licenciaPdf || null
+        cedulaPdf: cedName,
+        licenciaPdf: licName,
+        direccion: df.direccion || usuario?.direccion || ''
       },
       reservaDetalles: {
         ...rd,
@@ -411,10 +431,10 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
         fechaFin: rd.fechaFin || reserva.fechaFin,
         horaInicio: rd.horaInicio || '08:00',
         horaFin: rd.horaFin || '18:00',
-        sucursalRetiro: rd.sucursalRetiro || reserva.sucursal || reserva.vehiculo?.sucursal || 'Alquiler Neiva - Centro',
-        sucursalDevolucion: rd.sucursalDevolucion || reserva.sucursal || reserva.vehiculo?.sucursal || 'Alquiler Neiva - Centro',
-        metodoPago: rd.metodoPago || reserva.pasarela || (reserva.metodoPago === 'efectivo' ? 'efectivo' : 'tarjeta'),
-        sucursalPagoEfectivo: rd.sucursalPagoEfectivo || reserva.sucursal || reserva.vehiculo?.sucursal || 'Alquiler Neiva - Centro'
+        sucursalRetiro: rd.sucursalRetiro || reserva.sucursalRetiro || reserva.sucursal || reserva.vehiculo?.sucursal || 'Alquiler Neiva - Centro',
+        sucursalDevolucion: rd.sucursalDevolucion || reserva.sucursalDevolucion || reserva.sucursal || reserva.vehiculo?.sucursal || 'Alquiler Neiva - Centro',
+        metodoPago: rd.metodoPago || reserva.metodoPago || reserva.pasarela || (reserva.metodoPago === 'efectivo' ? 'efectivo' : 'tarjeta'),
+        sucursalPagoEfectivo: rd.sucursalPagoEfectivo || reserva.sucursalPagoEfectivo || reserva.sucursal || reserva.vehiculo?.sucursal || 'Alquiler Neiva - Centro'
       }
     }
   }, [reserva, contrato, reservaOriginal, usuario])
@@ -443,7 +463,7 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
     return {
       ...base,
       nombre: base.nombre || (base.marca ? `${base.marca} ${base.modelo || ''}` : 'Vehículo Drivique'),
-      placa: base.placa || 'Asignación al entregar',
+      placa: base.placa || 'ABC-123',
       color: base.color || 'Plata',
       año: base.año || base.anio || 2024,
       sucursal: base.sucursal || reserva.sucursal || 'Alquiler Neiva - Centro',
@@ -918,23 +938,27 @@ export default function ReservationsPage() {
 
   const detalleIdUrl = searchParams.get('detalle') || location.state?.detalleId
   const autoDesbloquear = searchParams.get('desbloquear') === 'true' || location.state?.autoDesbloquear === true
+  const prevDetalleIdRef = useRef(null)
 
   useEffect(() => {
     if (detalleIdUrl && reservas.length > 0) {
-      const cleanId = String(detalleIdUrl).split('_')[0].trim().toUpperCase()
-      const encontrada = reservas.find(r => 
-        String(r.id).toUpperCase() === cleanId || 
-        String(r.codigo || '').toUpperCase() === cleanId || 
-        String(r.referencia || '').toUpperCase() === cleanId ||
-        String(r.id) === String(detalleIdUrl) ||
-        r.codigo === detalleIdUrl ||
-        r.referencia === detalleIdUrl
-      )
-      if (encontrada && (!detalle || String(detalle.id) !== String(encontrada.id) || detalle.estado !== encontrada.estado)) {
-        setDetalle(encontrada)
+      if (prevDetalleIdRef.current !== detalleIdUrl) {
+        prevDetalleIdRef.current = detalleIdUrl
+        const cleanId = String(detalleIdUrl).split('_')[0].trim().toUpperCase()
+        const encontrada = reservas.find(r => 
+          String(r.id).toUpperCase() === cleanId || 
+          String(r.codigo || '').toUpperCase() === cleanId || 
+          String(r.referencia || '').toUpperCase() === cleanId ||
+          String(r.id) === String(detalleIdUrl) ||
+          r.codigo === detalleIdUrl ||
+          r.referencia === detalleIdUrl
+        )
+        if (encontrada) {
+          setDetalle(encontrada)
+        }
       }
     }
-  }, [detalleIdUrl, reservas, detalle])
+  }, [detalleIdUrl, reservas])
 
   const handleVerDetalle = (reserva) => {
     setDetalle(reserva)
@@ -942,8 +966,9 @@ export default function ReservationsPage() {
 
   const handleCerrarDetalle = () => {
     setDetalle(null)
-    if (searchParams.get('detalle') || searchParams.get('desbloquear')) {
-      navigate('/reservas', { replace: true })
+    prevDetalleIdRef.current = '__closed__'
+    if (searchParams.get('detalle') || searchParams.get('desbloquear') || location.state?.detalleId) {
+      navigate('/reservas', { replace: true, state: {} })
     }
   }
 

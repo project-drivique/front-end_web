@@ -1,15 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { FaInfoCircle } from 'react-icons/fa';
+import { FaSpinner, FaCheckCircle, FaExclamationTriangle, FaShieldAlt } from 'react-icons/fa';
 import { reservationService } from '@/services/reservationService';
-import { formatCurrency } from '@/utils/currencyUtils';
-import { showAlert } from '@/utils/swalConfig';
-import { useLanding } from '../../landing/LandingContext';
 import logo from '@/assets/logo.png';
 import { useBrand } from '@/contexts/BrandContext';
-import VEHICULOS_MOCK from '@/mocks/vehicles.json';
-import ContractSignature from '../../contracts/components/ContractSignature';
 import { useAuthStore } from '../../../store/authStore';
 import MenuConfiguracion from '@/components/MenuConfiguracion';
 
@@ -26,38 +21,50 @@ export default function RespuestaPagoPage() {
   const { usuario } = useAuthStore();
   const [searchParams] = useSearchParams();
   const transactionId = searchParams.get('id'); // Wompi retorna ?id=XXX
-  const [reserva, setReserva] = useState(null);
-  const [contratoFirmado, setContratoFirmado] = useState(false);
-  const { moneda } = useLanding();
+  const [estadoProceso, setEstadoProceso] = useState('procesando'); // 'procesando', 'exito', 'error'
+  const [mensajeEstado, setMensajeEstado] = useState('Confirmando tu transacción con Wompi...');
+  const procesadoRef = useRef(false);
 
   useEffect(() => {
-    let ref = sessionStorage.getItem('current_wompi_reference') || searchParams.get('ref') || searchParams.get('reference');
-    let encontrada = ref ? reservationService.obtenerPorReferencia(ref) : null;
+    if (procesadoRef.current) return;
+    procesadoRef.current = true;
+
+    const refStored = sessionStorage.getItem('current_wompi_reference');
+    const attemptStored = sessionStorage.getItem('current_wompi_attempt_ref');
+    const refParam = searchParams.get('ref') || searchParams.get('reference');
+    const refQuery = refStored || attemptStored || refParam;
+
+    let encontrada = refQuery ? reservationService.obtenerPorReferencia(refQuery) : null;
     if (!encontrada && transactionId) {
       const all = reservationService.getReservas();
       encontrada = all.find(r => r.paymentId === transactionId) || (all.length > 0 ? all[all.length - 1] : null);
     }
 
     const procesarPagoYRedirigir = (targetReserva, pType) => {
+      setEstadoProceso('exito');
+      setMensajeEstado('¡Pago validado con éxito! Redirigiendo a tu reserva...');
+
       const actualRef = targetReserva.referencia || targetReserva.codigo || targetReserva.id;
       reservationService.actualizarEstado(actualRef, 'CONFIRMADA', transactionId);
 
+      let metodo = 'Pago Wompi';
       if (pType) {
-        let metodo = 'Nequi';
-        if (pType === 'NEQUI') metodo = 'Nequi';
-        else if (pType === 'DAVIPLATA') metodo = 'Daviplata';
-        else if (pType === 'CARD') metodo = 'Tarjeta';
-        else if (pType === 'PSE') metodo = 'PSE';
-        else if (pType === 'BANCOLOMBIA_COLLECT') metodo = 'Efectivo Bancolombia';
-        else if (pType.includes('BANCOLOMBIA')) metodo = 'Bancolombia';
-
-        reservationService.actualizarMedioPago(actualRef, metodo);
+        if (pType === 'NEQUI') metodo = 'Pago Wompi - Nequi';
+        else if (pType === 'DAVIPLATA') metodo = 'Pago Wompi - Daviplata';
+        else if (pType === 'CARD') metodo = 'Pago Wompi - Tarjeta';
+        else if (pType === 'PSE') metodo = 'Pago Wompi - PSE';
+        else if (pType === 'BANCOLOMBIA_COLLECT') metodo = 'Pago Wompi - Efectivo Bancolombia';
+        else if (pType.includes('BANCOLOMBIA')) metodo = 'Pago Wompi - Bancolombia';
+        else metodo = `Pago Wompi - ${pType}`;
       }
+      reservationService.actualizarMedioPago(actualRef, metodo);
 
-      navigate(`/reservas?detalle=${encodeURIComponent(actualRef)}`, {
-        replace: true,
-        state: { detalleId: actualRef }
-      });
+      setTimeout(() => {
+        navigate(`/reservas?detalle=${encodeURIComponent(actualRef)}`, {
+          replace: true,
+          state: { detalleId: actualRef }
+        });
+      }, 900);
     };
 
     if (transactionId) {
@@ -75,120 +82,179 @@ export default function RespuestaPagoPage() {
             procesarPagoYRedirigir(targetReserva, pType);
           } else if (encontrada) {
             procesarPagoYRedirigir(encontrada, pType);
+          } else {
+            const all = reservationService.getReservas();
+            const fallbackReserva = all.length > 0 ? all[all.length - 1] : null;
+            if (fallbackReserva) {
+              procesarPagoYRedirigir(fallbackReserva, pType);
+            } else {
+              setEstadoProceso('error');
+              setMensajeEstado('No se encontró la reserva asociada al pago.');
+            }
           }
         })
         .catch(() => {
           if (encontrada) {
             procesarPagoYRedirigir(encontrada, null);
+          } else {
+            const all = reservationService.getReservas();
+            const fallbackReserva = all.length > 0 ? all[all.length - 1] : null;
+            if (fallbackReserva) {
+              procesarPagoYRedirigir(fallbackReserva, null);
+            } else {
+              setEstadoProceso('error');
+              setMensajeEstado('Ocurrió un error al consultar el estado de la transacción.');
+            }
           }
         });
     } else if (encontrada) {
       procesarPagoYRedirigir(encontrada, null);
+    } else {
+      const all = reservationService.getReservas();
+      const fallbackReserva = all.length > 0 ? all[all.length - 1] : null;
+      if (fallbackReserva) {
+        procesarPagoYRedirigir(fallbackReserva, null);
+      } else {
+        setEstadoProceso('error');
+        setMensajeEstado('No se encontró la referencia de la reserva.');
+      }
     }
   }, [transactionId, searchParams, navigate]);
 
-  const vehiculoReserva = reserva
-    ? (reserva.vehiculo || VEHICULOS_MOCK.find(v => String(v.id) === String(reserva.vehiculoId || reserva.vehiculo?.id)) || VEHICULOS_MOCK[0])
-    : null;
-
-  const actualRef = reserva?.referencia || reserva?.codigo || reserva?.id;
-
-  if (reserva && vehiculoReserva && !contratoFirmado) {
-    return (
-      <div style={{ minHeight: '100vh', background: 'var(--hero-fondo)', position: 'relative', overflow: 'hidden' }}>
-        <div className="sucursales-orb" style={{ position: 'absolute', top: -80, right: -80, width: 500, height: 500, borderRadius: '50%', background: 'var(--hero-orb1)', pointerEvents: 'none' }} />
-        <div className="sucursales-orb" style={{ position: 'absolute', bottom: -60, left: -60, width: 350, height: 350, borderRadius: '50%', background: 'var(--hero-orb2)', pointerEvents: 'none' }} />
-        <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50, background: 'var(--bg-tarjeta)', backdropFilter: 'blur(12px)', borderBottom: '1px solid var(--borde)', boxShadow: '0 4px 20px rgba(0,0,0,0.04)', height: 96 }}>
-          <div className="catalogo-header-inner" style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px', height: '100%', display: 'flex', alignItems: 'center', gap: 20 }}>
-            <Link to={usuario ? "/home" : "/"}><img src={brand.logoDataUrl || logo} alt={brand.name} style={{ height: 80 }} /></Link>
-          </div>
-        </nav>
-        <div style={{ position: 'relative', paddingTop: 128, paddingBottom: 48, paddingLeft: 24, paddingRight: 24 }}>
-          <div style={{ textAlign: 'center', maxWidth: 700, margin: '0 auto 28px' }}>
-            <h1 style={{ fontSize: 24, fontWeight: 900, color: 'var(--texto-primary)', margin: '0 0 8px' }}>
-              {t('contratoFirma.pageTitleWompi')}
-            </h1>
-            <p style={{ fontSize: 14, color: 'var(--texto-second)', margin: 0 }}>{t('contratoFirma.pageSubtitle')}</p>
-          </div>
-          <ContractSignature
-            vehiculo={vehiculoReserva}
-            reservaGuardada={reserva}
-            onFirmado={() => {
-              setContratoFirmado(true);
-              showAlert({
-                icon: 'success',
-                title: '¡Contrato Firmado con Éxito!',
-                text: 'Tu contrato ha sido firmado correctamente. Ya puedes verlo y descargarlo en Mis Reservas.',
-                confirmButtonText: 'Ir a Mis Reservas',
-              }).then(() => navigate(`/reservas?detalle=${encodeURIComponent(actualRef || '')}&desbloquear=true`, {
-                state: { detalleId: actualRef, autoDesbloquear: true }
-              }));
-            }}
-          />
-        </div>
-      </div>
-    );
-  }
-
-  if (contratoFirmado) return null;
-
   return (
-    <div className="catalogo-page" style={{ minHeight: '100vh', background: 'var(--bg-page)' }}>
-      <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50, background: 'var(--bg-tarjeta)', backdropFilter: 'blur(12px)', borderBottom: '1px solid var(--borde)', boxShadow: '0 4px 20px rgba(0,0,0,0.04)', height: 96 }}>
+    <div className="catalogo-page" style={{ minHeight: '100vh', background: 'var(--bg-page, #f8fafc)', position: 'relative' }}>
+      <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50, background: 'var(--bg-tarjeta, #ffffff)', backdropFilter: 'blur(12px)', borderBottom: '1px solid var(--borde, #e2e8f0)', boxShadow: '0 4px 20px rgba(0,0,0,0.04)', height: 96 }}>
         <div className="catalogo-header-inner" style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px', height: '100%', display: 'flex', alignItems: 'center', gap: 20 }}>
-          <Link to={usuario ? "/home" : "/"}><img src={brand.logoDataUrl || logo} alt={brand.name} style={{ height: 80 }} /></Link>
+          <Link to={usuario ? "/home" : "/"}><img src={brand.logoDataUrl || logo} alt={brand.name} style={{ height: 75, objectFit: 'contain' }} /></Link>
           <div style={{ flex: 1 }} />
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <Link to="/home" style={{ padding: '10px 20px', borderRadius: 9999, border: '2px solid var(--brand-border-light)', color: 'var(--texto-acento)', fontSize: 14, fontWeight: 700, textDecoration: 'none', transition: 'all 200ms ease' }}>{t('common.goHome', 'Ir al Inicio')}</Link>
+            <Link to="/reservas" style={{ padding: '10px 20px', borderRadius: 9999, border: '2px solid var(--brand-border-light, #e2e8f0)', color: 'var(--texto-acento, #1D4ED8)', fontSize: 14, fontWeight: 700, textDecoration: 'none', transition: 'all 200ms ease' }}>{t('nav.reservations', 'Mis Reservas')}</Link>
             <MenuConfiguracion />
           </div>
         </div>
       </nav>
 
-      <div style={{ paddingTop: 140, display: 'flex', justifyContent: 'center', paddingBottom: 40, paddingLeft: 24, paddingRight: 24 }}>
-        <div className="respuesta-pago-card" style={{ background: 'var(--bg-tarjeta)', borderRadius: 24, padding: 40, width: '100%', maxWidth: 500, boxShadow: '0 12px 36px rgba(0,0,0,0.06)', border: '1px solid var(--borde)', textAlign: 'center' }}>
-          
-          <div style={{ width: 80, height: 80, borderRadius: '50%', background: 'var(--brand-gradient)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px', boxShadow: 'var(--brand-shadow)', color: '#fff', fontSize: '32px' }}>
-            <FaInfoCircle />
-          </div>
-          
-          <h2 style={{ fontSize: 26, fontWeight: 900, color: 'var(--texto-primary)', margin: '0 0 12px' }}>{t('pago.paymentInProcess', 'Pago en Proceso')}</h2>
-          <p style={{ fontSize: 15, color: 'var(--texto-second)', marginBottom: 24 }}>
-            {t('pago.paymentInProcessDesc', 'Tu pago a través de Wompi se ha registrado. El estado de la reserva ahora es PENDIENTE DE VALIDACIÓN.')}
-          </p>
-
-          {reserva ? (
-            <div style={{ background: '#f8fafc', borderRadius: 16, padding: '24px', border: '1px solid #e2e8f0', textAlign: 'left', marginBottom: 24 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
-                <span style={{ fontSize: 13, color: 'var(--texto-second)', fontWeight: 600 }}>{t('reservas.vehicle', 'Vehículo')}</span>
-                <span style={{ fontSize: 13, color: 'var(--texto-primary)', fontWeight: 800 }}>{reserva.vehiculoNombre}</span>
+      <div style={{ paddingTop: 160, display: 'flex', justifyContent: 'center', paddingBottom: 60, paddingLeft: 24, paddingRight: 24 }}>
+        <div style={{
+          background: 'var(--bg-tarjeta, #ffffff)',
+          borderRadius: 24,
+          padding: '44px 36px',
+          width: '100%',
+          maxWidth: 480,
+          boxShadow: '0 16px 40px rgba(0,0,0,0.08)',
+          border: '1px solid var(--borde, #e2e8f0)',
+          textAlign: 'center',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center'
+        }}>
+          {estadoProceso === 'procesando' && (
+            <>
+              <div style={{
+                width: 80,
+                height: 80,
+                borderRadius: '50%',
+                background: 'var(--brand-primary, #1D4ED8)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: '0 auto 24px',
+                boxShadow: '0 8px 24px rgba(29, 78, 216, 0.25)',
+                color: '#fff',
+                fontSize: '34px'
+              }}>
+                <FaSpinner className="fa-spin" style={{ animation: 'spin 1s linear infinite' }} />
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
-                <span style={{ fontSize: 13, color: 'var(--texto-second)', fontWeight: 600 }}>{t('pago.internalRef', 'Referencia Interna')}</span>
-                <span style={{ fontSize: 13, color: 'var(--texto-primary)', fontWeight: 800 }}>{reserva.referencia}</span>
+              <h2 style={{ fontSize: 22, fontWeight: 900, color: 'var(--texto-primary, #0f172a)', margin: '0 0 10px' }}>
+                {t('pago.verifyingTitle', 'Verificando pago...')}
+              </h2>
+              <p style={{ fontSize: 14.5, color: 'var(--texto-second, #64748b)', margin: '0 0 20px', lineHeight: 1.5 }}>
+                {mensajeEstado}
+              </p>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#10b981', fontSize: 13, fontWeight: 600 }}>
+                <FaShieldAlt /> <span>Transacción protegida por Wompi</span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
-                <span style={{ fontSize: 13, color: 'var(--texto-second)', fontWeight: 600 }}>{t('pago.wompiTxId', 'ID de Transacción Wompi')}</span>
-                <span style={{ fontSize: 13, color: 'var(--brand-text)', fontWeight: 800 }}>{transactionId || 'N/A'}</span>
-              </div>
-              <div style={{ borderTop: '1px solid #e2e8f0', margin: '16px 0' }}></div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ fontSize: 13, color: 'var(--texto-primary)', fontWeight: 800 }}>{t('pago.amountToPay', 'Monto a Pagar')}</span>
-                <span style={{ fontSize: 18, color: 'var(--brand-text)', fontWeight: 900 }}>{formatCurrency(reserva.total, moneda)}</span>
-              </div>
-            </div>
-          ) : (
-            <div style={{ padding: 20, background: '#fee2e2', color: '#b91c1c', borderRadius: 12, marginBottom: 24, fontSize: 14 }}>
-              {t('pago.noLocalReservationInfo', 'No se encontró la información local de la reserva.')}
-            </div>
+            </>
           )}
 
-          <Link to="/home" style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '14px 32px', borderRadius: 16, background: 'var(--brand-gradient)', color: 'var(--brand-on-primary)', fontWeight: 900, fontSize: 15, border: 'none', cursor: 'pointer', textDecoration: 'none', boxShadow: 'var(--brand-shadow)' }}>
-            {t('pago.backToAccount', 'Volver a Mi Cuenta')}
-          </Link>
+          {estadoProceso === 'exito' && (
+            <>
+              <div style={{
+                width: 80,
+                height: 80,
+                borderRadius: '50%',
+                background: '#10b981',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: '0 auto 24px',
+                boxShadow: '0 8px 24px rgba(16, 185, 129, 0.25)',
+                color: '#fff',
+                fontSize: '36px'
+              }}>
+                <FaCheckCircle />
+              </div>
+              <h2 style={{ fontSize: 22, fontWeight: 900, color: 'var(--texto-primary, #0f172a)', margin: '0 0 10px' }}>
+                {t('pago.successTitle', '¡Pago Confirmado!')}
+              </h2>
+              <p style={{ fontSize: 14.5, color: 'var(--texto-second, #64748b)', margin: '0 0 16px', lineHeight: 1.5 }}>
+                {mensajeEstado}
+              </p>
+            </>
+          )}
 
+          {estadoProceso === 'error' && (
+            <>
+              <div style={{
+                width: 80,
+                height: 80,
+                borderRadius: '50%',
+                background: '#ef4444',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: '0 auto 24px',
+                boxShadow: '0 8px 24px rgba(239, 68, 68, 0.25)',
+                color: '#fff',
+                fontSize: '36px'
+              }}>
+                <FaExclamationTriangle />
+              </div>
+              <h2 style={{ fontSize: 22, fontWeight: 900, color: 'var(--texto-primary, #0f172a)', margin: '0 0 10px' }}>
+                {t('pago.errorTitle', 'Atención')}
+              </h2>
+              <p style={{ fontSize: 14.5, color: 'var(--texto-second, #64748b)', margin: '0 0 24px', lineHeight: 1.5 }}>
+                {mensajeEstado}
+              </p>
+              <Link
+                to="/reservas"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '14px 28px',
+                  borderRadius: 14,
+                  background: 'var(--brand-primary, #1D4ED8)',
+                  color: '#ffffff',
+                  fontWeight: 800,
+                  fontSize: 14,
+                  border: 'none',
+                  textDecoration: 'none',
+                  boxShadow: '0 6px 18px rgba(29, 78, 216, 0.25)'
+                }}
+              >
+                Ir a Mis Reservas
+              </Link>
+            </>
+          )}
         </div>
       </div>
+      <style>{`
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
     </div>
   );
 }

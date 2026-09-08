@@ -9,6 +9,7 @@ import { generarReferenciaUnica, aCentavos, construirUrlCheckout } from '@/servi
 import { RECARGOS_LOGISTICOS, SUCURSALES, CIUDADES } from '../../catalog/constants'
 import { branchManagementService } from '../../../services/branchManagementService'
 import { promotionManagementService } from '../../../services/promotionManagementService'
+import { vehicleManagementService } from '../../../services/vehicleManagementService'
 import VEHICULOS_MOCK from '@/mocks/vehicles.json'
 
 export const TOTAL_PASOS = 3
@@ -24,7 +25,20 @@ export function useReservationFlow() {
   const navigate = useNavigate()
   const { usuario, actualizarUsuario } = useAuthStore()
 
-  const vehiculo = VEHICULOS_MOCK.find(v => v.id === Number(id))
+  const baseVehiculo = vehicleManagementService.getById(id) || VEHICULOS_MOCK.find(v => Number(v.id) === Number(id))
+  const vehiculo = baseVehiculo ? {
+    ...baseVehiculo,
+    caracteristicas: baseVehiculo.caracteristicas || [],
+    equipamientoTecnologico: baseVehiculo.equipamientoTecnologico || [],
+    seguros: baseVehiculo.seguros || [{ nombre: 'Protección Básica Estándar', precio: 0, descripcion: 'Cobertura estándar' }],
+    servicios: baseVehiculo.servicios || [],
+    imagenes: baseVehiculo.imagenes || (baseVehiculo.imagen ? [baseVehiculo.imagen] : []),
+    sucursalInfo: baseVehiculo.sucursalInfo || {
+      nombre: baseVehiculo.sucursal || 'Alquiler Neiva - Centro',
+      direccion: 'Calle 9 # 8-25, Centro',
+      horario: 'Lun a dom, 6:00 am - 10:00 pm'
+    }
+  } : null
 
   const storageKey = `drivique_reservation_state_${id}`
 
@@ -381,16 +395,49 @@ export function useReservationFlow() {
       })
     }
 
+    const docSaved = idUsuarioDocs ? documentsService.obtenerDocumentos(idUsuarioDocs) : null
+    const docCedulaFinal = datosForm.cedulaPdf?.name || (typeof datosForm.cedulaPdf === 'string' && datosForm.cedulaPdf) || docSaved?.cedula?.nombre || (datosForm.numDoc ? `Cedula-${datosForm.numDoc}.pdf` : 'Cedula-Verificada.pdf')
+    const docLicenciaFinal = datosForm.licenciaPdf?.name || (typeof datosForm.licenciaPdf === 'string' && datosForm.licenciaPdf) || docSaved?.licencia?.nombre || (datosForm.numDoc ? `Licencia-${datosForm.numDoc}.pdf` : 'Licencia-Conduccion-Verificada.pdf')
+
     const reservaGuardada = reservationService.guardarReserva({
       referencia,
       vehiculoId: vehiculo.id,
       vehiculoNombre: vehiculo.nombre,
+      vehiculo: {
+        id: vehiculo.id,
+        nombre: vehiculo.nombre,
+        marca: vehiculo.marca,
+        modelo: vehiculo.modelo,
+        placa: vehiculo.placa,
+        color: vehiculo.color,
+        año: vehiculo.año || vehiculo.anio || 2024,
+        sucursal: vehiculo.sucursal,
+        precio: vehiculo.precio,
+        precioDiario: vehiculo.precioDiario || vehiculo.precio,
+        seguros: vehiculo.seguros,
+        servicios: vehiculo.servicios,
+        imagenes: vehiculo.imagenes,
+        imagen: vehiculo.imagen || vehiculo.imagenes?.[0]
+      },
       estado: reserva.metodoPago === 'efectivo' ? 'PENDIENTE_EFECTIVO' : 'PENDIENTE',
       fechaCreacion: new Date().toISOString(),
       fechaReserva: new Date().toISOString(),
-      datosForm,
+      fechaInicio: reserva.fechaInicio,
+      fechaFin: reserva.fechaFin,
+      horaInicio: reserva.horaInicio,
+      horaFin: reserva.horaFin,
+      sucursal: vehiculo.sucursal,
+      sucursalRetiro: reserva.sucursalRetiro,
+      sucursalDevolucion: reserva.sucursalDevolucion,
+      metodoPago: reserva.metodoPago,
+      datosForm: {
+        ...datosForm,
+        cedulaPdf: docCedulaFinal,
+        licenciaPdf: docLicenciaFinal,
+      },
       reservaDetalles: reserva,
       total: finalTotalCop,
+      totalCOP: finalTotalCop,
       promocion: appliedPromotion ? { id: appliedPromotion.id, codigo: appliedPromotion.codigo, descuento: discountCop } : null,
       seguroIdx,
       serviciosSeleccionados,

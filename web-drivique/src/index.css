@@ -405,3 +405,66 @@ html.dark .campo-select {
   background: #64748b !important;
 }
 
+/* ── Estilos globales de impresión de contrato ── */
+@media print {
+  @page {
+    size: A4;
+    margin: 10mm;
+  }
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+    color: #0f172a !important;
+  }
+  body.imprimiendo-contrato {
+    background: #ffffff !important;
+    overflow: visible !important;
+  }
+  body.imprimiendo-contrato > *:not(.raiz-impresion-contrato) {
+    display: none !important;
+  }
+  .raiz-impresion-contrato {
+    box-sizing: border-box;
+    display: block !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    visibility: visible !important;
+  }
+  .raiz-impresion-contrato * {
+    visibility: visible !important;
+  }
+  .raiz-impresion-contrato .contrato-a-imprimir {
+    display: block !important;
+    width: 100% !important;
+    max-width: none !important;
+    max-height: none !important;
+    overflow: visible !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: #ffffff !important;
+  }
+  .raiz-impresion-contrato .contrato-a-imprimir button,
+  .contrato-contenedor-externo button,
+  header,
+  nav,
+  footer:not(.contrato-footer-print) {
+    display: none !important;
+  }
+  .raiz-impresion-contrato .contrato-a-imprimir * {
+    --bg-tarjeta: #ffffff !important;
+    --bg-item: #f8fafc !important;
+    --borde: #dbe3ef !important;
+    --texto-primary: #0f172a !important;
+    --texto-second: #64748b !important;
+    --sombra-tarjeta: none !important;
+  }
+  .contrato-campo, section, footer, .firma-box, .tarjeta-contrato {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+}
+
+
