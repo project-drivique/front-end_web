@@ -118,7 +118,7 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <FaCreditCard color={accent} size={14} />
           <h3 style={{ fontSize: 13, fontWeight: 700, color: titleColor, margin: 0 }}>
-            {t('vehiculo.paymentMethodTitle', 'Selecciona el método de pago')}
+            {t('vehiculo.paymentMethodTitle', 'Seleccionar método de pago preferido')}
           </h3>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -167,11 +167,26 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
         </div>
       </div>
 
-      {metodoPago === 'efectivo' && <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-        <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 700, color: titleColor }}><FaMapMarkerAlt color={accent} size={14} /> {t('vehiculo.cashPaymentBranchLabel', 'Punto autorizado para pago en efectivo')}</span>
-        <div style={{ padding: '12px 16px', borderRadius: 12, border: `1px solid ${border}`, background: 'transparent' }}><select value={reserva?.sucursalPagoEfectivo || ''} onChange={(event) => onCambio('sucursalPagoEfectivo', event.target.value)} style={selectStyle}><option value="">{t('vehiculo.selectCashPaymentBranch', 'Selecciona un punto de pago')}</option>{cashBranches.map((branch) => <option key={branch.id} value={branch.nombre}>{branch.nombre} · {branch.ciudad}</option>)}</select></div>
-        {cashBranches.length === 0 && <small style={{ color: '#dc2626', fontWeight: 700 }}>{t('vehiculo.noCashPaymentBranches', 'No hay sucursales autorizadas para recibir pagos en efectivo.')}</small>}
-      </div>}
+      {metodoPago === 'efectivo' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 700, color: titleColor }}>
+            <FaMapMarkerAlt color={accent} size={14} /> {t('vehiculo.cashPaymentBranchLabel', 'Punto autorizado para pago en efectivo')}
+          </span>
+          <div style={{
+            padding: '12px 16px',
+            borderRadius: 12,
+            border: `1px solid ${border}`,
+            background: 'transparent',
+            display: 'flex',
+            alignItems: 'center',
+            fontSize: 14,
+            fontWeight: 500,
+            color: textPrimary,
+          }}>
+            <span>{vehiculo?.sucursal ? `${vehiculo.sucursal}${branchObj?.ciudad ? ` · ${branchObj.ciudad}` : ''}` : ''}</span>
+          </div>
+        </div>
+      )}
 
       {/* SECCIÓN: LUGAR Y HORA */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -202,7 +217,7 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
               >
                 <FaPencilAlt size={10} />
                 {hasDomicilioData
-                  ? 'Editar'
+                  ? t('vehiculo.edit', 'Editar')
                   : t('vehiculo.fillAddressBtn', 'Ingresar dirección')}
               </div>
             )}
@@ -238,7 +253,7 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
               >
                 {reserva?.sucursalRetiro === 'domicilio' ? <FaEye size={12} /> : <FaPencilAlt size={10} />}
                 {hasDomicilioData
-                  ? (reserva?.sucursalRetiro === 'domicilio' ? 'Ver' : 'Editar')
+                  ? (reserva?.sucursalRetiro === 'domicilio' ? t('vehiculo.view', 'Ver') : t('vehiculo.edit', 'Editar'))
                   : t('vehiculo.fillAddressBtn', 'Ingresar dirección')}
               </div>
             )}
@@ -294,6 +309,7 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
             vehiculoId={vehiculo.id}
             fechaInicio={reserva.fechaInicio}
             fechaFin={reserva.fechaFin}
+            c={c}
             onCambiarFechas={({ fechaInicio, fechaFin }) => {
               onCambio('fechaInicio', fechaInicio)
               onCambio('fechaFin', fechaFin)

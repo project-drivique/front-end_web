@@ -94,7 +94,7 @@ export default function TipoKilometraje({ vehiculo, tipoKm, onSeleccionar, c, di
                   transition: 'all 200ms ease',
                 }}>
                   {activo && <FaCheckCircle size={12} />}
-                  {activo ? t('vehiculo.selected', 'Seleccionado') : t('vehiculo.select', 'Seleccionar')}
+                  {activo ? t('vehiculo.planSelected', 'Plan Seleccionado') : t('vehiculo.choosePlan', 'Elegir Plan')}
                 </div>
               </div>
               </button>

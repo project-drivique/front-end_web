@@ -21,22 +21,22 @@ export default function VehicleCharacteristics({ vehiculo, c, showIcon = true, c
   const border = c?.cardBorder || '#e2e8f0'
   const titleColor = c?.titleColor || 'var(--brand-secondary)'
 
-  const categoria   = CAT_KEYS[vehiculo.categoria]     ? t(CAT_KEYS[vehiculo.categoria])   : vehiculo.categoria
-  const transmision = TRANS_KEYS[vehiculo.transmision] ? t(TRANS_KEYS[vehiculo.transmision]) : vehiculo.transmision
-  const combustible = FUEL_KEYS[vehiculo.combustible]  ? t(FUEL_KEYS[vehiculo.combustible])  : vehiculo.combustible
-  const color       = COLOR_MAP[vehiculo.color]        ? t(COLOR_MAP[vehiculo.color])      : vehiculo.color
+  const categoria   = CAT_KEYS[vehiculo?.categoria]     ? t(CAT_KEYS[vehiculo.categoria])   : (vehiculo?.categoria || 'Sedan')
+  const transmision = TRANS_KEYS[vehiculo?.transmision] ? t(TRANS_KEYS[vehiculo.transmision]) : (vehiculo?.transmision || 'Automática')
+  const combustible = FUEL_KEYS[vehiculo?.combustible]  ? t(FUEL_KEYS[vehiculo.combustible])  : (vehiculo?.combustible || 'Gasolina')
+  const color       = COLOR_MAP[vehiculo?.color]        ? t(COLOR_MAP[vehiculo.color])      : (vehiculo?.color || 'Gris')
 
   const items = [
     { Icono: FaTag,         label: t('vehiculo.category', 'Categoría'), value: categoria },
     { Icono: FaCar,         label: t('vehiculo.transmission', 'Transmisión'), value: transmision },
     { Icono: FaGasPump,     label: t('vehiculo.fuel', 'Combustible'), value: combustible },
-    { Icono: FaUserFriends, label: t('vehiculo.capacity', 'Capacidad'), value: `${vehiculo.pasajeros} ${t('vehiculo.passengers', 'pasajeros')}` },
-    { Icono: FaDoorOpen,    label: t('vehiculo.doorsLabel', 'Puertas'), value: `${vehiculo.puertas}` },
-    { Icono: FaSuitcase,    label: t('vehiculo.trunk', 'Maletero'), value: `${vehiculo.maletero} L` },
-    { Icono: FaBolt,        label: t('vehiculo.engine', 'Motor'), value: vehiculo.cilindraje },
+    { Icono: FaUserFriends, label: t('vehiculo.capacity', 'Capacidad'), value: `${vehiculo?.pasajeros || 5} ${t('vehiculo.passengers', 'pasajeros')}` },
+    { Icono: FaDoorOpen,    label: t('vehiculo.doorsLabel', 'Puertas'), value: `${vehiculo?.puertas || 4}` },
+    { Icono: FaSuitcase,    label: t('vehiculo.trunk', 'Maletero'), value: `${vehiculo?.maletero || 400} L` },
+    { Icono: FaBolt,        label: t('vehiculo.engine', 'Motor'), value: vehiculo?.cilindraje || '1.6L' },
     { Icono: FaPalette,     label: t('vehiculo.colorLabel', 'Color'), value: color },
-    { Icono: FaCalendarAlt, label: t('vehiculo.year', 'Año'), value: `${vehiculo.año}` },
-    { Icono: FaIdCard,      label: t('vehiculo.plateLabel', 'Placa'), value: vehiculo.placa || '—' },
+    { Icono: FaCalendarAlt, label: t('vehiculo.year', 'Año'), value: `${vehiculo?.año || vehiculo?.anio || 2024}` },
+    { Icono: FaIdCard,      label: t('vehiculo.plateLabel', 'Placa'), value: vehiculo?.placa || '—' },
   ]
 
   return (

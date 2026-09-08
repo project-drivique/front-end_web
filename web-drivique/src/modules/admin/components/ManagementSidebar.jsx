@@ -18,6 +18,7 @@ import {
   FaTags,
   FaPalette,
   FaFileAlt,
+  FaCashRegister,
 } from 'react-icons/fa'
 import { useAuthStore } from '../../../store/authStore'
 import accessConfig from '../../../mocks/adminAccessConfig.json'
@@ -32,6 +33,7 @@ const MODULE_ICONS = {
   users: FaUsers,
   roles: FaUserShield,
   reservations: FaClipboardList,
+  cashCollection: FaCashRegister,
   contracts: FaFileContract,
   incidents: FaExclamationTriangle,
   cities: FaCity,
@@ -48,6 +50,7 @@ const NAV_LABELS = {
   users: 'Usuarios',
   roles: 'Roles y Permisos',
   reservations: 'Reservas',
+  cashCollection: 'Cobro en Sucursal',
   contracts: 'Contratos',
   incidents: 'Incidencias',
   cities: 'Ciudades',
@@ -76,12 +79,15 @@ export default function ManagementSidebar({ branchOnly = false }) {
     navigate('/login', { replace: true })
   }
 
+  const brandName = brand?.name || 'Drivique'
+  const brandLogo = brand?.logoDataUrl || logo
+
   return (
     <>
       <div className="management-mobile-topbar">
         <div className="mobile-brand">
-          <img src={brand.logoDataUrl || logo} alt={brand.name} />
-          <strong>{brand.name.toUpperCase()}</strong>
+          <img src={brandLogo} alt={brandName} />
+          <strong>{brandName.toUpperCase()}</strong>
         </div>
         <button 
           className="management-mobile-btn" 
@@ -102,10 +108,10 @@ export default function ManagementSidebar({ branchOnly = false }) {
       <aside className={`management-sidebar ${isOpen ? 'is-open' : ''}`}>
         <div className="management-brand">
           <span className="management-brand__mark">
-            <img src={brand.logoDataUrl || logo} alt={brand.name} />
+            <img src={brandLogo} alt={brandName} />
           </span>
         <div>
-          <strong>{brand.name}</strong>
+          <strong>{brandName}</strong>
           <small>{t('admin.management', 'Gestión')}</small>
         </div>
       </div>

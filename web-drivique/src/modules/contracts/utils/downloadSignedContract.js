@@ -3,7 +3,11 @@ export async function prepararVistaContrato({ elementoContrato, contrato }) {
   const canvas = elementoContrato.querySelector('canvas')
   if (!canvas || !contrato?.firmaUsuarioDataUrl) return
   const firma = new Image()
-  await new Promise((resolve, reject) => { firma.onload = resolve; firma.onerror = reject; firma.src = contrato.firmaUsuarioDataUrl })
+  await new Promise((resolve, reject) => {
+    firma.onload = resolve
+    firma.onerror = reject
+    firma.src = contrato.firmaUsuarioDataUrl
+  })
   const contexto = canvas.getContext('2d')
   contexto.clearRect(0, 0, canvas.width, canvas.height)
   contexto.drawImage(firma, 0, 0, canvas.width, canvas.height)
@@ -16,18 +20,22 @@ export function descargarContratoOriginal({ contrato, elementoContrato }) {
   const siguienteOriginal = elementoContrato.nextSibling
   const raizImpresion = document.createElement('div')
   raizImpresion.className = 'raiz-impresion-contrato'
-  document.title = `Contrato-${contrato.codigo}`
+  document.title = `Contrato-${contrato?.codigo || 'Drivique'}`
   document.body.classList.add('imprimiendo-contrato')
   elementoContrato.classList.add('contrato-a-imprimir')
   document.body.appendChild(raizImpresion)
   raizImpresion.appendChild(elementoContrato)
+
   return new Promise(resolve => {
     let limpio = false
     const limpiar = () => {
       if (limpio) return
       limpio = true
-      if (siguienteOriginal && siguienteOriginal.parentNode === padreOriginal) padreOriginal.insertBefore(elementoContrato, siguienteOriginal)
-      else padreOriginal.appendChild(elementoContrato)
+      if (siguienteOriginal && siguienteOriginal.parentNode === padreOriginal) {
+        padreOriginal.insertBefore(elementoContrato, siguienteOriginal)
+      } else {
+        padreOriginal.appendChild(elementoContrato)
+      }
       raizImpresion.remove()
       document.body.classList.remove('imprimiendo-contrato')
       elementoContrato.classList.remove('contrato-a-imprimir')
@@ -42,3 +50,4 @@ export function descargarContratoOriginal({ contrato, elementoContrato }) {
     }))
   })
 }
+

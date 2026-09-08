@@ -93,8 +93,18 @@ export const construirUrlCheckout = async ({ reference, amountInCents, redirectU
     'signature:integrity': firma,
   });
 
-  if (redirectUrl) {
-    params.set('redirect-url', redirectUrl);
+  const netlifyUrl = import.meta.env?.VITE_NETLIFY_URL || import.meta.env?.VITE_PUBLIC_URL || '';
+  let targetRedirect = redirectUrl || (typeof window !== 'undefined' ? `${window.location.origin}/respuesta` : '');
+
+  if (netlifyUrl && netlifyUrl.startsWith('https://')) {
+    params.set('redirect-url', `${netlifyUrl.replace(/\/$/, '')}/respuesta`);
+  } else if (targetRedirect) {
+    if (targetRedirect.includes('localhost')) {
+      // CloudFront WAF de Wompi bloquea la palabra 'localhost' con 403.
+      // 'localtest.me' es un dominio DNS público que resuelve a 127.0.0.1 y pasa el WAF con 200 OK.
+      targetRedirect = targetRedirect.replace('localhost', 'localtest.me');
+    }
+    params.set('redirect-url', targetRedirect);
   }
 
   return `https://checkout.wompi.co/p/?${params.toString()}`;

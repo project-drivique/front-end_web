@@ -305,7 +305,7 @@ export default function AdminRolesManagementPage() {
   ])
 
   const exportDataAccounts = {
-    title: `Cuentas Administrativas — Plataforma ${brand.name}`,
+    title: `Cuentas Administrativas — Plataforma ${brand?.name || 'Drivique'}`,
     headers: headersExportAccounts,
     rows: rowsExportAccounts,
     items: cuentasFiltradas,

@@ -27,7 +27,7 @@ const traducciones = {
       vehiculos: 'Vehículos', sucursales: 'Sucursales', servicios: 'Servicios',
       tarifas: 'Tarifas', soporte: 'Soporte', login: 'Iniciar sesión',
       registro: 'Registrarse', config: 'Configuración',
-      tema: 'Tema', claro: 'Claro', oscuro: 'Oscuro', idioma: 'Idioma',
+      tema: 'Tema', claro: 'Claro', oscuro: 'Oscuro', idioma: 'Idioma', moneda: 'Moneda',
     },
     hero: {
       badge: 'Disponible en Colombia 🇨🇴',
@@ -102,7 +102,7 @@ const traducciones = {
       vehiculos: 'Vehicles', sucursales: 'Branches', servicios: 'Services',
       tarifas: 'Rates', soporte: 'Support', login: 'Log in',
       registro: 'Sign up', config: 'Settings',
-      tema: 'Theme', claro: 'Light', oscuro: 'Dark', idioma: 'Language',
+      tema: 'Theme', claro: 'Light', oscuro: 'Dark', idioma: 'Language', moneda: 'Currency',
     },
     hero: {
       badge: 'Available in Colombia 🇨🇴',
@@ -177,7 +177,7 @@ const traducciones = {
       vehiculos: 'Véhicules', sucursales: 'Agences', servicios: 'Services',
       tarifas: 'Tarifs', soporte: 'Support', login: 'Se connecter',
       registro: "S'inscrire", config: 'Paramètres',
-      tema: 'Thème', claro: 'Clair', oscuro: 'Sombre', idioma: 'Langue',
+      tema: 'Thème', claro: 'Clair', oscuro: 'Sombre', idioma: 'Langue', moneda: 'Devise',
     },
     hero: {
       badge: 'Disponible en Colombie 🇨🇴',
@@ -252,7 +252,7 @@ const traducciones = {
       vehiculos: 'Veículos', sucursales: 'Agências', servicios: 'Serviços',
       tarifas: 'Tarifas', soporte: 'Suporte', login: 'Entrar',
       registro: 'Registar', config: 'Configurações',
-      tema: 'Tema', claro: 'Claro', oscuro: 'Escuro', idioma: 'Idioma',
+      tema: 'Tema', claro: 'Claro', oscuro: 'Escuro', idioma: 'Idioma', moneda: 'Moeda',
     },
     hero: {
       badge: 'Disponível na Colômbia 🇨🇴',
@@ -327,7 +327,7 @@ const traducciones = {
       vehiculos: 'Veículos', sucursales: 'Filiais', servicios: 'Serviços',
       tarifas: 'Tarifas', soporte: 'Suporte', login: 'Entrar',
       registro: 'Cadastrar', config: 'Configurações',
-      tema: 'Tema', claro: 'Claro', oscuro: 'Escuro', idioma: 'Idioma',
+      tema: 'Tema', claro: 'Claro', oscuro: 'Escuro', idioma: 'Idioma', moneda: 'Moeda',
     },
     hero: {
       badge: 'Disponível na Colômbia 🇨🇴',

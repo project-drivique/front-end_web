@@ -6,8 +6,8 @@
 const STORAGE_KEY = 'drivique_reservas';
 
 // Tiempo que tiene el usuario para acercarse a la sucursal a pagar en
-// efectivo antes de que la reserva se cancele automáticamente.
-export const HORAS_LIMITE_PAGO_EFECTIVO = 4;
+// efectivo antes de que la reserva se cancele automáticamente (72 horas).
+export const HORAS_LIMITE_PAGO_EFECTIVO = 72;
 
 function calcularFechaLimitePago() {
   return new Date(Date.now() + HORAS_LIMITE_PAGO_EFECTIVO * 60 * 60 * 1000).toISOString();
@@ -37,32 +37,7 @@ const hoyMs = Date.now()
 const fechaInicioAyer = new Date(hoyMs - 86400000).toISOString().slice(0, 10)
 const fechaFinEnTresDias = new Date(hoyMs + 86400000 * 3).toISOString().slice(0, 10)
 
-const INITIAL_RESERVATIONS_SEED = [
-  {
-    referencia: 'RES-2026-9102',
-    vehiculoId: 2,
-    total: 348000,
-    estado: 'ACTIVA',
-    fechaLimitePago: null,
-    horasLimitePago: null,
-    reservaDetalles: {
-      fechaInicio: fechaInicioAyer,
-      fechaFin: fechaFinEnTresDias,
-      horaInicio: '09:00',
-      horaFin: '18:00',
-      sucursalRetiro: 'Bogotá - Calle 100',
-      sucursalDevolucion: 'Bogotá - Calle 100',
-      metodoPago: 'tarjeta',
-    },
-    datosForm: {
-      nombres: 'Carlos',
-      apellidos: 'Mendoza',
-      correo: 'cliente@drivique.com',
-      telefono: '+57 314 478 9702',
-      numDoc: '1020304050',
-    },
-  },
-]
+const INITIAL_RESERVATIONS_SEED = [];
 
 export const reservationService = {
   getReservas: () => {
@@ -72,9 +47,13 @@ export const reservationService = {
       if (!Array.isArray(reservas) || reservas.length === 0) {
         reservas = INITIAL_RESERVATIONS_SEED;
         localStorage.setItem(STORAGE_KEY, JSON.stringify(reservas));
+      } else {
+        // Limpiar reservas residuales y semillas anteriores
+        const legacySeedIds = new Set(['RES-2026-9102', 'RES-1788806368641-R95O5FB', 'RES-1788806368641-R9505FB']);
+        reservas = reservas.filter(r => !legacySeedIds.has(r.referencia) && !legacySeedIds.has(r.id) && !legacySeedIds.has(r.codigo));
       }
       const { actualizadas, cambiaron } = vencerReservasEfectivo(reservas);
-      if (cambiaron) {
+      if (cambiaron || (data && JSON.parse(data).length !== reservas.length)) {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(actualizadas));
       }
       return actualizadas;
@@ -91,16 +70,21 @@ export const reservationService = {
    */
   guardarReserva: (reserva) => {
     const reservas = reservationService.getReservas();
+    const ahoraIso = new Date().toISOString();
 
     const esEfectivo = reserva.reservaDetalles?.metodoPago === 'efectivo';
-    const reservaFinal = esEfectivo
-      ? {
-          ...reserva,
-          estado: 'PENDIENTE_EFECTIVO',
-          fechaLimitePago: calcularFechaLimitePago(),
-          horasLimitePago: HORAS_LIMITE_PAGO_EFECTIVO,
-        }
-      : reserva;
+    const reservaFinal = {
+      ...reserva,
+      fechaCreacion: reserva.fechaCreacion || reserva.fechaReserva || ahoraIso,
+      fechaReserva: reserva.fechaReserva || reserva.fechaCreacion || ahoraIso,
+      ...(esEfectivo
+        ? {
+            estado: 'PENDIENTE_EFECTIVO',
+            fechaLimitePago: calcularFechaLimitePago(),
+            horasLimitePago: HORAS_LIMITE_PAGO_EFECTIVO,
+          }
+        : {})
+    };
 
     reservas.push(reservaFinal);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(reservas));
@@ -108,16 +92,67 @@ export const reservationService = {
   },
 
   obtenerPorReferencia: (referencia) => {
+    if (!referencia) return null;
+    const refStr = String(referencia).trim();
+    const refClean = refStr.includes('_') ? refStr.split('_')[0] : refStr;
+    const refUpper = refClean.toUpperCase();
+    const refNoZeros = refUpper.replace(/0/g, 'O');
     const reservas = reservationService.getReservas();
-    return reservas.find(r => r.referencia === referencia);
+    return reservas.find(r => {
+      const cRef = String(r.referencia || '').trim().toUpperCase();
+      const cCod = String(r.codigo || '').trim().toUpperCase();
+      const cId = String(r.id || '').trim().toUpperCase();
+      return (
+        cRef === refUpper ||
+        cCod === refUpper ||
+        cId === refUpper ||
+        cRef.replace(/0/g, 'O') === refNoZeros ||
+        cCod.replace(/0/g, 'O') === refNoZeros ||
+        cId.replace(/0/g, 'O') === refNoZeros
+      );
+    });
   },
 
   actualizarEstado: (referencia, nuevoEstado, paymentId = null) => {
     const reservas = reservationService.getReservas();
-    const index = reservas.findIndex(r => r.referencia === referencia);
+    const refStr = String(referencia || '').trim();
+    const refClean = refStr.includes('_') ? refStr.split('_')[0] : refStr;
+    const index = reservas.findIndex(r => 
+      r.referencia === refClean || r.codigo === refClean || r.id === refClean ||
+      r.referencia === refStr || r.codigo === refStr || r.id === refStr
+    );
     if (index !== -1) {
       reservas[index].estado = nuevoEstado;
+      if (nuevoEstado === 'CONFIRMADA' || nuevoEstado === 'confirmada') {
+        reservas[index].pagoEstado = 'aprobado';
+        if (!reservas[index].metodoPagoConfirmado) {
+          reservas[index].metodoPagoConfirmado = reservas[index].metodoPago === 'efectivo' ? 'efectivo' : 'wompi';
+        }
+        if (!reservas[index].fechaPagoConfirmado) {
+          reservas[index].fechaPagoConfirmado = new Date().toISOString();
+        }
+      }
       if (paymentId) reservas[index].paymentId = paymentId;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(reservas));
+      return true;
+    }
+    return false;
+  },
+
+  actualizarMedioPago: (referencia, medioPago) => {
+    const reservas = reservationService.getReservas();
+    const refStr = String(referencia || '').trim();
+    const refClean = refStr.includes('_') ? refStr.split('_')[0] : refStr;
+    const index = reservas.findIndex(r => 
+      r.referencia === refClean || r.codigo === refClean || r.id === refClean ||
+      r.referencia === refStr || r.codigo === refStr || r.id === refStr
+    );
+    if (index !== -1) {
+      reservas[index].medioPago = medioPago;
+      reservas[index].metodoPagoConfirmado = medioPago?.toLowerCase().includes('efectivo') && !medioPago?.toLowerCase().includes('wompi') ? 'efectivo' : 'wompi';
+      if (reservas[index].reservaDetalles) {
+        reservas[index].reservaDetalles.medioPago = medioPago;
+      }
       localStorage.setItem(STORAGE_KEY, JSON.stringify(reservas));
       return true;
     }

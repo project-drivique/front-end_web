@@ -98,6 +98,8 @@ export default function AlertModal({
   onCerrar = () => {},
   showCloseButton = false,
   usePortal = true,
+  maxWidth,
+  width,
 }) {
   const landing = useLanding()
   const temaGuardado = typeof sessionStorage !== 'undefined' ? sessionStorage.getItem('rm_tema') : null
@@ -135,6 +137,8 @@ export default function AlertModal({
         onClick={(e) => e.stopPropagation()}
         style={{
           ...ESTILOS.card,
+          ...(width ? { width: typeof width === 'number' ? `${width}px` : width } : {}),
+          maxWidth: maxWidth || (width ? (typeof width === 'number' ? `${width}px` : width) : '280px'),
           background: t.cardBg,
           border: `1px solid ${t.cardBorder}`,
         }}

@@ -24,15 +24,33 @@ export function useDisponibilidadVehiculo(vehiculoId) {
 
   const diasOcupados = useMemo(() => {
     const set = new Set()
+    if (!Array.isArray(reservas)) return set
     reservas.forEach(r => {
-      const dias = eachDayOfInterval({ start: parseISO(r.fechaInicio), end: parseISO(r.fechaFin) })
-      dias.forEach(dia => set.add(format(dia, 'yyyy-MM-dd')))
+      try {
+        const fInicio = r?.reservaDetalles?.fechaInicio || r?.fechaInicio
+        const fFin = r?.reservaDetalles?.fechaFin || r?.fechaFin
+        if (!fInicio || !fFin) return
+        const dStart = parseISO(fInicio)
+        const dEnd = parseISO(fFin)
+        if (isNaN(dStart.getTime()) || isNaN(dEnd.getTime()) || dStart > dEnd) return
+        const dias = eachDayOfInterval({ start: dStart, end: dEnd })
+        dias.forEach(dia => set.add(format(dia, 'yyyy-MM-dd')))
+      } catch (err) {
+        console.warn('Error calculando dias ocupados de reserva', err)
+      }
     })
     return set
   }, [reservas])
 
   const estaOcupado = useCallback(
-    (fecha) => diasOcupados.has(typeof fecha === 'string' ? fecha : format(fecha, 'yyyy-MM-dd')),
+    (fecha) => {
+      try {
+        if (!fecha) return false
+        return diasOcupados.has(typeof fecha === 'string' ? fecha : format(fecha, 'yyyy-MM-dd'))
+      } catch {
+        return false
+      }
+    },
     [diasOcupados]
   )
 
