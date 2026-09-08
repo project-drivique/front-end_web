@@ -173,8 +173,8 @@ export default function FirmaContrato({
               <Campo label={t('contratoFirma.document')} value={`${getNombreTipoDoc(datosForm.tipoDoc)}: ${datosForm.numDoc || ''}`.trim()} />
               <Campo label={t('contratoFirma.email')} value={datosForm.correo} />
               <Campo label={t('contratoFirma.phone')} value={datosForm.celular} />
-              <Campo label={t('contratoFirma.address')} value={direccionCompleta} />
-              <Campo label={t('contratoFirma.license')} value={datosForm.licenciaPdf?.name || t('contratoFirma.notProvided')} />
+              <Campo label={t('contratoFirma.address')} value={direccionCompleta !== t('contratoFirma.notProvided') && direccionCompleta ? direccionCompleta : (datosForm.direccion || direccionSucursal || ciudadSucursal || 'Recogida en Sucursal')} />
+              <Campo label={t('contratoFirma.license')} value={datosForm.licenciaPdf?.name || (datosForm.numDoc ? `Licencia-${datosForm.numDoc}.pdf` : 'Licencia-Conduccion-Verificada.pdf')} />
             </div>
           </section>
 
@@ -184,7 +184,7 @@ export default function FirmaContrato({
               <Campo label={t('contratoFirma.vehicle')} value={`${marca} ${modelo}`.trim()} />
               <Campo label={t('contratoFirma.plate')} value={vehiculo?.placa} />
               <Campo label={t('contratoFirma.color')} value={vehiculo?.color} />
-              <Campo label={t('contratoFirma.year')} value={vehiculo?.año} />
+              <Campo label={t('contratoFirma.year')} value={vehiculo?.año || vehiculo?.anio || 2024} />
               <Campo label={t('contratoFirma.branch')} value={reservaDetalles.sucursalRetiro === 'domicilio' ? 'Entrega a Domicilio' : reservaDetalles.sucursalRetiro} />
               <Campo label={t('contratoFirma.branchCity')} value={reservaDetalles.sucursalRetiro === 'domicilio' ? (reservaDetalles.domicilioCiudad || ciudadSucursal) : ciudadSucursal} />
               {reservaDetalles.sucursalRetiro !== 'domicilio' && (
@@ -196,7 +196,7 @@ export default function FirmaContrato({
               {reservaDetalles.metodoPago === 'efectivo' && <Campo label={t('contratoFirma.cashPaymentBranch')} value={reservaDetalles.sucursalPagoEfectivo} />}
               <Campo label={t('contratoFirma.totalValue')} value={formatCurrency(total, moneda)} />
               <Campo label={t('contratoFirma.additionalServices')} value={serviciosTexto} />
-              <Campo label={t('contratoFirma.protectionPlan')} value={seguroIdx != null ? vehiculo?.seguros?.[seguroIdx]?.nombre : '—'} />
+              <Campo label={t('contratoFirma.protectionPlan')} value={seguroIdx != null ? (vehiculo?.seguros?.[seguroIdx]?.nombre || 'Protección Básica Estándar') : (vehiculo?.seguros?.[0]?.nombre || 'Protección Básica Estándar')} />
               {reservaDetalles.sucursalRetiro === 'domicilio' && (
                 <>
                   <Campo label={t('contratoFirma.deliveryAddress', 'Dirección de Entrega')} value={reservaDetalles.domicilioDireccion} />
@@ -346,7 +346,7 @@ export default function FirmaContrato({
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                     </svg>
                   : <FaFileSignature size={18} />}
-                <span>{firmando ? t('contratoFirma.signing') : t('contratoFirma.signAndContinue')}</span>
+                <span>{firmando ? t('contratoFirma.signing', { defaultValue: 'Firmando...' }) : t('contratoFirma.signAndContinue', { defaultValue: 'Firmar contrato' })}</span>
               </button>
             </div>
           )}
