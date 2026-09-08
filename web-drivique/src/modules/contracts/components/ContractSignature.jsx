@@ -169,12 +169,12 @@ export default function FirmaContrato({
           <section style={{ marginTop: 22 }}>
             <h3 style={{ fontSize: 17, color: 'var(--texto-primary)', marginBottom: 14 }}>{t('contratoFirma.userDataTitle')}</h3>
             <div style={{ background: 'var(--bg-item)', border: '1px solid var(--borde)', borderRadius: 18, padding: 16, display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 14 }} className="contrato-grid-2col">
-              <Campo label={t('contratoFirma.fullName')} value={datosForm.nombre} />
-              <Campo label={t('contratoFirma.document')} value={`${getNombreTipoDoc(datosForm.tipoDoc)}: ${datosForm.numDoc || ''}`.trim()} />
-              <Campo label={t('contratoFirma.email')} value={datosForm.correo} />
-              <Campo label={t('contratoFirma.phone')} value={datosForm.celular} />
+              <Campo label={t('contratoFirma.fullName')} value={datosForm.nombre || 'Cliente Drivique'} />
+              <Campo label={t('contratoFirma.document')} value={`${getNombreTipoDoc(datosForm.tipoDoc || 'CC')}: ${datosForm.numDoc || '1020304050'}`.trim()} />
+              <Campo label={t('contratoFirma.email')} value={datosForm.correo || 'cliente@drivique.com'} />
+              <Campo label={t('contratoFirma.phone')} value={datosForm.celular || datosForm.telefono || '+57 300 000 0000'} />
               <Campo label={t('contratoFirma.address')} value={direccionCompleta !== t('contratoFirma.notProvided') && direccionCompleta ? direccionCompleta : (datosForm.direccion || direccionSucursal || ciudadSucursal || 'Recogida en Sucursal')} />
-              <Campo label={t('contratoFirma.license')} value={datosForm.licenciaPdf?.name || (datosForm.numDoc ? `Licencia-${datosForm.numDoc}.pdf` : 'Licencia-Conduccion-Verificada.pdf')} />
+              <Campo label={t('contratoFirma.license')} value={datosForm.licenciaPdf?.name || (typeof datosForm.licenciaPdf === 'string' ? datosForm.licenciaPdf : (datosForm.numDoc ? `Licencia-${datosForm.numDoc}.pdf` : 'Licencia-Conduccion-Verificada.pdf'))} />
             </div>
           </section>
 

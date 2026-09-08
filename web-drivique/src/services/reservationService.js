@@ -39,30 +39,6 @@ const fechaFinEnTresDias = new Date(hoyMs + 86400000 * 3).toISOString().slice(0,
 
 const INITIAL_RESERVATIONS_SEED = [
   {
-    referencia: 'RES-2026-9102',
-    vehiculoId: 2,
-    total: 348000,
-    estado: 'ACTIVA',
-    fechaLimitePago: null,
-    horasLimitePago: null,
-    reservaDetalles: {
-      fechaInicio: fechaInicioAyer,
-      fechaFin: fechaFinEnTresDias,
-      horaInicio: '09:00',
-      horaFin: '18:00',
-      sucursalRetiro: 'Bogotá - Calle 100',
-      sucursalDevolucion: 'Bogotá - Calle 100',
-      metodoPago: 'tarjeta',
-    },
-    datosForm: {
-      nombres: 'Carlos',
-      apellidos: 'Mendoza',
-      correo: 'cliente@drivique.com',
-      telefono: '+57 314 478 9702',
-      numDoc: '1020304050',
-    },
-  },
-  {
     referencia: 'RES-1788806368641-R95O5FB',
     codigo: 'RES-1788806368641-R95O5FB',
     id: 'RES-1788806368641-R95O5FB',
@@ -111,25 +87,11 @@ export const reservationService = {
         reservas = INITIAL_RESERVATIONS_SEED;
         localStorage.setItem(STORAGE_KEY, JSON.stringify(reservas));
       } else {
-        // Garantizar que las semillas de sucursales existan en el almacenamiento
-        let agregados = false;
-        INITIAL_RESERVATIONS_SEED.forEach((seed) => {
-          const existe = reservas.some(
-            (r) =>
-              String(r.referencia || r.codigo || r.id || '').toUpperCase() === String(seed.referencia).toUpperCase() ||
-              String(r.referencia || r.codigo || r.id || '').replace(/0/g, 'O').toUpperCase() === String(seed.referencia).replace(/0/g, 'O').toUpperCase()
-          );
-          if (!existe) {
-            reservas.push(seed);
-            agregados = true;
-          }
-        });
-        if (agregados) {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(reservas));
-        }
+        // Limpiar reservas residuales eliminadas (RES-2026-9102)
+        reservas = reservas.filter(r => r.referencia !== 'RES-2026-9102' && r.id !== 'RES-2026-9102');
       }
       const { actualizadas, cambiaron } = vencerReservasEfectivo(reservas);
-      if (cambiaron) {
+      if (cambiaron || (data && JSON.parse(data).length !== reservas.length)) {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(actualizadas));
       }
       return actualizadas;

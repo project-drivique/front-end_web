@@ -896,15 +896,6 @@ function TarjetaReserva({ reserva, moneda, onValorar, onReportar, onVerDetalle }
     {reserva.estado === 'finalizada' && <div className="valoracion-resumen">{reserva.valoracion ? <div><Estrellas value={reserva.valoracion.estrellas} disabled /><p>“{reserva.valoracion.comentario || t('reservas.noComment')}”</p></div> : <div><strong>{t('reservas.howWasTrip')}</strong><span>{t('reservas.feedbackHelps')}</span></div>}
       <button className="btn-link" onClick={() => onValorar(reserva)}>{reserva.valoracion ? t('reservas.editRating') : t('reservas.rateVehicle')}</button></div>}
     <div className="reserva-actions">
-      {requiereFirma && (
-        <button
-          type="button"
-          className="btn-firmar-directo"
-          onClick={() => navigate(`/contrato/${encodeURIComponent(refBusqueda)}`, { state: { reserva } })}
-        >
-          <FaFileSignature /> {t('reservas.signContractNow', { defaultValue: 'Firmar contrato de alquiler' })}
-        </button>
-      )}
       {estaEnCurso && (
         <button className="btn-reporte" onClick={() => onReportar(reserva)}>
           <FaFlag /> {t('reservas.makeReport')}
