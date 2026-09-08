@@ -28,76 +28,18 @@ html.dark .detalle-modal-head h2,html.dark .detalle-resumen-fila strong,html.dar
   background: var(--bg-tarjeta, #ffffff);
   border: 1.5px solid var(--borde, #e2e8f0);
   border-radius: 24px;
-  padding: 22px 24px;
+  padding: 16px;
   margin-bottom: 20px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.03);
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  gap: 16px;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .contrato-card-padre:hover {
   border-color: var(--brand-border-light, #bfdbfe);
-  box-shadow: 0 14px 34px rgba(var(--brand-primary-rgb), 0.07);
-}
-
-.contrato-padre-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--borde, #edf2f7);
-}
-
-.contrato-padre-meta {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  text-align: left;
-}
-
-.contrato-padre-eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 11px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--brand-primary, #2563eb);
-}
-
-.contrato-padre-titulo {
-  margin: 0;
-  font-size: 16px;
-  font-weight: 800;
-  color: var(--texto-primary, #0f172a);
-}
-
-.contrato-padre-badge-status {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  border-radius: 999px;
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.02em;
-}
-
-.contrato-padre-badge-status.protegido {
-  background: var(--brand-soft-light, #eff6ff);
-  color: var(--brand-primary, #2563eb);
-  border: 1px solid var(--brand-border-light, #bfdbfe);
-}
-
-.contrato-padre-badge-status.firmado {
-  background: #ecfdf5;
-  color: #047857;
-  border: 1px solid #a7f3d0;
+  box-shadow: 0 12px 28px rgba(var(--brand-primary-rgb), 0.06);
 }
 
 /* SUBTARJETA INTERIOR (La que lleva el contenido) */
@@ -272,14 +214,6 @@ html.dark .contrato-subtarjeta-btn.bloqueado:disabled {
 html.dark .contrato-card-padre {
   background: #172033;
   border-color: #334155;
-}
-
-html.dark .contrato-padre-header {
-  border-bottom-color: #2a3950;
-}
-
-html.dark .contrato-padre-titulo {
-  color: #f8fafc;
 }
 
 html.dark .contrato-subtarjeta {

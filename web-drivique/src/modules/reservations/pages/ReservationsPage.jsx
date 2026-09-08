@@ -187,24 +187,6 @@ function ContratoVerCard({ reserva, contratoFirmado, reservaParaContrato, vehicu
   // Vista bloqueada: siempre presente (bloqueada si no firmado, desbloqueable si firmado)
   return (
     <div className="contrato-card-padre">
-      {/* Encabezado superior de la Tarjeta Padre */}
-      <div className="contrato-padre-header">
-        <div className="contrato-padre-meta">
-          <span className="contrato-padre-eyebrow">
-            <FaFileContract /> {t('reservas.legalDocumentation', { defaultValue: 'DOCUMENTACIÓN LEGAL' })}
-          </span>
-          <h4 className="contrato-padre-titulo">
-            {t('reservas.digitalRentalContract', { defaultValue: 'Contrato Digital de Alquiler' })}
-          </h4>
-        </div>
-        <span className={`contrato-padre-badge-status ${tieneContratoFirmado ? 'firmado' : 'protegido'}`}>
-          <FaShieldAlt />
-          {tieneContratoFirmado
-            ? t('reservas.digitalSignatureCompleted', { defaultValue: 'Firma Digital Completada' })
-            : t('reservas.contractProtected', { defaultValue: 'Contrato Protegido' })}
-        </span>
-      </div>
-
       {/* SUBTARJETA INTERIOR (La que lleva el contenido) */}
       <div className="contrato-subtarjeta">
         <div className="contrato-subtarjeta-icon-wrap">
