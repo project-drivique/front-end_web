@@ -57,6 +57,8 @@ export const showAlert = (options) => {
         onCerrar={handleClose}
         showCloseButton={true}
         usePortal={false}
+        width={options.width}
+        maxWidth={options.maxWidth || (options.width ? (typeof options.width === 'number' ? `${options.width}px` : options.width) : undefined)}
       />
     )
   })

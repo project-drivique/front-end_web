@@ -223,7 +223,7 @@ export default function IncidentManagementPage() {
   ])
 
   const exportData = {
-    title: `Reportes de Incidencias de Vehículos — ${brand.name}`,
+    title: `Reportes de Incidencias de Vehículos — ${brand?.name || 'Drivique'}`,
     headers: headersExport,
     rows: rowsExport,
     items: filtrados,

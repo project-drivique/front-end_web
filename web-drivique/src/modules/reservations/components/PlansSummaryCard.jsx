@@ -27,8 +27,12 @@ export default function PlansSummaryCard({ vehiculo, reserva, seguroIdx, servici
   // Kilometraje
   const kmLimit = vehiculo.tarifas?.kmLimitado || { precio: 0 };
   const kmIlimit = vehiculo.tarifas?.kmIlimitado || { precio: 0 };
-  const precioKm = reserva.tipoKm === 'ilimitado' ? kmIlimit.precio : kmLimit.precio;
-  const kmNombre = reserva.tipoKm === 'ilimitado' ? t('vehiculo.unlimited', 'Ilimitado') : t('vehiculo.limited', 'Limitado');
+  const precioKm = reserva.tipoKm === 'ilimitado'
+    ? kmIlimit.precio
+    : (reserva.tipoKm === 'limitado' ? kmLimit.precio : (vehiculo.precio || kmLimit.precio || 0));
+  const kmNombre = reserva.tipoKm === 'ilimitado'
+    ? t('vehiculo.unlimited', 'Ilimitado')
+    : (reserva.tipoKm === 'limitado' ? t('vehiculo.limited', 'Limitado') : t('vehiculo.notSelected', 'No seleccionado'));
 
   // Servicios
   const serviciosElegidos = (vehiculo.servicios || []).filter(s => serviciosSeleccionados.includes(s.nombre));

@@ -43,11 +43,29 @@ const authStorage = {
   },
 }
 
+// Lectura síncrona inmediata para evitar parpadeos (FOUC) en el primer render
+const getInitialAuthState = () => {
+  try {
+    const token = localStorage.getItem(AUTH_KEYS.token)
+    const usuarioRaw = localStorage.getItem(AUTH_KEYS.usuario)
+    const usuario = usuarioRaw ? JSON.parse(usuarioRaw) : null
+    const esValido = token && token !== 'null' && token !== 'undefined'
+    return {
+      token: esValido ? token : null,
+      usuario: esValido ? usuario : null,
+    }
+  } catch {
+    return { token: null, usuario: null }
+  }
+}
+
+const initialAuth = getInitialAuthState()
+
 export const useAuthStore = create(
   persist(
     (set) => ({
-      token: null,
-      usuario: null,
+      token: initialAuth.token,
+      usuario: initialAuth.usuario,
       sesion2FA: null,
       requiere2FA: false,
       verificacionCorreo: null,

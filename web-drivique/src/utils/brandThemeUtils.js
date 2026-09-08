@@ -81,3 +81,38 @@ export function createBrandTokens(colors) {
     softDark: mixHex(primary, '#0F172A', 0.78), softStrongDark: mixHex(primary, '#0F172A', 0.62),
   }
 }
+
+export function applyBrand(config) {
+  if (typeof document === 'undefined') return
+  const root = document.documentElement
+  const tokens = createBrandTokens(config?.colors)
+  const properties = {
+    '--brand-primary': tokens.primary,
+    '--brand-secondary': tokens.secondary,
+    '--brand-accent': tokens.accent,
+    '--brand-primary-rgb': tokens.primaryRgb,
+    '--brand-secondary-rgb': tokens.secondaryRgb,
+    '--brand-accent-rgb': tokens.accentRgb,
+    '--brand-on-primary': tokens.onPrimary,
+    '--brand-on-secondary': tokens.onSecondary,
+    '--brand-on-accent': tokens.onAccent,
+    '--brand-primary-hover': tokens.primaryHover,
+    '--brand-primary-active': tokens.primaryActive,
+    '--brand-secondary-hover': tokens.secondaryHover,
+    '--brand-text-light': tokens.textLight,
+    '--brand-text-dark': tokens.textDark,
+    '--brand-border-light': tokens.borderLight,
+    '--brand-border-dark': tokens.borderDark,
+    '--brand-soft-light': tokens.softLight,
+    '--brand-soft-strong-light': tokens.softStrongLight,
+    '--brand-soft-dark': tokens.softDark,
+    '--brand-soft-strong-dark': tokens.softStrongDark,
+    '--brand-shadow': `0 8px 24px rgba(${tokens.primaryRgb}, 0.22)`,
+  }
+  Object.entries(properties).forEach(([key, value]) => root.style.setProperty(key, value))
+  if (config?.name) {
+    root.dataset.brand = config.name
+    document.title = `${config.name} — Alquiler de vehículos en Colombia`
+  }
+}
+

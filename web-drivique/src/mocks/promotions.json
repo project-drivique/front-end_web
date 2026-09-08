@@ -14,6 +14,7 @@
     "vehiculoImagen": "",
     "audiencia": "todos",
     "condiciones": "Válido para cualquier categoría de vehículo en todas las sucursales de Colombia.",
+    "destacada": true,
     "activa": true,
     "creadaEn": "2026-01-01T00:00:00.000Z",
     "actualizadaEn": "2026-01-01T00:00:00.000Z"
@@ -33,6 +34,7 @@
     "vehiculoImagen": "",
     "audiencia": "todos",
     "condiciones": "Aplica únicamente para vehículos de la categoría SUV con un monto mínimo de reserva de $150.000 COP.",
+    "destacada": true,
     "activa": true,
     "creadaEn": "2026-01-01T00:00:00.000Z",
     "actualizadaEn": "2026-01-01T00:00:00.000Z"

@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { FaCar, FaEdit, FaFileExcel, FaFilePdf, FaGift, FaPlus, FaPrint, FaSearch, FaToggleOff, FaToggleOn, FaTrash } from 'react-icons/fa'
+import { FaCar, FaEdit, FaFileAlt, FaFileExcel, FaFilePdf, FaGift, FaInfoCircle, FaPlus, FaPrint, FaRegStar, FaSearch, FaStar, FaToggleOff, FaToggleOn, FaTrash } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import { useAuthStore } from '../../../store/authStore'
 import { promotionManagementService } from '../../../services/promotionManagementService'
@@ -26,6 +26,7 @@ const EMPTY_FORM = {
   audiencia: 'todos',
   condiciones: '',
   activa: true,
+  destacada: false,
 }
 
 export default function PromotionManagementPage() {
@@ -36,7 +37,9 @@ export default function PromotionManagementPage() {
   const [search, setSearch] = useState('')
   const [status, setStatus] = useState('all')
   const [type, setType] = useState('all')
+  const [featuredFilter, setFeaturedFilter] = useState('all')
   const [modal, setModal] = useState(null)
+  const [conditionsModal, setConditionsModal] = useState(null)
   const [form, setForm] = useState(EMPTY_FORM)
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
@@ -47,9 +50,10 @@ export default function PromotionManagementPage() {
       (item) =>
         (status === 'all' || (status === 'active') === item.activa) &&
         (type === 'all' || item.tipoDescuento === type) &&
+        (featuredFilter === 'all' || (featuredFilter === 'featured' ? item.destacada : !item.destacada)) &&
         (!term || `${item.codigo} ${item.nombre} ${item.condiciones} ${item.vehiculoNombre || ''} ${item.categoriaVehiculo || ''}`.toLowerCase().includes(term))
     )
-  }, [promotions, search, status, type])
+  }, [promotions, search, status, type, featuredFilter])
 
   const labelDiscount = (item) =>
     item.tipoDescuento === 'porcentaje'
@@ -65,19 +69,21 @@ export default function PromotionManagementPage() {
   const headers = [
     t('admin.promotions.fields.code'),
     t('admin.promotions.fields.name'),
+    'Condiciones',
     'Alcance / Vehículo',
     t('admin.promotions.fields.discount'),
     t('admin.promotions.fields.validity'),
-    t('admin.promotions.fields.audience'),
+    'Destacada',
     t('admin.promotions.fields.status'),
   ]
   const rows = filtered.map((item) => [
     item.codigo,
     item.nombre,
+    item.condiciones || '—',
     labelTarget(item),
     labelDiscount(item),
     `${item.fechaInicio} — ${item.fechaFin}`,
-    t(`admin.promotions.audiences.${item.audiencia}`),
+    item.destacada ? 'Sí (Destacada)' : 'No',
     t(item.activa ? 'admin.promotions.active' : 'admin.promotions.inactive'),
   ])
   const exportData = { title: t('admin.promotions.exportTitle'), headers, rows, filename: 'promociones-drivique' }
@@ -95,6 +101,7 @@ export default function PromotionManagementPage() {
   const openEdit = (promotion) => {
     setForm({
       ...promotion,
+      destacada: Boolean(promotion.destacada),
       vehiculoId: promotion.vehiculoId || '',
       vehiculoNombre: promotion.vehiculoNombre || '',
       categoriaVehiculo: promotion.categoriaVehiculo || 'Todos',
@@ -121,6 +128,12 @@ export default function PromotionManagementPage() {
     promotionManagementService.toggle(promotion.id, user)
     refresh()
     setNotice(t(promotion.activa ? 'admin.promotions.messages.deactivated' : 'admin.promotions.messages.activated'))
+  }
+
+  const toggleFeatured = (promotion) => {
+    promotionManagementService.toggleFeatured(promotion.id, user)
+    refresh()
+    setNotice(promotion.destacada ? 'Promoción quitada de destacadas' : '⭐ Promoción marcada como destacada')
   }
 
   const remove = () => {
@@ -189,6 +202,15 @@ export default function PromotionManagementPage() {
                 <option value="porcentaje">{t('admin.promotions.types.percentage')}</option>
                 <option value="fijo">{t('admin.promotions.types.fixed')}</option>
               </select>
+              <select
+                value={featuredFilter}
+                onChange={(event) => setFeaturedFilter(event.target.value)}
+                aria-label="Filtrar por destacada"
+              >
+                <option value="all">Todas las promociones</option>
+                <option value="featured">⭐ Solo Destacadas</option>
+                <option value="not_featured">No destacadas</option>
+              </select>
               <div className="cities-export">
                 <button type="button" onClick={() => exportExcel(exportData)}>
                   <FaFileExcel /> Excel
@@ -223,21 +245,56 @@ export default function PromotionManagementPage() {
                   </thead>
                   <tbody>
                     {filtered.map((item) => (
-                      <tr key={item.id}>
+                      <tr key={item.id} style={item.destacada ? { background: 'rgba(245, 158, 11, 0.04)' } : undefined}>
                         <td>
                           <div className="cities-name">
-                            <span>
+                            <span style={item.destacada ? { background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', color: '#ffffff' } : undefined}>
                               <FaGift />
                             </span>
                             <div>
-                              <strong>{item.codigo}</strong>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                                <strong>{item.codigo}</strong>
+                                {item.destacada && (
+                                  <span style={{ fontSize: 10, background: '#fef3c7', color: '#b45309', border: '1px solid #fde68a', borderRadius: 6, padding: '1px 5px', fontWeight: 800 }}>
+                                    ⭐ DESTACADA
+                                  </span>
+                                )}
+                              </div>
                               <small>{item.id}</small>
                             </div>
                           </div>
                         </td>
                         <td>
-                          <strong>{item.nombre}</strong>
-                          <small className="promotion-condition">{item.condiciones}</small>
+                          <strong style={{ display: 'block', fontSize: 13.5 }}>{item.nombre}</strong>
+                          <small style={{ color: 'var(--city-muted, #64748b)', fontSize: 11.5 }}>
+                            Audiencia: {t(`admin.promotions.audiences.${item.audiencia}`)}
+                          </small>
+                        </td>
+                        <td style={{ maxWidth: 220 }}>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                            <span style={{ fontSize: 12, color: 'var(--city-text)', lineHeight: 1.35, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                              {item.condiciones || 'Sin condiciones específicas'}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => setConditionsModal(item)}
+                              style={{
+                                background: 'none',
+                                border: 'none',
+                                padding: 0,
+                                color: 'var(--brand-primary)',
+                                fontSize: 11,
+                                fontWeight: 700,
+                                cursor: 'pointer',
+                                textAlign: 'left',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: 4,
+                              }}
+                            >
+                              <FaInfoCircle size={11} /> Ver condiciones
+                            </button>
+                          </div>
                         </td>
                         <td>
                           {item.vehiculoId || item.vehiculoNombre ? (
@@ -276,7 +333,30 @@ export default function PromotionManagementPage() {
                           <br />
                           <small>{item.fechaFin}</small>
                         </td>
-                        <td>{t(`admin.promotions.audiences.${item.audiencia}`)}</td>
+                        <td>
+                          <button
+                            type="button"
+                            onClick={() => toggleFeatured(item)}
+                            title={item.destacada ? 'Quitar de destacadas' : 'Marcar como destacada'}
+                            style={{
+                              background: item.destacada ? '#fef3c7' : 'rgba(0,0,0,0.04)',
+                              border: `1px solid ${item.destacada ? '#fde68a' : '#cbd5e1'}`,
+                              borderRadius: 8,
+                              padding: '6px 10px',
+                              cursor: 'pointer',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: 6,
+                              fontSize: 12,
+                              fontWeight: 700,
+                              color: item.destacada ? '#b45309' : '#64748b',
+                              transition: 'all 0.2s',
+                            }}
+                          >
+                            {item.destacada ? <FaStar color="#f59e0b" size={14} /> : <FaRegStar color="#94a3b8" size={14} />}
+                            <span>{item.destacada ? 'Destacada' : 'Normal'}</span>
+                          </button>
+                        </td>
                         <td>
                           <span className={`cities-status ${item.activa ? 'is-yes' : ''}`}>
                             {t(item.activa ? 'admin.promotions.active' : 'admin.promotions.inactive')}
@@ -313,6 +393,83 @@ export default function PromotionManagementPage() {
           </section>
         </div>
       </main>
+
+      {/* Modal de Condiciones Detalladas */}
+      {conditionsModal && (
+        <div
+          className="cities-modal-backdrop"
+          onMouseDown={(event) => event.target === event.currentTarget && setConditionsModal(null)}
+        >
+          <section className="cities-modal promotion-modal" style={{ maxWidth: 480 }} role="dialog" aria-modal="true">
+            <div className="cities-modal__head">
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(var(--brand-primary-rgb),0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--brand-primary)' }}>
+                  <FaFileAlt size={18} />
+                </div>
+                <div>
+                  <p className="cities-eyebrow">Detalles y Términos</p>
+                  <h2 style={{ fontSize: 18 }}>Condiciones del Cupón</h2>
+                </div>
+              </div>
+              <button type="button" onClick={() => setConditionsModal(null)}>
+                ×
+              </button>
+            </div>
+            <div style={{ padding: '16px 24px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <div style={{ background: 'var(--city-soft, rgba(0,0,0,0.03))', borderRadius: 12, padding: '12px 16px', border: '1px solid var(--city-border, #e2e8f0)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+                  <strong style={{ fontSize: 15, color: 'var(--city-text)' }}>{conditionsModal.codigo}</strong>
+                  <span className="promotion-discount">{labelDiscount(conditionsModal)}</span>
+                </div>
+                <p style={{ margin: 0, fontSize: 13, color: 'var(--city-muted, #64748b)' }}>{conditionsModal.nombre}</p>
+              </div>
+
+              <div>
+                <strong style={{ fontSize: 13, display: 'block', marginBottom: 6, color: 'var(--city-text)' }}>
+                  Texto de condiciones configurado:
+                </strong>
+                <div style={{ background: '#fff', border: '1px solid var(--city-border, #cbd5e1)', borderRadius: 10, padding: 14, fontSize: 13, color: '#334155', lineHeight: 1.6, whiteSpace: 'pre-line' }}>
+                  {conditionsModal.condiciones || 'No se han especificado condiciones especiales para esta promoción.'}
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, fontSize: 12 }}>
+                <div style={{ padding: 10, borderRadius: 8, background: 'var(--city-soft, rgba(0,0,0,0.02))', border: '1px solid var(--city-border, #e2e8f0)' }}>
+                  <span style={{ color: 'var(--city-muted, #64748b)', display: 'block' }}>Vigencia:</span>
+                  <strong>{conditionsModal.fechaInicio} al {conditionsModal.fechaFin}</strong>
+                </div>
+                <div style={{ padding: 10, borderRadius: 8, background: 'var(--city-soft, rgba(0,0,0,0.02))', border: '1px solid var(--city-border, #e2e8f0)' }}>
+                  <span style={{ color: 'var(--city-muted, #64748b)', display: 'block' }}>Monto Mínimo:</span>
+                  <strong>{conditionsModal.reservaMinima > 0 ? `$${Number(conditionsModal.reservaMinima).toLocaleString('es-CO')}` : 'Sin mínimo'}</strong>
+                </div>
+                <div style={{ padding: 10, borderRadius: 8, background: 'var(--city-soft, rgba(0,0,0,0.02))', border: '1px solid var(--city-border, #e2e8f0)' }}>
+                  <span style={{ color: 'var(--city-muted, #64748b)', display: 'block' }}>Alcance:</span>
+                  <strong>{labelTarget(conditionsModal)}</strong>
+                </div>
+                <div style={{ padding: 10, borderRadius: 8, background: 'var(--city-soft, rgba(0,0,0,0.02))', border: '1px solid var(--city-border, #e2e8f0)' }}>
+                  <span style={{ color: 'var(--city-muted, #64748b)', display: 'block' }}>Estado:</span>
+                  <strong>{conditionsModal.activa ? 'Activa' : 'Inactiva'} {conditionsModal.destacada ? '• ⭐ Destacada' : ''}</strong>
+                </div>
+              </div>
+            </div>
+            <div className="cities-modal__actions" style={{ padding: '12px 24px 20px' }}>
+              <button
+                type="button"
+                onClick={() => {
+                  const target = conditionsModal
+                  setConditionsModal(null)
+                  openEdit(target)
+                }}
+              >
+                <FaEdit /> Editar Condiciones
+              </button>
+              <button className="cities-primary" type="button" onClick={() => setConditionsModal(null)}>
+                Cerrar
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
 
       {modal && (
         <div
@@ -464,6 +621,27 @@ export default function PromotionManagementPage() {
                         <option value="frecuentes">{t('admin.promotions.audiences.frecuentes')}</option>
                       </select>
                     </label>
+                    
+                    {/* Switch / Checkbox Destacada */}
+                    <div style={{ gridColumn: 'span 2', padding: '12px 16px', background: form.destacada ? '#fef3c7' : 'rgba(0,0,0,0.02)', border: `1.5px solid ${form.destacada ? '#fde68a' : 'var(--city-border, #cbd5e1)'}`, borderRadius: 12, transition: 'all 0.2s' }}>
+                      <label style={{ display: 'flex', alignItems: 'flex-start', gap: 12, cursor: 'pointer', margin: 0 }}>
+                        <input
+                          type="checkbox"
+                          checked={form.destacada}
+                          onChange={(e) => setForm({ ...form, destacada: e.target.checked })}
+                          style={{ marginTop: 3, width: 18, height: 18, accentColor: '#f59e0b' }}
+                        />
+                        <div>
+                          <strong style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13.5, color: form.destacada ? '#92400e' : 'var(--city-text)' }}>
+                            <FaStar color={form.destacada ? '#f59e0b' : '#94a3b8'} /> Marcar como Promoción Destacada
+                          </strong>
+                          <span style={{ display: 'block', fontSize: 12, color: form.destacada ? '#b45309' : 'var(--city-muted, #64748b)', marginTop: 2 }}>
+                            Esta promoción aparecerá en la parte superior con distintivo destacado en la selección de cupones y catálogo.
+                          </span>
+                        </div>
+                      </label>
+                    </div>
+
                     <label className="promotion-active" style={{ gridColumn: 'span 2' }}>
                       <input
                         type="checkbox"
@@ -479,6 +657,7 @@ export default function PromotionManagementPage() {
                       value={form.condiciones}
                       onChange={(e) => setForm({ ...form, condiciones: e.target.value })}
                       placeholder="Términos, condiciones y detalles del cupón..."
+                      rows={4}
                     />
                   </label>
                   {error && <p className="cities-error">{error}</p>}

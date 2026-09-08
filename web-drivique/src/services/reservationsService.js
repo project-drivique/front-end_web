@@ -20,16 +20,23 @@ async function getApi() {
  * reservas de la app.
  */
 function mapearReservaLocal(r) {
+  const totalVal = r.total || r.totalCOP || r.reservaDetalles?.total || 0
   return {
-    id: r.referencia,
+    ...r,
+    id: r.referencia || r.id,
+    referencia: r.referencia || r.id,
     vehiculoId: r.vehiculoId,
-    fechaInicio: r.reservaDetalles?.fechaInicio,
-    fechaFin: r.reservaDetalles?.fechaFin,
+    vehiculoNombre: r.vehiculoNombre,
+    fechaInicio: r.reservaDetalles?.fechaInicio || r.fechaInicio,
+    fechaFin: r.reservaDetalles?.fechaFin || r.fechaFin,
     estado: r.estado,
-    total: r.total,
+    total: totalVal,
+    totalCOP: totalVal,
     fechaLimitePago: r.fechaLimitePago || null,
     horasLimitePago: r.horasLimitePago || null,
-    metodoPago: r.reservaDetalles?.metodoPago || null,
+    metodoPago: r.reservaDetalles?.metodoPago || r.metodoPago || null,
+    datosForm: r.datosForm || null,
+    reservaDetalles: r.reservaDetalles || null,
     esLocal: true,
   }
 }
