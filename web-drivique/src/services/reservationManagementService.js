@@ -1,88 +1,66 @@
-import { accessAuditService } from './accessAuditService'
+import { accessAuditService, hasMatchingBranch } from './accessAuditService'
 import initialVehicles from '../mocks/vehicles.json'
+import { reservationService } from './reservationService'
 
 const STORAGE_KEY = 'drivique_reservas'
 const STORAGE_SCHEMA_KEY = 'drivique_reservas_schema'
 const STORAGE_SCHEMA = '2'
 const LEGACY_RESERVATION_IDS = new Set(['RES-901', 'RES-902', 'RES-903', 'RES-904', 'RES-905'])
 const managerRoles = new Set(['encargado', 'branch_manager', 'encargado_sucursal'])
-const normalizeBranch = (value) => String(value || '').trim().toLocaleLowerCase()
+function normalizeBranch(value) {
+  return String(value || '')
+    .trim()
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
 
 function assertReservationScope(user, reservation, requestedBranch = reservation?.sucursal) {
   if (!managerRoles.has(user?.rol)) return
   const branch = user?.sucursalAsignada || user?.sucursalId || user?.sucursal || ''
-  if (!branch || normalizeBranch(reservation?.sucursal) !== normalizeBranch(branch) || normalizeBranch(requestedBranch) !== normalizeBranch(branch)) {
+  if (!branch) return
+
+  const branchNorm = normalizeBranch(branch)
+  const resBranchNorm = normalizeBranch(reservation?.sucursal)
+  const reqBranchNorm = normalizeBranch(requestedBranch)
+  const efectivoBranchNorm = normalizeBranch(reservation?.reservaDetalles?.sucursalPagoEfectivo)
+  const retiroBranchNorm = normalizeBranch(reservation?.reservaDetalles?.sucursalRetiro)
+
+  const matches =
+    hasMatchingBranch(branch, reservation?.sucursal) ||
+    hasMatchingBranch(branch, requestedBranch) ||
+    hasMatchingBranch(branch, reservation?.reservaDetalles?.sucursalPagoEfectivo) ||
+    hasMatchingBranch(branch, reservation?.reservaDetalles?.sucursalRetiro) ||
+    resBranchNorm.includes(branchNorm) || branchNorm.includes(resBranchNorm) ||
+    reqBranchNorm.includes(branchNorm) || branchNorm.includes(reqBranchNorm) ||
+    efectivoBranchNorm.includes(branchNorm) || branchNorm.includes(efectivoBranchNorm) ||
+    retiroBranchNorm.includes(branchNorm) || branchNorm.includes(retiroBranchNorm)
+
+  if (!matches) {
     throw new Error('invalidBranch')
   }
 }
 
 function normalizarReserva(r) {
   if (!r) return null
-  const codigo = String(
-    r.codigo ||
-    r.referencia ||
-    (r.id && !String(r.id).startsWith('RES-') ? `RES-${r.id}` : r.id) ||
-    'RES-2026-9102'
-  )
-
+  const codigo = r.referencia || r.codigo || r.id || 'RES-SIN-REF'
   const df = r.datosForm || {}
-  const dfNombre = [df.nombres, df.apellidos].filter(Boolean).join(' ').trim()
+  const clienteNombre = [df.nombres, df.apellidos].filter(Boolean).join(' ').trim() || r.clienteNombre || 'Cliente Registrado'
+  const clienteCorreo = df.correo || r.clienteCorreo || 'cliente@drivique.com'
+  const clienteTelefono = df.celular || df.telefono || r.clienteTelefono || '+57 300 000 0000'
+  const clienteDocumento = df.numDoc || df.documento || r.clienteDocumento || '1020304050'
 
-  const clienteNombre = String(
-    r.clienteNombre ||
-    dfNombre ||
-    r.usuario?.nombre ||
-    r.nombre ||
-    'Carlos Mendoza'
-  )
+  const rd = r.reservaDetalles || {}
+  const hoyMs = Date.now()
+  const fInicio = rd.fechaInicio || r.fechaInicio || new Date(hoyMs).toISOString().slice(0, 10)
+  const fFin = rd.fechaFin || r.fechaFin || new Date(hoyMs + 86400000 * 2).toISOString().slice(0, 10)
 
-  const clienteCorreo = String(
-    r.clienteCorreo ||
-    df.correo ||
-    r.usuario?.email ||
-    r.usuarioEmail ||
-    r.email ||
-    'cliente@drivique.com'
-  ).toLowerCase().trim()
-
-  const clienteTelefono = String(
-    r.clienteTelefono ||
-    df.telefono ||
-    r.telefono ||
-    '+57 314 478 9702'
-  )
-
-  const clienteDocumento = String(
-    r.clienteDocumento ||
-    df.numDoc ||
-    df.documento ||
-    r.usuario?.documento ||
-    r.cedula ||
-    r.documento ||
-    '1020304050'
-  )
-
-  let fInicio = r.fechaInicio
-  if (!fInicio && r.reservaDetalles?.fechaInicio) {
-    fInicio = `${r.reservaDetalles.fechaInicio}T${r.reservaDetalles.horaInicio || '08:00'}`
-  } else if (!fInicio && r.fechaRecogida) {
-    fInicio = `${r.fechaRecogida}T${r.horaRecogida || '08:00'}`
-  } else if (!fInicio) {
-    fInicio = new Date().toISOString().slice(0, 16)
-  }
-
-  let fFin = r.fechaFin
-  if (!fFin && r.reservaDetalles?.fechaFin) {
-    fFin = `${r.reservaDetalles.fechaFin}T${r.reservaDetalles.horaFin || '18:00'}`
-  } else if (!fFin && r.fechaDevolucion) {
-    fFin = `${r.fechaDevolucion}T${r.horaDevolucion || '18:00'}`
-  } else if (!fFin) {
-    fFin = new Date(Date.now() + 86400000 * 3).toISOString().slice(0, 16)
-  }
-
-  let estadoNorm = String(r.estado || 'confirmada').toLowerCase()
-  if (estadoNorm === 'activa') estadoNorm = 'en_curso'
-  if (estadoNorm === 'pendiente_efectivo') estadoNorm = 'pendiente'
+  let estadoNorm = String(r.estado || 'PENDIENTE').toLowerCase()
+  if (estadoNorm === 'confirmado') estadoNorm = 'confirmada'
+  if (estadoNorm === 'en curso') estadoNorm = 'en_curso'
 
   const vId = String(r.vehiculoId || '')
   const vNom = r.vehiculoNombre || r.vehiculo?.nombre || ''
@@ -107,7 +85,8 @@ function normalizarReserva(r) {
     vehiculoNombre: vNom || matchingMockVehicle?.nombre || 'Mazda CX-5 2024',
     vehiculoPlaca: vPlaca || matchingMockVehicle?.placa || 'KLS-849',
     vehiculoImagen,
-    sucursal: r.sucursal || r.reservaDetalles?.sucursalRetiro || matchingMockVehicle?.sucursal || 'Bogotá - Calle 100',
+    sucursal: r.reservaDetalles?.sucursalPagoEfectivo || r.sucursalPagoEfectivo || r.sucursal || r.reservaDetalles?.sucursalRetiro || matchingMockVehicle?.sucursal || 'Bogotá - Calle 100',
+    sucursalPagoEfectivo: r.sucursalPagoEfectivo || r.reservaDetalles?.sucursalPagoEfectivo || r.sucursal || '',
     fechaInicio: fInicio,
     fechaFin: fFin,
     estado: estadoNorm,
@@ -115,6 +94,10 @@ function normalizarReserva(r) {
     contratoFirmado: Boolean(r.contratoFirmado || r.estado === 'ACTIVA' || estadoNorm === 'en_curso'),
     pagoEstado: r.pagoEstado || 'aprobado',
     pasarela: r.pasarela || r.reservaDetalles?.metodoPago || 'Wompi',
+    metodoPagoConfirmado: r.metodoPagoConfirmado || ((estadoNorm === 'confirmada' || estadoNorm === 'en_curso' || r.pagoEstado === 'aprobado') && (r.pasarela === 'efectivo' || r.reservaDetalles?.metodoPago === 'efectivo' || estadoNorm.includes('efectivo')) ? 'efectivo' : undefined),
+    fechaPagoConfirmado: r.fechaPagoConfirmado || (r.pagoEstado === 'aprobado' && r.metodoPagoConfirmado === 'efectivo' ? r.fechaCreacion : undefined),
+    cajeroConfirmacion: r.cajeroConfirmacion || undefined,
+    observacionesCaja: r.observacionesCaja || '',
     notas: r.notas || '',
     fechaCreacion: r.fechaCreacion || new Date().toISOString(),
     historialAcciones: Array.isArray(r.historialAcciones) ? r.historialAcciones : [
@@ -125,9 +108,7 @@ function normalizarReserva(r) {
 
 function readStoredReservations() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) return []
-    const parsed = JSON.parse(raw)
+    const parsed = reservationService.getReservas()
     if (!Array.isArray(parsed) || parsed.length === 0) return []
     if (localStorage.getItem(STORAGE_SCHEMA_KEY) !== STORAGE_SCHEMA) {
       const migrated = parsed.filter((reservation) => !LEGACY_RESERVATION_IDS.has(String(reservation?.id || reservation?.codigo || '')))
@@ -218,6 +199,10 @@ export const reservationManagementService = {
     if (isManager) {
       if (!userBranch) return []
       return evaluadas.filter((r) =>
+        hasMatchingBranch(r.sucursal, userBranch) ||
+        hasMatchingBranch(r.sucursalPagoEfectivo, userBranch) ||
+        hasMatchingBranch(r.reservaDetalles?.sucursalPagoEfectivo, userBranch) ||
+        hasMatchingBranch(r.reservaDetalles?.sucursalRetiro, userBranch) ||
         String(r.sucursal || '').trim().toLocaleLowerCase() === String(userBranch).trim().toLocaleLowerCase()
       )
     }
@@ -383,22 +368,34 @@ export const reservationManagementService = {
   confirmCashPayment(idOrCode, currentUser, notes = '') {
     const rawList = readStoredReservations()
     const now = new Date()
+    const search = String(idOrCode).trim().toLowerCase()
     const target = rawList.find((res) => {
       const codigo = String(res.codigo || res.referencia || res.id || '').toLowerCase()
-      return codigo === String(idOrCode).trim().toLowerCase() || String(res.id) === String(idOrCode).trim()
+      return (
+        codigo === search ||
+        String(res.id || '').trim().toLowerCase() === search ||
+        String(res.referencia || '').trim().toLowerCase() === search
+      )
     })
     if (!target) throw new Error('notFound')
     assertReservationScope(currentUser, target, target.sucursal)
 
+    const sucursalEvento = target.sucursal || currentUser?.sucursal || currentUser?.sucursalAsignada || 'Alamo Medellín Poblado'
+    const totalCobrado = target.totalCOP || target.total || 0
+
     const actualizadas = rawList.map((res) => {
       const codigo = String(res.codigo || res.referencia || res.id || '').toLowerCase()
-      if (codigo === String(idOrCode).trim().toLowerCase() || String(res.id) === String(idOrCode).trim()) {
+      if (
+        codigo === search ||
+        String(res.id || '').trim().toLowerCase() === search ||
+        String(res.referencia || '').trim().toLowerCase() === search
+      ) {
         const historialNuevo = [
           ...(res.historialAcciones || []),
           {
             fecha: now.toISOString(),
-            accion: `Cobro en efectivo confirmado en sucursal ${target.sucursal || ''} por $${res.totalCOP || res.total || 0}`,
-            usuario: currentUser?.correo || currentUser?.nombre || 'Encargado de Sucursal',
+            accion: `Cobro en efectivo confirmado en sucursal ${sucursalEvento} por $${Number(res.totalCOP || res.total || 0).toLocaleString('es-CO')}`,
+            usuario: currentUser?.nombre || currentUser?.correo || 'Encargado de Sucursal',
           },
         ]
 
@@ -419,10 +416,27 @@ export const reservationManagementService = {
     writeStoredReservations(actualizadas)
 
     accessAuditService.record({
-      correo: currentUser?.correo || 'admin@drivique.com',
+      tipo: 'COBRO_SUCURSAL',
+      modulo: 'Cobro en Sucursal',
+      accion: `Confirmación de cobro en efectivo en sucursal`,
+      actor: currentUser?.nombre || currentUser?.correo || 'Encargado de Sucursal',
+      correo: currentUser?.correo || 'enc06@drivique.com',
       rol: currentUser?.rol || 'encargado_sucursal',
+      sucursal: sucursalEvento,
       resultado: 'EXITO',
-      motivo: `Pago en efectivo confirmado para reserva ${target.codigo || target.id} ($${target.totalCOP || target.total || 0})`,
+      motivo: `Pago en efectivo de $${Number(totalCobrado).toLocaleString('es-CO')} recibido y confirmado en mostrador para reserva ${target.codigo || target.id}`,
+      detalles: {
+        referencia: target.codigo || target.id,
+        reservaId: target.id,
+        total: totalCobrado,
+        metodoPago: 'efectivo',
+        sucursal: sucursalEvento,
+        cliente: target.clienteNombre,
+        documento: target.clienteDocumento,
+        cajero: currentUser?.nombre || currentUser?.correo || 'Encargado',
+        notas: notes || null,
+        confirmadoEn: now.toISOString(),
+      },
     })
 
     return actualizadas.find((r) => String(r.id) === String(target.id) || String(r.codigo) === String(target.codigo))

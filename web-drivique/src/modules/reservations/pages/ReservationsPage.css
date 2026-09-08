@@ -20,3 +20,953 @@ html.dark .detalle-modal-head h2,html.dark .detalle-resumen-fila strong,html.dar
 
 .reservation-promotion-box{margin:4px 0 16px;padding:14px;border:1px solid var(--borde,#dbe3ef);border-radius:12px;background:var(--bg-tarjeta,#f8fafc)}.reservation-promotion-box>label{display:block;margin-bottom:8px;font-size:10px;font-weight:900;text-transform:uppercase;color:var(--texto-second,#64748b)}.reservation-promotion-entry{display:flex}.reservation-promotion-entry input{min-width:0;flex:1;padding:10px 11px;border:1px solid #cbd5e1;border-radius:9px 0 0 9px;background:var(--bg-tarjeta,#fff);color:var(--texto-primary,#0f172a);font-weight:800;text-transform:uppercase}.reservation-promotion-entry button,.reservation-promotion-applied button{border:0;border-radius:0 9px 9px 0;padding:0 13px;background:var(--brand-primary);color:#fff;font-size:11px;font-weight:800;cursor:pointer}.reservation-promotion-entry button:disabled{opacity:.5;cursor:not-allowed}.reservation-promotion-applied{display:flex;align-items:center;justify-content:space-between;gap:10px}.reservation-promotion-applied div{display:flex;flex-direction:column}.reservation-promotion-applied strong{color:#15803d}.reservation-promotion-applied span{font-size:10px;color:#64748b}.reservation-promotion-applied button{border-radius:9px;padding:9px 12px;background:#e2e8f0;color:#334155}.reservation-promotion-error{margin:7px 0 0;color:#dc2626;font-size:10px;font-weight:700}.reservation-discount-row{display:flex;justify-content:space-between;margin:-6px 0 14px;color:#15803d;font-size:12px;font-weight:800}
 @media print{@page{size:A4;margin:0}html,body{margin:0!important;padding:0!important}body.imprimiendo-contrato{background:#fff!important;overflow:visible!important}body.imprimiendo-contrato>div:not(.raiz-impresion-contrato){display:none!important}.raiz-impresion-contrato{box-sizing:border-box;display:block!important;width:100%!important;margin:0!important;padding:10mm!important}.raiz-impresion-contrato .contrato-a-imprimir{display:block!important;width:100%!important;max-width:none!important;max-height:none!important;overflow:visible!important;margin:0!important;padding:0!important;border:0!important;background:#fff!important}.raiz-impresion-contrato .contrato-a-imprimir button{display:none!important}.raiz-impresion-contrato .contrato-a-imprimir *{--bg-tarjeta:#fff;--bg-item:#f8fafc;--borde:#dbe3ef;--texto-primary:#0f172a;--texto-second:#64748b;--sombra-tarjeta:none}.raiz-impresion-contrato .contrato-campo,.raiz-impresion-contrato section,.raiz-impresion-contrato footer{break-inside:avoid;page-break-inside:avoid}}
+
+/* ============================================================
+   ESTRUCTURA DE TARJETA PADRE Y SUBTARJETA DE CONTRATO
+   ============================================================ */
+.contrato-card-padre {
+  background: var(--bg-tarjeta, #ffffff);
+  border: 1.5px solid var(--borde, #e2e8f0);
+  border-radius: 24px;
+  padding: 22px 24px;
+  margin-bottom: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.contrato-card-padre:hover {
+  border-color: var(--brand-border-light, #bfdbfe);
+  box-shadow: 0 14px 34px rgba(var(--brand-primary-rgb), 0.07);
+}
+
+.contrato-padre-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--borde, #edf2f7);
+}
+
+.contrato-padre-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  text-align: left;
+}
+
+.contrato-padre-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--brand-primary, #2563eb);
+}
+
+.contrato-padre-titulo {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--texto-primary, #0f172a);
+}
+
+.contrato-padre-badge-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.contrato-padre-badge-status.protegido {
+  background: var(--brand-soft-light, #eff6ff);
+  color: var(--brand-primary, #2563eb);
+  border: 1px solid var(--brand-border-light, #bfdbfe);
+}
+
+.contrato-padre-badge-status.firmado {
+  background: #ecfdf5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
+}
+
+/* SUBTARJETA INTERIOR (La que lleva el contenido) */
+.contrato-subtarjeta {
+  width: 100%;
+  background: var(--brand-soft-light, #eff6ff);
+  border: 1.5px solid var(--brand-border-light, #bfdbfe);
+  border-radius: 18px;
+  padding: 28px 24px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-sizing: border-box;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.02);
+  transition: all 0.25s ease;
+}
+
+.contrato-subtarjeta-icon-wrap {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid var(--brand-border-light, #bfdbfe);
+  display: grid;
+  place-items: center;
+  margin-bottom: 14px;
+  flex-shrink: 0;
+  box-shadow: 0 4px 14px rgba(var(--brand-primary-rgb), 0.12);
+  transition: transform 0.2s ease;
+}
+
+.contrato-subtarjeta:hover .contrato-subtarjeta-icon-wrap {
+  transform: scale(1.05);
+}
+
+.contrato-subtarjeta-titulo {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--texto-primary, #0f172a);
+  margin: 0 0 6px;
+  letter-spacing: -0.01em;
+}
+
+.contrato-subtarjeta-desc {
+  font-size: 13.5px;
+  color: var(--texto-second, #64748b);
+  line-height: 1.55;
+  margin: 0 0 20px;
+  max-width: 400px;
+  font-weight: 500;
+}
+
+.contrato-subtarjeta-form {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-sizing: border-box;
+}
+
+.contrato-subtarjeta-input-box {
+  position: relative;
+  width: 100%;
+}
+
+.contrato-subtarjeta-input {
+  width: 100%;
+  height: 48px;
+  border-radius: 12px;
+  border: 1.5px solid var(--brand-border-light, #cbd5e1);
+  padding: 0 46px 0 16px;
+  font-size: 14px;
+  color: var(--texto-primary, #0f172a);
+  background: #ffffff;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.contrato-subtarjeta-input:focus {
+  border-color: var(--brand-primary, #2563eb);
+  box-shadow: 0 0 0 4px var(--brand-soft-light, rgba(37, 99, 235, 0.12));
+}
+
+.contrato-subtarjeta-input:disabled {
+  background: #f8fafc;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.contrato-subtarjeta-eye {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--brand-primary, #64748b);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  padding: 6px;
+  font-size: 17px;
+  transition: color 0.2s;
+}
+
+.contrato-subtarjeta-eye:hover {
+  color: var(--brand-primary, #2563eb);
+}
+
+.contrato-subtarjeta-eye:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.contrato-subtarjeta-error {
+  color: #ef4444;
+  font-size: 12px;
+  font-weight: 700;
+  text-align: left;
+  margin: -4px 0 2px 4px;
+}
+
+.contrato-subtarjeta-btn {
+  width: 100%;
+  height: 48px;
+  border-radius: 12px;
+  border: none;
+  font-size: 14px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.contrato-subtarjeta-btn.activo,
+.contrato-subtarjeta-btn.activo:not(:disabled) {
+  background: var(--brand-primary, #2563eb) !important;
+  color: var(--brand-on-primary, #ffffff) !important;
+  border: none !important;
+  cursor: pointer;
+  box-shadow: 0 4px 14px var(--brand-shadow, rgba(37, 99, 235, 0.25));
+}
+
+.contrato-subtarjeta-btn.activo:hover {
+  filter: brightness(0.93);
+  transform: translateY(-1px);
+}
+
+.contrato-subtarjeta-btn.bloqueado,
+.contrato-subtarjeta-btn.bloqueado:disabled {
+  background: var(--brand-soft-strong-light, rgba(37, 99, 235, 0.12)) !important;
+  color: var(--brand-primary, #2563eb) !important;
+  border: 1.5px dashed var(--brand-border-light, rgba(37, 99, 235, 0.35)) !important;
+  cursor: not-allowed;
+  opacity: 0.95;
+}
+
+/* Modo oscuro */
+html.dark .contrato-subtarjeta-btn.bloqueado,
+html.dark .contrato-subtarjeta-btn.bloqueado:disabled {
+  background: rgba(var(--brand-primary-rgb), 0.18) !important;
+  color: var(--brand-border-light, #93c5fd) !important;
+  border-color: rgba(var(--brand-primary-rgb), 0.4) !important;
+}
+
+html.dark .contrato-card-padre {
+  background: #172033;
+  border-color: #334155;
+}
+
+html.dark .contrato-padre-header {
+  border-bottom-color: #2a3950;
+}
+
+html.dark .contrato-padre-titulo {
+  color: #f8fafc;
+}
+
+html.dark .contrato-subtarjeta {
+  background: rgba(var(--brand-primary-rgb), 0.08);
+  border-color: rgba(var(--brand-primary-rgb), 0.25);
+}
+
+html.dark .contrato-subtarjeta-icon-wrap {
+  background: #1e293b;
+  border-color: rgba(var(--brand-primary-rgb), 0.3);
+}
+
+html.dark .contrato-subtarjeta-titulo {
+  color: #f8fafc;
+}
+
+html.dark .contrato-subtarjeta-desc {
+  color: #94a3b8;
+}
+
+html.dark .contrato-subtarjeta-input {
+  background: #0f172a;
+  color: #f8fafc;
+  border-color: #334155;
+}
+
+/* ============================================================
+   ENLACE DE ACCESO A FIRMA DE CONTRATO
+   ============================================================ */
+.contrato-firmar-link {
+  background: transparent;
+  border: none;
+  color: var(--brand-primary, #2563eb);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 4px;
+  text-decoration: underline;
+  transition: opacity 0.2s ease;
+}
+
+.contrato-firmar-link:hover {
+  opacity: 0.8;
+}
+
+/* ============================================================
+   TARJETA DESBLOQUEADA DE CONTRATO
+   ============================================================ */
+.contrato-desbloqueado-card {
+  background: var(--bg-tarjeta, #ffffff);
+  border: 1px solid var(--borde, #e2e8f0);
+  border-radius: 22px;
+  padding: 20px;
+  margin-bottom: 18px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.contrato-desbloqueado-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border: 1px solid #bbf7d0;
+  border-radius: 14px;
+  background: #f0fdf4;
+}
+
+.contrato-desbloqueado-status {
+  font-size: 13px;
+  color: #15803d;
+  font-weight: 800;
+}
+
+.contrato-desbloqueado-codigo {
+  font-size: 11px;
+  color: #64748b;
+}
+
+.contrato-bloquear-btn {
+  border: 1px solid var(--borde, #cbd5e1);
+  border-radius: 8px;
+  background: var(--bg-tarjeta, #ffffff);
+  color: var(--texto-primary, #475569);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.contrato-bloquear-btn:hover {
+  border-color: var(--brand-primary);
+  color: var(--brand-primary);
+}
+
+/* ============================================================
+   ELEMENTOS DE MODAL DETALLE CON TEMAS Y RESPONSIVE
+   ============================================================ */
+.detalle-modal-head-custom {
+  text-align: center;
+  padding: 8px 20px 16px;
+}
+
+.detalle-modal-titulo {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--texto-primary, #0f172a);
+  margin: 0 0 4px;
+  letter-spacing: -0.02em;
+}
+
+.detalle-modal-subtitulo {
+  font-size: 13.5px;
+  color: var(--texto-second, #64748b);
+  margin: 0;
+  font-weight: 500;
+}
+
+.modal-reserva-info-card {
+  background: var(--bg-tarjeta, #ffffff);
+  border: 1px solid var(--borde, #e2e8f0);
+  border-radius: 22px;
+  padding: 16px;
+  margin-bottom: 18px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.modal-reserva-img-box {
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--bg-item, #f8fafc);
+  border: 1px solid var(--borde, #e2e8f0);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-height: 220px;
+}
+
+.modal-reserva-img {
+  width: 100%;
+  max-height: 220px;
+  object-fit: cover;
+  display: block;
+}
+
+.modal-reserva-datos-grid {
+  background: var(--bg-tarjeta, #ffffff);
+  border: 1px solid var(--borde, #e2e8f0);
+  border-radius: 18px;
+  padding: 4px 14px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.modal-reserva-dato-celda {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 10px;
+  min-width: 0;
+}
+
+.celda-borde-r {
+  border-right: 1px solid var(--borde, #f1f5f9);
+}
+
+.celda-borde-b {
+  border-bottom: 1px solid var(--borde, #f1f5f9);
+}
+
+.modal-dato-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: var(--brand-soft-light, #eff6ff);
+  color: var(--brand-primary, #1d4ed8);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  font-size: 15px;
+}
+
+.modal-dato-texto {
+  min-width: 0;
+  overflow: hidden;
+  text-align: left;
+}
+
+.modal-dato-label {
+  display: block;
+  font-size: 11px;
+  color: var(--texto-second, #64748b);
+  font-weight: 600;
+}
+
+.modal-dato-val {
+  display: block;
+  font-size: 13px;
+  color: var(--texto-primary, #0f172a);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.modal-dato-val.status-val {
+  color: #15803d;
+}
+
+/* ============================================================
+   TARJETA PAGO EFECTIVO MODAL
+   ============================================================ */
+.modal-cash-card {
+  background: var(--bg-tarjeta, #ffffff);
+  border: 1px solid var(--borde, #e2e8f0);
+  border-radius: 22px;
+  padding: 28px 20px 20px;
+  text-align: center;
+  margin-bottom: 18px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.modal-cash-logo-badge {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: var(--bg-tarjeta, #ffffff);
+  border: 1.5px solid var(--borde, #e2e8f0);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  margin-bottom: 16px;
+}
+
+.modal-cash-logo-badge img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.modal-cash-titulo {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--texto-primary, #0f172a);
+  margin: 0 0 8px;
+  letter-spacing: -0.01em;
+}
+
+.modal-cash-desc {
+  font-size: 13px;
+  color: var(--texto-second, #64748b);
+  line-height: 1.5;
+  margin: 0 0 18px;
+  padding: 0 6px;
+}
+
+.modal-cash-summary {
+  width: 100%;
+  background: var(--brand-soft-light, #eff6ff);
+  border: 1.5px solid var(--brand-border-light, #bfdbfe);
+  border-radius: 16px;
+  padding: 16px 18px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 14px;
+  box-sizing: border-box;
+}
+
+.modal-cash-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+}
+
+.modal-cash-row-label {
+  color: var(--texto-second, #64748b);
+  font-weight: 600;
+}
+
+.modal-cash-ref-val {
+  color: var(--brand-primary, #1d4ed8);
+  font-weight: 800;
+}
+
+.modal-cash-row-val {
+  color: var(--texto-primary, #0f172a);
+  font-weight: 700;
+}
+
+.modal-cash-divider {
+  height: 1px;
+  background: var(--brand-border-light, #bfdbfe);
+  margin: 4px 0;
+}
+
+.modal-cash-row.total {
+  padding-top: 2px;
+}
+
+.modal-cash-total-label {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--texto-second, #475569);
+  letter-spacing: 0.02em;
+}
+
+.modal-cash-total-val {
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--brand-primary, #1d4ed8);
+}
+
+.modal-cash-deadline-box {
+  width: 100%;
+  background: #fefce8;
+  border: 1.5px solid #fef08a;
+  border-radius: 14px;
+  padding: 12px 14px;
+  text-align: left;
+  box-sizing: border-box;
+}
+
+.modal-cash-deadline-title {
+  margin: 0 0 4px;
+  font-size: 11px;
+  font-weight: 800;
+  color: #854d0e;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.modal-cash-deadline-text {
+  margin: 0;
+  fontSize: 12px;
+  color: #854d0e;
+  line-height: 1.45;
+  font-weight: 500;
+}
+
+/* ============================================================
+   TARJETA PAGO DIGITAL WOMPI MODAL
+   ============================================================ */
+.modal-wompi-card {
+  background: var(--bg-tarjeta, #ffffff);
+  border: 1px solid var(--borde, #e2e8f0);
+  border-radius: 22px;
+  padding: 28px 24px 24px;
+  text-align: center;
+  margin-bottom: 18px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.modal-wompi-titulo {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--texto-primary, #0f172a);
+  margin: 0 0 10px;
+  letter-spacing: -0.01em;
+}
+
+.modal-wompi-desc {
+  font-size: 13.5px;
+  color: var(--texto-second, #64748b);
+  line-height: 1.5;
+  margin: 0 0 18px;
+  max-width: 430px;
+  font-weight: 500;
+}
+
+.modal-wompi-total-box {
+  width: 100%;
+  max-width: 440px;
+  background: var(--brand-soft-light, #eff6ff);
+  border: 1.5px solid var(--brand-border-light, #bfdbfe);
+  border-radius: 14px;
+  padding: 14px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  box-sizing: border-box;
+}
+
+.modal-wompi-total-label {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--texto-second, #475569);
+  letter-spacing: 0.02em;
+}
+
+.modal-wompi-total-val {
+  font-size: 19px;
+  font-weight: 900;
+  color: var(--brand-primary, #1d4ed8);
+}
+
+.modal-wompi-btn {
+  width: 100%;
+  max-width: 440px;
+  height: 50px;
+  border-radius: 14px;
+  background: var(--brand-primary, #1d4ed8);
+  color: var(--brand-on-primary, #ffffff);
+  border: none;
+  font-weight: 800;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-shadow: 0 4px 14px var(--brand-shadow, rgba(29, 78, 216, 0.25));
+  transition: all 0.2s ease;
+}
+
+.modal-wompi-btn:hover:not(:disabled) {
+  filter: brightness(0.92);
+  transform: translateY(-1px);
+}
+
+.detalle-cerrar-btn-custom {
+  min-width: 160px;
+  padding: 10px 24px;
+  border-radius: 12px;
+  border: 1px solid var(--borde, #cbd5e1);
+  background: var(--bg-tarjeta, #ffffff);
+  color: var(--texto-primary, #1e293b);
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.detalle-cerrar-btn-custom:hover {
+  background: var(--bg-item, #f8fafc);
+  border-color: var(--brand-primary, #94a3b8);
+}
+
+/* ============================================================
+   MODO OSCURO PARA TODOS LOS NUEVOS COMPONENTES
+   ============================================================ */
+html.dark .contrato-firmar-padre {
+  background: #172033;
+  border-color: #334155;
+}
+
+html.dark .contrato-firmar-subtarjeta {
+  background: rgba(var(--brand-primary-rgb), 0.12);
+  border-color: rgba(var(--brand-primary-rgb), 0.3);
+}
+
+html.dark .contrato-firmar-icon-wrap {
+  background: #1e293b;
+  border-color: rgba(var(--brand-primary-rgb), 0.35);
+}
+
+html.dark .contrato-firmar-titulo {
+  color: #f8fafc;
+}
+
+html.dark .contrato-firmar-desc {
+  color: #94a3b8;
+}
+
+html.dark .contrato-desbloqueado-card {
+  background: #172033;
+  border-color: #334155;
+}
+
+html.dark .contrato-desbloqueado-head {
+  background: rgba(16, 185, 129, 0.1);
+  border-color: #166534;
+}
+
+html.dark .contrato-desbloqueado-status {
+  color: #4ade80;
+}
+
+html.dark .contrato-desbloqueado-codigo {
+  color: #94a3b8;
+}
+
+html.dark .contrato-bloquear-btn {
+  background: #1e293b;
+  border-color: #475569;
+  color: #cbd5e1;
+}
+
+html.dark .detalle-modal-titulo {
+  color: #f8fafc;
+}
+
+html.dark .detalle-modal-subtitulo {
+  color: #94a3b8;
+}
+
+html.dark .modal-reserva-info-card {
+  background: #172033;
+  border-color: #334155;
+}
+
+html.dark .modal-reserva-img-box {
+  background: #0f172a;
+  border-color: #334155;
+}
+
+html.dark .modal-reserva-datos-grid {
+  background: #0f172a;
+  border-color: #334155;
+}
+
+html.dark .celda-borde-r {
+  border-right-color: #1e293b;
+}
+
+html.dark .celda-borde-b {
+  border-bottom-color: #1e293b;
+}
+
+html.dark .modal-dato-label {
+  color: #94a3b8;
+}
+
+html.dark .modal-dato-val {
+  color: #f8fafc;
+}
+
+html.dark .modal-dato-val.status-val {
+  color: #4ade80;
+}
+
+html.dark .modal-cash-card {
+  background: #172033;
+  border-color: #334155;
+}
+
+html.dark .modal-cash-logo-badge {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+html.dark .modal-cash-titulo {
+  color: #f8fafc;
+}
+
+html.dark .modal-cash-desc {
+  color: #94a3b8;
+}
+
+html.dark .modal-cash-summary {
+  background: rgba(var(--brand-primary-rgb), 0.1);
+  border-color: rgba(var(--brand-primary-rgb), 0.3);
+}
+
+html.dark .modal-cash-row-label {
+  color: #94a3b8;
+}
+
+html.dark .modal-cash-row-val {
+  color: #f8fafc;
+}
+
+html.dark .modal-cash-divider {
+  background: rgba(var(--brand-primary-rgb), 0.3);
+}
+
+html.dark .modal-cash-total-label {
+  color: #cbd5e1;
+}
+
+html.dark .modal-cash-deadline-box {
+  background: rgba(234, 179, 8, 0.12);
+  border-color: rgba(234, 179, 8, 0.35);
+}
+
+html.dark .modal-cash-deadline-title {
+  color: #fde047;
+}
+
+html.dark .modal-cash-deadline-text {
+  color: #fef08a;
+}
+
+html.dark .modal-wompi-card {
+  background: #172033;
+  border-color: #334155;
+}
+
+html.dark .modal-wompi-titulo {
+  color: #f8fafc;
+}
+
+html.dark .modal-wompi-desc {
+  color: #94a3b8;
+}
+
+html.dark .modal-wompi-total-box {
+  background: rgba(var(--brand-primary-rgb), 0.1);
+  border-color: rgba(var(--brand-primary-rgb), 0.3);
+}
+
+html.dark .modal-wompi-total-label {
+  color: #cbd5e1;
+}
+
+html.dark .detalle-cerrar-btn-custom {
+  background: #1e293b;
+  border-color: #475569;
+  color: #cbd5e1;
+}
+
+html.dark .detalle-cerrar-btn-custom:hover {
+  background: #27364b;
+  border-color: var(--brand-primary);
+  color: #ffffff;
+}
+
+/* ============================================================
+   RESPONSIVE (TABLET Y CELULAR)
+   ============================================================ */
+@media (max-width: 600px) {
+  .contrato-padre-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .contrato-subtarjeta {
+    padding: 20px 14px;
+  }
+  .contrato-firmar-subtarjeta {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 12px;
+    padding: 16px 14px;
+  }
+  .contrato-firmar-info {
+    text-align: center;
+  }
+  .contrato-firmar-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  .modal-reserva-datos-grid {
+    grid-template-columns: 1fr;
+  }
+  .celda-borde-r {
+    border-right: none;
+  }
+  .modal-reserva-dato-celda:not(:last-child) {
+    border-bottom: 1px solid var(--borde, #f1f5f9);
+  }
+  html.dark .modal-reserva-dato-celda:not(:last-child) {
+    border-bottom-color: #1e293b;
+  }
+  .modal-cash-card {
+    padding: 22px 14px 16px;
+  }
+  .modal-cash-summary {
+    padding: 14px;
+  }
+  .modal-wompi-card {
+    padding: 22px 14px 16px;
+  }
+}
+

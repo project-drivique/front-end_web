@@ -25,17 +25,18 @@ export default function RespuestaPagoPage() {
   const { moneda } = useLanding();
 
   useEffect(() => {
-    // Para simplificar la demo recuperamos la referencia de sessionStorage
-    const ref = sessionStorage.getItem('current_wompi_reference');
-    if (ref) {
-      const encontrada = reservationService.obtenerPorReferencia(ref);
-      if (encontrada) {
-        // Marcamos como pendiente de validación, simulando que un backend deberia verificar el webhook o API
-        reservationService.actualizarEstado(ref, 'PENDIENTE_VALIDACION', transactionId);
-        setReserva({ ...encontrada, estado: 'PENDIENTE_VALIDACION', paymentId: transactionId });
-      }
+    let ref = sessionStorage.getItem('current_wompi_reference') || searchParams.get('ref') || searchParams.get('reference');
+    let encontrada = ref ? reservationService.obtenerPorReferencia(ref) : null;
+    if (!encontrada && transactionId) {
+      const all = reservationService.getReservas();
+      encontrada = all.find(r => r.paymentId === transactionId) || (all.length > 0 ? all[all.length - 1] : null);
     }
-  }, [transactionId]);
+    if (encontrada) {
+      const actualRef = encontrada.referencia || encontrada.codigo || encontrada.id;
+      reservationService.actualizarEstado(actualRef, 'PENDIENTE_VALIDACION', transactionId);
+      setReserva({ ...encontrada, estado: 'PENDIENTE_VALIDACION', paymentId: transactionId });
+    }
+  }, [transactionId, searchParams]);
 
   const vehiculoReserva = reserva ? VEHICULOS_MOCK.find(v => v.id === reserva.vehiculoId) : null;
 

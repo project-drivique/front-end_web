@@ -62,6 +62,44 @@ const INITIAL_RESERVATIONS_SEED = [
       numDoc: '1020304050',
     },
   },
+  {
+    referencia: 'RES-1788806368641-R95O5FB',
+    codigo: 'RES-1788806368641-R95O5FB',
+    id: 'RES-1788806368641-R95O5FB',
+    vehiculoId: 2,
+    vehiculoNombre: 'Mazda CX-5 2024',
+    vehiculoPlaca: 'KLS-849',
+    total: 406314,
+    totalCOP: 406314,
+    estado: 'CONFIRMADA',
+    pagoEstado: 'aprobado',
+    metodoPagoConfirmado: 'efectivo',
+    fechaPagoConfirmado: new Date().toISOString(),
+    fechaCreacion: new Date().toISOString(),
+    cajeroConfirmacion: 'Encargado Alamo Medellín Poblado',
+    observacionesCaja: 'Cobro en efectivo recibido y validado en caja de sucursal',
+    sucursal: 'Alamo Medellín Poblado',
+    sucursalPagoEfectivo: 'Alamo Medellín Poblado',
+    fechaLimitePago: null,
+    horasLimitePago: null,
+    reservaDetalles: {
+      fechaInicio: new Date().toISOString().slice(0, 10),
+      fechaFin: new Date(Date.now() + 86400000 * 3).toISOString().slice(0, 10),
+      horaInicio: '14:00',
+      horaFin: '18:00',
+      sucursalRetiro: 'Alamo Medellín Poblado',
+      sucursalDevolucion: 'Alamo Medellín Poblado',
+      sucursalPagoEfectivo: 'Alamo Medellín Poblado',
+      metodoPago: 'efectivo',
+    },
+    datosForm: {
+      nombres: 'Mateo',
+      apellidos: 'Gómez Restrepo',
+      correo: 'mateo.gomez@drivique.com',
+      telefono: '+57 300 456 7890',
+      numDoc: '1035987654',
+    },
+  },
 ]
 
 export const reservationService = {
@@ -72,6 +110,23 @@ export const reservationService = {
       if (!Array.isArray(reservas) || reservas.length === 0) {
         reservas = INITIAL_RESERVATIONS_SEED;
         localStorage.setItem(STORAGE_KEY, JSON.stringify(reservas));
+      } else {
+        // Garantizar que las semillas de sucursales existan en el almacenamiento
+        let agregados = false;
+        INITIAL_RESERVATIONS_SEED.forEach((seed) => {
+          const existe = reservas.some(
+            (r) =>
+              String(r.referencia || r.codigo || r.id || '').toUpperCase() === String(seed.referencia).toUpperCase() ||
+              String(r.referencia || r.codigo || r.id || '').replace(/0/g, 'O').toUpperCase() === String(seed.referencia).replace(/0/g, 'O').toUpperCase()
+          );
+          if (!existe) {
+            reservas.push(seed);
+            agregados = true;
+          }
+        });
+        if (agregados) {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(reservas));
+        }
       }
       const { actualizadas, cambiaron } = vencerReservasEfectivo(reservas);
       if (cambiaron) {
@@ -108,15 +163,37 @@ export const reservationService = {
   },
 
   obtenerPorReferencia: (referencia) => {
+    if (!referencia) return null;
+    const refUpper = String(referencia).trim().toUpperCase();
+    const refNoZeros = refUpper.replace(/0/g, 'O');
     const reservas = reservationService.getReservas();
-    return reservas.find(r => r.referencia === referencia);
+    return reservas.find(r => {
+      const cRef = String(r.referencia || '').trim().toUpperCase();
+      const cCod = String(r.codigo || '').trim().toUpperCase();
+      const cId = String(r.id || '').trim().toUpperCase();
+      return (
+        cRef === refUpper ||
+        cCod === refUpper ||
+        cId === refUpper ||
+        cRef.replace(/0/g, 'O') === refNoZeros ||
+        cCod.replace(/0/g, 'O') === refNoZeros ||
+        cId.replace(/0/g, 'O') === refNoZeros
+      );
+    });
   },
 
   actualizarEstado: (referencia, nuevoEstado, paymentId = null) => {
     const reservas = reservationService.getReservas();
-    const index = reservas.findIndex(r => r.referencia === referencia);
+    const index = reservas.findIndex(r => r.referencia === referencia || r.codigo === referencia || r.id === referencia);
     if (index !== -1) {
       reservas[index].estado = nuevoEstado;
+      if (nuevoEstado === 'CONFIRMADA' || nuevoEstado === 'confirmada') {
+        reservas[index].pagoEstado = 'aprobado';
+        reservas[index].metodoPagoConfirmado = 'efectivo';
+        if (!reservas[index].fechaPagoConfirmado) {
+          reservas[index].fechaPagoConfirmado = new Date().toISOString();
+        }
+      }
       if (paymentId) reservas[index].paymentId = paymentId;
       localStorage.setItem(STORAGE_KEY, JSON.stringify(reservas));
       return true;

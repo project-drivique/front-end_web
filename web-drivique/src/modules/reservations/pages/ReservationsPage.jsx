@@ -71,8 +71,9 @@ function ModalValoracion({ reserva, onClose, onSave }) {
   </section></div>
 }
 
-function ContratoVerCard({ reserva, contratoFirmado, reservaParaContrato, vehiculoParaContrato, identificacion, autoDesbloquear = false }) {
+function ContratoVerCard({ reserva, contratoFirmado, reservaParaContrato, vehiculoParaContrato, identificacion, autoDesbloquear = false, esConfirmada = false }) {
   const { t, i18n } = useTranslation()
+  const navigate = useNavigate()
   const [clave, setClave] = useState('')
   const [mostrarClave, setMostrarClave] = useState(false)
   const tieneContratoFirmado = Boolean(contratoFirmado?.firmaUsuarioDataUrl)
@@ -150,19 +151,22 @@ function ContratoVerCard({ reserva, contratoFirmado, reservaParaContrato, vehicu
   // Vista desbloqueada: mostrar contrato completo + descarga
   if (desbloqueado && tieneContratoFirmado) {
     return (
-      <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '22px', padding: '20px', marginBottom: '18px', boxShadow: '0 4px 18px rgba(0,0,0,0.03)', display: 'flex', flexDirection: 'column', gap: '14px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', border: '1px solid #bbf7d0', borderRadius: '14px', background: '#f0fdf4' }}>
+      <div className="contrato-desbloqueado-card">
+        <div className="contrato-desbloqueado-head">
           <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-            <strong style={{ fontSize: '13px', color: '#15803d', fontWeight: 800 }}>
+            <strong className="contrato-desbloqueado-status">
               {t('reservas.originalSignedContract', { defaultValue: 'Contrato firmado original' })}
             </strong>
-            <span style={{ fontSize: '11px', color: '#64748b' }}>
+            <span className="contrato-desbloqueado-codigo">
               {contratoFirmado.codigo || reserva.numeroContrato || reserva.id}
             </span>
           </div>
-          <button type="button" onClick={() => setDesbloqueado(false)}
-            style={{ border: '1px solid #cbd5e1', borderRadius: '8px', background: '#ffffff', color: '#475569', fontSize: '11px', fontWeight: 700, padding: '4px 10px', cursor: 'pointer' }}>
-            Bloquear
+          <button
+            type="button"
+            onClick={() => setDesbloqueado(false)}
+            className="contrato-bloquear-btn"
+          >
+            {t('reservas.lock', { defaultValue: 'Bloquear' })}
           </button>
         </div>
         <div className="contrato-vista-html" ref={contratoVisualRef} />
@@ -183,65 +187,111 @@ function ContratoVerCard({ reserva, contratoFirmado, reservaParaContrato, vehicu
 
   // Vista bloqueada: siempre presente (bloqueada si no firmado, desbloqueable si firmado)
   return (
-    <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '22px', padding: '24px', marginBottom: '18px', boxShadow: '0 4px 18px rgba(0,0,0,0.03)', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', boxSizing: 'border-box' }}>
-      <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: tieneContratoFirmado ? '#f0fdf4' : '#f8fafc', display: 'grid', placeItems: 'center', marginBottom: '14px', flexShrink: 0 }}>
-        <FaLock size={22} color={tieneContratoFirmado ? '#16a34a' : '#94A3B8'} />
-      </div>
-      <h3 style={{ fontSize: '17px', fontWeight: 800, color: '#0f172a', margin: '0 0 6px', letterSpacing: '-0.01em' }}>
-        {tieneContratoFirmado ? 'Ver contrato firmado' : 'Contrato protegido'}
-      </h3>
-      <p style={{ fontSize: '13px', color: '#64748b', lineHeight: 1.5, margin: '0 0 18px', maxWidth: '400px', fontWeight: 500 }}>
-        {tieneContratoFirmado
-          ? 'Ingresa tu número de cédula o identificación registrada para ver o descargar tu contrato.'
-          : 'El contrato estará disponible para ver una vez hayas completado la firma digital.'}
-      </p>
-      <div style={{ width: '100%', maxWidth: '400px', boxSizing: 'border-box' }}>
-        <div style={{ position: 'relative', width: '100%', marginBottom: error ? '8px' : '14px' }}>
-          <input
-            id="input-clave-contrato"
-            type={mostrarClave ? 'text' : 'password'}
-            value={clave}
-            disabled={!tieneContratoFirmado}
-            onChange={(e) => { setClave(e.target.value); setError('') }}
-            onKeyDown={(e) => e.key === 'Enter' && validar()}
-            placeholder="Ingresa tu cédula o identificación"
-            aria-label="Ingresa tu cédula o identificación"
-            style={{
-              width: '100%', height: '46px', borderRadius: '12px',
-              border: error ? '1.5px solid #EF4444' : '1.5px solid #E2E8F0',
-              padding: '0 44px 0 14px', fontSize: '13.5px', color: '#0f172a',
-              background: !tieneContratoFirmado ? '#F8FAFC' : '#ffffff',
-              cursor: !tieneContratoFirmado ? 'not-allowed' : 'text',
-              boxSizing: 'border-box', outline: 'none', transition: 'border-color 0.2s ease'
-            }}
-            onFocus={(e) => { if (!error && tieneContratoFirmado) e.target.style.borderColor = '#3B82F6' }}
-            onBlur={(e) => { if (!error && tieneContratoFirmado) e.target.style.borderColor = '#E2E8F0' }}
-          />
-          <button type="button" disabled={!tieneContratoFirmado} onClick={() => setMostrarClave(v => !v)}
-            aria-label={mostrarClave ? 'Ocultar clave' : 'Mostrar clave'}
-            style={{ position: 'absolute', right: '11px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#94A3B8', cursor: !tieneContratoFirmado ? 'not-allowed' : 'pointer', display: 'grid', placeItems: 'center', padding: '6px', fontSize: '16px', opacity: !tieneContratoFirmado ? 0.5 : 1 }}>
-            {mostrarClave ? <FaEyeSlash /> : <FaEye />}
-          </button>
+    <div className="contrato-card-padre">
+      {/* Encabezado superior de la Tarjeta Padre */}
+      <div className="contrato-padre-header">
+        <div className="contrato-padre-meta">
+          <span className="contrato-padre-eyebrow">
+            <FaFileContract /> {t('reservas.legalDocumentation', { defaultValue: 'DOCUMENTACIÓN LEGAL' })}
+          </span>
+          <h4 className="contrato-padre-titulo">
+            {t('reservas.digitalRentalContract', { defaultValue: 'Contrato Digital de Alquiler' })}
+          </h4>
         </div>
-        {error && <p style={{ color: '#EF4444', fontSize: '12px', fontWeight: 600, textAlign: 'left', margin: '0 0 12px 4px' }}>{error}</p>}
-        <button type="button" onClick={validar} disabled={!tieneContratoFirmado}
-          style={{
-            width: '100%', height: '46px', borderRadius: '12px', border: 'none',
-            fontSize: '13.5px', fontWeight: 700, display: 'flex', alignItems: 'center',
-            justifyContent: 'center', gap: '8px', transition: 'all 0.2s ease',
-            ...(!tieneContratoFirmado
-              ? { background: '#F1F5F9', color: '#94A3B8', cursor: 'not-allowed' }
-              : { background: '#16a34a', color: '#ffffff', cursor: 'pointer', boxShadow: '0 4px 14px rgba(22,163,74,0.25)' })
-          }}>
-          <FaFileContract size={14} color={!tieneContratoFirmado ? '#94A3B8' : '#ffffff'} />
-          <span>Ver contrato firmado</span>
-        </button>
+        <span className={`contrato-padre-badge-status ${tieneContratoFirmado ? 'firmado' : 'protegido'}`}>
+          <FaShieldAlt />
+          {tieneContratoFirmado
+            ? t('reservas.digitalSignatureCompleted', { defaultValue: 'Firma Digital Completada' })
+            : t('reservas.contractProtected', { defaultValue: 'Contrato Protegido' })}
+        </span>
+      </div>
+
+      {/* SUBTARJETA INTERIOR (La que lleva el contenido) */}
+      <div className="contrato-subtarjeta">
+        <div className="contrato-subtarjeta-icon-wrap">
+          <FaLock size={22} color="var(--brand-primary, #2563eb)" />
+        </div>
+
+        <h3 className="contrato-subtarjeta-titulo">
+          {tieneContratoFirmado
+            ? t('reservas.viewSignedContract', { defaultValue: 'Ver contrato firmado' })
+            : t('reservas.contractProtected', { defaultValue: 'Contrato protegido' })}
+        </h3>
+
+        <p className="contrato-subtarjeta-desc">
+          {tieneContratoFirmado
+            ? t('reservas.enterIdToViewContract', { defaultValue: 'Ingresa tu número de cédula o identificación registrada para ver o descargar tu contrato en PDF.' })
+            : t('reservas.availableAfterSigning', { defaultValue: 'El contrato estará disponible para ver una vez hayas completado la firma digital.' })}
+        </p>
+
+        <div className="contrato-subtarjeta-form">
+          <div className="contrato-subtarjeta-input-box">
+            <input
+              id="input-clave-contrato"
+              type={mostrarClave ? 'text' : 'password'}
+              value={clave}
+              disabled={!tieneContratoFirmado}
+              onChange={(e) => { setClave(e.target.value); setError('') }}
+              onKeyDown={(e) => e.key === 'Enter' && validar()}
+              placeholder={t('reservas.enterIdentificationPlaceholder', { defaultValue: 'Ingresa tu cédula o identificación' })}
+              aria-label={t('reservas.enterIdentificationPlaceholder', { defaultValue: 'Ingresa tu cédula o identificación' })}
+              className="contrato-subtarjeta-input"
+            />
+            <button
+              type="button"
+              disabled={!tieneContratoFirmado}
+              onClick={() => setMostrarClave(v => !v)}
+              aria-label={mostrarClave ? t('reservas.hidePassword', { defaultValue: 'Ocultar clave' }) : t('reservas.showPassword', { defaultValue: 'Mostrar clave' })}
+              className="contrato-subtarjeta-eye"
+            >
+              {mostrarClave ? <FaEyeSlash /> : <FaEye />}
+            </button>
+          </div>
+
+          {error && <p className="contrato-subtarjeta-error">{error}</p>}
+
+          <button
+            type="button"
+            onClick={validar}
+            disabled={!tieneContratoFirmado}
+            className={`contrato-subtarjeta-btn ${!tieneContratoFirmado ? 'bloqueado' : 'activo'}`}
+          >
+            <FaFileContract size={15} />
+            <span>{t('reservas.viewSignedContract', { defaultValue: 'Ver contrato firmado' })}</span>
+          </button>
+
+          {esConfirmada && !tieneContratoFirmado && (
+            <button
+              type="button"
+              onClick={() => navigate(`/contrato/${reserva.id}`, { state: { reserva, vehiculo: reserva.vehiculo } })}
+              className="contrato-firmar-link"
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: 'var(--brand-primary, #2563eb)',
+                fontSize: '13px',
+                fontWeight: 700,
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '6px',
+                marginTop: '4px',
+                textDecoration: 'underline'
+              }}
+            >
+              <FaPenNib size={12} />
+              <span>{t('reservas.readAndSign', { defaultValue: 'Leer y firmar contrato digital' })}</span>
+            </button>
+          )}
+        </div>
       </div>
     </div>
   )
 }
 
 function Contrato({ reserva, autoDesbloquear = false }) {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const usuario = useAuthStore(state => state.usuario)
   const [contratoLocal, setContratoLocal] = useState(() => contractService.obtenerPorReserva(reserva.id))
@@ -309,70 +359,16 @@ function Contrato({ reserva, autoDesbloquear = false }) {
     return reservaParaContrato?.datosForm?.numDoc || reserva.clienteDocumento || usuario?.cedula || ''
   }, [reservaParaContrato, reserva, usuario])
 
-  // Si la reserva NO está confirmada: solo tarjeta de Ver Contrato (bloqueada)
-  if (!esConfirmada) {
-    return (
-      <ContratoVerCard
-        reserva={reserva}
-        contratoFirmado={contratoFirmado}
-        reservaParaContrato={reservaParaContrato}
-        vehiculoParaContrato={vehiculoParaContrato}
-        identificacion={identificacion}
-        autoDesbloquear={autoDesbloquear}
-      />
-    )
-  }
-
-  // Reserva CONFIRMADA: mostrar ambas tarjetas
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-      {/* Tarjeta 1: Firmar contrato (solo si aún no está firmado) */}
-      {!tieneContratoFirmado && (
-        <div style={{
-          background: '#ffffff', border: '1.5px solid #BFDBFE', borderRadius: '22px',
-          padding: '24px 20px', boxShadow: '0 4px 20px rgba(37,99,235,0.08)',
-          display: 'flex', alignItems: 'center', gap: '16px', boxSizing: 'border-box'
-        }}>
-          <div style={{ width: '52px', height: '52px', borderRadius: '14px', background: '#EFF6FF', display: 'grid', placeItems: 'center', flexShrink: 0 }}>
-            <FaFileSignature size={22} color="#1D4ED8" />
-          </div>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <strong style={{ display: 'block', fontSize: '14px', fontWeight: 800, color: '#0f172a', marginBottom: '3px' }}>
-              Firma tu contrato digital
-            </strong>
-            <span style={{ display: 'block', fontSize: '12.5px', color: '#64748b', lineHeight: 1.4 }}>
-              Tu pago fue confirmado. Lee el contrato y firma digitalmente para finalizar.
-            </span>
-          </div>
-          <button
-            type="button"
-            onClick={() => navigate(`/contrato/${reserva.id}`, { state: { reserva, vehiculo: reserva.vehiculo } })}
-            style={{
-              flexShrink: 0, height: '42px', padding: '0 18px', borderRadius: '12px',
-              border: 'none', background: '#1D4ED8', color: '#ffffff', fontSize: '13px',
-              fontWeight: 800, display: 'inline-flex', alignItems: 'center', gap: '7px',
-              cursor: 'pointer', boxShadow: '0 4px 12px rgba(29,78,216,0.25)', whiteSpace: 'nowrap',
-              transition: 'all 0.2s ease'
-            }}
-            onMouseOver={(e) => { e.currentTarget.style.background = '#1E40AF' }}
-            onMouseOut={(e) => { e.currentTarget.style.background = '#1D4ED8' }}
-          >
-            <FaPenNib size={13} />
-            Leer y firmar
-          </button>
-        </div>
-      )}
-
-      {/* Tarjeta 2: Ver contrato (siempre presente) */}
-      <ContratoVerCard
-        reserva={reserva}
-        contratoFirmado={contratoFirmado}
-        reservaParaContrato={reservaParaContrato}
-        vehiculoParaContrato={vehiculoParaContrato}
-        identificacion={identificacion}
-        autoDesbloquear={autoDesbloquear}
-      />
-    </div>
+    <ContratoVerCard
+      reserva={reserva}
+      contratoFirmado={contratoFirmado}
+      reservaParaContrato={reservaParaContrato}
+      vehiculoParaContrato={vehiculoParaContrato}
+      identificacion={identificacion}
+      autoDesbloquear={autoDesbloquear}
+      esConfirmada={esConfirmada}
+    />
   )
 }
 
@@ -433,20 +429,6 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
         aria-modal="true"
         aria-labelledby="detalle-reserva-titulo"
         onMouseDown={(e) => e.stopPropagation()}
-        style={{
-          position: 'relative',
-          maxWidth: '560px',
-          width: '100%',
-          maxHeight: '92vh',
-          overflowY: 'auto',
-          scrollbarWidth: 'none',
-          msOverflowStyle: 'none',
-          background: '#ffffff',
-          borderRadius: '24px',
-          padding: '24px 24px 28px',
-          boxShadow: '0 25px 60px rgba(15, 23, 42, 0.25)',
-          border: '1px solid #e2e8f0'
-        }}
       >
         <div className="detalle-modal-acento" />
         
@@ -454,254 +436,141 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
           className="modal-cerrar"
           onClick={onClose}
           aria-label={t('reservas.closeDetail', { defaultValue: 'Cerrar' })}
-          style={{
-            position: 'absolute',
-            top: '16px',
-            right: '16px',
-            width: '32px',
-            height: '32px',
-            borderRadius: '8px',
-            border: '1px solid #e2e8f0',
-            background: '#ffffff',
-            color: '#64748b',
-            display: 'grid',
-            placeItems: 'center',
-            cursor: 'pointer',
-            zIndex: 10
-          }}
         >
           <FaTimes size={14} />
         </button>
 
-        {/* Encabezado sin el primer icono (quitado según solicitud) */}
-        <div style={{ textAlign: 'center', padding: '8px 24px 16px' }}>
-          <h2
-            id="detalle-reserva-titulo"
-            style={{
-              fontSize: '22px',
-              fontWeight: 800,
-              color: '#0f172a',
-              margin: '0 0 4px',
-              letterSpacing: '-0.02em'
-            }}
-          >
+        {/* Encabezado */}
+        <div className="detalle-modal-head-custom">
+          <h2 id="detalle-reserva-titulo" className="detalle-modal-titulo">
             {esPendienteEfectivo
-              ? 'Pendiente de pago en efectivo'
-              : (esPendienteWompi ? 'Pendiente de pago digital' : t('reservas.reservationWithStatus', { status: estado.texto.toLowerCase(), defaultValue: `Reserva ${estado.texto.toLowerCase()}` }))}
+              ? t('reservas.pendingCashPayment', { defaultValue: 'Pendiente de pago en efectivo' })
+              : (esPendienteWompi ? t('reservas.pendingDigitalPayment', { defaultValue: 'Pago Digital Pendiente' }) : t('reservas.reservationWithStatus', { status: estado.texto.toLowerCase(), defaultValue: `Reserva ${estado.texto.toLowerCase()}` }))}
           </h2>
-          <p
-            style={{
-              fontSize: '13.5px',
-              color: '#64748b',
-              margin: 0,
-              fontWeight: 500
-            }}
-          >
+          <p className="detalle-modal-subtitulo">
             {nombreAuto}
           </p>
         </div>
 
         {/* Tarjeta Padre: Contenedor de Galería y Datos */}
-        <div
-          style={{
-            background: '#ffffff',
-            border: '1px solid #e2e8f0',
-            borderRadius: '22px',
-            padding: '16px',
-            marginBottom: '18px',
-            boxShadow: '0 4px 18px rgba(0, 0, 0, 0.03)',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '14px'
-          }}
-        >
+        <div className="modal-reserva-info-card">
           {/* 1. Tarjeta de galería / Imagen del carro */}
           {imagenAuto && (
-            <div
-              style={{
-                borderRadius: '16px',
-                overflow: 'hidden',
-                background: '#f8fafc',
-                border: '1px solid #e2e8f0',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                maxHeight: '220px'
-              }}
-            >
+            <div className="modal-reserva-img-box">
               <img
                 src={imagenAuto}
                 alt={nombreAuto}
-                style={{
-                  width: '100%',
-                  maxHeight: '220px',
-                  objectFit: 'cover',
-                  display: 'block'
-                }}
+                className="modal-reserva-img"
               />
             </div>
           )}
 
           {/* 2. Tarjeta de datos de la reserva (2 columnas) */}
-          <div
-            style={{
-              background: '#ffffff',
-              border: '1px solid #e2e8f0',
-              borderRadius: '18px',
-              padding: '4px 14px',
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr'
-            }}
-          >
+          <div className="modal-reserva-datos-grid">
             {/* Fila 1: Vehículo / Fecha de retiro */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '14px 12px 14px 4px', borderBottom: '1px solid #f1f5f9', borderRight: '1px solid #f1f5f9', minWidth: 0 }}>
-              <div style={{ width: '38px', height: '38px', borderRadius: '12px', background: '#EFF6FF', color: '#1D4ED8', display: 'grid', placeItems: 'center', flexShrink: 0, fontSize: '15px' }}>
+            <div className="modal-reserva-dato-celda celda-borde-r celda-borde-b">
+              <div className="modal-dato-icon">
                 <FaCar />
               </div>
-              <div style={{ minWidth: 0, overflow: 'hidden' }}>
-                <span style={{ display: 'block', fontSize: '11px', color: '#64748b', fontWeight: 600 }}>{t('reservas.vehicle', { defaultValue: 'Vehículo' })}</span>
-                <strong style={{ display: 'block', fontSize: '13px', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{nombreAuto}</strong>
+              <div className="modal-dato-texto">
+                <span className="modal-dato-label">{t('reservas.vehicle', { defaultValue: 'Vehículo' })}</span>
+                <strong className="modal-dato-val">{nombreAuto}</strong>
               </div>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '14px 4px 14px 12px', borderBottom: '1px solid #f1f5f9', minWidth: 0 }}>
-              <div style={{ width: '38px', height: '38px', borderRadius: '12px', background: '#EFF6FF', color: '#1D4ED8', display: 'grid', placeItems: 'center', flexShrink: 0, fontSize: '15px' }}>
+            <div className="modal-reserva-dato-celda celda-borde-b">
+              <div className="modal-dato-icon">
                 <FaCalendarAlt />
               </div>
-              <div style={{ minWidth: 0, overflow: 'hidden' }}>
-                <span style={{ display: 'block', fontSize: '11px', color: '#64748b', fontWeight: 600 }}>{t('reservas.pickupDate', { defaultValue: 'Fecha de retiro' })}</span>
-                <strong style={{ display: 'block', fontSize: '13px', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{fechaBonita(reserva.fechaInicio, i18n.resolvedLanguage)}</strong>
+              <div className="modal-dato-texto">
+                <span className="modal-dato-label">{t('reservas.pickupDate', { defaultValue: 'Fecha de retiro' })}</span>
+                <strong className="modal-dato-val">{fechaBonita(reserva.fechaInicio, i18n.resolvedLanguage)}</strong>
               </div>
             </div>
 
             {/* Fila 2: Fecha de devolución / Lugar de retiro */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '14px 12px 14px 4px', borderBottom: '1px solid #f1f5f9', borderRight: '1px solid #f1f5f9', minWidth: 0 }}>
-              <div style={{ width: '38px', height: '38px', borderRadius: '12px', background: '#EFF6FF', color: '#1D4ED8', display: 'grid', placeItems: 'center', flexShrink: 0, fontSize: '15px' }}>
+            <div className="modal-reserva-dato-celda celda-borde-r celda-borde-b">
+              <div className="modal-dato-icon">
                 <FaRegCalendarCheck />
               </div>
-              <div style={{ minWidth: 0, overflow: 'hidden' }}>
-                <span style={{ display: 'block', fontSize: '11px', color: '#64748b', fontWeight: 600 }}>{t('reservas.returnDate', { defaultValue: 'Fecha de devolución' })}</span>
-                <strong style={{ display: 'block', fontSize: '13px', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{fechaBonita(reserva.fechaFin, i18n.resolvedLanguage)}</strong>
+              <div className="modal-dato-texto">
+                <span className="modal-dato-label">{t('reservas.returnDate', { defaultValue: 'Fecha de devolución' })}</span>
+                <strong className="modal-dato-val">{fechaBonita(reserva.fechaFin, i18n.resolvedLanguage)}</strong>
               </div>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '14px 4px 14px 12px', borderBottom: '1px solid #f1f5f9', minWidth: 0 }}>
-              <div style={{ width: '38px', height: '38px', borderRadius: '12px', background: '#EFF6FF', color: '#1D4ED8', display: 'grid', placeItems: 'center', flexShrink: 0, fontSize: '15px' }}>
+            <div className="modal-reserva-dato-celda celda-borde-b">
+              <div className="modal-dato-icon">
                 <FaMapMarkerAlt />
               </div>
-              <div style={{ minWidth: 0, overflow: 'hidden' }}>
-                <span style={{ display: 'block', fontSize: '11px', color: '#64748b', fontWeight: 600 }}>{t('reservas.pickupLocation', { defaultValue: 'Lugar de retiro' })}</span>
-                <strong style={{ display: 'block', fontSize: '13px', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} title={reserva.vehiculo?.sucursal || sucursalPago}>{reserva.vehiculo?.sucursal || sucursalPago}</strong>
+              <div className="modal-dato-texto">
+                <span className="modal-dato-label">{t('reservas.pickupLocation', { defaultValue: 'Lugar de retiro' })}</span>
+                <strong className="modal-dato-val" title={reserva.vehiculo?.sucursal || sucursalPago}>{reserva.vehiculo?.sucursal || sucursalPago}</strong>
               </div>
             </div>
 
             {/* Fila 3: Protección / Referencia */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '14px 12px 14px 4px', borderBottom: '1px solid #f1f5f9', borderRight: '1px solid #f1f5f9', minWidth: 0 }}>
-              <div style={{ width: '38px', height: '38px', borderRadius: '12px', background: '#EFF6FF', color: '#1D4ED8', display: 'grid', placeItems: 'center', flexShrink: 0, fontSize: '15px' }}>
+            <div className="modal-reserva-dato-celda celda-borde-r celda-borde-b">
+              <div className="modal-dato-icon">
                 <FaShieldAlt />
               </div>
-              <div style={{ minWidth: 0, overflow: 'hidden' }}>
-                <span style={{ display: 'block', fontSize: '11px', color: '#64748b', fontWeight: 600 }}>{t('reservas.protection', { defaultValue: 'Protección' })}</span>
-                <strong style={{ display: 'block', fontSize: '13px', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{proteccion}</strong>
+              <div className="modal-dato-texto">
+                <span className="modal-dato-label">{t('reservas.protection', { defaultValue: 'Protección' })}</span>
+                <strong className="modal-dato-val">{proteccion}</strong>
               </div>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '14px 4px 14px 12px', borderBottom: '1px solid #f1f5f9', minWidth: 0 }}>
-              <div style={{ width: '38px', height: '38px', borderRadius: '12px', background: '#EFF6FF', color: '#1D4ED8', display: 'grid', placeItems: 'center', flexShrink: 0, fontSize: '15px' }}>
+            <div className="modal-reserva-dato-celda celda-borde-b">
+              <div className="modal-dato-icon">
                 <FaScroll />
               </div>
-              <div style={{ minWidth: 0, overflow: 'hidden' }}>
-                <span style={{ display: 'block', fontSize: '11px', color: '#64748b', fontWeight: 600 }}>{t('reservas.reference', { defaultValue: 'Referencia' })}</span>
-                <strong style={{ display: 'block', fontSize: '11.5px', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} title={reserva.id}>{reserva.id}</strong>
+              <div className="modal-dato-texto">
+                <span className="modal-dato-label">{t('reservas.reference', { defaultValue: 'Referencia' })}</span>
+                <strong className="modal-dato-val" title={reserva.id}>{reserva.id}</strong>
               </div>
             </div>
 
             {/* Fila 4: Total / Estado */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '14px 12px 14px 4px', borderRight: '1px solid #f1f5f9', minWidth: 0 }}>
-              <div style={{ width: '38px', height: '38px', borderRadius: '12px', background: '#EFF6FF', color: '#1D4ED8', display: 'grid', placeItems: 'center', flexShrink: 0, fontSize: '15px' }}>
+            <div className="modal-reserva-dato-celda celda-borde-r">
+              <div className="modal-dato-icon brand-tint">
                 <FaMoneyBillWave />
               </div>
-              <div style={{ minWidth: 0, overflow: 'hidden' }}>
-                <span style={{ display: 'block', fontSize: '11px', color: '#64748b', fontWeight: 600 }}>{t('reservas.total', { defaultValue: 'Total' })}</span>
-                <strong style={{ display: 'block', fontSize: '13.5px', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{formatCurrency(reserva.total || 0, moneda)}</strong>
+              <div className="modal-dato-texto">
+                <span className="modal-dato-label">{t('reservas.total', { defaultValue: 'Total' })}</span>
+                <strong className="modal-dato-val">{formatCurrency(reserva.total || 0, moneda)}</strong>
               </div>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '14px 4px 14px 12px', minWidth: 0 }}>
-              <div style={{ width: '38px', height: '38px', borderRadius: '12px', background: '#EFF6FF', color: '#1D4ED8', display: 'grid', placeItems: 'center', flexShrink: 0, fontSize: '15px' }}>
+            <div className="modal-reserva-dato-celda">
+              <div className="modal-dato-icon brand-tint">
                 <FaCheckCircle />
               </div>
-              <div style={{ minWidth: 0, overflow: 'hidden' }}>
-                <span style={{ display: 'block', fontSize: '11px', color: '#64748b', fontWeight: 600 }}>{t('reservas.status', { defaultValue: 'Estado' })}</span>
-                <strong style={{ display: 'block', fontSize: '13px', color: '#15803d', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{estado.texto}</strong>
+              <div className="modal-dato-texto">
+                <span className="modal-dato-label">{t('reservas.status', { defaultValue: 'Estado' })}</span>
+                <strong className="modal-dato-val status-val">{estado.texto}</strong>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Tarjeta de Pago en Efectivo por Sucursal (Diseño exacto de la captura) */}
+        {/* Tarjeta de Pago en Efectivo por Sucursal */}
         {esPendienteEfectivo && (
-          <div
-            style={{
-              background: '#ffffff',
-              border: '1px solid #e2e8f0',
-              borderRadius: '22px',
-              padding: '28px 20px 20px',
-              textAlign: 'center',
-              marginBottom: '18px',
-              boxShadow: '0 4px 18px rgba(0, 0, 0, 0.03)',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center'
-            }}
-          >
+          <div className="modal-cash-card">
             {/* Logo Badge Circular */}
-            <div
-              style={{
-                width: 68,
-                height: 68,
-                borderRadius: '50%',
-                background: '#ffffff',
-                border: '1.5px solid #e2e8f0',
-                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.06)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: 12,
-                marginBottom: 16
-              }}
-            >
+            <div className="modal-cash-logo-badge">
               <img
                 src={brand?.logoDataUrl || logo}
                 alt={brand?.name || 'Drivique'}
-                style={{ width: '100%', height: '100%', objectFit: 'contain' }}
               />
             </div>
 
             {/* Titulo */}
-            <h3
-              style={{
-                fontSize: '20px',
-                fontWeight: 800,
-                color: '#0f172a',
-                margin: '0 0 8px',
-                letterSpacing: '-0.01em'
-              }}
-            >
+            <h3 className="modal-cash-titulo">
               {t('vehiculo.reservationRegisteredTitle', { defaultValue: 'Reserva Registrada' })}
             </h3>
 
             {/* Subtitulo */}
-            <p
-              style={{
-                fontSize: '13px',
-                color: '#64748b',
-                lineHeight: 1.5,
-                margin: '0 0 18px',
-                padding: '0 6px'
-              }}
-            >
+            <p className="modal-cash-desc">
               {t('vehiculo.cashReservationRegisteredDesc', {
                 defaultValue: `Tu reserva quedó registrada. Para confirmarla, realiza el pago en efectivo en el punto autorizado ${sucursalPago}.`,
                 sucursal: sucursalPago
@@ -709,78 +578,39 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
             </p>
 
             {/* Tarjeta de Resumen con datos */}
-            <div
-              style={{
-                width: '100%',
-                background: '#EFF6FF',
-                border: '1.5px solid #BFDBFE',
-                borderRadius: '16px',
-                padding: '16px 18px',
-                textAlign: 'left',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '8px',
-                marginBottom: '14px',
-                boxSizing: 'border-box'
-              }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '13px' }}>
-                <span style={{ color: '#64748b', fontWeight: 600 }}>Referencia:</span>
-                <strong style={{ color: '#1D4ED8', fontWeight: 800 }}>{reserva.id}</strong>
+            <div className="modal-cash-summary">
+              <div className="modal-cash-row">
+                <span className="modal-cash-row-label">{t('reservas.reference', { defaultValue: 'Referencia:' })}</span>
+                <strong className="modal-cash-ref-val">{reserva.id}</strong>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '13px' }}>
-                <span style={{ color: '#64748b', fontWeight: 600 }}>Sucursal:</span>
-                <strong style={{ color: '#0f172a', fontWeight: 700 }}>{sucursalPago}</strong>
+              <div className="modal-cash-row">
+                <span className="modal-cash-row-label">{t('reservas.branch', { defaultValue: 'Sucursal:' })}</span>
+                <strong className="modal-cash-row-val">{sucursalPago}</strong>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '13px' }}>
-                <span style={{ color: '#64748b', fontWeight: 600 }}>Ciudad:</span>
-                <strong style={{ color: '#0f172a', fontWeight: 700 }}>{ciudadPago}</strong>
+              <div className="modal-cash-row">
+                <span className="modal-cash-row-label">{t('reservas.city', { defaultValue: 'Ciudad:' })}</span>
+                <strong className="modal-cash-row-val">{ciudadPago}</strong>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '13px' }}>
-                <span style={{ color: '#64748b', fontWeight: 600 }}>Dirección:</span>
-                <strong style={{ color: '#0f172a', fontWeight: 700 }}>{direccionPago}</strong>
+              <div className="modal-cash-row">
+                <span className="modal-cash-row-label">{t('reservas.address', { defaultValue: 'Dirección:' })}</span>
+                <strong className="modal-cash-row-val">{direccionPago}</strong>
               </div>
-              <div style={{ height: '1px', background: '#BFDBFE', margin: '4px 0' }} />
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '12px', fontWeight: 800, color: '#475569', letterSpacing: '0.02em' }}>TOTAL A PAGAR:</span>
-                <strong style={{ fontSize: '18px', fontWeight: 900, color: '#1D4ED8' }}>{formatCurrency(reserva.total || 0, moneda)}</strong>
+              <div className="modal-cash-divider" />
+              <div className="modal-cash-row total">
+                <span className="modal-cash-total-label">{t('reservas.totalToPay', { defaultValue: 'TOTAL A PAGAR:' })}</span>
+                <strong className="modal-cash-total-val">{formatCurrency(reserva.total || 0, moneda)}</strong>
               </div>
             </div>
 
-            {/* Plazo para pagar (amarillo) */}
-            <div
-              style={{
-                width: '100%',
-                background: '#FEFCE8',
-                border: '1.5px solid #FEF08A',
-                borderRadius: '14px',
-                padding: '12px 14px',
-                textAlign: 'left',
-                boxSizing: 'border-box'
-              }}
-            >
-              <p
-                style={{
-                  margin: '0 0 4px',
-                  fontSize: '11px',
-                  fontWeight: 800,
-                  color: '#854D0E',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.04em'
-                }}
-              >
-                PLAZO PARA PAGAR
+            {/* Plazo para pagar */}
+            <div className="modal-cash-deadline-box">
+              <p className="modal-cash-deadline-title">
+                {t('reservas.paymentDeadline', { defaultValue: 'PLAZO PARA PAGAR' })}
               </p>
-              <p
-                style={{
-                  margin: 0,
-                  fontSize: '12px',
-                  color: '#854D0E',
-                  lineHeight: 1.45,
-                  fontWeight: 500
-                }}
-              >
-                Tienes 72 horas desde ahora para acercarte a la sucursal y pagar. Si no pagas dentro de este plazo, la reserva se cancelará automáticamente.
+              <p className="modal-cash-deadline-text">
+                {t('reservas.cashDeadlineNotice', {
+                  defaultValue: 'Tienes 72 horas desde ahora para acercarte a la sucursal y pagar. Si no pagas dentro de este plazo, la reserva se cancelará automáticamente.'
+                })}
               </p>
             </div>
           </div>
@@ -788,65 +618,22 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
 
         {/* Tarjeta de Pago Digital Pendiente Wompi (si aplica) */}
         {esPendienteWompi && (
-          <div
-            style={{
-              background: '#ffffff',
-              border: '1px solid #e2e8f0',
-              borderRadius: '22px',
-              padding: '28px 24px 24px',
-              textAlign: 'center',
-              marginBottom: '18px',
-              boxShadow: '0 4px 18px rgba(0, 0, 0, 0.03)',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              boxSizing: 'border-box'
-            }}
-          >
-            <h3
-              style={{
-                fontSize: '20px',
-                fontWeight: 800,
-                color: '#0f172a',
-                margin: '0 0 10px',
-                letterSpacing: '-0.01em'
-              }}
-            >
-              Pago Digital Pendiente
+          <div className="modal-wompi-card">
+            <h3 className="modal-wompi-titulo">
+              {t('reservas.pendingDigitalPayment', { defaultValue: 'Pago Digital Pendiente' })}
             </h3>
-            <p
-              style={{
-                fontSize: '13.5px',
-                color: '#64748b',
-                lineHeight: 1.5,
-                margin: '0 0 18px',
-                maxWidth: '430px',
-                fontWeight: 500
-              }}
-            >
-              Tu reserva está guardada como pendiente. Completa el pago seguro en Wompi para confirmar y habilitar tu contrato de alquiler.
+            <p className="modal-wompi-desc">
+              {t('reservas.digitalPendingDesc', {
+                defaultValue: 'Tu reserva está guardada como pendiente. Completa el pago seguro en Wompi para confirmar y habilitar tu contrato de alquiler.'
+              })}
             </p>
 
             {/* Caja de Total a pagar */}
-            <div
-              style={{
-                width: '100%',
-                maxWidth: '440px',
-                background: '#EFF6FF',
-                border: '1.5px solid #BFDBFE',
-                borderRadius: '14px',
-                padding: '14px 18px',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                marginBottom: '16px',
-                boxSizing: 'border-box'
-              }}
-            >
-              <span style={{ fontSize: '12px', fontWeight: 800, color: '#475569', letterSpacing: '0.02em' }}>
-                TOTAL A PAGAR:
+            <div className="modal-wompi-total-box">
+              <span className="modal-wompi-total-label">
+                {t('reservas.totalToPay', { defaultValue: 'TOTAL A PAGAR:' })}
               </span>
-              <strong style={{ fontSize: '19px', fontWeight: 900, color: '#1D4ED8' }}>
+              <strong className="modal-wompi-total-val">
                 {formatCurrency(reserva.total || 0, moneda)}
               </strong>
             </div>
@@ -856,27 +643,10 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
               type="button"
               onClick={handlePagarWompi}
               disabled={pagandoWompi}
-              style={{
-                width: '100%',
-                maxWidth: '440px',
-                height: '50px',
-                borderRadius: '14px',
-                background: '#1D4ED8',
-                color: '#ffffff',
-                border: 'none',
-                fontWeight: 800,
-                fontSize: '14px',
-                cursor: pagandoWompi ? 'default' : 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '10px',
-                boxShadow: '0 4px 14px rgba(29, 78, 216, 0.25)',
-                transition: 'all 0.2s ease'
-              }}
+              className="modal-wompi-btn"
             >
               <FaCreditCard size={16} />
-              <span>{pagandoWompi ? 'Redirigiendo a Wompi…' : 'Pagar con Wompi'}</span>
+              <span>{pagandoWompi ? t('reservas.redirectingToWompi', { defaultValue: 'Redirigiendo a Wompi…' }) : t('reservas.payWithWompi', { defaultValue: 'Pagar con Wompi' })}</span>
             </button>
           </div>
         )}
@@ -885,25 +655,11 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
         <Contrato reserva={reserva} autoDesbloquear={autoDesbloquear} />
 
         {/* Botón de cierre */}
-        <div style={{ display: 'flex', justifyContent: 'center', marginTop: 12 }}>
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: 14 }}>
           <button
             type="button"
             onClick={onClose}
-            style={{
-              minWidth: 160,
-              padding: '10px 24px',
-              borderRadius: '12px',
-              border: '1px solid #cbd5e1',
-              background: '#ffffff',
-              color: '#1e293b',
-              fontSize: '13px',
-              fontWeight: 800,
-              cursor: 'pointer',
-              transition: 'all 0.2s ease',
-              boxShadow: '0 2px 6px rgba(0, 0, 0, 0.04)'
-            }}
-            onMouseOver={(e) => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.borderColor = '#94a3b8' }}
-            onMouseOut={(e) => { e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.borderColor = '#cbd5e1' }}
+            className="detalle-cerrar-btn-custom"
           >
             {t('reservas.closeDetail', { defaultValue: 'Cerrar detalle' })}
           </button>

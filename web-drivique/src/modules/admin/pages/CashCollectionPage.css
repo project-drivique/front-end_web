@@ -492,6 +492,42 @@
   border-bottom: 1px solid var(--borde, #e2e8f0);
 }
 
+.cash-recent-row {
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.cash-recent-row:hover {
+  background-color: var(--brand-soft-light, rgba(37, 99, 235, 0.05));
+}
+
+.cash-recent-row.selected {
+  background-color: var(--brand-soft-light, rgba(37, 99, 235, 0.08));
+  outline: 2px solid var(--brand-primary, #2563eb);
+  outline-offset: -2px;
+}
+
+.cash-table-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--brand-soft-light, #eff6ff);
+  color: var(--brand-primary, #2563eb);
+  border: 1px solid var(--brand-border-light, #bfdbfe);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cash-table-action-btn:hover {
+  background: var(--brand-primary, #2563eb);
+  color: #ffffff;
+  border-color: var(--brand-primary, #2563eb);
+}
+
 @media (max-width: 900px) {
   .cash-detail-body {
     grid-template-columns: 1fr;
@@ -502,5 +538,242 @@
   .cash-search-btn {
     width: 100%;
     justify-content: center;
+  }
+}
+
+.cash-obs-input {
+  width: 100%;
+  height: 42px;
+  border-radius: 10px;
+  border: 1px solid var(--borde, #cbd5e1);
+  padding: 0 12px;
+  font-size: 13px;
+  box-sizing: border-box;
+  background: var(--bg-tarjeta, #ffffff);
+  color: var(--texto-primary, #0f172a);
+}
+
+.cash-audit-banner {
+  padding: 14px;
+  border-radius: 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #475569;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* ============================================================
+   MODO OSCURO COBRO EN SUCURSAL
+   ============================================================ */
+html.dark .cash-collection-shell,
+.management-shell--dark.cash-collection-shell {
+  background: #0b1329;
+  color: #f8fafc;
+}
+
+html.dark .cash-header h1,
+.management-shell--dark .cash-header h1 {
+  color: #f8fafc;
+}
+
+html.dark .cash-kpi-card,
+.management-shell--dark .cash-kpi-card {
+  background: #172033;
+  border-color: #334155;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+html.dark .cash-kpi-data strong,
+.management-shell--dark .cash-kpi-data strong {
+  color: #f8fafc;
+}
+
+html.dark .cash-search-box,
+.management-shell--dark .cash-search-box {
+  background: #172033;
+  border-color: #334155;
+}
+
+html.dark .cash-search-title,
+.management-shell--dark .cash-search-title {
+  color: #f8fafc;
+}
+
+html.dark .cash-search-input,
+.management-shell--dark .cash-search-input {
+  background: #0f172a;
+  border-color: #334155;
+  color: #f8fafc;
+}
+
+html.dark .cash-chip,
+.management-shell--dark .cash-chip {
+  background: #1e293b;
+  border-color: #334155;
+  color: #cbd5e1;
+}
+
+html.dark .cash-chip:hover,
+.management-shell--dark .cash-chip:hover {
+  background: rgba(var(--brand-primary-rgb), 0.2);
+  border-color: var(--brand-primary);
+}
+
+html.dark .cash-detail-card,
+.management-shell--dark .cash-detail-card {
+  background: #172033;
+  border-color: #334155;
+}
+
+html.dark .cash-detail-header,
+.management-shell--dark .cash-detail-header {
+  border-bottom-color: #334155;
+}
+
+html.dark .cash-col-title,
+.management-shell--dark .cash-col-title {
+  color: #f8fafc;
+}
+
+html.dark .cash-data-group,
+.management-shell--dark .cash-data-group {
+  background: #0f172a;
+  border-color: #334155;
+}
+
+html.dark .cash-data-row,
+.management-shell--dark .cash-data-row {
+  border-bottom-color: #1e293b;
+}
+
+html.dark .cash-data-val,
+.management-shell--dark .cash-data-val {
+  color: #f8fafc;
+}
+
+html.dark .cash-vehicle-preview,
+.management-shell--dark .cash-vehicle-preview {
+  background: #0f172a;
+  border-color: #334155;
+}
+
+html.dark .cash-vehicle-info strong,
+.management-shell--dark .cash-vehicle-info strong {
+  color: #f8fafc;
+}
+
+html.dark .cash-billing-box,
+.management-shell--dark .cash-billing-box {
+  background: #0f172a;
+  border-color: #334155;
+}
+
+html.dark .cash-breakdown-row span,
+.management-shell--dark .cash-breakdown-row span {
+  color: #cbd5e1;
+}
+
+html.dark .cash-total-callout,
+.management-shell--dark .cash-total-callout {
+  background: rgba(var(--brand-primary-rgb), 0.12);
+  border-color: rgba(var(--brand-primary-rgb), 0.35);
+}
+
+html.dark .cash-wompi-notice,
+.management-shell--dark .cash-wompi-notice {
+  background: rgba(16, 185, 129, 0.12);
+  border-color: #166534;
+  color: #86efac;
+}
+
+html.dark .cash-wompi-notice h4,
+.management-shell--dark .cash-wompi-notice h4 {
+  color: #4ade80;
+}
+
+html.dark .cash-obs-input,
+.management-shell--dark .cash-obs-input {
+  background: #0f172a;
+  border-color: #334155;
+  color: #f8fafc;
+}
+
+html.dark .cash-audit-banner,
+.management-shell--dark .cash-audit-banner {
+  background: #0f172a;
+  border-color: #334155;
+  color: #cbd5e1;
+}
+
+html.dark .cash-recent-section,
+.management-shell--dark .cash-recent-section {
+  background: #172033;
+  border-color: #334155;
+}
+
+html.dark .cash-recent-section h3,
+.management-shell--dark .cash-recent-section h3 {
+  color: #f8fafc;
+}
+
+html.dark .cash-recent-table th,
+.management-shell--dark .cash-recent-table th {
+  border-bottom-color: #334155;
+  color: #94a3b8;
+}
+
+html.dark .cash-recent-table td,
+.management-shell--dark .cash-recent-table td {
+  border-bottom-color: #1e293b;
+  color: #f8fafc;
+}
+
+html.dark .cash-recent-row:hover,
+.management-shell--dark .cash-recent-row:hover {
+  background-color: rgba(var(--brand-primary-rgb), 0.15);
+}
+
+html.dark .cash-recent-row.selected,
+.management-shell--dark .cash-recent-row.selected {
+  background-color: rgba(var(--brand-primary-rgb), 0.25);
+  outline-color: var(--brand-primary);
+}
+
+html.dark .cash-table-action-btn,
+.management-shell--dark .cash-table-action-btn {
+  background: rgba(var(--brand-primary-rgb), 0.18);
+  border-color: rgba(var(--brand-primary-rgb), 0.35);
+  color: var(--brand-border-light, #93c5fd);
+}
+
+/* ============================================================
+   RESPONSIVE PARA CAJA (CELULAR Y TABLET)
+   ============================================================ */
+@media (max-width: 768px) {
+  .cash-collection-main {
+    padding: 20px 16px 40px;
+  }
+  .cash-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .cash-header h1 {
+    font-size: 22px;
+  }
+  .cash-kpis {
+    grid-template-columns: 1fr;
+  }
+  .cash-detail-card {
+    padding: 18px 16px;
+  }
+  .cash-detail-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .cash-recent-section {
+    padding: 18px 14px;
   }
 }

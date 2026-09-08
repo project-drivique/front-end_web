@@ -93,8 +93,16 @@ export const construirUrlCheckout = async ({ reference, amountInCents, redirectU
     'signature:integrity': firma,
   });
 
-  if (redirectUrl) {
-    params.set('redirect-url', redirectUrl);
+  // Wompi y el WAF de CloudFront BLOQUEAN con HTTP 403 Forbidden cualquier petición
+  // si el parámetro 'redirect-url' contiene http:// o localhost.
+  // Solo se envía 'redirect-url' si es una URL HTTPS válida (Netlify / producción).
+  const targetRedirect = redirectUrl || (typeof window !== 'undefined' ? `${window.location.origin}/respuesta` : '');
+  const netlifyUrl = import.meta.env?.VITE_NETLIFY_URL || import.meta.env?.VITE_PUBLIC_URL || '';
+
+  if (netlifyUrl && netlifyUrl.startsWith('https://')) {
+    params.set('redirect-url', `${netlifyUrl.replace(/\/$/, '')}/respuesta`);
+  } else if (targetRedirect && targetRedirect.startsWith('https://')) {
+    params.set('redirect-url', targetRedirect);
   }
 
   return `https://checkout.wompi.co/p/?${params.toString()}`;

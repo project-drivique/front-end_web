@@ -429,7 +429,7 @@ export default function ReservationFlowPage() {
                     <span style={{ color: c.textSecondary || '#64748b', fontWeight: 600 }}>Referencia:</span>
                     <span style={{
                       fontWeight: 800,
-                      color: '#1D4ED8',
+                      color: 'var(--brand-primary, #1D4ED8)',
                       fontSize: 12.5,
                       letterSpacing: '0.02em'
                     }}>
@@ -459,7 +459,7 @@ export default function ReservationFlowPage() {
                     <span style={{
                       fontSize: 17,
                       fontWeight: 900,
-                      color: '#1D4ED8'
+                      color: 'var(--brand-primary, #1D4ED8)'
                     }}>
                       {formatCurrency(reservaCreada.total, moneda)}
                     </span>
@@ -516,13 +516,13 @@ export default function ReservationFlowPage() {
                       width: '100%',
                       height: 46,
                       borderRadius: 12,
-                      background: c.isDark ? '#2563EB' : '#1D4ED8',
-                      color: '#ffffff',
+                      background: 'var(--brand-primary, #1D4ED8)',
+                      color: 'var(--brand-on-primary, #ffffff)',
                       border: 'none',
                       fontWeight: 700,
                       fontSize: 14,
                       cursor: 'pointer',
-                      boxShadow: '0 6px 16px rgba(29, 78, 216, 0.25)',
+                      boxShadow: '0 6px 16px var(--brand-shadow, rgba(29, 78, 216, 0.25))',
                       transition: 'all 0.2s',
                       display: 'flex',
                       alignItems: 'center',

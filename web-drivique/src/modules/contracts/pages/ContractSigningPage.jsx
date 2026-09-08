@@ -165,10 +165,11 @@ export default function ContractSigningPage() {
           style={{
             padding: '10px 20px',
             borderRadius: '12px',
-            background: '#1D4ED8',
-            color: '#fff',
+            background: 'var(--brand-primary, #2563eb)',
+            color: 'var(--brand-on-primary, #fff)',
             fontWeight: 700,
-            textDecoration: 'none'
+            textDecoration: 'none',
+            boxShadow: '0 4px 12px var(--brand-shadow, rgba(37,99,235,0.25))'
           }}
         >
           Volver a Mis Reservas
@@ -248,9 +249,9 @@ export default function ContractSigningPage() {
               gap: 8,
               padding: '6px 14px',
               borderRadius: 9999,
-              background: '#EFF6FF',
-              border: '1px solid #BFDBFE',
-              color: '#1D4ED8',
+              background: 'var(--brand-soft-light, #EFF6FF)',
+              border: '1px solid var(--brand-border-light, #BFDBFE)',
+              color: 'var(--brand-primary, #2563eb)',
               fontSize: 12,
               fontWeight: 800,
               textTransform: 'uppercase',
@@ -283,7 +284,7 @@ export default function ContractSigningPage() {
               lineHeight: 1.55
             }}
           >
-            Tu reserva <strong style={{ color: '#1D4ED8' }}>{id}</strong> ya fue confirmada. Lee detenidamente los términos y condiciones de alquiler y dibuja tu firma digital en el recuadro inferior para completar el proceso.
+            Tu reserva <strong style={{ color: 'var(--brand-primary, #2563eb)' }}>{id}</strong> ya fue confirmada. Lee detenidamente los términos y condiciones de alquiler y dibuja tu firma digital en el recuadro inferior para completar el proceso.
           </p>
         </div>
 

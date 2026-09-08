@@ -179,7 +179,17 @@ export const authService = {
         throw error
       }
       clearLoginSecurity(correo)
-      accessAuditService.record({ correo, rol: usuario.rol, resultado: 'exitoso' })
+      accessAuditService.record({
+        correo,
+        rol: usuario.rol,
+        resultado: 'exitoso',
+        actor: usuario.nombre || correo,
+        sucursal: usuario.sucursal || usuario.sucursalId || 'Global / Sistema',
+        tipo: 'AUTENTICACION',
+        modulo: 'Seguridad / Acceso',
+        accion: 'Inicio de sesión exitoso',
+        motivo: `Acceso concedido a ${usuario.sucursal || 'panel administrativo'}`
+      })
       return {
         token: generateMockToken(),
         // Devuelve un token falso si el usuario existe.
