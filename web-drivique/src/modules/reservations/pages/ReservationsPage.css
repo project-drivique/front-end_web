@@ -733,10 +733,10 @@ html.dark .contrato-action-btn.bloqueado:disabled {
 .detalle-cerrar-btn-custom {
   width: auto;
   min-height: 38px;
-  padding: 9px 20px;
+  padding: 9px 22px;
   border-radius: 10px;
-  border: 1px solid var(--brand-secondary);
-  background: var(--brand-secondary);
+  border: none;
+  background: var(--brand-gradient, linear-gradient(135deg, var(--brand-secondary, #1e3a8a), var(--brand-primary, #2563eb)));
   color: #ffffff;
   font-size: 11px;
   font-weight: 800;
@@ -745,17 +745,15 @@ html.dark .contrato-action-btn.bloqueado:disabled {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  box-shadow: none;
-  transition: 0.18s ease;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
   box-sizing: border-box;
 }
 
 .detalle-cerrar-btn-custom:hover {
-  background: var(--brand-primary);
-  border-color: var(--brand-primary);
+  background: var(--brand-gradient, linear-gradient(135deg, var(--brand-secondary, #1e3a8a), var(--brand-primary, #2563eb)));
   transform: translateY(-1px);
-  box-shadow: 0 5px 14px rgba(var(--brand-primary-rgb), 0.2);
-  filter: none;
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.35);
 }
 
 .detalle-cerrar-btn-custom:active {
@@ -955,17 +953,16 @@ html.dark .modal-wompi-total-label {
 }
 
 html.dark .detalle-cerrar-btn-custom {
-  background: var(--brand-secondary);
-  border-color: var(--brand-secondary);
+  background: var(--brand-gradient, linear-gradient(135deg, var(--brand-secondary, #1e3a8a), var(--brand-primary, #2563eb)));
+  border: none;
   color: #ffffff;
-  box-shadow: none;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
 }
 
 html.dark .detalle-cerrar-btn-custom:hover {
-  background: var(--brand-primary);
-  border-color: var(--brand-primary);
-  box-shadow: 0 5px 14px rgba(var(--brand-primary-rgb), 0.3);
-  filter: none;
+  background: var(--brand-gradient, linear-gradient(135deg, var(--brand-secondary, #1e3a8a), var(--brand-primary, #2563eb)));
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.45);
 }
 
 /* ============================================================
