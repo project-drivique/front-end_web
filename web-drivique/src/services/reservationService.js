@@ -37,46 +37,7 @@ const hoyMs = Date.now()
 const fechaInicioAyer = new Date(hoyMs - 86400000).toISOString().slice(0, 10)
 const fechaFinEnTresDias = new Date(hoyMs + 86400000 * 3).toISOString().slice(0, 10)
 
-const INITIAL_RESERVATIONS_SEED = [
-  {
-    referencia: 'RES-1788806368641-R95O5FB',
-    codigo: 'RES-1788806368641-R95O5FB',
-    id: 'RES-1788806368641-R95O5FB',
-    vehiculoId: 2,
-    vehiculoNombre: 'Mazda CX-5 2024',
-    vehiculoPlaca: 'KLS-849',
-    total: 406314,
-    totalCOP: 406314,
-    estado: 'CONFIRMADA',
-    pagoEstado: 'aprobado',
-    metodoPagoConfirmado: 'efectivo',
-    fechaPagoConfirmado: new Date().toISOString(),
-    fechaCreacion: new Date().toISOString(),
-    cajeroConfirmacion: 'Encargado Alamo Medellín Poblado',
-    observacionesCaja: 'Cobro en efectivo recibido y validado en caja de sucursal',
-    sucursal: 'Alamo Medellín Poblado',
-    sucursalPagoEfectivo: 'Alamo Medellín Poblado',
-    fechaLimitePago: null,
-    horasLimitePago: null,
-    reservaDetalles: {
-      fechaInicio: new Date().toISOString().slice(0, 10),
-      fechaFin: new Date(Date.now() + 86400000 * 3).toISOString().slice(0, 10),
-      horaInicio: '14:00',
-      horaFin: '18:00',
-      sucursalRetiro: 'Alamo Medellín Poblado',
-      sucursalDevolucion: 'Alamo Medellín Poblado',
-      sucursalPagoEfectivo: 'Alamo Medellín Poblado',
-      metodoPago: 'efectivo',
-    },
-    datosForm: {
-      nombres: 'Mateo',
-      apellidos: 'Gómez Restrepo',
-      correo: 'mateo.gomez@drivique.com',
-      telefono: '+57 300 456 7890',
-      numDoc: '1035987654',
-    },
-  },
-]
+const INITIAL_RESERVATIONS_SEED = [];
 
 export const reservationService = {
   getReservas: () => {
