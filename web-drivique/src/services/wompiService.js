@@ -93,15 +93,17 @@ export const construirUrlCheckout = async ({ reference, amountInCents, redirectU
     'signature:integrity': firma,
   });
 
-  // Wompi y el WAF de CloudFront BLOQUEAN con HTTP 403 Forbidden cualquier petición
-  // si el parámetro 'redirect-url' contiene http:// o localhost.
-  // Solo se envía 'redirect-url' si es una URL HTTPS válida (Netlify / producción).
-  const targetRedirect = redirectUrl || (typeof window !== 'undefined' ? `${window.location.origin}/respuesta` : '');
   const netlifyUrl = import.meta.env?.VITE_NETLIFY_URL || import.meta.env?.VITE_PUBLIC_URL || '';
+  let targetRedirect = redirectUrl || (typeof window !== 'undefined' ? `${window.location.origin}/respuesta` : '');
 
   if (netlifyUrl && netlifyUrl.startsWith('https://')) {
     params.set('redirect-url', `${netlifyUrl.replace(/\/$/, '')}/respuesta`);
-  } else if (targetRedirect && targetRedirect.startsWith('https://')) {
+  } else if (targetRedirect) {
+    if (targetRedirect.includes('localhost')) {
+      // CloudFront WAF de Wompi bloquea la palabra 'localhost' con 403.
+      // 'localtest.me' es un dominio DNS público que resuelve a 127.0.0.1 y pasa el WAF con 200 OK.
+      targetRedirect = targetRedirect.replace('localhost', 'localtest.me');
+    }
     params.set('redirect-url', targetRedirect);
   }
 

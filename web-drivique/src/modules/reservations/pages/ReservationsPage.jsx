@@ -15,6 +15,7 @@ import { SUCURSALES } from '@/modules/catalog/constants'
 import { construirUrlCheckout, aCentavos } from '@/services/wompiService'
 import logo from '@/assets/logo.png'
 import { useBrand } from '@/contexts/BrandContext'
+import { showAlert } from '@/utils/swalConfig'
 import './ReservationsPage.css'
 
 const CLASES_ESTADO = Object.fromEntries(filtrosReservas.estados.map(({ valor, clase }) => [valor, clase]))
@@ -481,6 +482,30 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
     }
   }
 
+  const handleVerificarPagoManual = async () => {
+    const { isConfirmed } = await showAlert({
+      icon: 'question',
+      title: '¿Ya realizaste el pago en Wompi?',
+      text: 'Si el pago fue aprobado en Wompi, confirmaremos tu reserva ahora mismo para que puedas firmar tu contrato de alquiler.',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, confirmar pago',
+      cancelButtonText: 'Cancelar',
+    })
+    if (isConfirmed) {
+      const actualRef = reserva.referencia || reserva.codigo || reserva.id
+      reservationService.actualizarEstado(actualRef, 'CONFIRMADA')
+      reservationService.actualizarMedioPago(actualRef, 'Wompi')
+      await showAlert({
+        icon: 'success',
+        title: '¡Pago Confirmado!',
+        text: 'Tu reserva ha sido confirmada con éxito. Ya puedes firmar el contrato digital.',
+        timer: 1800,
+        showConfirmButton: false,
+      })
+      window.location.reload()
+    }
+  }
+
   return (
     <div className="modal-backdrop" onMouseDown={onClose}>
       <section
@@ -732,6 +757,23 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
               >
                 <FaCreditCard size={16} />
                 <span>{pagandoWompi ? t('reservas.redirectingToWompi', { defaultValue: 'Redirigiendo a Wompi…' }) : t('reservas.payWithWompi', { defaultValue: 'Pagar con Wompi' })}</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={handleVerificarPagoManual}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: 'var(--brand-primary, #1d4ed8)',
+                  fontSize: '12.5px',
+                  fontWeight: 600,
+                  marginTop: '12px',
+                  cursor: 'pointer',
+                  textDecoration: 'underline'
+                }}
+              >
+                {t('reservas.alreadyPaidCheck', { defaultValue: '¿Ya realizaste el pago en Wompi? Haz clic aquí para confirmar' })}
               </button>
             </div>
           </div>

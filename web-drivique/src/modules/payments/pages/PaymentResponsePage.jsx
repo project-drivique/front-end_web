@@ -14,6 +14,12 @@ import { useAuthStore } from '../../../store/authStore';
 import MenuConfiguracion from '@/components/MenuConfiguracion';
 
 export default function RespuestaPagoPage() {
+  if (typeof window !== 'undefined' && (window.location.hostname === 'localtest.me' || window.location.hostname === 'lvh.me')) {
+    const targetUrl = window.location.href.replace(window.location.hostname, 'localhost');
+    window.location.replace(targetUrl);
+    return null;
+  }
+
   const { brand } = useBrand();
   const { t } = useTranslation();
   const navigate = useNavigate();
