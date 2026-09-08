@@ -487,7 +487,7 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
           {/* 2. Tarjeta de datos de la reserva (2 columnas) */}
           <div className="modal-reserva-datos-grid">
             {/* Fila 1: Vehículo / Fecha de retiro */}
-            <div className="modal-reserva-dato-celda celda-borde-r celda-borde-b">
+            <div className="modal-reserva-dato-celda">
               <div className="modal-dato-icon">
                 <FaCar />
               </div>
@@ -497,7 +497,7 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
               </div>
             </div>
 
-            <div className="modal-reserva-dato-celda celda-borde-b">
+            <div className="modal-reserva-dato-celda">
               <div className="modal-dato-icon">
                 <FaCalendarAlt />
               </div>
@@ -508,7 +508,7 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
             </div>
 
             {/* Fila 2: Fecha de devolución / Lugar de retiro */}
-            <div className="modal-reserva-dato-celda celda-borde-r celda-borde-b">
+            <div className="modal-reserva-dato-celda">
               <div className="modal-dato-icon">
                 <FaRegCalendarCheck />
               </div>
@@ -518,7 +518,7 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
               </div>
             </div>
 
-            <div className="modal-reserva-dato-celda celda-borde-b">
+            <div className="modal-reserva-dato-celda">
               <div className="modal-dato-icon">
                 <FaMapMarkerAlt />
               </div>
@@ -529,7 +529,7 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
             </div>
 
             {/* Fila 3: Lugar de devolución / Medio de pago */}
-            <div className="modal-reserva-dato-celda celda-borde-r celda-borde-b">
+            <div className="modal-reserva-dato-celda">
               <div className="modal-dato-icon">
                 <FaMapMarkerAlt />
               </div>
@@ -539,7 +539,7 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
               </div>
             </div>
 
-            <div className="modal-reserva-dato-celda celda-borde-b">
+            <div className="modal-reserva-dato-celda">
               <div className="modal-dato-icon">
                 <FaCreditCard />
               </div>
@@ -550,7 +550,7 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
             </div>
 
             {/* Fila 4: Protección / Referencia */}
-            <div className="modal-reserva-dato-celda celda-borde-r celda-borde-b">
+            <div className="modal-reserva-dato-celda">
               <div className="modal-dato-icon">
                 <FaShieldAlt />
               </div>
@@ -560,18 +560,18 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
               </div>
             </div>
 
-            <div className="modal-reserva-dato-celda celda-borde-b">
+            <div className="modal-reserva-dato-celda">
               <div className="modal-dato-icon">
                 <FaScroll />
               </div>
               <div className="modal-dato-texto">
                 <span className="modal-dato-label">{t('reservas.reference', { defaultValue: 'Referencia' })}</span>
-                <strong className="modal-dato-val" title={reserva.id}>{reserva.id}</strong>
+                <strong className="modal-dato-val referencia-val" title={reserva.id}>{reserva.id}</strong>
               </div>
             </div>
 
             {/* Fila 5: Total / Estado */}
-            <div className="modal-reserva-dato-celda celda-borde-r">
+            <div className="modal-reserva-dato-celda">
               <div className="modal-dato-icon brand-tint">
                 <FaMoneyBillWave />
               </div>
