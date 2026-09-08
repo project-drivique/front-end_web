@@ -828,22 +828,6 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
                 <span>{pagandoWompi ? t('reservas.redirectingToWompi', { defaultValue: 'Redirigiendo a Wompi…' }) : t('reservas.payWithWompi', { defaultValue: 'Pagar con Wompi' })}</span>
               </button>
 
-              <button
-                type="button"
-                onClick={handleVerificarPagoManual}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  color: 'var(--brand-primary, #1d4ed8)',
-                  fontSize: '12.5px',
-                  fontWeight: 600,
-                  marginTop: '12px',
-                  cursor: 'pointer',
-                  textDecoration: 'underline'
-                }}
-              >
-                {t('reservas.alreadyPaidCheck', { defaultValue: '¿Ya realizaste el pago en Wompi? Haz clic aquí para confirmar' })}
-              </button>
             </div>
           </div>
         )}
