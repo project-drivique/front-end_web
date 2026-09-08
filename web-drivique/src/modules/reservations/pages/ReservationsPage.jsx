@@ -74,17 +74,13 @@ function ModalValoracion({ reserva, onClose, onSave }) {
   </section></div>
 }
 
-function ContratoVerCard({ reserva, contratoFirmado, reservaParaContrato, vehiculoParaContrato, identificacion, autoDesbloquear = false, onDesbloquear }) {
-  const { t, i18n } = useTranslation()
+function ContratoVerCard({ reserva, contratoFirmado, reservaParaContrato, vehiculoParaContrato, identificacion }) {
+  const { t } = useTranslation()
+  const navigate = useNavigate()
   const [clave, setClave] = useState('')
   const [mostrarClave, setMostrarClave] = useState(false)
   const tieneContratoFirmado = Boolean(contratoFirmado?.firmaUsuarioDataUrl)
-  const [desbloqueado, setDesbloqueado] = useState(false)
   const [error, setError] = useState('')
-  const [descargando, setDescargando] = useState(false)
-  const contratoVisualRef = useRef(null)
-  const [preparandoVista, setPreparandoVista] = useState(false)
-  const [vistaPreparada, setVistaPreparada] = useState(false)
   const usuario = useAuthStore(state => state.usuario)
 
   const validar = () => {
@@ -111,172 +107,20 @@ function ContratoVerCard({ reserva, contratoFirmado, reservaParaContrato, vehicu
     )
 
     if (coincideDoc || coincideUsuario || coincideRef || coincideContrato || esDuenio || clave.trim().length >= 3) {
-      if (onDesbloquear) {
-        onDesbloquear()
-      } else {
-        setDesbloqueado(true)
-      }
       setError('')
+      const targetId = reserva.referencia || reserva.codigo || reserva.id
+      navigate(`/contrato/${encodeURIComponent(targetId)}`, {
+        state: {
+          reserva: reservaParaContrato || reserva,
+          vehiculo: vehiculoParaContrato || reserva.vehiculo,
+          soloLectura: true
+        }
+      })
     } else {
       setError(t('reservas.wrongIdentification', { defaultValue: 'La clave ingresada no coincide.' }))
     }
   }
 
-  const descargar = async () => {
-    if (descargando) return
-    setDescargando(true)
-    try {
-      if (!reservaParaContrato || !vehiculoParaContrato) throw new Error(t('reservas.originalDataMissing'))
-      const docReserva = String(reservaParaContrato?.datosForm?.numDoc || '').replace(/\D/g, '')
-      const docUsuario = String(usuario?.cedula || '').replace(/\D/g, '')
-      if (docReserva && docUsuario && docReserva !== docUsuario) throw new Error(t('reservas.notReservationOwner'))
-      let contratoDescarga = contratoFirmado
-      if (!contratoFirmado?.contratoOriginal) {
-        contratoDescarga = contractService.completarContratoOriginal(reserva.id, {
-          reserva: JSON.parse(JSON.stringify(reservaParaContrato)),
-          vehiculo: JSON.parse(JSON.stringify(vehiculoParaContrato)),
-          idioma: i18n.resolvedLanguage || i18n.language || 'es',
-          guardadoEn: contratoFirmado?.firmadoEn || new Date().toISOString(),
-          migradoDesdeReserva: true,
-        })
-      }
-      await descargarContratoOriginal({ contrato: contratoDescarga, elementoContrato: contratoVisualRef.current })
-      setError('')
-    } catch (e) { setError(e.message) }
-    finally { setDescargando(false) }
-  }
-
-  useEffect(() => {
-    if (!desbloqueado || vistaPreparada || !reservaParaContrato || !vehiculoParaContrato) return
-    let activo = true
-    const preparar = async () => {
-      setPreparandoVista(true)
-      await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))
-      try {
-        await prepararVistaContrato({ elementoContrato: contratoVisualRef.current, contrato: contratoFirmado })
-        if (!activo) return
-        setVistaPreparada(true)
-        setError('')
-      } catch (e) { if (activo) setError(e.message) }
-      finally { if (activo) setPreparandoVista(false) }
-    }
-    preparar()
-    return () => { activo = false }
-  }, [desbloqueado, vistaPreparada, reservaParaContrato, vehiculoParaContrato, contratoFirmado, reserva.id])
-
-  // Vista desbloqueada: mostrar contrato completo + descarga dentro de la misma tarjeta estilizada
-  if (desbloqueado && tieneContratoFirmado) {
-    return (
-      <div className="contrato-card desbloqueada">
-        <div className="contrato-subcard">
-          <div className="contrato-icon-wrap" style={{ background: 'rgba(34, 197, 94, 0.1)', color: '#16a34a', borderColor: 'rgba(34, 197, 94, 0.25)' }}>
-            <FaFileContract size={22} />
-          </div>
-
-          <h3 className="contrato-card-titulo">
-            {t('reservas.originalSignedContract', { defaultValue: 'Contrato firmado original' })}
-          </h3>
-
-          <p className="contrato-card-desc">
-            {contratoFirmado.codigo || reserva.numeroContrato || reserva.id}
-          </p>
-
-          <div style={{ width: '100%', maxWidth: '440px', display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'center' }}>
-            <button
-              className="contrato-descargar"
-              onClick={descargar}
-              disabled={descargando || preparandoVista || !vistaPreparada}
-              style={{ width: '100%' }}
-            >
-              <span className="contrato-descarga-icon"><FaDownload /></span>
-              <span>
-                <strong>{descargando ? t('reservas.preparingDocument') : t('reservas.downloadContract')}</strong>
-                <small>{t('reservas.originalPdf')}</small>
-              </span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setDesbloqueado(false)}
-              className="btn-link"
-              style={{ fontSize: '13px', color: 'var(--texto-second)', marginTop: '4px', cursor: 'pointer', background: 'none', border: 'none', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
-            >
-              <FaLock size={12} />
-              <span>{t('reservas.lock', { defaultValue: 'Bloquear contrato' })}</span>
-            </button>
-          </div>
-
-          {/* Documento oficial completo visible para lectura inmediata */}
-          <div className="contrato-vista-documento" style={{
-            width: '100%',
-            maxHeight: '380px',
-            overflowY: 'auto',
-            background: 'var(--bg-item, #f8fafc)',
-            border: '1px solid var(--borde, #e2e8f0)',
-            borderRadius: '16px',
-            padding: '18px',
-            textAlign: 'left',
-            marginTop: '18px',
-            boxSizing: 'border-box'
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--borde, #e2e8f0)', paddingBottom: '10px', marginBottom: '14px' }}>
-              <strong style={{ fontSize: '13px', color: 'var(--brand-primary, #1d4ed8)' }}>
-                {contratoFirmado.codigo || ('CTR-' + (reserva.referencia || reserva.id))}
-              </strong>
-              <span style={{ fontSize: '11px', color: 'var(--texto-second, #64748b)', fontWeight: 600 }}>
-                {contratoFirmado.firmadoEn ? new Date(contratoFirmado.firmadoEn).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Documento Registrado'}
-              </span>
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '14px' }}>
-              <div style={{ fontSize: '12px', background: 'var(--bg-tarjeta, #ffffff)', padding: '10px', borderRadius: '10px', border: '1px solid var(--borde, #e2e8f0)' }}>
-                <span style={{ color: 'var(--texto-second)', display: 'block', fontSize: '10px', textTransform: 'uppercase', fontWeight: 800 }}>Arrendatario:</span>
-                <strong style={{ color: 'var(--texto-primary)', display: 'block', margin: '2px 0' }}>{reservaParaContrato?.datosForm?.nombre || usuario?.nombre || 'Cliente'}</strong>
-                <span style={{ display: 'block', color: 'var(--texto-second)', fontSize: '11px' }}>Doc: {reservaParaContrato?.datosForm?.numDoc || identificacion}</span>
-              </div>
-              <div style={{ fontSize: '12px', background: 'var(--bg-tarjeta, #ffffff)', padding: '10px', borderRadius: '10px', border: '1px solid var(--borde, #e2e8f0)' }}>
-                <span style={{ color: 'var(--texto-second)', display: 'block', fontSize: '10px', textTransform: 'uppercase', fontWeight: 800 }}>Vehículo:</span>
-                <strong style={{ color: 'var(--texto-primary)', display: 'block', margin: '2px 0' }}>{vehiculoParaContrato?.nombre || reserva.vehiculo?.nombre}</strong>
-                <span style={{ display: 'block', color: 'var(--texto-second)', fontSize: '11px' }}>Placa: {vehiculoParaContrato?.placa || reserva.vehiculo?.placa || 'Asignada en entrega'}</span>
-              </div>
-            </div>
-
-            <div style={{ fontSize: '11.5px', color: 'var(--texto-primary)', lineHeight: 1.5, background: 'var(--bg-tarjeta, #ffffff)', padding: '12px', borderRadius: '12px', border: '1px solid var(--borde, #e2e8f0)', marginBottom: '14px' }}>
-              <p style={{ margin: '0 0 4px', fontWeight: 800, color: 'var(--texto-primary)' }}>Términos y Cláusulas Aceptadas:</p>
-              <p style={{ margin: '0 0 3px', color: 'var(--texto-second)' }}>• Entrega y devolución en perfecto estado mecánico y de limpieza.</p>
-              <p style={{ margin: '0 0 3px', color: 'var(--texto-second)' }}>• Cobertura de protección seleccionada activa durante todo el alquiler.</p>
-              <p style={{ margin: '0', color: 'var(--texto-second)' }}>• Cumplimiento estricto del kilometraje y horarios pactados.</p>
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', borderTop: '1px solid var(--borde, #e2e8f0)', paddingTop: '14px' }}>
-              <div style={{ textAlign: 'center', background: 'var(--bg-tarjeta, #ffffff)', border: '1px solid var(--borde, #e2e8f0)', borderRadius: '12px', padding: '10px' }}>
-                <span style={{ fontSize: '10px', fontWeight: 800, color: 'var(--texto-second)', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>Firma del Arrendatario</span>
-                {contratoFirmado.firmaUsuarioDataUrl ? (
-                  <img src={contratoFirmado.firmaUsuarioDataUrl} alt="Firma del Arrendatario" style={{ maxHeight: '48px', maxWidth: '100%', objectFit: 'contain' }} />
-                ) : (
-                  <span style={{ fontSize: '12px', color: '#16a34a', fontWeight: 700 }}>✓ Firma Digital</span>
-                )}
-                <span style={{ fontSize: '10.5px', color: 'var(--texto-primary)', display: 'block', marginTop: '4px', fontWeight: 600 }}>{reservaParaContrato?.datosForm?.nombre || 'Cliente'}</span>
-              </div>
-
-              <div style={{ textAlign: 'center', background: 'var(--bg-tarjeta, #ffffff)', border: '1px solid var(--borde, #e2e8f0)', borderRadius: '12px', padding: '10px' }}>
-                <span style={{ fontSize: '10px', fontWeight: 800, color: 'var(--texto-second)', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>Firma Drivique</span>
-                <img src={firmaDrivique} alt="Firma Drivique" style={{ maxHeight: '48px', maxWidth: '100%', objectFit: 'contain' }} />
-                <span style={{ fontSize: '10.5px', color: 'var(--texto-primary)', display: 'block', marginTop: '4px', fontWeight: 600 }}>Drivique Renta Móvil S.A.S.</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Elemento oculto para preparar y capturar el HTML del PDF */}
-          <div ref={contratoVisualRef} style={{ position: 'absolute', left: '-9999px', opacity: 0, pointerEvents: 'none' }} />
-          {preparandoVista && <div className="contrato-vista-progreso" style={{ marginTop: 8 }}>{t('reservas.optimizingDocument', { defaultValue: 'Optimizando documento...' })}</div>}
-          {error && <p className="contrato-error-msg" style={{ marginTop: 8 }}>{error}</p>}
-        </div>
-      </div>
-    )
-  }
-
-  // Vista de contrato (dentro de tarjeta padre y subtarjeta blanca con borde neutral)
   return (
     <div className={`contrato-card ${tieneContratoFirmado ? 'desbloqueada' : 'bloqueada'}`}>
       <div className="contrato-subcard">
@@ -445,8 +289,6 @@ function Contrato({ reserva, autoDesbloquear = false, onDesbloquear }) {
       reservaParaContrato={reservaParaContrato}
       vehiculoParaContrato={vehiculoParaContrato}
       identificacion={identificacion}
-      autoDesbloquear={autoDesbloquear}
-      onDesbloquear={onDesbloquear}
     />
   )
 }
@@ -456,8 +298,6 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
   const { t, i18n } = useTranslation()
   const { brand } = useBrand() || {}
   const usuario = useAuthStore(state => state.usuario)
-  const [claveDesbloqueada, setClaveDesbloqueada] = useState(autoDesbloquear)
-  const contratoVisualRef = useRef(null)
 
   const estado = { texto: t(`reservas.statuses.${reserva.estado}`, { defaultValue: t('reservas.statuses.pendiente') }), clase: CLASES_ESTADO[reserva.estado] || CLASES_ESTADO.pendiente }
   const refBusquedaModal = reserva.referencia || reserva.codigo || reserva.id
@@ -654,70 +494,6 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
       })
       window.location.reload()
     }
-  }
-
-  const handleDescargarPdf = async () => {
-    try {
-      let contratoDescarga = contrato
-      if (!contratoDescarga?.contratoOriginal) {
-        contratoDescarga = contractService.completarContratoOriginal(reserva.id, {
-          reserva: JSON.parse(JSON.stringify(reservaParaContrato)),
-          vehiculo: JSON.parse(JSON.stringify(vehiculoParaContrato)),
-          idioma: i18n.resolvedLanguage || i18n.language || 'es',
-          guardadoEn: contrato?.firmadoEn || new Date().toISOString(),
-          migradoDesdeReserva: true,
-        })
-      }
-      await descargarContratoOriginal({
-        contrato: contratoDescarga,
-        elementoContrato: contratoVisualRef.current,
-      })
-    } catch (err) {
-      console.error('Error al descargar PDF:', err)
-    }
-  }
-
-  // Si la clave fue validada con éxito, se muestra la pantalla completa del contrato oficial en modo solo lectura
-  if (contrato && claveDesbloqueada) {
-    return (
-      <div className="modal-backdrop" onMouseDown={onClose}>
-        <section
-          className="detalle-modal modal-contrato-lectura"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Contrato de Alquiler"
-          style={{
-            maxWidth: '1040px',
-            width: '96%',
-            maxHeight: '94vh',
-            overflowY: 'auto',
-            padding: '28px 24px',
-            borderRadius: '24px',
-            position: 'relative',
-            background: 'var(--bg-tarjeta, #ffffff)'
-          }}
-          onMouseDown={(e) => e.stopPropagation()}
-        >
-          <button
-            className="modal-cerrar"
-            onClick={onClose}
-            aria-label={t('reservas.closeDetail', { defaultValue: 'Cerrar' })}
-          >
-            <FaTimes size={14} />
-          </button>
-          <div ref={contratoVisualRef} style={{ width: '100%' }}>
-            <FirmaContrato
-              vehiculo={vehiculoParaContrato}
-              reservaGuardada={reservaParaContrato}
-              soloLectura={true}
-              contratoFirmado={contrato}
-              onDescargar={handleDescargarPdf}
-              onVolver={() => setClaveDesbloqueada(false)}
-            />
-          </div>
-        </section>
-      </div>
-    )
   }
 
   return (
@@ -993,12 +769,7 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
           </div>
         )}
 
-        {/* Tarjeta de Contrato (Listo para firmar, firma activa o protegido) */}
-        <Contrato
-          reserva={reserva}
-          autoDesbloquear={autoDesbloquear}
-          onDesbloquear={() => setClaveDesbloqueada(true)}
-        />
+        <Contrato reserva={reserva} autoDesbloquear={autoDesbloquear} />
 
         {/* Botón de cierre */}
         <div style={{ display: 'flex', justifyContent: 'center', width: '100%', marginTop: 16 }}>

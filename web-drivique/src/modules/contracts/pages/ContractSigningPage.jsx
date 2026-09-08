@@ -1,7 +1,7 @@
-import { useEffect, useState, useMemo } from 'react'
+import { useEffect, useState, useMemo, useRef } from 'react'
 import { Link, useNavigate, useParams, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { FaArrowLeft, FaFileSignature, FaShieldAlt, FaCar } from 'react-icons/fa'
+import { FaArrowLeft, FaFileSignature, FaShieldAlt, FaCar, FaCheckCircle } from 'react-icons/fa'
 import { useAuthStore } from '@/store/authStore'
 import { useLanding } from '@/modules/landing/LandingContext'
 import { contractService } from '@/services/contractService'
@@ -10,6 +10,7 @@ import { reservationsService } from '@/services/reservationsService'
 import { catalogService } from '@/services/catalogService'
 import VEHICULOS_MOCK from '@/mocks/vehicles.json'
 import ContractSignature from '../components/ContractSignature'
+import { descargarContratoOriginal } from '@/modules/contracts/utils/downloadSignedContract'
 import { showAlert } from '@/utils/swalConfig'
 import MenuConfiguracion from '@/components/MenuConfiguracion'
 import logo from '@/assets/logo.png'
@@ -131,6 +132,39 @@ export default function ContractSigningPage() {
     }
   }, [vehiculo, reserva])
 
+  const contratoVisualRef = useRef(null)
+  const targetId = reserva?.referencia || reserva?.codigo || reserva?.id || (id ? id.split('_')[0] : id)
+
+  const contratoFirmado = useMemo(() => {
+    return contractService.obtenerPorReserva(targetId) ||
+           contractService.obtenerPorReserva(id) ||
+           (reserva?.referencia ? contractService.obtenerPorReserva(reserva.referencia) : null) ||
+           (reserva?.id ? contractService.obtenerPorReserva(reserva.id) : null)
+  }, [targetId, id, reserva])
+
+  const esSoloLectura = Boolean(contratoFirmado?.firmaUsuarioDataUrl) || Boolean(location.state?.soloLectura)
+
+  const handleDescargar = async () => {
+    try {
+      let contratoDescarga = contratoFirmado
+      if (!contratoDescarga?.contratoOriginal) {
+        contratoDescarga = contractService.completarContratoOriginal(targetId, {
+          reserva: JSON.parse(JSON.stringify(reservaParaContrato)),
+          vehiculo: JSON.parse(JSON.stringify(vehiculoParaContrato)),
+          idioma: i18n.resolvedLanguage || i18n.language || 'es',
+          guardadoEn: contratoFirmado?.firmadoEn || new Date().toISOString(),
+          migradoDesdeReserva: true,
+        })
+      }
+      await descargarContratoOriginal({
+        contrato: contratoDescarga,
+        elementoContrato: contratoVisualRef.current,
+      })
+    } catch (err) {
+      console.error('Error al descargar contrato en PDF:', err)
+    }
+  }
+
   const handleFirmado = async (contrato) => {
     await showAlert({
       icon: 'success',
@@ -138,7 +172,6 @@ export default function ContractSigningPage() {
       text: 'Tu contrato de alquiler ha sido firmado digitalmente y asegurado en tu cuenta. Ya puedes ver o descargar tu copia protegida en Mis Reservas.',
       confirmButtonText: 'Ir a Mis Reservas',
     })
-    const targetId = reserva?.referencia || reserva?.codigo || reserva?.id || (id ? id.split('_')[0] : id)
     navigate(`/reservas?detalle=${encodeURIComponent(targetId)}`, {
       state: { detalleId: targetId }
     })
@@ -211,7 +244,7 @@ export default function ContractSigningPage() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
             <button
               type="button"
-              onClick={() => navigate(`/reservas?detalle=${encodeURIComponent(id)}`)}
+              onClick={() => navigate(`/reservas?detalle=${encodeURIComponent(targetId)}`)}
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -250,9 +283,9 @@ export default function ContractSigningPage() {
               gap: 8,
               padding: '6px 14px',
               borderRadius: 9999,
-              background: 'var(--brand-soft-light, #EFF6FF)',
-              border: '1px solid var(--brand-border-light, #BFDBFE)',
-              color: 'var(--brand-primary, #2563eb)',
+              background: esSoloLectura ? 'rgba(34, 197, 94, 0.1)' : 'var(--brand-soft-light, #EFF6FF)',
+              border: esSoloLectura ? '1px solid rgba(34, 197, 94, 0.25)' : '1px solid var(--brand-border-light, #BFDBFE)',
+              color: esSoloLectura ? '#16a34a' : 'var(--brand-primary, #2563eb)',
               fontSize: 12,
               fontWeight: 800,
               textTransform: 'uppercase',
@@ -260,8 +293,8 @@ export default function ContractSigningPage() {
               marginBottom: 12
             }}
           >
-            <FaShieldAlt size={13} />
-            <span>Firma Digital Oficial</span>
+            {esSoloLectura ? <FaCheckCircle size={13} /> : <FaShieldAlt size={13} />}
+            <span>{esSoloLectura ? 'Contrato Oficial Firmado' : 'Firma Digital Oficial'}</span>
           </div>
 
           <h1
@@ -273,7 +306,7 @@ export default function ContractSigningPage() {
               letterSpacing: '-0.02em'
             }}
           >
-            Lectura y Firma de Contrato de Alquiler
+            {esSoloLectura ? 'Contrato de Alquiler Registrado' : 'Lectura y Firma de Contrato de Alquiler'}
           </h1>
           <p
             style={{
@@ -285,16 +318,24 @@ export default function ContractSigningPage() {
               lineHeight: 1.55
             }}
           >
-            Tu reserva <strong style={{ color: 'var(--brand-primary, #2563eb)' }}>{id}</strong> ya fue confirmada. Lee detenidamente los términos y condiciones de alquiler y dibuja tu firma digital en el recuadro inferior para completar el proceso.
+            {esSoloLectura
+              ? `Documento oficial firmado para la reserva ${targetId}. Puedes revisar los datos registrados, las cláusulas legales y descargar una copia en PDF.`
+              : `Tu reserva ${targetId} ya fue confirmada. Lee detenidamente los términos y condiciones de alquiler y dibuja tu firma digital en el recuadro inferior para completar el proceso.`}
           </p>
         </div>
 
-        {/* Visor de Contrato y Canvas de Firma */}
-        <ContractSignature
-          vehiculo={vehiculoParaContrato}
-          reservaGuardada={reservaParaContrato}
-          onFirmado={handleFirmado}
-        />
+        {/* Visor de Contrato y Canvas de Firma o Modo Solo Lectura */}
+        <div ref={contratoVisualRef} style={{ width: '100%' }}>
+          <ContractSignature
+            vehiculo={vehiculoParaContrato}
+            reservaGuardada={reservaParaContrato}
+            onFirmado={handleFirmado}
+            soloLectura={esSoloLectura}
+            contratoFirmado={contratoFirmado}
+            onDescargar={handleDescargar}
+            onVolver={() => navigate(`/reservas?detalle=${encodeURIComponent(targetId)}`)}
+          />
+        </div>
       </main>
     </div>
   )
