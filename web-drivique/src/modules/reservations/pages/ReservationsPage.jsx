@@ -701,13 +701,14 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
         <Contrato reserva={reserva} autoDesbloquear={autoDesbloquear} />
 
         {/* Botón de cierre */}
-        <div style={{ display: 'flex', justifyContent: 'center', marginTop: 14 }}>
+        <div style={{ width: '100%', marginTop: 16 }}>
           <button
             type="button"
             onClick={onClose}
             className="detalle-cerrar-btn-custom"
           >
-            {t('reservas.closeDetail', { defaultValue: 'Cerrar detalle' })}
+            <FaTimes size={14} />
+            <span>{t('reservas.closeDetail', { defaultValue: 'Cerrar detalle' })}</span>
           </button>
         </div>
       </section>
