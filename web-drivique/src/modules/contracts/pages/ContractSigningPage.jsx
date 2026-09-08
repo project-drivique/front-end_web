@@ -139,8 +139,8 @@ export default function ContractSigningPage() {
       confirmButtonText: 'Ir a Mis Reservas',
     })
     const targetId = reserva?.referencia || reserva?.codigo || reserva?.id || (id ? id.split('_')[0] : id)
-    navigate(`/reservas?detalle=${encodeURIComponent(targetId)}&desbloquear=true`, {
-      state: { detalleId: targetId, autoDesbloquear: true }
+    navigate(`/reservas?detalle=${encodeURIComponent(targetId)}`, {
+      state: { detalleId: targetId }
     })
   }
 

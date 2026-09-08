@@ -77,19 +77,13 @@ function ContratoVerCard({ reserva, contratoFirmado, reservaParaContrato, vehicu
   const [clave, setClave] = useState('')
   const [mostrarClave, setMostrarClave] = useState(false)
   const tieneContratoFirmado = Boolean(contratoFirmado?.firmaUsuarioDataUrl)
-  const [desbloqueado, setDesbloqueado] = useState(() => Boolean(autoDesbloquear && tieneContratoFirmado))
+  const [desbloqueado, setDesbloqueado] = useState(false)
   const [error, setError] = useState('')
   const [descargando, setDescargando] = useState(false)
   const contratoVisualRef = useRef(null)
   const [preparandoVista, setPreparandoVista] = useState(false)
   const [vistaPreparada, setVistaPreparada] = useState(false)
   const usuario = useAuthStore(state => state.usuario)
-
-  useEffect(() => {
-    if (autoDesbloquear && tieneContratoFirmado) {
-      setDesbloqueado(true)
-    }
-  }, [autoDesbloquear, tieneContratoFirmado])
 
   const validar = () => {
     if (!tieneContratoFirmado) return
@@ -148,39 +142,53 @@ function ContratoVerCard({ reserva, contratoFirmado, reservaParaContrato, vehicu
     return () => { activo = false }
   }, [desbloqueado, vistaPreparada, reservaParaContrato, vehiculoParaContrato, contratoFirmado, reserva.id])
 
-  // Vista desbloqueada: mostrar contrato completo + descarga
+  // Vista desbloqueada: mostrar contrato completo + descarga dentro de la misma tarjeta estilizada
   if (desbloqueado && tieneContratoFirmado) {
     return (
-      <div className="contrato-desbloqueado-card">
-        <div className="contrato-desbloqueado-head">
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-            <strong className="contrato-desbloqueado-status">
-              {t('reservas.originalSignedContract', { defaultValue: 'Contrato firmado original' })}
-            </strong>
-            <span className="contrato-desbloqueado-codigo">
-              {contratoFirmado.codigo || reserva.numeroContrato || reserva.id}
-            </span>
+      <div className="contrato-card desbloqueada">
+        <div className="contrato-subcard">
+          <div className="contrato-icon-wrap" style={{ background: 'rgba(34, 197, 94, 0.1)', color: '#16a34a', borderColor: 'rgba(34, 197, 94, 0.25)' }}>
+            <FaFileContract size={22} />
           </div>
-          <button
-            type="button"
-            onClick={() => setDesbloqueado(false)}
-            className="contrato-bloquear-btn"
-          >
-            {t('reservas.lock', { defaultValue: 'Bloquear' })}
-          </button>
+
+          <h3 className="contrato-card-titulo">
+            {t('reservas.originalSignedContract', { defaultValue: 'Contrato firmado original' })}
+          </h3>
+
+          <p className="contrato-card-desc">
+            {contratoFirmado.codigo || reserva.numeroContrato || reserva.id}
+          </p>
+
+          <div style={{ width: '100%', maxWidth: '440px', display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'center' }}>
+            <button
+              className="contrato-descargar"
+              onClick={descargar}
+              disabled={descargando || preparandoVista || !vistaPreparada}
+              style={{ width: '100%' }}
+            >
+              <span className="contrato-descarga-icon"><FaDownload /></span>
+              <span>
+                <strong>{descargando ? t('reservas.preparingDocument') : t('reservas.downloadContract')}</strong>
+                <small>{t('reservas.originalPdf')}</small>
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setDesbloqueado(false)}
+              className="btn-link"
+              style={{ fontSize: '13px', color: 'var(--texto-second)', marginTop: '4px', cursor: 'pointer', background: 'none', border: 'none', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+            >
+              <FaLock size={12} />
+              <span>{t('reservas.lock', { defaultValue: 'Bloquear contrato' })}</span>
+            </button>
+          </div>
+
+          {/* Elemento oculto para preparar y capturar el HTML del PDF sin alterar el diseño visual */}
+          <div ref={contratoVisualRef} style={{ position: 'absolute', left: '-9999px', opacity: 0, pointerEvents: 'none' }} />
+          {preparandoVista && <div className="contrato-vista-progreso" style={{ marginTop: 8 }}>{t('reservas.optimizingDocument', { defaultValue: 'Optimizando documento...' })}</div>}
+          {error && <p className="contrato-error-msg" style={{ marginTop: 8 }}>{error}</p>}
         </div>
-        <div className="contrato-vista-html" ref={contratoVisualRef} />
-        {preparandoVista && <div className="contrato-vista-progreso">{t('reservas.optimizingDocument', { defaultValue: 'Optimizando documento...' })}</div>}
-        <div className="contrato-acciones-doc">
-          <button className="contrato-descargar" onClick={descargar} disabled={descargando || preparandoVista || !vistaPreparada}>
-            <span className="contrato-descarga-icon"><FaDownload /></span>
-            <span>
-              <strong>{descargando ? t('reservas.preparingDocument') : t('reservas.downloadContract')}</strong>
-              <small>{t('reservas.originalPdf')}</small>
-            </span>
-          </button>
-        </div>
-        {error && <p className="clave-error" role="alert" style={{ textAlign: 'center' }}>{error}</p>}
       </div>
     )
   }
