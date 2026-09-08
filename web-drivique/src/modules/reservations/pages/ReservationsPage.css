@@ -11,8 +11,11 @@
 .modal-backdrop{position:fixed;z-index:9999;inset:0;background:rgba(15,23,42,.65);display:grid;place-items:center;padding:20px}.modal-panel{position:relative;width:min(440px,100%);background:var(--bg-tarjeta);border:1px solid var(--borde);border-radius:22px;padding:28px;box-shadow:0 30px 90px rgba(0,0,0,.3);text-align:center}.modal-cerrar{position:absolute;right:15px;top:15px;width:30px;height:30px;border:0;border-radius:50%;background:var(--bg-item);color:var(--texto-second);cursor:pointer}.modal-icon{width:48px;height:48px;margin:0 auto 14px;display:grid;place-items:center;border-radius:14px;background:#fffbeb;color:#f5a524;font-size:21px}.modal-panel h2{font-size:23px}.modal-subtitulo{font-size:12px;color:var(--texto-second);margin:7px 0 17px}.modal-panel>.estrellas{justify-content:center;margin-bottom:21px}.modal-panel>.estrellas .estrella{font-size:30px}.comentario-label{display:block;text-align:left;font-size:11px;font-weight:800;margin-bottom:7px}.comentario-label span{font-weight:500;color:var(--texto-second)}.modal-panel textarea{width:100%;height:105px;resize:none;border:1px solid var(--borde);border-radius:11px;background:var(--bg-item);color:var(--texto-primary);padding:12px;font:inherit;font-size:12px;outline:none}.modal-panel textarea:focus{border-color:var(--brand-primary)}.contador{text-align:right;font-size:9px;color:var(--texto-second);margin-top:4px}.modal-guardar{width:100%;margin-top:14px}.modal-guardar:disabled{opacity:.45;cursor:not-allowed}
 @media(max-width:850px){.reservas-header-inner{padding:0 16px}.reservas-header nav{gap:20px}.reservas-header nav a{font-size:12px}.reservas-main{padding:24px 16px 50px}.reservas-titlebar{align-items:stretch;flex-direction:column}.reservas-filtros{display:grid;grid-template-columns:1fr 1fr}.filtro-select{min-width:0}.reserva-card{grid-template-columns:1fr}.reserva-imagen-wrap{min-height:200px;max-height:240px}.reserva-meta{flex-wrap:wrap}.reserva-meta .meta-sede{margin-left:0;width:100%;max-width:none}.linea-fechas{display:none}}@media(max-width:650px){.reservas-header nav a:nth-child(3),.reservas-header nav a:nth-child(4){display:none}}@media(max-width:520px){.reservas-header nav{gap:16px}.reservas-header nav a{font-size:11px}.reservas-filtros{grid-template-columns:1fr}.reservas-titlebar h1{font-size:28px}.reserva-info{padding:18px 16px 14px}.reserva-head{flex-direction:column;gap:7px}.reserva-meta>div{width:calc(50% - 10px);min-width:0}.valoracion-resumen,.contrato-listo{align-items:flex-start;flex-direction:column}.clave-row{flex-wrap:wrap}.clave-row input{min-width:calc(100% - 80px)}.clave-row .clave-ojo{width:42px;padding:0;border-radius:0}.clave-row .clave-validar{width:100%;padding:10px;border-radius:0 0 8px 8px}.estado-pagina{padding:42px 20px}}
 @media(max-width:850px){.reservas-filtros{display:grid;grid-template-columns:1fr 1fr}.filtro-select{width:auto}}@media(max-width:520px){.reservas-filtros{grid-template-columns:1fr}}
-.reserva-actions{gap:10px}.btn-detalle{display:inline-flex;align-items:center;justify-content:center;min-height:38px;padding:9px 18px;border:1px solid var(--brand-secondary);border-radius:10px;background:var(--brand-secondary);color:#fff;font-size:11px;font-weight:800;cursor:pointer;transition:.18s ease}.btn-detalle:hover{background:var(--brand-primary);border-color:var(--brand-primary);transform:translateY(-1px);box-shadow:0 5px 14px rgba(var(--brand-primary-rgb),.2)}
-.detalle-modal{position:relative;width:min(680px,100%);max-height:92vh;overflow:auto;background:#f8fafc;border:1px solid #dbe3f4;border-radius:24px;padding:26px;box-shadow:0 28px 80px rgba(15,23,42,.3)}.detalle-modal-acento{position:absolute;inset:0 0 auto;height:5px;background:linear-gradient(90deg,var(--brand-primary-hover),var(--brand-accent))}.detalle-modal>.modal-cerrar{right:16px;top:16px;width:36px;height:36px;border:1px solid #dbe3f4;background:#fff;box-shadow:0 3px 10px rgba(15,23,42,.08)}.detalle-modal-head{text-align:center;padding:10px 48px 18px;margin-bottom:4px}.detalle-estado-icon{width:48px;height:48px;margin:0 auto 10px;display:grid;place-items:center;border-radius:15px;background:#e8efff;color:var(--brand-primary);font-size:21px}.detalle-modal-head h2{font-size:24px;line-height:1.2;margin:0;letter-spacing:-.025em;color:#111827}.detalle-modal-head p{font-size:13px;color:#64748b;margin-top:6px}.detalle-resumen-lista{display:grid;grid-template-columns:1fr 1fr;gap:0;padding:4px 18px;background:#fff;border:1px solid #e2e8f0;border-radius:18px;margin-bottom:20px;box-shadow:0 6px 20px rgba(15,23,42,.045)}.detalle-resumen-fila{display:grid;grid-template-columns:34px minmax(0,1fr);align-items:center;gap:2px 11px;min-height:72px;padding:12px 8px;border:0;border-bottom:1px solid #edf1f7;background:transparent;color:#111827}.detalle-resumen-fila:nth-last-child(-n+2){border-bottom:0}.detalle-resumen-fila:nth-child(odd){padding-right:16px;border-right:1px solid #edf1f7}.detalle-resumen-fila:nth-child(even){padding-left:16px}.detalle-fila-icon{grid-row:1/3;width:34px;height:34px;display:grid;place-items:center;border-radius:10px;background:#eef4ff;color:var(--brand-primary);font-size:14px}.detalle-fila-label{font-size:10px;color:#64748b;font-weight:600}.detalle-resumen-fila strong{min-width:0;text-align:left;font-size:12px;color:#111827;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.detalle-referencia{font-size:10px!important}.detalle-fila-estado{background:transparent}.detalle-fila-estado .detalle-fila-icon{background:#dcfce7;color:#16a34a}.detalle-fila-estado strong{color:#15803d}.detalle-contrato-seccion{padding:18px;background:#fff;border:1px solid #e2e8f0;border-radius:18px;box-shadow:0 6px 20px rgba(15,23,42,.045)}.detalle-contrato-titulo{margin-bottom:12px}.detalle-contrato-titulo h3{font-size:15px;color:#111827;margin:0}.detalle-contrato-titulo p{font-size:10px;color:#64748b;margin:4px 0 0}.detalle-modal .contrato{background:#fff}.detalle-modal-actions{display:flex;justify-content:center;margin-top:18px}.detalle-cerrar-btn{min-width:150px;padding:10px 20px;border:1px solid #cbd5e1;border-radius:11px;background:#fff;color:#334155;font-size:11px;font-weight:800;cursor:pointer;transition:.18s}.detalle-cerrar-btn:hover{border-color:#94a3b8;background:#f1f5f9}
+.reserva-actions{display:flex;justify-content:flex-end;margin-top:14px;gap:10px}
+.btn-firmar-directo{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:38px;padding:9px 18px;border:none;border-radius:10px;background:var(--brand-gradient, linear-gradient(135deg, var(--brand-secondary, #1e3a8a), var(--brand-primary, #2563eb)));color:#ffffff;font-size:11px;font-weight:800;cursor:pointer;box-shadow:0 4px 14px var(--brand-shadow, rgba(29, 78, 216, 0.25));transition:transform .18s ease, box-shadow .18s ease, filter .18s ease}
+.btn-firmar-directo:hover{filter:brightness(0.95);transform:translateY(-1px);box-shadow:0 6px 18px rgba(37, 99, 235, 0.35)}
+.btn-detalle{display:inline-flex;align-items:center;justify-content:center;min-height:38px;padding:9px 18px;border:1px solid var(--brand-secondary);border-radius:10px;background:var(--brand-secondary);color:#fff;font-size:11px;font-weight:800;cursor:pointer;transition:.18s ease}.btn-detalle:hover{background:var(--brand-primary);border-color:var(--brand-primary);transform:translateY(-1px);box-shadow:0 5px 14px rgba(var(--brand-primary-rgb),.2)}
+.detalle-modal{position:relative;width:min(560px,100%);max-height:92vh;overflow-y:auto;scrollbar-width:none;-ms-overflow-style:none;background:#f8fafc;border:1px solid #dbe3f4;border-radius:24px;padding:26px;box-shadow:0 28px 80px rgba(15,23,42,.3)}.detalle-modal::-webkit-scrollbar{display:none;width:0;height:0}.detalle-modal-acento{position:absolute;inset:0 0 auto;height:5px;background:linear-gradient(90deg,var(--brand-primary-hover),var(--brand-accent))}.detalle-modal>.modal-cerrar{right:16px;top:16px;width:36px;height:36px;border:1px solid #dbe3f4;background:#fff;box-shadow:0 3px 10px rgba(15,23,42,.08)}.detalle-modal-head{text-align:center;padding:10px 48px 18px;margin-bottom:4px}.detalle-estado-icon{width:48px;height:48px;margin:0 auto 10px;display:grid;place-items:center;border-radius:15px;background:#e8efff;color:var(--brand-primary);font-size:21px}.detalle-modal-head h2{font-size:24px;line-height:1.2;margin:0;letter-spacing:-.025em;color:#111827}.detalle-modal-head p{font-size:13px;color:#64748b;margin-top:6px}.detalle-resumen-lista{display:grid;grid-template-columns:1fr 1fr;gap:0;padding:4px 18px;background:#fff;border:1px solid #e2e8f0;border-radius:18px;margin-bottom:20px;box-shadow:0 6px 20px rgba(15,23,42,.045)}.detalle-resumen-fila{display:grid;grid-template-columns:34px minmax(0,1fr);align-items:center;gap:2px 11px;min-height:72px;padding:12px 8px;border:0;border-bottom:1px solid #edf1f7;background:transparent;color:#111827}.detalle-resumen-fila:nth-last-child(-n+2){border-bottom:0}.detalle-resumen-fila:nth-child(odd){padding-right:16px;border-right:1px solid #edf1f7}.detalle-resumen-fila:nth-child(even){padding-left:16px}.detalle-fila-icon{grid-row:1/3;width:34px;height:34px;display:grid;place-items:center;border-radius:10px;background:#eef4ff;color:var(--brand-primary);font-size:14px}.detalle-fila-label{font-size:10px;color:#64748b;font-weight:600}.detalle-resumen-fila strong{min-width:0;text-align:left;font-size:12px;color:#111827;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.detalle-referencia{font-size:10px!important}.detalle-fila-estado{background:transparent}.detalle-fila-estado .detalle-fila-icon{background:#dcfce7;color:#16a34a}.detalle-fila-estado strong{color:#15803d}.detalle-contrato-seccion{padding:18px;background:#fff;border:1px solid #e2e8f0;border-radius:18px;box-shadow:0 6px 20px rgba(15,23,42,.045)}.detalle-contrato-titulo{margin-bottom:12px}.detalle-contrato-titulo h3{font-size:15px;color:#111827;margin:0}.detalle-contrato-titulo p{font-size:10px;color:#64748b;margin:4px 0 0}.detalle-modal .contrato{background:#fff}.detalle-modal-actions{display:flex;justify-content:center;margin-top:18px}.detalle-cerrar-btn{min-width:150px;padding:10px 20px;border:1px solid #cbd5e1;border-radius:11px;background:#fff;color:#334155;font-size:11px;font-weight:800;cursor:pointer;transition:.18s}.detalle-cerrar-btn:hover{border-color:#94a3b8;background:#f1f5f9}
 html.dark .detalle-modal{background:#111827;border-color:#334155}.detalle-estado-finalizada{color:#047857}.detalle-estado-cancelada{color:#64748b}
 html.dark .detalle-modal-head h2,html.dark .detalle-resumen-fila strong,html.dark .detalle-contrato-titulo h3{color:#f8fafc}html.dark .detalle-modal-head p,html.dark .detalle-fila-label,html.dark .detalle-contrato-titulo p{color:#94a3b8}html.dark .detalle-resumen-lista,html.dark .detalle-contrato-seccion,html.dark .detalle-modal .contrato{background:#172033;border-color:#334155;box-shadow:0 6px 20px rgba(0,0,0,.22)}html.dark .detalle-resumen-fila,html.dark .detalle-resumen-fila:nth-child(odd){border-color:#2a3950;color:#f8fafc}html.dark .detalle-fila-icon,html.dark .detalle-estado-icon{background:rgba(var(--brand-primary-rgb),.18);color:var(--brand-text-dark)}html.dark .detalle-fila-estado .detalle-fila-icon{background:rgba(16,185,129,.15);color:#6ee7b7}html.dark .detalle-fila-estado strong{color:#6ee7b7}html.dark .detalle-modal>.modal-cerrar,html.dark .detalle-cerrar-btn{background:#1e293b;border-color:#475569;color:#cbd5e1}html.dark .detalle-modal>.modal-cerrar:hover,html.dark .detalle-cerrar-btn:hover{background:#27364b;border-color:var(--brand-accent);color:var(--brand-border-light)}html.dark .contrato-icon,html.dark .clave-row .clave-ojo,html.dark .estado-pagina.vacio>div{background:rgba(var(--brand-primary-rgb),.18);border-color:#334e78;color:var(--brand-text-dark)}html.dark .contrato-vista-head{background:rgba(16,185,129,.1);border-color:#166534}html.dark .contrato-vista-head strong{color:#6ee7b7}html.dark .contrato-vista-head span{color:#94a3b8}html.dark .contrato-vista-html{background:#0f172a;border-color:#475569}html.dark .contrato-vista-progreso{background:rgba(var(--brand-primary-rgb),.16);color:var(--brand-border-light)}html.dark .btn-descarga-bloqueada{background:#1e293b;color:#94a3b8}
 .detalle-modal>.modal-cerrar{right:20px;top:20px;z-index:3;width:34px;height:34px;display:grid;place-items:center;padding:0;border:1px solid #dbe3f4;border-radius:10px;background:#fff;color:#64748b;box-shadow:none;transition:background .18s,border-color .18s,color .18s,transform .18s}.detalle-modal>.modal-cerrar:hover{background:var(--brand-soft-light);border-color:var(--brand-text-dark);color:var(--brand-primary-hover);transform:translateY(-1px)}
@@ -20,3 +23,1079 @@ html.dark .detalle-modal-head h2,html.dark .detalle-resumen-fila strong,html.dar
 
 .reservation-promotion-box{margin:4px 0 16px;padding:14px;border:1px solid var(--borde,#dbe3ef);border-radius:12px;background:var(--bg-tarjeta,#f8fafc)}.reservation-promotion-box>label{display:block;margin-bottom:8px;font-size:10px;font-weight:900;text-transform:uppercase;color:var(--texto-second,#64748b)}.reservation-promotion-entry{display:flex}.reservation-promotion-entry input{min-width:0;flex:1;padding:10px 11px;border:1px solid #cbd5e1;border-radius:9px 0 0 9px;background:var(--bg-tarjeta,#fff);color:var(--texto-primary,#0f172a);font-weight:800;text-transform:uppercase}.reservation-promotion-entry button,.reservation-promotion-applied button{border:0;border-radius:0 9px 9px 0;padding:0 13px;background:var(--brand-primary);color:#fff;font-size:11px;font-weight:800;cursor:pointer}.reservation-promotion-entry button:disabled{opacity:.5;cursor:not-allowed}.reservation-promotion-applied{display:flex;align-items:center;justify-content:space-between;gap:10px}.reservation-promotion-applied div{display:flex;flex-direction:column}.reservation-promotion-applied strong{color:#15803d}.reservation-promotion-applied span{font-size:10px;color:#64748b}.reservation-promotion-applied button{border-radius:9px;padding:9px 12px;background:#e2e8f0;color:#334155}.reservation-promotion-error{margin:7px 0 0;color:#dc2626;font-size:10px;font-weight:700}.reservation-discount-row{display:flex;justify-content:space-between;margin:-6px 0 14px;color:#15803d;font-size:12px;font-weight:800}
 @media print{@page{size:A4;margin:0}html,body{margin:0!important;padding:0!important}body.imprimiendo-contrato{background:#fff!important;overflow:visible!important}body.imprimiendo-contrato>div:not(.raiz-impresion-contrato){display:none!important}.raiz-impresion-contrato{box-sizing:border-box;display:block!important;width:100%!important;margin:0!important;padding:10mm!important}.raiz-impresion-contrato .contrato-a-imprimir{display:block!important;width:100%!important;max-width:none!important;max-height:none!important;overflow:visible!important;margin:0!important;padding:0!important;border:0!important;background:#fff!important}.raiz-impresion-contrato .contrato-a-imprimir button{display:none!important}.raiz-impresion-contrato .contrato-a-imprimir *{--bg-tarjeta:#fff;--bg-item:#f8fafc;--borde:#dbe3ef;--texto-primary:#0f172a;--texto-second:#64748b;--sombra-tarjeta:none}.raiz-impresion-contrato .contrato-campo,.raiz-impresion-contrato section,.raiz-impresion-contrato footer{break-inside:avoid;page-break-inside:avoid}}
+
+/* ============================================================
+   ESTRUCTURA DE TARJETA PADRE Y SUBTARJETA DE CONTRATO
+   ============================================================ */
+/* ============================================================
+   TARJETA DE CONTRATO (TARJETA PADRE + SUBTARJETA BLANCA)
+   ============================================================ */
+.contrato-card {
+  width: 100%;
+  background: var(--bg-tarjeta, #ffffff);
+  border: 1px solid var(--borde, #e2e8f0);
+  border-radius: 22px;
+  padding: 16px;
+  margin-bottom: 18px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
+  box-sizing: border-box;
+}
+
+/* El borde NUNCA queda con color al hacer click, focus o hover */
+.contrato-card:hover,
+.contrato-card:focus,
+.contrato-card:focus-within,
+.contrato-card:active {
+  border-color: var(--borde, #e2e8f0) !important;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03) !important;
+  outline: none !important;
+}
+
+.contrato-subcard {
+  width: 100%;
+  background: var(--bg-tarjeta, #ffffff);
+  border: 1px solid var(--borde, #e2e8f0);
+  border-radius: 18px;
+  padding: 26px 20px 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.contrato-subcard:hover,
+.contrato-subcard:focus,
+.contrato-subcard:focus-within,
+.contrato-subcard:active {
+  border-color: var(--borde, #e2e8f0) !important;
+  outline: none !important;
+}
+
+.contrato-icon-wrap {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  color: #94a3b8;
+  display: grid;
+  place-items: center;
+  margin-bottom: 16px;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.contrato-card.desbloqueada .contrato-icon-wrap {
+  background: var(--brand-soft-light, #eff6ff);
+  color: var(--brand-primary, #2563eb);
+}
+
+.contrato-card-titulo {
+  font-size: 19px;
+  font-weight: 800;
+  color: var(--texto-primary, #0f172a);
+  margin: 0 0 8px;
+  letter-spacing: -0.01em;
+}
+
+.contrato-card-desc {
+  font-size: 13.5px;
+  color: var(--texto-second, #64748b);
+  line-height: 1.5;
+  margin: 0 0 20px;
+  max-width: 420px;
+  font-weight: 500;
+}
+
+.contrato-card-form {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-sizing: border-box;
+}
+
+.contrato-input-box {
+  position: relative;
+  width: 100%;
+}
+
+.contrato-card-input {
+  width: 100%;
+  height: 48px;
+  border-radius: 12px;
+  border: 1.5px solid var(--borde, #e2e8f0);
+  padding: 0 46px 0 16px;
+  font-size: 14px;
+  color: var(--texto-primary, #0f172a);
+  background: #ffffff;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.contrato-card.bloqueada .contrato-card-input {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  color: #94a3b8;
+  cursor: not-allowed;
+}
+
+.contrato-card-input::placeholder {
+  color: #cbd5e1;
+  font-weight: 500;
+}
+
+.contrato-card.desbloqueada .contrato-card-input:focus {
+  border-color: var(--brand-primary, #2563eb);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.contrato-eye-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  padding: 6px;
+  font-size: 17px;
+  transition: color 0.2s;
+}
+
+.contrato-card.desbloqueada .contrato-eye-btn:hover {
+  color: var(--brand-primary, #2563eb);
+}
+
+.contrato-eye-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.contrato-error-msg {
+  color: #ef4444;
+  font-size: 12px;
+  font-weight: 700;
+  text-align: left;
+  margin: -4px 0 2px 4px;
+}
+
+/* Botón de acción */
+.contrato-action-btn {
+  width: 100%;
+  height: 48px;
+  border-radius: 12px;
+  border: none;
+  font-size: 14px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+}
+
+/* Estado bloqueado: fondo gris suave, texto gris, sin borde de color, idéntico a la imagen */
+.contrato-action-btn.bloqueado,
+.contrato-action-btn.bloqueado:disabled {
+  background: #f1f5f9 !important;
+  color: #94a3b8 !important;
+  border: none !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+}
+
+/* Estado desbloqueado: BOTÓN AZUL DEGRADADO */
+.contrato-action-btn.activo,
+.contrato-action-btn.activo:not(:disabled) {
+  background: linear-gradient(135deg, var(--brand-primary, #2563eb) 0%, #1d4ed8 100%) !important;
+  color: #ffffff !important;
+  border: none !important;
+  cursor: pointer !important;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3) !important;
+}
+
+.contrato-action-btn.activo:hover {
+  filter: brightness(0.93);
+  transform: translateY(-1px);
+}
+
+/* MODO OSCURO */
+html.dark .contrato-card {
+  background: #172033;
+  border-color: #334155 !important;
+}
+
+html.dark .contrato-subcard {
+  background: #1e293b;
+  border-color: #334155 !important;
+}
+
+html.dark .contrato-card:hover,
+html.dark .contrato-card:focus,
+html.dark .contrato-card:focus-within,
+html.dark .contrato-card:active,
+html.dark .contrato-subcard:hover,
+html.dark .contrato-subcard:focus,
+html.dark .contrato-subcard:focus-within,
+html.dark .contrato-subcard:active {
+  border-color: #334155 !important;
+}
+
+html.dark .contrato-icon-wrap {
+  background: #1e293b;
+  color: #64748b;
+}
+
+html.dark .contrato-card.desbloqueada .contrato-icon-wrap {
+  background: rgba(var(--brand-primary-rgb), 0.15);
+  color: var(--brand-border-light, #93c5fd);
+}
+
+html.dark .contrato-card-titulo {
+  color: #f8fafc;
+}
+
+html.dark .contrato-card-desc {
+  color: #94a3b8;
+}
+
+html.dark .contrato-card-input {
+  background: #0f172a;
+  color: #f8fafc;
+  border-color: #334155;
+}
+
+html.dark .contrato-card.bloqueada .contrato-card-input {
+  background: #111827;
+  color: #64748b;
+  border-color: #1f2937;
+}
+
+html.dark .contrato-action-btn.bloqueado,
+html.dark .contrato-action-btn.bloqueado:disabled {
+  background: #1e293b !important;
+  color: #64748b !important;
+}
+
+
+
+
+
+/* ============================================================
+   TARJETA DESBLOQUEADA DE CONTRATO
+   ============================================================ */
+.contrato-desbloqueado-card {
+  background: var(--bg-tarjeta, #ffffff);
+  border: 1px solid var(--borde, #e2e8f0);
+  border-radius: 22px;
+  padding: 20px;
+  margin-bottom: 18px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.contrato-desbloqueado-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border: 1px solid #bbf7d0;
+  border-radius: 14px;
+  background: #f0fdf4;
+}
+
+.contrato-desbloqueado-status {
+  font-size: 13px;
+  color: #15803d;
+  font-weight: 800;
+}
+
+.contrato-desbloqueado-codigo {
+  font-size: 11px;
+  color: #64748b;
+}
+
+.contrato-bloquear-btn {
+  border: 1px solid var(--borde, #cbd5e1);
+  border-radius: 8px;
+  background: var(--bg-tarjeta, #ffffff);
+  color: var(--texto-primary, #475569);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.contrato-bloquear-btn:hover {
+  border-color: var(--brand-primary);
+  color: var(--brand-primary);
+}
+
+/* ============================================================
+   ELEMENTOS DE MODAL DETALLE CON TEMAS Y RESPONSIVE
+   ============================================================ */
+.detalle-modal-head-custom {
+  text-align: center;
+  padding: 8px 20px 16px;
+}
+
+.detalle-modal-titulo {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--texto-primary, #0f172a);
+  margin: 0 0 4px;
+  letter-spacing: -0.02em;
+}
+
+.detalle-modal-subtitulo {
+  font-size: 13.5px;
+  color: var(--texto-second, #64748b);
+  margin: 0;
+  font-weight: 500;
+}
+
+.modal-reserva-info-card {
+  background: var(--bg-tarjeta, #ffffff);
+  border: 1px solid var(--borde, #e2e8f0);
+  border-radius: 22px;
+  padding: 16px;
+  margin-bottom: 18px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.modal-reserva-img-box {
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--bg-item, #f8fafc);
+  border: 1px solid var(--borde, #e2e8f0);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-height: 220px;
+}
+
+.modal-reserva-img {
+  width: 100%;
+  max-height: 220px;
+  object-fit: cover;
+  display: block;
+}
+
+.modal-reserva-datos-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+.modal-reserva-dato-celda {
+  background: var(--bg-item, #f8fafc);
+  border: 1.5px solid var(--borde, #e2e8f0);
+  border-radius: 14px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+}
+
+.modal-reserva-dato-celda:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+.celda-borde-r {
+  border-right: none;
+}
+
+.celda-borde-b {
+  border-bottom: none;
+}
+
+.modal-dato-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: #ffffff;
+  border: 1px solid var(--borde, #e2e8f0);
+  color: var(--brand-primary, #1d4ed8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 15px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+}
+
+.modal-dato-icon.brand-tint {
+  background: var(--brand-soft-light, #eff6ff);
+  color: var(--brand-primary, #2563eb);
+}
+
+.modal-dato-texto {
+  min-width: 0;
+  flex: 1;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.modal-dato-label {
+  display: block;
+  font-size: 11px;
+  color: var(--texto-second, #64748b);
+  font-weight: 600;
+  line-height: 1.25;
+  margin-bottom: 2px;
+}
+
+.modal-dato-val {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--texto-primary, #0f172a);
+  line-height: 1.35;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+.modal-dato-val.referencia-val {
+  font-size: 11.5px;
+  word-break: break-all;
+  letter-spacing: -0.01em;
+}
+
+.modal-dato-val.status-val {
+  color: #15803d;
+}
+
+/* ============================================================
+   TARJETA PAGO EFECTIVO MODAL
+   ============================================================ */
+.modal-cash-card {
+  background: var(--bg-tarjeta, #ffffff);
+  border: 1px solid var(--borde, #e2e8f0);
+  border-radius: 22px;
+  padding: 16px;
+  text-align: center;
+  margin-bottom: 18px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
+  box-sizing: border-box;
+}
+
+.modal-cash-subcard {
+  width: 100%;
+  background: var(--bg-tarjeta, #ffffff);
+  border: 1px solid var(--borde, #e2e8f0);
+  border-radius: 18px;
+  padding: 24px 18px 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.modal-cash-logo-badge {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: var(--bg-tarjeta, #ffffff);
+  border: 1.5px solid var(--borde, #e2e8f0);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  margin-bottom: 16px;
+}
+
+.modal-cash-logo-badge img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.modal-cash-titulo {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--texto-primary, #0f172a);
+  margin: 0 0 8px;
+  letter-spacing: -0.01em;
+}
+
+.modal-cash-desc {
+  font-size: 13px;
+  color: var(--texto-second, #64748b);
+  line-height: 1.5;
+  margin: 0 0 18px;
+  padding: 0 6px;
+}
+
+.modal-cash-summary {
+  width: 100%;
+  background: var(--bg-item, #f8fafc);
+  border: 1px solid var(--borde, #e2e8f0);
+  border-radius: 16px;
+  padding: 16px 18px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 14px;
+  box-sizing: border-box;
+}
+
+.modal-cash-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+}
+
+.modal-cash-row-label {
+  color: var(--texto-second, #64748b);
+  font-weight: 600;
+}
+
+.modal-cash-ref-val {
+  color: var(--brand-primary, #1d4ed8);
+  font-weight: 800;
+}
+
+.modal-cash-row-val {
+  color: var(--texto-primary, #0f172a);
+  font-weight: 700;
+}
+
+.modal-cash-divider {
+  height: 1px;
+  background: var(--borde, #e2e8f0);
+  margin: 4px 0;
+}
+
+.modal-cash-row.total {
+  padding-top: 2px;
+}
+
+.modal-cash-total-label {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--texto-second, #475569);
+  letter-spacing: 0.02em;
+}
+
+.modal-cash-total-val {
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--brand-primary, #1d4ed8);
+}
+
+.modal-cash-deadline-box {
+  width: 100%;
+  background: #fefce8;
+  border: 1.5px solid #fef08a;
+  border-radius: 14px;
+  padding: 12px 14px;
+  text-align: left;
+  box-sizing: border-box;
+}
+
+.modal-cash-deadline-title {
+  margin: 0 0 4px;
+  font-size: 11px;
+  font-weight: 800;
+  color: #854d0e;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.modal-cash-deadline-text {
+  margin: 0;
+  font-size: 12px;
+  color: #854d0e;
+  line-height: 1.45;
+  font-weight: 500;
+}
+
+/* ============================================================
+   TARJETA FIRMAR CONTRATO (LISTO PARA FIRMAR)
+   ============================================================ */
+.contrato-firmar-padre {
+  background: var(--bg-tarjeta, #ffffff);
+  border: 1px solid var(--borde, #e2e8f0);
+  border-radius: 22px;
+  padding: 16px;
+  text-align: center;
+  margin-bottom: 18px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
+  box-sizing: border-box;
+}
+
+.contrato-firmar-subtarjeta {
+  width: 100%;
+  background: var(--bg-tarjeta, #ffffff);
+  border: 1px solid var(--borde, #e2e8f0);
+  border-radius: 18px;
+  padding: 24px 18px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.contrato-firmar-icon-wrap {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: var(--bg-tarjeta, #ffffff);
+  border: 1.5px solid var(--borde, #e2e8f0);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  margin-bottom: 16px;
+  box-sizing: border-box;
+}
+
+.contrato-firmar-icon-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.contrato-firmar-titulo {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--texto-primary, #0f172a);
+  margin: 0 0 10px;
+  letter-spacing: -0.01em;
+}
+
+.contrato-firmar-desc {
+  font-size: 13.5px;
+  color: var(--texto-second, #64748b);
+  line-height: 1.5;
+  margin: 0 0 18px;
+  max-width: 440px;
+  font-weight: 500;
+}
+
+.contrato-firmar-btn {
+  width: 100%;
+  max-width: 440px;
+  height: 50px;
+  border-radius: 14px;
+  background: var(--brand-gradient, linear-gradient(135deg, var(--brand-secondary, #1e3a8a), var(--brand-primary, #2563eb)));
+  color: #ffffff;
+  border: none;
+  font-weight: 800;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-shadow: 0 4px 14px var(--brand-shadow, rgba(29, 78, 216, 0.25));
+  transition: all 0.2s ease;
+}
+
+.contrato-firmar-btn:hover {
+  filter: brightness(0.95);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.35);
+}
+
+/* ============================================================
+   TARJETA PAGO DIGITAL WOMPI MODAL
+   ============================================================ */
+.modal-wompi-card {
+  background: var(--bg-tarjeta, #ffffff);
+  border: 1px solid var(--borde, #e2e8f0);
+  border-radius: 22px;
+  padding: 16px;
+  text-align: center;
+  margin-bottom: 18px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
+  box-sizing: border-box;
+}
+
+.modal-wompi-subcard {
+  width: 100%;
+  background: var(--bg-tarjeta, #ffffff);
+  border: 1px solid var(--borde, #e2e8f0);
+  border-radius: 18px;
+  padding: 24px 18px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.modal-wompi-titulo {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--texto-primary, #0f172a);
+  margin: 0 0 10px;
+  letter-spacing: -0.01em;
+}
+
+.modal-wompi-desc {
+  font-size: 13.5px;
+  color: var(--texto-second, #64748b);
+  line-height: 1.5;
+  margin: 0 0 18px;
+  max-width: 430px;
+  font-weight: 500;
+}
+
+.modal-wompi-total-box {
+  width: 100%;
+  max-width: 440px;
+  background: var(--bg-tarjeta, #ffffff);
+  border: 1px solid var(--borde, #e2e8f0);
+  border-radius: 14px;
+  padding: 14px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  box-sizing: border-box;
+}
+
+.modal-wompi-total-label {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--texto-second, #475569);
+  letter-spacing: 0.02em;
+}
+
+.modal-wompi-total-val {
+  font-size: 19px;
+  font-weight: 900;
+  color: var(--brand-primary, #1d4ed8);
+}
+
+.modal-wompi-btn {
+  width: 100%;
+  max-width: 440px;
+  height: 50px;
+  border-radius: 14px;
+  background: var(--brand-primary, #1d4ed8);
+  color: var(--brand-on-primary, #ffffff);
+  border: none;
+  font-weight: 800;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-shadow: 0 4px 14px var(--brand-shadow, rgba(29, 78, 216, 0.25));
+  transition: all 0.2s ease;
+}
+
+.modal-wompi-btn:hover:not(:disabled) {
+  filter: brightness(0.92);
+  transform: translateY(-1px);
+}
+
+.detalle-cerrar-btn-custom {
+  width: auto;
+  min-height: 38px;
+  padding: 9px 22px;
+  border-radius: 10px;
+  border: none;
+  background: var(--brand-gradient, linear-gradient(135deg, var(--brand-secondary, #1e3a8a), var(--brand-primary, #2563eb)));
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  box-sizing: border-box;
+}
+
+.detalle-cerrar-btn-custom:hover {
+  background: var(--brand-gradient, linear-gradient(135deg, var(--brand-secondary, #1e3a8a), var(--brand-primary, #2563eb)));
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.35);
+}
+
+.detalle-cerrar-btn-custom:active {
+  transform: translateY(0);
+}
+
+/* ============================================================
+   MODO OSCURO PARA TODOS LOS NUEVOS COMPONENTES
+   ============================================================ */
+html.dark .contrato-firmar-padre {
+  background: #172033;
+  border-color: #334155;
+}
+
+html.dark .contrato-firmar-subtarjeta {
+  background: rgba(var(--brand-primary-rgb), 0.12);
+  border-color: rgba(var(--brand-primary-rgb), 0.3);
+}
+
+html.dark .contrato-firmar-icon-wrap {
+  background: #1e293b;
+  border-color: rgba(var(--brand-primary-rgb), 0.35);
+}
+
+html.dark .contrato-firmar-titulo {
+  color: #f8fafc;
+}
+
+html.dark .contrato-firmar-desc {
+  color: #94a3b8;
+}
+
+html.dark .contrato-desbloqueado-card {
+  background: #172033;
+  border-color: #334155;
+}
+
+html.dark .contrato-desbloqueado-head {
+  background: rgba(16, 185, 129, 0.1);
+  border-color: #166534;
+}
+
+html.dark .contrato-desbloqueado-status {
+  color: #4ade80;
+}
+
+html.dark .contrato-desbloqueado-codigo {
+  color: #94a3b8;
+}
+
+html.dark .contrato-bloquear-btn {
+  background: #1e293b;
+  border-color: #475569;
+  color: #cbd5e1;
+}
+
+html.dark .detalle-modal-titulo {
+  color: #f8fafc;
+}
+
+html.dark .detalle-modal-subtitulo {
+  color: #94a3b8;
+}
+
+html.dark .modal-reserva-info-card {
+  background: #172033;
+  border-color: #334155;
+}
+
+html.dark .modal-reserva-img-box {
+  background: #0f172a;
+  border-color: #334155;
+}
+
+html.dark .modal-reserva-datos-grid {
+  background: transparent;
+  border: none;
+}
+
+html.dark .modal-reserva-dato-celda {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+html.dark .modal-reserva-dato-celda:hover {
+  background: #243248;
+  border-color: #475569;
+}
+
+html.dark .modal-dato-icon {
+  background: #0f172a;
+  border-color: #334155;
+  color: var(--brand-accent, #60a5fa);
+  box-shadow: none;
+}
+
+html.dark .modal-dato-icon.brand-tint {
+  background: rgba(37, 99, 235, 0.2);
+  border-color: rgba(37, 99, 235, 0.35);
+  color: #93c5fd;
+}
+
+html.dark .modal-dato-label {
+  color: #94a3b8;
+}
+
+html.dark .modal-dato-val {
+  color: #f8fafc;
+}
+
+html.dark .modal-dato-val.status-val {
+  color: #4ade80;
+}
+
+html.dark .modal-cash-card {
+  background: #172033;
+  border-color: #334155;
+}
+
+html.dark .modal-cash-subcard {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+html.dark .modal-cash-logo-badge {
+  background: #172033;
+  border-color: #334155;
+}
+
+html.dark .modal-cash-titulo {
+  color: #f8fafc;
+}
+
+html.dark .modal-cash-desc {
+  color: #94a3b8;
+}
+
+html.dark .modal-cash-summary {
+  background: #172033;
+  border-color: #334155;
+}
+
+html.dark .modal-cash-row-label {
+  color: #94a3b8;
+}
+
+html.dark .modal-cash-row-val {
+  color: #f8fafc;
+}
+
+html.dark .modal-cash-divider {
+  background: #334155;
+}
+
+html.dark .modal-cash-total-label {
+  color: #cbd5e1;
+}
+
+html.dark .modal-cash-deadline-box {
+  background: rgba(234, 179, 8, 0.12);
+  border-color: rgba(234, 179, 8, 0.35);
+}
+
+html.dark .modal-cash-deadline-title {
+  color: #fde047;
+}
+
+html.dark .modal-cash-deadline-text {
+  color: #fef08a;
+}
+
+html.dark .modal-wompi-card {
+  background: #172033;
+  border-color: #334155;
+}
+
+html.dark .modal-wompi-subcard {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+html.dark .modal-wompi-titulo {
+  color: #f8fafc;
+}
+
+html.dark .modal-wompi-desc {
+  color: #94a3b8;
+}
+
+html.dark .modal-wompi-total-box {
+  background: #172033;
+  border-color: #334155;
+}
+
+html.dark .modal-wompi-total-label {
+  color: #cbd5e1;
+}
+
+html.dark .detalle-cerrar-btn-custom {
+  background: var(--brand-gradient, linear-gradient(135deg, var(--brand-secondary, #1e3a8a), var(--brand-primary, #2563eb)));
+  border: none;
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
+}
+
+html.dark .detalle-cerrar-btn-custom:hover {
+  background: var(--brand-gradient, linear-gradient(135deg, var(--brand-secondary, #1e3a8a), var(--brand-primary, #2563eb)));
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.45);
+}
+
+/* ============================================================
+   RESPONSIVE (TABLET Y CELULAR)
+   ============================================================ */
+@media (max-width: 600px) {
+  .contrato-padre-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .contrato-subtarjeta {
+    padding: 20px 14px;
+  }
+  .contrato-firmar-subtarjeta {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 12px;
+    padding: 16px 14px;
+  }
+  .contrato-firmar-info {
+    text-align: center;
+  }
+  .contrato-firmar-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  .modal-reserva-datos-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .modal-cash-card {
+    padding: 22px 14px 16px;
+  }
+  .modal-cash-summary {
+    padding: 14px;
+  }
+  .modal-wompi-card {
+    padding: 22px 14px 16px;
+  }
+}
+

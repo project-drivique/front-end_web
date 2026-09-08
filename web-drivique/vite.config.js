@@ -5,6 +5,10 @@ import path from 'path'
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  server: {
+    host: true,
+    allowedHosts: true,
+  },
   resolve: {
     alias: {
       // eslint-disable-next-line no-undef

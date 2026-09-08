@@ -22,6 +22,7 @@ import CityManagementPage from '../modules/admin/pages/CityManagementPage'
 import BranchManagementPage from '../modules/admin/pages/BranchManagementPage'
 import VehicleManagementPage from '../modules/admin/pages/VehicleManagementPage'
 import ReservationManagementPage from '../modules/admin/pages/ReservationManagementPage'
+import CashCollectionPage from '../modules/admin/pages/CashCollectionPage'
 import ContractManagementPage from '../modules/admin/pages/ContractManagementPage'
 import IncidentManagementPage from '../modules/admin/pages/IncidentManagementPage'
 import UserManagementPage from '../modules/admin/pages/UserManagementPage'
@@ -38,6 +39,7 @@ import ReservationsPage from '../modules/reservations/pages/ReservationsPage'
 import FavoritesPage from '../modules/catalog/pages/FavoritesPage'
 import NotificationsPage from '../modules/notifications/pages/NotificationsPage'
 import SupportPage from '../modules/support/pages/SupportPage'
+import ContractSigningPage from '../modules/contracts/pages/ContractSigningPage'
 import FloatingChatBot from '../components/FloatingChatBot/FloatingChatBot'
 
 function RutaPrivada({ children }) {
@@ -48,6 +50,42 @@ function RutaPrivada({ children }) {
   return esValido ? children : <Navigate to="/" replace />
 }
 
+function RutaLanding() {
+  const token = useAuthStore((s) => s.token)
+  const usuario = useAuthStore((s) => s.usuario)
+  const hydrated = useHydration()
+  if (!hydrated) return null
+  const esValido = token && token !== 'null' && token !== 'undefined'
+  if (esValido) {
+    return <Navigate to={getRoleHome(usuario?.rol)} replace />
+  }
+  return <LandingPage />
+}
+
+function RutaCatalogo() {
+  const token = useAuthStore((s) => s.token)
+  const usuario = useAuthStore((s) => s.usuario)
+  const hydrated = useHydration()
+  if (!hydrated) return null
+  const esValido = token && token !== 'null' && token !== 'undefined'
+  if (esValido) {
+    return <Navigate to={getRoleHome(usuario?.rol)} replace />
+  }
+  return <CatalogPage />
+}
+
+function RutaPublicaAuth({ children }) {
+  const token = useAuthStore((s) => s.token)
+  const usuario = useAuthStore((s) => s.usuario)
+  const hydrated = useHydration()
+  if (!hydrated) return null
+  const esValido = token && token !== 'null' && token !== 'undefined'
+  if (esValido) {
+    return <Navigate to={getRoleHome(usuario?.rol)} replace />
+  }
+  return children
+}
+
 function RutaPorRol({ children, roles }) {
   const token = useAuthStore((s) => s.token)
   const usuario = useAuthStore((s) => s.usuario)
@@ -55,7 +93,13 @@ function RutaPorRol({ children, roles }) {
   if (!hydrated) return null
   const esValido = token && token !== 'null' && token !== 'undefined'
   if (!esValido) return <Navigate to="/login" replace />
-  return roles.includes(usuario?.rol) && hasValidRoleAccess(usuario)
+  const isMatch = roles.some(
+    (r) =>
+      r === usuario?.rol ||
+      (r === ROLES.BRANCH_MANAGER && (usuario?.rol === 'encargado_sucursal' || usuario?.rol === 'encargado' || usuario?.rol === 'branch_manager')) ||
+      (r === ROLES.ADMIN && (usuario?.rol === 'administrador' || usuario?.rol === 'admin'))
+  )
+  return isMatch && hasValidRoleAccess(usuario)
     ? children
     : <Navigate to="/login" replace />
 }
@@ -99,7 +143,7 @@ function RutaRecuperacionCorreo({ children }) {
 function RouteTracker() {
   const location = useLocation()
   useEffect(() => {
-    // No guardar rutas de autenticaciÃ³n, la raÃ­z, o rutas de respuesta de pagos/callback
+    // No guardar rutas de autenticación, la raíz, o rutas de respuesta de pagos/callback
     const ignorar = ['/', '/login', '/registro', '/recuperar', '/nueva-contrasena', '/verificar-2fa', '/verificar-correo', '/verificar-recuperacion', '/respuesta']
     if (!ignorar.includes(location.pathname)) {
       localStorage.setItem('last_path', location.pathname + location.search)
@@ -128,12 +172,12 @@ export default function AppRouter() {
     <BrowserRouter>
       <RouteTracker />
       <Routes>
-        <Route path="/" element={<LandingPage />} />
+        <Route path="/" element={<RutaLanding />} />
 
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/registro" element={<RegistrationPage />} />
-        <Route path="/recuperar" element={<RecoverPasswordPage />} />
-        <Route path="/nueva-contrasena" element={<NewPasswordPage />} />
+        <Route path="/login" element={<RutaPublicaAuth><LoginPage /></RutaPublicaAuth>} />
+        <Route path="/registro" element={<RutaPublicaAuth><RegistrationPage /></RutaPublicaAuth>} />
+        <Route path="/recuperar" element={<RutaPublicaAuth><RecoverPasswordPage /></RutaPublicaAuth>} />
+        <Route path="/nueva-contrasena" element={<RutaPublicaAuth><NewPasswordPage /></RutaPublicaAuth>} />
         <Route path="/verificar-2fa" element={<Ruta2FA><Verify2FAPage /></Ruta2FA>} />
         <Route path="/verificar-correo" element={<RutaVerificacionCorreo><VerifyEmailPage /></RutaVerificacionCorreo>} />
         <Route path="/verificar-recuperacion" element={<RutaRecuperacionCorreo><VerifyRecoverPage /></RutaRecuperacionCorreo>} />
@@ -144,6 +188,7 @@ export default function AppRouter() {
         <Route path="/admin/branches" element={<RutaPorRol roles={[ROLES.ADMIN]}><BranchManagementPage /></RutaPorRol>} />
         <Route path="/admin/vehicles" element={<RutaPorRol roles={[ROLES.ADMIN]}><VehicleManagementPage /></RutaPorRol>} />
         <Route path="/admin/reservations" element={<RutaPorRol roles={[ROLES.ADMIN]}><ReservationManagementPage /></RutaPorRol>} />
+        <Route path="/admin/cobro-sucursal" element={<RutaPorRol roles={[ROLES.ADMIN]}><CashCollectionPage /></RutaPorRol>} />
         <Route path="/admin/contracts" element={<RutaPorRol roles={[ROLES.ADMIN]}><ContractManagementPage /></RutaPorRol>} />
         <Route path="/admin/incidents" element={<RutaPorRol roles={[ROLES.ADMIN]}><IncidentManagementPage /></RutaPorRol>} />
         <Route path="/admin/users" element={<RutaPorRol roles={[ROLES.ADMIN]}><UserManagementPage /></RutaPorRol>} />
@@ -156,17 +201,19 @@ export default function AppRouter() {
         <Route path="/encargado" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER]}><BranchManagerPage /></RutaPorRol>} />
         <Route path="/encargado/vehicles" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER]}><VehicleManagementPage /></RutaPorRol>} />
         <Route path="/encargado/reservations" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER]}><ReservationManagementPage /></RutaPorRol>} />
+        <Route path="/encargado/cobro-sucursal" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER]}><CashCollectionPage branchOnly={true} /></RutaPorRol>} />
         <Route path="/encargado/contracts" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER]}><ContractManagementPage /></RutaPorRol>} />
         <Route path="/encargado/incidents" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER]}><IncidentManagementPage /></RutaPorRol>} />
         <Route path="/encargado/reports" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER]}><ReportsManagementPage branchOnly={true} /></RutaPorRol>} />
         <Route path="/encargado/audit" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER]}><AuditLogManagementPage branchOnly={true} /></RutaPorRol>} />
         <Route path="/encargado/:moduleKey" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER]}><ManagementModulePage /></RutaPorRol>} />
         <Route path="/perfil" element={<RutaPrivada><ProfilePage /></RutaPrivada>} />
-        <Route path="/catalogo" element={<CatalogPage />} />
+        <Route path="/catalogo" element={<RutaCatalogo />} />
         <Route path="/catalogo/:id" element={<VehicleDetailsPage />} />
         <Route path="/sucursales" element={<BranchesPage />} />
-        <Route path="/reservas/:id" element={<RutaPrivada><ReservationFlowPage /></RutaPrivada>} />
         <Route path="/reservas" element={<RutaPrivada><ReservationsPage /></RutaPrivada>} />
+        <Route path="/reservas/:id" element={<RutaPrivada><ReservationFlowPage /></RutaPrivada>} />
+        <Route path="/contrato/:id" element={<RutaPrivada><ContractSigningPage /></RutaPrivada>} />
         <Route path="/favoritos" element={<RutaPrivada><FavoritesPage /></RutaPrivada>} />
         <Route path="/notificaciones" element={<RutaPrivada><NotificationsPage /></RutaPrivada>} />
         <Route path="/cupones" element={<RutaPrivada><NotificationsPage defaultTab="promociones" /></RutaPrivada>} />

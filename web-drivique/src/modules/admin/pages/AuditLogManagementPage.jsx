@@ -31,7 +31,7 @@ import {
 import { useLanding } from '../../landing/LandingContext'
 import { useAuthStore } from '../../../store/authStore'
 import { useBrand } from '../../../contexts/BrandContext'
-import { accessAuditService } from '../../../services/accessAuditService'
+import { accessAuditService, hasMatchingBranch } from '../../../services/accessAuditService'
 import { branchManagementService } from '../../../services/branchManagementService'
 import { exportExcel, exportPdf, printTable } from '../../../utils/listExportUtils'
 import MenuConfiguracion from '../../../components/MenuConfiguracion'
@@ -55,10 +55,11 @@ export default function AuditLogManagementPage({ branchOnly = false }) {
 
   const TIPOS_EVENTO = [
     { value: 'all', label: t('admin.audit_module.types.all', 'Todos los tipos de evento') },
+    { value: 'COBRO_SUCURSAL', label: 'Cobro en Mostrador / Sucursal' },
+    { value: 'GESTION_RESERVAS', label: t('admin.audit_module.types.reservations', 'Gestión de Reservas') },
     { value: 'AUTENTICACION', label: t('admin.audit_module.types.auth', 'Autenticación y Acceso') },
     { value: 'SEGURIDAD_2FA', label: t('admin.audit_module.types.security2fa', 'Seguridad y 2FA') },
     { value: 'CRUD_VEHICULOS', label: t('admin.audit_module.types.vehicles', 'Gestión de Flota y Vehículos') },
-    { value: 'GESTION_RESERVAS', label: t('admin.audit_module.types.reservations', 'Gestión de Reservas') },
     { value: 'GESTION_CONTRATOS', label: t('admin.audit_module.types.contracts', 'Gestión de Contratos') },
     { value: 'GESTION_INCIDENCIAS', label: t('admin.audit_module.types.incidents', 'Gestión de Incidencias') },
     { value: 'GESTION_USUARIOS', label: t('admin.audit_module.types.users', 'Gestión de Usuarios') },
@@ -110,20 +111,35 @@ export default function AuditLogManagementPage({ branchOnly = false }) {
 
       // 1. Filtro por sucursal
       if (esEncargado) {
-        const branchNorm = String(sucursalEncargado || '').toLowerCase()
-        if (branchNorm) {
-          const logBranch = String(log.sucursal || '').toLowerCase()
-          if (!logBranch.includes(branchNorm) && !branchNorm.includes(logBranch)) return false
+        const userEmail = String(user?.correo || '').trim().toLowerCase()
+        const logEmail = String(log.correo || '').trim().toLowerCase()
+        if (userEmail && logEmail === userEmail) {
+          // Las acciones ejecutadas por el encargado siempre se le muestran
+        } else if (sucursalEncargado) {
+          if (!hasMatchingBranch(log.sucursal, sucursalEncargado)) {
+            return false
+          }
         }
       } else if (branchFilter !== 'all') {
-        const branchNorm = String(log.sucursal || '').toLowerCase()
-        if (!branchNorm.includes(branchFilter.toLowerCase())) return false
+        if (!hasMatchingBranch(log.sucursal, branchFilter)) {
+          return false
+        }
       }
 
       // 2. Filtro por tipo de evento
       if (typeFilter !== 'all') {
         const logTipo = String(log.tipo || '').toUpperCase()
-        if (logTipo !== typeFilter && !logTipo.includes(typeFilter)) return false
+        if (typeFilter === 'COBRO_SUCURSAL') {
+          if (logTipo !== 'COBRO_SUCURSAL' && !logTipo.includes('COBRO') && !String(log.modulo || '').toLowerCase().includes('cobro')) {
+            return false
+          }
+        } else if (typeFilter === 'GESTION_RESERVAS') {
+          if (logTipo !== 'GESTION_RESERVAS' && logTipo !== 'COBRO_SUCURSAL' && !logTipo.includes('RESERVA')) {
+            return false
+          }
+        } else if (logTipo !== typeFilter && !logTipo.includes(typeFilter)) {
+          return false
+        }
       }
 
       // 3. Filtro por resultado

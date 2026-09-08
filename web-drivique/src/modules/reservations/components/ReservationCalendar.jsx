@@ -4,13 +4,13 @@ import {
   startOfMonth, endOfMonth, startOfWeek, endOfWeek, eachDayOfInterval,
   addMonths, subMonths, isSameMonth, isToday, format,
 } from 'date-fns'
-import { es, enUS, fr, ptBR } from 'date-fns/locale'
+import { es, enUS, fr, ptBR, de } from 'date-fns/locale'
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa'
 import { useDisponibilidadVehiculo } from '../hooks/useVehicleAvailability'
 
 const hoyISO = format(new Date(), 'yyyy-MM-dd')
 
-export default function CalendarioReservas({ vehiculoId, fechaInicio, fechaFin, onCambiarFechas }) {
+export default function CalendarioReservas({ vehiculoId, fechaInicio, fechaFin, onCambiarFechas, c }) {
   const { t, i18n } = useTranslation()
   const { estaOcupado, cargando } = useDisponibilidadVehiculo(vehiculoId)
   const [mesActual, setMesActual] = useState(new Date())
@@ -22,6 +22,7 @@ export default function CalendarioReservas({ vehiculoId, fechaInicio, fechaFin, 
       case 'fr': return fr
       case 'pt': return ptBR
       case 'br': return ptBR
+      case 'de': return de
       default: return es
     }
   }
@@ -37,8 +38,16 @@ export default function CalendarioReservas({ vehiculoId, fechaInicio, fechaFin, 
   const esPasado = useCallback((fechaISO) => fechaISO < hoyISO, [])
 
   const hayConflictoEnRango = useCallback((desde, hasta) => {
-    return eachDayOfInterval({ start: new Date(desde), end: new Date(hasta) })
-      .some(d => estaOcupado(format(d, 'yyyy-MM-dd')))
+    try {
+      if (!desde || !hasta) return false
+      const dStart = new Date(desde)
+      const dEnd = new Date(hasta)
+      if (isNaN(dStart.getTime()) || isNaN(dEnd.getTime()) || dStart > dEnd) return false
+      return eachDayOfInterval({ start: dStart, end: dEnd })
+        .some(d => estaOcupado(format(d, 'yyyy-MM-dd')))
+    } catch {
+      return false
+    }
   }, [estaOcupado])
 
   const handleClickDia = useCallback((date) => {
@@ -73,18 +82,19 @@ export default function CalendarioReservas({ vehiculoId, fechaInicio, fechaFin, 
           onClick={() => setMesActual(m => subMonths(m, 1))}
           style={{
             width: 36, height: 36, borderRadius: '50%',
-            background: '#f1f5f9', border: '1px solid #e2e8f0',
+            background: c?.isDark ? '#1e293b' : '#f1f5f9',
+            border: `1px solid ${c?.cardBorder || '#e2e8f0'}`,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            cursor: 'pointer', color: '#475569', transition: 'all 0.2s',
+            cursor: 'pointer', color: c?.textSecondary || '#475569', transition: 'all 0.2s',
           }}
-          onMouseEnter={e => { e.currentTarget.style.background = '#e2e8f0'; e.currentTarget.style.color = '#1e293b' }}
-          onMouseLeave={e => { e.currentTarget.style.background = '#f1f5f9'; e.currentTarget.style.color = '#475569' }}
+          onMouseEnter={e => { e.currentTarget.style.background = c?.isDark ? '#334155' : '#e2e8f0'; e.currentTarget.style.color = c?.textPrimary || '#1e293b' }}
+          onMouseLeave={e => { e.currentTarget.style.background = c?.isDark ? '#1e293b' : '#f1f5f9'; e.currentTarget.style.color = c?.textSecondary || '#475569' }}
         >
           <FaChevronLeft size={12} />
         </button>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <span style={{ fontSize: 17, fontWeight: 800, color: '#0f172a', textTransform: 'capitalize', letterSpacing: '-0.01em' }}>
+          <span style={{ fontSize: 17, fontWeight: 800, color: c?.textPrimary || '#0f172a', textTransform: 'capitalize', letterSpacing: '-0.01em' }}>
             {format(mesActual, 'MMMM yyyy', { locale: currentLocale })}
           </span>
         </div>
@@ -94,12 +104,13 @@ export default function CalendarioReservas({ vehiculoId, fechaInicio, fechaFin, 
           onClick={() => setMesActual(m => addMonths(m, 1))}
           style={{
             width: 36, height: 36, borderRadius: '50%',
-            background: '#f1f5f9', border: '1px solid #e2e8f0',
+            background: c?.isDark ? '#1e293b' : '#f1f5f9',
+            border: `1px solid ${c?.cardBorder || '#e2e8f0'}`,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            cursor: 'pointer', color: '#475569', transition: 'all 0.2s',
+            cursor: 'pointer', color: c?.textSecondary || '#475569', transition: 'all 0.2s',
           }}
-          onMouseEnter={e => { e.currentTarget.style.background = '#e2e8f0'; e.currentTarget.style.color = '#1e293b' }}
-          onMouseLeave={e => { e.currentTarget.style.background = '#f1f5f9'; e.currentTarget.style.color = '#475569' }}
+          onMouseEnter={e => { e.currentTarget.style.background = c?.isDark ? '#334155' : '#e2e8f0'; e.currentTarget.style.color = c?.textPrimary || '#1e293b' }}
+          onMouseLeave={e => { e.currentTarget.style.background = c?.isDark ? '#1e293b' : '#f1f5f9'; e.currentTarget.style.color = c?.textSecondary || '#475569' }}
         >
           <FaChevronRight size={12} />
         </button>
@@ -134,7 +145,7 @@ export default function CalendarioReservas({ vehiculoId, fechaInicio, fechaFin, 
 
           // Colores dinámicos
           let btnBg = 'transparent'
-          let btnColor = '#334155'
+          let btnColor = c?.textPrimary || '#334155'
           let btnBorder = 'none'
           let btnCursor = 'pointer'
           let btnOpacity = 1
@@ -149,7 +160,7 @@ export default function CalendarioReservas({ vehiculoId, fechaInicio, fechaFin, 
             btnBg = 'var(--brand-primary)'
             btnColor = '#fff'
           } else if (pasado) {
-            btnColor = '#94a3b8'
+            btnColor = c?.textSecondary || '#94a3b8'
             btnOpacity = 0.5
             btnCursor = 'not-allowed'
           } else if (ocupado) {
@@ -203,7 +214,7 @@ export default function CalendarioReservas({ vehiculoId, fechaInicio, fechaFin, 
                 onMouseLeave={e => {
                   if (clicable && !seleccionado) {
                     e.currentTarget.style.background = 'transparent'
-                    e.currentTarget.style.color = '#334155'
+                    e.currentTarget.style.color = c?.textPrimary || '#334155'
                   }
                 }}
               >
@@ -228,8 +239,8 @@ export default function CalendarioReservas({ vehiculoId, fechaInicio, fechaFin, 
         display: 'flex', flexWrap: 'wrap', alignItems: 'center',
         justifyContent: 'center', gap: 16,
         marginTop: 20, paddingTop: 16,
-        borderTop: '1px solid #f1f5f9',
-        fontSize: 12, fontWeight: 500, color: '#64748b'
+        borderTop: `1px solid ${c?.cardBorder || '#f1f5f9'}`,
+        fontSize: 12, fontWeight: 500, color: c?.textSecondary || '#64748b'
       }}>
         <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#10b981', display: 'block' }} />
