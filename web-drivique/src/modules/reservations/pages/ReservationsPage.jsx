@@ -287,58 +287,49 @@ function Contrato({ reserva, autoDesbloquear = false, onDesbloquear }) {
     return reservaParaContrato?.datosForm?.numDoc || reserva.clienteDocumento || usuario?.cedula || ''
   }, [reservaParaContrato, reserva, usuario])
 
-  if (tieneContratoFirmado) {
+  if (esConfirmada && !tieneContratoFirmado) {
     return (
-      <ContratoVerCard
-        reserva={reserva}
-        contratoFirmado={contratoFirmado}
-        reservaParaContrato={reservaParaContrato}
-        vehiculoParaContrato={vehiculoParaContrato}
-        identificacion={identificacion}
-      />
-    )
-  }
-
-  if (esConfirmada) {
-    return (
-      <div className="contrato-firmar-padre">
-        <div className="contrato-firmar-subtarjeta">
-          <div className="contrato-firmar-icon-wrap">
-            <FaFileSignature size={22} />
+      <>
+        <div className="contrato-firmar-padre">
+          <div className="contrato-firmar-subtarjeta">
+            <div className="contrato-firmar-icon-wrap">
+              <FaFileSignature size={22} />
+            </div>
+            <h3 className="contrato-firmar-titulo">
+              {t('reservas.readyToSign', { defaultValue: 'Listo para firmar contrato' })}
+            </h3>
+            <p className="contrato-firmar-desc">
+              {t('reservas.readyToSignDesc', { defaultValue: 'Tu pago ha sido confirmado con éxito. Completa la firma digital de tu contrato para acceder al documento protegido.' })}
+            </p>
+            <button
+              type="button"
+              onClick={() => navigate(`/contrato/${encodeURIComponent(refBusqueda)}`, { state: { reserva: reservaParaContrato || reserva, vehiculo: vehiculoParaContrato || reserva.vehiculo } })}
+              className="contrato-firmar-btn"
+            >
+              <FaFileSignature size={15} />
+              <span>{t('reservas.signContractNow', { defaultValue: 'Firmar contrato de alquiler' })}</span>
+            </button>
           </div>
-          <h3 className="contrato-firmar-titulo">
-            {t('reservas.readyToSign', { defaultValue: 'Listo para firmar contrato' })}
-          </h3>
-          <p className="contrato-firmar-desc">
-            {t('reservas.readyToSignDesc', { defaultValue: 'Tu pago ha sido confirmado con éxito. Completa la firma digital de tu contrato para acceder al documento protegido.' })}
-          </p>
-          <button
-            type="button"
-            onClick={() => navigate(`/contrato/${encodeURIComponent(refBusqueda)}`, { state: { reserva: reservaParaContrato || reserva, vehiculo: vehiculoParaContrato || reserva.vehiculo } })}
-            className="contrato-firmar-btn"
-          >
-            <FaFileSignature size={15} />
-            <span>{t('reservas.signContractNow', { defaultValue: 'Firmar contrato de alquiler' })}</span>
-          </button>
         </div>
-      </div>
+        <ContratoVerCard
+          reserva={reserva}
+          contratoFirmado={contratoFirmado}
+          reservaParaContrato={reservaParaContrato}
+          vehiculoParaContrato={vehiculoParaContrato}
+          identificacion={identificacion}
+        />
+      </>
     )
   }
 
   return (
-    <div className="contrato-card bloqueada">
-      <div className="contrato-subcard">
-        <div className="contrato-icon-wrap">
-          <FaLock size={22} />
-        </div>
-        <h3 className="contrato-card-titulo">
-          {t('reservas.contractProtected', { defaultValue: 'Contrato protegido' })}
-        </h3>
-        <p className="contrato-card-desc">
-          {t('reservas.contractPendingPaymentNotice', { defaultValue: 'El contrato digital se habilitará para tu firma digital tan pronto se confirme el pago de la reserva.' })}
-        </p>
-      </div>
-    </div>
+    <ContratoVerCard
+      reserva={reserva}
+      contratoFirmado={contratoFirmado}
+      reservaParaContrato={reservaParaContrato}
+      vehiculoParaContrato={vehiculoParaContrato}
+      identificacion={identificacion}
+    />
   )
 }
 
