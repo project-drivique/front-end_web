@@ -1,5 +1,6 @@
 import defaultBrand from '../mocks/brandConfig.json'
 import { accessAuditService } from './accessAuditService'
+import { applyBrand } from '../utils/brandThemeUtils'
 
 const ACTIVE_KEY = 'drivique_brand_active'
 const PREVIOUS_KEY = 'drivique_brand_previous'
@@ -83,6 +84,7 @@ export const brandService = {
     const next = validate(config)
     localStorage.setItem(PREVIOUS_KEY, JSON.stringify(before))
     localStorage.setItem(ACTIVE_KEY, JSON.stringify(next))
+    applyBrand(next)
     audit(user, 'aplicar', before, next)
     announce(next)
     return next
@@ -93,6 +95,7 @@ export const brandService = {
     if (!previous) throw new Error('noPrevious')
     localStorage.setItem(ACTIVE_KEY, JSON.stringify(previous))
     localStorage.setItem(PREVIOUS_KEY, JSON.stringify(current))
+    applyBrand(previous)
     audit(user, 'restaurar_anterior', current, previous)
     announce(previous)
     return previous
@@ -102,6 +105,7 @@ export const brandService = {
     const defaults = validate(defaultBrand)
     localStorage.setItem(PREVIOUS_KEY, JSON.stringify(current))
     localStorage.setItem(ACTIVE_KEY, JSON.stringify(defaults))
+    applyBrand(defaults)
     audit(user, 'restaurar_original', current, defaults)
     announce(defaults)
     return defaults
@@ -109,3 +113,9 @@ export const brandService = {
   eventName: EVENT_NAME,
   activeKey: ACTIVE_KEY,
 }
+
+// Inicialización inmediata al importar para que no haya retraso de renderizado
+try {
+  applyBrand(brandService.getActive())
+} catch {}
+

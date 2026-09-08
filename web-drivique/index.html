@@ -6,6 +6,49 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
     <title>RentaMóvil — Alquiler de vehículos en Colombia</title>
     <meta name="description" content="Reserva tu vehículo en línea, paga con Nequi, PSE o tarjeta. Rápido, seguro y 100% digital." />
+    <script>
+      (function() {
+        try {
+          var saved = localStorage.getItem('drivique_brand_active');
+          if (saved) {
+            var config = JSON.parse(saved);
+            if (config && config.colors && config.colors.primary) {
+              var hexToRgb = function(hex) {
+                var h = hex.replace('#', '');
+                if (h.length === 3) h = h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
+                var num = parseInt(h, 16);
+                return (num >> 16) + ', ' + ((num >> 8) & 255) + ', ' + (num & 255);
+              };
+              var p = config.colors.primary;
+              var s = config.colors.secondary || p;
+              var a = config.colors.accent || p;
+              var pRgb = hexToRgb(p);
+              var sRgb = hexToRgb(s);
+              var aRgb = hexToRgb(a);
+              var root = document.documentElement;
+              root.style.setProperty('--brand-primary', p);
+              root.style.setProperty('--brand-secondary', s);
+              root.style.setProperty('--brand-accent', a);
+              root.style.setProperty('--brand-primary-rgb', pRgb);
+              root.style.setProperty('--brand-secondary-rgb', sRgb);
+              root.style.setProperty('--brand-accent-rgb', aRgb);
+              root.style.setProperty('--brand-primary-hover', p);
+              root.style.setProperty('--brand-primary-active', s);
+              root.style.setProperty('--brand-secondary-hover', s);
+              root.style.setProperty('--brand-soft-light', 'rgba(' + pRgb + ', 0.08)');
+              root.style.setProperty('--brand-soft-strong-light', 'rgba(' + pRgb + ', 0.16)');
+              root.style.setProperty('--brand-border-light', 'rgba(' + pRgb + ', 0.28)');
+              root.style.setProperty('--brand-shadow', '0 8px 24px rgba(' + pRgb + ', 0.22)');
+              root.style.setProperty('--brand-on-primary', '#FFFFFF');
+              root.dataset.brand = config.name || 'Drivique';
+              if (config.name) {
+                document.title = config.name + ' — Alquiler de vehículos en Colombia';
+              }
+            }
+          }
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

@@ -16,7 +16,7 @@
 .res-stepper-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
+  gap: 24px;
   width: 100%;
   align-items: stretch;
 }

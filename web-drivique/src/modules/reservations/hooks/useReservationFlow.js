@@ -9,6 +9,7 @@ import { generarReferenciaUnica, aCentavos, construirUrlCheckout } from '@/servi
 import { RECARGOS_LOGISTICOS, SUCURSALES, CIUDADES } from '../../catalog/constants'
 import { branchManagementService } from '../../../services/branchManagementService'
 import { promotionManagementService } from '../../../services/promotionManagementService'
+import { vehicleManagementService } from '../../../services/vehicleManagementService'
 import VEHICULOS_MOCK from '@/mocks/vehicles.json'
 
 export const TOTAL_PASOS = 3
@@ -24,7 +25,20 @@ export function useReservationFlow() {
   const navigate = useNavigate()
   const { usuario, actualizarUsuario } = useAuthStore()
 
-  const vehiculo = VEHICULOS_MOCK.find(v => v.id === Number(id))
+  const baseVehiculo = vehicleManagementService.getById(id) || VEHICULOS_MOCK.find(v => Number(v.id) === Number(id))
+  const vehiculo = baseVehiculo ? {
+    ...baseVehiculo,
+    caracteristicas: baseVehiculo.caracteristicas || [],
+    equipamientoTecnologico: baseVehiculo.equipamientoTecnologico || [],
+    seguros: baseVehiculo.seguros || [{ nombre: 'Protección Básica Estándar', precio: 0, descripcion: 'Cobertura estándar' }],
+    servicios: baseVehiculo.servicios || [],
+    imagenes: baseVehiculo.imagenes || (baseVehiculo.imagen ? [baseVehiculo.imagen] : []),
+    sucursalInfo: baseVehiculo.sucursalInfo || {
+      nombre: baseVehiculo.sucursal || 'Alquiler Neiva - Centro',
+      direccion: 'Calle 9 # 8-25, Centro',
+      horario: 'Lun a dom, 6:00 am - 10:00 pm'
+    }
+  } : null
 
   const storageKey = `drivique_reservation_state_${id}`
 
@@ -165,14 +179,21 @@ export function useReservationFlow() {
     setReserva(prev => {
       const act = { ...prev, [campo]: valor }
       if (campo === 'metodoPago' && valor === 'efectivo') {
-        const autorizadas = branchManagementService.getCashAuthorized()
-        if (!autorizadas.some((branch) => branch.nombre === act.sucursalPagoEfectivo)) act.sucursalPagoEfectivo = autorizadas[0]?.nombre || ''
+        act.sucursalPagoEfectivo = vehiculo?.sucursal || ''
+        act.sucursalRetiro = vehiculo?.sucursal || ''
+        act.sucursalDevolucion = vehiculo?.sucursal || ''
         act.domicilioCiudad = ''
         act.domicilioBarrio = ''
         act.domicilioDireccion = ''
         act.domicilioReferencias = ''
-        if (act.sucursalRetiro === 'domicilio') act.sucursalRetiro = ''
-        if (act.sucursalDevolucion === 'domicilio') act.sucursalDevolucion = ''
+      }
+      if (campo === 'sucursalRetiro' && valor === 'domicilio') {
+        const b = SUCURSALES.find(s => s.nombre === vehiculo?.sucursal)
+        act.domicilioCiudad = b?.ciudad || ''
+      }
+      if (campo === 'sucursalDevolucion' && valor === 'domicilio') {
+        const b = SUCURSALES.find(s => s.nombre === vehiculo?.sucursal)
+        act.domicilioCiudad = b?.ciudad || ''
       }
       if (act.sucursalRetiro === 'domicilio' || act.sucursalDevolucion === 'domicilio') {
         const b = SUCURSALES.find(s => s.nombre === vehiculo?.sucursal)
@@ -183,23 +204,23 @@ export function useReservationFlow() {
     setErrorPaso1('')
 
     if (campo === 'metodoPago' && valor === 'efectivo' && vehiculo) {
-      const sucursal = branchManagementService.getCashAuthorized().find(s => s.nombre === reserva.sucursalPagoEfectivo) || branchManagementService.getCashAuthorized()[0]
+      const sucursal = SUCURSALES.find(s => s.nombre === vehiculo.sucursal) || branchManagementService.getCashAuthorized().find(s => s.nombre === reserva.sucursalPagoEfectivo) || branchManagementService.getCashAuthorized()[0]
       if (sucursal) {
         showAlert({
           icon: 'info',
           title: t('vehiculo.cashBranchTitle'),
           background: 'var(--bg-tarjeta)',
           color: 'var(--texto-primary)',
-          html: `<div style="text-align:left;font-size:14px;line-height:1.6;color:var(--texto-primary);">
-            <p style="margin:0 0 10px;">${t('vehiculo.cashBranchIntro')}</p>
-            <div style="background:var(--bg-item);border:1px solid var(--borde);border-radius:12px;padding:14px 16px;">
-              <p style="margin:0 0 4px;font-weight:800;color:var(--texto-acento);">${sucursal.nombre}</p>
-              <p style="margin:0 0 4px;color:var(--texto-second);"><strong>${t('vehiculo.cashBranchCity')}:</strong> ${sucursal.ciudad}</p>
-              <p style="margin:0;color:var(--texto-second);"><strong>${t('vehiculo.cashBranchAddress')}:</strong> ${sucursal.direccion || t('vehiculo.cashBranchNoAddress')}</p>
+          html: `<div style="font-size:13.5px;line-height:1.5;color:var(--texto-primary);">
+            <p style="margin:0 0 14px;color:var(--texto-second);text-align:center;font-size:13px;line-height:1.45;">${t('vehiculo.cashBranchIntro')}</p>
+            <div style="text-align:left;background:var(--bg-item);border:1px solid var(--borde);border-radius:12px;padding:12px 14px;">
+              <p style="margin:0 0 4px;font-weight:700;color:var(--texto-primary);font-size:14px;">${sucursal.nombre}</p>
+              <p style="margin:0 0 2px;color:var(--texto-second);font-size:12.5px;"><strong>${t('vehiculo.cashBranchCity')}:</strong> ${sucursal.ciudad}</p>
+              <p style="margin:0;color:var(--texto-second);font-size:12.5px;"><strong>${t('vehiculo.cashBranchAddress')}:</strong> ${sucursal.direccion || t('vehiculo.cashBranchNoAddress')}</p>
             </div>
           </div>`,
           confirmButtonText: t('common.close'),
-          width: 480,
+          width: 340,
         })
       }
     }
@@ -212,7 +233,7 @@ export function useReservationFlow() {
   const [errorPaso1, setErrorPaso1] = useState('')
   const [datosForm, setDatosForm] = useState(savedState?.datosForm || {
     nombre: '', correo: '', celular: '',
-    nacionalidad: 'Colombia', tipoDoc: 'CC', numDoc: '',
+    nacionalidad: '', tipoDoc: '', numDoc: '',
     vuelo: false, numVuelo: '', terminos: false,
     cedulaPdf: null, licenciaPdf: null,
   })
@@ -230,20 +251,24 @@ export function useReservationFlow() {
   const idUsuarioDocs = usuario?.id || usuario?.correo || null
   const docsVerificados = documentsService.tieneDocumentos(idUsuarioDocs)
 
-  // Sincronizar estado con sessionStorage
+  // Sincronizar estado con sessionStorage solo si se ha avanzado más allá del paso 1
   useEffect(() => {
-    const stateToSave = {
-      pantalla,
-      seguroIdx,
-      serviciosSeleccionados,
-      reserva,
-      datosForm: {
-        ...datosForm,
-        cedulaPdf: null, // No podemos guardar archivos File
-        licenciaPdf: null,
+    if (pantalla > 1) {
+      const stateToSave = {
+        pantalla,
+        seguroIdx,
+        serviciosSeleccionados,
+        reserva,
+        datosForm: {
+          ...datosForm,
+          cedulaPdf: null, // No podemos guardar archivos File
+          licenciaPdf: null,
+        }
       }
+      sessionStorage.setItem(storageKey, JSON.stringify(stateToSave))
+    } else {
+      sessionStorage.removeItem(storageKey)
     }
-    sessionStorage.setItem(storageKey, JSON.stringify(stateToSave))
   }, [pantalla, seguroIdx, serviciosSeleccionados, reserva, datosForm, storageKey])
 
   useEffect(() => {
@@ -258,8 +283,8 @@ export function useReservationFlow() {
       correo: usuario.correo || prev.correo,
       celular: celular || prev.celular,
       numDoc: usuario.cedula || prev.numDoc,
-      nacionalidad: usuario.nacionalidad || prev.nacionalidad || 'Colombia',
-      tipoDoc: usuario.tipoDocumento || prev.tipoDoc || 'CC',
+      nacionalidad: usuario.nacionalidad || prev.nacionalidad || '',
+      tipoDoc: usuario.tipoDocumento || prev.tipoDoc || '',
     }))
   }, [usuario])
 
@@ -275,7 +300,6 @@ export function useReservationFlow() {
 
     if (pantalla === 1) {
       if (!reserva.metodoPago) { mostrarAlerta(); return }
-      if (reserva.metodoPago === 'efectivo' && !branchManagementService.getCashAuthorized().some((branch) => branch.nombre === reserva.sucursalPagoEfectivo)) { mostrarAlerta(); return }
       if (!reserva.sucursalRetiro || !reserva.sucursalDevolucion) { mostrarAlerta(); return }
       if (!reserva.fechaInicio || !reserva.fechaFin) { mostrarAlerta(); return }
       if (!reserva.horaInicio || !reserva.horaFin) { mostrarAlerta(); return }
@@ -313,13 +337,15 @@ export function useReservationFlow() {
     }
 
     const e = {}
-    if (!datosForm.nombre.trim()) e.nombre = t('vehiculo.errors.nameRequired')
-    if (!datosForm.correo.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(datosForm.correo)) e.correo = t('vehiculo.errors.emailInvalid')
-    if (!datosForm.celular.trim() || datosForm.celular.length < 10) e.celular = t('vehiculo.errors.phoneInvalid')
-    if (!datosForm.numDoc.trim()) e.numDoc = t('vehiculo.errors.docRequired')
+    if (!datosForm.nombre.trim()) e.nombre = t('vehiculo.errors.nameRequired', 'El nombre es obligatorio.')
+    if (!datosForm.nacionalidad?.trim()) e.nacionalidad = t('vehiculo.errors.nationalityRequired', 'Debes seleccionar tu nacionalidad.')
+    if (!datosForm.tipoDoc?.trim()) e.tipoDoc = t('vehiculo.errors.docTypeRequired', 'Debes seleccionar el tipo de documento.')
+    if (!datosForm.numDoc.trim()) e.numDoc = t('vehiculo.errors.docRequired', 'El número de documento es obligatorio.')
+    if (!datosForm.correo.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(datosForm.correo)) e.correo = t('vehiculo.errors.emailInvalid', 'El correo electrónico no es válido.')
+    if (!datosForm.celular.trim() || datosForm.celular.length < 10) e.celular = t('vehiculo.errors.phoneInvalid', 'El número celular debe tener al menos 10 dígitos.')
     if (!docsVerificados && !datosForm.cedulaPdf) e.cedulaPdf = t('vehiculo.errors.cedulaPdfRequired', 'Debes subir tu cédula en formato PDF.')
     if (!docsVerificados && !datosForm.licenciaPdf) e.licenciaPdf = t('vehiculo.errors.licenciaPdfRequired', 'Debes subir tu licencia de conducción en formato PDF.')
-    if (!datosForm.terminos) e.terminos = t('vehiculo.errors.termsRequired')
+    if (!datosForm.terminos) e.terminos = t('vehiculo.errors.termsRequired', 'Debes aceptar los términos y condiciones.')
     setErrores(e)
     if (Object.keys(e).length > 0) return
 
@@ -369,15 +395,49 @@ export function useReservationFlow() {
       })
     }
 
+    const docSaved = idUsuarioDocs ? documentsService.obtenerDocumentos(idUsuarioDocs) : null
+    const docCedulaFinal = datosForm.cedulaPdf?.name || (typeof datosForm.cedulaPdf === 'string' && datosForm.cedulaPdf) || docSaved?.cedula?.nombre || (datosForm.numDoc ? `Cedula-${datosForm.numDoc}.pdf` : 'Cedula-Verificada.pdf')
+    const docLicenciaFinal = datosForm.licenciaPdf?.name || (typeof datosForm.licenciaPdf === 'string' && datosForm.licenciaPdf) || docSaved?.licencia?.nombre || (datosForm.numDoc ? `Licencia-${datosForm.numDoc}.pdf` : 'Licencia-Conduccion-Verificada.pdf')
+
     const reservaGuardada = reservationService.guardarReserva({
       referencia,
       vehiculoId: vehiculo.id,
       vehiculoNombre: vehiculo.nombre,
-      estado: 'PENDIENTE',
+      vehiculo: {
+        id: vehiculo.id,
+        nombre: vehiculo.nombre,
+        marca: vehiculo.marca,
+        modelo: vehiculo.modelo,
+        placa: vehiculo.placa,
+        color: vehiculo.color,
+        año: vehiculo.año || vehiculo.anio || 2024,
+        sucursal: vehiculo.sucursal,
+        precio: vehiculo.precio,
+        precioDiario: vehiculo.precioDiario || vehiculo.precio,
+        seguros: vehiculo.seguros,
+        servicios: vehiculo.servicios,
+        imagenes: vehiculo.imagenes,
+        imagen: vehiculo.imagen || vehiculo.imagenes?.[0]
+      },
+      estado: reserva.metodoPago === 'efectivo' ? 'PENDIENTE_EFECTIVO' : 'PENDIENTE',
+      fechaCreacion: new Date().toISOString(),
       fechaReserva: new Date().toISOString(),
-      datosForm,
+      fechaInicio: reserva.fechaInicio,
+      fechaFin: reserva.fechaFin,
+      horaInicio: reserva.horaInicio,
+      horaFin: reserva.horaFin,
+      sucursal: vehiculo.sucursal,
+      sucursalRetiro: reserva.sucursalRetiro,
+      sucursalDevolucion: reserva.sucursalDevolucion,
+      metodoPago: reserva.metodoPago,
+      datosForm: {
+        ...datosForm,
+        cedulaPdf: docCedulaFinal,
+        licenciaPdf: docLicenciaFinal,
+      },
       reservaDetalles: reserva,
       total: finalTotalCop,
+      totalCOP: finalTotalCop,
       promocion: appliedPromotion ? { id: appliedPromotion.id, codigo: appliedPromotion.codigo, descuento: discountCop } : null,
       seguroIdx,
       serviciosSeleccionados,
@@ -387,12 +447,7 @@ export function useReservationFlow() {
     sessionStorage.setItem('current_wompi_reference', referencia)
     setReservaCreada(reservaGuardada)
     setDatosPago({ referencia, amountInCents: aCentavos(finalTotalCop) })
-
-    if (reserva.metodoPago === 'efectivo') {
-      setContratoFirmado(false)
-    } else {
-      setExito(true)
-    }
+    setExito(true)
 
     // Limpiar sessionStorage al completar reserva exitosamente
     sessionStorage.removeItem(storageKey)
@@ -408,8 +463,12 @@ export function useReservationFlow() {
     setErrorPago('')
     setRedirigiendoPago(true)
     try {
+      const baseRef = datosPago.referencia
+      const attemptRef = `${baseRef}_${Date.now()}`
+      sessionStorage.setItem('current_wompi_reference', baseRef)
+      sessionStorage.setItem('current_wompi_attempt_ref', attemptRef)
       const url = await construirUrlCheckout({
-        reference: datosPago.referencia,
+        reference: attemptRef,
         amountInCents: datosPago.amountInCents,
         redirectUrl: `${window.location.origin}/respuesta`,
       })

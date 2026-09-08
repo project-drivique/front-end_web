@@ -38,7 +38,18 @@ export const contractService = {
   obtenerPorReserva: (referenciaReserva) => {
     if (!referenciaReserva) return null;
     const todos = leerTodos();
-    return todos[referenciaReserva] || null;
+    const refStr = String(referenciaReserva).trim();
+    if (todos[refStr]) return todos[refStr];
+    const refClean = refStr.includes('_') ? refStr.split('_')[0] : refStr;
+    if (todos[refClean]) return todos[refClean];
+    const matchKey = Object.keys(todos).find(k => 
+      k === refClean || 
+      k.split('_')[0] === refClean || 
+      k.toLowerCase() === refClean.toLowerCase() ||
+      String(todos[k]?.codigo || '').toLowerCase() === refClean.toLowerCase() ||
+      String(todos[k]?.referenciaReserva || '').toLowerCase() === refClean.toLowerCase()
+    );
+    return matchKey ? todos[matchKey] : null;
   },
 
   /**
@@ -49,17 +60,23 @@ export const contractService = {
   obtenerOCrearCodigo: (referenciaReserva) => {
     if (!referenciaReserva) return generarCodigoContrato();
     const todos = leerTodos();
-    if (todos[referenciaReserva]?.codigo) return todos[referenciaReserva].codigo;
+    const refStr = String(referenciaReserva).trim();
+    const refClean = refStr.includes('_') ? refStr.split('_')[0] : refStr;
+    if (todos[refStr]?.codigo) return todos[refStr].codigo;
+    if (todos[refClean]?.codigo) return todos[refClean].codigo;
     return generarCodigoContrato();
   },
 
   completarContratoOriginal: (referenciaReserva, contratoOriginal) => {
     if (!referenciaReserva || !contratoOriginal) return null;
     const todos = leerTodos();
-    if (!todos[referenciaReserva]) return null;
-    todos[referenciaReserva] = { ...todos[referenciaReserva], contratoOriginal };
+    const refStr = String(referenciaReserva).trim();
+    const refClean = refStr.includes('_') ? refStr.split('_')[0] : refStr;
+    const key = todos[refStr] ? refStr : (todos[refClean] ? refClean : refClean);
+    if (!todos[key]) return null;
+    todos[key] = { ...todos[key], contratoOriginal };
     guardarTodos(todos);
-    return todos[referenciaReserva];
+    return todos[key];
   },
 
   /**
@@ -69,10 +86,12 @@ export const contractService = {
   guardarFirma: (referenciaReserva, { codigo, firmaUsuarioDataUrl, ciudad, fecha, contratoOriginal }) => {
     if (!referenciaReserva) return null;
     const todos = leerTodos();
+    const refStr = String(referenciaReserva).trim();
+    const refClean = refStr.includes('_') ? refStr.split('_')[0] : refStr;
 
     const contrato = {
       codigo: codigo || generarCodigoContrato(),
-      referenciaReserva,
+      referenciaReserva: refClean,
       firmaUsuarioDataUrl,
       ciudad: ciudad || '',
       fecha: fecha || new Date().toISOString(),
@@ -81,7 +100,14 @@ export const contractService = {
       firmadoEn: new Date().toISOString(),
     };
 
-    todos[referenciaReserva] = contrato;
+    todos[refClean] = contrato;
+    todos[refStr] = contrato;
+    if (contratoOriginal?.reserva) {
+      const res = contratoOriginal.reserva;
+      if (res.id) todos[String(res.id)] = contrato;
+      if (res.referencia) todos[String(res.referencia)] = contrato;
+      if (res.codigo) todos[String(res.codigo)] = contrato;
+    }
     guardarTodos(todos);
     return contrato;
   },

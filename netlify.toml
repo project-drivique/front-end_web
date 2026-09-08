@@ -1,0 +1,11 @@
+# Configuración de Netlify para proyecto dentro de subcarpeta (web-drivique)
+[build]
+  base = "web-drivique"
+  publish = "dist"
+  command = "npm run build"
+
+# Redirección SPA para React Router (evita errores 404 al recargar rutas)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

@@ -211,7 +211,7 @@ export default function UserManagementPage() {
   ])
 
   const exportData = {
-    title: `Gestión de Usuarios — Plataforma ${brand.name}`,
+    title: `Gestión de Usuarios — Plataforma ${brand?.name || 'Drivique'}`,
     headers: headersExport,
     rows: rowsExport,
     items: filtrados,
