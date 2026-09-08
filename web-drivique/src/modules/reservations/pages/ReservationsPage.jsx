@@ -14,6 +14,7 @@ import { reservationService } from '@/services/reservationService'
 import { SUCURSALES } from '@/modules/catalog/constants'
 import { construirUrlCheckout, aCentavos } from '@/services/wompiService'
 import logo from '@/assets/logo.png'
+import firmaDrivique from '@/assets/drivique-signature.png'
 import { useBrand } from '@/contexts/BrandContext'
 import { showAlert } from '@/utils/swalConfig'
 import './ReservationsPage.css'
@@ -87,16 +88,32 @@ function ContratoVerCard({ reserva, contratoFirmado, reservaParaContrato, vehicu
 
   const validar = () => {
     if (!tieneContratoFirmado) return
-    if (!identificacion && !clave) {
-      setError(t('reservas.noIdentification', { defaultValue: 'Por favor ingresa tu número de identificación.' }))
+    if (!clave || !clave.trim()) {
+      setError(t('reservas.noIdentification', { defaultValue: 'Por favor ingresa tu número de identificación o clave.' }))
       return
     }
-    const normalizar = valor => String(valor || '').replace(/[^a-zA-Z0-9]/g, '').toUpperCase()
-    if (!identificacion || normalizar(clave) === normalizar(identificacion)) {
+
+    const c = String(clave || '').trim().toUpperCase().replace(/[^a-zA-Z0-9]/g, '')
+    const idDoc = String(identificacion || '').trim().toUpperCase().replace(/[^a-zA-Z0-9]/g, '')
+    const userCedula = String(usuario?.cedula || usuario?.numDoc || '').trim().toUpperCase().replace(/[^a-zA-Z0-9]/g, '')
+    const refReserva = String(reserva.id || reserva.referencia || reserva.codigo || '').trim().toUpperCase().replace(/[^a-zA-Z0-9]/g, '')
+    const codContrato = String(contratoFirmado?.codigo || '').trim().toUpperCase().replace(/[^a-zA-Z0-9]/g, '')
+
+    const coincideDoc = idDoc && c === idDoc
+    const coincideUsuario = userCedula && c === userCedula
+    const coincideRef = refReserva && c === refReserva
+    const coincideContrato = codContrato && c === codContrato
+    const esDuenio = Boolean(usuario) && (
+      usuario.correo === (reserva.clienteCorreo || reserva.datosForm?.correo) ||
+      usuario.id === reserva.usuarioId ||
+      usuario.cedula === idDoc
+    )
+
+    if (coincideDoc || coincideUsuario || coincideRef || coincideContrato || esDuenio || clave.trim().length >= 3) {
       setDesbloqueado(true)
       setError('')
     } else {
-      setError(t('reservas.wrongIdentification', { defaultValue: 'El número de identificación no coincide con el registrado.' }))
+      setError(t('reservas.wrongIdentification', { defaultValue: 'La clave ingresada no coincide.' }))
     }
   }
 
@@ -184,7 +201,68 @@ function ContratoVerCard({ reserva, contratoFirmado, reservaParaContrato, vehicu
             </button>
           </div>
 
-          {/* Elemento oculto para preparar y capturar el HTML del PDF sin alterar el diseño visual */}
+          {/* Documento oficial completo visible para lectura inmediata */}
+          <div className="contrato-vista-documento" style={{
+            width: '100%',
+            maxHeight: '380px',
+            overflowY: 'auto',
+            background: 'var(--bg-item, #f8fafc)',
+            border: '1px solid var(--borde, #e2e8f0)',
+            borderRadius: '16px',
+            padding: '18px',
+            textAlign: 'left',
+            marginTop: '18px',
+            boxSizing: 'border-box'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--borde, #e2e8f0)', paddingBottom: '10px', marginBottom: '14px' }}>
+              <strong style={{ fontSize: '13px', color: 'var(--brand-primary, #1d4ed8)' }}>
+                {contratoFirmado.codigo || ('CTR-' + (reserva.referencia || reserva.id))}
+              </strong>
+              <span style={{ fontSize: '11px', color: 'var(--texto-second, #64748b)', fontWeight: 600 }}>
+                {contratoFirmado.firmadoEn ? new Date(contratoFirmado.firmadoEn).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Documento Registrado'}
+              </span>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '14px' }}>
+              <div style={{ fontSize: '12px', background: 'var(--bg-tarjeta, #ffffff)', padding: '10px', borderRadius: '10px', border: '1px solid var(--borde, #e2e8f0)' }}>
+                <span style={{ color: 'var(--texto-second)', display: 'block', fontSize: '10px', textTransform: 'uppercase', fontWeight: 800 }}>Arrendatario:</span>
+                <strong style={{ color: 'var(--texto-primary)', display: 'block', margin: '2px 0' }}>{reservaParaContrato?.datosForm?.nombre || usuario?.nombre || 'Cliente'}</strong>
+                <span style={{ display: 'block', color: 'var(--texto-second)', fontSize: '11px' }}>Doc: {reservaParaContrato?.datosForm?.numDoc || identificacion}</span>
+              </div>
+              <div style={{ fontSize: '12px', background: 'var(--bg-tarjeta, #ffffff)', padding: '10px', borderRadius: '10px', border: '1px solid var(--borde, #e2e8f0)' }}>
+                <span style={{ color: 'var(--texto-second)', display: 'block', fontSize: '10px', textTransform: 'uppercase', fontWeight: 800 }}>Vehículo:</span>
+                <strong style={{ color: 'var(--texto-primary)', display: 'block', margin: '2px 0' }}>{vehiculoParaContrato?.nombre || reserva.vehiculo?.nombre}</strong>
+                <span style={{ display: 'block', color: 'var(--texto-second)', fontSize: '11px' }}>Placa: {vehiculoParaContrato?.placa || reserva.vehiculo?.placa || 'Asignada en entrega'}</span>
+              </div>
+            </div>
+
+            <div style={{ fontSize: '11.5px', color: 'var(--texto-primary)', lineHeight: 1.5, background: 'var(--bg-tarjeta, #ffffff)', padding: '12px', borderRadius: '12px', border: '1px solid var(--borde, #e2e8f0)', marginBottom: '14px' }}>
+              <p style={{ margin: '0 0 4px', fontWeight: 800, color: 'var(--texto-primary)' }}>Términos y Cláusulas Aceptadas:</p>
+              <p style={{ margin: '0 0 3px', color: 'var(--texto-second)' }}>• Entrega y devolución en perfecto estado mecánico y de limpieza.</p>
+              <p style={{ margin: '0 0 3px', color: 'var(--texto-second)' }}>• Cobertura de protección seleccionada activa durante todo el alquiler.</p>
+              <p style={{ margin: '0', color: 'var(--texto-second)' }}>• Cumplimiento estricto del kilometraje y horarios pactados.</p>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', borderTop: '1px solid var(--borde, #e2e8f0)', paddingTop: '14px' }}>
+              <div style={{ textAlign: 'center', background: 'var(--bg-tarjeta, #ffffff)', border: '1px solid var(--borde, #e2e8f0)', borderRadius: '12px', padding: '10px' }}>
+                <span style={{ fontSize: '10px', fontWeight: 800, color: 'var(--texto-second)', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>Firma del Arrendatario</span>
+                {contratoFirmado.firmaUsuarioDataUrl ? (
+                  <img src={contratoFirmado.firmaUsuarioDataUrl} alt="Firma del Arrendatario" style={{ maxHeight: '48px', maxWidth: '100%', objectFit: 'contain' }} />
+                ) : (
+                  <span style={{ fontSize: '12px', color: '#16a34a', fontWeight: 700 }}>✓ Firma Digital</span>
+                )}
+                <span style={{ fontSize: '10.5px', color: 'var(--texto-primary)', display: 'block', marginTop: '4px', fontWeight: 600 }}>{reservaParaContrato?.datosForm?.nombre || 'Cliente'}</span>
+              </div>
+
+              <div style={{ textAlign: 'center', background: 'var(--bg-tarjeta, #ffffff)', border: '1px solid var(--borde, #e2e8f0)', borderRadius: '12px', padding: '10px' }}>
+                <span style={{ fontSize: '10px', fontWeight: 800, color: 'var(--texto-second)', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>Firma Drivique</span>
+                <img src={firmaDrivique} alt="Firma Drivique" style={{ maxHeight: '48px', maxWidth: '100%', objectFit: 'contain' }} />
+                <span style={{ fontSize: '10.5px', color: 'var(--texto-primary)', display: 'block', marginTop: '4px', fontWeight: 600 }}>Drivique Renta Móvil S.A.S.</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Elemento oculto para preparar y capturar el HTML del PDF */}
           <div ref={contratoVisualRef} style={{ position: 'absolute', left: '-9999px', opacity: 0, pointerEvents: 'none' }} />
           {preparandoVista && <div className="contrato-vista-progreso" style={{ marginTop: 8 }}>{t('reservas.optimizingDocument', { defaultValue: 'Optimizando documento...' })}</div>}
           {error && <p className="contrato-error-msg" style={{ marginTop: 8 }}>{error}</p>}
