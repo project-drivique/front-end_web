@@ -231,6 +231,10 @@ export default function VehicleDetailsModal({
                     c={c}
                   />
                 </div>
+
+                <div className="vdm-block-picoplaca">
+                  <PicoYPlacaCard c={c} />
+                </div>
               </div>
 
               {/* Col 3: Reservar + Tarifas + Características */}
@@ -306,9 +310,6 @@ export default function VehicleDetailsModal({
                 </div>
               </div>
             </div>
-
-            {/* Tarjeta Consultar Pico y Placa */}
-            <PicoYPlacaCard c={c} />
 
             {/* Reseñas integradas */}
             <ReviewsSection comentarios={vehiculo.comentarios} calificacion={vehiculo.calificacion} c={c} embedded />

@@ -561,7 +561,7 @@
       "horarioDetalle": "6:00 AM - 9:00 PM",
       "notaInformativa": "Check the current local regulations in the transit city.",
       "cardTitle": "Check Traffic Restrictions",
-      "cardDesc": "Not sure if this vehicle has mobility restrictions today? Check official national information to plan your route and avoid fines or setbacks during your reservation. Remember that restrictions may vary by city and day of the week, so it is vital to be informed before traveling.",
+      "cardDesc": "Check official mobility restrictions to plan your route and avoid setbacks during your trip.",
       "irAPagina": "Visit official website",
       "dias": {
         "lunes": "Monday",

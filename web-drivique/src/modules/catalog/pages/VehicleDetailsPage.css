@@ -102,7 +102,8 @@
   .vdm-block-insurance { order: 6; }
   .vdm-block-rates { order: 7; }
   .vdm-block-equipment { order: 8; }
-  .vdm-block-requirements { order: 9; }
+  .vdm-block-picoplaca { order: 9; }
+  .vdm-block-requirements { order: 10; }
 
   .vehiculo-detail-page-wrap {
     padding: 12px 10px 32px;
