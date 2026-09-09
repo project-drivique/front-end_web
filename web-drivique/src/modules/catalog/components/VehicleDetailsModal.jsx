@@ -36,7 +36,7 @@ export default function VehicleDetailsModal({
   const navigate = useNavigate()
   const token = useAuthStore((s) => s.token)
   const usuario = useAuthStore((s) => s.usuario)
-  const esAutenticado = Boolean(token && usuario)
+  const esAutenticado = Boolean(token && token !== 'null' && token !== 'undefined' && usuario)
   const { tema, moneda } = useLanding()
   const esModoOscuro = tema === 'oscuro'
 
