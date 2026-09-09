@@ -477,6 +477,8 @@
     "description": "Descripción",
     "branch": "Sucursal",
     "characteristics": "Características",
+    "techSpecs": "Especificaciones técnicas",
+    "capacityAndDetails": "Capacidad y detalles",
     "mileageRates": "Tarifas por kilometraje",
     "limitedMileage": "Kilometraje limitado",
     "unlimitedMileage": "Kilometraje ilimitado",

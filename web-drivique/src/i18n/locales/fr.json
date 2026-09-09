@@ -379,6 +379,8 @@
     "description": "Description",
     "branch": "Agence",
     "characteristics": "Caractéristiques",
+    "techSpecs": "Spécifications techniques",
+    "capacityAndDetails": "Capacité et détails",
     "mileageRates": "Tarifs au kilométrage",
     "limitedMileage": "Kilométrage limité",
     "unlimitedMileage": "Kilométrage illimité",

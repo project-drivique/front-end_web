@@ -389,6 +389,8 @@
     "description": "Description",
     "branch": "Branch",
     "characteristics": "Characteristics",
+    "techSpecs": "Technical specifications",
+    "capacityAndDetails": "Capacity and details",
     "mileageRates": "Mileage rates",
     "limitedMileage": "Limited mileage",
     "unlimitedMileage": "Unlimited mileage",
