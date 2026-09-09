@@ -290,32 +290,51 @@ export default function VehicleDetailsModal({
                     )}
                   </div>
 
-                  <div
-                    className="vehiculo-price-value"
-                    style={{
-                      display: 'flex',
-                      alignItems: 'baseline',
-                      gap: 8,
-                      flexWrap: 'wrap',
-                      marginBottom: promo && (vehiculo.precio - precioFinal > 0) ? 4 : 14,
-                    }}
-                  >
-                    <span style={{ fontSize: 24, fontWeight: 900, color: 'var(--brand-text, #1e3a8a)', letterSpacing: '-0.02em' }}>
-                      {formatCurrency(precioFinal, moneda)}
-                    </span>
-                    <span style={{ color: c.textSecondary, fontSize: 12, fontWeight: 600 }}>
-                      {t('catalogo.perDay', '/día')}
-                    </span>
-                    {promo && vehiculo.precio > precioFinal && (
-                      <span style={{ fontSize: 13, textDecoration: 'line-through', color: c.textSecondary, fontWeight: 500, marginLeft: 2 }}>
-                        {formatCurrency(vehiculo.precio, moneda)}
-                      </span>
-                    )}
-                  </div>
+                  {promo && (vehiculo.precio > precioFinal) ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 3, marginBottom: 12 }}>
+                      {/* Antes: precio / día */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: c.textSecondary }}>
+                        <span style={{ fontWeight: 600 }}>{t('catalogo.before', 'Antes:')}</span>
+                        <span style={{ textDecoration: 'line-through', fontWeight: 600 }}>
+                          {formatCurrency(vehiculo.precio, moneda)} {t('catalogo.perDay', '/día')}
+                        </span>
+                      </div>
 
-                  {promo && (vehiculo.precio - precioFinal > 0) && (
-                    <div style={{ fontSize: 11, color: c.isDark ? '#34d399' : '#059669', fontWeight: 600, marginBottom: 12 }}>
-                      {t('catalogo.youSave', 'Ahorras')} {formatCurrency(vehiculo.precio - precioFinal, moneda)} {t('catalogo.perDay', '/día')}
+                      {/* Ahora: precio / día */}
+                      <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+                        <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--brand-text, #1e3a8a)' }}>
+                          {t('catalogo.now', 'Ahora:')}
+                        </span>
+                        <span style={{ fontSize: 24, fontWeight: 900, color: 'var(--brand-text, #1e3a8a)', letterSpacing: '-0.02em' }}>
+                          {formatCurrency(precioFinal, moneda)}
+                        </span>
+                        <span style={{ color: c.textSecondary, fontSize: 12, fontWeight: 600 }}>
+                          {t('catalogo.perDay', '/día')}
+                        </span>
+                      </div>
+
+                      {/* Ahorras: $ / día */}
+                      <div style={{ fontSize: 11.5, color: c.isDark ? '#34d399' : '#059669', fontWeight: 700, marginTop: 2 }}>
+                        {t('catalogo.youSave', 'Ahorras:')} {formatCurrency(vehiculo.precio - precioFinal, moneda)} {t('catalogo.perDay', '/día')}
+                      </div>
+                    </div>
+                  ) : (
+                    <div
+                      className="vehiculo-price-value"
+                      style={{
+                        display: 'flex',
+                        alignItems: 'baseline',
+                        gap: 8,
+                        flexWrap: 'wrap',
+                        marginBottom: 14,
+                      }}
+                    >
+                      <span style={{ fontSize: 24, fontWeight: 900, color: 'var(--brand-text, #1e3a8a)', letterSpacing: '-0.02em' }}>
+                        {formatCurrency(precioFinal, moneda)}
+                      </span>
+                      <span style={{ color: c.textSecondary, fontSize: 12, fontWeight: 600 }}>
+                        {t('catalogo.perDay', '/día')}
+                      </span>
                     </div>
                   )}
 
