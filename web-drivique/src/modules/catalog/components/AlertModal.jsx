@@ -21,7 +21,7 @@ const ESTILOS = {
   overlay: {
     position: 'fixed',
     inset: 0,
-    zIndex: 300,
+    zIndex: 999999,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',

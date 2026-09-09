@@ -42,13 +42,15 @@ export default function LocationModal({ visible, onClose, sucursalInfo, c }) {
         left: 0,
         width: '100vw',
         height: '100vh',
-        backgroundColor: 'rgba(15, 23, 42, 0.6)',
-        backdropFilter: 'blur(4px)',
+        backgroundColor: 'rgba(15, 23, 42, 0.65)',
+        backdropFilter: 'blur(6px)',
+        WebkitBackdropFilter: 'blur(6px)',
         zIndex: 9999,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '20px',
+        padding: 'clamp(8px, 2vw, 20px)',
+        boxSizing: 'border-box',
       }}
       onClick={handleBackdropClick}
     >
@@ -57,17 +59,21 @@ export default function LocationModal({ visible, onClose, sucursalInfo, c }) {
           background: cardBg,
           width: '100%',
           maxWidth: '520px',
+          maxHeight: '92vh',
           borderRadius: '18px',
           overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
           boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
           animation: 'modalSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
           border: `1px solid ${borderColor}`,
+          boxSizing: 'border-box',
         }}
       >
         {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 22px', borderBottom: `1px solid ${borderColor}` }}>
-          <h2 style={{ margin: 0, fontSize: 17, fontWeight: 800, color: titleColor, display: 'flex', alignItems: 'center', gap: 8 }}>
-            <FaDirections size={18} /> {t('vehiculo.howToGetThere', 'Cómo llegar')}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 'clamp(12px, 2vw, 16px) clamp(14px, 2.5vw, 22px)', borderBottom: `1px solid ${borderColor}` }}>
+          <h2 style={{ margin: 0, fontSize: 'clamp(15px, 2.2vw, 17px)', fontWeight: 800, color: titleColor, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <FaDirections size={17} /> {t('vehiculo.howToGetThere', 'Cómo llegar')}
           </h2>
           <button
             onClick={onClose}
@@ -78,32 +84,32 @@ export default function LocationModal({ visible, onClose, sucursalInfo, c }) {
               width: 32, height: 32, borderRadius: '50%', padding: 0
             }}
           >
-            <FaTimes size={17} />
+            <FaTimes size={16} />
           </button>
         </div>
 
         {/* Content */}
-        <div style={{ padding: '20px 22px 16px' }}>
-          <div style={{ marginBottom: 16 }}>
-            <p style={{ fontSize: 15.5, fontWeight: 700, color: textPrimary, margin: '0 0 8px' }}>
+        <div style={{ padding: 'clamp(12px, 2vw, 18px) clamp(14px, 2.5vw, 22px)', overflowY: 'auto', flex: 1 }}>
+          <div style={{ marginBottom: 14 }}>
+            <p style={{ fontSize: 14.5, fontWeight: 700, color: textPrimary, margin: '0 0 6px' }}>
               {nombre}
             </p>
             {direccion && (
-              <p style={{ fontSize: 13.5, color: textSecondary, margin: '0 0 6px', display: 'flex', alignItems: 'center', gap: 8 }}>
-                <FaMapMarkerAlt size={14} color="#94a3b8" />
+              <p style={{ fontSize: 13, color: textSecondary, margin: '0 0 4px', display: 'flex', alignItems: 'center', gap: 6 }}>
+                <FaMapMarkerAlt size={13} color="#94a3b8" />
                 <span>{direccion}</span>
               </p>
             )}
             {horario && (
-              <p style={{ fontSize: 13.5, color: textSecondary, margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
-                <FaClock size={13.5} color="#94a3b8" />
+              <p style={{ fontSize: 13, color: textSecondary, margin: 0, display: 'flex', alignItems: 'center', gap: 6 }}>
+                <FaClock size={13} color="#94a3b8" />
                 <span>{horarioTraducido}</span>
               </p>
             )}
           </div>
 
           {mapEmbedUrl && (
-            <div style={{ position: 'relative', width: '100%', height: '280px', borderRadius: '14px', overflow: 'hidden', border: `1px solid ${borderColor}`, background: '#f8fafc' }}>
+            <div style={{ position: 'relative', width: '100%', height: 'clamp(200px, 32vh, 280px)', borderRadius: '14px', overflow: 'hidden', border: `1px solid ${borderColor}`, background: '#f8fafc' }}>
               {/* Floating button on top of map */}
               <a
                 href={mapSearchUrl}
@@ -111,26 +117,26 @@ export default function LocationModal({ visible, onClose, sucursalInfo, c }) {
                 rel="noopener noreferrer"
                 style={{
                   position: 'absolute',
-                  top: 12,
-                  left: 12,
+                  top: 10,
+                  left: 10,
                   zIndex: 10,
                   background: '#ffffff',
                   color: 'var(--brand-secondary, #2563eb)',
                   border: '1px solid #e2e8f0',
                   borderRadius: 8,
-                  padding: '7px 12px',
-                  fontSize: 12.5,
+                  padding: '6px 10px',
+                  fontSize: 12,
                   fontWeight: 700,
                   display: 'inline-flex',
                   alignItems: 'center',
-                  gap: 6,
+                  gap: 5,
                   boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
                   textDecoration: 'none',
                   cursor: 'pointer',
                 }}
               >
                 <span>{t('vehiculo.openInMaps', 'Abrir en Maps')}</span>
-                <FaExternalLinkAlt size={11} />
+                <FaExternalLinkAlt size={10} />
               </a>
 
               <iframe
@@ -147,7 +153,7 @@ export default function LocationModal({ visible, onClose, sucursalInfo, c }) {
         </div>
 
         {/* Footer */}
-        <div style={{ padding: '14px 22px', borderTop: `1px solid ${borderColor}`, display: 'flex', justifyContent: 'flex-end' }}>
+        <div style={{ padding: 'clamp(10px, 1.5vw, 14px) clamp(14px, 2.5vw, 22px)', borderTop: `1px solid ${borderColor}`, display: 'flex', justifyContent: 'flex-end' }}>
           <button
             onClick={onClose}
             style={{
@@ -155,8 +161,8 @@ export default function LocationModal({ visible, onClose, sucursalInfo, c }) {
               color: 'var(--brand-on-primary, #ffffff)',
               border: 'none',
               borderRadius: '10px',
-              padding: '9px 26px',
-              fontSize: 13.5,
+              padding: '8px 22px',
+              fontSize: 13,
               fontWeight: 700,
               cursor: 'pointer',
               boxShadow: '0 4px 12px rgba(0,0,0,0.15)',

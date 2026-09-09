@@ -14,20 +14,20 @@ export default function GuestReserveModal({ c, visible, onCerrar }) {
   return (
     <AlertModal
       theme={{
-        cardBg: c.heroCardBg,
-        cardBorder: c.heroCardBorder,
-        textPrimary: c.textPrimary,
-        textSecondary: c.textSecondary,
-        accent: c.accentText,
-        accentBgSoft: c.accentBgSoft,
-        accentGradient: c.accentGradient,
+        cardBg: c?.heroCardBg || c?.cardBg || 'var(--bg-tarjeta, #ffffff)',
+        cardBorder: c?.heroCardBorder || c?.cardBorder || 'var(--borde, #e2e8f0)',
+        textPrimary: c?.textPrimary || 'var(--texto-primary, #0f172a)',
+        textSecondary: c?.textSecondary || 'var(--texto-second, #64748b)',
+        accent: c?.accentText || 'var(--brand-text)',
+        accentBgSoft: c?.accentBgSoft || 'var(--brand-soft)',
+        accentGradient: c?.accentGradient || 'var(--brand-gradient)',
       }}
-      icon={<FaCarSide size={22} color={c.accentText} />}
-      titulo={t('catalogo.guestReserveModal.titulo')}
-      mensaje={t('catalogo.guestReserveModal.mensaje')}
-      secondaryText={t('common.cancel')}
+      icon={<FaCarSide size={22} color={c?.accentText || 'var(--brand-primary)'} />}
+      titulo={t('catalogo.guestReserveModal.titulo', '¿Deseas reservar este vehículo?')}
+      mensaje={t('catalogo.guestReserveModal.mensaje', 'Inicia sesión o regístrate para continuar con tu reserva y acceder a todos los beneficios.')}
+      secondaryText={t('common.cancel', 'Cancelar')}
       onSecondary={onCerrar}
-      primaryText={t('catalogo.guestReserveModal.iniciarSesion')}
+      primaryText={t('catalogo.guestReserveModal.iniciarSesion', 'Iniciar sesión')}
       onPrimary={() => { onCerrar(); navigate('/login') }}
       onCerrar={onCerrar}
     />
