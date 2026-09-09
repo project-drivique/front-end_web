@@ -237,8 +237,22 @@ export default function VehicleDetailsModal({
                 </div>
               </div>
 
-              {/* Col 3: Reservar + Tarifas + Características */}
+              {/* Col 3: Tarifas + Características + Reservar */}
               <div className="vehiculo-col-right">
+                <div className="vdm-block-rates">
+                  <PricingSection
+                    tarifas={vehiculo.tarifas}
+                    seguros={vehiculo.seguros}
+                    showTarifas={true}
+                    showSeguros={false}
+                    c={c}
+                  />
+                </div>
+
+                <div className="vdm-block-specs">
+                  <VehicleCharacteristics vehiculo={vehiculo} c={c} />
+                </div>
+
                 <div
                   className="vehiculo-reserve-card vdm-block-reserve"
                   style={{
@@ -294,20 +308,6 @@ export default function VehicleDetailsModal({
                     <FaCar size={13} />
                     <span>{t('catalogo.reserveNow', 'Reservar ahora')}</span>
                   </button>
-                </div>
-
-                <div className="vdm-block-rates">
-                  <PricingSection
-                    tarifas={vehiculo.tarifas}
-                    seguros={vehiculo.seguros}
-                    showTarifas={true}
-                    showSeguros={false}
-                    c={c}
-                  />
-                </div>
-
-                <div className="vdm-block-specs">
-                  <VehicleCharacteristics vehiculo={vehiculo} c={c} />
                 </div>
               </div>
             </div>
