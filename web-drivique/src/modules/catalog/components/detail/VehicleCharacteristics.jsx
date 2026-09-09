@@ -19,33 +19,44 @@ export default function VehicleCharacteristics({ vehiculo, c, showIcon = true, c
 
   const bg = c?.cardBg || '#fff'
   const border = c?.cardBorder || '#e2e8f0'
-  const titleColor = c?.titleColor || 'var(--brand-secondary)'
+  const titleColor = c?.titleColor || 'var(--brand-secondary, #0f172a)'
 
-  const categoria   = CAT_KEYS[vehiculo?.categoria]     ? t(CAT_KEYS[vehiculo.categoria])   : (vehiculo?.categoria || 'Sedan')
-  const transmision = TRANS_KEYS[vehiculo?.transmision] ? t(TRANS_KEYS[vehiculo.transmision]) : (vehiculo?.transmision || 'Automática')
+  const categoria   = CAT_KEYS[vehiculo?.categoria]     ? t(CAT_KEYS[vehiculo.categoria])   : (vehiculo?.categoria || 'Económico')
+  const transmision = TRANS_KEYS[vehiculo?.transmision] ? t(TRANS_KEYS[vehiculo.transmision]) : (vehiculo?.transmision || 'Manual')
   const combustible = FUEL_KEYS[vehiculo?.combustible]  ? t(FUEL_KEYS[vehiculo.combustible])  : (vehiculo?.combustible || 'Gasolina')
-  const color       = COLOR_MAP[vehiculo?.color]        ? t(COLOR_MAP[vehiculo.color])      : (vehiculo?.color || 'Gris')
+  const color       = COLOR_MAP[vehiculo?.color]        ? t(COLOR_MAP[vehiculo.color])      : (vehiculo?.color || 'Gris Highland')
 
   const items = [
     { Icono: FaTag,         label: t('vehiculo.category', 'Categoría'), value: categoria },
     { Icono: FaCar,         label: t('vehiculo.transmission', 'Transmisión'), value: transmision },
     { Icono: FaGasPump,     label: t('vehiculo.fuel', 'Combustible'), value: combustible },
     { Icono: FaUserFriends, label: t('vehiculo.capacity', 'Capacidad'), value: `${vehiculo?.pasajeros || 5} ${t('vehiculo.passengers', 'pasajeros')}` },
-    { Icono: FaDoorOpen,    label: t('vehiculo.doorsLabel', 'Puertas'), value: `${vehiculo?.puertas || 4}` },
-    { Icono: FaSuitcase,    label: t('vehiculo.trunk', 'Maletero'), value: `${vehiculo?.maletero || 400} L` },
+    { Icono: FaDoorOpen,    label: t('vehiculo.doorsLabel', 'Puertas'), value: `${vehiculo?.puertas || 5}` },
+    { Icono: FaSuitcase,    label: t('vehiculo.trunk', 'Maletero'), value: `${vehiculo?.maletero || 320} L` },
     { Icono: FaBolt,        label: t('vehiculo.engine', 'Motor'), value: vehiculo?.cilindraje || '1.6L' },
     { Icono: FaPalette,     label: t('vehiculo.colorLabel', 'Color'), value: color },
-    { Icono: FaCalendarAlt, label: t('vehiculo.year', 'Año'), value: `${vehiculo?.año || vehiculo?.anio || 2024}` },
-    { Icono: FaIdCard,      label: t('vehiculo.plateLabel', 'Placa'), value: vehiculo?.placa || '—' },
+    { Icono: FaCalendarAlt, label: t('vehiculo.year', 'Año'), value: `${vehiculo?.año || vehiculo?.anio || 2023}` },
+    { Icono: FaIdCard,      label: t('vehiculo.plateLabel', 'Placa'), value: vehiculo?.placa || 'PQR-678' },
   ]
 
   return (
-    <div style={{ background: bg, padding: 20, borderRadius: 16, border: `1px solid ${border}`, display: 'flex', flexDirection: 'column', height: '100%', flex: 1 }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: compact ? 16 : 24 }}>
-        <FaListUl color={c?.accentText || "var(--brand-primary)"} size={14} />
-        <h3 style={{ fontSize: 13, fontWeight: 700, color: titleColor, margin: 0 }}>{t('vehiculo.characteristics', 'Características')}</h3>
+    <div
+      style={{
+        background: bg,
+        padding: '22px 24px',
+        borderRadius: 20,
+        border: `1px solid ${border}`,
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
+        <FaListUl color={c?.accentText || "var(--brand-primary, #1e3a8a)"} size={14} />
+        <h3 style={{ fontSize: 14, fontWeight: 800, color: titleColor, margin: 0 }}>
+          {t('vehiculo.characteristics', 'Características')}
+        </h3>
       </div>
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+      <div>
         <SpecsGrid items={items} c={c} showIcon={showIcon} compact={compact} />
       </div>
     </div>

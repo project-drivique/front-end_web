@@ -22,6 +22,7 @@ import EmptyState from '../components/EmptyState'
 import NoResultsModal from '../components/NoResultsModal'
 import GuestReserveModal from '../components/GuestReserveModal'
 import GuestFavoriteModal from '../components/GuestFavoriteModal'
+import VehicleDetailsModal from '../components/VehicleDetailsModal'
 
 import './CatalogPage.css'
 
@@ -114,6 +115,7 @@ export default function CatalogoPage() {
   const [favoritoModalAbierto, setFavoritoModalAbierto] = useState(false)
   const [modalFechasAbierto, setModalFechasAbierto] = useState(false)
   const [modalFiltrosCerrado, setModalFiltrosCerrado] = useState(false)
+  const [vehiculoDetalle, setVehiculoDetalle] = useState(null)
 
   const location = useLocation()
 
@@ -351,6 +353,7 @@ export default function CatalogoPage() {
                     invitado={!esAutenticado}
                     onGuestBlocked={() => setReservaModalAbierto(true)}
                     onGuestFavorito={() => setFavoritoModalAbierto(true)}
+                    onVerDetalles={(v) => setVehiculoDetalle(v)}
                   />
 
                   <CatalogPagination
@@ -390,6 +393,12 @@ export default function CatalogoPage() {
       <GuestFavoriteModal c={c} visible={favoritoModalAbierto} onCerrar={() => setFavoritoModalAbierto(false)} />
 
       <ChooseDatesModal visible={modalFechasAbierto} onCerrar={() => setModalFechasAbierto(false)} />
+
+      <VehicleDetailsModal
+        isOpen={Boolean(vehiculoDetalle)}
+        vehiculo={vehiculoDetalle}
+        onClose={() => setVehiculoDetalle(null)}
+      />
 
       {mostrarModalFiltros && (
         <NoResultsModal

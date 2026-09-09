@@ -11,7 +11,7 @@ export default function RentalRequirements({ c }) {
   const reqDescColor = c?.textSecondary || '#64748b'
 
   const requisitos = [
-    { icono: FaUserAlt, titulo: t('vehiculo.minAgeTitle', 'Edad mínima'), desc: t('vehiculo.minAgeDesc', 'Debes tener al menos 21 años para rentar.') },
+    { icono: FaUserAlt, titulo: t('vehiculo.minAgeTitle', 'Edad mínima'), desc: t('vehiculo.minAgeDesc', 'Debes tener al menos 18 años para rentar.') },
     { icono: FaIdCard, titulo: t('vehiculo.idTitle', 'Identificación'), desc: t('vehiculo.idDesc', 'Cédula de ciudadanía para nacionales o pasaporte vigente para extranjeros.') }
   ]
 

@@ -2,17 +2,20 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FaChevronLeft, FaChevronRight, FaStar } from 'react-icons/fa';
 
-export default function GaleriaImagenes({ imagenes = [], nombreVehiculo = 'Vehículo', calificacion = 0, compact = false, stretchThumbnails = false }) {
+export default function GaleriaImagenes({ imagenes = [], nombreVehiculo = 'Vehículo', calificacion = 0, compact = false, stretchThumbnails = false, c }) {
   const { t } = useTranslation()
   const [indiceActivo, setIndiceActivo] = useState(0);
+
+  const bg = c?.cardBg || '#ffffff'
+  const border = c?.cardBorder || '#e2e8f0'
 
   if (!imagenes || imagenes.length === 0) {
     return (
       <div style={{
-        background: 'var(--bg-item)', border: '1px solid var(--borde)', borderRadius: 14,
+        background: bg, border: `1px solid ${border}`, borderRadius: 20, padding: 16,
         height: compact ? 180 : 240, display: 'flex', alignItems: 'center', justifyContent: 'center',
       }}>
-        <p style={{ color: 'var(--texto-second)', fontSize: 14 }}>{t('vehiculo.noImages', 'Sin imágenes')}</p>
+        <p style={{ color: c?.textSecondary || 'var(--texto-second)', fontSize: 14 }}>{t('vehiculo.noImages', 'Sin imágenes')}</p>
       </div>
     );
   }
@@ -30,13 +33,26 @@ export default function GaleriaImagenes({ imagenes = [], nombreVehiculo = 'Vehí
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: compact ? 10 : 16, height: stretchThumbnails ? '100%' : 'auto', justifyContent: stretchThumbnails ? 'space-between' : 'flex-start' }}>
+    <div
+      style={{
+        background: bg,
+        border: `1px solid ${border}`,
+        borderRadius: 20,
+        padding: '16px',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: compact ? 10 : 14,
+        height: stretchThumbnails ? '100%' : 'auto',
+        justifyContent: stretchThumbnails ? 'space-between' : 'flex-start',
+        boxSizing: 'border-box',
+      }}
+    >
       {/* Imagen Principal */}
       <div style={{
         width: '100%',
         aspectRatio: compact ? '1.6 / 1' : '1.7 / 1',
         maxHeight: compact ? 290 : 380,
-        borderRadius: 16,
+        borderRadius: 14,
         overflow: 'hidden',
         background: '#e2e8f0',
         position: 'relative',
@@ -137,8 +153,6 @@ export default function GaleriaImagenes({ imagenes = [], nombreVehiculo = 'Vehí
           <FaStar color={calificacion > 0 ? "#f59e0b" : "#e2e8f0"} size={12} />
           {calificacion > 0 ? calificacion.toFixed(1) : t('catalog.gallery.new', 'Nuevo')}
         </div>
-
-
       </div>
 
       {/* Miniaturas (Thumbnails) */}
