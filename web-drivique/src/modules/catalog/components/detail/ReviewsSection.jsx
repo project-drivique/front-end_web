@@ -112,7 +112,7 @@ export default function ReviewsSection({ comentarios = [], calificacion = 0, c, 
       <div className="resenas-layout" style={{ display: 'flex', flexWrap: 'wrap', gap: 'clamp(16px, 2.5vw, 32px)' }}>
         {/* Columna Izquierda: Resumen */}
         <div className="resenas-resumen" style={{ flex: '1 1 200px', minWidth: 180, maxWidth: 280 }}>
-          <div style={{ fontSize: 'clamp(32px, 5vw, 44px)', fontWeight: 900, color: textPrimary, lineHeight: 1, marginBottom: 8 }}>
+          <div style={{ fontSize: 'clamp(32px, 5vw, 44px)', fontWeight: 900, color: isDark ? '#f1f5f9' : '#334155', lineHeight: 1, marginBottom: 8 }}>
             {calificacion.toFixed(1)}
           </div>
           <div style={{ display: 'flex', gap: 4, marginBottom: 6 }}>
@@ -183,7 +183,7 @@ export default function ReviewsSection({ comentarios = [], calificacion = 0, c, 
                     justifyContent: 'center',
                     fontSize: 13,
                     fontWeight: 800,
-                    color: textPrimary,
+                    color: isDark ? '#f1f5f9' : '#334155',
                     flexShrink: 0,
                   }}
                 >
@@ -194,7 +194,7 @@ export default function ReviewsSection({ comentarios = [], calificacion = 0, c, 
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
                     <div>
-                      <div style={{ fontSize: 13.5, fontWeight: 600, color: textPrimary }}>{item.autor}</div>
+                      <div style={{ fontSize: 13.5, fontWeight: 600, color: isDark ? '#f1f5f9' : '#334155' }}>{item.autor}</div>
                       <div style={{ fontSize: 11.5, color: textSecondary }}>{fechaFormateada}</div>
                     </div>
                     <div style={{ display: 'flex', gap: 2 }}>
