@@ -291,9 +291,9 @@ export default function VehicleDetailsModal({
                   </div>
 
                   {promo && (vehiculo.precio > precioFinal) ? (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 3, marginBottom: 12 }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 12 }}>
                       {/* Antes: precio / día */}
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: c.textSecondary }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12.5, color: c.textSecondary }}>
                         <span style={{ fontWeight: 600 }}>{t('catalogo.before', 'Antes:')}</span>
                         <span style={{ textDecoration: 'line-through', fontWeight: 600 }}>
                           {formatCurrency(vehiculo.precio, moneda)} {t('catalogo.perDay', '/día')}
@@ -301,15 +301,12 @@ export default function VehicleDetailsModal({
                       </div>
 
                       {/* Ahora: precio / día */}
-                      <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-                        <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--brand-text, #1e3a8a)' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12.5 }}>
+                        <span style={{ fontWeight: 800, color: 'var(--brand-text, #1e3a8a)' }}>
                           {t('catalogo.now', 'Ahora:')}
                         </span>
-                        <span style={{ fontSize: 24, fontWeight: 900, color: 'var(--brand-text, #1e3a8a)', letterSpacing: '-0.02em' }}>
-                          {formatCurrency(precioFinal, moneda)}
-                        </span>
-                        <span style={{ color: c.textSecondary, fontSize: 12, fontWeight: 600 }}>
-                          {t('catalogo.perDay', '/día')}
+                        <span style={{ fontWeight: 800, color: 'var(--brand-text, #1e3a8a)' }}>
+                          {formatCurrency(precioFinal, moneda)} {t('catalogo.perDay', '/día')}
                         </span>
                       </div>
 
