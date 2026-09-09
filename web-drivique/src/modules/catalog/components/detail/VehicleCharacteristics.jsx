@@ -15,7 +15,7 @@ const COLOR_MAP  = {
   'Plata': 'vehiculo.colorPlata',
 }
 
-export default function VehicleCharacteristics({ vehiculo, c, showIcon = true, compact = false }) {
+export default function VehicleCharacteristics({ vehiculo, c, showIcon = false, compact = false }) {
   const { t } = useTranslation()
 
   const bg = c?.cardBg || '#fff'

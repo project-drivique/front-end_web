@@ -256,15 +256,15 @@ export default function VehicleDetailsModal({
                         display: 'inline-flex',
                         alignItems: 'center',
                         gap: 6,
-                        background: 'var(--brand-soft)',
-                        border: '1px solid var(--brand-border, rgba(var(--brand-primary-rgb), 0.2))',
-                        padding: '5px 12px',
-                        borderRadius: 8,
+                        background: '#ecfdf5',
+                        border: '1px solid #c8efd9',
+                        padding: '3px 9px',
+                        borderRadius: 999,
                         marginBottom: 10,
                         alignSelf: 'flex-start',
                       }}
                     >
-                      <span style={{ fontSize: 11.5, fontWeight: 900, color: 'var(--brand-text, var(--brand-primary))' }}>
+                      <span style={{ fontSize: 11, fontWeight: 800, color: '#059669', letterSpacing: '0.02em' }}>
                         🔥 {promo.tipoDescuento === 'porcentaje' ? `-${promo.valorDescuento}%` : `-${formatCurrency(promo.valorDescuento, moneda)}`} {t('promotions.discount', 'Descuento')}
                       </span>
                     </div>
@@ -291,7 +291,8 @@ export default function VehicleDetailsModal({
                     <span style={{ color: c.textSecondary, fontSize: 12 }}>{t('catalogo.perDay', '/día')}</span>
                   </div>
                   <button className="vehiculo-reserve-btn" onClick={handleReservar}>
-                    <FaCar /> {t('catalogo.reserveNow', 'Reservar ahora')}
+                    <FaCar size={13} />
+                    <span>{t('catalogo.reserveNow', 'Reservar ahora')}</span>
                   </button>
                 </div>
 
