@@ -142,7 +142,14 @@ export default function VehicleDetailsModal({
       aria-modal="true"
       aria-label={t('catalogo.details', 'Detalle del vehículo')}
     >
-      <div className="vehicle-details-modal-container">
+      <div
+        className="vehicle-details-modal-container"
+        style={{
+          background: c.cardBg,
+          color: c.textPrimary,
+          borderColor: c.cardBorder,
+        }}
+      >
         {/* Mobile Pull Handle */}
         <div className="vdm-mobile-handle" />
 
@@ -171,7 +178,10 @@ export default function VehicleDetailsModal({
         </div>
 
         {/* Modal Body */}
-        <div className="vehicle-details-modal-body vehiculo-detail-page-wrap">
+        <div
+          className="vehicle-details-modal-body vehiculo-detail-page-wrap"
+          style={{ background: c.cardBg }}
+        >
           <div
             className="vehiculo-detail-parent-card"
             style={{
