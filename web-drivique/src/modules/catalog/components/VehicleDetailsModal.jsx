@@ -111,7 +111,7 @@ export default function VehicleDetailsModal({
     pageBg: esModoOscuro ? '#0f172a' : '#eaeff8',
     cardBg: esModoOscuro ? '#111827' : '#ffffff',
     cardBorder: esModoOscuro ? '#1e293b' : '#e2e8f0',
-    subCardBg: esModoOscuro ? '#1e293b' : '#f8fafc',
+    subCardBg: esModoOscuro ? '#1e293b' : '#ffffff',
     subCardBorder: esModoOscuro ? '#334155' : '#e2e8f0',
     textPrimary: esModoOscuro ? '#f8fafc' : '#0f172a',
     textSecondary: esModoOscuro ? '#94a3b8' : '#64748b',
@@ -272,28 +272,27 @@ export default function VehicleDetailsModal({
                         style={{
                           display: 'inline-flex',
                           alignItems: 'center',
-                          gap: 4,
+                          justifyContent: 'center',
                           background: c.isDark ? 'rgba(16, 185, 129, 0.15)' : '#ecfdf5',
                           color: c.isDark ? '#34d399' : '#047857',
                           border: `1px solid ${c.isDark ? 'rgba(52, 211, 153, 0.3)' : '#a7f3d0'}`,
                           fontSize: 11,
-                          fontWeight: 700,
+                          fontWeight: 800,
                           padding: '2px 8px',
                           borderRadius: 999,
                           letterSpacing: '0.02em',
                         }}
                       >
-                        <span style={{ width: 5, height: 5, borderRadius: '50%', background: c.isDark ? '#34d399' : '#10b981', display: 'inline-block' }} />
                         {promo.tipoDescuento === 'porcentaje' ? `-${promo.valorDescuento}%` : `-${formatCurrency(promo.valorDescuento, moneda)}`}
                       </span>
                     )}
                   </div>
 
-                  {/* Caja elegante de desglose de precio */}
+                  {/* Caja elegante de desglose de precio con fondo blanco */}
                   <div
                     style={{
-                      background: c.subCardBg,
-                      border: `1px solid ${c.subCardBorder}`,
+                      background: c.isDark ? '#111827' : '#ffffff',
+                      border: `1px solid ${c.cardBorder}`,
                       borderRadius: 12,
                       padding: '10px 14px',
                       marginBottom: 14,
@@ -312,7 +311,7 @@ export default function VehicleDetailsModal({
                             {formatCurrency(vehiculo.precio, moneda)} <span style={{ fontSize: 10.5, fontWeight: 500 }}>{t('catalogo.perDay', '/día')}</span>
                           </span>
                         </div>
-                        <div style={{ height: 1, background: c.subCardBorder, opacity: 0.7 }} />
+                        <div style={{ height: 1, background: c.cardBorder, opacity: 0.7 }} />
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                           <span style={{ fontSize: 12.5, color: 'var(--brand-text, #1e3a8a)', fontWeight: 700 }}>
                             {t('catalogo.now', 'Ahora')}
