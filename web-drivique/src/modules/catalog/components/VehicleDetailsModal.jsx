@@ -111,7 +111,7 @@ export default function VehicleDetailsModal({
     pageBg: esModoOscuro ? '#0f172a' : '#eaeff8',
     cardBg: esModoOscuro ? '#111827' : '#ffffff',
     cardBorder: esModoOscuro ? '#1e293b' : '#e2e8f0',
-    subCardBg: esModoOscuro ? '#1e293b' : '#ffffff',
+    subCardBg: esModoOscuro ? '#1e293b' : '#f8fafc',
     subCardBorder: esModoOscuro ? '#334155' : '#e2e8f0',
     textPrimary: esModoOscuro ? '#f8fafc' : '#0f172a',
     textSecondary: esModoOscuro ? '#94a3b8' : '#64748b',
@@ -138,15 +138,11 @@ export default function VehicleDetailsModal({
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose?.()
       }}
+      role="dialog"
+      aria-modal="true"
+      aria-label={t('catalogo.details', 'Detalle del vehículo')}
     >
-      <div
-        className="vehicle-details-modal-container"
-        style={{
-          background: c.cardBg,
-          color: c.textPrimary,
-          borderColor: c.cardBorder,
-        }}
-      >
+      <div className="vehicle-details-modal-container">
         {/* Mobile Pull Handle */}
         <div className="vdm-mobile-handle" />
 
@@ -264,7 +260,7 @@ export default function VehicleDetailsModal({
                     border: `1px solid ${c.cardBorder}`,
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                       <FaTag color={c?.accentText || "var(--brand-primary, #1e3a8a)"} size={13} />
                       <h3 style={{ fontSize: 13, fontWeight: 700, color: c.titleColor, margin: 0 }}>
@@ -293,45 +289,52 @@ export default function VehicleDetailsModal({
                     )}
                   </div>
 
-                  {promo && (vehiculo.precio > precioFinal) ? (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 14 }}>
-                      {/* Antes: precio / día */}
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12.5, color: c.textSecondary }}>
-                        <span style={{ fontWeight: 600 }}>{t('catalogo.before', 'Antes:')}</span>
-                        <span style={{ textDecoration: 'line-through', fontWeight: 600 }}>
-                          {formatCurrency(vehiculo.precio, moneda)} {t('catalogo.perDay', '/día')}
+                  {/* Caja elegante de desglose de precio */}
+                  <div
+                    style={{
+                      background: c.subCardBg,
+                      border: `1px solid ${c.subCardBorder}`,
+                      borderRadius: 12,
+                      padding: '10px 14px',
+                      marginBottom: 14,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: 7,
+                    }}
+                  >
+                    {promo && (vehiculo.precio > precioFinal) ? (
+                      <>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <span style={{ fontSize: 12, color: c.textSecondary, fontWeight: 500 }}>
+                            {t('catalogo.before', 'Antes')}
+                          </span>
+                          <span style={{ fontSize: 12, color: c.textSecondary, textDecoration: 'line-through', fontWeight: 600 }}>
+                            {formatCurrency(vehiculo.precio, moneda)} <span style={{ fontSize: 10.5, fontWeight: 500 }}>{t('catalogo.perDay', '/día')}</span>
+                          </span>
+                        </div>
+                        <div style={{ height: 1, background: c.subCardBorder, opacity: 0.7 }} />
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <span style={{ fontSize: 12.5, color: 'var(--brand-text, #1e3a8a)', fontWeight: 700 }}>
+                            {t('catalogo.now', 'Ahora')}
+                          </span>
+                          <span style={{ fontSize: 14.5, color: 'var(--brand-text, #1e3a8a)', fontWeight: 800 }}>
+                            {formatCurrency(precioFinal, moneda)}{' '}
+                            <span style={{ fontSize: 11, fontWeight: 600, color: c.textSecondary }}>{t('catalogo.perDay', '/día')}</span>
+                          </span>
+                        </div>
+                      </>
+                    ) : (
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span style={{ fontSize: 12.5, color: c.textSecondary, fontWeight: 600 }}>
+                          {t('catalogo.rate', 'Tarifa base')}
+                        </span>
+                        <span style={{ fontSize: 14.5, color: 'var(--brand-text, #1e3a8a)', fontWeight: 800 }}>
+                          {formatCurrency(precioFinal, moneda)}{' '}
+                          <span style={{ fontSize: 11, fontWeight: 600, color: c.textSecondary }}>{t('catalogo.perDay', '/día')}</span>
                         </span>
                       </div>
-
-                      {/* Ahora: precio / día */}
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12.5 }}>
-                        <span style={{ fontWeight: 800, color: 'var(--brand-text, #1e3a8a)' }}>
-                          {t('catalogo.now', 'Ahora:')}
-                        </span>
-                        <span style={{ fontWeight: 800, color: 'var(--brand-text, #1e3a8a)' }}>
-                          {formatCurrency(precioFinal, moneda)} {t('catalogo.perDay', '/día')}
-                        </span>
-                      </div>
-                    </div>
-                  ) : (
-                    <div
-                      className="vehiculo-price-value"
-                      style={{
-                        display: 'flex',
-                        alignItems: 'baseline',
-                        gap: 8,
-                        flexWrap: 'wrap',
-                        marginBottom: 14,
-                      }}
-                    >
-                      <span style={{ fontSize: 24, fontWeight: 900, color: 'var(--brand-text, #1e3a8a)', letterSpacing: '-0.02em' }}>
-                        {formatCurrency(precioFinal, moneda)}
-                      </span>
-                      <span style={{ color: c.textSecondary, fontSize: 12, fontWeight: 600 }}>
-                        {t('catalogo.perDay', '/día')}
-                      </span>
-                    </div>
-                  )}
+                    )}
+                  </div>
 
                   <button className="vehiculo-reserve-btn" onClick={handleReservar}>
                     <FaCar size={13} />
