@@ -32,7 +32,7 @@ export default function BranchInfo({ sucursalInfo, c }) {
       
       <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'flex-start', gap: 14 }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          <p style={{ fontSize: 14.5, fontWeight: 700, color: textPrimary, margin: 0 }}>
+          <p style={{ fontSize: 13.5, fontWeight: 600, color: c?.textPrimary || '#0f172a', margin: 0 }}>
             {nombre}
           </p>
           {direccion && (
