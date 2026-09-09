@@ -98,34 +98,35 @@ export default function ReviewsSection({ comentarios = [], calificacion = 0, c, 
         background: bg,
         border: embedded ? 'none' : `1px solid ${border}`,
         borderTop: embedded ? `1px solid ${border}` : undefined,
-        borderRadius: embedded ? 0 : 20,
-        padding: embedded ? '32px 0 0' : 24,
+        borderRadius: embedded ? 0 : 16,
+        padding: embedded ? 'clamp(18px, 2.5vw, 28px) 0 0' : 'clamp(14px, 2vw, 24px)',
         boxShadow: embedded ? 'none' : (isDark ? '0 8px 24px rgba(0,0,0,0.3)' : '0 6px 20px rgba(0,0,0,0.03)'),
+        boxSizing: 'border-box',
       }}
     >
-      <h3 style={{ fontSize: 16, fontWeight: 800, color: textPrimary, margin: '0 0 20px', letterSpacing: '-0.01em' }}>
+      <h3 style={{ fontSize: 15, fontWeight: 800, color: textPrimary, margin: '0 0 16px', letterSpacing: '-0.01em' }}>
         {t('vehiculo.customerReviews', 'Reseñas de clientes')}
       </h3>
 
-      <div className="resenas-layout" style={{ display: 'flex', flexWrap: 'wrap', gap: 36 }}>
+      <div className="resenas-layout" style={{ display: 'flex', flexWrap: 'wrap', gap: 'clamp(16px, 2.5vw, 32px)' }}>
         {/* Columna Izquierda: Resumen */}
-        <div className="resenas-resumen" style={{ flex: '0 0 240px' }}>
-          <div style={{ fontSize: 44, fontWeight: 900, color: textPrimary, lineHeight: 1, marginBottom: 10 }}>
+        <div className="resenas-resumen" style={{ flex: '1 1 200px', minWidth: 180, maxWidth: 280 }}>
+          <div style={{ fontSize: 'clamp(32px, 5vw, 44px)', fontWeight: 900, color: textPrimary, lineHeight: 1, marginBottom: 8 }}>
             {calificacion.toFixed(1)}
           </div>
-          <div style={{ display: 'flex', gap: 4, marginBottom: 8 }}>
+          <div style={{ display: 'flex', gap: 4, marginBottom: 6 }}>
             {renderStars(Math.round(calificacion))}
           </div>
-          <div style={{ fontSize: 13, fontWeight: 600, color: textSecondary, marginBottom: 20 }}>
+          <div style={{ fontSize: 12.5, fontWeight: 600, color: textSecondary, marginBottom: 16 }}>
             {t('vehiculo.reviewsCount', { count: comentarios.length, defaultValue: `${comentarios.length} reseñas` })}
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             {[5, 4, 3, 2, 1].map(star => {
               const count = distribution[star]
               const percentage = comentarios.length > 0 ? (count / comentarios.length) * 100 : 0
               return (
-                <div key={star} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 12, color: textSecondary }}>
+                <div key={star} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: textSecondary }}>
                   <span style={{ width: 12, textAlign: 'right', fontWeight: 600 }}>{star}</span>
                   <FaStar size={10} color="#f59e0b" />
                   <div
@@ -154,7 +155,7 @@ export default function ReviewsSection({ comentarios = [], calificacion = 0, c, 
         </div>
 
         {/* Columna Derecha: Lista de Comentarios */}
-        <div className="resenas-lista" style={{ flex: 1, minWidth: 280, display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div className="resenas-lista" style={{ flex: '1 1 260px', minWidth: 220, display: 'flex', flexDirection: 'column', gap: 14 }}>
           {visibles.map((item, i) => {
             const textoTraducido = REVIEW_TEXT_MAP[item.texto] ? t(REVIEW_TEXT_MAP[item.texto]) : item.texto
             const fechaFormateada = formatearFecha(item.fecha || '2026-04-15')
@@ -192,7 +193,7 @@ export default function ReviewsSection({ comentarios = [], calificacion = 0, c, 
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
                     <div>
-                      <div style={{ fontSize: 13.5, fontWeight: 800, color: textPrimary }}>{item.autor}</div>
+                      <div style={{ fontSize: 13.5, fontWeight: 600, color: textPrimary }}>{item.autor}</div>
                       <div style={{ fontSize: 11.5, color: textSecondary }}>{fechaFormateada}</div>
                     </div>
                     <div style={{ display: 'flex', gap: 2 }}>

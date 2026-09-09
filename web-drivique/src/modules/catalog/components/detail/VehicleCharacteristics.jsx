@@ -8,6 +8,7 @@ const FUEL_KEYS  = { 'Gasolina': 'catalogo.fuelGas', 'Diesel': 'catalogo.fuelDie
 const COLOR_MAP  = {
   'Gris Highland': 'vehiculo.colorGrisHighland',
   'Blanco': 'vehiculo.colorBlanco',
+  'Blanco Perla': 'vehiculo.colorBlanco',
   'Negro': 'vehiculo.colorNegro',
   'Rojo': 'vehiculo.colorRojo',
   'Azul': 'vehiculo.colorAzul',
@@ -43,16 +44,17 @@ export default function VehicleCharacteristics({ vehiculo, c, showIcon = true, c
     <div
       style={{
         background: bg,
-        padding: '22px 24px',
-        borderRadius: 20,
+        padding: 'clamp(14px, 2vw, 20px)',
+        borderRadius: 16,
         border: `1px solid ${border}`,
         display: 'flex',
         flexDirection: 'column',
+        boxSizing: 'border-box',
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
-        <FaListUl color={c?.accentText || "var(--brand-primary, #1e3a8a)"} size={14} />
-        <h3 style={{ fontSize: 14, fontWeight: 800, color: titleColor, margin: 0 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+        <FaListUl color={c?.accentText || "var(--brand-primary, #1e3a8a)"} size={13} />
+        <h3 style={{ fontSize: 13, fontWeight: 800, color: titleColor, margin: 0 }}>
           {t('vehiculo.characteristics', 'Características')}
         </h3>
       </div>

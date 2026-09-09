@@ -17,25 +17,26 @@ export default function PicoYPlacaCard({ c }) {
     <div
       style={{
         background: bg,
-        padding: '22px 28px',
-        borderRadius: 20,
+        padding: 'clamp(14px, 2vw, 22px)',
+        borderRadius: 16,
         border: `1px solid ${border}`,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        gap: 24,
+        gap: 'clamp(12px, 2vw, 20px)',
         flexWrap: 'wrap',
-        marginBottom: 24,
+        marginBottom: 16,
+        boxSizing: 'border-box',
       }}
     >
-      <div style={{ flex: '1 1 300px', minWidth: 260 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
-          <FaCar color={c?.accentText || "var(--brand-primary, #1e3a8a)"} size={15} />
-          <h3 style={{ fontSize: 14, fontWeight: 800, color: titleColor, margin: 0 }}>
+      <div style={{ flex: '1 1 260px', minWidth: 220 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+          <FaCar color={c?.accentText || "var(--brand-primary, #1e3a8a)"} size={14} />
+          <h3 style={{ fontSize: 13.5, fontWeight: 800, color: titleColor, margin: 0 }}>
             {t('vehiculo.picoYPlaca.cardTitle', 'Consultar Pico y Placa')}
           </h3>
         </div>
-        <p style={{ fontSize: 12.5, color: textSecondary, margin: 0, lineHeight: 1.55 }}>
+        <p style={{ fontSize: 12, color: textSecondary, margin: 0, lineHeight: 1.5 }}>
           {t(
             'vehiculo.picoYPlaca.cardDesc',
             '¿No estás seguro de si este vehículo tiene restricción de movilidad hoy? Consulta la información oficial a nivel nacional para planificar tu ruta y evitar multas o contratiempos durante tu reserva. Recuerda que las restricciones pueden variar según la ciudad y el día de la semana, por lo que es vital estar informado antes de viajar.'
@@ -49,13 +50,14 @@ export default function PicoYPlacaCard({ c }) {
         style={{
           display: 'inline-flex',
           alignItems: 'center',
+          justifyContent: 'center',
           gap: 8,
-          padding: '11px 22px',
+          padding: '10px 18px',
           borderRadius: 12,
           border: '1.5px solid var(--brand-primary, #2563eb)',
           background: 'transparent',
           color: 'var(--brand-primary, #2563eb)',
-          fontSize: 13.5,
+          fontSize: 13,
           fontWeight: 700,
           cursor: 'pointer',
           whiteSpace: 'nowrap',
@@ -64,7 +66,7 @@ export default function PicoYPlacaCard({ c }) {
         }}
       >
         <span>{t('vehiculo.picoYPlaca.irAPagina', 'Ir a la página')}</span>
-        <FaExternalLinkAlt size={13} />
+        <FaExternalLinkAlt size={12} />
       </button>
     </div>
   )

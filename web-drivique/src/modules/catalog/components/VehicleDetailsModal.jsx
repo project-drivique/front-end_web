@@ -107,6 +107,7 @@ export default function VehicleDetailsModal({
   if (!isOpen || !vehiculo) return null
 
   const c = {
+    isDark: esModoOscuro,
     pageBg: esModoOscuro ? '#0f172a' : '#eaeff8',
     cardBg: esModoOscuro ? '#111827' : '#ffffff',
     cardBorder: esModoOscuro ? '#1e293b' : '#e2e8f0',
@@ -115,7 +116,7 @@ export default function VehicleDetailsModal({
     textPrimary: esModoOscuro ? '#f8fafc' : '#0f172a',
     textSecondary: esModoOscuro ? '#94a3b8' : '#64748b',
     accentText: 'var(--brand-text)',
-    titleColor: 'var(--brand-text)',
+    titleColor: esModoOscuro ? '#f8fafc' : 'var(--brand-text)',
     accentBgSoft: 'var(--brand-soft)',
     accentGradient: 'var(--brand-gradient)',
   }
@@ -146,6 +147,9 @@ export default function VehicleDetailsModal({
           borderColor: c.cardBorder,
         }}
       >
+        {/* Mobile Pull Handle */}
+        <div className="vdm-mobile-handle" />
+
         {/* Modal Header */}
         <div
           className="vehicle-details-modal-header"
@@ -155,7 +159,7 @@ export default function VehicleDetailsModal({
           }}
         >
           <div className="vehicle-details-modal-header-title">
-            <h2 style={{ fontSize: 22, fontWeight: 900, color: c.textPrimary, margin: 0, letterSpacing: '-0.02em' }}>
+            <h2 style={{ color: c.textPrimary, margin: 0 }}>
               {vehiculo.nombre}
             </h2>
           </div>
@@ -164,7 +168,7 @@ export default function VehicleDetailsModal({
             className="vehicle-details-modal-close-btn"
             onClick={onClose}
             aria-label={t('common.close', 'Cerrar')}
-            title={t('common.close', 'Cerrar (Esc)')}
+            title={t('common.closeEsc', 'Cerrar (Esc)')}
           >
             <FaTimes size={16} />
           </button>
@@ -182,39 +186,57 @@ export default function VehicleDetailsModal({
           >
             {/* Top Grid: 3 columns */}
             <div className="vehiculo-detail-grid">
-              {/* Col 1: Galería + Características */}
-              <div className="vehiculo-col-left" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                <ImageGallery
-                  imagenes={vehiculo.imagenes || []}
-                  nombreVehiculo={vehiculo.nombre}
-                  calificacion={vehiculo.comentarios?.length ? vehiculo.calificacion : 0}
-                  c={c}
-                />
+              {/* Col 1: Galería + Sucursal + Requisitos */}
+              <div className="vehiculo-col-left">
+                <div className="vdm-block-gallery">
+                  <ImageGallery
+                    imagenes={vehiculo.imagenes || []}
+                    nombreVehiculo={vehiculo.nombre}
+                    calificacion={vehiculo.comentarios?.length ? vehiculo.calificacion : 0}
+                    c={c}
+                  />
+                </div>
 
-                <div>
-                  <VehicleCharacteristics vehiculo={vehiculo} c={c} />
+                <div className="vdm-block-branch">
+                  <BranchInfo sucursalInfo={vehiculo.sucursalInfo} c={c} />
+                </div>
+
+                <div className="vdm-block-requirements">
+                  <RentalRequirements c={c} />
                 </div>
               </div>
 
-              {/* Col 2: Info central + Equipamiento */}
-              <div className="vehiculo-col-center" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                <DescriptionSection descripcion={vehiculo.descripcion} id={vehiculo.id} c={c} />
+              {/* Col 2: Descripción + Seguros + Equipamiento */}
+              <div className="vehiculo-col-center">
+                <div className="vdm-block-description">
+                  <DescriptionSection descripcion={vehiculo.descripcion} id={vehiculo.id} c={c} />
+                </div>
 
-                <BranchInfo sucursalInfo={vehiculo.sucursalInfo} c={c} />
+                <div className="vdm-block-insurance">
+                  <PricingSection
+                    tarifas={vehiculo.tarifas}
+                    seguros={vehiculo.seguros}
+                    showTarifas={false}
+                    showSeguros={true}
+                    c={c}
+                  />
+                </div>
 
-                <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                <div className="vdm-block-equipment">
                   <EquipmentSection
                     caracteristicas={vehiculo.caracteristicas}
                     equipamiento={vehiculo.equipamientoTecnologico}
+                    showTech={false}
+                    showGeneral={true}
                     c={c}
                   />
                 </div>
               </div>
 
-              {/* Col 3: Tarifas y Reservar */}
-              <div className="vehiculo-col-right" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              {/* Col 3: Reservar + Tarifas + Características */}
+              <div className="vehiculo-col-right">
                 <div
-                  className="vehiculo-reserve-card"
+                  className="vehiculo-reserve-card vdm-block-reserve"
                   style={{
                     margin: 0,
                     display: 'flex',
@@ -239,12 +261,12 @@ export default function VehicleDetailsModal({
                       }}
                     >
                       <span style={{ fontSize: 11.5, fontWeight: 900, color: 'var(--brand-text, var(--brand-primary))' }}>
-                        🔥 -{promo.valorDescuento}% {t('promotions.discount', 'Descuento')}
+                        🔥 {promo.tipoDescuento === 'porcentaje' ? `-${promo.valorDescuento}%` : `-${formatCurrency(promo.valorDescuento, moneda)}`} {t('promotions.discount', 'Descuento')}
                       </span>
                     </div>
                   )}
                   <div className="vehiculo-price-label" style={{ color: c.textSecondary }}>
-                    {t('catalogo.pricePerDay', 'Precio por día ($COP)')}
+                    {t('catalogo.pricePerDay', 'Precio por día')}
                   </div>
                   <div
                     className="vehiculo-price-value"
@@ -269,9 +291,19 @@ export default function VehicleDetailsModal({
                   </button>
                 </div>
 
-                <PricingSection tarifas={vehiculo.tarifas} seguros={vehiculo.seguros} c={c} />
+                <div className="vdm-block-rates">
+                  <PricingSection
+                    tarifas={vehiculo.tarifas}
+                    seguros={vehiculo.seguros}
+                    showTarifas={true}
+                    showSeguros={false}
+                    c={c}
+                  />
+                </div>
 
-                <RentalRequirements c={c} />
+                <div className="vdm-block-specs">
+                  <VehicleCharacteristics vehiculo={vehiculo} c={c} />
+                </div>
               </div>
             </div>
 

@@ -1,4 +1,4 @@
-/* VehicleDetailsModal.css - Premium Glassmorphic Modal */
+/* VehicleDetailsModal.css - Premium Glassmorphic Modal with Full Responsiveness */
 
 .vehicle-details-modal-overlay {
   position: fixed;
@@ -52,12 +52,22 @@
   }
 }
 
+.vdm-mobile-handle {
+  display: none;
+  width: 40px;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.45);
+  margin: 8px auto 4px auto;
+  flex-shrink: 0;
+}
+
 .vehicle-details-modal-header {
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
-  padding: 18px 60px 18px 24px;
+  padding: 16px 60px 16px 24px;
   border-bottom: 1px solid rgba(226, 232, 240, 0.8);
   flex-shrink: 0;
   z-index: 10;
@@ -75,11 +85,18 @@
 .vehicle-details-modal-header-title h2 {
   text-align: center;
   margin: 0;
+  font-size: clamp(17px, 2.2vw, 22px);
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: calc(100% - 60px);
 }
 
 .vehicle-details-modal-close-btn {
   position: absolute;
-  right: 20px;
+  right: 18px;
   top: 50%;
   transform: translateY(-50%);
   width: 38px;
@@ -109,6 +126,7 @@
   overflow-y: auto;
   flex: 1;
   box-sizing: border-box;
+  -webkit-overflow-scrolling: touch;
 }
 
 .vehicle-details-modal-body.vehiculo-detail-page-wrap {
@@ -121,7 +139,7 @@
 
 /* Customized scrollbar for modal body */
 .vehicle-details-modal-body::-webkit-scrollbar {
-  width: 8px;
+  width: 7px;
 }
 
 .vehicle-details-modal-body::-webkit-scrollbar-track {
@@ -137,27 +155,132 @@
   background: rgba(100, 116, 139, 0.6);
 }
 
+/* Dark Theme Adjustments */
+html.dark .vehicle-details-modal-header {
+  border-bottom-color: rgba(51, 65, 85, 0.6);
+}
+
+html.dark .vehicle-details-modal-close-btn {
+  background: rgba(30, 41, 59, 0.85);
+  border-color: rgba(51, 65, 85, 0.8);
+  color: #cbd5e1;
+}
+
+html.dark .vehicle-details-modal-close-btn:hover {
+  background: #334155;
+  color: #f8fafc;
+  border-color: #475569;
+}
+
+html.dark .vdm-mobile-handle {
+  background: rgba(148, 163, 184, 0.3);
+}
+
+html.dark .vehicle-details-modal-body::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.25);
+}
+
+html.dark .vehicle-details-modal-body::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.45);
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 1024px) {
+  .vehicle-details-modal-overlay {
+    padding: 16px;
+  }
+
+  .vehicle-details-modal-container {
+    max-height: 92vh;
+  }
+
+  .vehicle-details-modal-body {
+    padding: 16px 18px 24px;
+  }
+}
+
 @media (max-width: 768px) {
   .vehicle-details-modal-overlay {
-    padding: 10px;
+    padding: 0;
+    align-items: flex-end;
   }
 
   .vehicle-details-modal-container {
     max-height: 94vh;
-    border-radius: 18px;
+    border-radius: 22px 22px 0 0;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom: none;
+    animation: vdmSlideUpMobile 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @keyframes vdmSlideUpMobile {
+    from {
+      opacity: 0;
+      transform: translateY(100%);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .vdm-mobile-handle {
+    display: block;
   }
 
   .vehicle-details-modal-header {
-    padding: 14px 50px 14px 18px;
+    padding: 10px 50px 12px 16px;
+  }
+
+  .vehicle-details-modal-header-title h2 {
+    max-width: calc(100% - 40px);
+    font-size: 17px;
   }
 
   .vehicle-details-modal-close-btn {
-    right: 14px;
+    right: 12px;
     width: 34px;
     height: 34px;
   }
 
   .vehicle-details-modal-body {
-    padding: 14px;
+    padding: 12px 12px 32px;
+  }
+
+  .vehicle-details-modal-body .vehiculo-detail-parent-card {
+    padding: 12px !important;
+    border-radius: 16px !important;
+    margin-bottom: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .vehicle-details-modal-container {
+    max-height: 96vh;
+    border-radius: 18px 18px 0 0;
+  }
+
+  .vehicle-details-modal-header {
+    padding: 8px 46px 10px 12px;
+  }
+
+  .vehicle-details-modal-header-title h2 {
+    font-size: 16px;
+  }
+
+  .vehicle-details-modal-close-btn {
+    right: 10px;
+    width: 32px;
+    height: 32px;
+  }
+
+  .vehicle-details-modal-body {
+    padding: 8px 8px 28px;
+  }
+
+  .vehicle-details-modal-body .vehiculo-detail-parent-card {
+    padding: 8px !important;
+    border-radius: 14px !important;
   }
 }

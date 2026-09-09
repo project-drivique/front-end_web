@@ -43,11 +43,14 @@ function PriceRow({ label, value, sub, isLast = false, c }) {
   )
 }
 
-export default function PricingSection({ tarifas, seguros = [], c }) {
+export default function PricingSection({ tarifas, seguros = [], showTarifas = true, showSeguros = true, c }) {
   const { t } = useTranslation()
   const { moneda } = useLanding()
 
-  if (!tarifas && !seguros.length) return null
+  const renderTarifas = Boolean(showTarifas && tarifas)
+  const renderSeguros = Boolean(showSeguros && seguros.length > 0)
+
+  if (!renderTarifas && !renderSeguros) return null
 
   const bg = c?.cardBg || '#fff'
   const border = c?.cardBorder || '#e2e8f0'
@@ -61,15 +64,16 @@ export default function PricingSection({ tarifas, seguros = [], c }) {
   const seguroNombreMap = {
     'Protección Obligatoria': 'catalogo.basicProtection',
     'Protección Total': 'catalogo.fullProtection',
+    'Protección Básica Estándar': 'catalogo.standardProtection',
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
       {/* Tarjeta Tarifas */}
-      {tarifas && (
-        <div style={{ background: bg, padding: 20, borderRadius: 16, border: `1px solid ${border}` }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
-            <FaRoad size={14} color={c?.accentText || "var(--brand-primary, #1e3a8a)"} />
+      {renderTarifas && (
+        <div style={{ background: bg, padding: 'clamp(14px, 2vw, 20px)', borderRadius: 16, border: `1px solid ${border}`, boxSizing: 'border-box' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+            <FaRoad size={13} color={c?.accentText || "var(--brand-primary, #1e3a8a)"} />
             <h3 style={{ fontSize: 13, fontWeight: 700, color: titleColor, margin: 0 }}>
               {t('vehiculo.mileageRates', 'Tarifas por kilometraje')}
             </h3>
@@ -80,7 +84,7 @@ export default function PricingSection({ tarifas, seguros = [], c }) {
               background: subBg,
               border: `1px solid ${subBorder}`,
               borderRadius: 12,
-              padding: '0 16px',
+              padding: '0 clamp(10px, 1.5vw, 16px)',
             }}
           >
             <PriceRow
@@ -99,10 +103,10 @@ export default function PricingSection({ tarifas, seguros = [], c }) {
       )}
 
       {/* Tarjeta Seguros */}
-      {seguros.length > 0 && (
-        <div style={{ background: bg, padding: 20, borderRadius: 16, border: `1px solid ${border}` }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
-            <FaShieldAlt size={14} color={c?.accentText || "var(--brand-primary, #1e3a8a)"} />
+      {renderSeguros && (
+        <div style={{ background: bg, padding: 'clamp(14px, 2vw, 20px)', borderRadius: 16, border: `1px solid ${border}`, boxSizing: 'border-box' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+            <FaShieldAlt size={13} color={c?.accentText || "var(--brand-primary, #1e3a8a)"} />
             <h3 style={{ fontSize: 13, fontWeight: 700, color: titleColor, margin: 0 }}>
               {t('vehiculo.insurance', 'Seguros')}
             </h3>
@@ -113,7 +117,7 @@ export default function PricingSection({ tarifas, seguros = [], c }) {
               background: subBg,
               border: `1px solid ${subBorder}`,
               borderRadius: 12,
-              padding: '0 16px',
+              padding: '0 clamp(10px, 1.5vw, 16px)',
             }}
           >
             {seguros.map((seg, i) => (
