@@ -85,11 +85,6 @@ export default function PricingSection({ tarifas, seguros = [], c }) {
           >
             <PriceRow
               label={t('vehiculo.limitedMileage', 'Kilometraje limitado')}
-              sub={t('vehiculo.kmIncludedSub', {
-                km: kmLimit.km,
-                excedente: formatCurrency(kmLimit.excedente, moneda),
-                defaultValue: `${kmLimit.km} km/día incluidos · Excedente: ${formatCurrency(kmLimit.excedente, moneda)}/km adicional`,
-              })}
               value={`${formatCurrency(kmLimit.precio, moneda)}${t('catalogo.perDay', '/día')}`}
               c={c}
             />
