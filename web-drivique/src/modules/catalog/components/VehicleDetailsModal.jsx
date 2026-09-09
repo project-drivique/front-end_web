@@ -184,10 +184,10 @@ export default function VehicleDetailsModal({
               padding: '16px',
             }}
           >
-            {/* Clean 2-Column Layout */}
+            {/* 3 Equal Width Columns Grid */}
             <div className="vehiculo-detail-grid">
-              {/* Main Column (60%): Experiencia del auto */}
-              <div className="vehiculo-col-main">
+              {/* Col 1: Galería + Sucursal + Pico y Placa */}
+              <div className="vehiculo-col-left">
                 <div className="vdm-block-gallery">
                   <ImageGallery
                     imagenes={vehiculo.imagenes || []}
@@ -197,12 +197,29 @@ export default function VehicleDetailsModal({
                   />
                 </div>
 
-                <div className="vdm-block-specs">
-                  <VehicleCharacteristics vehiculo={vehiculo} c={c} />
+                <div className="vdm-block-branch">
+                  <BranchInfo sucursalInfo={vehiculo.sucursalInfo} c={c} />
                 </div>
 
+                <div className="vdm-block-picoplaca">
+                  <PicoYPlacaCard c={c} />
+                </div>
+              </div>
+
+              {/* Col 2: Descripción + Seguros + Equipamiento + Requisitos */}
+              <div className="vehiculo-col-center">
                 <div className="vdm-block-description">
                   <DescriptionSection descripcion={vehiculo.descripcion} id={vehiculo.id} c={c} />
+                </div>
+
+                <div className="vdm-block-insurance">
+                  <PricingSection
+                    tarifas={vehiculo.tarifas}
+                    seguros={vehiculo.seguros}
+                    showTarifas={false}
+                    showSeguros={true}
+                    c={c}
+                  />
                 </div>
 
                 <div className="vdm-block-equipment">
@@ -215,22 +232,13 @@ export default function VehicleDetailsModal({
                   />
                 </div>
 
-                <div className="vehiculo-two-card-row">
-                  <div className="vdm-block-branch">
-                    <BranchInfo sucursalInfo={vehiculo.sucursalInfo} c={c} />
-                  </div>
-                  <div className="vdm-block-picoplaca">
-                    <PicoYPlacaCard c={c} />
-                  </div>
-                </div>
-
-                <div className="vdm-block-reviews">
-                  <ReviewsSection comentarios={vehiculo.comentarios} calificacion={vehiculo.calificacion} c={c} embedded />
+                <div className="vdm-block-requirements">
+                  <RentalRequirements c={c} />
                 </div>
               </div>
 
-              {/* Sidebar Column (40% Sticky): Reserva, Tarifas y Requisitos */}
-              <div className="vehiculo-col-sidebar">
+              {/* Col 3: Reservar + Tarifas + Características */}
+              <div className="vehiculo-col-right">
                 <div
                   className="vehiculo-reserve-card vdm-block-reserve"
                   style={{
@@ -287,21 +295,24 @@ export default function VehicleDetailsModal({
                   </button>
                 </div>
 
-                <div className="vdm-block-pricing">
+                <div className="vdm-block-rates">
                   <PricingSection
                     tarifas={vehiculo.tarifas}
                     seguros={vehiculo.seguros}
                     showTarifas={true}
-                    showSeguros={true}
+                    showSeguros={false}
                     c={c}
                   />
                 </div>
 
-                <div className="vdm-block-requirements">
-                  <RentalRequirements c={c} />
+                <div className="vdm-block-specs">
+                  <VehicleCharacteristics vehiculo={vehiculo} c={c} />
                 </div>
               </div>
             </div>
+
+            {/* Reseñas integradas */}
+            <ReviewsSection comentarios={vehiculo.comentarios} calificacion={vehiculo.calificacion} c={c} embedded />
           </div>
         </div>
       </div>

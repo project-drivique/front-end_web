@@ -51,45 +51,33 @@
 
 .vehiculo-detail-grid {
   display: grid;
-  grid-template-columns: 1.45fr 1fr;
-  gap: 22px;
-  align-items: start;
-}
-
-.vehiculo-col-main {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  min-width: 0;
-}
-
-.vehiculo-col-sidebar {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  min-width: 0;
-  position: sticky;
-  top: 10px;
-}
-
-.vehiculo-two-card-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 16px;
+  margin-bottom: 20px;
 }
 
-@media (max-width: 960px) {
+.vehiculo-col-left,
+.vehiculo-col-center,
+.vehiculo-col-right {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1100px) {
   .vehiculo-detail-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 16px;
   }
-
-  .vehiculo-col-sidebar {
-    position: static;
-  }
-
-  .vehiculo-two-card-row {
-    grid-template-columns: 1fr;
+  
+  .vehiculo-col-right {
+    grid-column: span 2;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
   }
 }
 
@@ -101,8 +89,9 @@
     margin-bottom: 14px;
   }
 
-  .vehiculo-col-main,
-  .vehiculo-col-sidebar {
+  .vehiculo-col-left,
+  .vehiculo-col-center,
+  .vehiculo-col-right {
     display: contents;
   }
 
@@ -111,12 +100,12 @@
   .vdm-block-reserve { order: 2; }
   .vdm-block-specs { order: 3; }
   .vdm-block-description { order: 4; }
-  .vdm-block-pricing { order: 5; }
-  .vdm-block-equipment { order: 6; }
-  .vdm-block-branch { order: 7; }
-  .vdm-block-picoplaca { order: 8; }
-  .vdm-block-requirements { order: 9; }
-  .vdm-block-reviews { order: 10; }
+  .vdm-block-branch { order: 5; }
+  .vdm-block-insurance { order: 6; }
+  .vdm-block-rates { order: 7; }
+  .vdm-block-equipment { order: 8; }
+  .vdm-block-picoplaca { order: 9; }
+  .vdm-block-requirements { order: 10; }
 
   .vehiculo-detail-page-wrap {
     padding: 12px 10px 32px;
