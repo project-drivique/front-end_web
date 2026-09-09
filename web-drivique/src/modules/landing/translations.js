@@ -24,7 +24,7 @@ export const LANDING_UI = {
 const traducciones = {
   es: {
     nav: {
-      vehiculos: 'Vehículos', sucursales: 'Sucursales', servicios: 'Servicios',
+      vehiculos: 'Vehículos', sucursales: 'Sucursales', proceso: 'Cómo funciona', servicios: 'Servicios', app: 'App', requisitos: 'Requisitos',
       tarifas: 'Tarifas', soporte: 'Soporte', login: 'Iniciar sesión',
       registro: 'Registrarse', config: 'Configuración',
       tema: 'Tema', claro: 'Claro', oscuro: 'Oscuro', idioma: 'Idioma', moneda: 'Moneda',
@@ -69,7 +69,7 @@ const traducciones = {
       label: 'Experiencia movil',
       titulo: 'Tambien puedes gestionar tu actividad desde la App Drivique',
       sub: 'Consulta reservas, pagos, contratos y notificaciones desde una interfaz pensada para el celular.',
-      cta: 'Entrar a mi cuenta',
+      cta: 'Descargar APK',
       previewTitle: 'Resumen de viaje',
       status: 'Contrato listo',
       items: ['Reserva activa', 'Pago confirmado', 'Contrato digital'],
@@ -99,7 +99,7 @@ const traducciones = {
 
   en: {
     nav: {
-      vehiculos: 'Vehicles', sucursales: 'Branches', servicios: 'Services',
+      vehiculos: 'Vehicles', sucursales: 'Branches', proceso: 'How it works', servicios: 'Services', app: 'App', requisitos: 'Requirements',
       tarifas: 'Rates', soporte: 'Support', login: 'Log in',
       registro: 'Sign up', config: 'Settings',
       tema: 'Theme', claro: 'Light', oscuro: 'Dark', idioma: 'Language', moneda: 'Currency',
@@ -144,7 +144,7 @@ const traducciones = {
       label: 'Mobile experience',
       titulo: 'You can also manage your activity from the Drivique App',
       sub: 'Check bookings, payments, contracts and notifications from a phone-first interface.',
-      cta: 'Access my account',
+      cta: 'Download APK',
       previewTitle: 'Trip summary',
       status: 'Contract ready',
       items: ['Active booking', 'Payment confirmed', 'Digital contract'],
@@ -174,7 +174,7 @@ const traducciones = {
 
   fr: {
     nav: {
-      vehiculos: 'Véhicules', sucursales: 'Agences', servicios: 'Services',
+      vehiculos: 'Véhicules', sucursales: 'Agences', proceso: 'Fonctionnement', servicios: 'Services', app: 'App', requisitos: 'Conditions',
       tarifas: 'Tarifs', soporte: 'Support', login: 'Se connecter',
       registro: "S'inscrire", config: 'Paramètres',
       tema: 'Thème', claro: 'Clair', oscuro: 'Sombre', idioma: 'Langue', moneda: 'Devise',
@@ -219,7 +219,7 @@ const traducciones = {
       label: 'Expérience mobile',
       titulo: "Vous pouvez aussi gérer votre activité depuis l'App Drivique",
       sub: 'Consultez réservations, paiements, contrats et notifications depuis une interface pensée pour mobile.',
-      cta: 'Accéder à mon compte',
+      cta: "Télécharger l'APK",
       previewTitle: 'Résumé du trajet',
       status: 'Contrat prêt',
       items: ['Réservation active', 'Paiement confirmé', 'Contrat numérique'],
@@ -249,7 +249,7 @@ const traducciones = {
 
   pt: {
     nav: {
-      vehiculos: 'Veículos', sucursales: 'Agências', servicios: 'Serviços',
+      vehiculos: 'Veículos', sucursales: 'Agências', proceso: 'Como funciona', servicios: 'Serviços', app: 'App', requisitos: 'Requisitos',
       tarifas: 'Tarifas', soporte: 'Suporte', login: 'Entrar',
       registro: 'Registar', config: 'Configurações',
       tema: 'Tema', claro: 'Claro', oscuro: 'Escuro', idioma: 'Idioma', moneda: 'Moeda',
@@ -294,7 +294,7 @@ const traducciones = {
       label: 'Experiência móvel',
       titulo: 'Também pode gerir a sua atividade na App Drivique',
       sub: 'Consulte reservas, pagamentos, contratos e notificações numa interface pensada para telemóvel.',
-      cta: 'Entrar na minha conta',
+      cta: 'Transferir APK',
       previewTitle: 'Resumo da viagem',
       status: 'Contrato pronto',
       items: ['Reserva ativa', 'Pagamento confirmado', 'Contrato digital'],
@@ -324,7 +324,7 @@ const traducciones = {
 
   br: {
     nav: {
-      vehiculos: 'Veículos', sucursales: 'Filiais', servicios: 'Serviços',
+      vehiculos: 'Veículos', sucursales: 'Filiais', proceso: 'Como funciona', servicios: 'Serviços', app: 'App', requisitos: 'Requisitos',
       tarifas: 'Tarifas', soporte: 'Suporte', login: 'Entrar',
       registro: 'Cadastrar', config: 'Configurações',
       tema: 'Tema', claro: 'Claro', oscuro: 'Escuro', idioma: 'Idioma', moneda: 'Moeda',
@@ -369,7 +369,7 @@ const traducciones = {
       label: 'Experiência mobile',
       titulo: 'Você também pode gerenciar sua atividade pelo App Drivique',
       sub: 'Consulte reservas, pagamentos, contratos e notificações em uma interface pensada para celular.',
-      cta: 'Entrar na minha conta',
+      cta: 'Baixar APK',
       previewTitle: 'Resumo da viagem',
       status: 'Contrato pronto',
       items: ['Reserva ativa', 'Pagamento confirmado', 'Contrato digital'],

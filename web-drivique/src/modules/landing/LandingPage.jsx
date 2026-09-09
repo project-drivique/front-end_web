@@ -25,7 +25,6 @@ import {
   FaStar,
   FaMoon,
   FaSun,
-  FaTag,
   FaTimes,
   FaWhatsapp,
 } from 'react-icons/fa'
@@ -74,8 +73,6 @@ const IconoCoche = () => <FaCarSide size={18} aria-hidden="true" />
 const IconoPin = () => <FaMapMarkerAlt size={18} aria-hidden="true" />
 
 const IconoLlave = () => <FaKey size={18} aria-hidden="true" />
-
-const IconoEtiqueta = () => <FaTag size={18} aria-hidden="true" />
 
 const IconoFlecha = () => <FaArrowRight size={16} aria-hidden="true" />
 
@@ -331,6 +328,7 @@ export default function LandingPage() {
   const c = coloresTema(esModoOscuro, brand.colors)
 
   const [autos, setAutos] = useState([])
+  const [totalVehiculos, setTotalVehiculos] = useState(0)
   const [autoActivo, setAutoActivo] = useState(0)
   const [carruselPausado, setCarruselPausado] = useState(false)
   const [menuMovilAbierto, setMenuMovilAbierto] = useState(false)
@@ -338,6 +336,7 @@ export default function LandingPage() {
 
   useEffect(() => {
     catalogService.getVehiculosDestacados().then(data => setAutos(data)).catch(() => {})
+    catalogService.getVehiculos().then(data => setTotalVehiculos(Array.isArray(data) ? data.length : 0)).catch(() => {})
   }, [])
 
   useEffect(() => {
@@ -428,7 +427,7 @@ export default function LandingPage() {
             <span className="catalogo-logo-title" style={{ fontSize: '9.5px', fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase', lineHeight: 1, color: 'var(--brand-secondary)' }}>{brand.name}</span>
           </Link>
 
-          <div className="landing-nav-links" style={{ display: 'flex', alignItems: 'center', gap: 32, flex: 1, justifyContent: 'center' }}>
+          <div className="landing-nav-links" style={{ display: 'flex', alignItems: 'center', gap: 22, flex: 1, justifyContent: 'center' }}>
             <Link
               to="/catalogo"
               style={estiloEnlaceNav}
@@ -448,8 +447,10 @@ export default function LandingPage() {
             </Link>
 
             {[
+              [tx.nav.proceso, '#como-funciona'],
               [tx.nav.servicios, '#servicios'],
-              [tx.nav.tarifas, '#tarifas'],
+              [tx.nav.app, '#app'],
+              [tx.nav.requisitos, '#requisitos'],
             ].map(([label, href]) => (
               <a
                 key={href}
@@ -569,8 +570,10 @@ export default function LandingPage() {
             ))}
 
             {[
+              { href: '#como-funciona', label: tx.nav.proceso, icono: <FaQuestionCircle /> },
               { href: '#servicios', label: tx.nav.servicios, icono: <IconoLlave /> },
-              { href: '#tarifas', label: tx.nav.tarifas, icono: <IconoEtiqueta /> },
+              { href: '#app', label: tx.nav.app, icono: <FaMobileAlt /> },
+              { href: '#requisitos', label: tx.nav.requisitos, icono: <FaIdCard /> },
             ].map(item => (
               <a
                 key={item.href}
@@ -686,7 +689,7 @@ export default function LandingPage() {
             </div>
 
             <div className="landing-hero-stats" style={{ display: 'flex', gap: 40 }}>
-              {[['50+', tx.hero.stat1], ['24/7', tx.hero.stat2], ['100%', tx.hero.stat3]].map(([num, etiqueta]) => (
+              {[[`${totalVehiculos || autos.length || 0}+`, tx.hero.stat1], ['24/7', tx.hero.stat2], ['100%', tx.hero.stat3]].map(([num, etiqueta]) => (
                 <div key={etiqueta}>
                   <p style={{ fontSize: 28, fontWeight: 900, color: c.statColor, margin: 0 }}>{num}</p>
                   <p style={{ fontSize: 13, color: 'var(--texto-second)', fontWeight: 600, marginTop: 4 }}>{etiqueta}</p>
@@ -804,7 +807,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section className="landing-app-section landing-section">
+      <section id="app" className="landing-app-section landing-section">
         <div className="landing-app-section__inner">
           <div className="landing-phone" aria-hidden="true">
             <div className="landing-phone__screen">
@@ -842,20 +845,16 @@ export default function LandingPage() {
             <h2>{tx.app.titulo}</h2>
             <p>{tx.app.sub}</p>
             <div className="landing-app-actions">
-              <Link to="/login" className="landing-app-primary">
+              <a href="/drivique.apk" download className="landing-app-primary">
                 <FaMobileAlt aria-hidden="true" />
                 {tx.app.cta}
-              </Link>
-              <Link to="/catalogo" className="landing-app-secondary">
-                {tx.hero.verFlota}
-                <FaArrowRight aria-hidden="true" />
-              </Link>
+              </a>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="landing-requirements-section landing-section">
+      <section id="requisitos" className="landing-requirements-section landing-section">
         <div className="landing-requirements-section__inner">
           <div className="landing-requirements-copy">
             <span>{tx.requirements.label}</span>
