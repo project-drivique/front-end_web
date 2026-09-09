@@ -264,46 +264,61 @@ export default function VehicleDetailsModal({
                     border: `1px solid ${c.cardBorder}`,
                   }}
                 >
-                  {promo && (
-                    <div
-                      style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: 6,
-                        background: '#ecfdf5',
-                        border: '1px solid #c8efd9',
-                        padding: '3px 9px',
-                        borderRadius: 999,
-                        marginBottom: 10,
-                        alignSelf: 'flex-start',
-                      }}
-                    >
-                      <span style={{ fontSize: 11, fontWeight: 800, color: '#059669', letterSpacing: '0.02em' }}>
-                        🔥 {promo.tipoDescuento === 'porcentaje' ? `-${promo.valorDescuento}%` : `-${formatCurrency(promo.valorDescuento, moneda)}`} {t('promotions.discount', 'Descuento')}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+                    <span className="vehiculo-price-label" style={{ margin: 0, color: c.textSecondary }}>
+                      {t('catalogo.pricePerDay', 'Precio por día')}
+                    </span>
+                    {promo && (
+                      <span
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 4,
+                          background: c.isDark ? 'rgba(16, 185, 129, 0.15)' : '#ecfdf5',
+                          color: c.isDark ? '#34d399' : '#047857',
+                          border: `1px solid ${c.isDark ? 'rgba(52, 211, 153, 0.3)' : '#a7f3d0'}`,
+                          fontSize: 11,
+                          fontWeight: 700,
+                          padding: '2px 8px',
+                          borderRadius: 999,
+                          letterSpacing: '0.02em',
+                        }}
+                      >
+                        <span style={{ width: 5, height: 5, borderRadius: '50%', background: c.isDark ? '#34d399' : '#10b981', display: 'inline-block' }} />
+                        {promo.tipoDescuento === 'porcentaje' ? `-${promo.valorDescuento}%` : `-${formatCurrency(promo.valorDescuento, moneda)}`}
                       </span>
-                    </div>
-                  )}
-                  <div className="vehiculo-price-label" style={{ color: c.textSecondary }}>
-                    {t('catalogo.pricePerDay', 'Precio por día')}
+                    )}
                   </div>
+
                   <div
                     className="vehiculo-price-value"
                     style={{
-                      color: promo ? '#059669' : c.accentText,
                       display: 'flex',
                       alignItems: 'baseline',
                       gap: 8,
                       flexWrap: 'wrap',
+                      marginBottom: promo && (vehiculo.precio - precioFinal > 0) ? 4 : 14,
                     }}
                   >
-                    {promo && (
-                      <span style={{ fontSize: 14, textDecoration: 'line-through', color: c.textSecondary, fontWeight: 600 }}>
+                    <span style={{ fontSize: 24, fontWeight: 900, color: 'var(--brand-text, #1e3a8a)', letterSpacing: '-0.02em' }}>
+                      {formatCurrency(precioFinal, moneda)}
+                    </span>
+                    <span style={{ color: c.textSecondary, fontSize: 12, fontWeight: 600 }}>
+                      {t('catalogo.perDay', '/día')}
+                    </span>
+                    {promo && vehiculo.precio > precioFinal && (
+                      <span style={{ fontSize: 13, textDecoration: 'line-through', color: c.textSecondary, fontWeight: 500, marginLeft: 2 }}>
                         {formatCurrency(vehiculo.precio, moneda)}
                       </span>
                     )}
-                    <span>{formatCurrency(precioFinal, moneda)}</span>
-                    <span style={{ color: c.textSecondary, fontSize: 12 }}>{t('catalogo.perDay', '/día')}</span>
                   </div>
+
+                  {promo && (vehiculo.precio - precioFinal > 0) && (
+                    <div style={{ fontSize: 11, color: c.isDark ? '#34d399' : '#059669', fontWeight: 600, marginBottom: 12 }}>
+                      {t('catalogo.youSave', 'Ahorras')} {formatCurrency(vehiculo.precio - precioFinal, moneda)} {t('catalogo.perDay', '/día')}
+                    </div>
+                  )}
+
                   <button className="vehiculo-reserve-btn" onClick={handleReservar}>
                     <FaCar size={13} />
                     <span>{t('catalogo.reserveNow', 'Reservar ahora')}</span>
