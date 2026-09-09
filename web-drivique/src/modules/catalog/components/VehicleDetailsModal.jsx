@@ -1,7 +1,7 @@
 import { useMemo, useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { FaTimes, FaCar } from 'react-icons/fa'
+import { FaTimes, FaCar, FaTag } from 'react-icons/fa'
 import { useAuthStore } from '../../../store/authStore'
 import { useLanding } from '../../landing/LandingContext'
 import { promotionManagementService } from '../../../services/promotionManagementService'
@@ -264,10 +264,13 @@ export default function VehicleDetailsModal({
                     border: `1px solid ${c.cardBorder}`,
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
-                    <span className="vehiculo-price-label" style={{ margin: 0, color: c.textSecondary }}>
-                      {t('catalogo.pricePerDay', 'Precio por día')}
-                    </span>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <FaTag color={c?.accentText || "var(--brand-primary, #1e3a8a)"} size={13} />
+                      <h3 style={{ fontSize: 13, fontWeight: 700, color: c.titleColor, margin: 0 }}>
+                        {t('catalogo.pricePerDay', 'Precio por día')}
+                      </h3>
+                    </div>
                     {promo && (
                       <span
                         style={{
