@@ -291,7 +291,7 @@ export default function VehicleDetailsModal({
                   </div>
 
                   {promo && (vehiculo.precio > precioFinal) ? (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 12 }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 14 }}>
                       {/* Antes: precio / día */}
                       <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12.5, color: c.textSecondary }}>
                         <span style={{ fontWeight: 600 }}>{t('catalogo.before', 'Antes:')}</span>
@@ -308,11 +308,6 @@ export default function VehicleDetailsModal({
                         <span style={{ fontWeight: 800, color: 'var(--brand-text, #1e3a8a)' }}>
                           {formatCurrency(precioFinal, moneda)} {t('catalogo.perDay', '/día')}
                         </span>
-                      </div>
-
-                      {/* Ahorras: $ / día */}
-                      <div style={{ fontSize: 11.5, color: c.isDark ? '#34d399' : '#059669', fontWeight: 700, marginTop: 2 }}>
-                        {t('catalogo.youSave', 'Ahorras:')} {formatCurrency(vehiculo.precio - precioFinal, moneda)} {t('catalogo.perDay', '/día')}
                       </div>
                     </div>
                   ) : (
