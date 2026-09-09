@@ -255,16 +255,17 @@ export default function VehicleDetailsModal({
                     margin: 0,
                     display: 'flex',
                     flexDirection: 'column',
-                    justifyContent: 'center',
+                    justifyContent: 'space-between',
                     background: c.cardBg,
                     border: `1px solid ${c.cardBorder}`,
-                    padding: 'clamp(12px, 1.5vw, 16px)',
+                    padding: 'clamp(14px, 2vw, 20px)',
+                    borderRadius: 16,
                     boxSizing: 'border-box',
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
-                      <FaTag color={c?.accentText || "var(--brand-primary, #1e3a8a)"} size={12} />
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <FaTag color={c?.accentText || "var(--brand-primary, #1e3a8a)"} size={13} />
                       <h3 style={{ fontSize: 13, fontWeight: 700, color: c.titleColor, margin: 0 }}>
                         {t('catalogo.pricePerDay', 'Precio por día')}
                       </h3>
@@ -278,9 +279,9 @@ export default function VehicleDetailsModal({
                           background: c.isDark ? 'rgba(16, 185, 129, 0.15)' : '#ecfdf5',
                           color: c.isDark ? '#34d399' : '#047857',
                           border: `1px solid ${c.isDark ? 'rgba(52, 211, 153, 0.3)' : '#a7f3d0'}`,
-                          fontSize: 10.5,
+                          fontSize: 11,
                           fontWeight: 800,
-                          padding: '1px 7px',
+                          padding: '2px 8px',
                           borderRadius: 999,
                           letterSpacing: '0.02em',
                         }}
@@ -296,31 +297,31 @@ export default function VehicleDetailsModal({
                       background: c.isDark ? '#111827' : '#ffffff',
                       border: `1px solid ${c.cardBorder}`,
                       borderRadius: 10,
-                      padding: '6px 12px',
-                      marginBottom: 8,
+                      padding: '7px 12px',
+                      marginBottom: 10,
                       display: 'flex',
                       flexDirection: 'column',
-                      gap: 4,
+                      gap: 5,
                     }}
                   >
                     {promo && (vehiculo.precio > precioFinal) ? (
                       <>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <span style={{ fontSize: 11.5, color: c.textSecondary, fontWeight: 500 }}>
+                          <span style={{ fontSize: 12, color: c.textSecondary, fontWeight: 500 }}>
                             {t('catalogo.before', 'Antes')}
                           </span>
-                          <span style={{ fontSize: 11.5, color: c.textSecondary, textDecoration: 'line-through', fontWeight: 600 }}>
-                            {formatCurrency(vehiculo.precio, moneda)} <span style={{ fontSize: 10, fontWeight: 500 }}>{t('catalogo.perDay', '/día')}</span>
+                          <span style={{ fontSize: 12, color: c.textSecondary, textDecoration: 'line-through', fontWeight: 600 }}>
+                            {formatCurrency(vehiculo.precio, moneda)} <span style={{ fontSize: 10.5, fontWeight: 500 }}>{t('catalogo.perDay', '/día')}</span>
                           </span>
                         </div>
                         <div style={{ height: 1, background: c.cardBorder, opacity: 0.6 }} />
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <span style={{ fontSize: 12, color: 'var(--brand-text, #1e3a8a)', fontWeight: 700 }}>
+                          <span style={{ fontSize: 12.5, color: 'var(--brand-text, #1e3a8a)', fontWeight: 700 }}>
                             {t('catalogo.now', 'Ahora')}
                           </span>
                           <span style={{ fontSize: 13.5, color: 'var(--brand-text, #1e3a8a)', fontWeight: 800 }}>
                             {formatCurrency(precioFinal, moneda)}{' '}
-                            <span style={{ fontSize: 10.5, fontWeight: 600, color: c.textSecondary }}>{t('catalogo.perDay', '/día')}</span>
+                            <span style={{ fontSize: 11, fontWeight: 600, color: c.textSecondary }}>{t('catalogo.perDay', '/día')}</span>
                           </span>
                         </div>
                       </>
@@ -331,14 +332,29 @@ export default function VehicleDetailsModal({
                         </span>
                         <span style={{ fontSize: 13.5, color: 'var(--brand-text, #1e3a8a)', fontWeight: 800 }}>
                           {formatCurrency(precioFinal, moneda)}{' '}
-                          <span style={{ fontSize: 10.5, fontWeight: 600, color: c.textSecondary }}>{t('catalogo.perDay', '/día')}</span>
+                          <span style={{ fontSize: 11, fontWeight: 600, color: c.textSecondary }}>{t('catalogo.perDay', '/día')}</span>
                         </span>
                       </div>
                     )}
                   </div>
 
-                  <button className="vehiculo-reserve-btn" onClick={handleReservar} style={{ padding: '8px 12px', fontSize: 12, borderRadius: 10 }}>
-                    <FaCar size={12} />
+                  <button
+                    className="vehiculo-reserve-btn"
+                    onClick={handleReservar}
+                    style={{
+                      padding: '10px 16px',
+                      fontSize: 13,
+                      fontWeight: 700,
+                      borderRadius: 8,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 8,
+                      width: '100%',
+                      boxSizing: 'border-box',
+                    }}
+                  >
+                    <FaCar size={13} />
                     <span>{t('catalogo.reserveNow', 'Reservar ahora')}</span>
                   </button>
                 </div>
