@@ -28,7 +28,7 @@ export default function EquipmentSection({ caracteristicas = [], equipamiento = 
   const bg = c?.cardBg || 'var(--bg-tarjeta, #ffffff)'
   const border = c?.subCardBorder || c?.cardBorder || 'var(--borde, #e2e8f0)'
   const titleColor = c?.titleColor || 'var(--brand-secondary, #0f172a)'
-  const subBg = c?.subCardBg || 'var(--bg-item, #f8fafc)'
+  const subBg = c?.subCardBg || 'var(--bg-item, #ffffff)'
   const textPrimary = c?.textPrimary || 'var(--texto-primary, #0f172a)'
 
   return (

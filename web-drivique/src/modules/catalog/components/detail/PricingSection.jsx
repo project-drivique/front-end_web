@@ -55,7 +55,7 @@ export default function PricingSection({ tarifas, seguros = [], showTarifas = tr
   const bg = c?.cardBg || '#fff'
   const border = c?.cardBorder || '#e2e8f0'
   const titleColor = c?.titleColor || 'var(--brand-secondary, #0f172a)'
-  const subBg = c?.subCardBg || '#f8fafc'
+  const subBg = c?.subCardBg || '#ffffff'
   const subBorder = c?.subCardBorder || '#e2e8f0'
 
   const kmLimit = tarifas?.kmLimitado || { precio: 0, km: 0 }

@@ -111,7 +111,7 @@ export default function VehicleDetailsModal({
     pageBg: esModoOscuro ? '#0f172a' : '#eaeff8',
     cardBg: esModoOscuro ? '#111827' : '#ffffff',
     cardBorder: esModoOscuro ? '#1e293b' : '#e2e8f0',
-    subCardBg: esModoOscuro ? '#1e293b' : '#f8fafc',
+    subCardBg: esModoOscuro ? '#1e293b' : '#ffffff',
     subCardBorder: esModoOscuro ? '#334155' : '#e2e8f0',
     textPrimary: esModoOscuro ? '#f8fafc' : '#0f172a',
     textSecondary: esModoOscuro ? '#94a3b8' : '#64748b',

@@ -53,7 +53,7 @@ export default function ReviewsSection({ comentarios = [], calificacion = 0, c, 
         </h4>
         <div
           style={{
-            background: isDark ? 'rgba(255,255,255,0.03)' : '#f8fafc',
+            background: isDark ? 'rgba(255,255,255,0.03)' : '#ffffff',
             borderRadius: 14,
             padding: 24,
             textAlign: 'center',
