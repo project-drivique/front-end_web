@@ -24,25 +24,25 @@ export default function BranchInfo({ sucursalInfo, c }) {
   const horarioTraducido = SCHEDULE_MAP[horario] ? t(SCHEDULE_MAP[horario]) : horario
 
   return (
-    <div style={{ background: bg, padding: 20, borderRadius: 16, border: `1px solid ${border}`, display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div style={{ background: bg, padding: 'clamp(14px, 2vw, 20px)', borderRadius: 16, border: `1px solid ${border}`, display: 'flex', flexDirection: 'column', gap: 14, boxSizing: 'border-box' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 0 }}>
-        <FaMapMarkerAlt color={c?.accentText || "var(--brand-primary)"} size={14} />
+        <FaMapMarkerAlt color={c?.accentText || "var(--brand-primary)"} size={13} />
         <h3 style={{ fontSize: 13, fontWeight: 700, color: titleColor, margin: 0 }}>{t('vehiculo.branch', 'Sucursal')}</h3>
       </div>
       
       <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'flex-start', gap: 14 }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          <p style={{ fontSize: 14.5, fontWeight: 700, color: textPrimary, margin: 0 }}>
+          <p style={{ fontSize: 13.5, fontWeight: 600, color: c?.textPrimary || '#0f172a', margin: 0 }}>
             {nombre}
           </p>
           {direccion && (
             <p style={{ fontSize: 13, color: textSecondary, margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
-              <FaMapMarkerAlt size={12} color="#94a3b8" /> {direccion}
+              <FaMapMarkerAlt size={13} color="#94a3b8" /> {direccion}
             </p>
           )}
           {horario && (
             <p style={{ fontSize: 13, color: textSecondary, margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
-              <FaClock size={12} color="#94a3b8" /> {horarioTraducido}
+              <FaClock size={13} color="#94a3b8" /> {horarioTraducido}
             </p>
           )}
         </div>
@@ -59,7 +59,7 @@ export default function BranchInfo({ sucursalInfo, c }) {
               marginTop: 8, transition: 'all 0.2s', width: '100%'
             }}
           >
-            <FaDirections size={14} /> {t('vehiculo.howToGetThere')}
+            <FaDirections size={13} /> {t('vehiculo.howToGetThere')}
           </button>
 
           <LocationModal

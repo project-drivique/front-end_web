@@ -18,6 +18,7 @@ import LoadingState from '../components/LoadingState'
 import ErrorState from '../components/ErrorState'
 import EmptyState from '../components/EmptyState'
 import NoResultsModal from '../components/NoResultsModal'
+import VehicleDetailsModal from '../components/VehicleDetailsModal'
 import './CatalogPage.css'
 import './UserCatalogPage.css'
 
@@ -86,6 +87,7 @@ export default function CatalogoUsuarioPage() {
   const [filtrosMovilAbierto, setFiltrosMovilAbierto] = useState(false)
   const [busquedaMovilAbierta, setBusquedaMovilAbierta] = useState(false)
   const [modalFiltrosCerrado, setModalFiltrosCerrado] = useState(false)
+  const [vehiculoDetalle, setVehiculoDetalle] = useState(null)
 
   const location = useLocation()
 
@@ -359,6 +361,7 @@ export default function CatalogoUsuarioPage() {
                     toggleFavorito={toggleFavorito}
                     c={c}
                     invitado={false}
+                    onVerDetalles={(v) => setVehiculoDetalle(v)}
                   />
 
                   <CatalogPagination
@@ -404,6 +407,12 @@ export default function CatalogoUsuarioPage() {
         handleBuscar={handleBuscar}
         limpiar={limpiarTodo}
         invitado={false}
+      />
+
+      <VehicleDetailsModal
+        isOpen={Boolean(vehiculoDetalle)}
+        vehiculo={vehiculoDetalle}
+        onClose={() => setVehiculoDetalle(null)}
       />
 
       {sinCoincidenciasFiltros && !modalFiltrosCerrado && (

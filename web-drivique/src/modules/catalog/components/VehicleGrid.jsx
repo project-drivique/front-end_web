@@ -10,6 +10,7 @@ export default function GridVehiculos({
   invitado = false,
   onGuestBlocked = () => {},
   onGuestFavorito = () => {},
+  onVerDetalles = null,
 }) {
   const lista = (vehiculosPagina && vehiculosPagina.length > 0) ? vehiculosPagina : (vehiculos || [])
 
@@ -35,6 +36,7 @@ export default function GridVehiculos({
           invitado={invitado}
           onGuestBlocked={onGuestBlocked}
           onGuestFavorito={onGuestFavorito}
+          onVerDetalles={onVerDetalles}
         />
       ))}
     </div>
