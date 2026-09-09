@@ -21,6 +21,7 @@ export default function ReviewsSection({ comentarios = [], calificacion = 0, c, 
   const border = c?.cardBorder || 'var(--borde, #e2e8f0)'
   const textPrimary = c?.textPrimary || 'var(--texto-primary, #0f172a)'
   const textSecondary = c?.textSecondary || 'var(--texto-second, #64748b)'
+  const titleColor = c?.titleColor || 'var(--brand-secondary, #0f172a)'
   const isDark = c?.isDark || false
 
   const formatearFecha = (fechaStr) => {
@@ -48,9 +49,12 @@ export default function ReviewsSection({ comentarios = [], calificacion = 0, c, 
           boxShadow: embedded ? 'none' : (isDark ? '0 8px 24px rgba(0,0,0,0.3)' : '0 6px 20px rgba(0,0,0,0.03)'),
         }}
       >
-        <h4 style={{ fontSize: 15, fontWeight: 800, color: textPrimary, margin: '0 0 16px', letterSpacing: '-0.01em' }}>
-          {t('vehiculo.customerReviews', 'Reseñas de clientes')}
-        </h4>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+          <FaStar color={c?.accentText || "var(--brand-primary, #1e3a8a)"} size={13} />
+          <h3 style={{ fontSize: 13, fontWeight: 800, color: titleColor, margin: 0 }}>
+            {t('vehiculo.customerReviews', 'Reseñas de clientes')}
+          </h3>
+        </div>
         <div
           style={{
             background: isDark ? 'rgba(255,255,255,0.03)' : '#ffffff',
@@ -104,9 +108,12 @@ export default function ReviewsSection({ comentarios = [], calificacion = 0, c, 
         boxSizing: 'border-box',
       }}
     >
-      <h3 style={{ fontSize: 15, fontWeight: 800, color: textPrimary, margin: '0 0 16px', letterSpacing: '-0.01em' }}>
-        {t('vehiculo.customerReviews', 'Reseñas de clientes')}
-      </h3>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+        <FaStar color={c?.accentText || "var(--brand-primary, #1e3a8a)"} size={13} />
+        <h3 style={{ fontSize: 13, fontWeight: 800, color: titleColor, margin: 0 }}>
+          {t('vehiculo.customerReviews', 'Reseñas de clientes')}
+        </h3>
+      </div>
 
       <div className="resenas-layout" style={{ display: 'flex', flexWrap: 'wrap', gap: 'clamp(16px, 2.5vw, 32px)' }}>
         {/* Columna Izquierda: Resumen */}
