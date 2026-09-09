@@ -1,0 +1,287 @@
+/* VehicleDetailsModal.css - Premium Glassmorphic Modal with Full Responsiveness */
+
+.vehicle-details-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(15, 23, 42, 0.72);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: vdmFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+}
+
+@keyframes vdmFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.vehicle-details-modal-container {
+  width: 100%;
+  max-width: 1160px;
+  max-height: 90vh;
+  border-radius: 24px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1);
+  animation: vdmSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  box-sizing: border-box;
+}
+
+@keyframes vdmSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.vdm-mobile-handle {
+  display: none;
+  width: 40px;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.45);
+  margin: 8px auto 4px auto;
+  flex-shrink: 0;
+}
+
+.vehicle-details-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 16px 60px 16px 24px;
+  border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+  flex-shrink: 0;
+  z-index: 10;
+  text-align: center;
+}
+
+.vehicle-details-modal-header-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  text-align: center;
+}
+
+.vehicle-details-modal-header-title h2 {
+  text-align: center;
+  margin: 0;
+  font-size: clamp(17px, 2.2vw, 22px);
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: calc(100% - 60px);
+}
+
+.vehicle-details-modal-close-btn {
+  position: absolute;
+  right: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid rgba(203, 213, 225, 0.6);
+  background: rgba(241, 245, 249, 0.8);
+  color: #475569;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  z-index: 12;
+}
+
+.vehicle-details-modal-close-btn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+  border-color: #cbd5e1;
+  transform: translateY(-50%) rotate(90deg);
+}
+
+.vehicle-details-modal-body {
+  padding: 20px 24px 32px;
+  overflow-y: auto;
+  flex: 1;
+  box-sizing: border-box;
+  -webkit-overflow-scrolling: touch;
+}
+
+.vehicle-details-modal-body.vehiculo-detail-page-wrap {
+  min-height: auto !important;
+}
+
+.vehicle-details-modal-body .vehiculo-detail-parent-card {
+  margin-bottom: 24px;
+}
+
+/* Customized scrollbar for modal body */
+.vehicle-details-modal-body::-webkit-scrollbar {
+  width: 7px;
+}
+
+.vehicle-details-modal-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.vehicle-details-modal-body::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.4);
+  border-radius: 999px;
+}
+
+.vehicle-details-modal-body::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.6);
+}
+
+/* Dark Theme Adjustments */
+html.dark .vehicle-details-modal-header {
+  border-bottom-color: rgba(51, 65, 85, 0.6);
+}
+
+html.dark .vehicle-details-modal-close-btn {
+  background: rgba(30, 41, 59, 0.85);
+  border-color: rgba(51, 65, 85, 0.8);
+  color: #cbd5e1;
+}
+
+html.dark .vehicle-details-modal-close-btn:hover {
+  background: #334155;
+  color: #f8fafc;
+  border-color: #475569;
+}
+
+html.dark .vdm-mobile-handle {
+  background: rgba(148, 163, 184, 0.3);
+}
+
+html.dark .vehicle-details-modal-body::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.25);
+}
+
+html.dark .vehicle-details-modal-body::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.45);
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 1024px) {
+  .vehicle-details-modal-overlay {
+    padding: 16px;
+  }
+
+  .vehicle-details-modal-container {
+    max-height: 92vh;
+  }
+
+  .vehicle-details-modal-body {
+    padding: 16px 18px 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .vehicle-details-modal-overlay {
+    padding: 0;
+    align-items: flex-end;
+  }
+
+  .vehicle-details-modal-container {
+    max-height: 94vh;
+    border-radius: 22px 22px 0 0;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom: none;
+    animation: vdmSlideUpMobile 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @keyframes vdmSlideUpMobile {
+    from {
+      opacity: 0;
+      transform: translateY(100%);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .vdm-mobile-handle {
+    display: block;
+  }
+
+  .vehicle-details-modal-header {
+    padding: 10px 50px 12px 16px;
+  }
+
+  .vehicle-details-modal-header-title h2 {
+    max-width: calc(100% - 40px);
+    font-size: 17px;
+  }
+
+  .vehicle-details-modal-close-btn {
+    right: 12px;
+    width: 34px;
+    height: 34px;
+  }
+
+  .vehicle-details-modal-body {
+    padding: 12px 12px 32px;
+  }
+
+  .vehicle-details-modal-body .vehiculo-detail-parent-card {
+    padding: 12px !important;
+    border-radius: 16px !important;
+    margin-bottom: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .vehicle-details-modal-container {
+    max-height: 96vh;
+    border-radius: 18px 18px 0 0;
+  }
+
+  .vehicle-details-modal-header {
+    padding: 8px 46px 10px 12px;
+  }
+
+  .vehicle-details-modal-header-title h2 {
+    font-size: 16px;
+  }
+
+  .vehicle-details-modal-close-btn {
+    right: 10px;
+    width: 32px;
+    height: 32px;
+  }
+
+  .vehicle-details-modal-body {
+    padding: 8px 8px 28px;
+  }
+
+  .vehicle-details-modal-body .vehiculo-detail-parent-card {
+    padding: 8px !important;
+    border-radius: 14px !important;
+  }
+}
