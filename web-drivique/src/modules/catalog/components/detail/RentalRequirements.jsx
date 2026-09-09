@@ -11,14 +11,14 @@ export default function RentalRequirements({ c }) {
   const reqDescColor = c?.textSecondary || '#64748b'
 
   const requisitos = [
-    { icono: FaUserAlt, titulo: t('vehiculo.minAgeTitle', 'Edad mínima'), desc: t('vehiculo.minAgeDesc', 'Debes tener al menos 21 años para rentar.') },
+    { icono: FaUserAlt, titulo: t('vehiculo.minAgeTitle', 'Edad mínima'), desc: t('vehiculo.minAgeDesc', 'Debes tener al menos 18 años para rentar.') },
     { icono: FaIdCard, titulo: t('vehiculo.idTitle', 'Identificación'), desc: t('vehiculo.idDesc', 'Cédula de ciudadanía para nacionales o pasaporte vigente para extranjeros.') }
   ]
 
   return (
-    <div style={{ background: bg, padding: 20, borderRadius: 16, border: `1px solid ${border}` }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-        <FaClipboardCheck color={c?.accentText || "var(--brand-primary)"} size={14} />
+    <div style={{ background: bg, padding: 'clamp(14px, 2vw, 20px)', borderRadius: 16, border: `1px solid ${border}`, boxSizing: 'border-box' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
+        <FaClipboardCheck color={c?.accentText || "var(--brand-primary)"} size={13} />
         <h3 style={{ fontSize: 13, fontWeight: 700, color: titleColor, margin: 0 }}>{t('vehiculo.rentalRequirements', 'Requisitos para rentar')}</h3>
       </div>
       
@@ -26,10 +26,10 @@ export default function RentalRequirements({ c }) {
         {requisitos.map((req, i) => (
           <div key={i} style={{ display: 'flex', gap: 12 }}>
             <div style={{ marginTop: 2 }}>
-              <req.icono color="#94a3b8" size={14} />
+              <req.icono color="#94a3b8" size={13.5} />
             </div>
             <div>
-              <div style={{ fontSize: 12, fontWeight: 700, color: reqTitleColor, marginBottom: 2 }}>
+              <div style={{ fontSize: 13.5, fontWeight: 600, color: c?.textPrimary || '#0f172a', marginBottom: 2 }}>
                 {req.titulo}
               </div>
               <div style={{ fontSize: 12, color: reqDescColor, lineHeight: 1.4 }}>

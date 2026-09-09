@@ -88,6 +88,7 @@ export default function TarjetaVehiculo({
   invitado = false,
   onGuestBlocked = () => {},
   onGuestFavorito = () => {},
+  onVerDetalles = null,
 }) {
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
@@ -112,6 +113,10 @@ export default function TarjetaVehiculo({
   const badgeBorder = '#ccefdc'
 
   const handleVerDetalles = () => {
+    if (onVerDetalles) {
+      onVerDetalles(vehiculo)
+      return
+    }
     const isSucursales = location.pathname.includes('/sucursales')
     if (isSucursales) {
       sessionStorage.setItem('drivique_sucursales_scroll', String(window.scrollY))
