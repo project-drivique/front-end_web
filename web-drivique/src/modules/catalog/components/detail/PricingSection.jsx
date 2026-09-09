@@ -4,8 +4,8 @@ import { useLanding } from '../../../landing/LandingContext'
 import { formatCurrency } from '@/utils/currencyUtils'
 
 function PriceRow({ label, value, sub, isLast = false, c }) {
-  const textPrimary = c?.textPrimary || 'var(--texto-primary, #0f172a)'
-  const textSecondary = c?.textSecondary || 'var(--texto-second, #64748b)'
+  const textPrimary = c?.textPrimary || '#0f172a'
+  const textSecondary = c?.textSecondary || '#64748b'
 
   return (
     <div
@@ -19,7 +19,7 @@ function PriceRow({ label, value, sub, isLast = false, c }) {
       }}
     >
       <div style={{ flex: 1, minWidth: 0 }}>
-        <p style={{ fontSize: 13, fontWeight: 700, color: textPrimary, margin: 0 }}>
+        <p style={{ fontSize: 13, fontWeight: 600, color: textPrimary, margin: 0 }}>
           {label}
         </p>
         {sub && (
@@ -31,7 +31,7 @@ function PriceRow({ label, value, sub, isLast = false, c }) {
       <span
         style={{
           fontSize: 13,
-          fontWeight: 700,
+          fontWeight: 600,
           color: textPrimary,
           whiteSpace: 'nowrap',
           flexShrink: 0,
