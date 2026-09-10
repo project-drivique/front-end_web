@@ -4,13 +4,14 @@ import { useTranslation } from 'react-i18next'
 import { useLogin } from '../hooks/useLogin'
 import { useSocialRegistration } from '../hooks/useSocialRegistration'
 import { useLanding } from '../../landing/LandingContext'
-import { FaExclamationTriangle, FaCheckCircle, FaEye, FaEyeSlash, FaInfoCircle, FaTimes, FaArrowRight } from 'react-icons/fa'
+import { FaExclamationTriangle, FaCheckCircle, FaEye, FaEyeSlash } from 'react-icons/fa'
 import { coloresLogin, loginTokens } from '../styles/loginStyles'
 import SpinnerButton from '../components/SpinnerButton'
-import LeftPanel from '../components/LeftPanel'
 import AlertModal from '../../catalog/components/AlertModal'
 import AuthHeaderControls from '../components/AuthHeaderControls'
 import { getRoleHome } from '../utils/accessControl'
+import { useBrand } from '@/contexts/BrandContext'
+import logocatalog from '@/assets/logocatalog.png'
 
 // ─── SVGs de proveedores sociales ─────────────────────────────────────────────
 const IconoGoogle = () => (
@@ -34,10 +35,10 @@ export default function LoginPage() {
   const navigate = useNavigate()
   const { t } = useTranslation()
   const { tema } = useLanding()
+  const { brand } = useBrand()
   const esModoOscuro = tema === 'oscuro'
   const c = coloresLogin(esModoOscuro)
   const tok = loginTokens
-  const [modalWelcomeOpen, setModalWelcomeOpen] = useState(false)
 
   const BOTONES_SOCIALES = [
     { id: 'google',   label: t('login.googleBtn'),   labelCargando: t('login.connectingGoogle'),   Icono: IconoGoogle },
@@ -122,71 +123,133 @@ export default function LoginPage() {
   })
 
   return (
-    <div style={{ minHeight: '112vh', display: 'flex', background: c.pageBg, zoom: 0.9 }} className="auth-responsive-layout">
+    <div style={{
+      minHeight: '112vh',
+      display: 'flex',
+      background: esModoOscuro
+        ? 'radial-gradient(circle at 18% 18%, rgba(var(--brand-primary-rgb),0.30), transparent 32%), radial-gradient(circle at 84% 22%, rgba(var(--brand-accent-rgb),0.18), transparent 30%), radial-gradient(circle at 8% 84%, rgba(var(--brand-secondary-rgb),0.20), transparent 34%), linear-gradient(135deg,#020617 0%,#0f172a 48%,#111827 100%)'
+        : 'radial-gradient(circle at 86% 25%, rgba(190,207,239,0.72), transparent 30%), radial-gradient(circle at 5% 86%, rgba(198,216,247,0.62), transparent 34%), radial-gradient(circle at 14% 18%, rgba(var(--brand-primary-rgb),0.12), transparent 28%), linear-gradient(135deg,#eef6ff 0%,#f8fbff 44%,#ffffff 100%)',
+      zoom: 0.9,
+      position: 'relative',
+      overflow: 'hidden',
+    }} className="auth-responsive-layout login-clean-layout">
       <style>{`
         .auth-responsive-layout {
-          flex-direction: column-reverse !important;
+          flex-direction: column !important;
         }
         @media(min-width:1024px) {
           .auth-responsive-layout {
-            flex-direction: row !important;
+            flex-direction: column !important;
           }
         }
+        .login-clean-layout::before,
+        .login-clean-layout::after {
+          content: '';
+          position: absolute;
+          border-radius: 999px;
+          pointer-events: none;
+        }
+        .login-clean-layout::before {
+          width: 520px;
+          height: 520px;
+          left: -210px;
+          bottom: -230px;
+          background: radial-gradient(circle, rgba(var(--brand-primary-rgb), ${esModoOscuro ? '0.30' : '0.16'}), transparent 68%);
+          filter: blur(4px);
+        }
+        .login-clean-layout::after {
+          width: 430px;
+          height: 430px;
+          right: -145px;
+          top: 92px;
+          background: radial-gradient(circle, rgba(var(--brand-secondary-rgb), ${esModoOscuro ? '0.30' : '0.18'}), transparent 68%);
+          filter: blur(2px);
+          box-shadow: none;
+        }
       `}</style>
-      <LeftPanel />
 
-      {/* ── Panel derecho (formulario) ── */}
-      <div style={{ flex: 1, background: c.pageBg, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 24px' }} className="auth-contenedor">
+      <div style={{ position: 'relative', zIndex: 1, flex: 1, width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '34px 24px' }} className="auth-contenedor">
 
-        {/* Botón volver y botón de info móvil */}
-        <div style={{ width: '100%', maxWidth: 400 }}>
+        <div className="auth-back-floating">
           <AuthHeaderControls backTo="/" backLabelKey="common.backToHome" backLabelFallback="Volver al inicio" />
-
-          {/* Botón superior de información sobre Drivique en móviles */}
-          <div className="auth-mobile-welcome-trigger">
-            <button
-              type="button"
-              className="btn-auth-welcome-toggle"
-              onClick={() => setModalWelcomeOpen(true)}
-            >
-              <div className="btn-auth-welcome-left">
-                <span className="btn-auth-welcome-icon">
-                  <FaInfoCircle size={12} />
-                </span>
-                <span>{t('panel.welcomeTitle', 'Beneficios de tu cuenta')}</span>
-              </div>
-              <span className="btn-auth-welcome-badge">
-                {t('panel.viewInfo', 'Ver')} <FaArrowRight size={8} />
-              </span>
-            </button>
-          </div>
         </div>
 
-        {/* Modal de información para móvil */}
-        {modalWelcomeOpen && (
-          <div
-            className="auth-mobile-modal-backdrop"
-            onClick={() => setModalWelcomeOpen(false)}
-          >
-            <div
-              className="auth-mobile-modal-card"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <button
-                type="button"
-                className="auth-mobile-modal-close"
-                onClick={() => setModalWelcomeOpen(false)}
-              >
-                <FaTimes size={13} />
-              </button>
-              <LeftPanel isModal={true} />
-            </div>
-          </div>
-        )}
-
         {/* Card */}
-        <div style={{ width: '100%', maxWidth: 400, background: c.cardBg, borderRadius: tok.borderRadius.card, boxShadow: c.cardShadow, border: `1px solid ${c.cardBorder}`, padding: 40 }} className="auth-card">
-          <div style={{ marginBottom: 24, textAlign: 'center' }}>
+        <div style={{
+          width: '100%',
+          maxWidth: 860,
+          display: 'grid',
+          gridTemplateColumns: 'minmax(250px, 0.9fr) minmax(360px, 1fr)',
+          background: esModoOscuro ? 'rgba(14,23,42,0.88)' : 'rgba(255,255,255,0.90)',
+          backdropFilter: 'blur(18px)',
+          borderRadius: 30,
+          boxShadow: esModoOscuro ? '0 28px 80px rgba(0,0,0,0.46)' : '0 28px 80px rgba(var(--brand-secondary-rgb),0.13)',
+          border: `1px solid ${esModoOscuro ? 'rgba(148,163,184,0.20)' : 'rgba(var(--brand-primary-rgb),0.12)'}`,
+          padding: 14,
+          overflow: 'hidden',
+        }} className="auth-card auth-split-card">
+          <div style={{
+            position: 'relative',
+            overflow: 'hidden',
+            borderRadius: '24px 0 0 24px',
+            padding: '34px 28px',
+            textAlign: 'center',
+            minHeight: 470,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: esModoOscuro
+              ? 'linear-gradient(145deg, rgba(255,255,255,0.12), rgba(var(--brand-primary-rgb),0.20) 42%, rgba(var(--brand-secondary-rgb),0.18))'
+              : 'linear-gradient(145deg, rgba(255,255,255,0.52) 0%, rgba(var(--brand-primary-rgb),0.20) 42%, rgba(var(--brand-secondary-rgb),0.30) 100%)',
+            backdropFilter: 'blur(24px) saturate(1.25)',
+            WebkitBackdropFilter: 'blur(24px) saturate(1.25)',
+            border: `1px solid ${esModoOscuro ? 'rgba(255,255,255,0.14)' : 'rgba(255,255,255,0.62)'}`,
+            boxShadow: esModoOscuro
+              ? 'inset 0 1px 0 rgba(255,255,255,0.12), 0 18px 45px rgba(0,0,0,0.18)'
+              : 'inset 0 1px 0 rgba(255,255,255,0.70), 0 18px 45px rgba(var(--brand-secondary-rgb),0.10)',
+            color: '#fff',
+          }} className="auth-split-brand">
+            <div style={{ position: 'absolute', width: 210, height: 210, borderRadius: '50%', right: -88, top: -92, background: 'rgba(255,255,255,0.16)' }} />
+            <div style={{ position: 'absolute', width: 150, height: 150, borderRadius: '50%', left: -64, bottom: -70, background: 'rgba(255,255,255,0.12)' }} />
+            <img
+              className="auth-brand-logo"
+              src={brand.logoDataUrl || logocatalog}
+              alt={brand.name}
+              style={{ position: 'relative', zIndex: 1, width: 176, height: 176, objectFit: 'contain', margin: '0 auto 4px', display: 'block', filter: 'drop-shadow(0 18px 34px rgba(0,0,0,0.24))' }}
+            />
+            <p style={{
+              position: 'relative',
+              zIndex: 1,
+              margin: '-10px 0 4px',
+              fontFamily: 'Outfit, Inter, system-ui, sans-serif',
+              fontSize: 21,
+              fontWeight: 900,
+              letterSpacing: '0.14em',
+              textTransform: 'uppercase',
+              color: esModoOscuro ? 'var(--brand-text-dark)' : 'var(--brand-secondary)',
+              textShadow: esModoOscuro
+                ? '0 8px 22px rgba(0,0,0,0.24)'
+                : '0 8px 22px rgba(var(--brand-secondary-rgb),0.18)',
+            }}>
+              {brand.name}
+            </p>
+            <p style={{
+              position: 'relative',
+              zIndex: 1,
+              margin: '0 auto',
+              maxWidth: 260,
+              color: esModoOscuro ? 'rgba(255,255,255,0.86)' : 'rgba(var(--brand-secondary-rgb),0.82)',
+              fontSize: 14.5,
+              fontWeight: 600,
+              lineHeight: 1.55,
+            }}>
+              {t('panel.subtitle')}
+            </p>
+          </div>
+
+          <div style={{ padding: '34px 34px 30px' }} className="auth-split-form">
+          <div style={{ marginBottom: 22, textAlign: 'center' }}>
             <h1 style={{
               fontFamily: 'Outfit, Inter, system-ui, sans-serif',
               fontSize: '1.55rem',
@@ -320,6 +383,7 @@ export default function LoginPage() {
               {t('login.registerLink')}
             </Link>
           </p>
+          </div>
         </div>
       </div>
 
@@ -341,6 +405,38 @@ export default function LoginPage() {
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
         input::placeholder { color: ${c.inputPlaceholder}; opacity: 1; }
+        @media (max-width: 860px) {
+          .auth-back-floating {
+            top: 18px !important;
+            left: 18px !important;
+          }
+          .auth-split-card {
+            max-width: 430px !important;
+            grid-template-columns: 1fr !important;
+          }
+          .auth-split-brand {
+            min-height: 210px !important;
+            border-radius: 24px 24px 0 0 !important;
+            padding: 26px 22px !important;
+          }
+          .auth-brand-logo {
+            width: 128px !important;
+            height: 128px !important;
+          }
+          .auth-split-form {
+            padding: 28px 24px 26px !important;
+          }
+        }
+        .auth-back-floating {
+          position: absolute;
+          top: 28px;
+          left: 34px;
+          z-index: 4;
+          width: auto;
+        }
+        .auth-back-floating > div {
+          margin-bottom: 0 !important;
+        }
       `}</style>
     </div>
   )
