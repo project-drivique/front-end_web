@@ -12,12 +12,6 @@ import { showAlert } from '@/utils/swalConfig'
 import {
   FaTimes,
   FaCheck,
-  FaCreditCard,
-  FaFileAlt,
-  FaHeadset,
-  FaCheckCircle,
-  FaInfoCircle,
-  FaArrowRight
 } from 'react-icons/fa'
 import AuthHeaderControls from '../components/AuthHeaderControls'
 import { getRoleHome } from '../utils/accessControl'
@@ -363,7 +357,6 @@ export default function RegistroPage() {
   const [verPass, setVerPass] = useState(false)
   const [verConfirmar, setVerConfirmar] = useState(false)
   const [modalAbierto, setModalAbierto] = useState(false)
-  const [modalWelcomeOpen, setModalWelcomeOpen] = useState(false)
   const [errores, setErrores] = useState({})
 
   const {
@@ -463,171 +456,133 @@ export default function RegistroPage() {
         />
       )}
 
-      <div style={{ minHeight: '112vh', display: 'flex', background: c.pageBg, zoom: 0.9 }} className="auth-responsive-layout">
+      <div style={{
+        minHeight: '112vh',
+        display: 'flex',
+        background: esModoOscuro
+          ? 'radial-gradient(circle at 18% 18%, rgba(var(--brand-primary-rgb),0.30), transparent 32%), radial-gradient(circle at 84% 22%, rgba(var(--brand-accent-rgb),0.18), transparent 30%), radial-gradient(circle at 8% 84%, rgba(var(--brand-secondary-rgb),0.20), transparent 34%), linear-gradient(135deg,#020617 0%,#0f172a 48%,#111827 100%)'
+          : 'radial-gradient(circle at 86% 25%, rgba(190,207,239,0.72), transparent 30%), radial-gradient(circle at 5% 86%, rgba(198,216,247,0.62), transparent 34%), radial-gradient(circle at 14% 18%, rgba(var(--brand-primary-rgb),0.12), transparent 28%), linear-gradient(135deg,#eef6ff 0%,#f8fbff 44%,#ffffff 100%)',
+        zoom: 0.9,
+        position: 'relative',
+        overflow: 'hidden',
+      }} className="auth-responsive-layout register-clean-layout">
         <style>{`
           .auth-responsive-layout {
-            flex-direction: column-reverse !important;
-          }
-          .lg-left {
-            display: none !important;
+            flex-direction: column !important;
           }
           @media(min-width:1024px) {
             .auth-responsive-layout {
-              flex-direction: row !important;
+              flex-direction: column !important;
             }
-            .lg-left {
-              display: flex !important;
-              width: 42% !important;
-              border-bottom: none !important;
-              border-right: ${esModoOscuro ? '1px solid #334155' : '1px solid rgba(255,255,255,0.12)'} !important;
-            }
+          }
+          .register-clean-layout::before,
+          .register-clean-layout::after {
+            content: '';
+            position: absolute;
+            border-radius: 999px;
+            pointer-events: none;
+          }
+          .register-clean-layout::before {
+            width: 540px;
+            height: 540px;
+            left: -220px;
+            bottom: -245px;
+            background: radial-gradient(circle, rgba(var(--brand-primary-rgb), ${esModoOscuro ? '0.30' : '0.16'}), transparent 68%);
+            filter: blur(4px);
+          }
+          .register-clean-layout::after {
+            width: 440px;
+            height: 440px;
+            right: -150px;
+            top: 100px;
+            background: radial-gradient(circle, rgba(var(--brand-secondary-rgb), ${esModoOscuro ? '0.30' : '0.18'}), transparent 68%);
+            filter: blur(2px);
+            box-shadow: none;
           }
         `}</style>
 
-        <div className="lg-left" style={{ flexDirection: 'column', background: esModoOscuro ? 'linear-gradient(160deg,color-mix(in srgb,var(--brand-secondary) 48%,#070b12) 0%,color-mix(in srgb,var(--brand-secondary) 66%,#0f172a) 55%,color-mix(in srgb,var(--brand-primary) 52%,#111827) 100%)' : 'linear-gradient(160deg,color-mix(in srgb,var(--brand-secondary) 72%,#080b12) 0%,var(--brand-secondary) 52%,color-mix(in srgb,var(--brand-primary) 78%,#111827) 100%)', position: 'relative', overflow: 'hidden', flexShrink: 0 }}>
-          <div style={{ position: 'absolute', top: '-100px', left: '-100px', width: '400px', height: '400px', borderRadius: '50%', border: '1px solid rgba(255,255,255,0.05)', background: 'rgba(255,255,255,0.02)' }} />
-          <div style={{ position: 'absolute', bottom: '-80px', right: '-80px', width: '340px', height: '340px', borderRadius: '50%', background: 'rgba(var(--brand-accent-rgb),0.12)' }} />
-
-          <div style={{ position: 'relative', zIndex: 1, flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 36px', textAlign: 'center', gap: '24px' }}>
-            <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-              <img src={brand.logoDataUrl || logo} alt={brand.name} style={{ height: '48px', width: 'auto', display: 'block', filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.25))' }} />
-              <span style={{
-                fontFamily: 'Outfit, Inter, sans-serif',
-                fontWeight: 900,
-                fontSize: '18px',
-                letterSpacing: '0.14em',
-                color: 'var(--brand-text-dark)',
-                textTransform: 'uppercase',
-                textShadow: '0 2px 10px rgba(var(--brand-accent-rgb),0.35)'
-              }}>
-                {brand.name}
-              </span>
+        <div style={{ position: 'relative', zIndex: 1, flex: 1, width: '100%', overflowY: 'auto', height: '100%' }}>
+          <div className="auth-contenedor" style={{ minHeight: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '32px 24px' }}>
+            <div className="auth-back-floating">
+              <AuthHeaderControls backTo="/" backLabelKey="common.backToHome" backLabelFallback="Volver al inicio" />
             </div>
-            {/* Contenedor glassmórfico de la información */}
+
             <div style={{
-              background: esModoOscuro ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.06)',
-              backdropFilter: 'blur(24px)',
-              WebkitBackdropFilter: 'blur(24px)',
-              border: esModoOscuro ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(255, 255, 255, 0.14)',
-              borderRadius: '24px',
-              padding: '32px 28px',
-              boxShadow: esModoOscuro ? '0 20px 50px rgba(0, 0, 0, 0.4)' : '0 20px 50px rgba(0, 0, 0, 0.25)',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: '22px',
               width: '100%',
-              maxWidth: '360px',
-              boxSizing: 'border-box',
-              transition: 'all 300ms ease'
-            }}>
-              <div>
-                <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: '13px', lineHeight: 1.6, maxWidth: '260px', margin: '0 auto' }}>
+              maxWidth: 860,
+              display: 'grid',
+              gridTemplateColumns: 'minmax(250px, 0.9fr) minmax(360px, 1fr)',
+              transform: 'translateY(46px)',
+              background: esModoOscuro ? 'rgba(14,23,42,0.88)' : 'rgba(255,255,255,0.90)',
+              backdropFilter: 'blur(18px)',
+              borderRadius: '28px',
+              boxShadow: esModoOscuro ? '0 28px 80px rgba(0,0,0,0.46)' : '0 28px 80px rgba(var(--brand-secondary-rgb),0.13)',
+              border: `1px solid ${esModoOscuro ? 'rgba(148,163,184,0.20)' : 'rgba(var(--brand-primary-rgb),0.12)'}`,
+              padding: 14,
+              overflow: 'hidden'
+            }} className="auth-card auth-split-card">
+              <div style={{
+                position: 'relative',
+                overflow: 'hidden',
+                borderRadius: '24px 0 0 24px',
+                padding: '34px 28px',
+                textAlign: 'center',
+                minHeight: 470,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: esModoOscuro
+                  ? 'linear-gradient(145deg, rgba(255,255,255,0.12), rgba(var(--brand-primary-rgb),0.20) 42%, rgba(var(--brand-secondary-rgb),0.18))'
+                  : 'linear-gradient(145deg, rgba(255,255,255,0.52) 0%, rgba(var(--brand-primary-rgb),0.20) 42%, rgba(var(--brand-secondary-rgb),0.30) 100%)',
+                backdropFilter: 'blur(24px) saturate(1.25)',
+                WebkitBackdropFilter: 'blur(24px) saturate(1.25)',
+                border: `1px solid ${esModoOscuro ? 'rgba(255,255,255,0.14)' : 'rgba(255,255,255,0.62)'}`,
+                boxShadow: esModoOscuro
+                  ? 'inset 0 1px 0 rgba(255,255,255,0.12), 0 18px 45px rgba(0,0,0,0.18)'
+                  : 'inset 0 1px 0 rgba(255,255,255,0.70), 0 18px 45px rgba(var(--brand-secondary-rgb),0.10)',
+                color: '#fff',
+              }} className="auth-split-brand">
+                <div style={{ position: 'absolute', width: 210, height: 210, borderRadius: '50%', right: -88, top: -92, background: 'rgba(255,255,255,0.16)' }} />
+                <div style={{ position: 'absolute', width: 150, height: 150, borderRadius: '50%', left: -64, bottom: -70, background: 'rgba(255,255,255,0.12)' }} />
+                <img
+                  className="auth-brand-logo"
+                  src={brand.logoDataUrl || logo}
+                  alt={brand.name}
+                  style={{ position: 'relative', zIndex: 1, width: 176, height: 176, objectFit: 'contain', margin: '0 auto 4px', display: 'block', filter: 'drop-shadow(0 18px 34px rgba(0,0,0,0.24))' }}
+                />
+                <p style={{
+                  position: 'relative',
+                  zIndex: 1,
+                  margin: '-10px 0 4px',
+                  fontFamily: 'Outfit, Inter, system-ui, sans-serif',
+                  fontSize: 21,
+                  fontWeight: 900,
+                  letterSpacing: '0.14em',
+                  textTransform: 'uppercase',
+                  color: esModoOscuro ? 'var(--brand-text-dark)' : 'var(--brand-secondary)',
+                  textShadow: esModoOscuro
+                    ? '0 8px 22px rgba(0,0,0,0.24)'
+                    : '0 8px 22px rgba(var(--brand-secondary-rgb),0.18)',
+                }}>
+                  {brand.name}
+                </p>
+                <p style={{
+                  position: 'relative',
+                  zIndex: 1,
+                  margin: '0 auto',
+                  maxWidth: 270,
+                  color: esModoOscuro ? 'rgba(255,255,255,0.86)' : 'rgba(var(--brand-secondary-rgb),0.82)',
+                  fontSize: 14.5,
+                  fontWeight: 600,
+                  lineHeight: 1.55,
+                }}>
                   {t('registro.leftPanel.subtitle')}
                 </p>
               </div>
 
-              <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {[
-                  { icon: FaCheckCircle, text: t('registro.leftPanel.feature1') },
-                  { icon: FaCreditCard, text: t('registro.leftPanel.feature2') },
-                  { icon: FaFileAlt, text: t('registro.leftPanel.feature3') },
-                  { icon: FaHeadset, text: t('registro.leftPanel.feature4') },
-                ].map(({ icon: Icono, text }) => (
-                  <div key={text} style={{ display: 'flex', alignItems: 'center', gap: '10px', background: esModoOscuro ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.08)', borderRadius: '10px', padding: '10px 14px', border: esModoOscuro ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(255,255,255,0.1)' }}>
-                    <span style={{ fontSize: '16px', flexShrink: 0, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <Icono />
-                    </span>
-                    <p style={{ color: '#fff', fontSize: '13px', fontWeight: 600, margin: 0, textAlign: 'left' }}>{text}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div style={{ position: 'relative', zIndex: 1, padding: '12px 36px', borderTop: '1px solid rgba(255,255,255,0.08)', textAlign: 'center' }}>
-            <p style={{ color: 'rgba(var(--brand-accent-rgb),0.5)', fontSize: '11px', margin: 0 }}>{brand.name} © 2026</p>
-          </div>
-        </div>
-
-        <div style={{ flex: 1, background: c.pageBg, overflowY: 'auto', height: '100%' }}>
-          <div className="auth-contenedor" style={{ minHeight: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '32px 24px' }}>
-            <div style={{ width: '100%', maxWidth: '460px' }}>
-              <AuthHeaderControls backTo="/" backLabelKey="common.backToHome" backLabelFallback="Volver al inicio" />
-
-              {/* Botón superior de información sobre Drivique en móviles */}
-              <div className="auth-mobile-welcome-trigger">
-                <button
-                  type="button"
-                  className="btn-auth-welcome-toggle"
-                  onClick={() => setModalWelcomeOpen(true)}
-                >
-                  <div className="btn-auth-welcome-left">
-                    <span className="btn-auth-welcome-icon">
-                      <FaInfoCircle size={12} />
-                    </span>
-                    <span>{t('registro.leftPanel.welcomeTitle', 'Beneficios de registrarte')}</span>
-                  </div>
-                  <span className="btn-auth-welcome-badge">
-                    {t('panel.viewInfo', 'Ver')} <FaArrowRight size={8} />
-                  </span>
-                </button>
-              </div>
-            </div>
-
-            {/* Modal informativo móvil */}
-            {modalWelcomeOpen && (
-              <div
-                className="auth-mobile-modal-backdrop"
-                onClick={() => setModalWelcomeOpen(false)}
-              >
-                <div
-                  className="auth-mobile-modal-card"
-                  onClick={(e) => e.stopPropagation()}
-                  style={{
-                    background: esModoOscuro ? 'linear-gradient(160deg,#070b12 0%,#0f172a 55%,#111827 100%)' : 'linear-gradient(160deg,var(--brand-secondary) 0%,color-mix(in srgb,var(--brand-primary) 78%,#111827) 100%)',
-                    padding: '36px 24px 28px',
-                    color: '#ffffff',
-                    position: 'relative'
-                  }}
-                >
-                  <button
-                    type="button"
-                    className="auth-mobile-modal-close"
-                    onClick={() => setModalWelcomeOpen(false)}
-                  >
-                    <FaTimes size={13} />
-                  </button>
-
-                  <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
-                    <img src={brand.logoDataUrl || logo} alt={brand.name} style={{ height: '42px', width: 'auto' }} />
-                    <span style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 900, fontSize: '16px', letterSpacing: '0.14em', color: 'var(--brand-text-dark)', textTransform: 'uppercase' }}>
-                      {brand.name}
-                    </span>
-                    <p style={{ color: 'rgba(255,255,255,0.85)', fontSize: '13px', margin: '4px 0 0', lineHeight: 1.5 }}>
-                      {t('registro.leftPanel.subtitle')}
-                    </p>
-                  </div>
-
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    {[
-                      { icon: FaCheckCircle, text: t('registro.leftPanel.feature1') },
-                      { icon: FaCreditCard, text: t('registro.leftPanel.feature2') },
-                      { icon: FaFileAlt, text: t('registro.leftPanel.feature3') },
-                      { icon: FaHeadset, text: t('registro.leftPanel.feature4') },
-                    ].map(({ icon: Icono, text }) => (
-                      <div key={text} style={{ display: 'flex', alignItems: 'center', gap: '10px', background: 'rgba(255,255,255,0.08)', borderRadius: '12px', padding: '10px 14px', border: '1px solid rgba(255,255,255,0.1)' }}>
-                        <span style={{ fontSize: '15px', color: '#fff' }}><Icono /></span>
-                        <p style={{ color: '#fff', fontSize: '13px', fontWeight: 600, margin: 0 }}>{text}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            <div className="auth-card" style={{ width: '100%', maxWidth: '460px', background: c.panelCard, borderRadius: '24px', boxShadow: c.panelCardShadow, border: `1px solid ${c.panelCardBorder}`, padding: '36px' }}>
-              <div style={{ marginBottom: '24px', textAlign: 'center' }}>
+              <div style={{ padding: '34px 34px 30px' }} className="auth-split-form">
+              <div style={{ marginBottom: '20px', textAlign: 'center' }}>
                 <h1 style={{
                   fontFamily: 'Outfit, Inter, system-ui, sans-serif',
                   fontSize: '1.55rem',
@@ -680,7 +635,7 @@ export default function RegistroPage() {
                 </div>
               )}
 
-              <form onSubmit={handleSubmit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <form onSubmit={handleSubmit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: '13px' }}>
                 <div style={fieldWrap}>
                   <label htmlFor="correo" style={labelStyle(c)}>{t('registro.email')} <span style={{ color: c.accent }}>*</span></label>
                   <input
@@ -790,13 +745,14 @@ export default function RegistroPage() {
                   c={c}
                 />
 
-                <div style={{ borderTop: `1px solid ${c.divider}`, paddingTop: '14px' }}>
+                  <div style={{ borderTop: `1px solid ${c.divider}`, paddingTop: '12px' }}>
                   <p style={{ textAlign: 'center', fontSize: '13px', color: c.textMuted, margin: 0 }}>
                     {t('registro.hasAccount')}{' '}
                     <Link to="/login" style={{ color: c.accent, fontWeight: 700, textDecoration: 'none' }}>{t('registro.loginLink')}</Link>
                   </p>
                 </div>
               </form>
+              </div>
             </div>
           </div>
         </div>
@@ -805,6 +761,38 @@ export default function RegistroPage() {
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
         input::placeholder { color: ${c.inputPlaceholder}; opacity: 1; }
+        @media (max-width: 920px) {
+          .auth-back-floating {
+            top: 18px !important;
+            left: 18px !important;
+          }
+          .auth-split-card {
+            max-width: 500px !important;
+            grid-template-columns: 1fr !important;
+          }
+          .auth-split-brand {
+            min-height: 220px !important;
+            border-radius: 24px 24px 0 0 !important;
+            padding: 26px 22px !important;
+          }
+          .auth-brand-logo {
+            width: 128px !important;
+            height: 128px !important;
+          }
+          .auth-split-form {
+            padding: 28px 24px 26px !important;
+          }
+        }
+        .auth-back-floating {
+          position: absolute;
+          top: 28px;
+          left: 34px;
+          z-index: 4;
+          width: auto;
+        }
+        .auth-back-floating > div {
+          margin-bottom: 0 !important;
+        }
       `}</style>
     </>
   )
