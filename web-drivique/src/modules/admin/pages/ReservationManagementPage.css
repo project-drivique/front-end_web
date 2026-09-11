@@ -11,38 +11,38 @@
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  padding: 6px 14px;
+  padding: 5px 12px;
   border-radius: 999px;
-  font-size: 11px;
-  font-weight: 800;
+  font-size: 11.5px;
+  font-weight: 500;
   text-transform: capitalize;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 .reserva-status-dot {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
 }
 
 .reserva-status-badge.confirmada {
-  background: var(--brand-soft-strong-light);
-  color: var(--brand-text-light);
+  background: var(--brand-soft-strong-light, #dbeafe);
+  color: var(--brand-text-light, #1e40af);
 }
 
 .reserva-status-badge.confirmada .reserva-status-dot {
   background: var(--brand-primary);
-  box-shadow: 0 0 6px rgba(var(--brand-primary-rgb), 0.6);
+  box-shadow: 0 0 6px rgba(var(--brand-primary-rgb), 0.5);
 }
 
 .reserva-status-badge.en_curso {
-  background: #f3e8ff;
-  color: #7e22ce;
+  background: #e0f2fe;
+  color: #0369a1;
 }
 
 .reserva-status-badge.en_curso .reserva-status-dot {
-  background: #9333ea;
-  box-shadow: 0 0 8px rgba(147, 51, 234, 0.7);
+  background: #0284c7;
+  box-shadow: 0 0 6px rgba(2, 132, 199, 0.5);
 }
 
 .reserva-status-badge.finalizada {
@@ -52,16 +52,16 @@
 
 .reserva-status-badge.finalizada .reserva-status-dot {
   background: #16a34a;
-  box-shadow: 0 0 6px rgba(22, 163, 74, 0.6);
+  box-shadow: 0 0 6px rgba(22, 163, 74, 0.5);
 }
 
 .reserva-status-badge.pendiente {
-  background: #fef3c7;
-  color: #b45309;
+  background: #f1f5f9;
+  color: #475569;
 }
 
 .reserva-status-badge.pendiente .reserva-status-dot {
-  background: #d97706;
+  background: #64748b;
 }
 
 .reserva-status-badge.cancelada {

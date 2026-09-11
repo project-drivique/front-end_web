@@ -1,7 +1,7 @@
 [
   {
     "id": "acc-encargado-1",
-    "nombre": "Encargado Alamo Bogotá - Aeropuerto",
+    "nombre": "Andrés Felipe Castro",
     "correo": "enc01@drivique.com",
     "contrasena": "Sucursal01*2026",
     "rol": "encargado_sucursal",
@@ -9,11 +9,12 @@
     "sucursal": "Alamo Bogotá - Aeropuerto",
     "ciudad": "Bogotá",
     "telefono": "+57 310 101 2001",
-    "activo": true
+    "activo": true,
+    "cedula": "1020495801"
   },
   {
     "id": "acc-encargado-2",
-    "nombre": "Encargado Alamo Bogotá - Calle 80",
+    "nombre": "Valentina Morales Ríos",
     "correo": "enc02@drivique.com",
     "contrasena": "Sucursal02*2026",
     "rol": "encargado_sucursal",
@@ -21,11 +22,12 @@
     "sucursal": "Alamo Bogotá - Calle 80",
     "ciudad": "Bogotá",
     "telefono": "+57 310 102 2002",
-    "activo": true
+    "activo": true,
+    "cedula": "1020495802"
   },
   {
     "id": "acc-encargado-3",
-    "nombre": "Encargado National Bogota El Dorado Intl. Airport",
+    "nombre": "Mateo Restrepo Herrera",
     "correo": "enc03@drivique.com",
     "contrasena": "Sucursal03*2026",
     "rol": "encargado_sucursal",
@@ -33,11 +35,12 @@
     "sucursal": "National Bogota El Dorado Intl. Airport",
     "ciudad": "Bogotá",
     "telefono": "+57 310 103 2003",
-    "activo": true
+    "activo": true,
+    "cedula": "1020495803"
   },
   {
     "id": "acc-encargado-4",
-    "nombre": "Encargado National Medellín Centro",
+    "nombre": "Laura Sofía Gómez",
     "correo": "enc04@drivique.com",
     "contrasena": "Sucursal04*2026",
     "rol": "encargado_sucursal",
@@ -45,11 +48,12 @@
     "sucursal": "National Medellín Centro",
     "ciudad": "Medellín",
     "telefono": "+57 310 104 2004",
-    "activo": true
+    "activo": true,
+    "cedula": "1020495804"
   },
   {
     "id": "acc-encargado-5",
-    "nombre": "Encargado National Medellin Rionegro Jose Maria Cordova Intl. Airport",
+    "nombre": "Carlos Eduardo Ruiz",
     "correo": "enc05@drivique.com",
     "contrasena": "Sucursal05*2026",
     "rol": "encargado_sucursal",
@@ -57,11 +61,12 @@
     "sucursal": "National Medellin Rionegro Jose Maria Cordova Intl. Airport",
     "ciudad": "Medellín",
     "telefono": "+57 310 105 2005",
-    "activo": true
+    "activo": true,
+    "cedula": "1020495805"
   },
   {
     "id": "acc-encargado-6",
-    "nombre": "Encargado Alamo Medellín Poblado",
+    "nombre": "Diana Marcela Ospina",
     "correo": "enc06@drivique.com",
     "contrasena": "Sucursal06*2026",
     "rol": "encargado_sucursal",
@@ -69,11 +74,12 @@
     "sucursal": "Alamo Medellín Poblado",
     "ciudad": "Medellín",
     "telefono": "+57 310 106 2006",
-    "activo": true
+    "activo": true,
+    "cedula": "1020495806"
   },
   {
     "id": "acc-encargado-7",
-    "nombre": "Encargado Alamo Cali - Aeropuerto",
+    "nombre": "Santiago Herrera Cano",
     "correo": "enc07@drivique.com",
     "contrasena": "Sucursal07*2026",
     "rol": "encargado_sucursal",
@@ -81,11 +87,12 @@
     "sucursal": "Alamo Cali - Aeropuerto",
     "ciudad": "Cali",
     "telefono": "+57 310 107 2007",
-    "activo": true
+    "activo": true,
+    "cedula": "1020495807"
   },
   {
     "id": "acc-encargado-8",
-    "nombre": "Encargado Alamo Cali - Ciudad",
+    "nombre": "Camila Torres Vargas",
     "correo": "enc08@drivique.com",
     "contrasena": "Sucursal08*2026",
     "rol": "encargado_sucursal",
@@ -93,11 +100,12 @@
     "sucursal": "Alamo Cali - Ciudad",
     "ciudad": "Cali",
     "telefono": "+57 310 108 2008",
-    "activo": true
+    "activo": true,
+    "cedula": "1020495808"
   },
   {
     "id": "acc-encargado-9",
-    "nombre": "Encargado National Cali Centro",
+    "nombre": "Juan David Ramírez",
     "correo": "enc09@drivique.com",
     "contrasena": "Sucursal09*2026",
     "rol": "encargado_sucursal",
@@ -105,11 +113,12 @@
     "sucursal": "National Cali Centro",
     "ciudad": "Cali",
     "telefono": "+57 310 109 2009",
-    "activo": true
+    "activo": true,
+    "cedula": "1020495809"
   },
   {
     "id": "acc-encargado-10",
-    "nombre": "Encargado National Cali International Airport",
+    "nombre": "Mariana Vega Beltrán",
     "correo": "enc10@drivique.com",
     "contrasena": "Sucursal10*2026",
     "rol": "encargado_sucursal",
@@ -117,11 +126,12 @@
     "sucursal": "National Cali International Airport",
     "ciudad": "Cali",
     "telefono": "+57 310 110 2010",
-    "activo": true
+    "activo": true,
+    "cedula": "1020495810"
   },
   {
     "id": "acc-encargado-11",
-    "nombre": "Encargado Alamo Barranquilla - Aeropuerto",
+    "nombre": "Alejandro Cárdenas",
     "correo": "enc11@drivique.com",
     "contrasena": "Sucursal11*2026",
     "rol": "encargado_sucursal",
@@ -129,11 +139,12 @@
     "sucursal": "Alamo Barranquilla - Aeropuerto",
     "ciudad": "Barranquilla",
     "telefono": "+57 310 111 2011",
-    "activo": true
+    "activo": true,
+    "cedula": "1020495811"
   },
   {
     "id": "acc-encargado-12",
-    "nombre": "Encargado Alamo Barranquilla - Ciudad",
+    "nombre": "Daniela Pineda López",
     "correo": "enc12@drivique.com",
     "contrasena": "Sucursal12*2026",
     "rol": "encargado_sucursal",
@@ -141,11 +152,12 @@
     "sucursal": "Alamo Barranquilla - Ciudad",
     "ciudad": "Barranquilla",
     "telefono": "+57 310 112 2012",
-    "activo": true
+    "activo": true,
+    "cedula": "1020495812"
   },
   {
     "id": "acc-encargado-13",
-    "nombre": "Encargado National Barranquilla Airport",
+    "nombre": "Sebastián Quintero",
     "correo": "enc13@drivique.com",
     "contrasena": "Sucursal13*2026",
     "rol": "encargado_sucursal",
@@ -153,11 +165,12 @@
     "sucursal": "National Barranquilla Airport",
     "ciudad": "Barranquilla",
     "telefono": "+57 310 113 2013",
-    "activo": true
+    "activo": true,
+    "cedula": "1020495813"
   },
   {
     "id": "acc-encargado-14",
-    "nombre": "Encargado National Downtown Barranquilla",
+    "nombre": "Natalia Jaramillo",
     "correo": "enc14@drivique.com",
     "contrasena": "Sucursal14*2026",
     "rol": "encargado_sucursal",
@@ -165,11 +178,12 @@
     "sucursal": "National Downtown Barranquilla",
     "ciudad": "Barranquilla",
     "telefono": "+57 310 114 2014",
-    "activo": true
+    "activo": true,
+    "cedula": "1020495814"
   },
   {
     "id": "acc-encargado-15",
-    "nombre": "Encargado Alamo Cartagena - Aeropuerto",
+    "nombre": "Diego Fernando Montoya",
     "correo": "enc15@drivique.com",
     "contrasena": "Sucursal15*2026",
     "rol": "encargado_sucursal",
@@ -177,11 +191,12 @@
     "sucursal": "Alamo Cartagena - Aeropuerto",
     "ciudad": "Cartagena",
     "telefono": "+57 310 115 2015",
-    "activo": true
+    "activo": true,
+    "cedula": "1020495815"
   },
   {
     "id": "acc-encargado-16",
-    "nombre": "Encargado National Cartagena International Airport",
+    "nombre": "Paula Andrea Silva",
     "correo": "enc16@drivique.com",
     "contrasena": "Sucursal16*2026",
     "rol": "encargado_sucursal",
@@ -189,11 +204,12 @@
     "sucursal": "National Cartagena International Airport",
     "ciudad": "Cartagena",
     "telefono": "+57 310 116 2016",
-    "activo": true
+    "activo": true,
+    "cedula": "1020495816"
   },
   {
     "id": "acc-encargado-17",
-    "nombre": "Encargado Alamo Cartagena Centro",
+    "nombre": "Felipe Benítez Cruz",
     "correo": "enc17@drivique.com",
     "contrasena": "Sucursal17*2026",
     "rol": "encargado_sucursal",
@@ -201,11 +217,12 @@
     "sucursal": "Alamo Cartagena Centro",
     "ciudad": "Cartagena",
     "telefono": "+57 310 117 2017",
-    "activo": true
+    "activo": true,
+    "cedula": "1020495817"
   },
   {
     "id": "acc-encargado-18",
-    "nombre": "Encargado Alamo Bucaramanga - Aeropuerto",
+    "nombre": "Gabriela Mendoza",
     "correo": "enc18@drivique.com",
     "contrasena": "Sucursal18*2026",
     "rol": "encargado_sucursal",
@@ -213,11 +230,12 @@
     "sucursal": "Alamo Bucaramanga - Aeropuerto",
     "ciudad": "Bucaramanga",
     "telefono": "+57 310 118 2018",
-    "activo": true
+    "activo": true,
+    "cedula": "1020495818"
   },
   {
     "id": "acc-encargado-19",
-    "nombre": "Encargado National Bucaramanga Airport",
+    "nombre": "Nicolás Rojas Duarte",
     "correo": "enc19@drivique.com",
     "contrasena": "Sucursal19*2026",
     "rol": "encargado_sucursal",
@@ -225,11 +243,12 @@
     "sucursal": "National Bucaramanga Airport",
     "ciudad": "Bucaramanga",
     "telefono": "+57 310 119 2019",
-    "activo": true
+    "activo": true,
+    "cedula": "1020495819"
   },
   {
     "id": "acc-encargado-20",
-    "nombre": "Encargado Alamo Pereira - Aeropuerto",
+    "nombre": "Carolina Salgado",
     "correo": "enc20@drivique.com",
     "contrasena": "Sucursal20*2026",
     "rol": "encargado_sucursal",
@@ -237,11 +256,12 @@
     "sucursal": "Alamo Pereira - Aeropuerto",
     "ciudad": "Pereira",
     "telefono": "+57 310 120 2020",
-    "activo": true
+    "activo": true,
+    "cedula": "1020495820"
   },
   {
     "id": "acc-encargado-21",
-    "nombre": "Encargado National Pereira Intl Airport",
+    "nombre": "Esteban Valencia",
     "correo": "enc21@drivique.com",
     "contrasena": "Sucursal21*2026",
     "rol": "encargado_sucursal",
@@ -249,11 +269,12 @@
     "sucursal": "National Pereira Intl Airport",
     "ciudad": "Pereira",
     "telefono": "+57 310 121 2021",
-    "activo": true
+    "activo": true,
+    "cedula": "1020495821"
   },
   {
     "id": "acc-encargado-22",
-    "nombre": "Encargado Localiza Cúcuta Aeropuerto Camilo Daza",
+    "nombre": "Juliana Cardona",
     "correo": "enc22@drivique.com",
     "contrasena": "Sucursal22*2026",
     "rol": "encargado_sucursal",
@@ -261,11 +282,12 @@
     "sucursal": "Localiza Cúcuta Aeropuerto Camilo Daza",
     "ciudad": "Cúcuta",
     "telefono": "+57 310 122 2022",
-    "activo": true
+    "activo": true,
+    "cedula": "1020495822"
   },
   {
     "id": "acc-encargado-23",
-    "nombre": "Encargado Localiza Cúcuta Centro",
+    "nombre": "Cristian Camilo Parra",
     "correo": "enc23@drivique.com",
     "contrasena": "Sucursal23*2026",
     "rol": "encargado_sucursal",
@@ -273,11 +295,12 @@
     "sucursal": "Localiza Cúcuta Centro",
     "ciudad": "Cúcuta",
     "telefono": "+57 310 123 2023",
-    "activo": true
+    "activo": true,
+    "cedula": "1020495823"
   },
   {
     "id": "acc-encargado-24",
-    "nombre": "Encargado National Santa Marta Airport",
+    "nombre": "Andrea Vergara Ortiz",
     "correo": "enc24@drivique.com",
     "contrasena": "Sucursal24*2026",
     "rol": "encargado_sucursal",
@@ -285,11 +308,12 @@
     "sucursal": "National Santa Marta Airport",
     "ciudad": "Santa Marta",
     "telefono": "+57 310 124 2024",
-    "activo": true
+    "activo": true,
+    "cedula": "1020495824"
   },
   {
     "id": "acc-encargado-25",
-    "nombre": "Encargado National Santa Marta Rodadero",
+    "nombre": "Mauricio Castaño",
     "correo": "enc25@drivique.com",
     "contrasena": "Sucursal25*2026",
     "rol": "encargado_sucursal",
@@ -297,11 +321,12 @@
     "sucursal": "National Santa Marta Rodadero",
     "ciudad": "Santa Marta",
     "telefono": "+57 310 125 2025",
-    "activo": true
+    "activo": true,
+    "cedula": "1020495825"
   },
   {
     "id": "acc-encargado-26",
-    "nombre": "Encargado National Santa Marta Centro",
+    "nombre": "Manuela Botero",
     "correo": "enc26@drivique.com",
     "contrasena": "Sucursal26*2026",
     "rol": "encargado_sucursal",
@@ -309,11 +334,12 @@
     "sucursal": "National Santa Marta Centro",
     "ciudad": "Santa Marta",
     "telefono": "+57 310 126 2026",
-    "activo": true
+    "activo": true,
+    "cedula": "1020495826"
   },
   {
     "id": "acc-encargado-27",
-    "nombre": "Encargado Localiza Manizales Terminal",
+    "nombre": "Julián David Moreno",
     "correo": "enc27@drivique.com",
     "contrasena": "Sucursal27*2026",
     "rol": "encargado_sucursal",
@@ -321,11 +347,12 @@
     "sucursal": "Localiza Manizales Terminal",
     "ciudad": "Manizales",
     "telefono": "+57 310 127 2027",
-    "activo": true
+    "activo": true,
+    "cedula": "1020495827"
   },
   {
     "id": "acc-encargado-28",
-    "nombre": "Encargado Localiza Manizales Aeropuerto La Nubia",
+    "nombre": "Vanessa Osorio",
     "correo": "enc28@drivique.com",
     "contrasena": "Sucursal28*2026",
     "rol": "encargado_sucursal",
@@ -333,11 +360,12 @@
     "sucursal": "Localiza Manizales Aeropuerto La Nubia",
     "ciudad": "Manizales",
     "telefono": "+57 310 128 2028",
-    "activo": true
+    "activo": true,
+    "cedula": "1020495828"
   },
   {
     "id": "acc-encargado-29",
-    "nombre": "Encargado Alquiler Ibagué - Centro",
+    "nombre": "David Fernando Suárez",
     "correo": "enc29@drivique.com",
     "contrasena": "Sucursal29*2026",
     "rol": "encargado_sucursal",
@@ -345,11 +373,12 @@
     "sucursal": "Alquiler Ibagué - Centro",
     "ciudad": "Ibagué",
     "telefono": "+57 310 129 2029",
-    "activo": true
+    "activo": true,
+    "cedula": "1020495829"
   },
   {
     "id": "acc-encargado-30",
-    "nombre": "Encargado Alquiler Ibagué - Aeropuerto Perales",
+    "nombre": "Tatiana Quintana",
     "correo": "enc30@drivique.com",
     "contrasena": "Sucursal30*2026",
     "rol": "encargado_sucursal",
@@ -357,11 +386,12 @@
     "sucursal": "Alquiler Ibagué - Aeropuerto Perales",
     "ciudad": "Ibagué",
     "telefono": "+57 310 130 2030",
-    "activo": true
+    "activo": true,
+    "cedula": "1020495830"
   },
   {
     "id": "acc-encargado-31",
-    "nombre": "Encargado Alquiler Pasto - Centro",
+    "nombre": "Ricardo José Arango",
     "correo": "enc31@drivique.com",
     "contrasena": "Sucursal31*2026",
     "rol": "encargado_sucursal",
@@ -369,11 +399,12 @@
     "sucursal": "Alquiler Pasto - Centro",
     "ciudad": "Pasto",
     "telefono": "+57 310 131 2031",
-    "activo": true
+    "activo": true,
+    "cedula": "1020495831"
   },
   {
     "id": "acc-encargado-32",
-    "nombre": "Encargado Alquiler Pasto - Aeropuerto Antonio Nariño",
+    "nombre": "Melissa Villamizar",
     "correo": "enc32@drivique.com",
     "contrasena": "Sucursal32*2026",
     "rol": "encargado_sucursal",
@@ -381,11 +412,12 @@
     "sucursal": "Alquiler Pasto - Aeropuerto Antonio Nariño",
     "ciudad": "Pasto",
     "telefono": "+57 310 132 2032",
-    "activo": true
+    "activo": true,
+    "cedula": "1020495832"
   },
   {
     "id": "acc-encargado-33",
-    "nombre": "Encargado Alquiler Villavicencio - Centro",
+    "nombre": "Gabriel Eduardo Niño",
     "correo": "enc33@drivique.com",
     "contrasena": "Sucursal33*2026",
     "rol": "encargado_sucursal",
@@ -393,11 +425,12 @@
     "sucursal": "Alquiler Villavicencio - Centro",
     "ciudad": "Villavicencio",
     "telefono": "+57 310 133 2033",
-    "activo": true
+    "activo": true,
+    "cedula": "1020495833"
   },
   {
     "id": "acc-encargado-34",
-    "nombre": "Encargado Alquiler Villavicencio - Aeropuerto Vanguardia",
+    "nombre": "Sara Lucía Correa",
     "correo": "enc34@drivique.com",
     "contrasena": "Sucursal34*2026",
     "rol": "encargado_sucursal",
@@ -405,11 +438,12 @@
     "sucursal": "Alquiler Villavicencio - Aeropuerto Vanguardia",
     "ciudad": "Villavicencio",
     "telefono": "+57 310 134 2034",
-    "activo": true
+    "activo": true,
+    "cedula": "1020495834"
   },
   {
     "id": "acc-encargado-35",
-    "nombre": "Encargado Alquiler Montería - Centro",
+    "nombre": "Oscar Iván Chaves",
     "correo": "enc35@drivique.com",
     "contrasena": "Sucursal35*2026",
     "rol": "encargado_sucursal",
@@ -417,11 +451,12 @@
     "sucursal": "Alquiler Montería - Centro",
     "ciudad": "Montería",
     "telefono": "+57 310 135 2035",
-    "activo": true
+    "activo": true,
+    "cedula": "1020495835"
   },
   {
     "id": "acc-encargado-36",
-    "nombre": "Encargado Alquiler Montería - Aeropuerto Los Garzones",
+    "nombre": "Daniela Bermúdez",
     "correo": "enc36@drivique.com",
     "contrasena": "Sucursal36*2026",
     "rol": "encargado_sucursal",
@@ -429,11 +464,12 @@
     "sucursal": "Alquiler Montería - Aeropuerto Los Garzones",
     "ciudad": "Montería",
     "telefono": "+57 310 136 2036",
-    "activo": true
+    "activo": true,
+    "cedula": "1020495836"
   },
   {
     "id": "acc-encargado-37",
-    "nombre": "Encargado Alquiler Valledupar - Centro",
+    "nombre": "Álvaro José Hoyos",
     "correo": "enc37@drivique.com",
     "contrasena": "Sucursal37*2026",
     "rol": "encargado_sucursal",
@@ -441,11 +477,12 @@
     "sucursal": "Alquiler Valledupar - Centro",
     "ciudad": "Valledupar",
     "telefono": "+57 310 137 2037",
-    "activo": true
+    "activo": true,
+    "cedula": "1020495837"
   },
   {
     "id": "acc-encargado-38",
-    "nombre": "Encargado Alquiler Valledupar - Aeropuerto Alfonso López",
+    "nombre": "Lucía Fernanda Barreto",
     "correo": "enc38@drivique.com",
     "contrasena": "Sucursal38*2026",
     "rol": "encargado_sucursal",
@@ -453,11 +490,12 @@
     "sucursal": "Alquiler Valledupar - Aeropuerto Alfonso López",
     "ciudad": "Valledupar",
     "telefono": "+57 310 138 2038",
-    "activo": true
+    "activo": true,
+    "cedula": "1020495838"
   },
   {
     "id": "acc-encargado-39",
-    "nombre": "Encargado Alquiler Armenia - Centro",
+    "nombre": "Jorge Iván Agudelo",
     "correo": "enc39@drivique.com",
     "contrasena": "Sucursal39*2026",
     "rol": "encargado_sucursal",
@@ -465,11 +503,12 @@
     "sucursal": "Alquiler Armenia - Centro",
     "ciudad": "Armenia",
     "telefono": "+57 310 139 2039",
-    "activo": true
+    "activo": true,
+    "cedula": "1020495839"
   },
   {
     "id": "acc-encargado-40",
-    "nombre": "Encargado Alquiler Armenia - Aeropuerto El Edén",
+    "nombre": "Luisa María Caicedo",
     "correo": "enc40@drivique.com",
     "contrasena": "Sucursal40*2026",
     "rol": "encargado_sucursal",
@@ -477,11 +516,12 @@
     "sucursal": "Alquiler Armenia - Aeropuerto El Edén",
     "ciudad": "Armenia",
     "telefono": "+57 310 140 2040",
-    "activo": true
+    "activo": true,
+    "cedula": "1020495840"
   },
   {
     "id": "acc-encargado-41",
-    "nombre": "Encargado Alquiler Neiva - Centro",
+    "nombre": "Rodrigo Paz Guerrero",
     "correo": "enc41@drivique.com",
     "contrasena": "Sucursal41*2026",
     "rol": "encargado_sucursal",
@@ -489,11 +529,12 @@
     "sucursal": "Alquiler Neiva - Centro",
     "ciudad": "Neiva",
     "telefono": "+57 310 141 2041",
-    "activo": true
+    "activo": true,
+    "cedula": "1020495841"
   },
   {
     "id": "acc-encargado-42",
-    "nombre": "Encargado Alquiler Neiva - Aeropuerto Benito Salas",
+    "nombre": "Karen Lizeth Rincón",
     "correo": "enc42@drivique.com",
     "contrasena": "Sucursal42*2026",
     "rol": "encargado_sucursal",
@@ -501,11 +542,12 @@
     "sucursal": "Alquiler Neiva - Aeropuerto Benito Salas",
     "ciudad": "Neiva",
     "telefono": "+57 310 142 2042",
-    "activo": true
+    "activo": true,
+    "cedula": "1020495842"
   },
   {
     "id": "acc-encargado-43",
-    "nombre": "Encargado Alquiler Popayán - Centro",
+    "nombre": "Leonardo Fabio Reyes",
     "correo": "enc43@drivique.com",
     "contrasena": "Sucursal43*2026",
     "rol": "encargado_sucursal",
@@ -513,11 +555,12 @@
     "sucursal": "Alquiler Popayán - Centro",
     "ciudad": "Popayán",
     "telefono": "+57 310 143 2043",
-    "activo": true
+    "activo": true,
+    "cedula": "1020495843"
   },
   {
     "id": "acc-encargado-44",
-    "nombre": "Encargado Alquiler Popayán - Aeropuerto Guillermo León Valencia",
+    "nombre": "Angie Paola Pinzón",
     "correo": "enc44@drivique.com",
     "contrasena": "Sucursal44*2026",
     "rol": "encargado_sucursal",
@@ -525,11 +568,12 @@
     "sucursal": "Alquiler Popayán - Aeropuerto Guillermo León Valencia",
     "ciudad": "Popayán",
     "telefono": "+57 310 144 2044",
-    "activo": true
+    "activo": true,
+    "cedula": "1020495844"
   },
   {
     "id": "acc-encargado-45",
-    "nombre": "Encargado Alquiler Sincelejo - Centro",
+    "nombre": "Guillermo León Vélez",
     "correo": "enc45@drivique.com",
     "contrasena": "Sucursal45*2026",
     "rol": "encargado_sucursal",
@@ -537,11 +581,12 @@
     "sucursal": "Alquiler Sincelejo - Centro",
     "ciudad": "Sincelejo",
     "telefono": "+57 310 145 2045",
-    "activo": true
+    "activo": true,
+    "cedula": "1020495845"
   },
   {
     "id": "acc-encargado-46",
-    "nombre": "Encargado Alquiler Sincelejo - Aeropuerto Las Brujas",
+    "nombre": "Adriana Rocío Franco",
     "correo": "enc46@drivique.com",
     "contrasena": "Sucursal46*2026",
     "rol": "encargado_sucursal",
@@ -549,11 +594,12 @@
     "sucursal": "Alquiler Sincelejo - Aeropuerto Las Brujas",
     "ciudad": "Sincelejo",
     "telefono": "+57 310 146 2046",
-    "activo": true
+    "activo": true,
+    "cedula": "1020495846"
   },
   {
     "id": "acc-encargado-47",
-    "nombre": "Encargado Alquiler Tunja - Terminal",
+    "nombre": "Héctor Mario Londoño",
     "correo": "enc47@drivique.com",
     "contrasena": "Sucursal47*2026",
     "rol": "encargado_sucursal",
@@ -561,11 +607,12 @@
     "sucursal": "Alquiler Tunja - Terminal",
     "ciudad": "Tunja",
     "telefono": "+57 310 147 2047",
-    "activo": true
+    "activo": true,
+    "cedula": "1020495847"
   },
   {
     "id": "acc-encargado-48",
-    "nombre": "Encargado Alquiler Riohacha - Centro",
+    "nombre": "Sandra Milena Gallego",
     "correo": "enc48@drivique.com",
     "contrasena": "Sucursal48*2026",
     "rol": "encargado_sucursal",
@@ -573,11 +620,12 @@
     "sucursal": "Alquiler Riohacha - Centro",
     "ciudad": "Riohacha",
     "telefono": "+57 310 148 2048",
-    "activo": true
+    "activo": true,
+    "cedula": "1020495848"
   },
   {
     "id": "acc-encargado-49",
-    "nombre": "Encargado Alquiler Riohacha - Aeropuerto Almirante Padilla",
+    "nombre": "Iván Darío Echeverry",
     "correo": "enc49@drivique.com",
     "contrasena": "Sucursal49*2026",
     "rol": "encargado_sucursal",
@@ -585,11 +633,12 @@
     "sucursal": "Alquiler Riohacha - Aeropuerto Almirante Padilla",
     "ciudad": "Riohacha",
     "telefono": "+57 310 149 2049",
-    "activo": true
+    "activo": true,
+    "cedula": "1020495849"
   },
   {
     "id": "acc-encargado-50",
-    "nombre": "Encargado Alquiler Quibdó - Centro",
+    "nombre": "Mónica Patricia Cuervo",
     "correo": "enc50@drivique.com",
     "contrasena": "Sucursal50*2026",
     "rol": "encargado_sucursal",
@@ -597,11 +646,12 @@
     "sucursal": "Alquiler Quibdó - Centro",
     "ciudad": "Quibdó",
     "telefono": "+57 310 150 2050",
-    "activo": true
+    "activo": true,
+    "cedula": "1020495850"
   },
   {
     "id": "acc-encargado-51",
-    "nombre": "Encargado Alquiler Quibdó - Aeropuerto El Caraño",
+    "nombre": "Fabián Enrique Solano",
     "correo": "enc51@drivique.com",
     "contrasena": "Sucursal51*2026",
     "rol": "encargado_sucursal",
@@ -609,11 +659,12 @@
     "sucursal": "Alquiler Quibdó - Aeropuerto El Caraño",
     "ciudad": "Quibdó",
     "telefono": "+57 310 151 2051",
-    "activo": true
+    "activo": true,
+    "cedula": "1020495851"
   },
   {
     "id": "acc-encargado-52",
-    "nombre": "Encargado Alquiler Florencia - Centro",
+    "nombre": "Claudia Elena Maya",
     "correo": "enc52@drivique.com",
     "contrasena": "Sucursal52*2026",
     "rol": "encargado_sucursal",
@@ -621,11 +672,12 @@
     "sucursal": "Alquiler Florencia - Centro",
     "ciudad": "Florencia",
     "telefono": "+57 310 152 2052",
-    "activo": true
+    "activo": true,
+    "cedula": "1020495852"
   },
   {
     "id": "acc-encargado-53",
-    "nombre": "Encargado Alquiler Florencia - Aeropuerto Gustavo Artunduaga",
+    "nombre": "Wilson Javier Triana",
     "correo": "enc53@drivique.com",
     "contrasena": "Sucursal53*2026",
     "rol": "encargado_sucursal",
@@ -633,11 +685,12 @@
     "sucursal": "Alquiler Florencia - Aeropuerto Gustavo Artunduaga",
     "ciudad": "Florencia",
     "telefono": "+57 310 153 2053",
-    "activo": true
+    "activo": true,
+    "cedula": "1020495853"
   },
   {
     "id": "acc-encargado-54",
-    "nombre": "Encargado Alquiler Yopal - Centro",
+    "nombre": "Gloria Inés Buitrago",
     "correo": "enc54@drivique.com",
     "contrasena": "Sucursal54*2026",
     "rol": "encargado_sucursal",
@@ -645,11 +698,12 @@
     "sucursal": "Alquiler Yopal - Centro",
     "ciudad": "Yopal",
     "telefono": "+57 310 154 2054",
-    "activo": true
+    "activo": true,
+    "cedula": "1020495854"
   },
   {
     "id": "acc-encargado-55",
-    "nombre": "Encargado Alquiler Yopal - Aeropuerto El Alcaraván",
+    "nombre": "Pablo Emilio Serna",
     "correo": "enc55@drivique.com",
     "contrasena": "Sucursal55*2026",
     "rol": "encargado_sucursal",
@@ -657,11 +711,12 @@
     "sucursal": "Alquiler Yopal - Aeropuerto El Alcaraván",
     "ciudad": "Yopal",
     "telefono": "+57 310 155 2055",
-    "activo": true
+    "activo": true,
+    "cedula": "1020495855"
   },
   {
     "id": "acc-encargado-56",
-    "nombre": "Encargado Alquiler San Andrés - Aeropuerto",
+    "nombre": "Yolanda Rueda Méndez",
     "correo": "enc56@drivique.com",
     "contrasena": "Sucursal56*2026",
     "rol": "encargado_sucursal",
@@ -669,6 +724,7 @@
     "sucursal": "Alquiler San Andrés - Aeropuerto",
     "ciudad": "San Andrés",
     "telefono": "+57 310 156 2056",
-    "activo": true
+    "activo": true,
+    "cedula": "1020495856"
   }
 ]

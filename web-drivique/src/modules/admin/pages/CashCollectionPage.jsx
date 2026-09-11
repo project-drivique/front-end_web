@@ -600,7 +600,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
                         className={`cash-recent-row ${isSelected ? 'selected' : ''}`}
                         title="Clic para ver detalle y comprobante"
                       >
-                        <td style={{ color: 'var(--brand-primary, #2563eb)', fontWeight: 800 }}>{c.codigo || c.id || c.referencia}</td>
+                        <td style={{ color: 'var(--city-text, #0f172a)', fontWeight: 700 }}>{c.codigo || c.id || c.referencia}</td>
                         <td>{c.clienteNombre}</td>
                         <td>{c.vehiculoNombre}</td>
                         <td>{c.sucursal}</td>

@@ -7,8 +7,8 @@
   gap: 6px;
   padding: 5px 12px;
   border-radius: 999px;
-  font-size: 11px;
-  font-weight: 800;
+  font-size: 11.5px;
+  font-weight: 500;
   text-transform: capitalize;
 }
 
@@ -18,8 +18,8 @@
 }
 
 .doc-status-badge.pendiente {
-  background: #fef3c7;
-  color: #b45309;
+  background: #f1f5f9;
+  color: #475569;
 }
 
 .doc-status-badge.rechazado {
@@ -34,13 +34,13 @@
   gap: 6px;
   padding: 5px 12px;
   border-radius: 999px;
-  font-size: 11px;
-  font-weight: 800;
+  font-size: 11.5px;
+  font-weight: 500;
 }
 
 .user-account-badge.activo {
-  background: var(--brand-soft-strong-light);
-  color: var(--brand-text-light);
+  background: var(--brand-soft-strong-light, #dbeafe);
+  color: var(--brand-text-light, #1e40af);
 }
 
 .user-account-badge.inactivo {
@@ -56,7 +56,7 @@
 
 .user-account-badge.activo .user-account-dot {
   background: var(--brand-primary);
-  box-shadow: 0 0 6px rgba(var(--brand-primary-rgb), 0.6);
+  box-shadow: 0 0 6px rgba(var(--brand-primary-rgb), 0.5);
 }
 
 .user-account-badge.inactivo .user-account-dot {
@@ -125,6 +125,62 @@ html.dark .user-doc-card,
   place-items: center;
   font-size: 12px;
   font-weight: 700;
+}
+
+/* Tabla de Gestión de Usuarios */
+.user-mgmt-table {
+  width: 100%;
+  min-width: 1700px !important;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.user-mgmt-table th:nth-child(1),
+.user-mgmt-table td:nth-child(1) {
+  min-width: 260px;
+  white-space: nowrap;
+}
+
+.user-mgmt-table th:nth-child(2),
+.user-mgmt-table td:nth-child(2) {
+  min-width: 140px;
+  white-space: nowrap;
+}
+
+.user-mgmt-table th:nth-child(3),
+.user-mgmt-table td:nth-child(3) {
+  min-width: 380px;
+  white-space: nowrap;
+}
+
+.user-mgmt-table th:nth-child(4),
+.user-mgmt-table td:nth-child(4) {
+  min-width: 480px;
+  white-space: nowrap;
+}
+
+.user-mgmt-table th:nth-child(5),
+.user-mgmt-table td:nth-child(5) {
+  min-width: 140px;
+  white-space: nowrap;
+}
+
+.user-mgmt-table th:nth-child(6),
+.user-mgmt-table td:nth-child(6) {
+  min-width: 140px;
+  white-space: nowrap;
+}
+
+.user-mgmt-table th:nth-child(7),
+.user-mgmt-table td:nth-child(7) {
+  min-width: 120px;
+  white-space: nowrap;
+}
+
+.user-mgmt-table th:nth-child(8),
+.user-mgmt-table td:nth-child(8) {
+  min-width: 140px;
+  text-align: center;
 }
 
 
