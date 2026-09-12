@@ -346,21 +346,26 @@ export default function NotificationsPage({ defaultTab }) {
             ) : (
               <div className="promos-vehiculos-grid">
                 {promosVehiculos.map((promo) => {
-                  const vehiculo = VEHICULOS_MOCK.find((v) => v.id === promo.vehiculoId)
+                  const vehiculo = VEHICULOS_MOCK.find((v) => Number(v.id) === Number(promo.vehiculoId))
                   const chipVencimiento = calcularChipVencimiento(promo.expiracionMs)
-                  const precioBase = vehiculo?.precio || 80000
-                  const pct = promo.descuentoPorcentaje || 15
-                  const precioRebajado = Math.round(precioBase * (1 - pct / 100))
+                  const precioBase = promo.precioBase || vehiculo?.precio || 80000
+                  const isPct = promo.tipoDescuento === 'porcentaje' || Boolean(promo.descuentoPorcentaje)
+                  const discountVal = promo.valorDescuento || promo.descuentoPorcentaje || 10
+                  const precioRebajado = isPct
+                    ? Math.round(precioBase * (1 - discountVal / 100))
+                    : Math.max(0, precioBase - discountVal)
+                  const targetQuery = promo.codigo ? `?promo=${promo.codigo}` : `?descuento=${discountVal}`
+                  const targetUrl = `/catalogo/${promo.vehiculoId}${targetQuery}`
 
                   return (
                     <div
                       key={promo.id}
                       className="promo-vehiculo-card"
-                      onClick={() => navigate(`/catalogo/${promo.vehiculoId}?descuento=${pct}`)}
+                      onClick={() => navigate(targetUrl)}
                     >
                       <div className="promo-vehiculo-img-wrap" style={{ position: 'relative' }}>
-                        {vehiculo?.imagenes?.[0] ? (
-                          <img src={vehiculo.imagenes[0]} alt={promo.titulo} />
+                        {vehiculo?.imagenes?.[0] || promo.vehiculoImagen ? (
+                          <img src={vehiculo?.imagenes?.[0] || promo.vehiculoImagen} alt={promo.titulo} />
                         ) : (
                           <FaCar style={{ fontSize: 40, color: '#94a3b8' }} />
                         )}
@@ -380,14 +385,14 @@ export default function NotificationsPage({ defaultTab }) {
                             letterSpacing: '0.02em',
                           }}
                         >
-                          🔥 -{pct}%
+                          {isPct ? `-${discountVal}%` : `-${formatCurrency(discountVal, moneda)}`}
                         </span>
                       </div>
 
                       <div className="promo-vehiculo-content">
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', marginBottom: '6px' }}>
                           <span style={{ fontSize: '10px', fontWeight: 800, color: '#059669', background: '#ecfdf5', padding: '2px 8px', borderRadius: '20px', border: '1px solid #c8efd9' }}>
-                            {vehiculo?.categoria || 'Destacado'}
+                            {promo.categoriaVehiculo || vehiculo?.categoria || 'Destacado'}
                           </span>
                         </div>
 
@@ -413,7 +418,7 @@ export default function NotificationsPage({ defaultTab }) {
                           className="btn-reservar-promo-destacada"
                           onClick={(e) => {
                             e.stopPropagation()
-                            navigate(`/catalogo/${promo.vehiculoId}?descuento=${pct}`)
+                            navigate(targetUrl)
                           }}
                           style={{
                             marginTop: 12,

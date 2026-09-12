@@ -323,7 +323,7 @@ export default function UserManagementPage() {
               </div>
             ) : (
               <div className="cities-table-wrap">
-                <table>
+                <table className="user-mgmt-table">
                   <thead>
                     <tr>
                       <th>{t('admin.usersPage.tableUser')}</th>
@@ -340,43 +340,49 @@ export default function UserManagementPage() {
                     {filtrados.map((u) => (
                       <tr key={u.id}>
                         <td>
-                          <div className="cities-name">
-                            <span>
+                          <div className="cities-name" style={{ minWidth: 240, whiteSpace: 'nowrap' }}>
+                            <span style={{ flexShrink: 0 }}>
                               <FaUsers />
                             </span>
                             <div>
-                              <strong>{u.nombre}</strong>
-                              <small>{u.id}</small>
+                              <strong style={{ fontSize: 13.5, color: 'var(--city-text, #0f172a)', fontWeight: 600, whiteSpace: 'nowrap' }}>
+                                {u.nombre}
+                              </strong>
                             </div>
                           </div>
                         </td>
 
                         <td>
-                          <strong style={{ fontSize: 13, color: 'var(--city-text)' }}>
-                            {u.cedula || 'N/A'}
+                          <strong style={{ fontSize: 13, color: 'var(--city-text, #0f172a)', fontWeight: 700, whiteSpace: 'nowrap' }}>
+                            {u.cedula}
                           </strong>
                         </td>
 
                         <td>
-                          <div style={{ fontSize: 12 }}>
-                            <div>
-                              <FaEnvelope style={{ marginRight: 4, color: '#64748b' }} />
-                              {u.correo}
+                          <div style={{ fontSize: 12.5, display: 'inline-flex', alignItems: 'center', flexWrap: 'nowrap', gap: '8px 16px', color: 'var(--city-text, #0f172a)', whiteSpace: 'nowrap' }}>
+                            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' }}>
+                              <FaEnvelope style={{ color: 'var(--city-muted, #64748b)', fontSize: 11, flexShrink: 0 }} />
+                              <span>{u.correo || '—'}</span>
                             </div>
-                            <div style={{ color: '#64748b', fontSize: 11 }}>
-                              <FaPhone style={{ marginRight: 4 }} />
-                              {u.telefono}
-                            </div>
+                            {u.telefono && String(u.telefono).trim() !== '' && (
+                              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: 'var(--city-muted, #64748b)', fontSize: 11.5, whiteSpace: 'nowrap' }}>
+                                <FaPhone style={{ fontSize: 10, flexShrink: 0 }} />
+                                <span>{u.telefono}</span>
+                              </div>
+                            )}
                           </div>
                         </td>
 
                         <td>
-                          <div style={{ fontSize: 12 }}>
-                            <strong style={{ textTransform: 'capitalize' }}>{u.rol}</strong>
+                          <div style={{ fontSize: 12.5, display: 'inline-flex', alignItems: 'center', flexWrap: 'nowrap', gap: '8px', whiteSpace: 'nowrap' }}>
+                            <span style={{ textTransform: 'capitalize', color: 'var(--city-text, #0f172a)', fontWeight: 600, whiteSpace: 'nowrap' }}>
+                              {u.rol === 'encargado_sucursal' ? 'Encargado Sucursal' : u.rol?.replace(/_/g, ' ') || 'Usuario'}
+                            </span>
                             {u.sucursal && (
-                              <small style={{ display: 'block', color: 'var(--brand-text)', fontWeight: 800 }}>
-                                <FaBuilding style={{ marginRight: 3 }} /> {u.sucursal}
-                              </small>
+                              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, color: 'var(--city-muted, #64748b)', fontSize: 12, whiteSpace: 'nowrap' }}>
+                                <FaBuilding style={{ fontSize: 11, flexShrink: 0 }} />
+                                <span>{u.sucursal}</span>
+                              </span>
                             )}
                           </div>
                         </td>
@@ -398,14 +404,14 @@ export default function UserManagementPage() {
                         </td>
 
                         <td>
-                          <strong
+                          <span
                             style={{
                               fontSize: 13,
-                              color: u.reservasActivas > 0 ? '#9333ea' : '#64748b',
+                              color: 'var(--city-text)',
                             }}
                           >
                             {u.reservasActivas} activas
-                          </strong>
+                          </span>
                         </td>
 
                         <td>
@@ -415,7 +421,6 @@ export default function UserManagementPage() {
                               type="button"
                               onClick={() => openDocumentosModal(u)}
                               title={t('admin.usersPage.reviewDocsAction')}
-                              style={{ color: 'var(--brand-text)' }}
                             >
                               <FaIdCard />
                             </button>

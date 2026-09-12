@@ -1,6 +1,7 @@
 // src/services/userManagementService.js
 import { accessAuditService } from './accessAuditService'
 import { reservationManagementService } from './reservationManagementService'
+import branchAccounts from '../mocks/branchAccounts.json'
 
 const STORAGE_KEY = 'drivique_mock_users'
 
@@ -63,10 +64,10 @@ const INITIAL_USERS = [
   },
   {
     id: 'usr-106',
-    nombre: 'Administrador Drivique',
+    nombre: 'Administrador General',
     correo: 'admin@drivique.com',
     telefono: '+57 300 123 4567',
-    cedula: '1000000001',
+    cedula: '80123456',
     rol: 'administrador',
     activo: true,
     documentosEstado: 'aprobado',
@@ -77,12 +78,65 @@ const INITIAL_USERS = [
 function readUsers() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_USERS))
-      return INITIAL_USERS
+    let users = INITIAL_USERS
+    if (raw) {
+      const parsed = JSON.parse(raw)
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        users = parsed
+      }
     }
-    const parsed = JSON.parse(raw)
-    return Array.isArray(parsed) && parsed.length > 0 ? parsed : INITIAL_USERS
+    let cambio = false
+    const branchMap = new Map()
+    branchAccounts.forEach((acc) => {
+      if (acc.correo) branchMap.set(acc.correo.toLowerCase(), acc)
+    })
+
+    const sanitized = users.map((u, i) => {
+      let nombre = u.nombre
+      let cedula = u.cedula
+      const emailLower = String(u.correo || '').toLowerCase()
+      const branchMatch = emailLower ? branchMap.get(emailLower) : null
+
+      if (branchMatch) {
+        if (nombre !== branchMatch.nombre) {
+          nombre = branchMatch.nombre
+          cambio = true
+        }
+        if (cedula !== branchMatch.cedula) {
+          cedula = branchMatch.cedula
+          cambio = true
+        }
+      } else if (emailLower === 'cliente@drivique.com') {
+        if (!nombre || nombre === 'Cliente' || nombre === 'Carlos') {
+          nombre = 'Carlos Mendoza'
+          cambio = true
+        }
+        if (!cedula || cedula === 'N/A') {
+          cedula = '1075228306'
+          cambio = true
+        }
+      } else if (emailLower === 'admin@drivique.com') {
+        if (!nombre || nombre === 'Administrador' || nombre === 'Admin') {
+          nombre = 'Administrador General'
+          cambio = true
+        }
+        if (!cedula || cedula === 'N/A') {
+          cedula = '80123456'
+          cambio = true
+        }
+      }
+
+      if (!cedula || cedula === 'N/A' || String(cedula).startsWith('acc-') || String(cedula).startsWith('usr-')) {
+        const hash = Math.abs(String(u.id || u.correo || i).split('').reduce((acc, c) => acc * 31 + c.charCodeAt(0), 0))
+        cedula = '10' + String((hash % 80000000) + 10000000).padStart(8, '0')
+        cambio = true
+      }
+      return { ...u, nombre, cedula }
+    })
+    if (cambio || !raw) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(sanitized))
+    }
+    return sanitized
   } catch {
     return INITIAL_USERS
   }

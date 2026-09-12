@@ -511,9 +511,9 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: var(--brand-soft-light, #eff6ff);
-  color: var(--brand-primary, #2563eb);
-  border: 1px solid var(--brand-border-light, #bfdbfe);
+  background: #f1f5f9;
+  color: #0f172a;
+  border: 1px solid #cbd5e1;
   border-radius: 8px;
   padding: 6px 12px;
   font-size: 12px;
@@ -523,9 +523,9 @@
 }
 
 .cash-table-action-btn:hover {
-  background: var(--brand-primary, #2563eb);
+  background: #0f172a;
   color: #ffffff;
-  border-color: var(--brand-primary, #2563eb);
+  border-color: #0f172a;
 }
 
 @media (max-width: 900px) {

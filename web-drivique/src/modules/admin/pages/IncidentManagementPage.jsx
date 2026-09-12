@@ -353,7 +353,7 @@ export default function IncidentManagementPage() {
               </div>
             ) : (
               <div className="cities-table-wrap">
-                <table>
+                <table className="incidents-table">
                   <thead>
                     <tr>
                       <th>{t('admin.incidents.tableCode', 'Reporte / Código')}</th>
@@ -393,22 +393,23 @@ export default function IncidentManagementPage() {
                               }}
                             />
                             <div>
-                              <strong style={{ display: 'block', fontSize: 13, color: 'var(--city-text)' }}>{r.vehiculo}</strong>
-                              <small style={{ color: '#64748b', fontWeight: 600 }}>{r.placa}</small>
+                              <span style={{ display: 'block', fontSize: 13, color: 'var(--city-text)' }}>{r.vehiculo}</span>
+                              <small style={{ color: '#64748b' }}>{r.placa}</small>
                             </div>
                           </div>
                         </td>
 
                         <td>
-                          <div style={{ fontSize: 12 }}>
-                            <strong>{r.contactoNombre}</strong>
-                            <small style={{ display: 'block', color: '#64748b' }}>{r.contactoEmail}</small>
+                          <div style={{ fontSize: 12, display: 'inline-flex', alignItems: 'center', flexWrap: 'wrap', gap: '6px 12px' }}>
+                            <span style={{ color: 'var(--city-text)', whiteSpace: 'nowrap' }}>{r.contactoNombre}</span>
+                            <small style={{ color: '#64748b', whiteSpace: 'nowrap' }}>{r.contactoEmail}</small>
                           </div>
                         </td>
 
                         <td>
-                          <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--brand-text)' }}>
-                            <FaBuilding style={{ marginRight: 3 }} /> {r.sucursal}
+                          <span style={{ fontSize: 12, color: 'var(--city-text)', display: 'inline-flex', alignItems: 'flex-start', gap: 5, lineHeight: 1.35 }}>
+                            <FaBuilding style={{ color: 'var(--city-muted, #64748b)', fontSize: 11, marginTop: 2, flexShrink: 0 }} />
+                            <span>{r.sucursal}</span>
                           </span>
                         </td>
 
@@ -433,18 +434,18 @@ export default function IncidentManagementPage() {
                                 r.estado === 'resuelto'
                                   ? '#dcfce7'
                                   : r.estado === 'en_reparacion'
-                                  ? '#f3e8ff'
+                                  ? '#e0f2fe'
                                   : r.estado === 'en_revision'
-                                  ? '#fef3c7'
-                                  : 'var(--brand-soft-strong-light)',
+                                  ? '#f1f5f9'
+                                  : '#f1f5f9',
                               color:
                                 r.estado === 'resuelto'
                                   ? '#15803d'
                                   : r.estado === 'en_reparacion'
-                                  ? '#6b21a8'
+                                  ? '#0369a1'
                                   : r.estado === 'en_revision'
-                                  ? '#b45309'
-                                  : 'var(--brand-text-light)',
+                                  ? '#475569'
+                                  : '#475569',
                             }}
                           >
                             {t(`admin.incidents.${r.estado}`, r.estado)}
@@ -457,7 +458,6 @@ export default function IncidentManagementPage() {
                               type="button"
                               onClick={() => openDetalleModal(r)}
                               title={t("admin.incidents.viewDetails", "Ver Detalle y Responder")}
-                              style={{ color: 'var(--brand-text)' }}
                             >
                               <FaEye />
                             </button>

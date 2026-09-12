@@ -462,7 +462,7 @@ export default function AdminRolesManagementPage() {
                 </div>
               ) : (
                 <div className="cities-table-wrap">
-                  <table>
+                  <table className="roles-accounts-table">
                     <thead>
                       <tr>
                         <th>{t('admin.rolesPage.colaborador')}</th>
@@ -482,31 +482,33 @@ export default function AdminRolesManagementPage() {
                                 <FaUserShield />
                               </span>
                               <div>
-                                <strong>{acc.nombre}</strong>
-                                <small>{acc.id}</small>
+                                <span style={{ fontSize: 13, color: 'var(--city-text, #0f172a)' }}>{acc.nombre}</span>
+                                <small style={{ color: 'var(--city-muted, #64748b)', fontWeight: 600 }}>{acc.id}</small>
                               </div>
                             </div>
                           </td>
 
                           <td>
-                            <div style={{ fontSize: 12 }}>
-                              <div>
-                                <FaEnvelope style={{ marginRight: 4, color: '#64748b' }} />
-                                {acc.correo}
+                            <div style={{ fontSize: 12.5, display: 'inline-flex', alignItems: 'center', flexWrap: 'wrap', gap: '8px 16px', color: 'var(--city-text, #0f172a)' }}>
+                              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' }}>
+                                <FaEnvelope style={{ color: 'var(--city-muted, #64748b)', fontSize: 11, flexShrink: 0 }} />
+                                <span>{acc.correo || '—'}</span>
                               </div>
-                              <div style={{ color: '#64748b', fontSize: 11 }}>
-                                <FaPhone style={{ marginRight: 4 }} />
-                                {acc.telefono}
-                              </div>
+                              {acc.telefono && String(acc.telefono).trim() !== '' && (
+                                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: 'var(--city-muted, #64748b)', fontSize: 11.5, whiteSpace: 'nowrap' }}>
+                                  <FaPhone style={{ fontSize: 10, flexShrink: 0 }} />
+                                  <span>{acc.telefono}</span>
+                                </div>
+                              )}
                             </div>
                           </td>
 
                           <td>
-                            <strong style={{ fontSize: 13, color: 'var(--brand-text)' }}>{acc.rolNombre}</strong>
+                            <span style={{ fontSize: 13, color: 'var(--city-text, #0f172a)' }}>{acc.rolNombre}</span>
                           </td>
 
                           <td>
-                            <span>{acc.sucursal ? acc.sucursal : 'Global (Todas)'}</span>
+                            <span style={{ fontSize: 13, color: 'var(--city-text, #0f172a)' }}>{acc.sucursal ? acc.sucursal : 'Global (Todas)'}</span>
                           </td>
 
                           <td>

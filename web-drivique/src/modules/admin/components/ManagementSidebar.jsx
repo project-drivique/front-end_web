@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { NavLink, useNavigate } from 'react-router-dom'
+import { NavLink, useNavigate, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import {
   FaBuilding,
@@ -85,10 +85,21 @@ export default function ManagementSidebar({ branchOnly = false }) {
   return (
     <>
       <div className="management-mobile-topbar">
-        <div className="mobile-brand">
-          <img src={brandLogo} alt={brandName} />
-          <strong>{brandName.toUpperCase()}</strong>
-        </div>
+        <Link to={isBranchManager ? '/encargado' : '/admin'} className="mobile-brand" style={{ textDecoration: 'none' }}>
+          <img 
+            src={brandLogo} 
+            alt={brandName}
+            style={{
+              height: 24,
+              width: 'auto',
+              objectFit: 'contain',
+            }}
+          />
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <strong style={{ fontSize: 16, fontWeight: 900, color: 'var(--adm-text)', lineHeight: 1.1 }}>{brandName.toUpperCase()}</strong>
+            <small style={{ fontSize: 10, fontWeight: 800, color: 'var(--brand-primary)', textTransform: 'uppercase', letterSpacing: '0.8px' }}>{t('admin.management', 'Gestión')}</small>
+          </div>
+        </Link>
         <button 
           className="management-mobile-btn" 
           onClick={() => setIsOpen(!isOpen)}
@@ -107,14 +118,21 @@ export default function ManagementSidebar({ branchOnly = false }) {
 
       <aside className={`management-sidebar ${isOpen ? 'is-open' : ''}`}>
         <div className="management-brand">
-          <span className="management-brand__mark">
-            <img src={brandLogo} alt={brandName} />
-          </span>
-        <div>
-          <strong>{brandName}</strong>
-          <small>{t('admin.management', 'Gestión')}</small>
+          <Link to={isBranchManager ? '/encargado' : '/admin'} className="management-brand__link">
+            <img 
+              src={brandLogo} 
+              alt={brandName} 
+              className="management-brand__logo"
+              style={{
+                filter: brand?.logoDataUrl ? 'none' : 'brightness(0) invert(1)',
+              }}
+            />
+            <div className="management-brand__text">
+              <strong className="management-brand__title">{brandName}</strong>
+              <small className="management-brand__subtitle">{t('admin.management', 'Gestión')}</small>
+            </div>
+          </Link>
         </div>
-      </div>
 
       <nav className="management-nav" aria-label={t('admin.navigation', 'Navegación')}>
         {navigation.map(({ key, route }) => {

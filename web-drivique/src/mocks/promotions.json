@@ -1,6 +1,7 @@
 [
   {
     "id": "PROMO-BIENVENIDA",
+    "tipoOferta": "cupon",
     "codigo": "BIENVENIDO10",
     "nombre": "Cupón de Bienvenida Drivique",
     "tipoDescuento": "porcentaje",
@@ -20,7 +21,29 @@
     "actualizadaEn": "2026-01-01T00:00:00.000Z"
   },
   {
+    "id": "PROMO-VIP-50K",
+    "tipoOferta": "cupon",
+    "codigo": "DRIVIQUE50K",
+    "nombre": "Bono Fijo de Alquiler",
+    "tipoDescuento": "fijo",
+    "valorDescuento": 50000,
+    "fechaInicio": "2026-01-01",
+    "fechaFin": "2026-12-31",
+    "reservaMinima": 200000,
+    "categoriaVehiculo": "Todos",
+    "vehiculoId": null,
+    "vehiculoNombre": "",
+    "vehiculoImagen": "",
+    "audiencia": "todos",
+    "condiciones": "Bono directo de $50.000 COP aplicable a reservas superiores a $200.000 COP.",
+    "destacada": false,
+    "activa": true,
+    "creadaEn": "2026-01-01T00:00:00.000Z",
+    "actualizadaEn": "2026-01-01T00:00:00.000Z"
+  },
+  {
     "id": "PROMO-SUV-20",
+    "tipoOferta": "promocion",
     "codigo": "SUV20",
     "nombre": "Especial Aventura SUV",
     "tipoDescuento": "porcentaje",
@@ -41,6 +64,7 @@
   },
   {
     "id": "PROMO-COROLLA-15",
+    "tipoOferta": "promocion",
     "codigo": "COROLLA15",
     "nombre": "Toyota Corolla Exclusivo",
     "tipoDescuento": "porcentaje",
@@ -54,12 +78,14 @@
     "vehiculoImagen": "",
     "audiencia": "todos",
     "condiciones": "Descuento del 15% exclusivo para reservas del Toyota Corolla 2024.",
+    "destacada": true,
     "activa": true,
     "creadaEn": "2026-01-01T00:00:00.000Z",
     "actualizadaEn": "2026-01-01T00:00:00.000Z"
   },
   {
     "id": "PROMO-MUSTANG-25",
+    "tipoOferta": "promocion",
     "codigo": "MUSTANG25",
     "nombre": "Ford Mustang GT Deportivo VIP",
     "tipoDescuento": "porcentaje",
@@ -73,25 +99,7 @@
     "vehiculoImagen": "",
     "audiencia": "todos",
     "condiciones": "Descuento del 25% exclusivo para reservas del Ford Mustang GT 2023.",
-    "activa": true,
-    "creadaEn": "2026-01-01T00:00:00.000Z",
-    "actualizadaEn": "2026-01-01T00:00:00.000Z"
-  },
-  {
-    "id": "PROMO-VIP-50K",
-    "codigo": "DRIVIQUE50K",
-    "nombre": "Bono Fijo de Alquiler",
-    "tipoDescuento": "fijo",
-    "valorDescuento": 50000,
-    "fechaInicio": "2026-01-01",
-    "fechaFin": "2026-12-31",
-    "reservaMinima": 200000,
-    "categoriaVehiculo": "Todos",
-    "vehiculoId": null,
-    "vehiculoNombre": "",
-    "vehiculoImagen": "",
-    "audiencia": "todos",
-    "condiciones": "Bono directo de $50.000 COP aplicable a reservas superiores a $200.000 COP.",
+    "destacada": true,
     "activa": true,
     "creadaEn": "2026-01-01T00:00:00.000Z",
     "actualizadaEn": "2026-01-01T00:00:00.000Z"

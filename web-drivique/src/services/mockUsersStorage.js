@@ -1,6 +1,6 @@
 const STORAGE_KEY = 'drivique_mock_users'
 const SCHEMA_KEY = 'drivique_mock_users_schema'
-const CURRENT_SCHEMA = '4'
+const CURRENT_SCHEMA = '6'
 const LEGACY_MANAGER_EMAILS = new Set(['encargado.neiva@drivique.com'])
 
 function leerUsuarios() {
@@ -62,10 +62,12 @@ export const mockUsersStorage = {
       if (requiereMigracion) {
         usuarios[indice] = {
           ...actual,
+          nombre: usuario.nombre || actual.nombre,
           contrasena: usuario.contrasena,
           rol: usuario.rol,
           activo: usuario.activo,
           permisos: usuario.permisos,
+          cedula: usuario.cedula || actual.cedula,
           ...(usuario.sucursalId ? { sucursalId: usuario.sucursalId } : {}),
         }
         cambio = true

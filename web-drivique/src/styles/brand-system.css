@@ -221,7 +221,7 @@ input[type="checkbox"], input[type="radio"], input[type="range"] { accent-color:
 .management-kpi__icon,
 .management-user > span { background: var(--brand-primary) !important; color: var(--brand-on-primary) !important; }
 .management-shell :is(.cities-eyebrow,.management-eyebrow,.management-heading p,.brand-page__header p),
-.management-shell :is(.cities-search,.contracts-code,.fleet-modal legend,.fleet-modal label>small),
+.management-shell :is(.cities-search,.fleet-modal legend,.fleet-modal label>small),
 .management-shell :is(.contracts-cell-with-icon svg,.incident-field svg) { color: var(--brand-text) !important; }
 .management-shell :is(.cities-primary,.management-action,.brand-primary) {
   background: var(--brand-primary) !important;

@@ -288,11 +288,13 @@ export default function ContractManagementPage() {
                       <td className="contracts-code">
                         {c.contratoNumero || `CTR-${c.reservaCodigo}`}
                       </td>
-                      <td><strong>{c.reservaCodigo}</strong></td>
+                      <td>
+                        <span style={{ fontWeight: 600, color: 'var(--city-text)' }}>{c.reservaCodigo}</span>
+                      </td>
                       <td>
                         <div className="contracts-cell-with-icon">
-                          <FaUser style={{ color: "var(--city-text-muted)" }} />
-                          {c.clienteNombre || 'Cliente Drivique'}
+                          <FaUser style={{ color: "var(--city-muted, #64748b)" }} />
+                          <span>{c.clienteNombre || 'Cliente Drivique'}</span>
                         </div>
                       </td>
                       <td>{c.clienteDocumento || '1030507090'}</td>
@@ -317,10 +319,10 @@ export default function ContractManagementPage() {
                             }}
                           />
                           <div>
-                            <strong style={{ display: "block", fontSize: 13, color: "var(--city-text)" }}>
+                            <span style={{ display: "block", fontSize: 13, color: "var(--city-text)" }}>
                               {c.vehiculoNombre || "Vehículo Drivique"}
-                            </strong>
-                            <small style={{ color: "#64748b", fontWeight: 600 }}>{c.vehiculoPlaca || "KLS-849"}</small>
+                            </span>
+                            <small style={{ color: "#64748b" }}>{c.vehiculoPlaca || "KLS-849"}</small>
                           </div>
                         </div>
                       </td>

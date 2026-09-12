@@ -81,6 +81,12 @@ export default function VehicleDetailsModal({
 
   const promo = useMemo(() => {
     if (!vehiculo) return null
+    if (promoCode) {
+      const found = promotionManagementService.list().find(
+        (p) => p.codigo === promoCode.toUpperCase() && p.activa
+      )
+      if (found) return found
+    }
     const descNum = descuentoParam ? Number(descuentoParam) : null
     if (descNum && descNum > 0) {
       return {
@@ -88,12 +94,6 @@ export default function VehicleDetailsModal({
         valorDescuento: descNum,
         nombre: `Descuento ${descNum}%`,
       }
-    }
-    if (promoCode) {
-      const found = promotionManagementService.list().find(
-        (p) => p.codigo === promoCode.toUpperCase() && p.activa
-      )
-      if (found) return found
     }
     return promotionManagementService.getPromotionForVehicle(vehiculo, usuario)
   }, [vehiculo, descuentoParam, promoCode, usuario])

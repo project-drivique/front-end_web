@@ -5,15 +5,30 @@ const STORAGE_KEY = 'drivique_admin_promotions'
 const AUDIT_KEY = 'drivique_management_audit'
 const PUBLICATION_EVENT = 'drivique:promotions-updated'
 
-const readJson = (key, fallback = []) => {
+function getStoredPromotions() {
+  if (typeof window === 'undefined') return initialPromotions
   try {
-    const raw = localStorage.getItem(key)
-    if (!raw) return fallback
+    const raw = localStorage.getItem(STORAGE_KEY)
+    if (raw === null) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(initialPromotions))
+      return initialPromotions
+    }
     const parsed = JSON.parse(raw)
-    if (Array.isArray(parsed) && parsed.length > 0) return parsed
-    return fallback
+    return Array.isArray(parsed) ? parsed : []
   } catch {
-    return fallback
+    return initialPromotions
+  }
+}
+
+const readAuditRecords = () => {
+  if (typeof window === 'undefined') return []
+  try {
+    const raw = localStorage.getItem(AUDIT_KEY)
+    if (!raw) return []
+    const parsed = JSON.parse(raw)
+    return Array.isArray(parsed) ? parsed : []
+  } catch {
+    return []
   }
 }
 
@@ -21,12 +36,14 @@ const normalizeCode = (value) => String(value || '').trim().toUpperCase().replac
 const nowIso = () => new Date().toISOString()
 
 function persist(promotions) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(promotions))
-  window.dispatchEvent(new CustomEvent(PUBLICATION_EVENT))
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(promotions))
+    window.dispatchEvent(new CustomEvent(PUBLICATION_EVENT))
+  }
 }
 
 function audit(action, promotion, user) {
-  const records = readJson(AUDIT_KEY)
+  const records = readAuditRecords()
   const entry = {
     id: `CRUD-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
     fecha: nowIso(),
@@ -36,12 +53,15 @@ function audit(action, promotion, user) {
     entidadNombre: promotion.codigo,
     usuario: user?.correo || user?.nombre || 'administrador',
   }
-  localStorage.setItem(AUDIT_KEY, JSON.stringify([entry, ...records].slice(0, 200)))
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(AUDIT_KEY, JSON.stringify([entry, ...records].slice(0, 200)))
+  }
 }
 
 function cleanData(data, promotions, editingId) {
   const codigo = normalizeCode(data.codigo)
   const nombre = String(data.nombre || '').trim()
+  const tipoOferta = data.tipoOferta === 'promocion' ? 'promocion' : 'cupon'
   const tipoDescuento = data.tipoDescuento === 'fijo' ? 'fijo' : 'porcentaje'
   const valorDescuento = Number(data.valorDescuento)
   const fechaInicio = String(data.fechaInicio || '')
@@ -63,11 +83,15 @@ function cleanData(data, promotions, editingId) {
 
   let vehiculoImagen = data.vehiculoImagen || ''
   if (!vehiculoImagen && (vehiculoId || vehiculoNombre)) {
-    const matched = VEHICULOS_MOCK.find((v) => (vehiculoId && Number(v.id) === Number(vehiculoId)) || (vehiculoNombre && v.nombre === vehiculoNombre))
+    const matched = VEHICULOS_MOCK.find(
+      (v) => (vehiculoId && Number(v.id) === Number(vehiculoId)) ||
+             (vehiculoNombre && v.nombre.toLowerCase().includes(vehiculoNombre.toLowerCase()))
+    )
     vehiculoImagen = matched?.imagenes?.[0] || matched?.imagen || ''
   }
 
   return {
+    tipoOferta,
     codigo,
     nombre,
     tipoDescuento,
@@ -86,7 +110,7 @@ function cleanData(data, promotions, editingId) {
 }
 
 function isAudienceEligible(promotion, user) {
-  if (promotion.audiencia === 'todos') return true
+  if (!promotion.audiencia || promotion.audiencia === 'todos') return true
   const completed = Number(user?.reservasCompletadas || 0)
   if (promotion.audiencia === 'nuevos') return completed === 0
   if (promotion.audiencia === 'frecuentes') return completed >= 2
@@ -96,26 +120,34 @@ function isAudienceEligible(promotion, user) {
 export const promotionManagementService = {
   eventName: PUBLICATION_EVENT,
 
-  list() {
-    const raw = readJson(STORAGE_KEY, [])
-    const combined = [...initialPromotions]
-    if (Array.isArray(raw)) {
-      raw.forEach((item) => {
-        const idx = combined.findIndex((p) => p.codigo === item.codigo || p.id === item.id)
-        if (idx !== -1) {
-          combined[idx] = { ...combined[idx], ...item }
-        } else {
-          combined.push(item)
-        }
-      })
+  cleanStorage() {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem(STORAGE_KEY)
+      localStorage.removeItem('drivique_user_cupones')
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(initialPromotions))
+      window.dispatchEvent(new CustomEvent(PUBLICATION_EVENT))
     }
-    return combined.map((item) => {
+  },
+
+  list() {
+    const raw = getStoredPromotions()
+    return raw.map((item) => {
       let vehiculoImagen = item.vehiculoImagen || ''
       if (!vehiculoImagen && (item.vehiculoId || item.vehiculoNombre)) {
-        const matched = VEHICULOS_MOCK.find((v) => (item.vehiculoId && Number(v.id) === Number(item.vehiculoId)) || (item.vehiculoNombre && v.nombre === item.vehiculoNombre))
+        const matched = VEHICULOS_MOCK.find(
+          (v) => (item.vehiculoId && Number(v.id) === Number(item.vehiculoId)) ||
+                 (item.vehiculoNombre && v.nombre.toLowerCase().includes(item.vehiculoNombre.toLowerCase()))
+        )
         vehiculoImagen = matched?.imagenes?.[0] || matched?.imagen || ''
       }
-      return { ...item, vehiculoImagen, destacada: Boolean(item.destacada) }
+      const tipoOferta = item.tipoOferta || (item.vehiculoId || (item.categoriaVehiculo && item.categoriaVehiculo !== 'Todos') ? 'promocion' : 'cupon')
+      return {
+        ...item,
+        tipoOferta,
+        vehiculoImagen,
+        destacada: Boolean(item.destacada),
+        activa: item.activa !== false,
+      }
     })
   },
 
@@ -123,7 +155,7 @@ export const promotionManagementService = {
     const promotions = this.list()
     const clean = cleanData(data, promotions)
     const promotion = {
-      id: `PROMO-${Date.now()}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`,
+      id: `${clean.tipoOferta === 'promocion' ? 'PROMO' : 'CUPON'}-${Date.now()}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`,
       ...clean,
       activa: data.activa !== false,
       creadaEn: nowIso(),
@@ -177,12 +209,17 @@ export const promotionManagementService = {
     audit('eliminar', current, user)
   },
 
-  listPublished(user = null) {
+  listPublished(user = null, options = {}) {
     const today = new Date().toISOString().slice(0, 10)
     const nowMs = Date.now()
+    const requireFeatured = Boolean(options?.onlyFeatured)
+    const filterTipo = options?.tipoOferta
+
     return this.list()
       .filter((item) => {
         if (!item.activa) return false
+        if (filterTipo && item.tipoOferta !== filterTipo) return false
+        if (requireFeatured && !item.destacada) return false
         if (item.fechaInicio > today) return false
         if (item.fechaFin < today) return false
         const expMs = new Date(`${item.fechaFin}T23:59:59`).getTime()
@@ -191,7 +228,6 @@ export const promotionManagementService = {
       })
       .map((item) => {
         let imagenes = []
-        // 1. Si es para un vehículo específico, obtener sus fotos
         if (item.vehiculoId) {
           const veh = VEHICULOS_MOCK.find((v) => Number(v.id) === Number(item.vehiculoId))
           if (veh?.imagenes?.length) {
@@ -203,11 +239,9 @@ export const promotionManagementService = {
             imagenes = veh.imagenes.slice(0, 3)
           }
         } else if (item.categoriaVehiculo && item.categoriaVehiculo !== 'Todos') {
-          // 2. Si es para una categoría específica, obtener fotos de vehículos de esa categoría
           const catVehs = VEHICULOS_MOCK.filter((v) => v.categoria?.toLowerCase() === item.categoriaVehiculo.toLowerCase())
           imagenes = catVehs.slice(0, 3).map((v) => v.imagenes?.[0]).filter(Boolean)
         } else {
-          // 3. Si es para todos los vehículos, obtener fotos representativas
           imagenes = VEHICULOS_MOCK.slice(0, 3).map((v) => v.imagenes?.[0]).filter(Boolean)
         }
 
@@ -233,11 +267,135 @@ export const promotionManagementService = {
       .sort((a, b) => (b.destacada ? 1 : 0) - (a.destacada ? 1 : 0))
   },
 
-  listPublishedForVehicle(vehicle, user = null) {
-    const published = this.listPublished(user)
+  listPublishedCoupons(user = null) {
+    return this.listPublished(user, { tipoOferta: 'cupon' })
+  },
+
+  listFeaturedVehiclePromotions(user = null) {
+    let targetPromos = this.listPublished(user, { tipoOferta: 'promocion', onlyFeatured: true })
+    if (targetPromos.length === 0) {
+      targetPromos = this.listPublished(user, { tipoOferta: 'promocion' })
+    }
+    const results = []
+
+    targetPromos.forEach((promo) => {
+      // 1. Si apunta a un vehículo específico por ID
+      if (promo.vehiculoId) {
+        const veh = VEHICULOS_MOCK.find((v) => Number(v.id) === Number(promo.vehiculoId))
+        if (veh) {
+          results.push({
+            id: `${promo.id}-${veh.id}`,
+            promoId: promo.id,
+            vehiculoId: veh.id,
+            vehiculoNombre: veh.nombre,
+            titulo: promo.nombre,
+            fechaPublicacion: new Date(promo.creadaEn || Date.now()).toLocaleDateString('es-ES', {
+              day: '2-digit',
+              month: 'short',
+              year: 'numeric',
+            }),
+            expiracionMs: promo.expiracionMs,
+            tipoDescuento: promo.tipoDescuento,
+            valorDescuento: promo.valorDescuento,
+            descuentoPorcentaje: promo.tipoDescuento === 'porcentaje' ? promo.valorDescuento : null,
+            codigo: promo.codigo,
+            categoriaVehiculo: veh.categoria,
+            vehiculoImagen: veh.imagenes?.[0] || promo.vehiculoImagen || '',
+            precioBase: veh.precio,
+          })
+          return
+        }
+      }
+
+      // 2. Si apunta a un vehículo por nombre
+      if (promo.vehiculoNombre) {
+        const veh = VEHICULOS_MOCK.find((v) => v.nombre.toLowerCase().includes(promo.vehiculoNombre.toLowerCase()))
+        if (veh) {
+          results.push({
+            id: `${promo.id}-${veh.id}`,
+            promoId: promo.id,
+            vehiculoId: veh.id,
+            vehiculoNombre: veh.nombre,
+            titulo: promo.nombre,
+            fechaPublicacion: new Date(promo.creadaEn || Date.now()).toLocaleDateString('es-ES', {
+              day: '2-digit',
+              month: 'short',
+              year: 'numeric',
+            }),
+            expiracionMs: promo.expiracionMs,
+            tipoDescuento: promo.tipoDescuento,
+            valorDescuento: promo.valorDescuento,
+            descuentoPorcentaje: promo.tipoDescuento === 'porcentaje' ? promo.valorDescuento : null,
+            codigo: promo.codigo,
+            categoriaVehiculo: veh.categoria,
+            vehiculoImagen: veh.imagenes?.[0] || promo.vehiculoImagen || '',
+            precioBase: veh.precio,
+          })
+          return
+        }
+      }
+
+      // 3. Si apunta a una categoría específica
+      if (promo.categoriaVehiculo && promo.categoriaVehiculo !== 'Todos') {
+        const matchingVehs = VEHICULOS_MOCK.filter((v) => v.categoria?.toLowerCase() === promo.categoriaVehiculo.toLowerCase())
+        matchingVehs.slice(0, 2).forEach((veh) => {
+          results.push({
+            id: `${promo.id}-${veh.id}`,
+            promoId: promo.id,
+            vehiculoId: veh.id,
+            vehiculoNombre: veh.nombre,
+            titulo: `${promo.nombre} (${veh.nombre})`,
+            fechaPublicacion: new Date(promo.creadaEn || Date.now()).toLocaleDateString('es-ES', {
+              day: '2-digit',
+              month: 'short',
+              year: 'numeric',
+            }),
+            expiracionMs: promo.expiracionMs,
+            tipoDescuento: promo.tipoDescuento,
+            valorDescuento: promo.valorDescuento,
+            descuentoPorcentaje: promo.tipoDescuento === 'porcentaje' ? promo.valorDescuento : null,
+            codigo: promo.codigo,
+            categoriaVehiculo: veh.categoria,
+            vehiculoImagen: veh.imagenes?.[0] || '',
+            precioBase: veh.precio,
+          })
+        })
+        return
+      }
+
+      // 4. Si es para todos los vehículos
+      const defaultVeh = VEHICULOS_MOCK[0]
+      if (defaultVeh) {
+        results.push({
+          id: `${promo.id}-${defaultVeh.id}`,
+          promoId: promo.id,
+          vehiculoId: defaultVeh.id,
+          vehiculoNombre: defaultVeh.nombre,
+          titulo: promo.nombre,
+          fechaPublicacion: new Date(promo.creadaEn || Date.now()).toLocaleDateString('es-ES', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+          }),
+          expiracionMs: promo.expiracionMs,
+          tipoDescuento: promo.tipoDescuento,
+          valorDescuento: promo.valorDescuento,
+          descuentoPorcentaje: promo.tipoDescuento === 'porcentaje' ? promo.valorDescuento : null,
+          codigo: promo.codigo,
+          categoriaVehiculo: defaultVeh.categoria,
+          vehiculoImagen: defaultVeh.imagenes?.[0] || '',
+          precioBase: defaultVeh.precio,
+        })
+      }
+    })
+
+    return results
+  },
+
+  listPublishedForVehicle(vehicle, user = null, options = {}) {
+    const published = this.listPublished(user, options)
     if (!vehicle) return published
     return published.filter((item) => {
-      // 1. Si la promo está restringida a un vehículo específico
       if (item.vehiculoId || item.vehiculoNombre) {
         const matchesId = item.vehiculoId && Number(item.vehiculoId) === Number(vehicle.id)
         const matchesName =
@@ -247,21 +405,19 @@ export const promotionManagementService = {
             item.vehiculoNombre.toLowerCase().includes(vehicle.nombre.toLowerCase()))
         return matchesId || matchesName
       }
-      // 2. Si la promo está restringida a una categoría específica
       if (item.categoriaVehiculo && item.categoriaVehiculo !== 'Todos') {
         return Boolean(
           vehicle.categoria &&
             item.categoriaVehiculo.toLowerCase() === vehicle.categoria.toLowerCase()
         )
       }
-      // 3. Si es global (aplica para todos los vehículos)
       return true
     })
   },
 
-  getPromotionForVehicle(vehicle, user = null) {
+  getPromotionForVehicle(vehicle, user = null, options = {}) {
     if (!vehicle) return null
-    const published = this.listPublishedForVehicle(vehicle, user)
+    const published = this.listPublishedForVehicle(vehicle, user, options)
     return published[0] || null
   },
 
@@ -275,7 +431,6 @@ export const promotionManagementService = {
     if (!isAudienceEligible(promotion, context.user)) throw new Error('audience')
     if (Number(context.total || 0) < promotion.reservaMinima) throw new Error('minimum')
 
-    // Validar vehículo específico si la promoción lo restringe
     if (promotion.vehiculoId && context.vehicleId) {
       if (Number(promotion.vehiculoId) !== Number(context.vehicleId)) {
         throw new Error('vehicleMismatch')
@@ -286,7 +441,6 @@ export const promotionManagementService = {
       }
     }
 
-    // Validar categoría si la promoción no es 'Todos'
     if (promotion.categoriaVehiculo && promotion.categoriaVehiculo !== 'Todos' && context.category) {
       if (String(context.category).toLowerCase() !== promotion.categoriaVehiculo.toLowerCase()) {
         throw new Error('category')

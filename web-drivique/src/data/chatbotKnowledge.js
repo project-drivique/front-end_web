@@ -51,7 +51,7 @@ export const getBotResponses = (t, moneda) => {
 
     requisitos: t(
       'chatbot.responses.requisitos',
-      '📋 **Requisitos obligatorios para alquilar:**\n\n• **Edad mínima:** 16 años cumplidos.\n• **Documento de Identidad:** Cédula de ciudadanía, Pasaporte, Tarjeta de identidad o Documento de extranjería.\n• **Licencia de Conducción:** Vigente (nacional o internacional).\n• **Depósito de garantía:** Tarjeta de crédito o débito a nombre del titular.'
+      '📋 **Requisitos obligatorios para alquilar:**\n\n• **Edad mínima:** 18 años cumplidos.\n• **Documento de Identidad:** Cédula de ciudadanía, Pasaporte, Tarjeta de identidad o Documento de extranjería.\n• **Licencia de Conducción:** Vigente (nacional o internacional).\n• **Depósito de garantía:** Tarjeta de crédito o débito a nombre del titular.'
     ),
 
     pagos: t(
