@@ -105,7 +105,7 @@ function clearLoginSecurity(correo) {
 }
 
 function prepararUsuariosLocales() {
-  const branchManagers = branchAccounts.map((account) => ({
+  const branchManagers = branchAccounts.map((account, idx) => ({
       correo: account.correo,
       contrasena: account.contrasena,
       nombre: account.nombre,
@@ -117,7 +117,7 @@ function prepararUsuariosLocales() {
       sucursal: account.sucursal,
       ciudad: account.ciudad,
       telefono: account.telefono,
-      cedula: account.id,
+      cedula: account.cedula || String(1020495800 + idx + 1),
       emailVerificado: true,
     }))
 

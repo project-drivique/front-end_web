@@ -90,42 +90,6 @@ export const NOTIFICACIONES_GENERALES_INITIAL = [
 // ─── DUMMY DATA: CUPONES DE RECOMPENSA ───────────────────────────────────────
 export const CUPONES_INITIAL = []
 
-// ─── DUMMY DATA: PROMOS DE VEHÍCULOS ─────────────────────────────────────────
-export const PROMOS_VEHICULOS_INITIAL = [
-  {
-    id: 'promo-veh-1',
-    vehiculoId: 1,
-    titulo: 'Toyota Corolla 2024 - Descuento Exclusivo',
-    fechaPublicacion: '12 de ago de 2026',
-    expiracionMs: Date.now() + 86400000 * 5,
-    descuentoPorcentaje: 15,
-    codigo: 'COROLLA15',
-  },
-  {
-    id: 'promo-veh-2',
-    vehiculoId: 2,
-    titulo: 'Mazda CX-5 2024 - Temporada de Aventura SUV',
-    fechaPublicacion: '11 de ago de 2026',
-    expiracionMs: Date.now() + 86400000 * 7,
-    descuentoPorcentaje: 20,
-    codigo: 'SUV20',
-  },
-  {
-    id: 'promo-veh-3',
-    vehiculoId: 5,
-    titulo: 'Toyota Prado 2024 - 20% OFF en Categoría SUV',
-    fechaPublicacion: '10 de ago de 2026',
-    expiracionMs: Date.now() + 86400000 * 10,
-    descuentoPorcentaje: 20,
-    codigo: 'SUV20',
-  },
-  {
-    id: 'promo-veh-4',
-    vehiculoId: 4,
-    titulo: 'Ford Mustang GT 2023 - 25% OFF Deportivo VIP',
-    fechaPublicacion: '09 de ago de 2026',
-    expiracionMs: Date.now() + 86400000 * 14,
-    descuentoPorcentaje: 25,
-    codigo: 'MUSTANG25',
-  },
-]
+// ─── DUMMY DATA: PROMOS DE VEHÍCULOS (DEPRECATED - USAR promotionManagementService) ──
+export const PROMOS_VEHICULOS_INITIAL = []
+

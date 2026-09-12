@@ -16,7 +16,7 @@
   --city-muted: var(--adm-muted);
   --city-border: var(--adm-border);
   --city-soft: var(--adm-soft);
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
   font-size: 14px;
   line-height: 1.5;
   background: var(--adm-bg) !important;
@@ -35,7 +35,10 @@
   --adm-shadow-lg: 0 24px 64px rgba(0, 0, 0, .32);
 }
 
-.management-shell *, .management-shell *::before, .management-shell *::after { box-sizing: border-box; }
+.management-shell *, .management-shell *::before, .management-shell *::after { 
+  box-sizing: border-box;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
 .management-main { padding: 30px clamp(20px, 3vw, 42px) 54px !important; }
 .cities-container { width: 100%; max-width: 1500px !important; margin-inline: auto; }
 
@@ -61,19 +64,22 @@
   letter-spacing: .11em !important;
 }
 .cities-subtitle, .management-header>div>p:not(.management-eyebrow), .brand-page__header span {
-  max-width: 760px; color: var(--adm-muted) !important; font-size: 14px; line-height: 1.55;
+  max-width: 760px; color: var(--adm-muted) !important; font-size: 14px; line-height: 1.55; font-weight: 400;
 }
 
 /* Navegación */
-.management-sidebar { padding: 22px 14px; box-shadow: 3px 0 24px rgba(15,23,42,.16); }
-.management-brand { gap: 11px; padding: 2px 8px 22px; }
-.management-brand__mark { width: 44px; height: 44px; border-radius: 12px; box-shadow: 0 5px 14px rgba(0,0,0,.15); }
+.management-sidebar { 
+  padding: 22px 14px; 
+  box-shadow: 3px 0 24px rgba(15,23,42,.16); 
+  background: var(--brand-gradient, linear-gradient(135deg, var(--brand-secondary, #1e3a8a) 0%, var(--brand-primary, #2563eb) 100%)) !important; 
+}
+.management-brand { gap: 11px; padding: 2px 6px 18px; border-bottom: 1px solid rgba(255, 255, 255, 0.15); margin-bottom: 6px; }
 .management-brand strong { font-size: 18px; font-weight: 800; }
-.management-brand small { color: rgba(255,255,255,.7); font-size: 10px; }
+.management-brand small { color: rgba(255,255,255,.75); font-size: 10px; }
 .management-nav { gap: 4px; }
 .management-nav__item, .management-logout { min-height: 43px; padding: 10px 13px; border-radius: 10px; font-size: 13px; font-weight: 650; }
 .management-nav__item:hover { transform: none; background: rgba(255,255,255,.12); }
-.management-nav__item.is-active { transform: none; background: rgba(255,255,255,.18) !important; border: 1px solid rgba(255,255,255,.24) !important; box-shadow: none; }
+.management-nav__item.is-active { transform: none; background: rgba(255,255,255,.22) !important; border: 1px solid rgba(255,255,255,.28) !important; box-shadow: 0 4px 14px rgba(0,0,0,0.12); }
 
 /* Encabezados y controles */
 .cities-topbar, .management-header, .brand-page__header { align-items: center; margin-bottom: 22px; }
@@ -96,6 +102,7 @@
   color: var(--adm-text) !important;
   box-shadow: none !important;
   transform: none !important;
+  font-weight: 400;
 }
 .cities-search { padding-inline: 13px !important; color: var(--brand-primary) !important; }
 .cities-search:focus-within, .cities-toolbar select:focus, .branches-toolbar select:focus,
@@ -115,26 +122,451 @@
 }
 .cities-primary:hover, .management-action:hover, .brand-primary:hover { filter: brightness(.94); transform: translateY(-1px) !important; }
 .cities-export { display: flex; gap: 8px; flex-wrap: wrap; }
-.cities-export button, .brand-secondary, .cities-modal__actions>button:not(.cities-primary):not(.cities-danger) {
+.cities-export button {
+  min-height: 40px;
+  padding: 8px 14px !important;
+  border-radius: 10px !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 7px !important;
+  cursor: pointer;
+  transition: all 0.2s ease !important;
+}
+
+/* 1. Botón Excel (Verde) */
+.cities-export button:nth-child(1) {
+  background: #f0fdf4 !important;
+  border: 1.5px solid #86efac !important;
+  color: #15803d !important;
+  box-shadow: 0 2px 6px rgba(22, 163, 74, 0.08) !important;
+}
+.cities-export button:nth-child(1) svg {
+  color: #16a34a !important;
+}
+.cities-export button:nth-child(1):hover {
+  background: #dcfce7 !important;
+  border-color: #16a34a !important;
+  color: #166534 !important;
+  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.2) !important;
+  transform: translateY(-1px) !important;
+}
+.management-shell--dark .cities-export button:nth-child(1) {
+  background: rgba(34, 197, 94, 0.14) !important;
+  border-color: rgba(34, 197, 94, 0.38) !important;
+  color: #4ade80 !important;
+}
+.management-shell--dark .cities-export button:nth-child(1) svg {
+  color: #4ade80 !important;
+}
+.management-shell--dark .cities-export button:nth-child(1):hover {
+  background: rgba(34, 197, 94, 0.24) !important;
+  border-color: rgba(34, 197, 94, 0.6) !important;
+  color: #86efac !important;
+}
+
+/* 2. Botón PDF (Rojo) */
+.cities-export button:nth-child(2) {
+  background: #fef2f2 !important;
+  border: 1.5px solid #fca5a5 !important;
+  color: #dc2626 !important;
+  box-shadow: 0 2px 6px rgba(220, 38, 38, 0.08) !important;
+}
+.cities-export button:nth-child(2) svg {
+  color: #ef4444 !important;
+}
+.cities-export button:nth-child(2):hover {
+  background: #fee2e2 !important;
+  border-color: #b91c1c !important;
+  color: #991b1b !important;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2) !important;
+  transform: translateY(-1px) !important;
+}
+.management-shell--dark .cities-export button:nth-child(2) {
+  background: rgba(239, 68, 68, 0.14) !important;
+  border-color: rgba(239, 68, 68, 0.38) !important;
+  color: #f87171 !important;
+}
+.management-shell--dark .cities-export button:nth-child(2) svg {
+  color: #f87171 !important;
+}
+.management-shell--dark .cities-export button:nth-child(2):hover {
+  background: rgba(239, 68, 68, 0.24) !important;
+  border-color: rgba(239, 68, 68, 0.6) !important;
+  color: #fca5a5 !important;
+}
+
+/* 3. Botón Imprimir (Azul) */
+.cities-export button:nth-child(3) {
+  background: #eff6ff !important;
+  border: 1.5px solid #bfdbfe !important;
+  color: #2563eb !important;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.08) !important;
+}
+.cities-export button:nth-child(3) svg {
+  color: #2563eb !important;
+}
+.cities-export button:nth-child(3):hover {
+  background: #dbeafe !important;
+  border-color: #1d4ed8 !important;
+  color: #1e40af !important;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2) !important;
+  transform: translateY(-1px) !important;
+}
+.management-shell--dark .cities-export button:nth-child(3) {
+  background: rgba(59, 130, 246, 0.14) !important;
+  border-color: rgba(59, 130, 246, 0.38) !important;
+  color: #60a5fa !important;
+}
+.management-shell--dark .cities-export button:nth-child(3) svg {
+  color: #60a5fa !important;
+}
+.management-shell--dark .cities-export button:nth-child(3):hover {
+  background: rgba(59, 130, 246, 0.24) !important;
+  border-color: rgba(59, 130, 246, 0.6) !important;
+  color: #93c5fd !important;
+}
+
+.brand-secondary, .cities-modal__actions>button:not(.cities-primary):not(.cities-danger) {
   min-height: 42px; padding: 9px 13px !important; border: 1px solid var(--adm-border) !important;
   border-radius: 10px !important; background: var(--adm-card) !important; color: var(--adm-text) !important;
-  box-shadow: none !important; font-size: 12px; font-weight: 700; transform: none !important;
+  box-shadow: none !important; font-size: 12px; font-weight: 600; transform: none !important;
 }
-.cities-export button:hover, .brand-secondary:hover { border-color: var(--brand-primary) !important; color: var(--brand-primary) !important; background: var(--adm-soft) !important; }
+.brand-secondary:hover { border-color: var(--brand-primary) !important; color: var(--brand-primary) !important; background: var(--adm-soft) !important; }
 .management-shell button:focus-visible, .management-shell a:focus-visible { outline: 3px solid var(--brand-primary-soft); outline-offset: 2px; }
 
 /* Tablas */
 .cities-table-wrap, .management-table-wrap { border: 1px solid var(--adm-border) !important; border-radius: 12px !important; box-shadow: none !important; overflow: auto; }
-.management-shell table { border-collapse: separate; border-spacing: 0; }
+.management-shell table { border-collapse: separate; border-spacing: 0; width: 100%; }
 .management-shell th {
   padding: 12px 14px !important; background: var(--adm-card-alt) !important; color: var(--adm-muted) !important;
-  border-bottom: 1px solid var(--adm-border) !important; font-size: 10px !important; font-weight: 800 !important;
-  letter-spacing: .07em !important; text-transform: uppercase;
+  border-bottom: 1px solid var(--adm-border) !important; font-size: 10.5px !important; font-weight: 800 !important;
+  letter-spacing: .06em !important; text-transform: uppercase;
 }
-.management-shell td { padding: 13px 14px !important; background: var(--adm-card) !important; color: var(--adm-text); border-bottom: 1px solid var(--adm-border) !important; font-size: 13px !important; }
+.management-shell td { 
+  padding: 13px 14px !important; 
+  background: var(--adm-card) !important; 
+  color: #0f172a !important; 
+  border-bottom: 1px solid var(--adm-border) !important; 
+  font-size: 13px !important; 
+  font-weight: 400 !important;
+}
+.management-shell--dark td { color: #f8fafc !important; }
 .management-shell tbody tr:last-child td { border-bottom: 0 !important; }
 .management-shell tbody tr:hover td { background: var(--adm-card-alt) !important; }
-.cities-row-actions button { border-radius: 9px !important; background: var(--adm-card-alt) !important; border: 1px solid var(--adm-border) !important; color: var(--brand-primary) !important; }
+.cities-row-actions button { border-radius: 9px !important; background: var(--adm-card-alt) !important; border: 1px solid var(--adm-border) !important; color: #0f172a !important; }
+.cities-row-actions button:hover { background: var(--adm-border) !important; }
+.cities-row-actions button.is-danger { color: #ef4444 !important; }
+.management-shell--dark .cities-row-actions button { color: #f8fafc !important; }
+
+/* En tablas, absolutamente todo el texto común, códigos, enlaces e IDs son negro/neutro (#0f172a / #f8fafc) */
+.management-shell table td,
+.management-shell table td span:not([class*="badge"]):not([class*="status"]):not([class*="pill"]):not([class*="tag"]):not([class*="is-"]),
+.management-shell table td div,
+.management-shell table td p,
+.management-shell table td a,
+.management-shell table td strong,
+.management-shell table td b,
+.management-shell table td [class*="code"],
+.management-shell table td [class*="id"],
+.management-shell table td .contracts-code {
+  color: #0f172a !important;
+}
+.management-shell--dark table td,
+.management-shell--dark table td span:not([class*="badge"]):not([class*="status"]):not([class*="pill"]):not([class*="tag"]):not([class*="is-"]),
+.management-shell--dark table td div,
+.management-shell--dark table td p,
+.management-shell--dark table td a,
+.management-shell--dark table td strong,
+.management-shell--dark table td b,
+.management-shell--dark table td [class*="code"],
+.management-shell--dark table td [class*="id"],
+.management-shell--dark table td .contracts-code {
+  color: #f8fafc !important;
+}
+.management-shell td small,
+.management-shell table td [class*="muted"],
+.management-shell table td .audit-td-time,
+.management-shell table td .audit-device-text {
+  color: #64748b !important;
+  font-weight: 400 !important;
+}
+.management-shell--dark td small,
+.management-shell--dark table td [class*="muted"] {
+  color: #94a3b8 !important;
+}
+.management-shell td strong,
+.management-shell td [class*="code"] {
+  font-weight: 700 !important;
+}
+
+/* Iconos y badges dentro de tablas en neutral */
+.management-shell .cities-name > span,
+.management-shell .fleet-vehicle > span {
+  background: var(--adm-card-alt, #f1f5f9) !important;
+  color: #475569 !important;
+  border: 1px solid var(--adm-border, #cbd5e1) !important;
+  box-shadow: none !important;
+}
+.management-shell--dark .cities-name > span,
+.management-shell--dark .fleet-vehicle > span {
+  background: rgba(255, 255, 255, 0.06) !important;
+  color: #94a3b8 !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+.management-shell .audit-module-pill {
+  background: transparent !important;
+  color: var(--audit-text-primary, #0f172a) !important;
+  border: none !important;
+  padding: 0 !important;
+}
+.management-shell--dark .audit-module-pill {
+  background: transparent !important;
+  color: var(--audit-text-primary, #f8fafc) !important;
+  border: none !important;
+}
+
+.management-shell .audit-branch-icon {
+  color: #64748b !important;
+}
+
+.management-shell .audit-btn-detail,
+.management-shell .cash-table-action-btn {
+  background: var(--adm-card-alt, #f1f5f9) !important;
+  color: #0f172a !important;
+  border: 1px solid var(--adm-border, #cbd5e1) !important;
+}
+.management-shell--dark .audit-btn-detail,
+.management-shell--dark .cash-table-action-btn {
+  background: rgba(255, 255, 255, 0.06) !important;
+  color: #f8fafc !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+.management-shell .promotion-discount {
+  background: #f1f5f9 !important;
+  color: #0f172a !important;
+  border: 1px solid #cbd5e1 !important;
+  font-weight: 700 !important;
+}
+.management-shell--dark .promotion-discount {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #f8fafc !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+/* Badges de Tipo de Oferta (Promoción / Cupón) con soporte para Modo Oscuro */
+.management-shell .offer-type-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 11.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  background: #f1f5f9;
+  color: #0f172a;
+  border: 1px solid #cbd5e1;
+  transition: all 0.2s ease;
+}
+
+.management-shell .offer-type-badge.promocion {
+  background: #f8fafc;
+  color: #0f172a;
+  border-color: #cbd5e1;
+}
+
+.management-shell .offer-type-badge.cupon {
+  background: #f1f5f9;
+  color: #475569;
+  border-color: #cbd5e1;
+}
+
+.management-shell--dark .offer-type-badge,
+.management-shell--dark .offer-type-badge.promocion,
+.management-shell--dark .offer-type-badge.cupon {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #f8fafc !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+.management-shell .promotion-destacada-badge {
+  font-size: 10px;
+  background: #f8fafc;
+  color: #0f172a;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 1px 5px;
+  font-weight: 700;
+}
+
+.management-shell--dark .promotion-destacada-badge {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #f8fafc !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.management-shell .promotion-toggle-btn {
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 6px 10px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #0f172a;
+  transition: all 0.2s;
+}
+
+.management-shell--dark .promotion-toggle-btn {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #f8fafc !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+.promotion-conditions-btn {
+  background: transparent;
+  border: none;
+  padding: 0;
+  color: var(--brand-primary, #2563eb);
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  width: fit-content;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.promotion-conditions-btn:hover {
+  text-decoration: underline;
+  opacity: 0.85;
+}
+
+.management-shell--dark .promotion-conditions-btn {
+  color: var(--brand-text-dark, #93c5fd);
+}
+
+/* Tabla de Gestión de Promociones y Cupones */
+.promotions-mgmt-table {
+  width: 100%;
+  min-width: 1520px !important;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.promotions-mgmt-table th:nth-child(1),
+.promotions-mgmt-table td:nth-child(1) {
+  min-width: 110px;
+  white-space: nowrap;
+}
+
+.promotions-mgmt-table th:nth-child(2),
+.promotions-mgmt-table td:nth-child(2) {
+  min-width: 170px;
+  white-space: nowrap;
+}
+
+.promotions-mgmt-table th:nth-child(3),
+.promotions-mgmt-table td:nth-child(3) {
+  min-width: 200px;
+}
+
+.promotions-mgmt-table th:nth-child(4),
+.promotions-mgmt-table td:nth-child(4) {
+  min-width: 150px;
+  white-space: nowrap;
+}
+
+.promotions-mgmt-table th:nth-child(5),
+.promotions-mgmt-table td:nth-child(5) {
+  min-width: 290px;
+  max-width: 360px;
+}
+
+.promotions-mgmt-table th:nth-child(6),
+.promotions-mgmt-table td:nth-child(6) {
+  min-width: 210px;
+}
+
+.promotions-mgmt-table th:nth-child(7),
+.promotions-mgmt-table td:nth-child(7) {
+  min-width: 120px;
+  white-space: nowrap;
+}
+
+.promotions-mgmt-table th:nth-child(8),
+.promotions-mgmt-table td:nth-child(8) {
+  min-width: 150px;
+  white-space: nowrap;
+}
+
+.promotions-mgmt-table th:nth-child(9),
+.promotions-mgmt-table td:nth-child(9) {
+  min-width: 120px;
+  white-space: nowrap;
+}
+
+.promotions-mgmt-table th:nth-child(10),
+.promotions-mgmt-table td:nth-child(10) {
+  min-width: 110px;
+  white-space: nowrap;
+}
+
+.promotions-mgmt-table th:nth-child(11),
+.promotions-mgmt-table td:nth-child(11) {
+  min-width: 110px;
+  text-align: center;
+}
+
+/* Formatos de reportes y exportación (colores característicos) */
+.format-pill-tag.PDF,
+.history-kpi-icon.pdf,
+.format-selection-card.pdf .format-icon-box {
+  background: #fee2e2 !important;
+  color: #dc2626 !important;
+  border: 1px solid #fca5a5 !important;
+}
+.format-pill-tag.EXCEL,
+.history-kpi-icon.excel,
+.format-selection-card.excel .format-icon-box {
+  background: #dcfce7 !important;
+  color: #15803d !important;
+  border: 1px solid #86efac !important;
+}
+.format-pill-tag.WORD,
+.history-kpi-icon.word,
+.format-selection-card.word .format-icon-box {
+  background: #e0e7ff !important;
+  color: #2563eb !important;
+  border: 1px solid #a5b4fc !important;
+}
+.management-shell--dark .format-pill-tag.PDF,
+.management-shell--dark .history-kpi-icon.pdf {
+  background: rgba(239, 68, 68, 0.2) !important;
+  color: #f87171 !important;
+  border: 1px solid rgba(239, 68, 68, 0.4) !important;
+}
+.management-shell--dark .format-pill-tag.EXCEL,
+.management-shell--dark .history-kpi-icon.excel {
+  background: rgba(34, 197, 94, 0.2) !important;
+  color: #4ade80 !important;
+  border: 1px solid rgba(34, 197, 94, 0.4) !important;
+}
+.management-shell--dark .format-pill-tag.WORD,
+.management-shell--dark .history-kpi-icon.word {
+  background: rgba(59, 130, 246, 0.2) !important;
+  color: #60a5fa !important;
+  border: 1px solid rgba(59, 130, 246, 0.4) !important;
+}
 
 /* Formularios, modales y estados */
 .cities-modal-backdrop { background: rgba(15,23,42,.58) !important; backdrop-filter: blur(5px); }
@@ -145,7 +577,7 @@
 .cities-modal input, .cities-modal select, .cities-modal textarea, .fleet-modal input:not([type=file]),
 .fleet-modal select, .fleet-modal textarea {
   min-height: 43px; border: 1px solid var(--adm-border) !important; border-radius: 10px !important;
-  background: var(--adm-card-alt) !important; color: var(--adm-text) !important; font-size: 13px;
+  background: var(--adm-card-alt) !important; color: var(--adm-text) !important; font-size: 13px; font-weight: 400;
 }
 .cities-notice { border: 1px solid color-mix(in srgb,var(--brand-primary) 35%,var(--adm-border)) !important; background: var(--adm-soft) !important; color: var(--adm-text) !important; box-shadow: none !important; }
 .management-shell input[type="checkbox"], .management-shell input[type="radio"] { accent-color: var(--brand-primary); }
@@ -160,9 +592,9 @@
 .management-kpi strong { font-size: clamp(22px,2vw,28px); font-weight: 800; }
 .management-user { border: 1px solid var(--adm-border); background: var(--adm-card); box-shadow: none; border-radius: 12px; }
 
-/* La marca gobierna los acentos de todos los módulos administrativos. */
-.management-shell a:not(.management-nav__item), .management-shell legend,
-.management-shell .contracts-code, .management-shell .incident-field svg,
+/* La marca gobierna los acentos de todos los módulos administrativos */
+.management-shell legend,
+.management-shell .incident-field svg,
 .management-shell .contracts-cell-with-icon svg, .management-shell .fleet-modal label>small,
 .management-shell .fleet-insurances>button { color: var(--brand-primary) !important; }
 

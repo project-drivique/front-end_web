@@ -66,9 +66,9 @@
   color: #ffffff;
   padding: 12px 14px;
   text-align: center;
-  font-weight: 800;
+  font-weight: 700;
   text-transform: uppercase;
-  font-size: 10px;
+  font-size: 10.5px;
   letter-spacing: 0.5px;
 }
 
@@ -85,7 +85,7 @@
 
 .permission-matrix-table td:first-child {
   text-align: left;
-  font-weight: 800;
+  font-weight: 500;
   color: var(--city-text);
 }
 
@@ -282,3 +282,45 @@ html.dark .role-card__head h3 {
     padding: 8px !important;
   }
 }
+
+/* Tabla de Cuentas y Roles */
+.roles-accounts-table {
+  width: 100%;
+  min-width: 1100px !important;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.roles-accounts-table th:nth-child(1),
+.roles-accounts-table td:nth-child(1) {
+  min-width: 220px;
+}
+
+.roles-accounts-table th:nth-child(2),
+.roles-accounts-table td:nth-child(2) {
+  min-width: 290px;
+}
+
+.roles-accounts-table th:nth-child(3),
+.roles-accounts-table td:nth-child(3) {
+  min-width: 170px;
+  white-space: nowrap;
+}
+
+.roles-accounts-table th:nth-child(4),
+.roles-accounts-table td:nth-child(4) {
+  min-width: 170px;
+}
+
+.roles-accounts-table th:nth-child(5),
+.roles-accounts-table td:nth-child(5) {
+  min-width: 130px;
+  white-space: nowrap;
+}
+
+.roles-accounts-table th:nth-child(6),
+.roles-accounts-table td:nth-child(6) {
+  min-width: 140px;
+  text-align: center;
+}
+
