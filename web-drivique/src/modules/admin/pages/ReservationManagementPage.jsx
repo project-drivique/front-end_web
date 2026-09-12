@@ -382,31 +382,32 @@ export default function ReservationManagementPage() {
                     return (
                       <tr key={r.id || cod}>
                         <td>
-                          <strong style={{ color: 'var(--brand-text, #2563eb)' }}>{cod}</strong>
+                          <strong style={{ color: 'var(--city-text, #0f172a)', fontWeight: 700 }}>{cod}</strong>
                         </td>
 
                         <td>
-                          <div>
-                            <strong>{cliNom}</strong>
-                            <small style={{ display: 'block', color: 'var(--city-muted, #64748b)', fontSize: 11 }}>
+                          <div style={{ display: 'inline-flex', alignItems: 'center', flexWrap: 'wrap', gap: '4px 10px' }}>
+                            <span style={{ fontSize: 13, color: 'var(--city-text, #0f172a)', fontWeight: 600, whiteSpace: 'nowrap' }}>{cliNom}</span>
+                            <span style={{ color: 'var(--city-muted, #64748b)', fontSize: 11.5, whiteSpace: 'nowrap' }}>
                               {cliMail}
-                            </small>
+                            </span>
                           </div>
                         </td>
 
                         <td>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                             {r.vehiculoImagen ? (
                               <img
                                 src={r.vehiculoImagen}
                                 alt={r.vehiculoNombre}
                                 style={{
-                                  width: 44,
+                                  width: 46,
                                   height: 32,
                                   borderRadius: 8,
                                   objectFit: 'cover',
                                   border: '1px solid var(--city-border)',
-                                  boxShadow: '0 2px 6px rgba(0,0,0,0.1)'
+                                  boxShadow: '0 2px 6px rgba(0,0,0,0.08)',
+                                  flexShrink: 0
                                 }}
                               />
                             ) : (
@@ -414,29 +415,31 @@ export default function ReservationManagementPage() {
                                 <span><FaCar /></span>
                               </div>
                             )}
-                            <div>
-                              <strong style={{ display: 'block', fontSize: 13, color: 'var(--city-text)' }}>{r.vehiculoNombre || 'Mazda CX-5 2024'}</strong>
-                              <small style={{ display: 'block', color: 'var(--city-muted, #64748b)', fontSize: 11, fontWeight: 700 }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                              <span style={{ display: 'block', fontSize: 13, color: 'var(--city-text, #0f172a)' }}>{r.vehiculoNombre || 'Mazda CX-5 2024'}</span>
+                              <span style={{ display: 'block', color: 'var(--city-muted, #64748b)', fontSize: 11.5 }}>
                                 {t('admin.reservationsManagement.table.plateLabel', 'Placa:')} {r.vehiculoPlaca || 'KLS-849'}
-                              </small>
+                              </span>
                             </div>
                           </div>
                         </td>
 
                         <td>
-                          <span>
-                            <FaBuilding style={{ marginRight: 4, color: 'var(--brand-primary, #2563eb)' }} />
-                            {r.sucursal || 'Bogotá - Calle 100'}
+                          <span style={{ fontSize: 13, color: 'var(--city-text, #0f172a)', display: 'inline-flex', alignItems: 'flex-start', gap: 6, lineHeight: 1.35 }}>
+                            <FaBuilding style={{ color: 'var(--city-muted, #64748b)', fontSize: 12, marginTop: 2, flexShrink: 0 }} />
+                            <span>{r.sucursal || 'Bogotá - Calle 100'}</span>
                           </span>
                         </td>
 
                         <td>
-                          <div style={{ fontSize: 11 }}>
+                          <div style={{ fontSize: 12, color: 'var(--city-text, #0f172a)', display: 'flex', flexDirection: 'column', gap: 3 }}>
                             <div>
-                              <strong>{t('admin.reservationsManagement.table.start', 'Inicio:')}</strong> {r.fechaInicio ? r.fechaInicio.replace('T', ' ') : new Date().toISOString().slice(0, 10)}
+                              <span style={{ color: 'var(--city-muted, #64748b)', fontSize: 11 }}>{t('admin.reservationsManagement.table.start', 'Inicio:')} </span>
+                              {r.fechaInicio ? r.fechaInicio.replace('T', ' ').slice(0, 10) : new Date().toISOString().slice(0, 10)}
                             </div>
                             <div>
-                              <strong>{t('admin.reservationsManagement.table.end', 'Fin:')}</strong> {r.fechaFin ? r.fechaFin.replace('T', ' ') : new Date(Date.now() + 86400000 * 3).toISOString().slice(0, 10)}
+                              <span style={{ color: 'var(--city-muted, #64748b)', fontSize: 11 }}>{t('admin.reservationsManagement.table.end', 'Fin:')} </span>
+                              {r.fechaFin ? r.fechaFin.replace('T', ' ').slice(0, 10) : new Date(Date.now() + 86400000 * 3).toISOString().slice(0, 10)}
                             </div>
                           </div>
                         </td>
@@ -449,14 +452,9 @@ export default function ReservationManagementPage() {
                         </td>
 
                         <td>
-                          <div style={{ display: 'flex', flexDirection: 'column' }}>
-                            <strong style={{ fontSize: 13.5, color: 'var(--city-text)' }}>
-                              ${totalCOP.toLocaleString('es-CO')} COP
-                            </strong>
-                            <span style={{ fontSize: 11, fontWeight: 800, color: 'var(--brand-primary, #2563eb)' }}>
-                              ≈ ${totalUSD.toLocaleString('en-US')} USD
-                            </span>
-                          </div>
+                          <span style={{ fontSize: 13.5, color: 'var(--city-text, #0f172a)', fontWeight: 600 }}>
+                            {formatCurrency(totalCOP, moneda, tasaUSD)}
+                          </span>
                         </td>
 
                         <td>
