@@ -709,7 +709,7 @@ export default function ReportsManagementPage({ branchOnly = false }) {
                 {currentTypeConfig.filtrosSoportados.includes('sucursal') && !esEncargado && (
                   <div className="filter-input-card">
                     <label>
-                      <FaBuilding style={{ color: 'var(--brand-primary)' }} />
+                      <FaBuilding style={{ color: 'var(--adm-muted, #64748b)' }} />
                       {t('admin.reports.branchLabel', 'Sucursal')}
                     </label>
                     <select
@@ -1068,14 +1068,14 @@ export default function ReportsManagementPage({ branchOnly = false }) {
                         filteredHistory.map((report) => (
                           <tr key={report.id}>
                             <td>
-                              <strong style={{ color: 'var(--brand-primary)', fontFamily: 'monospace' }}>
+                              <strong style={{ color: 'var(--adm-text, #0f172a)', fontWeight: 700 }}>
                                 {report.codigo}
                               </strong>
                             </td>
                             <td>
-                              <strong style={{ fontSize: 13.5 }}>
+                              <span style={{ fontSize: 13.5, color: 'var(--adm-text, #0f172a)' }}>
                                 {t(`admin.reports.types.${report.tipoId}_title`, report.titulo)}
-                              </strong>
+                              </span>
                               {report.filtersSummary && report.filtersSummary.length > 0 && (
                                 <div style={{ fontSize: 11, color: 'var(--adm-muted)', marginTop: 3 }}>
                                   {report.filtersSummary
@@ -1100,7 +1100,7 @@ export default function ReportsManagementPage({ branchOnly = false }) {
                               </span>
                             </td>
                             <td>
-                              <div style={{ fontWeight: 650 }}>
+                              <div style={{ fontSize: 13, color: 'var(--adm-text, #0f172a)' }}>
                                 {report.generadoPorRol === 'admin' || report.generadoPorNombre === 'Administrador'
                                   ? t('admin.reports.roleAdminSingle', 'Administrador')
                                   : report.generadoPorRol === 'encargado_sucursal' ||
@@ -1121,9 +1121,9 @@ export default function ReportsManagementPage({ branchOnly = false }) {
                               </small>
                             </td>
                             <td>
-                              <strong>
+                              <span>
                                 {report.totalRegistros} {t('admin.reports.records', 'reg.')}
-                              </strong>
+                              </span>
                               <small style={{ display: 'block', color: 'var(--adm-muted)' }}>
                                 {report.tamanoEstimado}
                               </small>
@@ -1294,7 +1294,7 @@ export default function ReportsManagementPage({ branchOnly = false }) {
               <div className="modal-dialog-header">
                 <div>
                   <h3 style={{ margin: 0 }}>{t(`admin.reports.types.${currentTypeConfig.id}_title`, livePreviewData.reportTitle)}</h3>
-                  <small style={{ color: 'var(--brand-primary)', fontWeight: 750 }}>
+                  <small style={{ color: 'var(--adm-muted, #64748b)', fontWeight: 600 }}>
                     {t('admin.reports.previewModalSubtitle', {
                       count: livePreviewData.totalRegistros,
                       format: selectedFormat,
@@ -1404,7 +1404,7 @@ export default function ReportsManagementPage({ branchOnly = false }) {
                   <h3 style={{ margin: 0 }}>
                     {t(`admin.reports.types.${modalReport.tipoId}_title`, modalReport.titulo)}
                   </h3>
-                  <small style={{ color: 'var(--brand-primary)', fontFamily: 'monospace', fontWeight: 800 }}>
+                  <small style={{ color: 'var(--adm-muted, #64748b)', fontWeight: 600 }}>
                     {modalReport.codigo} • {modalReport.formato}
                   </small>
                 </div>

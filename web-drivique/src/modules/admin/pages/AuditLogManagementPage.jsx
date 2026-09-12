@@ -713,7 +713,6 @@ export default function AuditLogManagementPage({ branchOnly = false }) {
                             <div className="audit-actor-block">
                               <span className="audit-actor-name">{log.actor}</span>
                               <span className="audit-actor-email">{log.correo}</span>
-                              <span className="audit-actor-role-tag">{log.rol}</span>
                             </div>
                           </td>
 
