@@ -188,7 +188,7 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
         </div>
       )}
 
-      {/* SECCIÓN: LUGAR Y HORA */}
+      {/* SECCIÓN: LUGAR */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -258,40 +258,6 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
               </div>
             )}
           </div>
-
-          {/* Hora Retiro */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 700, color: titleColor }}>
-              <FaClock color={accent} size={14} /> {t('vehiculo.selectPickupTime', 'Selecciona Hora de Retiro')}
-            </span>
-            <div style={{ padding: '12px 16px', borderRadius: 12, border: `1px solid ${border}`, background: 'transparent' }}>
-              <select
-                value={reserva?.horaInicio || ''}
-                onChange={e => onCambio('horaInicio', e.target.value)}
-                style={selectStyle}
-              >
-                <option value="">{t('vehiculo.selectTime', 'Seleccionar')}</option>
-                {HORAS.map(h => <option key={h} value={h}>{h}</option>)}
-              </select>
-            </div>
-          </div>
-
-          {/* Hora Devolución */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 700, color: titleColor }}>
-              <FaClock color={accent} size={14} /> {t('vehiculo.selectReturnTime', 'Selecciona Hora de Devolución')}
-            </span>
-            <div style={{ padding: '12px 16px', borderRadius: 12, border: `1px solid ${border}`, background: 'transparent' }}>
-              <select
-                value={reserva?.horaFin || ''}
-                onChange={e => onCambio('horaFin', e.target.value)}
-                style={selectStyle}
-              >
-                <option value="">{t('vehiculo.selectTime', 'Seleccionar')}</option>
-                {HORAS.map(h => <option key={h} value={h}>{h}</option>)}
-              </select>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -338,6 +304,43 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
               <span style={{ fontSize: 14, fontWeight: 500, color: textPrimary, display: 'block' }}>
                 {reserva.fechaFin || t('vehiculo.selectAction', 'Seleccionar')}
               </span>
+            </div>
+          </div>
+        </div>
+
+        {/* SECCIÓN: HORAS */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
+          {/* Hora Retiro */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 700, color: titleColor }}>
+              <FaClock color={accent} size={14} /> {t('vehiculo.selectPickupTime', 'Selecciona Hora de Retiro')}
+            </span>
+            <div style={{ padding: '12px 16px', borderRadius: 12, border: `1px solid ${border}`, background: 'transparent' }}>
+              <select
+                value={reserva?.horaInicio || ''}
+                onChange={e => onCambio('horaInicio', e.target.value)}
+                style={selectStyle}
+              >
+                <option value="">{t('vehiculo.selectTime', 'Seleccionar')}</option>
+                {HORAS.map(h => <option key={h} value={h}>{h}</option>)}
+              </select>
+            </div>
+          </div>
+
+          {/* Hora Devolución */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 700, color: titleColor }}>
+              <FaClock color={accent} size={14} /> {t('vehiculo.selectReturnTime', 'Selecciona Hora de Devolución')}
+            </span>
+            <div style={{ padding: '12px 16px', borderRadius: 12, border: `1px solid ${border}`, background: 'transparent' }}>
+              <select
+                value={reserva?.horaFin || ''}
+                onChange={e => onCambio('horaFin', e.target.value)}
+                style={selectStyle}
+              >
+                <option value="">{t('vehiculo.selectTime', 'Seleccionar')}</option>
+                {HORAS.map(h => <option key={h} value={h}>{h}</option>)}
+              </select>
             </div>
           </div>
         </div>
