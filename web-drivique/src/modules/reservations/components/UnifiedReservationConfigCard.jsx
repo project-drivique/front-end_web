@@ -1,15 +1,64 @@
 import { useTranslation } from 'react-i18next'
-import { FaCalendarAlt, FaMapMarkerAlt, FaClock, FaCreditCard, FaPencilAlt, FaEye, FaHourglassHalf } from 'react-icons/fa'
+import { FaCalendarAlt, FaMapMarkerAlt, FaClock, FaCreditCard, FaPencilAlt, FaEye, FaHourglassHalf, FaInfoCircle } from 'react-icons/fa'
 import { useState } from 'react'
 import ReservationCalendar from './ReservationCalendar'
 import DomicilioModal from './DomicilioModal'
 import { SUCURSALES, CIUDADES } from '../../catalog/constants'
 import { branchManagementService } from '../../../services/branchManagementService'
 
-const HORAS = Array.from({ length: 24 }, (_, i) => {
-  const h = i.toString().padStart(2, '0')
-  return [`${h}:00`, `${h}:30`]
-}).flat()
+function getHorarioSucursal(nombreSucursal) {
+  if (!nombreSucursal) return { apertura: '08:00', cierre: '18:00' }
+  const nombreLower = nombreSucursal.toLowerCase()
+  if (nombreLower.includes('aeropuerto') || nombreLower.includes('terminal') || nombreLower.includes('el dorado')) {
+    return { apertura: '00:00', cierre: '23:30' }
+  }
+  if (nombreLower.includes('domicilio') || nombreLower.includes('hotel') || nombreLower.includes('airbnb')) {
+    return { apertura: '07:00', cierre: '19:00' }
+  }
+  return { apertura: '08:00', cierre: '18:00' }
+}
+
+function generarHoras(lugar, minHora, maxHora) {
+  const { apertura, cierre } = getHorarioSucursal(lugar)
+  const [hInicio, mInicio] = apertura.split(':').map(Number)
+  const [hFin, mFin] = cierre.split(':').map(Number)
+  
+  let minMins = -1;
+  if (minHora) {
+    const [mh, mm] = minHora.split(':').map(Number)
+    minMins = mh * 60 + mm
+  }
+
+  let maxMins = Infinity;
+  if (maxHora) {
+    const [mh, mm] = maxHora.split(':').map(Number)
+    maxMins = mh * 60 + mm
+  }
+
+  const horas = []
+  for (let h = hInicio; h <= hFin; h++) {
+    for (const m of [0, 30]) {
+      if (h === hInicio && m < mInicio) continue
+      if (h === hFin && m > mFin) continue
+      
+      const totalMins = h * 60 + m
+      if (totalMins <= minMins) continue
+      if (totalMins > maxMins) continue
+      
+      horas.push(`${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`)
+    }
+  }
+  return horas
+}
+
+function formatHoraAmPm(hora24) {
+  if (!hora24) return ''
+  const [h, m] = hora24.split(':').map(Number)
+  const ampm = h >= 12 ? 'p. m.' : 'a. m.'
+  let hour12 = h % 12
+  if (hour12 === 0) hour12 = 12
+  return `${hour12}:${String(m).padStart(2, '0')} ${ampm}`
+}
 
 export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCambio, c }) {
   const { t } = useTranslation()
@@ -75,6 +124,8 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
   }
 
   const hasDomicilioData = reserva?.domicilioBarrio && reserva?.domicilioDireccion
+  const horasRetiro = generarHoras(reserva?.sucursalRetiro)
+  const horasDevolucion = generarHoras(reserva?.sucursalDevolucion, null, reserva?.horaInicio)
 
   const handleLugarChange = (campo, valor) => {
     onCambio(campo, valor)
@@ -84,28 +135,35 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
     }
   }
 
-  let durationText = ''
+  let diasReserva = 0
+  let devolucionAnticipadaText = ''
+
   if (reserva?.fechaInicio && reserva?.fechaFin) {
+    const startDate = new Date(`${reserva.fechaInicio}T00:00:00`)
+    const endDate = new Date(`${reserva.fechaFin}T00:00:00`)
+    const diffTime = endDate - startDate
+    diasReserva = Math.max(1, Math.round(diffTime / 86400000))
+    if (reserva.fechaInicio === reserva.fechaFin) diasReserva = 1
+
     if (reserva?.horaInicio && reserva?.horaFin) {
       const start = new Date(`${reserva.fechaInicio}T${reserva.horaInicio}:00`)
       const end = new Date(`${reserva.fechaFin}T${reserva.horaFin}:00`)
       const diffMs = end - start
+      
       if (diffMs > 0) {
-        const diffHrs = Math.floor(diffMs / (1000 * 60 * 60))
-        const dias = Math.floor(diffHrs / 24)
-        const horas = Math.max(0, Math.ceil((diffMs % 86400000) / 3600000))
-        const parts = []
-        if (dias > 0) parts.push(`${dias} ${dias === 1 ? t('vehiculo.day', 'día') : t('vehiculo.days', 'días')}`)
-        if (horas > 0) parts.push(`${horas} ${horas === 1 ? t('vehiculo.hour', 'hora') : t('vehiculo.hours', 'horas')}`)
-        durationText = parts.join(' - ') || `0 ${t('vehiculo.hours', 'horas')}`
-      }
-    } else {
-      const start = new Date(reserva.fechaInicio)
-      const end = new Date(reserva.fechaFin)
-      const diffMs = end - start
-      if (diffMs >= 0) {
-        const dias = Math.max(1, Math.ceil(diffMs / 86400000))
-        durationText = `${dias} ${dias === 1 ? t('vehiculo.day', 'día') : t('vehiculo.days', 'días')}`
+        const totalMinutes = Math.floor(diffMs / 60000)
+        const totalHours = Math.floor(totalMinutes / 60)
+        const days = Math.floor(totalHours / 24)
+        const hours = totalHours % 24
+        const mins = totalMinutes % 60
+
+        if (diffMs < diasReserva * 86400000) {
+          const parts = []
+          if (days > 0) parts.push(`${days} ${days === 1 ? t('vehiculo.day', 'día') : t('vehiculo.days', 'días')}`)
+          if (hours > 0) parts.push(`${hours} h`)
+          if (mins > 0) parts.push(`${mins} min`)
+          devolucionAnticipadaText = parts.join(', ')
+        }
       }
     }
   }
@@ -130,7 +188,6 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
                 onClick={(e) => {
                   if (activo) {
                     e.preventDefault();
-                    onCambio('metodoPago', value);
                   }
                 }}
                 style={{
@@ -158,7 +215,13 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
                   name="metodoPagoUnified"
                   value={value}
                   checked={activo}
-                  onChange={() => onCambio('metodoPago', value)}
+                  onChange={() => {
+                    onCambio('metodoPago', value)
+                    if (value === 'efectivo' && carBranch) {
+                      onCambio('sucursalRetiro', carBranch)
+                      onCambio('sucursalDevolucion', carBranch)
+                    }
+                  }}
                   style={{ accentColor: accent, width: 20, height: 20, cursor: 'pointer', flexShrink: 0 }}
                 />
               </label>
@@ -308,6 +371,23 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
           </div>
         </div>
 
+        {/* INFO ALERT: HORA MÁXIMA */}
+        {reserva?.horaInicio && diasReserva > 0 && (
+          <div style={{ marginTop: 8, padding: 12, borderRadius: 12, backgroundColor: 'rgba(59, 130, 246, 0.1)', border: '1px solid rgba(59, 130, 246, 0.2)', display: 'flex', gap: 12 }}>
+            <div style={{ color: '#3b82f6', marginTop: 2 }}>
+              <FaInfoCircle size={16} />
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+              <span style={{ fontSize: 13, fontWeight: 700, color: textPrimary }}>
+                {t('vehiculo.maxReturnTime', 'Hora máxima de devolución:')} {formatHoraAmPm(reserva.horaInicio)}
+              </span>
+              <span style={{ fontSize: 12, color: textSecond, lineHeight: 1.4 }}>
+                {t('vehiculo.maxReturnTimeDesc', `Para cumplir con los ${diasReserva} ${diasReserva === 1 ? 'día' : 'días'} de tu reserva (retiro a las ${formatHoraAmPm(reserva.horaInicio)}), la hora límite de entrega es a las ${formatHoraAmPm(reserva.horaInicio)}. Si seleccionas una hora anterior, se calculará devolución anticipada.`)}
+              </span>
+            </div>
+          </div>
+        )}
+
         {/* SECCIÓN: HORAS */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
           {/* Hora Retiro */}
@@ -322,7 +402,7 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
                 style={selectStyle}
               >
                 <option value="">{t('vehiculo.selectTime', 'Seleccionar')}</option>
-                {HORAS.map(h => <option key={h} value={h}>{h}</option>)}
+                {horasRetiro.map(h => <option key={h} value={h}>{h}</option>)}
               </select>
             </div>
           </div>
@@ -339,20 +419,33 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
                 style={selectStyle}
               >
                 <option value="">{t('vehiculo.selectTime', 'Seleccionar')}</option>
-                {HORAS.map(h => <option key={h} value={h}>{h}</option>)}
+                {horasDevolucion.map(h => <option key={h} value={h}>{h}</option>)}
               </select>
             </div>
           </div>
         </div>
 
-        {durationText && (
-          <div style={{ marginTop: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', borderRadius: 12, background: 'rgba(var(--brand-primary-rgb),0.05)', border: `1px solid rgba(var(--brand-primary-rgb),0.15)` }}>
-            <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, color: textSecond }}>
-              <FaHourglassHalf color={textSecond} size={14} /> {t('vehiculo.rentalDuration', 'Duración del alquiler:')}
-            </span>
-            <span style={{ fontSize: 14, fontWeight: 800, color: titleColor }}>
-              {durationText}
-            </span>
+        {diasReserva > 0 && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 4 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', borderRadius: 12, background: 'rgba(var(--brand-primary-rgb),0.05)', border: `1px solid rgba(var(--brand-primary-rgb),0.15)` }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, color: textSecond }}>
+                <FaHourglassHalf color={textSecond} size={14} /> {t('vehiculo.rentalDuration', 'Duración del alquiler')}
+              </span>
+              <span style={{ fontSize: 14, fontWeight: 800, color: titleColor }}>
+                {diasReserva} {diasReserva === 1 ? t('vehiculo.day', 'día') : t('vehiculo.days', 'días')}
+              </span>
+            </div>
+            
+            {devolucionAnticipadaText && (
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', borderRadius: 12, background: 'rgba(var(--brand-primary-rgb),0.05)', border: `1px solid rgba(var(--brand-primary-rgb),0.15)` }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, color: textSecond }}>
+                  <FaClock color={textSecond} size={14} /> {t('vehiculo.earlyReturn', 'Devolución anticipada')}
+                </span>
+                <span style={{ fontSize: 14, fontWeight: 800, color: titleColor }}>
+                  {devolucionAnticipadaText}
+                </span>
+              </div>
+            )}
           </div>
         )}
       </div>
