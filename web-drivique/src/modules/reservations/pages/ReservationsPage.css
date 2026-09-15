@@ -517,8 +517,8 @@ html.dark .contrato-action-btn.bloqueado:disabled {
 }
 
 .modal-cash-logo-badge {
-  width: 68px;
-  height: 68px;
+  width: 90px;
+  height: 90px;
   border-radius: 50%;
   background: var(--bg-tarjeta, #ffffff);
   border: 1.5px solid var(--borde, #e2e8f0);
@@ -526,7 +526,7 @@ html.dark .contrato-action-btn.bloqueado:disabled {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 12px;
+  padding: 16px;
   margin-bottom: 16px;
 }
 
@@ -571,27 +571,28 @@ html.dark .contrato-action-btn.bloqueado:disabled {
   justify-content: space-between;
   align-items: center;
   font-size: 13px;
+  margin-bottom: 4px;
 }
 
 .modal-cash-row-label {
-  color: var(--texto-second, #64748b);
-  font-weight: 600;
+  color: var(--texto-primary, #1e293b);
+  font-weight: 700;
 }
 
 .modal-cash-ref-val {
-  color: var(--brand-primary, #1d4ed8);
-  font-weight: 800;
+  color: var(--texto-primary, #0f172a);
+  font-weight: 400;
 }
 
 .modal-cash-row-val {
   color: var(--texto-primary, #0f172a);
-  font-weight: 700;
+  font-weight: 400;
 }
 
 .modal-cash-divider {
   height: 1px;
   background: var(--borde, #e2e8f0);
-  margin: 4px 0;
+  margin: 12px 0;
 }
 
 .modal-cash-row.total {
@@ -601,13 +602,14 @@ html.dark .contrato-action-btn.bloqueado:disabled {
 .modal-cash-total-label {
   font-size: 12px;
   font-weight: 800;
-  color: var(--texto-second, #475569);
-  letter-spacing: 0.02em;
+  color: var(--texto-second, #64748b);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .modal-cash-total-val {
   font-size: 18px;
-  font-weight: 900;
+  font-weight: 700;
   color: var(--brand-primary, #1d4ed8);
 }
 
@@ -635,7 +637,7 @@ html.dark .contrato-action-btn.bloqueado:disabled {
   font-size: 12px;
   color: #854d0e;
   line-height: 1.45;
-  font-weight: 500;
+  font-weight: 400;
 }
 
 /* ============================================================

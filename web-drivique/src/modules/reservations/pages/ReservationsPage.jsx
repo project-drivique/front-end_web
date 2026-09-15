@@ -189,7 +189,6 @@ function ContratoVerCard({ reserva, contratoFirmado, reservaParaContrato, vehicu
             disabled={!tieneContratoFirmado}
             className={`contrato-action-btn ${tieneContratoFirmado ? 'activo' : 'bloqueado'}`}
           >
-            <FaLock size={15} />
             <span>{t('reservas.viewContract', { defaultValue: 'Ver contrato' })}</span>
           </button>
         </div>
@@ -591,6 +590,15 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
     }
   }
 
+  const formatHoraAmPm = (hora24) => {
+    if (!hora24) return ''
+    const [h, m] = hora24.split(':').map(Number)
+    const ampm = h >= 12 ? 'p. m.' : 'a. m.'
+    let hour12 = h % 12
+    if (hour12 === 0) hour12 = 12
+    return `${hour12}:${String(m).padStart(2, '0')} ${ampm}`
+  }
+
   return (
     <div className="modal-backdrop" onMouseDown={onClose}>
       <section
@@ -658,7 +666,17 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
               </div>
             </div>
 
-            {/* Fila 2: Fecha de devolución / Lugar de retiro */}
+            <div className="modal-reserva-dato-celda">
+              <div className="modal-dato-icon">
+                <FaClock />
+              </div>
+              <div className="modal-dato-texto">
+                <span className="modal-dato-label">{t('reservas.pickupTime', { defaultValue: 'Hora de retiro' })}</span>
+                <strong className="modal-dato-val">{formatHoraAmPm(reserva.horaInicio) || 'N/A'}</strong>
+              </div>
+            </div>
+
+            {/* Fila 2: Fecha de devolución / Hora de devolución */}
             <div className="modal-reserva-dato-celda">
               <div className="modal-dato-icon">
                 <FaRegCalendarCheck />
@@ -666,6 +684,16 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
               <div className="modal-dato-texto">
                 <span className="modal-dato-label">{t('reservas.returnDate', { defaultValue: 'Fecha de devolución' })}</span>
                 <strong className="modal-dato-val">{fechaBonita(reserva.fechaFin, i18n.resolvedLanguage)}</strong>
+              </div>
+            </div>
+
+            <div className="modal-reserva-dato-celda">
+              <div className="modal-dato-icon">
+                <FaClock />
+              </div>
+              <div className="modal-dato-texto">
+                <span className="modal-dato-label">{t('reservas.returnTime', { defaultValue: 'Hora de devolución' })}</span>
+                <strong className="modal-dato-val">{formatHoraAmPm(reserva.horaFin) || 'N/A'}</strong>
               </div>
             </div>
 
@@ -759,7 +787,7 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
 
               {/* Titulo */}
               <h3 className="modal-cash-titulo">
-                {t('vehiculo.reservationRegisteredTitle', { defaultValue: 'Reserva Registrada' })}
+                {t('vehiculo.cashPaymentTitle', { defaultValue: 'Pago en sucursal' })}
               </h3>
 
               {/* Subtitulo */}
@@ -773,19 +801,19 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
               {/* Tarjeta de Resumen con datos */}
               <div className="modal-cash-summary">
                 <div className="modal-cash-row">
-                  <span className="modal-cash-row-label">{t('reservas.reference', { defaultValue: 'Referencia:' })}</span>
+                  <span className="modal-cash-row-label">{t('reservas.reference', { defaultValue: 'Referencia' }).replace(/:$/, '')}:</span>
                   <strong className="modal-cash-ref-val">{reserva.id}</strong>
                 </div>
                 <div className="modal-cash-row">
-                  <span className="modal-cash-row-label">{t('reservas.branch', { defaultValue: 'Sucursal:' })}</span>
+                  <span className="modal-cash-row-label">{t('reservas.branch', { defaultValue: 'Sucursal' }).replace(/:$/, '')}:</span>
                   <strong className="modal-cash-row-val">{sucursalPago}</strong>
                 </div>
                 <div className="modal-cash-row">
-                  <span className="modal-cash-row-label">{t('reservas.city', { defaultValue: 'Ciudad:' })}</span>
+                  <span className="modal-cash-row-label">{t('reservas.city', { defaultValue: 'Ciudad' }).replace(/:$/, '')}:</span>
                   <strong className="modal-cash-row-val">{ciudadPago}</strong>
                 </div>
                 <div className="modal-cash-row">
-                  <span className="modal-cash-row-label">{t('reservas.address', { defaultValue: 'Dirección:' })}</span>
+                  <span className="modal-cash-row-label">{t('reservas.address', { defaultValue: 'Dirección' }).replace(/:$/, '')}:</span>
                   <strong className="modal-cash-row-val">{direccionPago}</strong>
                 </div>
                 <div className="modal-cash-divider" />
@@ -802,7 +830,8 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
                 </p>
                 <p className="modal-cash-deadline-text">
                   {t('reservas.cashDeadlineNotice', {
-                    defaultValue: 'Tienes 72 horas desde ahora para acercarte a la sucursal y pagar. Si no pagas dentro de este plazo, la reserva se cancelará automáticamente.'
+                    horas: reserva.horasLimitePago || 72,
+                    defaultValue: `Tienes aproximadamente ${reserva.horasLimitePago || 72} horas desde ahora para acercarte a la sucursal y realizar el pago. Si no realizas el pago dentro de este plazo, la reserva se cancelará automáticamente.`
                   })}
                 </p>
               </div>
