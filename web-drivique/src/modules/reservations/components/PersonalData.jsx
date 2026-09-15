@@ -1166,6 +1166,9 @@ export default function DatosPersonales({
                     <p style={{ margin: 0 }}>
                       <strong style={{ color: c?.textPrimary || '#0f172a' }}>9. LEGISLACIÓN APLICABLE:</strong> El presente contrato de alquiler se rige en su totalidad por las leyes de la República de Colombia.
                     </p>
+                    <p style={{ margin: 0 }}>
+                      <strong style={{ color: c?.textPrimary || '#0f172a' }}>10. POLÍTICA DE DEVOLUCIÓN PUNTUAL:</strong> Por favor entrega el vehículo en la fecha y hora acordadas. Cuentas con 30 minutos de cortesía. Pasado este tiempo, la hora adicional tendrá un valor de $30.000 COP. Si el retraso supera las 2 horas o pasa al siguiente día, se cobrará el valor equivalente a un (1) día completo de alquiler a la tarifa contratada.
+                    </p>
                   </div>
                 </div>
               </div>
