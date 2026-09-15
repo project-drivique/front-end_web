@@ -860,7 +860,7 @@
     "reservationNumber": "RESERVA #{{id}}",
     "pickup": "RECOGIDA",
     "return": "DEVOLUCIÓN",
-    "branch": "SUCURSAL",
+    "branch": "Sucursal",
     "makeReport": "Hacer reporte",
     "viewDetail": "Ver detalle",
     "legalDocumentation": "Documentación Legal",

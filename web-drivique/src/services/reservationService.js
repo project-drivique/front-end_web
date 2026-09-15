@@ -9,8 +9,22 @@ const STORAGE_KEY = 'drivique_reservas';
 // efectivo antes de que la reserva se cancele automáticamente (72 horas).
 export const HORAS_LIMITE_PAGO_EFECTIVO = 72;
 
-function calcularFechaLimitePago() {
-  return new Date(Date.now() + HORAS_LIMITE_PAGO_EFECTIVO * 60 * 60 * 1000).toISOString();
+function calcularFechaLimitePago(fechaInicio, horaInicio) {
+  if (!fechaInicio || !horaInicio) {
+    return {
+      horasLimite: HORAS_LIMITE_PAGO_EFECTIVO,
+      fechaLimite: new Date(Date.now() + HORAS_LIMITE_PAGO_EFECTIVO * 60 * 60 * 1000).toISOString()
+    };
+  }
+
+  const pickupMs = new Date(`${fechaInicio}T${horaInicio}:00`).getTime();
+  const nowMs = Date.now();
+  
+  const horasRestantes = Math.max(0, (pickupMs - nowMs) / (1000 * 60 * 60));
+  const horasLimite = Math.floor(Math.min(HORAS_LIMITE_PAGO_EFECTIVO, Math.max(2, horasRestantes)));
+  const fechaLimite = new Date(nowMs + (horasLimite * 60 * 60 * 1000)).toISOString();
+  
+  return { horasLimite, fechaLimite };
 }
 
 /**
@@ -73,17 +87,21 @@ export const reservationService = {
     const ahoraIso = new Date().toISOString();
 
     const esEfectivo = reserva.reservaDetalles?.metodoPago === 'efectivo';
+    let pagoProps = {};
+    if (esEfectivo) {
+       const limite = calcularFechaLimitePago(reserva.fechaInicio, reserva.horaInicio);
+       pagoProps = {
+         estado: 'PENDIENTE_EFECTIVO',
+         fechaLimitePago: limite.fechaLimite,
+         horasLimitePago: limite.horasLimite
+       };
+    }
+
     const reservaFinal = {
       ...reserva,
       fechaCreacion: reserva.fechaCreacion || reserva.fechaReserva || ahoraIso,
       fechaReserva: reserva.fechaReserva || reserva.fechaCreacion || ahoraIso,
-      ...(esEfectivo
-        ? {
-            estado: 'PENDIENTE_EFECTIVO',
-            fechaLimitePago: calcularFechaLimitePago(),
-            horasLimitePago: HORAS_LIMITE_PAGO_EFECTIVO,
-          }
-        : {})
+      ...pagoProps
     };
 
     reservas.push(reservaFinal);

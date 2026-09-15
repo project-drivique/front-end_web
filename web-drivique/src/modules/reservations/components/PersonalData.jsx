@@ -754,7 +754,18 @@ export default function DatosPersonales({
           color: c?.accentText || 'var(--brand-secondary)',
           fontWeight: 500
         }}>
-          {t('vehiculo.confirmNoticeText', 'Al confirmar la reserva, quedará guardada automáticamente en tu cuenta. Tendrás un plazo de 72 horas para completar el pago antes de su cancelación automática.')}
+          {(() => {
+            let limit = 72;
+            if (reserva?.fechaInicio && reserva?.horaInicio) {
+              const pickupMs = new Date(`${reserva.fechaInicio}T${reserva.horaInicio}:00`).getTime();
+              // eslint-disable-next-line react-hooks/purity
+              limit = Math.floor(Math.min(72, Math.max(2, (pickupMs - Date.now()) / (1000 * 60 * 60))));
+            }
+            return t('vehiculo.confirmNoticeText', {
+              horas: limit,
+              defaultValue: `Al confirmar la reserva, quedará guardada automáticamente en tu cuenta. Tendrás un plazo de ${limit} horas para completar el pago antes de su cancelación automática.`
+            });
+          })()}
         </p>
       </div>
 

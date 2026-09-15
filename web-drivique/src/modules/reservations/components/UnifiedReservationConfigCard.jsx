@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { FaCalendarAlt, FaMapMarkerAlt, FaClock, FaCreditCard, FaPencilAlt, FaEye, FaHourglassHalf, FaInfoCircle } from 'react-icons/fa'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import ReservationCalendar from './ReservationCalendar'
 import DomicilioModal from './DomicilioModal'
 import { SUCURSALES, CIUDADES } from '../../catalog/constants'
@@ -73,6 +73,23 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
 
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isModalReadOnly, setIsModalReadOnly] = useState(false)
+  const [showOneDayModal, setShowOneDayModal] = useState(false)
+
+  // Actualizar automáticamente a reserva de 24h (día siguiente) cuando se haya seleccionado la fecha de 1 día Y la hora de retiro
+  useEffect(() => {
+    if (reserva?.fechaInicio && reserva?.fechaInicio === reserva?.fechaFin && reserva?.horaInicio) {
+      const [y, m, d] = reserva.fechaFin.split('-').map(Number);
+      const end = new Date(y, m - 1, d);
+      end.setDate(end.getDate() + 1);
+      
+      const yyyy = end.getFullYear();
+      const mm = String(end.getMonth() + 1).padStart(2, '0');
+      const dd = String(end.getDate()).padStart(2, '0');
+      const nextDayStr = `${yyyy}-${mm}-${dd}`;
+      
+      onCambio('fechaFin', nextDayStr);
+    }
+  }, [reserva?.fechaInicio, reserva?.fechaFin, reserva?.horaInicio]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Payment Options
   const metodoPago = reserva?.metodoPago
@@ -99,14 +116,14 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
   if (reserva?.metodoPago !== 'efectivo') {
     opcionesEntrega.push({ value: 'domicilio', label: t('vehiculo.deliveryHome', 'A domicilio') })
     if (cityObj?.tieneAeropuerto) opcionesEntrega.push({ value: 'aeropuerto', label: t('vehiculo.deliveryAirport', 'Aeropuerto') })
-    if (cityObj?.tieneTerminal)   opcionesEntrega.push({ value: 'terminal',   label: t('vehiculo.deliveryTerminal', 'Terminal') })
+    if (cityObj?.tieneTerminal)   opcionesEntrega.push({ value: 'terminal',   label: t('vehiculo.deliveryTerminal', 'Entrega en terminal') })
   }
 
   const opcionesDevolucion = carBranch ? [{ value: carBranch, label: t('vehiculo.returnAtBranch', { sucursal: carBranch }) }] : []
   if (reserva?.metodoPago !== 'efectivo') {
     opcionesDevolucion.push({ value: 'domicilio', label: t('vehiculo.returnHome', 'A domicilio') })
     if (cityObj?.tieneAeropuerto) opcionesDevolucion.push({ value: 'aeropuerto', label: t('vehiculo.returnAirport', 'Aeropuerto') })
-    if (cityObj?.tieneTerminal)   opcionesDevolucion.push({ value: 'terminal',   label: t('vehiculo.returnTerminal', 'Terminal') })
+    if (cityObj?.tieneTerminal)   opcionesDevolucion.push({ value: 'terminal',   label: t('vehiculo.pickupTerminal', 'Recoger en terminal') })
   }
 
   const selectStyle = {
@@ -124,7 +141,22 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
   }
 
   const hasDomicilioData = reserva?.domicilioBarrio && reserva?.domicilioDireccion
-  const horasRetiro = generarHoras(reserva?.sucursalRetiro)
+  
+  const getMinHoraRetiro = () => {
+    if (!reserva?.fechaInicio) return null;
+    // Usamos el constructor local para evitar desfases de UTC
+    const [y, m, d] = reserva.fechaInicio.split('-').map(Number);
+    const selectedDate = new Date(y, m - 1, d);
+    const today = new Date();
+    
+    if (selectedDate.toDateString() === today.toDateString()) {
+      // Sin margen extra, devolvemos la hora actual para que se pueda escoger a partir de la siguiente media hora disponible
+      return `${String(today.getHours()).padStart(2, '0')}:${String(today.getMinutes()).padStart(2, '0')}`;
+    }
+    return null;
+  }
+
+  const horasRetiro = generarHoras(reserva?.sucursalRetiro, getMinHoraRetiro())
   const horasDevolucion = generarHoras(reserva?.sucursalDevolucion, null, reserva?.horaInicio)
 
   const handleLugarChange = (campo, valor) => {
@@ -342,6 +374,9 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
             onCambiarFechas={({ fechaInicio, fechaFin }) => {
               onCambio('fechaInicio', fechaInicio)
               onCambio('fechaFin', fechaFin)
+              if (fechaInicio && fechaInicio === fechaFin) {
+                setShowOneDayModal(true)
+              }
             }}
           />
         </div>
@@ -402,7 +437,7 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
                 style={selectStyle}
               >
                 <option value="">{t('vehiculo.selectTime', 'Seleccionar')}</option>
-                {horasRetiro.map(h => <option key={h} value={h}>{h}</option>)}
+                {horasRetiro.map(h => <option key={h} value={h}>{formatHoraAmPm(h)}</option>)}
               </select>
             </div>
           </div>
@@ -419,7 +454,7 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
                 style={selectStyle}
               >
                 <option value="">{t('vehiculo.selectTime', 'Seleccionar')}</option>
-                {horasDevolucion.map(h => <option key={h} value={h}>{h}</option>)}
+                {horasDevolucion.map(h => <option key={h} value={h}>{formatHoraAmPm(h)}</option>)}
               </select>
             </div>
           </div>
@@ -458,6 +493,32 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
         c={c}
         isReadOnly={isModalReadOnly}
       />
+
+      {showOneDayModal && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+          <div style={{ background: c?.bgSecundario || '#ffffff', borderRadius: 20, padding: 24, maxWidth: 320, margin: '0 auto', textAlign: 'center', boxShadow: '0 10px 25px rgba(0,0,0,0.2)' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
+              <div style={{ width: 64, height: 64, borderRadius: 32, backgroundColor: 'rgba(37, 99, 235, 0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: 'transparent', border: '2px solid #2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <FaInfoCircle size={22} color="#2563eb" />
+                </div>
+              </div>
+            </div>
+            <h3 style={{ fontSize: 18, fontWeight: 700, color: textPrimary, marginBottom: 12 }}>
+              {t('vehiculo.oneDayReservationTitle', 'Reserva de 1 día (24 horas)')}
+            </h3>
+            <p style={{ fontSize: 14, color: textSecond, lineHeight: 1.5, marginBottom: 24 }}>
+              {t('vehiculo.oneDayReservationDesc', 'Seleccionaste 1 día de reserva. Elige la hora de retiro y devolución; las 24 horas contarán a partir de la hora de retiro.')}
+            </p>
+            <button
+              onClick={() => setShowOneDayModal(false)}
+              style={{ width: '100%', padding: '12px 16px', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: 8, fontSize: 15, fontWeight: 600, cursor: 'pointer' }}
+            >
+              Aceptar
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
