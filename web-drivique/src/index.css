@@ -24,6 +24,13 @@ body {
   max-width: 100%;
 }
 
+/* ── Ajuste global para focus en inputs ── */
+input:focus, select:focus, textarea:focus, input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 1px solid var(--brand-primary) !important;
+  outline-offset: -1px;
+  box-shadow: none !important;
+}
+
 /* ── Modo claro (defecto) ── */
 :root {
   --brand-primary: #2563eb;

@@ -272,10 +272,10 @@ function Contrato({ reserva, autoDesbloquear = false, onDesbloquear }) {
         fechaFin: rd.fechaFin || reserva.fechaFin,
         horaInicio: rd.horaInicio || '08:00',
         horaFin: rd.horaFin || '18:00',
-        sucursalRetiro: rd.sucursalRetiro || reserva.sucursalRetiro || reserva.sucursal || reserva.vehiculo?.sucursal || 'Alquiler Neiva - Centro',
-        sucursalDevolucion: rd.sucursalDevolucion || reserva.sucursalDevolucion || reserva.sucursal || reserva.vehiculo?.sucursal || 'Alquiler Neiva - Centro',
+        sucursalRetiro: rd.sucursalRetiro || reserva.sucursalRetiro || reserva.sucursal || reserva.vehiculo?.sucursal || '',
+        sucursalDevolucion: rd.sucursalDevolucion || reserva.sucursalDevolucion || reserva.sucursal || reserva.vehiculo?.sucursal || '',
         metodoPago: rd.metodoPago || reserva.metodoPago || reserva.pasarela || (reserva.metodoPago === 'efectivo' ? 'efectivo' : 'tarjeta'),
-        sucursalPagoEfectivo: rd.sucursalPagoEfectivo || reserva.sucursalPagoEfectivo || reserva.sucursal || reserva.vehiculo?.sucursal || 'Alquiler Neiva - Centro'
+        sucursalPagoEfectivo: rd.sucursalPagoEfectivo || reserva.sucursalPagoEfectivo || reserva.sucursal || reserva.vehiculo?.sucursal || ''
       }
     }
   }, [reserva, contratoFirmado, reservaAlmacenada, usuario])
@@ -288,7 +288,7 @@ function Contrato({ reserva, autoDesbloquear = false, onDesbloquear }) {
       placa: base.placa || 'ABC-123',
       color: base.color || 'Plata',
       año: base.año || base.anio || 2024,
-      sucursal: base.sucursal || reserva.sucursal || 'Alquiler Neiva - Centro',
+      sucursal: base.sucursal || reserva.sucursal || '',
       servicios: base.servicios || [],
       seguros: base.seguros || [{ nombre: 'Protección Básica Estándar' }]
     }
@@ -384,7 +384,7 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
   const esPendienteWompi = !esEfectivo && !esConfirmadaModal && (estadoNormModal === 'pendiente')
   const esWompiAprobado = !esEfectivo && esConfirmadaModal
 
-  const sucursalPago = reservaOriginal?.reservaDetalles?.sucursalPagoEfectivo || reserva.vehiculo?.sucursal || 'Alquiler Neiva - Centro'
+  const sucursalPago = reservaOriginal?.reservaDetalles?.sucursalPagoEfectivo || reserva.vehiculo?.sucursal || ''
   const branchObj = SUCURSALES.find(s => s.nombre === sucursalPago)
   const ciudadPago = branchObj?.ciudad || reserva.vehiculo?.ciudad || 'Neiva'
   const direccionPago = branchObj?.direccion || 'Calle 9 # 8-25, Centro'
@@ -430,10 +430,10 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
         fechaFin: rd.fechaFin || reserva.fechaFin,
         horaInicio: rd.horaInicio || '08:00',
         horaFin: rd.horaFin || '18:00',
-        sucursalRetiro: rd.sucursalRetiro || reserva.sucursalRetiro || reserva.sucursal || reserva.vehiculo?.sucursal || 'Alquiler Neiva - Centro',
-        sucursalDevolucion: rd.sucursalDevolucion || reserva.sucursalDevolucion || reserva.sucursal || reserva.vehiculo?.sucursal || 'Alquiler Neiva - Centro',
+        sucursalRetiro: rd.sucursalRetiro || reserva.sucursalRetiro || reserva.sucursal || reserva.vehiculo?.sucursal || '',
+        sucursalDevolucion: rd.sucursalDevolucion || reserva.sucursalDevolucion || reserva.sucursal || reserva.vehiculo?.sucursal || '',
         metodoPago: rd.metodoPago || reserva.metodoPago || reserva.pasarela || (reserva.metodoPago === 'efectivo' ? 'efectivo' : 'tarjeta'),
-        sucursalPagoEfectivo: rd.sucursalPagoEfectivo || reserva.sucursalPagoEfectivo || reserva.sucursal || reserva.vehiculo?.sucursal || 'Alquiler Neiva - Centro'
+        sucursalPagoEfectivo: rd.sucursalPagoEfectivo || reserva.sucursalPagoEfectivo || reserva.sucursal || reserva.vehiculo?.sucursal || ''
       }
     }
   }, [reserva, contrato, reservaOriginal, usuario])
@@ -465,7 +465,7 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
       placa: base.placa || 'ABC-123',
       color: base.color || 'Plata',
       año: base.año || base.anio || 2024,
-      sucursal: base.sucursal || reserva.sucursal || 'Alquiler Neiva - Centro',
+      sucursal: base.sucursal || reserva.sucursal || '',
       servicios: base.servicios || [],
       seguros: base.seguros || [{ nombre: 'Protección Básica Estándar' }]
     }

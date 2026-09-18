@@ -97,10 +97,10 @@ export default function ContractSigningPage() {
     const fFin = rd.fechaFin || reserva.fechaFin || new Date(Date.now() + 86400000 * 3).toISOString().slice(0, 10)
     const hInicio = rd.horaInicio || reserva.horaInicio || '08:00'
     const hFin = rd.horaFin || reserva.horaFin || '18:00'
-    const sucRet = rd.sucursalRetiro || reserva.sucursalRetiro || reserva.sucursal || vehiculo?.sucursal || 'Alquiler Neiva - Centro'
-    const sucDev = rd.sucursalDevolucion || reserva.sucursalDevolucion || reserva.sucursal || vehiculo?.sucursal || 'Alquiler Neiva - Centro'
+    const sucRet = rd.sucursalRetiro || reserva.sucursalRetiro || reserva.sucursal || vehiculo?.sucursal || ''
+    const sucDev = rd.sucursalDevolucion || reserva.sucursalDevolucion || reserva.sucursal || vehiculo?.sucursal || ''
     const metPago = rd.metodoPago || reserva.metodoPago || reserva.pasarela || 'tarjeta'
-    const sucPagoEf = rd.sucursalPagoEfectivo || reserva.sucursalPagoEfectivo || reserva.sucursal || vehiculo?.sucursal || 'Alquiler Neiva - Centro'
+    const sucPagoEf = rd.sucursalPagoEfectivo || reserva.sucursalPagoEfectivo || reserva.sucursal || vehiculo?.sucursal || ''
 
     return {
       ...reserva,
@@ -150,7 +150,7 @@ export default function ContractSigningPage() {
       placa: base.placa || vMock.placa || 'ABC-123',
       color: base.color || vMock.color || 'Plata',
       año: base.año || base.anio || vMock.año || 2024,
-      sucursal: base.sucursal || reserva?.sucursal || reserva?.reservaDetalles?.sucursalRetiro || vMock.sucursal || 'Alquiler Neiva - Centro',
+      sucursal: base.sucursal || reserva?.sucursal || reserva?.reservaDetalles?.sucursalRetiro || vMock.sucursal || '',
       servicios: base.servicios || vMock.servicios || [],
       seguros: base.seguros || vMock.seguros || [{ nombre: 'Protección Básica Estándar' }]
     }

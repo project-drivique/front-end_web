@@ -201,7 +201,7 @@ export default function FirmaContrato({
               <Campo label={t('contratoFirma.plate')} value={vehiculoPlaca} />
               <Campo label={t('contratoFirma.color')} value={vehiculoColor} />
               <Campo label={t('contratoFirma.year')} value={vehiculoAnio} />
-              <Campo label={t('contratoFirma.branch')} value={reservaDetalles.sucursalRetiro === 'domicilio' ? 'Entrega a Domicilio' : (reservaDetalles.sucursalRetiro || 'Alquiler Neiva - Centro')} />
+              <Campo label={t('contratoFirma.branch')} value={reservaDetalles.sucursalRetiro === 'domicilio' ? 'Entrega a Domicilio' : (reservaDetalles.sucursalRetiro || '')} />
               <Campo label={t('contratoFirma.branchCity')} value={reservaDetalles.sucursalRetiro === 'domicilio' ? (reservaDetalles.domicilioCiudad || ciudadSucursal) : ciudadSucursal} />
               {reservaDetalles.sucursalRetiro !== 'domicilio' && (
                 <Campo label={t('contratoFirma.branchAddress')} value={direccionSucursal} />

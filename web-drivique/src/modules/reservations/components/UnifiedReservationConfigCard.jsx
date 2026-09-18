@@ -1,8 +1,9 @@
 import { useTranslation } from 'react-i18next'
-import { FaCalendarAlt, FaMapMarkerAlt, FaClock, FaCreditCard, FaPencilAlt, FaEye, FaHourglassHalf, FaInfoCircle } from 'react-icons/fa'
+import { FaCalendarAlt, FaMapMarkerAlt, FaClock, FaCreditCard, FaPencilAlt, FaEye, FaHourglassHalf, FaInfoCircle, FaExclamationTriangle } from 'react-icons/fa'
 import { useState, useEffect } from 'react'
 import ReservationCalendar from './ReservationCalendar'
 import DomicilioModal from './DomicilioModal'
+import AlertModal from '../../catalog/components/AlertModal'
 import { SUCURSALES, CIUDADES } from '../../catalog/constants'
 import { branchManagementService } from '../../../services/branchManagementService'
 import { verificarYCambiarSiSucursalCerradaHoy, generarHorasDisponibles } from '@/utils/branchScheduleUtils'
@@ -75,6 +76,7 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isModalReadOnly, setIsModalReadOnly] = useState(false)
   const [showOneDayModal, setShowOneDayModal] = useState(false)
+  const [conflictAlert, setConflictAlert] = useState(null) // { campo, valor, openDomicilio }
 
   // Actualizar automáticamente a reserva de 24h (día siguiente) cuando se haya seleccionado la fecha de 1 día Y la hora de retiro
   useEffect(() => {
@@ -161,6 +163,23 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
   const horasDevolucion = generarHoras(reserva?.sucursalDevolucion, null, reserva?.horaInicio)
 
   const handleLugarChange = (campo, valor) => {
+    // Mostrar alerta cuando ambos campos quedarían en 'domicilio'
+    const otherValor = campo === 'sucursalRetiro' ? reserva?.sucursalDevolucion : reserva?.sucursalRetiro
+
+    const hasConflict = valor === 'domicilio' && otherValor === 'domicilio'
+
+    if (hasConflict) {
+      // Guardar el valor previo para restaurarlo si el usuario cancela
+      const prevValue = campo === 'sucursalRetiro' ? (reserva?.sucursalRetiro || '') : (reserva?.sucursalDevolucion || '')
+      setConflictAlert({
+        campo,
+        valor,
+        prevValue,
+        openDomicilio: !hasDomicilioData,
+      })
+      return
+    }
+
     onCambio(campo, valor)
     if (valor === 'domicilio' && !hasDomicilioData) {
       setIsModalReadOnly(false)
@@ -175,7 +194,7 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
     const startDate = new Date(`${reserva.fechaInicio}T00:00:00`)
     const endDate = new Date(`${reserva.fechaFin}T00:00:00`)
     const diffTime = endDate - startDate
-    diasReserva = Math.max(1, Math.round(diffTime / 86400000))
+    diasReserva = Math.max(1, Math.round(diffTime / 86400000) + 1)
     if (reserva.fechaInicio === reserva.fechaFin) diasReserva = 1
 
     if (reserva?.horaInicio && reserva?.horaFin) {
@@ -495,6 +514,36 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
         c={c}
         isReadOnly={isModalReadOnly}
       />
+
+      {/* ALERTA: Misma ubicación domicilio */}
+      {conflictAlert && (
+        <AlertModal
+          icon={<FaExclamationTriangle size={18} color="var(--texto-acento)" />}
+          titulo={t('vehiculo.conflictLocationTitle', 'El lugar de retiro y devolución deben ser el mismo')}
+          mensaje={t('vehiculo.conflictLocationDesc', 'Al seleccionar domicilio en ambos campos, el retiro y la devolución se realizarán en la misma dirección.')}
+          secondaryText={t('common.cancel', 'Cancelar')}
+          onSecondary={() => {
+            // Restaurar el valor anterior para que el select vuelva a su estado previo
+            onCambio(conflictAlert.campo, conflictAlert.prevValue)
+            setConflictAlert(null)
+          }}
+          primaryText={t('common.accept', 'Aceptar')}
+          onPrimary={() => {
+            const { campo, valor, openDomicilio } = conflictAlert
+            onCambio(campo, valor)
+            setConflictAlert(null)
+            if (openDomicilio) {
+              setIsModalReadOnly(false)
+              setIsModalOpen(true)
+            }
+          }}
+          onCerrar={() => {
+            onCambio(conflictAlert.campo, conflictAlert.prevValue)
+            setConflictAlert(null)
+          }}
+          maxWidth={320}
+        />
+      )}
 
       {showOneDayModal && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>

@@ -16,7 +16,7 @@ export default function PlansSummaryCard({ vehiculo, reserva, seguroIdx, servici
   if (!vehiculo) return null;
 
   const dias = reserva.fechaInicio && reserva.fechaFin
-    ? Math.max(1, Math.ceil((new Date(reserva.fechaFin) - new Date(reserva.fechaInicio)) / 86400000))
+    ? (reserva.fechaInicio === reserva.fechaFin ? 1 : Math.max(1, Math.ceil((new Date(reserva.fechaFin) - new Date(reserva.fechaInicio)) / 86400000) + 1))
     : 1;
 
   // Proteccion
