@@ -399,10 +399,19 @@ export function useReservationFlow() {
     const docCedulaFinal = datosForm.cedulaPdf?.name || (typeof datosForm.cedulaPdf === 'string' && datosForm.cedulaPdf) || docSaved?.cedula?.nombre || (datosForm.numDoc ? `Cedula-${datosForm.numDoc}.pdf` : 'Cedula-Verificada.pdf')
     const docLicenciaFinal = datosForm.licenciaPdf?.name || (typeof datosForm.licenciaPdf === 'string' && datosForm.licenciaPdf) || docSaved?.licencia?.nombre || (datosForm.numDoc ? `Licencia-${datosForm.numDoc}.pdf` : 'Licencia-Conduccion-Verificada.pdf')
 
+    const clienteNombreFinal = datosForm.nombre || [datosForm.nombres, datosForm.apellidos].filter(Boolean).join(' ') || usuario?.nombre || 'Cliente Drivique'
+    const clienteCorreoFinal = datosForm.correo || datosForm.email || usuario?.correo || usuario?.email || 'cliente@drivique.com'
+    const clienteTelFinal = datosForm.celular || datosForm.telefono || usuario?.telefono || '+57 300 000 0000'
+    const clienteDocFinal = datosForm.numDoc || datosForm.documento || datosForm.cedula || usuario?.cedula || '1020304050'
+
     const reservaGuardada = reservationService.guardarReserva({
       referencia,
       vehiculoId: vehiculo.id,
       vehiculoNombre: vehiculo.nombre,
+      clienteNombre: clienteNombreFinal,
+      clienteCorreo: clienteCorreoFinal,
+      clienteTelefono: clienteTelFinal,
+      clienteDocumento: clienteDocFinal,
       vehiculo: {
         id: vehiculo.id,
         nombre: vehiculo.nombre,
@@ -432,6 +441,13 @@ export function useReservationFlow() {
       metodoPago: reserva.metodoPago,
       datosForm: {
         ...datosForm,
+        nombre: clienteNombreFinal,
+        correo: clienteCorreoFinal,
+        celular: clienteTelFinal,
+        telefono: clienteTelFinal,
+        numDoc: clienteDocFinal,
+        tipoDoc: datosForm.tipoDoc || usuario?.tipoDocumento || 'CC',
+        direccion: datosForm.direccion || usuario?.direccion || '',
         cedulaPdf: docCedulaFinal,
         licenciaPdf: docLicenciaFinal,
       },
