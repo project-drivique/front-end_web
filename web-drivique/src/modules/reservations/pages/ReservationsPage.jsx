@@ -447,10 +447,9 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
     const fInicio = reserva.fechaInicio || reserva.reservaDetalles?.fechaInicio
     const fFin = reserva.fechaFin || reserva.reservaDetalles?.fechaFin
     if (precioDia && fInicio && fFin) {
-      const d1 = new Date(fInicio)
-      const d2 = new Date(fFin)
-      const diffTime = Math.abs(d2.getTime() - d1.getTime())
-      const diffDays = Math.max(1, Math.ceil(diffTime / (1000 * 60 * 60 * 24)))
+      const f1 = fInicio.split('T')[0]
+      const f2 = fFin.split('T')[0]
+      const diffDays = f1 === f2 ? 1 : Math.max(1, Math.round(Math.abs(new Date(`${f2}T00:00:00`) - new Date(`${f1}T00:00:00`)) / 86400000) + 1)
       return diffDays * precioDia
     }
     return rawTotal
@@ -927,10 +926,9 @@ function TarjetaReserva({ reserva, moneda, onValorar, onReportar, onVerDetalle }
 
     const precioDia = reserva.vehiculo?.precioDiario || reserva.vehiculo?.precio || 0
     if (precioDia && reserva.fechaInicio && reserva.fechaFin) {
-      const d1 = new Date(reserva.fechaInicio)
-      const d2 = new Date(reserva.fechaFin)
-      const diffTime = Math.abs(d2.getTime() - d1.getTime())
-      const diffDays = Math.max(1, Math.ceil(diffTime / (1000 * 60 * 60 * 24)))
+      const f1 = reserva.fechaInicio.split('T')[0]
+      const f2 = reserva.fechaFin.split('T')[0]
+      const diffDays = f1 === f2 ? 1 : Math.max(1, Math.round(Math.abs(new Date(`${f2}T00:00:00`) - new Date(`${f1}T00:00:00`)) / 86400000) + 1)
       return diffDays * precioDia
     }
     return 0

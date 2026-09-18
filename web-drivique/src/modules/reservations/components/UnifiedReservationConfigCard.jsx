@@ -10,7 +10,7 @@ import { verificarYCambiarSiSucursalCerradaHoy, generarHorasDisponibles } from '
 
 function getHorarioSucursal(nombreSucursal) {
   if (!nombreSucursal) return { apertura: '08:00', cierre: '18:00' }
-  const nombreLower = nombreSucursal.toLowerCase()
+  const nombreLower = String(nombreSucursal).toLowerCase()
   if (nombreLower.includes('aeropuerto') || nombreLower.includes('terminal') || nombreLower.includes('el dorado')) {
     return { apertura: '00:00', cierre: '23:30' }
   }
@@ -91,6 +91,9 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
       const nextDayStr = `${yyyy}-${mm}-${dd}`;
       
       onCambio('fechaFin', nextDayStr);
+      if (!reserva?.horaFin) {
+        onCambio('horaFin', reserva.horaInicio);
+      }
     }
   }, [reserva?.fechaInicio, reserva?.fechaFin, reserva?.horaInicio]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -147,20 +150,40 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
   
   const getMinHoraRetiro = () => {
     if (!reserva?.fechaInicio) return null;
-    // Usamos el constructor local para evitar desfases de UTC
-    const [y, m, d] = reserva.fechaInicio.split('-').map(Number);
+    const fInicioStr = reserva.fechaInicio.split('T')[0];
+    const [y, m, d] = fInicioStr.split('-').map(Number);
     const selectedDate = new Date(y, m - 1, d);
     const today = new Date();
     
     if (selectedDate.toDateString() === today.toDateString()) {
-      // Sin margen extra, devolvemos la hora actual para que se pueda escoger a partir de la siguiente media hora disponible
       return `${String(today.getHours()).padStart(2, '0')}:${String(today.getMinutes()).padStart(2, '0')}`;
     }
     return null;
   }
 
+  const getMinHoraDevolucion = () => {
+    if (!reserva?.fechaFin) return null;
+    const fInicioStr = reserva?.fechaInicio ? reserva.fechaInicio.split('T')[0] : '';
+    const fFinStr = reserva.fechaFin.split('T')[0];
+    
+    // Si la reserva inicia y finaliza el mismo día, la devolución no puede ser anterior a la hora de retiro
+    if (fInicioStr && fFinStr && fInicioStr === fFinStr && reserva?.horaInicio) {
+      return reserva.horaInicio;
+    }
+
+    // Si la fecha de devolución es hoy, filtrar horas pasadas
+    const [y, m, d] = fFinStr.split('-').map(Number);
+    const selectedDate = new Date(y, m - 1, d);
+    const today = new Date();
+    if (selectedDate.toDateString() === today.toDateString()) {
+      return `${String(today.getHours()).padStart(2, '0')}:${String(today.getMinutes()).padStart(2, '0')}`;
+    }
+
+    return null;
+  }
+
   const horasRetiro = generarHoras(reserva?.sucursalRetiro, getMinHoraRetiro())
-  const horasDevolucion = generarHoras(reserva?.sucursalDevolucion, null, reserva?.horaInicio)
+  const horasDevolucion = generarHoras(reserva?.sucursalDevolucion, getMinHoraDevolucion())
 
   const handleLugarChange = (campo, valor) => {
     // Mostrar alerta cuando ambos campos quedarían en 'domicilio'
@@ -191,31 +214,29 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
   let devolucionAnticipadaText = ''
 
   if (reserva?.fechaInicio && reserva?.fechaFin) {
-    const startDate = new Date(`${reserva.fechaInicio}T00:00:00`)
-    const endDate = new Date(`${reserva.fechaFin}T00:00:00`)
+    const fInicioStr = reserva.fechaInicio.split('T')[0]
+    const fFinStr = reserva.fechaFin.split('T')[0]
+    const startDate = new Date(`${fInicioStr}T00:00:00`)
+    const endDate = new Date(`${fFinStr}T00:00:00`)
     const diffTime = endDate - startDate
     diasReserva = Math.max(1, Math.round(diffTime / 86400000) + 1)
-    if (reserva.fechaInicio === reserva.fechaFin) diasReserva = 1
+    if (fInicioStr === fFinStr) diasReserva = 1
 
     if (reserva?.horaInicio && reserva?.horaFin) {
-      const start = new Date(`${reserva.fechaInicio}T${reserva.horaInicio}:00`)
-      const end = new Date(`${reserva.fechaFin}T${reserva.horaFin}:00`)
-      const diffMs = end - start
-      
-      if (diffMs > 0) {
-        const totalMinutes = Math.floor(diffMs / 60000)
-        const totalHours = Math.floor(totalMinutes / 60)
-        const days = Math.floor(totalHours / 24)
-        const hours = totalHours % 24
-        const mins = totalMinutes % 60
+      const [hR, mR] = reserva.horaInicio.split(':').map(Number)
+      const [hD, mD] = reserva.horaFin.split(':').map(Number)
+      const minutosRetiro = hR * 60 + mR
+      const minutosDevolucion = hD * 60 + mD
 
-        if (diffMs < diasReserva * 86400000) {
-          const parts = []
-          if (days > 0) parts.push(`${days} ${days === 1 ? t('vehiculo.day', 'día') : t('vehiculo.days', 'días')}`)
-          if (hours > 0) parts.push(`${hours} h`)
-          if (mins > 0) parts.push(`${mins} min`)
-          devolucionAnticipadaText = parts.join(', ')
-        }
+      // Devolución anticipada solo si la hora de devolución es menor a la hora máxima permitida (hora de retiro)
+      if (minutosDevolucion < minutosRetiro) {
+        const diffMins = minutosRetiro - minutosDevolucion
+        const anticipadaHours = Math.floor(diffMins / 60)
+        const anticipadaMins = diffMins % 60
+        const parts = []
+        if (anticipadaHours > 0) parts.push(`${anticipadaHours} h`)
+        if (anticipadaMins > 0) parts.push(`${anticipadaMins} min`)
+        devolucionAnticipadaText = `${parts.join(' ')} ${t('vehiculo.beforeLimitTime', 'antes de la hora límite')}`
       }
     }
   }
@@ -453,7 +474,13 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
             <div style={{ padding: '12px 16px', borderRadius: 12, border: `1px solid ${border}`, background: 'transparent' }}>
               <select
                 value={reserva?.horaInicio || ''}
-                onChange={e => onCambio('horaInicio', e.target.value)}
+                onChange={e => {
+                  const val = e.target.value
+                  onCambio('horaInicio', val)
+                  if (val && !reserva?.horaFin) {
+                    onCambio('horaFin', val)
+                  }
+                }}
                 style={selectStyle}
               >
                 <option value="">{t('vehiculo.selectTime', 'Seleccionar')}</option>
