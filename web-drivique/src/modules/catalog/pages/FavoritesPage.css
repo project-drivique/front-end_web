@@ -4,6 +4,7 @@
   min-height: 100vh;
   background-color: #eaeff8;
   color: var(--texto-primary, #0f172a);
+  zoom: 0.9;
 }
 
 html.dark .favoritos-pagina {

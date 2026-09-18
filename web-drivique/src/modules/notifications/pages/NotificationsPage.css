@@ -5,6 +5,7 @@
   color: var(--texto-primary, #0f172a);
   font-family: system-ui, -apple-system, sans-serif;
   transition: background-color 0.25s ease, color 0.25s ease;
+  zoom: 0.9;
 }
 
 .notificaciones-main {

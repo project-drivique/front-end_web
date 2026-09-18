@@ -41,9 +41,6 @@ export default function RespuestaPagoPage() {
     }
 
     const procesarPagoYRedirigir = (targetReserva, pType) => {
-      setEstadoProceso('exito');
-      setMensajeEstado('¡Pago validado con éxito! Redirigiendo a tu reserva...');
-
       const actualRef = targetReserva.referencia || targetReserva.codigo || targetReserva.id;
       reservationService.actualizarEstado(actualRef, 'CONFIRMADA', transactionId);
 
@@ -59,18 +56,15 @@ export default function RespuestaPagoPage() {
       }
       reservationService.actualizarMedioPago(actualRef, metodo);
 
-      setTimeout(() => {
-        navigate(`/reservas?detalle=${encodeURIComponent(actualRef)}`, {
-          replace: true,
-          state: { detalleId: actualRef }
-        });
-      }, 900);
+      // Redirección inmediata a la firma de contrato sin pantalla ni retardo intermedio
+      navigate(`/contrato/${encodeURIComponent(actualRef)}`, { replace: true });
     };
 
     if (transactionId) {
       fetch(`https://sandbox.wompi.co/v1/transactions/${transactionId}`)
         .then(res => res.json())
         .then(data => {
+          const status = data?.data?.status;
           const pType = data?.data?.payment_method_type;
           const wompiRef = data?.data?.reference;
 
@@ -78,46 +72,42 @@ export default function RespuestaPagoPage() {
           if (!targetReserva && wompiRef) {
             targetReserva = reservationService.obtenerPorReferencia(wompiRef);
           }
-          if (targetReserva) {
-            procesarPagoYRedirigir(targetReserva, pType);
-          } else if (encontrada) {
-            procesarPagoYRedirigir(encontrada, pType);
-          } else {
-            const all = reservationService.getReservas();
-            const fallbackReserva = all.length > 0 ? all[all.length - 1] : null;
-            if (fallbackReserva) {
-              procesarPagoYRedirigir(fallbackReserva, pType);
+
+          if (status === 'APPROVED') {
+            if (targetReserva) {
+              procesarPagoYRedirigir(targetReserva, pType);
             } else {
-              setEstadoProceso('error');
-              setMensajeEstado('No se encontró la reserva asociada al pago.');
+              const all = reservationService.getReservas();
+              const fallbackReserva = all.length > 0 ? all[all.length - 1] : null;
+              if (fallbackReserva) {
+                procesarPagoYRedirigir(fallbackReserva, pType);
+              } else {
+                setEstadoProceso('error');
+                setMensajeEstado('No se encontró la reserva asociada al pago aprobado.');
+              }
             }
+          } else if (status === 'DECLINED' || status === 'VOIDED' || status === 'ERROR') {
+            const reason = data?.data?.status_message || 'Transacción denegada o rechazada por la entidad bancaria.';
+            setEstadoProceso('error');
+            setMensajeEstado(`Tu pago no fue aprobado por Wompi (${reason}). La reserva no fue confirmada y permanece en estado pendiente para que reintentes el pago.`);
+          } else if (status === 'PENDING') {
+            setEstadoProceso('procesando');
+            setMensajeEstado('Tu pago se encuentra en proceso de verificación por la entidad bancaria (ej. PSE/Nequi). Puedes consultar el avance en Mis Reservas.');
+          } else {
+            setEstadoProceso('error');
+            setMensajeEstado('No fue posible confirmar la transacción. El estado del pago no fue aprobado.');
           }
         })
         .catch(() => {
-          if (encontrada) {
-            procesarPagoYRedirigir(encontrada, null);
-          } else {
-            const all = reservationService.getReservas();
-            const fallbackReserva = all.length > 0 ? all[all.length - 1] : null;
-            if (fallbackReserva) {
-              procesarPagoYRedirigir(fallbackReserva, null);
-            } else {
-              setEstadoProceso('error');
-              setMensajeEstado('Ocurrió un error al consultar el estado de la transacción.');
-            }
-          }
+          setEstadoProceso('error');
+          setMensajeEstado('No fue posible validar la transacción con Wompi debido a un problema de conexión a internet. Tu reserva permanece pendiente.');
         });
     } else if (encontrada) {
-      procesarPagoYRedirigir(encontrada, null);
+      setEstadoProceso('error');
+      setMensajeEstado('No se detectó un identificador válido de transacción de Wompi.');
     } else {
-      const all = reservationService.getReservas();
-      const fallbackReserva = all.length > 0 ? all[all.length - 1] : null;
-      if (fallbackReserva) {
-        procesarPagoYRedirigir(fallbackReserva, null);
-      } else {
-        setEstadoProceso('error');
-        setMensajeEstado('No se encontró la referencia de la reserva.');
-      }
+      setEstadoProceso('error');
+      setMensajeEstado('No se encontró la referencia de la reserva ni la transacción de pago.');
     }
   }, [transactionId, searchParams, navigate]);
 

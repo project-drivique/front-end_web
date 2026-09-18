@@ -7,10 +7,11 @@ import {
 import { es, enUS, fr, ptBR, de } from 'date-fns/locale'
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa'
 import { useDisponibilidadVehiculo } from '../hooks/useVehicleAvailability'
+import { verificarSiSucursalCerradaHoy } from '@/utils/branchScheduleUtils'
 
 const hoyISO = format(new Date(), 'yyyy-MM-dd')
 
-export default function CalendarioReservas({ vehiculoId, fechaInicio, fechaFin, onCambiarFechas, c }) {
+export default function CalendarioReservas({ vehiculoId, sucursal, fechaInicio, fechaFin, onCambiarFechas, c }) {
   const { t, i18n } = useTranslation()
   const { estaOcupado, cargando } = useDisponibilidadVehiculo(vehiculoId)
   const [mesActual, setMesActual] = useState(new Date())
@@ -56,6 +57,9 @@ export default function CalendarioReservas({ vehiculoId, fechaInicio, fechaFin, 
 
     if (esPasado(fechaISO) || estaOcupado(fechaISO)) return
 
+    const esCerrada = verificarSiSucursalCerradaHoy(fechaISO, sucursal)
+    if (esCerrada) return
+
     const rangoCompleto = fechaInicio && fechaFin
     const empezandoDeNuevo = !fechaInicio || rangoCompleto || fechaISO < fechaInicio
 
@@ -70,7 +74,7 @@ export default function CalendarioReservas({ vehiculoId, fechaInicio, fechaFin, 
     }
 
     onCambiarFechas({ fechaInicio, fechaFin: fechaISO })
-  }, [fechaInicio, fechaFin, esPasado, estaOcupado, hayConflictoEnRango, onCambiarFechas, t])
+  }, [fechaInicio, fechaFin, esPasado, estaOcupado, hayConflictoEnRango, onCambiarFechas, sucursal, t])
 
   return (
     <div style={{ width: '100%', fontFamily: 'inherit' }}>

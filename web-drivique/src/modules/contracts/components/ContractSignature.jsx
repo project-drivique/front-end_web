@@ -8,6 +8,7 @@ import { useLanding } from '../../landing/LandingContext';
 import { formatCurrency } from '@/utils/currencyUtils';
 import { getNombreTipoDoc } from '@/utils/documentUtils';
 import { contractService } from '@/services/contractService';
+import { useAuthStore } from '@/store/authStore';
 import SUCURSALES_MOCK from '@/mocks/branches.json';
 import SignatureCanvas from './SignatureCanvas';
 
@@ -50,11 +51,26 @@ export default function FirmaContrato({
   const { brand } = useBrand();
   const { t, i18n } = useTranslation();
   const { moneda } = useLanding();
+  const usuarioStore = useAuthStore(state => state.usuario);
   const canvasRef = useRef(null);
   const [errorFirma, setErrorFirma] = useState('');
   const [firmando, setFirmando] = useState(false);
 
   const { datosForm = {}, reservaDetalles = {}, total = 0, referencia, seguroIdx, serviciosSeleccionados = [] } = reservaGuardada || {};
+
+  // Normalización exhaustiva de los datos del cliente
+  const clienteNombre = datosForm.nombre || [datosForm.nombres, datosForm.apellidos].filter(Boolean).join(' ') || reservaGuardada?.clienteNombre || usuarioStore?.nombre || 'Cliente Drivique';
+  const clienteTipoDoc = datosForm.tipoDoc || datosForm.tipoDocumento || usuarioStore?.tipoDocumento || 'CC';
+  const clienteNumDoc = datosForm.numDoc || datosForm.documento || datosForm.cedula || reservaGuardada?.clienteDocumento || usuarioStore?.cedula || '1020304050';
+  const clienteCorreo = datosForm.correo || datosForm.email || reservaGuardada?.clienteCorreo || usuarioStore?.correo || usuarioStore?.email || 'cliente@drivique.com';
+  const clienteTelefono = datosForm.celular || datosForm.telefono || reservaGuardada?.clienteTelefono || usuarioStore?.telefono || '+57 300 000 0000';
+  const clienteDireccion = datosForm.direccion || reservaGuardada?.clienteDireccion || usuarioStore?.direccion || '';
+  const clienteLicencia = datosForm.licenciaPdf?.name || (typeof datosForm.licenciaPdf === 'string' ? datosForm.licenciaPdf : (clienteNumDoc ? `Licencia-${clienteNumDoc}.pdf` : 'Licencia-Conduccion-Verificada.pdf'));
+
+  // Normalización exhaustiva de datos del vehículo
+  const vehiculoPlaca = vehiculo?.placa || 'KLS-849';
+  const vehiculoColor = vehiculo?.color || 'Plata';
+  const vehiculoAnio = vehiculo?.año || vehiculo?.anio || 2024;
 
   const direccionCompleta = reservaDetalles.sucursalRetiro === 'domicilio'
     ? `${reservaDetalles.domicilioDireccion || ''}, ${reservaDetalles.domicilioBarrio || ''}, ${reservaDetalles.domicilioCiudad || ''} (Ref: ${reservaDetalles.domicilioReferencias || ''})`
@@ -66,8 +82,8 @@ export default function FirmaContrato({
   const sucursalRetiroNombre = reservaDetalles.sucursalRetiro === 'domicilio'
     ? vehiculo?.sucursal
     : reservaDetalles.sucursalRetiro;
-  const ciudadSucursal = ciudadDeSucursal(sucursalRetiroNombre);
-  const direccionSucursal = (SUCURSALES_MOCK.find((s) => s.nombre === sucursalRetiroNombre) || {}).direccion || '';
+  const ciudadSucursal = ciudadDeSucursal(sucursalRetiroNombre) || 'Neiva';
+  const direccionSucursal = (SUCURSALES_MOCK.find((s) => s.nombre === sucursalRetiroNombre) || {}).direccion || 'Calle 9 # 8-25, Centro';
   const fechaGeneracion = new Date().toLocaleDateString(localeFecha, { day: '2-digit', month: 'long', year: 'numeric' });
 
   const serviciosTexto = useMemo(() => {
@@ -160,21 +176,21 @@ export default function FirmaContrato({
         <div className="contrato-contenido" style={{ padding: '26px 32px 32px' }}>
           <p style={{ fontSize: 15, color: 'var(--texto-primary)', marginBottom: 24, lineHeight: 1.6 }}>
             {t('contratoFirma.intro', {
-              nombre: datosForm.nombre,
-              tipoDoc: getNombreTipoDoc(datosForm.tipoDoc),
-              numDoc: datosForm.numDoc,
+              nombre: clienteNombre,
+              tipoDoc: getNombreTipoDoc(clienteTipoDoc),
+              numDoc: clienteNumDoc,
             })}
           </p>
 
           <section style={{ marginTop: 22 }}>
             <h3 style={{ fontSize: 17, color: 'var(--texto-primary)', marginBottom: 14 }}>{t('contratoFirma.userDataTitle')}</h3>
             <div style={{ background: 'var(--bg-item)', border: '1px solid var(--borde)', borderRadius: 18, padding: 16, display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 14 }} className="contrato-grid-2col">
-              <Campo label={t('contratoFirma.fullName')} value={datosForm.nombre || 'Cliente Drivique'} />
-              <Campo label={t('contratoFirma.document')} value={`${getNombreTipoDoc(datosForm.tipoDoc || 'CC')}: ${datosForm.numDoc || '1020304050'}`.trim()} />
-              <Campo label={t('contratoFirma.email')} value={datosForm.correo || 'cliente@drivique.com'} />
-              <Campo label={t('contratoFirma.phone')} value={datosForm.celular || datosForm.telefono || '+57 300 000 0000'} />
-              <Campo label={t('contratoFirma.address')} value={direccionCompleta !== t('contratoFirma.notProvided') && direccionCompleta ? direccionCompleta : (datosForm.direccion || direccionSucursal || ciudadSucursal || 'Recogida en Sucursal')} />
-              <Campo label={t('contratoFirma.license')} value={datosForm.licenciaPdf?.name || (typeof datosForm.licenciaPdf === 'string' ? datosForm.licenciaPdf : (datosForm.numDoc ? `Licencia-${datosForm.numDoc}.pdf` : 'Licencia-Conduccion-Verificada.pdf'))} />
+              <Campo label={t('contratoFirma.fullName')} value={clienteNombre} />
+              <Campo label={t('contratoFirma.document')} value={`${getNombreTipoDoc(clienteTipoDoc)}: ${clienteNumDoc}`.trim()} />
+              <Campo label={t('contratoFirma.email')} value={clienteCorreo} />
+              <Campo label={t('contratoFirma.phone')} value={clienteTelefono} />
+              <Campo label={t('contratoFirma.address')} value={direccionCompleta !== t('contratoFirma.notProvided') && direccionCompleta ? direccionCompleta : (clienteDireccion || direccionSucursal || ciudadSucursal || 'Recogida en Sucursal')} />
+              <Campo label={t('contratoFirma.license')} value={clienteLicencia} />
             </div>
           </section>
 
@@ -182,10 +198,10 @@ export default function FirmaContrato({
             <h3 style={{ fontSize: 17, color: 'var(--texto-primary)', marginBottom: 14 }}>{t('contratoFirma.reservationTitle')}</h3>
             <div style={{ background: 'var(--bg-item)', border: '1px solid var(--borde)', borderRadius: 18, padding: 16, display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 14 }} className="contrato-grid-2col">
               <Campo label={t('contratoFirma.vehicle')} value={`${marca} ${modelo}`.trim()} />
-              <Campo label={t('contratoFirma.plate')} value={vehiculo?.placa} />
-              <Campo label={t('contratoFirma.color')} value={vehiculo?.color} />
-              <Campo label={t('contratoFirma.year')} value={vehiculo?.año || vehiculo?.anio || 2024} />
-              <Campo label={t('contratoFirma.branch')} value={reservaDetalles.sucursalRetiro === 'domicilio' ? 'Entrega a Domicilio' : reservaDetalles.sucursalRetiro} />
+              <Campo label={t('contratoFirma.plate')} value={vehiculoPlaca} />
+              <Campo label={t('contratoFirma.color')} value={vehiculoColor} />
+              <Campo label={t('contratoFirma.year')} value={vehiculoAnio} />
+              <Campo label={t('contratoFirma.branch')} value={reservaDetalles.sucursalRetiro === 'domicilio' ? 'Entrega a Domicilio' : (reservaDetalles.sucursalRetiro || 'Alquiler Neiva - Centro')} />
               <Campo label={t('contratoFirma.branchCity')} value={reservaDetalles.sucursalRetiro === 'domicilio' ? (reservaDetalles.domicilioCiudad || ciudadSucursal) : ciudadSucursal} />
               {reservaDetalles.sucursalRetiro !== 'domicilio' && (
                 <Campo label={t('contratoFirma.branchAddress')} value={direccionSucursal} />

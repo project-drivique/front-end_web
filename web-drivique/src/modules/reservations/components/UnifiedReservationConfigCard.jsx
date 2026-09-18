@@ -5,6 +5,7 @@ import ReservationCalendar from './ReservationCalendar'
 import DomicilioModal from './DomicilioModal'
 import { SUCURSALES, CIUDADES } from '../../catalog/constants'
 import { branchManagementService } from '../../../services/branchManagementService'
+import { verificarYCambiarSiSucursalCerradaHoy, generarHorasDisponibles } from '@/utils/branchScheduleUtils'
 
 function getHorarioSucursal(nombreSucursal) {
   if (!nombreSucursal) return { apertura: '08:00', cierre: '18:00' }
@@ -484,6 +485,7 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
           </div>
         )}
       </div>
+
 
       <DomicilioModal
         isOpen={isModalOpen}

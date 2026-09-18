@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { FaMoneyBillWave, FaCreditCard, FaArrowLeft, FaTimes, FaClipboardList, FaArrowRight } from 'react-icons/fa'
 import logo from '@/assets/logo.png'
@@ -51,6 +51,10 @@ export default function ReservationFlowPage() {
   const { tema, moneda } = useLanding()
   const navigate = useNavigate()
   const esModoOscuro = tema === 'oscuro'
+
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
 
   const c = {
     pageBg:        esModoOscuro ? '#0f172a'  : '#eaeff8',
