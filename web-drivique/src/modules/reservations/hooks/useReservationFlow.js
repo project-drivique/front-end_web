@@ -34,8 +34,8 @@ export function useReservationFlow() {
     servicios: baseVehiculo.servicios || [],
     imagenes: baseVehiculo.imagenes || (baseVehiculo.imagen ? [baseVehiculo.imagen] : []),
     sucursalInfo: baseVehiculo.sucursalInfo || {
-      nombre: baseVehiculo.sucursal || 'Alquiler Neiva - Centro',
-      direccion: 'Calle 9 # 8-25, Centro',
+      nombre: baseVehiculo.sucursal || '',
+      direccion: '',
       horario: 'Lun a dom, 6:00 am - 10:00 pm'
     }
   } : null
@@ -354,7 +354,7 @@ export function useReservationFlow() {
       ? (tarifas.kmIlimitado?.precio || 0)
       : (reserva.tipoKm === 'limitado' ? (tarifas.kmLimitado?.precio || 0) : 0)
     const dias = (reserva.fechaInicio && reserva.fechaFin)
-      ? Math.max(1, Math.ceil((new Date(reserva.fechaFin) - new Date(reserva.fechaInicio)) / 86400000))
+      ? (reserva.fechaInicio === reserva.fechaFin ? 1 : Math.max(1, Math.ceil((new Date(reserva.fechaFin) - new Date(reserva.fechaInicio)) / 86400000) + 1))
       : 1
     const precioSeguro = seguroIdx !== null ? (vehiculo.seguros[seguroIdx]?.precio ?? 0) : 0
     const serviciosElegidos = (vehiculo.servicios || []).filter(s => serviciosSeleccionados.includes(s.nombre))
@@ -507,7 +507,7 @@ export function useReservationFlow() {
     ? (tarifasTotal.kmIlimitado?.precio || 0)
     : (reserva.tipoKm === 'limitado' ? (tarifasTotal.kmLimitado?.precio || 0) : 0)
   const diasTotal = reserva.fechaInicio && reserva.fechaFin
-    ? Math.max(1, Math.ceil((new Date(reserva.fechaFin) - new Date(reserva.fechaInicio)) / 86400000))
+    ? (reserva.fechaInicio === reserva.fechaFin ? 1 : Math.max(1, Math.ceil((new Date(reserva.fechaFin) - new Date(reserva.fechaInicio)) / 86400000) + 1))
     : 1
   const precioSeguroTotal = seguroIdx !== null ? (vehiculo?.seguros[seguroIdx]?.precio ?? 0) : 0
   const precioServiciosTotal = (vehiculo?.servicios || [])

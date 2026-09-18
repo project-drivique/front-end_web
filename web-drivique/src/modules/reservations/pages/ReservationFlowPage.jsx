@@ -101,10 +101,10 @@ export default function ReservationFlowPage() {
   )
 
   // ─── Variables para datos de sucursal de pago en efectivo ─────────────────
-  const sucursalPago = reservaCreada?.reservaDetalles?.sucursalPagoEfectivo || reserva.sucursalPagoEfectivo || vehiculo?.sucursal || 'Alquiler Neiva - Centro'
+  const sucursalPago = reservaCreada?.reservaDetalles?.sucursalPagoEfectivo || reserva.sucursalPagoEfectivo || vehiculo?.sucursal || ''
   const branchObj = SUCURSALES.find(s => s.nombre === sucursalPago)
-  const ciudadPago = branchObj?.ciudad || vehiculo?.ciudad || 'Neiva'
-  const direccionPago = branchObj?.direccion || 'Calle 9 # 8-25, Centro'
+  const ciudadPago = branchObj?.ciudad || vehiculo?.ciudad || ''
+  const direccionPago = branchObj?.direccion || ''
 
   // ─── Flujo principal ──────────────────────────────────────────────────────
   return (

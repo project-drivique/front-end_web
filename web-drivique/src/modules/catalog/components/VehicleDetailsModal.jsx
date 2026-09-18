@@ -72,8 +72,8 @@ export default function VehicleDetailsModal({
       servicios: baseVehiculo.servicios || [],
       imagenes: baseVehiculo.imagenes || (baseVehiculo.imagen ? [baseVehiculo.imagen] : []),
       sucursalInfo: baseVehiculo.sucursalInfo || {
-        nombre: baseVehiculo.sucursal || 'Alquiler Neiva - Centro',
-        direccion: 'Calle 9 # 8-25, Centro',
+        nombre: baseVehiculo.sucursal || '',
+        direccion: '',
         horario: 'Lun a dom, 6:00 am - 10:00 pm',
       },
     }
