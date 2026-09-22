@@ -851,17 +851,22 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
                 </span>
               </div>
 
-              {/* 3. INFORMACIÓN COMPLETA DE ENTREGA Y RECOGIDA A DOMICILIO (CIUDAD, BARRIO, DIRECCIÓN, REFERENCIAS, HORA) */}
-              <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '16px', padding: '0 4px', textAlign: 'left' }}>
+              {/* 3. INFORMACIÓN COMPLETA (CIUDAD, ENTREGA, RECOGIDA, CONDUCTOR) CON DISEÑO 100% UNIFICADO */}
+              <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '16px', textAlign: 'left' }}>
                 
                 {/* Ciudad (Fija según sucursal) */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                  <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--texto-second)', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', padding: '10px 12px', background: 'var(--bg-item, #f8fafc)', borderRadius: '12px', border: '1px solid var(--borde, #e2e8f0)' }}>
+                  <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--brand-primary)', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
                     Ciudad:
                   </span>
-                  <strong style={{ fontSize: '13.5px', fontWeight: 700, color: 'var(--texto-primary)' }}>
-                    {ciudadPago} <small style={{ fontWeight: 600, color: 'var(--brand-primary)', fontSize: '10px', marginLeft: '6px' }}>(Auto-detectado)</small>
-                  </strong>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <strong style={{ fontSize: '13.5px', fontWeight: 700, color: 'var(--texto-primary)' }}>
+                      {ciudadPago}
+                    </strong>
+                    <small style={{ fontWeight: 600, color: 'var(--brand-primary)', fontSize: '10.5px' }}>
+                      (Auto-detectado)
+                    </small>
+                  </div>
                 </div>
 
                 {/* Entrega a Domicilio */}
@@ -915,34 +920,34 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
                     </div>
                   </div>
                 )}
-              </div>
 
-              {/* 4. CONDUCTOR ASIGNADO (EN PROCESO HASTA QUE LO ASIGNE LA SUCURSAL) */}
-              <div style={{ width: '100%', paddingTop: '14px', borderTop: '1px solid var(--borde, #e2e8f0)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                  <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--texto-second)', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
-                    Conductor asignado:
+                {/* Conductor Asignado */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', padding: '10px 12px', background: 'var(--bg-item, #f8fafc)', borderRadius: '12px', border: '1px solid var(--borde, #e2e8f0)' }}>
+                  <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--brand-primary)', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+                    Conductor Asignado:
                   </span>
-                  <strong style={{ fontSize: '14px', fontWeight: 700, color: domicilioConductor ? 'var(--texto-primary)' : '#b45309' }}>
-                    {domicilioConductor ? domicilioConductor : 'En proceso'}
-                  </strong>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <strong style={{ fontSize: '13.5px', fontWeight: 700, color: domicilioConductor ? 'var(--texto-primary)' : '#b45309' }}>
+                      {domicilioConductor ? domicilioConductor : 'En proceso'}
+                    </strong>
+
+                    {domicilioTelefonoConductor ? (
+                      <a
+                        href={`https://wa.me/${domicilioTelefonoConductor.replace(/[^0-9]/g, '')}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn-reporte"
+                        style={{ background: '#25d366', color: '#fff', border: 'none', textDecoration: 'none', padding: '6px 12px', fontSize: '11.5px', borderRadius: '8px', fontWeight: 800 }}
+                      >
+                        <FaWhatsapp size={13} /> WhatsApp
+                      </a>
+                    ) : (
+                      <span className="estado-badge estado-pendiente" style={{ fontSize: '10px', padding: '3px 9px' }}>
+                        En proceso
+                      </span>
+                    )}
+                  </div>
                 </div>
-
-                {domicilioTelefonoConductor ? (
-                  <a
-                    href={`https://wa.me/${domicilioTelefonoConductor.replace(/[^0-9]/g, '')}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn-reporte"
-                    style={{ background: '#25d366', color: '#fff', border: 'none', textDecoration: 'none', padding: '7px 13px', fontSize: '12px', borderRadius: '10px', fontWeight: 800 }}
-                  >
-                    <FaWhatsapp size={14} /> WhatsApp
-                  </a>
-                ) : (
-                  <span className="estado-badge estado-pendiente" style={{ fontSize: '10.5px', padding: '4px 10px' }}>
-                    En proceso
-                  </span>
-                )}
               </div>
             </div>
           </div>
