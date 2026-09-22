@@ -497,6 +497,7 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
   const domicilioEstado = reserva.domicilioEstado || reservaOriginal?.domicilioEstado || reservaOriginal?.reservaDetalles?.domicilioEstado || 'EN_PREPARACION'
   const domicilioConductor = reserva.domicilioConductor || reservaOriginal?.domicilioConductor || reservaOriginal?.reservaDetalles?.domicilioConductor || ''
   const domicilioTelefonoConductor = reserva.domicilioTelefonoConductor || reservaOriginal?.domicilioTelefonoConductor || reservaOriginal?.reservaDetalles?.domicilioTelefonoConductor || ''
+  const domicilioPin = reserva.domicilioPin || reservaOriginal?.domicilioPin || reservaOriginal?.reservaDetalles?.domicilioPin || String(Math.abs(Array.from(String(reserva.id || reserva.codigo || '1234')).reduce((acc, char) => (acc * 31 + char.charCodeAt(0)) | 0, 0)) % 9000 + 1000)
 
   // Resolver Medio / Canal de Pago
   const resolverMedioPago = () => {
@@ -779,10 +780,11 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
           </div>
         </div>
 
-        {/* Tarjeta de Servicio a Domicilio VIP (si aplica) */}
+        {/* Tarjeta de Servicio a Domicilio VIP (Rediseño Ultra-Premium) */}
         {esDomicilio && (
           <div className="modal-domicilio-card">
             <div className="modal-domicilio-subcard">
+              {/* Encabezado de la Tarjeta */}
               <div className="modal-domicilio-header">
                 <div className="modal-domicilio-badge-icon">
                   <FaTruck size={22} />
@@ -797,29 +799,51 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
                 </div>
               </div>
 
-              {/* Timeline de Estado del Domicilio en Tiempo Real */}
-              <div className="modal-domicilio-timeline">
-                <div className={`domicilio-step ${['EN_PREPARACION', 'EN_CAMINO', 'ENTREGADO', 'RECOGIDO'].includes(domicilioEstado) ? 'activo' : ''}`}>
-                  <div className="domicilio-step-dot" />
-                  <span>1. En preparación</span>
+              {/* 🔒 TICKET DE CÓDIGO PIN DE SEGURIDAD PARA LA ENTREGA */}
+              <div className="domicilio-pin-ticket">
+                <div className="domicilio-pin-head">
+                  <FaShieldAlt size={14} /> <span>Código PIN de Seguridad para Entrega</span>
                 </div>
-                <div className={`domicilio-step ${['EN_CAMINO', 'ENTREGADO', 'RECOGIDO'].includes(domicilioEstado) ? 'activo' : ''}`}>
-                  <div className="domicilio-step-dot" />
-                  <span>2. Agente en camino</span>
+                <p className="domicilio-pin-desc">
+                  Dicta este código PIN de 4 dígitos al conductor cuando llegue con tu vehículo para verificar tu identidad de forma segura.
+                </p>
+                <div className="domicilio-pin-digits">
+                  {String(domicilioPin).padStart(4, '0').split('').map((digit, idx) => (
+                    <div key={idx} className="domicilio-pin-box">
+                      {digit}
+                    </div>
+                  ))}
                 </div>
-                <div className={`domicilio-step ${['ENTREGADO', 'RECOGIDO'].includes(domicilioEstado) ? 'activo' : ''}`}>
-                  <div className="domicilio-step-dot" />
-                  <span>3. Entregado</span>
-                </div>
-                {esDomicilioDevolucion && (
-                  <div className={`domicilio-step ${['RECOGIDO'].includes(domicilioEstado) ? 'activo' : ''}`}>
-                    <div className="domicilio-step-dot" />
-                    <span>4. Recogido</span>
-                  </div>
-                )}
               </div>
 
-              {/* Información de direcciones de Domicilio */}
+              {/* 🛤️ STEPPER CONECTADO DE PROGRESO DE LOGÍSTICA */}
+              <div className="domicilio-stepper-container">
+                <div className="domicilio-stepper-track">
+                  <div className={`domicilio-stepper-step ${['EN_PREPARACION', 'EN_CAMINO', 'ENTREGADO', 'RECOGIDO'].includes(domicilioEstado) ? (domicilioEstado === 'EN_PREPARACION' ? 'activo' : 'completado') : ''}`}>
+                    <div className="domicilio-step-num">1</div>
+                    <span className="domicilio-step-title">En preparación</span>
+                  </div>
+
+                  <div className={`domicilio-stepper-step ${['EN_CAMINO', 'ENTREGADO', 'RECOGIDO'].includes(domicilioEstado) ? (domicilioEstado === 'EN_CAMINO' ? 'activo' : 'completado') : ''}`}>
+                    <div className="domicilio-step-num">2</div>
+                    <span className="domicilio-step-title">Agente en camino</span>
+                  </div>
+
+                  <div className={`domicilio-stepper-step ${['ENTREGADO', 'RECOGIDO'].includes(domicilioEstado) ? (domicilioEstado === 'ENTREGADO' ? 'activo' : 'completado') : ''}`}>
+                    <div className="domicilio-step-num">3</div>
+                    <span className="domicilio-step-title">Entregado</span>
+                  </div>
+
+                  {esDomicilioDevolucion && (
+                    <div className={`domicilio-stepper-step ${['RECOGIDO'].includes(domicilioEstado) ? 'activo completado' : ''}`}>
+                      <div className="domicilio-step-num">4</div>
+                      <span className="domicilio-step-title">Recogido</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* 📍 GRILLA DE UBICACIONES DE ENTREGA Y RECOGIDA */}
               <div className="modal-domicilio-info-grid">
                 {esDomicilioRetiro && (
                   <div className="domicilio-info-box">
@@ -850,10 +874,10 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
                 )}
               </div>
 
-              {/* Agente Logístico asignado */}
+              {/* 👨‍✈️ AGENTE LOGÍSTICO ASIGNADO */}
               <div className="domicilio-driver-card">
                 <div className="domicilio-driver-icon">
-                  <FaUserCheck size={18} />
+                  <FaUserCheck size={20} />
                 </div>
                 <div className="domicilio-driver-info">
                   <span className="domicilio-driver-label">Agente Logístico Asignado:</span>
