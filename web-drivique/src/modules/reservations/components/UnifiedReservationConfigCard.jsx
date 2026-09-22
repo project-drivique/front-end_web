@@ -78,24 +78,12 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
   const [showOneDayModal, setShowOneDayModal] = useState(false)
   const [conflictAlert, setConflictAlert] = useState(null) // { campo, valor, openDomicilio }
 
-  // Actualizar automáticamente a reserva de 24h (día siguiente) cuando se haya seleccionado la fecha de 1 día Y la hora de retiro
+  // Sincronizar horaFin por defecto a la horaInicio cuando cambia horaInicio
   useEffect(() => {
-    if (reserva?.fechaInicio && reserva?.fechaInicio === reserva?.fechaFin && reserva?.horaInicio) {
-      const [y, m, d] = reserva.fechaFin.split('-').map(Number);
-      const end = new Date(y, m - 1, d);
-      end.setDate(end.getDate() + 1);
-      
-      const yyyy = end.getFullYear();
-      const mm = String(end.getMonth() + 1).padStart(2, '0');
-      const dd = String(end.getDate()).padStart(2, '0');
-      const nextDayStr = `${yyyy}-${mm}-${dd}`;
-      
-      onCambio('fechaFin', nextDayStr);
-      if (!reserva?.horaFin) {
-        onCambio('horaFin', reserva.horaInicio);
-      }
+    if (reserva?.horaInicio && (!reserva?.horaFin || reserva?.horaFin > reserva?.horaInicio)) {
+      onCambio('horaFin', reserva.horaInicio);
     }
-  }, [reserva?.fechaInicio, reserva?.fechaFin, reserva?.horaInicio]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [reserva?.horaInicio]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Payment Options
   const metodoPago = reserva?.metodoPago
