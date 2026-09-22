@@ -1118,6 +1118,67 @@ html.dark .detalle-cerrar-btn-custom:hover {
   min-width: 0;
 }
 
+/* 🔒 CÓDIGO NEQUI STYLE */
+.nequi-pin-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 14px;
+  background: var(--bg-item, #f8fafc);
+  border: 1px solid var(--borde, #e2e8f0);
+  border-radius: 16px;
+  gap: 10px;
+}
+
+.nequi-pin-label {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: var(--texto-second, #64748b);
+  text-transform: uppercase;
+}
+
+.nequi-pin-boxes {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nequi-pin-box {
+  width: 44px;
+  height: 52px;
+  border-radius: 12px;
+  background: var(--bg-tarjeta, #ffffff);
+  border: 2px solid var(--brand-primary, #2563eb);
+  display: grid;
+  place-items: center;
+  font-size: 24px;
+  font-weight: 900;
+  color: var(--brand-primary, #2563eb);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.12);
+  transition: all 0.2s ease;
+}
+
+.nequi-pin-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 2px;
+}
+
+html.dark .nequi-pin-wrapper {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+html.dark .nequi-pin-box {
+  background: #0f172a;
+  border-color: var(--brand-accent, #60a5fa);
+  color: var(--brand-accent, #60a5fa);
+  box-shadow: none;
+}
+
 .modal-domicilio-card {
   width: 100%;
   background: var(--bg-tarjeta, #ffffff);
