@@ -99,6 +99,16 @@ function normalizarReserva(r) {
     cajeroConfirmacion: r.cajeroConfirmacion || undefined,
     observacionesCaja: r.observacionesCaja || '',
     notas: r.notas || '',
+    sucursalRetiro: r.sucursalRetiro || rd.sucursalRetiro || '',
+    sucursalDevolucion: r.sucursalDevolucion || rd.sucursalDevolucion || '',
+    domicilioDireccion: r.domicilioDireccion || rd.domicilioDireccion || '',
+    domicilioDevolucionDireccion: r.domicilioDevolucionDireccion || rd.domicilioDevolucionDireccion || '',
+    domicilioBarrio: r.domicilioBarrio || rd.domicilioBarrio || '',
+    domicilioCiudad: r.domicilioCiudad || rd.domicilioCiudad || '',
+    domicilioReferencias: r.domicilioReferencias || rd.domicilioReferencias || '',
+    domicilioEstado: r.domicilioEstado || rd.domicilioEstado || 'EN_PREPARACION',
+    domicilioConductor: r.domicilioConductor || rd.domicilioConductor || '',
+    domicilioTelefonoConductor: r.domicilioTelefonoConductor || rd.domicilioTelefonoConductor || '',
     fechaCreacion: r.fechaCreacion || new Date().toISOString(),
     historialAcciones: Array.isArray(r.historialAcciones) ? r.historialAcciones : [
       { fecha: r.fechaCreacion || new Date().toISOString(), accion: 'Registro de reserva', usuario: clienteCorreo }
@@ -440,5 +450,62 @@ export const reservationManagementService = {
     })
 
     return actualizadas.find((r) => String(r.id) === String(target.id) || String(r.codigo) === String(target.codigo))
+  },
+
+  /**
+   * Actualizar estado y conductor de logística a domicilio (Encargado de Sucursal)
+   */
+  updateDeliveryLogistics(id, dataLogistica, currentUser) {
+    const lista = readStoredReservations()
+    const now = new Date()
+    const target = lista.find((res) => res.id === id || res.codigo === id)
+    if (!target) throw new Error('notFound')
+    assertReservationScope(currentUser, target)
+
+    const actualizadas = lista.map((res) => {
+      if (res.id === id || res.codigo === id) {
+        const historialNuevo = [
+          ...(res.historialAcciones || []),
+          {
+            fecha: now.toISOString(),
+            accion: `Actualización de Domicilio: Estado [${dataLogistica.domicilioEstado}], Conductor [${dataLogistica.domicilioConductor || 'No asignado'}]`,
+            usuario: currentUser?.nombre || currentUser?.correo || 'Encargado de Sucursal',
+          },
+        ]
+
+        const rd = res.reservaDetalles || {}
+
+        return {
+          ...res,
+          domicilioEstado: dataLogistica.domicilioEstado || res.domicilioEstado || 'EN_PREPARACION',
+          domicilioConductor: dataLogistica.domicilioConductor !== undefined ? dataLogistica.domicilioConductor : res.domicilioConductor,
+          domicilioTelefonoConductor: dataLogistica.domicilioTelefonoConductor !== undefined ? dataLogistica.domicilioTelefonoConductor : res.domicilioTelefonoConductor,
+          reservaDetalles: {
+            ...rd,
+            domicilioEstado: dataLogistica.domicilioEstado || rd.domicilioEstado || 'EN_PREPARACION',
+            domicilioConductor: dataLogistica.domicilioConductor !== undefined ? dataLogistica.domicilioConductor : rd.domicilioConductor,
+            domicilioTelefonoConductor: dataLogistica.domicilioTelefonoConductor !== undefined ? dataLogistica.domicilioTelefonoConductor : rd.domicilioTelefonoConductor,
+          },
+          historialAcciones: historialNuevo,
+        }
+      }
+      return res
+    })
+
+    writeStoredReservations(actualizadas)
+
+    accessAuditService.record({
+      tipo: 'LOGISTICA_DOMICILIO',
+      modulo: 'Gestión de Reservas',
+      accion: `Actualización de logística a domicilio`,
+      actor: currentUser?.nombre || currentUser?.correo || 'Encargado de Sucursal',
+      correo: currentUser?.correo || 'admin@drivique.com',
+      rol: currentUser?.rol || 'encargado_sucursal',
+      sucursal: target.sucursal,
+      resultado: 'EXITO',
+      motivo: `Logística a domicilio actualizada para reserva ${target.codigo || target.id}: Estado ${dataLogistica.domicilioEstado}`,
+    })
+
+    return true
   },
 }

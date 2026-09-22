@@ -15,6 +15,11 @@ import {
   FaClock,
   FaBan,
   FaHistory,
+  FaTruck,
+  FaUserCheck,
+  FaSave,
+  FaMapMarkerAlt,
+  FaWhatsapp,
 } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import { useAuthStore } from '../../../store/authStore'
@@ -56,6 +61,39 @@ export default function ReservationManagementPage() {
 
   // Mensaje de notificación
   const [notice, setNotice] = useState('')
+
+  // Estado para gestión de Domicilio (Encargado de Sucursal)
+  const [domicilioFormState, setDomicilioFormState] = useState({
+    domicilioEstado: 'EN_PREPARACION',
+    domicilioConductor: '',
+    domicilioTelefonoConductor: '',
+  })
+
+  useEffect(() => {
+    if (modalDetalle) {
+      setDomicilioFormState({
+        domicilioEstado: modalDetalle.domicilioEstado || 'EN_PREPARACION',
+        domicilioConductor: modalDetalle.domicilioConductor || '',
+        domicilioTelefonoConductor: modalDetalle.domicilioTelefonoConductor || '',
+      })
+    }
+  }, [modalDetalle])
+
+  const handleGuardarLogisticaDomicilio = (e) => {
+    e.preventDefault()
+    if (!modalDetalle) return
+    try {
+      reservationManagementService.updateDeliveryLogistics(modalDetalle.id, domicilioFormState, user)
+      setNotice('Logística a domicilio actualizada con éxito para el cliente.')
+      setTimeout(() => setNotice(''), 4000)
+      const lista = reservationManagementService.list(user)
+      setReservas(lista)
+      const actualizada = lista.find(r => String(r.id) === String(modalDetalle.id) || String(r.codigo) === String(modalDetalle.codigo))
+      if (actualizada) setModalDetalle(actualizada)
+    } catch (err) {
+      console.error('Error al actualizar logística a domicilio:', err)
+    }
+  }
 
   // Datos para selector en formularios
   const [catalogoVehiculos, setCatalogoVehiculos] = useState([])
@@ -587,6 +625,83 @@ export default function ReservationManagementPage() {
                 </div>
               </div>
             </div>
+
+            {/* Gestión de Logística a Domicilio (Encargado de Sucursal) */}
+            {(modalDetalle.sucursalRetiro === 'domicilio' || modalDetalle.sucursalDevolucion === 'domicilio' || modalDetalle.domicilioDireccion) && (
+              <div className="reserva-detail-card-box" style={{ background: 'var(--city-bg-sub, #f8fafc)', border: '1.5px solid var(--brand-border-light, #cbd5e1)' }}>
+                <h4 style={{ color: 'var(--brand-primary, #2563eb)' }}>
+                  <FaTruck /> Gestión de Logística a Domicilio (Sucursal)
+                </h4>
+                
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 14 }}>
+                  {modalDetalle.domicilioDireccion && (
+                    <div className="reserva-detail-field">
+                      <small>Dirección de Entrega (Retiro):</small>
+                      <strong>{modalDetalle.domicilioDireccion}</strong>
+                      {modalDetalle.domicilioBarrio && <small style={{ color: 'var(--city-muted)' }}>Barrio: {modalDetalle.domicilioBarrio}</small>}
+                      {modalDetalle.domicilioReferencias && <small style={{ color: 'var(--city-muted)' }}>Ref: {modalDetalle.domicilioReferencias}</small>}
+                    </div>
+                  )}
+                  {modalDetalle.domicilioDevolucionDireccion && (
+                    <div className="reserva-detail-field">
+                      <small>Dirección de Recogida (Devolución):</small>
+                      <strong>{modalDetalle.domicilioDevolucionDireccion}</strong>
+                    </div>
+                  )}
+                </div>
+
+                <form onSubmit={handleGuardarLogisticaDomicilio} style={{ display: 'flex', flexDirection: 'column', gap: 12, background: 'var(--bg-tarjeta, #ffffff)', padding: 14, borderRadius: 12, border: '1px solid var(--borde, #e2e8f0)' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                    <div>
+                      <label style={{ display: 'block', fontSize: 11, fontWeight: 700, marginBottom: 4, color: 'var(--city-text)' }}>
+                        Estado de Logística:
+                      </label>
+                      <select
+                        style={{ width: '100%', padding: '8px 10px', borderRadius: 8, border: '1px solid #cbd5e1', fontSize: 12, fontWeight: 700 }}
+                        value={domicilioFormState.domicilioEstado}
+                        onChange={(e) => setDomicilioFormState({ ...domicilioFormState, domicilioEstado: e.target.value })}
+                      >
+                        <option value="EN_PREPARACION">1. En preparación (Sucursal)</option>
+                        <option value="EN_CAMINO">2. Agente en camino a entrega</option>
+                        <option value="ENTREGADO">3. Vehículo entregado al cliente</option>
+                        <option value="RECOGIDO">4. Vehículo recogido y retornado</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label style={{ display: 'block', fontSize: 11, fontWeight: 700, marginBottom: 4, color: 'var(--city-text)' }}>
+                        Nombre del Agente / Conductor:
+                      </label>
+                      <input
+                        style={{ width: '100%', padding: '8px 10px', borderRadius: 8, border: '1px solid #cbd5e1', fontSize: 12 }}
+                        placeholder="ej. Carlos Restrepo (Logística Drivique)"
+                        value={domicilioFormState.domicilioConductor}
+                        onChange={(e) => setDomicilioFormState({ ...domicilioFormState, domicilioConductor: e.target.value })}
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, marginBottom: 4, color: 'var(--city-text)' }}>
+                      Teléfono / WhatsApp del Conductor:
+                    </label>
+                    <input
+                      style={{ width: '100%', padding: '8px 10px', borderRadius: 8, border: '1px solid #cbd5e1', fontSize: 12 }}
+                      placeholder="ej. +57 312 456 7890"
+                      value={domicilioFormState.domicilioTelefonoConductor}
+                      onChange={(e) => setDomicilioFormState({ ...domicilioFormState, domicilioTelefonoConductor: e.target.value })}
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '10px 16px', borderRadius: 10, background: 'var(--brand-primary, #2563eb)', color: '#ffffff', border: 'none', fontWeight: 800, fontSize: 12, cursor: 'pointer', marginTop: 4 }}
+                  >
+                    <FaSave /> Actualizar Logística a Domicilio
+                  </button>
+                </form>
+              </div>
+            )}
 
             {/* Historial de Transiciones / Auditoría */}
             <div className="reserva-timeline-wrap">
