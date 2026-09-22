@@ -791,10 +791,10 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
           </div>
         </div>
 
-        {/* Tarjeta de Servicio a Domicilio VIP (Rediseño Nativo y Unificado) */}
+        {/* Tarjeta de Servicio a Domicilio VIP (Rediseño Estilo Nequi & Ultra Limpio) */}
         {esDomicilio && (
           <div className="modal-reserva-info-card" style={{ marginTop: '16px' }}>
-            {/* Encabezado Nativo Limpio */}
+            {/* Encabezado Principal */}
             <div className="modal-domicilio-head-clean">
               <div className="modal-dato-icon brand-tint">
                 <FaTruck />
@@ -821,8 +821,38 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
               </span>
             </div>
 
-            {/* Grilla de Datos Nativa (2 Columnas) */}
-            <div className="modal-reserva-datos-grid" style={{ marginTop: '14px' }}>
+            {/* 1. CÓDIGO DE DOMICILIO ESTILO NEQUI (ARRIBA DEL TODO) */}
+            <div className="nequi-pin-wrapper" style={{ marginTop: '14px' }}>
+              <span className="nequi-pin-label">Código de Seguridad Domicilio</span>
+              <div className="nequi-pin-boxes">
+                {String(domicilioPin || '4829').padStart(4, '0').slice(0, 4).split('').map((char, i) => (
+                  <div key={i} className="nequi-pin-box">
+                    {revelarPin ? char : '•'}
+                  </div>
+                ))}
+              </div>
+              <div className="nequi-pin-actions">
+                <button
+                  type="button"
+                  onClick={() => setRevelarPin(v => !v)}
+                  className="btn-sec-revelar"
+                >
+                  {revelarPin ? <FaEyeSlash size={13} /> : <FaEye size={13} />}
+                  <span>{revelarPin ? 'Ocultar PIN' : 'Ver PIN'}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleEnviarCorreoPin}
+                  className="btn-sec-correo"
+                >
+                  <FaEnvelope size={13} />
+                  <span>Enviar al correo</span>
+                </button>
+              </div>
+            </div>
+
+            {/* 2. DATOS DE ENTREGA Y RECOGIDA */}
+            <div className="modal-reserva-datos-grid" style={{ marginTop: '12px' }}>
               {/* 📍 Dirección de Entrega */}
               {esDomicilioRetiro && (
                 <div className="modal-reserva-dato-celda">
@@ -859,60 +889,19 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
                 </div>
               )}
 
-              {/* 🔒 PIN de Seguridad OTP */}
-              <div className="modal-reserva-dato-celda">
-                <div className="modal-dato-icon brand-tint">
-                  <FaShieldAlt />
-                </div>
-                <div className="modal-dato-texto">
-                  <span className="modal-dato-label">Código de seguridad PIN</span>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '2px' }}>
-                    <strong className="modal-dato-val" style={{ fontFamily: 'monospace', fontSize: '15px', letterSpacing: '0.12em' }}>
-                      {revelarPin ? domicilioPin : '••••'}
-                    </strong>
-                    <button
-                      type="button"
-                      onClick={() => setRevelarPin(v => !v)}
-                      style={{ border: 'none', background: 'transparent', color: 'var(--brand-primary)', cursor: 'pointer', padding: '2px 4px', fontSize: '14px', display: 'grid', placeItems: 'center' }}
-                      title={revelarPin ? 'Ocultar PIN' : 'Ver PIN'}
-                    >
-                      {revelarPin ? <FaEyeSlash /> : <FaEye />}
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* 📧 Acceso rápido: Enviar PIN al Correo */}
-              <div className="modal-reserva-dato-celda">
-                <div className="modal-dato-icon brand-tint">
-                  <FaEnvelope />
-                </div>
-                <div className="modal-dato-texto">
-                  <span className="modal-dato-label">Verificación por correo</span>
-                  <button
-                    type="button"
-                    onClick={handleEnviarCorreoPin}
-                    className="btn-reporte"
-                    style={{ marginTop: '4px', padding: '4px 10px', fontSize: '11px', minHeight: '30px' }}
-                  >
-                    <FaEnvelope size={11} /> Enviar PIN al correo
-                  </button>
-                </div>
-              </div>
-
-              {/* 👨‍✈️ Agente Logístico Asignado */}
+              {/* 3. CONDUCTOR ASIGNADO */}
               <div className="modal-reserva-dato-celda" style={{ gridColumn: '1 / -1' }}>
-                <div className="modal-dato-icon" style={{ background: domicilioConductor ? 'var(--brand-soft-light)' : 'var(--bg-tarjeta)', color: domicilioConductor ? 'var(--brand-primary)' : 'var(--texto-second)' }}>
+                <div className="modal-dato-icon" style={{ background: domicilioConductor ? '#ecfdf5' : 'var(--bg-tarjeta)', color: domicilioConductor ? '#047857' : 'var(--texto-second)' }}>
                   <FaUserCheck />
                 </div>
-                <div className="modal-dato-texto" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: '10px' }}>
+                <div className="modal-dato-texto" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: '100%', gap: '10px' }}>
                   <div>
-                    <span className="modal-dato-label">Agente logístico asignado</span>
-                    <strong className="modal-dato-val">
-                      {domicilioConductor ? domicilioConductor : 'Asignando agente de logística por la sucursal...'}
+                    <span className="modal-dato-label">Conductor asignado</span>
+                    <strong className="modal-dato-val" style={{ color: domicilioConductor ? 'var(--texto-primary)' : '#b45309' }}>
+                      {domicilioConductor ? domicilioConductor : 'En proceso'}
                     </strong>
                   </div>
-                  {domicilioTelefonoConductor && (
+                  {domicilioTelefonoConductor ? (
                     <a
                       href={`https://wa.me/${domicilioTelefonoConductor.replace(/[^0-9]/g, '')}`}
                       target="_blank"
@@ -922,6 +911,10 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
                     >
                       <FaWhatsapp size={13} /> WhatsApp
                     </a>
+                  ) : (
+                    <span className="estado-badge estado-pendiente" style={{ fontSize: '10px', padding: '4px 10px' }}>
+                      En proceso
+                    </span>
                   )}
                 </div>
               </div>
