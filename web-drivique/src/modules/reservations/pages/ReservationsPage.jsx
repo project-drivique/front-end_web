@@ -809,7 +809,7 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
                   domicilioEstado === 'ENTREGADO' || domicilioEstado === 'RECOGIDO'
                     ? 'estado-finalizada'
                     : (domicilioEstado === 'EN_CAMINO' ? 'estado-confirmada' : 'estado-pendiente')
-                }`}>
+                }`} style={{ position: 'static' }}>
                   {domicilioEstado === 'EN_PREPARACION' && 'En preparación'}
                   {domicilioEstado === 'EN_CAMINO' && 'Agente en camino'}
                   {domicilioEstado === 'ENTREGADO' && 'Entregado'}
@@ -944,7 +944,7 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
                       {domicilioConductor ? domicilioConductor : 'En proceso'}
                     </strong>
 
-                    {domicilioTelefonoConductor ? (
+                    {domicilioTelefonoConductor && (
                       <a
                         href={`https://wa.me/${domicilioTelefonoConductor.replace(/[^0-9]/g, '')}`}
                         target="_blank"
@@ -954,10 +954,6 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
                       >
                         <FaWhatsapp size={13} /> WhatsApp
                       </a>
-                    ) : (
-                      <span className="estado-badge estado-pendiente" style={{ fontSize: '10px', padding: '3px 9px' }}>
-                        En proceso
-                      </span>
                     )}
                   </div>
                 </div>
