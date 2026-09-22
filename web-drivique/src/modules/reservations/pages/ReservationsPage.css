@@ -1102,8 +1102,22 @@ html.dark .detalle-cerrar-btn-custom:hover {
 }
 
 /* ============================================================
-   TARJETA DE SERVICIO A DOMICILIO VIP (REDISEÑO DE UNIDAD & SEGURIDAD OTP)
+   TARJETA DE SERVICIO A DOMICILIO (DISEÑO UNIFICADO Y LIMPIO)
    ============================================================ */
+.modal-domicilio-head-clean {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--borde, #e2e8f0);
+}
+
+.modal-domicilio-head-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
 .modal-domicilio-card {
   width: 100%;
   background: var(--bg-tarjeta, #ffffff);
