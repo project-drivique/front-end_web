@@ -171,7 +171,7 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
   }
 
   const horasRetiro = generarHoras(reserva?.sucursalRetiro, getMinHoraRetiro())
-  const horasDevolucion = generarHoras(reserva?.sucursalDevolucion, getMinHoraDevolucion(), reserva?.horaInicio)
+  const horasDevolucion = generarHoras(reserva?.sucursalDevolucion, null, reserva?.horaInicio)
 
   const handleLugarChange = (campo, valor) => {
     // Mostrar alerta cuando ambos campos quedarían en 'domicilio'
