@@ -500,6 +500,7 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
   const domicilioPin = reserva.domicilioPin || reservaOriginal?.domicilioPin || reservaOriginal?.reservaDetalles?.domicilioPin || String(Math.abs(Array.from(String(reserva.id || reserva.codigo || '1234')).reduce((acc, char) => (acc * 31 + char.charCodeAt(0)) | 0, 0)) % 9000 + 1000)
 
   const [revelarPin, setRevelarPin] = useState(false)
+  const [verMasDomicilio, setVerMasDomicilio] = useState(false)
   const handleEnviarCorreoPin = async () => {
     const destinoCorreo = reserva.clienteCorreo || reserva.datosForm?.correo || usuario?.correo || 'tu correo registrado'
     await showAlert({
@@ -795,26 +796,13 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
         {esDomicilio && (
           <div className="modal-wompi-card" style={{ marginTop: '16px', textAlign: 'left' }}>
             <div className="modal-wompi-subcard" style={{ padding: '22px 20px 20px', alignItems: 'center' }}>
-              {/* Encabezado: Título + Estado */}
-              <div style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px', paddingBottom: '12px', borderBottom: '1px solid var(--borde, #e2e8f0)' }}>
-                <div>
-                  <h3 className="modal-wompi-titulo" style={{ fontSize: '20px', fontWeight: 800, margin: 0, color: 'var(--texto-primary)' }}>
-                    Domicilio
-                  </h3>
-                  <p className="modal-wompi-desc" style={{ fontSize: '12px', margin: '3px 0 0', textAlign: 'left', color: 'var(--texto-second)' }}>
-                    Código de seguridad para validación al momento de la entrega.
-                  </p>
-                </div>
-                <span className={`estado-badge ${
-                  domicilioEstado === 'ENTREGADO' || domicilioEstado === 'RECOGIDO'
-                    ? 'estado-finalizada'
-                    : (domicilioEstado === 'EN_CAMINO' ? 'estado-confirmada' : 'estado-pendiente')
-                }`} style={{ position: 'static' }}>
-                  {domicilioEstado === 'EN_PREPARACION' && 'En preparación'}
-                  {domicilioEstado === 'EN_CAMINO' && 'Agente en camino'}
-                  {domicilioEstado === 'ENTREGADO' && 'Entregado'}
-                  {domicilioEstado === 'RECOGIDO' && 'Recogido'}
-                </span>
+              <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '14px', paddingBottom: '12px', borderBottom: '1px solid var(--borde, #e2e8f0)', textAlign: 'center' }}>
+                <h3 className="modal-wompi-titulo" style={{ fontSize: '20px', fontWeight: 800, margin: 0, color: 'var(--texto-primary)' }}>
+                  Domicilio
+                </h3>
+                <p className="modal-wompi-desc" style={{ fontSize: '12px', margin: '3px 0 0', textAlign: 'center', color: 'var(--texto-second)' }}>
+                  Código de seguridad para validación al momento de la entrega.
+                </p>
               </div>
 
               {/* 1. LOGO ANTES DEL CÓDIGO (logo.png) */}
@@ -851,7 +839,7 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
                 </span>
               </div>
 
-              {/* 3. INFORMACIÓN COMPLETA UNIFICADA EN UNA SOLA TARJETA BLANCA */}
+              {/* 3. INFORMACIÓN COMPLETA UNIFICADA EN UNA SOLA TARJETA BLANCA CON DESPLEGABLE */}
               <div style={{
                 width: '100%',
                 background: 'var(--bg-tarjeta, #ffffff)',
@@ -876,63 +864,24 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
 
                 <div style={{ borderTop: '1px solid var(--borde, #f1f5f9)' }} />
 
-                {/* Entrega a Domicilio */}
-                {esDomicilioRetiro && (
-                  <>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                      <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--texto-second, #64748b)', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
-                        Información de Entrega:
-                      </span>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ fontSize: '12px', color: 'var(--texto-second)' }}>Dirección Exacta:</span>
-                        <strong style={{ fontSize: '13px', color: 'var(--texto-primary)' }}>{domicilioRetiro || 'A convenir'}</strong>
-                      </div>
-                      {(reserva.domicilioBarrio || reservaOriginal?.domicilioBarrio) && (
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <span style={{ fontSize: '12px', color: 'var(--texto-second)' }}>Barrio:</span>
-                          <strong style={{ fontSize: '12.5px', color: 'var(--texto-primary)' }}>{reserva.domicilioBarrio || reservaOriginal?.domicilioBarrio}</strong>
-                        </div>
-                      )}
-                      {(reserva.domicilioReferencias || reservaOriginal?.domicilioReferencias) && (
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <span style={{ fontSize: '12px', color: 'var(--texto-second)' }}>Indicaciones / Ref:</span>
-                          <strong style={{ fontSize: '12px', color: 'var(--texto-primary)' }}>{reserva.domicilioReferencias || reservaOriginal?.domicilioReferencias}</strong>
-                        </div>
-                      )}
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '2px', paddingTop: '4px', borderTop: '1px dashed var(--borde, #cbd5e1)' }}>
-                        <span style={{ fontSize: '12px', color: 'var(--texto-second)' }}>Hora de Entrega (Retiro):</span>
-                        <strong style={{ fontSize: '13px', color: 'var(--texto-primary, #0f172a)' }}>{formatHoraAmPm(reserva.horaInicio) || 'N/A'}</strong>
-                      </div>
-                    </div>
-                    <div style={{ borderTop: '1px solid var(--borde, #f1f5f9)' }} />
-                  </>
-                )}
+                {/* Estado del Domicilio (Ubicado antes de Conductor Asignado) */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--texto-second, #64748b)', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+                    Estado del Domicilio:
+                  </span>
+                  <span className={`estado-badge ${
+                    domicilioEstado === 'ENTREGADO' || domicilioEstado === 'RECOGIDO'
+                      ? 'estado-finalizada'
+                      : (domicilioEstado === 'EN_CAMINO' ? 'estado-confirmada' : 'estado-pendiente')
+                  }`} style={{ position: 'static', margin: 0, fontSize: '10.5px', padding: '4px 10px' }}>
+                    {domicilioEstado === 'EN_PREPARACION' && 'En preparación'}
+                    {domicilioEstado === 'EN_CAMINO' && 'Agente en camino'}
+                    {domicilioEstado === 'ENTREGADO' && 'Entregado'}
+                    {domicilioEstado === 'RECOGIDO' && 'Recogido'}
+                  </span>
+                </div>
 
-                {/* Recogida a Domicilio */}
-                {esDomicilioDevolucion && (
-                  <>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                      <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--texto-second, #64748b)', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
-                        Información de Recogida:
-                      </span>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ fontSize: '12px', color: 'var(--texto-second)' }}>Dirección Exacta:</span>
-                        <strong style={{ fontSize: '13px', color: 'var(--texto-primary)' }}>{domicilioDevolucion || domicilioRetiro || 'A convenir'}</strong>
-                      </div>
-                      {(reserva.domicilioDevolucionBarrio || reservaOriginal?.domicilioDevolucionBarrio || reserva.domicilioBarrio) && (
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <span style={{ fontSize: '12px', color: 'var(--texto-second)' }}>Barrio:</span>
-                          <strong style={{ fontSize: '12.5px', color: 'var(--texto-primary)' }}>{reserva.domicilioDevolucionBarrio || reservaOriginal?.domicilioDevolucionBarrio || reserva.domicilioBarrio}</strong>
-                        </div>
-                      )}
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '2px', paddingTop: '4px', borderTop: '1px dashed var(--borde, #cbd5e1)' }}>
-                        <span style={{ fontSize: '12px', color: 'var(--texto-second)' }}>Hora de Recogida (Devolución):</span>
-                        <strong style={{ fontSize: '13px', color: 'var(--texto-primary, #0f172a)' }}>{formatHoraAmPm(reserva.horaFin) || 'N/A'}</strong>
-                      </div>
-                    </div>
-                    <div style={{ borderTop: '1px solid var(--borde, #f1f5f9)' }} />
-                  </>
-                )}
+                <div style={{ borderTop: '1px solid var(--borde, #f1f5f9)' }} />
 
                 {/* Conductor Asignado */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -956,6 +905,91 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
                       </a>
                     )}
                   </div>
+                </div>
+
+                {/* Detalles completos desplegables (Información de Entrega y Recogida) */}
+                {verMasDomicilio && (
+                  <>
+                    <div style={{ borderTop: '1px solid var(--borde, #f1f5f9)' }} />
+
+                    {/* Entrega a Domicilio */}
+                    {esDomicilioRetiro && (
+                      <>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                          <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--texto-second, #64748b)', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+                            Información de Entrega:
+                          </span>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <span style={{ fontSize: '12px', color: 'var(--texto-second)' }}>Dirección Exacta:</span>
+                            <strong style={{ fontSize: '13px', color: 'var(--texto-primary)' }}>{domicilioRetiro || 'A convenir'}</strong>
+                          </div>
+                          {(reserva.domicilioBarrio || reservaOriginal?.domicilioBarrio) && (
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                              <span style={{ fontSize: '12px', color: 'var(--texto-second)' }}>Barrio:</span>
+                              <strong style={{ fontSize: '12.5px', color: 'var(--texto-primary)' }}>{reserva.domicilioBarrio || reservaOriginal?.domicilioBarrio}</strong>
+                            </div>
+                          )}
+                          {(reserva.domicilioReferencias || reservaOriginal?.domicilioReferencias) && (
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                              <span style={{ fontSize: '12px', color: 'var(--texto-second)' }}>Indicaciones / Ref:</span>
+                              <strong style={{ fontSize: '12px', color: 'var(--texto-primary)' }}>{reserva.domicilioReferencias || reservaOriginal?.domicilioReferencias}</strong>
+                            </div>
+                          )}
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '2px', paddingTop: '4px', borderTop: '1px dashed var(--borde, #cbd5e1)' }}>
+                            <span style={{ fontSize: '12px', color: 'var(--texto-second)' }}>Hora de Entrega (Retiro):</span>
+                            <strong style={{ fontSize: '13px', color: 'var(--texto-primary, #0f172a)' }}>{formatHoraAmPm(reserva.horaInicio) || 'N/A'}</strong>
+                          </div>
+                        </div>
+                        {esDomicilioDevolucion && <div style={{ borderTop: '1px solid var(--borde, #f1f5f9)' }} />}
+                      </>
+                    )}
+
+                    {/* Recogida a Domicilio */}
+                    {esDomicilioDevolucion && (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                        <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--texto-second, #64748b)', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+                          Información de Recogida:
+                        </span>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <span style={{ fontSize: '12px', color: 'var(--texto-second)' }}>Dirección Exacta:</span>
+                          <strong style={{ fontSize: '13px', color: 'var(--texto-primary)' }}>{domicilioDevolucion || domicilioRetiro || 'A convenir'}</strong>
+                        </div>
+                        {(reserva.domicilioDevolucionBarrio || reservaOriginal?.domicilioDevolucionBarrio || reserva.domicilioBarrio) && (
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <span style={{ fontSize: '12px', color: 'var(--texto-second)' }}>Barrio:</span>
+                            <strong style={{ fontSize: '12.5px', color: 'var(--texto-primary)' }}>{reserva.domicilioDevolucionBarrio || reservaOriginal?.domicilioDevolucionBarrio || reserva.domicilioBarrio}</strong>
+                          </div>
+                        )}
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '2px', paddingTop: '4px', borderTop: '1px dashed var(--borde, #cbd5e1)' }}>
+                          <span style={{ fontSize: '12px', color: 'var(--texto-second)' }}>Hora de Recogida (Devolución):</span>
+                          <strong style={{ fontSize: '13px', color: 'var(--texto-primary, #0f172a)' }}>{formatHoraAmPm(reserva.horaFin) || 'N/A'}</strong>
+                        </div>
+                      </div>
+                    )}
+                  </>
+                )}
+
+                {/* Botón Ver más / Ocultar detalles */}
+                <div style={{ borderTop: '1px solid var(--borde, #f1f5f9)', paddingTop: '6px', marginTop: '2px', textAlign: 'center' }}>
+                  <button
+                    type="button"
+                    onClick={() => setVerMasDomicilio(v => !v)}
+                    style={{
+                      border: 'none',
+                      background: 'transparent',
+                      color: 'var(--brand-primary, #2563eb)',
+                      fontSize: '12px',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      padding: '4px 8px'
+                    }}
+                  >
+                    <span>{verMasDomicilio ? 'Ocultar detalles' : 'Ver más detalles'}</span>
+                    <FaChevronDown style={{ transform: verMasDomicilio ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease' }} size={12} />
+                  </button>
                 </div>
               </div>
             </div>
