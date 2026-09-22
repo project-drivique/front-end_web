@@ -1130,24 +1130,32 @@ function TarjetaReserva({ reserva, moneda, onValorar, onReportar, onVerDetalle }
   const reservaAlmacenada = reservationService.obtenerPorReferencia(refBusqueda) || reservationService.obtenerPorReferencia(reserva.id)
   const rawEstado = reservaAlmacenada?.estado || reserva.estado || ''
   const estadoNorm = String(rawEstado).toLowerCase()
-  const estaEnCurso = estadoNorm === 'activa' || estadoNorm === 'en_curso' || estadoNorm === 'en curso'
-  const esConfirmada =
-    estadoNorm === 'confirmada' ||
-    estaEnCurso ||
-    estadoNorm === 'finalizada' ||
-    estadoNorm === 'completada' ||
-    estadoNorm === 'pagada' ||
+  const contratoFirmado = contractService.obtenerPorReserva(refBusqueda) || contractService.obtenerPorReserva(reserva.id)
+  const tieneContratoFirmado = Boolean(contratoFirmado?.firmaUsuarioDataUrl)
+
+  const esPagoConfirmado =
     reserva.pagoEstado === 'aprobado' ||
     reservaAlmacenada?.pagoEstado === 'aprobado' ||
     Boolean(reserva.fechaPagoConfirmado) ||
     Boolean(reservaAlmacenada?.fechaPagoConfirmado)
 
-  const contratoFirmado = contractService.obtenerPorReserva(refBusqueda) || contractService.obtenerPorReserva(reserva.id)
-  const tieneContratoFirmado = Boolean(contratoFirmado?.firmaUsuarioDataUrl)
+  const esRawEnCurso = estadoNorm === 'activa' || estadoNorm === 'en_curso' || estadoNorm === 'en curso'
+  // Una reserva solo puede estar en curso si está pagada Y tiene el contrato digital firmado
+  const estaEnCurso = esRawEnCurso && tieneContratoFirmado && esPagoConfirmado
+  const esFinalizada = estadoNorm === 'finalizada' || estadoNorm === 'completada'
+  const puedeReportar = estaEnCurso || esFinalizada
+
+  const esConfirmada =
+    estadoNorm === 'confirmada' ||
+    estaEnCurso ||
+    esFinalizada ||
+    estadoNorm === 'pagada' ||
+    esPagoConfirmado
+
   const requiereFirma = esConfirmada && !tieneContratoFirmado
 
   const estadoClave = esConfirmada
-    ? (estaEnCurso ? 'activa' : (estadoNorm === 'finalizada' ? 'finalizada' : 'confirmada'))
+    ? (estaEnCurso ? 'activa' : (esFinalizada ? 'finalizada' : 'confirmada'))
     : (reserva.estado || 'pendiente')
 
   const estado = {
@@ -1180,10 +1188,10 @@ function TarjetaReserva({ reserva, moneda, onValorar, onReportar, onVerDetalle }
     <div className="reserva-head"><div><span className="reserva-id">{t('reservas.reservationNumber', { id: reserva.id })}</span><h2>{reserva.vehiculo?.nombre || t('reservas.vehicleUnavailable')}</h2></div><strong className="reserva-total">{formatCurrency(totalTarjeta, moneda)}</strong></div>
     <div className="reserva-meta"><div><FaCalendarAlt /><span><small>{t('reservas.pickup')}</small>{fechaBonita(reserva.fechaInicio, i18n.resolvedLanguage)}</span></div><span className="linea-fechas" />
       <div><FaRegCalendarCheck /><span><small>{t('reservas.return')}</small>{fechaBonita(reserva.fechaFin, i18n.resolvedLanguage)}</span></div><div className="meta-sede"><FaMapMarkerAlt /><span><small>{t('reservas.branch')}</small>{sede}</span></div></div>
-    {reserva.estado === 'finalizada' && <div className="valoracion-resumen">{reserva.valoracion ? <div><Estrellas value={reserva.valoracion.estrellas} disabled /><p>“{reserva.valoracion.comentario || t('reservas.noComment')}”</p></div> : <div><strong>{t('reservas.howWasTrip')}</strong><span>{t('reservas.feedbackHelps')}</span></div>}
+    {esFinalizada && <div className="valoracion-resumen">{reserva.valoracion ? <div><Estrellas value={reserva.valoracion.estrellas} disabled /><p>“{reserva.valoracion.comentario || t('reservas.noComment')}”</p></div> : <div><strong>{t('reservas.howWasTrip')}</strong><span>{t('reservas.feedbackHelps')}</span></div>}
       <button className="btn-link" onClick={() => onValorar(reserva)}>{reserva.valoracion ? t('reservas.editRating') : t('reservas.rateVehicle')}</button></div>}
     <div className="reserva-actions">
-      {estaEnCurso && (
+      {puedeReportar && (
         <button className="btn-reporte" onClick={() => onReportar(reserva)}>
           <FaFlag /> {t('reservas.makeReport')}
         </button>
