@@ -51,7 +51,39 @@ const hoyMs = Date.now()
 const fechaInicioAyer = new Date(hoyMs - 86400000).toISOString().slice(0, 10)
 const fechaFinEnTresDias = new Date(hoyMs + 86400000 * 3).toISOString().slice(0, 10)
 
-const INITIAL_RESERVATIONS_SEED = [];
+const DEMO_RESERVA_FINALIZADA = {
+  id: 'RES-2026-DEMO',
+  referencia: 'RES-2026-DEMO',
+  codigo: 'RES-2026-DEMO',
+  estado: 'FINALIZADA',
+  pagoEstado: 'aprobado',
+  metodoPago: 'wompi',
+  vehiculoId: 1,
+  vehiculoNombre: 'Kia Cerato 2024',
+  sucursalRetiro: 'domicilio',
+  sucursalDevolucion: 'domicilio',
+  domicilioDireccion: 'Calle 20 # 1a W 23',
+  domicilioBarrio: 'Álamos Norte',
+  domicilioReferencias: 'Casa blanca de 2 pisos frente al parque',
+  domicilioPin: '5523',
+  domicilioEstado: 'ENTREGADO',
+  domicilioConductor: 'Carlos Restrepo',
+  domicilioTelefonoConductor: '+57 312 456 7890',
+  fechaInicio: '2026-09-15T07:30:00Z',
+  fechaFin: '2026-09-18T19:00:00Z',
+  horaInicio: '07:30',
+  horaFin: '19:00',
+  total: 420000,
+  totalCOP: 420000,
+  datosForm: {
+    nombre: 'Cliente Drivique',
+    correo: 'cliente@drivique.com',
+    celular: '+57 300 123 4567',
+    numDoc: '1020304050'
+  }
+}
+
+const INITIAL_RESERVATIONS_SEED = [DEMO_RESERVA_FINALIZADA];
 
 export const reservationService = {
   getReservas: () => {
@@ -62,7 +94,12 @@ export const reservationService = {
         reservas = INITIAL_RESERVATIONS_SEED;
         localStorage.setItem(STORAGE_KEY, JSON.stringify(reservas));
       } else {
-        // Limpiar reservas residuales y semillas anteriores
+        // Asegurar que la reserva demo este presente para la vista del usuario
+        if (!reservas.some(r => r.id === 'RES-2026-DEMO' || r.referencia === 'RES-2026-DEMO')) {
+          reservas.unshift(DEMO_RESERVA_FINALIZADA);
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(reservas));
+        }
+        // Limpiar reservas residuales anteriores
         const legacySeedIds = new Set(['RES-2026-9102', 'RES-1788806368641-R95O5FB', 'RES-1788806368641-R9505FB']);
         reservas = reservas.filter(r => !legacySeedIds.has(r.referencia) && !legacySeedIds.has(r.id) && !legacySeedIds.has(r.codigo));
       }
