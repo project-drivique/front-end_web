@@ -1049,6 +1049,19 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
                 <span>{pagandoWompi ? t('reservas.redirectingToWompi', { defaultValue: 'Redirigiendo a Wompi…' }) : t('reservas.payWithWompi', { defaultValue: 'Pagar con Wompi' })}</span>
               </button>
 
+              {/* Plazo para pagar en Wompi */}
+              <div className="modal-cash-deadline-box" style={{ marginTop: '16px', width: '100%' }}>
+                <p className="modal-cash-deadline-title">
+                  {t('reservas.paymentDeadline', { defaultValue: 'PLAZO PARA PAGAR' })}
+                </p>
+                <p className="modal-cash-deadline-text">
+                  {t('reservas.wompiDeadlineNotice', {
+                    horas: reserva.horasLimitePago || 72,
+                    defaultValue: `Tienes aproximadamente ${reserva.horasLimitePago || 72} horas desde ahora para realizar el pago seguro en línea. Si no realizas el pago dentro de este plazo, la reserva se cancelará automáticamente.`
+                  })}
+                </p>
+              </div>
+
             </div>
           </div>
         )}
