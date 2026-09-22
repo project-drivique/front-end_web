@@ -869,16 +869,18 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
                   <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--texto-second, #64748b)', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
                     Estado del Domicilio:
                   </span>
-                  <span className={`estado-badge ${
-                    domicilioEstado === 'ENTREGADO' || domicilioEstado === 'RECOGIDO'
-                      ? 'estado-finalizada'
-                      : (domicilioEstado === 'EN_CAMINO' ? 'estado-confirmada' : 'estado-pendiente')
-                  }`} style={{ position: 'static', margin: 0, fontSize: '10.5px', padding: '4px 10px' }}>
-                    {domicilioEstado === 'EN_PREPARACION' && 'En preparación'}
+                  <strong style={{
+                    fontSize: '13.5px',
+                    fontWeight: 700,
+                    color: (domicilioEstado === 'ENTREGADO' || domicilioEstado === 'RECOGIDO')
+                      ? '#047857'
+                      : (domicilioEstado === 'EN_CAMINO' ? '#1d4ed8' : '#b45309')
+                  }}>
+                    {domicilioEstado === 'EN_PREPARACION' && 'En proceso'}
                     {domicilioEstado === 'EN_CAMINO' && 'Agente en camino'}
                     {domicilioEstado === 'ENTREGADO' && 'Entregado'}
                     {domicilioEstado === 'RECOGIDO' && 'Recogido'}
-                  </span>
+                  </strong>
                 </div>
 
                 <div style={{ borderTop: '1px solid var(--borde, #f1f5f9)' }} />
