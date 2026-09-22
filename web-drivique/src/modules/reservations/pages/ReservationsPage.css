@@ -1150,13 +1150,13 @@ html.dark .detalle-cerrar-btn-custom:hover {
   height: 52px;
   border-radius: 12px;
   background: var(--bg-tarjeta, #ffffff);
-  border: 2px solid var(--brand-primary, #2563eb);
+  border: 1.5px solid var(--borde, #cbd5e1);
   display: grid;
   place-items: center;
-  font-size: 24px;
-  font-weight: 900;
-  color: var(--brand-primary, #2563eb);
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.12);
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--texto-primary, #0f172a);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   transition: all 0.2s ease;
 }
 
@@ -1174,8 +1174,8 @@ html.dark .nequi-pin-wrapper {
 
 html.dark .nequi-pin-box {
   background: #0f172a;
-  border-color: var(--brand-accent, #60a5fa);
-  color: var(--brand-accent, #60a5fa);
+  border-color: #334155;
+  color: #f8fafc;
   box-shadow: none;
 }
 
