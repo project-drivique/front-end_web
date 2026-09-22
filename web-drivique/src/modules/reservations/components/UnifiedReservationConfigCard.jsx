@@ -183,7 +183,7 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
   }
 
   const horasRetiro = generarHoras(reserva?.sucursalRetiro, getMinHoraRetiro())
-  const horasDevolucion = generarHoras(reserva?.sucursalDevolucion, getMinHoraDevolucion())
+  const horasDevolucion = generarHoras(reserva?.sucursalDevolucion, getMinHoraDevolucion(), reserva?.horaInicio)
 
   const handleLugarChange = (campo, valor) => {
     // Mostrar alerta cuando ambos campos quedarían en 'domicilio'
@@ -230,13 +230,35 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
 
       // Devolución anticipada solo si la hora de devolución es menor a la hora máxima permitida (hora de retiro)
       if (minutosDevolucion < minutosRetiro) {
-        const diffMins = minutosRetiro - minutosDevolucion
-        const anticipadaHours = Math.floor(diffMins / 60)
-        const anticipadaMins = diffMins % 60
-        const parts = []
-        if (anticipadaHours > 0) parts.push(`${anticipadaHours} h`)
-        if (anticipadaMins > 0) parts.push(`${anticipadaMins} min`)
-        devolucionAnticipadaText = `${parts.join(' ')} ${t('vehiculo.beforeLimitTime', 'antes de la hora límite')}`
+        const startDt = new Date(`${fInicioStr}T${reserva.horaInicio}:00`)
+        const endDt = new Date(`${fFinStr}T${reserva.horaFin}:00`)
+        const diffMs = endDt - startDt
+        const totalDiffMins = Math.floor(diffMs / (1000 * 60))
+
+        if (totalDiffMins > 0) {
+          const antDias = Math.floor(totalDiffMins / (24 * 60))
+          const remainderMins = totalDiffMins % (24 * 60)
+          const antHoras = Math.floor(remainderMins / 60)
+          const antMins = remainderMins % 60
+
+          if (antDias > 0) {
+            const dayStr = `${antDias} ${antDias === 1 ? t('vehiculo.day', 'día') : t('vehiculo.days', 'días')}`
+            const timeParts = []
+            if (antHoras > 0) timeParts.push(`${antHoras} h`)
+            if (antMins > 0) timeParts.push(`${antMins} min`)
+
+            if (timeParts.length > 0) {
+              devolucionAnticipadaText = `${dayStr}, ${timeParts.join(' ')}`
+            } else {
+              devolucionAnticipadaText = dayStr
+            }
+          } else {
+            const timeParts = []
+            if (antHoras > 0) timeParts.push(`${antHoras} h`)
+            if (antMins > 0) timeParts.push(`${antMins} min`)
+            devolucionAnticipadaText = timeParts.join(' ')
+          }
+        }
       }
     }
   }
@@ -447,22 +469,45 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
           </div>
         </div>
 
-        {/* INFO ALERT: HORA MÁXIMA */}
-        {reserva?.horaInicio && diasReserva > 0 && (
-          <div style={{ marginTop: 8, padding: 12, borderRadius: 12, backgroundColor: 'rgba(59, 130, 246, 0.1)', border: '1px solid rgba(59, 130, 246, 0.2)', display: 'flex', gap: 12 }}>
-            <div style={{ color: '#3b82f6', marginTop: 2 }}>
-              <FaInfoCircle size={16} />
+        {/* INFO ALERT: CÓMPUTO DE DÍAS (OPCIÓN B) */}
+        {reserva?.horaInicio && diasReserva > 0 && (() => {
+          const meses = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic']
+          let fInicioFmt = ''
+          let fFinFmt = ''
+          let fNextFmt = ''
+
+          if (reserva?.fechaInicio) {
+            const p = reserva.fechaInicio.split('T')[0].split('-').map(Number)
+            if (p.length === 3) fInicioFmt = `${p[2]} de ${meses[p[1] - 1]}`
+          }
+          if (reserva?.fechaFin) {
+            const p = reserva.fechaFin.split('T')[0].split('-').map(Number)
+            if (p.length === 3) {
+              fFinFmt = `${p[2]} de ${meses[p[1] - 1]}`
+              const nextDt = new Date(p[0], p[1] - 1, p[2])
+              nextDt.setDate(nextDt.getDate() + 1)
+              fNextFmt = `${nextDt.getDate()} de ${meses[nextDt.getMonth()]}`
+            }
+          }
+
+          const hAmPm = formatHoraAmPm(reserva.horaInicio)
+
+          return (
+            <div style={{ marginTop: 8, padding: 14, borderRadius: 12, backgroundColor: 'rgba(59, 130, 246, 0.08)', border: '1px solid rgba(59, 130, 246, 0.25)', display: 'flex', gap: 12 }}>
+              <div style={{ color: '#2563eb', marginTop: 2, flexShrink: 0 }}>
+                <FaInfoCircle size={18} />
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                <span style={{ fontSize: 13, fontWeight: 700, color: textPrimary }}>
+                  {t('vehiculo.computoReservaTitle', `Cómputo de tus ${diasReserva} ${diasReserva === 1 ? 'día' : 'días'} de alquiler`)}
+                </span>
+                <span style={{ fontSize: 12, color: textSecond, lineHeight: 1.5 }}>
+                  {t('vehiculo.computoReservaDesc', `Tu reserva empieza el ${fInicioFmt} a las ${hAmPm}. Cada día te otorga 24 horas completas: tu ${diasReserva}º día inicia el ${fFinFmt} a las ${hAmPm} y sus 24 horas terminan el ${fNextFmt} a las ${hAmPm}. Entregar antes registra tiempo de devolución anticipada.`)}
+                </span>
+              </div>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              <span style={{ fontSize: 13, fontWeight: 700, color: textPrimary }}>
-                {t('vehiculo.maxReturnTime', 'Hora máxima de devolución:')} {formatHoraAmPm(reserva.horaInicio)}
-              </span>
-              <span style={{ fontSize: 12, color: textSecond, lineHeight: 1.4 }}>
-                {t('vehiculo.maxReturnTimeDesc', `Para cumplir con los ${diasReserva} ${diasReserva === 1 ? 'día' : 'días'} de tu reserva (retiro a las ${formatHoraAmPm(reserva.horaInicio)}), la hora límite de entrega es a las ${formatHoraAmPm(reserva.horaInicio)}. Si seleccionas una hora anterior, se calculará devolución anticipada.`)}
-              </span>
-            </div>
-          </div>
-        )}
+          )
+        })()}
 
         {/* SECCIÓN: HORAS */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">

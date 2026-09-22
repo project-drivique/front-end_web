@@ -99,7 +99,7 @@ export default function ResumenLateral({
     : (reserva.tipoKm === 'limitado' ? kmLimit.precio : (vehiculo.precio || kmLimit.precio || 0));
 
   const dias = reserva.fechaInicio && reserva.fechaFin
-    ? (reserva.fechaInicio === reserva.fechaFin ? 1 : Math.max(1, Math.ceil((new Date(reserva.fechaFin) - new Date(reserva.fechaInicio)) / 86400000) + 1))
+    ? (reserva.fechaInicio === reserva.fechaFin ? 1 : Math.max(1, Math.round((new Date(`${reserva.fechaFin.split('T')[0]}T00:00:00`) - new Date(`${reserva.fechaInicio.split('T')[0]}T00:00:00`)) / 86400000) + 1))
     : 1;
 
   const precioSeguro = seguroIdx !== null ? (vehiculo.seguros[seguroIdx]?.precio ?? 0) : 0;
