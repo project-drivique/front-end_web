@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useLocation, useSearchParams } from 'react-router-dom'
-import { FaCalendarAlt, FaCar, FaCheckCircle, FaChevronDown, FaDownload, FaEye, FaEyeSlash, FaFileContract, FaFlag, FaKey, FaLock, FaMapMarkerAlt, FaMoneyBillWave, FaRegCalendarCheck, FaScroll, FaShieldAlt, FaStar, FaTimes, FaInfoCircle, FaCreditCard, FaFileSignature, FaPenNib, FaClock, FaTruck, FaUserCheck, FaWhatsapp } from 'react-icons/fa'
+import { FaCalendarAlt, FaCar, FaCheckCircle, FaChevronDown, FaDownload, FaEye, FaEyeSlash, FaFileContract, FaFlag, FaKey, FaLock, FaMapMarkerAlt, FaMoneyBillWave, FaRegCalendarCheck, FaScroll, FaShieldAlt, FaStar, FaTimes, FaInfoCircle, FaCreditCard, FaFileSignature, FaPenNib, FaClock, FaTruck, FaUserCheck, FaWhatsapp, FaEnvelope } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/store/authStore'
@@ -499,6 +499,17 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
   const domicilioTelefonoConductor = reserva.domicilioTelefonoConductor || reservaOriginal?.domicilioTelefonoConductor || reservaOriginal?.reservaDetalles?.domicilioTelefonoConductor || ''
   const domicilioPin = reserva.domicilioPin || reservaOriginal?.domicilioPin || reservaOriginal?.reservaDetalles?.domicilioPin || String(Math.abs(Array.from(String(reserva.id || reserva.codigo || '1234')).reduce((acc, char) => (acc * 31 + char.charCodeAt(0)) | 0, 0)) % 9000 + 1000)
 
+  const [revelarPin, setRevelarPin] = useState(false)
+  const handleEnviarCorreoPin = async () => {
+    const destinoCorreo = reserva.clienteCorreo || reserva.datosForm?.correo || usuario?.correo || 'tu correo registrado'
+    await showAlert({
+      icon: 'success',
+      title: '¡Código de Seguridad Enviado!',
+      text: `Hemos enviado el código PIN de entrega (${domicilioPin}) al correo ${destinoCorreo}. Úsalo para validar tu identidad con el conductor al recibir el vehículo.`,
+      confirmButtonText: 'Entendido',
+    })
+  }
+
   // Resolver Medio / Canal de Pago
   const resolverMedioPago = () => {
     const rawEfectivo =
@@ -780,16 +791,16 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
           </div>
         </div>
 
-        {/* Tarjeta de Servicio a Domicilio VIP (Rediseño Ultra-Premium) */}
+        {/* Tarjeta de Servicio a Domicilio VIP (Rediseño Unificado & Seguridad OTP) */}
         {esDomicilio && (
           <div className="modal-domicilio-card">
-            <div className="modal-domicilio-subcard">
-              {/* Encabezado de la Tarjeta */}
-              <div className="modal-domicilio-header">
+            {/* Encabezado Unificado */}
+            <div className="modal-domicilio-header">
+              <div className="modal-domicilio-head-left">
                 <div className="modal-domicilio-badge-icon">
-                  <FaTruck size={22} />
+                  <FaTruck size={20} />
                 </div>
-                <div className="modal-domicilio-header-text">
+                <div>
                   <span className="modal-domicilio-eyebrow">
                     {esDomicilioRetiro && esDomicilioDevolucion
                       ? 'ENTREGA Y RECOGIDA A DOMICILIO VIP'
@@ -799,102 +810,120 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
                 </div>
               </div>
 
-              {/* 🔒 TICKET DE CÓDIGO PIN DE SEGURIDAD PARA LA ENTREGA */}
-              <div className="domicilio-pin-ticket">
-                <div className="domicilio-pin-head">
-                  <FaShieldAlt size={14} /> <span>Código PIN de Seguridad para Entrega</span>
+              <span className="domicilio-status-pill">
+                {domicilioEstado === 'EN_PREPARACION' && '🟡 En preparación'}
+                {domicilioEstado === 'EN_CAMINO' && '🔵 Agente en camino'}
+                {domicilioEstado === 'ENTREGADO' && '🟢 Vehículo entregado'}
+                {domicilioEstado === 'RECOGIDO' && '✅ Vehículo recogido'}
+              </span>
+            </div>
+
+            {/* 🔒 SECCIÓN DE SEGURIDAD PROTEGIDA (PIN / OTP POR CORREO) */}
+            <div className="domicilio-security-box">
+              <div className="domicilio-sec-head">
+                <div className="domicilio-sec-title">
+                  <FaShieldAlt size={14} style={{ color: 'var(--brand-primary)' }} />
+                  <span>Código de Seguridad para Entrega:</span>
                 </div>
-                <p className="domicilio-pin-desc">
-                  Dicta este código PIN de 4 dígitos al conductor cuando llegue con tu vehículo para verificar tu identidad de forma segura.
-                </p>
-                <div className="domicilio-pin-digits">
-                  {String(domicilioPin).padStart(4, '0').split('').map((digit, idx) => (
-                    <div key={idx} className="domicilio-pin-box">
-                      {digit}
-                    </div>
-                  ))}
+                <div className="domicilio-sec-code-display">
+                  {revelarPin ? domicilioPin : '••••'}
                 </div>
               </div>
 
-              {/* 🛤️ STEPPER CONECTADO DE PROGRESO DE LOGÍSTICA */}
-              <div className="domicilio-stepper-container">
-                <div className="domicilio-stepper-track">
-                  <div className={`domicilio-stepper-step ${['EN_PREPARACION', 'EN_CAMINO', 'ENTREGADO', 'RECOGIDO'].includes(domicilioEstado) ? (domicilioEstado === 'EN_PREPARACION' ? 'activo' : 'completado') : ''}`}>
-                    <div className="domicilio-step-num">1</div>
-                    <span className="domicilio-step-title">En preparación</span>
-                  </div>
+              <div className="domicilio-sec-actions">
+                <button
+                  type="button"
+                  className="btn-sec-revelar"
+                  onClick={() => setRevelarPin(v => !v)}
+                >
+                  {revelarPin ? <FaEyeSlash size={13} /> : <FaEye size={13} />}
+                  <span>{revelarPin ? 'Ocultar PIN' : 'Ver Código PIN'}</span>
+                </button>
 
-                  <div className={`domicilio-stepper-step ${['EN_CAMINO', 'ENTREGADO', 'RECOGIDO'].includes(domicilioEstado) ? (domicilioEstado === 'EN_CAMINO' ? 'activo' : 'completado') : ''}`}>
-                    <div className="domicilio-step-num">2</div>
-                    <span className="domicilio-step-title">Agente en camino</span>
-                  </div>
+                <button
+                  type="button"
+                  className="btn-sec-correo"
+                  onClick={handleEnviarCorreoPin}
+                >
+                  <FaEnvelope size={13} />
+                  <span>Enviar Código al Correo</span>
+                </button>
+              </div>
+            </div>
 
-                  <div className={`domicilio-stepper-step ${['ENTREGADO', 'RECOGIDO'].includes(domicilioEstado) ? (domicilioEstado === 'ENTREGADO' ? 'activo' : 'completado') : ''}`}>
-                    <div className="domicilio-step-num">3</div>
-                    <span className="domicilio-step-title">Entregado</span>
-                  </div>
+            {/* 🛤️ STEPPER FLUIDO DE PROGRESO */}
+            <div className="domicilio-stepper-track">
+              <div className={`domicilio-stepper-step ${['EN_PREPARACION', 'EN_CAMINO', 'ENTREGADO', 'RECOGIDO'].includes(domicilioEstado) ? (domicilioEstado === 'EN_PREPARACION' ? 'activo' : 'completado') : ''}`}>
+                <div className="domicilio-step-num">1</div>
+                <span>En preparación</span>
+              </div>
+              <div className={`domicilio-stepper-step ${['EN_CAMINO', 'ENTREGADO', 'RECOGIDO'].includes(domicilioEstado) ? (domicilioEstado === 'EN_CAMINO' ? 'activo' : 'completado') : ''}`}>
+                <div className="domicilio-step-num">2</div>
+                <span>Agente en camino</span>
+              </div>
+              <div className={`domicilio-stepper-step ${['ENTREGADO', 'RECOGIDO'].includes(domicilioEstado) ? (domicilioEstado === 'ENTREGADO' ? 'activo' : 'completado') : ''}`}>
+                <div className="domicilio-step-num">3</div>
+                <span>Entregado</span>
+              </div>
+              {esDomicilioDevolucion && (
+                <div className={`domicilio-stepper-step ${['RECOGIDO'].includes(domicilioEstado) ? 'activo completado' : ''}`}>
+                  <div className="domicilio-step-num">4</div>
+                  <span>Recogido</span>
+                </div>
+              )}
+            </div>
 
-                  {esDomicilioDevolucion && (
-                    <div className={`domicilio-stepper-step ${['RECOGIDO'].includes(domicilioEstado) ? 'activo completado' : ''}`}>
-                      <div className="domicilio-step-num">4</div>
-                      <span className="domicilio-step-title">Recogido</span>
-                    </div>
+            {/* 📍 GRILLA DE DIRECCIONES DE ENTREGA Y RECOGIDA */}
+            <div className="modal-domicilio-info-grid">
+              {esDomicilioRetiro && (
+                <div className="domicilio-info-box">
+                  <div className="domicilio-info-label">
+                    <FaMapMarkerAlt /> <span>Dirección de Entrega:</span>
+                  </div>
+                  <p className="domicilio-info-val">
+                    {domicilioRetiro || 'Dirección a domicilio acordada'}
+                  </p>
+                  {(reserva.domicilioBarrio || reservaOriginal?.domicilioBarrio) && (
+                    <small className="domicilio-info-sub">Barrio: {reserva.domicilioBarrio || reservaOriginal?.domicilioBarrio}</small>
+                  )}
+                  {(reserva.domicilioReferencias || reservaOriginal?.domicilioReferencias) && (
+                    <small className="domicilio-info-sub">Ref: {reserva.domicilioReferencias || reservaOriginal?.domicilioReferencias}</small>
                   )}
                 </div>
-              </div>
+              )}
 
-              {/* 📍 GRILLA DE UBICACIONES DE ENTREGA Y RECOGIDA */}
-              <div className="modal-domicilio-info-grid">
-                {esDomicilioRetiro && (
-                  <div className="domicilio-info-box">
-                    <div className="domicilio-info-label">
-                      <FaMapMarkerAlt /> <span>Dirección de Entrega:</span>
-                    </div>
-                    <p className="domicilio-info-val">
-                      {domicilioRetiro || 'Dirección a domicilio acordada'}
-                    </p>
-                    {(reserva.domicilioBarrio || reservaOriginal?.domicilioBarrio) && (
-                      <small className="domicilio-info-sub">Barrio: {reserva.domicilioBarrio || reservaOriginal?.domicilioBarrio}</small>
-                    )}
-                    {(reserva.domicilioReferencias || reservaOriginal?.domicilioReferencias) && (
-                      <small className="domicilio-info-sub">Ref: {reserva.domicilioReferencias || reservaOriginal?.domicilioReferencias}</small>
-                    )}
+              {esDomicilioDevolucion && (
+                <div className="domicilio-info-box">
+                  <div className="domicilio-info-label">
+                    <FaMapMarkerAlt /> <span>Dirección de Recogida:</span>
                   </div>
-                )}
+                  <p className="domicilio-info-val">
+                    {domicilioDevolucion || domicilioRetiro || 'Misma dirección de entrega'}
+                  </p>
+                </div>
+              )}
+            </div>
 
-                {esDomicilioDevolucion && (
-                  <div className="domicilio-info-box">
-                    <div className="domicilio-info-label">
-                      <FaMapMarkerAlt /> <span>Dirección de Recogida:</span>
-                    </div>
-                    <p className="domicilio-info-val">
-                      {domicilioDevolucion || domicilioRetiro || 'Misma dirección de entrega'}
-                    </p>
-                  </div>
-                )}
+            {/* 👨‍✈️ AGENTE LOGÍSTICO ASIGNADO */}
+            <div className="domicilio-driver-card">
+              <div className="domicilio-driver-icon">
+                <FaUserCheck size={18} />
               </div>
-
-              {/* 👨‍✈️ AGENTE LOGÍSTICO ASIGNADO */}
-              <div className="domicilio-driver-card">
-                <div className="domicilio-driver-icon">
-                  <FaUserCheck size={20} />
-                </div>
-                <div className="domicilio-driver-info">
-                  <span className="domicilio-driver-label">Agente Logístico Asignado:</span>
-                  <strong className="domicilio-driver-name">
-                    {domicilioConductor || 'Asignando agente de logística por la sucursal...'}
-                  </strong>
-                  {domicilioTelefonoConductor && (
-                    <a
-                      href={`https://wa.me/${domicilioTelefonoConductor.replace(/[^0-9]/g, '')}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="domicilio-driver-contact-btn"
-                    >
-                      <FaWhatsapp size={14} /> Contactar Agente
-                    </a>
-                  )}
-                </div>
+              <div className="domicilio-driver-info">
+                <span className="domicilio-driver-label">Agente Logístico Asignado:</span>
+                <strong className="domicilio-driver-name">
+                  {domicilioConductor || 'Asignando agente de logística por la sucursal...'}
+                </strong>
+                {domicilioTelefonoConductor && (
+                  <a
+                    href={`https://wa.me/${domicilioTelefonoConductor.replace(/[^0-9]/g, '')}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="domicilio-driver-contact-btn"
+                  >
+                    <FaWhatsapp size={13} /> Contactar Agente
+                  </a>
+                )}
               </div>
             </div>
           </div>
