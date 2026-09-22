@@ -1101,3 +1101,222 @@ html.dark .detalle-cerrar-btn-custom:hover {
   }
 }
 
+/* ============================================================
+   TARJETA DE SERVICIO A DOMICILIO VIP (CLIENTE)
+   ============================================================ */
+.modal-domicilio-card {
+  width: 100%;
+  background: var(--bg-tarjeta, #ffffff);
+  border: 1px solid var(--borde, #e2e8f0);
+  border-radius: 22px;
+  padding: 16px;
+  margin-bottom: 18px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
+  box-sizing: border-box;
+}
+
+.modal-domicilio-subcard {
+  width: 100%;
+  background: var(--bg-tarjeta, #ffffff);
+  border: 1px solid var(--borde, #e2e8f0);
+  border-radius: 18px;
+  padding: 22px 20px;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.modal-domicilio-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.modal-domicilio-badge-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--brand-secondary, #1e3a8a), var(--brand-primary, #2563eb));
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+}
+
+.modal-domicilio-header-text {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.modal-domicilio-eyebrow {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--brand-primary, #2563eb);
+  text-transform: uppercase;
+}
+
+.modal-domicilio-titulo {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--texto-primary, #0f172a);
+  margin: 2px 0 0;
+}
+
+.modal-domicilio-timeline {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 8px;
+  background: var(--bg-item, #f8fafc);
+  border: 1px solid var(--borde, #e2e8f0);
+  border-radius: 14px;
+  padding: 12px 14px;
+  margin-bottom: 16px;
+}
+
+.domicilio-step {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--texto-second, #64748b);
+  opacity: 0.6;
+  transition: opacity 0.2s, color 0.2s;
+}
+
+.domicilio-step.activo {
+  opacity: 1;
+  color: var(--brand-primary, #2563eb);
+  font-weight: 800;
+}
+
+.domicilio-step-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--texto-second, #94a3b8);
+  flex-shrink: 0;
+}
+
+.domicilio-step.activo .domicilio-step-dot {
+  background: var(--brand-primary, #2563eb);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+}
+
+.modal-domicilio-info-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+  text-align: left;
+}
+
+.domicilio-info-box {
+  background: var(--bg-item, #f8fafc);
+  border: 1px solid var(--borde, #e2e8f0);
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+
+.domicilio-info-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--texto-second, #64748b);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}
+
+.domicilio-info-val {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--texto-primary, #0f172a);
+  margin: 0;
+}
+
+.domicilio-info-sub {
+  display: block;
+  font-size: 11.5px;
+  color: var(--texto-second, #64748b);
+  margin-top: 3px;
+}
+
+.domicilio-driver-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 14px;
+  padding: 12px 14px;
+  text-align: left;
+}
+
+html.dark .domicilio-driver-card {
+  background: rgba(16, 185, 129, 0.12);
+  border-color: #166534;
+}
+
+.domicilio-driver-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: #10b981;
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.domicilio-driver-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.domicilio-driver-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #15803d;
+  text-transform: uppercase;
+}
+
+html.dark .domicilio-driver-label {
+  color: #4ade80;
+}
+
+.domicilio-driver-name {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--texto-primary, #0f172a);
+}
+
+.domicilio-driver-contact-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  padding: 5px 11px;
+  border-radius: 8px;
+  background: #25d366;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 800;
+  text-decoration: none;
+  width: fit-content;
+  transition: transform 0.18s, filter 0.18s;
+}
+
+.domicilio-driver-contact-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+}
+
+

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useLocation, useSearchParams } from 'react-router-dom'
-import { FaCalendarAlt, FaCar, FaCheckCircle, FaChevronDown, FaDownload, FaEye, FaEyeSlash, FaFileContract, FaFlag, FaKey, FaLock, FaMapMarkerAlt, FaMoneyBillWave, FaRegCalendarCheck, FaScroll, FaShieldAlt, FaStar, FaTimes, FaInfoCircle, FaCreditCard, FaFileSignature, FaPenNib, FaClock } from 'react-icons/fa'
+import { FaCalendarAlt, FaCar, FaCheckCircle, FaChevronDown, FaDownload, FaEye, FaEyeSlash, FaFileContract, FaFlag, FaKey, FaLock, FaMapMarkerAlt, FaMoneyBillWave, FaRegCalendarCheck, FaScroll, FaShieldAlt, FaStar, FaTimes, FaInfoCircle, FaCreditCard, FaFileSignature, FaPenNib, FaClock, FaTruck, FaUserCheck, FaWhatsapp } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/store/authStore'
@@ -490,6 +490,14 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
   const lugarRetiro = resolverLugar(lugarRetiroRaw, domicilioRetiro)
   const lugarDevolucion = resolverLugar(lugarDevolucionRaw, domicilioDevolucion)
 
+  const esDomicilioRetiro = lugarRetiroRaw === 'domicilio' || Boolean(domicilioRetiro)
+  const esDomicilioDevolucion = lugarDevolucionRaw === 'domicilio' || Boolean(domicilioDevolucion)
+  const esDomicilio = esDomicilioRetiro || esDomicilioDevolucion
+
+  const domicilioEstado = reserva.domicilioEstado || reservaOriginal?.domicilioEstado || reservaOriginal?.reservaDetalles?.domicilioEstado || 'EN_PREPARACION'
+  const domicilioConductor = reserva.domicilioConductor || reservaOriginal?.domicilioConductor || reservaOriginal?.reservaDetalles?.domicilioConductor || ''
+  const domicilioTelefonoConductor = reserva.domicilioTelefonoConductor || reservaOriginal?.domicilioTelefonoConductor || reservaOriginal?.reservaDetalles?.domicilioTelefonoConductor || ''
+
   // Resolver Medio / Canal de Pago
   const resolverMedioPago = () => {
     const rawEfectivo =
@@ -770,6 +778,103 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
             </div>
           </div>
         </div>
+
+        {/* Tarjeta de Servicio a Domicilio VIP (si aplica) */}
+        {esDomicilio && (
+          <div className="modal-domicilio-card">
+            <div className="modal-domicilio-subcard">
+              <div className="modal-domicilio-header">
+                <div className="modal-domicilio-badge-icon">
+                  <FaTruck size={22} />
+                </div>
+                <div className="modal-domicilio-header-text">
+                  <span className="modal-domicilio-eyebrow">
+                    {esDomicilioRetiro && esDomicilioDevolucion
+                      ? 'ENTREGA Y RECOGIDA A DOMICILIO VIP'
+                      : (esDomicilioRetiro ? 'ENTREGA A DOMICILIO VIP' : 'RECOGIDA A DOMICILIO VIP')}
+                  </span>
+                  <h3 className="modal-domicilio-titulo">Servicio a Domicilio Drivique</h3>
+                </div>
+              </div>
+
+              {/* Timeline de Estado del Domicilio en Tiempo Real */}
+              <div className="modal-domicilio-timeline">
+                <div className={`domicilio-step ${['EN_PREPARACION', 'EN_CAMINO', 'ENTREGADO', 'RECOGIDO'].includes(domicilioEstado) ? 'activo' : ''}`}>
+                  <div className="domicilio-step-dot" />
+                  <span>1. En preparación</span>
+                </div>
+                <div className={`domicilio-step ${['EN_CAMINO', 'ENTREGADO', 'RECOGIDO'].includes(domicilioEstado) ? 'activo' : ''}`}>
+                  <div className="domicilio-step-dot" />
+                  <span>2. Agente en camino</span>
+                </div>
+                <div className={`domicilio-step ${['ENTREGADO', 'RECOGIDO'].includes(domicilioEstado) ? 'activo' : ''}`}>
+                  <div className="domicilio-step-dot" />
+                  <span>3. Entregado</span>
+                </div>
+                {esDomicilioDevolucion && (
+                  <div className={`domicilio-step ${['RECOGIDO'].includes(domicilioEstado) ? 'activo' : ''}`}>
+                    <div className="domicilio-step-dot" />
+                    <span>4. Recogido</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Información de direcciones de Domicilio */}
+              <div className="modal-domicilio-info-grid">
+                {esDomicilioRetiro && (
+                  <div className="domicilio-info-box">
+                    <div className="domicilio-info-label">
+                      <FaMapMarkerAlt /> <span>Dirección de Entrega:</span>
+                    </div>
+                    <p className="domicilio-info-val">
+                      {domicilioRetiro || 'Dirección a domicilio acordada'}
+                    </p>
+                    {(reserva.domicilioBarrio || reservaOriginal?.domicilioBarrio) && (
+                      <small className="domicilio-info-sub">Barrio: {reserva.domicilioBarrio || reservaOriginal?.domicilioBarrio}</small>
+                    )}
+                    {(reserva.domicilioReferencias || reservaOriginal?.domicilioReferencias) && (
+                      <small className="domicilio-info-sub">Ref: {reserva.domicilioReferencias || reservaOriginal?.domicilioReferencias}</small>
+                    )}
+                  </div>
+                )}
+
+                {esDomicilioDevolucion && (
+                  <div className="domicilio-info-box">
+                    <div className="domicilio-info-label">
+                      <FaMapMarkerAlt /> <span>Dirección de Recogida:</span>
+                    </div>
+                    <p className="domicilio-info-val">
+                      {domicilioDevolucion || domicilioRetiro || 'Misma dirección de entrega'}
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Agente Logístico asignado */}
+              <div className="domicilio-driver-card">
+                <div className="domicilio-driver-icon">
+                  <FaUserCheck size={18} />
+                </div>
+                <div className="domicilio-driver-info">
+                  <span className="domicilio-driver-label">Agente Logístico Asignado:</span>
+                  <strong className="domicilio-driver-name">
+                    {domicilioConductor || 'Asignando agente de logística por la sucursal...'}
+                  </strong>
+                  {domicilioTelefonoConductor && (
+                    <a
+                      href={`https://wa.me/${domicilioTelefonoConductor.replace(/[^0-9]/g, '')}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="domicilio-driver-contact-btn"
+                    >
+                      <FaWhatsapp size={14} /> Contactar Agente
+                    </a>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Tarjeta de Pago en Efectivo por Sucursal */}
         {esPendienteEfectivo && (
