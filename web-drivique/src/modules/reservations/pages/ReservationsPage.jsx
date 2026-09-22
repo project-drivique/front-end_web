@@ -839,7 +839,7 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
                   <button
                     type="button"
                     onClick={() => setRevelarPin(v => !v)}
-                    style={{ border: 'none', background: 'transparent', color: 'var(--brand-primary)', cursor: 'pointer', padding: '6px', fontSize: '20px', display: 'grid', placeItems: 'center' }}
+                    style={{ border: 'none', background: 'transparent', color: 'var(--texto-second, #64748b)', cursor: 'pointer', padding: '6px', fontSize: '20px', display: 'grid', placeItems: 'center' }}
                     title={revelarPin ? 'Ocultar Código' : 'Ver Código'}
                   >
                     {revelarPin ? <FaEyeSlash /> : <FaEye />}
@@ -866,7 +866,7 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
               }}>
                 {/* Ciudad */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--brand-primary)', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+                  <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--texto-second, #64748b)', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
                     Ciudad:
                   </span>
                   <strong style={{ fontSize: '13.5px', fontWeight: 700, color: 'var(--texto-primary)' }}>
@@ -880,7 +880,7 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
                 {esDomicilioRetiro && (
                   <>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                      <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--brand-primary)', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+                      <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--texto-second, #64748b)', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
                         Información de Entrega:
                       </span>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -901,7 +901,7 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
                       )}
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '2px', paddingTop: '4px', borderTop: '1px dashed var(--borde, #cbd5e1)' }}>
                         <span style={{ fontSize: '12px', color: 'var(--texto-second)' }}>Hora de Entrega (Retiro):</span>
-                        <strong style={{ fontSize: '13px', color: 'var(--brand-primary)' }}>{formatHoraAmPm(reserva.horaInicio) || 'N/A'}</strong>
+                        <strong style={{ fontSize: '13px', color: 'var(--texto-primary, #0f172a)' }}>{formatHoraAmPm(reserva.horaInicio) || 'N/A'}</strong>
                       </div>
                     </div>
                     <div style={{ borderTop: '1px solid var(--borde, #f1f5f9)' }} />
@@ -912,7 +912,7 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
                 {esDomicilioDevolucion && (
                   <>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                      <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--brand-primary)', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+                      <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--texto-second, #64748b)', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
                         Información de Recogida:
                       </span>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -927,7 +927,7 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
                       )}
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '2px', paddingTop: '4px', borderTop: '1px dashed var(--borde, #cbd5e1)' }}>
                         <span style={{ fontSize: '12px', color: 'var(--texto-second)' }}>Hora de Recogida (Devolución):</span>
-                        <strong style={{ fontSize: '13px', color: 'var(--brand-primary)' }}>{formatHoraAmPm(reserva.horaFin) || 'N/A'}</strong>
+                        <strong style={{ fontSize: '13px', color: 'var(--texto-primary, #0f172a)' }}>{formatHoraAmPm(reserva.horaFin) || 'N/A'}</strong>
                       </div>
                     </div>
                     <div style={{ borderTop: '1px solid var(--borde, #f1f5f9)' }} />
@@ -936,7 +936,7 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
 
                 {/* Conductor Asignado */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--brand-primary)', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+                  <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--texto-second, #64748b)', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
                     Conductor Asignado:
                   </span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
