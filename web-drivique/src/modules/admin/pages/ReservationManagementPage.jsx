@@ -648,6 +648,12 @@ export default function ReservationManagementPage() {
                       <strong>{modalDetalle.domicilioDevolucionDireccion}</strong>
                     </div>
                   )}
+                  <div className="reserva-detail-field" style={{ background: '#eff6ff', padding: '8px 12px', borderRadius: 8, border: '1px solid #bfdbfe', gridColumn: 'span 2' }}>
+                    <small style={{ color: '#1d4ed8', fontWeight: 800 }}>PIN DE SEGURIDAD PARA VALIDAR ENTREGA:</small>
+                    <strong style={{ fontSize: 16, color: '#1e40af', letterSpacing: '0.12em' }}>
+                      {modalDetalle.domicilioPin || '4829'}
+                    </strong>
+                  </div>
                 </div>
 
                 <form onSubmit={handleGuardarLogisticaDomicilio} style={{ display: 'flex', flexDirection: 'column', gap: 12, background: 'var(--bg-tarjeta, #ffffff)', padding: 14, borderRadius: 12, border: '1px solid var(--borde, #e2e8f0)' }}>

@@ -109,6 +109,7 @@ function normalizarReserva(r) {
     domicilioEstado: r.domicilioEstado || rd.domicilioEstado || 'EN_PREPARACION',
     domicilioConductor: r.domicilioConductor || rd.domicilioConductor || '',
     domicilioTelefonoConductor: r.domicilioTelefonoConductor || rd.domicilioTelefonoConductor || '',
+    domicilioPin: r.domicilioPin || rd.domicilioPin || String(Math.abs(Array.from(String(codigo)).reduce((acc, char) => (acc * 31 + char.charCodeAt(0)) | 0, 0)) % 9000 + 1000),
     fechaCreacion: r.fechaCreacion || new Date().toISOString(),
     historialAcciones: Array.isArray(r.historialAcciones) ? r.historialAcciones : [
       { fecha: r.fechaCreacion || new Date().toISOString(), accion: 'Registro de reserva', usuario: clienteCorreo }
