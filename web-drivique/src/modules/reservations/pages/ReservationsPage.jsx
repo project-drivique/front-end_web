@@ -791,18 +791,18 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
           </div>
         </div>
 
-        {/* Tarjeta de Domicilio (Estricto Diseño Solicitado: Limpio, Nequi PIN, Sin iconos de carro) */}
+        {/* Tarjeta de Domicilio (Logo, Código Nequi sin vencimiento, Campos Completos + Hora) */}
         {esDomicilio && (
           <div className="modal-wompi-card" style={{ marginTop: '16px', textAlign: 'left' }}>
-            <div className="modal-wompi-subcard" style={{ padding: '22px 20px 20px' }}>
-              {/* 1. Nombre de la tarjeta: Domicilio + Badge de Estado (SIN ICONO DE CARRO) */}
+            <div className="modal-wompi-subcard" style={{ padding: '22px 20px 20px', alignItems: 'center' }}>
+              {/* Encabezado: Título + Estado */}
               <div style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px', paddingBottom: '12px', borderBottom: '1px solid var(--borde, #e2e8f0)' }}>
                 <div>
                   <h3 className="modal-wompi-titulo" style={{ fontSize: '20px', fontWeight: 800, margin: 0, color: 'var(--texto-primary)' }}>
                     Domicilio
                   </h3>
                   <p className="modal-wompi-desc" style={{ fontSize: '12px', margin: '3px 0 0', textAlign: 'left', color: 'var(--texto-second)' }}>
-                    Código de seguridad para validación con el conductor al momento de la entrega.
+                    Código de seguridad para validación al momento de la entrega.
                   </p>
                 </div>
                 <span className={`estado-badge ${
@@ -815,6 +815,15 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
                   {domicilioEstado === 'ENTREGADO' && 'Entregado'}
                   {domicilioEstado === 'RECOGIDO' && 'Recogido'}
                 </span>
+              </div>
+
+              {/* 1. LOGO ANTES DEL CÓDIGO (logo.png) */}
+              <div className="modal-cash-logo-badge" style={{ marginBottom: '14px', width: '80px', height: '80px', padding: '12px' }}>
+                <img
+                  src={brand?.logoDataUrl || logo}
+                  alt={brand?.name || 'Drivique'}
+                  style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                />
               </div>
 
               {/* 2. CÓDIGO NEQUI (SIN TIEMPO DE VENCIMIENTO) + OJO DE MOSTRAR/OCULTAR */}
@@ -842,37 +851,68 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
                 </span>
               </div>
 
-              {/* 3. INFORMACIÓN DE ENTREGA Y RECOGIDA ORGANIZADA (TEXTO LIMPIO, SIN MINI TARJETAS) */}
-              <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '16px', padding: '0 4px' }}>
+              {/* 3. INFORMACIÓN COMPLETA DE ENTREGA Y RECOGIDA A DOMICILIO (CIUDAD, BARRIO, DIRECCIÓN, REFERENCIAS, HORA) */}
+              <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '16px', padding: '0 4px', textAlign: 'left' }}>
+                
+                {/* Ciudad (Fija según sucursal) */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                  <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--texto-second)', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+                    Ciudad:
+                  </span>
+                  <strong style={{ fontSize: '13.5px', fontWeight: 700, color: 'var(--texto-primary)' }}>
+                    {ciudadPago} <small style={{ fontWeight: 600, color: 'var(--brand-primary)', fontSize: '10px', marginLeft: '6px' }}>(Auto-detectado)</small>
+                  </strong>
+                </div>
+
+                {/* Entrega a Domicilio */}
                 {esDomicilioRetiro && (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', padding: '10px 12px', background: 'var(--bg-item, #f8fafc)', borderRadius: '12px', border: '1px solid var(--borde, #e2e8f0)' }}>
                     <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--brand-primary)', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
-                      Dirección de entrega:
+                      Información de Entrega:
                     </span>
-                    <strong style={{ fontSize: '14px', fontWeight: 700, color: 'var(--texto-primary)' }}>
-                      {domicilioRetiro || 'A convenir'}
-                    </strong>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontSize: '12px', color: 'var(--texto-second)' }}>Dirección Exacta:</span>
+                      <strong style={{ fontSize: '13px', color: 'var(--texto-primary)' }}>{domicilioRetiro || 'A convenir'}</strong>
+                    </div>
                     {(reserva.domicilioBarrio || reservaOriginal?.domicilioBarrio) && (
-                      <span style={{ fontSize: '11.5px', color: 'var(--texto-second)' }}>
-                        Barrio: {reserva.domicilioBarrio || reservaOriginal?.domicilioBarrio}
-                      </span>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span style={{ fontSize: '12px', color: 'var(--texto-second)' }}>Barrio:</span>
+                        <strong style={{ fontSize: '12.5px', color: 'var(--texto-primary)' }}>{reserva.domicilioBarrio || reservaOriginal?.domicilioBarrio}</strong>
+                      </div>
                     )}
+                    {(reserva.domicilioReferencias || reservaOriginal?.domicilioReferencias) && (
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span style={{ fontSize: '12px', color: 'var(--texto-second)' }}>Indicaciones / Ref:</span>
+                        <strong style={{ fontSize: '12px', color: 'var(--texto-primary)' }}>{reserva.domicilioReferencias || reservaOriginal?.domicilioReferencias}</strong>
+                      </div>
+                    )}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '2px', paddingTop: '4px', borderTop: '1px dashed var(--borde, #cbd5e1)' }}>
+                      <span style={{ fontSize: '12px', color: 'var(--texto-second)' }}>Hora de Entrega (Retiro):</span>
+                      <strong style={{ fontSize: '13px', color: 'var(--brand-primary)' }}>{formatHoraAmPm(reserva.horaInicio) || 'N/A'}</strong>
+                    </div>
                   </div>
                 )}
 
+                {/* Recogida a Domicilio */}
                 {esDomicilioDevolucion && (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', padding: '10px 12px', background: 'var(--bg-item, #f8fafc)', borderRadius: '12px', border: '1px solid var(--borde, #e2e8f0)' }}>
                     <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--brand-primary)', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
-                      Dirección de recogida:
+                      Información de Recogida:
                     </span>
-                    <strong style={{ fontSize: '14px', fontWeight: 700, color: 'var(--texto-primary)' }}>
-                      {domicilioDevolucion || domicilioRetiro || 'A convenir'}
-                    </strong>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontSize: '12px', color: 'var(--texto-second)' }}>Dirección Exacta:</span>
+                      <strong style={{ fontSize: '13px', color: 'var(--texto-primary)' }}>{domicilioDevolucion || domicilioRetiro || 'A convenir'}</strong>
+                    </div>
                     {(reserva.domicilioDevolucionBarrio || reservaOriginal?.domicilioDevolucionBarrio || reserva.domicilioBarrio) && (
-                      <span style={{ fontSize: '11.5px', color: 'var(--texto-second)' }}>
-                        Barrio: {reserva.domicilioDevolucionBarrio || reservaOriginal?.domicilioDevolucionBarrio || reserva.domicilioBarrio}
-                      </span>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span style={{ fontSize: '12px', color: 'var(--texto-second)' }}>Barrio:</span>
+                        <strong style={{ fontSize: '12.5px', color: 'var(--texto-primary)' }}>{reserva.domicilioDevolucionBarrio || reservaOriginal?.domicilioDevolucionBarrio || reserva.domicilioBarrio}</strong>
+                      </div>
                     )}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '2px', paddingTop: '4px', borderTop: '1px dashed var(--borde, #cbd5e1)' }}>
+                      <span style={{ fontSize: '12px', color: 'var(--texto-second)' }}>Hora de Recogida (Devolución):</span>
+                      <strong style={{ fontSize: '13px', color: 'var(--brand-primary)' }}>{formatHoraAmPm(reserva.horaFin) || 'N/A'}</strong>
+                    </div>
                   </div>
                 )}
               </div>
