@@ -15,7 +15,6 @@ import {
   FaClock,
   FaBan,
   FaHistory,
-  FaTruck,
   FaUserCheck,
   FaSave,
   FaMapMarkerAlt,
@@ -630,7 +629,7 @@ export default function ReservationManagementPage() {
             {(modalDetalle.sucursalRetiro === 'domicilio' || modalDetalle.sucursalDevolucion === 'domicilio' || modalDetalle.domicilioDireccion) && (
               <div className="reserva-detail-card-box" style={{ background: 'var(--city-bg-sub, #f8fafc)', border: '1.5px solid var(--brand-border-light, #cbd5e1)' }}>
                 <h4 style={{ color: 'var(--brand-primary, #2563eb)' }}>
-                  <FaTruck /> Gestión de Logística a Domicilio (Sucursal)
+                  Gestión de Logística a Domicilio (Sucursal)
                 </h4>
                 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 14 }}>
