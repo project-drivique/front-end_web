@@ -817,15 +817,8 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
                 </span>
               </div>
 
-              {/* 2. CÓDIGO NEQUI (ABAJO DEL TÍTULO) + OJO DE MOSTRAR/OCULTAR (SIN BOTÓN DE CORREO) */}
-              <div className="modal-wompi-total-box" style={{ width: '100%', padding: '14px 18px', marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  <span className="modal-wompi-total-label" style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 800, color: 'var(--texto-second)' }}>
-                    Código de Seguridad:
-                  </span>
-                  <small style={{ fontSize: '10px', color: 'var(--texto-second)' }}>PIN para entrega</small>
-                </div>
-
+              {/* 2. CÓDIGO NEQUI (SIN TIEMPO DE VENCIMIENTO) + OJO DE MOSTRAR/OCULTAR */}
+              <div className="modal-wompi-total-box" style={{ width: '100%', padding: '16px 18px', marginBottom: '16px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   <div className="nequi-pin-boxes">
                     {String(domicilioPin || '4829').padStart(4, '0').slice(0, 4).split('').map((char, i) => (
@@ -837,12 +830,16 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
                   <button
                     type="button"
                     onClick={() => setRevelarPin(v => !v)}
-                    style={{ border: 'none', background: 'transparent', color: 'var(--brand-primary)', cursor: 'pointer', padding: '6px', fontSize: '18px', display: 'grid', placeItems: 'center' }}
+                    style={{ border: 'none', background: 'transparent', color: 'var(--brand-primary)', cursor: 'pointer', padding: '6px', fontSize: '20px', display: 'grid', placeItems: 'center' }}
                     title={revelarPin ? 'Ocultar Código' : 'Ver Código'}
                   >
                     {revelarPin ? <FaEyeSlash /> : <FaEye />}
                   </button>
                 </div>
+
+                <span style={{ fontSize: '11.5px', color: 'var(--texto-second)', textAlign: 'center', fontWeight: 500 }}>
+                  Confírmale este código al conductor encargado de entregar el vehículo.
+                </span>
               </div>
 
               {/* 3. INFORMACIÓN DE ENTREGA Y RECOGIDA ORGANIZADA (TEXTO LIMPIO, SIN MINI TARJETAS) */}
