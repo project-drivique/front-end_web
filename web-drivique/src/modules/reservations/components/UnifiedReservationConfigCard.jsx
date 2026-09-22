@@ -228,16 +228,15 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
       const minutosRetiro = hR * 60 + mR
       const minutosDevolucion = hD * 60 + mD
 
-      // Devolución anticipada solo si la hora de devolución es menor a la hora máxima permitida (hora de retiro)
+      // Devolución anticipada solo si la hora de devolución es menor a la hora de retiro
       if (minutosDevolucion < minutosRetiro) {
-        const startDt = new Date(`${fInicioStr}T${reserva.horaInicio}:00`)
-        const endDt = new Date(`${fFinStr}T${reserva.horaFin}:00`)
-        const diffMs = endDt - startDt
-        const totalDiffMins = Math.floor(diffMs / (1000 * 60))
+        const diffEarlyMins = minutosRetiro - minutosDevolucion
+        const totalContractMins = diasReserva * 24 * 60
+        const totalEffectiveMins = totalContractMins - diffEarlyMins
 
-        if (totalDiffMins > 0) {
-          const antDias = Math.floor(totalDiffMins / (24 * 60))
-          const remainderMins = totalDiffMins % (24 * 60)
+        if (totalEffectiveMins > 0) {
+          const antDias = Math.floor(totalEffectiveMins / (24 * 60))
+          const remainderMins = totalEffectiveMins % (24 * 60)
           const antHoras = Math.floor(remainderMins / 60)
           const antMins = remainderMins % 60
 
