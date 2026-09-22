@@ -1196,6 +1196,24 @@ function TarjetaReserva({ reserva, moneda, onValorar, onReportar, onVerDetalle }
           <FaFlag /> {t('reservas.makeReport')}
         </button>
       )}
+      {esFinalizada && (
+        <button
+          className="btn-secundario"
+          onClick={() => onValorar(reserva)}
+          style={{
+            background: '#fffbeb',
+            color: '#b45309',
+            borderColor: '#fde68a',
+            fontWeight: 800,
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '6px'
+          }}
+        >
+          <FaStar color="#f59e0b" size={13} />
+          <span>{reserva.valoracion ? t('reservas.editRating', { defaultValue: 'Editar Reseña' }) : t('reservas.rateVehicle', { defaultValue: 'Calificar Vehículo' })}</span>
+        </button>
+      )}
       <button className="btn-detalle" onClick={() => onVerDetalle(reserva)}>
         {t('reservas.viewDetail')}
       </button>
