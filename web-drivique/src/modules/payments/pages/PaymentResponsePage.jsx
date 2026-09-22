@@ -82,32 +82,19 @@ export default function RespuestaPagoPage() {
               if (fallbackReserva) {
                 procesarPagoYRedirigir(fallbackReserva, pType);
               } else {
-                setEstadoProceso('error');
-                setMensajeEstado('No se encontró la reserva asociada al pago aprobado.');
+                navigate('/reservas', { replace: true });
               }
             }
-          } else if (status === 'DECLINED' || status === 'VOIDED' || status === 'ERROR') {
-            const reason = data?.data?.status_message || 'Transacción denegada o rechazada por la entidad bancaria.';
-            setEstadoProceso('error');
-            setMensajeEstado(`Tu pago no fue aprobado por Wompi (${reason}). La reserva no fue confirmada y permanece en estado pendiente para que reintentes el pago.`);
-          } else if (status === 'PENDING') {
-            setEstadoProceso('procesando');
-            setMensajeEstado('Tu pago se encuentra en proceso de verificación por la entidad bancaria (ej. PSE/Nequi). Puedes consultar el avance en Mis Reservas.');
           } else {
-            setEstadoProceso('error');
-            setMensajeEstado('No fue posible confirmar la transacción. El estado del pago no fue aprobado.');
+            // Redirección inmediata a Mis Reservas sin pantallas intermedias si el pago no fue aprobado o fue cancelado
+            navigate('/reservas', { replace: true });
           }
         })
         .catch(() => {
-          setEstadoProceso('error');
-          setMensajeEstado('No fue posible validar la transacción con Wompi debido a un problema de conexión a internet. Tu reserva permanece pendiente.');
+          navigate('/reservas', { replace: true });
         });
-    } else if (encontrada) {
-      setEstadoProceso('error');
-      setMensajeEstado('No se detectó un identificador válido de transacción de Wompi.');
     } else {
-      setEstadoProceso('error');
-      setMensajeEstado('No se encontró la referencia de la reserva ni la transacción de pago.');
+      navigate('/reservas', { replace: true });
     }
   }, [transactionId, searchParams, navigate]);
 
