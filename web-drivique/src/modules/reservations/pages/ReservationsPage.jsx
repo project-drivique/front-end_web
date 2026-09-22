@@ -791,24 +791,19 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
           </div>
         </div>
 
-        {/* Tarjeta de Servicio a Domicilio VIP (Formato Nequi Ultra Limpio) */}
+        {/* Tarjeta de Domicilio (Estricto Diseño Solicitado: Limpio, Nequi PIN, Sin iconos de carro) */}
         {esDomicilio && (
           <div className="modal-wompi-card" style={{ marginTop: '16px', textAlign: 'left' }}>
-            <div className="modal-wompi-subcard" style={{ padding: '22px 20px 18px' }}>
-              {/* Encabezado Nativo Limpio */}
+            <div className="modal-wompi-subcard" style={{ padding: '22px 20px 20px' }}>
+              {/* 1. Nombre de la tarjeta: Domicilio + Badge de Estado (SIN ICONO DE CARRO) */}
               <div style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px', paddingBottom: '12px', borderBottom: '1px solid var(--borde, #e2e8f0)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <div className="modal-dato-icon brand-tint">
-                    <FaTruck />
-                  </div>
-                  <div>
-                    <h3 className="modal-wompi-titulo" style={{ fontSize: '18px', margin: 0 }}>
-                      Servicio a Domicilio Drivique
-                    </h3>
-                    <p className="modal-wompi-desc" style={{ fontSize: '12px', margin: '2px 0 0', textAlign: 'left' }}>
-                      Muestra tu código de seguridad al conductor al recibir el vehículo en tu domicilio.
-                    </p>
-                  </div>
+                <div>
+                  <h3 className="modal-wompi-titulo" style={{ fontSize: '20px', fontWeight: 800, margin: 0, color: 'var(--texto-primary)' }}>
+                    Domicilio
+                  </h3>
+                  <p className="modal-wompi-desc" style={{ fontSize: '12px', margin: '3px 0 0', textAlign: 'left', color: 'var(--texto-second)' }}>
+                    Código de seguridad para validación con el conductor al momento de la entrega.
+                  </p>
                 </div>
                 <span className={`estado-badge ${
                   domicilioEstado === 'ENTREGADO' || domicilioEstado === 'RECOGIDO'
@@ -822,95 +817,78 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
                 </span>
               </div>
 
-              {/* 1. CÓDIGO NEQUI DENTRO DEL CUADRO DESTACADO (Estilo TOTAL A PAGAR) */}
-              <div className="modal-wompi-total-box" style={{ padding: '14px 18px', marginBottom: '14px' }}>
+              {/* 2. CÓDIGO NEQUI (ABAJO DEL TÍTULO) + OJO DE MOSTRAR/OCULTAR (SIN BOTÓN DE CORREO) */}
+              <div className="modal-wompi-total-box" style={{ width: '100%', padding: '14px 18px', marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  <span className="modal-wompi-total-label" style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  <span className="modal-wompi-total-label" style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 800, color: 'var(--texto-second)' }}>
                     Código de Seguridad:
                   </span>
-                  <small style={{ fontSize: '10px', color: 'var(--texto-second)' }}>PIN de 4 dígitos para entrega</small>
+                  <small style={{ fontSize: '10px', color: 'var(--texto-second)' }}>PIN para entrega</small>
                 </div>
 
-                <div className="nequi-pin-boxes">
-                  {String(domicilioPin || '4829').padStart(4, '0').slice(0, 4).split('').map((char, i) => (
-                    <div key={i} className="nequi-pin-box">
-                      {revelarPin ? char : '•'}
-                    </div>
-                  ))}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div className="nequi-pin-boxes">
+                    {String(domicilioPin || '4829').padStart(4, '0').slice(0, 4).split('').map((char, i) => (
+                      <div key={i} className="nequi-pin-box">
+                        {revelarPin ? char : '•'}
+                      </div>
+                    ))}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setRevelarPin(v => !v)}
+                    style={{ border: 'none', background: 'transparent', color: 'var(--brand-primary)', cursor: 'pointer', padding: '6px', fontSize: '18px', display: 'grid', placeItems: 'center' }}
+                    title={revelarPin ? 'Ocultar Código' : 'Ver Código'}
+                  >
+                    {revelarPin ? <FaEyeSlash /> : <FaEye />}
+                  </button>
                 </div>
               </div>
 
-              {/* Botones de Acción (Estilo Pagar con Wompi) */}
-              <div style={{ width: '100%', display: 'flex', gap: '10px', marginBottom: '16px' }}>
-                <button
-                  type="button"
-                  className="modal-wompi-btn"
-                  onClick={() => setRevelarPin(v => !v)}
-                  style={{ flex: 1, height: '46px', fontSize: '13px' }}
-                >
-                  {revelarPin ? <FaEyeSlash size={14} /> : <FaEye size={14} />}
-                  <span>{revelarPin ? 'Ocultar Código' : 'Ver Código PIN'}</span>
-                </button>
-                <button
-                  type="button"
-                  className="btn-secundario"
-                  onClick={handleEnviarCorreoPin}
-                  title="Enviar código al correo"
-                  style={{ padding: '0 18px', height: '46px', borderRadius: '14px', fontSize: '13px', fontWeight: 800 }}
-                >
-                  <FaEnvelope size={14} />
-                </button>
-              </div>
-
-              {/* 2. GRILLA DE DIRECCIONES */}
-              <div className="modal-reserva-datos-grid" style={{ width: '100%', marginBottom: '14px' }}>
+              {/* 3. INFORMACIÓN DE ENTREGA Y RECOGIDA ORGANIZADA (TEXTO LIMPIO, SIN MINI TARJETAS) */}
+              <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '16px', padding: '0 4px' }}>
                 {esDomicilioRetiro && (
-                  <div className="modal-reserva-dato-celda">
-                    <div className="modal-dato-icon">
-                      <FaMapMarkerAlt />
-                    </div>
-                    <div className="modal-dato-texto">
-                      <span className="modal-dato-label">Dirección de entrega</span>
-                      <strong className="modal-dato-val">{domicilioRetiro || 'A convenir'}</strong>
-                      {(reserva.domicilioBarrio || reservaOriginal?.domicilioBarrio) && (
-                        <small style={{ fontSize: '10.5px', color: 'var(--texto-second)', marginTop: '2px', display: 'block' }}>
-                          Barrio: {reserva.domicilioBarrio || reservaOriginal?.domicilioBarrio}
-                        </small>
-                      )}
-                    </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                    <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--brand-primary)', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+                      Dirección de entrega:
+                    </span>
+                    <strong style={{ fontSize: '14px', fontWeight: 700, color: 'var(--texto-primary)' }}>
+                      {domicilioRetiro || 'A convenir'}
+                    </strong>
+                    {(reserva.domicilioBarrio || reservaOriginal?.domicilioBarrio) && (
+                      <span style={{ fontSize: '11.5px', color: 'var(--texto-second)' }}>
+                        Barrio: {reserva.domicilioBarrio || reservaOriginal?.domicilioBarrio}
+                      </span>
+                    )}
                   </div>
                 )}
 
                 {esDomicilioDevolucion && (
-                  <div className="modal-reserva-dato-celda">
-                    <div className="modal-dato-icon">
-                      <FaMapMarkerAlt />
-                    </div>
-                    <div className="modal-dato-texto">
-                      <span className="modal-dato-label">Dirección de recogida</span>
-                      <strong className="modal-dato-val">{domicilioDevolucion || domicilioRetiro || 'A convenir'}</strong>
-                      {(reserva.domicilioDevolucionBarrio || reservaOriginal?.domicilioDevolucionBarrio || reserva.domicilioBarrio) && (
-                        <small style={{ fontSize: '10.5px', color: 'var(--texto-second)', marginTop: '2px', display: 'block' }}>
-                          Barrio: {reserva.domicilioDevolucionBarrio || reservaOriginal?.domicilioDevolucionBarrio || reserva.domicilioBarrio}
-                        </small>
-                      )}
-                    </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                    <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--brand-primary)', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+                      Dirección de recogida:
+                    </span>
+                    <strong style={{ fontSize: '14px', fontWeight: 700, color: 'var(--texto-primary)' }}>
+                      {domicilioDevolucion || domicilioRetiro || 'A convenir'}
+                    </strong>
+                    {(reserva.domicilioDevolucionBarrio || reservaOriginal?.domicilioDevolucionBarrio || reserva.domicilioBarrio) && (
+                      <span style={{ fontSize: '11.5px', color: 'var(--texto-second)' }}>
+                        Barrio: {reserva.domicilioDevolucionBarrio || reservaOriginal?.domicilioDevolucionBarrio || reserva.domicilioBarrio}
+                      </span>
+                    )}
                   </div>
                 )}
               </div>
 
-              {/* 3. CONDUCTOR ASIGNADO Y CONTACTO WHATSAPP */}
+              {/* 4. CONDUCTOR ASIGNADO (EN PROCESO HASTA QUE LO ASIGNE LA SUCURSAL) */}
               <div style={{ width: '100%', paddingTop: '14px', borderTop: '1px solid var(--borde, #e2e8f0)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <div className="modal-dato-icon" style={{ background: domicilioConductor ? '#ecfdf5' : 'var(--bg-tarjeta)', color: domicilioConductor ? '#047857' : 'var(--texto-second)' }}>
-                    <FaUserCheck />
-                  </div>
-                  <div>
-                    <span className="modal-dato-label">Conductor asignado</span>
-                    <strong className="modal-dato-val" style={{ color: domicilioConductor ? 'var(--texto-primary)' : '#b45309', fontSize: '13.5px' }}>
-                      {domicilioConductor ? domicilioConductor : 'En proceso'}
-                    </strong>
-                  </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                  <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--texto-second)', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+                    Conductor asignado:
+                  </span>
+                  <strong style={{ fontSize: '14px', fontWeight: 700, color: domicilioConductor ? 'var(--texto-primary)' : '#b45309' }}>
+                    {domicilioConductor ? domicilioConductor : 'En proceso'}
+                  </strong>
                 </div>
 
                 {domicilioTelefonoConductor ? (
@@ -919,12 +897,12 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="btn-reporte"
-                    style={{ background: '#25d366', color: '#fff', border: 'none', textDecoration: 'none', padding: '8px 14px', fontSize: '12px', borderRadius: '10px', fontWeight: 800 }}
+                    style={{ background: '#25d366', color: '#fff', border: 'none', textDecoration: 'none', padding: '7px 13px', fontSize: '12px', borderRadius: '10px', fontWeight: 800 }}
                   >
                     <FaWhatsapp size={14} /> WhatsApp
                   </a>
                 ) : (
-                  <span className="estado-badge estado-pendiente" style={{ fontSize: '10px', padding: '5px 11px' }}>
+                  <span className="estado-badge estado-pendiente" style={{ fontSize: '10.5px', padding: '4px 10px' }}>
                     En proceso
                   </span>
                 )}
