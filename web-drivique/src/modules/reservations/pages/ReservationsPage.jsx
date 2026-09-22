@@ -854,12 +854,12 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
               {/* 3. INFORMACIÓN COMPLETA (CIUDAD, ENTREGA, RECOGIDA, CONDUCTOR) CON DISEÑO 100% UNIFICADO */}
               <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '16px', textAlign: 'left' }}>
                 
-                {/* Ciudad (Fija según sucursal) */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', padding: '10px 12px', background: 'var(--bg-item, #f8fafc)', borderRadius: '12px', border: '1px solid var(--borde, #e2e8f0)' }}>
+                {/* Ciudad (Fija según sucursal - Valor a la derecha) */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', background: 'var(--bg-item, #f8fafc)', borderRadius: '12px', border: '1px solid var(--borde, #e2e8f0)' }}>
                   <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--brand-primary)', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
                     Ciudad:
                   </span>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <strong style={{ fontSize: '13.5px', fontWeight: 700, color: 'var(--texto-primary)' }}>
                       {ciudadPago}
                     </strong>
@@ -921,12 +921,12 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
                   </div>
                 )}
 
-                {/* Conductor Asignado */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', padding: '10px 12px', background: 'var(--bg-item, #f8fafc)', borderRadius: '12px', border: '1px solid var(--borde, #e2e8f0)' }}>
+                {/* Conductor Asignado (Valor a la derecha) */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', background: 'var(--bg-item, #f8fafc)', borderRadius: '12px', border: '1px solid var(--borde, #e2e8f0)' }}>
                   <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--brand-primary)', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
                     Conductor Asignado:
                   </span>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <strong style={{ fontSize: '13.5px', fontWeight: 700, color: domicilioConductor ? 'var(--texto-primary)' : '#b45309' }}>
                       {domicilioConductor ? domicilioConductor : 'En proceso'}
                     </strong>
