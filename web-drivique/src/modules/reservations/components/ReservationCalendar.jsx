@@ -60,7 +60,7 @@ export default function CalendarioReservas({ vehiculoId, sucursal, fechaInicio, 
     const esCerrada = verificarSiSucursalCerradaHoy(fechaISO, sucursal)
     if (esCerrada) return
 
-    const rangoCompleto = fechaInicio && fechaFin
+    const rangoCompleto = fechaInicio && fechaFin && fechaInicio !== fechaFin
     const empezandoDeNuevo = !fechaInicio || rangoCompleto || fechaISO < fechaInicio
 
     if (empezandoDeNuevo) {

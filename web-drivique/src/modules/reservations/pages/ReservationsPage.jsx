@@ -876,7 +876,7 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
           </div>
         )}
 
-        <Contrato reserva={reserva} autoDesbloquear={autoDesbloquear} />
+        {esConfirmadaModal && <Contrato reserva={reserva} autoDesbloquear={autoDesbloquear} />}
 
       </section>
     </div>
