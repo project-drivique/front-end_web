@@ -1150,13 +1150,13 @@ html.dark .detalle-cerrar-btn-custom:hover {
   height: 52px;
   border-radius: 12px;
   background: var(--bg-tarjeta, #ffffff);
-  border: 1.5px solid var(--borde, #cbd5e1);
+  border: 1px solid var(--brand-primary, #2563eb);
   display: grid;
   place-items: center;
   font-size: 22px;
   font-weight: 800;
   color: var(--texto-primary, #0f172a);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.08);
   transition: all 0.2s ease;
 }
 
