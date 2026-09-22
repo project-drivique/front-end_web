@@ -1102,27 +1102,16 @@ html.dark .detalle-cerrar-btn-custom:hover {
 }
 
 /* ============================================================
-   TARJETA DE SERVICIO A DOMICILIO VIP (REDISEÑO ULTRA-PREMIUM)
+   TARJETA DE SERVICIO A DOMICILIO VIP (REDISEÑO DE UNIDAD & SEGURIDAD OTP)
    ============================================================ */
 .modal-domicilio-card {
   width: 100%;
   background: var(--bg-tarjeta, #ffffff);
   border: 1px solid var(--borde, #e2e8f0);
   border-radius: 22px;
-  padding: 16px;
+  padding: 18px 20px;
   margin-bottom: 18px;
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.04);
-  box-sizing: border-box;
-}
-
-.modal-domicilio-subcard {
-  width: 100%;
-  background: var(--bg-tarjeta, #ffffff);
-  border: 1px solid var(--borde, #e2e8f0);
-  border-radius: 18px;
-  padding: 22px 20px;
-  display: flex;
-  flex-direction: column;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
   box-sizing: border-box;
   text-align: left;
 }
@@ -1130,28 +1119,29 @@ html.dark .detalle-cerrar-btn-custom:hover {
 .modal-domicilio-header {
   display: flex;
   align-items: center;
-  gap: 14px;
-  margin-bottom: 18px;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
   padding-bottom: 14px;
-  border-bottom: 1px dashed var(--borde, #e2e8f0);
+  border-bottom: 1px solid var(--borde, #e2e8f0);
+}
+
+.modal-domicilio-head-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .modal-domicilio-badge-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 14px;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
   background: linear-gradient(135deg, var(--brand-primary, #2563eb), var(--brand-secondary, #1d4ed8));
   color: #ffffff;
   display: grid;
   place-items: center;
   flex-shrink: 0;
-  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.25);
-}
-
-.modal-domicilio-header-text {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.22);
 }
 
 .modal-domicilio-eyebrow {
@@ -1163,172 +1153,199 @@ html.dark .detalle-cerrar-btn-custom:hover {
 }
 
 .modal-domicilio-titulo {
-  font-size: 18px;
-  font-weight: 900;
+  font-size: 17px;
+  font-weight: 800;
   color: var(--texto-primary, #0f172a);
-  margin: 2px 0 0;
+  margin: 1px 0 0;
   letter-spacing: -0.01em;
 }
 
-/* 🔒 TICKET DE PIN DE SEGURIDAD */
-.domicilio-pin-ticket {
-  background: linear-gradient(135deg, rgba(37, 99, 235, 0.05), rgba(30, 58, 138, 0.08));
-  border: 1.5px dashed var(--brand-primary, #2563eb);
+.domicilio-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  background: #eff6ff;
+  color: var(--brand-primary, #2563eb);
+  border: 1px solid #bfdbfe;
+}
+
+/* 🔒 SECCIÓN DE SEGURIDAD PROTEGIDA (PIN / OTP POR CORREO) */
+.domicilio-security-box {
+  background: var(--bg-item, #f8fafc);
+  border: 1px solid var(--borde, #e2e8f0);
   border-radius: 16px;
-  padding: 16px 18px;
-  margin-bottom: 18px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
   display: flex;
   flex-direction: column;
+  gap: 10px;
+}
+
+.domicilio-sec-head {
+  display: flex;
   align-items: center;
-  text-align: center;
-  position: relative;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
-html.dark .domicilio-pin-ticket {
-  background: rgba(37, 99, 235, 0.12);
-  border-color: var(--brand-primary, #3b82f6);
-}
-
-.domicilio-pin-head {
+.domicilio-sec-title {
   display: flex;
   align-items: center;
   gap: 6px;
   font-size: 11px;
   font-weight: 800;
-  color: var(--brand-primary, #2563eb);
+  color: var(--texto-primary, #0f172a);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: 4px;
+  letter-spacing: 0.04em;
 }
 
-.domicilio-pin-desc {
-  font-size: 11.5px;
-  color: var(--texto-second, #64748b);
-  margin: 0 0 12px;
-  line-height: 1.4;
-  max-width: 380px;
-}
-
-.domicilio-pin-digits {
+.domicilio-sec-code-display {
   display: flex;
-  gap: 10px;
-  justify-content: center;
-}
-
-.domicilio-pin-box {
-  width: 44px;
-  height: 48px;
-  border-radius: 12px;
-  background: var(--bg-tarjeta, #ffffff);
-  border: 2px solid var(--brand-primary, #2563eb);
-  color: var(--brand-primary, #2563eb);
-  font-size: 22px;
+  align-items: center;
+  gap: 8px;
+  font-family: monospace;
+  font-size: 18px;
   font-weight: 900;
-  display: grid;
-  place-items: center;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
-  transition: transform 0.2s ease;
+  letter-spacing: 0.15em;
+  color: var(--brand-primary, #2563eb);
+  background: var(--bg-tarjeta, #ffffff);
+  padding: 4px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--borde, #cbd5e1);
 }
 
-.domicilio-pin-box:hover {
-  transform: translateY(-2px);
+.domicilio-sec-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
-/* 🛤️ TIMELINE CONECTADO (STEPPER FISICO) */
-.domicilio-stepper-container {
-  margin-bottom: 18px;
-  padding: 14px 10px;
-  background: var(--bg-item, #f8fafc);
-  border: 1px solid var(--borde, #e2e8f0);
-  border-radius: 16px;
+.btn-sec-revelar,
+.btn-sec-correo {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 13px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.18s ease;
 }
 
+.btn-sec-revelar {
+  border: 1px solid var(--borde, #cbd5e1);
+  background: var(--bg-tarjeta, #ffffff);
+  color: var(--texto-primary, #334155);
+}
+
+.btn-sec-revelar:hover {
+  border-color: var(--brand-primary, #2563eb);
+  color: var(--brand-primary, #2563eb);
+}
+
+.btn-sec-correo {
+  border: none;
+  background: var(--brand-primary, #2563eb);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+}
+
+.btn-sec-correo:hover {
+  filter: brightness(0.95);
+  transform: translateY(-1px);
+}
+
+/* 🛤️ STEPPER FLUIDO HORIZONTALES */
 .domicilio-stepper-track {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   position: relative;
+  background: var(--bg-item, #f8fafc);
+  border: 1px solid var(--borde, #e2e8f0);
+  border-radius: 14px;
+  padding: 12px 14px;
+  margin-bottom: 16px;
 }
 
 .domicilio-stepper-step {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  position: relative;
-  z-index: 2;
-  flex: 1;
-  text-align: center;
-}
-
-.domicilio-step-num {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: var(--bg-tarjeta, #ffffff);
-  border: 2px solid var(--borde, #cbd5e1);
-  color: var(--texto-second, #64748b);
-  font-size: 12px;
-  font-weight: 800;
-  display: grid;
-  place-items: center;
-  margin-bottom: 6px;
-  transition: all 0.25s ease;
-}
-
-.domicilio-stepper-step.activo .domicilio-step-num {
-  background: var(--brand-primary, #2563eb);
-  border-color: var(--brand-primary, #2563eb);
-  color: #ffffff;
-  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.2);
-}
-
-.domicilio-stepper-step.completado .domicilio-step-num {
-  background: #10b981;
-  border-color: #10b981;
-  color: #ffffff;
-}
-
-.domicilio-step-title {
-  font-size: 10.5px;
+  gap: 6px;
+  font-size: 11.5px;
   font-weight: 700;
   color: var(--texto-second, #64748b);
-  line-height: 1.25;
+  opacity: 0.55;
+  transition: all 0.2s ease;
 }
 
-.domicilio-stepper-step.activo .domicilio-step-title {
+.domicilio-stepper-step.activo {
+  opacity: 1;
   color: var(--brand-primary, #2563eb);
   font-weight: 900;
 }
 
-/* 📍 GRILLA DE UBICACIONES */
+.domicilio-stepper-step.completado {
+  opacity: 1;
+  color: #10b981;
+}
+
+.domicilio-step-num {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--borde, #cbd5e1);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 800;
+  display: grid;
+  place-items: center;
+}
+
+.domicilio-stepper-step.activo .domicilio-step-num {
+  background: var(--brand-primary, #2563eb);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+}
+
+.domicilio-stepper-step.completado .domicilio-step-num {
+  background: #10b981;
+}
+
+/* 📍 GRILLA DE DIRECCIONES */
 .modal-domicilio-info-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 12px;
-  margin-bottom: 18px;
+  gap: 10px;
+  margin-bottom: 14px;
 }
 
 .domicilio-info-box {
   background: var(--bg-item, #f8fafc);
   border: 1px solid var(--borde, #e2e8f0);
-  border-radius: 14px;
-  padding: 14px;
+  border-radius: 12px;
+  padding: 12px 14px;
 }
 
 .domicilio-info-label {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 10.5px;
+  font-size: 10px;
   font-weight: 900;
   color: var(--brand-primary, #2563eb);
-  margin-bottom: 6px;
+  margin-bottom: 4px;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
 }
 
 .domicilio-info-val {
-  font-size: 13.5px;
+  font-size: 13px;
   font-weight: 800;
   color: var(--texto-primary, #0f172a);
   margin: 0;
@@ -1337,20 +1354,20 @@ html.dark .domicilio-pin-ticket {
 
 .domicilio-info-sub {
   display: block;
-  font-size: 11.5px;
+  font-size: 11px;
   color: var(--texto-second, #64748b);
-  margin-top: 4px;
+  margin-top: 3px;
 }
 
-/* 👨‍✈️ FICHA DE CONDUCTOR LOGÍSTICO */
+/* 👨‍✈️ CONDUCTOR */
 .domicilio-driver-card {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
   background: #f0fdf4;
-  border: 1.5px solid #bbf7d0;
-  border-radius: 16px;
-  padding: 14px 16px;
+  border: 1px solid #bbf7d0;
+  border-radius: 14px;
+  padding: 12px 14px;
 }
 
 html.dark .domicilio-driver-card {
@@ -1359,15 +1376,14 @@ html.dark .domicilio-driver-card {
 }
 
 .domicilio-driver-icon {
-  width: 42px;
-  height: 42px;
-  border-radius: 12px;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
   background: #10b981;
   color: #ffffff;
   display: grid;
   place-items: center;
   flex-shrink: 0;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
 }
 
 .domicilio-driver-info {
@@ -1382,7 +1398,6 @@ html.dark .domicilio-driver-card {
   font-weight: 800;
   color: #15803d;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
 }
 
 html.dark .domicilio-driver-label {
@@ -1390,7 +1405,7 @@ html.dark .domicilio-driver-label {
 }
 
 .domicilio-driver-name {
-  font-size: 13.5px;
+  font-size: 13px;
   font-weight: 800;
   color: var(--texto-primary, #0f172a);
 }
@@ -1399,22 +1414,20 @@ html.dark .domicilio-driver-label {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  margin-top: 6px;
-  padding: 6px 12px;
+  margin-top: 5px;
+  padding: 5px 11px;
   border-radius: 999px;
   background: #25d366;
   color: #ffffff;
-  font-size: 11.5px;
+  font-size: 11px;
   font-weight: 800;
   text-decoration: none;
   width: fit-content;
-  box-shadow: 0 3px 10px rgba(37, 211, 102, 0.25);
-  transition: transform 0.18s, filter 0.18s;
+  transition: transform 0.18s;
 }
 
 .domicilio-driver-contact-btn:hover {
   transform: translateY(-1px);
-  filter: brightness(1.06);
 }
 
 
