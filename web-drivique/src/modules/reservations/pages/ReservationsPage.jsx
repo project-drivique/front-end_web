@@ -123,14 +123,46 @@ function ModalValoracion({ reserva, onClose, onSave }) {
   const { t } = useTranslation()
   const [estrellas, setEstrellas] = useState(reserva.valoracion?.estrellas || 0)
   const [comentario, setComentario] = useState(reserva.valoracion?.comentario || '')
+  const [fotos, setFotos] = useState(reserva.valoracion?.fotos || [])
   const [guardando, setGuardando] = useState(false)
+  const fileInputRef = useRef(null)
 
   const vehiculoNombre = reserva.vehiculo?.nombre || reserva.vehiculoNombre || 'este vehículo'
+
+  const handleFotoAdd = (e) => {
+    const files = Array.from(e.target.files || [])
+    if (!files.length) return
+
+    const slotsDisponibles = 3 - fotos.length
+    if (slotsDisponibles <= 0) return
+
+    const archivosAProcesar = files.slice(0, slotsDisponibles)
+    archivosAProcesar.forEach((file) => {
+      const reader = new FileReader()
+      reader.onload = (event) => {
+        setFotos((prev) => {
+          if (prev.length >= 3) return prev
+          return [...prev, event.target.result]
+        })
+      }
+      reader.readAsDataURL(file)
+    })
+    if (fileInputRef.current) fileInputRef.current.value = ''
+  }
+
+  const handleEliminarFoto = (idx) => {
+    setFotos((prev) => prev.filter((_, i) => i !== idx))
+  }
 
   const guardar = async () => {
     if (!estrellas) return
     setGuardando(true)
-    await onSave(reserva.id, { estrellas, comentario: comentario.trim() })
+    await onSave(reserva.id, {
+      estrellas,
+      comentario: comentario.trim(),
+      fotos,
+      actualizadoEn: new Date().toISOString()
+    })
     setGuardando(false)
     onClose()
   }
@@ -156,10 +188,14 @@ function ModalValoracion({ reserva, onClose, onSave }) {
 
         <Estrellas value={estrellas} onChange={setEstrellas} />
 
+        {/* Sección de Comentario Libre */}
         <div className="minimal-textarea-group">
-          <label className="minimal-label" htmlFor="comentario">
-            {t('reservas.tellMore', { defaultValue: 'Cuéntanos un poco más' })} <span>({t('reservas.optional', { defaultValue: 'opcional' })})</span>
-          </label>
+          <div className="minimal-group-head">
+            <label className="minimal-label" htmlFor="comentario">
+              {t('reservas.tellMore', { defaultValue: 'Cuéntanos un poco más' })} <span>({t('reservas.optional', { defaultValue: 'opcional' })})</span>
+            </label>
+            <span className="minimal-counter">{comentario.length}/400</span>
+          </div>
           <textarea
             id="comentario"
             maxLength={400}
@@ -168,7 +204,52 @@ function ModalValoracion({ reserva, onClose, onSave }) {
             placeholder={t('reservas.commentPlaceholder', { defaultValue: '¿Qué fue lo que más te gustó del vehículo?' })}
             className="minimal-textarea"
           />
-          <div className="minimal-counter">{comentario.length}/400</div>
+        </div>
+
+        {/* Sección de Fotos (opcional, máximo 3) */}
+        <div className="minimal-textarea-group">
+          <div className="minimal-group-head">
+            <label className="minimal-label">
+              Fotos del vehículo <span>({t('reservas.optional', { defaultValue: 'opcional' })})</span>
+            </label>
+            <span className="minimal-counter">{fotos.length}/3</span>
+          </div>
+
+          <div className="minimal-fotos-container">
+            {fotos.map((src, index) => (
+              <div key={index} className="minimal-foto-thumb">
+                <img src={src} alt={`Foto ${index + 1}`} />
+                <button
+                  type="button"
+                  onClick={() => handleEliminarFoto(index)}
+                  className="minimal-foto-del-btn"
+                  title="Eliminar foto"
+                >
+                  <FaTimes size={10} />
+                </button>
+              </div>
+            ))}
+
+            {fotos.length < 3 && (
+              <button
+                type="button"
+                className="minimal-upload-box"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <FaCamera className="upload-cam-icon" />
+                <span>+ Añadir</span>
+              </button>
+            )}
+
+            <input
+              type="file"
+              ref={fileInputRef}
+              accept="image/*"
+              multiple
+              style={{ display: 'none' }}
+              onChange={handleFotoAdd}
+            />
+          </div>
         </div>
 
         <button className="minimal-submit-btn" disabled={!estrellas || guardando} onClick={guardar}>
