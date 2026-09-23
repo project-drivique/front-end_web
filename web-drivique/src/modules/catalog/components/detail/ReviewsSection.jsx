@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { FaStar } from 'react-icons/fa'
+import { FaStar, FaTimes } from 'react-icons/fa'
 import { useAuthStore } from '../../../../store/authStore'
 
 const REVIEW_TEXT_MAP = {
@@ -18,12 +18,12 @@ export default function ReviewsSection({ comentarios = [], calificacion = 0, veh
   const { t, i18n } = useTranslation()
   const usuario = useAuthStore(state => state.usuario)
   const [mostrarTodas, setMostrarTodas] = useState(false)
+  const [fotoAmpliada, setFotoAmpliada] = useState(null)
 
   const bg = embedded ? 'transparent' : (c?.cardBg || 'var(--bg-tarjeta, #ffffff)')
   const border = c?.cardBorder || 'var(--borde, #e2e8f0)'
   const textPrimary = c?.textPrimary || 'var(--texto-primary, #0f172a)'
   const textSecondary = c?.textSecondary || 'var(--texto-second, #64748b)'
-  const titleColor = c?.titleColor || 'var(--brand-secondary, #0f172a)'
   const isDark = c?.isDark || false
 
   const formatearFecha = (fechaStr) => {
@@ -129,7 +129,7 @@ export default function ReviewsSection({ comentarios = [], calificacion = 0, veh
     )
   }
 
-  // Muestra 4 reseñas inicialmente, y el botón Ver más al final de la lista desplegará el resto
+  // Muestra 4 reseñas inicialmente, y el enlace Ver más al final de la lista desplegará el resto
   const visibles = mostrarTodas ? listaComentarios : listaComentarios.slice(0, 4)
 
   const distribution = {
@@ -224,76 +224,81 @@ export default function ReviewsSection({ comentarios = [], calificacion = 0, veh
                   gap: 14,
                   borderBottom: i < visibles.length - 1 ? `1px solid ${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}` : 'none',
                   paddingBottom: 16,
+                  alignItems: 'flex-start'
                 }}
               >
-                {/* Avatar */}
+                {/* Avatar con diseño neutro idéntico para todas las reseñas */}
                 <div
                   style={{
                     width: 38,
                     height: 38,
                     borderRadius: '50%',
-                    background: item.esPropia ? 'var(--brand-primary, #2563eb)' : (isDark ? 'rgba(255,255,255,0.1)' : '#f1f5f9'),
+                    background: isDark ? 'rgba(255,255,255,0.1)' : '#f1f5f9',
                     border: `1px solid ${border}`,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     fontSize: 13,
                     fontWeight: 800,
-                    color: item.esPropia ? '#ffffff' : (isDark ? '#f1f5f9' : '#334155'),
+                    color: isDark ? '#f1f5f9' : '#334155',
                     flexShrink: 0,
                   }}
                 >
                   {item.autor.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()}
                 </div>
 
-                {/* Contenido */}
+                {/* Contenido (Texto a la izquierda, Estrellas y Fotos al lado derecho) */}
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
-                    <div>
-                      <div style={{ fontSize: 13.5, fontWeight: 600, color: isDark ? '#f1f5f9' : '#334155' }}>
-                        {item.autor} {item.esPropia && <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--brand-primary, #2563eb)', marginLeft: 4 }}>(Tu reseña)</span>}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 }}>
+                    {/* Lado Izquierdo: Autor, Fecha, Comentario */}
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 13.5, fontWeight: 600, color: isDark ? '#f1f5f9' : '#334155', marginBottom: 2 }}>
+                        {item.autor} {item.esPropia && <span style={{ fontSize: 11, fontWeight: 600, color: textSecondary, marginLeft: 4 }}>(Tu reseña)</span>}
                       </div>
-                      <div style={{ fontSize: 11.5, color: textSecondary }}>{fechaFormateada}</div>
+                      <div style={{ fontSize: 11.5, color: textSecondary, marginBottom: 6 }}>{fechaFormateada}</div>
+                      <p style={{ fontSize: 13, color: isDark ? '#e2e8f0' : '#334155', margin: 0, lineHeight: 1.5 }}>
+                        {textoTraducido}
+                      </p>
                     </div>
-                    <div style={{ display: 'flex', gap: 2 }}>
-                      {Array.from({ length: 5 }).map((_, j) => (
-                        <FaStar key={j} size={11} color={j < item.calificacion ? '#f59e0b' : (isDark ? '#334155' : '#e2e8f0')} />
-                      ))}
-                    </div>
-                  </div>
 
-                  {/* Texto del comentario + Fotos a la derecha directamente */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, marginTop: 4 }}>
-                    <p style={{ fontSize: 13, color: isDark ? '#e2e8f0' : '#334155', margin: 0, lineHeight: 1.5, flex: 1 }}>
-                      {textoTraducido}
-                    </p>
-
-                    {/* Fotos al lado derecho del texto sin necesidad de Ver más */}
-                    {tieneFotos && (
-                      <div style={{ display: 'flex', gap: 6, flexShrink: 0, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-                        {item.fotos.map((imgSrc, imgIdx) => (
-                          <img
-                            key={imgIdx}
-                            src={imgSrc}
-                            alt={`Foto adjunta ${imgIdx + 1}`}
-                            style={{
-                              width: 54,
-                              height: 54,
-                              borderRadius: 8,
-                              objectFit: 'cover',
-                              border: `1px solid ${border}`
-                            }}
-                          />
+                    {/* Lado Derecho: Estrellas y Fotos al lado directamente con click para ampliar */}
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6, flexShrink: 0 }}>
+                      <div style={{ display: 'flex', gap: 2 }}>
+                        {Array.from({ length: 5 }).map((_, j) => (
+                          <FaStar key={j} size={11} color={j < item.calificacion ? '#f59e0b' : (isDark ? '#334155' : '#e2e8f0')} />
                         ))}
                       </div>
-                    )}
+
+                      {tieneFotos && (
+                        <div style={{ display: 'flex', gap: 6, marginTop: 2, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                          {item.fotos.map((imgSrc, imgIdx) => (
+                            <img
+                              key={imgIdx}
+                              src={imgSrc}
+                              alt={`Foto adjunta ${imgIdx + 1}`}
+                              onClick={() => setFotoAmpliada(imgSrc)}
+                              style={{
+                                width: 48,
+                                height: 48,
+                                borderRadius: 8,
+                                objectFit: 'cover',
+                                border: `1px solid ${border}`,
+                                cursor: 'pointer',
+                                transition: 'transform 0.15s ease, border-color 0.15s ease'
+                              }}
+                              title="Haz clic para ver imagen en pantalla completa"
+                            />
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
             )
           })}
 
-          {/* Enlace "Ver más" / "Ver menos" abajo de las 4 reseñas si hay más comentarios */}
+          {/* Enlace "Ver más" / "Ver menos" abajo de las 4 reseñas */}
           {listaComentarios.length > 4 && (
             <div style={{ textAlign: 'center', marginTop: 8 }}>
               <span
@@ -315,6 +320,78 @@ export default function ReviewsSection({ comentarios = [], calificacion = 0, veh
           )}
         </div>
       </div>
+
+      {/* Modal / Lightbox para ver la foto ampliada en pantalla completa al hacer clic */}
+      {fotoAmpliada && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(15, 23, 42, 0.8)',
+            backdropFilter: 'blur(4px)',
+            zIndex: 99999,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 20
+          }}
+          onClick={() => setFotoAmpliada(null)}
+        >
+          <div
+            style={{
+              position: 'relative',
+              maxWidth: '90vw',
+              maxHeight: '85vh',
+              background: '#ffffff',
+              borderRadius: 16,
+              padding: 12,
+              boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)',
+              overflow: 'hidden'
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={() => setFotoAmpliada(null)}
+              style={{
+                position: 'absolute',
+                top: 16,
+                right: 16,
+                width: 34,
+                height: 34,
+                borderRadius: '50%',
+                background: 'rgba(15, 23, 42, 0.7)',
+                color: '#ffffff',
+                border: 'none',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: 14,
+                zIndex: 2,
+                transition: 'background 0.2s ease'
+              }}
+              title="Cerrar vista"
+            >
+              <FaTimes />
+            </button>
+            <img
+              src={fotoAmpliada}
+              alt="Foto del vehículo ampliada"
+              style={{
+                maxWidth: '100%',
+                maxHeight: '75vh',
+                objectFit: 'contain',
+                borderRadius: 10,
+                display: 'block'
+              }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   )
 }
