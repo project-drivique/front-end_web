@@ -76,48 +76,30 @@ const ETIQUETAS_ESTRELLAS = {
 function Estrellas({ value, onChange, disabled = false }) {
   const { t } = useTranslation()
   const [hoverIndex, setHoverIndex] = useState(0)
-
   const activeRating = hoverIndex || value || 0
 
   return (
-    <div className="selector-estrellas-container">
-      <div
-        className="selector-estrellas-grid"
-        role="radiogroup"
-        aria-label={t('reservas.ratingAria', { defaultValue: 'Calificación por estrellas' })}
-        onMouseLeave={() => !disabled && setHoverIndex(0)}
-      >
-        {[1, 2, 3, 4, 5].map((n) => {
-          const estaActiva = n <= activeRating
-          return (
-            <button
-              key={n}
-              type="button"
-              disabled={disabled}
-              onClick={() => onChange?.(n)}
-              onMouseEnter={() => !disabled && setHoverIndex(n)}
-              className={`estrella-btn ${estaActiva ? 'activa' : ''}`}
-              aria-label={t('reservas.starsCount', { count: n, defaultValue: `${n} estrellas` })}
-              aria-checked={value === n}
-              role="radio"
-            >
-              <FaStar className="estrella-icon" />
-            </button>
-          )
-        })}
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', marginBottom: '18px' }}>
+      <div className="estrellas" role="radiogroup" aria-label={t('reservas.ratingAria')} onMouseLeave={() => !disabled && setHoverIndex(0)}>
+        {[1, 2, 3, 4, 5].map(n => (
+          <button
+            key={n}
+            type="button"
+            disabled={disabled}
+            onClick={() => onChange?.(n)}
+            onMouseEnter={() => !disabled && setHoverIndex(n)}
+            className={n <= activeRating ? 'estrella activa' : 'estrella'}
+            aria-label={t('reservas.starsCount', { count: n })}
+            aria-checked={value === n}
+            role="radio"
+          >
+            <FaStar />
+          </button>
+        ))}
       </div>
-
       {!disabled && (
-        <div className="selector-estrellas-etiqueta">
-          {activeRating > 0 ? (
-            <span className="etiqueta-texto activa">
-              {ETIQUETAS_ESTRELLAS[activeRating]}
-            </span>
-          ) : (
-            <span className="etiqueta-texto hint">
-              Toca las estrellas para calificar (1 a 5)
-            </span>
-          )}
+        <div style={{ minHeight: '20px', fontSize: '13px', fontWeight: 700, color: activeRating > 0 ? 'var(--brand-primary, #2563eb)' : 'var(--texto-second, #94a3b8)' }}>
+          {activeRating > 0 ? ETIQUETAS_ESTRELLAS[activeRating] : 'Toca las estrellas para calificar (1 a 5)'}
         </div>
       )}
     </div>
@@ -128,160 +110,30 @@ function ModalValoracion({ reserva, onClose, onSave }) {
   const { t } = useTranslation()
   const [estrellas, setEstrellas] = useState(reserva.valoracion?.estrellas || 0)
   const [comentario, setComentario] = useState(reserva.valoracion?.comentario || '')
-  const [fotos, setFotos] = useState(reserva.valoracion?.fotos || [])
   const [guardando, setGuardando] = useState(false)
-  const fileInputRef = useRef(null)
-
-  const vehiculoNombre = reserva.vehiculo?.nombre || reserva.vehiculoNombre || 'Vehículo Drivique'
-
-  const handleFotoAdd = (e) => {
-    const files = Array.from(e.target.files || [])
-    if (!files.length) return
-
-    const slotsDisponibles = 3 - fotos.length
-    if (slotsDisponibles <= 0) return
-
-    const archivosAProcesar = files.slice(0, slotsDisponibles)
-    archivosAProcesar.forEach((file) => {
-      const reader = new FileReader()
-      reader.onload = (event) => {
-        setFotos((prev) => {
-          if (prev.length >= 3) return prev
-          return [...prev, event.target.result]
-        })
-      }
-      reader.readAsDataURL(file)
-    })
-    if (fileInputRef.current) fileInputRef.current.value = ''
-  }
-
-  const handleEliminarFoto = (idx) => {
-    setFotos((prev) => prev.filter((_, i) => i !== idx))
-  }
 
   const guardar = async () => {
     if (!estrellas) return
     setGuardando(true)
-    await onSave(reserva.id, {
-      estrellas,
-      comentario: comentario.trim(),
-      fotos,
-      actualizadoEn: new Date().toISOString()
-    })
+    await onSave(reserva.id, { estrellas, comentario: comentario.trim() })
     setGuardando(false)
     onClose()
   }
 
   return (
     <div className="modal-backdrop" onMouseDown={onClose}>
-      <section
-        className="modal-panel modal-calificar-panel"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="titulo-valoracion"
-        onMouseDown={(e) => e.stopPropagation()}
-      >
-        <button className="modal-cerrar" onClick={onClose} aria-label={t('reservas.close', { defaultValue: 'Cerrar' })}>
-          <FaTimes />
-        </button>
-
-        {/* Badge Circular Superior con Estrella Dorada */}
-        <div className="modal-calificar-badge">
-          <FaStar size={26} color="#f59e0b" />
-        </div>
-
-        {/* Título y Nombre del Vehículo */}
-        <h2 id="titulo-valoracion" className="modal-calificar-titulo">
-          Calificar vehículo
-        </h2>
-        <p className="modal-calificar-vehiculo">
-          {vehiculoNombre}
-        </p>
-
-        {/* Pregunta Principal */}
-        <p className="modal-calificar-pregunta">
-          ¿Cómo calificarías el vehículo y tu experiencia?
-        </p>
-
-        {/* Selector de Estrellas interactivo con Hover y Etiquetas dinámicas */}
+      <section className="modal-panel" role="dialog" aria-modal="true" aria-labelledby="titulo-valoracion" onMouseDown={e => e.stopPropagation()}>
+        <button className="modal-cerrar" onClick={onClose} aria-label={t('reservas.close')}><FaTimes /></button>
+        <div className="modal-icon"><FaStar /></div>
+        <p className="eyebrow">{t('reservas.yourExperience')}</p>
+        <h2 id="titulo-valoracion">{reserva.valoracion ? t('reservas.editYourRating') : t('reservas.howWasTrip')}</h2>
+        <p className="modal-subtitulo">{t('reservas.rateExperience', { vehicle: reserva.vehiculo?.nombre })}</p>
         <Estrellas value={estrellas} onChange={setEstrellas} />
-
-        {/* Sección de Opinión / Comentario */}
-        <div className="modal-calificar-campo-group">
-          <div className="modal-calificar-campo-head">
-            <label htmlFor="comentario" className="modal-calificar-label">
-              Cuéntanos tu opinión <span>(opcional)</span>
-            </label>
-            <span className="modal-calificar-counter">{comentario.length}/500</span>
-          </div>
-          <textarea
-            id="comentario"
-            maxLength={500}
-            rows={4}
-            value={comentario}
-            onChange={(e) => setComentario(e.target.value)}
-            placeholder="Describe el estado del auto, limpieza, confort o rendimiento..."
-            className="modal-calificar-textarea"
-          />
-        </div>
-
-        {/* Sección de Fotos del Vehículo (opcional 0/3) */}
-        <div className="modal-calificar-campo-group">
-          <div className="modal-calificar-campo-head">
-            <label className="modal-calificar-label">
-              Fotos del vehículo <span>(opcional)</span>
-            </label>
-            <span className="modal-calificar-counter">{fotos.length}/3</span>
-          </div>
-
-          <div className="modal-calificar-fotos-grid">
-            {fotos.map((src, index) => (
-              <div key={index} className="modal-calificar-foto-thumb">
-                <img src={src} alt={`Foto ${index + 1}`} />
-                <button
-                  type="button"
-                  onClick={() => handleEliminarFoto(index)}
-                  className="modal-calificar-foto-del"
-                  title="Eliminar foto"
-                >
-                  <FaTimes size={10} />
-                </button>
-              </div>
-            ))}
-
-            {fotos.length < 3 && (
-              <button
-                type="button"
-                className="modal-calificar-upload-btn"
-                onClick={() => fileInputRef.current?.click()}
-              >
-                <FaCamera className="upload-icon" />
-                <span>+ Añadir</span>
-              </button>
-            )}
-
-            <input
-              type="file"
-              ref={fileInputRef}
-              accept="image/*"
-              multiple
-              style={{ display: 'none' }}
-              onChange={handleFotoAdd}
-            />
-          </div>
-        </div>
-
-        {/* Botón Principal de Publicar / Guardar */}
-        <button
-          className="btn-primario modal-calificar-submit-btn"
-          disabled={!estrellas || guardando}
-          onClick={guardar}
-        >
-          {guardando
-            ? t('reservas.saving', { defaultValue: 'Guardando...' })
-            : reserva.valoracion
-            ? t('reservas.saveChanges', { defaultValue: 'Guardar cambios' })
-            : t('reservas.publishRating', { defaultValue: 'Publicar reseña' })}
+        <label className="comentario-label" htmlFor="comentario">{t('reservas.tellMore')} <span>({t('reservas.optional')})</span></label>
+        <textarea id="comentario" maxLength={400} value={comentario} onChange={e => setComentario(e.target.value)} placeholder={t('reservas.commentPlaceholder')} />
+        <div className="contador">{comentario.length}/400</div>
+        <button className="btn-primario modal-guardar" disabled={!estrellas || guardando} onClick={guardar}>
+          {guardando ? t('reservas.saving') : reserva.valoracion ? t('reservas.saveChanges') : t('reservas.publishRating')}
         </button>
       </section>
     </div>
