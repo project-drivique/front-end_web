@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { FaStar } from 'react-icons/fa'
+import { FaStar, FaChevronDown, FaChevronUp } from 'react-icons/fa'
 import { useAuthStore } from '../../../../store/authStore'
 
 const REVIEW_TEXT_MAP = {
@@ -16,8 +16,8 @@ const REVIEW_TEXT_MAP = {
 
 export default function ReviewsSection({ comentarios = [], calificacion = 0, vehiculoId = null, vehiculoNombre = '', c, embedded = false }) {
   const { t, i18n } = useTranslation()
-  const [mostrarTodas, setMostrarTodas] = useState(false)
   const usuario = useAuthStore(state => state.usuario)
+  const [fotosAbiertasMap, setFotosAbiertasMap] = useState({})
 
   const bg = embedded ? 'transparent' : (c?.cardBg || 'var(--bg-tarjeta, #ffffff)')
   const border = c?.cardBorder || 'var(--borde, #e2e8f0)'
@@ -36,6 +36,13 @@ export default function ReviewsSection({ comentarios = [], calificacion = 0, veh
     } catch {
       return fechaStr
     }
+  }
+
+  const toggleFotosResena = (idx) => {
+    setFotosAbiertasMap(prev => ({
+      ...prev,
+      [idx]: !prev[idx]
+    }))
   }
 
   // Fusionar reseñas guardadas localmente por el usuario con las reseñas base del catálogo
@@ -62,7 +69,7 @@ export default function ReviewsSection({ comentarios = [], calificacion = 0, veh
           const elementoResena = {
             autor: autorNombre,
             calificacion: Number(val.estrellas || val.calificacion || 5),
-            texto: val.comentario || 'Excelente servicio.',
+            texto: val.comentario || 'Excelente servicio y vehículo.',
             fecha: val.actualizadoEn ? val.actualizadoEn.split('T')[0] : new Date().toISOString().split('T')[0],
             fotos: val.fotos || [],
             esPropia: true
@@ -128,8 +135,6 @@ export default function ReviewsSection({ comentarios = [], calificacion = 0, veh
       </div>
     )
   }
-
-  const visibles = mostrarTodas ? listaComentarios : listaComentarios.slice(0, 3)
 
   const distribution = {
     5: listaComentarios.filter(c => Math.round(c.calificacion) === 5).length,
@@ -208,18 +213,21 @@ export default function ReviewsSection({ comentarios = [], calificacion = 0, veh
           </div>
         </div>
 
-        {/* Columna Derecha: Lista de Comentarios */}
+        {/* Columna Derecha: Lista Completa de Comentarios sin botón global */}
         <div className="resenas-lista" style={{ flex: '1 1 260px', minWidth: 220, display: 'flex', flexDirection: 'column', gap: 14 }}>
-          {visibles.map((item, i) => {
+          {listaComentarios.map((item, i) => {
             const textoTraducido = REVIEW_TEXT_MAP[item.texto] ? t(REVIEW_TEXT_MAP[item.texto]) : item.texto
             const fechaFormateada = formatearFecha(item.fecha || '2026-04-15')
+            const tieneFotos = Boolean(item.fotos && item.fotos.length > 0)
+            const fotosAbiertas = Boolean(fotosAbiertasMap[i])
+
             return (
               <div
                 key={i}
                 style={{
                   display: 'flex',
                   gap: 14,
-                  borderBottom: i < visibles.length - 1 ? `1px solid ${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}` : 'none',
+                  borderBottom: i < listaComentarios.length - 1 ? `1px solid ${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}` : 'none',
                   paddingBottom: 16,
                 }}
               >
@@ -262,53 +270,63 @@ export default function ReviewsSection({ comentarios = [], calificacion = 0, veh
                     {textoTraducido}
                   </p>
 
-                  {/* Renderizado de Fotos Adjuntas */}
-                  {item.fotos && item.fotos.length > 0 && (
-                    <div style={{ display: 'flex', gap: 8, marginTop: 10, flexWrap: 'wrap' }}>
-                      {item.fotos.map((imgSrc, imgIdx) => (
-                        <img
-                          key={imgIdx}
-                          src={imgSrc}
-                          alt={`Foto adjunta ${imgIdx + 1}`}
-                          style={{
-                            width: 60,
-                            height: 60,
-                            borderRadius: 10,
-                            objectFit: 'cover',
-                            border: `1px solid ${border}`
-                          }}
-                        />
-                      ))}
+                  {/* Botón Ver más / Ver menos ÚNICAMENTE si el usuario subió fotos en esa reseña */}
+                  {tieneFotos && (
+                    <div style={{ marginTop: 8 }}>
+                      <button
+                        type="button"
+                        onClick={() => toggleFotosResena(i)}
+                        style={{
+                          background: 'transparent',
+                          border: 'none',
+                          padding: 0,
+                          color: 'var(--brand-primary, #2563eb)',
+                          fontSize: 12,
+                          fontWeight: 700,
+                          cursor: 'pointer',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 4
+                        }}
+                      >
+                        {fotosAbiertas ? (
+                          <>
+                            <span>Ver menos</span>
+                            <FaChevronUp size={10} />
+                          </>
+                        ) : (
+                          <>
+                            <span>Ver fotos ({item.fotos.length})</span>
+                            <FaChevronDown size={10} />
+                          </>
+                        )}
+                      </button>
+
+                      {/* Galería desplegable de Fotos */}
+                      {fotosAbiertas && (
+                        <div style={{ display: 'flex', gap: 8, marginTop: 10, flexWrap: 'wrap' }}>
+                          {item.fotos.map((imgSrc, imgIdx) => (
+                            <img
+                              key={imgIdx}
+                              src={imgSrc}
+                              alt={`Foto adjunta ${imgIdx + 1}`}
+                              style={{
+                                width: 64,
+                                height: 64,
+                                borderRadius: 10,
+                                objectFit: 'cover',
+                                border: `1px solid ${border}`
+                              }}
+                            />
+                          ))}
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
               </div>
             )
           })}
-
-          {listaComentarios.length > 3 && (
-            <div style={{ textAlign: 'center', marginTop: 8 }}>
-              <button
-                type="button"
-                onClick={() => setMostrarTodas(v => !v)}
-                style={{
-                  background: isDark ? 'rgba(255,255,255,0.05)' : '#ffffff',
-                  border: `1px solid ${border}`,
-                  color: 'var(--brand-primary, #2563eb)',
-                  padding: '8px 18px',
-                  borderRadius: 10,
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 8,
-                  cursor: 'pointer',
-                  fontWeight: 700,
-                  fontSize: 13,
-                }}
-              >
-                {mostrarTodas ? t('vehiculo.viewLessReviews', 'Ver menos reseñas') : t('vehiculo.viewMoreReviews', 'Ver más reseñas ˅')}
-              </button>
-            </div>
-          )}
         </div>
       </div>
     </div>
