@@ -1877,6 +1877,29 @@ html.dark .minimal-slot-upload-btn .slot-num {
   color: #f8fafc;
 }
 
+@media (max-width: 480px) {
+  .minimal-modal-panel {
+    padding: 22px 16px 18px !important;
+    border-radius: 18px !important;
+    width: 95vw !important;
+  }
+  .minimal-star-btn svg {
+    font-size: 30px;
+  }
+  .minimal-fotos-grid-3 {
+    gap: 6px;
+  }
+  .minimal-slot-box {
+    height: 74px;
+  }
+  .minimal-slot-upload-btn .slot-cam-icon {
+    font-size: 16px;
+  }
+  .minimal-slot-upload-btn .slot-num {
+    font-size: 10px;
+  }
+}
+
 
 
 
