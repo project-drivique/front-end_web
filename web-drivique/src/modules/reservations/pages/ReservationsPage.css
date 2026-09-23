@@ -1672,8 +1672,8 @@ html.dark .domicilio-driver-label {
 
 .minimal-slot-box {
   width: 100%;
-  aspect-ratio: 1 / 1;
-  border-radius: 14px;
+  height: 84px;
+  border-radius: 12px;
   overflow: hidden;
   position: relative;
 }
@@ -1683,7 +1683,7 @@ html.dark .domicilio-driver-label {
   height: 100%;
   border: 1px dashed #cbd5e1;
   background: #f8fafc;
-  border-radius: 14px;
+  border-radius: 12px;
   color: var(--brand-primary, #2563eb);
   display: flex;
   flex-direction: column;
@@ -1723,7 +1723,7 @@ html.dark .domicilio-driver-label {
 .minimal-slot-thumb {
   width: 100%;
   height: 100%;
-  border-radius: 14px;
+  border-radius: 12px;
   overflow: hidden;
   position: relative;
   border: 1px solid var(--borde, #e2e8f0);
