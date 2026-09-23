@@ -104,9 +104,11 @@ function Estrellas({ value, onChange, disabled = false }) {
       </div>
       {!disabled && (
         <div className="minimal-label-status">
-          <span className={`minimal-label-pill ${activeRating > 0 ? 'activa' : 'hint'}`}>
-            {activeRating > 0 ? ETIQUETAS_ESTRELLAS[activeRating] : 'Toca las estrellas para calificar (1 a 5)'}
-          </span>
+          {activeRating > 0 ? (
+            <span className="minimal-label-txt-light">
+              {ETIQUETAS_ESTRELLAS[activeRating]}
+            </span>
+          ) : null}
         </div>
       )}
     </div>

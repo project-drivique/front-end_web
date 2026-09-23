@@ -1517,8 +1517,8 @@ html.dark .domicilio-driver-label {
   background: var(--bg-tarjeta, #ffffff) !important;
   border: 1px solid var(--borde, #e2e8f0) !important;
   border-radius: 20px !important;
-  padding: 30px 24px 24px !important;
-  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.16) !important;
+  padding: 28px 24px 24px !important;
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.14) !important;
   text-align: center !important;
   position: relative;
   max-height: 90vh;
@@ -1526,41 +1526,42 @@ html.dark .domicilio-driver-label {
 }
 
 .minimal-eyebrow-text {
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.12em;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
   color: var(--brand-primary, #2563eb);
-  margin-bottom: 6px;
+  margin-bottom: 5px;
   text-transform: uppercase;
 }
 
 .minimal-title {
-  font-size: 22px !important;
-  font-weight: 700 !important;
+  font-size: 20px !important;
+  font-weight: 600 !important;
   color: var(--texto-primary, #0f172a) !important;
   margin: 0 0 4px !important;
-  line-height: 1.25;
+  line-height: 1.3;
 }
 
 .minimal-subtitle {
   font-size: 13px !important;
+  font-weight: 400 !important;
   color: var(--texto-second, #64748b) !important;
-  margin: 0 0 20px !important;
+  margin: 0 0 18px !important;
 }
 
 .minimal-estrellas-box {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 20px;
+  gap: 8px;
+  margin-bottom: 18px;
 }
 
 .minimal-estrellas-grid {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 8px;
 }
 
 .minimal-star-btn {
@@ -1575,74 +1576,56 @@ html.dark .domicilio-driver-label {
 }
 
 .minimal-star-btn svg {
-  font-size: 38px;
+  font-size: 36px;
   color: #cbd5e1;
-  transition: color 0.2s ease, filter 0.2s ease;
+  transition: color 0.18s ease, filter 0.18s ease;
 }
 
 .minimal-star-btn.activa svg {
   color: #f59e0b;
-  filter: drop-shadow(0 3px 8px rgba(245, 158, 11, 0.4));
+  filter: drop-shadow(0 2px 6px rgba(245, 158, 11, 0.35));
 }
 
 .minimal-star-btn:hover:not(:disabled) {
-  transform: scale(1.22);
+  transform: scale(1.18);
 }
 
 .minimal-label-status {
-  min-height: 32px;
+  min-height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.minimal-label-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 14px;
-  border-radius: 999px;
+.minimal-label-txt-light {
   font-size: 13px;
-  font-weight: 700;
-  transition: all 0.2s ease;
-}
-
-.minimal-label-pill.activa {
-  background: #eff6ff;
-  color: var(--brand-primary, #2563eb);
-  border: 1px solid #bfdbfe;
-}
-
-.minimal-label-pill.hint {
-  background: var(--bg-item, #f8fafc);
-  color: var(--texto-second, #64748b);
-  border: 1px solid var(--borde, #e2e8f0);
-  font-size: 12px;
   font-weight: 500;
+  color: var(--brand-primary, #2563eb);
+  transition: opacity 0.18s ease;
 }
 
 .minimal-textarea-group {
-  margin-bottom: 20px;
+  margin-bottom: 18px;
   text-align: left;
 }
 
 .minimal-label {
   display: block;
   font-size: 12.5px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--texto-primary, #1e293b);
   margin-bottom: 6px;
 }
 
 .minimal-label span {
-  font-weight: 500;
+  font-weight: 400;
   color: var(--texto-second, #64748b);
   margin-left: 2px;
 }
 
 .minimal-textarea {
   width: 100%;
-  height: 95px;
+  height: 90px;
   border: 1px solid var(--borde, #cbd5e1);
   border-radius: 12px;
   background: var(--bg-item, #ffffff);
@@ -1650,6 +1633,7 @@ html.dark .domicilio-driver-label {
   padding: 12px 14px;
   font-family: inherit;
   font-size: 13px;
+  font-weight: 400;
   line-height: 1.45;
   resize: none;
   outline: none;
@@ -1675,7 +1659,7 @@ html.dark .domicilio-driver-label {
 
 .minimal-counter {
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 400;
   color: var(--texto-second, #94a3b8);
 }
 
@@ -1698,8 +1682,8 @@ html.dark .domicilio-driver-label {
 .minimal-slot-upload-btn {
   width: 100%;
   height: 100%;
-  border: 1.5px dashed #93c5fd;
-  background: #f0f9ff;
+  border: 1px dashed #cbd5e1;
+  background: #f8fafc;
   border-radius: 14px;
   color: var(--brand-primary, #2563eb);
   display: flex;
@@ -1714,25 +1698,26 @@ html.dark .domicilio-driver-label {
 }
 
 .minimal-slot-upload-btn:hover {
-  background: #e0f2fe;
-  border-color: var(--brand-primary, #2563eb);
+  background: #f0f9ff;
+  border-color: #93c5fd;
   transform: translateY(-1px);
 }
 
 .minimal-slot-upload-btn .slot-cam-icon {
-  font-size: 20px;
+  font-size: 18px;
   margin-bottom: 2px;
+  color: var(--brand-primary, #2563eb);
 }
 
 .minimal-slot-upload-btn .slot-num {
   font-size: 11px;
-  font-weight: 800;
-  color: var(--texto-primary, #0f172a);
+  font-weight: 500;
+  color: var(--texto-primary, #1e293b);
 }
 
 .minimal-slot-upload-btn .slot-action {
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 500;
   color: var(--brand-primary, #2563eb);
 }
 
@@ -1756,30 +1741,30 @@ html.dark .domicilio-driver-label {
   position: absolute;
   top: 4px;
   right: 4px;
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
-  background: rgba(239, 68, 68, 0.95);
+  background: rgba(239, 68, 68, 0.9);
   color: #ffffff;
   border: none;
   display: grid;
   place-items: center;
   cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
   transition: background 0.18s, transform 0.18s;
 }
 
 .minimal-slot-del-btn:hover {
   background: #dc2626;
-  transform: scale(1.1);
+  transform: scale(1.08);
 }
 
 .minimal-submit-btn {
   width: 100% !important;
-  height: 48px !important;
-  border-radius: 14px !important;
-  font-size: 14px !important;
-  font-weight: 800 !important;
+  height: 44px !important;
+  border-radius: 12px !important;
+  font-size: 13.5px !important;
+  font-weight: 600 !important;
   box-sizing: border-box !important;
   display: inline-flex !important;
   align-items: center !important;
@@ -1792,13 +1777,13 @@ html.dark .domicilio-driver-label {
   background: var(--brand-primary, #2563eb) !important;
   color: #ffffff !important;
   cursor: pointer !important;
-  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25) !important;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.22) !important;
 }
 
 .minimal-submit-btn:not(:disabled):hover {
   background: var(--brand-primary-hover, #1d4ed8) !important;
   transform: translateY(-1px) !important;
-  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.35) !important;
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.3) !important;
 }
 
 .minimal-submit-btn:disabled {
