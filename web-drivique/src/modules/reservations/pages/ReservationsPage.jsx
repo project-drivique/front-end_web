@@ -65,18 +65,19 @@ const fechaBonita = (fecha, idioma) => {
   }
 }
 
-const ETIQUETAS_ESTRELLAS = {
-  1: '😞 Mala experiencia',
-  2: '😐 Regular',
-  3: '🙂 Bueno',
-  4: '😊 Muy bueno',
-  5: '🤩 ¡Excelente!'
-}
+const ETIQUETAS_ESTRELLAS = (t) => ({
+  1: `😞 ${t('reservas.ratingLabels.1', { defaultValue: 'Mala experiencia' })}`,
+  2: `😐 ${t('reservas.ratingLabels.2', { defaultValue: 'Regular' })}`,
+  3: `🙂 ${t('reservas.ratingLabels.3', { defaultValue: 'Bueno' })}`,
+  4: `😊 ${t('reservas.ratingLabels.4', { defaultValue: 'Muy bueno' })}`,
+  5: `🤩 ${t('reservas.ratingLabels.5', { defaultValue: '¡Excelente!' })}`
+})
 
 function Estrellas({ value, onChange, disabled = false }) {
   const { t } = useTranslation()
   const [hoverIndex, setHoverIndex] = useState(0)
   const activeRating = hoverIndex || value || 0
+  const etiquetas = ETIQUETAS_ESTRELLAS(t)
 
   return (
     <div className="minimal-estrellas-box">
@@ -106,7 +107,7 @@ function Estrellas({ value, onChange, disabled = false }) {
         <div className="minimal-label-status">
           {activeRating > 0 ? (
             <span className="minimal-label-txt-light">
-              {ETIQUETAS_ESTRELLAS[activeRating]}
+              {etiquetas[activeRating]}
             </span>
           ) : null}
         </div>
