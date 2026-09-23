@@ -541,6 +541,8 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
     Boolean(reservaOriginal?.fechaPagoConfirmado) ||
     Boolean(reserva.fechaPagoConfirmado)
 
+  const esFinalizadaModal = ['finalizada', 'completada', 'finalizado', 'completado'].includes(estadoNormModal)
+
   const estadoClaveModal = esConfirmadaModal
     ? (estadoNormModal === 'activa' || estadoNormModal === 'en_curso' || estadoNormModal === 'en curso' ? 'activa' : (estadoNormModal === 'finalizada' ? 'finalizada' : 'confirmada'))
     : (reserva.estado || 'pendiente')
