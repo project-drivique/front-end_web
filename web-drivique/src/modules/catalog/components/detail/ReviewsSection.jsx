@@ -270,49 +270,47 @@ export default function ReviewsSection({ comentarios = [], calificacion = 0, veh
                     {textoTraducido}
                   </p>
 
-                  {/* Botón Ver más / Ver menos ÚNICAMENTE si el usuario subió fotos en esa reseña */}
+                  {/* Control Ver más / Ocultar alineado a la derecha ÚNICAMENTE si hay fotos */}
                   {tieneFotos && (
-                    <div style={{ marginTop: 8 }}>
-                      <button
-                        type="button"
+                    <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+                      <span
+                        role="button"
+                        tabIndex={0}
                         onClick={() => toggleFotosResena(i)}
+                        onKeyDown={e => e.key === 'Enter' && toggleFotosResena(i)}
                         style={{
-                          background: 'transparent',
-                          border: 'none',
-                          padding: 0,
                           color: 'var(--brand-primary, #2563eb)',
                           fontSize: 12,
-                          fontWeight: 700,
+                          fontWeight: 600,
                           cursor: 'pointer',
+                          userSelect: 'none',
                           display: 'inline-flex',
                           alignItems: 'center',
                           gap: 4
                         }}
                       >
-                        {fotosAbiertas ? (
-                          <>
-                            <span>Ver menos</span>
-                            <FaChevronUp size={10} />
-                          </>
-                        ) : (
-                          <>
-                            <span>Ver fotos ({item.fotos.length})</span>
-                            <FaChevronDown size={10} />
-                          </>
-                        )}
-                      </button>
+                        {fotosAbiertas ? 'Ocultar' : 'Ver más'}
+                      </span>
 
-                      {/* Galería desplegable de Fotos */}
+                      {/* Galería desplegable de Fotos a la derecha */}
                       {fotosAbiertas && (
-                        <div style={{ display: 'flex', gap: 8, marginTop: 10, flexWrap: 'wrap' }}>
+                        <div
+                          style={{
+                            display: 'flex',
+                            gap: 8,
+                            marginTop: 8,
+                            flexWrap: 'wrap',
+                            justifyContent: 'flex-end'
+                          }}
+                        >
                           {item.fotos.map((imgSrc, imgIdx) => (
                             <img
                               key={imgIdx}
                               src={imgSrc}
                               alt={`Foto adjunta ${imgIdx + 1}`}
                               style={{
-                                width: 64,
-                                height: 64,
+                                width: 60,
+                                height: 60,
                                 borderRadius: 10,
                                 objectFit: 'cover',
                                 border: `1px solid ${border}`
