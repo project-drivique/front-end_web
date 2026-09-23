@@ -79,9 +79,9 @@ function Estrellas({ value, onChange, disabled = false }) {
   const activeRating = hoverIndex || value || 0
 
   return (
-    <div className="selector-estrellas-wrapper">
+    <div className="minimal-estrellas-box">
       <div
-        className="estrellas-row"
+        className="minimal-estrellas-grid"
         role="radiogroup"
         aria-label={t('reservas.ratingAria', { defaultValue: 'Calificación por estrellas' })}
         onMouseLeave={() => !disabled && setHoverIndex(0)}
@@ -93,7 +93,7 @@ function Estrellas({ value, onChange, disabled = false }) {
             disabled={disabled}
             onClick={() => onChange?.(n)}
             onMouseEnter={() => !disabled && setHoverIndex(n)}
-            className={`estrella-btn ${n <= activeRating ? 'activa' : ''}`}
+            className={`minimal-star-btn ${n <= activeRating ? 'activa' : ''}`}
             aria-label={t('reservas.starsCount', { count: n, defaultValue: `${n} estrellas` })}
             aria-checked={value === n}
             role="radio"
@@ -103,13 +103,13 @@ function Estrellas({ value, onChange, disabled = false }) {
         ))}
       </div>
       {!disabled && (
-        <div className="etiqueta-hover-container">
+        <div className="minimal-label-status">
           {activeRating > 0 ? (
-            <span className="etiqueta-hover-badge activa">
+            <span className="minimal-label-txt activa">
               {ETIQUETAS_ESTRELLAS[activeRating]}
             </span>
           ) : (
-            <span className="etiqueta-hover-badge hint">
+            <span className="minimal-label-txt hint">
               Toca las estrellas para calificar (1 a 5)
             </span>
           )}
@@ -137,45 +137,41 @@ function ModalValoracion({ reserva, onClose, onSave }) {
 
   return (
     <div className="modal-backdrop" onMouseDown={onClose}>
-      <section className="modal-panel modal-valoracion-clean" role="dialog" aria-modal="true" aria-labelledby="titulo-valoracion" onMouseDown={e => e.stopPropagation()}>
-        <button className="modal-cerrar" onClick={onClose} aria-label={t('reservas.close', { defaultValue: 'Cerrar' })}>
+      <section className="modal-panel minimal-modal-panel" role="dialog" aria-modal="true" aria-labelledby="titulo-valoracion" onMouseDown={e => e.stopPropagation()}>
+        <button className="minimal-close-btn" onClick={onClose} aria-label={t('reservas.close', { defaultValue: 'Cerrar' })}>
           <FaTimes />
         </button>
 
-        <div className="modal-valoracion-header">
-          <span className="modal-eyebrow-pill">
-            {t('reservas.yourExperience', { defaultValue: 'TU EXPERIENCIA' })}
-          </span>
-          <h2 id="titulo-valoracion" className="modal-valoracion-title">
-            {reserva.valoracion
-              ? t('reservas.editYourRating', { defaultValue: 'Editar reseña' })
-              : t('reservas.howWasTrip', { defaultValue: '¿Cómo estuvo tu viaje?' })}
-          </h2>
-          <p className="modal-subtitulo">
-            {t('reservas.rateExperience', { defaultValue: `Califica tu experiencia con ${vehiculoNombre}.`, vehicle: vehiculoNombre })}
-          </p>
-        </div>
+        <p className="minimal-eyebrow-text">
+          {t('reservas.yourExperience', { defaultValue: 'TU EXPERIENCIA' })}
+        </p>
+        <h2 id="titulo-valoracion" className="minimal-title">
+          {reserva.valoracion
+            ? t('reservas.editYourRating', { defaultValue: 'Editar reseña' })
+            : t('reservas.howWasTrip', { defaultValue: '¿Cómo estuvo tu viaje?' })}
+        </h2>
+        <p className="minimal-subtitle">
+          {t('reservas.rateExperience', { defaultValue: `Califica tu experiencia con ${vehiculoNombre}.`, vehicle: vehiculoNombre })}
+        </p>
 
         <Estrellas value={estrellas} onChange={setEstrellas} />
 
-        <div className="modal-comentario-group">
-          <div className="comentario-label-row">
-            <label className="comentario-label" htmlFor="comentario">
-              {t('reservas.tellMore', { defaultValue: 'Cuéntanos un poco más' })} <span>({t('reservas.optional', { defaultValue: 'opcional' })})</span>
-            </label>
-          </div>
+        <div className="minimal-textarea-group">
+          <label className="minimal-label" htmlFor="comentario">
+            {t('reservas.tellMore', { defaultValue: 'Cuéntanos un poco más' })} <span>({t('reservas.optional', { defaultValue: 'opcional' })})</span>
+          </label>
           <textarea
             id="comentario"
             maxLength={400}
             value={comentario}
             onChange={e => setComentario(e.target.value)}
             placeholder={t('reservas.commentPlaceholder', { defaultValue: '¿Qué fue lo que más te gustó del vehículo?' })}
-            className="modal-valoracion-textarea"
+            className="minimal-textarea"
           />
-          <div className="contador-characteres">{comentario.length}/400</div>
+          <div className="minimal-counter">{comentario.length}/400</div>
         </div>
 
-        <button className="btn-primario modal-guardar-btn" disabled={!estrellas || guardando} onClick={guardar}>
+        <button className="minimal-submit-btn" disabled={!estrellas || guardando} onClick={guardar}>
           {guardando
             ? t('reservas.saving', { defaultValue: 'Guardando...' })
             : (reserva.valoracion

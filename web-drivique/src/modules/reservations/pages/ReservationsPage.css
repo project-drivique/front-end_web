@@ -1506,293 +1506,240 @@ html.dark .domicilio-driver-label {
 }
 
 /* ============================================================
-   DISEÑO MODERNO Y ELEGANTE DEL MODAL DE VALORACIÓN (UI/UX)
+   ESTILO MINIMALISTA MODERNO PARA MODAL DE VALORACIÓN
    ============================================================ */
-.modal-backdrop {
-  position: fixed;
-  z-index: 9999;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.65) !important;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  display: grid;
-  place-items: center;
-  padding: 20px;
-}
-
-.modal-valoracion-clean {
-  width: min(450px, 92vw) !important;
+.minimal-modal-panel {
+  width: min(440px, 92vw) !important;
   background: var(--bg-tarjeta, #ffffff) !important;
   border: 1px solid var(--borde, #e2e8f0) !important;
-  border-radius: 26px !important;
-  padding: 34px 28px 28px !important;
-  box-shadow: 0 25px 70px rgba(15, 23, 42, 0.22) !important;
+  border-radius: 20px !important;
+  padding: 30px 24px 24px !important;
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.16) !important;
   text-align: center !important;
   position: relative;
 }
 
-.modal-valoracion-header {
-  margin-bottom: 20px;
-}
-
-.modal-eyebrow-pill {
-  display: inline-block;
-  padding: 5px 14px;
-  border-radius: 999px;
-  background: rgba(37, 99, 235, 0.08);
-  color: var(--brand-primary, #2563eb);
-  font-size: 10px;
+.minimal-eyebrow-text {
+  font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.12em;
+  color: var(--brand-primary, #2563eb);
+  margin-bottom: 6px;
   text-transform: uppercase;
-  margin-bottom: 10px;
 }
 
-.modal-valoracion-title {
-  font-size: 24px !important;
-  font-weight: 800 !important;
+.minimal-title {
+  font-size: 22px !important;
+  font-weight: 700 !important;
   color: var(--texto-primary, #0f172a) !important;
-  margin: 0 0 6px !important;
-  letter-spacing: -0.02em;
-  line-height: 1.2;
+  margin: 0 0 4px !important;
+  line-height: 1.25;
 }
 
-.modal-valoracion-clean .modal-subtitulo {
-  font-size: 13.5px !important;
+.minimal-subtitle {
+  font-size: 13px !important;
   color: var(--texto-second, #64748b) !important;
-  margin: 0 !important;
-  font-weight: 500;
+  margin: 0 0 20px !important;
 }
 
-/* Selector de Estrellas Interactivo */
-.selector-estrellas-wrapper {
+.minimal-estrellas-box {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
-  margin: 18px 0 24px;
+  gap: 8px;
+  margin-bottom: 22px;
 }
 
-.estrellas-row {
+.minimal-estrellas-grid {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 8px;
 }
 
-.estrella-btn {
+.minimal-star-btn {
   background: transparent;
   border: none;
   cursor: pointer;
   padding: 4px;
   display: grid;
   place-items: center;
-  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: transform 0.18s ease;
   outline: none;
 }
 
-.estrella-btn svg {
+.minimal-star-btn svg {
   font-size: 34px;
   color: #cbd5e1;
-  transition: color 0.18s ease, filter 0.18s ease;
+  transition: color 0.18s ease;
 }
 
-.estrella-btn.activa svg {
+.minimal-star-btn.activa svg {
   color: #f59e0b;
-  filter: drop-shadow(0 3px 8px rgba(245, 158, 11, 0.4));
 }
 
-.estrella-btn:hover:not(:disabled) {
-  transform: scale(1.22);
+.minimal-star-btn:hover:not(:disabled) {
+  transform: scale(1.18);
 }
 
-.estrella-btn:active:not(:disabled) {
-  transform: scale(0.95);
-}
-
-.etiqueta-hover-container {
-  min-height: 28px;
+.minimal-label-status {
+  min-height: 22px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.etiqueta-hover-badge {
-  font-size: 12.5px;
-  font-weight: 700;
-  padding: 5px 14px;
-  border-radius: 999px;
-  transition: all 0.2s ease;
-}
-
-.etiqueta-hover-badge.activa {
-  background: rgba(37, 99, 235, 0.08);
-  color: var(--brand-primary, #2563eb);
+.minimal-label-txt {
   font-size: 13px;
-  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.08);
+  font-weight: 700;
 }
 
-.etiqueta-hover-badge.hint {
-  background: transparent;
+.minimal-label-txt.activa {
+  color: var(--brand-primary, #2563eb);
+}
+
+.minimal-label-txt.hint {
   color: var(--texto-second, #94a3b8);
   font-weight: 500;
   font-size: 12px;
 }
 
-/* Grupo de Comentario */
-.modal-comentario-group {
-  margin-bottom: 22px;
+.minimal-textarea-group {
+  margin-bottom: 20px;
   text-align: left;
 }
 
-.comentario-label-row {
-  margin-bottom: 8px;
-}
-
-.modal-comentario-group .comentario-label {
-  font-size: 13px;
+.minimal-label {
+  display: block;
+  font-size: 12.5px;
   font-weight: 700;
   color: var(--texto-primary, #1e293b);
-  margin: 0;
+  margin-bottom: 6px;
 }
 
-.modal-comentario-group .comentario-label span {
+.minimal-label span {
   font-weight: 500;
   color: var(--texto-second, #64748b);
   margin-left: 2px;
 }
 
-.modal-valoracion-textarea {
+.minimal-textarea {
   width: 100%;
-  height: 110px;
-  border: 1.5px solid var(--borde, #e2e8f0);
-  border-radius: 16px;
-  background: var(--bg-item, #f8fafc);
+  height: 100px;
+  border: 1px solid var(--borde, #cbd5e1);
+  border-radius: 12px;
+  background: var(--bg-item, #ffffff);
   color: var(--texto-primary, #0f172a);
-  padding: 14px 16px;
+  padding: 12px 14px;
   font-family: inherit;
   font-size: 13px;
   line-height: 1.45;
   resize: none;
   outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s;
   box-sizing: border-box;
 }
 
-.modal-valoracion-textarea:focus {
+.minimal-textarea:focus {
   border-color: var(--brand-primary, #2563eb);
-  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
-  background: var(--bg-tarjeta, #ffffff);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
 }
 
-.contador-characteres {
+.minimal-counter {
   text-align: right;
   font-size: 11px;
-  font-weight: 600;
   color: var(--texto-second, #94a3b8);
-  margin-top: 6px;
+  margin-top: 4px;
 }
 
-/* Botón Principal de Valoración */
-.modal-guardar-btn {
+.minimal-submit-btn {
   width: 100% !important;
-  height: 48px !important;
-  border-radius: 14px !important;
-  font-size: 15px !important;
-  font-weight: 800 !important;
-  letter-spacing: 0.01em !important;
+  height: 46px !important;
+  border-radius: 12px !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
   box-sizing: border-box !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
-  transition: all 0.2s ease !important;
-  margin-top: 4px !important;
-}
-
-.modal-guardar-btn:not(:disabled) {
-  background: linear-gradient(135deg, var(--brand-primary, #2563eb) 0%, #1d4ed8 100%) !important;
-  color: #ffffff !important;
-  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.35) !important;
   border: none !important;
+  transition: all 0.2s ease !important;
+}
+
+.minimal-submit-btn:not(:disabled) {
+  background: var(--brand-primary, #2563eb) !important;
+  color: #ffffff !important;
   cursor: pointer !important;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25) !important;
 }
 
-.modal-guardar-btn:not(:disabled):hover {
-  transform: translateY(-2px) !important;
-  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.45) !important;
-  filter: brightness(1.04) !important;
+.minimal-submit-btn:not(:disabled):hover {
+  background: var(--brand-primary-hover, #1d4ed8) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.35) !important;
 }
 
-.modal-guardar-btn:not(:disabled):active {
-  transform: translateY(0) !important;
-}
-
-.modal-guardar-btn:disabled {
+.minimal-submit-btn:disabled {
   background: #e2e8f0 !important;
   color: #94a3b8 !important;
-  box-shadow: none !important;
-  border: none !important;
   cursor: not-allowed !important;
-  opacity: 1 !important;
 }
 
-/* Botón Cerrar (X) */
-.modal-valoracion-clean .modal-cerrar {
+.minimal-close-btn {
   position: absolute;
-  right: 18px;
-  top: 18px;
-  width: 34px;
-  height: 34px;
-  border: 1px solid var(--borde, #e2e8f0);
+  right: 16px;
+  top: 16px;
+  width: 32px;
+  height: 32px;
+  border: none;
   border-radius: 50%;
   background: var(--bg-item, #f1f5f9);
   color: var(--texto-second, #64748b);
   display: grid;
   place-items: center;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.18s ease;
 }
 
-.modal-valoracion-clean .modal-cerrar:hover {
+.minimal-close-btn:hover {
   background: var(--borde, #e2e8f0);
   color: var(--texto-primary, #0f172a);
-  transform: scale(1.06);
 }
 
-/* Modo Oscuro */
-html.dark .modal-valoracion-clean {
+/* Modo oscuro */
+html.dark .minimal-modal-panel {
   background: #172033 !important;
   border-color: #334155 !important;
 }
 
-html.dark .modal-eyebrow-pill {
-  background: rgba(37, 99, 235, 0.16);
+html.dark .minimal-eyebrow-text {
   color: #93c5fd;
 }
 
-html.dark .modal-valoracion-title {
+html.dark .minimal-title {
   color: #f8fafc !important;
 }
 
-html.dark .modal-valoracion-clean .modal-subtitulo {
+html.dark .minimal-subtitle {
   color: #94a3b8 !important;
 }
 
-html.dark .modal-valoracion-textarea {
+html.dark .minimal-textarea {
   background: #0f172a;
   border-color: #334155;
   color: #f8fafc;
 }
 
-html.dark .modal-valoracion-textarea:focus {
-  background: #172033;
-  border-color: var(--brand-primary, #2563eb);
+html.dark .minimal-close-btn {
+  background: #1e293b;
+  color: #cbd5e1;
 }
 
-html.dark .modal-guardar-btn:disabled {
+html.dark .minimal-submit-btn:disabled {
   background: #1e293b !important;
   color: #64748b !important;
 }
+
 
 
 
