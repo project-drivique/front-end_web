@@ -1577,17 +1577,16 @@ html.dark .domicilio-driver-label {
 
 .minimal-star-btn svg {
   font-size: 36px;
-  color: #cbd5e1;
-  transition: color 0.18s ease, filter 0.18s ease;
+  color: #e2e8f0;
+  transition: color 0.18s ease, transform 0.18s ease;
 }
 
 .minimal-star-btn.activa svg {
   color: #f59e0b;
-  filter: drop-shadow(0 2px 6px rgba(245, 158, 11, 0.35));
 }
 
 .minimal-star-btn:hover:not(:disabled) {
-  transform: scale(1.18);
+  transform: scale(1.15);
 }
 
 .minimal-label-status {
@@ -1598,9 +1597,9 @@ html.dark .domicilio-driver-label {
 }
 
 .minimal-label-txt-light {
-  font-size: 13px;
+  font-size: 13.5px;
   font-weight: 500;
-  color: var(--brand-primary, #2563eb);
+  color: #334155;
   transition: opacity 0.18s ease;
 }
 
@@ -1839,6 +1838,10 @@ html.dark .minimal-textarea {
 
 html.dark .minimal-close-btn {
   background: #1e293b;
+  color: #cbd5e1;
+}
+
+html.dark .minimal-label-txt-light {
   color: #cbd5e1;
 }
 
