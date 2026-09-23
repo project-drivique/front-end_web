@@ -176,9 +176,6 @@ function ModalValoracion({ reserva, onClose, onSave }) {
           <FaTimes />
         </button>
 
-        <p className="minimal-eyebrow-text">
-          {t('reservas.yourExperience', { defaultValue: 'VALORACIÓN DE TU VIAJE' })}
-        </p>
         <h2 id="titulo-valoracion" className="minimal-title">
           {reserva.valoracion
             ? t('reservas.editYourRating', { defaultValue: 'Editar reseña' })
