@@ -1681,10 +1681,10 @@ html.dark .domicilio-driver-label {
 .minimal-slot-upload-btn {
   width: 100%;
   height: 100%;
-  border: 1px dashed #cbd5e1;
-  background: #f8fafc;
+  border: 1.5px dashed #e2e8f0;
+  background: #ffffff;
   border-radius: 12px;
-  color: var(--brand-primary, #2563eb);
+  color: #64748b;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1697,27 +1697,37 @@ html.dark .domicilio-driver-label {
 }
 
 .minimal-slot-upload-btn:hover {
-  background: #f1f5f9;
-  border-color: #94a3b8;
+  background: #f8fafc;
+  border-color: #cbd5e1;
   transform: translateY(-1px);
 }
 
 .minimal-slot-upload-btn .slot-cam-icon {
   font-size: 18px;
   margin-bottom: 2px;
-  color: var(--brand-primary, #2563eb);
+  color: #64748b;
+  transition: color 0.18s ease;
+}
+
+.minimal-slot-upload-btn:hover .slot-cam-icon {
+  color: #334155;
 }
 
 .minimal-slot-upload-btn .slot-num {
   font-size: 11px;
   font-weight: 500;
-  color: var(--texto-primary, #1e293b);
+  color: #334155;
 }
 
 .minimal-slot-upload-btn .slot-action {
   font-size: 10px;
   font-weight: 500;
-  color: var(--brand-primary, #2563eb);
+  color: #64748b;
+  transition: color 0.18s ease;
+}
+
+.minimal-slot-upload-btn:hover .slot-action {
+  color: #0f172a;
 }
 
 .minimal-slot-thumb {
@@ -1863,18 +1873,28 @@ html.dark .minimal-label-pill.hint {
 }
 
 html.dark .minimal-slot-upload-btn {
-  background: #1e293b;
+  background: #0f172a;
   border-color: #334155;
   color: #94a3b8;
 }
 
 html.dark .minimal-slot-upload-btn:hover {
-  background: #27364b;
+  background: #1e293b;
   border-color: #475569;
 }
 
+html.dark .minimal-slot-upload-btn .slot-cam-icon,
+html.dark .minimal-slot-upload-btn .slot-action {
+  color: #94a3b8;
+}
+
+html.dark .minimal-slot-upload-btn:hover .slot-cam-icon,
+html.dark .minimal-slot-upload-btn:hover .slot-action {
+  color: #f1f5f9;
+}
+
 html.dark .minimal-slot-upload-btn .slot-num {
-  color: #f8fafc;
+  color: #e2e8f0;
 }
 
 @media (max-width: 480px) {
