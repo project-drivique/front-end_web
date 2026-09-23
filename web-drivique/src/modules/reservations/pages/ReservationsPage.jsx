@@ -1396,9 +1396,6 @@ function TarjetaReserva({ reserva, moneda, onValorar, onReportar, onVerDetalle }
           <Estrellas value={reserva.valoracion.estrellas} disabled />
           {reserva.valoracion.comentario && <p>“{reserva.valoracion.comentario}”</p>}
         </div>
-        <button className="btn-link" onClick={() => onValorar(reserva)}>
-          {t('reservas.editRating', { defaultValue: 'Editar Reseña' })}
-        </button>
       </div>
     )}
     <div className="reserva-actions">
@@ -1407,7 +1404,7 @@ function TarjetaReserva({ reserva, moneda, onValorar, onReportar, onVerDetalle }
           <FaFlag /> {t('reservas.makeReport')}
         </button>
       )}
-      {esFinalizada && !reserva.valoracion && (
+      {esFinalizada && (
         <button
           className="btn-secundario"
           onClick={() => onValorar(reserva)}
@@ -1422,7 +1419,11 @@ function TarjetaReserva({ reserva, moneda, onValorar, onReportar, onVerDetalle }
           }}
         >
           <FaStar color="#f59e0b" size={13} />
-          <span>{t('reservas.rateVehicle', { defaultValue: 'Calificar Vehículo' })}</span>
+          <span>
+            {reserva.valoracion
+              ? t('reservas.editRating', { defaultValue: 'Editar reseña' })
+              : t('reservas.rateVehicle', { defaultValue: 'Calificar vehículo' })}
+          </span>
         </button>
       )}
       <button className="btn-detalle" onClick={() => onVerDetalle(reserva)}>
