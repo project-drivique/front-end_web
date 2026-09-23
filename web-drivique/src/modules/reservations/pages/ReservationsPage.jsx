@@ -168,7 +168,7 @@ function ModalValoracion({ reserva, onClose, onSave }) {
   }
 
   return (
-    <div className="modal-backdrop" onMouseDown={onClose}>
+    <div className="modal-backdrop minimal-modal-backdrop" onMouseDown={onClose}>
       <section className="modal-panel minimal-modal-panel" role="dialog" aria-modal="true" aria-labelledby="titulo-valoracion" onMouseDown={e => e.stopPropagation()}>
         <button className="minimal-close-btn" onClick={onClose} aria-label={t('reservas.close', { defaultValue: 'Cerrar' })}>
           <FaTimes />
@@ -1289,6 +1289,33 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
 
         {esConfirmadaModal && <Contrato reserva={reserva} autoDesbloquear={autoDesbloquear} />}
 
+        {esFinalizadaModal && onValorar && (
+          <div style={{ marginTop: '20px', textOverflow: 'ellipsis' }}>
+            <button
+              type="button"
+              className="btn-secundario"
+              onClick={() => onValorar(reserva)}
+              style={{
+                width: '100%',
+                padding: '12px 18px',
+                background: '#fffbeb',
+                color: '#b45309',
+                borderColor: '#fde68a',
+                fontWeight: 800,
+                borderRadius: '14px',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                fontSize: '13px'
+              }}
+            >
+              <FaStar color="#f59e0b" size={16} />
+              <span>{reserva.valoracion ? t('reservas.editRating', { defaultValue: 'Editar Reseña' }) : t('reservas.rateVehicle', { defaultValue: 'Calificar Vehículo' })}</span>
+            </button>
+          </div>
+        )}
+
       </section>
     </div>
   )
@@ -1313,7 +1340,7 @@ function TarjetaReserva({ reserva, moneda, onValorar, onReportar, onVerDetalle }
   const esRawEnCurso = estadoNorm === 'activa' || estadoNorm === 'en_curso' || estadoNorm === 'en curso'
   // Una reserva solo puede estar en curso si está pagada Y tiene el contrato digital firmado
   const estaEnCurso = esRawEnCurso && tieneContratoFirmado && esPagoConfirmado
-  const esFinalizada = estadoNorm === 'finalizada' || estadoNorm === 'completada'
+  const esFinalizada = ['finalizada', 'completada', 'finalizado', 'completado'].includes(estadoNorm) || ['finalizada', 'completada', 'finalizado', 'completado'].includes(String(reserva.estado).toLowerCase())
   const puedeReportar = estaEnCurso || esFinalizada
 
   const esConfirmada =
@@ -1454,5 +1481,11 @@ export default function ReservationsPage() {
     {cargando && <div className="estado-pagina">{t('reservas.loading')}</div>}{!cargando && error && <div className="estado-pagina error">{error}</div>}
   {!cargando && !error && filtradas.length === 0 && <div className="estado-pagina vacio"><div><FaCalendarAlt /></div><h2>{reservas.length ? t('reservas.noFilteredResults') : t('reservas.noReservations')}</h2><p>{reservas.length ? t('reservas.changeFilters') : t('reservas.noReservationsSubtitle')}</p>{reservas.length ? <button className="btn-primario" onClick={() => { setMes('todos'); setEstadoFiltro('todos') }}>{t('reservas.clearFilters')}</button> : <Link className="btn-primario" to="/home">{t('reservas.exploreVehicles')}</Link>}</div>}
     <section className="reservas-lista">{filtradas.map(r => <TarjetaReserva key={r.id} reserva={r} moneda={moneda} onValorar={setValorando} onReportar={reportar} onVerDetalle={handleVerDetalle} />)}</section>
-  </main>{valorando && <ModalValoracion reserva={valorando} onClose={() => setValorando(null)} onSave={guardarValoracion} />}{detalle && <ModalDetalle reserva={detalle} moneda={moneda} autoDesbloquear={autoDesbloquear} onClose={handleCerrarDetalle} />}</div>
+  </main>{detalle && <ModalDetalle reserva={detalle} moneda={moneda} autoDesbloquear={autoDesbloquear} onClose={handleCerrarDetalle} onValorar={setValorando} />}{valorando && <ModalValoracion reserva={valorando} onClose={() => setValorando(null)} onSave={async (id, val) => {
+    const res = await guardarValoracion(id, val)
+    if (detalle && (detalle.id === id || detalle.referencia === id || detalle.codigo === id)) {
+      setDetalle(prev => prev ? { ...prev, valoracion: res } : null)
+    }
+  }} />}</div>
 }
+

@@ -1508,6 +1508,10 @@ html.dark .domicilio-driver-label {
 /* ============================================================
    ESTILO MINIMALISTA MODERNO PARA MODAL DE VALORACIÓN
    ============================================================ */
+.minimal-modal-backdrop {
+  z-index: 10005 !important;
+}
+
 .minimal-modal-panel {
   width: min(440px, 92vw) !important;
   background: var(--bg-tarjeta, #ffffff) !important;
@@ -1517,6 +1521,8 @@ html.dark .domicilio-driver-label {
   box-shadow: 0 20px 50px rgba(15, 23, 42, 0.16) !important;
   text-align: center !important;
   position: relative;
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 .minimal-eyebrow-text {
