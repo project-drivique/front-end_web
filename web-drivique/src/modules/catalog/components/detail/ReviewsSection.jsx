@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { FaStar, FaChevronDown, FaChevronUp } from 'react-icons/fa'
+import { FaStar } from 'react-icons/fa'
 import { useAuthStore } from '../../../../store/authStore'
 
 const REVIEW_TEXT_MAP = {
@@ -17,7 +17,7 @@ const REVIEW_TEXT_MAP = {
 export default function ReviewsSection({ comentarios = [], calificacion = 0, vehiculoId = null, vehiculoNombre = '', c, embedded = false }) {
   const { t, i18n } = useTranslation()
   const usuario = useAuthStore(state => state.usuario)
-  const [fotosAbiertasMap, setFotosAbiertasMap] = useState({})
+  const [mostrarTodas, setMostrarTodas] = useState(false)
 
   const bg = embedded ? 'transparent' : (c?.cardBg || 'var(--bg-tarjeta, #ffffff)')
   const border = c?.cardBorder || 'var(--borde, #e2e8f0)'
@@ -36,13 +36,6 @@ export default function ReviewsSection({ comentarios = [], calificacion = 0, veh
     } catch {
       return fechaStr
     }
-  }
-
-  const toggleFotosResena = (idx) => {
-    setFotosAbiertasMap(prev => ({
-      ...prev,
-      [idx]: !prev[idx]
-    }))
   }
 
   // Fusionar reseñas guardadas localmente por el usuario con las reseñas base del catálogo
@@ -136,6 +129,9 @@ export default function ReviewsSection({ comentarios = [], calificacion = 0, veh
     )
   }
 
+  // Muestra 4 reseñas inicialmente, y el botón Ver más al final de la lista desplegará el resto
+  const visibles = mostrarTodas ? listaComentarios : listaComentarios.slice(0, 4)
+
   const distribution = {
     5: listaComentarios.filter(c => Math.round(c.calificacion) === 5).length,
     4: listaComentarios.filter(c => Math.round(c.calificacion) === 4).length,
@@ -213,13 +209,12 @@ export default function ReviewsSection({ comentarios = [], calificacion = 0, veh
           </div>
         </div>
 
-        {/* Columna Derecha: Lista Completa de Comentarios sin botón global */}
+        {/* Columna Derecha: Lista de Comentarios */}
         <div className="resenas-lista" style={{ flex: '1 1 260px', minWidth: 220, display: 'flex', flexDirection: 'column', gap: 14 }}>
-          {listaComentarios.map((item, i) => {
+          {visibles.map((item, i) => {
             const textoTraducido = REVIEW_TEXT_MAP[item.texto] ? t(REVIEW_TEXT_MAP[item.texto]) : item.texto
             const fechaFormateada = formatearFecha(item.fecha || '2026-04-15')
             const tieneFotos = Boolean(item.fotos && item.fotos.length > 0)
-            const fotosAbiertas = Boolean(fotosAbiertasMap[i])
 
             return (
               <div
@@ -227,7 +222,7 @@ export default function ReviewsSection({ comentarios = [], calificacion = 0, veh
                 style={{
                   display: 'flex',
                   gap: 14,
-                  borderBottom: i < listaComentarios.length - 1 ? `1px solid ${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}` : 'none',
+                  borderBottom: i < visibles.length - 1 ? `1px solid ${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}` : 'none',
                   paddingBottom: 16,
                 }}
               >
@@ -266,65 +261,58 @@ export default function ReviewsSection({ comentarios = [], calificacion = 0, veh
                       ))}
                     </div>
                   </div>
-                  <p style={{ fontSize: 13, color: isDark ? '#e2e8f0' : '#334155', margin: 0, lineHeight: 1.5 }}>
-                    {textoTraducido}
-                  </p>
 
-                  {/* Control Ver más / Ocultar alineado a la derecha ÚNICAMENTE si hay fotos */}
-                  {tieneFotos && (
-                    <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-                      <span
-                        role="button"
-                        tabIndex={0}
-                        onClick={() => toggleFotosResena(i)}
-                        onKeyDown={e => e.key === 'Enter' && toggleFotosResena(i)}
-                        style={{
-                          color: 'var(--brand-primary, #2563eb)',
-                          fontSize: 12,
-                          fontWeight: 600,
-                          cursor: 'pointer',
-                          userSelect: 'none',
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: 4
-                        }}
-                      >
-                        {fotosAbiertas ? 'Ocultar' : 'Ver más'}
-                      </span>
+                  {/* Texto del comentario + Fotos a la derecha directamente */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, marginTop: 4 }}>
+                    <p style={{ fontSize: 13, color: isDark ? '#e2e8f0' : '#334155', margin: 0, lineHeight: 1.5, flex: 1 }}>
+                      {textoTraducido}
+                    </p>
 
-                      {/* Galería desplegable de Fotos a la derecha */}
-                      {fotosAbiertas && (
-                        <div
-                          style={{
-                            display: 'flex',
-                            gap: 8,
-                            marginTop: 8,
-                            flexWrap: 'wrap',
-                            justifyContent: 'flex-end'
-                          }}
-                        >
-                          {item.fotos.map((imgSrc, imgIdx) => (
-                            <img
-                              key={imgIdx}
-                              src={imgSrc}
-                              alt={`Foto adjunta ${imgIdx + 1}`}
-                              style={{
-                                width: 60,
-                                height: 60,
-                                borderRadius: 10,
-                                objectFit: 'cover',
-                                border: `1px solid ${border}`
-                              }}
-                            />
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  )}
+                    {/* Fotos al lado derecho del texto sin necesidad de Ver más */}
+                    {tieneFotos && (
+                      <div style={{ display: 'flex', gap: 6, flexShrink: 0, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                        {item.fotos.map((imgSrc, imgIdx) => (
+                          <img
+                            key={imgIdx}
+                            src={imgSrc}
+                            alt={`Foto adjunta ${imgIdx + 1}`}
+                            style={{
+                              width: 54,
+                              height: 54,
+                              borderRadius: 8,
+                              objectFit: 'cover',
+                              border: `1px solid ${border}`
+                            }}
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             )
           })}
+
+          {/* Enlace "Ver más" / "Ver menos" abajo de las 4 reseñas si hay más comentarios */}
+          {listaComentarios.length > 4 && (
+            <div style={{ textAlign: 'center', marginTop: 8 }}>
+              <span
+                role="button"
+                tabIndex={0}
+                onClick={() => setMostrarTodas(v => !v)}
+                onKeyDown={e => e.key === 'Enter' && setMostrarTodas(v => !v)}
+                style={{
+                  color: 'var(--brand-primary, #2563eb)',
+                  fontSize: 13,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  userSelect: 'none'
+                }}
+              >
+                {mostrarTodas ? 'Ver menos' : 'Ver más'}
+              </span>
+            </div>
+          )}
         </div>
       </div>
     </div>
