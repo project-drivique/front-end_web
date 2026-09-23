@@ -1645,11 +1645,94 @@ html.dark .domicilio-driver-label {
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
 }
 
+.minimal-group-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.minimal-group-head .minimal-label {
+  margin-bottom: 0;
+}
+
 .minimal-counter {
-  text-align: right;
   font-size: 11px;
+  font-weight: 600;
   color: var(--texto-second, #94a3b8);
-  margin-top: 4px;
+}
+
+.minimal-fotos-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.minimal-upload-box {
+  width: 78px;
+  height: 78px;
+  border-radius: 14px;
+  border: 1.5px dashed #93c5fd;
+  background: #f0f9ff;
+  color: var(--brand-primary, #2563eb);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.minimal-upload-box:hover {
+  background: #e0f2fe;
+  border-color: var(--brand-primary, #2563eb);
+  transform: translateY(-1px);
+}
+
+.minimal-upload-box .upload-cam-icon {
+  font-size: 18px;
+}
+
+.minimal-upload-box span {
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.minimal-foto-thumb {
+  position: relative;
+  width: 78px;
+  height: 78px;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid var(--borde, #e2e8f0);
+}
+
+.minimal-foto-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.minimal-foto-del-btn {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: rgba(239, 68, 68, 0.9);
+  color: #ffffff;
+  border: none;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: background 0.18s;
+}
+
+.minimal-foto-del-btn:hover {
+  background: #dc2626;
 }
 
 .minimal-submit-btn {
