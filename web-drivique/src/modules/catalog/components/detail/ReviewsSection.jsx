@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { FaStar } from 'react-icons/fa'
+import { useAuthStore } from '../../../../store/authStore'
 
 const REVIEW_TEXT_MAP = {
   "Muy cómodo para viajes cortos, sin problemas mecánicos y el proceso de entrega fue rápido.": "vehiculo.reviews.rev1",
@@ -13,9 +14,10 @@ const REVIEW_TEXT_MAP = {
   "Espacio de sobra para toda la familia. La volveré a alquilar.": "vehiculo.reviews.rev8"
 }
 
-export default function ReviewsSection({ comentarios = [], calificacion = 0, c, embedded = false }) {
+export default function ReviewsSection({ comentarios = [], calificacion = 0, vehiculoId = null, vehiculoNombre = '', c, embedded = false }) {
   const { t, i18n } = useTranslation()
   const [mostrarTodas, setMostrarTodas] = useState(false)
+  const usuario = useAuthStore(state => state.usuario)
 
   const bg = embedded ? 'transparent' : (c?.cardBg || 'var(--bg-tarjeta, #ffffff)')
   const border = c?.cardBorder || 'var(--borde, #e2e8f0)'
@@ -36,7 +38,58 @@ export default function ReviewsSection({ comentarios = [], calificacion = 0, c, 
     }
   }
 
-  if (!comentarios || comentarios.length === 0) {
+  // Fusionar reseñas guardadas localmente por el usuario con las reseñas base del catálogo
+  const listaComentarios = useMemo(() => {
+    const fusionados = [...(comentarios || [])]
+    try {
+      const valoracionesLocales = JSON.parse(localStorage.getItem('drivique_valoraciones') || '{}')
+      const reservasLocales = JSON.parse(localStorage.getItem('drivique_reservas') || '[]')
+
+      // Recorrer las valoraciones locales guardadas
+      Object.entries(valoracionesLocales).forEach(([reservaId, val]) => {
+        if (!val) return
+        const resMatch = reservasLocales.find(r => String(r.id) === String(reservaId) || String(r.codigo) === String(reservaId) || String(r.referencia) === String(reservaId))
+        
+        // Comprobar si la reseña corresponde a este vehículo (por ID o por nombre)
+        const matchId = vehiculoId && resMatch && (Number(resMatch.vehiculoId) === Number(vehiculoId) || Number(resMatch.vehiculo?.id) === Number(vehiculoId))
+        const matchNombre = vehiculoNombre && resMatch && (resMatch.vehiculo?.nombre === vehiculoNombre)
+        const matchSinReserva = !resMatch // Si no hay match de reserva, incluir si es la valoración actual
+
+        if (matchId || matchNombre || matchSinReserva) {
+          const autorNombre = resMatch?.clienteNombre || resMatch?.datosForm?.nombre || usuario?.nombre || 'Tú (Cliente Drivique)'
+          const yaExisteIdx = fusionados.findIndex(item => item.autor === autorNombre || item.esPropia)
+          
+          const elementoResena = {
+            autor: autorNombre,
+            calificacion: Number(val.estrellas || val.calificacion || 5),
+            texto: val.comentario || 'Excelente servicio.',
+            fecha: val.actualizadoEn ? val.actualizadoEn.split('T')[0] : new Date().toISOString().split('T')[0],
+            fotos: val.fotos || [],
+            esPropia: true
+          }
+
+          if (yaExisteIdx !== -1) {
+            fusionados[yaExisteIdx] = elementoResena
+          } else {
+            fusionados.unshift(elementoResena)
+          }
+        }
+      })
+    } catch (e) {
+      console.warn('Error recuperando valoraciones locales:', e)
+    }
+
+    return fusionados
+  }, [comentarios, vehiculoId, vehiculoNombre, usuario])
+
+  // Recalcular calificación global basada en la lista combinada
+  const calificacionFinal = useMemo(() => {
+    if (!listaComentarios.length) return calificacion || 0
+    const suma = listaComentarios.reduce((acc, curr) => acc + (Number(curr.calificacion) || 5), 0)
+    return Number((suma / listaComentarios.length).toFixed(1))
+  }, [listaComentarios, calificacion])
+
+  if (!listaComentarios || listaComentarios.length === 0) {
     return (
       <div
         className="resenas-card-wrap"
@@ -76,14 +129,14 @@ export default function ReviewsSection({ comentarios = [], calificacion = 0, c, 
     )
   }
 
-  const visibles = mostrarTodas ? comentarios : comentarios.slice(0, 3)
+  const visibles = mostrarTodas ? listaComentarios : listaComentarios.slice(0, 3)
 
   const distribution = {
-    5: comentarios.filter(c => c.calificacion === 5).length,
-    4: comentarios.filter(c => c.calificacion === 4).length,
-    3: comentarios.filter(c => c.calificacion === 3).length,
-    2: comentarios.filter(c => c.calificacion === 2).length,
-    1: comentarios.filter(c => c.calificacion === 1).length,
+    5: listaComentarios.filter(c => Math.round(c.calificacion) === 5).length,
+    4: listaComentarios.filter(c => Math.round(c.calificacion) === 4).length,
+    3: listaComentarios.filter(c => Math.round(c.calificacion) === 3).length,
+    2: listaComentarios.filter(c => Math.round(c.calificacion) === 2).length,
+    1: listaComentarios.filter(c => Math.round(c.calificacion) === 1).length,
   }
 
   const renderStars = (rating) => {
@@ -113,19 +166,19 @@ export default function ReviewsSection({ comentarios = [], calificacion = 0, c, 
         {/* Columna Izquierda: Resumen */}
         <div className="resenas-resumen" style={{ flex: '1 1 200px', minWidth: 180, maxWidth: 280 }}>
           <div style={{ fontSize: 'clamp(32px, 5vw, 44px)', fontWeight: 900, color: isDark ? '#f1f5f9' : '#334155', lineHeight: 1, marginBottom: 8 }}>
-            {calificacion.toFixed(1)}
+            {calificacionFinal.toFixed(1)}
           </div>
           <div style={{ display: 'flex', gap: 4, marginBottom: 6 }}>
-            {renderStars(Math.round(calificacion))}
+            {renderStars(Math.round(calificacionFinal))}
           </div>
           <div style={{ fontSize: 12.5, fontWeight: 600, color: textSecondary, marginBottom: 16 }}>
-            {t('vehiculo.reviewsCount', { count: comentarios.length, defaultValue: `${comentarios.length} reseñas` })}
+            {t('vehiculo.reviewsCount', { count: listaComentarios.length, defaultValue: `${listaComentarios.length} reseñas` })}
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             {[5, 4, 3, 2, 1].map(star => {
               const count = distribution[star]
-              const percentage = comentarios.length > 0 ? (count / comentarios.length) * 100 : 0
+              const percentage = listaComentarios.length > 0 ? (count / listaComentarios.length) * 100 : 0
               return (
                 <div key={star} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: textSecondary }}>
                   <span style={{ width: 12, textAlign: 'right', fontWeight: 600 }}>{star}</span>
@@ -176,14 +229,14 @@ export default function ReviewsSection({ comentarios = [], calificacion = 0, c, 
                     width: 38,
                     height: 38,
                     borderRadius: '50%',
-                    background: isDark ? 'rgba(255,255,255,0.1)' : '#f1f5f9',
+                    background: item.esPropia ? 'var(--brand-primary, #2563eb)' : (isDark ? 'rgba(255,255,255,0.1)' : '#f1f5f9'),
                     border: `1px solid ${border}`,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     fontSize: 13,
                     fontWeight: 800,
-                    color: isDark ? '#f1f5f9' : '#334155',
+                    color: item.esPropia ? '#ffffff' : (isDark ? '#f1f5f9' : '#334155'),
                     flexShrink: 0,
                   }}
                 >
@@ -194,7 +247,9 @@ export default function ReviewsSection({ comentarios = [], calificacion = 0, c, 
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
                     <div>
-                      <div style={{ fontSize: 13.5, fontWeight: 600, color: isDark ? '#f1f5f9' : '#334155' }}>{item.autor}</div>
+                      <div style={{ fontSize: 13.5, fontWeight: 600, color: isDark ? '#f1f5f9' : '#334155' }}>
+                        {item.autor} {item.esPropia && <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--brand-primary, #2563eb)', marginLeft: 4 }}>(Tu reseña)</span>}
+                      </div>
                       <div style={{ fontSize: 11.5, color: textSecondary }}>{fechaFormateada}</div>
                     </div>
                     <div style={{ display: 'flex', gap: 2 }}>
@@ -203,15 +258,35 @@ export default function ReviewsSection({ comentarios = [], calificacion = 0, c, 
                       ))}
                     </div>
                   </div>
-                  <p style={{ fontSize: 13, color: textSecondary, margin: 0, lineHeight: 1.5 }}>
+                  <p style={{ fontSize: 13, color: isDark ? '#e2e8f0' : '#334155', margin: 0, lineHeight: 1.5 }}>
                     {textoTraducido}
                   </p>
+
+                  {/* Renderizado de Fotos Adjuntas */}
+                  {item.fotos && item.fotos.length > 0 && (
+                    <div style={{ display: 'flex', gap: 8, marginTop: 10, flexWrap: 'wrap' }}>
+                      {item.fotos.map((imgSrc, imgIdx) => (
+                        <img
+                          key={imgIdx}
+                          src={imgSrc}
+                          alt={`Foto adjunta ${imgIdx + 1}`}
+                          style={{
+                            width: 60,
+                            height: 60,
+                            borderRadius: 10,
+                            objectFit: 'cover',
+                            border: `1px solid ${border}`
+                          }}
+                        />
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             )
           })}
 
-          {comentarios.length > 3 && (
+          {listaComentarios.length > 3 && (
             <div style={{ textAlign: 'center', marginTop: 8 }}>
               <button
                 type="button"

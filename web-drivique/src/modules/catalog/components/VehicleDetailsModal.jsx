@@ -372,7 +372,14 @@ export default function VehicleDetailsModal({
             </div>
 
             {/* Reseñas integradas */}
-            <ReviewsSection comentarios={vehiculo.comentarios} calificacion={vehiculo.calificacion} c={c} embedded />
+            <ReviewsSection
+              comentarios={vehiculo.comentarios}
+              calificacion={vehiculo.calificacion}
+              vehiculoId={vehiculo.id}
+              vehiculoNombre={vehiculo.nombre}
+              c={c}
+              embedded
+            />
           </div>
         </div>
       </div>
