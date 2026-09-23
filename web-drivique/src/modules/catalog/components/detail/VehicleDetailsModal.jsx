@@ -150,11 +150,15 @@ export default function VehicleDetailsModal({ vehiculo, visible, onCerrar, c }) 
           <RentalRequirements c={c} />
 
           {/* Reseñas */}
-          {vehiculo.comentarios && vehiculo.comentarios.length > 0 && (
-            <div style={{ marginTop: 10 }}>
-              <ReviewsSection comentarios={vehiculo.comentarios} calificacion={vehiculo.calificacion} c={c} />
-            </div>
-          )}
+          <div style={{ marginTop: 10 }}>
+            <ReviewsSection
+              comentarios={vehiculo.comentarios}
+              calificacion={vehiculo.calificacion}
+              vehiculoId={vehiculo.id}
+              vehiculoNombre={vehiculo.nombre}
+              c={c}
+            />
+          </div>
         </div>
 
         {/* Footer del Modal */}
