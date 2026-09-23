@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useLocation, useSearchParams } from 'react-router-dom'
-import { FaCalendarAlt, FaCar, FaCheckCircle, FaChevronDown, FaDownload, FaEye, FaEyeSlash, FaFileContract, FaFlag, FaKey, FaLock, FaMapMarkerAlt, FaMoneyBillWave, FaRegCalendarCheck, FaScroll, FaShieldAlt, FaStar, FaTimes, FaInfoCircle, FaCreditCard, FaFileSignature, FaPenNib, FaClock, FaTruck, FaUserCheck, FaWhatsapp, FaEnvelope, FaCamera } from 'react-icons/fa'
+import { FaCalendarAlt, FaCar, FaCheckCircle, FaChevronDown, FaDownload, FaEye, FaEyeSlash, FaFileContract, FaFlag, FaKey, FaLock, FaMapMarkerAlt, FaMoneyBillWave, FaRegCalendarCheck, FaScroll, FaShieldAlt, FaStar, FaTimes, FaInfoCircle, FaCreditCard, FaFileSignature, FaPenNib, FaClock, FaTruck, FaUserCheck, FaWhatsapp, FaEnvelope } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/store/authStore'
@@ -65,45 +65,12 @@ const fechaBonita = (fecha, idioma) => {
   }
 }
 
-const ETIQUETAS_ESTRELLAS = {
-  1: '😞 Mala experiencia',
-  2: '😐 Regular',
-  3: '🙂 Bueno',
-  4: '😊 Muy bueno',
-  5: '🤩 ¡Excelente'
-}
-
 function Estrellas({ value, onChange, disabled = false }) {
   const { t } = useTranslation()
-  const [hoverIndex, setHoverIndex] = useState(0)
-  const activeRating = hoverIndex || value || 0
-
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', marginBottom: '18px' }}>
-      <div className="estrellas" role="radiogroup" aria-label={t('reservas.ratingAria')} onMouseLeave={() => !disabled && setHoverIndex(0)}>
-        {[1, 2, 3, 4, 5].map(n => (
-          <button
-            key={n}
-            type="button"
-            disabled={disabled}
-            onClick={() => onChange?.(n)}
-            onMouseEnter={() => !disabled && setHoverIndex(n)}
-            className={n <= activeRating ? 'estrella activa' : 'estrella'}
-            aria-label={t('reservas.starsCount', { count: n })}
-            aria-checked={value === n}
-            role="radio"
-          >
-            <FaStar />
-          </button>
-        ))}
-      </div>
-      {!disabled && (
-        <div style={{ minHeight: '20px', fontSize: '13px', fontWeight: 700, color: activeRating > 0 ? 'var(--brand-primary, #2563eb)' : 'var(--texto-second, #94a3b8)' }}>
-          {activeRating > 0 ? ETIQUETAS_ESTRELLAS[activeRating] : 'Toca las estrellas para calificar (1 a 5)'}
-        </div>
-      )}
-    </div>
-  )
+  return <div className="estrellas" role="radiogroup" aria-label={t('reservas.ratingAria')}>
+    {[1, 2, 3, 4, 5].map(n => <button key={n} type="button" disabled={disabled} onClick={() => onChange?.(n)}
+      className={n <= value ? 'estrella activa' : 'estrella'} aria-label={t('reservas.starsCount', { count: n })} aria-checked={value === n} role="radio"><FaStar /></button>)}
+  </div>
 }
 
 function ModalValoracion({ reserva, onClose, onSave }) {
@@ -111,33 +78,19 @@ function ModalValoracion({ reserva, onClose, onSave }) {
   const [estrellas, setEstrellas] = useState(reserva.valoracion?.estrellas || 0)
   const [comentario, setComentario] = useState(reserva.valoracion?.comentario || '')
   const [guardando, setGuardando] = useState(false)
-
   const guardar = async () => {
     if (!estrellas) return
-    setGuardando(true)
-    await onSave(reserva.id, { estrellas, comentario: comentario.trim() })
-    setGuardando(false)
-    onClose()
+    setGuardando(true); await onSave(reserva.id, { estrellas, comentario: comentario.trim() }); setGuardando(false); onClose()
   }
-
-  return (
-    <div className="modal-backdrop" onMouseDown={onClose}>
-      <section className="modal-panel" role="dialog" aria-modal="true" aria-labelledby="titulo-valoracion" onMouseDown={e => e.stopPropagation()}>
-        <button className="modal-cerrar" onClick={onClose} aria-label={t('reservas.close')}><FaTimes /></button>
-        <div className="modal-icon"><FaStar /></div>
-        <p className="eyebrow">{t('reservas.yourExperience')}</p>
-        <h2 id="titulo-valoracion">{reserva.valoracion ? t('reservas.editYourRating') : t('reservas.howWasTrip')}</h2>
-        <p className="modal-subtitulo">{t('reservas.rateExperience', { vehicle: reserva.vehiculo?.nombre })}</p>
-        <Estrellas value={estrellas} onChange={setEstrellas} />
-        <label className="comentario-label" htmlFor="comentario">{t('reservas.tellMore')} <span>({t('reservas.optional')})</span></label>
-        <textarea id="comentario" maxLength={400} value={comentario} onChange={e => setComentario(e.target.value)} placeholder={t('reservas.commentPlaceholder')} />
-        <div className="contador">{comentario.length}/400</div>
-        <button className="btn-primario modal-guardar" disabled={!estrellas || guardando} onClick={guardar}>
-          {guardando ? t('reservas.saving') : reserva.valoracion ? t('reservas.saveChanges') : t('reservas.publishRating')}
-        </button>
-      </section>
-    </div>
-  )
+  return <div className="modal-backdrop" onMouseDown={onClose}><section className="modal-panel" role="dialog" aria-modal="true" aria-labelledby="titulo-valoracion" onMouseDown={e => e.stopPropagation()}>
+    <button className="modal-cerrar" onClick={onClose} aria-label={t('reservas.close')}><FaTimes /></button><div className="modal-icon"><FaStar /></div>
+    <p className="eyebrow">{t('reservas.yourExperience')}</p><h2 id="titulo-valoracion">{reserva.valoracion ? t('reservas.editYourRating') : t('reservas.howWasTrip')}</h2>
+    <p className="modal-subtitulo">{t('reservas.rateExperience', { vehicle: reserva.vehiculo?.nombre })}</p><Estrellas value={estrellas} onChange={setEstrellas} />
+    <label className="comentario-label" htmlFor="comentario">{t('reservas.tellMore')} <span>({t('reservas.optional')})</span></label>
+    <textarea id="comentario" maxLength={400} value={comentario} onChange={e => setComentario(e.target.value)} placeholder={t('reservas.commentPlaceholder')} />
+    <div className="contador">{comentario.length}/400</div><button className="btn-primario modal-guardar" disabled={!estrellas || guardando} onClick={guardar}>
+      {guardando ? t('reservas.saving') : reserva.valoracion ? t('reservas.saveChanges') : t('reservas.publishRating')}</button>
+  </section></div>
 }
 
 function ContratoVerCard({ reserva, contratoFirmado, reservaParaContrato, vehiculoParaContrato, identificacion }) {
