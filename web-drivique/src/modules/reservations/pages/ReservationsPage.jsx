@@ -79,8 +79,13 @@ function Estrellas({ value, onChange, disabled = false }) {
   const activeRating = hoverIndex || value || 0
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', margin: '12px 0 20px' }}>
-      <div className="estrellas" role="radiogroup" aria-label={t('reservas.ratingAria', { defaultValue: 'Calificación por estrellas' })} onMouseLeave={() => !disabled && setHoverIndex(0)}>
+    <div className="selector-estrellas-wrapper">
+      <div
+        className="estrellas-row"
+        role="radiogroup"
+        aria-label={t('reservas.ratingAria', { defaultValue: 'Calificación por estrellas' })}
+        onMouseLeave={() => !disabled && setHoverIndex(0)}
+      >
         {[1, 2, 3, 4, 5].map(n => (
           <button
             key={n}
@@ -88,7 +93,7 @@ function Estrellas({ value, onChange, disabled = false }) {
             disabled={disabled}
             onClick={() => onChange?.(n)}
             onMouseEnter={() => !disabled && setHoverIndex(n)}
-            className={n <= activeRating ? 'estrella activa' : 'estrella'}
+            className={`estrella-btn ${n <= activeRating ? 'activa' : ''}`}
             aria-label={t('reservas.starsCount', { count: n, defaultValue: `${n} estrellas` })}
             aria-checked={value === n}
             role="radio"
@@ -98,8 +103,16 @@ function Estrellas({ value, onChange, disabled = false }) {
         ))}
       </div>
       {!disabled && (
-        <div style={{ minHeight: '20px', fontSize: '13px', fontWeight: 700, color: activeRating > 0 ? 'var(--brand-primary, #2563eb)' : 'var(--texto-second, #94a3b8)', transition: 'all 0.2s ease' }}>
-          {activeRating > 0 ? ETIQUETAS_ESTRELLAS[activeRating] : 'Toca las estrellas para calificar (1 a 5)'}
+        <div className="etiqueta-hover-container">
+          {activeRating > 0 ? (
+            <span className="etiqueta-hover-badge activa">
+              {ETIQUETAS_ESTRELLAS[activeRating]}
+            </span>
+          ) : (
+            <span className="etiqueta-hover-badge hint">
+              Toca las estrellas para calificar (1 a 5)
+            </span>
+          )}
         </div>
       )}
     </div>
@@ -124,36 +137,45 @@ function ModalValoracion({ reserva, onClose, onSave }) {
 
   return (
     <div className="modal-backdrop" onMouseDown={onClose}>
-      <section className="modal-panel" role="dialog" aria-modal="true" aria-labelledby="titulo-valoracion" onMouseDown={e => e.stopPropagation()}>
+      <section className="modal-panel modal-valoracion-clean" role="dialog" aria-modal="true" aria-labelledby="titulo-valoracion" onMouseDown={e => e.stopPropagation()}>
         <button className="modal-cerrar" onClick={onClose} aria-label={t('reservas.close', { defaultValue: 'Cerrar' })}>
           <FaTimes />
         </button>
 
-        <p className="eyebrow">{t('reservas.yourExperience', { defaultValue: 'TU EXPERIENCIA' })}</p>
-        <h2 id="titulo-valoracion">
-          {reserva.valoracion
-            ? t('reservas.editYourRating', { defaultValue: 'Editar reseña' })
-            : t('reservas.howWasTrip', { defaultValue: '¿Cómo estuvo tu viaje?' })}
-        </h2>
-        <p className="modal-subtitulo">
-          {t('reservas.rateExperience', { defaultValue: `Califica tu experiencia con ${vehiculoNombre}.`, vehicle: vehiculoNombre })}
-        </p>
+        <div className="modal-valoracion-header">
+          <span className="modal-eyebrow-pill">
+            {t('reservas.yourExperience', { defaultValue: 'TU EXPERIENCIA' })}
+          </span>
+          <h2 id="titulo-valoracion" className="modal-valoracion-title">
+            {reserva.valoracion
+              ? t('reservas.editYourRating', { defaultValue: 'Editar reseña' })
+              : t('reservas.howWasTrip', { defaultValue: '¿Cómo estuvo tu viaje?' })}
+          </h2>
+          <p className="modal-subtitulo">
+            {t('reservas.rateExperience', { defaultValue: `Califica tu experiencia con ${vehiculoNombre}.`, vehicle: vehiculoNombre })}
+          </p>
+        </div>
 
         <Estrellas value={estrellas} onChange={setEstrellas} />
 
-        <label className="comentario-label" htmlFor="comentario">
-          {t('reservas.tellMore', { defaultValue: 'Cuéntanos un poco más' })} <span>({t('reservas.optional', { defaultValue: 'opcional' })})</span>
-        </label>
-        <textarea
-          id="comentario"
-          maxLength={400}
-          value={comentario}
-          onChange={e => setComentario(e.target.value)}
-          placeholder={t('reservas.commentPlaceholder', { defaultValue: '¿Qué fue lo que más te gustó del vehículo?' })}
-        />
-        <div className="contador">{comentario.length}/400</div>
+        <div className="modal-comentario-group">
+          <div className="comentario-label-row">
+            <label className="comentario-label" htmlFor="comentario">
+              {t('reservas.tellMore', { defaultValue: 'Cuéntanos un poco más' })} <span>({t('reservas.optional', { defaultValue: 'opcional' })})</span>
+            </label>
+          </div>
+          <textarea
+            id="comentario"
+            maxLength={400}
+            value={comentario}
+            onChange={e => setComentario(e.target.value)}
+            placeholder={t('reservas.commentPlaceholder', { defaultValue: '¿Qué fue lo que más te gustó del vehículo?' })}
+            className="modal-valoracion-textarea"
+          />
+          <div className="contador-characteres">{comentario.length}/400</div>
+        </div>
 
-        <button className="btn-primario modal-guardar" disabled={!estrellas || guardando} onClick={guardar}>
+        <button className="btn-primario modal-guardar-btn" disabled={!estrellas || guardando} onClick={guardar}>
           {guardando
             ? t('reservas.saving', { defaultValue: 'Guardando...' })
             : (reserva.valoracion

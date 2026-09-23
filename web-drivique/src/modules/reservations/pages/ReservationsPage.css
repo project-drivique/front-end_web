@@ -1505,4 +1505,294 @@ html.dark .domicilio-driver-label {
   transform: translateY(-1px);
 }
 
+/* ============================================================
+   DISEÑO MODERNO Y ELEGANTE DEL MODAL DE VALORACIÓN (UI/UX)
+   ============================================================ */
+.modal-backdrop {
+  position: fixed;
+  z-index: 9999;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+
+.modal-valoracion-clean {
+  width: min(450px, 92vw) !important;
+  background: var(--bg-tarjeta, #ffffff) !important;
+  border: 1px solid var(--borde, #e2e8f0) !important;
+  border-radius: 26px !important;
+  padding: 34px 28px 28px !important;
+  box-shadow: 0 25px 70px rgba(15, 23, 42, 0.22) !important;
+  text-align: center !important;
+  position: relative;
+}
+
+.modal-valoracion-header {
+  margin-bottom: 20px;
+}
+
+.modal-eyebrow-pill {
+  display: inline-block;
+  padding: 5px 14px;
+  border-radius: 999px;
+  background: rgba(37, 99, 235, 0.08);
+  color: var(--brand-primary, #2563eb);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.modal-valoracion-title {
+  font-size: 24px !important;
+  font-weight: 800 !important;
+  color: var(--texto-primary, #0f172a) !important;
+  margin: 0 0 6px !important;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.modal-valoracion-clean .modal-subtitulo {
+  font-size: 13.5px !important;
+  color: var(--texto-second, #64748b) !important;
+  margin: 0 !important;
+  font-weight: 500;
+}
+
+/* Selector de Estrellas Interactivo */
+.selector-estrellas-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin: 18px 0 24px;
+}
+
+.estrellas-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.estrella-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: grid;
+  place-items: center;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  outline: none;
+}
+
+.estrella-btn svg {
+  font-size: 34px;
+  color: #cbd5e1;
+  transition: color 0.18s ease, filter 0.18s ease;
+}
+
+.estrella-btn.activa svg {
+  color: #f59e0b;
+  filter: drop-shadow(0 3px 8px rgba(245, 158, 11, 0.4));
+}
+
+.estrella-btn:hover:not(:disabled) {
+  transform: scale(1.22);
+}
+
+.estrella-btn:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.etiqueta-hover-container {
+  min-height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.etiqueta-hover-badge {
+  font-size: 12.5px;
+  font-weight: 700;
+  padding: 5px 14px;
+  border-radius: 999px;
+  transition: all 0.2s ease;
+}
+
+.etiqueta-hover-badge.activa {
+  background: rgba(37, 99, 235, 0.08);
+  color: var(--brand-primary, #2563eb);
+  font-size: 13px;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.08);
+}
+
+.etiqueta-hover-badge.hint {
+  background: transparent;
+  color: var(--texto-second, #94a3b8);
+  font-weight: 500;
+  font-size: 12px;
+}
+
+/* Grupo de Comentario */
+.modal-comentario-group {
+  margin-bottom: 22px;
+  text-align: left;
+}
+
+.comentario-label-row {
+  margin-bottom: 8px;
+}
+
+.modal-comentario-group .comentario-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--texto-primary, #1e293b);
+  margin: 0;
+}
+
+.modal-comentario-group .comentario-label span {
+  font-weight: 500;
+  color: var(--texto-second, #64748b);
+  margin-left: 2px;
+}
+
+.modal-valoracion-textarea {
+  width: 100%;
+  height: 110px;
+  border: 1.5px solid var(--borde, #e2e8f0);
+  border-radius: 16px;
+  background: var(--bg-item, #f8fafc);
+  color: var(--texto-primary, #0f172a);
+  padding: 14px 16px;
+  font-family: inherit;
+  font-size: 13px;
+  line-height: 1.45;
+  resize: none;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
+  box-sizing: border-box;
+}
+
+.modal-valoracion-textarea:focus {
+  border-color: var(--brand-primary, #2563eb);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+  background: var(--bg-tarjeta, #ffffff);
+}
+
+.contador-characteres {
+  text-align: right;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--texto-second, #94a3b8);
+  margin-top: 6px;
+}
+
+/* Botón Principal de Valoración */
+.modal-guardar-btn {
+  width: 100% !important;
+  height: 48px !important;
+  border-radius: 14px !important;
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.01em !important;
+  box-sizing: border-box !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.2s ease !important;
+  margin-top: 4px !important;
+}
+
+.modal-guardar-btn:not(:disabled) {
+  background: linear-gradient(135deg, var(--brand-primary, #2563eb) 0%, #1d4ed8 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.35) !important;
+  border: none !important;
+  cursor: pointer !important;
+}
+
+.modal-guardar-btn:not(:disabled):hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.45) !important;
+  filter: brightness(1.04) !important;
+}
+
+.modal-guardar-btn:not(:disabled):active {
+  transform: translateY(0) !important;
+}
+
+.modal-guardar-btn:disabled {
+  background: #e2e8f0 !important;
+  color: #94a3b8 !important;
+  box-shadow: none !important;
+  border: none !important;
+  cursor: not-allowed !important;
+  opacity: 1 !important;
+}
+
+/* Botón Cerrar (X) */
+.modal-valoracion-clean .modal-cerrar {
+  position: absolute;
+  right: 18px;
+  top: 18px;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--borde, #e2e8f0);
+  border-radius: 50%;
+  background: var(--bg-item, #f1f5f9);
+  color: var(--texto-second, #64748b);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.modal-valoracion-clean .modal-cerrar:hover {
+  background: var(--borde, #e2e8f0);
+  color: var(--texto-primary, #0f172a);
+  transform: scale(1.06);
+}
+
+/* Modo Oscuro */
+html.dark .modal-valoracion-clean {
+  background: #172033 !important;
+  border-color: #334155 !important;
+}
+
+html.dark .modal-eyebrow-pill {
+  background: rgba(37, 99, 235, 0.16);
+  color: #93c5fd;
+}
+
+html.dark .modal-valoracion-title {
+  color: #f8fafc !important;
+}
+
+html.dark .modal-valoracion-clean .modal-subtitulo {
+  color: #94a3b8 !important;
+}
+
+html.dark .modal-valoracion-textarea {
+  background: #0f172a;
+  border-color: #334155;
+  color: #f8fafc;
+}
+
+html.dark .modal-valoracion-textarea:focus {
+  background: #172033;
+  border-color: var(--brand-primary, #2563eb);
+}
+
+html.dark .modal-guardar-btn:disabled {
+  background: #1e293b !important;
+  color: #64748b !important;
+}
+
+
 
