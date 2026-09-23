@@ -1698,8 +1698,7 @@ html.dark .domicilio-driver-label {
 
 .minimal-slot-upload-btn:hover {
   background: #ffffff;
-  border-color: #94a3b8;
-  transform: translateY(-1px);
+  border-color: var(--brand-primary, #2563eb);
 }
 
 .minimal-slot-upload-btn .slot-cam-icon {
