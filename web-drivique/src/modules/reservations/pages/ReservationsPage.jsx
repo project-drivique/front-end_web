@@ -1393,33 +1393,22 @@ function TarjetaReserva({ reserva, moneda, onValorar, onReportar, onVerDetalle }
     <div className="reserva-actions">
       {puedeReportar && (
         <button className="btn-reporte" onClick={() => onReportar(reserva)}>
-          <FaFlag /> {t('reservas.makeReport')}
+          <FaFlag size={12} />
+          <span>{t('reservas.makeReport', { defaultValue: 'Hacer reporte' })}</span>
         </button>
       )}
       {esFinalizada && (
-        <button
-          className="btn-secundario"
-          onClick={() => onValorar(reserva)}
-          style={{
-            background: '#fffbeb',
-            color: '#b45309',
-            borderColor: '#fde68a',
-            fontWeight: 800,
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '6px'
-          }}
-        >
+        <button className="btn-calificar" onClick={() => onValorar(reserva)}>
           <FaStar color="#f59e0b" size={13} />
           <span>
             {reserva.valoracion
-              ? t('reservas.editRating', { defaultValue: 'Editar reseña' })
+              ? t('reservas.editRating', { defaultValue: 'Editar valoración' })
               : t('reservas.rateVehicle', { defaultValue: 'Calificar vehículo' })}
           </span>
         </button>
       )}
       <button className="btn-detalle" onClick={() => onVerDetalle(reserva)}>
-        {t('reservas.viewDetail')}
+        {t('reservas.viewDetail', { defaultValue: 'Ver detalle' })}
       </button>
     </div>
   </div></article>
