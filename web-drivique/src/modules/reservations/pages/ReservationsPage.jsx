@@ -1390,14 +1390,6 @@ function TarjetaReserva({ reserva, moneda, onValorar, onReportar, onVerDetalle }
     <div className="reserva-head"><div><span className="reserva-id">{t('reservas.reservationNumber', { id: reserva.id })}</span><h2>{reserva.vehiculo?.nombre || t('reservas.vehicleUnavailable')}</h2></div><strong className="reserva-total">{formatCurrency(totalTarjeta, moneda)}</strong></div>
     <div className="reserva-meta"><div><FaCalendarAlt /><span><small>{t('reservas.pickup')}</small>{fechaBonita(reserva.fechaInicio, i18n.resolvedLanguage)}</span></div><span className="linea-fechas" />
       <div><FaRegCalendarCheck /><span><small>{t('reservas.return')}</small>{fechaBonita(reserva.fechaFin, i18n.resolvedLanguage)}</span></div><div className="meta-sede"><FaMapMarkerAlt /><span><small>{t('reservas.branch')}</small>{sede}</span></div></div>
-    {esFinalizada && reserva.valoracion && (
-      <div className="valoracion-resumen">
-        <div>
-          <Estrellas value={reserva.valoracion.estrellas} disabled />
-          {reserva.valoracion.comentario && <p>“{reserva.valoracion.comentario}”</p>}
-        </div>
-      </div>
-    )}
     <div className="reserva-actions">
       {puedeReportar && (
         <button className="btn-reporte" onClick={() => onReportar(reserva)}>
