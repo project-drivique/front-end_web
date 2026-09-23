@@ -1552,15 +1552,15 @@ html.dark .domicilio-driver-label {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 22px;
+  gap: 10px;
+  margin-bottom: 20px;
 }
 
 .minimal-estrellas-grid {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 10px;
 }
 
 .minimal-star-btn {
@@ -1570,44 +1570,55 @@ html.dark .domicilio-driver-label {
   padding: 4px;
   display: grid;
   place-items: center;
-  transition: transform 0.18s ease;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
   outline: none;
 }
 
 .minimal-star-btn svg {
-  font-size: 34px;
+  font-size: 38px;
   color: #cbd5e1;
-  transition: color 0.18s ease;
+  transition: color 0.2s ease, filter 0.2s ease;
 }
 
 .minimal-star-btn.activa svg {
   color: #f59e0b;
+  filter: drop-shadow(0 3px 8px rgba(245, 158, 11, 0.4));
 }
 
 .minimal-star-btn:hover:not(:disabled) {
-  transform: scale(1.18);
+  transform: scale(1.22);
 }
 
 .minimal-label-status {
-  min-height: 22px;
+  min-height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.minimal-label-txt {
+.minimal-label-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 999px;
   font-size: 13px;
   font-weight: 700;
+  transition: all 0.2s ease;
 }
 
-.minimal-label-txt.activa {
+.minimal-label-pill.activa {
+  background: #eff6ff;
   color: var(--brand-primary, #2563eb);
+  border: 1px solid #bfdbfe;
 }
 
-.minimal-label-txt.hint {
-  color: var(--texto-second, #94a3b8);
-  font-weight: 500;
+.minimal-label-pill.hint {
+  background: var(--bg-item, #f8fafc);
+  color: var(--texto-second, #64748b);
+  border: 1px solid var(--borde, #e2e8f0);
   font-size: 12px;
+  font-weight: 500;
 }
 
 .minimal-textarea-group {
@@ -1631,7 +1642,7 @@ html.dark .domicilio-driver-label {
 
 .minimal-textarea {
   width: 100%;
-  height: 100px;
+  height: 95px;
   border: 1px solid var(--borde, #cbd5e1);
   border-radius: 12px;
   background: var(--bg-item, #ffffff);
@@ -1668,85 +1679,107 @@ html.dark .domicilio-driver-label {
   color: var(--texto-second, #94a3b8);
 }
 
-.minimal-fotos-container {
-  display: flex;
-  align-items: center;
+/* 3 Slots de Fotos en Grilla */
+.minimal-fotos-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 10px;
-  flex-wrap: wrap;
+  width: 100%;
 }
 
-.minimal-upload-box {
-  width: 78px;
-  height: 78px;
+.minimal-slot-box {
+  width: 100%;
+  aspect-ratio: 1 / 1;
   border-radius: 14px;
+  overflow: hidden;
+  position: relative;
+}
+
+.minimal-slot-upload-btn {
+  width: 100%;
+  height: 100%;
   border: 1.5px dashed #93c5fd;
   background: #f0f9ff;
+  border-radius: 14px;
   color: var(--brand-primary, #2563eb);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 3px;
   cursor: pointer;
+  padding: 6px;
   transition: all 0.18s ease;
+  box-sizing: border-box;
 }
 
-.minimal-upload-box:hover {
+.minimal-slot-upload-btn:hover {
   background: #e0f2fe;
   border-color: var(--brand-primary, #2563eb);
   transform: translateY(-1px);
 }
 
-.minimal-upload-box .upload-cam-icon {
-  font-size: 18px;
+.minimal-slot-upload-btn .slot-cam-icon {
+  font-size: 20px;
+  margin-bottom: 2px;
 }
 
-.minimal-upload-box span {
+.minimal-slot-upload-btn .slot-num {
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 800;
+  color: var(--texto-primary, #0f172a);
 }
 
-.minimal-foto-thumb {
-  position: relative;
-  width: 78px;
-  height: 78px;
+.minimal-slot-upload-btn .slot-action {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--brand-primary, #2563eb);
+}
+
+.minimal-slot-thumb {
+  width: 100%;
+  height: 100%;
   border-radius: 14px;
   overflow: hidden;
+  position: relative;
   border: 1px solid var(--borde, #e2e8f0);
 }
 
-.minimal-foto-thumb img {
+.minimal-slot-thumb img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
 }
 
-.minimal-foto-del-btn {
+.minimal-slot-del-btn {
   position: absolute;
   top: 4px;
   right: 4px;
-  width: 18px;
-  height: 18px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
-  background: rgba(239, 68, 68, 0.9);
+  background: rgba(239, 68, 68, 0.95);
   color: #ffffff;
   border: none;
   display: grid;
   place-items: center;
   cursor: pointer;
-  transition: background 0.18s;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+  transition: background 0.18s, transform 0.18s;
 }
 
-.minimal-foto-del-btn:hover {
+.minimal-slot-del-btn:hover {
   background: #dc2626;
+  transform: scale(1.1);
 }
 
 .minimal-submit-btn {
   width: 100% !important;
-  height: 46px !important;
-  border-radius: 12px !important;
+  height: 48px !important;
+  border-radius: 14px !important;
   font-size: 14px !important;
-  font-weight: 700 !important;
+  font-weight: 800 !important;
   box-sizing: border-box !important;
   display: inline-flex !important;
   align-items: center !important;
@@ -1827,6 +1860,33 @@ html.dark .minimal-close-btn {
 html.dark .minimal-submit-btn:disabled {
   background: #1e293b !important;
   color: #64748b !important;
+}
+
+html.dark .minimal-label-pill.activa {
+  background: rgba(37, 99, 235, 0.2);
+  color: #93c5fd;
+  border-color: rgba(37, 99, 235, 0.35);
+}
+
+html.dark .minimal-label-pill.hint {
+  background: #1e293b;
+  color: #94a3b8;
+  border-color: #334155;
+}
+
+html.dark .minimal-slot-upload-btn {
+  background: rgba(37, 99, 235, 0.1);
+  border-color: rgba(37, 99, 235, 0.3);
+  color: #93c5fd;
+}
+
+html.dark .minimal-slot-upload-btn:hover {
+  background: rgba(37, 99, 235, 0.2);
+  border-color: #60a5fa;
+}
+
+html.dark .minimal-slot-upload-btn .slot-num {
+  color: #f8fafc;
 }
 
 
