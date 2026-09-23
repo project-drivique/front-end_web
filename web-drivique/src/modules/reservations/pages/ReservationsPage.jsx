@@ -70,7 +70,7 @@ const ETIQUETAS_ESTRELLAS = {
   2: '😐 Regular',
   3: '🙂 Bueno',
   4: '😊 Muy bueno',
-  5: '🤩 ¡Excelente'
+  5: '🤩 ¡Excelente!'
 }
 
 function Estrellas({ value, onChange, disabled = false }) {
@@ -104,15 +104,9 @@ function Estrellas({ value, onChange, disabled = false }) {
       </div>
       {!disabled && (
         <div className="minimal-label-status">
-          {activeRating > 0 ? (
-            <span className="minimal-label-txt activa">
-              {ETIQUETAS_ESTRELLAS[activeRating]}
-            </span>
-          ) : (
-            <span className="minimal-label-txt hint">
-              Toca las estrellas para calificar (1 a 5)
-            </span>
-          )}
+          <span className={`minimal-label-pill ${activeRating > 0 ? 'activa' : 'hint'}`}>
+            {activeRating > 0 ? ETIQUETAS_ESTRELLAS[activeRating] : 'Toca las estrellas para calificar (1 a 5)'}
+          </span>
         </div>
       )}
     </div>
@@ -125,29 +119,35 @@ function ModalValoracion({ reserva, onClose, onSave }) {
   const [comentario, setComentario] = useState(reserva.valoracion?.comentario || '')
   const [fotos, setFotos] = useState(reserva.valoracion?.fotos || [])
   const [guardando, setGuardando] = useState(false)
+  const [activeSlotIndex, setActiveSlotIndex] = useState(null)
   const fileInputRef = useRef(null)
 
   const vehiculoNombre = reserva.vehiculo?.nombre || reserva.vehiculoNombre || 'este vehículo'
 
-  const handleFotoAdd = (e) => {
-    const files = Array.from(e.target.files || [])
-    if (!files.length) return
+  const triggerSlotUpload = (slotIdx) => {
+    setActiveSlotIndex(slotIdx)
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+      fileInputRef.current.click()
+    }
+  }
 
-    const slotsDisponibles = 3 - fotos.length
-    if (slotsDisponibles <= 0) return
+  const handleFotoFileChange = (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
 
-    const archivosAProcesar = files.slice(0, slotsDisponibles)
-    archivosAProcesar.forEach((file) => {
-      const reader = new FileReader()
-      reader.onload = (event) => {
-        setFotos((prev) => {
-          if (prev.length >= 3) return prev
-          return [...prev, event.target.result]
-        })
-      }
-      reader.readAsDataURL(file)
-    })
-    if (fileInputRef.current) fileInputRef.current.value = ''
+    const reader = new FileReader()
+    reader.onload = (event) => {
+      const targetIndex = activeSlotIndex !== null ? activeSlotIndex : fotos.length
+      setFotos((prev) => {
+        const next = [...prev]
+        if (targetIndex < 3) {
+          next[targetIndex] = event.target.result
+        }
+        return next.filter(Boolean).slice(0, 3)
+      })
+    }
+    reader.readAsDataURL(file)
   }
 
   const handleEliminarFoto = (idx) => {
@@ -160,7 +160,7 @@ function ModalValoracion({ reserva, onClose, onSave }) {
     await onSave(reserva.id, {
       estrellas,
       comentario: comentario.trim(),
-      fotos,
+      fotos: fotos.filter(Boolean),
       actualizadoEn: new Date().toISOString()
     })
     setGuardando(false)
@@ -175,7 +175,7 @@ function ModalValoracion({ reserva, onClose, onSave }) {
         </button>
 
         <p className="minimal-eyebrow-text">
-          {t('reservas.yourExperience', { defaultValue: 'TU EXPERIENCIA' })}
+          {t('reservas.yourExperience', { defaultValue: 'VALORACIÓN DE TU VIAJE' })}
         </p>
         <h2 id="titulo-valoracion" className="minimal-title">
           {reserva.valoracion
@@ -192,7 +192,7 @@ function ModalValoracion({ reserva, onClose, onSave }) {
         <div className="minimal-textarea-group">
           <div className="minimal-group-head">
             <label className="minimal-label" htmlFor="comentario">
-              {t('reservas.tellMore', { defaultValue: 'Cuéntanos un poco más' })} <span>({t('reservas.optional', { defaultValue: 'opcional' })})</span>
+              {t('reservas.tellMore', { defaultValue: 'Comentario' })} <span>({t('reservas.optional', { defaultValue: 'opcional' })})</span>
             </label>
             <span className="minimal-counter">{comentario.length}/400</span>
           </div>
@@ -201,55 +201,59 @@ function ModalValoracion({ reserva, onClose, onSave }) {
             maxLength={400}
             value={comentario}
             onChange={e => setComentario(e.target.value)}
-            placeholder={t('reservas.commentPlaceholder', { defaultValue: '¿Qué fue lo que más te gustó del vehículo?' })}
+            placeholder={t('reservas.commentPlaceholder', { defaultValue: '¿Qué tal estuvo el estado del vehículo, la limpieza o el servicio?' })}
             className="minimal-textarea"
           />
         </div>
 
-        {/* Sección de Fotos (opcional, máximo 3) */}
+        {/* 3 Slots de Fotos inmediatos */}
         <div className="minimal-textarea-group">
           <div className="minimal-group-head">
             <label className="minimal-label">
-              Fotos del vehículo <span>({t('reservas.optional', { defaultValue: 'opcional' })})</span>
+              Fotos del vehículo <span>({fotos.filter(Boolean).length}/3 opcional)</span>
             </label>
-            <span className="minimal-counter">{fotos.length}/3</span>
           </div>
 
-          <div className="minimal-fotos-container">
-            {fotos.map((src, index) => (
-              <div key={index} className="minimal-foto-thumb">
-                <img src={src} alt={`Foto ${index + 1}`} />
-                <button
-                  type="button"
-                  onClick={() => handleEliminarFoto(index)}
-                  className="minimal-foto-del-btn"
-                  title="Eliminar foto"
-                >
-                  <FaTimes size={10} />
-                </button>
-              </div>
-            ))}
-
-            {fotos.length < 3 && (
-              <button
-                type="button"
-                className="minimal-upload-box"
-                onClick={() => fileInputRef.current?.click()}
-              >
-                <FaCamera className="upload-cam-icon" />
-                <span>+ Añadir</span>
-              </button>
-            )}
-
-            <input
-              type="file"
-              ref={fileInputRef}
-              accept="image/*"
-              multiple
-              style={{ display: 'none' }}
-              onChange={handleFotoAdd}
-            />
+          <div className="minimal-fotos-grid-3">
+            {[0, 1, 2].map((slotIdx) => {
+              const src = fotos[slotIdx]
+              return (
+                <div key={slotIdx} className="minimal-slot-box">
+                  {src ? (
+                    <div className="minimal-slot-thumb">
+                      <img src={src} alt={`Foto ${slotIdx + 1}`} />
+                      <button
+                        type="button"
+                        onClick={() => handleEliminarFoto(slotIdx)}
+                        className="minimal-slot-del-btn"
+                        title="Eliminar foto"
+                      >
+                        <FaTimes size={11} />
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      className="minimal-slot-upload-btn"
+                      onClick={() => triggerSlotUpload(slotIdx)}
+                    >
+                      <FaCamera className="slot-cam-icon" />
+                      <span className="slot-num">Foto {slotIdx + 1}</span>
+                      <span className="slot-action">+ Añadir</span>
+                    </button>
+                  )}
+                </div>
+              )
+            })}
           </div>
+
+          <input
+            type="file"
+            ref={fileInputRef}
+            accept="image/*"
+            style={{ display: 'none' }}
+            onChange={handleFotoFileChange}
+          />
         </div>
 
         <button className="minimal-submit-btn" disabled={!estrellas || guardando} onClick={guardar}>
@@ -1386,15 +1390,24 @@ function TarjetaReserva({ reserva, moneda, onValorar, onReportar, onVerDetalle }
     <div className="reserva-head"><div><span className="reserva-id">{t('reservas.reservationNumber', { id: reserva.id })}</span><h2>{reserva.vehiculo?.nombre || t('reservas.vehicleUnavailable')}</h2></div><strong className="reserva-total">{formatCurrency(totalTarjeta, moneda)}</strong></div>
     <div className="reserva-meta"><div><FaCalendarAlt /><span><small>{t('reservas.pickup')}</small>{fechaBonita(reserva.fechaInicio, i18n.resolvedLanguage)}</span></div><span className="linea-fechas" />
       <div><FaRegCalendarCheck /><span><small>{t('reservas.return')}</small>{fechaBonita(reserva.fechaFin, i18n.resolvedLanguage)}</span></div><div className="meta-sede"><FaMapMarkerAlt /><span><small>{t('reservas.branch')}</small>{sede}</span></div></div>
-    {esFinalizada && <div className="valoracion-resumen">{reserva.valoracion ? <div><Estrellas value={reserva.valoracion.estrellas} disabled /><p>“{reserva.valoracion.comentario || t('reservas.noComment')}”</p></div> : <div><strong>{t('reservas.howWasTrip')}</strong><span>{t('reservas.feedbackHelps')}</span></div>}
-      <button className="btn-link" onClick={() => onValorar(reserva)}>{reserva.valoracion ? t('reservas.editRating') : t('reservas.rateVehicle')}</button></div>}
+    {esFinalizada && reserva.valoracion && (
+      <div className="valoracion-resumen">
+        <div>
+          <Estrellas value={reserva.valoracion.estrellas} disabled />
+          {reserva.valoracion.comentario && <p>“{reserva.valoracion.comentario}”</p>}
+        </div>
+        <button className="btn-link" onClick={() => onValorar(reserva)}>
+          {t('reservas.editRating', { defaultValue: 'Editar Reseña' })}
+        </button>
+      </div>
+    )}
     <div className="reserva-actions">
       {puedeReportar && (
         <button className="btn-reporte" onClick={() => onReportar(reserva)}>
           <FaFlag /> {t('reservas.makeReport')}
         </button>
       )}
-      {esFinalizada && (
+      {esFinalizada && !reserva.valoracion && (
         <button
           className="btn-secundario"
           onClick={() => onValorar(reserva)}
@@ -1409,7 +1422,7 @@ function TarjetaReserva({ reserva, moneda, onValorar, onReportar, onVerDetalle }
           }}
         >
           <FaStar color="#f59e0b" size={13} />
-          <span>{reserva.valoracion ? t('reservas.editRating', { defaultValue: 'Editar Reseña' }) : t('reservas.rateVehicle', { defaultValue: 'Calificar Vehículo' })}</span>
+          <span>{t('reservas.rateVehicle', { defaultValue: 'Calificar Vehículo' })}</span>
         </button>
       )}
       <button className="btn-detalle" onClick={() => onVerDetalle(reserva)}>
