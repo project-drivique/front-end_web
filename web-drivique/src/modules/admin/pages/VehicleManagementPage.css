@@ -206,12 +206,46 @@
 }
 
 /* 🎨 BOTONES DE EXPORTACIÓN CON DISEÑO PILL EXACTO AL CAPTURADO */
+.fleet-datatable-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.fleet-datatable-search {
+  flex: 1 1 240px;
+  max-width: 360px;
+}
+
+.fleet-datatable-search input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 9px 16px;
+  border-radius: 12px;
+  border: 1.5px solid var(--city-border, #cbd5e1);
+  background: var(--city-card, #ffffff);
+  color: var(--city-text, #0f172a);
+  font-size: 13px;
+  transition: all 0.2s ease;
+  outline: none;
+  font-family: inherit;
+}
+
+.fleet-datatable-search input:focus {
+  border-color: var(--brand-primary, #2563eb);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
 .export-pills-group {
   display: flex;
   align-items: center;
   gap: 10px;
   flex-wrap: wrap;
 }
+
 
 .export-pill {
   display: inline-flex;
