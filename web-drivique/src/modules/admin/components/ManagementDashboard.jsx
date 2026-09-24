@@ -23,9 +23,21 @@ import MenuConfiguracion from '../../../components/MenuConfiguracion'
 import ManagementSidebar from './ManagementSidebar'
 import './ManagementDashboard.css'
 
-function WeeklyGroupedBarChart({ data }) {
-  const maxDataVal = Math.max(...data.map((d) => Math.max(d.entregas, d.devoluciones)), 4)
-  const maxVal = Math.ceil(maxDataVal / 4) * 4
+function WeeklyGroupedBarChart({ data = [] }) {
+  const chartData = Array.isArray(data) && data.length > 0 ? data : [
+    { day: 'Lun', entregas: 0, devoluciones: 0 },
+    { day: 'Mar', entregas: 0, devoluciones: 0 },
+    { day: 'Mié', entregas: 0, devoluciones: 0 },
+    { day: 'Jue', entregas: 0, devoluciones: 0 },
+    { day: 'Vie', entregas: 0, devoluciones: 0 },
+    { day: 'Sáb', entregas: 0, devoluciones: 0 },
+    { day: 'Dom', entregas: 0, devoluciones: 0 },
+  ]
+  const maxDataVal = Math.max(
+    ...chartData.map((d) => Math.max(Number(d?.entregas) || 0, Number(d?.devoluciones) || 0)),
+    4
+  )
+  const maxVal = Math.max(4, Math.ceil(maxDataVal / 4) * 4)
   const step = maxVal / 4
   const yTicks = [0, Math.round(step), Math.round(step * 2), Math.round(step * 3), maxVal]
 
@@ -39,7 +51,7 @@ function WeeklyGroupedBarChart({ data }) {
   const chartWidth = svgWidth - marginLeft - marginRight
   const chartHeight = svgHeight - marginTop - marginBottom
 
-  const numCategories = data.length || 7
+  const numCategories = chartData.length
   const categoryWidth = chartWidth / numCategories
   const barWidth = 14
   const barGap = 4
@@ -76,21 +88,23 @@ function WeeklyGroupedBarChart({ data }) {
         })}
 
         {/* Grouped Bars per Day */}
-        {data.map((item, idx) => {
+        {chartData.map((item, idx) => {
           const groupCenterX = marginLeft + idx * categoryWidth + categoryWidth / 2
+          const entregasVal = Number(item?.entregas) || 0
+          const devolucionesVal = Number(item?.devoluciones) || 0
 
           // Bar 1: Entregas
-          const hEntregas = (item.entregas / maxVal) * chartHeight
+          const hEntregas = (entregasVal / maxVal) * chartHeight
           const yEntregas = marginTop + chartHeight - hEntregas
           const xEntregas = groupCenterX - barWidth - barGap / 2
 
           // Bar 2: Devoluciones
-          const hDevoluciones = (item.devoluciones / maxVal) * chartHeight
+          const hDevoluciones = (devolucionesVal / maxVal) * chartHeight
           const yDevoluciones = marginTop + chartHeight - hDevoluciones
           const xDevoluciones = groupCenterX + barGap / 2
 
           return (
-            <g key={item.day}>
+            <g key={item.day || idx}>
               {/* Entregas Bar */}
               <rect
                 x={xEntregas}
@@ -102,7 +116,7 @@ function WeeklyGroupedBarChart({ data }) {
                 ry="3"
                 style={{ transition: 'all 0.4s ease' }}
               >
-                <title>{`Entregas ${item.day}: ${item.entregas}`}</title>
+                <title>{`Entregas ${item.day}: ${entregasVal}`}</title>
               </rect>
               {/* Entregas Value Label */}
               <text
@@ -113,7 +127,7 @@ function WeeklyGroupedBarChart({ data }) {
                 fontWeight="700"
                 textAnchor="middle"
               >
-                {item.entregas}
+                {entregasVal}
               </text>
 
               {/* Devoluciones Bar */}
@@ -127,7 +141,7 @@ function WeeklyGroupedBarChart({ data }) {
                 ry="3"
                 style={{ transition: 'all 0.4s ease' }}
               >
-                <title>{`Devoluciones ${item.day}: ${item.devoluciones}`}</title>
+                <title>{`Devoluciones ${item.day}: ${devolucionesVal}`}</title>
               </rect>
               {/* Devoluciones Value Label */}
               <text
@@ -138,7 +152,7 @@ function WeeklyGroupedBarChart({ data }) {
                 fontWeight="700"
                 textAnchor="middle"
               >
-                {item.devoluciones}
+                {devolucionesVal}
               </text>
 
               {/* Day Label (X Axis) */}
@@ -269,7 +283,7 @@ export default function ManagementDashboard({ branchOnly = false }) {
                 {isBranchManager ? `Sede: ${summary.branch || 'Sucursal Bogotá Aeropuerto'}` : 'Administración Central Drivique'}
               </span>
               <span style={{ fontSize: 11, color: '#64748b', display: 'inline-flex', alignItems: 'center', gap: 4, marginLeft: 4 }}>
-                <FaSync style={{ fontSize: 10, color: '#10b981' }} /> En Tiempo Real ({lastSync.toLocaleTimeString().slice(0, 5)})
+                <FaSync style={{ fontSize: 10, color: '#10b981' }} /> En Tiempo Real ({(lastSync instanceof Date ? lastSync : new Date()).toLocaleTimeString().slice(0, 5)})
               </span>
             </div>
             <h1 style={{ fontSize: 24, fontWeight: 800, color: '#0f172a', margin: '2px 0 4px', letterSpacing: '-0.01em' }}>
