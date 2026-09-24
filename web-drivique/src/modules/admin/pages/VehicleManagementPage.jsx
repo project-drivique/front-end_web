@@ -121,7 +121,7 @@ export default function VehicleManagementPage() {
     assignedBranchKey,
   ]);
 
-  const mockSedeCentral = [
+  const mockSedeCentral = useMemo(() => [
     {
       id: 1,
       nombre: 'Sede Central Principal Drivique',
@@ -133,9 +133,9 @@ export default function VehicleManagementPage() {
       director: 'Carlos Eduardo Restrepo',
       estado: 'Activa'
     }
-  ];
+  ], []);
 
-  const mockGruposFlota = [
+  const mockGruposFlota = useMemo(() => [
     {
       id: 1,
       codigo: 'FLT-ECO',
@@ -172,7 +172,38 @@ export default function VehicleManagementPage() {
       tarifaPromedio: 240000,
       estado: 'Activa'
     }
-  ];
+  ], []);
+
+  const filteredSedeCentral = useMemo(() => {
+    const term = search.trim().toLowerCase();
+    return mockSedeCentral.filter((sc) =>
+      !term ||
+      `${sc.id} ${sc.nombre} ${sc.nit} ${sc.razonSocial} ${sc.direccion} ${sc.director}`
+        .toLowerCase()
+        .includes(term)
+    );
+  }, [search, mockSedeCentral]);
+
+  const filteredSucursales = useMemo(() => {
+    const term = search.trim().toLowerCase();
+    return branches.filter((b) =>
+      !term ||
+      `${b.id} ${b.nombre} ${b.ciudad} ${b.direccion} ${b.telefono}`
+        .toLowerCase()
+        .includes(term)
+    );
+  }, [search, branches]);
+
+  const filteredFlotas = useMemo(() => {
+    const term = search.trim().toLowerCase();
+    return mockGruposFlota.filter((gf) =>
+      !term ||
+      `${gf.id} ${gf.codigo} ${gf.nombre} ${gf.sedesDisponibles}`
+        .toLowerCase()
+        .includes(term)
+    );
+  }, [search, mockGruposFlota]);
+
   const headers = [
     "ID",
     t("admin.vehiclesManagement.fields.vehicle"),
@@ -330,10 +361,23 @@ export default function VehicleManagementPage() {
               <button
                 className="cities-primary"
                 type="button"
-                onClick={openCreate}
-                disabled={esEncargado && !sucursalAsignada}
+                onClick={() => {
+                  if (activeTab === 'sede_central') {
+                    showAlert({ icon: 'info', title: 'Editar Matriz', text: 'Editando parámetros corporativos de Drivique Colombia.' });
+                  } else if (activeTab === 'sucursales') {
+                    showAlert({ icon: 'info', title: 'Crear Sucursal', text: 'Para registrar nuevas sedes, dirígete al módulo de Sucursales.' });
+                  } else if (activeTab === 'flotas') {
+                    showAlert({ icon: 'info', title: 'Crear Grupo de Flota', text: 'Formulario de registro de nueva categoría de flota.' });
+                  } else {
+                    openCreate();
+                  }
+                }}
+                disabled={esEncargado && activeTab === 'vehiculos' && !sucursalAsignada}
               >
-                + Crear Registro
+                {activeTab === 'sede_central' && 'Editar Matriz'}
+                {activeTab === 'sucursales' && '+ Crear Sucursal'}
+                {activeTab === 'flotas' && '+ Crear Grupo'}
+                {activeTab === 'vehiculos' && '+ Crear Vehículo'}
               </button>
             </div>
           </header>
@@ -384,15 +428,23 @@ export default function VehicleManagementPage() {
           {/* TAB 1: SEDE CENTRAL */}
           {activeTab === 'sede_central' && (
             <section className="cities-card attached-to-tabs">
-              <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 16 }}>
+              <div className="fleet-datatable-header">
+                <div className="fleet-datatable-search">
+                  <input
+                    type="text"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder="Buscar en Sede Central..."
+                  />
+                </div>
                 <div className="export-pills-group">
-                  <button type="button" className="export-pill export-pill--excel" onClick={() => exportExcel({ title: "Sede Central", headers: ["ID", "Nombre Sede", "NIT", "Razón Social", "Dirección", "Teléfono", "Correo", "Director", "Estado"], rows: mockSedeCentral.map(sc => [sc.id, sc.nombre, sc.nit, sc.razonSocial, sc.direccion, sc.telefono, sc.correo, sc.director, sc.estado]), filename: "sede-central-drivique" })}>
+                  <button type="button" className="export-pill export-pill--excel" onClick={() => exportExcel({ title: "Sede Central", headers: ["ID", "Nombre Sede", "NIT", "Razón Social", "Dirección", "Teléfono", "Correo", "Director", "Estado"], rows: filteredSedeCentral.map(sc => [sc.id, sc.nombre, sc.nit, sc.razonSocial, sc.direccion, sc.telefono, sc.correo, sc.director, sc.estado]), filename: "sede-central-drivique" })}>
                     <FaFileExcel aria-hidden="true" /> Excel
                   </button>
-                  <button type="button" className="export-pill export-pill--pdf" onClick={() => exportPdf({ title: "Sede Central", headers: ["ID", "Nombre Sede", "NIT", "Razón Social", "Dirección", "Teléfono", "Correo", "Director", "Estado"], rows: mockSedeCentral.map(sc => [sc.id, sc.nombre, sc.nit, sc.razonSocial, sc.direccion, sc.telefono, sc.correo, sc.director, sc.estado]), filename: "sede-central-drivique" })}>
+                  <button type="button" className="export-pill export-pill--pdf" onClick={() => exportPdf({ title: "Sede Central", headers: ["ID", "Nombre Sede", "NIT", "Razón Social", "Dirección", "Teléfono", "Correo", "Director", "Estado"], rows: filteredSedeCentral.map(sc => [sc.id, sc.nombre, sc.nit, sc.razonSocial, sc.direccion, sc.telefono, sc.correo, sc.director, sc.estado]), filename: "sede-central-drivique" })}>
                     <FaFilePdf aria-hidden="true" /> PDF
                   </button>
-                  <button type="button" className="export-pill export-pill--print" onClick={() => printTable({ title: "Sede Central", headers: ["ID", "Nombre Sede", "NIT", "Razón Social", "Dirección", "Teléfono", "Correo", "Director", "Estado"], rows: mockSedeCentral.map(sc => [sc.id, sc.nombre, sc.nit, sc.razonSocial, sc.direccion, sc.telefono, sc.correo, sc.director, sc.estado]) })}>
+                  <button type="button" className="export-pill export-pill--print" onClick={() => printTable({ title: "Sede Central", headers: ["ID", "Nombre Sede", "NIT", "Razón Social", "Dirección", "Teléfono", "Correo", "Director", "Estado"], rows: filteredSedeCentral.map(sc => [sc.id, sc.nombre, sc.nit, sc.razonSocial, sc.direccion, sc.telefono, sc.correo, sc.director, sc.estado]) })}>
                     <FaPrint aria-hidden="true" /> Imprimir
                   </button>
                 </div>
@@ -414,7 +466,7 @@ export default function VehicleManagementPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {mockSedeCentral.map((sc) => (
+                    {filteredSedeCentral.map((sc) => (
                       <tr key={sc.id}>
                         <td>{sc.id}</td>
                         <td>{sc.nombre}</td>
@@ -451,15 +503,23 @@ export default function VehicleManagementPage() {
           {/* TAB 2: SUCURSALES */}
           {activeTab === 'sucursales' && (
             <section className="cities-card attached-to-tabs">
-              <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 16 }}>
+              <div className="fleet-datatable-header">
+                <div className="fleet-datatable-search">
+                  <input
+                    type="text"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder="Buscar sucursal o ciudad..."
+                  />
+                </div>
                 <div className="export-pills-group">
-                  <button type="button" className="export-pill export-pill--excel" onClick={() => exportExcel({ title: "Sucursales", headers: ["ID", "Código", "Sucursal", "Ciudad", "Dirección", "Teléfono", "Capacidad", "Horario", "Estado"], rows: branches.map((b, idx) => [b.id || (idx+1), `SEC-00${b.id||(idx+1)}`, b.nombre, b.ciudad||'Colombia', b.direccion||'', b.telefono||'', `${b.capacidadVehiculos||25} autos`, b.horario||'', b.estado]), filename: "sucursales-drivique" })}>
+                  <button type="button" className="export-pill export-pill--excel" onClick={() => exportExcel({ title: "Sucursales", headers: ["ID", "Código", "Sucursal", "Ciudad", "Dirección", "Teléfono", "Capacidad", "Horario", "Estado"], rows: filteredSucursales.map((b, idx) => [b.id || (idx+1), `SEC-00${b.id||(idx+1)}`, b.nombre, b.ciudad||'Colombia', b.direccion||'', b.telefono||'', `${b.capacidadVehiculos||25} autos`, b.horario||'', b.estado]), filename: "sucursales-drivique" })}>
                     <FaFileExcel aria-hidden="true" /> Excel
                   </button>
-                  <button type="button" className="export-pill export-pill--pdf" onClick={() => exportPdf({ title: "Sucursales", headers: ["ID", "Código", "Sucursal", "Ciudad", "Dirección", "Teléfono", "Capacidad", "Horario", "Estado"], rows: branches.map((b, idx) => [b.id || (idx+1), `SEC-00${b.id||(idx+1)}`, b.nombre, b.ciudad||'Colombia', b.direccion||'', b.telefono||'', `${b.capacidadVehiculos||25} autos`, b.horario||'', b.estado]), filename: "sucursales-drivique" })}>
+                  <button type="button" className="export-pill export-pill--pdf" onClick={() => exportPdf({ title: "Sucursales", headers: ["ID", "Código", "Sucursal", "Ciudad", "Dirección", "Teléfono", "Capacidad", "Horario", "Estado"], rows: filteredSucursales.map((b, idx) => [b.id || (idx+1), `SEC-00${b.id||(idx+1)}`, b.nombre, b.ciudad||'Colombia', b.direccion||'', b.telefono||'', `${b.capacidadVehiculos||25} autos`, b.horario||'', b.estado]), filename: "sucursales-drivique" })}>
                     <FaFilePdf aria-hidden="true" /> PDF
                   </button>
-                  <button type="button" className="export-pill export-pill--print" onClick={() => printTable({ title: "Sucursales", headers: ["ID", "Código", "Sucursal", "Ciudad", "Dirección", "Teléfono", "Capacidad", "Horario", "Estado"], rows: branches.map((b, idx) => [b.id || (idx+1), `SEC-00${b.id||(idx+1)}`, b.nombre, b.ciudad||'Colombia', b.direccion||'', b.telefono||'', `${b.capacidadVehiculos||25} autos`, b.horario||'', b.estado]) })}>
+                  <button type="button" className="export-pill export-pill--print" onClick={() => printTable({ title: "Sucursales", headers: ["ID", "Código", "Sucursal", "Ciudad", "Dirección", "Teléfono", "Capacidad", "Horario", "Estado"], rows: filteredSucursales.map((b, idx) => [b.id || (idx+1), `SEC-00${b.id||(idx+1)}`, b.nombre, b.ciudad||'Colombia', b.direccion||'', b.telefono||'', `${b.capacidadVehiculos||25} autos`, b.horario||'', b.estado]) })}>
                     <FaPrint aria-hidden="true" /> Imprimir
                   </button>
                 </div>
@@ -481,7 +541,7 @@ export default function VehicleManagementPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {branches.map((b, idx) => (
+                    {filteredSucursales.map((b, idx) => (
                       <tr key={b.id || b.nombre}>
                         <td>{b.id || (idx + 1)}</td>
                         <td><code>SEC-00{b.id || (idx + 1)}</code></td>
@@ -527,15 +587,23 @@ export default function VehicleManagementPage() {
           {/* TAB 3: CATEGORÍAS DE FLOTAS */}
           {activeTab === 'flotas' && (
             <section className="cities-card attached-to-tabs">
-              <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 16 }}>
+              <div className="fleet-datatable-header">
+                <div className="fleet-datatable-search">
+                  <input
+                    type="text"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder="Buscar grupo de flota..."
+                  />
+                </div>
                 <div className="export-pills-group">
-                  <button type="button" className="export-pill export-pill--excel" onClick={() => exportExcel({ title: "Categorías de Flotas", headers: ["ID", "Código", "Nombre Flota", "Vehículos", "Cobertura", "Tarifa Promedio", "Estado"], rows: mockGruposFlota.map(gf => [gf.id, gf.codigo, gf.nombre, `${gf.vehiculosCount} unidades`, gf.sedesDisponibles, gf.tarifaPromedio, gf.estado]), filename: "flotas-drivique" })}>
+                  <button type="button" className="export-pill export-pill--excel" onClick={() => exportExcel({ title: "Categorías de Flotas", headers: ["ID", "Código", "Nombre Flota", "Vehículos", "Cobertura", "Tarifa Promedio", "Estado"], rows: filteredFlotas.map(gf => [gf.id, gf.codigo, gf.nombre, `${gf.vehiculosCount} unidades`, gf.sedesDisponibles, gf.tarifaPromedio, gf.estado]), filename: "flotas-drivique" })}>
                     <FaFileExcel aria-hidden="true" /> Excel
                   </button>
-                  <button type="button" className="export-pill export-pill--pdf" onClick={() => exportPdf({ title: "Categorías de Flotas", headers: ["ID", "Código", "Nombre Flota", "Vehículos", "Cobertura", "Tarifa Promedio", "Estado"], rows: mockGruposFlota.map(gf => [gf.id, gf.codigo, gf.nombre, `${gf.vehiculosCount} unidades`, gf.sedesDisponibles, gf.tarifaPromedio, gf.estado]), filename: "flotas-drivique" })}>
+                  <button type="button" className="export-pill export-pill--pdf" onClick={() => exportPdf({ title: "Categorías de Flotas", headers: ["ID", "Código", "Nombre Flota", "Vehículos", "Cobertura", "Tarifa Promedio", "Estado"], rows: filteredFlotas.map(gf => [gf.id, gf.codigo, gf.nombre, `${gf.vehiculosCount} unidades`, gf.sedesDisponibles, gf.tarifaPromedio, gf.estado]), filename: "flotas-drivique" })}>
                     <FaFilePdf aria-hidden="true" /> PDF
                   </button>
-                  <button type="button" className="export-pill export-pill--print" onClick={() => printTable({ title: "Categorías de Flotas", headers: ["ID", "Código", "Nombre Flota", "Vehículos", "Cobertura", "Tarifa Promedio", "Estado"], rows: mockGruposFlota.map(gf => [gf.id, gf.codigo, gf.nombre, `${gf.vehiculosCount} unidades`, gf.sedesDisponibles, gf.tarifaPromedio, gf.estado]) })}>
+                  <button type="button" className="export-pill export-pill--print" onClick={() => printTable({ title: "Categorías de Flotas", headers: ["ID", "Código", "Nombre Flota", "Vehículos", "Cobertura", "Tarifa Promedio", "Estado"], rows: filteredFlotas.map(gf => [gf.id, gf.codigo, gf.nombre, `${gf.vehiculosCount} unidades`, gf.sedesDisponibles, gf.tarifaPromedio, gf.estado]) })}>
                     <FaPrint aria-hidden="true" /> Imprimir
                   </button>
                 </div>
@@ -555,7 +623,7 @@ export default function VehicleManagementPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {mockGruposFlota.map((gf) => (
+                    {filteredFlotas.map((gf) => (
                       <tr key={gf.id}>
                         <td>{gf.id}</td>
                         <td><code>{gf.codigo}</code></td>
