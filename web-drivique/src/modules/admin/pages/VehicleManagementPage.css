@@ -173,36 +173,51 @@
   padding: 20px 24px;
 }
 
-/* Botones de acción textuales (sin iconos) */
+/* Botones de acción textuales (estilo Dashboard) */
+.cities-row-actions {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  white-space: nowrap !important;
+}
+
 .btn-row-action {
-  border: 1px solid var(--city-border, #cbd5e1);
-  background: var(--city-card, #ffffff);
-  color: var(--city-text, #0f172a);
-  border-radius: 8px;
-  padding: 6px 14px;
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  border: none !important;
+  background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%) !important;
+  color: #ffffff !important;
+  border-radius: 8px !important;
+  padding: 6px 14px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25) !important;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1.2 !important;
+  text-decoration: none !important;
 }
 
 .btn-row-action:hover {
-  background: var(--city-soft, #eff6ff);
-  color: var(--brand-primary, #2563eb);
-  border-color: var(--brand-primary, #2563eb);
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.35) !important;
+  background: linear-gradient(135deg, #1e40af 0%, #1d4ed8 100%) !important;
+  color: #ffffff !important;
 }
 
 .btn-row-action.is-delete {
-  color: #dc2626;
-  border-color: #fecaca;
+  background: #ef4444 !important;
+  color: #ffffff !important;
+  border: none !important;
+  box-shadow: 0 2px 6px rgba(239, 68, 68, 0.25) !important;
 }
 
 .btn-row-action.is-delete:hover {
-  background: #fef2f2;
-  border-color: #dc2626;
+  background: #dc2626 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 10px rgba(220, 38, 38, 0.35) !important;
 }
 
 /* 🎨 BOTONES DE EXPORTACIÓN CON DISEÑO PILL EXACTO AL CAPTURADO */
