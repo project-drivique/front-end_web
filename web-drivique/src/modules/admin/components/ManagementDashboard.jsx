@@ -173,10 +173,8 @@ export default function ManagementDashboard({ branchOnly = false }) {
   const [searchTerm, setSearchTerm] = useState('')
   const [lastSync, setLastSync] = useState(new Date())
 
-  // Filtro de Rango de Fechas para la Tabla Operativa
-  const [dateFilterMode, setDateFilterMode] = useState('hoy') // 'hoy' | 'semana' | 'rango' | 'todo'
-  const [startDate, setStartDate] = useState(todayStr)
-  const [endDate, setEndDate] = useState(todayStr)
+  // Calendario Fecha Seleccionada (Por defecto hoy)
+  const [selectedDate, setSelectedDate] = useState(todayStr)
 
   // Sincronización en tiempo real (Polling cada 2.5s)
   useEffect(() => {
@@ -203,60 +201,25 @@ export default function ManagementDashboard({ branchOnly = false }) {
   const reservationsRoute = isBranchManager ? '/encargado/reservations' : '/admin/reservations'
   const incidentsRoute = isBranchManager ? '/encargado/incidents' : '/admin/incidents'
 
-  // Filtrado de entregas y devoluciones por rango de fechas del calendario
+  // Filtrado de entregas y devoluciones por la fecha del calendario seleccionada
   const { dateDeliveriesList, dateReturnsList } = useMemo(() => {
     const reservations = summary.allBranchReservations || []
     const isCancelled = (st) => ['CANCELADA', 'CANCELADA_POR_TIEMPO'].includes(String(st).toUpperCase())
 
-    if (dateFilterMode === 'todo') {
-      return {
-        dateDeliveriesList: reservations.filter((r) => !isCancelled(r.estado)),
-        dateReturnsList: reservations.filter((r) => !isCancelled(r.estado)),
-      }
-    }
-
-    if (dateFilterMode === 'hoy') {
-      return {
-        dateDeliveriesList: summary.todayDeliveriesList || [],
-        dateReturnsList: summary.todayReturnsList || [],
-      }
-    }
-
-    let sDate = startDate
-    let eDate = endDate
-
-    if (dateFilterMode === 'semana') {
-      const now = new Date()
-      const dayOfWeek = now.getDay()
-      const diffToMonday = (dayOfWeek + 6) % 7
-      const mon = new Date(now)
-      mon.setDate(now.getDate() - diffToMonday)
-      const sun = new Date(mon)
-      sun.setDate(mon.getDate() + 6)
-      sDate = mon.toISOString().slice(0, 10)
-      eDate = sun.toISOString().slice(0, 10)
-    }
-
     const del = reservations.filter((r) => {
       if (isCancelled(r.estado)) return false
       const d = String(r.reservaDetalles?.fechaInicio || r.fechaInicio || '').slice(0, 10)
-      if (!d) return false
-      if (sDate && d < sDate) return false
-      if (eDate && d > eDate) return false
-      return true
+      return d === selectedDate
     })
 
     const ret = reservations.filter((r) => {
       if (isCancelled(r.estado)) return false
       const d = String(r.reservaDetalles?.fechaFin || r.fechaFin || '').slice(0, 10)
-      if (!d) return false
-      if (sDate && d < sDate) return false
-      if (eDate && d > eDate) return false
-      return true
+      return d === selectedDate
     })
 
     return { dateDeliveriesList: del, dateReturnsList: ret }
-  }, [summary, dateFilterMode, startDate, endDate])
+  }, [summary, selectedDate])
 
   const rawList = activeTab === 'entregas' ? dateDeliveriesList : dateReturnsList
 
@@ -538,7 +501,7 @@ export default function ManagementDashboard({ branchOnly = false }) {
 
         </div>
 
-        {/* TABLA OPERATIVA CON FILTRO DE RANGO DE FECHAS Y BUSCADOR */}
+        {/* TABLA OPERATIVA CON CALENDARIO SENCILLO Y BUSCADOR */}
         <section style={{ background: '#ffffff', padding: 22, borderRadius: 16, border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18, flexWrap: 'wrap', gap: 14 }}>
             <div>
@@ -546,95 +509,28 @@ export default function ManagementDashboard({ branchOnly = false }) {
                 Programación Operativa de Sucursal
               </h2>
               <span style={{ fontSize: 12, color: '#64748b' }}>
-                {dateFilterMode === 'hoy'
-                  ? 'Entregas y devoluciones agendadas para Hoy'
-                  : dateFilterMode === 'semana'
-                  ? 'Agenda programada para esta Semana'
-                  : dateFilterMode === 'todo'
-                  ? 'Histórico completo de la sucursal'
-                  : `Filtrando del ${startDate} al ${endDate}`}
+                {selectedDate === todayStr ? 'Atención presencial programada para Hoy' : `Atención presencial programada para el ${selectedDate}`}
               </span>
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-              {/* Calendario Selector de Rango de Fechas */}
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#f8fafc', padding: '5px 10px', borderRadius: 8, border: '1px solid #cbd5e1' }}>
-                <FaCalendarAlt style={{ color: '#2563eb', fontSize: 12 }} />
-                
-                <button
-                  type="button"
-                  onClick={() => setDateFilterMode('hoy')}
-                  style={{
-                    padding: '3px 8px',
-                    borderRadius: 5,
-                    fontSize: 11.5,
-                    fontWeight: 600,
-                    border: 'none',
-                    background: dateFilterMode === 'hoy' ? '#2563eb' : 'transparent',
-                    color: dateFilterMode === 'hoy' ? '#ffffff' : '#64748b',
-                    cursor: 'pointer',
-                  }}
-                >
-                  Hoy
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setDateFilterMode('semana')}
-                  style={{
-                    padding: '3px 8px',
-                    borderRadius: 5,
-                    fontSize: 11.5,
-                    fontWeight: 600,
-                    border: 'none',
-                    background: dateFilterMode === 'semana' ? '#2563eb' : 'transparent',
-                    color: dateFilterMode === 'semana' ? '#ffffff' : '#64748b',
-                    cursor: 'pointer',
-                  }}
-                >
-                  Esta Semana
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setDateFilterMode('todo')}
-                  style={{
-                    padding: '3px 8px',
-                    borderRadius: 5,
-                    fontSize: 11.5,
-                    fontWeight: 600,
-                    border: 'none',
-                    background: dateFilterMode === 'todo' ? '#2563eb' : 'transparent',
-                    color: dateFilterMode === 'todo' ? '#ffffff' : '#64748b',
-                    cursor: 'pointer',
-                  }}
-                >
-                  Todo
-                </button>
-
-                <span style={{ color: '#cbd5e1', fontSize: 12 }}>|</span>
-
-                {/* Date Picker Inputs */}
+              {/* Calendario Sencillo */}
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#f8fafc', padding: '6px 12px', borderRadius: 8, border: '1px solid #cbd5e1' }}>
+                <FaCalendarAlt style={{ color: '#2563eb', fontSize: 13 }} />
+                <span style={{ fontSize: 12, fontWeight: 600, color: '#475569' }}>Fecha:</span>
                 <input
                   type="date"
-                  value={startDate}
-                  onChange={(e) => {
-                    setStartDate(e.target.value)
-                    setDateFilterMode('rango')
+                  value={selectedDate}
+                  onChange={(e) => setSelectedDate(e.target.value)}
+                  style={{
+                    border: 'none',
+                    background: 'transparent',
+                    fontSize: 12.5,
+                    fontWeight: 600,
+                    color: '#0f172a',
+                    outline: 'none',
+                    cursor: 'pointer',
                   }}
-                  title="Fecha Inicio"
-                  style={{ border: 'none', background: 'transparent', fontSize: 11.5, outline: 'none', color: '#0f172a', fontWeight: 600, cursor: 'pointer' }}
-                />
-                <span style={{ fontSize: 11, color: '#94a3b8' }}>a</span>
-                <input
-                  type="date"
-                  value={endDate}
-                  onChange={(e) => {
-                    setEndDate(e.target.value)
-                    setDateFilterMode('rango')
-                  }}
-                  title="Fecha Fin"
-                  style={{ border: 'none', background: 'transparent', fontSize: 11.5, outline: 'none', color: '#0f172a', fontWeight: 600, cursor: 'pointer' }}
                 />
               </div>
 
@@ -704,10 +600,10 @@ export default function ManagementDashboard({ branchOnly = false }) {
             <div style={{ padding: '36px 16px', textAlign: 'center', background: '#f8fafc', borderRadius: 10, border: '1px solid #f1f5f9' }}>
               <FaCalendarCheck style={{ fontSize: 28, color: '#94a3b8', marginBottom: 8 }} />
               <h3 style={{ margin: '0 0 4px', fontSize: 14, fontWeight: 700, color: '#334155' }}>
-                No hay {activeTab === 'entregas' ? 'entregas' : 'devoluciones'} {searchTerm ? 'que coincidan' : 'en el rango seleccionado'}
+                No hay {activeTab === 'entregas' ? 'entregas' : 'devoluciones'} {searchTerm ? 'que coincidan' : `para la fecha ${selectedDate}`}
               </h3>
               <p style={{ margin: 0, fontSize: 12, color: '#64748b' }}>
-                {searchTerm ? 'Intenta borrar el texto del buscador.' : 'Selecciona otra fecha en el calendario o pulsa "Todo".'}
+                {searchTerm ? 'Intenta borrar el texto del buscador.' : 'Selecciona otra fecha en el calendario.'}
               </p>
             </div>
           ) : (
