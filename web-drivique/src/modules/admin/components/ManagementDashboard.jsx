@@ -13,6 +13,7 @@ import {
   FaSearch,
   FaChartLine,
   FaSync,
+  FaCalendarAlt,
 } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import { useAuthStore } from '../../../store/authStore'
@@ -165,13 +166,19 @@ export default function ManagementDashboard({ branchOnly = false }) {
   const usuario = useAuthStore((state) => state.usuario)
   const navigate = useNavigate()
 
+  const todayStr = new Date().toISOString().slice(0, 10)
   const [summary, setSummary] = useState(() => adminDashboardService.getSummary(usuario))
   const [weeklyData, setWeeklyData] = useState(() => adminDashboardService.getWeeklyActivity(usuario))
   const [activeTab, setActiveTab] = useState('entregas') // 'entregas' | 'devoluciones'
   const [searchTerm, setSearchTerm] = useState('')
   const [lastSync, setLastSync] = useState(new Date())
 
-  // Sincronización en tiempo real (Polling cada 2.5s + listeners de storage/focus)
+  // Filtro de Rango de Fechas para la Tabla Operativa
+  const [dateFilterMode, setDateFilterMode] = useState('hoy') // 'hoy' | 'semana' | 'rango' | 'todo'
+  const [startDate, setStartDate] = useState(todayStr)
+  const [endDate, setEndDate] = useState(todayStr)
+
+  // Sincronización en tiempo real (Polling cada 2.5s)
   useEffect(() => {
     const refreshData = () => {
       setSummary(adminDashboardService.getSummary(usuario))
@@ -196,9 +203,62 @@ export default function ManagementDashboard({ branchOnly = false }) {
   const reservationsRoute = isBranchManager ? '/encargado/reservations' : '/admin/reservations'
   const incidentsRoute = isBranchManager ? '/encargado/incidents' : '/admin/incidents'
 
-  const deliveriesList = summary.todayDeliveriesList || []
-  const returnsList = summary.todayReturnsList || []
-  const rawList = activeTab === 'entregas' ? deliveriesList : returnsList
+  // Filtrado de entregas y devoluciones por rango de fechas del calendario
+  const { dateDeliveriesList, dateReturnsList } = useMemo(() => {
+    const reservations = summary.allBranchReservations || []
+    const isCancelled = (st) => ['CANCELADA', 'CANCELADA_POR_TIEMPO'].includes(String(st).toUpperCase())
+
+    if (dateFilterMode === 'todo') {
+      return {
+        dateDeliveriesList: reservations.filter((r) => !isCancelled(r.estado)),
+        dateReturnsList: reservations.filter((r) => !isCancelled(r.estado)),
+      }
+    }
+
+    if (dateFilterMode === 'hoy') {
+      return {
+        dateDeliveriesList: summary.todayDeliveriesList || [],
+        dateReturnsList: summary.todayReturnsList || [],
+      }
+    }
+
+    let sDate = startDate
+    let eDate = endDate
+
+    if (dateFilterMode === 'semana') {
+      const now = new Date()
+      const dayOfWeek = now.getDay()
+      const diffToMonday = (dayOfWeek + 6) % 7
+      const mon = new Date(now)
+      mon.setDate(now.getDate() - diffToMonday)
+      const sun = new Date(mon)
+      sun.setDate(mon.getDate() + 6)
+      sDate = mon.toISOString().slice(0, 10)
+      eDate = sun.toISOString().slice(0, 10)
+    }
+
+    const del = reservations.filter((r) => {
+      if (isCancelled(r.estado)) return false
+      const d = String(r.reservaDetalles?.fechaInicio || r.fechaInicio || '').slice(0, 10)
+      if (!d) return false
+      if (sDate && d < sDate) return false
+      if (eDate && d > eDate) return false
+      return true
+    })
+
+    const ret = reservations.filter((r) => {
+      if (isCancelled(r.estado)) return false
+      const d = String(r.reservaDetalles?.fechaFin || r.fechaFin || '').slice(0, 10)
+      if (!d) return false
+      if (sDate && d < sDate) return false
+      if (eDate && d > eDate) return false
+      return true
+    })
+
+    return { dateDeliveriesList: del, dateReturnsList: ret }
+  }, [summary, dateFilterMode, startDate, endDate])
+
+  const rawList = activeTab === 'entregas' ? dateDeliveriesList : dateReturnsList
 
   const filteredList = useMemo(() => {
     if (!searchTerm.trim()) return rawList
@@ -333,7 +393,7 @@ export default function ManagementDashboard({ branchOnly = false }) {
           </button>
         </div>
 
-        {/* Tarjetas KPI Limpias (4 Métricas Clave en Tiempo Real) */}
+        {/* Tarjetas KPI Limpias (4 Métricas Clave) */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16, marginBottom: 24 }}>
           {/* KPI 1: Ingresos del Mes */}
           <div style={{ background: '#ffffff', padding: 18, borderRadius: 14, border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
@@ -416,7 +476,7 @@ export default function ManagementDashboard({ branchOnly = false }) {
               <div style={{ width: `${maintPct}%`, background: '#f59e0b', transition: 'width 0.4s' }} title={`En Taller: ${maintPct}%`} />
             </div>
 
-            {/* Lista Desglosada Limpia en Tiempo Real */}
+            {/* Lista Desglosada Limpia */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -453,7 +513,7 @@ export default function ManagementDashboard({ branchOnly = false }) {
             </div>
           </div>
 
-          {/* Gráfica 2: Diagrama de Barras Agrupadas Estándar en Tiempo Real */}
+          {/* Gráfica 2: Diagrama de Barras Agrupadas Estándar */}
           <div style={{ background: '#ffffff', padding: 22, borderRadius: 16, border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
               <div>
@@ -472,27 +532,114 @@ export default function ManagementDashboard({ branchOnly = false }) {
               </div>
             </div>
 
-            {/* SVG Grouped Bar Chart con datos dinámicos en tiempo real */}
+            {/* SVG Grouped Bar Chart */}
             <WeeklyGroupedBarChart data={weeklyData} />
           </div>
 
         </div>
 
-        {/* TABLA OPERATIVA DEL DÍA EN TIEMPO REAL CON BUSCADOR */}
+        {/* TABLA OPERATIVA CON FILTRO DE RANGO DE FECHAS Y BUSCADOR */}
         <section style={{ background: '#ffffff', padding: 22, borderRadius: 16, border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18, flexWrap: 'wrap', gap: 12 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18, flexWrap: 'wrap', gap: 14 }}>
             <div>
               <h2 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: '#0f172a' }}>
-                Programación Operativa de Hoy
+                Programación Operativa de Sucursal
               </h2>
               <span style={{ fontSize: 12, color: '#64748b' }}>
-                Atención presencial en mostrador de la sucursal
+                {dateFilterMode === 'hoy'
+                  ? 'Entregas y devoluciones agendadas para Hoy'
+                  : dateFilterMode === 'semana'
+                  ? 'Agenda programada para esta Semana'
+                  : dateFilterMode === 'todo'
+                  ? 'Histórico completo de la sucursal'
+                  : `Filtrando del ${startDate} al ${endDate}`}
               </span>
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-              {/* Buscador */}
-              <div style={{ position: 'relative', minWidth: 220 }}>
+              {/* Calendario Selector de Rango de Fechas */}
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#f8fafc', padding: '5px 10px', borderRadius: 8, border: '1px solid #cbd5e1' }}>
+                <FaCalendarAlt style={{ color: '#2563eb', fontSize: 12 }} />
+                
+                <button
+                  type="button"
+                  onClick={() => setDateFilterMode('hoy')}
+                  style={{
+                    padding: '3px 8px',
+                    borderRadius: 5,
+                    fontSize: 11.5,
+                    fontWeight: 600,
+                    border: 'none',
+                    background: dateFilterMode === 'hoy' ? '#2563eb' : 'transparent',
+                    color: dateFilterMode === 'hoy' ? '#ffffff' : '#64748b',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Hoy
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setDateFilterMode('semana')}
+                  style={{
+                    padding: '3px 8px',
+                    borderRadius: 5,
+                    fontSize: 11.5,
+                    fontWeight: 600,
+                    border: 'none',
+                    background: dateFilterMode === 'semana' ? '#2563eb' : 'transparent',
+                    color: dateFilterMode === 'semana' ? '#ffffff' : '#64748b',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Esta Semana
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setDateFilterMode('todo')}
+                  style={{
+                    padding: '3px 8px',
+                    borderRadius: 5,
+                    fontSize: 11.5,
+                    fontWeight: 600,
+                    border: 'none',
+                    background: dateFilterMode === 'todo' ? '#2563eb' : 'transparent',
+                    color: dateFilterMode === 'todo' ? '#ffffff' : '#64748b',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Todo
+                </button>
+
+                <span style={{ color: '#cbd5e1', fontSize: 12 }}>|</span>
+
+                {/* Date Picker Inputs */}
+                <input
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => {
+                    setStartDate(e.target.value)
+                    setDateFilterMode('rango')
+                  }}
+                  title="Fecha Inicio"
+                  style={{ border: 'none', background: 'transparent', fontSize: 11.5, outline: 'none', color: '#0f172a', fontWeight: 600, cursor: 'pointer' }}
+                />
+                <span style={{ fontSize: 11, color: '#94a3b8' }}>a</span>
+                <input
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => {
+                    setEndDate(e.target.value)
+                    setDateFilterMode('rango')
+                  }}
+                  title="Fecha Fin"
+                  style={{ border: 'none', background: 'transparent', fontSize: 11.5, outline: 'none', color: '#0f172a', fontWeight: 600, cursor: 'pointer' }}
+                />
+              </div>
+
+              {/* Buscador en Vivo */}
+              <div style={{ position: 'relative', minWidth: 200 }}>
                 <FaSearch style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', fontSize: 12 }} />
                 <input
                   type="text"
@@ -530,7 +677,7 @@ export default function ManagementDashboard({ branchOnly = false }) {
                     cursor: 'pointer',
                   }}
                 >
-                  Entregas ({deliveriesList.length})
+                  Entregas ({dateDeliveriesList.length})
                 </button>
                 <button
                   type="button"
@@ -547,7 +694,7 @@ export default function ManagementDashboard({ branchOnly = false }) {
                     cursor: 'pointer',
                   }}
                 >
-                  Devoluciones ({returnsList.length})
+                  Devoluciones ({dateReturnsList.length})
                 </button>
               </div>
             </div>
@@ -557,10 +704,10 @@ export default function ManagementDashboard({ branchOnly = false }) {
             <div style={{ padding: '36px 16px', textAlign: 'center', background: '#f8fafc', borderRadius: 10, border: '1px solid #f1f5f9' }}>
               <FaCalendarCheck style={{ fontSize: 28, color: '#94a3b8', marginBottom: 8 }} />
               <h3 style={{ margin: '0 0 4px', fontSize: 14, fontWeight: 700, color: '#334155' }}>
-                No hay {activeTab === 'entregas' ? 'entregas' : 'devoluciones'} {searchTerm ? 'que coincidan' : 'programadas para hoy'}
+                No hay {activeTab === 'entregas' ? 'entregas' : 'devoluciones'} {searchTerm ? 'que coincidan' : 'en el rango seleccionado'}
               </h3>
               <p style={{ margin: 0, fontSize: 12, color: '#64748b' }}>
-                {searchTerm ? 'Intenta borrar el texto del buscador.' : 'No se registran salidas ni retornos en la agenda de hoy.'}
+                {searchTerm ? 'Intenta borrar el texto del buscador.' : 'Selecciona otra fecha en el calendario o pulsa "Todo".'}
               </p>
             </div>
           ) : (
@@ -573,7 +720,7 @@ export default function ManagementDashboard({ branchOnly = false }) {
                     <th style={{ textAlign: 'left', fontWeight: 700 }}>Vehículo</th>
                     <th style={{ textAlign: 'left', fontWeight: 700 }}>Placa</th>
                     <th style={{ textAlign: 'left', fontWeight: 700 }}>Cliente</th>
-                    <th style={{ textAlign: 'left', fontWeight: 700 }}>Hora Cita</th>
+                    <th style={{ textAlign: 'left', fontWeight: 700 }}>Fecha / Hora</th>
                     <th style={{ textAlign: 'left', fontWeight: 700 }}>Medio Pago</th>
                     <th style={{ textAlign: 'left', fontWeight: 700 }}>Estado Pago</th>
                     <th style={{ textAlign: 'center', fontWeight: 700 }}>Acción</th>
@@ -586,6 +733,9 @@ export default function ManagementDashboard({ branchOnly = false }) {
                     const esEfectivo = rawMetodo.includes('efectivo') || rawMetodo.includes('sucursal')
                     const textoMedio = esEfectivo ? 'Pago en Sucursal' : 'Wompi - Tarjeta'
                     const estaPagado = r.pagoEstado === 'aprobado' || Boolean(r.metodoPagoConfirmado) || r.estado === 'confirmada' || r.estado === 'en_curso' || r.estado === 'finalizada'
+                    const fechaTxt = activeTab === 'entregas'
+                      ? (r.reservaDetalles?.fechaInicio || r.fechaInicio || '')
+                      : (r.reservaDetalles?.fechaFin || r.fechaFin || '')
 
                     return (
                       <tr key={r.id || cod}>
@@ -629,9 +779,7 @@ export default function ManagementDashboard({ branchOnly = false }) {
                         <td>
                           <span style={{ fontSize: 12, color: '#64748b', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                             <FaClock />
-                            {activeTab === 'entregas'
-                              ? (r.reservaDetalles?.fechaInicio?.slice(11, 16) || '08:00 AM')
-                              : (r.reservaDetalles?.fechaFin?.slice(11, 16) || '18:00 PM')}
+                            {fechaTxt ? (fechaTxt.length > 10 ? `${fechaTxt.slice(0, 10)} ${fechaTxt.slice(11, 16)}` : fechaTxt) : '08:00 AM'}
                           </span>
                         </td>
 
