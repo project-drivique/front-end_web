@@ -2,16 +2,21 @@
 
 .management-shell {
   --adm-bg: #f4f7fb;
-  --adm-card: #f0f7ff;
+  --adm-card: #ffffff;
   --adm-text: #0f172a;
   --adm-muted: #64748b;
-  --adm-border: #cbd5e1;
+  --adm-border: #e2e8f0;
   --adm-soft: #e8f2fe;
   min-height: 100vh;
   background: var(--adm-bg);
   color: var(--adm-text);
   display: grid;
   grid-template-columns: 260px minmax(0, 1fr);
+  transition: grid-template-columns 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.management-shell.has-collapsed-sidebar {
+  grid-template-columns: 76px minmax(0, 1fr) !important;
 }
 
 .management-shell--dark {
@@ -30,20 +35,100 @@
   height: 100vh;
   background: var(--brand-gradient, linear-gradient(135deg, var(--brand-secondary, #1e3a8a) 0%, var(--brand-primary, #2563eb) 100%)) !important;
   color: #ffffff;
-  padding: 24px 16px;
+  padding: 22px 14px;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
   box-shadow: 4px 0 25px rgba(0, 0, 0, 0.18);
   z-index: 10;
+  transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1), padding 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .management-brand {
   display: flex;
   align-items: center;
-  padding: 0 6px 20px;
+  justify-content: space-between;
+  padding: 0 2px 18px;
   margin-bottom: 8px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.management-collapse-btn {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+.management-collapse-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.05);
+}
+
+/* Modo Menú Hamburguesa / Colapsado */
+.management-sidebar.is-collapsed {
+  width: 76px !important;
+  min-width: 76px !important;
+  padding: 20px 8px !important;
+}
+
+.management-sidebar.is-collapsed .management-brand {
+  padding-bottom: 14px;
+  justify-content: center;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.management-sidebar.is-collapsed .management-brand__text {
+  display: none !important;
+}
+
+.management-sidebar.is-collapsed .management-brand__logo {
+  height: 30px !important;
+}
+
+.management-sidebar.is-collapsed .management-nav__section-title {
+  display: none !important;
+}
+
+.management-sidebar.is-collapsed .management-nav__group {
+  gap: 6px;
+}
+
+.management-sidebar.is-collapsed .management-nav__item {
+  justify-content: center !important;
+  padding: 10px 0 !important;
+  min-height: 42px;
+  border-radius: 10px;
+}
+
+.management-sidebar.is-collapsed .management-nav__item span {
+  display: none !important;
+}
+
+.management-sidebar.is-collapsed .management-nav__item svg {
+  font-size: 19px !important;
+  margin: 0 !important;
+}
+
+.management-sidebar.is-collapsed .management-logout {
+  justify-content: center !important;
+  padding: 10px 0 !important;
+}
+
+.management-sidebar.is-collapsed .management-logout span {
+  display: none !important;
+}
+
+.management-sidebar.is-collapsed .management-logout svg {
+  font-size: 18px !important;
 }
 
 .management-brand__link {
