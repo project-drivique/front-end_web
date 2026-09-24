@@ -21,6 +21,138 @@ import MenuConfiguracion from '../../../components/MenuConfiguracion'
 import ManagementSidebar from './ManagementSidebar'
 import './ManagementDashboard.css'
 
+function WeeklyGroupedBarChart({ data }) {
+  const maxVal = 12
+  const svgWidth = 540
+  const svgHeight = 210
+  const marginTop = 30
+  const marginBottom = 35
+  const marginLeft = 35
+  const marginRight = 15
+
+  const chartWidth = svgWidth - marginLeft - marginRight
+  const chartHeight = svgHeight - marginTop - marginBottom
+
+  const yTicks = [0, 3, 6, 9, 12]
+  const numCategories = data.length
+  const categoryWidth = chartWidth / numCategories
+  const barWidth = 14
+  const barGap = 4
+
+  return (
+    <div style={{ width: '100%', overflowX: 'auto' }}>
+      <svg viewBox={`0 0 ${svgWidth} ${svgHeight}`} style={{ width: '100%', height: 'auto', display: 'block' }}>
+        {/* Grid lines and Y axis ticks */}
+        {yTicks.map((tick) => {
+          const yPos = marginTop + chartHeight * (1 - tick / maxVal)
+          return (
+            <g key={tick}>
+              <line
+                x1={marginLeft}
+                y1={yPos}
+                x2={svgWidth - marginRight}
+                y2={yPos}
+                stroke={tick === 0 ? '#94a3b8' : '#f1f5f9'}
+                strokeWidth={tick === 0 ? '1.5' : '1'}
+                strokeDasharray={tick === 0 ? 'none' : '4 4'}
+              />
+              <text
+                x={marginLeft - 8}
+                y={yPos + 4}
+                fill="#64748b"
+                fontSize="11"
+                fontWeight="600"
+                textAnchor="end"
+              >
+                {tick}
+              </text>
+            </g>
+          )
+        })}
+
+        {/* Grouped Bars per Day */}
+        {data.map((item, idx) => {
+          const groupCenterX = marginLeft + idx * categoryWidth + categoryWidth / 2
+
+          // Bar 1: Entregas
+          const hEntregas = (item.entregas / maxVal) * chartHeight
+          const yEntregas = marginTop + chartHeight - hEntregas
+          const xEntregas = groupCenterX - barWidth - barGap / 2
+
+          // Bar 2: Devoluciones
+          const hDevoluciones = (item.devoluciones / maxVal) * chartHeight
+          const yDevoluciones = marginTop + chartHeight - hDevoluciones
+          const xDevoluciones = groupCenterX + barGap / 2
+
+          return (
+            <g key={item.day}>
+              {/* Entregas Bar */}
+              <rect
+                x={xEntregas}
+                y={yEntregas}
+                width={barWidth}
+                height={hEntregas}
+                fill="#2563eb"
+                rx="3"
+                ry="3"
+              >
+                <title>{`Entregas ${item.day}: ${item.entregas}`}</title>
+              </rect>
+              {/* Entregas Value Label */}
+              <text
+                x={xEntregas + barWidth / 2}
+                y={yEntregas - 4}
+                fill="#2563eb"
+                fontSize="10"
+                fontWeight="700"
+                textAnchor="middle"
+              >
+                {item.entregas}
+              </text>
+
+              {/* Devoluciones Bar */}
+              <rect
+                x={xDevoluciones}
+                y={yDevoluciones}
+                width={barWidth}
+                height={hDevoluciones}
+                fill="#10b981"
+                rx="3"
+                ry="3"
+              >
+                <title>{`Devoluciones ${item.day}: ${item.devoluciones}`}</title>
+              </rect>
+              {/* Devoluciones Value Label */}
+              <text
+                x={xDevoluciones + barWidth / 2}
+                y={yDevoluciones - 4}
+                fill="#10b981"
+                fontSize="10"
+                fontWeight="700"
+                textAnchor="middle"
+              >
+                {item.devoluciones}
+              </text>
+
+              {/* Day Label (X Axis) */}
+              <text
+                x={groupCenterX}
+                y={svgHeight - 10}
+                fill="#475569"
+                fontSize="12"
+                fontWeight="700"
+                textAnchor="middle"
+              >
+                {item.day}
+              </text>
+            </g>
+          )
+        })}
+      </svg>
+    </div>
+  )
+}
+
 export default function ManagementDashboard({ branchOnly = false }) {
   const { t } = useTranslation()
   const { tema, moneda, tasaUSD } = useLanding()
@@ -74,7 +206,6 @@ export default function ManagementDashboard({ branchOnly = false }) {
     { day: 'Sáb', entregas: 10, devoluciones: 9 },
     { day: 'Dom', entregas: 5, devoluciones: 6 },
   ]
-  const maxWeeklyVal = 12
 
   return (
     <div className={`management-shell ${tema === 'oscuro' ? 'management-shell--dark' : ''}`}>
@@ -182,7 +313,7 @@ export default function ManagementDashboard({ branchOnly = false }) {
           </button>
         </div>
 
-        {/* Tarjetas KPI Limpias (4 Métricas Clave - Sin Morado) */}
+        {/* Tarjetas KPI Limpias (4 Métricas Clave) */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16, marginBottom: 24 }}>
           {/* KPI 1: Ingresos del Mes */}
           <div style={{ background: '#ffffff', padding: 18, borderRadius: 14, border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
@@ -244,17 +375,17 @@ export default function ManagementDashboard({ branchOnly = false }) {
         {/* GRÁFICAS MINIMALISTAS Y 100% CLARAS */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 20, marginBottom: 28 }}>
           
-          {/* Gráfica 1: Ocupación y Estado de la Flota (Progress Bars Claros) */}
+          {/* Gráfica 1: Ocupación y Estado de la Flota */}
           <div style={{ background: '#ffffff', padding: 22, borderRadius: 16, border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
               <div>
                 <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: '#0f172a' }}>
                   Estado de la Flota
                 </h3>
-                <span style={{ fontSize: 12, color: '#64748b' }}>Distribución actual de los {totalVehicles} vehículos</span>
+                <span style={{ fontSize: 12, color: '#64748b' }}>Distribución de los {totalVehicles} vehículos de la sucursal</span>
               </div>
               <span style={{ fontSize: 12, fontWeight: 700, color: '#2563eb', background: '#eff6ff', padding: '4px 10px', borderRadius: 20 }}>
-                {totalVehicles} Autos en Sede
+                {totalVehicles} Autos
               </span>
             </div>
 
@@ -267,7 +398,6 @@ export default function ManagementDashboard({ branchOnly = false }) {
 
             {/* Lista Desglosada Limpia */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              {/* Disponibles */}
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#10b981' }} />
@@ -279,7 +409,6 @@ export default function ManagementDashboard({ branchOnly = false }) {
                 </div>
               </div>
 
-              {/* En Alquiler */}
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#2563eb' }} />
@@ -291,7 +420,6 @@ export default function ManagementDashboard({ branchOnly = false }) {
                 </div>
               </div>
 
-              {/* En Taller */}
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#f59e0b' }} />
@@ -305,14 +433,14 @@ export default function ManagementDashboard({ branchOnly = false }) {
             </div>
           </div>
 
-          {/* Gráfica 2: Flujo Semanal (Barras SVG Limpias) */}
+          {/* Gráfica 2: Diagrama de Barras Agrupadas Estándar con Ejes SVG */}
           <div style={{ background: '#ffffff', padding: 22, borderRadius: 16, border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
               <div>
                 <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: '#0f172a' }}>
-                  Actividad Semanal
+                  Diagrama de Barras: Actividad Semanal
                 </h3>
-                <span style={{ fontSize: 12, color: '#64748b' }}>Entregas y devoluciones de la semana</span>
+                <span style={{ fontSize: 12, color: '#64748b' }}>Comparativa de Entregas vs. Devoluciones por día</span>
               </div>
               <div style={{ display: 'flex', gap: 10 }}>
                 <span style={{ fontSize: 11, fontWeight: 600, color: '#2563eb', display: 'flex', alignItems: 'center', gap: 4 }}>
@@ -324,38 +452,8 @@ export default function ManagementDashboard({ branchOnly = false }) {
               </div>
             </div>
 
-            {/* Barras Semanales */}
-            <div style={{ height: 140, display: 'flex', alignItems: 'flex-end', gap: 10, paddingTop: 10, borderBottom: '1px solid #f1f5f9' }}>
-              {weeklyData.map((item) => {
-                const hEntregas = Math.round((item.entregas / maxWeeklyVal) * 110)
-                const hDevoluciones = Math.round((item.devoluciones / maxWeeklyVal) * 110)
-                return (
-                  <div key={item.day} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%', justifyContent: 'flex-end', gap: 4 }}>
-                    <div style={{ display: 'flex', alignItems: 'flex-end', gap: 2, height: 110 }}>
-                      <div
-                        title={`Entregas ${item.day}: ${item.entregas}`}
-                        style={{
-                          width: 12,
-                          height: `${hEntregas}px`,
-                          background: '#2563eb',
-                          borderRadius: '3px 3px 0 0',
-                        }}
-                      />
-                      <div
-                        title={`Devoluciones ${item.day}: ${item.devoluciones}`}
-                        style={{
-                          width: 12,
-                          height: `${hDevoluciones}px`,
-                          background: '#10b981',
-                          borderRadius: '3px 3px 0 0',
-                        }}
-                      />
-                    </div>
-                    <span style={{ fontSize: 11, fontWeight: 600, color: '#64748b' }}>{item.day}</span>
-                  </div>
-                )
-              })}
-            </div>
+            {/* SVG Grouped Bar Chart con Eje Y, Eje X y Líneas Guía */}
+            <WeeklyGroupedBarChart data={weeklyData} />
           </div>
 
         </div>
