@@ -167,8 +167,8 @@ export default function ManagementDashboard({ branchOnly = false }) {
   const navigate = useNavigate()
 
   const todayStr = new Date().toISOString().slice(0, 10)
-  const [summary, setSummary] = useState(() => adminDashboardService.getSummary(usuario))
-  const [weeklyData, setWeeklyData] = useState(() => adminDashboardService.getWeeklyActivity(usuario))
+  const [summary, setSummary] = useState(() => adminDashboardService.getSummary(usuario) || {})
+  const [weeklyData, setWeeklyData] = useState(() => adminDashboardService.getWeeklyActivity(usuario) || [])
   const [activeTab, setActiveTab] = useState('entregas') // 'entregas' | 'devoluciones'
   const [searchTerm, setSearchTerm] = useState('')
   const [lastSync, setLastSync] = useState(new Date())
@@ -180,8 +180,8 @@ export default function ManagementDashboard({ branchOnly = false }) {
   // Sincronización en tiempo real (Polling cada 2.5s)
   useEffect(() => {
     const refreshData = () => {
-      setSummary(adminDashboardService.getSummary(usuario))
-      setWeeklyData(adminDashboardService.getWeeklyActivity(usuario))
+      setSummary(adminDashboardService.getSummary(usuario) || {})
+      setWeeklyData(adminDashboardService.getWeeklyActivity(usuario) || [])
       setLastSync(new Date())
     }
 
@@ -204,28 +204,30 @@ export default function ManagementDashboard({ branchOnly = false }) {
 
   // Filtrado de entregas y devoluciones por rango de fechas (Desde - Hasta)
   const { dateDeliveriesList, dateReturnsList } = useMemo(() => {
-    const reservations = summary.allBranchReservations || []
-    const isCancelled = (st) => ['CANCELADA', 'CANCELADA_POR_TIEMPO'].includes(String(st).toUpperCase())
+    const reservations = summary?.allBranchReservations || []
+    const isCancelled = (st) => ['CANCELADA', 'CANCELADA_POR_TIEMPO'].includes(String(st || '').toUpperCase())
 
-    const minDate = startDate <= endDate ? startDate : endDate
-    const maxDate = startDate <= endDate ? endDate : startDate
+    const sDate = startDate || todayStr
+    const eDate = endDate || todayStr
+    const minDate = sDate <= eDate ? sDate : eDate
+    const maxDate = sDate <= eDate ? eDate : sDate
 
     const del = reservations.filter((r) => {
-      if (isCancelled(r.estado)) return false
-      const d = String(r.reservaDetalles?.fechaInicio || r.fechaInicio || '').slice(0, 10)
+      if (isCancelled(r?.estado)) return false
+      const d = String(r?.reservaDetalles?.fechaInicio || r?.fechaInicio || '').slice(0, 10)
       if (!d) return false
       return d >= minDate && d <= maxDate
     })
 
     const ret = reservations.filter((r) => {
-      if (isCancelled(r.estado)) return false
-      const d = String(r.reservaDetalles?.fechaFin || r.fechaFin || '').slice(0, 10)
+      if (isCancelled(r?.estado)) return false
+      const d = String(r?.reservaDetalles?.fechaFin || r?.fechaFin || '').slice(0, 10)
       if (!d) return false
       return d >= minDate && d <= maxDate
     })
 
     return { dateDeliveriesList: del, dateReturnsList: ret }
-  }, [summary, startDate, endDate])
+  }, [summary, startDate, endDate, todayStr])
 
   const rawList = activeTab === 'entregas' ? dateDeliveriesList : dateReturnsList
 
