@@ -384,6 +384,19 @@ export default function VehicleManagementPage() {
           {/* TAB 1: SEDE CENTRAL */}
           {activeTab === 'sede_central' && (
             <section className="cities-card attached-to-tabs">
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 16 }}>
+                <div className="export-pills-group">
+                  <button type="button" className="export-pill export-pill--excel" onClick={() => exportExcel({ title: "Sede Central", headers: ["ID", "Nombre Sede", "NIT", "Razón Social", "Dirección", "Teléfono", "Correo", "Director", "Estado"], rows: mockSedeCentral.map(sc => [sc.id, sc.nombre, sc.nit, sc.razonSocial, sc.direccion, sc.telefono, sc.correo, sc.director, sc.estado]), filename: "sede-central-drivique" })}>
+                    <FaFileExcel aria-hidden="true" /> Excel
+                  </button>
+                  <button type="button" className="export-pill export-pill--pdf" onClick={() => exportPdf({ title: "Sede Central", headers: ["ID", "Nombre Sede", "NIT", "Razón Social", "Dirección", "Teléfono", "Correo", "Director", "Estado"], rows: mockSedeCentral.map(sc => [sc.id, sc.nombre, sc.nit, sc.razonSocial, sc.direccion, sc.telefono, sc.correo, sc.director, sc.estado]), filename: "sede-central-drivique" })}>
+                    <FaFilePdf aria-hidden="true" /> PDF
+                  </button>
+                  <button type="button" className="export-pill export-pill--print" onClick={() => printTable({ title: "Sede Central", headers: ["ID", "Nombre Sede", "NIT", "Razón Social", "Dirección", "Teléfono", "Correo", "Director", "Estado"], rows: mockSedeCentral.map(sc => [sc.id, sc.nombre, sc.nit, sc.razonSocial, sc.direccion, sc.telefono, sc.correo, sc.director, sc.estado]) })}>
+                    <FaPrint aria-hidden="true" /> Imprimir
+                  </button>
+                </div>
+              </div>
               <div className="cities-table-wrap">
                 <table className="fleet-table">
                   <thead>
@@ -438,6 +451,19 @@ export default function VehicleManagementPage() {
           {/* TAB 2: SUCURSALES */}
           {activeTab === 'sucursales' && (
             <section className="cities-card attached-to-tabs">
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 16 }}>
+                <div className="export-pills-group">
+                  <button type="button" className="export-pill export-pill--excel" onClick={() => exportExcel({ title: "Sucursales", headers: ["ID", "Código", "Sucursal", "Ciudad", "Dirección", "Teléfono", "Capacidad", "Horario", "Estado"], rows: branches.map((b, idx) => [b.id || (idx+1), `SEC-00${b.id||(idx+1)}`, b.nombre, b.ciudad||'Colombia', b.direccion||'', b.telefono||'', `${b.capacidadVehiculos||25} autos`, b.horario||'', b.estado]), filename: "sucursales-drivique" })}>
+                    <FaFileExcel aria-hidden="true" /> Excel
+                  </button>
+                  <button type="button" className="export-pill export-pill--pdf" onClick={() => exportPdf({ title: "Sucursales", headers: ["ID", "Código", "Sucursal", "Ciudad", "Dirección", "Teléfono", "Capacidad", "Horario", "Estado"], rows: branches.map((b, idx) => [b.id || (idx+1), `SEC-00${b.id||(idx+1)}`, b.nombre, b.ciudad||'Colombia', b.direccion||'', b.telefono||'', `${b.capacidadVehiculos||25} autos`, b.horario||'', b.estado]), filename: "sucursales-drivique" })}>
+                    <FaFilePdf aria-hidden="true" /> PDF
+                  </button>
+                  <button type="button" className="export-pill export-pill--print" onClick={() => printTable({ title: "Sucursales", headers: ["ID", "Código", "Sucursal", "Ciudad", "Dirección", "Teléfono", "Capacidad", "Horario", "Estado"], rows: branches.map((b, idx) => [b.id || (idx+1), `SEC-00${b.id||(idx+1)}`, b.nombre, b.ciudad||'Colombia', b.direccion||'', b.telefono||'', `${b.capacidadVehiculos||25} autos`, b.horario||'', b.estado]) })}>
+                    <FaPrint aria-hidden="true" /> Imprimir
+                  </button>
+                </div>
+              </div>
               <div className="cities-table-wrap">
                 <table className="fleet-table">
                   <thead>
@@ -501,6 +527,19 @@ export default function VehicleManagementPage() {
           {/* TAB 3: CATEGORÍAS DE FLOTAS */}
           {activeTab === 'flotas' && (
             <section className="cities-card attached-to-tabs">
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 16 }}>
+                <div className="export-pills-group">
+                  <button type="button" className="export-pill export-pill--excel" onClick={() => exportExcel({ title: "Categorías de Flotas", headers: ["ID", "Código", "Nombre Flota", "Vehículos", "Cobertura", "Tarifa Promedio", "Estado"], rows: mockGruposFlota.map(gf => [gf.id, gf.codigo, gf.nombre, `${gf.vehiculosCount} unidades`, gf.sedesDisponibles, gf.tarifaPromedio, gf.estado]), filename: "flotas-drivique" })}>
+                    <FaFileExcel aria-hidden="true" /> Excel
+                  </button>
+                  <button type="button" className="export-pill export-pill--pdf" onClick={() => exportPdf({ title: "Categorías de Flotas", headers: ["ID", "Código", "Nombre Flota", "Vehículos", "Cobertura", "Tarifa Promedio", "Estado"], rows: mockGruposFlota.map(gf => [gf.id, gf.codigo, gf.nombre, `${gf.vehiculosCount} unidades`, gf.sedesDisponibles, gf.tarifaPromedio, gf.estado]), filename: "flotas-drivique" })}>
+                    <FaFilePdf aria-hidden="true" /> PDF
+                  </button>
+                  <button type="button" className="export-pill export-pill--print" onClick={() => printTable({ title: "Categorías de Flotas", headers: ["ID", "Código", "Nombre Flota", "Vehículos", "Cobertura", "Tarifa Promedio", "Estado"], rows: mockGruposFlota.map(gf => [gf.id, gf.codigo, gf.nombre, `${gf.vehiculosCount} unidades`, gf.sedesDisponibles, gf.tarifaPromedio, gf.estado]) })}>
+                    <FaPrint aria-hidden="true" /> Imprimir
+                  </button>
+                </div>
+              </div>
               <div className="cities-table-wrap">
                 <table className="fleet-table">
                   <thead>
@@ -596,15 +635,15 @@ export default function VehicleManagementPage() {
                     </option>
                   ))}
                 </select>
-                <div className="cities-export">
-                  <button type="button" onClick={() => exportExcel(exportData)}>
-                    Excel
+                <div className="export-pills-group">
+                  <button type="button" className="export-pill export-pill--excel" onClick={() => exportExcel(exportData)}>
+                    <FaFileExcel aria-hidden="true" /> Excel
                   </button>
-                  <button type="button" onClick={() => exportPdf(exportData)}>
-                    PDF
+                  <button type="button" className="export-pill export-pill--pdf" onClick={() => exportPdf(exportData)}>
+                    <FaFilePdf aria-hidden="true" /> PDF
                   </button>
-                  <button type="button" onClick={() => printTable(exportData)}>
-                    {t("admin.cities.print")}
+                  <button type="button" className="export-pill export-pill--print" onClick={() => printTable(exportData)}>
+                    <FaPrint aria-hidden="true" /> Imprimir
                   </button>
                 </div>
               </div>
