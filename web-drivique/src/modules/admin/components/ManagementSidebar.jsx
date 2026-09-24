@@ -19,6 +19,7 @@ import {
   FaPalette,
   FaFileAlt,
   FaCashRegister,
+  FaSlidersH,
 } from 'react-icons/fa'
 import { useAuthStore } from '../../../store/authStore'
 import accessConfig from '../../../mocks/adminAccessConfig.json'
@@ -29,6 +30,7 @@ import './ManagementDashboard.css'
 
 const MODULE_ICONS = {
   dashboard: FaChartPie,
+  controlPanel: FaSlidersH,
   vehicles: FaCar,
   users: FaUsers,
   roles: FaUserShield,
@@ -46,6 +48,7 @@ const MODULE_ICONS = {
 
 const NAV_LABELS = {
   dashboard: 'Dashboard',
+  controlPanel: 'Panel de Control',
   vehicles: 'Flota y Vehículos',
   users: 'Usuarios',
   roles: 'Roles y Permisos',

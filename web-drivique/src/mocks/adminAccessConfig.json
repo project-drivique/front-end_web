@@ -27,6 +27,7 @@
   "dashboardNavigation": {
     "administrador": [
       { "key": "dashboard", "route": "/admin" },
+      { "key": "controlPanel", "route": "/admin/panel" },
       { "key": "vehicles", "route": "/admin/vehicles" },
       { "key": "users", "route": "/admin/users" },
       { "key": "roles", "route": "/admin/roles" },
@@ -43,6 +44,7 @@
     ],
     "encargado_sucursal": [
       { "key": "dashboard", "route": "/encargado" },
+      { "key": "controlPanel", "route": "/encargado/panel" },
       { "key": "vehicles", "route": "/encargado/vehicles" },
       { "key": "reservations", "route": "/encargado/reservations" },
       { "key": "cashCollection", "route": "/encargado/cobro-sucursal" },
