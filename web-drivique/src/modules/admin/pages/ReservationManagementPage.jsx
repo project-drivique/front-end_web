@@ -164,7 +164,21 @@ export default function ReservationManagementPage() {
 
   const headersExport = useMemo(() => {
     if (activeTab === 'fechas_ubicacion') {
-      return ['Código', 'Vehículo', 'Placa', 'Método Pago Preferido', 'Punto Pago / Sucursal', 'Lugar Retiro', 'Lugar Devolución', 'Fecha y Hora Retiro', 'Fecha y Hora Devolución', 'Duración Alquiler', 'Devolución Anticipada', 'Estado Reserva']
+      return [
+        'Código',
+        'Vehículo',
+        'Placa',
+        'Medio de Pago',
+        'Lugar de Retiro',
+        'Lugar de Devolución',
+        'Fecha de Retiro',
+        'Fecha de Devolución',
+        'Hora de Retiro',
+        'Hora de Devolución',
+        'Duración del Alquiler',
+        'Devolución Anticipada',
+        'Estado Reserva',
+      ]
     }
     if (activeTab === 'proteccion_extras') {
       return ['Código', 'Vehículo', 'Placa', 'Cliente', 'Plan Protección', 'Tipo Kilometraje', 'Servicios Adicionales', 'Estado Reserva']
@@ -186,26 +200,28 @@ export default function ReservationManagementPage() {
 
       const esPagoEfectivo = rawMetodo.includes('efectivo') || rawMetodo.includes('sucursal')
       const textoMedioPago = esPagoEfectivo ? 'Pago en efectivo' : 'Pago virtual con Wompi'
-      const puntoPagoText = esPagoEfectivo ? (r.sucursal || 'Alquiler Neiva - Centro') : 'Wompi Digital'
 
-      let lugarRetiroText = r.sucursalRetiro === 'domicilio'
-        ? 'Entrega a Domicilio'
-        : r.sucursalRetiro === 'aeropuerto'
-        ? 'Entrega en Aeropuerto'
-        : r.sucursalRetiro === 'terminal'
-        ? 'Entrega en Terminal'
-        : `Recoger en Sucursal (${r.sucursal || 'Alquiler Neiva - Centro'})`
+      let lugarRetiroText = `Recoger en Sucursal (${r.sucursal || 'Alquiler Neiva - Centro'})`
+      if (!esPagoEfectivo) {
+        if (r.sucursalRetiro === 'domicilio') lugarRetiroText = 'Entrega a Domicilio'
+        else if (r.sucursalRetiro === 'aeropuerto') lugarRetiroText = 'Entrega en Aeropuerto'
+        else if (r.sucursalRetiro === 'terminal') lugarRetiroText = 'Entrega en Terminal'
+      }
 
-      let lugarDevolucionText = r.sucursalDevolucion === 'domicilio'
-        ? 'Devolución a Domicilio'
-        : r.sucursalDevolucion === 'aeropuerto'
-        ? 'Devolución en Aeropuerto'
-        : r.sucursalDevolucion === 'terminal'
-        ? 'Devolución en Terminal'
-        : `Devolver en Sucursal (${r.sucursal || 'Alquiler Neiva - Centro'})`
+      let lugarDevolucionText = `Devolver en Sucursal (${r.sucursal || 'Alquiler Neiva - Centro'})`
+      if (!esPagoEfectivo) {
+        if (r.sucursalDevolucion === 'domicilio') lugarDevolucionText = 'Devolución a Domicilio'
+        else if (r.sucursalDevolucion === 'aeropuerto') lugarDevolucionText = 'Devolución en Aeropuerto'
+        else if (r.sucursalDevolucion === 'terminal') lugarDevolucionText = 'Devolución en Terminal'
+      }
 
-      const fInicioHora = r.fechaInicio ? r.fechaInicio.replace('T', ' ').slice(0, 16) : ''
-      const fFinHora = r.fechaFin ? r.fechaFin.replace('T', ' ').slice(0, 16) : ''
+      const fInicioRaw = r.fechaInicio || ''
+      const fFinRaw = r.fechaFin || ''
+      const fechaRetiroVal = fInicioRaw.split('T')[0] || new Date().toISOString().slice(0, 10)
+      const fechaDevolucionVal = fFinRaw.split('T')[0] || new Date(Date.now() + 86400000 * 3).toISOString().slice(0, 10)
+
+      const horaRetiroVal = r.horaInicio ? r.horaInicio : (fInicioRaw.includes('T') ? fInicioRaw.split('T')[1].slice(0, 5) : '9:00 a. m.')
+      const horaDevolucionVal = r.horaFin ? r.horaFin : (fFinRaw.includes('T') ? fFinRaw.split('T')[1].slice(0, 5) : '8:30 a. m.')
 
       const duracionText = r.reservaDetalles?.duracionDias ? `${r.reservaDetalles.duracionDias} días` : '4 días'
       const devAnticipadaText = r.reservaDetalles?.devolucionAnticipada || (r.devolucionAnticipada ? '3 días, 23 h 30 min' : 'No registra')
@@ -216,11 +232,12 @@ export default function ReservationManagementPage() {
           r.vehiculoNombre || 'Renault Sandero 2023',
           r.vehiculoPlaca || 'KLS-849',
           textoMedioPago,
-          puntoPagoText,
           lugarRetiroText,
           lugarDevolucionText,
-          fInicioHora,
-          fFinHora,
+          fechaRetiroVal,
+          fechaDevolucionVal,
+          horaRetiroVal,
+          horaDevolucionVal,
           duracionText,
           devAnticipadaText,
           r.estado || 'Confirmada',
@@ -560,13 +577,14 @@ export default function ReservationManagementPage() {
                         <th>Foto</th>
                         <th>Vehículo</th>
                         <th>Placa</th>
-                        <th>Método Pago Preferido</th>
-                        <th>Punto Pago / Sucursal</th>
-                        <th>Lugar Retiro</th>
-                        <th>Lugar Devolución</th>
-                        <th>Fecha y Hora Retiro</th>
-                        <th>Fecha y Hora Devolución</th>
-                        <th>Duración Alquiler</th>
+                        <th>Medio de Pago</th>
+                        <th>Lugar de Retiro</th>
+                        <th>Lugar de Devolución</th>
+                        <th>Fecha de Retiro</th>
+                        <th>Fecha de Devolución</th>
+                        <th>Hora de Retiro</th>
+                        <th>Hora de Devolución</th>
+                        <th>Duración del Alquiler</th>
                         <th>Devolución Anticipada</th>
                         <th>Estado Reserva</th>
                         <th style={{ textAlign: 'center' }}>{t('admin.actions', 'Acciones')}</th>
@@ -585,31 +603,33 @@ export default function ReservationManagementPage() {
 
                         const esPagoEfectivo = rawMetodo.includes('efectivo') || rawMetodo.includes('sucursal')
                         const textoMedioPago = esPagoEfectivo ? 'Pago en efectivo' : 'Pago virtual con Wompi'
-                        const puntoPagoText = esPagoEfectivo ? (r.sucursal || 'Alquiler Neiva - Centro') : 'Wompi Digital'
 
-                        let lugarRetiroText = r.sucursalRetiro === 'domicilio'
-                          ? 'Entrega a Domicilio'
-                          : r.sucursalRetiro === 'aeropuerto'
-                          ? 'Entrega en Aeropuerto'
-                          : r.sucursalRetiro === 'terminal'
-                          ? 'Entrega en Terminal'
-                          : `Recoger en Sucursal (${r.sucursal || 'Alquiler Neiva - Centro'})`
+                        let lugarRetiroText = `Recoger en Sucursal (${r.sucursal || 'Alquiler Neiva - Centro'})`
+                        if (!esPagoEfectivo) {
+                          if (r.sucursalRetiro === 'domicilio') lugarRetiroText = 'Entrega a Domicilio'
+                          else if (r.sucursalRetiro === 'aeropuerto') lugarRetiroText = 'Entrega en Aeropuerto'
+                          else if (r.sucursalRetiro === 'terminal') lugarRetiroText = 'Entrega en Terminal'
+                        }
 
-                        let lugarDevolucionText = r.sucursalDevolucion === 'domicilio'
-                          ? 'Devolución a Domicilio'
-                          : r.sucursalDevolucion === 'aeropuerto'
-                          ? 'Devolución en Aeropuerto'
-                          : r.sucursalDevolucion === 'terminal'
-                          ? 'Devolución en Terminal'
-                          : `Devolver en Sucursal (${r.sucursal || 'Alquiler Neiva - Centro'})`
+                        let lugarDevolucionText = `Devolver en Sucursal (${r.sucursal || 'Alquiler Neiva - Centro'})`
+                        if (!esPagoEfectivo) {
+                          if (r.sucursalDevolucion === 'domicilio') lugarDevolucionText = 'Devolución a Domicilio'
+                          else if (r.sucursalDevolucion === 'aeropuerto') lugarDevolucionText = 'Devolución en Aeropuerto'
+                          else if (r.sucursalDevolucion === 'terminal') lugarDevolucionText = 'Devolución en Terminal'
+                        }
 
                         const esCobroPresencialPendiente =
                           esPagoEfectivo &&
                           !Boolean(r.metodoPagoConfirmado) &&
                           r.pagoEstado !== 'aprobado'
 
-                        const fInicioHora = r.fechaInicio ? r.fechaInicio.replace('T', ' ').slice(0, 16) : ''
-                        const fFinHora = r.fechaFin ? r.fechaFin.replace('T', ' ').slice(0, 16) : ''
+                        const fInicioRaw = r.fechaInicio || ''
+                        const fFinRaw = r.fechaFin || ''
+                        const fechaRetiroVal = fInicioRaw.split('T')[0] || new Date().toISOString().slice(0, 10)
+                        const fechaDevolucionVal = fFinRaw.split('T')[0] || new Date(Date.now() + 86400000 * 3).toISOString().slice(0, 10)
+
+                        const horaRetiroVal = r.horaInicio ? r.horaInicio : (fInicioRaw.includes('T') ? fInicioRaw.split('T')[1].slice(0, 5) : '9:00 a. m.')
+                        const horaDevolucionVal = r.horaFin ? r.horaFin : (fFinRaw.includes('T') ? fFinRaw.split('T')[1].slice(0, 5) : '8:30 a. m.')
 
                         const duracionText = r.reservaDetalles?.duracionDias ? `${r.reservaDetalles.duracionDias} días` : '4 días'
                         const devAnticipadaText = r.reservaDetalles?.devolucionAnticipada || (r.devolucionAnticipada ? '3 días, 23 h 30 min' : 'No registra')
@@ -658,11 +678,12 @@ export default function ReservationManagementPage() {
                             <td style={{ fontWeight: 600, color: esPagoEfectivo ? '#b45309' : '#047857' }}>
                               {textoMedioPago}
                             </td>
-                            <td>{puntoPagoText}</td>
                             <td>{lugarRetiroText}</td>
                             <td>{lugarDevolucionText}</td>
-                            <td style={{ fontWeight: 600 }}>{fInicioHora}</td>
-                            <td style={{ fontWeight: 600 }}>{fFinHora}</td>
+                            <td style={{ fontWeight: 600 }}>{fechaRetiroVal}</td>
+                            <td style={{ fontWeight: 600 }}>{fechaDevolucionVal}</td>
+                            <td>{horaRetiroVal}</td>
+                            <td>{horaDevolucionVal}</td>
                             <td>{duracionText}</td>
                             <td style={{ fontSize: 12, color: r.devolucionAnticipada ? '#0284c7' : '#94a3b8' }}>
                               {devAnticipadaText}
