@@ -164,7 +164,7 @@ export default function ReservationManagementPage() {
 
   const headersExport = useMemo(() => {
     if (activeTab === 'fechas_ubicacion') {
-      return ['Código', 'Vehículo', 'Placa', 'Método Pago Preferido', 'Lugar Retiro', 'Lugar Devolución', 'Fecha Retiro', 'Fecha Devolución', 'Estado Reserva']
+      return ['Código', 'Vehículo', 'Placa', 'Método Pago Preferido', 'Punto Pago / Sucursal', 'Lugar Retiro', 'Lugar Devolución', 'Fecha y Hora Retiro', 'Fecha y Hora Devolución', 'Duración Alquiler', 'Devolución Anticipada', 'Estado Reserva']
     }
     if (activeTab === 'proteccion_extras') {
       return ['Código', 'Vehículo', 'Placa', 'Cliente', 'Plan Protección', 'Tipo Kilometraje', 'Servicios Adicionales', 'Estado Reserva']
@@ -186,24 +186,29 @@ export default function ReservationManagementPage() {
 
       const esPagoEfectivo = rawMetodo.includes('efectivo') || rawMetodo.includes('sucursal')
       const textoMedioPago = esPagoEfectivo ? 'Pago en efectivo' : 'Pago virtual con Wompi'
+      const puntoPagoText = esPagoEfectivo ? (r.sucursal || 'Alquiler Neiva - Centro') : 'Wompi Digital'
 
-      let lugarRetiroText = r.sucursalRetiro || r.sucursal || 'Bogotá - Calle 100'
-      if (r.sucursalRetiro === 'domicilio') {
-        lugarRetiroText = 'A Domicilio'
-      } else if (r.sucursalRetiro === 'aeropuerto') {
-        lugarRetiroText = 'Aeropuerto'
-      } else if (r.sucursalRetiro === 'terminal') {
-        lugarRetiroText = 'Terminal'
-      }
+      let lugarRetiroText = r.sucursalRetiro === 'domicilio'
+        ? 'Entrega a Domicilio'
+        : r.sucursalRetiro === 'aeropuerto'
+        ? 'Entrega en Aeropuerto'
+        : r.sucursalRetiro === 'terminal'
+        ? 'Entrega en Terminal'
+        : `Recoger en Sucursal (${r.sucursal || 'Alquiler Neiva - Centro'})`
 
-      let lugarDevolucionText = r.sucursalDevolucion || r.sucursal || 'Bogotá - Calle 100'
-      if (r.sucursalDevolucion === 'domicilio') {
-        lugarDevolucionText = 'A Domicilio'
-      } else if (r.sucursalDevolucion === 'aeropuerto') {
-        lugarDevolucionText = 'Aeropuerto'
-      } else if (r.sucursalDevolucion === 'terminal') {
-        lugarDevolucionText = 'Terminal'
-      }
+      let lugarDevolucionText = r.sucursalDevolucion === 'domicilio'
+        ? 'Devolución a Domicilio'
+        : r.sucursalDevolucion === 'aeropuerto'
+        ? 'Devolución en Aeropuerto'
+        : r.sucursalDevolucion === 'terminal'
+        ? 'Devolución en Terminal'
+        : `Devolver en Sucursal (${r.sucursal || 'Alquiler Neiva - Centro'})`
+
+      const fInicioHora = r.fechaInicio ? r.fechaInicio.replace('T', ' ').slice(0, 16) : ''
+      const fFinHora = r.fechaFin ? r.fechaFin.replace('T', ' ').slice(0, 16) : ''
+
+      const duracionText = r.reservaDetalles?.duracionDias ? `${r.reservaDetalles.duracionDias} días` : '4 días'
+      const devAnticipadaText = r.reservaDetalles?.devolucionAnticipada || (r.devolucionAnticipada ? '3 días, 23 h 30 min' : 'No registra')
 
       if (activeTab === 'fechas_ubicacion') {
         return [
@@ -211,10 +216,13 @@ export default function ReservationManagementPage() {
           r.vehiculoNombre || 'Renault Sandero 2023',
           r.vehiculoPlaca || 'KLS-849',
           textoMedioPago,
+          puntoPagoText,
           lugarRetiroText,
           lugarDevolucionText,
-          r.fechaInicio ? r.fechaInicio.replace('T', ' ').slice(0, 16) : '',
-          r.fechaFin ? r.fechaFin.replace('T', ' ').slice(0, 16) : '',
+          fInicioHora,
+          fFinHora,
+          duracionText,
+          devAnticipadaText,
           r.estado || 'Confirmada',
         ]
       }
@@ -543,7 +551,7 @@ export default function ReservationManagementPage() {
           ) : (
             <div className="cities-table-wrap">
               <table className="branches-table reservations-admin-table">
-                {/* ── TABLA 1: FECHAS Y UBICACIÓN ── */}
+                {/* ── TABLA 1: FECHAS Y UBICACIÓN (PASO 1 DE RESERVA) ── */}
                 {activeTab === 'fechas_ubicacion' && (
                   <>
                     <thead>
@@ -553,10 +561,13 @@ export default function ReservationManagementPage() {
                         <th>Vehículo</th>
                         <th>Placa</th>
                         <th>Método Pago Preferido</th>
+                        <th>Punto Pago / Sucursal</th>
                         <th>Lugar Retiro</th>
                         <th>Lugar Devolución</th>
-                        <th>Fecha Retiro</th>
-                        <th>Fecha Devolución</th>
+                        <th>Fecha y Hora Retiro</th>
+                        <th>Fecha y Hora Devolución</th>
+                        <th>Duración Alquiler</th>
+                        <th>Devolución Anticipada</th>
                         <th>Estado Reserva</th>
                         <th style={{ textAlign: 'center' }}>{t('admin.actions', 'Acciones')}</th>
                       </tr>
@@ -574,24 +585,23 @@ export default function ReservationManagementPage() {
 
                         const esPagoEfectivo = rawMetodo.includes('efectivo') || rawMetodo.includes('sucursal')
                         const textoMedioPago = esPagoEfectivo ? 'Pago en efectivo' : 'Pago virtual con Wompi'
+                        const puntoPagoText = esPagoEfectivo ? (r.sucursal || 'Alquiler Neiva - Centro') : 'Wompi Digital'
 
-                        let lugarRetiroText = r.sucursalRetiro || r.sucursal || 'Bogotá - Calle 100'
-                        if (r.sucursalRetiro === 'domicilio') {
-                          lugarRetiroText = 'A Domicilio'
-                        } else if (r.sucursalRetiro === 'aeropuerto') {
-                          lugarRetiroText = 'Aeropuerto'
-                        } else if (r.sucursalRetiro === 'terminal') {
-                          lugarRetiroText = 'Terminal'
-                        }
+                        let lugarRetiroText = r.sucursalRetiro === 'domicilio'
+                          ? 'Entrega a Domicilio'
+                          : r.sucursalRetiro === 'aeropuerto'
+                          ? 'Entrega en Aeropuerto'
+                          : r.sucursalRetiro === 'terminal'
+                          ? 'Entrega en Terminal'
+                          : `Recoger en Sucursal (${r.sucursal || 'Alquiler Neiva - Centro'})`
 
-                        let lugarDevolucionText = r.sucursalDevolucion || r.sucursal || 'Bogotá - Calle 100'
-                        if (r.sucursalDevolucion === 'domicilio') {
-                          lugarDevolucionText = 'A Domicilio'
-                        } else if (r.sucursalDevolucion === 'aeropuerto') {
-                          lugarDevolucionText = 'Aeropuerto'
-                        } else if (r.sucursalDevolucion === 'terminal') {
-                          lugarDevolucionText = 'Terminal'
-                        }
+                        let lugarDevolucionText = r.sucursalDevolucion === 'domicilio'
+                          ? 'Devolución a Domicilio'
+                          : r.sucursalDevolucion === 'aeropuerto'
+                          ? 'Devolución en Aeropuerto'
+                          : r.sucursalDevolucion === 'terminal'
+                          ? 'Devolución en Terminal'
+                          : `Devolver en Sucursal (${r.sucursal || 'Alquiler Neiva - Centro'})`
 
                         const esCobroPresencialPendiente =
                           esPagoEfectivo &&
@@ -600,6 +610,9 @@ export default function ReservationManagementPage() {
 
                         const fInicioHora = r.fechaInicio ? r.fechaInicio.replace('T', ' ').slice(0, 16) : ''
                         const fFinHora = r.fechaFin ? r.fechaFin.replace('T', ' ').slice(0, 16) : ''
+
+                        const duracionText = r.reservaDetalles?.duracionDias ? `${r.reservaDetalles.duracionDias} días` : '4 días'
+                        const devAnticipadaText = r.reservaDetalles?.devolucionAnticipada || (r.devolucionAnticipada ? '3 días, 23 h 30 min' : 'No registra')
 
                         return (
                           <tr key={r.id || cod}>
@@ -642,11 +655,18 @@ export default function ReservationManagementPage() {
                             <td>
                               <code>{r.vehiculoPlaca || 'KLS-849'}</code>
                             </td>
-                            <td>{textoMedioPago}</td>
+                            <td style={{ fontWeight: 600, color: esPagoEfectivo ? '#b45309' : '#047857' }}>
+                              {textoMedioPago}
+                            </td>
+                            <td>{puntoPagoText}</td>
                             <td>{lugarRetiroText}</td>
                             <td>{lugarDevolucionText}</td>
-                            <td>{fInicioHora}</td>
-                            <td>{fFinHora}</td>
+                            <td style={{ fontWeight: 600 }}>{fInicioHora}</td>
+                            <td style={{ fontWeight: 600 }}>{fFinHora}</td>
+                            <td>{duracionText}</td>
+                            <td style={{ fontSize: 12, color: r.devolucionAnticipada ? '#0284c7' : '#94a3b8' }}>
+                              {devAnticipadaText}
+                            </td>
                             <td>
                               {r.estado === 'en_curso' ? 'En curso' : r.estado === 'finalizada' ? 'Finalizada' : r.estado === 'cancelada' ? 'Cancelada' : 'Confirmada'}
                             </td>
