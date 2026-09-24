@@ -13,7 +13,6 @@ import {
   FaSearch,
   FaChartLine,
   FaSync,
-  FaCalendarAlt,
 } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import { useAuthStore } from '../../../store/authStore'
@@ -187,10 +186,6 @@ export default function ManagementDashboard({ branchOnly = false }) {
   const [searchTerm, setSearchTerm] = useState('')
   const [lastSync, setLastSync] = useState(new Date())
 
-  // Calendario con Rango de Fechas (Desde - Hasta)
-  const [startDate, setStartDate] = useState(todayStr)
-  const [endDate, setEndDate] = useState(todayStr)
-
   // Sincronización en tiempo real (Polling cada 2.5s)
   useEffect(() => {
     const refreshData = () => {
@@ -216,32 +211,16 @@ export default function ManagementDashboard({ branchOnly = false }) {
   const reservationsRoute = isBranchManager ? '/encargado/reservations' : '/admin/reservations'
   const incidentsRoute = isBranchManager ? '/encargado/incidents' : '/admin/incidents'
 
-  // Filtrado de entregas y devoluciones por rango de fechas (Desde - Hasta)
+  // Listas de entregas y devoluciones operativas
   const { dateDeliveriesList, dateReturnsList } = useMemo(() => {
     const reservations = summary?.allBranchReservations || []
     const isCancelled = (st) => ['CANCELADA', 'CANCELADA_POR_TIEMPO'].includes(String(st || '').toUpperCase())
 
-    const sDate = startDate || todayStr
-    const eDate = endDate || todayStr
-    const minDate = sDate <= eDate ? sDate : eDate
-    const maxDate = sDate <= eDate ? eDate : sDate
-
-    const del = reservations.filter((r) => {
-      if (isCancelled(r?.estado)) return false
-      const d = String(r?.reservaDetalles?.fechaInicio || r?.fechaInicio || '').slice(0, 10)
-      if (!d) return false
-      return d >= minDate && d <= maxDate
-    })
-
-    const ret = reservations.filter((r) => {
-      if (isCancelled(r?.estado)) return false
-      const d = String(r?.reservaDetalles?.fechaFin || r?.fechaFin || '').slice(0, 10)
-      if (!d) return false
-      return d >= minDate && d <= maxDate
-    })
+    const del = reservations.filter((r) => !isCancelled(r?.estado))
+    const ret = reservations.filter((r) => !isCancelled(r?.estado))
 
     return { dateDeliveriesList: del, dateReturnsList: ret }
-  }, [summary, startDate, endDate, todayStr])
+  }, [summary])
 
   const rawList = activeTab === 'entregas' ? dateDeliveriesList : dateReturnsList
 
@@ -523,7 +502,7 @@ export default function ManagementDashboard({ branchOnly = false }) {
 
         </div>
 
-        {/* TABLA OPERATIVA CON CALENDARIO SENCILLO Y BUSCADOR */}
+        {/* TABLA OPERATIVA CON BUSCADOR Y PESTAÑAS */}
         <section style={{ background: '#ffffff', padding: 22, borderRadius: 16, border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18, flexWrap: 'wrap', gap: 14 }}>
             <div>
@@ -531,47 +510,11 @@ export default function ManagementDashboard({ branchOnly = false }) {
                 Programación Operativa de Sucursal
               </h2>
               <span style={{ fontSize: 12, color: '#64748b' }}>
-                {startDate === endDate
-                  ? `Atención presencial para el ${startDate}`
-                  : `Atención presencial del ${startDate} al ${endDate}`}
+                Atención presencial de entregas y devoluciones de la sede
               </span>
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-              {/* Calendario con Rango de 2 Fechas (Desde - Hasta) */}
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#f8fafc', padding: '5px 12px', borderRadius: 8, border: '1px solid #cbd5e1' }}>
-                <FaCalendarAlt style={{ color: '#2563eb', fontSize: 13 }} />
-                <span style={{ fontSize: 11.5, fontWeight: 600, color: '#475569' }}>Desde:</span>
-                <input
-                  type="date"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                  style={{
-                    border: 'none',
-                    background: 'transparent',
-                    fontSize: 12,
-                    fontWeight: 600,
-                    color: '#0f172a',
-                    outline: 'none',
-                    cursor: 'pointer',
-                  }}
-                />
-                <span style={{ fontSize: 11.5, fontWeight: 600, color: '#475569', marginLeft: 4 }}>Hasta:</span>
-                <input
-                  type="date"
-                  value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                  style={{
-                    border: 'none',
-                    background: 'transparent',
-                    fontSize: 12,
-                    fontWeight: 600,
-                    color: '#0f172a',
-                    outline: 'none',
-                    cursor: 'pointer',
-                  }}
-                />
-              </div>
 
               {/* Buscador en Vivo */}
               <div style={{ position: 'relative', minWidth: 200 }}>
