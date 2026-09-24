@@ -1329,6 +1329,7 @@
     "updatedSuccess": "Reserva actualizada correctamente.",
     "cancelledSuccess": "Reserva {{code}} cancelada correctamente.",
     "nav": {
+      "dashboard": "Dashboard",
       "contracts": "Contratos",
       "audit": "Auditoría"
     },
