@@ -45,7 +45,7 @@ const MODULE_ICONS = {
 }
 
 const NAV_LABELS = {
-  dashboard: 'Panel de Control',
+  dashboard: 'Dashboard',
   vehicles: 'Flota y Vehículos',
   users: 'Usuarios',
   roles: 'Roles y Permisos',
