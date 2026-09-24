@@ -1,13 +1,17 @@
 /* src/modules/admin/pages/ReservationManagementPage.css */
 
 .reservations-admin-table {
-  min-width: 1450px !important;
+  min-width: 1650px !important;
+  width: 100% !important;
+  border-collapse: collapse !important;
+  table-layout: auto !important;
 }
 
 .reservations-admin-table th,
 .reservations-admin-table td {
-  padding: 14px 16px;
-  vertical-align: middle;
+  padding: 14px 16px !important;
+  vertical-align: middle !important;
+  white-space: nowrap !important;
 }
 
 /* Badges de Estado de Reserva */
