@@ -579,102 +579,128 @@ export default function ManagementDashboard({ branchOnly = false }) {
           </div>
 
           {filteredList.length === 0 ? (
-            <div style={{ padding: '36px 16px', textAlign: 'center', background: '#f8fafc', borderRadius: 10, border: '1px solid #f1f5f9' }}>
-              <FaCalendarCheck style={{ fontSize: 28, color: '#94a3b8', marginBottom: 8 }} />
-              <h3 style={{ margin: '0 0 4px', fontSize: 14, fontWeight: 700, color: '#334155' }}>
-                No hay {activeTab === 'entregas' ? 'entregas' : 'devoluciones'} {searchTerm ? 'que coincidan' : `para la fecha ${selectedDate}`}
+            <div style={{ padding: '44px 20px', textAlign: 'center', background: '#f8fafc', borderRadius: 12, border: '1px dashed #cbd5e1' }}>
+              <FaCalendarCheck style={{ fontSize: 32, color: '#94a3b8', marginBottom: 10 }} />
+              <h3 style={{ margin: '0 0 4px', fontSize: 15, fontWeight: 700, color: '#1e293b' }}>
+                No hay {activeTab === 'entregas' ? 'entregas' : 'devoluciones'} registradas
               </h3>
-              <p style={{ margin: 0, fontSize: 12, color: '#64748b' }}>
-                {searchTerm ? 'Intenta borrar el texto del buscador.' : 'Selecciona otra fecha en el calendario.'}
+              <p style={{ margin: 0, fontSize: 13, color: '#64748b' }}>
+                {searchTerm ? 'No se encontraron resultados para tu búsqueda.' : 'No existen actividades pendientes en esta sección.'}
               </p>
             </div>
           ) : (
-            <div className="cities-table-wrap">
-              <table className="branches-table" style={{ width: '100%', minWidth: 900 }}>
+            <div style={{ overflowX: 'auto', borderRadius: 12, border: '1px solid #f1f5f9' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: 850 }}>
                 <thead>
-                  <tr>
-                    <th style={{ textAlign: 'left', fontWeight: 700 }}>ID Reserva</th>
-                    <th style={{ textAlign: 'left', fontWeight: 700 }}>Imagen</th>
-                    <th style={{ textAlign: 'left', fontWeight: 700 }}>Vehículo</th>
-                    <th style={{ textAlign: 'left', fontWeight: 700 }}>Placa</th>
-                    <th style={{ textAlign: 'left', fontWeight: 700 }}>Cliente</th>
-                    <th style={{ textAlign: 'left', fontWeight: 700 }}>Fecha / Hora</th>
-                    <th style={{ textAlign: 'left', fontWeight: 700 }}>Medio Pago</th>
-                    <th style={{ textAlign: 'left', fontWeight: 700 }}>Estado Pago</th>
-                    <th style={{ textAlign: 'center', fontWeight: 700 }}>Acción</th>
+                  <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
+                    <th style={{ padding: '12px 16px', fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Código</th>
+                    <th style={{ padding: '12px 16px', fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Vehículo & Placa</th>
+                    <th style={{ padding: '12px 16px', fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Cliente</th>
+                    <th style={{ padding: '12px 16px', fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Fecha & Hora</th>
+                    <th style={{ padding: '12px 16px', fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Estado Pago</th>
+                    <th style={{ padding: '12px 16px', fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px', textAlign: 'right' }}>Acción</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredList.map((r) => {
-                    const cod = r.codigo || r.referencia || `RES-${r.id}`
+                  {filteredList.map((r, index) => {
+                    const rawCod = r.codigo || r.referencia || `RES-${r.id}`
+                    const shortCod = rawCod.length > 16 ? `${rawCod.slice(0, 15)}...` : rawCod
                     const rawMetodo = String(r.reservaDetalles?.metodoPago || r.pasarela || r.metodoPago || '').toLowerCase()
                     const esEfectivo = rawMetodo.includes('efectivo') || rawMetodo.includes('sucursal')
                     const textoMedio = esEfectivo ? 'Pago en Sucursal' : 'Wompi - Tarjeta'
                     const estaPagado = r.pagoEstado === 'aprobado' || Boolean(r.metodoPagoConfirmado) || r.estado === 'confirmada' || r.estado === 'en_curso' || r.estado === 'finalizada'
-                    const fechaTxt = activeTab === 'entregas'
+                    const fechaRaw = activeTab === 'entregas'
                       ? (r.reservaDetalles?.fechaInicio || r.fechaInicio || '')
                       : (r.reservaDetalles?.fechaFin || r.fechaFin || '')
+                    const fechaTxt = fechaRaw ? (fechaRaw.length > 10 ? `${fechaRaw.slice(0, 10)} (${fechaRaw.slice(11, 16)})` : fechaRaw) : '08:00 AM'
+                    const clienteNombre = r.clienteNombre || r.datosForm?.nombres || 'Cliente Drivique'
 
                     return (
-                      <tr key={r.id || cod}>
-                        <td style={{ fontWeight: 600, color: '#0f172a' }}>{cod}</td>
+                      <tr
+                        key={r.id || rawCod || index}
+                        style={{
+                          borderBottom: '1px solid #f1f5f9',
+                          transition: 'background 0.15s ease',
+                        }}
+                        onMouseEnter={(e) => (e.currentTarget.style.background = '#f8fafc')}
+                        onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+                      >
+                        {/* CÓDIGO */}
+                        <td style={{ padding: '14px 16px' }}>
+                          <span title={rawCod} style={{ fontFamily: 'monospace', fontSize: 12, fontWeight: 700, color: '#334155', background: '#f1f5f9', padding: '3px 8px', borderRadius: 6, border: '1px solid #cbd5e1' }}>
+                            {shortCod}
+                          </span>
+                        </td>
 
-                        <td>
-                          {r.vehiculoImagen ? (
-                            <img
-                              src={r.vehiculoImagen}
-                              alt={r.vehiculoNombre || 'Auto'}
-                              style={{
-                                width: 40,
-                                height: 26,
-                                borderRadius: 4,
-                                objectFit: 'cover',
-                                border: '1px solid #e2e8f0',
-                                display: 'block',
-                              }}
-                            />
-                          ) : (
-                            <div style={{ width: 30, height: 30, borderRadius: 6, background: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748b' }}>
-                              <FaCar />
+                        {/* VEHÍCULO & PLACA */}
+                        <td style={{ padding: '14px 16px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                            {r.vehiculoImagen ? (
+                              <img
+                                src={r.vehiculoImagen}
+                                alt={r.vehiculoNombre || 'Auto'}
+                                style={{
+                                  width: 48,
+                                  height: 32,
+                                  borderRadius: 6,
+                                  objectFit: 'cover',
+                                  border: '1px solid #e2e8f0',
+                                  flexShrink: 0,
+                                }}
+                              />
+                            ) : (
+                              <div style={{ width: 44, height: 32, borderRadius: 6, background: '#eff6ff', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2563eb', flexShrink: 0 }}>
+                                <FaCar style={{ fontSize: 14 }} />
+                              </div>
+                            )}
+                            <div>
+                              <strong style={{ display: 'block', fontSize: 13, fontWeight: 700, color: '#0f172a', lineHeight: 1.2 }}>
+                                {r.vehiculoNombre || 'Mazda CX-5'}
+                              </strong>
+                              <span style={{ fontSize: 11, fontWeight: 700, color: '#475569', background: '#f1f5f9', padding: '1px 5px', borderRadius: 4, display: 'inline-block', marginTop: 3, border: '1px solid #cbd5e1' }}>
+                                {r.vehiculoPlaca || 'KLS-849'}
+                              </span>
                             </div>
-                          )}
+                          </div>
                         </td>
 
-                        <td style={{ fontWeight: 600, color: '#0f172a' }}>
-                          {r.vehiculoNombre || 'Mazda CX-5'}
+                        {/* CLIENTE */}
+                        <td style={{ padding: '14px 16px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <div style={{ width: 28, height: 28, borderRadius: '50%', background: '#e0f2fe', color: '#0369a1', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 12, flexShrink: 0 }}>
+                              {clienteNombre.charAt(0).toUpperCase()}
+                            </div>
+                            <span style={{ fontSize: 13, fontWeight: 600, color: '#1e293b' }}>
+                              {clienteNombre}
+                            </span>
+                          </div>
                         </td>
 
-                        <td>
-                          <span style={{ background: '#f1f5f9', border: '1px solid #cbd5e1', padding: '2px 6px', borderRadius: 4, fontSize: 11, fontWeight: 700 }}>
-                            {r.vehiculoPlaca || 'KLS-849'}
-                          </span>
+                        {/* FECHA & HORA */}
+                        <td style={{ padding: '14px 16px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 500, color: '#475569' }}>
+                            <FaClock style={{ color: '#2563eb', fontSize: 12 }} />
+                            <span>{fechaTxt}</span>
+                          </div>
                         </td>
 
-                        <td style={{ color: '#0f172a' }}>
-                          {r.clienteNombre || r.datosForm?.nombres || 'Cliente Drivique'}
+                        {/* ESTADO PAGO */}
+                        <td style={{ padding: '14px 16px' }}>
+                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 3 }}>
+                            <span style={{ padding: '2px 9px', borderRadius: 20, fontSize: 11, fontWeight: 700, background: estaPagado ? '#ecfdf5' : '#fffbe1', color: estaPagado ? '#047857' : '#b45309', border: `1px solid ${estaPagado ? '#a7f3d0' : '#fde68a'}` }}>
+                              {estaPagado ? 'Recibido' : 'No Recibido'}
+                            </span>
+                            <small style={{ fontSize: 11, color: '#64748b' }}>{textoMedio}</small>
+                          </div>
                         </td>
 
-                        <td>
-                          <span style={{ fontSize: 12, color: '#64748b', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-                            <FaClock />
-                            {fechaTxt ? (fechaTxt.length > 10 ? `${fechaTxt.slice(0, 10)} ${fechaTxt.slice(11, 16)}` : fechaTxt) : '08:00 AM'}
-                          </span>
-                        </td>
-
-                        <td style={{ fontSize: 12 }}>{textoMedio}</td>
-
-                        <td>
-                          <span style={{ padding: '2px 8px', borderRadius: 12, fontSize: 11, fontWeight: 600, background: estaPagado ? '#ecfdf5' : '#fffbe1', color: estaPagado ? '#047857' : '#b45309', border: `1px solid ${estaPagado ? '#a7f3d0' : '#fde68a'}` }}>
-                            {estaPagado ? 'Recibido' : 'No Recibido'}
-                          </span>
-                        </td>
-
-                        <td style={{ textAlign: 'center' }}>
+                        {/* ACCIÓN */}
+                        <td style={{ padding: '14px 16px', textAlign: 'right' }}>
                           {!estaPagado && esEfectivo ? (
                             <button
                               type="button"
-                              onClick={() => navigate(`${cashRoute}?ref=${encodeURIComponent(cod)}`)}
-                              style={{ background: '#047857', color: '#ffffff', border: 'none', padding: '5px 12px', borderRadius: 6, fontSize: 11.5, fontWeight: 600, cursor: 'pointer' }}
+                              onClick={() => navigate(`${cashRoute}?ref=${encodeURIComponent(rawCod)}`)}
+                              style={{ background: '#047857', color: '#ffffff', border: 'none', padding: '6px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', boxShadow: '0 1px 3px rgba(4,120,87,0.2)', transition: 'background 0.2s ease' }}
                             >
                               Cobrar en Caja
                             </button>
@@ -682,7 +708,7 @@ export default function ManagementDashboard({ branchOnly = false }) {
                             <button
                               type="button"
                               onClick={() => navigate(reservationsRoute)}
-                              style={{ background: '#f1f5f9', color: '#334155', border: '1px solid #cbd5e1', padding: '5px 12px', borderRadius: 6, fontSize: 11.5, fontWeight: 500, cursor: 'pointer' }}
+                              style={{ background: '#ffffff', color: '#2563eb', border: '1px solid #bfdbfe', padding: '6px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s ease' }}
                             >
                               Ver Reserva
                             </button>
