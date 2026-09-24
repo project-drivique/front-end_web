@@ -49,7 +49,7 @@ export default function ReservationManagementPage() {
   const sucursalEncargado = user?.sucursalAsignada || user?.sucursalId || user?.sucursal || ''
   const cashRoute = esEncargado ? '/encargado/cobro-sucursal' : '/admin/cobro-sucursal'
 
-  const [activeTab, setActiveTab] = useState('entregas') // 'entregas' | 'devoluciones' | 'canceladas'
+  const [activeTab, setActiveTab] = useState('fechas_ubicacion') // 'fechas_ubicacion' | 'proteccion_extras' | 'datos_pago'
   const [zoomImage, setZoomImage] = useState(null)
 
   const [reservas, setReservas] = useState([])
@@ -136,7 +136,7 @@ export default function ReservationManagementPage() {
     return reservas.filter((res) => {
       const matchSearch =
         !term ||
-        `${res.codigo} ${res.clienteNombre} ${res.clienteCorreo} ${res.vehiculoNombre} ${res.vehiculoPlaca} ${res.sucursal}`
+        `${res.codigo} ${res.clienteNombre} ${res.clienteCorreo} ${res.clienteDocumento || ''} ${res.vehiculoNombre} ${res.vehiculoPlaca} ${res.sucursal}`
           .toLowerCase()
           .includes(term)
 
@@ -155,59 +155,106 @@ export default function ReservationManagementPage() {
     })
   }, [reservas, search, statusFilter, branchFilter, dateFrom, dateTo])
 
-  // Desglose de los 3 Flujos Operativos de Reserva
-  const entregasList = useMemo(() => {
-    return filtradas.filter((r) => {
-      const st = String(r.estado || '').toLowerCase()
-      return st === 'confirmada' || st === 'en_curso' || st === 'pendiente' || st === 'pendiente_efectivo' || st === 'activa' || !st
+  // Configuración de exportación independiente por cada flujo de reserva
+  const flowTitleName = activeTab === 'fechas_ubicacion'
+    ? '1. Fechas y Ubicación'
+    : activeTab === 'proteccion_extras'
+    ? '2. Protección y Extras'
+    : '3. Datos Personales y Pago'
+
+  const headersExport = useMemo(() => {
+    if (activeTab === 'fechas_ubicacion') {
+      return ['Código', 'Vehículo', 'Placa', 'Método Pago Preferido', 'Lugar Retiro', 'Lugar Devolución', 'Fecha Retiro', 'Fecha Devolución', 'Estado Reserva']
+    }
+    if (activeTab === 'proteccion_extras') {
+      return ['Código', 'Vehículo', 'Placa', 'Cliente', 'Plan Protección', 'Tipo Kilometraje', 'Servicios Adicionales', 'Estado Reserva']
+    }
+    return ['Código', 'Cliente', 'Documento', 'Correo', 'Teléfono', 'Dirección / Domicilio', 'Tarifa Base', 'Cargos e IVA', 'Total Final', 'Estado Pago']
+  }, [activeTab])
+
+  const rowsExport = useMemo(() => {
+    return filtradas.map((r) => {
+      const cod = r.codigo || r.referencia || `RES-${r.id}`
+      const totalCOP = Number(r.totalCOP || r.total || r.precioTotal || 348000)
+      const rawMetodo = String(
+        r.reservaDetalles?.metodoPago ||
+        r.pasarela ||
+        r.metodoPagoConfirmado ||
+        r.metodoPago ||
+        ''
+      ).toLowerCase()
+
+      let textoMedioPago = 'Pago virtual con Wompi'
+      if (rawMetodo.includes('efectivo') || rawMetodo.includes('sucursal')) {
+        textoMedioPago = 'Pago en efectivo'
+      }
+
+      if (activeTab === 'fechas_ubicacion') {
+        return [
+          cod,
+          r.vehiculoNombre || 'Mazda CX-5 2024',
+          r.vehiculoPlaca || 'KLS-849',
+          textoMedioPago,
+          r.sucursalRetiro || r.sucursal || 'Bogotá - Calle 100',
+          r.sucursalDevolucion || r.sucursal || 'Bogotá - Calle 100',
+          r.fechaInicio ? r.fechaInicio.replace('T', ' ').slice(0, 16) : '',
+          r.fechaFin ? r.fechaFin.replace('T', ' ').slice(0, 16) : '',
+          r.estado || 'Confirmada',
+        ]
+      }
+
+      if (activeTab === 'proteccion_extras') {
+        const servs = (r.reservaDetalles?.serviciosAdicionales || []).map(s => typeof s === 'string' ? s : s.nombre).join(', ') || 'Ninguno'
+        return [
+          cod,
+          r.vehiculoNombre || 'Mazda CX-5 2024',
+          r.vehiculoPlaca || 'KLS-849',
+          r.clienteNombre || 'Cliente Registrado',
+          r.reservaDetalles?.cobertura?.nombre || r.cobertura || 'Protección Estándar CDW',
+          r.reservaDetalles?.kilometraje || r.kilometraje || 'Ilimitado',
+          servs,
+          r.estado || 'Confirmada',
+        ]
+      }
+
+      // activeTab === 'datos_pago'
+      const esCobroPresencialPendiente =
+        (rawMetodo.includes('efectivo') || rawMetodo.includes('sucursal')) &&
+        !Boolean(r.metodoPagoConfirmado) &&
+        r.pagoEstado !== 'aprobado'
+
+      const pagoRecibido =
+        (r.pagoEstado === 'aprobado' ||
+          Boolean(r.metodoPagoConfirmado) ||
+          Boolean(r.fechaPagoConfirmado) ||
+          r.estado === 'confirmada' ||
+          r.estado === 'en_curso' ||
+          r.estado === 'finalizada') &&
+        !esCobroPresencialPendiente
+
+      const subtotal = totalCOP / 1.29
+      const cargosIVA = totalCOP - subtotal
+
+      return [
+        cod,
+        r.clienteNombre || 'Cliente Registrado',
+        r.clienteDocumento || '1020304050',
+        r.clienteCorreo || 'cliente@drivique.com',
+        r.clienteTelefono || '300 000 0000',
+        r.domicilioDireccion || r.clienteDireccion || 'Retiro en Sucursal',
+        formatCurrency(subtotal, moneda, tasaUSD),
+        formatCurrency(cargosIVA, moneda, tasaUSD),
+        formatCurrency(totalCOP, moneda, tasaUSD),
+        pagoRecibido ? 'Recibido' : 'No Recibido',
+      ]
     })
-  }, [filtradas])
-
-  const devolucionesList = useMemo(() => {
-    return filtradas.filter((r) => {
-      const st = String(r.estado || '').toLowerCase()
-      return st === 'finalizada' || st === 'devolucion_pendiente' || st === 'devolución'
-    })
-  }, [filtradas])
-
-  const canceladasList = useMemo(() => {
-    return filtradas.filter((r) => {
-      const st = String(r.estado || '').toLowerCase()
-      return st === 'cancelada' || st === 'rechazada'
-    })
-  }, [filtradas])
-
-  const currentFlowList = useMemo(() => {
-    if (activeTab === 'devoluciones') return devolucionesList
-    if (activeTab === 'canceladas') return canceladasList
-    return entregasList
-  }, [activeTab, entregasList, devolucionesList, canceladasList])
-
-  // Configuración de exportación independiente por cada flujo
-  const flowTitleName = activeTab === 'entregas' ? 'Flujo de Entregas' : activeTab === 'devoluciones' ? 'Flujo de Devoluciones' : 'Flujo de Cancelaciones'
-  const headersExport = ['Código', 'Cliente', 'Correo', 'Teléfono', 'Vehículo', 'Placa', 'Sucursal', 'Fecha Retiro', 'Fecha Devolución', 'Medio de Pago', 'Estado Pago', 'Estado Reserva', 'Total']
-
-  const rowsExport = currentFlowList.map((r) => [
-    r.codigo || r.referencia || `RES-${r.id}`,
-    r.clienteNombre || 'Cliente Registrado',
-    r.clienteCorreo || 'cliente@drivique.com',
-    r.clienteTelefono || '300 000 0000',
-    r.vehiculoNombre || 'Mazda CX-5 2024',
-    r.vehiculoPlaca || 'KLS-849',
-    r.sucursal || 'Bogotá - Calle 100',
-    r.fechaInicio ? r.fechaInicio.replace('T', ' ').slice(0, 16) : '',
-    r.fechaFin ? r.fechaFin.replace('T', ' ').slice(0, 16) : '',
-    r.reservaDetalles?.metodoPago?.includes('efectivo') ? 'Pago en Sucursal' : 'Wompi - Tarjeta',
-    r.pagoEstado === 'aprobado' || r.metodoPagoConfirmado ? 'Recibido' : 'No Recibido',
-    r.estado || 'Confirmada',
-    formatCurrency(Number(r.totalCOP || r.total || r.precioTotal || 348000), moneda, tasaUSD),
-  ])
+  }, [filtradas, activeTab, moneda, tasaUSD])
 
   const exportData = {
     title: `${flowTitleName} - ${esEncargado ? sucursalEncargado : 'Todas las Sedes'}`,
     headers: headersExport,
     rows: rowsExport,
-    items: currentFlowList,
+    items: filtradas,
     filename: `reservas-${activeTab}-drivique-${new Date().toISOString().slice(0, 10)}`,
   }
 
@@ -379,24 +426,24 @@ export default function ReservationManagementPage() {
         <div className="fleet-attached-tabs">
           <button
             type="button"
-            onClick={() => setActiveTab('entregas')}
-            className={`fleet-tab-btn ${activeTab === 'entregas' ? 'is-active' : ''}`}
+            onClick={() => setActiveTab('fechas_ubicacion')}
+            className={`fleet-tab-btn ${activeTab === 'fechas_ubicacion' ? 'is-active' : ''}`}
           >
-            Entregas / Salidas ({entregasList.length})
+            1. Fechas y Ubicación ({filtradas.length})
           </button>
           <button
             type="button"
-            onClick={() => setActiveTab('devoluciones')}
-            className={`fleet-tab-btn ${activeTab === 'devoluciones' ? 'is-active' : ''}`}
+            onClick={() => setActiveTab('proteccion_extras')}
+            className={`fleet-tab-btn ${activeTab === 'proteccion_extras' ? 'is-active' : ''}`}
           >
-            Devoluciones / Retornos ({devolucionesList.length})
+            2. Protección y Extras ({filtradas.length})
           </button>
           <button
             type="button"
-            onClick={() => setActiveTab('canceladas')}
-            className={`fleet-tab-btn ${activeTab === 'canceladas' ? 'is-active' : ''}`}
+            onClick={() => setActiveTab('datos_pago')}
+            className={`fleet-tab-btn ${activeTab === 'datos_pago' ? 'is-active' : ''}`}
           >
-            Canceladas / Historial ({canceladasList.length})
+            3. Datos Personales y Pago ({filtradas.length})
           </button>
         </div>
 
@@ -413,32 +460,17 @@ export default function ReservationManagementPage() {
               />
             </label>
 
-            {/* Filtro de Estado del Flujo */}
+            {/* Filtro de Estado */}
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
               className="reservations-filter-select"
             >
               <option value="all">{t('admin.allStatuses', 'Todos los estados')}</option>
-              {activeTab === 'entregas' && (
-                <>
-                  <option value="confirmada">{t('admin.statusConfirmada', 'Confirmada')}</option>
-                  <option value="en_curso">{t('admin.statusEnCurso', 'En curso')}</option>
-                  <option value="pendiente">{t('admin.statusPendiente', 'Pendiente')}</option>
-                </>
-              )}
-              {activeTab === 'devoluciones' && (
-                <>
-                  <option value="finalizada">{t('admin.statusFinalizada', 'Finalizada')}</option>
-                  <option value="devolucion_pendiente">Devolución Pendiente</option>
-                </>
-              )}
-              {activeTab === 'canceladas' && (
-                <>
-                  <option value="cancelada">{t('admin.statusCancelada', 'Cancelada')}</option>
-                  <option value="rechazada">Rechazada</option>
-                </>
-              )}
+              <option value="confirmada">{t('admin.statusConfirmada', 'Confirmada')}</option>
+              <option value="en_curso">{t('admin.statusEnCurso', 'En curso')}</option>
+              <option value="finalizada">{t('admin.statusFinalizada', 'Finalizada')}</option>
+              <option value="cancelada">{t('admin.statusCancelada', 'Cancelada')}</option>
             </select>
 
             {/* Filtro de Sucursal */}
@@ -482,223 +514,354 @@ export default function ReservationManagementPage() {
 
           {/* Resumen de resultados del flujo activo */}
           <div className="cities-summary" style={{ margin: '12px 0 16px' }}>
-            <strong>{currentFlowList.length}</strong> {t('admin.reservationsFound', 'reservas encontradas en esta sección')}
+            <strong>{filtradas.length}</strong> {t('admin.reservationsFound', 'reservas encontradas en esta sección')}
           </div>
 
           {/* Tabla de Reservas del Flujo Activo */}
-          {currentFlowList.length === 0 ? (
+          {filtradas.length === 0 ? (
             <div className="cities-empty">
               <FaCalendarAlt />
-              <h2>No hay reservas registradas en {activeTab === 'entregas' ? 'Entregas' : activeTab === 'devoluciones' ? 'Devoluciones' : 'Cancelaciones'}</h2>
-              <p>No se encontraron registros activos en esta categoría con los filtros aplicados.</p>
+              <h2>No hay reservas registradas en esta sección</h2>
+              <p>No se encontraron registros en esta categoría con los filtros aplicados.</p>
             </div>
           ) : (
             <div className="cities-table-wrap">
               <table className="branches-table reservations-admin-table">
-                <thead>
-                  <tr>
-                    <th>{t('admin.reservationsManagement.table.code')}</th>
-                    <th>Foto</th>
-                    <th>Vehículo</th>
-                    <th>Placa</th>
-                    <th>Cliente</th>
-                    <th>Correo</th>
-                    <th>{t('admin.reservationsManagement.table.branch')}</th>
-                    <th>Fecha Retiro</th>
-                    <th>Fecha Devolución</th>
-                    <th>Medio de Pago</th>
-                    <th>Estado Pago</th>
-                    <th>{t('admin.reservationsManagement.table.state')}</th>
-                    <th>{t('admin.reservationsManagement.table.totalSuffix')} ({moneda})</th>
-                    <th style={{ textAlign: 'center' }}>{t('admin.actions', 'Acciones')}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {currentFlowList.map((r) => {
-                    const cod = r.codigo || r.referencia || `RES-${r.id}`
-                    const cliNom = r.clienteNombre || 'Cliente Registrado'
-                    const cliMail = r.clienteCorreo || 'cliente@drivique.com'
-                    const totalCOP = Number(r.totalCOP || r.total || r.precioTotal || 348000)
-
-                    const rawMetodo = String(
-                      r.reservaDetalles?.metodoPago ||
-                      r.pasarela ||
-                      r.metodoPagoConfirmado ||
-                      r.metodoPago ||
-                      ''
-                    ).toLowerCase()
-
-                    let textoMedioPago = 'Wompi - Tarjeta'
-                    if (rawMetodo.includes('efectivo') || rawMetodo.includes('sucursal')) {
-                      textoMedioPago = 'Pago en Sucursal'
-                    } else if (rawMetodo.includes('wompi') || rawMetodo.includes('pasarela') || rawMetodo.includes('card') || rawMetodo.includes('tarjeta')) {
-                      textoMedioPago = 'Wompi - Tarjeta'
-                    }
-
-                    const esCobroPresencialPendiente =
-                      (rawMetodo.includes('efectivo') || rawMetodo.includes('sucursal')) &&
-                      !Boolean(r.metodoPagoConfirmado) &&
-                      r.pagoEstado !== 'aprobado'
-
-                    const pagoRecibido =
-                      (r.pagoEstado === 'aprobado' ||
-                        Boolean(r.metodoPagoConfirmado) ||
-                        Boolean(r.fechaPagoConfirmado) ||
-                        r.estado === 'confirmada' ||
-                        r.estado === 'en_curso' ||
-                        r.estado === 'finalizada') &&
-                      !esCobroPresencialPendiente
-
-                    return (
-                      <tr key={r.id || cod}>
-                        {/* CÓDIGO */}
-                        <td>
-                          <strong style={{ color: '#0f172a', fontWeight: 700 }}>{cod}</strong>
-                        </td>
-
-                        {/* FOTO CON ZOOM */}
-                        <td>
-                          {r.vehiculoImagen ? (
-                            <img
-                              src={r.vehiculoImagen}
-                              alt={r.vehiculoNombre || 'Auto'}
-                              title="Haz clic para ver foto completa"
-                              onClick={() => setZoomImage({ url: r.vehiculoImagen, title: `${r.vehiculoNombre || 'Vehículo'} (${r.vehiculoPlaca || 'Placa'})` })}
-                              style={{
-                                width: 48,
-                                height: 34,
-                                borderRadius: 8,
-                                objectFit: 'cover',
-                                border: '1px solid #cbd5e1',
-                                display: 'block',
-                                cursor: 'zoom-in',
-                                transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-                              }}
-                              onMouseEnter={(e) => {
-                                e.currentTarget.style.transform = 'scale(1.15)'
-                                e.currentTarget.style.boxShadow = '0 4px 10px rgba(0,0,0,0.18)'
-                              }}
-                              onMouseLeave={(e) => {
-                                e.currentTarget.style.transform = 'scale(1)'
-                                e.currentTarget.style.boxShadow = 'none'
-                              }}
-                            />
-                          ) : (
-                            <span style={{ fontSize: 12, color: '#94a3b8' }}>—</span>
-                          )}
-                        </td>
-
-                        {/* VEHÍCULO */}
-                        <td style={{ fontWeight: 700, color: '#0f172a' }}>
-                          {r.vehiculoNombre || 'Mazda CX-5'}
-                        </td>
-
-                        {/* PLACA */}
-                        <td>
-                          <code>{r.vehiculoPlaca || 'KLS-849'}</code>
-                        </td>
-
-                        {/* CLIENTE */}
-                        <td style={{ fontWeight: 600, color: '#0f172a' }}>
-                          {cliNom}
-                        </td>
-
-                        {/* CORREO */}
-                        <td style={{ color: '#64748b', fontSize: 12 }}>
-                          {cliMail}
-                        </td>
-
-                        {/* SUCURSAL */}
-                        <td>
-                          {r.sucursal || 'Bogotá - Calle 100'}
-                        </td>
-
-                        {/* FECHA RETIRO */}
-                        <td>
-                          {r.fechaInicio ? r.fechaInicio.replace('T', ' ').slice(0, 16) : new Date().toISOString().slice(0, 10)}
-                        </td>
-
-                        {/* FECHA DEVOLUCIÓN */}
-                        <td>
-                          {r.fechaFin ? r.fechaFin.replace('T', ' ').slice(0, 16) : new Date(Date.now() + 86400000 * 3).toISOString().slice(0, 10)}
-                        </td>
-
-                        {/* MEDIO DE PAGO */}
-                        <td>
-                          {textoMedioPago}
-                        </td>
-
-                        {/* ESTADO PAGO */}
-                        <td>
-                          {pagoRecibido ? 'Recibido' : 'No Recibido'}
-                        </td>
-
-                        {/* ESTADO RESERVA */}
-                        <td>
-                          {r.estado === 'en_curso' ? 'En curso' : r.estado === 'finalizada' ? 'Finalizada' : r.estado === 'cancelada' ? 'Cancelada' : 'Confirmada'}
-                        </td>
-
-                        {/* TOTAL */}
-                        <td style={{ fontWeight: 700, color: '#0f172a' }}>
-                          {formatCurrency(totalCOP, moneda, tasaUSD)}
-                        </td>
-
-                        {/* ACCIONES */}
-                        <td style={{ textAlign: 'center' }}>
-                          <div className="cities-row-actions">
-                            {esCobroPresencialPendiente && (
-                              <button
-                                type="button"
-                                className="btn-row-action"
-                                onClick={() => navigate(`${cashRoute}?ref=${encodeURIComponent(cod)}`)}
-                              >
-                                Cobrar en Caja
-                              </button>
-                            )}
-
-                            {activeTab === 'entregas' && r.estado !== 'en_curso' && (
-                              <button
-                                type="button"
-                                className="btn-row-action"
-                                onClick={() => handleEntregarAuto(r)}
-                              >
-                                Entregar Auto
-                              </button>
-                            )}
-
-                            {activeTab === 'devoluciones' && r.estado !== 'finalizada' && (
-                              <button
-                                type="button"
-                                className="btn-row-action"
-                                onClick={() => handleRecibirDevolucion(r)}
-                              >
-                                Recibir Devolución
-                              </button>
-                            )}
-
-                            <button
-                              type="button"
-                              className="btn-row-action"
-                              onClick={() => setModalDetalle(r)}
-                            >
-                              Ver Detalle
-                            </button>
-
-                            {activeTab === 'entregas' && r.estado !== 'cancelada' && (
-                              <button
-                                type="button"
-                                className="btn-row-action is-delete"
-                                onClick={() => setModalCancelar(r)}
-                              >
-                                Cancelar
-                              </button>
-                            )}
-                          </div>
-                        </td>
+                {/* ── TABLA 1: FECHAS Y UBICACIÓN ── */}
+                {activeTab === 'fechas_ubicacion' && (
+                  <>
+                    <thead>
+                      <tr>
+                        <th>{t('admin.reservationsManagement.table.code')}</th>
+                        <th>Foto</th>
+                        <th>Vehículo</th>
+                        <th>Placa</th>
+                        <th>Método Pago Preferido</th>
+                        <th>Lugar Retiro</th>
+                        <th>Lugar Devolución</th>
+                        <th>Fecha Retiro</th>
+                        <th>Fecha Devolución</th>
+                        <th>Estado Reserva</th>
+                        <th style={{ textAlign: 'center' }}>{t('admin.actions', 'Acciones')}</th>
                       </tr>
-                    )
-                  })}
-                </tbody>
+                    </thead>
+                    <tbody>
+                      {filtradas.map((r) => {
+                        const cod = r.codigo || r.referencia || `RES-${r.id}`
+                        const rawMetodo = String(
+                          r.reservaDetalles?.metodoPago ||
+                          r.pasarela ||
+                          r.metodoPagoConfirmado ||
+                          r.metodoPago ||
+                          ''
+                        ).toLowerCase()
+
+                        let textoMedioPago = 'Pago virtual con Wompi'
+                        if (rawMetodo.includes('efectivo') || rawMetodo.includes('sucursal')) {
+                          textoMedioPago = 'Pago en efectivo'
+                        }
+
+                        const esCobroPresencialPendiente =
+                          (rawMetodo.includes('efectivo') || rawMetodo.includes('sucursal')) &&
+                          !Boolean(r.metodoPagoConfirmado) &&
+                          r.pagoEstado !== 'aprobado'
+
+                        return (
+                          <tr key={r.id || cod}>
+                            <td>
+                              <strong style={{ color: '#0f172a', fontWeight: 700 }}>{cod}</strong>
+                            </td>
+                            <td>
+                              {r.vehiculoImagen ? (
+                                <img
+                                  src={r.vehiculoImagen}
+                                  alt={r.vehiculoNombre || 'Auto'}
+                                  title="Haz clic para ver foto completa"
+                                  onClick={() => setZoomImage({ url: r.vehiculoImagen, title: `${r.vehiculoNombre || 'Vehículo'} (${r.vehiculoPlaca || 'Placa'})` })}
+                                  style={{
+                                    width: 48,
+                                    height: 34,
+                                    borderRadius: 8,
+                                    objectFit: 'cover',
+                                    border: '1px solid #cbd5e1',
+                                    display: 'block',
+                                    cursor: 'zoom-in',
+                                    transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                                  }}
+                                  onMouseEnter={(e) => {
+                                    e.currentTarget.style.transform = 'scale(1.15)'
+                                    e.currentTarget.style.boxShadow = '0 4px 10px rgba(0,0,0,0.18)'
+                                  }}
+                                  onMouseLeave={(e) => {
+                                    e.currentTarget.style.transform = 'scale(1)'
+                                    e.currentTarget.style.boxShadow = 'none'
+                                  }}
+                                />
+                              ) : (
+                                <span style={{ fontSize: 12, color: '#94a3b8' }}>—</span>
+                              )}
+                            </td>
+                            <td style={{ fontWeight: 700, color: '#0f172a' }}>
+                              {r.vehiculoNombre || 'Renault Sandero 2023'}
+                            </td>
+                            <td>
+                              <code>{r.vehiculoPlaca || 'KLS-849'}</code>
+                            </td>
+                            <td>{textoMedioPago}</td>
+                            <td>{r.sucursalRetiro || r.sucursal || 'Bogotá - Calle 100'}</td>
+                            <td>{r.sucursalDevolucion || r.sucursal || 'Bogotá - Calle 100'}</td>
+                            <td>{r.fechaInicio ? r.fechaInicio.replace('T', ' ').slice(0, 16) : new Date().toISOString().slice(0, 10)}</td>
+                            <td>{r.fechaFin ? r.fechaFin.replace('T', ' ').slice(0, 16) : new Date(Date.now() + 86400000 * 3).toISOString().slice(0, 10)}</td>
+                            <td>
+                              {r.estado === 'en_curso' ? 'En curso' : r.estado === 'finalizada' ? 'Finalizada' : r.estado === 'cancelada' ? 'Cancelada' : 'Confirmada'}
+                            </td>
+                            <td style={{ textAlign: 'center' }}>
+                              <div className="cities-row-actions">
+                                {esCobroPresencialPendiente && (
+                                  <button
+                                    type="button"
+                                    className="btn-row-action"
+                                    onClick={() => navigate(`${cashRoute}?ref=${encodeURIComponent(cod)}`)}
+                                  >
+                                    Cobrar en Caja
+                                  </button>
+                                )}
+                                {r.estado !== 'en_curso' && r.estado !== 'finalizada' && r.estado !== 'cancelada' && (
+                                  <button
+                                    type="button"
+                                    className="btn-row-action"
+                                    onClick={() => handleEntregarAuto(r)}
+                                  >
+                                    Entregar Auto
+                                  </button>
+                                )}
+                                <button
+                                  type="button"
+                                  className="btn-row-action"
+                                  onClick={() => setModalDetalle(r)}
+                                >
+                                  Ver Detalle
+                                </button>
+                                {r.estado !== 'cancelada' && (
+                                  <button
+                                    type="button"
+                                    className="btn-row-action is-delete"
+                                    onClick={() => setModalCancelar(r)}
+                                  >
+                                    Cancelar
+                                  </button>
+                                )}
+                              </div>
+                            </td>
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                  </>
+                )}
+
+                {/* ── TABLA 2: PROTECCIÓN Y EXTRAS ── */}
+                {activeTab === 'proteccion_extras' && (
+                  <>
+                    <thead>
+                      <tr>
+                        <th>{t('admin.reservationsManagement.table.code')}</th>
+                        <th>Foto</th>
+                        <th>Vehículo</th>
+                        <th>Placa</th>
+                        <th>Cliente</th>
+                        <th>Plan Protección</th>
+                        <th>Tipo Kilometraje</th>
+                        <th>Servicios Adicionales</th>
+                        <th>Estado Reserva</th>
+                        <th style={{ textAlign: 'center' }}>{t('admin.actions', 'Acciones')}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filtradas.map((r) => {
+                        const cod = r.codigo || r.referencia || `RES-${r.id}`
+                        const cliNom = r.clienteNombre || 'Cliente Registrado'
+                        const cobertura = r.reservaDetalles?.cobertura?.nombre || r.cobertura || 'Protección Estándar CDW'
+                        const kilometraje = r.reservaDetalles?.kilometraje || r.kilometraje || 'Ilimitado'
+                        const extras = (r.reservaDetalles?.serviciosAdicionales || []).map(s => typeof s === 'string' ? s : s.nombre).join(', ') || 'Ninguno'
+
+                        return (
+                          <tr key={r.id || cod}>
+                            <td>
+                              <strong style={{ color: '#0f172a', fontWeight: 700 }}>{cod}</strong>
+                            </td>
+                            <td>
+                              {r.vehiculoImagen ? (
+                                <img
+                                  src={r.vehiculoImagen}
+                                  alt={r.vehiculoNombre || 'Auto'}
+                                  title="Haz clic para ver foto completa"
+                                  onClick={() => setZoomImage({ url: r.vehiculoImagen, title: `${r.vehiculoNombre || 'Vehículo'} (${r.vehiculoPlaca || 'Placa'})` })}
+                                  style={{
+                                    width: 48,
+                                    height: 34,
+                                    borderRadius: 8,
+                                    objectFit: 'cover',
+                                    border: '1px solid #cbd5e1',
+                                    display: 'block',
+                                    cursor: 'zoom-in',
+                                    transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                                  }}
+                                  onMouseEnter={(e) => {
+                                    e.currentTarget.style.transform = 'scale(1.15)'
+                                    e.currentTarget.style.boxShadow = '0 4px 10px rgba(0,0,0,0.18)'
+                                  }}
+                                  onMouseLeave={(e) => {
+                                    e.currentTarget.style.transform = 'scale(1)'
+                                    e.currentTarget.style.boxShadow = 'none'
+                                  }}
+                                />
+                              ) : (
+                                <span style={{ fontSize: 12, color: '#94a3b8' }}>—</span>
+                              )}
+                            </td>
+                            <td style={{ fontWeight: 700, color: '#0f172a' }}>
+                              {r.vehiculoNombre || 'Renault Sandero 2023'}
+                            </td>
+                            <td>
+                              <code>{r.vehiculoPlaca || 'KLS-849'}</code>
+                            </td>
+                            <td style={{ fontWeight: 600, color: '#0f172a' }}>{cliNom}</td>
+                            <td>{cobertura}</td>
+                            <td>{kilometraje}</td>
+                            <td>{extras}</td>
+                            <td>
+                              {r.estado === 'en_curso' ? 'En curso' : r.estado === 'finalizada' ? 'Finalizada' : r.estado === 'cancelada' ? 'Cancelada' : 'Confirmada'}
+                            </td>
+                            <td style={{ textAlign: 'center' }}>
+                              <div className="cities-row-actions">
+                                <button
+                                  type="button"
+                                  className="btn-row-action"
+                                  onClick={() => setModalDetalle(r)}
+                                >
+                                  Ver Detalle
+                                </button>
+                                {r.estado !== 'cancelada' && (
+                                  <button
+                                    type="button"
+                                    className="btn-row-action is-delete"
+                                    onClick={() => setModalCancelar(r)}
+                                  >
+                                    Cancelar
+                                  </button>
+                                )}
+                              </div>
+                            </td>
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                  </>
+                )}
+
+                {/* ── TABLA 3: DATOS PERSONALES Y PAGO ── */}
+                {activeTab === 'datos_pago' && (
+                  <>
+                    <thead>
+                      <tr>
+                        <th>{t('admin.reservationsManagement.table.code')}</th>
+                        <th>Cliente</th>
+                        <th>Documento</th>
+                        <th>Correo</th>
+                        <th>Teléfono</th>
+                        <th>Dirección / Domicilio</th>
+                        <th>Tarifa Base</th>
+                        <th>Cargos (10%) + IVA (19%)</th>
+                        <th>Total Final ({moneda})</th>
+                        <th>Estado Pago</th>
+                        <th style={{ textAlign: 'center' }}>{t('admin.actions', 'Acciones')}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filtradas.map((r) => {
+                        const cod = r.codigo || r.referencia || `RES-${r.id}`
+                        const cliNom = r.clienteNombre || 'Cliente Registrado'
+                        const cliDoc = r.clienteDocumento || '1020304050'
+                        const cliMail = r.clienteCorreo || 'cliente@drivique.com'
+                        const cliTel = r.clienteTelefono || '300 000 0000'
+                        const cliDir = r.domicilioDireccion || r.clienteDireccion || 'Entrega en Sucursal'
+                        const totalCOP = Number(r.totalCOP || r.total || r.precioTotal || 348000)
+
+                        const rawMetodo = String(
+                          r.reservaDetalles?.metodoPago ||
+                          r.pasarela ||
+                          r.metodoPagoConfirmado ||
+                          r.metodoPago ||
+                          ''
+                        ).toLowerCase()
+
+                        const esCobroPresencialPendiente =
+                          (rawMetodo.includes('efectivo') || rawMetodo.includes('sucursal')) &&
+                          !Boolean(r.metodoPagoConfirmado) &&
+                          r.pagoEstado !== 'aprobado'
+
+                        const pagoRecibido =
+                          (r.pagoEstado === 'aprobado' ||
+                            Boolean(r.metodoPagoConfirmado) ||
+                            Boolean(r.fechaPagoConfirmado) ||
+                            r.estado === 'confirmada' ||
+                            r.estado === 'en_curso' ||
+                            r.estado === 'finalizada') &&
+                          !esCobroPresencialPendiente
+
+                        const subtotal = totalCOP / 1.29
+                        const cargosIVA = totalCOP - subtotal
+
+                        return (
+                          <tr key={r.id || cod}>
+                            <td>
+                              <strong style={{ color: '#0f172a', fontWeight: 700 }}>{cod}</strong>
+                            </td>
+                            <td style={{ fontWeight: 600, color: '#0f172a' }}>{cliNom}</td>
+                            <td><code>{cliDoc}</code></td>
+                            <td style={{ color: '#64748b', fontSize: 12 }}>{cliMail}</td>
+                            <td>{cliTel}</td>
+                            <td>{cliDir}</td>
+                            <td>{formatCurrency(subtotal, moneda, tasaUSD)}</td>
+                            <td>{formatCurrency(cargosIVA, moneda, tasaUSD)}</td>
+                            <td style={{ fontWeight: 700, color: '#0f172a' }}>{formatCurrency(totalCOP, moneda, tasaUSD)}</td>
+                            <td>{pagoRecibido ? 'Recibido' : 'No Recibido'}</td>
+                            <td style={{ textAlign: 'center' }}>
+                              <div className="cities-row-actions">
+                                {esCobroPresencialPendiente && (
+                                  <button
+                                    type="button"
+                                    className="btn-row-action"
+                                    onClick={() => navigate(`${cashRoute}?ref=${encodeURIComponent(cod)}`)}
+                                  >
+                                    Cobrar en Caja
+                                  </button>
+                                )}
+                                <button
+                                  type="button"
+                                  className="btn-row-action"
+                                  onClick={() => setModalDetalle(r)}
+                                >
+                                  Ver Detalle
+                                </button>
+                                {r.estado !== 'cancelada' && (
+                                  <button
+                                    type="button"
+                                    className="btn-row-action is-delete"
+                                    onClick={() => setModalCancelar(r)}
+                                  >
+                                    Cancelar
+                                  </button>
+                                )}
+                              </div>
+                            </td>
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                  </>
+                )}
               </table>
             </div>
           )}
