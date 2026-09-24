@@ -173,8 +173,9 @@ export default function ManagementDashboard({ branchOnly = false }) {
   const [searchTerm, setSearchTerm] = useState('')
   const [lastSync, setLastSync] = useState(new Date())
 
-  // Calendario Fecha Seleccionada (Por defecto hoy)
-  const [selectedDate, setSelectedDate] = useState(todayStr)
+  // Calendario con Rango de Fechas (Desde - Hasta)
+  const [startDate, setStartDate] = useState(todayStr)
+  const [endDate, setEndDate] = useState(todayStr)
 
   // Sincronización en tiempo real (Polling cada 2.5s)
   useEffect(() => {
@@ -201,25 +202,30 @@ export default function ManagementDashboard({ branchOnly = false }) {
   const reservationsRoute = isBranchManager ? '/encargado/reservations' : '/admin/reservations'
   const incidentsRoute = isBranchManager ? '/encargado/incidents' : '/admin/incidents'
 
-  // Filtrado de entregas y devoluciones por la fecha del calendario seleccionada
+  // Filtrado de entregas y devoluciones por rango de fechas (Desde - Hasta)
   const { dateDeliveriesList, dateReturnsList } = useMemo(() => {
     const reservations = summary.allBranchReservations || []
     const isCancelled = (st) => ['CANCELADA', 'CANCELADA_POR_TIEMPO'].includes(String(st).toUpperCase())
 
+    const minDate = startDate <= endDate ? startDate : endDate
+    const maxDate = startDate <= endDate ? endDate : startDate
+
     const del = reservations.filter((r) => {
       if (isCancelled(r.estado)) return false
       const d = String(r.reservaDetalles?.fechaInicio || r.fechaInicio || '').slice(0, 10)
-      return d === selectedDate
+      if (!d) return false
+      return d >= minDate && d <= maxDate
     })
 
     const ret = reservations.filter((r) => {
       if (isCancelled(r.estado)) return false
       const d = String(r.reservaDetalles?.fechaFin || r.fechaFin || '').slice(0, 10)
-      return d === selectedDate
+      if (!d) return false
+      return d >= minDate && d <= maxDate
     })
 
     return { dateDeliveriesList: del, dateReturnsList: ret }
-  }, [summary, selectedDate])
+  }, [summary, startDate, endDate])
 
   const rawList = activeTab === 'entregas' ? dateDeliveriesList : dateReturnsList
 
@@ -509,23 +515,40 @@ export default function ManagementDashboard({ branchOnly = false }) {
                 Programación Operativa de Sucursal
               </h2>
               <span style={{ fontSize: 12, color: '#64748b' }}>
-                {selectedDate === todayStr ? 'Atención presencial programada para Hoy' : `Atención presencial programada para el ${selectedDate}`}
+                {startDate === endDate
+                  ? `Atención presencial para el ${startDate}`
+                  : `Atención presencial del ${startDate} al ${endDate}`}
               </span>
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-              {/* Calendario Sencillo */}
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#f8fafc', padding: '6px 12px', borderRadius: 8, border: '1px solid #cbd5e1' }}>
+              {/* Calendario con Rango de 2 Fechas (Desde - Hasta) */}
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#f8fafc', padding: '5px 12px', borderRadius: 8, border: '1px solid #cbd5e1' }}>
                 <FaCalendarAlt style={{ color: '#2563eb', fontSize: 13 }} />
-                <span style={{ fontSize: 12, fontWeight: 600, color: '#475569' }}>Fecha:</span>
+                <span style={{ fontSize: 11.5, fontWeight: 600, color: '#475569' }}>Desde:</span>
                 <input
                   type="date"
-                  value={selectedDate}
-                  onChange={(e) => setSelectedDate(e.target.value)}
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
                   style={{
                     border: 'none',
                     background: 'transparent',
-                    fontSize: 12.5,
+                    fontSize: 12,
+                    fontWeight: 600,
+                    color: '#0f172a',
+                    outline: 'none',
+                    cursor: 'pointer',
+                  }}
+                />
+                <span style={{ fontSize: 11.5, fontWeight: 600, color: '#475569', marginLeft: 4 }}>Hasta:</span>
+                <input
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  style={{
+                    border: 'none',
+                    background: 'transparent',
+                    fontSize: 12,
                     fontWeight: 600,
                     color: '#0f172a',
                     outline: 'none',

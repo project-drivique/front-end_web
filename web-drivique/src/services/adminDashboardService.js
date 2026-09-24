@@ -128,6 +128,7 @@ export const adminDashboardService = {
       todayReturns: todayReturnsList.length,
       todayDeliveriesList,
       todayReturnsList,
+      allBranchReservations: reservations,
       statusBreakdown,
       vehicleCount: scopedVehicles.length,
       reservationCount: reservations.length,
