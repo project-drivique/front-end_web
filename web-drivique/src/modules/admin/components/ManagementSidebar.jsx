@@ -48,12 +48,11 @@ const MODULE_ICONS = {
 
 const NAV_LABELS = {
   dashboard: 'Dashboard',
-  controlPanel: 'Panel de Control',
-  vehicles: 'Flota y Vehículos',
+  vehicles: 'Flota de Vehículos',
   users: 'Usuarios',
   roles: 'Roles y Permisos',
   reservations: 'Reservas',
-  cashCollection: 'Cobro en Sucursal',
+  cashCollection: 'Pagos',
   contracts: 'Contratos',
   incidents: 'Incidencias',
   cities: 'Ciudades',

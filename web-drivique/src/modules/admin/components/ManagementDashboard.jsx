@@ -95,7 +95,7 @@ export default function ManagementDashboard({ branchOnly = false }) {
             onClick={() => navigate(cashRoute)}
             style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '10px 16px', background: '#047857', border: 'none', borderRadius: 10, color: '#fff', fontWeight: 700, cursor: 'pointer' }}
           >
-            <FaMoneyBillWave /> Cobro Presencial en Caja
+            <FaMoneyBillWave /> Gestión de Pagos
           </button>
           <button
             type="button"

@@ -498,12 +498,12 @@ export default function CashCollectionPage({ branchOnly = false }) {
             <div>
               <p className="cities-eyebrow">
                 {isBranchManager
-                  ? `Módulo de Caja · Sede ${sucursalAsignada || 'Asignada'} (Sólo Pago Efectivo)`
-                  : 'Administración Central · Módulo de Caja (Sólo Pago Efectivo)'}
+                  ? `Módulo de Caja y Finanzas · Sede ${sucursalAsignada || 'Asignada'}`
+                  : 'Administración Central · Módulo de Pagos y Caja'}
               </p>
-              <h1>Cobro en Sucursal</h1>
+              <h1>Gestión de Pagos</h1>
               <p className="cities-subtitle">
-                Gestión en mostrador para consulta de reservas y confirmación de pagos únicamente en efectivo.
+                Consulta integral de estados de pago, comprobantes digitales (Wompi, transferencias) y confirmación de cobros presenciales en caja.
               </p>
             </div>
 
