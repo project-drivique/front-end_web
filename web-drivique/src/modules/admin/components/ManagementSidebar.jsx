@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { NavLink, useNavigate, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import {
@@ -71,9 +71,6 @@ const NAV_LABELS = {
 
 export default function ManagementSidebar({ branchOnly = false }) {
   const [isOpen, setIsOpen] = useState(false)
-  const [isCollapsed, setIsCollapsed] = useState(() => {
-    return localStorage.getItem('drivique_sidebar_collapsed') === 'true'
-  })
   const { t } = useTranslation()
   const navigate = useNavigate()
   const usuario = useAuthStore((state) => state.usuario)
@@ -83,32 +80,6 @@ export default function ManagementSidebar({ branchOnly = false }) {
   const isBranchManager = branchOnly || usuario?.rol === ROLES.BRANCH_MANAGER || usuario?.rol === 'encargado' || usuario?.rol === 'encargado_sucursal'
   const roleKey = isBranchManager ? ROLES.BRANCH_MANAGER : ROLES.ADMIN
   const navigation = accessConfig.dashboardNavigation[roleKey] || []
-
-  // Sincronizar clase en el shell principal cuando cambia el estado de colapso
-  useEffect(() => {
-    const shell = document.querySelector('.management-shell')
-    if (shell) {
-      if (isCollapsed) {
-        shell.classList.add('has-collapsed-sidebar')
-      } else {
-        shell.classList.remove('has-collapsed-sidebar')
-      }
-    }
-  }, [isCollapsed])
-
-  const toggleCollapse = () => {
-    const next = !isCollapsed
-    setIsCollapsed(next)
-    localStorage.setItem('drivique_sidebar_collapsed', String(next))
-    const shell = document.querySelector('.management-shell')
-    if (shell) {
-      if (next) {
-        shell.classList.add('has-collapsed-sidebar')
-      } else {
-        shell.classList.remove('has-collapsed-sidebar')
-      }
-    }
-  }
 
   const closeSession = () => {
     logout()
@@ -153,7 +124,7 @@ export default function ManagementSidebar({ branchOnly = false }) {
         />
       )}
 
-      <aside className={`management-sidebar ${isOpen ? 'is-open' : ''} ${isCollapsed ? 'is-collapsed' : ''}`}>
+      <aside className={`management-sidebar ${isOpen ? 'is-open' : ''}`}>
         <div className="management-brand">
           <Link to={isBranchManager ? '/encargado' : '/admin'} className="management-brand__link" title={brandName}>
             <img 
@@ -168,23 +139,11 @@ export default function ManagementSidebar({ branchOnly = false }) {
                 filter: brand?.logoDataUrl ? 'none' : 'brightness(0) invert(1)',
               }}
             />
-            {!isCollapsed && (
-              <div className="management-brand__text">
-                <strong className="management-brand__title">{brandName}</strong>
-                <small className="management-brand__subtitle">{t('admin.management', 'Gestión')}</small>
-              </div>
-            )}
+            <div className="management-brand__text">
+              <strong className="management-brand__title">{brandName}</strong>
+              <small className="management-brand__subtitle">{t('admin.management', 'Gestión')}</small>
+            </div>
           </Link>
-
-          <button
-            type="button"
-            className="management-collapse-btn"
-            onClick={toggleCollapse}
-            title={isCollapsed ? "Expandir menú lateral" : "Contraer menú lateral"}
-            aria-label={isCollapsed ? "Expandir menú lateral" : "Contraer menú lateral"}
-          >
-            <FaBars />
-          </button>
         </div>
 
       <nav className="management-nav" aria-label={t('admin.navigation', 'Navegación')}>
