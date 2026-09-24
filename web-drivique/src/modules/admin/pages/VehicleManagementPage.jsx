@@ -237,7 +237,9 @@ export default function VehicleManagementPage() {
       divisa,
       tasaUSD,
     ),
-    vehicle.picoYPlaca.dia || "—",
+    vehicle.picoYPlaca?.dia
+      ? `Aplica (${t(`vehiculo.picoYPlaca.dias.${vehicle.picoYPlaca.dia}`)})`
+      : "No aplica",
   ]);
   const exportData = {
     title: t("admin.vehiclesManagement.exportTitle"),
@@ -815,11 +817,15 @@ export default function VehicleManagementPage() {
                             )}
                           </td>
                           <td>
-                            {vehicle.picoYPlaca.dia
-                              ? t(
-                                  `vehiculo.picoYPlaca.dias.${vehicle.picoYPlaca.dia}`,
-                                )
-                              : "—"}
+                            {vehicle.picoYPlaca?.dia ? (
+                              <span style={{ padding: '4px 10px', borderRadius: 20, fontSize: 11, fontWeight: 700, background: '#fee2e2', color: '#991b1b', border: '1px solid #fca5a5' }}>
+                                Aplica ({t(`vehiculo.picoYPlaca.dias.${vehicle.picoYPlaca.dia}`)})
+                              </span>
+                            ) : (
+                              <span style={{ padding: '4px 10px', borderRadius: 20, fontSize: 11, fontWeight: 700, background: '#ecfdf5', color: '#047857', border: '1px solid #a7f3d0' }}>
+                                No aplica
+                              </span>
+                            )}
                           </td>
                           <td style={{ textAlign: 'center' }}>
                             <div className="cities-row-actions">
