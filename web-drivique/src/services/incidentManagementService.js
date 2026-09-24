@@ -184,7 +184,7 @@ export const incidentManagementService = {
       autor: adminUser?.nombre || 'Administrador Drivique',
       hora: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       fecha: new Date().toISOString(),
-      color: updatedState === 'resuelto' ? '#16a34a' : updatedState === 'en_reparacion' ? '#9333ea' : '#d97706',
+      color: updatedState === 'resuelto' ? '#16a34a' : updatedState === 'en_reparacion' ? '#0284c7' : '#d97706',
     }
 
     incidents[index] = {

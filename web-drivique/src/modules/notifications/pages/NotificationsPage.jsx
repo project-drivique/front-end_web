@@ -79,7 +79,7 @@ export default function NotificationsPage({ defaultTab }) {
       case 'documentos_verificados':
         return <FaFileAlt style={{ color: '#059669' }} />
       case 'soporte_respuesta':
-        return <FaComments style={{ color: '#8b5cf6' }} />
+        return <FaComments style={{ color: '#0284c7' }} />
       case 'alquiler_finalizado':
         return <FaCar style={{ color: 'var(--brand-text)' }} />
       case 'politica_actualizacion':

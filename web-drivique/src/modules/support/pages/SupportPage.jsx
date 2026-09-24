@@ -566,7 +566,7 @@ export default function SupportPage() {
                       case 'resuelto':
                         return { text: 'Resuelto', bg: '#dcfce7', color: '#15803d', dot: '#16a34a' }
                       case 'en_atencion':
-                        return { text: 'En atención', bg: '#f3e8ff', color: '#7e22ce', dot: '#9333ea' }
+                        return { text: 'En atención', bg: '#e0f2fe', color: '#0369a1', dot: '#0284c7' }
                       case 'en_revision':
                         return { text: 'En revisión', bg: '#fef3c7', color: '#b45309', dot: '#d97706' }
                       case 'recibido':
