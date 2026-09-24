@@ -266,9 +266,9 @@ export default function VehicleManagementPage() {
           <header className="cities-topbar">
             <div>
               <p className="cities-eyebrow">{t("admin.management")}</p>
-              <h1>{t("admin.vehiclesManagement.title")}</h1>
+              <h1>Gestión de Flotas</h1>
               <p className="cities-subtitle">
-                {t("admin.vehiclesManagement.subtitle")}
+                Administración integral de vehículos, categorías, asignación por sucursal y estado de operación.
               </p>
             </div>
             <div className="cities-topbar__actions">
