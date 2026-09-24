@@ -31,6 +31,8 @@ import PromotionManagementPage from '../modules/admin/pages/PromotionManagementP
 import BrandManagementPage from '../modules/admin/pages/BrandManagementPage'
 import ReportsManagementPage from '../modules/admin/pages/ReportsManagementPage'
 import AuditLogManagementPage from '../modules/admin/pages/AuditLogManagementPage'
+import BranchReviewsPage from '../modules/admin/pages/BranchReviewsPage'
+import DocumentVerificationPage from '../modules/admin/pages/DocumentVerificationPage'
 import { getRoleHome, hasValidRoleAccess, ROLES } from '../modules/auth/utils/accessControl'
 import BranchesPage from '../modules/catalog/pages/BranchesPage'
 import ProfilePage from '../modules/profile/pages/ProfilePage'
@@ -191,6 +193,8 @@ export default function AppRouter() {
         <Route path="/admin/cobro-sucursal" element={<RutaPorRol roles={[ROLES.ADMIN]}><CashCollectionPage /></RutaPorRol>} />
         <Route path="/admin/contracts" element={<RutaPorRol roles={[ROLES.ADMIN]}><ContractManagementPage /></RutaPorRol>} />
         <Route path="/admin/incidents" element={<RutaPorRol roles={[ROLES.ADMIN]}><IncidentManagementPage /></RutaPorRol>} />
+        <Route path="/admin/documents" element={<RutaPorRol roles={[ROLES.ADMIN]}><DocumentVerificationPage /></RutaPorRol>} />
+        <Route path="/admin/reviews" element={<RutaPorRol roles={[ROLES.ADMIN]}><BranchReviewsPage /></RutaPorRol>} />
         <Route path="/admin/users" element={<RutaPorRol roles={[ROLES.ADMIN]}><UserManagementPage /></RutaPorRol>} />
         <Route path="/admin/roles" element={<RutaPorRol roles={[ROLES.ADMIN]}><AdminRolesManagementPage /></RutaPorRol>} />
         <Route path="/admin/promotions" element={<RutaPorRol roles={[ROLES.ADMIN]}><PromotionManagementPage /></RutaPorRol>} />
@@ -204,6 +208,9 @@ export default function AppRouter() {
         <Route path="/encargado/cobro-sucursal" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER]}><CashCollectionPage branchOnly={true} /></RutaPorRol>} />
         <Route path="/encargado/contracts" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER]}><ContractManagementPage /></RutaPorRol>} />
         <Route path="/encargado/incidents" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER]}><IncidentManagementPage /></RutaPorRol>} />
+        <Route path="/encargado/documents" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER]}><DocumentVerificationPage branchOnly={true} /></RutaPorRol>} />
+        <Route path="/encargado/promotions" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER]}><PromotionManagementPage /></RutaPorRol>} />
+        <Route path="/encargado/reviews" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER]}><BranchReviewsPage branchOnly={true} /></RutaPorRol>} />
         <Route path="/encargado/reports" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER]}><ReportsManagementPage branchOnly={true} /></RutaPorRol>} />
         <Route path="/encargado/audit" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER]}><AuditLogManagementPage branchOnly={true} /></RutaPorRol>} />
         <Route path="/encargado/:moduleKey" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER]}><ManagementModulePage /></RutaPorRol>} />

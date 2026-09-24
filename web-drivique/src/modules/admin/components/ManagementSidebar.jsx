@@ -20,6 +20,8 @@ import {
   FaFileAlt,
   FaCashRegister,
   FaSlidersH,
+  FaStar,
+  FaIdCard,
 } from 'react-icons/fa'
 import { useAuthStore } from '../../../store/authStore'
 import accessConfig from '../../../mocks/adminAccessConfig.json'
@@ -38,6 +40,8 @@ const MODULE_ICONS = {
   cashCollection: FaCashRegister,
   contracts: FaFileContract,
   incidents: FaExclamationTriangle,
+  documents: FaIdCard,
+  reviews: FaStar,
   cities: FaCity,
   branches: FaBuilding,
   promotions: FaTags,
@@ -55,6 +59,8 @@ const NAV_LABELS = {
   cashCollection: 'Pagos',
   contracts: 'Contratos',
   incidents: 'Incidencias',
+  documents: 'Validación de Documentos',
+  reviews: 'Reseñas y Calificaciones',
   cities: 'Ciudades',
   branches: 'Sucursales',
   promotions: 'Promociones',
