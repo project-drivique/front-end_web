@@ -76,7 +76,23 @@
 .management-brand { gap: 11px; padding: 2px 6px 18px; border-bottom: 1px solid rgba(255, 255, 255, 0.15); margin-bottom: 6px; }
 .management-brand strong { font-size: 18px; font-weight: 800; }
 .management-brand small { color: rgba(255,255,255,.75); font-size: 10px; }
-.management-nav { gap: 4px; }
+.management-nav { gap: 4px; display: flex; flex-direction: column; }
+.management-nav__group { display: flex; flex-direction: column; gap: 4px; }
+.management-nav__section-title {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.65);
+  text-transform: uppercase;
+  padding: 12px 10px 4px;
+  margin-top: 4px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+.management-nav__group:first-child .management-nav__section-title {
+  border-top: none;
+  margin-top: 0;
+  padding-top: 4px;
+}
 .management-nav__item, .management-logout { min-height: 43px; padding: 10px 13px; border-radius: 10px; font-size: 13px; font-weight: 650; }
 .management-nav__item:hover { transform: none; background: rgba(255,255,255,.12); }
 .management-nav__item.is-active { transform: none; background: rgba(255,255,255,.22) !important; border: 1px solid rgba(255,255,255,.28) !important; box-shadow: 0 4px 14px rgba(0,0,0,0.12); }

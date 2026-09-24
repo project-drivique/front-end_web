@@ -26,32 +26,30 @@
   },
   "dashboardNavigation": {
     "administrador": [
-      { "key": "dashboard", "route": "/admin" },
-      { "key": "controlPanel", "route": "/admin/panel" },
-      { "key": "vehicles", "route": "/admin/vehicles" },
-      { "key": "users", "route": "/admin/users" },
-      { "key": "roles", "route": "/admin/roles" },
-      { "key": "reservations", "route": "/admin/reservations" },
-      { "key": "cashCollection", "route": "/admin/cobro-sucursal" },
-      { "key": "contracts", "route": "/admin/contracts" },
-      { "key": "incidents", "route": "/admin/incidents" },
-      { "key": "cities", "route": "/admin/cities" },
-      { "key": "branches", "route": "/admin/branches" },
-      { "key": "promotions", "route": "/admin/promotions" },
-      { "key": "brand", "route": "/admin/brand" },
-      { "key": "reports", "route": "/admin/reports" },
-      { "key": "audit", "route": "/admin/audit" }
+      { "key": "dashboard", "route": "/admin", "section": "MONITOREO" },
+      { "key": "vehicles", "route": "/admin/vehicles", "section": "GESTIÓN OPERATIVA" },
+      { "key": "reservations", "route": "/admin/reservations", "section": "GESTIÓN OPERATIVA" },
+      { "key": "cashCollection", "route": "/admin/cobro-sucursal", "section": "GESTIÓN OPERATIVA" },
+      { "key": "contracts", "route": "/admin/contracts", "section": "GESTIÓN OPERATIVA" },
+      { "key": "incidents", "route": "/admin/incidents", "section": "GESTIÓN OPERATIVA" },
+      { "key": "reports", "route": "/admin/reports", "section": "CONSULTA Y AUDITORÍA" },
+      { "key": "audit", "route": "/admin/audit", "section": "CONSULTA Y AUDITORÍA" },
+      { "key": "users", "route": "/admin/users", "section": "CONFIGURACIÓN GLOBAL" },
+      { "key": "roles", "route": "/admin/roles", "section": "CONFIGURACIÓN GLOBAL" },
+      { "key": "branches", "route": "/admin/branches", "section": "CONFIGURACIÓN GLOBAL" },
+      { "key": "cities", "route": "/admin/cities", "section": "CONFIGURACIÓN GLOBAL" },
+      { "key": "promotions", "route": "/admin/promotions", "section": "CONFIGURACIÓN GLOBAL" },
+      { "key": "brand", "route": "/admin/brand", "section": "CONFIGURACIÓN GLOBAL" }
     ],
     "encargado_sucursal": [
-      { "key": "dashboard", "route": "/encargado" },
-      { "key": "controlPanel", "route": "/encargado/panel" },
-      { "key": "vehicles", "route": "/encargado/vehicles" },
-      { "key": "reservations", "route": "/encargado/reservations" },
-      { "key": "cashCollection", "route": "/encargado/cobro-sucursal" },
-      { "key": "contracts", "route": "/encargado/contracts" },
-      { "key": "incidents", "route": "/encargado/incidents" },
-      { "key": "reports", "route": "/encargado/reports" },
-      { "key": "audit", "route": "/encargado/audit" }
+      { "key": "dashboard", "route": "/encargado", "section": "MONITOREO" },
+      { "key": "vehicles", "route": "/encargado/vehicles", "section": "GESTIÓN OPERATIVA" },
+      { "key": "reservations", "route": "/encargado/reservations", "section": "GESTIÓN OPERATIVA" },
+      { "key": "cashCollection", "route": "/encargado/cobro-sucursal", "section": "GESTIÓN OPERATIVA" },
+      { "key": "contracts", "route": "/encargado/contracts", "section": "GESTIÓN OPERATIVA" },
+      { "key": "incidents", "route": "/encargado/incidents", "section": "GESTIÓN OPERATIVA" },
+      { "key": "reports", "route": "/encargado/reports", "section": "CONSULTA Y AUDITORÍA" },
+      { "key": "audit", "route": "/encargado/audit", "section": "CONSULTA Y AUDITORÍA" }
     ]
   }
 }
