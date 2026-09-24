@@ -138,19 +138,26 @@ export default function ManagementSidebar({ branchOnly = false }) {
         </div>
 
       <nav className="management-nav" aria-label={t('admin.navigation', 'Navegación')}>
-        {navigation.map(({ key, route }) => {
+        {navigation.map(({ key, route, section }, index) => {
           const Icon = MODULE_ICONS[key] || FaChartPie
           const labelFallback = NAV_LABELS[key] || key
+          const showSectionHeader = section && (index === 0 || navigation[index - 1]?.section !== section)
           return (
-            <NavLink
-              key={key}
-              to={route}
-              end={key === 'dashboard'}
-              className={({ isActive }) => `management-nav__item ${isActive ? 'is-active' : ''}`}
-            >
-              <Icon aria-hidden="true" />
-              <span>{t(`admin.nav.${key}`, labelFallback)}</span>
-            </NavLink>
+            <div key={key} className="management-nav__group">
+              {showSectionHeader && (
+                <div className="management-nav__section-title">
+                  {section}
+                </div>
+              )}
+              <NavLink
+                to={route}
+                end={key === 'dashboard'}
+                className={({ isActive }) => `management-nav__item ${isActive ? 'is-active' : ''}`}
+              >
+                <Icon aria-hidden="true" />
+                <span>{t(`admin.nav.${key}`, labelFallback)}</span>
+              </NavLink>
+            </div>
           )
         })}
       </nav>
