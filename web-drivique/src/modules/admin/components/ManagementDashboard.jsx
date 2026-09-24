@@ -589,30 +589,36 @@ export default function ManagementDashboard({ branchOnly = false }) {
               </p>
             </div>
           ) : (
-            <div style={{ overflowX: 'auto', borderRadius: 12, border: '1px solid #f1f5f9' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: 850 }}>
+            <div style={{ overflowX: 'auto', borderRadius: 12, border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: 980 }}>
                 <thead>
-                  <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
-                    <th style={{ padding: '12px 16px', fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Código</th>
-                    <th style={{ padding: '12px 16px', fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Vehículo & Placa</th>
-                    <th style={{ padding: '12px 16px', fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Cliente</th>
-                    <th style={{ padding: '12px 16px', fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Fecha & Hora</th>
-                    <th style={{ padding: '12px 16px', fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Estado Pago</th>
-                    <th style={{ padding: '12px 16px', fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px', textAlign: 'right' }}>Acción</th>
+                  <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0' }}>
+                    <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Código</th>
+                    <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Foto</th>
+                    <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Vehículo</th>
+                    <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Placa</th>
+                    <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Cliente</th>
+                    <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Fecha</th>
+                    <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Hora</th>
+                    <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Medio de Pago</th>
+                    <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Estado</th>
+                    <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px', textAlign: 'center' }}>Acción</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredList.map((r, index) => {
                     const rawCod = r.codigo || r.referencia || `RES-${r.id}`
-                    const shortCod = rawCod.length > 16 ? `${rawCod.slice(0, 15)}...` : rawCod
                     const rawMetodo = String(r.reservaDetalles?.metodoPago || r.pasarela || r.metodoPago || '').toLowerCase()
                     const esEfectivo = rawMetodo.includes('efectivo') || rawMetodo.includes('sucursal')
-                    const textoMedio = esEfectivo ? 'Pago en Sucursal' : 'Wompi - Tarjeta'
+                    const textoMedio = esEfectivo ? 'Sucursal (Efectivo)' : 'Wompi (Tarjeta)'
                     const estaPagado = r.pagoEstado === 'aprobado' || Boolean(r.metodoPagoConfirmado) || r.estado === 'confirmada' || r.estado === 'en_curso' || r.estado === 'finalizada'
+                    
                     const fechaRaw = activeTab === 'entregas'
                       ? (r.reservaDetalles?.fechaInicio || r.fechaInicio || '')
                       : (r.reservaDetalles?.fechaFin || r.fechaFin || '')
-                    const fechaTxt = fechaRaw ? (fechaRaw.length > 10 ? `${fechaRaw.slice(0, 10)} (${fechaRaw.slice(11, 16)})` : fechaRaw) : '08:00 AM'
+                    
+                    const fechaSolo = fechaRaw ? fechaRaw.slice(0, 10) : 'N/A'
+                    const horaSolo = fechaRaw && fechaRaw.length > 10 ? fechaRaw.slice(11, 16) : '08:00 AM'
                     const clienteNombre = r.clienteNombre || r.datosForm?.nombres || 'Cliente Drivique'
 
                     return (
@@ -626,81 +632,83 @@ export default function ManagementDashboard({ branchOnly = false }) {
                         onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
                       >
                         {/* CÓDIGO */}
-                        <td style={{ padding: '14px 16px' }}>
-                          <span title={rawCod} style={{ fontFamily: 'monospace', fontSize: 12, fontWeight: 700, color: '#334155', background: '#f1f5f9', padding: '3px 8px', borderRadius: 6, border: '1px solid #cbd5e1' }}>
-                            {shortCod}
+                        <td style={{ padding: '12px 14px' }}>
+                          <span style={{ fontFamily: 'monospace', fontSize: 11.5, fontWeight: 700, color: '#334155', background: '#f1f5f9', padding: '3px 7px', borderRadius: 5, border: '1px solid #e2e8f0', display: 'inline-block', whiteSpace: 'nowrap' }}>
+                            {rawCod}
                           </span>
                         </td>
 
-                        {/* VEHÍCULO & PLACA */}
-                        <td style={{ padding: '14px 16px' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                            {r.vehiculoImagen ? (
-                              <img
-                                src={r.vehiculoImagen}
-                                alt={r.vehiculoNombre || 'Auto'}
-                                style={{
-                                  width: 48,
-                                  height: 32,
-                                  borderRadius: 6,
-                                  objectFit: 'cover',
-                                  border: '1px solid #e2e8f0',
-                                  flexShrink: 0,
-                                }}
-                              />
-                            ) : (
-                              <div style={{ width: 44, height: 32, borderRadius: 6, background: '#eff6ff', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2563eb', flexShrink: 0 }}>
-                                <FaCar style={{ fontSize: 14 }} />
-                              </div>
-                            )}
-                            <div>
-                              <strong style={{ display: 'block', fontSize: 13, fontWeight: 700, color: '#0f172a', lineHeight: 1.2 }}>
-                                {r.vehiculoNombre || 'Mazda CX-5'}
-                              </strong>
-                              <span style={{ fontSize: 11, fontWeight: 700, color: '#475569', background: '#f1f5f9', padding: '1px 5px', borderRadius: 4, display: 'inline-block', marginTop: 3, border: '1px solid #cbd5e1' }}>
-                                {r.vehiculoPlaca || 'KLS-849'}
-                              </span>
+                        {/* FOTO */}
+                        <td style={{ padding: '12px 14px' }}>
+                          {r.vehiculoImagen ? (
+                            <img
+                              src={r.vehiculoImagen}
+                              alt={r.vehiculoNombre || 'Auto'}
+                              style={{
+                                width: 42,
+                                height: 28,
+                                borderRadius: 5,
+                                objectFit: 'cover',
+                                border: '1px solid #e2e8f0',
+                                display: 'block',
+                              }}
+                            />
+                          ) : (
+                            <div style={{ width: 36, height: 28, borderRadius: 5, background: '#eff6ff', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2563eb' }}>
+                              <FaCar style={{ fontSize: 13 }} />
                             </div>
-                          </div>
+                          )}
+                        </td>
+
+                        {/* VEHÍCULO */}
+                        <td style={{ padding: '12px 14px', fontSize: 13, fontWeight: 700, color: '#0f172a', whiteSpace: 'nowrap' }}>
+                          {r.vehiculoNombre || 'Mazda CX-5'}
+                        </td>
+
+                        {/* PLACA */}
+                        <td style={{ padding: '12px 14px' }}>
+                          <span style={{ fontSize: 11, fontWeight: 700, color: '#1e293b', background: '#f1f5f9', padding: '2px 6px', borderRadius: 4, border: '1px solid #cbd5e1', display: 'inline-block' }}>
+                            {r.vehiculoPlaca || 'KLS-849'}
+                          </span>
                         </td>
 
                         {/* CLIENTE */}
-                        <td style={{ padding: '14px 16px' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                            <div style={{ width: 28, height: 28, borderRadius: '50%', background: '#e0f2fe', color: '#0369a1', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 12, flexShrink: 0 }}>
-                              {clienteNombre.charAt(0).toUpperCase()}
-                            </div>
-                            <span style={{ fontSize: 13, fontWeight: 600, color: '#1e293b' }}>
-                              {clienteNombre}
-                            </span>
-                          </div>
+                        <td style={{ padding: '12px 14px', fontSize: 13, fontWeight: 600, color: '#334155', whiteSpace: 'nowrap' }}>
+                          {clienteNombre}
                         </td>
 
-                        {/* FECHA & HORA */}
-                        <td style={{ padding: '14px 16px' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 500, color: '#475569' }}>
-                            <FaClock style={{ color: '#2563eb', fontSize: 12 }} />
-                            <span>{fechaTxt}</span>
-                          </div>
+                        {/* FECHA */}
+                        <td style={{ padding: '12px 14px', fontSize: 12, fontWeight: 600, color: '#475569', whiteSpace: 'nowrap' }}>
+                          {fechaSolo}
                         </td>
 
-                        {/* ESTADO PAGO */}
-                        <td style={{ padding: '14px 16px' }}>
-                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 3 }}>
-                            <span style={{ padding: '2px 9px', borderRadius: 20, fontSize: 11, fontWeight: 700, background: estaPagado ? '#ecfdf5' : '#fffbe1', color: estaPagado ? '#047857' : '#b45309', border: `1px solid ${estaPagado ? '#a7f3d0' : '#fde68a'}` }}>
-                              {estaPagado ? 'Recibido' : 'No Recibido'}
-                            </span>
-                            <small style={{ fontSize: 11, color: '#64748b' }}>{textoMedio}</small>
-                          </div>
+                        {/* HORA */}
+                        <td style={{ padding: '12px 14px', fontSize: 12, color: '#64748b', whiteSpace: 'nowrap' }}>
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                            <FaClock style={{ color: '#2563eb', fontSize: 11 }} />
+                            {horaSolo}
+                          </span>
+                        </td>
+
+                        {/* MEDIO DE PAGO */}
+                        <td style={{ padding: '12px 14px', fontSize: 12, color: '#334155', whiteSpace: 'nowrap' }}>
+                          {textoMedio}
+                        </td>
+
+                        {/* ESTADO */}
+                        <td style={{ padding: '12px 14px', whiteSpace: 'nowrap' }}>
+                          <span style={{ padding: '3px 10px', borderRadius: 20, fontSize: 11, fontWeight: 700, background: estaPagado ? '#ecfdf5' : '#fffbe1', color: estaPagado ? '#047857' : '#b45309', border: `1px solid ${estaPagado ? '#a7f3d0' : '#fde68a'}` }}>
+                            {estaPagado ? 'Recibido' : 'No Recibido'}
+                          </span>
                         </td>
 
                         {/* ACCIÓN */}
-                        <td style={{ padding: '14px 16px', textAlign: 'right' }}>
+                        <td style={{ padding: '12px 14px', textAlign: 'center', whiteSpace: 'nowrap' }}>
                           {!estaPagado && esEfectivo ? (
                             <button
                               type="button"
                               onClick={() => navigate(`${cashRoute}?ref=${encodeURIComponent(rawCod)}`)}
-                              style={{ background: '#047857', color: '#ffffff', border: 'none', padding: '6px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', boxShadow: '0 1px 3px rgba(4,120,87,0.2)', transition: 'background 0.2s ease' }}
+                              style={{ background: '#047857', color: '#ffffff', border: 'none', padding: '5px 12px', borderRadius: 6, fontSize: 11.5, fontWeight: 600, cursor: 'pointer', boxShadow: '0 1px 3px rgba(4,120,87,0.2)' }}
                             >
                               Cobrar en Caja
                             </button>
@@ -708,7 +716,7 @@ export default function ManagementDashboard({ branchOnly = false }) {
                             <button
                               type="button"
                               onClick={() => navigate(reservationsRoute)}
-                              style={{ background: '#ffffff', color: '#2563eb', border: '1px solid #bfdbfe', padding: '6px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s ease' }}
+                              style={{ background: '#ffffff', color: '#2563eb', border: '1px solid #bfdbfe', padding: '5px 12px', borderRadius: 6, fontSize: 11.5, fontWeight: 600, cursor: 'pointer' }}
                             >
                               Ver Reserva
                             </button>
