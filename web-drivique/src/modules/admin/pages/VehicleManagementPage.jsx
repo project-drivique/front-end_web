@@ -123,19 +123,21 @@ export default function VehicleManagementPage() {
 
   const mockSedeCentral = [
     {
+      id: 1,
+      nombre: 'Sede Central Principal Drivique',
       nit: '901.458.920-3',
       razonSocial: 'Drivique Colombia S.A.S.',
-      matriz: 'Bogotá D.C. - Edificio Capital Tower, Cl. 100 #19-61',
-      cobertura: '4 Ciudades Principales (Bogotá, Medellín, Cali, Cartagena)',
-      sucursalesTotal: '12 Sucursales Activas',
-      flotaTotal: '48 Vehículos Activos',
-      director: 'Carlos Eduardo Restrepo (Admin General)',
-      estado: 'Matriz Operativa'
+      direccion: 'Cl. 100 #19-61, Edificio Capital Tower, Bogotá D.C.',
+      telefono: '+57 (601) 745-0000',
+      correo: 'contacto@drivique.com.co',
+      director: 'Carlos Eduardo Restrepo',
+      estado: 'Activa'
     }
   ];
 
   const mockGruposFlota = [
     {
+      id: 1,
       codigo: 'FLT-ECO',
       nombre: 'Flota Económica (Hatchbacks & Compactos)',
       vehiculosCount: 12,
@@ -144,6 +146,7 @@ export default function VehicleManagementPage() {
       estado: 'Activa'
     },
     {
+      id: 2,
       codigo: 'FLT-SED',
       nombre: 'Flota Sedán (Confort & Ejecutivo)',
       vehiculosCount: 16,
@@ -152,6 +155,7 @@ export default function VehicleManagementPage() {
       estado: 'Activa'
     },
     {
+      id: 3,
       codigo: 'FLT-SUV',
       nombre: 'Flota SUV & 4x4 (Aventura & Familia)',
       vehiculosCount: 14,
@@ -160,6 +164,7 @@ export default function VehicleManagementPage() {
       estado: 'Activa'
     },
     {
+      id: 4,
       codigo: 'FLT-ELE',
       nombre: 'Flota Eléctrica & Híbrida (Eco-Drive)',
       vehiculosCount: 6,
@@ -169,6 +174,7 @@ export default function VehicleManagementPage() {
     }
   ];
   const headers = [
+    "ID",
     t("admin.vehiclesManagement.fields.vehicle"),
     t("admin.vehiclesManagement.fields.plate"),
     t("admin.vehiclesManagement.fields.branch"),
@@ -382,26 +388,28 @@ export default function VehicleManagementPage() {
                 <table className="fleet-table">
                   <thead>
                     <tr>
+                      <th>ID</th>
+                      <th>Nombre Sede</th>
                       <th>NIT</th>
                       <th>Razón Social</th>
-                      <th>Sede Matriz Principal</th>
-                      <th>Cobertura Nacional</th>
-                      <th>Sucursales</th>
-                      <th>Flota Nacional</th>
+                      <th>Dirección Matriz</th>
+                      <th>Teléfono</th>
+                      <th>Correo</th>
                       <th>Director General</th>
                       <th>Estado</th>
                       <th style={{ textAlign: 'center' }}>Acciones</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {mockSedeCentral.map((sc, idx) => (
-                      <tr key={idx}>
+                    {mockSedeCentral.map((sc) => (
+                      <tr key={sc.id}>
+                        <td>{sc.id}</td>
+                        <td>{sc.nombre}</td>
                         <td><code>{sc.nit}</code></td>
-                        <td><strong>{sc.razonSocial}</strong></td>
-                        <td>{sc.matriz}</td>
-                        <td>{sc.cobertura}</td>
-                        <td><span style={{ fontWeight: 600 }}>{sc.sucursalesTotal}</span></td>
-                        <td><span style={{ fontWeight: 600 }}>{sc.flotaTotal}</span></td>
+                        <td>{sc.razonSocial}</td>
+                        <td>{sc.direccion}</td>
+                        <td>{sc.telefono}</td>
+                        <td>{sc.correo}</td>
                         <td>{sc.director}</td>
                         <td>
                           <span className="status-pill is-green" style={{ padding: '4px 10px', borderRadius: 20, fontSize: 11, fontWeight: 700 }}>
@@ -434,6 +442,7 @@ export default function VehicleManagementPage() {
                 <table className="fleet-table">
                   <thead>
                     <tr>
+                      <th>ID</th>
                       <th>Código Sede</th>
                       <th>Nombre Sucursal</th>
                       <th>Ciudad</th>
@@ -446,14 +455,15 @@ export default function VehicleManagementPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {branches.map((b) => (
+                    {branches.map((b, idx) => (
                       <tr key={b.id || b.nombre}>
-                        <td><code>SEC-00{b.id || 1}</code></td>
-                        <td><strong>{b.nombre}</strong></td>
+                        <td>{b.id || (idx + 1)}</td>
+                        <td><code>SEC-00{b.id || (idx + 1)}</code></td>
+                        <td>{b.nombre}</td>
                         <td>{b.ciudad || 'Colombia'}</td>
                         <td>{b.direccion || 'Dirección comercial de sede'}</td>
                         <td>{b.telefono || '300 000 0000'}</td>
-                        <td><span style={{ fontWeight: 600 }}>{b.capacidadVehiculos || 25} autos</span></td>
+                        <td>{b.capacidadVehiculos || 25} autos</td>
                         <td>{b.horario || 'Lun a Sáb 7:00 am - 7:00 pm'}</td>
                         <td>
                           <span className={`status-pill ${b.estado === 'inactiva' ? 'is-red' : 'is-green'}`} style={{ padding: '4px 10px', borderRadius: 20, fontSize: 11, fontWeight: 700 }}>
@@ -495,6 +505,7 @@ export default function VehicleManagementPage() {
                 <table className="fleet-table">
                   <thead>
                     <tr>
+                      <th>ID</th>
                       <th>Código Flota</th>
                       <th>Nombre del Grupo de Flota</th>
                       <th>Total Vehículos</th>
@@ -506,12 +517,13 @@ export default function VehicleManagementPage() {
                   </thead>
                   <tbody>
                     {mockGruposFlota.map((gf) => (
-                      <tr key={gf.codigo}>
+                      <tr key={gf.id}>
+                        <td>{gf.id}</td>
                         <td><code>{gf.codigo}</code></td>
-                        <td><strong>{gf.nombre}</strong></td>
-                        <td><span style={{ fontWeight: 600 }}>{gf.vehiculosCount} unidades</span></td>
+                        <td>{gf.nombre}</td>
+                        <td>{gf.vehiculosCount} unidades</td>
                         <td>{gf.sedesDisponibles}</td>
-                        <td><strong>{formatCurrency(gf.tarifaPromedio, divisa, tasaUSD)}</strong></td>
+                        <td>{formatCurrency(gf.tarifaPromedio, divisa, tasaUSD)}</td>
                         <td>
                           <span className="status-pill is-green" style={{ padding: '4px 10px', borderRadius: 20, fontSize: 11, fontWeight: 700 }}>
                             {gf.estado}
@@ -597,7 +609,7 @@ export default function VehicleManagementPage() {
                 </div>
               </div>
               <div className="cities-summary" style={{ margin: '8px 0 12px' }}>
-                <strong>{filtered.length}</strong>{" "}
+                <span>{filtered.length}</span>{" "}
                 {t("admin.vehiclesManagement.results")}
               </div>
               {filtered.length === 0 ? (
@@ -616,17 +628,18 @@ export default function VehicleManagementPage() {
                       </tr>
                     </thead>
                     <tbody>
-                      {filtered.map((vehicle) => (
+                      {filtered.map((vehicle, idx) => (
                         <tr key={vehicle.id}>
+                          <td>{vehicle.id || (idx + 1)}</td>
                           <td>
                             <div className="fleet-vehicle">
                               {vehicle.imagenes?.[0] ? (
                                 <img src={vehicle.imagenes[0]} alt="" />
                               ) : (
-                                <span style={{ fontSize: 11, fontWeight: 700 }}>Auto</span>
+                                <span style={{ fontSize: 11, fontWeight: 400 }}>Auto</span>
                               )}
                               <div>
-                                <strong>{vehicle.nombre}</strong>
+                                <span>{vehicle.nombre}</span>
                                 <small>
                                   {vehicle.año} · {vehicle.color}
                                 </small>
@@ -634,7 +647,7 @@ export default function VehicleManagementPage() {
                             </div>
                           </td>
                           <td>
-                            <strong>{vehicle.placa}</strong>
+                            {vehicle.placa}
                           </td>
                           <td>{vehicle.sucursal}</td>
                           <td>{vehicle.categoria}</td>
