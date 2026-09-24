@@ -149,7 +149,10 @@ export default function ManagementSidebar({ branchOnly = false }) {
       <nav className="management-nav" aria-label={t('admin.navigation', 'Navegación')}>
         {navigation.map(({ key, route, section }, index) => {
           const Icon = MODULE_ICONS[key] || FaChartPie
-          const labelFallback = NAV_LABELS[key] || key
+          let labelFallback = NAV_LABELS[key] || key
+          if (isBranchManager && key === 'vehicles') {
+            labelFallback = 'Flota de Sucursal'
+          }
           const showSectionHeader = section && (index === 0 || navigation[index - 1]?.section !== section)
           return (
             <div key={key} className="management-nav__group">

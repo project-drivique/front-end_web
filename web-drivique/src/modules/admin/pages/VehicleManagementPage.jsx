@@ -71,7 +71,11 @@ export default function VehicleManagementPage() {
   const { t } = useTranslation();
   const { tema, divisa, tasaUSD } = useLanding();
   const user = useAuthStore((state) => state.usuario);
-  const [activeTab, setActiveTab] = useState('sede_central');
+  const esEncargado =
+    user?.rol === "encargado" ||
+    user?.rol === "encargado_sucursal" ||
+    user?.rol === "branch_manager";
+  const [activeTab, setActiveTab] = useState(() => (esEncargado ? 'vehiculos' : 'sede_central'));
   const [vehicles, setVehicles] = useState(() =>
     vehicleManagementService.list(),
   );
@@ -85,10 +89,6 @@ export default function VehicleManagementPage() {
   const branches = branchManagementService
     .list()
     .sort((a, b) => a.nombre.localeCompare(b.nombre));
-  const esEncargado =
-    user?.rol === "encargado" ||
-    user?.rol === "encargado_sucursal" ||
-    user?.rol === "branch_manager";
   const sucursalAsignada =
     user?.sucursal || user?.sucursalId || user?.sucursalAsignada;
   const assignedBranchKey = normalizeBranch(sucursalAsignada);
@@ -350,10 +350,12 @@ export default function VehicleManagementPage() {
         <div className="cities-container" style={{ maxWidth: "100%" }}>
           <header className="cities-topbar">
             <div>
-              <p className="cities-eyebrow">{t("admin.management")}</p>
-              <h1>Gestión de Flotas</h1>
+              <p className="cities-eyebrow">{esEncargado ? `Sede: ${sucursalAsignada || 'Sucursal Local'}` : t("admin.management")}</p>
+              <h1>{esEncargado ? "Flota de Sucursal" : "Gestión de Flotas"}</h1>
               <p className="cities-subtitle">
-                Administración integral de vehículos, categorías, asignación por sucursal y estado de operación.
+                {esEncargado
+                  ? `Control y gestión del estado operativo de los vehículos asignados a ${sucursalAsignada || 'tu sucursal'}.`
+                  : "Administración integral de vehículos, categorías, asignación por sucursal y estado de operación."}
               </p>
             </div>
             <div className="cities-topbar__actions">
@@ -393,21 +395,32 @@ export default function VehicleManagementPage() {
               </button>
             </div>
           )}
-          {/* Pestañas de Secciones (Pegadas a las Tablas y sin Iconos) */}
+          {/* Pestañas de Secciones (Adaptadas al rol del usuario) */}
           <div className="fleet-attached-tabs">
+            {!esEncargado && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('sede_central')}
+                  className={`fleet-tab-btn ${activeTab === 'sede_central' ? 'is-active' : ''}`}
+                >
+                  Sede Central
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('sucursales')}
+                  className={`fleet-tab-btn ${activeTab === 'sucursales' ? 'is-active' : ''}`}
+                >
+                  Sucursales
+                </button>
+              </>
+            )}
             <button
               type="button"
-              onClick={() => setActiveTab('sede_central')}
-              className={`fleet-tab-btn ${activeTab === 'sede_central' ? 'is-active' : ''}`}
+              onClick={() => setActiveTab('vehiculos')}
+              className={`fleet-tab-btn ${activeTab === 'vehiculos' ? 'is-active' : ''}`}
             >
-              Sede Central
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab('sucursales')}
-              className={`fleet-tab-btn ${activeTab === 'sucursales' ? 'is-active' : ''}`}
-            >
-              Sucursales
+              {esEncargado ? "Flota de la Sucursal" : "Vehículos"}
             </button>
             <button
               type="button"
@@ -415,13 +428,6 @@ export default function VehicleManagementPage() {
               className={`fleet-tab-btn ${activeTab === 'flotas' ? 'is-active' : ''}`}
             >
               Categorías de Flotas
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab('vehiculos')}
-              className={`fleet-tab-btn ${activeTab === 'vehiculos' ? 'is-active' : ''}`}
-            >
-              Vehículos
             </button>
           </div>
 
