@@ -742,8 +742,8 @@ export default function ReservationManagementPage() {
               </div>
 
               {/* PASO 3: DATOS DEL CLIENTE, TÉRMINOS, CUPONES Y PAGO */}
-              <div className="reserva-detail-card-box" style={{ borderLeft: '4px solid #7c3aed' }}>
-                <h4 style={{ color: '#7c3aed', margin: '0 0 12px', fontSize: 14 }}>
+              <div className="reserva-detail-card-box" style={{ borderLeft: '4px solid #2563eb' }}>
+                <h4 style={{ color: '#2563eb', margin: '0 0 12px', fontSize: 14 }}>
                   <FaUser /> PASO 3: Cliente, Términos, Cupones y Gestión de Pago
                 </h4>
 

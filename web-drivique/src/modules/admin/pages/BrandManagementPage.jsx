@@ -16,7 +16,7 @@ const PALETTE_PRESETS = [
   { id: 'ocean', colors: { primary: '#2563EB', secondary: '#1E3A8A', accent: '#60A5FA' } },
   { id: 'forest', colors: { primary: '#059669', secondary: '#064E3B', accent: '#34D399' } },
   { id: 'sunset', colors: { primary: '#EA580C', secondary: '#9A3412', accent: '#FDBA74' } },
-  { id: 'violet', colors: { primary: '#7C3AED', secondary: '#4C1D95', accent: '#C4B5FD' } },
+  { id: 'navy', colors: { primary: '#1E40AF', secondary: '#1E3A8A', accent: '#93C5FD' } },
   { id: 'rose', colors: { primary: '#E11D48', secondary: '#881337', accent: '#FDA4AF' } },
   { id: 'graphite', colors: { primary: '#334155', secondary: '#0F172A', accent: '#94A3B8' } },
 ]
