@@ -247,7 +247,7 @@ export default function ManagementDashboard({ branchOnly = false }) {
                     return (
                       <tr key={r.id || cod}>
                         <td>
-                          <strong style={{ color: 'var(--city-text, #0f172a)', fontWeight: 700 }}>{cod}</strong>
+                          <span style={{ color: 'var(--city-text, #0f172a)', fontWeight: 500 }}>{cod}</span>
                         </td>
 
                         {/* Imagen Aislada en su Propia Columna */}
@@ -273,25 +273,25 @@ export default function ManagementDashboard({ branchOnly = false }) {
                         </td>
 
                         <td>
-                          <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--city-text, #0f172a)' }}>
+                          <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--city-text, #0f172a)' }}>
                             {r.vehiculoNombre || 'Mazda CX-5'}
                           </span>
                         </td>
 
                         <td>
-                          <span style={{ background: '#f1f5f9', border: '1px solid #cbd5e1', padding: '3px 7px', borderRadius: 6, fontSize: 11.5, fontWeight: 700 }}>
+                          <span style={{ background: '#f1f5f9', border: '1px solid #cbd5e1', padding: '3px 7px', borderRadius: 6, fontSize: 11.5, fontWeight: 600 }}>
                             {r.vehiculoPlaca || 'KLS-849'}
                           </span>
                         </td>
 
                         <td>
-                          <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--city-text, #0f172a)' }}>
+                          <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--city-text, #0f172a)' }}>
                             {r.clienteNombre || r.datosForm?.nombres || 'Cliente Drivique'}
                           </span>
                         </td>
 
                         <td>
-                          <span style={{ fontSize: 12, display: 'inline-flex', alignItems: 'center', gap: 4, fontWeight: 600 }}>
+                          <span style={{ fontSize: 12, display: 'inline-flex', alignItems: 'center', gap: 4, fontWeight: 400 }}>
                             <FaClock style={{ color: 'var(--city-muted)' }} />
                             {activeTab === 'entregas'
                               ? (r.reservaDetalles?.fechaInicio?.slice(11, 16) || '08:00 AM')
@@ -300,13 +300,13 @@ export default function ManagementDashboard({ branchOnly = false }) {
                         </td>
 
                         <td>
-                          <span style={{ fontSize: 12, fontWeight: 600 }}>
+                          <span style={{ fontSize: 12, fontWeight: 400 }}>
                             {textoMedio}
                           </span>
                         </td>
 
                         <td>
-                          <span style={{ padding: '4px 8px', borderRadius: 999, fontSize: 11, fontWeight: 700, background: estaPagado ? '#ecfdf5' : '#fffbe1', color: estaPagado ? '#047857' : '#b45309', border: `1px solid ${estaPagado ? '#a7f3d0' : '#fde68a'}` }}>
+                          <span style={{ padding: '4px 8px', borderRadius: 999, fontSize: 11, fontWeight: 600, background: estaPagado ? '#ecfdf5' : '#fffbe1', color: estaPagado ? '#047857' : '#b45309', border: `1px solid ${estaPagado ? '#a7f3d0' : '#fde68a'}` }}>
                             {estaPagado ? 'Recibido' : 'No Recibido'}
                           </span>
                         </td>
@@ -316,7 +316,7 @@ export default function ManagementDashboard({ branchOnly = false }) {
                             <button
                               type="button"
                               onClick={() => navigate(`${cashRoute}?ref=${encodeURIComponent(cod)}`)}
-                              style={{ background: '#047857', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: 7, fontSize: 11.5, fontWeight: 700, cursor: 'pointer' }}
+                              style={{ background: '#047857', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: 7, fontSize: 11.5, fontWeight: 600, cursor: 'pointer' }}
                             >
                               Cobrar en Caja
                             </button>
@@ -324,7 +324,7 @@ export default function ManagementDashboard({ branchOnly = false }) {
                             <button
                               type="button"
                               onClick={() => navigate(reservationsRoute)}
-                              style={{ background: '#f1f5f9', color: '#334155', border: '1px solid #cbd5e1', padding: '6px 12px', borderRadius: 7, fontSize: 11.5, fontWeight: 600, cursor: 'pointer' }}
+                              style={{ background: '#f1f5f9', color: '#334155', border: '1px solid #cbd5e1', padding: '6px 12px', borderRadius: 7, fontSize: 11.5, fontWeight: 500, cursor: 'pointer' }}
                             >
                               Ver Reserva
                             </button>
@@ -333,46 +333,6 @@ export default function ManagementDashboard({ branchOnly = false }) {
                       </tr>
                     )
                   })}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </section>
-
-        {/* Auditoría Reciente de la Sede */}
-        <section className="management-audit" style={{ marginTop: 24 }}>
-          <div>
-            <p className="management-eyebrow">Auditoría y Seguridad</p>
-            <h2>Registros Recientes de Acceso en tu Sucursal</h2>
-          </div>
-          {audits.length === 0 ? (
-            <p className="management-empty">No hay registros de auditoría recientes.</p>
-          ) : (
-            <div className="management-table-wrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Fecha y Hora</th>
-                    <th>Correo Usuario</th>
-                    <th>Rol</th>
-                    <th>Resultado</th>
-                    <th>Dirección IP</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {audits.map((record) => (
-                    <tr key={record.id}>
-                      <td>{new Date(record.fecha).toLocaleString(i18n.language)}</td>
-                      <td>{record.correo}</td>
-                      <td>{record.rol}</td>
-                      <td>
-                        <span className={`management-result management-result--${record.resultado}`}>
-                          {record.resultado}
-                        </span>
-                      </td>
-                      <td>{record.ip}</td>
-                    </tr>
-                  ))}
                 </tbody>
               </table>
             </div>
