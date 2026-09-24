@@ -7,14 +7,11 @@ import {
   FaDollarSign,
   FaCalendarCheck,
   FaClock,
-  FaBuilding,
   FaMoneyBillWave,
   FaPlus,
   FaTools,
   FaSearch,
   FaChartLine,
-  FaChartPie,
-  FaArrowUp,
 } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import { useAuthStore } from '../../../store/authStore'
@@ -39,10 +36,8 @@ export default function ManagementDashboard({ branchOnly = false }) {
   const reservationsRoute = isBranchManager ? '/encargado/reservations' : '/admin/reservations'
   const incidentsRoute = isBranchManager ? '/encargado/incidents' : '/admin/incidents'
 
-  const occupancy = summary.occupancyRate || 0
   const deliveriesList = summary.todayDeliveriesList || []
   const returnsList = summary.todayReturnsList || []
-
   const rawList = activeTab === 'entregas' ? deliveriesList : returnsList
 
   const filteredList = useMemo(() => {
@@ -57,70 +52,72 @@ export default function ManagementDashboard({ branchOnly = false }) {
     })
   }, [rawList, searchTerm])
 
-  // Datos para Gráfica de Flota
-  const totalVehicles = summary.vehicleCount || 10
-  const rentedVehicles = summary.rentedVehicles || 4
-  const availableVehicles = summary.availableVehicles || 5
-  const maintenanceVehicles = summary.maintenanceVehicles || 1
+  // Cálculo seguro de estadísticas de la flota
+  const totalVehicles = Math.max(1, summary.vehicleCount || 1)
+  const rentedVehicles = Math.min(totalVehicles, summary.rentedVehicles || 0)
+  const maintenanceVehicles = Math.min(totalVehicles - rentedVehicles, summary.maintenanceVehicles || 0)
+  const availableVehicles = Math.max(0, totalVehicles - rentedVehicles - maintenanceVehicles)
 
   const rentedPct = Math.round((rentedVehicles / totalVehicles) * 100)
   const availPct = Math.round((availableVehicles / totalVehicles) * 100)
   const maintPct = Math.max(0, 100 - rentedPct - availPct)
 
+  const occupancy = summary.occupancyRate || rentedPct
+
   // Datos para flujo semanal
   const weeklyData = [
-    { day: 'Lun', entregas: 4, devoluciones: 3 },
-    { day: 'Mar', entregas: 6, devoluciones: 5 },
-    { day: 'Mié', entregas: 8, devoluciones: 7 },
-    { day: 'Jue', entregas: 5, devoluciones: 6 },
-    { day: 'Vie', entregas: 10, devoluciones: 8 },
-    { day: 'Sáb', entregas: 12, devoluciones: 11 },
-    { day: 'Dom', entregas: 7, devoluciones: 9 },
+    { day: 'Lun', entregas: 3, devoluciones: 2 },
+    { day: 'Mar', entregas: 5, devoluciones: 4 },
+    { day: 'Mié', entregas: 6, devoluciones: 6 },
+    { day: 'Jue', entregas: 4, devoluciones: 5 },
+    { day: 'Vie', entregas: 8, devoluciones: 7 },
+    { day: 'Sáb', entregas: 10, devoluciones: 9 },
+    { day: 'Dom', entregas: 5, devoluciones: 6 },
   ]
-  const maxWeekly = 14
+  const maxWeeklyVal = 12
 
   return (
     <div className={`management-shell ${tema === 'oscuro' ? 'management-shell--dark' : ''}`}>
       <ManagementSidebar branchOnly={branchOnly} />
 
-      <main className="management-main" style={{ padding: '24px 32px' }}>
-        {/* Cabecera Superior Minimalista */}
-        <header className="management-header" style={{ marginBottom: 20 }}>
+      <main className="management-main" style={{ padding: '28px 36px', background: 'var(--adm-bg, #f8fafc)', minHeight: '100vh' }}>
+        {/* Cabecera Limpia y Minimalista */}
+        <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24, gap: 20 }}>
           <div>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '4px 12px', background: 'rgba(37, 99, 235, 0.08)', borderRadius: 999, marginBottom: 8, border: '1px solid rgba(37, 99, 235, 0.2)' }}>
-              <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#10b981', display: 'inline-block', boxShadow: '0 0 8px #10b981' }} />
-              <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--brand-primary, #2563eb)' }}>
-                {isBranchManager ? `Sede Asignada: ${summary.branch || 'ALAMO BOGOTÁ - AEROPUERTO'}` : 'Administración Central Drivique'}
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 10px', background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 20, marginBottom: 8 }}>
+              <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#2563eb' }} />
+              <span style={{ fontSize: 12, fontWeight: 600, color: '#1d4ed8' }}>
+                {isBranchManager ? `Sede: ${summary.branch || 'Sucursal Bogotá Aeropuerto'}` : 'Administración Central Drivique'}
               </span>
             </div>
-            <h1 style={{ fontSize: 28, fontWeight: 900, color: 'var(--adm-text, #0f172a)', margin: '4px 0 6px', letterSpacing: '-0.02em' }}>
-              Dashboard Operativo de Sucursal
+            <h1 style={{ fontSize: 24, fontWeight: 800, color: '#0f172a', margin: '2px 0 4px', letterSpacing: '-0.01em' }}>
+              Dashboard Operativo
             </h1>
-            <p className="management-subtitle" style={{ fontSize: 13.5, color: 'var(--adm-muted, #64748b)', margin: 0 }}>
-              Tablero de control en tiempo real: Entregas, devoluciones, ocupación de flota y recaudación en caja.
+            <p style={{ fontSize: 13, color: '#64748b', margin: 0 }}>
+              Resumen en tiempo real de entregas, devoluciones y estado de la flota local.
             </p>
           </div>
 
-          <div className="management-header__actions" style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
             <MenuConfiguracion />
-            <div className="management-user" style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'var(--adm-card, #fff)', padding: '6px 14px 6px 6px', borderRadius: 999, border: '1px solid var(--adm-border, #e2e8f0)', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
-              <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: 15 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, background: '#ffffff', padding: '6px 14px', borderRadius: 30, border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+              <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#2563eb', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 14 }}>
                 {(usuario?.nombre || usuario?.correo || 'U').charAt(0).toUpperCase()}
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <strong style={{ fontSize: 13, fontWeight: 800, color: 'var(--adm-text, #0f172a)', lineHeight: 1.1 }}>
-                  {usuario?.nombre || 'Andrés Felipe Castro'}
+              <div>
+                <strong style={{ fontSize: 13, fontWeight: 700, color: '#0f172a', display: 'block', lineHeight: 1.1 }}>
+                  {usuario?.nombre || 'Encargado de Sucursal'}
                 </strong>
-                <small style={{ fontSize: 11, color: 'var(--brand-primary, #2563eb)', fontWeight: 700 }}>
-                  {isBranchManager ? 'Encargado de Sucursal' : 'Administrador Principal'}
+                <small style={{ fontSize: 11, color: '#64748b' }}>
+                  {isBranchManager ? 'Administrador de Sucursal' : 'Admin Principal'}
                 </small>
               </div>
             </div>
           </div>
         </header>
 
-        {/* Botones de Acción Rápida Operativos */}
-        <section style={{ display: 'flex', gap: 12, marginBottom: 24, flexWrap: 'wrap' }}>
+        {/* Acciones Rápidas Minimalistas */}
+        <div style={{ display: 'flex', gap: 12, marginBottom: 24, flexWrap: 'wrap' }}>
           <button
             type="button"
             onClick={() => navigate(cashRoute)}
@@ -128,19 +125,21 @@ export default function ManagementDashboard({ branchOnly = false }) {
               display: 'inline-flex',
               alignItems: 'center',
               gap: 8,
-              padding: '11px 18px',
-              background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+              padding: '10px 18px',
+              background: '#2563eb',
               border: 'none',
-              borderRadius: 12,
-              color: '#fff',
-              fontWeight: 700,
+              borderRadius: 10,
+              color: '#ffffff',
+              fontWeight: 600,
               fontSize: 13,
               cursor: 'pointer',
-              boxShadow: '0 4px 14px rgba(37, 99, 235, 0.28)',
+              boxShadow: '0 2px 8px rgba(37, 99, 235, 0.25)',
+              transition: 'background 0.2s ease',
             }}
           >
             <FaMoneyBillWave /> Gestión de Pagos
           </button>
+
           <button
             type="button"
             onClick={() => navigate(reservationsRoute)}
@@ -148,19 +147,20 @@ export default function ManagementDashboard({ branchOnly = false }) {
               display: 'inline-flex',
               alignItems: 'center',
               gap: 8,
-              padding: '11px 18px',
-              background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+              padding: '10px 18px',
+              background: '#0284c7',
               border: 'none',
-              borderRadius: 12,
-              color: '#fff',
-              fontWeight: 700,
+              borderRadius: 10,
+              color: '#ffffff',
+              fontWeight: 600,
               fontSize: 13,
               cursor: 'pointer',
-              boxShadow: '0 4px 14px rgba(59, 130, 246, 0.25)',
+              boxShadow: '0 2px 8px rgba(2, 132, 199, 0.2)',
             }}
           >
             <FaPlus /> Crear Reserva Manual
           </button>
+
           <button
             type="button"
             onClick={() => navigate(incidentsRoute)}
@@ -168,267 +168,214 @@ export default function ManagementDashboard({ branchOnly = false }) {
               display: 'inline-flex',
               alignItems: 'center',
               gap: 8,
-              padding: '11px 18px',
-              background: 'var(--adm-card, #fff)',
-              border: '1px solid var(--adm-border, #e2e8f0)',
-              borderRadius: 12,
-              color: 'var(--adm-text, #334155)',
-              fontWeight: 700,
+              padding: '10px 18px',
+              background: '#ffffff',
+              border: '1px solid #cbd5e1',
+              borderRadius: 10,
+              color: '#334155',
+              fontWeight: 600,
               fontSize: 13,
               cursor: 'pointer',
-              boxShadow: '0 2px 6px rgba(0,0,0,0.03)',
             }}
           >
-            <FaTools style={{ color: '#f59e0b' }} /> Reportar Incidencia / Taller
+            <FaTools style={{ color: '#d97706' }} /> Reportar Incidencia / Taller
           </button>
-        </section>
+        </div>
 
-        {/* Tarjetas KPI Principales (4 Métricas) */}
-        <section className="management-kpis" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16, marginBottom: 24 }}>
+        {/* Tarjetas KPI Limpias (4 Métricas Clave - Sin Morado) */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16, marginBottom: 24 }}>
           {/* KPI 1: Ingresos del Mes */}
-          <article className="management-kpi" style={{ background: 'var(--adm-card, #fff)', padding: 20, borderRadius: 16, border: '1px solid var(--adm-border, #e2e8f0)', boxShadow: '0 4px 16px rgba(0,0,0,0.03)', display: 'flex', gap: 16, alignItems: 'center' }}>
-            <div style={{ width: 48, height: 48, borderRadius: 14, background: '#ecfdf5', color: '#10b981', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, flexShrink: 0 }}>
-              <FaDollarSign />
-            </div>
-            <div style={{ flex: 1 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <p style={{ margin: 0, fontSize: 12, color: 'var(--adm-muted, #64748b)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Ingresos del Mes</p>
-                <span style={{ fontSize: 10, fontWeight: 800, color: '#10b981', background: '#d1fae5', padding: '2px 6px', borderRadius: 999, display: 'inline-flex', alignItems: 'center', gap: 3 }}>
-                  <FaArrowUp style={{ fontSize: 8 }} /> +14%
-                </span>
+          <div style={{ background: '#ffffff', padding: 18, borderRadius: 14, border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+              <span style={{ fontSize: 12, fontWeight: 600, color: '#64748b' }}>Ingresos del Mes</span>
+              <div style={{ width: 34, height: 34, borderRadius: 8, background: '#ecfdf5', color: '#10b981', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>
+                <FaDollarSign />
               </div>
-              <strong style={{ fontSize: 22, fontWeight: 900, color: 'var(--adm-text, #0f172a)', display: 'block', margin: '4px 0 2px' }}>
-                {formatCurrency(summary.monthlyRevenue || 0, moneda, tasaUSD)}
-              </strong>
-              <small style={{ fontSize: 11, color: 'var(--adm-muted, #94a3b8)' }}>Facturación acumulada en la sede</small>
             </div>
-          </article>
+            <strong style={{ fontSize: 22, fontWeight: 800, color: '#0f172a', display: 'block' }}>
+              {formatCurrency(summary.monthlyRevenue || 0, moneda, tasaUSD)}
+            </strong>
+            <span style={{ fontSize: 11, color: '#94a3b8', marginTop: 4, display: 'block' }}>Facturación acumulada en sede</span>
+          </div>
 
           {/* KPI 2: Tasa de Ocupación */}
-          <article className="management-kpi" style={{ background: 'var(--adm-card, #fff)', padding: 20, borderRadius: 16, border: '1px solid var(--adm-border, #e2e8f0)', boxShadow: '0 4px 16px rgba(0,0,0,0.03)', display: 'flex', gap: 16, alignItems: 'center' }}>
-            <div style={{ width: 48, height: 48, borderRadius: 14, background: occupancy > 70 ? '#ecfdf5' : occupancy >= 40 ? '#fffbe1' : '#fef2f2', color: occupancy > 70 ? '#10b981' : occupancy >= 40 ? '#f59e0b' : '#ef4444', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, flexShrink: 0 }}>
-              <FaChartLine />
-            </div>
-            <div style={{ flex: 1 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <p style={{ margin: 0, fontSize: 12, color: 'var(--adm-muted, #64748b)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Tasa de Ocupación</p>
-                <span style={{ fontSize: 10, fontWeight: 800, color: occupancy > 70 ? '#047857' : '#b45309', background: occupancy > 70 ? '#d1fae5' : '#fef3c7', padding: '2px 6px', borderRadius: 999 }}>
-                  {occupancy > 70 ? 'Alta' : occupancy >= 40 ? 'Media' : 'Baja'}
-                </span>
+          <div style={{ background: '#ffffff', padding: 18, borderRadius: 14, border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+              <span style={{ fontSize: 12, fontWeight: 600, color: '#64748b' }}>Tasa de Ocupación</span>
+              <div style={{ width: 34, height: 34, borderRadius: 8, background: '#eff6ff', color: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>
+                <FaChartLine />
               </div>
-              <strong style={{ fontSize: 22, fontWeight: 900, color: 'var(--adm-text, #0f172a)', display: 'block', margin: '4px 0 2px' }}>
-                {occupancy}%
-              </strong>
-              <small style={{ fontSize: 11, color: 'var(--adm-muted, #94a3b8)' }}>{rentedVehicles} de {totalVehicles} vehículos alquilados</small>
             </div>
-          </article>
+            <strong style={{ fontSize: 22, fontWeight: 800, color: '#0f172a', display: 'block' }}>
+              {occupancy}%
+            </strong>
+            <span style={{ fontSize: 11, color: '#94a3b8', marginTop: 4, display: 'block' }}>{rentedVehicles} de {totalVehicles} autos alquilados</span>
+          </div>
 
           {/* KPI 3: Entregas de Hoy */}
-          <article className="management-kpi" style={{ background: 'var(--adm-card, #fff)', padding: 20, borderRadius: 16, border: '1px solid var(--adm-border, #e2e8f0)', boxShadow: '0 4px 16px rgba(0,0,0,0.03)', display: 'flex', gap: 16, alignItems: 'center' }}>
-            <div style={{ width: 48, height: 48, borderRadius: 14, background: '#eff6ff', color: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, flexShrink: 0 }}>
-              <FaCalendarCheck />
+          <div style={{ background: '#ffffff', padding: 18, borderRadius: 14, border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+              <span style={{ fontSize: 12, fontWeight: 600, color: '#64748b' }}>Entregas de Hoy</span>
+              <div style={{ width: 34, height: 34, borderRadius: 8, background: '#e0f2fe', color: '#0284c7', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>
+                <FaCalendarCheck />
+              </div>
             </div>
-            <div style={{ flex: 1 }}>
-              <p style={{ margin: 0, fontSize: 12, color: 'var(--adm-muted, #64748b)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Entregas de Hoy</p>
-              <strong style={{ fontSize: 22, fontWeight: 900, color: 'var(--adm-text, #0f172a)', display: 'block', margin: '4px 0 2px' }}>
-                {summary.todayDeliveries} recogidas
-              </strong>
-              <small style={{ fontSize: 11, color: 'var(--adm-muted, #94a3b8)' }}>Clientes citados en mostrador</small>
-            </div>
-          </article>
+            <strong style={{ fontSize: 22, fontWeight: 800, color: '#0f172a', display: 'block' }}>
+              {summary.todayDeliveries} recogidas
+            </strong>
+            <span style={{ fontSize: 11, color: '#94a3b8', marginTop: 4, display: 'block' }}>Clientes en mostrador</span>
+          </div>
 
           {/* KPI 4: Devoluciones de Hoy */}
-          <article className="management-kpi" style={{ background: 'var(--adm-card, #fff)', padding: 20, borderRadius: 16, border: '1px solid var(--adm-border, #e2e8f0)', boxShadow: '0 4px 16px rgba(0,0,0,0.03)', display: 'flex', gap: 16, alignItems: 'center' }}>
-            <div style={{ width: 48, height: 48, borderRadius: 14, background: '#f5f3ff', color: '#7c3aed', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, flexShrink: 0 }}>
-              <FaCheckCircle />
+          <div style={{ background: '#ffffff', padding: 18, borderRadius: 14, border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+              <span style={{ fontSize: 12, fontWeight: 600, color: '#64748b' }}>Devoluciones de Hoy</span>
+              <div style={{ width: 34, height: 34, borderRadius: 8, background: '#f0fdf4', color: '#16a34a', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>
+                <FaCheckCircle />
+              </div>
             </div>
-            <div style={{ flex: 1 }}>
-              <p style={{ margin: 0, fontSize: 12, color: 'var(--adm-muted, #64748b)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Devoluciones de Hoy</p>
-              <strong style={{ fontSize: 22, fontWeight: 900, color: 'var(--adm-text, #0f172a)', display: 'block', margin: '4px 0 2px' }}>
-                {summary.todayReturns} retornos
-              </strong>
-              <small style={{ fontSize: 11, color: 'var(--adm-muted, #94a3b8)' }}>Vehículos retornando a sede</small>
-            </div>
-          </article>
-        </section>
+            <strong style={{ fontSize: 22, fontWeight: 800, color: '#0f172a', display: 'block' }}>
+              {summary.todayReturns} retornos
+            </strong>
+            <span style={{ fontSize: 11, color: '#94a3b8', marginTop: 4, display: 'block' }}>Vehículos retornando a sede</span>
+          </div>
+        </div>
 
-        {/* SECCIÓN DE GRÁFICAS VISUALES DE SUCURSAL */}
-        <section style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: 20, marginBottom: 28 }}>
-          {/* Gráfica 1: Distribución y Estado de la Flota */}
-          <div style={{ background: 'var(--adm-card, #fff)', padding: 24, borderRadius: 20, border: '1px solid var(--adm-border, #e2e8f0)', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+        {/* GRÁFICAS MINIMALISTAS Y 100% CLARAS */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 20, marginBottom: 28 }}>
+          
+          {/* Gráfica 1: Ocupación y Estado de la Flota (Progress Bars Claros) */}
+          <div style={{ background: '#ffffff', padding: 22, borderRadius: 16, border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
               <div>
-                <h3 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: 'var(--adm-text, #0f172a)' }}>
-                  Estado y Distribución de Flota
+                <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: '#0f172a' }}>
+                  Estado de la Flota
                 </h3>
-                <p style={{ margin: '2px 0 0', fontSize: 12, color: 'var(--adm-muted, #64748b)' }}>
-                  Situación de autos asignados a esta sucursal
-                </p>
+                <span style={{ fontSize: 12, color: '#64748b' }}>Distribución actual de los {totalVehicles} vehículos</span>
               </div>
-              <div style={{ width: 34, height: 34, borderRadius: 10, background: 'rgba(37, 99, 235, 0.08)', color: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <FaChartPie />
-              </div>
+              <span style={{ fontSize: 12, fontWeight: 700, color: '#2563eb', background: '#eff6ff', padding: '4px 10px', borderRadius: 20 }}>
+                {totalVehicles} Autos en Sede
+              </span>
             </div>
 
-            {/* Donut Chart SVG Container */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 24, flexWrap: 'wrap' }}>
-              <div style={{ position: 'relative', width: 140, height: 140, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto' }}>
-                <svg width="140" height="140" viewBox="0 0 36 36" style={{ transform: 'rotate(-90deg)', overflow: 'visible' }}>
-                  {/* Background Track */}
-                  <path
-                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                    fill="none"
-                    stroke="var(--adm-border, #f1f5f9)"
-                    strokeWidth="3.8"
-                  />
-                  {/* Segment 1: En Alquiler (Blue) */}
-                  <path
-                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                    fill="none"
-                    stroke="#2563eb"
-                    strokeWidth="3.8"
-                    strokeDasharray={`${rentedPct}, 100`}
-                    strokeDashoffset="0"
-                    strokeLinecap="round"
-                    style={{ transition: 'stroke-dasharray 0.6s ease' }}
-                  />
-                  {/* Segment 2: Disponibles (Green) */}
-                  <path
-                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                    fill="none"
-                    stroke="#10b981"
-                    strokeWidth="3.8"
-                    strokeDasharray={`${availPct}, 100`}
-                    strokeDashoffset={`-${rentedPct}`}
-                    strokeLinecap="round"
-                    style={{ transition: 'stroke-dasharray 0.6s ease' }}
-                  />
-                  {/* Segment 3: En Taller (Amber) */}
-                  {maintPct > 0 && (
-                    <path
-                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                      fill="none"
-                      stroke="#f59e0b"
-                      strokeWidth="3.8"
-                      strokeDasharray={`${maintPct}, 100`}
-                      strokeDashoffset={`-${rentedPct + availPct}`}
-                      strokeLinecap="round"
-                      style={{ transition: 'stroke-dasharray 0.6s ease' }}
-                    />
-                  )}
-                </svg>
-                {/* Center text inside Donut */}
-                <div style={{ position: 'absolute', textAlign: 'center' }}>
-                  <span style={{ fontSize: 24, fontWeight: 900, color: 'var(--adm-text, #0f172a)', display: 'block', lineHeight: 1 }}>{totalVehicles}</span>
-                  <small style={{ fontSize: 10, color: 'var(--adm-muted, #64748b)', fontWeight: 700, textTransform: 'uppercase' }}>Autos</small>
+            {/* Barra de progreso combinada visual */}
+            <div style={{ height: 12, borderRadius: 6, background: '#f1f5f9', overflow: 'hidden', display: 'flex', marginBottom: 20 }}>
+              <div style={{ width: `${availPct}%`, background: '#10b981', transition: 'width 0.4s' }} title={`Disponibles: ${availPct}%`} />
+              <div style={{ width: `${rentedPct}%`, background: '#2563eb', transition: 'width 0.4s' }} title={`En Alquiler: ${rentedPct}%`} />
+              <div style={{ width: `${maintPct}%`, background: '#f59e0b', transition: 'width 0.4s' }} title={`En Taller: ${maintPct}%`} />
+            </div>
+
+            {/* Lista Desglosada Limpia */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {/* Disponibles */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#10b981' }} />
+                  <span style={{ fontSize: 13, fontWeight: 600, color: '#334155' }}>Disponibles</span>
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                  <strong style={{ fontSize: 13, fontWeight: 700, color: '#0f172a' }}>{availableVehicles} autos</strong>
+                  <span style={{ fontSize: 11, color: '#64748b', marginLeft: 6 }}>({availPct}%)</span>
                 </div>
               </div>
 
-              {/* Interactive Legend List */}
-              <div style={{ flex: 1, minWidth: 160, display: 'flex', flexDirection: 'column', gap: 10 }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 10px', background: '#f8fafc', borderRadius: 10, border: '1px solid #f1f5f9' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#2563eb' }} />
-                    <span style={{ fontSize: 12.5, fontWeight: 700, color: '#334155' }}>En Alquiler</span>
-                  </div>
-                  <strong style={{ fontSize: 13, fontWeight: 800, color: '#0f172a' }}>{rentedVehicles} ({rentedPct}%)</strong>
+              {/* En Alquiler */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#2563eb' }} />
+                  <span style={{ fontSize: 13, fontWeight: 600, color: '#334155' }}>En Alquiler</span>
                 </div>
-
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 10px', background: '#f8fafc', borderRadius: 10, border: '1px solid #f1f5f9' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#10b981' }} />
-                    <span style={{ fontSize: 12.5, fontWeight: 700, color: '#334155' }}>Disponibles</span>
-                  </div>
-                  <strong style={{ fontSize: 13, fontWeight: 800, color: '#0f172a' }}>{availableVehicles} ({availPct}%)</strong>
+                <div style={{ textAlign: 'right' }}>
+                  <strong style={{ fontSize: 13, fontWeight: 700, color: '#0f172a' }}>{rentedVehicles} autos</strong>
+                  <span style={{ fontSize: 11, color: '#64748b', marginLeft: 6 }}>({rentedPct}%)</span>
                 </div>
+              </div>
 
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 10px', background: '#f8fafc', borderRadius: 10, border: '1px solid #f1f5f9' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#f59e0b' }} />
-                    <span style={{ fontSize: 12.5, fontWeight: 700, color: '#334155' }}>En Taller / Mant.</span>
-                  </div>
-                  <strong style={{ fontSize: 13, fontWeight: 800, color: '#0f172a' }}>{maintenanceVehicles} ({maintPct}%)</strong>
+              {/* En Taller */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#f59e0b' }} />
+                  <span style={{ fontSize: 13, fontWeight: 600, color: '#334155' }}>En Taller / Mantenimiento</span>
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                  <strong style={{ fontSize: 13, fontWeight: 700, color: '#0f172a' }}>{maintenanceVehicles} autos</strong>
+                  <span style={{ fontSize: 11, color: '#64748b', marginLeft: 6 }}>({maintPct}%)</span>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Gráfica 2: Flujo Semanal de Entregas y Devoluciones */}
-          <div style={{ background: 'var(--adm-card, #fff)', padding: 24, borderRadius: 20, border: '1px solid var(--adm-border, #e2e8f0)', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+          {/* Gráfica 2: Flujo Semanal (Barras SVG Limpias) */}
+          <div style={{ background: '#ffffff', padding: 22, borderRadius: 16, border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
               <div>
-                <h3 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: 'var(--adm-text, #0f172a)' }}>
-                  Flujo Semanal de Operaciones
+                <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: '#0f172a' }}>
+                  Actividad Semanal
                 </h3>
-                <p style={{ margin: '2px 0 0', fontSize: 12, color: 'var(--adm-muted, #64748b)' }}>
-                  Comparativa de Entregas vs Devoluciones por día
-                </p>
+                <span style={{ fontSize: 12, color: '#64748b' }}>Entregas y devoluciones de la semana</span>
               </div>
-
-              <div style={{ display: 'flex', gap: 12 }}>
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 11.5, fontWeight: 700, color: '#2563eb' }}>
+              <div style={{ display: 'flex', gap: 10 }}>
+                <span style={{ fontSize: 11, fontWeight: 600, color: '#2563eb', display: 'flex', alignItems: 'center', gap: 4 }}>
                   <span style={{ width: 8, height: 8, borderRadius: 2, background: '#2563eb' }} /> Entregas
                 </span>
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 11.5, fontWeight: 700, color: '#10b981' }}>
+                <span style={{ fontSize: 11, fontWeight: 600, color: '#10b981', display: 'flex', alignItems: 'center', gap: 4 }}>
                   <span style={{ width: 8, height: 8, borderRadius: 2, background: '#10b981' }} /> Devoluciones
                 </span>
               </div>
             </div>
 
-            {/* Custom SVG Bar Chart */}
-            <div style={{ height: 150, display: 'flex', alignItems: 'flex-end', gap: 12, padding: '10px 0 0', borderBottom: '1px solid #f1f5f9' }}>
+            {/* Barras Semanales */}
+            <div style={{ height: 140, display: 'flex', alignItems: 'flex-end', gap: 10, paddingTop: 10, borderBottom: '1px solid #f1f5f9' }}>
               {weeklyData.map((item) => {
-                const hEntregas = Math.round((item.entregas / maxWeekly) * 120)
-                const hDevoluciones = Math.round((item.devoluciones / maxWeekly) * 120)
+                const hEntregas = Math.round((item.entregas / maxWeeklyVal) * 110)
+                const hDevoluciones = Math.round((item.devoluciones / maxWeeklyVal) * 110)
                 return (
-                  <div key={item.day} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%', justifyContent: 'flex-end', gap: 6 }}>
-                    <div style={{ display: 'flex', alignItems: 'flex-end', gap: 3, height: 120 }}>
+                  <div key={item.day} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%', justifyContent: 'flex-end', gap: 4 }}>
+                    <div style={{ display: 'flex', alignItems: 'flex-end', gap: 2, height: 110 }}>
                       <div
                         title={`Entregas ${item.day}: ${item.entregas}`}
                         style={{
-                          width: 14,
+                          width: 12,
                           height: `${hEntregas}px`,
-                          background: 'linear-gradient(180deg, #3b82f6 0%, #2563eb 100%)',
-                          borderRadius: '4px 4px 0 0',
-                          transition: 'height 0.4s ease',
+                          background: '#2563eb',
+                          borderRadius: '3px 3px 0 0',
                         }}
                       />
                       <div
                         title={`Devoluciones ${item.day}: ${item.devoluciones}`}
                         style={{
-                          width: 14,
+                          width: 12,
                           height: `${hDevoluciones}px`,
-                          background: 'linear-gradient(180deg, #34d399 0%, #10b981 100%)',
-                          borderRadius: '4px 4px 0 0',
-                          transition: 'height 0.4s ease',
+                          background: '#10b981',
+                          borderRadius: '3px 3px 0 0',
                         }}
                       />
                     </div>
-                    <span style={{ fontSize: 11, fontWeight: 700, color: '#64748b' }}>{item.day}</span>
+                    <span style={{ fontSize: 11, fontWeight: 600, color: '#64748b' }}>{item.day}</span>
                   </div>
                 )
               })}
             </div>
           </div>
-        </section>
+
+        </div>
 
         {/* TABLA OPERATIVA DEL DÍA CON BUSCADOR EN VIVO */}
-        <section className="cities-card" style={{ padding: 24, borderRadius: 20, background: 'var(--adm-card, #fff)', border: '1px solid var(--adm-border, #e2e8f0)', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20, flexWrap: 'wrap', gap: 14 }}>
+        <section style={{ background: '#ffffff', padding: 22, borderRadius: 16, border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18, flexWrap: 'wrap', gap: 12 }}>
             <div>
-              <span style={{ fontSize: 11, fontWeight: 800, color: 'var(--brand-primary, #2563eb)', textTransform: 'uppercase', letterSpacing: '0.8px', display: 'block', marginBottom: 2 }}>
-                OPERACIÓN PRESENCIAL EN SUCURSAL
-              </span>
-              <h2 style={{ margin: 0, fontSize: 19, fontWeight: 900, color: 'var(--adm-text, #0f172a)' }}>
+              <h2 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: '#0f172a' }}>
                 Programación Operativa de Hoy
               </h2>
+              <span style={{ fontSize: 12, color: '#64748b' }}>
+                Atención presencial en mostrador de la sucursal
+              </span>
             </div>
 
-            {/* Selector de Pestaña + Buscador en Vivo */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-              {/* Buscador en Vivo */}
-              <div style={{ position: 'relative', minWidth: 240 }}>
-                <FaSearch style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', fontSize: 13 }} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+              {/* Buscador */}
+              <div style={{ position: 'relative', minWidth: 220 }}>
+                <FaSearch style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', fontSize: 12 }} />
                 <input
                   type="text"
                   placeholder="Buscar cliente, auto o placa..."
@@ -436,12 +383,12 @@ export default function ManagementDashboard({ branchOnly = false }) {
                   onChange={(e) => setSearchTerm(e.target.value)}
                   style={{
                     width: '100%',
-                    padding: '8px 12px 8px 34px',
-                    borderRadius: 10,
-                    border: '1px solid var(--adm-border, #cbd5e1)',
-                    background: 'var(--adm-bg, #f8fafc)',
-                    fontSize: 12.5,
-                    color: 'var(--adm-text, #0f172a)',
+                    padding: '7px 10px 7px 30px',
+                    borderRadius: 8,
+                    border: '1px solid #cbd5e1',
+                    background: '#f8fafc',
+                    fontSize: 12,
+                    color: '#0f172a',
                     outline: 'none',
                     boxSizing: 'border-box',
                   }}
@@ -449,71 +396,69 @@ export default function ManagementDashboard({ branchOnly = false }) {
               </div>
 
               {/* Botones de Pestaña */}
-              <div style={{ display: 'flex', background: '#f1f5f9', padding: 4, borderRadius: 10 }}>
+              <div style={{ display: 'flex', background: '#f1f5f9', padding: 3, borderRadius: 8 }}>
                 <button
                   type="button"
                   onClick={() => setActiveTab('entregas')}
                   style={{
-                    padding: '7px 14px',
-                    borderRadius: 8,
-                    fontWeight: 700,
+                    padding: '6px 12px',
+                    borderRadius: 6,
+                    fontWeight: 600,
                     fontSize: 12,
                     border: 'none',
-                    background: activeTab === 'entregas' ? '#2563eb' : 'transparent',
-                    color: activeTab === 'entregas' ? '#fff' : '#64748b',
+                    background: activeTab === 'entregas' ? '#ffffff' : 'transparent',
+                    color: activeTab === 'entregas' ? '#0f172a' : '#64748b',
+                    boxShadow: activeTab === 'entregas' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
                     cursor: 'pointer',
-                    transition: 'all 0.15s ease',
                   }}
                 >
-                  🔑 Entregas ({deliveriesList.length})
+                  Entregas ({deliveriesList.length})
                 </button>
                 <button
                   type="button"
                   onClick={() => setActiveTab('devoluciones')}
                   style={{
-                    padding: '7px 14px',
-                    borderRadius: 8,
-                    fontWeight: 700,
+                    padding: '6px 12px',
+                    borderRadius: 6,
+                    fontWeight: 600,
                     fontSize: 12,
                     border: 'none',
-                    background: activeTab === 'devoluciones' ? '#2563eb' : 'transparent',
-                    color: activeTab === 'devoluciones' ? '#fff' : '#64748b',
+                    background: activeTab === 'devoluciones' ? '#ffffff' : 'transparent',
+                    color: activeTab === 'devoluciones' ? '#0f172a' : '#64748b',
+                    boxShadow: activeTab === 'devoluciones' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
                     cursor: 'pointer',
-                    transition: 'all 0.15s ease',
                   }}
                 >
-                  🏁 Devoluciones ({returnsList.length})
+                  Devoluciones ({returnsList.length})
                 </button>
               </div>
             </div>
           </div>
 
           {filteredList.length === 0 ? (
-            <div className="cities-empty" style={{ padding: '40px 16px', textAlign: 'center', background: 'var(--adm-bg, #f8fafc)', borderRadius: 14, border: '1px solid var(--adm-border, #e2e8f0)' }}>
-              <div style={{ width: 54, height: 54, borderRadius: '50%', background: '#eff6ff', color: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24, margin: '0 auto 12px' }}>
-                <FaCalendarCheck />
-              </div>
-              <h3 style={{ margin: '0 0 6px', fontSize: 16, fontWeight: 800, color: 'var(--adm-text, #0f172a)' }}>
-                No hay {activeTab === 'entregas' ? 'entregas' : 'devoluciones'} {searchTerm ? 'que coincidan con la búsqueda' : 'programadas para hoy'}
+            <div style={{ padding: '36px 16px', textAlign: 'center', background: '#f8fafc', borderRadius: 10, border: '1px solid #f1f5f9' }}>
+              <FaCalendarCheck style={{ fontSize: 28, color: '#94a3b8', marginBottom: 8 }} />
+              <h3 style={{ margin: '0 0 4px', fontSize: 14, fontWeight: 700, color: '#334155' }}>
+                No hay {activeTab === 'entregas' ? 'entregas' : 'devoluciones'} {searchTerm ? 'que coincidan' : 'programadas para hoy'}
               </h3>
-              <p style={{ margin: 0, fontSize: 13, color: 'var(--adm-muted, #64748b)' }}>
-                {searchTerm ? 'Intenta con otro término o limpia el filtro.' : 'No se registran salidas ni retornos previstos en la agenda de hoy.'}
+              <p style={{ margin: 0, fontSize: 12, color: '#64748b' }}>
+                {searchTerm ? 'Intenta borrar el texto del buscador.' : 'No se registran salidas ni retornos en la agenda de hoy.'}
               </p>
             </div>
           ) : (
             <div className="cities-table-wrap">
-              <table className="branches-table" style={{ width: '100%', minWidth: 980 }}>
+              <table className="branches-table" style={{ width: '100%', minWidth: 900 }}>
                 <thead>
                   <tr>
-                    <th style={{ textAlign: 'left', fontWeight: 800 }}>ID Reserva</th>
-                    <th style={{ textAlign: 'left', fontWeight: 800 }}>Imagen</th>
-                    <th style={{ textAlign: 'left', fontWeight: 800 }}>Vehículo</th>
-                    <th style={{ textAlign: 'left', fontWeight: 800 }}>Placa</th>
-                    <th style={{ textAlign: 'left', fontWeight: 800 }}>Cliente</th>
-                    <th style={{ textAlign: 'left', fontWeight: 800 }}>Hora Cita</th>
-                    <th style={{ textAlign: 'left', fontWeight: 800 }}>Medio de Pago</th>
-                    <th style={{ textAlign: 'left', fontWeight: 800 }}>Estado Pago</th>
-                    <th style={{ textAlign: 'center', fontWeight: 800 }}>Acción</th>
+                    <th style={{ textAlign: 'left', fontWeight: 700 }}>ID Reserva</th>
+                    <th style={{ textAlign: 'left', fontWeight: 700 }}>Imagen</th>
+                    <th style={{ textAlign: 'left', fontWeight: 700 }}>Vehículo</th>
+                    <th style={{ textAlign: 'left', fontWeight: 700 }}>Placa</th>
+                    <th style={{ textAlign: 'left', fontWeight: 700 }}>Cliente</th>
+                    <th style={{ textAlign: 'left', fontWeight: 700 }}>Hora Cita</th>
+                    <th style={{ textAlign: 'left', fontWeight: 700 }}>Medio Pago</th>
+                    <th style={{ textAlign: 'left', fontWeight: 700 }}>Estado Pago</th>
+                    <th style={{ textAlign: 'center', fontWeight: 700 }}>Acción</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -526,7 +471,7 @@ export default function ManagementDashboard({ branchOnly = false }) {
 
                     return (
                       <tr key={r.id || cod}>
-                        <td style={{ fontWeight: 700, color: 'var(--adm-text, #0f172a)' }}>{cod}</td>
+                        <td style={{ fontWeight: 600, color: '#0f172a' }}>{cod}</td>
 
                         <td>
                           {r.vehiculoImagen ? (
@@ -534,37 +479,37 @@ export default function ManagementDashboard({ branchOnly = false }) {
                               src={r.vehiculoImagen}
                               alt={r.vehiculoNombre || 'Auto'}
                               style={{
-                                width: 44,
-                                height: 30,
-                                borderRadius: 6,
+                                width: 40,
+                                height: 26,
+                                borderRadius: 4,
                                 objectFit: 'cover',
                                 border: '1px solid #e2e8f0',
                                 display: 'block',
                               }}
                             />
                           ) : (
-                            <div style={{ width: 34, height: 34, borderRadius: 8, background: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748b' }}>
+                            <div style={{ width: 30, height: 30, borderRadius: 6, background: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748b' }}>
                               <FaCar />
                             </div>
                           )}
                         </td>
 
-                        <td style={{ fontWeight: 600, color: 'var(--adm-text, #0f172a)' }}>
+                        <td style={{ fontWeight: 600, color: '#0f172a' }}>
                           {r.vehiculoNombre || 'Mazda CX-5'}
                         </td>
 
                         <td>
-                          <span style={{ background: '#f1f5f9', border: '1px solid #cbd5e1', padding: '3px 8px', borderRadius: 6, fontSize: 11.5, fontWeight: 700, letterSpacing: '0.5px' }}>
+                          <span style={{ background: '#f1f5f9', border: '1px solid #cbd5e1', padding: '2px 6px', borderRadius: 4, fontSize: 11, fontWeight: 700 }}>
                             {r.vehiculoPlaca || 'KLS-849'}
                           </span>
                         </td>
 
-                        <td style={{ color: 'var(--adm-text, #0f172a)', fontWeight: 500 }}>
+                        <td style={{ color: '#0f172a' }}>
                           {r.clienteNombre || r.datosForm?.nombres || 'Cliente Drivique'}
                         </td>
 
                         <td>
-                          <span style={{ fontSize: 12, display: 'inline-flex', alignItems: 'center', gap: 5, color: 'var(--adm-muted, #64748b)', fontWeight: 600 }}>
+                          <span style={{ fontSize: 12, color: '#64748b', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                             <FaClock />
                             {activeTab === 'entregas'
                               ? (r.reservaDetalles?.fechaInicio?.slice(11, 16) || '08:00 AM')
@@ -572,10 +517,10 @@ export default function ManagementDashboard({ branchOnly = false }) {
                           </span>
                         </td>
 
-                        <td style={{ fontSize: 12, fontWeight: 500 }}>{textoMedio}</td>
+                        <td style={{ fontSize: 12 }}>{textoMedio}</td>
 
                         <td>
-                          <span style={{ padding: '3px 10px', borderRadius: 999, fontSize: 11, fontWeight: 800, background: estaPagado ? '#ecfdf5' : '#fffbe1', color: estaPagado ? '#047857' : '#b45309', border: `1px solid ${estaPagado ? '#a7f3d0' : '#fde68a'}` }}>
+                          <span style={{ padding: '2px 8px', borderRadius: 12, fontSize: 11, fontWeight: 600, background: estaPagado ? '#ecfdf5' : '#fffbe1', color: estaPagado ? '#047857' : '#b45309', border: `1px solid ${estaPagado ? '#a7f3d0' : '#fde68a'}` }}>
                             {estaPagado ? 'Recibido' : 'No Recibido'}
                           </span>
                         </td>
@@ -585,7 +530,7 @@ export default function ManagementDashboard({ branchOnly = false }) {
                             <button
                               type="button"
                               onClick={() => navigate(`${cashRoute}?ref=${encodeURIComponent(cod)}`)}
-                              style={{ background: '#047857', color: '#fff', border: 'none', padding: '6px 14px', borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: 'pointer', boxShadow: '0 2px 6px rgba(4, 120, 87, 0.2)' }}
+                              style={{ background: '#047857', color: '#ffffff', border: 'none', padding: '5px 12px', borderRadius: 6, fontSize: 11.5, fontWeight: 600, cursor: 'pointer' }}
                             >
                               Cobrar en Caja
                             </button>
@@ -593,7 +538,7 @@ export default function ManagementDashboard({ branchOnly = false }) {
                             <button
                               type="button"
                               onClick={() => navigate(reservationsRoute)}
-                              style={{ background: '#f1f5f9', color: '#334155', border: '1px solid #cbd5e1', padding: '6px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}
+                              style={{ background: '#f1f5f9', color: '#334155', border: '1px solid #cbd5e1', padding: '5px 12px', borderRadius: 6, fontSize: 11.5, fontWeight: 500, cursor: 'pointer' }}
                             >
                               Ver Reserva
                             </button>
