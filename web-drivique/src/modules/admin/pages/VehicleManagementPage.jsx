@@ -374,27 +374,29 @@ export default function VehicleManagementPage() {
             </div>
             <div className="cities-topbar__actions">
               <MenuConfiguracion />
-              <button
-                className="cities-primary"
-                type="button"
-                onClick={() => {
-                  if (activeTab === 'sede_central') {
-                    showAlert({ icon: 'info', title: 'Editar Matriz', text: 'Editando parámetros corporativos de Drivique Colombia.' });
-                  } else if (activeTab === 'sucursales') {
-                    showAlert({ icon: 'info', title: 'Crear Sucursal', text: 'Para registrar nuevas sedes, dirígete al módulo de Sucursales.' });
-                  } else if (activeTab === 'flotas') {
-                    showAlert({ icon: 'info', title: 'Crear Grupo de Flota', text: 'Formulario de registro de nueva categoría de flota.' });
-                  } else {
-                    openCreate();
-                  }
-                }}
-                disabled={esEncargado && activeTab === 'vehiculos' && !sucursalAsignada}
-              >
-                {activeTab === 'sede_central' && 'Editar Matriz'}
-                {activeTab === 'sucursales' && '+ Crear Sucursal'}
-                {activeTab === 'flotas' && '+ Crear Grupo'}
-                {activeTab === 'vehiculos' && '+ Crear Vehículo'}
-              </button>
+              {(!esEncargado || activeTab === 'vehiculos') && (
+                <button
+                  className="cities-primary"
+                  type="button"
+                  onClick={() => {
+                    if (activeTab === 'sede_central') {
+                      showAlert({ icon: 'info', title: 'Editar Matriz', text: 'Editando parámetros corporativos de Drivique Colombia.' });
+                    } else if (activeTab === 'sucursales') {
+                      showAlert({ icon: 'info', title: 'Crear Sucursal', text: 'Para registrar nuevas sedes, dirígete al módulo de Sucursales.' });
+                    } else if (activeTab === 'flotas') {
+                      showAlert({ icon: 'info', title: 'Crear Grupo de Flota', text: 'Formulario de registro de nueva categoría de flota.' });
+                    } else {
+                      openCreate();
+                    }
+                  }}
+                  disabled={esEncargado && activeTab === 'vehiculos' && !sucursalAsignada}
+                >
+                  {activeTab === 'sede_central' && 'Editar Matriz'}
+                  {activeTab === 'sucursales' && '+ Crear Sucursal'}
+                  {activeTab === 'flotas' && '+ Crear Grupo'}
+                  {activeTab === 'vehiculos' && '+ Crear Vehículo'}
+                </button>
+              )}
             </div>
           </header>
           {notice && (
