@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import {
@@ -12,6 +12,7 @@ import {
   FaTools,
   FaSearch,
   FaChartLine,
+  FaSync,
 } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import { useAuthStore } from '../../../store/authStore'
@@ -22,7 +23,11 @@ import ManagementSidebar from './ManagementSidebar'
 import './ManagementDashboard.css'
 
 function WeeklyGroupedBarChart({ data }) {
-  const maxVal = 12
+  const maxDataVal = Math.max(...data.map((d) => Math.max(d.entregas, d.devoluciones)), 4)
+  const maxVal = Math.ceil(maxDataVal / 4) * 4
+  const step = maxVal / 4
+  const yTicks = [0, Math.round(step), Math.round(step * 2), Math.round(step * 3), maxVal]
+
   const svgWidth = 540
   const svgHeight = 210
   const marginTop = 30
@@ -33,8 +38,7 @@ function WeeklyGroupedBarChart({ data }) {
   const chartWidth = svgWidth - marginLeft - marginRight
   const chartHeight = svgHeight - marginTop - marginBottom
 
-  const yTicks = [0, 3, 6, 9, 12]
-  const numCategories = data.length
+  const numCategories = data.length || 7
   const categoryWidth = chartWidth / numCategories
   const barWidth = 14
   const barGap = 4
@@ -95,6 +99,7 @@ function WeeklyGroupedBarChart({ data }) {
                 fill="#2563eb"
                 rx="3"
                 ry="3"
+                style={{ transition: 'all 0.4s ease' }}
               >
                 <title>{`Entregas ${item.day}: ${item.entregas}`}</title>
               </rect>
@@ -119,6 +124,7 @@ function WeeklyGroupedBarChart({ data }) {
                 fill="#10b981"
                 rx="3"
                 ry="3"
+                style={{ transition: 'all 0.4s ease' }}
               >
                 <title>{`Devoluciones ${item.day}: ${item.devoluciones}`}</title>
               </rect>
@@ -159,9 +165,31 @@ export default function ManagementDashboard({ branchOnly = false }) {
   const usuario = useAuthStore((state) => state.usuario)
   const navigate = useNavigate()
 
-  const [summary] = useState(() => adminDashboardService.getSummary(usuario))
+  const [summary, setSummary] = useState(() => adminDashboardService.getSummary(usuario))
+  const [weeklyData, setWeeklyData] = useState(() => adminDashboardService.getWeeklyActivity(usuario))
   const [activeTab, setActiveTab] = useState('entregas') // 'entregas' | 'devoluciones'
   const [searchTerm, setSearchTerm] = useState('')
+  const [lastSync, setLastSync] = useState(new Date())
+
+  // Sincronización en tiempo real (Polling cada 2.5s + listeners de storage/focus)
+  useEffect(() => {
+    const refreshData = () => {
+      setSummary(adminDashboardService.getSummary(usuario))
+      setWeeklyData(adminDashboardService.getWeeklyActivity(usuario))
+      setLastSync(new Date())
+    }
+
+    refreshData()
+    const timer = setInterval(refreshData, 2500)
+    window.addEventListener('focus', refreshData)
+    window.addEventListener('storage', refreshData)
+
+    return () => {
+      clearInterval(timer)
+      window.removeEventListener('focus', refreshData)
+      window.removeEventListener('storage', refreshData)
+    }
+  }, [usuario])
 
   const isBranchManager = branchOnly || usuario?.rol === 'encargado' || usuario?.rol === 'branch_manager' || usuario?.rol === 'encargado_sucursal'
   const cashRoute = isBranchManager ? '/encargado/cobro-sucursal' : '/admin/cobro-sucursal'
@@ -184,7 +212,7 @@ export default function ManagementDashboard({ branchOnly = false }) {
     })
   }, [rawList, searchTerm])
 
-  // Cálculo seguro de estadísticas de la flota
+  // Cálculo seguro de estadísticas de la flota en tiempo real
   const totalVehicles = Math.max(1, summary.vehicleCount || 1)
   const rentedVehicles = Math.min(totalVehicles, summary.rentedVehicles || 0)
   const maintenanceVehicles = Math.min(totalVehicles - rentedVehicles, summary.maintenanceVehicles || 0)
@@ -196,29 +224,21 @@ export default function ManagementDashboard({ branchOnly = false }) {
 
   const occupancy = summary.occupancyRate || rentedPct
 
-  // Datos para flujo semanal
-  const weeklyData = [
-    { day: 'Lun', entregas: 3, devoluciones: 2 },
-    { day: 'Mar', entregas: 5, devoluciones: 4 },
-    { day: 'Mié', entregas: 6, devoluciones: 6 },
-    { day: 'Jue', entregas: 4, devoluciones: 5 },
-    { day: 'Vie', entregas: 8, devoluciones: 7 },
-    { day: 'Sáb', entregas: 10, devoluciones: 9 },
-    { day: 'Dom', entregas: 5, devoluciones: 6 },
-  ]
-
   return (
     <div className={`management-shell ${tema === 'oscuro' ? 'management-shell--dark' : ''}`}>
       <ManagementSidebar branchOnly={branchOnly} />
 
       <main className="management-main" style={{ padding: '28px 36px', background: 'var(--adm-bg, #f8fafc)', minHeight: '100vh' }}>
-        {/* Cabecera Limpia y Minimalista */}
+        {/* Cabecera Limpia con Indicador de Tiempo Real */}
         <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24, gap: 20 }}>
           <div>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 10px', background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 20, marginBottom: 8 }}>
-              <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#2563eb' }} />
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '4px 12px', background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 20, marginBottom: 8 }}>
+              <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#10b981', boxShadow: '0 0 6px #10b981' }} />
               <span style={{ fontSize: 12, fontWeight: 600, color: '#1d4ed8' }}>
                 {isBranchManager ? `Sede: ${summary.branch || 'Sucursal Bogotá Aeropuerto'}` : 'Administración Central Drivique'}
+              </span>
+              <span style={{ fontSize: 11, color: '#64748b', display: 'inline-flex', alignItems: 'center', gap: 4, marginLeft: 4 }}>
+                <FaSync style={{ fontSize: 10, color: '#10b981' }} /> En Tiempo Real ({lastSync.toLocaleTimeString().slice(0, 5)})
               </span>
             </div>
             <h1 style={{ fontSize: 24, fontWeight: 800, color: '#0f172a', margin: '2px 0 4px', letterSpacing: '-0.01em' }}>
@@ -313,7 +333,7 @@ export default function ManagementDashboard({ branchOnly = false }) {
           </button>
         </div>
 
-        {/* Tarjetas KPI Limpias (4 Métricas Clave) */}
+        {/* Tarjetas KPI Limpias (4 Métricas Clave en Tiempo Real) */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16, marginBottom: 24 }}>
           {/* KPI 1: Ingresos del Mes */}
           <div style={{ background: '#ffffff', padding: 18, borderRadius: 14, border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
@@ -372,7 +392,7 @@ export default function ManagementDashboard({ branchOnly = false }) {
           </div>
         </div>
 
-        {/* GRÁFICAS MINIMALISTAS Y 100% CLARAS */}
+        {/* GRÁFICAS MINIMALISTAS Y 100% EN TIEMPO REAL */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 20, marginBottom: 28 }}>
           
           {/* Gráfica 1: Ocupación y Estado de la Flota */}
@@ -396,7 +416,7 @@ export default function ManagementDashboard({ branchOnly = false }) {
               <div style={{ width: `${maintPct}%`, background: '#f59e0b', transition: 'width 0.4s' }} title={`En Taller: ${maintPct}%`} />
             </div>
 
-            {/* Lista Desglosada Limpia */}
+            {/* Lista Desglosada Limpia en Tiempo Real */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -433,14 +453,14 @@ export default function ManagementDashboard({ branchOnly = false }) {
             </div>
           </div>
 
-          {/* Gráfica 2: Diagrama de Barras Agrupadas Estándar con Ejes SVG */}
+          {/* Gráfica 2: Diagrama de Barras Agrupadas Estándar en Tiempo Real */}
           <div style={{ background: '#ffffff', padding: 22, borderRadius: 16, border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
               <div>
                 <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: '#0f172a' }}>
-                  Diagrama de Barras: Actividad Semanal
+                  Actividad Semanal
                 </h3>
-                <span style={{ fontSize: 12, color: '#64748b' }}>Comparativa de Entregas vs. Devoluciones por día</span>
+                <span style={{ fontSize: 12, color: '#64748b' }}>Entregas vs. Devoluciones de la semana</span>
               </div>
               <div style={{ display: 'flex', gap: 10 }}>
                 <span style={{ fontSize: 11, fontWeight: 600, color: '#2563eb', display: 'flex', alignItems: 'center', gap: 4 }}>
@@ -452,13 +472,13 @@ export default function ManagementDashboard({ branchOnly = false }) {
               </div>
             </div>
 
-            {/* SVG Grouped Bar Chart con Eje Y, Eje X y Líneas Guía */}
+            {/* SVG Grouped Bar Chart con datos dinámicos en tiempo real */}
             <WeeklyGroupedBarChart data={weeklyData} />
           </div>
 
         </div>
 
-        {/* TABLA OPERATIVA DEL DÍA CON BUSCADOR EN VIVO */}
+        {/* TABLA OPERATIVA DEL DÍA EN TIEMPO REAL CON BUSCADOR */}
         <section style={{ background: '#ffffff', padding: 22, borderRadius: 16, border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18, flexWrap: 'wrap', gap: 12 }}>
             <div>
