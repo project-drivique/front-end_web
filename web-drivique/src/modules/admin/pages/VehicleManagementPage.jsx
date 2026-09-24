@@ -211,6 +211,10 @@ export default function VehicleManagementPage() {
     t("admin.vehiclesManagement.fields.plate"),
     t("admin.vehiclesManagement.fields.branch"),
     t("admin.vehiclesManagement.fields.category"),
+    "Año",
+    "Color",
+    "Transmisión",
+    "Combustible",
     t("admin.vehiclesManagement.fields.state"),
     t("admin.vehiclesManagement.fields.price"),
     t("admin.vehiclesManagement.fields.pico"),
@@ -222,6 +226,10 @@ export default function VehicleManagementPage() {
     vehicle.placa,
     vehicle.sucursal,
     vehicle.categoria,
+    vehicle.año || "—",
+    vehicle.color || "—",
+    vehicle.transmision || "Automática",
+    vehicle.combustible || "Gasolina",
     t(`admin.vehiclesManagement.states.${vehicle.estadoEfectivo}`),
     formatCurrency(
       vehicle.precioLimitado || vehicle.precio || 0,
@@ -777,19 +785,18 @@ export default function VehicleManagementPage() {
                               <span style={{ fontSize: 12, color: '#94a3b8' }}>—</span>
                             )}
                           </td>
-                          <td>
-                            <div style={{ display: 'flex', flexDirection: 'column' }}>
-                              <strong style={{ fontWeight: 700, color: '#0f172a', fontSize: 13 }}>{vehicle.nombre}</strong>
-                              <small style={{ color: '#64748b', fontSize: 11 }}>
-                                {vehicle.año} · {vehicle.color}
-                              </small>
-                            </div>
+                          <td style={{ fontWeight: 700, color: '#0f172a' }}>
+                            {vehicle.nombre}
                           </td>
                           <td>
-                            {vehicle.placa}
+                            <code>{vehicle.placa}</code>
                           </td>
                           <td>{vehicle.sucursal}</td>
                           <td>{vehicle.categoria}</td>
+                          <td>{vehicle.año || '—'}</td>
+                          <td>{vehicle.color || '—'}</td>
+                          <td>{vehicle.transmision || 'Automática'}</td>
+                          <td>{vehicle.combustible || 'Gasolina'}</td>
                           <td>
                             <span
                               className={`fleet-state is-${vehicle.estadoEfectivo}`}

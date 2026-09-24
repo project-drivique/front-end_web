@@ -203,7 +203,7 @@
 .cities-table-wrap table,
 .fleet-table {
   width: 100% !important;
-  min-width: 1280px !important;
+  min-width: 1550px !important;
   border-collapse: collapse !important;
   table-layout: auto !important;
 }
