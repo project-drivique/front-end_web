@@ -185,6 +185,7 @@ export default function ManagementDashboard({ branchOnly = false }) {
   const [activeTab, setActiveTab] = useState('entregas') // 'entregas' | 'devoluciones'
   const [searchTerm, setSearchTerm] = useState('')
   const [lastSync, setLastSync] = useState(new Date())
+  const [zoomImage, setZoomImage] = useState(null)
 
   // Sincronización en tiempo real (Polling cada 2.5s)
   useEffect(() => {
@@ -256,12 +257,12 @@ export default function ManagementDashboard({ branchOnly = false }) {
         {/* Cabecera Limpia con Indicador de Tiempo Real */}
         <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24, gap: 20 }}>
           <div>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '4px 12px', background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 20, marginBottom: 8 }}>
-              <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#10b981', boxShadow: '0 0 6px #10b981' }} />
-              <span style={{ fontSize: 12, fontWeight: 600, color: '#1d4ed8' }}>
-                {isBranchManager ? `Sede: ${summary.branch || 'Sucursal Bogotá Aeropuerto'}` : 'Administración Central Drivique'}
-              </span>
-              <span style={{ fontSize: 11, color: '#64748b', display: 'inline-flex', alignItems: 'center', gap: 4, marginLeft: 4 }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '6px 16px', background: 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)', border: '1px solid #bfdbfe', borderRadius: 24, marginBottom: 10, boxShadow: '0 1px 3px rgba(37,99,235,0.08)' }}>
+              <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#10b981', boxShadow: '0 0 8px #10b981' }} />
+              <strong style={{ fontSize: 13, fontWeight: 700, color: '#1e40af', letterSpacing: '-0.01em' }}>
+                {isBranchManager ? `Sede: ${summary?.branch || 'Sucursal Bogotá Aeropuerto'}` : 'Administración Central Drivique'}
+              </strong>
+              <span style={{ fontSize: 11, color: '#64748b', display: 'inline-flex', alignItems: 'center', gap: 4, marginLeft: 6, borderLeft: '1px solid #cbd5e1', paddingLeft: 10 }}>
                 <FaSync style={{ fontSize: 10, color: '#10b981' }} /> En Tiempo Real ({(lastSync instanceof Date ? lastSync : new Date()).toLocaleTimeString().slice(0, 5)})
               </span>
             </div>
@@ -642,13 +643,25 @@ export default function ManagementDashboard({ branchOnly = false }) {
                             <img
                               src={r.vehiculoImagen}
                               alt={r.vehiculoNombre || 'Auto'}
+                              title="Haz clic para ver foto completa"
+                              onClick={() => setZoomImage({ url: r.vehiculoImagen, title: `${r.vehiculoNombre || 'Vehículo'} (${r.vehiculoPlaca || 'Placa'})` })}
                               style={{
-                                width: 42,
-                                height: 28,
-                                borderRadius: 5,
+                                width: 44,
+                                height: 30,
+                                borderRadius: 6,
                                 objectFit: 'cover',
-                                border: '1px solid #e2e8f0',
+                                border: '1px solid #cbd5e1',
                                 display: 'block',
+                                cursor: 'zoom-in',
+                                transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.transform = 'scale(1.15)'
+                                e.currentTarget.style.boxShadow = '0 4px 10px rgba(0,0,0,0.18)'
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.transform = 'scale(1)'
+                                e.currentTarget.style.boxShadow = 'none'
                               }}
                             />
                           ) : (
@@ -699,7 +712,9 @@ export default function ManagementDashboard({ branchOnly = false }) {
                             <button
                               type="button"
                               onClick={() => navigate(`${cashRoute}?ref=${encodeURIComponent(rawCod)}`)}
-                              style={{ background: '#047857', color: '#ffffff', border: 'none', padding: '5px 12px', borderRadius: 6, fontSize: 11.5, fontWeight: 600, cursor: 'pointer', boxShadow: '0 1px 3px rgba(4,120,87,0.2)' }}
+                              style={{ background: '#047857', color: '#ffffff', border: 'none', padding: '6px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', boxShadow: '0 2px 6px rgba(4,120,87,0.25)', transition: 'transform 0.15s ease' }}
+                              onMouseEnter={(e) => (e.currentTarget.style.transform = 'translateY(-1px)')}
+                              onMouseLeave={(e) => (e.currentTarget.style.transform = 'translateY(0)')}
                             >
                               Cobrar en Caja
                             </button>
@@ -707,7 +722,9 @@ export default function ManagementDashboard({ branchOnly = false }) {
                             <button
                               type="button"
                               onClick={() => navigate(reservationsRoute)}
-                              style={{ background: '#ffffff', color: '#2563eb', border: '1px solid #bfdbfe', padding: '5px 12px', borderRadius: 6, fontSize: 11.5, fontWeight: 600, cursor: 'pointer' }}
+                              style={{ background: 'linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%)', color: '#ffffff', border: 'none', padding: '6px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', boxShadow: '0 2px 6px rgba(37,99,235,0.25)', transition: 'transform 0.15s ease' }}
+                              onMouseEnter={(e) => (e.currentTarget.style.transform = 'translateY(-1px)')}
+                              onMouseLeave={(e) => (e.currentTarget.style.transform = 'translateY(0)')}
                             >
                               Ver Reserva
                             </button>
@@ -721,6 +738,74 @@ export default function ManagementDashboard({ branchOnly = false }) {
             </div>
           )}
         </section>
+
+        {/* MODAL DE ZOOM DE FOTO DE VEHÍCULO */}
+        {zoomImage && (
+          <div
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              width: '100vw',
+              height: '100vh',
+              background: 'rgba(15, 23, 42, 0.75)',
+              backdropFilter: 'blur(4px)',
+              zIndex: 9999,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: 20,
+            }}
+            onClick={() => setZoomImage(null)}
+          >
+            <div
+              style={{
+                position: 'relative',
+                background: '#ffffff',
+                borderRadius: 16,
+                padding: 20,
+                maxWidth: 580,
+                width: '100%',
+                boxShadow: '0 20px 25px -5px rgba(0,0,0,0.3)',
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+                <h3 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: '#0f172a' }}>{zoomImage.title}</h3>
+                <button
+                  type="button"
+                  onClick={() => setZoomImage(null)}
+                  style={{
+                    background: '#f1f5f9',
+                    border: 'none',
+                    borderRadius: '50%',
+                    width: 30,
+                    height: 30,
+                    fontWeight: 700,
+                    color: '#64748b',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  ✕
+                </button>
+              </div>
+              <img
+                src={zoomImage.url}
+                alt={zoomImage.title}
+                style={{
+                  width: '100%',
+                  maxHeight: 380,
+                  objectFit: 'contain',
+                  borderRadius: 10,
+                  background: '#f8fafc',
+                }}
+              />
+            </div>
+          </div>
+        )}
       </main>
     </div>
   )
