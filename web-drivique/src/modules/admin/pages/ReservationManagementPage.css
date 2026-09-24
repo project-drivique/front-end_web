@@ -1,8 +1,12 @@
 /* src/modules/admin/pages/ReservationManagementPage.css */
 
+.reservations-admin-table {
+  min-width: 1450px !important;
+}
+
 .reservations-admin-table th,
 .reservations-admin-table td {
-  padding: 16px 18px;
+  padding: 14px 16px;
   vertical-align: middle;
 }
 
@@ -599,4 +603,57 @@ html.dark .reserva-timeline-line {
   .reservations-management-toolbar .reservations-export-actions {
     grid-template-columns: 1fr;
   }
+}
+
+/* ── SUB-PESTAÑAS (Reserva | Cobro en sucursal) ── */
+.reservations-subtabs-nav {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  border-bottom: 2px solid var(--city-border, #e2e8f0);
+  margin-top: 14px;
+  margin-bottom: 24px;
+  padding-left: 6px;
+  width: 100%;
+}
+
+html.dark .reservations-subtabs-nav {
+  border-bottom-color: #334155;
+}
+
+.reservations-subtab-btn {
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--city-muted, #64748b);
+  padding: 10px 6px 14px 6px;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.2s ease, font-weight 0.2s ease;
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.reservations-subtab-btn:hover {
+  color: var(--city-text, #0f172a);
+}
+
+.reservations-subtab-btn.active {
+  color: var(--brand-primary, #047857);
+  font-weight: 700;
+}
+
+.reservations-subtab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background-color: var(--brand-primary, #047857);
+  border-radius: 3px 3px 0 0;
 }

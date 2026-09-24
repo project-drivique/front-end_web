@@ -81,19 +81,50 @@ export const adminDashboardService = {
       .filter((reservation) => isSameMonth(reservation.fechaReserva, referenceDate))
       .reduce((total, reservation) => total + (Number(reservation.total) || 0), 0)
 
-    const todayDeliveries = reservations.filter((reservation) => {
+    const todayDeliveriesList = reservations.filter((reservation) => {
       const state = String(reservation.estado).toUpperCase()
-      return !CANCELLED_STATES.has(state)
-        && isSameLocalDate(reservation.reservaDetalles?.fechaInicio, referenceDate)
-    }).length
+      const startDate = reservation.reservaDetalles?.fechaInicio || reservation.fechaInicio
+      return !CANCELLED_STATES.has(state) && isSameLocalDate(startDate, referenceDate)
+    })
+
+    const todayReturnsList = reservations.filter((reservation) => {
+      const state = String(reservation.estado).toUpperCase()
+      const endDate = reservation.reservaDetalles?.fechaFin || reservation.fechaFin
+      return !CANCELLED_STATES.has(state) && isSameLocalDate(endDate, referenceDate)
+    })
+
+    const totalVehiclesCount = scopedVehicles.length || 1
+    const rentedVehiclesCount = activeVehicleIds.size
+    const availableVehiclesCount = scopedVehicles.filter(
+      (vehicle) => vehicle.disponible !== false && !activeVehicleIds.has(Number(vehicle.id)),
+    ).length
+    const maintenanceVehiclesCount = scopedVehicles.filter(
+      (vehicle) => vehicle.estadoFlota === 'EN_MANTENIMIENTO' || vehicle.disponible === false,
+    ).length
+
+    const occupancyRate = Math.min(100, Math.round((rentedVehiclesCount / totalVehiclesCount) * 100))
+
+    const statusBreakdown = {
+      confirmada: reservations.filter((r) => String(r.estado).toLowerCase().includes('confirmad')).length,
+      en_curso: reservations.filter((r) => String(r.estado).toLowerCase().includes('curso') || String(r.estado).toLowerCase().includes('activ')).length,
+      finalizada: reservations.filter((r) => String(r.estado).toLowerCase().includes('finaliz') || String(r.estado).toLowerCase().includes('complet')).length,
+      pendiente: reservations.filter((r) => String(r.estado).toLowerCase().includes('pendient')).length,
+      cancelada: reservations.filter((r) => String(r.estado).toLowerCase().includes('cancel')).length,
+    }
 
     return {
       scope: isBranchManager ? 'branch' : 'global',
       branch: isBranchManager ? (scopedVehicles[0]?.sucursal || assignedBranch) : null,
       monthlyRevenue,
-      rentedVehicles: activeVehicleIds.size,
-      availableVehicles: scopedVehicles.filter((vehicle) => vehicle.disponible !== false && !activeVehicleIds.has(Number(vehicle.id))).length,
-      todayDeliveries,
+      rentedVehicles: rentedVehiclesCount,
+      availableVehicles: availableVehiclesCount,
+      maintenanceVehicles: maintenanceVehiclesCount,
+      occupancyRate,
+      todayDeliveries: todayDeliveriesList.length,
+      todayReturns: todayReturnsList.length,
+      todayDeliveriesList,
+      todayReturnsList,
+      statusBreakdown,
       vehicleCount: scopedVehicles.length,
       reservationCount: reservations.length,
       generatedAt: referenceDate.toISOString(),
