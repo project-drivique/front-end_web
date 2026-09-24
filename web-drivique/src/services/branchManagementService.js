@@ -26,7 +26,16 @@ function configuredBranches() {
       const branchName = compact(branch.nombre)
       return managerBranch && (branchName.includes(managerBranch) || managerBranch.includes(branchName))
     })
-    return { id: branch.id || slugify(branch.nombre), ...branch, encargadoId: branch.encargadoId || assigned?.correo || '', autorizadoPagoEfectivo: branch.autorizadoPagoEfectivo ?? true }
+    return {
+      id: branch.id || slugify(branch.nombre),
+      ...branch,
+      encargadoId: branch.encargadoId || assigned?.correo || '',
+      autorizadoPagoEfectivo: branch.autorizadoPagoEfectivo ?? true,
+      telefono: branch.telefono || '+57 601 555 1234',
+      horario: branch.horario || 'Lun-Vie 08:00 - 18:00 | Sáb 08:00 - 13:00',
+      capacidadVehiculos: branch.capacidadVehiculos || 25,
+      estado: branch.estado || 'activa',
+    }
   })
 }
 
@@ -37,7 +46,17 @@ function recordAudit(action, branch, user) {
 }
 
 function validate(data, branches, editingId) {
-  const clean = { nombre: String(data.nombre || '').trim(), ciudad: String(data.ciudad || '').trim(), direccion: String(data.direccion || '').trim(), encargadoId: String(data.encargadoId || '').trim(), autorizadoPagoEfectivo: Boolean(data.autorizadoPagoEfectivo) }
+  const clean = {
+    nombre: String(data.nombre || '').trim(),
+    ciudad: String(data.ciudad || '').trim(),
+    direccion: String(data.direccion || '').trim(),
+    encargadoId: String(data.encargadoId || '').trim(),
+    autorizadoPagoEfectivo: Boolean(data.autorizadoPagoEfectivo),
+    telefono: String(data.telefono || '').trim() || '+57 601 555 1234',
+    horario: String(data.horario || '').trim() || 'Lun-Vie 08:00 - 18:00 | Sáb 08:00 - 13:00',
+    capacidadVehiculos: Number(data.capacidadVehiculos || 20),
+    estado: String(data.estado || 'activa').trim().toLowerCase(),
+  }
   if (!clean.nombre || !clean.ciudad || !clean.direccion || !clean.encargadoId) throw new Error('required')
   if (!cityManagementService.list().some((city) => city.nombre === clean.ciudad)) throw new Error('invalidCity')
   if (!mockUsersStorage.listar().some((user) => user.correo === clean.encargadoId && user.rol === accessConfig.roles.branchManager)) throw new Error('invalidManager')

@@ -362,7 +362,7 @@ export default function UserManagementPage() {
                           <div style={{ fontSize: 12.5, display: 'inline-flex', alignItems: 'center', flexWrap: 'nowrap', gap: '8px 16px', color: 'var(--city-text, #0f172a)', whiteSpace: 'nowrap' }}>
                             <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' }}>
                               <FaEnvelope style={{ color: 'var(--city-muted, #64748b)', fontSize: 11, flexShrink: 0 }} />
-                              <span>{u.correo || '—'}</span>
+                              <span>{u.correo || 'No aplica'}</span>
                             </div>
                             {u.telefono && String(u.telefono).trim() !== '' && (
                               <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: 'var(--city-muted, #64748b)', fontSize: 11.5, whiteSpace: 'nowrap' }}>
@@ -378,10 +378,14 @@ export default function UserManagementPage() {
                             <span style={{ textTransform: 'capitalize', color: 'var(--city-text, #0f172a)', fontWeight: 600, whiteSpace: 'nowrap' }}>
                               {u.rol === 'encargado_sucursal' ? 'Encargado Sucursal' : u.rol?.replace(/_/g, ' ') || 'Usuario'}
                             </span>
-                            {u.sucursal && (
+                            {u.sucursal ? (
                               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, color: 'var(--city-muted, #64748b)', fontSize: 12, whiteSpace: 'nowrap' }}>
                                 <FaBuilding style={{ fontSize: 11, flexShrink: 0 }} />
                                 <span>{u.sucursal}</span>
+                              </span>
+                            ) : (
+                              <span style={{ color: 'var(--city-muted, #94a3b8)', fontSize: 11, italic: 'true' }}>
+                                No aplica
                               </span>
                             )}
                           </div>
