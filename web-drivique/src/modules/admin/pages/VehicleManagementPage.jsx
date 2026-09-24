@@ -206,6 +206,7 @@ export default function VehicleManagementPage() {
 
   const headers = [
     "ID",
+    "Foto",
     t("admin.vehiclesManagement.fields.vehicle"),
     t("admin.vehiclesManagement.fields.plate"),
     t("admin.vehiclesManagement.fields.branch"),
@@ -214,7 +215,9 @@ export default function VehicleManagementPage() {
     t("admin.vehiclesManagement.fields.price"),
     t("admin.vehiclesManagement.fields.pico"),
   ];
-  const rows = filtered.map((vehicle) => [
+  const rows = filtered.map((vehicle, idx) => [
+    vehicle.id || (idx + 1),
+    vehicle.imagenes?.[0] ? "Con Foto" : "Sin Foto",
     vehicle.nombre,
     vehicle.placa,
     vehicle.sucursal,
@@ -745,18 +748,41 @@ export default function VehicleManagementPage() {
                         <tr key={vehicle.id}>
                           <td>{vehicle.id || (idx + 1)}</td>
                           <td>
-                            <div className="fleet-vehicle">
-                              {vehicle.imagenes?.[0] ? (
-                                <img src={vehicle.imagenes[0]} alt="" />
-                              ) : (
-                                <span style={{ fontSize: 11, fontWeight: 400 }}>Auto</span>
-                              )}
-                              <div>
-                                <span>{vehicle.nombre}</span>
-                                <small>
-                                  {vehicle.año} · {vehicle.color}
-                                </small>
-                              </div>
+                            {vehicle.imagenes?.[0] ? (
+                              <img
+                                src={vehicle.imagenes[0]}
+                                alt={vehicle.nombre || "Auto"}
+                                title="Haz clic para ver foto completa"
+                                onClick={() => setZoomImage({ url: vehicle.imagenes[0], title: `${vehicle.nombre || 'Vehículo'} (${vehicle.placa || 'Placa'})` })}
+                                style={{
+                                  width: 48,
+                                  height: 34,
+                                  borderRadius: 8,
+                                  objectFit: 'cover',
+                                  border: '1px solid #cbd5e1',
+                                  display: 'block',
+                                  cursor: 'zoom-in',
+                                  transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                                }}
+                                onMouseEnter={(e) => {
+                                  e.currentTarget.style.transform = 'scale(1.15)';
+                                  e.currentTarget.style.boxShadow = '0 4px 10px rgba(0,0,0,0.18)';
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.transform = 'scale(1)';
+                                  e.currentTarget.style.boxShadow = 'none';
+                                }}
+                              />
+                            ) : (
+                              <span style={{ fontSize: 12, color: '#94a3b8' }}>—</span>
+                            )}
+                          </td>
+                          <td>
+                            <div style={{ display: 'flex', flexDirection: 'column' }}>
+                              <strong style={{ fontWeight: 700, color: '#0f172a', fontSize: 13 }}>{vehicle.nombre}</strong>
+                              <small style={{ color: '#64748b', fontSize: 11 }}>
+                                {vehicle.año} · {vehicle.color}
+                              </small>
                             </div>
                           </td>
                           <td>
