@@ -49,6 +49,9 @@ export default function ReservationManagementPage() {
   const sucursalEncargado = user?.sucursalAsignada || user?.sucursalId || user?.sucursal || ''
   const cashRoute = esEncargado ? '/encargado/cobro-sucursal' : '/admin/cobro-sucursal'
 
+  const [activeTab, setActiveTab] = useState('entregas') // 'entregas' | 'devoluciones' | 'canceladas'
+  const [zoomImage, setZoomImage] = useState(null)
+
   const [reservas, setReservas] = useState([])
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
@@ -152,29 +155,82 @@ export default function ReservationManagementPage() {
     })
   }, [reservas, search, statusFilter, branchFilter, dateFrom, dateTo])
 
-  // Configuración de exportación Excel / PDF / Impresión
-  const headersExport = ['code', 'client', 'email', 'phone', 'vehicle', 'plate', 'branch', 'pickupDate', 'returnDate', 'state', 'total'].map((key) => t(`admin.reservationsManagement.fields.${key}`))
+  // Desglose de los 3 Flujos Operativos de Reserva
+  const entregasList = useMemo(() => {
+    return filtradas.filter((r) => {
+      const st = String(r.estado || '').toLowerCase()
+      return st === 'confirmada' || st === 'en_curso' || st === 'pendiente' || st === 'pendiente_efectivo' || st === 'activa' || !st
+    })
+  }, [filtradas])
 
-  const rowsExport = filtradas.map((r) => [
-    r.codigo,
-    r.clienteNombre,
-    r.clienteCorreo,
-    r.clienteTelefono,
-    r.vehiculoNombre,
-    r.vehiculoPlaca,
-    r.sucursal,
-    r.fechaInicio ? r.fechaInicio.replace('T', ' ') : '',
-    r.fechaFin ? r.fechaFin.replace('T', ' ') : '',
-    r.estado,
-    r.totalCOP,
+  const devolucionesList = useMemo(() => {
+    return filtradas.filter((r) => {
+      const st = String(r.estado || '').toLowerCase()
+      return st === 'finalizada' || st === 'devolucion_pendiente' || st === 'devolución'
+    })
+  }, [filtradas])
+
+  const canceladasList = useMemo(() => {
+    return filtradas.filter((r) => {
+      const st = String(r.estado || '').toLowerCase()
+      return st === 'cancelada' || st === 'rechazada'
+    })
+  }, [filtradas])
+
+  const currentFlowList = useMemo(() => {
+    if (activeTab === 'devoluciones') return devolucionesList
+    if (activeTab === 'canceladas') return canceladasList
+    return entregasList
+  }, [activeTab, entregasList, devolucionesList, canceladasList])
+
+  // Configuración de exportación independiente por cada flujo
+  const flowTitleName = activeTab === 'entregas' ? 'Flujo de Entregas' : activeTab === 'devoluciones' ? 'Flujo de Devoluciones' : 'Flujo de Cancelaciones'
+  const headersExport = ['Código', 'Cliente', 'Correo', 'Teléfono', 'Vehículo', 'Placa', 'Sucursal', 'Fecha Retiro', 'Fecha Devolución', 'Medio de Pago', 'Estado Pago', 'Estado Reserva', 'Total']
+
+  const rowsExport = currentFlowList.map((r) => [
+    r.codigo || r.referencia || `RES-${r.id}`,
+    r.clienteNombre || 'Cliente Registrado',
+    r.clienteCorreo || 'cliente@drivique.com',
+    r.clienteTelefono || '300 000 0000',
+    r.vehiculoNombre || 'Mazda CX-5 2024',
+    r.vehiculoPlaca || 'KLS-849',
+    r.sucursal || 'Bogotá - Calle 100',
+    r.fechaInicio ? r.fechaInicio.replace('T', ' ').slice(0, 16) : '',
+    r.fechaFin ? r.fechaFin.replace('T', ' ').slice(0, 16) : '',
+    r.reservaDetalles?.metodoPago?.includes('efectivo') ? 'Pago en Sucursal' : 'Wompi - Tarjeta',
+    r.pagoEstado === 'aprobado' || r.metodoPagoConfirmado ? 'Recibido' : 'No Recibido',
+    r.estado || 'Confirmada',
+    formatCurrency(Number(r.totalCOP || r.total || r.precioTotal || 348000), moneda, tasaUSD),
   ])
 
   const exportData = {
-    title: esEncargado ? t('admin.reservationsManagement.exportTitleBranch', { branch: sucursalEncargado }) : t('admin.reservationsManagement.exportTitleGlobal'),
+    title: `${flowTitleName} - ${esEncargado ? sucursalEncargado : 'Todas las Sedes'}`,
     headers: headersExport,
     rows: rowsExport,
-    items: filtradas,
-    filename: `reservas-drivique-${new Date().toISOString().slice(0, 10)}`,
+    items: currentFlowList,
+    filename: `reservas-${activeTab}-drivique-${new Date().toISOString().slice(0, 10)}`,
+  }
+
+  const handleEntregarAuto = (r) => {
+    try {
+      reservationManagementService.update(r.id, { ...r, estado: 'en_curso' }, user)
+      setNotice(`Vehículo entregado exitosamente al cliente. Reserva ${r.codigo || r.id} en curso.`)
+      setTimeout(() => setNotice(''), 4000)
+      cargarYEvaluarReservas()
+    } catch (err) {
+      console.error('Error al entregar auto:', err)
+    }
+  }
+
+  const handleRecibirDevolucion = (r) => {
+    try {
+      reservationManagementService.update(r.id, { ...r, estado: 'finalizada' }, user)
+      setNotice(`Vehículo recibido en sucursal. Reserva ${r.codigo || r.id} finalizada exitosamente.`)
+      setTimeout(() => setNotice(''), 4000)
+      cargarYEvaluarReservas()
+    } catch (err) {
+      console.error('Error al recibir devolución:', err)
+    }
   }
 
   const handleExportExcel = () => {
@@ -319,10 +375,35 @@ export default function ReservationManagementPage() {
           </div>
         )}
 
-        {/* Barra de Filtros y Búsqueda */}
-        <section className="cities-card">
+        {/* Pestañas de los 3 Flujos de Reserva (pegadas a la tarjeta de la tabla) */}
+        <div className="fleet-attached-tabs">
+          <button
+            type="button"
+            onClick={() => setActiveTab('entregas')}
+            className={`fleet-tab-btn ${activeTab === 'entregas' ? 'is-active' : ''}`}
+          >
+            Entregas / Salidas ({entregasList.length})
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('devoluciones')}
+            className={`fleet-tab-btn ${activeTab === 'devoluciones' ? 'is-active' : ''}`}
+          >
+            Devoluciones / Retornos ({devolucionesList.length})
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('canceladas')}
+            className={`fleet-tab-btn ${activeTab === 'canceladas' ? 'is-active' : ''}`}
+          >
+            Canceladas / Historial ({canceladasList.length})
+          </button>
+        </div>
+
+        {/* Sección del Flujo Activo */}
+        <section className="cities-card attached-to-tabs">
           <div className="branches-toolbar reservations-management-toolbar">
-            {/* Buscador general */}
+            {/* Buscador general en vivo */}
             <label className="cities-search">
               <FaSearch />
               <input
@@ -332,21 +413,35 @@ export default function ReservationManagementPage() {
               />
             </label>
 
-            {/* Filtro de Estado */}
+            {/* Filtro de Estado del Flujo */}
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
               className="reservations-filter-select"
             >
               <option value="all">{t('admin.allStatuses', 'Todos los estados')}</option>
-              <option value="confirmada">{t('admin.statusConfirmada', 'Confirmada')}</option>
-              <option value="en_curso">{t('admin.statusEnCurso', 'En curso')}</option>
-              <option value="finalizada">{t('admin.statusFinalizada', 'Finalizada')}</option>
-              <option value="pendiente">{t('admin.statusPendiente', 'Pendiente')}</option>
-              <option value="cancelada">{t('admin.statusCancelada', 'Cancelada')}</option>
+              {activeTab === 'entregas' && (
+                <>
+                  <option value="confirmada">{t('admin.statusConfirmada', 'Confirmada')}</option>
+                  <option value="en_curso">{t('admin.statusEnCurso', 'En curso')}</option>
+                  <option value="pendiente">{t('admin.statusPendiente', 'Pendiente')}</option>
+                </>
+              )}
+              {activeTab === 'devoluciones' && (
+                <>
+                  <option value="finalizada">{t('admin.statusFinalizada', 'Finalizada')}</option>
+                  <option value="devolucion_pendiente">Devolución Pendiente</option>
+                </>
+              )}
+              {activeTab === 'canceladas' && (
+                <>
+                  <option value="cancelada">{t('admin.statusCancelada', 'Cancelada')}</option>
+                  <option value="rechazada">Rechazada</option>
+                </>
+              )}
             </select>
 
-            {/* Filtro de Sucursal (Bloqueado si es Encargado) */}
+            {/* Filtro de Sucursal */}
             {esEncargado ? (
               <div className="reservations-assigned-branch">
                 <FaBuilding />
@@ -365,37 +460,37 @@ export default function ReservationManagementPage() {
               </select>
             )}
 
-            {/* Filtros de Fecha Recogida */}
+            {/* Filtros de Fecha */}
             <div className="reservations-date-inputs">
               <label><span>{t('admin.reservationsManagement.dateFrom')}</span><input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} /></label>
               <label><span>{t('admin.reservationsManagement.dateTo')}</span><input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} /></label>
             </div>
 
-            {/* Botones de Exportación e Impresión */}
+            {/* Botones de Exportación Independientes por Flujo */}
             <div className="cities-export reservations-export-actions">
-              <button type="button" onClick={handleExportExcel} title={t('admin.reservationsManagement.exportExcelTitle')}>
+              <button type="button" onClick={handleExportExcel} title="Exportar tabla actual a Excel">
                 <FaFileExcel /> Excel
               </button>
-              <button type="button" onClick={handleExportPdf} title={t('admin.reservationsManagement.exportPdfTitle')}>
+              <button type="button" onClick={handleExportPdf} title="Exportar tabla actual a PDF">
                 <FaFilePdf /> PDF
               </button>
-              <button type="button" onClick={handlePrint} title={t('admin.reservationsManagement.printTitle')}>
+              <button type="button" onClick={handlePrint} title="Imprimir tabla actual">
                 <FaPrint /> {t('admin.print', 'Imprimir')}
               </button>
             </div>
           </div>
 
-          {/* Resumen de resultados */}
-          <div className="cities-summary">
-            <strong>{filtradas.length}</strong> {t('admin.reservationsFound', 'reservas encontradas')}
+          {/* Resumen de resultados del flujo activo */}
+          <div className="cities-summary" style={{ margin: '12px 0 16px' }}>
+            <strong>{currentFlowList.length}</strong> {t('admin.reservationsFound', 'reservas encontradas en esta sección')}
           </div>
 
-          {/* Tabla de Reservas */}
-          {filtradas.length === 0 ? (
+          {/* Tabla de Reservas del Flujo Activo */}
+          {currentFlowList.length === 0 ? (
             <div className="cities-empty">
               <FaCalendarAlt />
-              <h2>{t('admin.noReservationsTitle', 'No hay reservas registradas')}</h2>
-              <p>{t('admin.noReservationsText', 'No se encontraron reservas con los filtros aplicados.')}</p>
+              <h2>No hay reservas registradas en {activeTab === 'entregas' ? 'Entregas' : activeTab === 'devoluciones' ? 'Devoluciones' : 'Cancelaciones'}</h2>
+              <p>No se encontraron registros activos en esta categoría con los filtros aplicados.</p>
             </div>
           ) : (
             <div className="cities-table-wrap">
@@ -403,11 +498,11 @@ export default function ReservationManagementPage() {
                 <thead>
                   <tr>
                     <th>{t('admin.reservationsManagement.table.code')}</th>
-                    <th>Cliente</th>
-                    <th>Correo</th>
-                    <th>Imagen</th>
+                    <th>Foto</th>
                     <th>Vehículo</th>
                     <th>Placa</th>
+                    <th>Cliente</th>
+                    <th>Correo</th>
                     <th>{t('admin.reservationsManagement.table.branch')}</th>
                     <th>Fecha Retiro</th>
                     <th>Fecha Devolución</th>
@@ -415,16 +510,15 @@ export default function ReservationManagementPage() {
                     <th>Estado Pago</th>
                     <th>{t('admin.reservationsManagement.table.state')}</th>
                     <th>{t('admin.reservationsManagement.table.totalSuffix')} ({moneda})</th>
-                    <th>{t('admin.actions', 'Acciones')}</th>
+                    <th style={{ textAlign: 'center' }}>{t('admin.actions', 'Acciones')}</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {filtradas.map((r) => {
-                    const cod = r.codigo || r.referencia || 'RES-2026-9102'
-                    const cliNom = r.clienteNombre || 'Carlos Mendoza'
+                  {currentFlowList.map((r) => {
+                    const cod = r.codigo || r.referencia || `RES-${r.id}`
+                    const cliNom = r.clienteNombre || 'Cliente Registrado'
                     const cliMail = r.clienteCorreo || 'cliente@drivique.com'
                     const totalCOP = Number(r.totalCOP || r.total || r.precioTotal || 348000)
-                    const totalUSD = Math.round(totalCOP / (tasaUSD || 4000))
 
                     const rawMetodo = String(
                       r.reservaDetalles?.metodoPago ||
@@ -434,23 +528,11 @@ export default function ReservationManagementPage() {
                       ''
                     ).toLowerCase()
 
-                    const canalPago = String(
-                      r.reservaDetalles?.metodoDetalle ||
-                      r.reservaDetalles?.tipoTarjeta ||
-                      r.reservaDetalles?.banco ||
-                      r.canalPago ||
-                      ''
-                    ).toLowerCase()
-
                     let textoMedioPago = 'Wompi - Tarjeta'
                     if (rawMetodo.includes('efectivo') || rawMetodo.includes('sucursal')) {
                       textoMedioPago = 'Pago en Sucursal'
                     } else if (rawMetodo.includes('wompi') || rawMetodo.includes('pasarela') || rawMetodo.includes('card') || rawMetodo.includes('tarjeta')) {
-                      if (canalPago.includes('nequi')) textoMedioPago = 'Wompi - Nequi'
-                      else if (canalPago.includes('bancolombia')) textoMedioPago = 'Wompi - Bancolombia'
-                      else if (canalPago.includes('pse')) textoMedioPago = 'Wompi - PSE'
-                      else if (canalPago.includes('efectivo')) textoMedioPago = 'Wompi - Efectivo'
-                      else textoMedioPago = 'Wompi - Tarjeta'
+                      textoMedioPago = 'Wompi - Tarjeta'
                     }
 
                     const esCobroPresencialPendiente =
@@ -469,163 +551,146 @@ export default function ReservationManagementPage() {
 
                     return (
                       <tr key={r.id || cod}>
+                        {/* CÓDIGO */}
                         <td>
-                          <strong style={{ color: 'var(--city-text, #0f172a)', fontWeight: 700 }}>{cod}</strong>
+                          <strong style={{ color: '#0f172a', fontWeight: 700 }}>{cod}</strong>
                         </td>
 
-                        <td>
-                          <span style={{ fontSize: 13, color: 'var(--city-text, #0f172a)', fontWeight: 600, whiteSpace: 'nowrap' }}>
-                            {cliNom}
-                          </span>
-                        </td>
-
-                        <td>
-                          <span style={{ color: 'var(--city-muted, #64748b)', fontSize: 12, whiteSpace: 'nowrap' }}>
-                            {cliMail}
-                          </span>
-                        </td>
-
+                        {/* FOTO CON ZOOM */}
                         <td>
                           {r.vehiculoImagen ? (
                             <img
                               src={r.vehiculoImagen}
-                              alt={r.vehiculoNombre}
+                              alt={r.vehiculoNombre || 'Auto'}
+                              title="Haz clic para ver foto completa"
+                              onClick={() => setZoomImage({ url: r.vehiculoImagen, title: `${r.vehiculoNombre || 'Vehículo'} (${r.vehiculoPlaca || 'Placa'})` })}
                               style={{
-                                width: 44,
-                                height: 30,
-                                borderRadius: 6,
+                                width: 48,
+                                height: 34,
+                                borderRadius: 8,
                                 objectFit: 'cover',
-                                border: '1px solid var(--city-border)',
-                                boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
-                                display: 'block'
+                                border: '1px solid #cbd5e1',
+                                display: 'block',
+                                cursor: 'zoom-in',
+                                transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.transform = 'scale(1.15)'
+                                e.currentTarget.style.boxShadow = '0 4px 10px rgba(0,0,0,0.18)'
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.transform = 'scale(1)'
+                                e.currentTarget.style.boxShadow = 'none'
                               }}
                             />
                           ) : (
-                            <div className="cities-name" style={{ width: 32, height: 32 }}>
-                              <span><FaCar /></span>
-                            </div>
+                            <span style={{ fontSize: 12, color: '#94a3b8' }}>—</span>
                           )}
                         </td>
 
-                        <td>
-                          <span style={{ fontSize: 13, color: 'var(--city-text, #0f172a)', fontWeight: 600, whiteSpace: 'nowrap' }}>
-                            {r.vehiculoNombre || 'Mazda CX-5 2024'}
-                          </span>
+                        {/* VEHÍCULO */}
+                        <td style={{ fontWeight: 700, color: '#0f172a' }}>
+                          {r.vehiculoNombre || 'Mazda CX-5'}
                         </td>
 
+                        {/* PLACA */}
                         <td>
-                          <span
-                            style={{
-                              background: '#f1f5f9',
-                              border: '1px solid #cbd5e1',
-                              color: '#334155',
-                              padding: '3px 7px',
-                              borderRadius: '6px',
-                              fontSize: '11.5px',
-                              fontWeight: 700,
-                              letterSpacing: '0.5px',
-                              whiteSpace: 'nowrap'
-                            }}
-                          >
-                            {r.vehiculoPlaca || 'KLS-849'}
-                          </span>
+                          <code>{r.vehiculoPlaca || 'KLS-849'}</code>
                         </td>
 
-                        <td>
-                          <span style={{ fontSize: 13, color: 'var(--city-text, #0f172a)', display: 'inline-flex', alignItems: 'flex-start', gap: 6, lineHeight: 1.35 }}>
-                            <FaBuilding style={{ color: 'var(--city-muted, #64748b)', fontSize: 12, marginTop: 2, flexShrink: 0 }} />
-                            <span>{r.sucursal || 'Bogotá - Calle 100'}</span>
-                          </span>
+                        {/* CLIENTE */}
+                        <td style={{ fontWeight: 600, color: '#0f172a' }}>
+                          {cliNom}
                         </td>
 
-                        <td>
-                          <span style={{ fontSize: 12.5, color: 'var(--city-text, #0f172a)', fontWeight: 600, whiteSpace: 'nowrap' }}>
-                            {r.fechaInicio ? r.fechaInicio.replace('T', ' ').slice(0, 16) : new Date().toISOString().slice(0, 10)}
-                          </span>
-                        </td>
-                        <td>
-                          <span style={{ fontSize: 12.5, color: 'var(--city-text, #0f172a)', fontWeight: 600, whiteSpace: 'nowrap' }}>
-                            {r.fechaFin ? r.fechaFin.replace('T', ' ').slice(0, 16) : new Date(Date.now() + 86400000 * 3).toISOString().slice(0, 10)}
-                          </span>
+                        {/* CORREO */}
+                        <td style={{ color: '#64748b', fontSize: 12 }}>
+                          {cliMail}
                         </td>
 
+                        {/* SUCURSAL */}
                         <td>
-                          <span style={{ fontSize: 12, color: 'var(--city-text, #0f172a)', fontWeight: 600, whiteSpace: 'nowrap' }}>
-                            {textoMedioPago}
-                          </span>
+                          {r.sucursal || 'Bogotá - Calle 100'}
                         </td>
 
+                        {/* FECHA RETIRO */}
                         <td>
-                          {pagoRecibido ? (
-                            <span
-                              style={{
-                                background: '#ecfdf5',
-                                border: '1px solid #a7f3d0',
-                                color: '#047857',
-                                padding: '4px 9px',
-                                borderRadius: '999px',
-                                fontSize: '11px',
-                                fontWeight: 700,
-                                whiteSpace: 'nowrap'
-                              }}
-                            >
-                              Recibido
-                            </span>
-                          ) : (
-                            <span
-                              style={{
-                                background: '#fffbe1',
-                                border: '1px solid #fde68a',
-                                color: '#b45309',
-                                padding: '4px 9px',
-                                borderRadius: '999px',
-                                fontSize: '11px',
-                                fontWeight: 700,
-                                whiteSpace: 'nowrap'
-                              }}
-                            >
-                              No Recibido
-                            </span>
-                          )}
+                          {r.fechaInicio ? r.fechaInicio.replace('T', ' ').slice(0, 16) : new Date().toISOString().slice(0, 10)}
                         </td>
 
+                        {/* FECHA DEVOLUCIÓN */}
                         <td>
-                          <span className={`reserva-status-badge ${r.estado || 'confirmada'}`}>
-                            <span className="reserva-status-dot" />
-                            {t(`admin.reservationsManagement.editModal.state${r.estado === 'en_curso' ? 'Ongoing' : r.estado === 'finalizada' ? 'Finished' : r.estado === 'cancelada' ? 'Cancelled' : r.estado === 'confirmada' ? 'Confirmed' : 'Pending'}`, r.estado || 'Confirmada')}
-                          </span>
+                          {r.fechaFin ? r.fechaFin.replace('T', ' ').slice(0, 16) : new Date(Date.now() + 86400000 * 3).toISOString().slice(0, 10)}
                         </td>
 
+                        {/* MEDIO DE PAGO */}
                         <td>
-                          <span style={{ fontSize: 13.5, color: 'var(--city-text, #0f172a)', fontWeight: 600 }}>
-                            {formatCurrency(totalCOP, moneda, tasaUSD)}
-                          </span>
+                          {textoMedioPago}
                         </td>
 
+                        {/* ESTADO PAGO */}
                         <td>
+                          {pagoRecibido ? 'Recibido' : 'No Recibido'}
+                        </td>
+
+                        {/* ESTADO RESERVA */}
+                        <td>
+                          {r.estado === 'en_curso' ? 'En curso' : r.estado === 'finalizada' ? 'Finalizada' : r.estado === 'cancelada' ? 'Cancelada' : 'Confirmada'}
+                        </td>
+
+                        {/* TOTAL */}
+                        <td style={{ fontWeight: 700, color: '#0f172a' }}>
+                          {formatCurrency(totalCOP, moneda, tasaUSD)}
+                        </td>
+
+                        {/* ACCIONES */}
+                        <td style={{ textAlign: 'center' }}>
                           <div className="cities-row-actions">
-                            <button
-                              type="button"
-                              onClick={() => setModalDetalle(r)}
-                              title={t('admin.reservationsManagement.tooltips.viewDetail', 'Ver Detalle')}
-                            >
-                              <FaEye />
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => openEditarModal(r)}
-                              title={t('admin.reservationsManagement.tooltips.edit', 'Editar')}
-                            >
-                              <FaEdit />
-                            </button>
-                            {r.estado !== 'cancelada' && (
+                            {esCobroPresencialPendiente && (
                               <button
-                                className="is-danger"
                                 type="button"
-                                onClick={() => setModalCancelar(r)}
-                                title={t('admin.reservationsManagement.tooltips.cancel', 'Cancelar')}
+                                className="btn-row-action"
+                                onClick={() => navigate(`${cashRoute}?ref=${encodeURIComponent(cod)}`)}
                               >
-                                <FaBan />
+                                Cobrar en Caja
+                              </button>
+                            )}
+
+                            {activeTab === 'entregas' && r.estado !== 'en_curso' && (
+                              <button
+                                type="button"
+                                className="btn-row-action"
+                                onClick={() => handleEntregarAuto(r)}
+                              >
+                                Entregar Auto
+                              </button>
+                            )}
+
+                            {activeTab === 'devoluciones' && r.estado !== 'finalizada' && (
+                              <button
+                                type="button"
+                                className="btn-row-action"
+                                onClick={() => handleRecibirDevolucion(r)}
+                              >
+                                Recibir Devolución
+                              </button>
+                            )}
+
+                            <button
+                              type="button"
+                              className="btn-row-action"
+                              onClick={() => setModalDetalle(r)}
+                            >
+                              Ver Detalle
+                            </button>
+
+                            {activeTab === 'entregas' && r.estado !== 'cancelada' && (
+                              <button
+                                type="button"
+                                className="btn-row-action is-delete"
+                                onClick={() => setModalCancelar(r)}
+                              >
+                                Cancelar
                               </button>
                             )}
                           </div>
@@ -1236,6 +1301,78 @@ export default function ReservationManagementPage() {
               </div>
             </form>
           </section>
+        </div>
+      )}
+      {/* ── MODAL DE IMAGEN AMPLIADA ── */}
+      {zoomImage && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(15, 23, 42, 0.75)',
+            backdropFilter: 'blur(5px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 99999,
+            padding: 20,
+          }}
+          onClick={() => setZoomImage(null)}
+        >
+          <div
+            style={{
+              background: '#ffffff',
+              borderRadius: 16,
+              padding: 20,
+              maxWidth: 640,
+              width: '100%',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.35)',
+              position: 'relative',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+              <div>
+                <h3 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: '#0f172a' }}>{zoomImage.title}</h3>
+                <span style={{ fontSize: 12, color: '#64748b' }}>Vista ampliada del vehículo</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setZoomImage(null)}
+                style={{
+                  background: '#f1f5f9',
+                  border: 'none',
+                  borderRadius: '50%',
+                  width: 32,
+                  height: 32,
+                  fontWeight: 700,
+                  color: '#64748b',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: 14,
+                }}
+              >
+                ✕
+              </button>
+            </div>
+            <div style={{ borderRadius: 12, overflow: 'hidden', background: '#f8fafc', border: '1px solid #e2e8f0', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: 10 }}>
+              <img
+                src={zoomImage.url}
+                alt={zoomImage.title}
+                style={{
+                  maxWidth: '100%',
+                  maxHeight: 480,
+                  objectFit: 'contain',
+                  borderRadius: 8,
+                }}
+              />
+            </div>
+          </div>
         </div>
       )}
     </main>
