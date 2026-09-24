@@ -164,7 +164,7 @@ export default function ReservationManagementPage() {
 
   const headersExport = useMemo(() => {
     if (activeTab === 'fechas_ubicacion') {
-      return ['Código', 'Vehículo', 'Placa', 'Método Pago Preferido', 'Lugar Retiro', 'Lugar Devolución', 'Fecha Retiro', 'Fecha Devolución', 'Estado Reserva']
+      return ['Código', 'Vehículo', 'Placa', 'Método Pago Preferido', 'Lugar Retiro', 'Lugar Devolución', 'Fecha Retiro', 'Fecha Devolución', 'Detalle / PIN Domicilio', 'Estado Reserva']
     }
     if (activeTab === 'proteccion_extras') {
       return ['Código', 'Vehículo', 'Placa', 'Cliente', 'Plan Protección', 'Tipo Kilometraje', 'Servicios Adicionales', 'Estado Reserva']
@@ -184,9 +184,32 @@ export default function ReservationManagementPage() {
         ''
       ).toLowerCase()
 
-      let textoMedioPago = 'Pago virtual con Wompi'
-      if (rawMetodo.includes('efectivo') || rawMetodo.includes('sucursal')) {
-        textoMedioPago = 'Pago en efectivo'
+      const esPagoEfectivo = rawMetodo.includes('efectivo') || rawMetodo.includes('sucursal')
+      const textoMedioPago = esPagoEfectivo ? 'Pago en efectivo (Sucursal)' : 'Pago virtual con Wompi'
+
+      let lugarRetiroText = r.sucursalRetiro || r.sucursal || 'Bogotá - Calle 100'
+      if (r.sucursalRetiro === 'domicilio' || r.domicilioDireccion) {
+        lugarRetiroText = `A Domicilio (${r.domicilioDireccion || 'Dirección cliente'})`
+      } else if (r.sucursalRetiro === 'aeropuerto') {
+        lugarRetiroText = 'Aeropuerto'
+      } else if (r.sucursalRetiro === 'terminal') {
+        lugarRetiroText = 'Terminal de Transportes'
+      }
+
+      let lugarDevolucionText = r.sucursalDevolucion || r.sucursal || 'Bogotá - Calle 100'
+      if (r.sucursalDevolucion === 'domicilio' || r.domicilioDevolucionDireccion) {
+        lugarDevolucionText = `A Domicilio (${r.domicilioDevolucionDireccion || r.domicilioDireccion || 'Dirección cliente'})`
+      } else if (r.sucursalDevolucion === 'aeropuerto') {
+        lugarDevolucionText = 'Aeropuerto'
+      } else if (r.sucursalDevolucion === 'terminal') {
+        lugarDevolucionText = 'Terminal de Transportes'
+      }
+
+      let detallePinText = 'Retiro en Sucursal'
+      if (r.sucursalRetiro === 'domicilio' || r.sucursalDevolucion === 'domicilio' || r.domicilioDireccion) {
+        detallePinText = `PIN: ${r.domicilioPin || '4829'} (${r.domicilioEstado || 'EN_PREPARACION'})`
+      } else if (esPagoEfectivo) {
+        detallePinText = 'Obligatorio en Sucursal'
       }
 
       if (activeTab === 'fechas_ubicacion') {
@@ -195,10 +218,11 @@ export default function ReservationManagementPage() {
           r.vehiculoNombre || 'Mazda CX-5 2024',
           r.vehiculoPlaca || 'KLS-849',
           textoMedioPago,
-          r.sucursalRetiro || r.sucursal || 'Bogotá - Calle 100',
-          r.sucursalDevolucion || r.sucursal || 'Bogotá - Calle 100',
+          lugarRetiroText,
+          lugarDevolucionText,
           r.fechaInicio ? r.fechaInicio.replace('T', ' ').slice(0, 16) : '',
           r.fechaFin ? r.fechaFin.replace('T', ' ').slice(0, 16) : '',
+          detallePinText,
           r.estado || 'Confirmada',
         ]
       }
@@ -527,7 +551,7 @@ export default function ReservationManagementPage() {
           ) : (
             <div className="cities-table-wrap">
               <table className="branches-table reservations-admin-table">
-                {/* ── TABLA 1: FECHAS Y UBICACIÓN ── */}
+                {/* ── TABLA 1: FECHAS Y UBICACIÓN (PASO 1 DE RESERVA) ── */}
                 {activeTab === 'fechas_ubicacion' && (
                   <>
                     <thead>
@@ -539,8 +563,9 @@ export default function ReservationManagementPage() {
                         <th>Método Pago Preferido</th>
                         <th>Lugar Retiro</th>
                         <th>Lugar Devolución</th>
-                        <th>Fecha Retiro</th>
-                        <th>Fecha Devolución</th>
+                        <th>Fecha y Hora Retiro</th>
+                        <th>Fecha y Hora Devolución</th>
+                        <th>Detalle / PIN Domicilio</th>
                         <th>Estado Reserva</th>
                         <th style={{ textAlign: 'center' }}>{t('admin.actions', 'Acciones')}</th>
                       </tr>
@@ -556,15 +581,45 @@ export default function ReservationManagementPage() {
                           ''
                         ).toLowerCase()
 
-                        let textoMedioPago = 'Pago virtual con Wompi'
-                        if (rawMetodo.includes('efectivo') || rawMetodo.includes('sucursal')) {
-                          textoMedioPago = 'Pago en efectivo'
+                        const esPagoEfectivo = rawMetodo.includes('efectivo') || rawMetodo.includes('sucursal')
+                        const textoMedioPago = esPagoEfectivo ? 'Pago en efectivo (Sucursal)' : 'Pago virtual con Wompi'
+
+                        // Desglose de Lugar de Retiro según selección del flujo 1
+                        let lugarRetiroText = r.sucursalRetiro || r.sucursal || 'Bogotá - Calle 100'
+                        if (r.sucursalRetiro === 'domicilio' || r.domicilioDireccion) {
+                          lugarRetiroText = `A Domicilio (${r.domicilioDireccion || 'Dirección cliente'})`
+                        } else if (r.sucursalRetiro === 'aeropuerto') {
+                          lugarRetiroText = 'Aeropuerto'
+                        } else if (r.sucursalRetiro === 'terminal') {
+                          lugarRetiroText = 'Terminal de Transportes'
+                        }
+
+                        // Desglose de Lugar de Devolución según selección del flujo 1
+                        let lugarDevolucionText = r.sucursalDevolucion || r.sucursal || 'Bogotá - Calle 100'
+                        if (r.sucursalDevolucion === 'domicilio' || r.domicilioDevolucionDireccion) {
+                          lugarDevolucionText = `A Domicilio (${r.domicilioDevolucionDireccion || r.domicilioDireccion || 'Dirección cliente'})`
+                        } else if (r.sucursalDevolucion === 'aeropuerto') {
+                          lugarDevolucionText = 'Aeropuerto'
+                        } else if (r.sucursalDevolucion === 'terminal') {
+                          lugarDevolucionText = 'Terminal de Transportes'
                         }
 
                         const esCobroPresencialPendiente =
-                          (rawMetodo.includes('efectivo') || rawMetodo.includes('sucursal')) &&
+                          esPagoEfectivo &&
                           !Boolean(r.metodoPagoConfirmado) &&
                           r.pagoEstado !== 'aprobado'
+
+                        // Formatear Fecha y Hora de Retiro / Devolución
+                        const fInicioHora = r.fechaInicio ? r.fechaInicio.replace('T', ' ').slice(0, 16) : ''
+                        const fFinHora = r.fechaFin ? r.fechaFin.replace('T', ' ').slice(0, 16) : ''
+
+                        // Detalle especial de domicilio o restricción de efectivo
+                        let detallePinText = 'Retiro en Sucursal'
+                        if (r.sucursalRetiro === 'domicilio' || r.sucursalDevolucion === 'domicilio' || r.domicilioDireccion) {
+                          detallePinText = `PIN: ${r.domicilioPin || '4829'} (${r.domicilioEstado || 'EN_PREPARACION'})`
+                        } else if (esPagoEfectivo) {
+                          detallePinText = 'Obligatorio en Sucursal'
+                        }
 
                         return (
                           <tr key={r.id || cod}>
@@ -607,11 +662,16 @@ export default function ReservationManagementPage() {
                             <td>
                               <code>{r.vehiculoPlaca || 'KLS-849'}</code>
                             </td>
-                            <td>{textoMedioPago}</td>
-                            <td>{r.sucursalRetiro || r.sucursal || 'Bogotá - Calle 100'}</td>
-                            <td>{r.sucursalDevolucion || r.sucursal || 'Bogotá - Calle 100'}</td>
-                            <td>{r.fechaInicio ? r.fechaInicio.replace('T', ' ').slice(0, 16) : new Date().toISOString().slice(0, 10)}</td>
-                            <td>{r.fechaFin ? r.fechaFin.replace('T', ' ').slice(0, 16) : new Date(Date.now() + 86400000 * 3).toISOString().slice(0, 10)}</td>
+                            <td style={{ fontWeight: 600, color: esPagoEfectivo ? '#b45309' : '#047857' }}>
+                              {textoMedioPago}
+                            </td>
+                            <td>{lugarRetiroText}</td>
+                            <td>{lugarDevolucionText}</td>
+                            <td style={{ fontWeight: 600 }}>{fInicioHora}</td>
+                            <td style={{ fontWeight: 600 }}>{fFinHora}</td>
+                            <td style={{ fontSize: 12, color: '#475569' }}>
+                              <code>{detallePinText}</code>
+                            </td>
                             <td>
                               {r.estado === 'en_curso' ? 'En curso' : r.estado === 'finalizada' ? 'Finalizada' : r.estado === 'cancelada' ? 'Cancelada' : 'Confirmada'}
                             </td>
