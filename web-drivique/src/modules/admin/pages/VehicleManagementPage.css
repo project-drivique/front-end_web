@@ -173,21 +173,66 @@
   padding: 20px 24px;
 }
 
-/* Botones de acción textuales (estilo Dashboard) */
+/* 🏆 TABLA CON SCROLL HORIZONTAL FLUIDO Y ANCHO MÍNIMO AMPLIO */
+.cities-table-wrap {
+  overflow-x: auto !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  border-radius: 14px !important;
+  border: 1px solid var(--city-border, #cbd5e1) !important;
+}
+
+.cities-table-wrap::-webkit-scrollbar {
+  height: 8px !important;
+}
+
+.cities-table-wrap::-webkit-scrollbar-track {
+  background: #f1f5f9 !important;
+  border-radius: 4px !important;
+}
+
+.cities-table-wrap::-webkit-scrollbar-thumb {
+  background: #cbd5e1 !important;
+  border-radius: 4px !important;
+}
+
+.cities-table-wrap::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8 !important;
+}
+
+.cities-table-wrap table,
+.fleet-table {
+  width: 100% !important;
+  min-width: 1280px !important;
+  border-collapse: collapse !important;
+  table-layout: auto !important;
+}
+
+.cities-table-wrap th,
+.cities-table-wrap td {
+  white-space: nowrap !important;
+  padding: 14px 16px !important;
+  vertical-align: middle !important;
+}
+
+/* Botones de acción textuales (estilo Dashboard amplio) */
 .cities-row-actions {
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  gap: 8px !important;
+  gap: 10px !important;
   white-space: nowrap !important;
+  min-width: 180px !important;
 }
 
-.btn-row-action {
+.btn-row-action,
+.cities-row-actions button {
   border: none !important;
   background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%) !important;
   color: #ffffff !important;
   border-radius: 8px !important;
-  padding: 6px 14px !important;
+  padding: 7px 16px !important;
+  min-width: 82px !important;
   font-size: 12px !important;
   font-weight: 600 !important;
   cursor: pointer !important;
@@ -198,23 +243,30 @@
   justify-content: center !important;
   line-height: 1.2 !important;
   text-decoration: none !important;
+  white-space: nowrap !important;
+  flex: 0 0 auto !important;
 }
 
-.btn-row-action:hover {
+.btn-row-action:hover,
+.cities-row-actions button:hover {
   transform: translateY(-1px) !important;
   box-shadow: 0 4px 10px rgba(37, 99, 235, 0.35) !important;
   background: linear-gradient(135deg, #1e40af 0%, #1d4ed8 100%) !important;
   color: #ffffff !important;
 }
 
-.btn-row-action.is-delete {
+.btn-row-action.is-delete,
+.cities-row-actions button.is-delete,
+.cities-row-actions button.is-danger {
   background: #ef4444 !important;
   color: #ffffff !important;
   border: none !important;
   box-shadow: 0 2px 6px rgba(239, 68, 68, 0.25) !important;
 }
 
-.btn-row-action.is-delete:hover {
+.btn-row-action.is-delete:hover,
+.cities-row-actions button.is-delete:hover,
+.cities-row-actions button.is-danger:hover {
   background: #dc2626 !important;
   color: #ffffff !important;
   box-shadow: 0 4px 10px rgba(220, 38, 38, 0.35) !important;
