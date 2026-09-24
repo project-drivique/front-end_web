@@ -488,7 +488,7 @@ export default function VehicleManagementPage() {
                           </span>
                         </td>
                         <td style={{ textAlign: 'center' }}>
-                          <div className="cities-row-actions" style={{ justifyContent: 'center' }}>
+                          <div className="cities-row-actions">
                             <button
                               type="button"
                               className="btn-row-action"
@@ -563,7 +563,7 @@ export default function VehicleManagementPage() {
                           </span>
                         </td>
                         <td style={{ textAlign: 'center' }}>
-                          <div className="cities-row-actions" style={{ justifyContent: 'center', gap: 6 }}>
+                          <div className="cities-row-actions">
                             <button
                               type="button"
                               className="btn-row-action"
@@ -643,7 +643,7 @@ export default function VehicleManagementPage() {
                           </span>
                         </td>
                         <td style={{ textAlign: 'center' }}>
-                          <div className="cities-row-actions" style={{ justifyContent: 'center', gap: 6 }}>
+                          <div className="cities-row-actions">
                             <button
                               type="button"
                               className="btn-row-action"
@@ -788,7 +788,7 @@ export default function VehicleManagementPage() {
                               : "—"}
                           </td>
                           <td style={{ textAlign: 'center' }}>
-                            <div className="cities-row-actions" style={{ justifyContent: 'center', gap: 6 }}>
+                            <div className="cities-row-actions">
                               <button
                                 type="button"
                                 className="btn-row-action"

@@ -271,10 +271,51 @@
 .management-shell--dark td { color: #f8fafc !important; }
 .management-shell tbody tr:last-child td { border-bottom: 0 !important; }
 .management-shell tbody tr:hover td { background: var(--adm-card-alt) !important; }
-.cities-row-actions button { border-radius: 9px !important; background: var(--adm-card-alt) !important; border: 1px solid var(--adm-border) !important; color: #0f172a !important; }
-.cities-row-actions button:hover { background: var(--adm-border) !important; }
-.cities-row-actions button.is-danger { color: #ef4444 !important; }
-.management-shell--dark .cities-row-actions button { color: #f8fafc !important; }
+.cities-row-actions {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  white-space: nowrap !important;
+}
+.cities-row-actions button,
+.cities-row-actions .btn-row-action {
+  border: none !important;
+  border-radius: 8px !important;
+  background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%) !important;
+  color: #ffffff !important;
+  padding: 6px 14px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25) !important;
+  transition: transform 0.15s ease, box-shadow 0.15s ease !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1.2 !important;
+}
+.cities-row-actions button:hover,
+.cities-row-actions .btn-row-action:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.35) !important;
+  background: linear-gradient(135deg, #1e40af 0%, #1d4ed8 100%) !important;
+  color: #ffffff !important;
+}
+.cities-row-actions button.is-delete,
+.cities-row-actions button.is-danger,
+.cities-row-actions .btn-row-action.is-delete {
+  background: #ef4444 !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 6px rgba(239, 68, 68, 0.25) !important;
+}
+.cities-row-actions button.is-delete:hover,
+.cities-row-actions button.is-danger:hover,
+.cities-row-actions .btn-row-action.is-delete:hover {
+  background: #dc2626 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 10px rgba(220, 38, 38, 0.35) !important;
+}
 
 /* En tablas, absolutamente todo el texto común, códigos, enlaces e IDs son negro/neutro (#0f172a / #f8fafc) */
 .management-shell table td,
