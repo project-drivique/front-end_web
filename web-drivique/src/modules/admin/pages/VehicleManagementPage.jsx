@@ -71,6 +71,7 @@ export default function VehicleManagementPage() {
   const { t } = useTranslation();
   const { tema, divisa, tasaUSD } = useLanding();
   const user = useAuthStore((state) => state.usuario);
+  const [activeTab, setActiveTab] = useState('sede_central');
   const [vehicles, setVehicles] = useState(() =>
     vehicleManagementService.list(),
   );
@@ -96,7 +97,6 @@ export default function VehicleManagementPage() {
     const term = search.trim().toLocaleLowerCase();
     return vehicles
       .filter((vehicle) => {
-        // Si es encargado de sucursal, solo gestiona vehículos de su sucursal asignada
         if (esEncargado && normalizeBranch(vehicle.sucursal) !== assignedBranchKey) return false;
 
         const matchBranchFilter =
@@ -120,6 +120,54 @@ export default function VehicleManagementPage() {
     esEncargado,
     assignedBranchKey,
   ]);
+
+  const mockSedeCentral = [
+    {
+      nit: '901.458.920-3',
+      razonSocial: 'Drivique Colombia S.A.S.',
+      matriz: 'Bogotá D.C. - Edificio Capital Tower, Cl. 100 #19-61',
+      cobertura: '4 Ciudades Principales (Bogotá, Medellín, Cali, Cartagena)',
+      sucursalesTotal: '12 Sucursales Activas',
+      flotaTotal: '48 Vehículos Activos',
+      director: 'Carlos Eduardo Restrepo (Admin General)',
+      estado: 'Matriz Operativa'
+    }
+  ];
+
+  const mockGruposFlota = [
+    {
+      codigo: 'FLT-ECO',
+      nombre: 'Flota Económica (Hatchbacks & Compactos)',
+      vehiculosCount: 12,
+      sedesDisponibles: 'Todas las Sedes de Colombia',
+      tarifaPromedio: 110000,
+      estado: 'Activa'
+    },
+    {
+      codigo: 'FLT-SED',
+      nombre: 'Flota Sedán (Confort & Ejecutivo)',
+      vehiculosCount: 16,
+      sedesDisponibles: 'Todas las Sedes de Colombia',
+      tarifaPromedio: 160000,
+      estado: 'Activa'
+    },
+    {
+      codigo: 'FLT-SUV',
+      nombre: 'Flota SUV & 4x4 (Aventura & Familia)',
+      vehiculosCount: 14,
+      sedesDisponibles: 'Medellín, Bogotá, Cali y Cartagena',
+      tarifaPromedio: 280000,
+      estado: 'Activa'
+    },
+    {
+      codigo: 'FLT-ELE',
+      nombre: 'Flota Eléctrica & Híbrida (Eco-Drive)',
+      vehiculosCount: 6,
+      sedesDisponibles: 'Medellín y Bogotá',
+      tarifaPromedio: 240000,
+      estado: 'Activa'
+    }
+  ];
   const headers = [
     t("admin.vehiclesManagement.fields.vehicle"),
     t("admin.vehiclesManagement.fields.plate"),
@@ -295,150 +343,369 @@ export default function VehicleManagementPage() {
               </button>
             </div>
           )}
-          <section className="cities-card">
-            <div className={`fleet-toolbar ${esEncargado ? "fleet-toolbar--manager" : ""}`}>
-              <label className="cities-search">
-                <FaSearch />
-                <input
-                  value={search}
-                  onChange={(event) => setSearch(event.target.value)}
-                  placeholder={t("admin.vehiclesManagement.search")}
-                />
-              </label>
-              {!esEncargado && (
-                <select
-                  value={branchFilter}
-                  onChange={(event) => setBranchFilter(event.target.value)}
-                >
-                  <option value="all">
-                    {t("admin.vehiclesManagement.allBranches")}
-                  </option>
-                  {branches.map((branch) => (
-                    <option key={branch.id} value={branch.nombre}>
-                      {branch.nombre}
-                    </option>
-                  ))}
-                </select>
-              )}
-              <select
-                value={stateFilter}
-                onChange={(event) => setStateFilter(event.target.value)}
-              >
-                <option value="all">
-                  {t("admin.vehiclesManagement.allStates")}
-                </option>
-                {Object.values(VEHICLE_STATES).map((state) => (
-                  <option key={state} value={state}>
-                    {t(`admin.vehiclesManagement.states.${state}`)}
-                  </option>
-                ))}
-              </select>
-              <div className="cities-export">
-                <button type="button" onClick={() => exportExcel(exportData)}>
-                  <FaFileExcel aria-hidden="true" /> Excel
-                </button>
-                <button type="button" onClick={() => exportPdf(exportData)}>
-                  <FaFilePdf aria-hidden="true" /> PDF
-                </button>
-                <button type="button" onClick={() => printTable(exportData)}>
-                  <FaPrint aria-hidden="true" /> {t("admin.cities.print")}
-                </button>
+          {/* Barra de Pestañas Jerárquicas (Basado en la captura del usuario con colores Drivique) */}
+          <div className="fleet-tab-bar" style={{ display: 'flex', gap: 24, borderBottom: '2px solid var(--adm-border, #cbd5e1)', marginBottom: 20, flexWrap: 'wrap' }}>
+            <button
+              type="button"
+              onClick={() => setActiveTab('sede_central')}
+              style={{
+                background: 'none',
+                border: 'none',
+                padding: '10px 4px',
+                fontSize: 14,
+                fontWeight: activeTab === 'sede_central' ? 700 : 500,
+                color: activeTab === 'sede_central' ? 'var(--brand-primary, #2563eb)' : 'var(--adm-muted, #64748b)',
+                borderBottom: activeTab === 'sede_central' ? '3px solid var(--brand-primary, #2563eb)' : '3px solid transparent',
+                marginBottom: -2,
+                cursor: 'pointer',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              🏛️ 1º Sede Central (Corporativo)
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('sucursales')}
+              style={{
+                background: 'none',
+                border: 'none',
+                padding: '10px 4px',
+                fontSize: 14,
+                fontWeight: activeTab === 'sucursales' ? 700 : 500,
+                color: activeTab === 'sucursales' ? 'var(--brand-primary, #2563eb)' : 'var(--adm-muted, #64748b)',
+                borderBottom: activeTab === 'sucursales' ? '3px solid var(--brand-primary, #2563eb)' : '3px solid transparent',
+                marginBottom: -2,
+                cursor: 'pointer',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              🏢 2º Sucursales (Puntos Locales)
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('flotas')}
+              style={{
+                background: 'none',
+                border: 'none',
+                padding: '10px 4px',
+                fontSize: 14,
+                fontWeight: activeTab === 'flotas' ? 700 : 500,
+                color: activeTab === 'flotas' ? 'var(--brand-primary, #2563eb)' : 'var(--adm-muted, #64748b)',
+                borderBottom: activeTab === 'flotas' ? '3px solid var(--brand-primary, #2563eb)' : '3px solid transparent',
+                marginBottom: -2,
+                cursor: 'pointer',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              🚚 3º Categorías de Flotas
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('vehiculos')}
+              style={{
+                background: 'none',
+                border: 'none',
+                padding: '10px 4px',
+                fontSize: 14,
+                fontWeight: activeTab === 'vehiculos' ? 700 : 500,
+                color: activeTab === 'vehiculos' ? 'var(--brand-primary, #2563eb)' : 'var(--adm-muted, #64748b)',
+                borderBottom: activeTab === 'vehiculos' ? '3px solid var(--brand-primary, #2563eb)' : '3px solid transparent',
+                marginBottom: -2,
+                cursor: 'pointer',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              🚗 4º Vehículos (Unidades Físicas)
+            </button>
+          </div>
+
+          {/* VISTA CONTENIDO TAB 1: SEDE CENTRAL (CORPORATIVO) */}
+          {activeTab === 'sede_central' && (
+            <section className="cities-card" style={{ padding: 24 }}>
+              <div style={{ marginBottom: 18 }}>
+                <p className="cities-eyebrow">Nivel 1 · Estructura Corporativa Principal</p>
+                <h2 style={{ margin: 0, fontSize: 18, fontWeight: 800 }}>Casa Matriz y Administración General</h2>
+                <p className="cities-subtitle" style={{ marginTop: 4 }}>
+                  Empresa raíz responsable de la operación nacional, normatividad, plataformas digitales y expansión de sedes.
+                </p>
               </div>
-            </div>
-            <div className="cities-summary">
-              <strong>{filtered.length}</strong>{" "}
-              {t("admin.vehiclesManagement.results")}
-            </div>
-            {filtered.length === 0 ? (
-              <div className="cities-empty">
-                <FaCar />
-                <h2>{t("admin.vehiclesManagement.emptyTitle")}</h2>
-              </div>
-            ) : (
+
               <div className="cities-table-wrap">
                 <table className="fleet-table">
                   <thead>
                     <tr>
-                      {headers.map((header) => (
-                        <th key={header}>{header}</th>
-                      ))}
-                      <th>{t("admin.cities.fields.actions")}</th>
+                      <th>NIT</th>
+                      <th>Razón Social</th>
+                      <th>Sede Matriz Principal</th>
+                      <th>Cobertura Nacional</th>
+                      <th>Sucursales</th>
+                      <th>Flota Nacional</th>
+                      <th>Director General</th>
+                      <th>Estado</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {filtered.map((vehicle) => (
-                      <tr key={vehicle.id}>
+                    {mockSedeCentral.map((sc, idx) => (
+                      <tr key={idx}>
+                        <td><code>{sc.nit}</code></td>
+                        <td><strong>{sc.razonSocial}</strong></td>
+                        <td>{sc.matriz}</td>
+                        <td>{sc.cobertura}</td>
+                        <td><span style={{ fontWeight: 600 }}>{sc.sucursalesTotal}</span></td>
+                        <td><span style={{ fontWeight: 600 }}>{sc.flotaTotal}</span></td>
+                        <td>{sc.director}</td>
                         <td>
-                          <div className="fleet-vehicle">
-                            {vehicle.imagenes?.[0] ? (
-                              <img src={vehicle.imagenes[0]} alt="" />
-                            ) : (
-                              <span>
-                                <FaCar />
-                              </span>
-                            )}
-                            <div>
-                              <strong>{vehicle.nombre}</strong>
-                              <small>
-                                {vehicle.año} · {vehicle.color}
-                              </small>
-                            </div>
-                          </div>
-                        </td>
-                        <td>
-                          <strong>{vehicle.placa}</strong>
-                        </td>
-                        <td>{vehicle.sucursal}</td>
-                        <td>{vehicle.categoria}</td>
-                        <td>
-                          <span
-                            className={`fleet-state is-${vehicle.estadoEfectivo}`}
-                          >
-                            {t(
-                              `admin.vehiclesManagement.states.${vehicle.estadoEfectivo}`,
-                            )}
+                          <span className="status-pill is-green" style={{ padding: '4px 10px', borderRadius: 20, fontSize: 11, fontWeight: 700 }}>
+                            {sc.estado}
                           </span>
-                        </td>
-                        <td>
-                          {formatCurrency(
-                            vehicle.precioLimitado || vehicle.precio || 0,
-                            divisa,
-                            tasaUSD,
-                          )}
-                        </td>
-                        <td>
-                          {vehicle.picoYPlaca.dia
-                            ? t(
-                                `vehiculo.picoYPlaca.dias.${vehicle.picoYPlaca.dia}`,
-                              )
-                            : "—"}
-                        </td>
-                        <td>
-                          <div className="cities-row-actions">
-                            <button
-                              type="button"
-                              onClick={() => openEdit(vehicle)}
-                            >
-                              <FaEdit />
-                            </button>
-                            <button
-                              className="is-danger"
-                              type="button"
-                              onClick={() =>
-                                setModal({ type: "delete", vehicle })
-                              }
-                            >
-                              <FaTrash />
-                            </button>
-                          </div>
                         </td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
-            )}
-          </section>
+            </section>
+          )}
+
+          {/* VISTA CONTENIDO TAB 2: SUCURSALES (PUNTOS COMERCIALES LOCALES) */}
+          {activeTab === 'sucursales' && (
+            <section className="cities-card" style={{ padding: 24 }}>
+              <div style={{ marginBottom: 18 }}>
+                <p className="cities-eyebrow">Nivel 2 · Red Comercial y Puntos de Atención</p>
+                <h2 style={{ margin: 0, fontSize: 18, fontWeight: 800 }}>Sucursales Descentralizadas por Ciudad</h2>
+                <p className="cities-subtitle" style={{ marginTop: 4 }}>
+                  Oficinas operativas abiertas al público en Colombia donde los clientes retiran, entregan autos y pagan en caja.
+                </p>
+              </div>
+
+              <div className="cities-table-wrap">
+                <table className="fleet-table">
+                  <thead>
+                    <tr>
+                      <th>Código Sede</th>
+                      <th>Nombre Sucursal</th>
+                      <th>Ciudad</th>
+                      <th>Dirección Física</th>
+                      <th>Teléfono Contacto</th>
+                      <th>Capacidad Parqueadero</th>
+                      <th>Horario Atención</th>
+                      <th>Estado</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {branches.map((b) => (
+                      <tr key={b.id || b.nombre}>
+                        <td><code>SEC-00{b.id || 1}</code></td>
+                        <td><strong>{b.nombre}</strong></td>
+                        <td>{b.ciudad || 'Colombia'}</td>
+                        <td>{b.direccion || 'Dirección comercial de sede'}</td>
+                        <td>{b.telefono || '300 000 0000'}</td>
+                        <td><span style={{ fontWeight: 600 }}>{b.capacidadVehiculos || 25} autos</span></td>
+                        <td>{b.horario || 'Lun a Sáb 7:00 am - 7:00 pm'}</td>
+                        <td>
+                          <span className={`status-pill ${b.estado === 'inactiva' ? 'is-red' : 'is-green'}`} style={{ padding: '4px 10px', borderRadius: 20, fontSize: 11, fontWeight: 700 }}>
+                            {b.estado === 'inactiva' ? 'Inactiva' : 'Activa'}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          )}
+
+          {/* VISTA CONTENIDO TAB 3: CATEGORÍAS DE FLOTAS (NIVEL DE AGRUPACIÓN) */}
+          {activeTab === 'flotas' && (
+            <section className="cities-card" style={{ padding: 24 }}>
+              <div style={{ marginBottom: 18 }}>
+                <p className="cities-eyebrow">Nivel 3 · Categorías e Inventario Agrupado</p>
+                <h2 style={{ margin: 0, fontSize: 18, fontWeight: 800 }}>Grupos de Flota Registrados</h2>
+                <p className="cities-subtitle" style={{ marginTop: 4 }}>
+                  Agrupación estratégica de vehículos según su gama, capacidad y tipo de experiencia ofrecida al cliente.
+                </p>
+              </div>
+
+              <div className="cities-table-wrap">
+                <table className="fleet-table">
+                  <thead>
+                    <tr>
+                      <th>Código Flota</th>
+                      <th>Nombre del Grupo de Flota</th>
+                      <th>Total Vehículos</th>
+                      <th>Cobertura de Sedes</th>
+                      <th>Tarifa Promedio / Día</th>
+                      <th>Estado Operativo</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {mockGruposFlota.map((gf) => (
+                      <tr key={gf.codigo}>
+                        <td><code>{gf.codigo}</code></td>
+                        <td><strong>{gf.nombre}</strong></td>
+                        <td><span style={{ fontWeight: 600 }}>{gf.vehiculosCount} unidades</span></td>
+                        <td>{gf.sedesDisponibles}</td>
+                        <td><strong>{formatCurrency(gf.tarifaPromedio, divisa, tasaUSD)}</strong></td>
+                        <td>
+                          <span className="status-pill is-green" style={{ padding: '4px 10px', borderRadius: 20, fontSize: 11, fontWeight: 700 }}>
+                            {gf.estado}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          )}
+
+          {/* VISTA CONTENIDO TAB 4: VEHÍCULOS (UNIDADES FÍSICAS INDIVIDUALES) */}
+          {activeTab === 'vehiculos' && (
+            <section className="cities-card">
+              <div className={`fleet-toolbar ${esEncargado ? "fleet-toolbar--manager" : ""}`}>
+                <label className="cities-search">
+                  <FaSearch />
+                  <input
+                    value={search}
+                    onChange={(event) => setSearch(event.target.value)}
+                    placeholder={t("admin.vehiclesManagement.search")}
+                  />
+                </label>
+                {!esEncargado && (
+                  <select
+                    value={branchFilter}
+                    onChange={(event) => setBranchFilter(event.target.value)}
+                  >
+                    <option value="all">
+                      {t("admin.vehiclesManagement.allBranches")}
+                    </option>
+                    {branches.map((branch) => (
+                      <option key={branch.id} value={branch.nombre}>
+                        {branch.nombre}
+                      </option>
+                    ))}
+                  </select>
+                )}
+                <select
+                  value={stateFilter}
+                  onChange={(event) => setStateFilter(event.target.value)}
+                >
+                  <option value="all">
+                    {t("admin.vehiclesManagement.allStates")}
+                  </option>
+                  {Object.values(VEHICLE_STATES).map((state) => (
+                    <option key={state} value={state}>
+                      {t(`admin.vehiclesManagement.states.${state}`)}
+                    </option>
+                  ))}
+                </select>
+                <div className="cities-export">
+                  <button type="button" onClick={() => exportExcel(exportData)}>
+                    <FaFileExcel aria-hidden="true" /> Excel
+                  </button>
+                  <button type="button" onClick={() => exportPdf(exportData)}>
+                    <FaFilePdf aria-hidden="true" /> PDF
+                  </button>
+                  <button type="button" onClick={() => printTable(exportData)}>
+                    <FaPrint aria-hidden="true" /> {t("admin.cities.print")}
+                  </button>
+                </div>
+              </div>
+              <div className="cities-summary">
+                <strong>{filtered.length}</strong>{" "}
+                {t("admin.vehiclesManagement.results")}
+              </div>
+              {filtered.length === 0 ? (
+                <div className="cities-empty">
+                  <FaCar />
+                  <h2>{t("admin.vehiclesManagement.emptyTitle")}</h2>
+                </div>
+              ) : (
+                <div className="cities-table-wrap">
+                  <table className="fleet-table">
+                    <thead>
+                      <tr>
+                        {headers.map((header) => (
+                          <th key={header}>{header}</th>
+                        ))}
+                        <th>{t("admin.cities.fields.actions")}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filtered.map((vehicle) => (
+                        <tr key={vehicle.id}>
+                          <td>
+                            <div className="fleet-vehicle">
+                              {vehicle.imagenes?.[0] ? (
+                                <img src={vehicle.imagenes[0]} alt="" />
+                              ) : (
+                                <span>
+                                  <FaCar />
+                                </span>
+                              )}
+                              <div>
+                                <strong>{vehicle.nombre}</strong>
+                                <small>
+                                  {vehicle.año} · {vehicle.color}
+                                </small>
+                              </div>
+                            </div>
+                          </td>
+                          <td>
+                            <strong>{vehicle.placa}</strong>
+                          </td>
+                          <td>{vehicle.sucursal}</td>
+                          <td>{vehicle.categoria}</td>
+                          <td>
+                            <span
+                              className={`fleet-state is-${vehicle.estadoEfectivo}`}
+                            >
+                              {t(
+                                `admin.vehiclesManagement.states.${vehicle.estadoEfectivo}`,
+                              )}
+                            </span>
+                          </td>
+                          <td>
+                            {formatCurrency(
+                              vehicle.precioLimitado || vehicle.precio || 0,
+                              divisa,
+                              tasaUSD,
+                            )}
+                          </td>
+                          <td>
+                            {vehicle.picoYPlaca.dia
+                              ? t(
+                                  `vehiculo.picoYPlaca.dias.${vehicle.picoYPlaca.dia}`,
+                                )
+                              : "—"}
+                          </td>
+                          <td>
+                            <div className="cities-row-actions">
+                              <button
+                                type="button"
+                                onClick={() => openEdit(vehicle)}
+                              >
+                                <FaEdit />
+                              </button>
+                              <button
+                                className="is-danger"
+                                type="button"
+                                onClick={() =>
+                                  setModal({ type: "delete", vehicle })
+                                }
+                              >
+                                <FaTrash />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </section>
+          )}
         </div>
         {modal && (
           <div
