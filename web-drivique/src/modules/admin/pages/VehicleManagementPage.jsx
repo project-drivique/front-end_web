@@ -813,13 +813,9 @@ export default function VehicleManagementPage() {
                               : "No aplica"}
                           </td>
                           <td>
-                            <span
-                              className={`fleet-state is-${vehicle.estadoEfectivo}`}
-                            >
-                              {t(
-                                `admin.vehiclesManagement.states.${vehicle.estadoEfectivo}`,
-                              )}
-                            </span>
+                            {t(
+                              `admin.vehiclesManagement.states.${vehicle.estadoEfectivo}`,
+                            )}
                           </td>
                           <td style={{ textAlign: 'center' }}>
                             <div className="cities-row-actions">
