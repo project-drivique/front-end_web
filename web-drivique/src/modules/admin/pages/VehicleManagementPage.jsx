@@ -216,9 +216,9 @@ export default function VehicleManagementPage() {
     "Color",
     "Transmisión",
     "Combustible",
-    t("admin.vehiclesManagement.fields.state"),
     t("admin.vehiclesManagement.fields.price"),
     t("admin.vehiclesManagement.fields.pico"),
+    t("admin.vehiclesManagement.fields.state"),
   ];
   const rows = filtered.map((vehicle, idx) => [
     vehicle.id || (idx + 1),
@@ -231,7 +231,6 @@ export default function VehicleManagementPage() {
     vehicle.color || "—",
     vehicle.transmision || "Automática",
     vehicle.combustible || "Gasolina",
-    t(`admin.vehiclesManagement.states.${vehicle.estadoEfectivo}`),
     formatCurrency(
       vehicle.precioLimitado || vehicle.precio || 0,
       divisa,
@@ -240,6 +239,7 @@ export default function VehicleManagementPage() {
     vehicle.picoYPlaca?.dia
       ? `Aplica (${t(`vehiculo.picoYPlaca.dias.${vehicle.picoYPlaca.dia}`)})`
       : "No aplica",
+    t(`admin.vehiclesManagement.states.${vehicle.estadoEfectivo}`),
   ]);
   const exportData = {
     title: t("admin.vehiclesManagement.exportTitle"),
@@ -801,15 +801,6 @@ export default function VehicleManagementPage() {
                           <td>{vehicle.transmision || 'Automática'}</td>
                           <td>{vehicle.combustible || 'Gasolina'}</td>
                           <td>
-                            <span
-                              className={`fleet-state is-${vehicle.estadoEfectivo}`}
-                            >
-                              {t(
-                                `admin.vehiclesManagement.states.${vehicle.estadoEfectivo}`,
-                              )}
-                            </span>
-                          </td>
-                          <td>
                             {formatCurrency(
                               vehicle.precioLimitado || vehicle.precio || 0,
                               divisa,
@@ -817,15 +808,18 @@ export default function VehicleManagementPage() {
                             )}
                           </td>
                           <td>
-                            {vehicle.picoYPlaca?.dia ? (
-                              <span style={{ padding: '4px 10px', borderRadius: 20, fontSize: 11, fontWeight: 700, background: '#fee2e2', color: '#991b1b', border: '1px solid #fca5a5' }}>
-                                Aplica ({t(`vehiculo.picoYPlaca.dias.${vehicle.picoYPlaca.dia}`)})
-                              </span>
-                            ) : (
-                              <span style={{ padding: '4px 10px', borderRadius: 20, fontSize: 11, fontWeight: 700, background: '#ecfdf5', color: '#047857', border: '1px solid #a7f3d0' }}>
-                                No aplica
-                              </span>
-                            )}
+                            {vehicle.picoYPlaca?.dia
+                              ? `Aplica (${t(`vehiculo.picoYPlaca.dias.${vehicle.picoYPlaca.dia}`)})`
+                              : "No aplica"}
+                          </td>
+                          <td>
+                            <span
+                              className={`fleet-state is-${vehicle.estadoEfectivo}`}
+                            >
+                              {t(
+                                `admin.vehiclesManagement.states.${vehicle.estadoEfectivo}`,
+                              )}
+                            </span>
                           </td>
                           <td style={{ textAlign: 'center' }}>
                             <div className="cities-row-actions">
