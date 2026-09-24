@@ -327,7 +327,7 @@ export default function VehicleManagementPage() {
                 onClick={openCreate}
                 disabled={esEncargado && !sucursalAsignada}
               >
-                <FaPlus /> {t("admin.vehiclesManagement.create")}
+                + Crear Registro
               </button>
             </div>
           </header>
@@ -343,93 +343,41 @@ export default function VehicleManagementPage() {
               </button>
             </div>
           )}
-          {/* Barra de Pestañas Jerárquicas (Basado en la captura del usuario con colores Drivique) */}
-          <div className="fleet-tab-bar" style={{ display: 'flex', gap: 24, borderBottom: '2px solid var(--adm-border, #cbd5e1)', marginBottom: 20, flexWrap: 'wrap' }}>
+          {/* Pestañas de Secciones (Pegadas a las Tablas y sin Iconos) */}
+          <div className="fleet-attached-tabs">
             <button
               type="button"
               onClick={() => setActiveTab('sede_central')}
-              style={{
-                background: 'none',
-                border: 'none',
-                padding: '10px 4px',
-                fontSize: 14,
-                fontWeight: activeTab === 'sede_central' ? 700 : 500,
-                color: activeTab === 'sede_central' ? 'var(--brand-primary, #2563eb)' : 'var(--adm-muted, #64748b)',
-                borderBottom: activeTab === 'sede_central' ? '3px solid var(--brand-primary, #2563eb)' : '3px solid transparent',
-                marginBottom: -2,
-                cursor: 'pointer',
-                transition: 'all 0.2s ease'
-              }}
+              className={`fleet-tab-btn ${activeTab === 'sede_central' ? 'is-active' : ''}`}
             >
-              🏛️ 1º Sede Central (Corporativo)
+              Sede Central
             </button>
             <button
               type="button"
               onClick={() => setActiveTab('sucursales')}
-              style={{
-                background: 'none',
-                border: 'none',
-                padding: '10px 4px',
-                fontSize: 14,
-                fontWeight: activeTab === 'sucursales' ? 700 : 500,
-                color: activeTab === 'sucursales' ? 'var(--brand-primary, #2563eb)' : 'var(--adm-muted, #64748b)',
-                borderBottom: activeTab === 'sucursales' ? '3px solid var(--brand-primary, #2563eb)' : '3px solid transparent',
-                marginBottom: -2,
-                cursor: 'pointer',
-                transition: 'all 0.2s ease'
-              }}
+              className={`fleet-tab-btn ${activeTab === 'sucursales' ? 'is-active' : ''}`}
             >
-              🏢 2º Sucursales (Puntos Locales)
+              Sucursales
             </button>
             <button
               type="button"
               onClick={() => setActiveTab('flotas')}
-              style={{
-                background: 'none',
-                border: 'none',
-                padding: '10px 4px',
-                fontSize: 14,
-                fontWeight: activeTab === 'flotas' ? 700 : 500,
-                color: activeTab === 'flotas' ? 'var(--brand-primary, #2563eb)' : 'var(--adm-muted, #64748b)',
-                borderBottom: activeTab === 'flotas' ? '3px solid var(--brand-primary, #2563eb)' : '3px solid transparent',
-                marginBottom: -2,
-                cursor: 'pointer',
-                transition: 'all 0.2s ease'
-              }}
+              className={`fleet-tab-btn ${activeTab === 'flotas' ? 'is-active' : ''}`}
             >
-              🚚 3º Categorías de Flotas
+              Categorías de Flotas
             </button>
             <button
               type="button"
               onClick={() => setActiveTab('vehiculos')}
-              style={{
-                background: 'none',
-                border: 'none',
-                padding: '10px 4px',
-                fontSize: 14,
-                fontWeight: activeTab === 'vehiculos' ? 700 : 500,
-                color: activeTab === 'vehiculos' ? 'var(--brand-primary, #2563eb)' : 'var(--adm-muted, #64748b)',
-                borderBottom: activeTab === 'vehiculos' ? '3px solid var(--brand-primary, #2563eb)' : '3px solid transparent',
-                marginBottom: -2,
-                cursor: 'pointer',
-                transition: 'all 0.2s ease'
-              }}
+              className={`fleet-tab-btn ${activeTab === 'vehiculos' ? 'is-active' : ''}`}
             >
-              🚗 4º Vehículos (Unidades Físicas)
+              Vehículos
             </button>
           </div>
 
-          {/* VISTA CONTENIDO TAB 1: SEDE CENTRAL (CORPORATIVO) */}
+          {/* TAB 1: SEDE CENTRAL */}
           {activeTab === 'sede_central' && (
-            <section className="cities-card" style={{ padding: 24 }}>
-              <div style={{ marginBottom: 18 }}>
-                <p className="cities-eyebrow">Nivel 1 · Estructura Corporativa Principal</p>
-                <h2 style={{ margin: 0, fontSize: 18, fontWeight: 800 }}>Casa Matriz y Administración General</h2>
-                <p className="cities-subtitle" style={{ marginTop: 4 }}>
-                  Empresa raíz responsable de la operación nacional, normatividad, plataformas digitales y expansión de sedes.
-                </p>
-              </div>
-
+            <section className="cities-card attached-to-tabs">
               <div className="cities-table-wrap">
                 <table className="fleet-table">
                   <thead>
@@ -442,6 +390,7 @@ export default function VehicleManagementPage() {
                       <th>Flota Nacional</th>
                       <th>Director General</th>
                       <th>Estado</th>
+                      <th style={{ textAlign: 'center' }}>Acciones</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -459,6 +408,17 @@ export default function VehicleManagementPage() {
                             {sc.estado}
                           </span>
                         </td>
+                        <td style={{ textAlign: 'center' }}>
+                          <div className="cities-row-actions" style={{ justifyContent: 'center' }}>
+                            <button
+                              type="button"
+                              className="btn-row-action"
+                              onClick={() => showAlert({ icon: 'info', title: 'Editar Matriz', text: 'Editando parámetros corporativos de Drivique Colombia.' })}
+                            >
+                              Editar
+                            </button>
+                          </div>
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -467,17 +427,9 @@ export default function VehicleManagementPage() {
             </section>
           )}
 
-          {/* VISTA CONTENIDO TAB 2: SUCURSALES (PUNTOS COMERCIALES LOCALES) */}
+          {/* TAB 2: SUCURSALES */}
           {activeTab === 'sucursales' && (
-            <section className="cities-card" style={{ padding: 24 }}>
-              <div style={{ marginBottom: 18 }}>
-                <p className="cities-eyebrow">Nivel 2 · Red Comercial y Puntos de Atención</p>
-                <h2 style={{ margin: 0, fontSize: 18, fontWeight: 800 }}>Sucursales Descentralizadas por Ciudad</h2>
-                <p className="cities-subtitle" style={{ marginTop: 4 }}>
-                  Oficinas operativas abiertas al público en Colombia donde los clientes retiran, entregan autos y pagan en caja.
-                </p>
-              </div>
-
+            <section className="cities-card attached-to-tabs">
               <div className="cities-table-wrap">
                 <table className="fleet-table">
                   <thead>
@@ -490,6 +442,7 @@ export default function VehicleManagementPage() {
                       <th>Capacidad Parqueadero</th>
                       <th>Horario Atención</th>
                       <th>Estado</th>
+                      <th style={{ textAlign: 'center' }}>Acciones</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -507,6 +460,26 @@ export default function VehicleManagementPage() {
                             {b.estado === 'inactiva' ? 'Inactiva' : 'Activa'}
                           </span>
                         </td>
+                        <td style={{ textAlign: 'center' }}>
+                          <div className="cities-row-actions" style={{ justifyContent: 'center', gap: 6 }}>
+                            <button
+                              type="button"
+                              className="btn-row-action"
+                              onClick={() => showAlert({ icon: 'info', title: 'Editar Sucursal', text: `Modificando parámetros de la ${b.nombre}.` })}
+                            >
+                              Editar
+                            </button>
+                            {!esEncargado && (
+                              <button
+                                type="button"
+                                className="btn-row-action is-delete"
+                                onClick={() => showAlert({ icon: 'warning', title: 'Eliminar Sucursal', text: `¿Deseas deshabilitar la ${b.nombre}?` })}
+                              >
+                                Eliminar
+                              </button>
+                            )}
+                          </div>
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -515,17 +488,9 @@ export default function VehicleManagementPage() {
             </section>
           )}
 
-          {/* VISTA CONTENIDO TAB 3: CATEGORÍAS DE FLOTAS (NIVEL DE AGRUPACIÓN) */}
+          {/* TAB 3: CATEGORÍAS DE FLOTAS */}
           {activeTab === 'flotas' && (
-            <section className="cities-card" style={{ padding: 24 }}>
-              <div style={{ marginBottom: 18 }}>
-                <p className="cities-eyebrow">Nivel 3 · Categorías e Inventario Agrupado</p>
-                <h2 style={{ margin: 0, fontSize: 18, fontWeight: 800 }}>Grupos de Flota Registrados</h2>
-                <p className="cities-subtitle" style={{ marginTop: 4 }}>
-                  Agrupación estratégica de vehículos según su gama, capacidad y tipo de experiencia ofrecida al cliente.
-                </p>
-              </div>
-
+            <section className="cities-card attached-to-tabs">
               <div className="cities-table-wrap">
                 <table className="fleet-table">
                   <thead>
@@ -536,6 +501,7 @@ export default function VehicleManagementPage() {
                       <th>Cobertura de Sedes</th>
                       <th>Tarifa Promedio / Día</th>
                       <th>Estado Operativo</th>
+                      <th style={{ textAlign: 'center' }}>Acciones</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -551,6 +517,26 @@ export default function VehicleManagementPage() {
                             {gf.estado}
                           </span>
                         </td>
+                        <td style={{ textAlign: 'center' }}>
+                          <div className="cities-row-actions" style={{ justifyContent: 'center', gap: 6 }}>
+                            <button
+                              type="button"
+                              className="btn-row-action"
+                              onClick={() => showAlert({ icon: 'info', title: 'Editar Flota', text: `Modificando grupo ${gf.nombre}.` })}
+                            >
+                              Editar
+                            </button>
+                            {!esEncargado && (
+                              <button
+                                type="button"
+                                className="btn-row-action is-delete"
+                                onClick={() => showAlert({ icon: 'warning', title: 'Eliminar Flota', text: `¿Deseas eliminar el grupo ${gf.nombre}?` })}
+                              >
+                                Eliminar
+                              </button>
+                            )}
+                          </div>
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -559,12 +545,11 @@ export default function VehicleManagementPage() {
             </section>
           )}
 
-          {/* VISTA CONTENIDO TAB 4: VEHÍCULOS (UNIDADES FÍSICAS INDIVIDUALES) */}
+          {/* TAB 4: VEHÍCULOS */}
           {activeTab === 'vehiculos' && (
-            <section className="cities-card">
-              <div className={`fleet-toolbar ${esEncargado ? "fleet-toolbar--manager" : ""}`}>
+            <section className="cities-card attached-to-tabs">
+              <div className={`fleet-toolbar ${esEncargado ? "fleet-toolbar--manager" : ""}`} style={{ marginBottom: 16 }}>
                 <label className="cities-search">
-                  <FaSearch />
                   <input
                     value={search}
                     onChange={(event) => setSearch(event.target.value)}
@@ -601,23 +586,22 @@ export default function VehicleManagementPage() {
                 </select>
                 <div className="cities-export">
                   <button type="button" onClick={() => exportExcel(exportData)}>
-                    <FaFileExcel aria-hidden="true" /> Excel
+                    Excel
                   </button>
                   <button type="button" onClick={() => exportPdf(exportData)}>
-                    <FaFilePdf aria-hidden="true" /> PDF
+                    PDF
                   </button>
                   <button type="button" onClick={() => printTable(exportData)}>
-                    <FaPrint aria-hidden="true" /> {t("admin.cities.print")}
+                    {t("admin.cities.print")}
                   </button>
                 </div>
               </div>
-              <div className="cities-summary">
+              <div className="cities-summary" style={{ margin: '8px 0 12px' }}>
                 <strong>{filtered.length}</strong>{" "}
                 {t("admin.vehiclesManagement.results")}
               </div>
               {filtered.length === 0 ? (
                 <div className="cities-empty">
-                  <FaCar />
                   <h2>{t("admin.vehiclesManagement.emptyTitle")}</h2>
                 </div>
               ) : (
@@ -628,7 +612,7 @@ export default function VehicleManagementPage() {
                         {headers.map((header) => (
                           <th key={header}>{header}</th>
                         ))}
-                        <th>{t("admin.cities.fields.actions")}</th>
+                        <th style={{ textAlign: 'center' }}>{t("admin.cities.fields.actions")}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -639,9 +623,7 @@ export default function VehicleManagementPage() {
                               {vehicle.imagenes?.[0] ? (
                                 <img src={vehicle.imagenes[0]} alt="" />
                               ) : (
-                                <span>
-                                  <FaCar />
-                                </span>
+                                <span style={{ fontSize: 11, fontWeight: 700 }}>Auto</span>
                               )}
                               <div>
                                 <strong>{vehicle.nombre}</strong>
@@ -679,22 +661,23 @@ export default function VehicleManagementPage() {
                                 )
                               : "—"}
                           </td>
-                          <td>
-                            <div className="cities-row-actions">
+                          <td style={{ textAlign: 'center' }}>
+                            <div className="cities-row-actions" style={{ justifyContent: 'center', gap: 6 }}>
                               <button
                                 type="button"
+                                className="btn-row-action"
                                 onClick={() => openEdit(vehicle)}
                               >
-                                <FaEdit />
+                                Editar
                               </button>
                               <button
-                                className="is-danger"
                                 type="button"
+                                className="btn-row-action is-delete"
                                 onClick={() =>
                                   setModal({ type: "delete", vehicle })
                                 }
                               >
-                                <FaTrash />
+                                Eliminar
                               </button>
                             </div>
                           </td>
