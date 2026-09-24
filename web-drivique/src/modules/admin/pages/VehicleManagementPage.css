@@ -205,3 +205,77 @@
   border-color: #dc2626;
 }
 
+/* 🎨 BOTONES DE EXPORTACIÓN CON DISEÑO PILL EXACTO AL CAPTURADO */
+.export-pills-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.export-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border-radius: 14px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.export-pill--excel {
+  background: #f0fdf4;
+  border: 1.5px solid #bbf7d0;
+  color: #16a34a;
+}
+
+.export-pill--excel svg {
+  color: #16a34a;
+  font-size: 14px;
+}
+
+.export-pill--excel:hover {
+  background: #dcfce7;
+  border-color: #86efac;
+  transform: translateY(-1px);
+}
+
+.export-pill--pdf {
+  background: #fef2f2;
+  border: 1.5px solid #fecaca;
+  color: #dc2626;
+}
+
+.export-pill--pdf svg {
+  color: #dc2626;
+  font-size: 14px;
+}
+
+.export-pill--pdf:hover {
+  background: #fee2e2;
+  border-color: #fca5a5;
+  transform: translateY(-1px);
+}
+
+.export-pill--print {
+  background: #eff6ff;
+  border: 1.5px solid #bfdbfe;
+  color: #2563eb;
+}
+
+.export-pill--print svg {
+  color: #2563eb;
+  font-size: 14px;
+}
+
+.export-pill--print:hover {
+  background: #dbeafe;
+  border-color: #93c5fd;
+  transform: translateY(-1px);
+}
+
+
