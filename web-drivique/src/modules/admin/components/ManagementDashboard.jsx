@@ -632,10 +632,8 @@ export default function ManagementDashboard({ branchOnly = false }) {
                         onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
                       >
                         {/* CÓDIGO */}
-                        <td style={{ padding: '12px 14px' }}>
-                          <span style={{ fontFamily: 'monospace', fontSize: 11.5, fontWeight: 700, color: '#334155', background: '#f1f5f9', padding: '3px 7px', borderRadius: 5, border: '1px solid #e2e8f0', display: 'inline-block', whiteSpace: 'nowrap' }}>
-                            {rawCod}
-                          </span>
+                        <td style={{ padding: '12px 14px', fontSize: 13, fontWeight: 700, color: '#0f172a', whiteSpace: 'nowrap' }}>
+                          {rawCod}
                         </td>
 
                         {/* FOTO */}
@@ -654,44 +652,37 @@ export default function ManagementDashboard({ branchOnly = false }) {
                               }}
                             />
                           ) : (
-                            <div style={{ width: 36, height: 28, borderRadius: 5, background: '#eff6ff', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2563eb' }}>
-                              <FaCar style={{ fontSize: 13 }} />
-                            </div>
+                            <span style={{ fontSize: 12, color: '#94a3b8' }}>—</span>
                           )}
                         </td>
 
                         {/* VEHÍCULO */}
-                        <td style={{ padding: '12px 14px', fontSize: 13, fontWeight: 700, color: '#0f172a', whiteSpace: 'nowrap' }}>
+                        <td style={{ padding: '12px 14px', fontSize: 13, fontWeight: 600, color: '#0f172a', whiteSpace: 'nowrap' }}>
                           {r.vehiculoNombre || 'Mazda CX-5'}
                         </td>
 
                         {/* PLACA */}
-                        <td style={{ padding: '12px 14px' }}>
-                          <span style={{ fontSize: 11, fontWeight: 700, color: '#1e293b', background: '#f1f5f9', padding: '2px 6px', borderRadius: 4, border: '1px solid #cbd5e1', display: 'inline-block' }}>
-                            {r.vehiculoPlaca || 'KLS-849'}
-                          </span>
+                        <td style={{ padding: '12px 14px', fontSize: 13, fontWeight: 700, color: '#0f172a', whiteSpace: 'nowrap' }}>
+                          {r.vehiculoPlaca || 'KLS-849'}
                         </td>
 
                         {/* CLIENTE */}
-                        <td style={{ padding: '12px 14px', fontSize: 13, fontWeight: 600, color: '#334155', whiteSpace: 'nowrap' }}>
+                        <td style={{ padding: '12px 14px', fontSize: 13, fontWeight: 500, color: '#334155', whiteSpace: 'nowrap' }}>
                           {clienteNombre}
                         </td>
 
                         {/* FECHA */}
-                        <td style={{ padding: '12px 14px', fontSize: 12, fontWeight: 600, color: '#475569', whiteSpace: 'nowrap' }}>
+                        <td style={{ padding: '12px 14px', fontSize: 13, fontWeight: 500, color: '#334155', whiteSpace: 'nowrap' }}>
                           {fechaSolo}
                         </td>
 
                         {/* HORA */}
-                        <td style={{ padding: '12px 14px', fontSize: 12, color: '#64748b', whiteSpace: 'nowrap' }}>
-                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-                            <FaClock style={{ color: '#2563eb', fontSize: 11 }} />
-                            {horaSolo}
-                          </span>
+                        <td style={{ padding: '12px 14px', fontSize: 13, fontWeight: 500, color: '#334155', whiteSpace: 'nowrap' }}>
+                          {horaSolo}
                         </td>
 
                         {/* MEDIO DE PAGO */}
-                        <td style={{ padding: '12px 14px', fontSize: 12, color: '#334155', whiteSpace: 'nowrap' }}>
+                        <td style={{ padding: '12px 14px', fontSize: 13, fontWeight: 500, color: '#334155', whiteSpace: 'nowrap' }}>
                           {textoMedio}
                         </td>
 
