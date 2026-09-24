@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { NavLink, useNavigate, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import {
@@ -26,7 +26,7 @@ import {
 import { useAuthStore } from '../../../store/authStore'
 import accessConfig from '../../../mocks/adminAccessConfig.json'
 import { ROLES } from '../../auth/utils/accessControl'
-import logo from '../../../assets/logocatalog.png'
+import logo from '../../../assets/logo.png'
 import { useBrand } from '../../../contexts/BrandContext'
 import './ManagementDashboard.css'
 
@@ -71,6 +71,9 @@ const NAV_LABELS = {
 
 export default function ManagementSidebar({ branchOnly = false }) {
   const [isOpen, setIsOpen] = useState(false)
+  const [isCollapsed, setIsCollapsed] = useState(() => {
+    return localStorage.getItem('drivique_sidebar_collapsed') === 'true'
+  })
   const { t } = useTranslation()
   const navigate = useNavigate()
   const usuario = useAuthStore((state) => state.usuario)
@@ -80,6 +83,32 @@ export default function ManagementSidebar({ branchOnly = false }) {
   const isBranchManager = branchOnly || usuario?.rol === ROLES.BRANCH_MANAGER || usuario?.rol === 'encargado' || usuario?.rol === 'encargado_sucursal'
   const roleKey = isBranchManager ? ROLES.BRANCH_MANAGER : ROLES.ADMIN
   const navigation = accessConfig.dashboardNavigation[roleKey] || []
+
+  // Sincronizar clase en el shell principal cuando cambia el estado de colapso
+  useEffect(() => {
+    const shell = document.querySelector('.management-shell')
+    if (shell) {
+      if (isCollapsed) {
+        shell.classList.add('has-collapsed-sidebar')
+      } else {
+        shell.classList.remove('has-collapsed-sidebar')
+      }
+    }
+  }, [isCollapsed])
+
+  const toggleCollapse = () => {
+    const next = !isCollapsed
+    setIsCollapsed(next)
+    localStorage.setItem('drivique_sidebar_collapsed', String(next))
+    const shell = document.querySelector('.management-shell')
+    if (shell) {
+      if (next) {
+        shell.classList.add('has-collapsed-sidebar')
+      } else {
+        shell.classList.remove('has-collapsed-sidebar')
+      }
+    }
+  }
 
   const closeSession = () => {
     logout()
@@ -98,7 +127,7 @@ export default function ManagementSidebar({ branchOnly = false }) {
             src={brandLogo} 
             alt={brandName}
             style={{
-              height: 24,
+              height: 26,
               width: 'auto',
               objectFit: 'contain',
             }}
@@ -124,22 +153,38 @@ export default function ManagementSidebar({ branchOnly = false }) {
         />
       )}
 
-      <aside className={`management-sidebar ${isOpen ? 'is-open' : ''}`}>
+      <aside className={`management-sidebar ${isOpen ? 'is-open' : ''} ${isCollapsed ? 'is-collapsed' : ''}`}>
         <div className="management-brand">
-          <Link to={isBranchManager ? '/encargado' : '/admin'} className="management-brand__link">
+          <Link to={isBranchManager ? '/encargado' : '/admin'} className="management-brand__link" title={brandName}>
             <img 
               src={brandLogo} 
               alt={brandName} 
               className="management-brand__logo"
               style={{
+                height: 32,
+                maxHeight: 32,
+                width: 'auto',
+                objectFit: 'contain',
                 filter: brand?.logoDataUrl ? 'none' : 'brightness(0) invert(1)',
               }}
             />
-            <div className="management-brand__text">
-              <strong className="management-brand__title">{brandName}</strong>
-              <small className="management-brand__subtitle">{t('admin.management', 'Gestión')}</small>
-            </div>
+            {!isCollapsed && (
+              <div className="management-brand__text">
+                <strong className="management-brand__title">{brandName}</strong>
+                <small className="management-brand__subtitle">{t('admin.management', 'Gestión')}</small>
+              </div>
+            )}
           </Link>
+
+          <button
+            type="button"
+            className="management-collapse-btn"
+            onClick={toggleCollapse}
+            title={isCollapsed ? "Expandir menú lateral" : "Contraer menú lateral"}
+            aria-label={isCollapsed ? "Expandir menú lateral" : "Contraer menú lateral"}
+          >
+            <FaBars />
+          </button>
         </div>
 
       <nav className="management-nav" aria-label={t('admin.navigation', 'Navegación')}>
@@ -157,6 +202,7 @@ export default function ManagementSidebar({ branchOnly = false }) {
               <NavLink
                 to={route}
                 end={key === 'dashboard'}
+                title={t(`admin.nav.${key}`, labelFallback)}
                 className={({ isActive }) => `management-nav__item ${isActive ? 'is-active' : ''}`}
               >
                 <Icon aria-hidden="true" />
@@ -167,8 +213,8 @@ export default function ManagementSidebar({ branchOnly = false }) {
         })}
       </nav>
 
-      <button type="button" className="management-logout" onClick={closeSession}>
-        <FaSignOutAlt /> {t('admin.logout', 'Cerrar sesión')}
+      <button type="button" className="management-logout" onClick={closeSession} title={t('admin.logout', 'Cerrar sesión')}>
+        <FaSignOutAlt /> <span>{t('admin.logout', 'Cerrar sesión')}</span>
       </button>
     </aside>
     </>
