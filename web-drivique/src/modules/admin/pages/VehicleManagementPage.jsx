@@ -34,26 +34,26 @@ import "./IncidentManagementPage.css";
 const EMPTY = {
   nombre: "",
   placa: "",
-  categoria: "Sedan",
-  transmision: "Automática",
-  combustible: "Gasolina",
+  categoria: "",
+  transmision: "",
+  combustible: "",
   color: "",
-  año: new Date().getFullYear(),
+  año: "",
   sucursal: "",
   descripcion: "",
   estadoFlota: VEHICLE_STATES.AVAILABLE,
-  puertas: 4,
-  pasajeros: 5,
-  maletero: 0,
+  puertas: "",
+  pasajeros: "",
+  maletero: "",
   cilindraje: "",
   destacado: false,
-  kmLimitado: 200,
-  precioLimitado: 0,
-  precioExcedente: 0,
-  precioIlimitado: 0,
+  kmLimitado: "",
+  precioLimitado: "",
+  precioExcedente: "",
+  precioIlimitado: "",
   caracteristicasTexto: "",
   equipamientoTecnologico: [],
-  seguros: [{ nombre: "Protección Obligatoria", precio: 29000 }],
+  seguros: [],
   imagenes: [],
 };
 const listToText = (items) =>
@@ -75,7 +75,7 @@ export default function VehicleManagementPage() {
     user?.rol === "encargado" ||
     user?.rol === "encargado_sucursal" ||
     user?.rol === "branch_manager";
-  const [activeTab, setActiveTab] = useState(() => (esEncargado ? 'vehiculos' : 'sede_central'));
+  const [activeTab, setActiveTab] = useState(() => (esEncargado ? 'flotas' : 'sede_central'));
   const [vehicles, setVehicles] = useState(() =>
     vehicleManagementService.list(),
   );
@@ -84,6 +84,16 @@ export default function VehicleManagementPage() {
   const [stateFilter, setStateFilter] = useState("all");
   const [modal, setModal] = useState(null);
   const [form, setForm] = useState(EMPTY);
+  const CATEGORY_EMPTY = {
+    nombre: "",
+    descripcion: "",
+    coberturaSedes: "Todas las Sedes de Colombia",
+    tarifaBaseDiaria: "",
+    depositoGarantia: "",
+    activo: true,
+    vehiculosCount: 0
+  };
+  const [categoryForm, setCategoryForm] = useState(CATEGORY_EMPTY);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [zoomImage, setZoomImage] = useState(null);
@@ -132,48 +142,55 @@ export default function VehicleManagementPage() {
       telefono: '+57 (601) 745-0000',
       correo: 'contacto@drivique.com.co',
       director: 'Carlos Eduardo Restrepo',
-      estado: 'Activa'
+      estado: 'Activa',
+      descripcion: 'Drivique es la empresa líder en soluciones de movilidad y alquiler de vehículos, ofreciendo un servicio premium con presencia a nivel nacional.',
+      mision: 'Brindar a nuestros clientes la mejor experiencia de alquiler de vehículos con un servicio ágil, seguro y de alta calidad.',
+      vision: 'Ser reconocidos para el 2030 como la principal empresa de movilidad y renta de autos en América Latina, destacando por nuestra innovación.'
     }
   ], []);
 
-  const mockGruposFlota = useMemo(() => [
+  const [mockGruposFlota, setMockGruposFlota] = useState([
     {
       id: 1,
-      codigo: 'FLT-ECO',
-      nombre: 'Flota Económica (Hatchbacks & Compactos)',
-      vehiculosCount: 12,
-      sedesDisponibles: 'Todas las Sedes de Colombia',
-      tarifaPromedio: 110000,
-      estado: 'Activa'
+      nombre: 'Económica (Compactos)',
+      descripcion: 'Vehículos pequeños, ideales para la ciudad y ahorro de combustible.',
+      coberturaSedes: 'Todas las Sedes de Colombia',
+      tarifaBaseDiaria: 110000,
+      depositoGarantia: 500000,
+      activo: true,
+      vehiculosCount: 12
     },
     {
       id: 2,
-      codigo: 'FLT-SED',
-      nombre: 'Flota Sedán (Confort & Ejecutivo)',
-      vehiculosCount: 16,
-      sedesDisponibles: 'Todas las Sedes de Colombia',
-      tarifaPromedio: 160000,
-      estado: 'Activa'
+      nombre: 'Sedán Ejecutivo',
+      descripcion: 'Mayor espacio interior y baúl, perfectos para viajes largos y negocios.',
+      coberturaSedes: 'Todas las Sedes de Colombia',
+      tarifaBaseDiaria: 160000,
+      depositoGarantia: 700000,
+      activo: true,
+      vehiculosCount: 16
     },
     {
       id: 3,
-      codigo: 'FLT-SUV',
-      nombre: 'Flota SUV & 4x4 (Aventura & Familia)',
-      vehiculosCount: 14,
-      sedesDisponibles: 'Medellín, Bogotá, Cali y Cartagena',
-      tarifaPromedio: 280000,
-      estado: 'Activa'
+      nombre: 'Camionetas SUV',
+      descripcion: 'Vehículos altos y robustos para cualquier terreno o viajes familiares.',
+      coberturaSedes: 'Medellín, Bogotá, Cali y Cartagena',
+      tarifaBaseDiaria: 280000,
+      depositoGarantia: 1200000,
+      activo: true,
+      vehiculosCount: 14
     },
     {
       id: 4,
-      codigo: 'FLT-ELE',
-      nombre: 'Flota Eléctrica & Híbrida (Eco-Drive)',
-      vehiculosCount: 6,
-      sedesDisponibles: 'Medellín y Bogotá',
-      tarifaPromedio: 240000,
-      estado: 'Activa'
+      nombre: 'Eléctricos (Eco-Drive)',
+      descripcion: 'Amigables con el medio ambiente, silenciosos y sin pico y placa.',
+      coberturaSedes: 'Medellín y Bogotá',
+      tarifaBaseDiaria: 240000,
+      depositoGarantia: 1000000,
+      activo: true,
+      vehiculosCount: 6
     }
-  ], []);
+  ]);
 
   const filteredSedeCentral = useMemo(() => {
     const term = search.trim().toLowerCase();
@@ -199,7 +216,7 @@ export default function VehicleManagementPage() {
     const term = search.trim().toLowerCase();
     return mockGruposFlota.filter((gf) =>
       !term ||
-      `${gf.id} ${gf.codigo} ${gf.nombre} ${gf.sedesDisponibles}`
+      `${gf.id} ${gf.nombre} ${gf.descripcion}`
         .toLowerCase()
         .includes(term)
     );
@@ -277,6 +294,33 @@ export default function VehicleManagementPage() {
     setModal({ type: "form", vehicle });
     setError("");
   };
+  const openCreateCategory = () => {
+    setCategoryForm(CATEGORY_EMPTY);
+    setModal({ type: 'category_form' });
+    setError('');
+  };
+  const openEditCategory = (category) => {
+    setCategoryForm(category);
+    setModal({ type: 'category_form', category });
+    setError('');
+  };
+  const saveCategory = (e) => {
+    e.preventDefault();
+    if (modal.category) {
+      setMockGruposFlota(mockGruposFlota.map(c => c.id === modal.category.id ? { ...categoryForm, id: c.id } : c));
+      setNotice("Categoría actualizada correctamente");
+    } else {
+      setMockGruposFlota([...mockGruposFlota, { ...categoryForm, id: Date.now() }]);
+      setNotice("Categoría creada correctamente");
+    }
+    close();
+  };
+  const removeCategory = () => {
+    setMockGruposFlota(mockGruposFlota.filter(c => c.id !== modal.category.id));
+    setNotice("Categoría eliminada correctamente");
+    close();
+  };
+
   const save = (event) => {
     event.preventDefault();
     const payload = {
@@ -364,8 +408,8 @@ export default function VehicleManagementPage() {
         <div className="cities-container" style={{ maxWidth: "100%" }}>
           <header className="cities-topbar">
             <div>
-              <p className="cities-eyebrow">{esEncargado ? `Sede: ${sucursalAsignada || 'Sucursal Local'}` : t("admin.management")}</p>
-              <h1>{esEncargado ? "Flota de Sucursal" : "Gestión de Flotas"}</h1>
+              <p className="cities-eyebrow">{esEncargado ? `Sucursal: ${sucursalAsignada || 'Local'}` : t("admin.management")}</p>
+              <h1>{esEncargado ? t("admin.nav.vehicles", "Flota y vehículos") : t("admin.vehiclesManagement.title", "Gestión de Vehículos")}</h1>
               <p className="cities-subtitle">
                 {esEncargado
                   ? `Control y gestión del estado operativo de los vehículos asignados a ${sucursalAsignada || 'tu sucursal'}.`
@@ -384,7 +428,7 @@ export default function VehicleManagementPage() {
                     } else if (activeTab === 'sucursales') {
                       showAlert({ icon: 'info', title: 'Crear Sucursal', text: 'Para registrar nuevas sedes, dirígete al módulo de Sucursales.' });
                     } else if (activeTab === 'flotas') {
-                      showAlert({ icon: 'info', title: 'Crear Grupo de Flota', text: 'Formulario de registro de nueva categoría de flota.' });
+                      showAlert({ icon: 'info', title: 'Crear Grupo de Vehículos', text: 'Formulario de registro de nueva categoría de vehículos.' });
                     } else {
                       openCreate();
                     }
@@ -414,110 +458,129 @@ export default function VehicleManagementPage() {
           {/* Pestañas de Secciones (Adaptadas al rol del usuario) */}
           <div className="fleet-attached-tabs">
             {!esEncargado && (
-              <>
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('sede_central')}
-                  className={`fleet-tab-btn ${activeTab === 'sede_central' ? 'is-active' : ''}`}
-                >
-                  Sede Central
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('sucursales')}
-                  className={`fleet-tab-btn ${activeTab === 'sucursales' ? 'is-active' : ''}`}
-                >
-                  Sucursales
-                </button>
-              </>
+              <button
+                type="button"
+                onClick={() => setActiveTab('sede_central')}
+                className={`fleet-tab-btn ${activeTab === 'sede_central' ? 'is-active' : ''}`}
+              >
+                Sede Central
+              </button>
             )}
-            <button
-              type="button"
-              onClick={() => setActiveTab('vehiculos')}
-              className={`fleet-tab-btn ${activeTab === 'vehiculos' ? 'is-active' : ''}`}
-            >
-              {esEncargado ? "Flota de la Sucursal" : "Vehículos"}
-            </button>
+            {!esEncargado && (
+              <button
+                type="button"
+                onClick={() => setActiveTab('sucursales')}
+                className={`fleet-tab-btn ${activeTab === 'sucursales' ? 'is-active' : ''}`}
+              >
+                Sucursales
+              </button>
+            )}
             <button
               type="button"
               onClick={() => setActiveTab('flotas')}
               className={`fleet-tab-btn ${activeTab === 'flotas' ? 'is-active' : ''}`}
             >
-              Categorías de Flotas
+              Categorías
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('vehiculos')}
+              className={`fleet-tab-btn ${activeTab === 'vehiculos' ? 'is-active' : ''}`}
+            >
+              Vehículos
             </button>
           </div>
 
           {/* TAB 1: SEDE CENTRAL */}
           {activeTab === 'sede_central' && (
             <section className="cities-card attached-to-tabs">
-              <div className="fleet-datatable-header">
-                <div className="fleet-datatable-search">
-                  <input
-                    type="text"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    placeholder="Buscar en Sede Central..."
-                  />
-                </div>
-                <div className="export-pills-group">
-                  <button type="button" className="export-pill export-pill--excel" onClick={() => exportExcel({ title: "Sede Central", headers: ["ID", "Nombre Sede", "NIT", "Razón Social", "Dirección", "Teléfono", "Correo", "Director", "Estado"], rows: filteredSedeCentral.map(sc => [sc.id, sc.nombre, sc.nit, sc.razonSocial, sc.direccion, sc.telefono, sc.correo, sc.director, sc.estado]), filename: "sede-central-drivique" })}>
-                    <FaFileExcel aria-hidden="true" /> Excel
-                  </button>
-                  <button type="button" className="export-pill export-pill--pdf" onClick={() => exportPdf({ title: "Sede Central", headers: ["ID", "Nombre Sede", "NIT", "Razón Social", "Dirección", "Teléfono", "Correo", "Director", "Estado"], rows: filteredSedeCentral.map(sc => [sc.id, sc.nombre, sc.nit, sc.razonSocial, sc.direccion, sc.telefono, sc.correo, sc.director, sc.estado]), filename: "sede-central-drivique" })}>
-                    <FaFilePdf aria-hidden="true" /> PDF
-                  </button>
-                  <button type="button" className="export-pill export-pill--print" onClick={() => printTable({ title: "Sede Central", headers: ["ID", "Nombre Sede", "NIT", "Razón Social", "Dirección", "Teléfono", "Correo", "Director", "Estado"], rows: filteredSedeCentral.map(sc => [sc.id, sc.nombre, sc.nit, sc.razonSocial, sc.direccion, sc.telefono, sc.correo, sc.director, sc.estado]) })}>
-                    <FaPrint aria-hidden="true" /> Imprimir
-                  </button>
-                </div>
-              </div>
-              <div className="cities-table-wrap">
-                <table className="fleet-table">
-                  <thead>
-                    <tr>
-                      <th>ID</th>
-                      <th>Nombre Sede</th>
-                      <th>NIT</th>
-                      <th>Razón Social</th>
-                      <th>Dirección Matriz</th>
-                      <th>Teléfono</th>
-                      <th>Correo</th>
-                      <th>Director General</th>
-                      <th>Estado</th>
-                      <th style={{ textAlign: 'center' }}>Acciones</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredSedeCentral.map((sc) => (
-                      <tr key={sc.id}>
-                        <td>{sc.id}</td>
-                        <td>{sc.nombre}</td>
-                        <td><code>{sc.nit}</code></td>
-                        <td>{sc.razonSocial}</td>
-                        <td>{sc.direccion}</td>
-                        <td>{sc.telefono}</td>
-                        <td>{sc.correo}</td>
-                        <td>{sc.director}</td>
-                        <td>
-                          <span className="status-pill is-green" style={{ padding: '4px 10px', borderRadius: 20, fontSize: 11, fontWeight: 700 }}>
+              <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                {filteredSedeCentral.map((sc) => (
+                  <div key={sc.id} style={{ display: 'flex', flexDirection: 'column', gap: '32px', background: 'var(--card-bg, #fff)', padding: '40px', borderRadius: '20px', border: '1px solid var(--city-border)', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
+                    
+                    {/* ENCABEZADO Y PERFIL CORPORATIVO */}
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '32px', alignItems: 'flex-start', paddingBottom: '32px', borderBottom: '1px solid var(--city-border)' }}>
+                      <div style={{ flex: 1, minWidth: '300px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+                          <h2 style={{ margin: 0, fontSize: '28px', color: 'var(--adm-text)', fontWeight: 800, letterSpacing: '-0.5px' }}>{sc.razonSocial}</h2>
+                          <span style={{ background: '#e0e7ff', color: 'var(--brand-primary)', padding: '4px 12px', borderRadius: '20px', fontSize: '12px', fontWeight: 700, letterSpacing: '0.5px' }}>MATRIZ</span>
+                        </div>
+                        <p style={{ margin: 0, fontSize: '16px', color: 'var(--brand-text)', lineHeight: 1.6, maxWidth: '800px' }}>{sc.descripcion}</p>
+                      </div>
+                    </div>
+
+                    {/* MISIÓN Y VISIÓN - TARJETAS PREMIUM */}
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '32px' }}>
+                      <div style={{ padding: '32px', borderRadius: '16px', border: '1px solid #e2e8f0', background: 'linear-gradient(145deg, #ffffff 0%, #f8fafc 100%)', position: 'relative', overflow: 'hidden' }}>
+                        <div style={{ position: 'absolute', top: 0, left: 0, width: '4px', height: '100%', background: 'var(--brand-primary)' }}></div>
+                        <h3 style={{ margin: '0 0 16px 0', fontSize: '13px', color: 'var(--brand-text)', textTransform: 'uppercase', letterSpacing: '1.5px', fontWeight: 700 }}>Nuestra Misión</h3>
+                        <p style={{ margin: 0, fontSize: '15px', color: 'var(--adm-text)', lineHeight: 1.7 }}>{sc.mision}</p>
+                      </div>
+                      <div style={{ padding: '32px', borderRadius: '16px', border: '1px solid #e2e8f0', background: 'linear-gradient(145deg, #ffffff 0%, #f8fafc 100%)', position: 'relative', overflow: 'hidden' }}>
+                        <div style={{ position: 'absolute', top: 0, left: 0, width: '4px', height: '100%', background: 'var(--brand-accent, #6366f1)' }}></div>
+                        <h3 style={{ margin: '0 0 16px 0', fontSize: '13px', color: 'var(--brand-text)', textTransform: 'uppercase', letterSpacing: '1.5px', fontWeight: 700 }}>Nuestra Visión</h3>
+                        <p style={{ margin: 0, fontSize: '15px', color: 'var(--adm-text)', lineHeight: 1.7 }}>{sc.vision}</p>
+                      </div>
+                    </div>
+
+                    {/* DATOS CORPORATIVOS - TARJETAS INDIVIDUALES */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '16px', marginBottom: '-16px' }}>
+                      <h3 style={{ margin: 0, fontSize: '18px', color: 'var(--adm-text)', fontWeight: 800 }}>Información Operativa</h3>
+                      {!esEncargado && (
+                        <button
+                          type="button"
+                          onClick={() => showAlert({ icon: 'info', title: 'Editar Matriz', text: 'Editando parámetros corporativos de Drivique Colombia.' })}
+                          style={{ background: 'transparent', border: 'none', color: 'var(--brand-primary)', fontWeight: 600, fontSize: '13px', cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.5px' }}
+                        >
+                          Editar Datos
+                        </button>
+                      )}
+                    </div>
+                    
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px' }}>
+                      <div style={{ padding: '24px', borderRadius: '16px', border: '1px solid #e2e8f0', background: 'linear-gradient(145deg, #ffffff 0%, #f8fafc 100%)', position: 'relative', overflow: 'hidden' }}>
+                        <div style={{ position: 'absolute', top: 0, left: 0, width: '4px', height: '100%', background: 'var(--brand-primary)' }}></div>
+                        <h3 style={{ margin: '0 0 8px 0', fontSize: '13px', color: 'var(--brand-text)', textTransform: 'uppercase', letterSpacing: '1.5px', fontWeight: 700 }}>NIT</h3>
+                        <p style={{ margin: 0, fontSize: '15px', color: 'var(--adm-text)', lineHeight: 1.7 }}>{sc.nit}</p>
+                      </div>
+                      
+                      <div style={{ padding: '24px', borderRadius: '16px', border: '1px solid #e2e8f0', background: 'linear-gradient(145deg, #ffffff 0%, #f8fafc 100%)', position: 'relative', overflow: 'hidden' }}>
+                        <div style={{ position: 'absolute', top: 0, left: 0, width: '4px', height: '100%', background: 'var(--brand-primary)' }}></div>
+                        <h3 style={{ margin: '0 0 8px 0', fontSize: '13px', color: 'var(--brand-text)', textTransform: 'uppercase', letterSpacing: '1.5px', fontWeight: 700 }}>Dirección Matriz</h3>
+                        <p style={{ margin: 0, fontSize: '15px', color: 'var(--adm-text)', lineHeight: 1.7 }}>{sc.direccion}</p>
+                      </div>
+                      
+                      <div style={{ padding: '24px', borderRadius: '16px', border: '1px solid #e2e8f0', background: 'linear-gradient(145deg, #ffffff 0%, #f8fafc 100%)', position: 'relative', overflow: 'hidden' }}>
+                        <div style={{ position: 'absolute', top: 0, left: 0, width: '4px', height: '100%', background: 'var(--brand-primary)' }}></div>
+                        <h3 style={{ margin: '0 0 8px 0', fontSize: '13px', color: 'var(--brand-text)', textTransform: 'uppercase', letterSpacing: '1.5px', fontWeight: 700 }}>Teléfono Corporativo</h3>
+                        <p style={{ margin: 0, fontSize: '15px', color: 'var(--adm-text)', lineHeight: 1.7 }}>{sc.telefono}</p>
+                      </div>
+                      
+                      <div style={{ padding: '24px', borderRadius: '16px', border: '1px solid #e2e8f0', background: 'linear-gradient(145deg, #ffffff 0%, #f8fafc 100%)', position: 'relative', overflow: 'hidden' }}>
+                        <div style={{ position: 'absolute', top: 0, left: 0, width: '4px', height: '100%', background: 'var(--brand-primary)' }}></div>
+                        <h3 style={{ margin: '0 0 8px 0', fontSize: '13px', color: 'var(--brand-text)', textTransform: 'uppercase', letterSpacing: '1.5px', fontWeight: 700 }}>Correo Electrónico</h3>
+                        <p style={{ margin: 0, fontSize: '15px', color: 'var(--adm-text)', lineHeight: 1.7 }}>{sc.correo}</p>
+                      </div>
+                      
+                      <div style={{ padding: '24px', borderRadius: '16px', border: '1px solid #e2e8f0', background: 'linear-gradient(145deg, #ffffff 0%, #f8fafc 100%)', position: 'relative', overflow: 'hidden' }}>
+                        <div style={{ position: 'absolute', top: 0, left: 0, width: '4px', height: '100%', background: 'var(--brand-primary)' }}></div>
+                        <h3 style={{ margin: '0 0 8px 0', fontSize: '13px', color: 'var(--brand-text)', textTransform: 'uppercase', letterSpacing: '1.5px', fontWeight: 700 }}>Director General</h3>
+                        <p style={{ margin: 0, fontSize: '15px', color: 'var(--adm-text)', lineHeight: 1.7 }}>{sc.director}</p>
+                      </div>
+                      
+                      <div style={{ padding: '24px', borderRadius: '16px', border: '1px solid #e2e8f0', background: 'linear-gradient(145deg, #ffffff 0%, #f8fafc 100%)', position: 'relative', overflow: 'hidden' }}>
+                        <div style={{ position: 'absolute', top: 0, left: 0, width: '4px', height: '100%', background: 'var(--brand-primary)' }}></div>
+                        <h3 style={{ margin: '0 0 8px 0', fontSize: '13px', color: 'var(--brand-text)', textTransform: 'uppercase', letterSpacing: '1.5px', fontWeight: 700 }}>Estado Operativo</h3>
+                        <p style={{ margin: 0, fontSize: '15px', color: 'var(--adm-text)', lineHeight: 1.7 }}>
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: '#059669', fontWeight: 700 }}>
+                            <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10b981' }}></span>
                             {sc.estado}
                           </span>
-                        </td>
-                        <td style={{ textAlign: 'center' }}>
-                          <div className="cities-row-actions">
-                            <button
-                              type="button"
-                              className="btn-row-action"
-                              onClick={() => showAlert({ icon: 'info', title: 'Editar Matriz', text: 'Editando parámetros corporativos de Drivique Colombia.' })}
-                            >
-                              Editar
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </section>
           )}
@@ -606,26 +669,29 @@ export default function VehicleManagementPage() {
             </section>
           )}
 
-          {/* TAB 3: CATEGORÍAS DE FLOTAS */}
+          {/* TAB 3: CATEGORÍAS DE VEHÍCULOS */}
           {activeTab === 'flotas' && (
             <section className="cities-card attached-to-tabs">
               <div className="fleet-datatable-header">
-                <div className="fleet-datatable-search">
+                <div className="fleet-datatable-search" style={{ display: 'flex', gap: '16px' }}>
                   <input
                     type="text"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    placeholder="Buscar grupo de flota..."
+                    placeholder="Buscar grupo de vehículos..."
                   />
+                  <button type="button" className="cities-primary" onClick={openCreateCategory} style={{ whiteSpace: 'nowrap', padding: '0 24px' }}>
+                    <FaPlus style={{ marginRight: 8 }} /> Crear Categoría
+                  </button>
                 </div>
                 <div className="export-pills-group">
-                  <button type="button" className="export-pill export-pill--excel" onClick={() => exportExcel({ title: "Categorías de Flotas", headers: ["ID", "Código", "Nombre Flota", "Vehículos", "Cobertura", "Tarifa Promedio", "Estado"], rows: filteredFlotas.map(gf => [gf.id, gf.codigo, gf.nombre, `${gf.vehiculosCount} unidades`, gf.sedesDisponibles, gf.tarifaPromedio, gf.estado]), filename: "flotas-drivique" })}>
+                  <button type="button" className="export-pill export-pill--excel" onClick={() => exportExcel({ title: "Categorías de Vehículos", headers: ["ID", "Nombre", "Descripción", "Cobertura de Sedes", "Vehículos", "Tarifa Base Diaria", "Depósito de Garantía", "Estado"], rows: filteredFlotas.map(gf => [gf.id, gf.nombre, gf.descripcion, gf.coberturaSedes, `${gf.vehiculosCount} unidades`, gf.tarifaBaseDiaria, gf.depositoGarantia, gf.activo ? 'Activa' : 'Inactiva']), filename: "categorias-vehiculos-drivique" })}>
                     <FaFileExcel aria-hidden="true" /> Excel
                   </button>
-                  <button type="button" className="export-pill export-pill--pdf" onClick={() => exportPdf({ title: "Categorías de Flotas", headers: ["ID", "Código", "Nombre Flota", "Vehículos", "Cobertura", "Tarifa Promedio", "Estado"], rows: filteredFlotas.map(gf => [gf.id, gf.codigo, gf.nombre, `${gf.vehiculosCount} unidades`, gf.sedesDisponibles, gf.tarifaPromedio, gf.estado]), filename: "flotas-drivique" })}>
+                  <button type="button" className="export-pill export-pill--pdf" onClick={() => exportPdf({ title: "Categorías de Vehículos", headers: ["ID", "Nombre", "Descripción", "Cobertura de Sedes", "Vehículos", "Tarifa Base Diaria", "Depósito de Garantía", "Estado"], rows: filteredFlotas.map(gf => [gf.id, gf.nombre, gf.descripcion, gf.coberturaSedes, `${gf.vehiculosCount} unidades`, gf.tarifaBaseDiaria, gf.depositoGarantia, gf.activo ? 'Activa' : 'Inactiva']), filename: "categorias-vehiculos-drivique" })}>
                     <FaFilePdf aria-hidden="true" /> PDF
                   </button>
-                  <button type="button" className="export-pill export-pill--print" onClick={() => printTable({ title: "Categorías de Flotas", headers: ["ID", "Código", "Nombre Flota", "Vehículos", "Cobertura", "Tarifa Promedio", "Estado"], rows: filteredFlotas.map(gf => [gf.id, gf.codigo, gf.nombre, `${gf.vehiculosCount} unidades`, gf.sedesDisponibles, gf.tarifaPromedio, gf.estado]) })}>
+                  <button type="button" className="export-pill export-pill--print" onClick={() => printTable({ title: "Categorías de Vehículos", headers: ["ID", "Nombre", "Descripción", "Cobertura de Sedes", "Vehículos", "Tarifa Base Diaria", "Depósito de Garantía", "Estado"], rows: filteredFlotas.map(gf => [gf.id, gf.nombre, gf.descripcion, gf.coberturaSedes, `${gf.vehiculosCount} unidades`, gf.tarifaBaseDiaria, gf.depositoGarantia, gf.activo ? 'Activa' : 'Inactiva']) })}>
                     <FaPrint aria-hidden="true" /> Imprimir
                   </button>
                 </div>
@@ -635,11 +701,12 @@ export default function VehicleManagementPage() {
                   <thead>
                     <tr>
                       <th>ID</th>
-                      <th>Código Flota</th>
-                      <th>Nombre del Grupo de Flota</th>
-                      <th>Total Vehículos</th>
+                      <th>Nombre de la Categoría</th>
+                      <th>Descripción</th>
                       <th>Cobertura de Sedes</th>
-                      <th>Tarifa Promedio / Día</th>
+                      <th>Total Vehículos</th>
+                      <th>Tarifa Base Diaria</th>
+                      <th>Depósito de Garantía</th>
                       <th>Estado Operativo</th>
                       <th style={{ textAlign: 'center' }}>Acciones</th>
                     </tr>
@@ -648,14 +715,15 @@ export default function VehicleManagementPage() {
                     {filteredFlotas.map((gf) => (
                       <tr key={gf.id}>
                         <td>{gf.id}</td>
-                        <td><code>{gf.codigo}</code></td>
                         <td>{gf.nombre}</td>
+                        <td style={{ maxWidth: 200, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{gf.descripcion}</td>
+                        <td>{gf.coberturaSedes}</td>
                         <td>{gf.vehiculosCount} unidades</td>
-                        <td>{gf.sedesDisponibles}</td>
-                        <td>{formatCurrency(gf.tarifaPromedio, divisa, tasaUSD)}</td>
+                        <td>{formatCurrency(gf.tarifaBaseDiaria, divisa, tasaUSD)}</td>
+                        <td>{formatCurrency(gf.depositoGarantia, divisa, tasaUSD)}</td>
                         <td>
-                          <span className="status-pill is-green" style={{ padding: '4px 10px', borderRadius: 20, fontSize: 11, fontWeight: 700 }}>
-                            {gf.estado}
+                          <span className={`status-pill ${gf.activo ? 'is-green' : 'is-red'}`} style={{ padding: '4px 10px', borderRadius: 20, fontSize: 11, fontWeight: 700 }}>
+                            {gf.activo ? 'Activa' : 'Inactiva'}
                           </span>
                         </td>
                         <td style={{ textAlign: 'center' }}>
@@ -663,7 +731,7 @@ export default function VehicleManagementPage() {
                             <button
                               type="button"
                               className="btn-row-action"
-                              onClick={() => showAlert({ icon: 'info', title: 'Editar Flota', text: `Modificando grupo ${gf.nombre}.` })}
+                              onClick={() => openEditCategory(gf)}
                             >
                               Editar
                             </button>
@@ -671,7 +739,7 @@ export default function VehicleManagementPage() {
                               <button
                                 type="button"
                                 className="btn-row-action is-delete"
-                                onClick={() => showAlert({ icon: 'warning', title: 'Eliminar Flota', text: `¿Deseas eliminar el grupo ${gf.nombre}?` })}
+                                onClick={() => setModal({ type: 'delete_category', category: gf })}
                               >
                                 Eliminar
                               </button>
@@ -774,16 +842,7 @@ export default function VehicleManagementPage() {
                                   objectFit: 'cover',
                                   border: '1px solid #cbd5e1',
                                   display: 'block',
-                                  cursor: 'zoom-in',
-                                  transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-                                }}
-                                onMouseEnter={(e) => {
-                                  e.currentTarget.style.transform = 'scale(1.15)';
-                                  e.currentTarget.style.boxShadow = '0 4px 10px rgba(0,0,0,0.18)';
-                                }}
-                                onMouseLeave={(e) => {
-                                  e.currentTarget.style.transform = 'scale(1)';
-                                  e.currentTarget.style.boxShadow = 'none';
+                                  cursor: 'pointer',
                                 }}
                               />
                             ) : (
@@ -888,11 +947,11 @@ export default function VehicleManagementPage() {
                     <div className="incident-grid-2">
                       <div className="incident-field">
                         <span className="incident-field-label">{t("admin.vehiclesManagement.fields.vehicle")}</span>
-                        <input value={form.nombre} onChange={(e) => setForm({ ...form, nombre: e.target.value })} />
+                        <input value={form.nombre} onChange={(e) => setForm({ ...form, nombre: e.target.value })} placeholder="Ej: Toyota Corolla 2024" />
                       </div>
                       <div className="incident-field">
                         <span className="incident-field-label">{t("admin.vehiclesManagement.fields.plate")}</span>
-                        <input value={form.placa} onChange={(e) => setForm({ ...form, placa: e.target.value.toUpperCase() })} />
+                        <input value={form.placa} onChange={(e) => setForm({ ...form, placa: e.target.value.toUpperCase() })} placeholder="Ej: ABC-123" />
                         <small style={{ color: 'var(--brand-text)', fontSize: 11, fontWeight: 800, marginTop: 4 }}>
                           {pico.dia ? `${t("admin.vehiclesManagement.picoResult")}: ${t(`vehiculo.picoYPlaca.dias.${pico.dia}`)}` : t("admin.vehiclesManagement.picoPending")}
                         </small>
@@ -917,19 +976,19 @@ export default function VehicleManagementPage() {
                         )}
                       </div>
                       {[
-                        ["categoria", "category"],
-                        ["transmision", "transmission"],
-                        ["combustible", "fuel"],
-                        ["color", "color"],
-                      ].map(([key, label]) => (
+                        ["categoria", "category", "Ej: Sedan, SUV, Deportivo"],
+                        ["transmision", "transmission", "Ej: Automática, Manual"],
+                        ["combustible", "fuel", "Ej: Gasolina, Híbrido, Eléctrico"],
+                        ["color", "color", "Ej: Blanco Perla, Gris Oscuro"],
+                      ].map(([key, label, placeholder]) => (
                         <div className="incident-field" key={key}>
                           <span className="incident-field-label">{t(`admin.vehiclesManagement.fields.${label}`)}</span>
-                          <input value={form[key]} onChange={(e) => setForm({ ...form, [key]: e.target.value })} />
+                          <input value={form[key]} onChange={(e) => setForm({ ...form, [key]: e.target.value })} placeholder={placeholder} />
                         </div>
                       ))}
                       <div className="incident-field">
                         <span className="incident-field-label">{t("admin.vehiclesManagement.fields.year")}</span>
-                        <input type="number" value={form.año} onChange={(e) => setForm({ ...form, año: e.target.value })} />
+                        <input type="number" value={form.año} onChange={(e) => setForm({ ...form, año: e.target.value })} placeholder="Ej: 2024" />
                       </div>
                     </div>
 
@@ -940,18 +999,18 @@ export default function VehicleManagementPage() {
                     </div>
                     <div className="incident-grid-2">
                       {[
-                        ["puertas", "doors"],
-                        ["pasajeros", "passengers"],
-                        ["maletero", "trunk"],
-                      ].map(([key, label]) => (
+                        ["puertas", "doors", "Ej: 4"],
+                        ["pasajeros", "passengers", "Ej: 5"],
+                        ["maletero", "trunk", "Ej: 2"],
+                      ].map(([key, label, placeholder]) => (
                         <div className="incident-field" key={key}>
                           <span className="incident-field-label">{t(`admin.vehiclesManagement.fields.${label}`)}</span>
-                          <input type="number" value={form[key]} onChange={(e) => setForm({ ...form, [key]: e.target.value })} />
+                          <input type="number" value={form[key]} onChange={(e) => setForm({ ...form, [key]: e.target.value })} placeholder={placeholder} />
                         </div>
                       ))}
                       <div className="incident-field">
                         <span className="incident-field-label">{t("admin.vehiclesManagement.fields.engine")}</span>
-                        <input value={form.cilindraje} onChange={(e) => setForm({ ...form, cilindraje: e.target.value })} />
+                        <input value={form.cilindraje} onChange={(e) => setForm({ ...form, cilindraje: e.target.value })} placeholder="Ej: 2.0L Turbo" />
                       </div>
                     </div>
                     
@@ -971,14 +1030,14 @@ export default function VehicleManagementPage() {
                     </div>
                     <div className="incident-grid-2">
                       {[
-                        ["kmLimitado", "limitedKm"],
-                        ["precioLimitado", "limitedPrice"],
-                        ["precioExcedente", "extraPrice"],
-                        ["precioIlimitado", "unlimitedPrice"],
-                      ].map(([key, label]) => (
+                        ["kmLimitado", "limitedKm", "Ej: 200"],
+                        ["precioLimitado", "limitedPrice", "Ej: 85000"],
+                        ["precioExcedente", "extraPrice", "Ej: 500"],
+                        ["precioIlimitado", "unlimitedPrice", "Ej: 120000"],
+                      ].map(([key, label, placeholder]) => (
                         <div className="incident-field" key={key}>
                           <span className="incident-field-label">{t(`admin.vehiclesManagement.fields.${label}`)}</span>
-                          <input type="number" min="0" value={form[key]} onChange={(e) => setForm({ ...form, [key]: e.target.value })} />
+                          <input type="number" min="0" value={form[key]} onChange={(e) => setForm({ ...form, [key]: e.target.value })} placeholder={placeholder} />
                         </div>
                       ))}
                     </div>
@@ -1037,7 +1096,7 @@ export default function VehicleManagementPage() {
                     </div>
                   </form>
                 </>
-              ) : (
+              ) : modal.type === "delete" ? (
                 <>
                   <div className="cities-delete-icon">
                     <FaTrash />
@@ -1061,7 +1120,84 @@ export default function VehicleManagementPage() {
                     </button>
                   </div>
                 </>
-              )}
+              ) : modal.type === "category_form" ? (
+                <>
+                  <div className="cities-modal__head">
+                    <div>
+                      <p className="cities-eyebrow">Formulario de Categoría</p>
+                      <h2>{modal.category ? 'Editar Categoría' : 'Nueva Categoría'}</h2>
+                    </div>
+                    <button type="button" onClick={close}>×</button>
+                  </div>
+                  <form onSubmit={saveCategory} className="incident-form" style={{ display: 'flex', flexDirection: 'column', gap: 20, padding: '10px 0' }}>
+                    <div className="incident-field" style={{ marginBottom: 4 }}>
+                      <span className="incident-field-label" style={{ fontSize: 14, color: 'var(--brand-primary)', borderBottom: '2px solid var(--city-border)', paddingBottom: 8, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                        Detalles de la Categoría
+                      </span>
+                    </div>
+                    <div className="incident-grid-2" style={{ gap: '20px 24px' }}>
+                      <div className="incident-field" style={{ gridColumn: '1 / -1' }}>
+                        <span className="incident-field-label" style={{ fontWeight: 600, color: 'var(--brand-text)' }}>Nombre de la Categoría</span>
+                        <input value={categoryForm.nombre} onChange={(e) => setCategoryForm({ ...categoryForm, nombre: e.target.value })} placeholder="Ej: Hatchbacks & Compactos" required style={{ width: '100%', padding: '12px 16px', borderRadius: 10, border: '1px solid var(--brand-border)', fontSize: 15, background: 'var(--brand-surface)' }} />
+                      </div>
+                      <div className="incident-field" style={{ gridColumn: '1 / -1' }}>
+                        <span className="incident-field-label" style={{ fontWeight: 600, color: 'var(--brand-text)' }}>Descripción</span>
+                        <textarea value={categoryForm.descripcion} onChange={(e) => setCategoryForm({ ...categoryForm, descripcion: e.target.value })} placeholder="Breve explicación de los tipos de vehículos en esta categoría..." rows={3} style={{ width: '100%', padding: '12px 16px', borderRadius: 10, border: '1px solid var(--brand-border)', fontSize: 15, fontFamily: 'inherit', background: 'var(--brand-surface)', resize: 'none' }} required />
+                      </div>
+                      <div className="incident-field" style={{ gridColumn: '1 / -1' }}>
+                        <span className="incident-field-label" style={{ fontWeight: 600, color: 'var(--brand-text)' }}>Cobertura de Sedes</span>
+                        <input value={categoryForm.coberturaSedes} onChange={(e) => setCategoryForm({ ...categoryForm, coberturaSedes: e.target.value })} placeholder="Ej: Todas las Sedes de Colombia" required style={{ width: '100%', padding: '12px 16px', borderRadius: 10, border: '1px solid var(--brand-border)', fontSize: 15, background: 'var(--brand-surface)' }} />
+                      </div>
+                    </div>
+
+                    <div className="incident-field" style={{ marginBottom: 4, marginTop: 10 }}>
+                      <span className="incident-field-label" style={{ fontSize: 14, color: 'var(--brand-primary)', borderBottom: '2px solid var(--city-border)', paddingBottom: 8, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                        Tarifas y Operación
+                      </span>
+                    </div>
+                    <div className="incident-grid-2" style={{ gap: '20px 24px' }}>
+                      <div className="incident-field">
+                        <span className="incident-field-label" style={{ fontWeight: 600, color: 'var(--brand-text)' }}>Tarifa Base Diaria (COP)</span>
+                        <div style={{ position: 'relative' }}>
+                          <span style={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)', color: 'var(--brand-secondary)', fontWeight: 600 }}>$</span>
+                          <input type="number" value={categoryForm.tarifaBaseDiaria} onChange={(e) => setCategoryForm({ ...categoryForm, tarifaBaseDiaria: e.target.value })} placeholder="110000" required style={{ width: '100%', padding: '12px 16px 12px 36px', borderRadius: 10, border: '1px solid var(--brand-border)', fontSize: 15, background: 'var(--brand-surface)' }} />
+                        </div>
+                      </div>
+                      <div className="incident-field">
+                        <span className="incident-field-label" style={{ fontWeight: 600, color: 'var(--brand-text)' }}>Depósito de Garantía (COP)</span>
+                        <div style={{ position: 'relative' }}>
+                          <span style={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)', color: 'var(--brand-secondary)', fontWeight: 600 }}>$</span>
+                          <input type="number" value={categoryForm.depositoGarantia} onChange={(e) => setCategoryForm({ ...categoryForm, depositoGarantia: e.target.value })} placeholder="500000" required style={{ width: '100%', padding: '12px 16px 12px 36px', borderRadius: 10, border: '1px solid var(--brand-border)', fontSize: 15, background: 'var(--brand-surface)' }} />
+                        </div>
+                      </div>
+                      <div className="incident-field" style={{ gridColumn: '1 / -1' }}>
+                        <span className="incident-field-label" style={{ fontWeight: 600, color: 'var(--brand-text)' }}>Estado Operativo</span>
+                        <select value={categoryForm.activo} onChange={(e) => setCategoryForm({ ...categoryForm, activo: e.target.value === 'true' })} style={{ width: '100%', padding: '12px 16px', borderRadius: 10, border: '1px solid var(--brand-border)', fontSize: 15, background: 'var(--brand-surface)', fontWeight: 600, color: categoryForm.activo ? 'var(--brand-green, #10b981)' : 'var(--brand-red, #ef4444)' }}>
+                          <option value="true">Activa</option>
+                          <option value="false">Inactiva</option>
+                        </select>
+                      </div>
+                    </div>
+                    
+                    <div className="cities-modal__actions" style={{ marginTop: 32, paddingTop: 20, borderTop: '1px solid var(--city-border)', display: 'flex', justifyContent: 'flex-end', gap: 16 }}>
+                      <button type="button" onClick={close} style={{ padding: '12px 24px', borderRadius: 10, fontWeight: 600, background: 'transparent', color: 'var(--brand-text)', border: '1px solid var(--brand-border)', cursor: 'pointer' }}>{t("common.cancel")}</button>
+                      <button type="submit" style={{ padding: '12px 28px', borderRadius: 10, fontWeight: 600, background: 'var(--brand-primary)', color: 'white', border: 'none', cursor: 'pointer', boxShadow: '0 4px 12px rgba(37,99,235,0.2)' }}>{t("common.save")}</button>
+                    </div>
+                  </form>
+                </>
+              ) : modal.type === "delete_category" ? (
+                <>
+                  <div className="cities-delete-icon">
+                    <FaTrash />
+                  </div>
+                  <h2>Eliminar Categoría</h2>
+                  <p>¿Estás seguro de que deseas eliminar la categoría <strong>{modal.category.nombre}</strong>? Esta acción no se puede deshacer.</p>
+                  <div className="cities-modal__actions">
+                    <button type="button" onClick={close}>{t("common.cancel")}</button>
+                    <button className="cities-danger" type="button" onClick={removeCategory}>{t("common.delete")}</button>
+                  </div>
+                </>
+              ) : null}
             </section>
           </div>
         )}

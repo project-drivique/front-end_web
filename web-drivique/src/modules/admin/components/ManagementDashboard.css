@@ -193,7 +193,7 @@
   border-radius: 12px;
   color: rgba(255, 255, 255, 0.85);
   text-decoration: none;
-  font-weight: 650;
+  font-weight: 500;
   font-size: 13.5px;
   transition: all 0.2s ease;
 }
@@ -207,7 +207,7 @@
 .management-nav__item.is-active {
   background: rgba(255, 255, 255, 0.22) !important;
   color: #ffffff !important;
-  font-weight: 800;
+  font-weight: 600;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14);
   border: 1px solid rgba(255, 255, 255, 0.28) !important;
   backdrop-filter: blur(8px);

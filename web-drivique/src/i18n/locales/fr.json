@@ -2497,6 +2497,18 @@
         "watermark": "Cet enregistrement d'audit est immuable et ne peut être altéré ou supprimé conformément aux normes de traçabilité de la plateforme.",
         "close": "Fermer"
       }
+    },
+    "branchProfile": {
+      "title": "Mi sucursal",
+      "subtitle": "Administra la información pública y operativa de tu sucursal.",
+      "savedSuccess": "Los datos de la sucursal han sido actualizados.",
+      "fields": {
+        "address": "Dirección",
+        "hours": "Horario de atención",
+        "phone": "Teléfono",
+        "latitude": "Latitud",
+        "longitude": "Longitud"
+      }
     }
   },
   "contratoFirma": {
@@ -2853,6 +2865,102 @@
     "tableTime": "Heure d'Enregistrement",
     "tableCashier": "Caissier / Responsable",
     "tableAction": "Action",
-    "viewReceipt": "Voir le Reçu"
+    "viewReceipt": "Voir le Reçu",
+    "dashboard": {
+      "title": "Dashboard",
+      "subtitle": "Resumen del día en tu sucursal",
+      "realtime": "En tiempo real",
+      "actions": {
+        "createReservation": "Crear reserva",
+        "reportIncident": "Reportar incidencia"
+      },
+      "kpi": {
+        "monthlyRevenue": "Ingresos del mes",
+        "revenueVsMonth": "+8,5% vs. mes anterior",
+        "todayDeliveries": "Entregas de hoy",
+        "customersAtCounter": "clientes en mostrador",
+        "todayReturns": "Devoluciones de hoy",
+        "vehiclesReturning": "vehículos retornando a la sucursal",
+        "occupancy": "Ocupación",
+        "occupancyVehicles": "{{rented}} de {{total}} vehículos"
+      },
+      "kpiTooltip": {
+        "monthlyRevenue": "Somme des réservations encaissées ce mois-ci dans votre succursale.",
+        "todayDeliveries": "Clients récupérant leur véhicule aujourd'hui au comptoir.",
+        "todayReturns": "Véhicules retournant à la succursale aujourd'hui.",
+        "occupancy": "Pourcentage de votre flotte actuellement en location."
+      },
+      "drawer": {
+        "title": "Détail de la réservation",
+        "client": "Client",
+        "phone": "Téléphone",
+        "vehicle": "Véhicule",
+        "plate": "Plaque",
+        "category": "Catégorie",
+        "time": "Heure prévue",
+        "type": "Type d'opération",
+        "delivery": "Livraison au comptoir",
+        "return": "Retour à la succursale",
+        "status": "Statut actuel",
+        "viewFullReservation": "Voir la réservation complète",
+        "close": "Fermer"
+      },
+      "fleetChips": {
+        "available": "Disponibles",
+        "rented": "En location",
+        "maintenance": "En atelier"
+      },
+      "schedule": {
+        "title": "Programación de hoy",
+        "tabs": {
+          "deliveries": "Entregas {{count}}",
+          "returns": "Devoluciones {{count}}"
+        },
+        "colTime": "Hora",
+        "colClient": "Cliente",
+        "colVehicle": "Vehículo",
+        "colStatus": "Estado",
+        "viewAllReservations": "Ver todas las reservas →",
+        "emptyDeliveries": "No hay entregas programadas para hoy.",
+        "emptyReturns": "No hay devoluciones programadas para hoy."
+      },
+      "attention": {
+        "title": "Requiere tu atención",
+        "documentsToValidate_one": "1 documento por validar",
+        "documentsToValidate_other": "{{count}} documentos por validar",
+        "openIncidents_one": "1 incidencia abierta",
+        "openIncidents_other": "{{count}} incidencias abiertas",
+        "pendingPayments_one": "1 pago pendiente",
+        "pendingPayments_other": "{{count}} pagos pendientes",
+        "expiringVehicleDocs_one": "1 document de véhicule expirant",
+        "expiringVehicleDocs_other": "{{count}} documents de véhicule expirant",
+        "allClear": "Todo al día"
+      },
+      "fleet": {
+        "title": "Estado de la flota",
+        "available": "Disponibles",
+        "rented": "En alquiler",
+        "maintenance": "En taller o mantenimiento",
+        "viewFleet": "Ver flota →",
+        "vehicleCount_one": "1 vehículo",
+        "vehicleCount_other": "{{count}} vehículos"
+      },
+      "notifications": {
+        "title": "Notifications",
+        "markAllAsRead": "Tout marquer comme lu",
+        "viewAll": "Voir tout",
+        "empty": "Aucune notification en attente."
+      },
+      "rowMenu": {
+        "viewReservation": "Voir la réservation complète",
+        "contactClient": "Contacter le client",
+        "reportIncident": "Signaler un incident"
+      },
+      "kpiMenu": {
+        "viewReportDetails": "Voir les détails dans Rapports",
+        "exportData": "Exporter la donnée",
+        "exportComingSoon": "Fonctionnalité disponible bientôt"
+      }
+    }
   }
 }

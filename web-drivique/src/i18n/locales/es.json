@@ -2849,6 +2849,165 @@
     "tableTime": "Hora de Registro",
     "tableCashier": "Cajero / Encargado",
     "tableAction": "Acción",
-    "viewReceipt": "Ver Recibo"
+    "viewReceipt": "Ver Recibo",
+    "branchProfile": {
+      "title": "Mi sucursal",
+      "subtitle": "Datos que ven tus clientes en el catálogo",
+      "unsavedChanges": "Tienes cambios sin guardar",
+      "noChanges": "No hay cambios por guardar",
+      "saveSuccessTitle": "Cambios guardados",
+      "saveSuccessMsg": "Los datos de la sucursal han sido actualizados con éxito.",
+      "readOnlyHint": "Solo el administrador general puede cambiarlo",
+      "devSwitch": "Modo Pruebas - Seleccionar sucursal:",
+      "actions": {
+        "cancel": "Cancelar",
+        "save": "Guardar cambios"
+      },
+      "general": {
+        "title": "Información general"
+      },
+      "schedules": {
+        "title": "Horarios de atención",
+        "typeLabel": "Tipo de sucursal",
+        "typeAirport": "Aeropuerto o terminal",
+        "typeStandard": "Sucursal estándar",
+        "branchAttention": "Atención en la sucursal",
+        "homeDelivery": "Entrega y recogida a domicilio",
+        "scheduleTypeHint": "Definido por la empresa según el tipo de sucursal",
+        "infoNote": "Estos horarios determinan las horas de retiro y devolución que pueden elegir tus clientes al reservar, según el lugar que escojan."
+      },
+      "location": {
+        "title": "Ubicación",
+        "mapUnavailable": "Mapa no disponible",
+        "getDirections": "Cómo llegar →"
+      },
+      "summaryCard": {
+        "title": "Resumen",
+        "manager": "Encargado",
+        "vehicles": "Vehículos",
+        "viewFleet": "Ver flota →",
+        "categories": "Categorías que ofrece"
+      },
+      "status": {
+        "active": "Activa",
+        "inactive": "Inactiva"
+      },
+      "fields": {
+        "name": "Nombre de la sucursal",
+        "city": "Ciudad",
+        "status": "Estado",
+        "address": "Dirección",
+        "phone": "Teléfono",
+        "pickupInstructions": "Indicaciones de recogida",
+        "latitude": "Latitud",
+        "longitude": "Longitud"
+      },
+      "placeholders": {
+        "pickupInstructions": "Frente a la salida 3 del aeropuerto"
+      },
+      "errors": {
+        "addressRequired": "La dirección es obligatoria.",
+        "phoneInvalid": "El teléfono debe contener entre 7 y 13 dígitos.",
+        "latInvalid": "La latitud debe estar entre -90 y 90.",
+        "lngInvalid": "La longitud debe estar entre -180 y 180.",
+        "bothCoordsRequired": "Debes ingresar latitud y longitud juntas."
+      }
+    },
+    "dashboard": {
+      "title": "Dashboard",
+      "subtitle": "Resumen del día en tu sucursal",
+      "realtime": "En tiempo real",
+      "actions": {
+        "createReservation": "Crear reserva",
+        "reportIncident": "Reportar incidencia"
+      },
+      "kpi": {
+        "monthlyRevenue": "Ingresos del mes",
+        "revenueVsMonth": "+8,5% vs. mes anterior",
+        "todayDeliveries": "Entregas de hoy",
+        "customersAtCounter": "clientes en mostrador",
+        "todayReturns": "Devoluciones de hoy",
+        "vehiclesReturning": "vehículos retornando a la sucursal",
+        "occupancy": "Ocupación",
+        "occupancyVehicles": "{{rented}} de {{total}} vehículos"
+      },
+      "kpiTooltip": {
+        "monthlyRevenue": "Suma de reservas cobradas este mes en tu sucursal.",
+        "todayDeliveries": "Clientes que recogen su vehículo hoy en el mostrador.",
+        "todayReturns": "Vehículos que vuelven a la sucursal hoy.",
+        "occupancy": "Porcentaje de tu flota actualmente en alquiler."
+      },
+      "drawer": {
+        "title": "Detalle de la reserva",
+        "client": "Cliente",
+        "phone": "Teléfono",
+        "vehicle": "Vehículo",
+        "plate": "Placa",
+        "category": "Categoría",
+        "time": "Hora programada",
+        "type": "Tipo de operación",
+        "delivery": "Entrega en mostrador",
+        "return": "Devolución en sucursal",
+        "status": "Estado actual",
+        "viewFullReservation": "Ver reserva completa",
+        "close": "Cerrar"
+      },
+      "fleetChips": {
+        "available": "Disponibles",
+        "rented": "En alquiler",
+        "maintenance": "En taller"
+      },
+      "schedule": {
+        "title": "Programación de hoy",
+        "tabs": {
+          "deliveries": "Entregas {{count}}",
+          "returns": "Devoluciones {{count}}"
+        },
+        "colTime": "Hora",
+        "colClient": "Cliente",
+        "colVehicle": "Vehículo",
+        "colStatus": "Estado",
+        "viewAllReservations": "Ver todas las reservas →",
+        "emptyDeliveries": "No hay entregas programadas para hoy.",
+        "emptyReturns": "No hay devoluciones programadas para hoy."
+      },
+      "attention": {
+        "title": "Requiere tu atención",
+        "documentsToValidate_one": "1 documento por validar",
+        "documentsToValidate_other": "{{count}} documentos por validar",
+        "openIncidents_one": "1 incidencia abierta",
+        "openIncidents_other": "{{count}} incidencias abiertas",
+        "pendingPayments_one": "1 pago pendiente",
+        "pendingPayments_other": "{{count}} pagos pendientes",
+        "expiringVehicleDocs_one": "1 documento de vehículo por vencer",
+        "expiringVehicleDocs_other": "{{count}} documentos de vehículos por vencer",
+        "allClear": "Todo al día"
+      },
+      "fleet": {
+        "title": "Estado de la flota",
+        "available": "Disponibles",
+        "rented": "En alquiler",
+        "maintenance": "En taller o mantenimiento",
+        "viewFleet": "Ver flota →",
+        "vehicleCount_one": "1 vehículo",
+        "vehicleCount_other": "{{count}} vehículos"
+      },
+      "notifications": {
+        "title": "Notificaciones",
+        "markAllAsRead": "Marcar todas como leídas",
+        "viewAll": "Ver todas",
+        "empty": "No tienes notificaciones pendientes."
+      },
+      "rowMenu": {
+        "viewReservation": "Ver reserva completa",
+        "contactClient": "Contactar cliente",
+        "reportIncident": "Reportar incidencia"
+      },
+      "kpiMenu": {
+        "viewReportDetails": "Ver detalle en Reportes",
+        "exportData": "Exportar dato",
+        "exportComingSoon": "Función disponible próximamente"
+      }
+    }
   }
 }
