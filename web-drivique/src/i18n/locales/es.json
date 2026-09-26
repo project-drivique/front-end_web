@@ -2881,6 +2881,17 @@
         "mapUnavailable": "Mapa no disponible",
         "getDirections": "Cómo llegar →"
       },
+      "deliveryByPayment": {
+        "title": "Cómo funciona la entrega según el pago",
+        "intro": "Esto es lo que ven tus clientes al elegir dónde retirar y devolver su vehículo, según cómo paguen.",
+        "colCash": "Efectivo",
+        "colOnline": "Pago en línea",
+        "rowBranch": "En esta sucursal",
+        "rowHome": "A domicilio",
+        "rowAirport": "En aeropuerto o terminal de {{city}}",
+        "noAirportOption": "Tu ciudad no ofrece esta opción",
+        "note": "El horario de tu sucursal es {{schedule}} según su tipo. Esto se define desde Mi sucursal → Horarios de atención."
+      },
       "summaryCard": {
         "title": "Resumen",
         "manager": "Encargado",

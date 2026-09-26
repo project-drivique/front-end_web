@@ -8,25 +8,28 @@ import {
   FaClock,
   FaBuilding,
   FaCar,
-  FaPhoneAlt,
+  FaCheck,
+  FaTimes,
   FaDirections,
   FaCheckCircle,
   FaExclamationTriangle,
   FaSave,
   FaUndo,
-  FaShieldAlt,
   FaSearch,
+  FaCreditCard,
 } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import { useAuthStore } from '../../../store/authStore'
 import { useBranchProfile } from '../../../hooks/useBranchProfile'
 import { showAlert } from '../../../utils/swalConfig'
+import { getPlaceSchedule, formatSchedule } from '../../../utils/branchSchedules'
+import { CIUDADES } from '../../catalog/constants'
 import ManagementSidebar from '../components/ManagementSidebar'
 import MenuConfiguracion from '../../../components/MenuConfiguracion'
 import './BranchProfilePage.css'
 
 export default function BranchProfilePage() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { tema } = useLanding()
   const user = useAuthStore((state) => state.usuario)
   const navigate = useNavigate()
@@ -238,6 +241,43 @@ export default function BranchProfilePage() {
       )}`
     : null
 
+  // Ciudad e infraestructura aeroportuaria / terminal
+  const cityObj = useMemo(() => {
+    if (!profile?.ciudad) return null
+    const cleanCity = String(profile.ciudad).trim().toLowerCase()
+    return (
+      CIUDADES.find(
+        (c) =>
+          c.nombre?.toLowerCase() === cleanCity ||
+          c.id?.toLowerCase() === cleanCity ||
+          cleanCity.includes(c.nombre?.toLowerCase()) ||
+          c.nombre?.toLowerCase().includes(cleanCity)
+      ) || null
+    )
+  }, [profile?.ciudad])
+
+  const hasAirportOrTerminal = Boolean(cityObj?.tieneAeropuerto || cityObj?.tieneTerminal)
+  const cityName = profile?.ciudad || 'tu ciudad'
+
+  // Horarios usando branchSchedules.js (getPlaceSchedule y formatSchedule)
+  const branchScheduleObj = useMemo(() => {
+    return getPlaceSchedule({ branchType: profile?.branchType })
+  }, [profile?.branchType])
+
+  const homeScheduleObj = useMemo(() => {
+    return getPlaceSchedule({ kind: 'home_delivery' })
+  }, [])
+
+  const formattedBranchSchedule = useMemo(() => {
+    return formatSchedule(branchScheduleObj, i18n.language)
+  }, [branchScheduleObj, i18n.language])
+
+  const formattedHomeSchedule = useMemo(() => {
+    return formatSchedule(homeScheduleObj, i18n.language)
+  }, [homeScheduleObj, i18n.language])
+
+  const formattedAirportSchedule = formattedHomeSchedule
+
   if (loading || !profile) {
     return (
       <div className={`management-shell ${tema === 'oscuro' ? 'management-shell--dark' : ''}`}>
@@ -375,13 +415,13 @@ export default function BranchProfilePage() {
           <div className="branch-profile-grid">
             {/* COLUMNA IZQUIERDA: INFORMACIÓN GENERAL + HORARIOS */}
             <div className="branch-profile-col">
-              {/* TARJETA 1: DATOS GENERALES Y CONTACTO */}
+              {/* TARJETA 1: INFORMACIÓN GENERAL (DATOS Y CONTACTO) */}
               <article className="branch-profile-card">
                 <div className="branch-profile-card-header">
                   <div className="branch-profile-card-title-wrap">
                     <span className="branch-profile-card-title">
                       <FaBuilding className="branch-profile-card-icon" aria-hidden="true" />
-                      Información de la Sede y Contacto
+                      {t('branchProfile.general.title', 'Información general')}
                     </span>
                     <span className="branch-profile-card-desc">
                       Datos visibles para los clientes en el catálogo público
@@ -394,7 +434,7 @@ export default function BranchProfilePage() {
                     {/* Nombre de la Sede (Lectura) */}
                     <div className="branch-profile-field">
                       <label htmlFor="branchName" className="branch-profile-label">
-                        Nombre de la sucursal
+                        {t('branchProfile.fields.name', 'Nombre de la sucursal')}
                       </label>
                       <div className="branch-profile-input-readonly">
                         <input
@@ -407,14 +447,14 @@ export default function BranchProfilePage() {
                         <FaLock className="branch-profile-lock-icon" aria-hidden="true" />
                       </div>
                       <span className="branch-profile-help-text">
-                        Configurado por la administración general
+                        {t('branchProfile.readOnlyHint', 'Solo el administrador general puede cambiarlo')}
                       </span>
                     </div>
 
                     {/* Ciudad (Lectura) */}
                     <div className="branch-profile-field">
                       <label htmlFor="branchCity" className="branch-profile-label">
-                        Ciudad
+                        {t('branchProfile.fields.city', 'Ciudad')}
                       </label>
                       <div className="branch-profile-input-readonly">
                         <input
@@ -427,7 +467,7 @@ export default function BranchProfilePage() {
                         <FaLock className="branch-profile-lock-icon" aria-hidden="true" />
                       </div>
                       <span className="branch-profile-help-text">
-                        Jurisdicción operativa
+                        {t('branchProfile.readOnlyHint', 'Solo el administrador general puede cambiarlo')}
                       </span>
                     </div>
                   </div>
@@ -436,7 +476,7 @@ export default function BranchProfilePage() {
                     {/* Dirección Física (Editable, Obligatoria) */}
                     <div className="branch-profile-field">
                       <label htmlFor="branchAddress" className="branch-profile-label">
-                        Dirección física del punto *
+                        {t('branchProfile.fields.address', 'Dirección')} *
                       </label>
                       <input
                         id="branchAddress"
@@ -461,7 +501,7 @@ export default function BranchProfilePage() {
                     {/* Teléfono de Contacto (Editable, Opcional) */}
                     <div className="branch-profile-field">
                       <label htmlFor="branchPhone" className="branch-profile-label">
-                        Teléfono / Línea de mostrador
+                        {t('branchProfile.fields.phone', 'Teléfono')}
                       </label>
                       <input
                         id="branchPhone"
@@ -487,7 +527,7 @@ export default function BranchProfilePage() {
                   <div className="branch-profile-field" style={{ marginTop: 4 }}>
                     <div className="branch-profile-label-row">
                       <label htmlFor="branchPickup" className="branch-profile-label">
-                        Indicaciones de recogida y punto de encuentro
+                        {t('branchProfile.fields.pickupInstructions', 'Indicaciones de recogida')}
                       </label>
                       <span className="branch-profile-counter">
                         {form.indicacionesRecogida.length}/140
@@ -498,7 +538,10 @@ export default function BranchProfilePage() {
                       rows={2}
                       maxLength={140}
                       className="branch-profile-textarea"
-                      placeholder="Ej. Frente a la salida 3 del aeropuerto, piso 1 llegadas nacionales."
+                      placeholder={t(
+                        'branchProfile.placeholders.pickupInstructions',
+                        'Frente a la salida 3 del aeropuerto'
+                      )}
                       value={form.indicacionesRecogida}
                       onChange={(e) =>
                         setForm({ ...form, indicacionesRecogida: e.target.value })
@@ -508,13 +551,13 @@ export default function BranchProfilePage() {
                 </div>
               </article>
 
-              {/* TARJETA 2: HORARIOS OPERATIVOS Y ATENCIÓN */}
+              {/* TARJETA 2: HORARIOS DE ATENCIÓN */}
               <article className="branch-profile-card">
                 <div className="branch-profile-card-header">
                   <div className="branch-profile-card-title-wrap">
                     <span className="branch-profile-card-title">
                       <FaClock className="branch-profile-card-icon" aria-hidden="true" />
-                      Horarios Operativos y Políticas de Retiro
+                      {t('branchProfile.schedules.title', 'Horarios de atención')}
                     </span>
                     <span className="branch-profile-card-desc">
                       Regulan las horas habilitadas para entrega y devolución de vehículos
@@ -527,23 +570,29 @@ export default function BranchProfilePage() {
                     <div className="branch-profile-schedule-box">
                       <div className="branch-profile-schedule-head">
                         <span className="branch-dot branch-dot--green" />
-                        <span className="branch-profile-schedule-title">Atención en Mostrador</span>
+                        <span className="branch-profile-schedule-title">
+                          {t('branchProfile.schedules.branchAttention', 'Atención en la sucursal')}
+                        </span>
                       </div>
                       <strong className="branch-profile-schedule-val">
-                        {profile.horarios?.branchFormatted || '24 Horas (Lunes a Domingo)'}
+                        {formattedBranchSchedule}
                       </strong>
                       <span className="branch-profile-schedule-desc">
-                        Entrega y devolución presencial en sede
+                        {isAirport
+                          ? t('branchProfile.schedules.typeAirport', 'Aeropuerto o terminal')
+                          : t('branchProfile.schedules.typeStandard', 'Sucursal estándar')}
                       </span>
                     </div>
 
                     <div className="branch-profile-schedule-box">
                       <div className="branch-profile-schedule-head">
                         <span className="branch-dot branch-dot--blue" />
-                        <span className="branch-profile-schedule-title">Entrega a Domicilio</span>
+                        <span className="branch-profile-schedule-title">
+                          {t('branchProfile.schedules.homeDelivery', 'Entrega y recogida a domicilio')}
+                        </span>
                       </div>
                       <strong className="branch-profile-schedule-val">
-                        {profile.horarios?.homeFormatted || '07:00 - 20:00 (Lunes a Domingo)'}
+                        {formattedHomeSchedule}
                       </strong>
                       <span className="branch-profile-schedule-desc">
                         Servicio puerta a puerta en la ciudad
@@ -554,22 +603,25 @@ export default function BranchProfilePage() {
                   <div className="branch-profile-info-banner">
                     <FaInfoCircle className="branch-profile-info-icon" aria-hidden="true" />
                     <p className="branch-profile-info-text">
-                      Los clientes solo podrán seleccionar horarios dentro de estas franjas al generar su reserva. Cualquier ajuste extraordinario debe ser canalizado con la administración general.
+                      {t(
+                        'branchProfile.schedules.infoNote',
+                        'Estos horarios determinan las horas de retiro y devolución que pueden elegir tus clientes al reservar, según el lugar que escojan.'
+                      )}
                     </p>
                   </div>
                 </div>
               </article>
             </div>
 
-            {/* COLUMNA DERECHA: UBICACIÓN Y CAPACIDADES */}
+            {/* COLUMNA DERECHA: UBICACIÓN + CÓMO FUNCIONA LA ENTREGA + RESUMEN */}
             <div className="branch-profile-col">
-              {/* TARJETA 3: UBICACIÓN Y MAPA */}
+              {/* TARJETA 3: UBICACIÓN */}
               <article className="branch-profile-card">
                 <div className="branch-profile-card-header">
                   <div className="branch-profile-card-title-wrap">
                     <span className="branch-profile-card-title">
                       <FaMapMarkerAlt className="branch-profile-card-icon" aria-hidden="true" />
-                      Ubicación Geográfica y Mapa
+                      {t('branchProfile.location.title', 'Ubicación')}
                     </span>
                     <span className="branch-profile-card-desc">
                       Posicionamiento satelital de la sede
@@ -582,7 +634,7 @@ export default function BranchProfilePage() {
                   <div className="branch-profile-map-wrap">
                     {mapIframeUrl ? (
                       <iframe
-                        title="Mapa de la sucursal"
+                        title={t('branchProfile.location.title', 'Ubicación')}
                         src={mapIframeUrl}
                         className="branch-profile-map-iframe"
                         loading="lazy"
@@ -590,7 +642,7 @@ export default function BranchProfilePage() {
                     ) : (
                       <div className="branch-profile-map-fallback">
                         <FaMapMarkerAlt className="branch-profile-fallback-icon" aria-hidden="true" />
-                        <span>Mapa no disponible temporalmente</span>
+                        <span>{t('branchProfile.location.mapUnavailable', 'Mapa no disponible')}</span>
                       </div>
                     )}
                   </div>
@@ -599,7 +651,7 @@ export default function BranchProfilePage() {
                   <div className="branch-profile-fields-row" style={{ marginTop: 12 }}>
                     <div className="branch-profile-field">
                       <label htmlFor="branchLat" className="branch-profile-label">
-                        Latitud GPS
+                        {t('branchProfile.fields.latitude', 'Latitud')}
                       </label>
                       <input
                         id="branchLat"
@@ -617,7 +669,7 @@ export default function BranchProfilePage() {
 
                     <div className="branch-profile-field">
                       <label htmlFor="branchLng" className="branch-profile-label">
-                        Longitud GPS
+                        {t('branchProfile.fields.longitude', 'Longitud')}
                       </label>
                       <input
                         id="branchLng"
@@ -643,20 +695,145 @@ export default function BranchProfilePage() {
                         className="branch-profile-directions-link"
                       >
                         <FaDirections aria-hidden="true" />
-                        <span>Abrir en Google Maps &gt;</span>
+                        <span>{t('branchProfile.location.getDirections', 'Cómo llegar →')}</span>
                       </a>
                     </div>
                   )}
                 </div>
               </article>
 
-              {/* TARJETA 4: CAPACIDADES OPERATIVAS Y FLOTA */}
+              {/* NUEVA TARJETA: CÓMO FUNCIONA LA ENTREGA SEGÚN EL PAGO (SOLO LECTURA) */}
+              <article className="branch-profile-card">
+                <div className="branch-profile-card-header">
+                  <div className="branch-profile-card-title-wrap">
+                    <span className="branch-profile-card-title">
+                      <FaCreditCard className="branch-profile-card-icon" aria-hidden="true" />
+                      {t('branchProfile.deliveryByPayment.title', 'Cómo funciona la entrega según el pago')}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="branch-profile-card-body">
+                  <p className="branch-delivery-intro">
+                    {t(
+                      'branchProfile.deliveryByPayment.intro',
+                      'Esto es lo que ven tus clientes al elegir dónde retirar y devolver su vehículo, según cómo paguen.'
+                    )}
+                  </p>
+
+                  <div className="branch-delivery-table-wrap">
+                    <table className="branch-delivery-table">
+                      <thead>
+                        <tr>
+                          <th className="branch-delivery-th-place">
+                            {t('branchProfile.deliveryByPayment.title', 'Lugar')}
+                          </th>
+                          <th className="branch-delivery-th">
+                            {t('branchProfile.deliveryByPayment.colCash', 'Efectivo')}
+                          </th>
+                          <th className="branch-delivery-th">
+                            {t('branchProfile.deliveryByPayment.colOnline', 'Pago en línea')}
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {/* Fila 1: En esta sucursal */}
+                        <tr>
+                          <td className="branch-delivery-td-name">
+                            <span className="branch-delivery-place-title">
+                              {t('branchProfile.deliveryByPayment.rowBranch', 'En esta sucursal')}
+                            </span>
+                          </td>
+                          <td>
+                            <div className="branch-delivery-avail-cell">
+                              <FaCheck className="branch-delivery-icon-check" aria-hidden="true" />
+                              <span className="branch-delivery-schedule">{formattedBranchSchedule}</span>
+                            </div>
+                          </td>
+                          <td>
+                            <div className="branch-delivery-avail-cell">
+                              <FaCheck className="branch-delivery-icon-check" aria-hidden="true" />
+                              <span className="branch-delivery-schedule">{formattedBranchSchedule}</span>
+                            </div>
+                          </td>
+                        </tr>
+
+                        {/* Fila 2: A domicilio */}
+                        <tr>
+                          <td className="branch-delivery-td-name">
+                            <span className="branch-delivery-place-title">
+                              {t('branchProfile.deliveryByPayment.rowHome', 'A domicilio')}
+                            </span>
+                          </td>
+                          <td>
+                            <div className="branch-delivery-avail-cell">
+                              <FaTimes className="branch-delivery-icon-cross" aria-hidden="true" />
+                            </div>
+                          </td>
+                          <td>
+                            <div className="branch-delivery-avail-cell">
+                              <FaCheck className="branch-delivery-icon-check" aria-hidden="true" />
+                              <span className="branch-delivery-schedule">{formattedHomeSchedule}</span>
+                            </div>
+                          </td>
+                        </tr>
+
+                        {/* Fila 3: En aeropuerto o terminal */}
+                        <tr>
+                          <td className="branch-delivery-td-name">
+                            <span className="branch-delivery-place-title">
+                              {t('branchProfile.deliveryByPayment.rowAirport', {
+                                city: cityName,
+                                defaultValue: `En aeropuerto o terminal de ${cityName}`,
+                              })}
+                            </span>
+                          </td>
+                          {hasAirportOrTerminal ? (
+                            <>
+                              <td>
+                                <div className="branch-delivery-avail-cell">
+                                  <FaTimes className="branch-delivery-icon-cross" aria-hidden="true" />
+                                </div>
+                              </td>
+                              <td>
+                                <div className="branch-delivery-avail-cell">
+                                  <FaCheck className="branch-delivery-icon-check" aria-hidden="true" />
+                                  <span className="branch-delivery-schedule">{formattedAirportSchedule}</span>
+                                </div>
+                              </td>
+                            </>
+                          ) : (
+                            <td colSpan={2} className="branch-delivery-td-no-option">
+                              <span className="branch-delivery-no-option">
+                                {t('branchProfile.deliveryByPayment.noAirportOption', 'Tu ciudad no ofrece esta opción')}
+                              </span>
+                            </td>
+                          )}
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Nota pequeña con ícono de información */}
+                  <div className="branch-delivery-note">
+                    <FaInfoCircle className="branch-delivery-note-icon" aria-hidden="true" />
+                    <span>
+                      {t('branchProfile.deliveryByPayment.note', {
+                        schedule: formattedBranchSchedule,
+                        defaultValue: `El horario de tu sucursal es ${formattedBranchSchedule} según su tipo. Esto se define desde Mi sucursal → Horarios de atención.`,
+                      })}
+                    </span>
+                  </div>
+                </div>
+              </article>
+
+              {/* TARJETA 4: RESUMEN (SOLO LECTURA) */}
               <article className="branch-profile-card">
                 <div className="branch-profile-card-header">
                   <div className="branch-profile-card-title-wrap">
                     <span className="branch-profile-card-title">
                       <FaCar className="branch-profile-card-icon" aria-hidden="true" />
-                      Capacidades y Flota de la Sede
+                      {t('branchProfile.summaryCard.title', 'Resumen')}
                     </span>
                     <span className="branch-profile-card-desc">
                       Resumen de vehículos, categorías y servicios habilitados
@@ -666,34 +843,40 @@ export default function BranchProfilePage() {
 
                 <div className="branch-profile-card-body">
                   <div className="branch-profile-summary-grid">
-                    {/* Encargado responsable */}
+                    {/* Encargado */}
                     <div className="branch-profile-summary-row">
-                      <span className="branch-profile-summary-label">Encargado responsable</span>
+                      <span className="branch-profile-summary-label">
+                        {t('branchProfile.summaryCard.manager', 'Encargado')}
+                      </span>
                       <strong className="branch-profile-summary-val">
                         {profile.encargado || user?.nombre || 'Andrés Felipe Castro'}
                       </strong>
                     </div>
 
-                    {/* Flota asignada */}
+                    {/* Vehículos */}
                     <div className="branch-profile-summary-row">
-                      <span className="branch-profile-summary-label">Flota total asignada</span>
+                      <span className="branch-profile-summary-label">
+                        {t('branchProfile.summaryCard.vehicles', 'Vehículos')}
+                      </span>
                       <div className="branch-profile-fleet-action">
                         <strong className="branch-profile-summary-val">
-                          {profile.vehiculosCount || 5} vehículos
+                          {profile.vehiculosCount || 5} {t('branchProfile.summaryCard.vehicles', 'vehículos').toLowerCase()}
                         </strong>
                         <button
                           type="button"
                           className="branch-profile-link-btn"
                           onClick={() => navigate('/encargado/vehicles')}
                         >
-                          Ver flota &gt;
+                          {t('branchProfile.summaryCard.viewFleet', 'Ver flota →')}
                         </button>
                       </div>
                     </div>
 
-                    {/* Categorías de vehículos */}
+                    {/* Categorías que ofrece */}
                     <div className="branch-profile-summary-row branch-profile-summary-row--col">
-                      <span className="branch-profile-summary-label">Categorías disponibles</span>
+                      <span className="branch-profile-summary-label">
+                        {t('branchProfile.summaryCard.categories', 'Categorías que ofrece')}
+                      </span>
                       <div className="branch-profile-tags-cloud">
                         {(profile.categorias || ['Sedán', 'SUV', '4x4', 'Compacto', 'Crossover']).map((cat) => (
                           <span key={cat} className="branch-profile-category-tag">
@@ -703,7 +886,7 @@ export default function BranchProfilePage() {
                       </div>
                     </div>
 
-                    {/* Servicios destacados */}
+                    {/* Servicios activos en sede */}
                     <div className="branch-profile-summary-row branch-profile-summary-row--col">
                       <span className="branch-profile-summary-label">Servicios activos en sede</span>
                       <div className="branch-profile-services-list">

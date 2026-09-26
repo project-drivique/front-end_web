@@ -2499,15 +2499,77 @@
       }
     },
     "branchProfile": {
-      "title": "Mi sucursal",
-      "subtitle": "Administra la información pública y operativa de tu sucursal.",
-      "savedSuccess": "Los datos de la sucursal han sido actualizados.",
+      "title": "Mon agence",
+      "subtitle": "Informations visibles par vos clients dans le catalogue",
+      "unsavedChanges": "Vous avez des modifications non enregistrées",
+      "noChanges": "Aucune modification à enregistrer",
+      "saveSuccessTitle": "Modifications enregistrées",
+      "saveSuccessMsg": "Les informations de l'agence ont été mises à jour avec succès.",
+      "readOnlyHint": "Seul l'administrateur général peut modifier cela",
+      "devSwitch": "Mode Test - Sélectionner l'agence:",
+      "actions": {
+        "cancel": "Annuler",
+        "save": "Enregistrer les modifications"
+      },
+      "general": {
+        "title": "Informations générales"
+      },
+      "schedules": {
+        "title": "Horaires d'ouverture",
+        "typeLabel": "Type d'agence",
+        "typeAirport": "Aéroport ou terminal",
+        "typeStandard": "Agence standard",
+        "branchAttention": "Service au comptoir de l'agence",
+        "homeDelivery": "Livraison et restitution à domicile",
+        "scheduleTypeHint": "Défini par l'entreprise selon le type d'agence",
+        "infoNote": "Ces horaires déterminent les heures de retrait et de retour que les clients peuvent choisir lors de leur réservation."
+      },
+      "location": {
+        "title": "Emplacement",
+        "mapUnavailable": "Carte non disponible",
+        "getDirections": "Comment s'y rendre →"
+      },
+      "deliveryByPayment": {
+        "title": "Fonctionnement de la livraison selon le paiement",
+        "intro": "Voici ce que vos clients voient lorsqu'ils choisissent où retirer et restituer leur véhicule, selon leur mode de paiement.",
+        "colCash": "Espèces",
+        "colOnline": "Paiement en ligne",
+        "rowBranch": "Dans cette agence",
+        "rowHome": "À domicile",
+        "rowAirport": "À l'aéroport ou au terminal de {{city}}",
+        "noAirportOption": "Votre ville ne propose pas cette option",
+        "note": "L'horaire de votre agence est {{schedule}} selon son type. Ceci est défini dans Mon agence → Horaires d'ouverture."
+      },
+      "summaryCard": {
+        "title": "Résumé",
+        "manager": "Responsable",
+        "vehicles": "Véhicules",
+        "viewFleet": "Voir la flotte →",
+        "categories": "Catégories proposées"
+      },
+      "status": {
+        "active": "Active",
+        "inactive": "Inactive"
+      },
       "fields": {
-        "address": "Dirección",
-        "hours": "Horario de atención",
-        "phone": "Teléfono",
-        "latitude": "Latitud",
-        "longitude": "Longitud"
+        "name": "Nom de l'agence",
+        "city": "Ville",
+        "status": "Statut",
+        "address": "Adresse",
+        "phone": "Téléphone",
+        "pickupInstructions": "Instructions de retrait",
+        "latitude": "Latitude",
+        "longitude": "Longitude"
+      },
+      "placeholders": {
+        "pickupInstructions": "En face de la sortie 3 de l'aéroport"
+      },
+      "errors": {
+        "addressRequired": "L'adresse est obligatoire.",
+        "phoneInvalid": "Le numéro de téléphone doit contenir entre 7 et 13 chiffres.",
+        "latInvalid": "La latitude doit être comprise entre -90 et 90.",
+        "lngInvalid": "La longitude doit être comprise entre -180 et 180.",
+        "bothCoordsRequired": "Vous devez saisir la latitude et la longitude ensemble."
       }
     }
   },
