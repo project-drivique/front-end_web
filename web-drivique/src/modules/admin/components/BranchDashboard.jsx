@@ -1023,7 +1023,7 @@ export default function BranchDashboard({ branchOnly = true }) {
                       className="branch-notif-view-all-btn"
                       onClick={() => {
                         setIsNotificationsOpen(false)
-                        navigate('/encargado/reservations')
+                        navigate('/notificaciones')
                       }}
                     >
                       {t('dashboard.notifications.viewAll', 'Ver todas')}
