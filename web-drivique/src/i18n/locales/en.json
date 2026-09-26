@@ -1122,7 +1122,7 @@
       "poblado": "Excellent strategic location in El Poblado hotel district.",
       "executive": "The ideal choice for executive travel in the financial district.",
       "convertible": "Fast pickup at airport exit with convertible fleet available.",
-      "premium": "Premium service with optional additional driver at no extra charge.",
+      "premium": "Premium service with priority attention and fast delivery.",
       "flexible": "Wide range of modern SUVs and sedans with flexible terms.",
       "efficiency": "International rental guarantee and excellent fuel efficiency.",
       "valle": "Fast booking directly at Valle's airport terminal."
@@ -2757,7 +2757,6 @@
     "backToAccount": "Back to My Account"
   },
   "servicios": {
-    "Conductor adicional": "Additional driver",
     "Devolución con tanque vacío": "Return with empty tank",
     "GPS Integrado": "Integrated GPS",
     "Lavado de auto post-entrega": "Post-rental car wash",

@@ -1111,7 +1111,7 @@
       "poblado": "Excellente situation stratégique dans le quartier hôtelier d'El Poblado.",
       "executive": "Le choix idéal pour les déplacements professionnels dans le quartier financier.",
       "convertible": "Livraison rapide à la sortie de l'aéroport avec flotte cabriolet.",
-      "premium": "Service premium avec option chauffeur additionnel sans supplément.",
+      "premium": "Service haut de gamme avec accueil prioritaire et livraison rapide.",
       "flexible": "Large choix de VUS et berlines modernes aux conditions flexibles.",
       "efficiency": "Garantie internationale de location et excellente efficacité énergétique.",
       "valle": "Réservation rapide directement au terminal aéroportuaire de la Vallée."
@@ -2740,7 +2740,6 @@
     "backToAccount": "Retour à Mon Compte"
   },
   "servicios": {
-    "Conductor adicional": "Conducteur supplémentaire",
     "Devolución con tanque vacío": "Retour avec réservoir vide",
     "GPS Integrado": "GPS Intégré",
     "Lavado de auto post-entrega": "Lavage de voiture après location",

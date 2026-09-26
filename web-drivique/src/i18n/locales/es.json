@@ -1100,7 +1100,7 @@
       "poblado": "Excelente ubicación estratégica en la zona hotelera de El Poblado.",
       "executive": "La opción ideal para desplazamientos ejecutivos en el sector financiero.",
       "convertible": "Entrega ágil a la salida del aeropuerto con flota convertible disponible.",
-      "premium": "Servicio prémium con opción de conductor adicional sin recargo.",
+      "premium": "Servicio prémium con atención prioritaria y entrega rápida.",
       "flexible": "Variedad de SUVs y sedanes modernos con condiciones flexibles.",
       "efficiency": "Garantía internacional de alquiler y excelente eficiencia de combustible.",
       "valle": "Reserva rápida directamente en la terminal aérea del Valle."
@@ -2662,7 +2662,6 @@
     "backToAccount": "Volver a Mi Cuenta"
   },
   "servicios": {
-    "Conductor adicional": "Conductor adicional",
     "Devolución con tanque vacío": "Devolución con tanque vacío",
     "GPS Integrado": "GPS Integrado",
     "Lavado de auto post-entrega": "Lavado de auto post-entrega",
