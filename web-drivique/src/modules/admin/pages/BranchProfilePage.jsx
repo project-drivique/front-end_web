@@ -13,10 +13,11 @@ import {
   FaDirections,
   FaCheckCircle,
   FaExclamationTriangle,
-  FaSave,
-  FaUndo,
   FaSearch,
   FaCreditCard,
+  FaHourglassHalf,
+  FaCalendarDay,
+  FaMoneyBillWave,
 } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import { useAuthStore } from '../../../store/authStore'
@@ -854,14 +855,60 @@ export default function BranchProfilePage() {
                     </table>
                   </div>
 
-                  {/* Notas operativas de negocio */}
+                  {/* Notas operativas de lugares de entrega */}
                   <div className="branch-delivery-note">
                     <FaInfoCircle className="branch-delivery-note-icon" aria-hidden="true" />
                     <span>
-                      <strong>Efectivo:</strong> Requiere retirar y devolver el vehículo exclusivamente en la sucursal física asignada, abonando el valor y garantía en mostrador.
+                      <strong>Pago en efectivo:</strong> El cliente debe retirar y devolver obligatoriamente en la sucursal física asignada, dentro del horario de atención de la sede.
                       <br />
-                      <strong>Pago en línea (Wompi):</strong> Habilita entrega y recogida a domicilio (registrando barrio, dirección y referencias) o en aeropuerto/terminal si la ciudad los posee.
+                      <strong>Pago en línea (Wompi):</strong> Habilita entrega y recogida a domicilio (con dirección, barrio y referencias) o en aeropuerto/terminal si la ciudad los posee.
                     </span>
+                  </div>
+
+                  {/* SECCIÓN DE REGLAS DE PLAZO DE PAGO EN EFECTIVO */}
+                  <div className="branch-payment-deadline-section">
+                    <span className="branch-payment-deadline-title">
+                      <FaHourglassHalf className="branch-payment-deadline-icon" aria-hidden="true" />
+                      Plazos de pago en efectivo y cancelación por tiempo límite
+                    </span>
+
+                    <div className="branch-payment-deadline-grid">
+                      {/* Caso 1: Reserva con más de 3 días de anticipación */}
+                      <div className="branch-deadline-card">
+                        <div className="branch-deadline-card-head">
+                          <span className="branch-deadline-badge branch-deadline-badge--blue">
+                            <FaCalendarDay aria-hidden="true" />
+                            Anticipación &gt; 3 días
+                          </span>
+                          <strong className="branch-deadline-highlight">Hasta 72 horas</strong>
+                        </div>
+                        <p className="branch-deadline-desc">
+                          El cliente cuenta con un plazo máximo de <strong>72 horas</strong> desde la creación de la reserva para acercarse a la sucursal a pagar en mostrador.
+                        </p>
+                      </div>
+
+                      {/* Caso 2: Reserva para el mismo día o &lt; 3 días */}
+                      <div className="branch-deadline-card">
+                        <div className="branch-deadline-card-head">
+                          <span className="branch-deadline-badge branch-deadline-badge--amber">
+                            <FaClock aria-hidden="true" />
+                            Mismo día / &lt; 72 horas
+                          </span>
+                          <strong className="branch-deadline-highlight">Horas restantes</strong>
+                        </div>
+                        <p className="branch-deadline-desc">
+                          El pago debe realizarse <strong>el mismo día antes de la hora de retiro</strong>. El sistema le indica en pantalla las horas exactas disponibles para pagar.
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Banner de Cancelación Automática */}
+                    <div className="branch-delivery-auto-cancel-banner">
+                      <FaExclamationTriangle className="branch-auto-cancel-icon" aria-hidden="true" />
+                      <span>
+                        <strong>Cancelación automática por tiempo:</strong> Si el plazo de pago vence sin haberse registrado el cobro en mostrador, el sistema pasa la reserva a estado <code>CANCELADA_POR_TIEMPO</code> y libera el vehículo a la flota de la sucursal.
+                      </span>
+                    </div>
                   </div>
                 </div>
               </article>
