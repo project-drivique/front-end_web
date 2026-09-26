@@ -2530,15 +2530,21 @@
         "getDirections": "Comment s'y rendre →"
       },
       "deliveryByPayment": {
-        "title": "Fonctionnement de la livraison selon le paiement",
-        "intro": "Voici ce que vos clients voient lorsqu'ils choisissent où retirer et restituer leur véhicule, selon leur mode de paiement.",
+        "title": "Comment fonctionne la livraison selon le paiement",
+        "intro": "Logique opérationnelle appliquée par le système de réservation lors de la sélection du mode de paiement et du lieu de retrait/restitution :",
+        "colPlace": "Lieu",
         "colCash": "Espèces",
         "colOnline": "Paiement en ligne",
         "rowBranch": "Dans cette agence",
+        "rowAirport": "Aéroport",
+        "rowTerminal": "Terminal",
         "rowHome": "À domicile",
-        "rowAirport": "À l'aéroport ou au terminal de {{city}}",
-        "noAirportOption": "Votre ville ne propose pas cette option",
-        "note": "L'horaire de votre agence est {{schedule}} selon son type. Ceci est défini dans Mon agence → Horaires d'ouverture."
+        "noAlternateDeliveries": "Votre ville ne propose pas de livraisons alternatives à l'aéroport ou au terminal.",
+        "notAvailable": "Non disponible"
+      },
+      "paymentDeadline": {
+        "title": "Délai de paiement de vos clients",
+        "text": "Lorsqu'un client confirme une réservation, il dispose d'un délai maximum de 72 heures pour payer. Si le retrait a lieu avant ces 72 heures, le délai est automatiquement ajusté au temps restant (minimum 2 heures). S'il ne paie pas à temps, la réservation est automatiquement annulée."
       },
       "summaryCard": {
         "title": "Résumé",

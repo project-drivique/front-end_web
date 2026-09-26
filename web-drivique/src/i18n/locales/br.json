@@ -2529,15 +2529,21 @@
         "getDirections": "Como chegar →"
       },
       "deliveryByPayment": {
-        "title": "Como funciona a entrega de acordo com o pagamento",
-        "intro": "Isso é o que seus clientes veem ao escolher onde retirar e devolver o veículo, de acordo com a forma de pagamento.",
+        "title": "Como funciona a entrega conforme o pagamento",
+        "intro": "Lógica operacional aplicada pelo sistema de reservas ao selecionar a forma de pagamento e local de retirada/devolução:",
+        "colPlace": "Local",
         "colCash": "Dinheiro",
         "colOnline": "Pagamento online",
         "rowBranch": "Nesta agência",
+        "rowAirport": "Aeroporto",
+        "rowTerminal": "Terminal",
         "rowHome": "A domicílio",
-        "rowAirport": "No aeroporto ou terminal de {{city}}",
-        "noAirportOption": "Sua cidade não oferece esta opção",
-        "note": "O horário da sua agência é {{schedule}} de acordo com o seu tipo. Isso é definido em Minha agência → Horários de atendimento."
+        "noAlternateDeliveries": "Sua cidade não oferece entregas alternativas em aeroporto ou terminal.",
+        "notAvailable": "Não disponível"
+      },
+      "paymentDeadline": {
+        "title": "Prazo de pagamento dos seus clientes",
+        "text": "Quando um cliente confirma uma reserva, ele tem até 72 horas para pagar. Se a retirada for antes dessas 72 horas, o prazo se ajusta automaticamente ao tempo restante (mínimo 2 horas). Se não pagar a tempo, a reserva é cancelada automaticamente."
       },
       "summaryCard": {
         "title": "Resumo",

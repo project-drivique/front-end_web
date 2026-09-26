@@ -949,28 +949,11 @@ export default function BranchDashboard({ branchOnly = true }) {
           </div>
         )}
 
-        {/* BARRA SUPERIOR GLOBAL CON BÚSQUEDA Y NOTIFICACIONES */}
+        {/* BARRA SUPERIOR GLOBAL CON HERRAMIENTAS Y NOTIFICACIONES */}
         <div className="branch-top-global-bar">
-          <div className="branch-search-box">
-            <FaSearch className="branch-search-icon" aria-hidden="true" />
-            <input
-              type="text"
-              className="branch-search-input"
-              placeholder={t('dashboard.searchPlaceholder', 'Buscar en el sistema...')}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            {searchQuery && (
-              <button
-                type="button"
-                className="branch-search-clear-btn"
-                onClick={() => setSearchQuery('')}
-                title="Limpiar búsqueda"
-                aria-label="Limpiar búsqueda"
-              >
-                <FaTimes aria-hidden="true" />
-              </button>
-            )}
+          <div className="branch-top-breadcrumb">
+            <span className="branch-breadcrumb-subtitle">{t('dashboard.subtitle', 'Panel operativo')}</span>
+            <h1 className="branch-breadcrumb-title">{t('dashboard.title', 'Dashboard')}</h1>
           </div>
 
           <div className="branch-top-right-tools">
