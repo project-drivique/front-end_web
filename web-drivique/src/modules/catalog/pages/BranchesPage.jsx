@@ -231,7 +231,7 @@ const SUCURSALES_GRID = [
     horario: 'Lun-Dom 24 Horas',
     flota: 'Chevrolet Onix, etc.',
     precioCOP: 103600,
-    porQue: 'Servicio prémium con opción de conductor adicional sin recargo.',
+    porQue: 'Servicio prémium con atención prioritaria y entrega rápida.',
     porQueKey: 'premium',
     nombreKeys: {
       es: 'Enterprise Bogotá - El Dorado',

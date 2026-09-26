@@ -2037,8 +2037,8 @@ export default function BranchDashboard({ branchOnly = true }) {
                     <span className="branch-drawer-item-val">LIC-B1-4920194 (Vence 2028)</span>
                   </div>
                   <div className="branch-drawer-item-box">
-                    <span className="branch-drawer-item-lbl">Conductor Adicional</span>
-                    <span className="branch-drawer-item-val">Laura Restrepo (Habilitado)</span>
+                    <span className="branch-drawer-item-lbl">Teléfono Móvil</span>
+                    <span className="branch-drawer-item-val">+57 312 456 7890</span>
                   </div>
                 </div>
               </div>
