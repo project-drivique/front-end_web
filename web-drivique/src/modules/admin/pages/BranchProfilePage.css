@@ -857,6 +857,121 @@
   margin-top: 2px;
 }
 
+/* ─────────────────────────────────────────────────────────────
+   SECCIÓN DE PLAZOS DE PAGO EN EFECTIVO
+   ───────────────────────────────────────────────────────────── */
+.branch-payment-deadline-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 6px;
+  padding-top: 14px;
+  border-top: 1px solid var(--borde, #f1f5f9);
+}
+
+.branch-payment-deadline-title {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--texto-primary, #0f172a);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.branch-payment-deadline-icon {
+  color: var(--brand-primary, #2563eb);
+  font-size: 13px;
+}
+
+.branch-payment-deadline-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.branch-deadline-card {
+  background: #ffffff;
+  border: 1px solid var(--borde, #e2e8f0);
+  border-radius: 10px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+.branch-deadline-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.branch-deadline-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+.branch-deadline-badge--blue {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.branch-deadline-badge--amber {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.branch-deadline-highlight {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--texto-primary, #0f172a);
+  font-variant-numeric: tabular-nums;
+}
+
+.branch-deadline-desc {
+  margin: 0;
+  font-size: 11.5px;
+  color: var(--texto-second, #64748b);
+  line-height: 1.4;
+}
+
+.branch-delivery-auto-cancel-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  font-size: 11.5px;
+  color: #92400e;
+  line-height: 1.4;
+}
+
+.branch-auto-cancel-icon {
+  color: #d97706;
+  font-size: 13px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.branch-delivery-auto-cancel-banner code {
+  background: rgba(217, 119, 6, 0.15);
+  color: #b45309;
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 10.5px;
+  font-weight: 700;
+}
+
 /* Skeleton Loading */
 .branch-profile-skeleton-header {
   margin-bottom: 24px;
@@ -891,7 +1006,8 @@
 
 @media (max-width: 640px) {
   .branch-profile-fields-row,
-  .branch-profile-schedule-grid {
+  .branch-profile-schedule-grid,
+  .branch-payment-deadline-grid {
     grid-template-columns: 1fr;
   }
   .branch-topbar {
