@@ -1783,7 +1783,7 @@ export default function BranchDashboard({ branchOnly = true }) {
                 <span className="branch-fleet-total-pill">{totalF} vehículos en sucursal</span>
               </div>
 
-              {/* 3 TARJETAS RESUMEN DE ESTADO */}
+              {/* 4 TARJETAS RESUMEN DE ESTADO */}
               <div className="branch-fleet-stats-grid">
                 <div className="branch-fleet-stat-box branch-fleet-stat-box--green">
                   <div className="branch-fleet-stat-head">
@@ -1791,7 +1791,7 @@ export default function BranchDashboard({ branchOnly = true }) {
                     <span className="branch-fleet-stat-lbl">Disponibles</span>
                   </div>
                   <div className="branch-fleet-stat-num">
-                    {fleet.availableVehicles || 2} <small>({availPct}%)</small>
+                    2 <small>(40%)</small>
                   </div>
                   <span className="branch-fleet-stat-desc">Listos para entrega</span>
                 </div>
@@ -1802,9 +1802,20 @@ export default function BranchDashboard({ branchOnly = true }) {
                     <span className="branch-fleet-stat-lbl">Ocupados</span>
                   </div>
                   <div className="branch-fleet-stat-num">
-                    {fleet.rentedVehicles || 2} <small>({rentedPct}%)</small>
+                    1 <small>(20%)</small>
                   </div>
-                  <span className="branch-fleet-stat-desc">Con contrato activo</span>
+                  <span className="branch-fleet-stat-desc">En contrato activo</span>
+                </div>
+
+                <div className="branch-fleet-stat-box branch-fleet-stat-box--cyan">
+                  <div className="branch-fleet-stat-head">
+                    <span className="branch-dot branch-dot--cyan" />
+                    <span className="branch-fleet-stat-lbl">Reservados</span>
+                  </div>
+                  <div className="branch-fleet-stat-num">
+                    1 <small>(20%)</small>
+                  </div>
+                  <span className="branch-fleet-stat-desc">Para entrega hoy</span>
                 </div>
 
                 <div className="branch-fleet-stat-box branch-fleet-stat-box--amber">
@@ -1813,33 +1824,38 @@ export default function BranchDashboard({ branchOnly = true }) {
                     <span className="branch-fleet-stat-lbl">En mantenimiento</span>
                   </div>
                   <div className="branch-fleet-stat-num">
-                    {fleet.maintenanceVehicles || 1} <small>({maintPct}%)</small>
+                    1 <small>(20%)</small>
                   </div>
-                  <span className="branch-fleet-stat-desc">En revisión técnica</span>
+                  <span className="branch-fleet-stat-desc">Revisión técnica</span>
                 </div>
               </div>
 
-              {/* BARRA SEGMENTADA DE OCUPACIÓN */}
+              {/* BARRA SEGMENTADA DE DISTRIBUCIÓN */}
               <div className="branch-fleet-bar-wrapper">
                 <div className="branch-fleet-bar-labels">
                   <span>Distribución de disponibilidad</span>
-                  <strong>{availPct + rentedPct}% operativa</strong>
+                  <strong>80% operativa</strong>
                 </div>
                 <div className="branch-fleet-multi-bar">
                   <div
                     className="branch-fleet-bar-seg branch-fleet-bar-seg--green"
-                    style={{ width: `${availPct}%` }}
-                    title={`Disponibles: ${availPct}%`}
+                    style={{ width: '40%' }}
+                    title="Disponibles: 40%"
                   />
                   <div
                     className="branch-fleet-bar-seg branch-fleet-bar-seg--blue"
-                    style={{ width: `${rentedPct}%` }}
-                    title={`Ocupados: ${rentedPct}%`}
+                    style={{ width: '20%' }}
+                    title="Ocupados: 20%"
+                  />
+                  <div
+                    className="branch-fleet-bar-seg branch-fleet-bar-seg--cyan"
+                    style={{ width: '20%' }}
+                    title="Reservados: 20%"
                   />
                   <div
                     className="branch-fleet-bar-seg branch-fleet-bar-seg--amber"
-                    style={{ width: `${maintPct}%` }}
-                    title={`En mantenimiento: ${maintPct}%`}
+                    style={{ width: '20%' }}
+                    title="En mantenimiento: 20%"
                   />
                 </div>
               </div>
@@ -1860,7 +1876,7 @@ export default function BranchDashboard({ branchOnly = true }) {
                     <span className="branch-fleet-unit-name">Chevrolet Tracker</span>
                     <span className="branch-fleet-unit-plate">MXP-492 · SUV</span>
                   </div>
-                  <span className="branch-status-badge branch-status-badge--blue">Ocupado</span>
+                  <span className="branch-status-badge branch-status-badge--green">Disponible</span>
                 </div>
 
                 <div className="branch-fleet-unit-item">
@@ -1876,7 +1892,7 @@ export default function BranchDashboard({ branchOnly = true }) {
                     <span className="branch-fleet-unit-name">Renault Duster</span>
                     <span className="branch-fleet-unit-plate">JHK-201 · 4x4</span>
                   </div>
-                  <span className="branch-status-badge branch-status-badge--purple">Reservado</span>
+                  <span className="branch-status-badge branch-status-badge--cyan">Reservado</span>
                 </div>
 
                 <div className="branch-fleet-unit-item">
