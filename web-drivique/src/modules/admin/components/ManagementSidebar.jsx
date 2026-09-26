@@ -33,6 +33,7 @@ import './ManagementDashboard.css'
 const MODULE_ICONS = {
   dashboard: FaChartPie,
   controlPanel: FaSlidersH,
+  myBranch: FaBuilding,
   vehicles: FaCar,
   users: FaUsers,
   roles: FaUserShield,
@@ -52,15 +53,16 @@ const MODULE_ICONS = {
 
 const NAV_LABELS = {
   dashboard: 'Dashboard',
-  vehicles: 'Gestión de Flotas',
+  myBranch: 'Mi sucursal',
+  vehicles: 'Flota y vehículos',
   users: 'Usuarios',
   roles: 'Roles y Permisos',
   reservations: 'Reservas',
   cashCollection: 'Pagos',
   contracts: 'Contratos',
   incidents: 'Incidencias',
-  documents: 'Validación de Documentos',
-  reviews: 'Reseñas y Calificaciones',
+  documents: 'Validación de documentos',
+  reviews: 'Reseñas y calificaciones',
   cities: 'Ciudades',
   branches: 'Sucursales',
   promotions: 'Promociones',
@@ -149,10 +151,7 @@ export default function ManagementSidebar({ branchOnly = false }) {
       <nav className="management-nav" aria-label={t('admin.navigation', 'Navegación')}>
         {navigation.map(({ key, route, section }, index) => {
           const Icon = MODULE_ICONS[key] || FaChartPie
-          let labelFallback = NAV_LABELS[key] || key
-          if (isBranchManager && key === 'vehicles') {
-            labelFallback = 'Flota de Sucursal'
-          }
+          const labelFallback = NAV_LABELS[key] || key
           const showSectionHeader = section && (index === 0 || navigation[index - 1]?.section !== section)
           return (
             <div key={key} className="management-nav__group">

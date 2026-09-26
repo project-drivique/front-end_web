@@ -18,6 +18,7 @@ import { useLanding } from '../../landing/LandingContext'
 import { useAuthStore } from '../../../store/authStore'
 import { adminDashboardService } from '../../../services/adminDashboardService'
 import { formatCurrency } from '../../../utils/currencyUtils'
+import BranchDashboard from './BranchDashboard'
 import MenuConfiguracion from '../../../components/MenuConfiguracion'
 import ManagementSidebar from './ManagementSidebar'
 import './ManagementDashboard.css'
@@ -208,6 +209,11 @@ export default function ManagementDashboard({ branchOnly = false }) {
   }, [usuario])
 
   const isBranchManager = branchOnly || usuario?.rol === 'encargado' || usuario?.rol === 'branch_manager' || usuario?.rol === 'encargado_sucursal'
+
+  if (isBranchManager) {
+    return <BranchDashboard branchOnly={branchOnly} />
+  }
+
   const cashRoute = isBranchManager ? '/encargado/cobro-sucursal' : '/admin/cobro-sucursal'
   const reservationsRoute = isBranchManager ? '/encargado/reservations' : '/admin/reservations'
   const incidentsRoute = isBranchManager ? '/encargado/incidents' : '/admin/incidents'
@@ -260,7 +266,7 @@ export default function ManagementDashboard({ branchOnly = false }) {
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '6px 16px', background: 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)', border: '1px solid #bfdbfe', borderRadius: 24, marginBottom: 10, boxShadow: '0 1px 3px rgba(37,99,235,0.08)' }}>
               <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#10b981', boxShadow: '0 0 8px #10b981' }} />
               <strong style={{ fontSize: 13, fontWeight: 700, color: '#1e40af', letterSpacing: '-0.01em' }}>
-                {isBranchManager ? `Sede: ${summary?.branch || 'Sucursal Bogotá Aeropuerto'}` : 'Administración Central Drivique'}
+                {isBranchManager ? `Sucursal: ${summary?.branch || 'Alamo Bogotá - Aeropuerto'}` : 'Administración Central Drivique'}
               </strong>
               <span style={{ fontSize: 11, color: '#64748b', display: 'inline-flex', alignItems: 'center', gap: 4, marginLeft: 6, borderLeft: '1px solid #cbd5e1', paddingLeft: 10 }}>
                 <FaSync style={{ fontSize: 10, color: '#10b981' }} /> En Tiempo Real ({(lastSync instanceof Date ? lastSync : new Date()).toLocaleTimeString().slice(0, 5)})
@@ -358,42 +364,42 @@ export default function ManagementDashboard({ branchOnly = false }) {
           </button>
         </div>
 
-        {/* Tarjetas KPI Limpias (4 Métricas Clave) */}
+        {/* Tarjetas KPI Limpias (4 Métricas Clave) — ICONO AL LADO DEL TÍTULO CON MISMO TAMAÑO */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16, marginBottom: 24 }}>
           {/* KPI 1: Ingresos del Mes */}
           <div style={{ background: '#ffffff', padding: 18, borderRadius: 14, border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-              <span style={{ fontSize: 12, fontWeight: 600, color: '#64748b' }}>Ingresos del Mes</span>
-              <div style={{ width: 34, height: 34, borderRadius: 8, background: '#ecfdf5', color: '#10b981', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>
-                <FaDollarSign />
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                <FaDollarSign style={{ fontSize: 13, color: '#2563eb' }} aria-hidden="true" />
+                <span style={{ fontSize: 13, fontWeight: 600, color: '#64748b' }}>Ingresos del Mes</span>
               </div>
             </div>
             <strong style={{ fontSize: 22, fontWeight: 800, color: '#0f172a', display: 'block' }}>
               {formatCurrency(summary.monthlyRevenue || 0, moneda, tasaUSD)}
             </strong>
-            <span style={{ fontSize: 11, color: '#94a3b8', marginTop: 4, display: 'block' }}>Facturación acumulada en sede</span>
+            <span style={{ fontSize: 11, color: '#94a3b8', marginTop: 4, display: 'block' }}>Facturación acumulada en la sucursal</span>
           </div>
 
           {/* KPI 2: Tasa de Ocupación */}
           <div style={{ background: '#ffffff', padding: 18, borderRadius: 14, border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-              <span style={{ fontSize: 12, fontWeight: 600, color: '#64748b' }}>Tasa de Ocupación</span>
-              <div style={{ width: 34, height: 34, borderRadius: 8, background: '#eff6ff', color: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>
-                <FaChartLine />
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                <FaChartLine style={{ fontSize: 13, color: '#2563eb' }} aria-hidden="true" />
+                <span style={{ fontSize: 13, fontWeight: 600, color: '#64748b' }}>Tasa de Ocupación</span>
               </div>
             </div>
             <strong style={{ fontSize: 22, fontWeight: 800, color: '#0f172a', display: 'block' }}>
               {occupancy}%
             </strong>
-            <span style={{ fontSize: 11, color: '#94a3b8', marginTop: 4, display: 'block' }}>{rentedVehicles} de {totalVehicles} autos alquilados</span>
+            <span style={{ fontSize: 11, color: '#94a3b8', marginTop: 4, display: 'block' }}>{rentedVehicles} de {totalVehicles} vehículo{totalVehicles === 1 ? '' : 's'} alquilado{rentedVehicles === 1 ? '' : 's'}</span>
           </div>
 
           {/* KPI 3: Entregas de Hoy */}
           <div style={{ background: '#ffffff', padding: 18, borderRadius: 14, border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-              <span style={{ fontSize: 12, fontWeight: 600, color: '#64748b' }}>Entregas de Hoy</span>
-              <div style={{ width: 34, height: 34, borderRadius: 8, background: '#e0f2fe', color: '#0284c7', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>
-                <FaCalendarCheck />
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                <FaCalendarCheck style={{ fontSize: 13, color: '#16a34a' }} aria-hidden="true" />
+                <span style={{ fontSize: 13, fontWeight: 600, color: '#64748b' }}>Entregas de Hoy</span>
               </div>
             </div>
             <strong style={{ fontSize: 22, fontWeight: 800, color: '#0f172a', display: 'block' }}>
@@ -405,15 +411,15 @@ export default function ManagementDashboard({ branchOnly = false }) {
           {/* KPI 4: Devoluciones de Hoy */}
           <div style={{ background: '#ffffff', padding: 18, borderRadius: 14, border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-              <span style={{ fontSize: 12, fontWeight: 600, color: '#64748b' }}>Devoluciones de Hoy</span>
-              <div style={{ width: 34, height: 34, borderRadius: 8, background: '#f0fdf4', color: '#16a34a', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>
-                <FaCheckCircle />
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                <FaCheckCircle style={{ fontSize: 13, color: '#d97706' }} aria-hidden="true" />
+                <span style={{ fontSize: 13, fontWeight: 600, color: '#64748b' }}>Devoluciones de Hoy</span>
               </div>
             </div>
             <strong style={{ fontSize: 22, fontWeight: 800, color: '#0f172a', display: 'block' }}>
               {summary.todayReturns} retornos
             </strong>
-            <span style={{ fontSize: 11, color: '#94a3b8', marginTop: 4, display: 'block' }}>Vehículos retornando a sede</span>
+            <span style={{ fontSize: 11, color: '#94a3b8', marginTop: 4, display: 'block' }}>Vehículos retornando a la sucursal</span>
           </div>
         </div>
 
@@ -430,7 +436,7 @@ export default function ManagementDashboard({ branchOnly = false }) {
                 <span style={{ fontSize: 12, color: '#64748b' }}>Distribución de los {totalVehicles} vehículos de la sucursal</span>
               </div>
               <span style={{ fontSize: 12, fontWeight: 700, color: '#2563eb', background: '#eff6ff', padding: '4px 10px', borderRadius: 20 }}>
-                {totalVehicles} Autos
+                {totalVehicles} Vehículo{totalVehicles === 1 ? '' : 's'}
               </span>
             </div>
 

@@ -2508,6 +2508,18 @@
         "watermark": "This audit record is immutable and cannot be altered or deleted in compliance with platform traceability standards.",
         "close": "Close"
       }
+    },
+    "branchProfile": {
+      "title": "Mi sucursal",
+      "subtitle": "Administra la información pública y operativa de tu sucursal.",
+      "savedSuccess": "Los datos de la sucursal han sido actualizados.",
+      "fields": {
+        "address": "Dirección",
+        "hours": "Horario de atención",
+        "phone": "Teléfono",
+        "latitude": "Latitud",
+        "longitude": "Longitud"
+      }
     }
   },
   "contratoFirma": {
@@ -2870,6 +2882,114 @@
     "tableTime": "Registration Time",
     "tableCashier": "Cashier / Manager",
     "tableAction": "Action",
-    "viewReceipt": "View Receipt"
+    "viewReceipt": "View Receipt",
+    "branchProfile": {
+      "title": "Mi sucursal",
+      "subtitle": "Administra la informaci�n p�blica y operativa de tu sucursal.",
+      "savedSuccess": "Los datos de la sucursal han sido actualizados.",
+      "fields": {
+        "address": "Direcci�n",
+        "hours": "Horario de atenci�n",
+        "phone": "Tel�fono",
+        "latitude": "Latitud",
+        "longitude": "Longitud"
+      }
+    },
+    "dashboard": {
+      "title": "Dashboard",
+      "subtitle": "Resumen del día en tu sucursal",
+      "realtime": "En tiempo real",
+      "actions": {
+        "createReservation": "Crear reserva",
+        "reportIncident": "Reportar incidencia"
+      },
+      "kpi": {
+        "monthlyRevenue": "Ingresos del mes",
+        "revenueVsMonth": "+8,5% vs. mes anterior",
+        "todayDeliveries": "Entregas de hoy",
+        "customersAtCounter": "clientes en mostrador",
+        "todayReturns": "Devoluciones de hoy",
+        "vehiclesReturning": "vehículos retornando a la sucursal",
+        "occupancy": "Ocupación",
+        "occupancyVehicles": "{{rented}} de {{total}} vehículos"
+      },
+      "kpiTooltip": {
+        "monthlyRevenue": "Sum of reservations charged this month at your branch.",
+        "todayDeliveries": "Customers picking up their vehicle today at the counter.",
+        "todayReturns": "Vehicles returning to the branch today.",
+        "occupancy": "Percentage of your fleet currently rented."
+      },
+      "drawer": {
+        "title": "Reservation detail",
+        "client": "Customer",
+        "phone": "Phone",
+        "vehicle": "Vehicle",
+        "plate": "License plate",
+        "category": "Category",
+        "time": "Scheduled time",
+        "type": "Operation type",
+        "delivery": "Counter pickup",
+        "return": "Branch return",
+        "status": "Current status",
+        "viewFullReservation": "View full reservation",
+        "close": "Close"
+      },
+      "fleetChips": {
+        "available": "Available",
+        "rented": "Rented",
+        "maintenance": "In shop"
+      },
+      "schedule": {
+        "title": "Programación de hoy",
+        "tabs": {
+          "deliveries": "Entregas {{count}}",
+          "returns": "Devoluciones {{count}}"
+        },
+        "colTime": "Hora",
+        "colClient": "Cliente",
+        "colVehicle": "Vehículo",
+        "colStatus": "Estado",
+        "viewAllReservations": "Ver todas las reservas →",
+        "emptyDeliveries": "No hay entregas programadas para hoy.",
+        "emptyReturns": "No hay devoluciones programadas para hoy."
+      },
+      "attention": {
+        "title": "Requiere tu atención",
+        "documentsToValidate_one": "1 documento por validar",
+        "documentsToValidate_other": "{{count}} documentos por validar",
+        "openIncidents_one": "1 incidencia abierta",
+        "openIncidents_other": "{{count}} incidencias abiertas",
+        "pendingPayments_one": "1 pago pendiente",
+        "pendingPayments_other": "{{count}} pagos pendientes",
+        "expiringVehicleDocs_one": "1 vehicle document expiring",
+        "expiringVehicleDocs_other": "{{count}} vehicle documents expiring",
+        "allClear": "Todo al día"
+      },
+      "fleet": {
+        "title": "Estado de la flota",
+        "available": "Disponibles",
+        "rented": "En alquiler",
+        "maintenance": "En taller o mantenimiento",
+        "viewFleet": "Ver flota →",
+        "vehicleCount_one": "1 vehículo",
+        "vehicleCount_other": "{{count}} vehículos"
+      },
+      "notifications": {
+        "title": "Notifications",
+        "markAllAsRead": "Mark all as read",
+        "viewAll": "View all",
+        "empty": "No pending notifications."
+      },
+      "rowMenu": {
+        "viewReservation": "View full reservation",
+        "contactClient": "Contact customer",
+        "reportIncident": "Report incident"
+      },
+      "kpiMenu": {
+        "viewReportDetails": "View details in Reports",
+        "exportData": "Export data",
+        "exportComingSoon": "Export feature coming soon"
+      }
+    }
   }
 }

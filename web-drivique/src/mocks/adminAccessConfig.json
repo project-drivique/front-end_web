@@ -45,6 +45,7 @@
     ],
     "encargado_sucursal": [
       { "key": "dashboard", "route": "/encargado", "section": "MONITOREO" },
+      { "key": "myBranch", "route": "/encargado/my-branch", "section": "GESTIÓN OPERATIVA" },
       { "key": "vehicles", "route": "/encargado/vehicles", "section": "GESTIÓN OPERATIVA" },
       { "key": "reservations", "route": "/encargado/reservations", "section": "GESTIÓN OPERATIVA" },
       { "key": "cashCollection", "route": "/encargado/cobro-sucursal", "section": "GESTIÓN OPERATIVA" },

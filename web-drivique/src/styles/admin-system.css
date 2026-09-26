@@ -93,9 +93,9 @@
   margin-top: 0;
   padding-top: 4px;
 }
-.management-nav__item, .management-logout { min-height: 43px; padding: 10px 13px; border-radius: 10px; font-size: 13px; font-weight: 650; }
+.management-nav__item, .management-logout { min-height: 43px; padding: 10px 13px; border-radius: 10px; font-size: 13px; font-weight: 500; }
 .management-nav__item:hover { transform: none; background: rgba(255,255,255,.12); }
-.management-nav__item.is-active { transform: none; background: rgba(255,255,255,.22) !important; border: 1px solid rgba(255,255,255,.28) !important; box-shadow: 0 4px 14px rgba(0,0,0,0.12); }
+.management-nav__item.is-active { transform: none; background: rgba(255,255,255,.22) !important; border: 1px solid rgba(255,255,255,.28) !important; box-shadow: 0 4px 14px rgba(0,0,0,0.12); font-weight: 600; }
 
 /* Encabezados y controles */
 .cities-topbar, .management-header, .brand-page__header { align-items: center; margin-bottom: 22px; }

@@ -181,9 +181,9 @@ export default function ReservationManagementPage() {
       ]
     }
     if (activeTab === 'proteccion_extras') {
-      return ['Código', 'Vehículo', 'Placa', 'Cliente', 'Plan Protección', 'Tipo Kilometraje', 'Servicios Adicionales', 'Estado Reserva']
+      return ['Código', 'Plan Protección', 'Tipo Kilometraje', 'Servicios Adicionales']
     }
-    return ['Código', 'Cliente', 'Documento', 'Correo', 'Teléfono', 'Dirección / Domicilio', 'Tarifa Base', 'Cargos e IVA', 'Total Final', 'Estado Pago']
+    return ['Código', 'Nombre', 'Correo', 'Tipo de Documento', 'Nacionalidad', 'Teléfono Celular', 'Número de Documento', 'Documento de Identidad', 'Licencia de Conducción', 'Términos y Condiciones', 'Promociones']
   }, [activeTab])
 
   const rowsExport = useMemo(() => {
@@ -248,45 +248,25 @@ export default function ReservationManagementPage() {
         const servs = (r.reservaDetalles?.serviciosAdicionales || []).map(s => typeof s === 'string' ? s : s.nombre).join(', ') || 'Ninguno'
         return [
           cod,
-          r.vehiculoNombre || 'Mazda CX-5 2024',
-          r.vehiculoPlaca || 'KLS-849',
-          r.clienteNombre || 'Cliente Registrado',
           r.reservaDetalles?.cobertura?.nombre || r.cobertura || 'Protección Estándar CDW',
           r.reservaDetalles?.kilometraje || r.kilometraje || 'Ilimitado',
           servs,
-          r.estado || 'Confirmada',
         ]
       }
 
       // activeTab === 'datos_pago'
-      const esCobroPresencialPendiente =
-        (rawMetodo.includes('efectivo') || rawMetodo.includes('sucursal')) &&
-        !Boolean(r.metodoPagoConfirmado) &&
-        r.pagoEstado !== 'aprobado'
-
-      const pagoRecibido =
-        (r.pagoEstado === 'aprobado' ||
-          Boolean(r.metodoPagoConfirmado) ||
-          Boolean(r.fechaPagoConfirmado) ||
-          r.estado === 'confirmada' ||
-          r.estado === 'en_curso' ||
-          r.estado === 'finalizada') &&
-        !esCobroPresencialPendiente
-
-      const subtotal = totalCOP / 1.29
-      const cargosIVA = totalCOP - subtotal
-
       return [
         cod,
         r.clienteNombre || 'Cliente Registrado',
-        r.clienteDocumento || '1020304050',
         r.clienteCorreo || 'cliente@drivique.com',
+        r.clienteTipoDocumento || 'Cédula de Ciudadanía',
+        r.clienteNacionalidad || 'Colombia',
         r.clienteTelefono || '300 000 0000',
-        r.domicilioDireccion || r.clienteDireccion || 'Retiro en Sucursal',
-        formatCurrency(subtotal, moneda, tasaUSD),
-        formatCurrency(cargosIVA, moneda, tasaUSD),
-        formatCurrency(totalCOP, moneda, tasaUSD),
-        pagoRecibido ? 'Recibido' : 'No Recibido',
+        r.clienteDocumento || '1020304050',
+        r.documentoIdentidadPdf ? 'Archivo Cargado' : 'Sin cargar',
+        r.licenciaConduccionPdf ? 'Archivo Cargado' : 'Sin cargar',
+        'Aceptados',
+        r.cuponCodigo || 'Sin cupones',
       ]
     })
   }, [filtradas, activeTab, moneda, tasaUSD])
@@ -742,14 +722,9 @@ export default function ReservationManagementPage() {
                     <thead>
                       <tr>
                         <th>{t('admin.reservationsManagement.table.code')}</th>
-                        <th>Foto</th>
-                        <th>Vehículo</th>
-                        <th>Placa</th>
-                        <th>Cliente</th>
                         <th>Plan Protección</th>
                         <th>Tipo Kilometraje</th>
                         <th>Servicios Adicionales</th>
-                        <th>Estado Reserva</th>
                         <th style={{ textAlign: 'center' }}>{t('admin.actions', 'Acciones')}</th>
                       </tr>
                     </thead>
@@ -766,49 +741,9 @@ export default function ReservationManagementPage() {
                             <td>
                               <strong style={{ color: '#0f172a', fontWeight: 700 }}>{cod}</strong>
                             </td>
-                            <td>
-                              {r.vehiculoImagen ? (
-                                <img
-                                  src={r.vehiculoImagen}
-                                  alt={r.vehiculoNombre || 'Auto'}
-                                  title="Haz clic para ver foto completa"
-                                  onClick={() => setZoomImage({ url: r.vehiculoImagen, title: `${r.vehiculoNombre || 'Vehículo'} (${r.vehiculoPlaca || 'Placa'})` })}
-                                  style={{
-                                    width: 48,
-                                    height: 34,
-                                    borderRadius: 8,
-                                    objectFit: 'cover',
-                                    border: '1px solid #cbd5e1',
-                                    display: 'block',
-                                    cursor: 'zoom-in',
-                                    transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-                                  }}
-                                  onMouseEnter={(e) => {
-                                    e.currentTarget.style.transform = 'scale(1.15)'
-                                    e.currentTarget.style.boxShadow = '0 4px 10px rgba(0,0,0,0.18)'
-                                  }}
-                                  onMouseLeave={(e) => {
-                                    e.currentTarget.style.transform = 'scale(1)'
-                                    e.currentTarget.style.boxShadow = 'none'
-                                  }}
-                                />
-                              ) : (
-                                <span style={{ fontSize: 12, color: '#94a3b8' }}>—</span>
-                              )}
-                            </td>
-                            <td style={{ fontWeight: 700, color: '#0f172a' }}>
-                              {r.vehiculoNombre || 'Renault Sandero 2023'}
-                            </td>
-                            <td>
-                              <code>{r.vehiculoPlaca || 'KLS-849'}</code>
-                            </td>
-                            <td style={{ fontWeight: 600, color: '#0f172a' }}>{cliNom}</td>
                             <td>{cobertura}</td>
                             <td>{kilometraje}</td>
                             <td>{extras}</td>
-                            <td>
-                              {r.estado === 'en_curso' ? 'En curso' : r.estado === 'finalizada' ? 'Finalizada' : r.estado === 'cancelada' ? 'Cancelada' : 'Confirmada'}
-                            </td>
                             <td style={{ textAlign: 'center' }}>
                               <div className="cities-row-actions">
                                 <button
@@ -842,15 +777,16 @@ export default function ReservationManagementPage() {
                     <thead>
                       <tr>
                         <th>{t('admin.reservationsManagement.table.code')}</th>
-                        <th>Cliente</th>
-                        <th>Documento</th>
+                        <th>Nombre</th>
                         <th>Correo</th>
-                        <th>Teléfono</th>
-                        <th>Dirección / Domicilio</th>
-                        <th>Tarifa Base</th>
-                        <th>Cargos (10%) + IVA (19%)</th>
-                        <th>Total Final ({moneda})</th>
-                        <th>Estado Pago</th>
+                        <th>Tipo de Documento</th>
+                        <th>Nacionalidad</th>
+                        <th>Teléfono Celular</th>
+                        <th>Número de Documento</th>
+                        <th>Documento de Identidad</th>
+                        <th>Licencia de Conducción</th>
+                        <th>Términos y Condiciones</th>
+                        <th>Promociones</th>
                         <th style={{ textAlign: 'center' }}>{t('admin.actions', 'Acciones')}</th>
                       </tr>
                     </thead>
@@ -861,8 +797,9 @@ export default function ReservationManagementPage() {
                         const cliDoc = r.clienteDocumento || '1020304050'
                         const cliMail = r.clienteCorreo || 'cliente@drivique.com'
                         const cliTel = r.clienteTelefono || '300 000 0000'
-                        const cliDir = r.domicilioDireccion || r.clienteDireccion || 'Entrega en Sucursal'
-                        const totalCOP = Number(r.totalCOP || r.total || r.precioTotal || 348000)
+                        const tipoDoc = r.clienteTipoDocumento || 'Cédula de Ciudadanía'
+                        const nacionalidad = r.clienteNacionalidad || 'Colombia'
+                        const cuponCodigo = r.cuponCodigo || r.reservaDetalles?.cuponAplicado ? `Aplicó (${r.cuponCodigo || 'CUPON'})` : 'Sin cupones'
 
                         const rawMetodo = String(
                           r.reservaDetalles?.metodoPago ||
@@ -877,32 +814,39 @@ export default function ReservationManagementPage() {
                           !Boolean(r.metodoPagoConfirmado) &&
                           r.pagoEstado !== 'aprobado'
 
-                        const pagoRecibido =
-                          (r.pagoEstado === 'aprobado' ||
-                            Boolean(r.metodoPagoConfirmado) ||
-                            Boolean(r.fechaPagoConfirmado) ||
-                            r.estado === 'confirmada' ||
-                            r.estado === 'en_curso' ||
-                            r.estado === 'finalizada') &&
-                          !esCobroPresencialPendiente
-
-                        const subtotal = totalCOP / 1.29
-                        const cargosIVA = totalCOP - subtotal
-
                         return (
                           <tr key={r.id || cod}>
                             <td>
                               <strong style={{ color: '#0f172a', fontWeight: 700 }}>{cod}</strong>
                             </td>
                             <td style={{ fontWeight: 600, color: '#0f172a' }}>{cliNom}</td>
-                            <td><code>{cliDoc}</code></td>
                             <td style={{ color: '#64748b', fontSize: 12 }}>{cliMail}</td>
+                            <td>{tipoDoc}</td>
+                            <td>{nacionalidad}</td>
                             <td>{cliTel}</td>
-                            <td>{cliDir}</td>
-                            <td>{formatCurrency(subtotal, moneda, tasaUSD)}</td>
-                            <td>{formatCurrency(cargosIVA, moneda, tasaUSD)}</td>
-                            <td style={{ fontWeight: 700, color: '#0f172a' }}>{formatCurrency(totalCOP, moneda, tasaUSD)}</td>
-                            <td>{pagoRecibido ? 'Recibido' : 'No Recibido'}</td>
+                            <td><code>{cliDoc}</code></td>
+                            <td>
+                              {r.documentoIdentidadPdf ? (
+                                <a href={r.documentoIdentidadPdf} target="_blank" rel="noopener noreferrer" style={{ color: '#2563eb', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 4 }}>
+                                  <FaFilePdf /> Ver PDF
+                                </a>
+                              ) : (
+                                <span style={{ color: '#94a3b8', fontSize: 12 }}>Sin archivo</span>
+                              )}
+                            </td>
+                            <td>
+                              {r.licenciaConduccionPdf ? (
+                                <a href={r.licenciaConduccionPdf} target="_blank" rel="noopener noreferrer" style={{ color: '#2563eb', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 4 }}>
+                                  <FaFilePdf /> Ver PDF
+                                </a>
+                              ) : (
+                                <span style={{ color: '#94a3b8', fontSize: 12 }}>Sin archivo</span>
+                              )}
+                            </td>
+                            <td>
+                              <span style={{ color: '#047857', fontWeight: 600, fontSize: 12 }}>✓ Aceptados</span>
+                            </td>
+                            <td>{cuponCodigo}</td>
                             <td style={{ textAlign: 'center' }}>
                               <div className="cities-row-actions">
                                 {esCobroPresencialPendiente && (

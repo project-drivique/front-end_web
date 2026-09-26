@@ -17,6 +17,7 @@ import ReservationFlowPage from '../modules/reservations/pages/ReservationFlowPa
 import VehicleDetailsPage from '../modules/catalog/pages/VehicleDetailsPage'
 import AdminPage from '../modules/admin/pages/AdminPage'
 import BranchManagerPage from '../modules/admin/pages/BranchManagerPage'
+import BranchProfilePage from '../modules/admin/pages/BranchProfilePage'
 import ManagementModulePage from '../modules/admin/pages/ManagementModulePage'
 import CityManagementPage from '../modules/admin/pages/CityManagementPage'
 import BranchManagementPage from '../modules/admin/pages/BranchManagementPage'
@@ -203,6 +204,7 @@ export default function AppRouter() {
         <Route path="/admin/audit" element={<RutaPorRol roles={[ROLES.ADMIN]}><AuditLogManagementPage /></RutaPorRol>} />
         <Route path="/admin/:moduleKey" element={<RutaPorRol roles={[ROLES.ADMIN]}><ManagementModulePage /></RutaPorRol>} />
         <Route path="/encargado" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER, ROLES.ADMIN]}><BranchManagerPage /></RutaPorRol>} />
+        <Route path="/encargado/my-branch" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER]}><BranchProfilePage /></RutaPorRol>} />
         <Route path="/encargado/vehicles" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER]}><VehicleManagementPage /></RutaPorRol>} />
         <Route path="/encargado/reservations" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER]}><ReservationManagementPage /></RutaPorRol>} />
         <Route path="/encargado/cobro-sucursal" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER]}><CashCollectionPage branchOnly={true} /></RutaPorRol>} />
