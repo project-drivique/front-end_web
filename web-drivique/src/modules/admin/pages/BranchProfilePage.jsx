@@ -268,6 +268,10 @@ export default function BranchProfilePage() {
     return getPlaceSchedule({ kind: 'home_delivery' })
   }, [])
 
+  const airportScheduleObj = useMemo(() => {
+    return getPlaceSchedule({ branchType: 'AIRPORT_TERMINAL' })
+  }, [])
+
   const formattedBranchSchedule = useMemo(() => {
     return formatSchedule(branchScheduleObj, i18n.language)
   }, [branchScheduleObj, i18n.language])
@@ -276,7 +280,9 @@ export default function BranchProfilePage() {
     return formatSchedule(homeScheduleObj, i18n.language)
   }, [homeScheduleObj, i18n.language])
 
-  const formattedAirportSchedule = formattedHomeSchedule
+  const formattedAirportSchedule = useMemo(() => {
+    return formatSchedule(airportScheduleObj, i18n.language)
+  }, [airportScheduleObj, i18n.language])
 
   if (loading || !profile) {
     return (
@@ -717,7 +723,7 @@ export default function BranchProfilePage() {
                   <p className="branch-delivery-intro">
                     {t(
                       'branchProfile.deliveryByPayment.intro',
-                      'Esto es lo que ven tus clientes al elegir dónde retirar y devolver su vehículo, según cómo paguen.'
+                      'Lógica operativa que aplica el sistema de reservas al seleccionar el método de pago y lugar de entrega/devolución:'
                     )}
                   </p>
 
@@ -726,23 +732,24 @@ export default function BranchProfilePage() {
                       <thead>
                         <tr>
                           <th className="branch-delivery-th-place">
-                            {t('branchProfile.deliveryByPayment.title', 'Lugar')}
+                            {t('branchProfile.deliveryByPayment.place', 'Lugar de Retiro / Devolución')}
                           </th>
                           <th className="branch-delivery-th">
-                            {t('branchProfile.deliveryByPayment.colCash', 'Efectivo')}
+                            {t('branchProfile.deliveryByPayment.colCash', 'Pago en Efectivo')}
                           </th>
                           <th className="branch-delivery-th">
-                            {t('branchProfile.deliveryByPayment.colOnline', 'Pago en línea')}
+                            {t('branchProfile.deliveryByPayment.colOnline', 'Pago en Línea (Wompi)')}
                           </th>
                         </tr>
                       </thead>
                       <tbody>
-                        {/* Fila 1: En esta sucursal */}
+                        {/* Fila 1: En esta sucursal física */}
                         <tr>
                           <td className="branch-delivery-td-name">
                             <span className="branch-delivery-place-title">
-                              {t('branchProfile.deliveryByPayment.rowBranch', 'En esta sucursal')}
+                              {t('branchProfile.deliveryByPayment.rowBranch', 'En esta sucursal (sede física)')}
                             </span>
+                            <small className="branch-delivery-place-sub">Retiro y devolución en mostrador</small>
                           </td>
                           <td>
                             <div className="branch-delivery-avail-cell">
@@ -764,10 +771,12 @@ export default function BranchProfilePage() {
                             <span className="branch-delivery-place-title">
                               {t('branchProfile.deliveryByPayment.rowHome', 'A domicilio')}
                             </span>
+                            <small className="branch-delivery-place-sub">Servicio puerta a puerta en la ciudad</small>
                           </td>
                           <td>
                             <div className="branch-delivery-avail-cell">
                               <FaTimes className="branch-delivery-icon-cross" aria-hidden="true" />
+                              <span className="branch-delivery-schedule" style={{ color: '#94a3b8' }}>No disponible</span>
                             </div>
                           </td>
                           <td>
@@ -778,50 +787,80 @@ export default function BranchProfilePage() {
                           </td>
                         </tr>
 
-                        {/* Fila 3: En aeropuerto o terminal */}
-                        <tr>
-                          <td className="branch-delivery-td-name">
-                            <span className="branch-delivery-place-title">
-                              {t('branchProfile.deliveryByPayment.rowAirport', {
-                                city: cityName,
-                                defaultValue: `En aeropuerto o terminal de ${cityName}`,
-                              })}
-                            </span>
-                          </td>
-                          {hasAirportOrTerminal ? (
-                            <>
-                              <td>
-                                <div className="branch-delivery-avail-cell">
-                                  <FaTimes className="branch-delivery-icon-cross" aria-hidden="true" />
-                                </div>
-                              </td>
-                              <td>
-                                <div className="branch-delivery-avail-cell">
-                                  <FaCheck className="branch-delivery-icon-check" aria-hidden="true" />
-                                  <span className="branch-delivery-schedule">{formattedAirportSchedule}</span>
-                                </div>
-                              </td>
-                            </>
-                          ) : (
-                            <td colSpan={2} className="branch-delivery-td-no-option">
-                              <span className="branch-delivery-no-option">
-                                {t('branchProfile.deliveryByPayment.noAirportOption', 'Tu ciudad no ofrece esta opción')}
+                        {/* Fila 3: Aeropuerto (si aplica a la ciudad) */}
+                        {cityObj?.tieneAeropuerto && (
+                          <tr>
+                            <td className="branch-delivery-td-name">
+                              <span className="branch-delivery-place-title">
+                                {`Aeropuerto de ${cityName}`}
+                              </span>
+                              <small className="branch-delivery-place-sub">Entrega / recepción en terminal aérea</small>
+                            </td>
+                            <td>
+                              <div className="branch-delivery-avail-cell">
+                                <FaTimes className="branch-delivery-icon-cross" aria-hidden="true" />
+                                <span className="branch-delivery-schedule" style={{ color: '#94a3b8' }}>No disponible</span>
+                              </div>
+                            </td>
+                            <td>
+                              <div className="branch-delivery-avail-cell">
+                                <FaCheck className="branch-delivery-icon-check" aria-hidden="true" />
+                                <span className="branch-delivery-schedule">{formattedAirportSchedule}</span>
+                              </div>
+                            </td>
+                          </tr>
+                        )}
+
+                        {/* Fila 4: Terminal de transporte (si aplica a la ciudad) */}
+                        {cityObj?.tieneTerminal && (
+                          <tr>
+                            <td className="branch-delivery-td-name">
+                              <span className="branch-delivery-place-title">
+                                {`Terminal de transporte de ${cityName}`}
+                              </span>
+                              <small className="branch-delivery-place-sub">Entrega / recepción en terminal terrestre</small>
+                            </td>
+                            <td>
+                              <div className="branch-delivery-avail-cell">
+                                <FaTimes className="branch-delivery-icon-cross" aria-hidden="true" />
+                                <span className="branch-delivery-schedule" style={{ color: '#94a3b8' }}>No disponible</span>
+                              </div>
+                            </td>
+                            <td>
+                              <div className="branch-delivery-avail-cell">
+                                <FaCheck className="branch-delivery-icon-check" aria-hidden="true" />
+                                <span className="branch-delivery-schedule">{formattedAirportSchedule}</span>
+                              </div>
+                            </td>
+                          </tr>
+                        )}
+
+                        {/* Si la ciudad no tiene ni aeropuerto ni terminal */}
+                        {!cityObj?.tieneAeropuerto && !cityObj?.tieneTerminal && (
+                          <tr>
+                            <td className="branch-delivery-td-name">
+                              <span className="branch-delivery-place-title">
+                                Aeropuerto / Terminal terrestre
                               </span>
                             </td>
-                          )}
-                        </tr>
+                            <td colSpan={2} className="branch-delivery-td-no-option">
+                              <span className="branch-delivery-no-option">
+                                {`La ciudad de ${cityName} no cuenta con aeropuerto o terminal configurados`}
+                              </span>
+                            </td>
+                          </tr>
+                        )}
                       </tbody>
                     </table>
                   </div>
 
-                  {/* Nota pequeña con ícono de información */}
+                  {/* Notas operativas de negocio */}
                   <div className="branch-delivery-note">
                     <FaInfoCircle className="branch-delivery-note-icon" aria-hidden="true" />
                     <span>
-                      {t('branchProfile.deliveryByPayment.note', {
-                        schedule: formattedBranchSchedule,
-                        defaultValue: `El horario de tu sucursal es ${formattedBranchSchedule} según su tipo. Esto se define desde Mi sucursal → Horarios de atención.`,
-                      })}
+                      <strong>Efectivo:</strong> Requiere retirar y devolver el vehículo exclusivamente en la sucursal física asignada, abonando el valor y garantía en mostrador.
+                      <br />
+                      <strong>Pago en línea (Wompi):</strong> Habilita entrega y recogida a domicilio (registrando barrio, dirección y referencias) o en aeropuerto/terminal si la ciudad los posee.
                     </span>
                   </div>
                 </div>

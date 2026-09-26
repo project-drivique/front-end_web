@@ -799,6 +799,14 @@
   font-variant-numeric: tabular-nums;
 }
 
+.branch-delivery-place-sub {
+  display: block;
+  font-size: 10.5px;
+  color: var(--texto-second, #64748b);
+  font-weight: 400;
+  margin-top: 2px;
+}
+
 .branch-delivery-icon-check {
   color: #10b981;
   font-size: 13px;

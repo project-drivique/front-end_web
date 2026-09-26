@@ -972,20 +972,25 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* ─────────────────────────────────────────────────────────────
-   3. COLUMNAS PRINCIPALES (1.7fr IZQUIERDA / 1fr DERECHA)
-   ───────────────────────────────────────────────────────────── */
 .branch-columns-grid {
   display: grid;
-  grid-template-columns: 1.7fr 1fr;
+  grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
   gap: 22px;
-  align-items: stretch;
+  align-items: start;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
-.branch-left-stack {
+.branch-left-stack,
+.branch-right-stack {
   display: flex;
   flex-direction: column;
   gap: 22px;
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .branch-card {
@@ -995,6 +1000,8 @@
   padding: 22px 24px;
   box-shadow: var(--sombra-tarjeta, 0 2px 8px rgba(15, 23, 42, 0.04));
   box-sizing: border-box;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .branch-card-header-row {
@@ -1628,8 +1635,8 @@
 
 .branch-fleet-stats-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
   margin-top: 14px;
 }
 
@@ -1637,11 +1644,12 @@
   background: #ffffff !important;
   border: 1px solid var(--borde, #e2e8f0);
   border-radius: 12px;
-  padding: 10px 10px;
+  padding: 10px 12px;
   display: flex;
   flex-direction: column;
   gap: 3px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  min-width: 0;
 }
 
 .branch-fleet-stat-box--green {
