@@ -2541,15 +2541,21 @@
         "getDirections": "Get directions →"
       },
       "deliveryByPayment": {
-        "title": "How delivery works according to payment",
-        "intro": "This is what your customers see when choosing where to pick up and return their vehicle, depending on how they pay.",
+        "title": "How delivery works by payment method",
+        "intro": "Operating logic applied by the booking system when selecting payment method and pickup/return location:",
+        "colPlace": "Location",
         "colCash": "Cash",
         "colOnline": "Online payment",
         "rowBranch": "At this branch",
+        "rowAirport": "Airport",
+        "rowTerminal": "Terminal",
         "rowHome": "Home delivery",
-        "rowAirport": "At airport or terminal in {{city}}",
-        "noAirportOption": "Your city does not offer this option",
-        "note": "Your branch schedule is {{schedule}} according to its type. This is defined under My branch → Operating hours."
+        "noAlternateDeliveries": "Your city does not offer alternative deliveries at airport or terminal.",
+        "notAvailable": "Not available"
+      },
+      "paymentDeadline": {
+        "title": "Payment deadline for your customers",
+        "text": "When a customer confirms a reservation, they have up to 72 hours to pay. If pickup is before those 72 hours, the deadline is automatically adjusted to the remaining time (minimum 2 hours). If they do not pay on time, the reservation is automatically cancelled."
       },
       "summaryCard": {
         "title": "Summary",

@@ -18,6 +18,8 @@ import {
   FaHourglassHalf,
   FaCalendarDay,
   FaMoneyBillWave,
+  FaUndo,
+  FaSave,
 } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import { useAuthStore } from '../../../store/authStore'
@@ -314,14 +316,9 @@ export default function BranchProfilePage() {
       <main className="management-main branch-profile-main">
         {/* TOPBAR OPERATIVA UNIFICADA */}
         <div className="branch-topbar">
-          <div className="branch-search-box">
-            <FaSearch className="branch-search-icon" aria-hidden="true" />
-            <input
-              type="text"
-              className="branch-search-input"
-              placeholder="Buscar en la sucursal..."
-              aria-label="Buscar en la sucursal"
-            />
+          <div className="branch-topbar-brand-title">
+            <span className="branch-topbar-badge">Gestión de Sede</span>
+            <h1 className="branch-topbar-heading">{profile.nombre || 'Mi sucursal'}</h1>
           </div>
 
           <div className="branch-topbar-actions">
@@ -618,11 +615,92 @@ export default function BranchProfilePage() {
                   </div>
                 </div>
               </article>
+
+              {/* TARJETA 3: RESUMEN (SOLO LECTURA) */}
+              <article className="branch-profile-card">
+                <div className="branch-profile-card-header">
+                  <div className="branch-profile-card-title-wrap">
+                    <span className="branch-profile-card-title">
+                      <FaCar className="branch-profile-card-icon" aria-hidden="true" />
+                      {t('branchProfile.summaryCard.title', 'Resumen')}
+                    </span>
+                    <span className="branch-profile-card-desc">
+                      Resumen de vehículos, categorías y servicios habilitados
+                    </span>
+                  </div>
+                </div>
+
+                <div className="branch-profile-card-body">
+                  <div className="branch-profile-summary-grid">
+                    {/* Encargado */}
+                    <div className="branch-profile-summary-row">
+                      <span className="branch-profile-summary-label">
+                        {t('branchProfile.summaryCard.manager', 'Encargado')}
+                      </span>
+                      <strong className="branch-profile-summary-val">
+                        {profile.encargado || user?.nombre || 'Andrés Felipe Castro'}
+                      </strong>
+                    </div>
+
+                    {/* Vehículos */}
+                    <div className="branch-profile-summary-row">
+                      <span className="branch-profile-summary-label">
+                        {t('branchProfile.summaryCard.vehicles', 'Vehículos')}
+                      </span>
+                      <div className="branch-profile-fleet-action">
+                        <strong className="branch-profile-summary-val">
+                          {profile.vehiculosCount || 5} {t('branchProfile.summaryCard.vehicles', 'vehículos').toLowerCase()}
+                        </strong>
+                        <button
+                          type="button"
+                          className="branch-profile-link-btn"
+                          onClick={() => navigate('/encargado/vehicles')}
+                        >
+                          {t('branchProfile.summaryCard.viewFleet', 'Ver flota →')}
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Categorías que ofrece */}
+                    <div className="branch-profile-summary-row branch-profile-summary-row--col">
+                      <span className="branch-profile-summary-label">
+                        {t('branchProfile.summaryCard.categories', 'Categorías que ofrece')}
+                      </span>
+                      <div className="branch-profile-tags-cloud">
+                        {(profile.categorias || ['Sedán', 'SUV', '4x4', 'Compacto', 'Crossover']).map((cat) => (
+                          <span key={cat} className="branch-profile-category-tag">
+                            {cat}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Servicios activos en sede */}
+                    <div className="branch-profile-summary-row branch-profile-summary-row--col">
+                      <span className="branch-profile-summary-label">Servicios activos en sede</span>
+                      <div className="branch-profile-services-list">
+                        <div className="branch-profile-service-item">
+                          <FaCheckCircle className="branch-profile-service-icon" aria-hidden="true" />
+                          <span>Entrega y recepción en mostrador</span>
+                        </div>
+                        <div className="branch-profile-service-item">
+                          <FaCheckCircle className="branch-profile-service-icon" aria-hidden="true" />
+                          <span>Servicio a domicilio</span>
+                        </div>
+                        <div className="branch-profile-service-item">
+                          <FaCheckCircle className="branch-profile-service-icon" aria-hidden="true" />
+                          <span>Validación biométrica e inspección digital</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </article>
             </div>
 
-            {/* COLUMNA DERECHA: UBICACIÓN + CÓMO FUNCIONA LA ENTREGA + RESUMEN */}
+            {/* COLUMNA DERECHA: UBICACIÓN + CÓMO FUNCIONA LA ENTREGA SEGÚN EL PAGO */}
             <div className="branch-profile-col">
-              {/* TARJETA 3: UBICACIÓN */}
+              {/* TARJETA 4: UBICACIÓN */}
               <article className="branch-profile-card">
                 <div className="branch-profile-card-header">
                   <div className="branch-profile-card-title-wrap">
@@ -709,7 +787,7 @@ export default function BranchProfilePage() {
                 </div>
               </article>
 
-              {/* NUEVA TARJETA: CÓMO FUNCIONA LA ENTREGA SEGÚN EL PAGO (SOLO LECTURA) */}
+              {/* TARJETA 5: CÓMO FUNCIONA LA ENTREGA SEGÚN EL PAGO (SOLO LECTURA) */}
               <article className="branch-profile-card">
                 <div className="branch-profile-card-header">
                   <div className="branch-profile-card-title-wrap">
@@ -717,279 +795,156 @@ export default function BranchProfilePage() {
                       <FaCreditCard className="branch-profile-card-icon" aria-hidden="true" />
                       {t('branchProfile.deliveryByPayment.title', 'Cómo funciona la entrega según el pago')}
                     </span>
+                    <span className="branch-profile-card-desc">
+                      Disponibilidad y horarios de entrega según el método de pago
+                    </span>
                   </div>
                 </div>
 
                 <div className="branch-profile-card-body">
-                  <p className="branch-delivery-intro">
-                    {t(
-                      'branchProfile.deliveryByPayment.intro',
-                      'Lógica operativa que aplica el sistema de reservas al seleccionar el método de pago y lugar de entrega/devolución:'
-                    )}
-                  </p>
-
                   <div className="branch-delivery-table-wrap">
                     <table className="branch-delivery-table">
                       <thead>
                         <tr>
                           <th className="branch-delivery-th-place">
-                            {t('branchProfile.deliveryByPayment.place', 'Lugar de Retiro / Devolución')}
+                            {t('branchProfile.deliveryByPayment.colPlace', 'Lugar')}
                           </th>
                           <th className="branch-delivery-th">
-                            {t('branchProfile.deliveryByPayment.colCash', 'Pago en Efectivo')}
+                            {t('branchProfile.deliveryByPayment.colCash', 'Efectivo')}
                           </th>
                           <th className="branch-delivery-th">
-                            {t('branchProfile.deliveryByPayment.colOnline', 'Pago en Línea (Wompi)')}
+                            {t('branchProfile.deliveryByPayment.colOnline', 'Pago en línea')}
                           </th>
                         </tr>
                       </thead>
                       <tbody>
-                        {/* Fila 1: En esta sucursal física */}
+                        {/* Fila 1: En esta sucursal */}
                         <tr>
                           <td className="branch-delivery-td-name">
                             <span className="branch-delivery-place-title">
-                              {t('branchProfile.deliveryByPayment.rowBranch', 'En esta sucursal (sede física)')}
+                              {t('branchProfile.deliveryByPayment.rowBranch', 'En esta sucursal')}
                             </span>
-                            <small className="branch-delivery-place-sub">Retiro y devolución en mostrador</small>
                           </td>
                           <td>
-                            <div className="branch-delivery-avail-cell">
+                            <div className="branch-delivery-avail-pill branch-delivery-avail-pill--active">
                               <FaCheck className="branch-delivery-icon-check" aria-hidden="true" />
                               <span className="branch-delivery-schedule">{formattedBranchSchedule}</span>
                             </div>
                           </td>
                           <td>
-                            <div className="branch-delivery-avail-cell">
+                            <div className="branch-delivery-avail-pill branch-delivery-avail-pill--active">
                               <FaCheck className="branch-delivery-icon-check" aria-hidden="true" />
                               <span className="branch-delivery-schedule">{formattedBranchSchedule}</span>
                             </div>
                           </td>
                         </tr>
 
-                        {/* Fila 2: A domicilio */}
+                        {/* Fila 2: Aeropuerto (si aplica a la ciudad de esta sucursal) */}
+                        {cityObj?.tieneAeropuerto && (
+                          <tr>
+                            <td className="branch-delivery-td-name">
+                              <span className="branch-delivery-place-title">
+                                {t('branchProfile.deliveryByPayment.rowAirport', 'Aeropuerto')}
+                              </span>
+                            </td>
+                            <td>
+                              <div className="branch-delivery-avail-pill branch-delivery-avail-pill--inactive">
+                                <FaTimes className="branch-delivery-icon-cross" aria-hidden="true" />
+                                <span className="branch-delivery-schedule">
+                                  {t('branchProfile.deliveryByPayment.notAvailable', 'No disponible')}
+                                </span>
+                              </div>
+                            </td>
+                            <td>
+                              <div className="branch-delivery-avail-pill branch-delivery-avail-pill--active">
+                                <FaCheck className="branch-delivery-icon-check" aria-hidden="true" />
+                                <span className="branch-delivery-schedule">{formattedAirportSchedule}</span>
+                              </div>
+                            </td>
+                          </tr>
+                        )}
+
+                        {/* Fila 3: Terminal (si aplica a la ciudad de esta sucursal) */}
+                        {cityObj?.tieneTerminal && (
+                          <tr>
+                            <td className="branch-delivery-td-name">
+                              <span className="branch-delivery-place-title">
+                                {t('branchProfile.deliveryByPayment.rowTerminal', 'Terminal')}
+                              </span>
+                            </td>
+                            <td>
+                              <div className="branch-delivery-avail-pill branch-delivery-avail-pill--inactive">
+                                <FaTimes className="branch-delivery-icon-cross" aria-hidden="true" />
+                                <span className="branch-delivery-schedule">
+                                  {t('branchProfile.deliveryByPayment.notAvailable', 'No disponible')}
+                                </span>
+                              </div>
+                            </td>
+                            <td>
+                              <div className="branch-delivery-avail-pill branch-delivery-avail-pill--active">
+                                <FaCheck className="branch-delivery-icon-check" aria-hidden="true" />
+                                <span className="branch-delivery-schedule">{formattedAirportSchedule}</span>
+                              </div>
+                            </td>
+                          </tr>
+                        )}
+
+                        {/* Fila 4: A domicilio */}
                         <tr>
                           <td className="branch-delivery-td-name">
                             <span className="branch-delivery-place-title">
                               {t('branchProfile.deliveryByPayment.rowHome', 'A domicilio')}
                             </span>
-                            <small className="branch-delivery-place-sub">Servicio puerta a puerta en la ciudad</small>
                           </td>
                           <td>
-                            <div className="branch-delivery-avail-cell">
+                            <div className="branch-delivery-avail-pill branch-delivery-avail-pill--inactive">
                               <FaTimes className="branch-delivery-icon-cross" aria-hidden="true" />
-                              <span className="branch-delivery-schedule" style={{ color: '#94a3b8' }}>No disponible</span>
+                              <span className="branch-delivery-schedule">
+                                {t('branchProfile.deliveryByPayment.notAvailable', 'No disponible')}
+                              </span>
                             </div>
                           </td>
                           <td>
-                            <div className="branch-delivery-avail-cell">
+                            <div className="branch-delivery-avail-pill branch-delivery-avail-pill--active">
                               <FaCheck className="branch-delivery-icon-check" aria-hidden="true" />
                               <span className="branch-delivery-schedule">{formattedHomeSchedule}</span>
                             </div>
                           </td>
                         </tr>
-
-                        {/* Fila 3: Aeropuerto (si aplica a la ciudad) */}
-                        {cityObj?.tieneAeropuerto && (
-                          <tr>
-                            <td className="branch-delivery-td-name">
-                              <span className="branch-delivery-place-title">
-                                {`Aeropuerto de ${cityName}`}
-                              </span>
-                              <small className="branch-delivery-place-sub">Entrega / recepción en terminal aérea</small>
-                            </td>
-                            <td>
-                              <div className="branch-delivery-avail-cell">
-                                <FaTimes className="branch-delivery-icon-cross" aria-hidden="true" />
-                                <span className="branch-delivery-schedule" style={{ color: '#94a3b8' }}>No disponible</span>
-                              </div>
-                            </td>
-                            <td>
-                              <div className="branch-delivery-avail-cell">
-                                <FaCheck className="branch-delivery-icon-check" aria-hidden="true" />
-                                <span className="branch-delivery-schedule">{formattedAirportSchedule}</span>
-                              </div>
-                            </td>
-                          </tr>
-                        )}
-
-                        {/* Fila 4: Terminal de transporte (si aplica a la ciudad) */}
-                        {cityObj?.tieneTerminal && (
-                          <tr>
-                            <td className="branch-delivery-td-name">
-                              <span className="branch-delivery-place-title">
-                                {`Terminal de transporte de ${cityName}`}
-                              </span>
-                              <small className="branch-delivery-place-sub">Entrega / recepción en terminal terrestre</small>
-                            </td>
-                            <td>
-                              <div className="branch-delivery-avail-cell">
-                                <FaTimes className="branch-delivery-icon-cross" aria-hidden="true" />
-                                <span className="branch-delivery-schedule" style={{ color: '#94a3b8' }}>No disponible</span>
-                              </div>
-                            </td>
-                            <td>
-                              <div className="branch-delivery-avail-cell">
-                                <FaCheck className="branch-delivery-icon-check" aria-hidden="true" />
-                                <span className="branch-delivery-schedule">{formattedAirportSchedule}</span>
-                              </div>
-                            </td>
-                          </tr>
-                        )}
-
-                        {/* Si la ciudad no tiene ni aeropuerto ni terminal */}
-                        {!cityObj?.tieneAeropuerto && !cityObj?.tieneTerminal && (
-                          <tr>
-                            <td className="branch-delivery-td-name">
-                              <span className="branch-delivery-place-title">
-                                Aeropuerto / Terminal terrestre
-                              </span>
-                            </td>
-                            <td colSpan={2} className="branch-delivery-td-no-option">
-                              <span className="branch-delivery-no-option">
-                                {`La ciudad de ${cityName} no cuenta con aeropuerto o terminal configurados`}
-                              </span>
-                            </td>
-                          </tr>
-                        )}
                       </tbody>
                     </table>
                   </div>
 
-                  {/* Notas operativas de lugares de entrega */}
-                  <div className="branch-delivery-note">
-                    <FaInfoCircle className="branch-delivery-note-icon" aria-hidden="true" />
-                    <span>
-                      <strong>Pago en efectivo:</strong> El cliente debe retirar y devolver obligatoriamente en la sucursal física asignada, dentro del horario de atención de la sede.
-                      <br />
-                      <strong>Pago en línea (Wompi):</strong> Habilita entrega y recogida a domicilio (con dirección, barrio y referencias) o en aeropuerto/terminal si la ciudad los posee.
-                    </span>
-                  </div>
-
-                  {/* SECCIÓN DE REGLAS DE PLAZO DE PAGO EN EFECTIVO */}
-                  <div className="branch-payment-deadline-section">
-                    <span className="branch-payment-deadline-title">
-                      <FaHourglassHalf className="branch-payment-deadline-icon" aria-hidden="true" />
-                      Plazos de pago en efectivo y cancelación por tiempo límite
-                    </span>
-
-                    <div className="branch-payment-deadline-grid">
-                      {/* Caso 1: Reserva con más de 3 días de anticipación */}
-                      <div className="branch-deadline-card">
-                        <div className="branch-deadline-card-head">
-                          <span className="branch-deadline-badge branch-deadline-badge--blue">
-                            <FaCalendarDay aria-hidden="true" />
-                            Anticipación &gt; 3 días
-                          </span>
-                          <strong className="branch-deadline-highlight">Hasta 72 horas</strong>
-                        </div>
-                        <p className="branch-deadline-desc">
-                          El cliente cuenta con un plazo máximo de <strong>72 horas</strong> desde la creación de la reserva para acercarse a la sucursal a pagar en mostrador.
-                        </p>
-                      </div>
-
-                      {/* Caso 2: Reserva para el mismo día o &lt; 3 días */}
-                      <div className="branch-deadline-card">
-                        <div className="branch-deadline-card-head">
-                          <span className="branch-deadline-badge branch-deadline-badge--amber">
-                            <FaClock aria-hidden="true" />
-                            Mismo día / &lt; 72 horas
-                          </span>
-                          <strong className="branch-deadline-highlight">Horas restantes</strong>
-                        </div>
-                        <p className="branch-deadline-desc">
-                          El pago debe realizarse <strong>el mismo día antes de la hora de retiro</strong>. El sistema le indica en pantalla las horas exactas disponibles para pagar.
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Banner de Cancelación Automática */}
-                    <div className="branch-delivery-auto-cancel-banner">
-                      <FaExclamationTriangle className="branch-auto-cancel-icon" aria-hidden="true" />
+                  {/* Si la ciudad no tiene ni aeropuerto ni terminal */}
+                  {!cityObj?.tieneAeropuerto && !cityObj?.tieneTerminal && (
+                    <div className="branch-delivery-no-alternates">
+                      <FaInfoCircle aria-hidden="true" />
                       <span>
-                        <strong>Cancelación automática por tiempo:</strong> Si el plazo de pago vence sin haberse registrado el cobro en mostrador, el sistema pasa la reserva a estado <code>CANCELADA_POR_TIEMPO</code> y libera el vehículo a la flota de la sucursal.
+                        {t(
+                          'branchProfile.deliveryByPayment.noAlternateDeliveries',
+                          'Tu ciudad no ofrece entregas alternas en aeropuerto o terminal.'
+                        )}
                       </span>
                     </div>
-                  </div>
-                </div>
-              </article>
+                  )}
 
-              {/* TARJETA 4: RESUMEN (SOLO LECTURA) */}
-              <article className="branch-profile-card">
-                <div className="branch-profile-card-header">
-                  <div className="branch-profile-card-title-wrap">
-                    <span className="branch-profile-card-title">
-                      <FaCar className="branch-profile-card-icon" aria-hidden="true" />
-                      {t('branchProfile.summaryCard.title', 'Resumen')}
-                    </span>
-                    <span className="branch-profile-card-desc">
-                      Resumen de vehículos, categorías y servicios habilitados
-                    </span>
-                  </div>
-                </div>
-
-                <div className="branch-profile-card-body">
-                  <div className="branch-profile-summary-grid">
-                    {/* Encargado */}
-                    <div className="branch-profile-summary-row">
-                      <span className="branch-profile-summary-label">
-                        {t('branchProfile.summaryCard.manager', 'Encargado')}
-                      </span>
-                      <strong className="branch-profile-summary-val">
-                        {profile.encargado || user?.nombre || 'Andrés Felipe Castro'}
-                      </strong>
-                    </div>
-
-                    {/* Vehículos */}
-                    <div className="branch-profile-summary-row">
-                      <span className="branch-profile-summary-label">
-                        {t('branchProfile.summaryCard.vehicles', 'Vehículos')}
-                      </span>
-                      <div className="branch-profile-fleet-action">
-                        <strong className="branch-profile-summary-val">
-                          {profile.vehiculosCount || 5} {t('branchProfile.summaryCard.vehicles', 'vehículos').toLowerCase()}
-                        </strong>
-                        <button
-                          type="button"
-                          className="branch-profile-link-btn"
-                          onClick={() => navigate('/encargado/vehicles')}
-                        >
-                          {t('branchProfile.summaryCard.viewFleet', 'Ver flota →')}
-                        </button>
+                  {/* SECCIÓN B: PLAZO DE PAGO DE TUS CLIENTES */}
+                  <div className="branch-payment-deadline-section">
+                    <div className="branch-payment-deadline-header">
+                      <div className="branch-payment-deadline-icon-wrap">
+                        <FaHourglassHalf className="branch-payment-deadline-icon" aria-hidden="true" />
                       </div>
-                    </div>
-
-                    {/* Categorías que ofrece */}
-                    <div className="branch-profile-summary-row branch-profile-summary-row--col">
-                      <span className="branch-profile-summary-label">
-                        {t('branchProfile.summaryCard.categories', 'Categorías que ofrece')}
+                      <span className="branch-payment-deadline-title">
+                        {t('branchProfile.paymentDeadline.title', 'Plazo de pago de tus clientes')}
                       </span>
-                      <div className="branch-profile-tags-cloud">
-                        {(profile.categorias || ['Sedán', 'SUV', '4x4', 'Compacto', 'Crossover']).map((cat) => (
-                          <span key={cat} className="branch-profile-category-tag">
-                            {cat}
-                          </span>
-                        ))}
-                      </div>
                     </div>
 
-                    {/* Servicios activos en sede */}
-                    <div className="branch-profile-summary-row branch-profile-summary-row--col">
-                      <span className="branch-profile-summary-label">Servicios activos en sede</span>
-                      <div className="branch-profile-services-list">
-                        <div className="branch-profile-service-item">
-                          <FaCheckCircle className="branch-profile-service-icon" aria-hidden="true" />
-                          <span>Entrega y recepción en mostrador</span>
-                        </div>
-                        <div className="branch-profile-service-item">
-                          <FaCheckCircle className="branch-profile-service-icon" aria-hidden="true" />
-                          <span>Servicio a domicilio</span>
-                        </div>
-                        <div className="branch-profile-service-item">
-                          <FaCheckCircle className="branch-profile-service-icon" aria-hidden="true" />
-                          <span>Validación biométrica e inspección digital</span>
-                        </div>
-                      </div>
-                    </div>
+                    <p className="branch-payment-deadline-text">
+                      {t(
+                        'branchProfile.paymentDeadline.text',
+                        'Cuando un cliente confirma una reserva, tiene hasta 72 horas para pagar. Si el retiro es antes de esas 72 horas, el plazo se ajusta automáticamente al tiempo que falta (mínimo 2 horas). Si no paga a tiempo, la reserva se cancela sola.'
+                      )}
+                    </p>
                   </div>
                 </div>
               </article>

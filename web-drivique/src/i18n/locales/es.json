@@ -2882,14 +2882,20 @@
       },
       "deliveryByPayment": {
         "title": "Cómo funciona la entrega según el pago",
-        "intro": "Esto es lo que ven tus clientes al elegir dónde retirar y devolver su vehículo, según cómo paguen.",
+        "intro": "Lógica operativa que aplica el sistema de reservas al seleccionar el método de pago y lugar de entrega/devolución:",
+        "colPlace": "Lugar",
         "colCash": "Efectivo",
         "colOnline": "Pago en línea",
         "rowBranch": "En esta sucursal",
+        "rowAirport": "Aeropuerto",
+        "rowTerminal": "Terminal",
         "rowHome": "A domicilio",
-        "rowAirport": "En aeropuerto o terminal de {{city}}",
-        "noAirportOption": "Tu ciudad no ofrece esta opción",
-        "note": "El horario de tu sucursal es {{schedule}} según su tipo. Esto se define desde Mi sucursal → Horarios de atención."
+        "noAlternateDeliveries": "Tu ciudad no ofrece entregas alternas en aeropuerto o terminal.",
+        "notAvailable": "No disponible"
+      },
+      "paymentDeadline": {
+        "title": "Plazo de pago de tus clientes",
+        "text": "Cuando un cliente confirma una reserva, tiene hasta 72 horas para pagar. Si el retiro es antes de esas 72 horas, el plazo se ajusta automáticamente al tiempo que falta (mínimo 2 horas). Si no paga a tiempo, la reserva se cancela sola."
       },
       "summaryCard": {
         "title": "Resumen",
