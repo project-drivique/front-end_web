@@ -2510,15 +2510,77 @@
       }
     },
     "branchProfile": {
-      "title": "Mi sucursal",
-      "subtitle": "Administra la información pública y operativa de tu sucursal.",
-      "savedSuccess": "Los datos de la sucursal han sido actualizados.",
+      "title": "My branch",
+      "subtitle": "Data that your customers see in the catalog",
+      "unsavedChanges": "You have unsaved changes",
+      "noChanges": "No changes to save",
+      "saveSuccessTitle": "Changes saved",
+      "saveSuccessMsg": "Branch details have been successfully updated.",
+      "readOnlyHint": "Only the general administrator can change this",
+      "devSwitch": "Test Mode - Select branch:",
+      "actions": {
+        "cancel": "Cancel",
+        "save": "Save changes"
+      },
+      "general": {
+        "title": "General information"
+      },
+      "schedules": {
+        "title": "Operating hours",
+        "typeLabel": "Branch type",
+        "typeAirport": "Airport or terminal",
+        "typeStandard": "Standard branch",
+        "branchAttention": "Branch counter service",
+        "homeDelivery": "Home pickup and delivery",
+        "scheduleTypeHint": "Defined by company according to branch type",
+        "infoNote": "These operating hours determine the pickup and return hours that customers can choose when booking, based on their selected location."
+      },
+      "location": {
+        "title": "Location",
+        "mapUnavailable": "Map unavailable",
+        "getDirections": "Get directions →"
+      },
+      "deliveryByPayment": {
+        "title": "How delivery works according to payment",
+        "intro": "This is what your customers see when choosing where to pick up and return their vehicle, depending on how they pay.",
+        "colCash": "Cash",
+        "colOnline": "Online payment",
+        "rowBranch": "At this branch",
+        "rowHome": "Home delivery",
+        "rowAirport": "At airport or terminal in {{city}}",
+        "noAirportOption": "Your city does not offer this option",
+        "note": "Your branch schedule is {{schedule}} according to its type. This is defined under My branch → Operating hours."
+      },
+      "summaryCard": {
+        "title": "Summary",
+        "manager": "Branch Manager",
+        "vehicles": "Vehicles",
+        "viewFleet": "View fleet →",
+        "categories": "Offered categories"
+      },
+      "status": {
+        "active": "Active",
+        "inactive": "Inactive"
+      },
       "fields": {
-        "address": "Dirección",
-        "hours": "Horario de atención",
-        "phone": "Teléfono",
-        "latitude": "Latitud",
-        "longitude": "Longitud"
+        "name": "Branch name",
+        "city": "City",
+        "status": "Status",
+        "address": "Address",
+        "phone": "Phone",
+        "pickupInstructions": "Pickup instructions",
+        "latitude": "Latitude",
+        "longitude": "Longitude"
+      },
+      "placeholders": {
+        "pickupInstructions": "In front of airport exit 3"
+      },
+      "errors": {
+        "addressRequired": "Address is required.",
+        "phoneInvalid": "Phone must contain between 7 and 13 digits.",
+        "latInvalid": "Latitude must be between -90 and 90.",
+        "lngInvalid": "Longitude must be between -180 and 180.",
+        "bothCoordsRequired": "You must provide both latitude and longitude together."
       }
     }
   },
