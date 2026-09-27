@@ -1,0 +1,966 @@
+/* ==========================================================================
+   BranchProfilePage.css - Vista Informativa y Operativa "Mi sucursal"
+   Diseño de alta gama, tarjetas blancas pulidas, balance estético y tipografía premium.
+   ========================================================================== */
+
+.branch-profile-main {
+  padding: 24px 32px 48px;
+  background-color: var(--bg-principal, #f8fafc);
+  min-height: 100vh;
+  box-sizing: border-box;
+  font-family: inherit;
+  color: var(--texto-primary, #0f172a);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   TOPBAR OPERATIVA UNIFICADA (SIN BUSCADOR)
+   ───────────────────────────────────────────────────────────── */
+.branch-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 22px;
+  width: 100%;
+}
+
+.branch-topbar-brand-title {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.branch-topbar-badge {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--brand-primary, #2563eb);
+}
+
+.branch-topbar-heading {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--texto-primary, #0f172a);
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.branch-topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.branch-profile-dev-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  padding: 4px 10px;
+  border-radius: 10px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.branch-profile-dev-label {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #475569;
+}
+
+.branch-profile-dev-select {
+  background: transparent;
+  border: none;
+  font-size: 12px;
+  color: #0f172a;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  font-family: inherit;
+  padding-right: 4px;
+}
+
+.branch-divider-v {
+  width: 1px;
+  height: 24px;
+  background: var(--borde, #e2e8f0);
+}
+
+.branch-user-profile-chip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #ffffff;
+  border: 1px solid var(--borde, #e2e8f0);
+  padding: 4px 14px 4px 5px;
+  border-radius: 28px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+}
+
+.branch-user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--brand-primary, #2563eb), #1d4ed8);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.25);
+}
+
+.branch-user-info-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.branch-user-name {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--texto-primary, #0f172a);
+}
+
+.branch-user-role {
+  font-size: 11px;
+  color: var(--texto-second, #64748b);
+  font-weight: 500;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   HERO BANNER ELEGANTE
+   ───────────────────────────────────────────────────────────── */
+.branch-profile-hero-banner {
+  background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 55%, #3b82f6 100%);
+  border-radius: 20px;
+  padding: 24px 28px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.25);
+  color: #ffffff;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.branch-profile-hero-banner::after {
+  content: '';
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0) 70%);
+  pointer-events: none;
+}
+
+.branch-profile-hero-content {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 1;
+}
+
+.branch-profile-hero-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.branch-profile-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(8px);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #ffffff !important;
+}
+
+.branch-profile-live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #34d399;
+  box-shadow: 0 0 0 2px rgba(52, 211, 153, 0.4);
+}
+
+.branch-profile-type-tag {
+  background: rgba(15, 23, 42, 0.28);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.branch-profile-hero-title {
+  font-size: 24px;
+  font-weight: 800;
+  color: #ffffff !important;
+  margin: 2px 0 0;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+
+.branch-profile-hero-subtitle {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.88) !important;
+  margin: 0;
+  font-weight: 400;
+}
+
+.branch-profile-hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  z-index: 1;
+}
+
+.branch-profile-unsaved-alert {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #fef3c7;
+  color: #b45309;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+.branch-hero-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 180ms ease;
+  outline: none;
+}
+
+.branch-hero-btn--outlined {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: #ffffff !important;
+}
+
+.branch-hero-btn--outlined:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.22);
+  border-color: #ffffff;
+}
+
+.branch-hero-btn--white {
+  background: #ffffff;
+  border: 1px solid #ffffff;
+  color: var(--brand-primary, #2563eb) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.branch-hero-btn--white:hover:not(:disabled) {
+  background: #f8fafc;
+  color: #1d4ed8 !important;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.branch-hero-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   GRID Y TARJETAS INFORMATIVAS
+   ───────────────────────────────────────────────────────────── */
+.branch-profile-form-container {
+  width: 100%;
+}
+
+.branch-profile-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.branch-profile-col {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.branch-profile-card {
+  background: #ffffff !important;
+  border: 1px solid var(--borde, #e2e8f0);
+  border-radius: 18px;
+  padding: 22px 24px;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.03), 0 1px 3px rgba(15, 23, 42, 0.02);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: box-shadow 200ms ease;
+}
+
+.branch-profile-card:hover {
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.05), 0 2px 6px rgba(15, 23, 42, 0.03);
+}
+
+.branch-profile-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--borde, #f1f5f9);
+}
+
+.branch-profile-card-title-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.branch-profile-card-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--texto-primary, #0f172a);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.branch-profile-card-icon {
+  font-size: 15px;
+  color: var(--brand-primary, #2563eb);
+}
+
+.branch-profile-card-desc {
+  font-size: 12px;
+  color: var(--texto-second, #64748b);
+  font-weight: 400;
+}
+
+.branch-profile-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Campos del formulario */
+.branch-profile-fields-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+.branch-profile-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.branch-profile-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.branch-profile-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--texto-second, #475569);
+}
+
+.branch-profile-counter {
+  font-size: 11px;
+  color: var(--texto-second, #94a3b8);
+  font-variant-numeric: tabular-nums;
+}
+
+.branch-profile-input {
+  height: 40px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1px solid var(--borde, #e2e8f0);
+  background: #ffffff;
+  color: var(--texto-primary, #0f172a);
+  font-size: 13px;
+  font-weight: 500;
+  outline: none;
+  font-family: inherit;
+  box-sizing: border-box;
+  transition: all 180ms ease;
+  width: 100%;
+}
+
+.branch-profile-input:focus {
+  border-color: var(--brand-primary, #2563eb);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.branch-profile-input--error {
+  border-color: #ef4444 !important;
+  background-color: #fef2f2;
+}
+
+.branch-profile-error-msg {
+  font-size: 11.5px;
+  color: #ef4444;
+  font-weight: 600;
+}
+
+.branch-profile-input-readonly {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.branch-profile-input-readonly .branch-profile-input {
+  background-color: #f8fafc;
+  color: #64748b;
+  cursor: not-allowed;
+  padding-right: 34px;
+  font-weight: 600;
+}
+
+.branch-profile-lock-icon {
+  position: absolute;
+  right: 12px;
+  color: #94a3b8;
+  font-size: 12px;
+  pointer-events: none;
+}
+
+.branch-profile-help-text {
+  font-size: 11px;
+  color: var(--texto-second, #94a3b8);
+  font-style: italic;
+}
+
+.branch-profile-textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--borde, #e2e8f0);
+  background: #ffffff;
+  color: var(--texto-primary, #0f172a);
+  font-size: 13px;
+  font-weight: 500;
+  outline: none;
+  font-family: inherit;
+  box-sizing: border-box;
+  resize: vertical;
+  min-height: 60px;
+  transition: all 180ms ease;
+}
+
+.branch-profile-textarea:focus {
+  border-color: var(--brand-primary, #2563eb);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   HORARIOS DE ATENCIÓN
+   ───────────────────────────────────────────────────────────── */
+.branch-profile-schedule-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+.branch-profile-schedule-box {
+  background: #f8fafc;
+  border: 1px solid var(--borde, #e2e8f0);
+  border-radius: 14px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: transform 180ms ease;
+}
+
+.branch-profile-schedule-box:hover {
+  transform: translateY(-2px);
+}
+
+.branch-profile-schedule-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.branch-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.branch-dot--green {
+  background: #10b981;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.25);
+}
+
+.branch-dot--blue {
+  background: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.25);
+}
+
+.branch-profile-schedule-title {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--texto-second, #475569);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.branch-profile-schedule-val {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--texto-primary, #0f172a);
+  font-variant-numeric: tabular-nums;
+}
+
+.branch-profile-schedule-desc {
+  font-size: 11.5px;
+  color: var(--texto-second, #64748b);
+}
+
+.branch-profile-info-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 12px;
+}
+
+.branch-profile-info-icon {
+  color: var(--brand-primary, #2563eb);
+  font-size: 14px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.branch-profile-info-text {
+  margin: 0;
+  font-size: 12px;
+  color: #1e40af;
+  line-height: 1.45;
+  font-weight: 500;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   UBICACIÓN Y MAPA
+   ───────────────────────────────────────────────────────────── */
+.branch-profile-map-wrap {
+  width: 100%;
+  height: 200px;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid var(--borde, #e2e8f0);
+  background: #f1f5f9;
+}
+
+.branch-profile-map-iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.branch-profile-map-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.branch-profile-fallback-icon {
+  font-size: 24px;
+  color: #cbd5e1;
+}
+
+.branch-profile-directions-wrap {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
+.branch-profile-directions-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--brand-primary, #2563eb);
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: rgba(37, 99, 235, 0.08);
+  transition: all 180ms ease;
+}
+
+.branch-profile-directions-link:hover {
+  background: rgba(37, 99, 235, 0.16);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   CÓMO FUNCIONA LA ENTREGA SEGÚN EL PAGO (TABLA PULIDA)
+   ───────────────────────────────────────────────────────────── */
+.branch-delivery-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 14px;
+  border: 1px solid var(--borde, #e2e8f0);
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+.branch-delivery-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  text-align: left;
+  font-size: 12.5px;
+}
+
+.branch-delivery-table thead {
+  background: #f8fafc;
+}
+
+.branch-delivery-th-place {
+  padding: 12px 14px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--texto-second, #64748b);
+  width: 30%;
+  border-bottom: 1px solid var(--borde, #e2e8f0);
+}
+
+.branch-delivery-th {
+  padding: 12px 14px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--texto-second, #64748b);
+  width: 35%;
+  border-bottom: 1px solid var(--borde, #e2e8f0);
+}
+
+.branch-delivery-table tbody tr {
+  transition: background-color 150ms ease;
+}
+
+.branch-delivery-table tbody tr:hover {
+  background-color: #fafbfc;
+}
+
+.branch-delivery-table tbody tr td {
+  border-bottom: 1px solid var(--borde, #f1f5f9);
+  padding: 11px 14px;
+  vertical-align: middle;
+}
+
+.branch-delivery-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.branch-delivery-td-name {
+  font-weight: 600;
+  color: var(--texto-primary, #0f172a);
+}
+
+.branch-delivery-place-title {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--texto-primary, #0f172a);
+}
+
+.branch-delivery-avail-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 11.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  line-height: 1.3;
+}
+
+.branch-delivery-avail-pill--active {
+  background: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+
+.branch-delivery-avail-pill--inactive {
+  background: #f8fafc;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+}
+
+.branch-delivery-icon-check {
+  color: #059669;
+  font-size: 11.5px;
+  flex-shrink: 0;
+}
+
+.branch-delivery-icon-cross {
+  color: #94a3b8;
+  font-size: 11.5px;
+  flex-shrink: 0;
+}
+
+.branch-delivery-schedule {
+  font-size: 11.5px;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.branch-delivery-no-alternates {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 10px 0 0 0;
+  font-size: 12px;
+  color: var(--texto-second, #64748b);
+  font-style: italic;
+  padding: 8px 12px;
+  background: #f8fafc;
+  border: 1px dashed var(--borde, #e2e8f0);
+  border-radius: 8px;
+}
+
+.branch-delivery-no-alternates svg {
+  color: #94a3b8;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   SECCIÓN B: PLAZO DE PAGO DE TUS CLIENTES
+   ───────────────────────────────────────────────────────────── */
+.branch-payment-deadline-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 14px;
+  padding: 14px 16px;
+  background: #f8fafc;
+  border: 1px solid var(--borde, #e2e8f0);
+  border-left: 4px solid var(--brand-primary, #2563eb);
+  border-radius: 12px;
+}
+
+.branch-payment-deadline-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.branch-payment-deadline-icon-wrap {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: rgba(37, 99, 235, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.branch-payment-deadline-icon {
+  color: var(--brand-primary, #2563eb);
+  font-size: 12px;
+}
+
+.branch-payment-deadline-title {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--texto-primary, #0f172a);
+}
+
+.branch-payment-deadline-text {
+  margin: 0;
+  font-size: 12px;
+  color: var(--texto-second, #475569);
+  line-height: 1.55;
+  font-weight: 500;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   RESUMEN OPERATIVO DE LA SUCURSAL
+   ───────────────────────────────────────────────────────────── */
+.branch-profile-summary-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.branch-profile-summary-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: #f8fafc;
+  border: 1px solid var(--borde, #f1f5f9);
+}
+
+.branch-profile-summary-row--col {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.branch-profile-summary-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--texto-second, #64748b);
+}
+
+.branch-profile-summary-val {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--texto-primary, #0f172a);
+}
+
+.branch-profile-fleet-action {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.branch-profile-link-btn {
+  background: transparent;
+  border: none;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--brand-primary, #2563eb);
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 6px;
+  transition: background-color 150ms ease;
+  font-family: inherit;
+}
+
+.branch-profile-link-btn:hover {
+  background: rgba(37, 99, 235, 0.08);
+}
+
+.branch-profile-tags-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  width: 100%;
+}
+
+.branch-profile-category-tag {
+  background: #ffffff;
+  border: 1px solid var(--borde, #e2e8f0);
+  color: var(--texto-primary, #0f172a);
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 16px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+.branch-profile-services-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.branch-profile-service-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--texto-primary, #334155);
+  font-weight: 500;
+}
+
+.branch-profile-service-icon {
+  color: #10b981;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+/* Skeleton Loading */
+.branch-profile-skeleton-header {
+  margin-bottom: 24px;
+}
+
+.branch-skeleton-block {
+  background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+  background-size: 200% 100%;
+  animation: branchSkeletonWave 1.5s infinite;
+  border-radius: 8px;
+}
+
+@keyframes branchSkeletonWave {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   RESPONSIVIDAD
+   ───────────────────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .branch-profile-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .branch-profile-main {
+    padding: 16px 16px 32px;
+  }
+
+  .branch-topbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .branch-profile-hero-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 20px;
+  }
+
+  .branch-profile-fields-row,
+  .branch-profile-schedule-grid {
+    grid-template-columns: 1fr;
+  }
+}

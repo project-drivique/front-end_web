@@ -34,8 +34,8 @@ export function useReservationFlow() {
     servicios: baseVehiculo.servicios || [],
     imagenes: baseVehiculo.imagenes || (baseVehiculo.imagen ? [baseVehiculo.imagen] : []),
     sucursalInfo: baseVehiculo.sucursalInfo || {
-      nombre: baseVehiculo.sucursal || 'Alquiler Neiva - Centro',
-      direccion: 'Calle 9 # 8-25, Centro',
+      nombre: baseVehiculo.sucursal || '',
+      direccion: '',
       horario: 'Lun a dom, 6:00 am - 10:00 pm'
     }
   } : null
@@ -354,7 +354,7 @@ export function useReservationFlow() {
       ? (tarifas.kmIlimitado?.precio || 0)
       : (reserva.tipoKm === 'limitado' ? (tarifas.kmLimitado?.precio || 0) : 0)
     const dias = (reserva.fechaInicio && reserva.fechaFin)
-      ? Math.max(1, Math.ceil((new Date(reserva.fechaFin) - new Date(reserva.fechaInicio)) / 86400000))
+      ? (reserva.fechaInicio === reserva.fechaFin ? 1 : Math.max(1, Math.ceil((new Date(reserva.fechaFin) - new Date(reserva.fechaInicio)) / 86400000) + 1))
       : 1
     const precioSeguro = seguroIdx !== null ? (vehiculo.seguros[seguroIdx]?.precio ?? 0) : 0
     const serviciosElegidos = (vehiculo.servicios || []).filter(s => serviciosSeleccionados.includes(s.nombre))
@@ -399,10 +399,19 @@ export function useReservationFlow() {
     const docCedulaFinal = datosForm.cedulaPdf?.name || (typeof datosForm.cedulaPdf === 'string' && datosForm.cedulaPdf) || docSaved?.cedula?.nombre || (datosForm.numDoc ? `Cedula-${datosForm.numDoc}.pdf` : 'Cedula-Verificada.pdf')
     const docLicenciaFinal = datosForm.licenciaPdf?.name || (typeof datosForm.licenciaPdf === 'string' && datosForm.licenciaPdf) || docSaved?.licencia?.nombre || (datosForm.numDoc ? `Licencia-${datosForm.numDoc}.pdf` : 'Licencia-Conduccion-Verificada.pdf')
 
+    const clienteNombreFinal = datosForm.nombre || [datosForm.nombres, datosForm.apellidos].filter(Boolean).join(' ') || usuario?.nombre || 'Cliente Drivique'
+    const clienteCorreoFinal = datosForm.correo || datosForm.email || usuario?.correo || usuario?.email || 'cliente@drivique.com'
+    const clienteTelFinal = datosForm.celular || datosForm.telefono || usuario?.telefono || '+57 300 000 0000'
+    const clienteDocFinal = datosForm.numDoc || datosForm.documento || datosForm.cedula || usuario?.cedula || '1020304050'
+
     const reservaGuardada = reservationService.guardarReserva({
       referencia,
       vehiculoId: vehiculo.id,
       vehiculoNombre: vehiculo.nombre,
+      clienteNombre: clienteNombreFinal,
+      clienteCorreo: clienteCorreoFinal,
+      clienteTelefono: clienteTelFinal,
+      clienteDocumento: clienteDocFinal,
       vehiculo: {
         id: vehiculo.id,
         nombre: vehiculo.nombre,
@@ -432,6 +441,13 @@ export function useReservationFlow() {
       metodoPago: reserva.metodoPago,
       datosForm: {
         ...datosForm,
+        nombre: clienteNombreFinal,
+        correo: clienteCorreoFinal,
+        celular: clienteTelFinal,
+        telefono: clienteTelFinal,
+        numDoc: clienteDocFinal,
+        tipoDoc: datosForm.tipoDoc || usuario?.tipoDocumento || 'CC',
+        direccion: datosForm.direccion || usuario?.direccion || '',
         cedulaPdf: docCedulaFinal,
         licenciaPdf: docLicenciaFinal,
       },
@@ -491,7 +507,7 @@ export function useReservationFlow() {
     ? (tarifasTotal.kmIlimitado?.precio || 0)
     : (reserva.tipoKm === 'limitado' ? (tarifasTotal.kmLimitado?.precio || 0) : 0)
   const diasTotal = reserva.fechaInicio && reserva.fechaFin
-    ? Math.max(1, Math.ceil((new Date(reserva.fechaFin) - new Date(reserva.fechaInicio)) / 86400000))
+    ? (reserva.fechaInicio === reserva.fechaFin ? 1 : Math.max(1, Math.ceil((new Date(reserva.fechaFin) - new Date(reserva.fechaInicio)) / 86400000) + 1))
     : 1
   const precioSeguroTotal = seguroIdx !== null ? (vehiculo?.seguros[seguroIdx]?.precio ?? 0) : 0
   const precioServiciosTotal = (vehiculo?.servicios || [])
