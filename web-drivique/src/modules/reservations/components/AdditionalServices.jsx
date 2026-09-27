@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { FaCheck, FaWifi, FaBaby, FaUserPlus, FaRoad, FaPlane, FaPlusCircle, FaGasPump, FaShower } from 'react-icons/fa'
+import { FaCheck, FaWifi, FaBaby, FaRoad, FaPlane, FaPlusCircle, FaGasPump, FaShower } from 'react-icons/fa'
 import { formatCurrency } from '@/utils/currencyUtils'
 import { useLanding } from '../../landing/LandingContext'
 
@@ -7,7 +7,6 @@ const getIconForService = (name) => {
   const n = name.toLowerCase();
   if (n.includes('gps')) return <FaWifi size={14} />;
   if (n.includes('beb')) return <FaBaby size={14} />;
-  if (n.includes('conductor')) return <FaUserPlus size={14} />;
   if (n.includes('lavado')) return <FaShower size={14} />;
   if (n.includes('tanque')) return <FaGasPump size={14} />;
   if (n.includes('peaje')) return <FaRoad size={14} />;
@@ -19,11 +18,15 @@ export default function ServiciosAdicionales({ servicios = [], seleccionados = [
   const { t } = useTranslation()
   const { moneda } = useLanding()
 
-  if (servicios.length === 0) return null
+  const serviciosDisponibles = servicios.filter(
+    (s) => !s?.nombre?.toLowerCase().includes('conductor')
+  )
+
+  if (serviciosDisponibles.length === 0) return null
 
   // Calcular total de servicios adicionales
   const totalDiario = seleccionados.reduce((acc, nombreServicio) => {
-    const s = servicios.find(s => s.nombre === nombreServicio);
+    const s = serviciosDisponibles.find(s => s.nombre === nombreServicio);
     return acc + (s ? s.precio : 0);
   }, 0);
   const total = totalDiario * dias;
@@ -46,7 +49,7 @@ export default function ServiciosAdicionales({ servicios = [], seleccionados = [
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          {servicios.map((servicio) => {
+          {serviciosDisponibles.map((servicio) => {
             const activo = seleccionados.includes(servicio.nombre)
             return (
               <button

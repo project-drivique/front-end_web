@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { FaMoneyBillWave, FaCreditCard, FaArrowLeft, FaTimes, FaClipboardList, FaArrowRight } from 'react-icons/fa'
 import logo from '@/assets/logo.png'
@@ -52,6 +52,10 @@ export default function ReservationFlowPage() {
   const navigate = useNavigate()
   const esModoOscuro = tema === 'oscuro'
 
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
+
   const c = {
     pageBg:        esModoOscuro ? '#0f172a'  : '#eaeff8',
     cardBg:        esModoOscuro ? '#111827'  : '#ffffff',
@@ -97,10 +101,10 @@ export default function ReservationFlowPage() {
   )
 
   // ─── Variables para datos de sucursal de pago en efectivo ─────────────────
-  const sucursalPago = reservaCreada?.reservaDetalles?.sucursalPagoEfectivo || reserva.sucursalPagoEfectivo || vehiculo?.sucursal || 'Alquiler Neiva - Centro'
+  const sucursalPago = reservaCreada?.reservaDetalles?.sucursalPagoEfectivo || reserva.sucursalPagoEfectivo || vehiculo?.sucursal || ''
   const branchObj = SUCURSALES.find(s => s.nombre === sucursalPago)
-  const ciudadPago = branchObj?.ciudad || vehiculo?.ciudad || 'Neiva'
-  const direccionPago = branchObj?.direccion || 'Calle 9 # 8-25, Centro'
+  const ciudadPago = branchObj?.ciudad || vehiculo?.ciudad || ''
+  const direccionPago = branchObj?.direccion || ''
 
   // ─── Flujo principal ──────────────────────────────────────────────────────
   return (
@@ -412,7 +416,7 @@ export default function ReservationFlowPage() {
                   margin: '0 0 8px',
                   letterSpacing: '-0.01em'
                 }}>
-                  {t('vehiculo.reservationRegisteredTitle', 'Reserva Registrada')}
+                  {t('vehiculo.cashPaymentTitle', { defaultValue: 'Pago en sucursal' })}
                 </h2>
 
                 {/* Subtitulo */}
@@ -444,10 +448,10 @@ export default function ReservationFlowPage() {
                   boxSizing: 'border-box'
                 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 12.5 }}>
-                    <span style={{ color: c.textSecondary || '#64748b', fontWeight: 600 }}>Referencia:</span>
+                    <span style={{ color: c.textPrimary || '#1e293b', fontWeight: 700 }}>Referencia:</span>
                     <span style={{
-                      fontWeight: 800,
-                      color: 'var(--brand-primary, #1D4ED8)',
+                      fontWeight: 400,
+                      color: c.textPrimary || '#0f172a',
                       fontSize: 12.5,
                       letterSpacing: '0.02em'
                     }}>
@@ -456,13 +460,13 @@ export default function ReservationFlowPage() {
                   </div>
 
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 12.5 }}>
-                    <span style={{ color: c.textSecondary || '#64748b', fontWeight: 600 }}>Sucursal:</span>
-                    <span style={{ fontWeight: 700, color: c.textPrimary || '#0f172a' }}>
+                    <span style={{ color: c.textPrimary || '#1e293b', fontWeight: 700 }}>Sucursal:</span>
+                    <span style={{ fontWeight: 400, color: c.textPrimary || '#0f172a' }}>
                       {sucursalPago}
                     </span>
                   </div>
 
-                  <div style={{ height: 1, background: c.cardBorder || '#e2e8f0', margin: '4px 0' }} />
+                  <div style={{ height: 1, background: c.cardBorder || '#e2e8f0', margin: '12px 0' }} />
 
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span style={{
@@ -475,8 +479,8 @@ export default function ReservationFlowPage() {
                       TOTAL A PAGAR:
                     </span>
                     <span style={{
-                      fontSize: 17,
-                      fontWeight: 900,
+                      fontSize: 18,
+                      fontWeight: 700,
                       color: 'var(--brand-primary, #1D4ED8)'
                     }}>
                       {formatCurrency(reservaCreada.total, moneda)}
@@ -510,9 +514,9 @@ export default function ReservationFlowPage() {
                     color: '#713F12',
                     margin: 0,
                     lineHeight: 1.45,
-                    fontWeight: 500
+                    fontWeight: 400
                   }}>
-                    Tienes 72 horas desde ahora para acercarte a la sucursal y pagar. Si no pagas dentro de este plazo, la reserva se cancelará automáticamente.
+                    Tienes aproximadamente {reservaCreada?.horasLimitePago || 72} horas desde ahora para acercarte a la sucursal y realizar el pago. Si no realizas el pago dentro de este plazo, la reserva se cancelará automáticamente.
                   </p>
                 </div>
 

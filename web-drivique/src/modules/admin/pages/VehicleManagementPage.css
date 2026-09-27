@@ -128,3 +128,255 @@
     gap: 8px;
   }
 }
+
+/* Pestañas pegadas directamente a la tabla */
+.fleet-attached-tabs {
+  display: flex;
+  gap: 6px;
+  background: var(--city-card, #ffffff);
+  border: 1px solid var(--city-border, #cbd5e1);
+  border-bottom: 1px solid var(--city-border, #cbd5e1);
+  border-radius: 16px 16px 0 0;
+  padding: 8px 16px 0 16px;
+  margin-bottom: 0 !important;
+  flex-wrap: wrap;
+}
+
+.fleet-tab-btn {
+  background: transparent;
+  border: none;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--city-muted, #64748b);
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.fleet-tab-btn:hover {
+  color: var(--brand-primary, #2563eb);
+}
+
+.fleet-tab-btn.is-active {
+  font-weight: 800;
+  color: var(--brand-primary, #2563eb);
+  border-bottom-color: var(--brand-primary, #2563eb);
+}
+
+.cities-card.attached-to-tabs {
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
+  border-top: none !important;
+  margin-top: 0 !important;
+  padding: 20px 24px;
+}
+
+/* 🏆 TABLA CON SCROLL HORIZONTAL FLUIDO Y ANCHO MÍNIMO AMPLIO */
+.cities-table-wrap {
+  overflow-x: auto !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  border-radius: 14px !important;
+  border: 1px solid var(--city-border, #cbd5e1) !important;
+}
+
+.cities-table-wrap::-webkit-scrollbar {
+  height: 8px !important;
+}
+
+.cities-table-wrap::-webkit-scrollbar-track {
+  background: #f1f5f9 !important;
+  border-radius: 4px !important;
+}
+
+.cities-table-wrap::-webkit-scrollbar-thumb {
+  background: #cbd5e1 !important;
+  border-radius: 4px !important;
+}
+
+.cities-table-wrap::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8 !important;
+}
+
+.cities-table-wrap table,
+.fleet-table {
+  width: 100% !important;
+  min-width: 1550px !important;
+  border-collapse: collapse !important;
+  table-layout: auto !important;
+}
+
+.cities-table-wrap th,
+.cities-table-wrap td {
+  white-space: nowrap !important;
+  padding: 14px 16px !important;
+  vertical-align: middle !important;
+}
+
+/* Botones de acción textuales (estilo Dashboard amplio) */
+.cities-row-actions {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 10px !important;
+  white-space: nowrap !important;
+  min-width: 180px !important;
+}
+
+.btn-row-action,
+.cities-row-actions button {
+  border: none !important;
+  background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%) !important;
+  color: #ffffff !important;
+  border-radius: 8px !important;
+  padding: 7px 16px !important;
+  min-width: 82px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25) !important;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1.2 !important;
+  text-decoration: none !important;
+  white-space: nowrap !important;
+  flex: 0 0 auto !important;
+}
+
+.btn-row-action:hover,
+.cities-row-actions button:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.35) !important;
+  background: linear-gradient(135deg, #1e40af 0%, #1d4ed8 100%) !important;
+  color: #ffffff !important;
+}
+
+.btn-row-action.is-delete,
+.cities-row-actions button.is-delete,
+.cities-row-actions button.is-danger {
+  background: #ef4444 !important;
+  color: #ffffff !important;
+  border: none !important;
+  box-shadow: 0 2px 6px rgba(239, 68, 68, 0.25) !important;
+}
+
+.btn-row-action.is-delete:hover,
+.cities-row-actions button.is-delete:hover,
+.cities-row-actions button.is-danger:hover {
+  background: #dc2626 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 10px rgba(220, 38, 38, 0.35) !important;
+}
+
+/* 🎨 BOTONES DE EXPORTACIÓN CON DISEÑO PILL EXACTO AL CAPTURADO */
+.fleet-datatable-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.fleet-datatable-search {
+  flex: 1 1 240px;
+  max-width: 360px;
+}
+
+.fleet-datatable-search input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 9px 16px;
+  border-radius: 12px;
+  border: 1.5px solid var(--city-border, #cbd5e1);
+  background: var(--city-card, #ffffff);
+  color: var(--city-text, #0f172a);
+  font-size: 13px;
+  transition: all 0.2s ease;
+  outline: none;
+  font-family: inherit;
+}
+
+.fleet-datatable-search input:focus {
+  border-color: var(--brand-primary, #2563eb);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.export-pills-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+
+.export-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border-radius: 14px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.export-pill--excel {
+  background: #f0fdf4;
+  border: 1.5px solid #bbf7d0;
+  color: #16a34a;
+}
+
+.export-pill--excel svg {
+  color: #16a34a;
+  font-size: 14px;
+}
+
+.export-pill--excel:hover {
+  background: #dcfce7;
+  border-color: #86efac;
+  transform: translateY(-1px);
+}
+
+.export-pill--pdf {
+  background: #fef2f2;
+  border: 1.5px solid #fecaca;
+  color: #dc2626;
+}
+
+.export-pill--pdf svg {
+  color: #dc2626;
+  font-size: 14px;
+}
+
+.export-pill--pdf:hover {
+  background: #fee2e2;
+  border-color: #fca5a5;
+  transform: translateY(-1px);
+}
+
+.export-pill--print {
+  background: #eff6ff;
+  border: 1.5px solid #bfdbfe;
+  color: #2563eb;
+}
+
+.export-pill--print svg {
+  color: #2563eb;
+  font-size: 14px;
+}
+
+.export-pill--print:hover {
+  background: #dbeafe;
+  border-color: #93c5fd;
+  transform: translateY(-1px);
+}
+
+
