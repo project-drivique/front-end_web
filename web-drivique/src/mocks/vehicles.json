@@ -89,10 +89,6 @@
         "precio": 20000
       },
       {
-        "nombre": "Conductor adicional",
-        "precio": 30000
-      },
-      {
         "nombre": "Lavado de auto post-entrega",
         "precio": 25000
       },
@@ -224,10 +220,6 @@
         "precio": 20000
       },
       {
-        "nombre": "Conductor adicional",
-        "precio": 30000
-      },
-      {
         "nombre": "Lavado de auto post-entrega",
         "precio": 25000
       },
@@ -335,10 +327,6 @@
       {
         "nombre": "Silla de bebé",
         "precio": 20000
-      },
-      {
-        "nombre": "Conductor adicional",
-        "precio": 30000
       },
       {
         "nombre": "Lavado de auto post-entrega",
@@ -451,10 +439,6 @@
       {
         "nombre": "Silla de bebé",
         "precio": 20000
-      },
-      {
-        "nombre": "Conductor adicional",
-        "precio": 30000
       },
       {
         "nombre": "Lavado de auto post-entrega",
@@ -580,10 +564,6 @@
         "precio": 20000
       },
       {
-        "nombre": "Conductor adicional",
-        "precio": 30000
-      },
-      {
         "nombre": "Lavado de auto post-entrega",
         "precio": 25000
       },
@@ -699,10 +679,6 @@
       {
         "nombre": "Silla de bebé",
         "precio": 20000
-      },
-      {
-        "nombre": "Conductor adicional",
-        "precio": 30000
       },
       {
         "nombre": "Lavado de auto post-entrega",
@@ -830,10 +806,6 @@
         "precio": 20000
       },
       {
-        "nombre": "Conductor adicional",
-        "precio": 30000
-      },
-      {
         "nombre": "Lavado de auto post-entrega",
         "precio": 25000
       },
@@ -943,10 +915,6 @@
       {
         "nombre": "Silla de bebé",
         "precio": 20000
-      },
-      {
-        "nombre": "Conductor adicional",
-        "precio": 30000
       },
       {
         "nombre": "Lavado de auto post-entrega",
@@ -1059,10 +1027,6 @@
       {
         "nombre": "Silla de bebé",
         "precio": 20000
-      },
-      {
-        "nombre": "Conductor adicional",
-        "precio": 30000
       },
       {
         "nombre": "Lavado de auto post-entrega",

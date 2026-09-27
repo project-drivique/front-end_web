@@ -26,3 +26,11 @@ Thumbs.db
 
 # Local Netlify folder
 .netlify
+
+# Base de datos y scripts locales (no subir a git)
+*.sql
+Script-tablas-Drivique.sql
+Script-tablas-Drivique.md
+web-drivique/docs/
+web-drivique/public/Script-tablas-Drivique.sql
+web-drivique/public/Script-tablas-Drivique.md

@@ -37,8 +37,12 @@ function reservationBranch(reservation, vehicleById) {
 
 function isSameLocalDate(value, reference) {
   if (!value) return false
-  const date = new Date(`${value}T00:00:00`)
-  return date.getFullYear() === reference.getFullYear()
+  const dateStr = String(value).slice(0, 10)
+  const refStr = reference.toISOString().slice(0, 10)
+  if (dateStr === refStr) return true
+  const date = new Date(value.length === 10 ? `${value}T00:00:00` : value)
+  return !Number.isNaN(date.getTime())
+    && date.getFullYear() === reference.getFullYear()
     && date.getMonth() === reference.getMonth()
     && date.getDate() === reference.getDate()
 }
@@ -55,7 +59,7 @@ export const adminDashboardService = {
   getSummary(user, referenceDate = new Date()) {
     const vehicles = vehicleManagementService.list()
     const vehicleById = new Map(vehicles.map((vehicle) => [Number(vehicle.id), vehicle]))
-    const isBranchManager = user?.rol === ROLES.BRANCH_MANAGER
+    const isBranchManager = user?.rol === ROLES.BRANCH_MANAGER || user?.rol === 'encargado_sucursal' || user?.rol === 'encargado'
     const assignedBranch = user?.sucursalId || user?.sucursal || user?.sucursalAsignada || ''
     const scopedVehicles = isBranchManager
       ? vehicles.filter((vehicle) => sameBranch(vehicle.sucursal, assignedBranch))
@@ -78,25 +82,100 @@ export const adminDashboardService = {
 
     const monthlyRevenue = reservations
       .filter((reservation) => REVENUE_STATES.has(String(reservation.estado).toUpperCase()))
-      .filter((reservation) => isSameMonth(reservation.fechaReserva, referenceDate))
+      .filter((reservation) => isSameMonth(reservation.fechaReserva || reservation.reservaDetalles?.fechaInicio, referenceDate))
       .reduce((total, reservation) => total + (Number(reservation.total) || 0), 0)
 
-    const todayDeliveries = reservations.filter((reservation) => {
+    const todayDeliveriesList = reservations.filter((reservation) => {
       const state = String(reservation.estado).toUpperCase()
-      return !CANCELLED_STATES.has(state)
-        && isSameLocalDate(reservation.reservaDetalles?.fechaInicio, referenceDate)
-    }).length
+      const startDate = reservation.reservaDetalles?.fechaInicio || reservation.fechaInicio
+      return !CANCELLED_STATES.has(state) && isSameLocalDate(startDate, referenceDate)
+    })
+
+    const todayReturnsList = reservations.filter((reservation) => {
+      const state = String(reservation.estado).toUpperCase()
+      const endDate = reservation.reservaDetalles?.fechaFin || reservation.fechaFin
+      return !CANCELLED_STATES.has(state) && isSameLocalDate(endDate, referenceDate)
+    })
+
+    const totalVehiclesCount = scopedVehicles.length || 1
+    const rentedVehiclesCount = activeVehicleIds.size
+    const availableVehiclesCount = scopedVehicles.filter(
+      (vehicle) => vehicle.disponible !== false && !activeVehicleIds.has(Number(vehicle.id)),
+    ).length
+    const maintenanceVehiclesCount = scopedVehicles.filter(
+      (vehicle) => vehicle.estadoFlota === 'EN_MANTENIMIENTO' || vehicle.disponible === false,
+    ).length
+
+    const occupancyRate = Math.min(100, Math.round((rentedVehiclesCount / totalVehiclesCount) * 100))
+
+    const statusBreakdown = {
+      confirmada: reservations.filter((r) => String(r.estado).toLowerCase().includes('confirmad')).length,
+      en_curso: reservations.filter((r) => String(r.estado).toLowerCase().includes('curso') || String(r.estado).toLowerCase().includes('activ')).length,
+      finalizada: reservations.filter((r) => String(r.estado).toLowerCase().includes('finaliz') || String(r.estado).toLowerCase().includes('complet')).length,
+      pendiente: reservations.filter((r) => String(r.estado).toLowerCase().includes('pendient')).length,
+      cancelada: reservations.filter((r) => String(r.estado).toLowerCase().includes('cancel')).length,
+    }
 
     return {
       scope: isBranchManager ? 'branch' : 'global',
       branch: isBranchManager ? (scopedVehicles[0]?.sucursal || assignedBranch) : null,
       monthlyRevenue,
-      rentedVehicles: activeVehicleIds.size,
-      availableVehicles: scopedVehicles.filter((vehicle) => vehicle.disponible !== false && !activeVehicleIds.has(Number(vehicle.id))).length,
-      todayDeliveries,
+      rentedVehicles: rentedVehiclesCount,
+      availableVehicles: availableVehiclesCount,
+      maintenanceVehicles: maintenanceVehiclesCount,
+      occupancyRate,
+      todayDeliveries: todayDeliveriesList.length,
+      todayReturns: todayReturnsList.length,
+      todayDeliveriesList,
+      todayReturnsList,
+      allBranchReservations: reservations,
+      statusBreakdown,
       vehicleCount: scopedVehicles.length,
       reservationCount: reservations.length,
       generatedAt: referenceDate.toISOString(),
     }
+  },
+
+  getWeeklyActivity(user, referenceDate = new Date()) {
+    const vehicles = vehicleManagementService.list()
+    const vehicleById = new Map(vehicles.map((v) => [Number(v.id), v]))
+    const isBranchManager = user?.rol === ROLES.BRANCH_MANAGER || user?.rol === 'encargado_sucursal' || user?.rol === 'encargado'
+    const assignedBranch = user?.sucursalId || user?.sucursal || user?.sucursalAsignada || ''
+    const scopedVehicles = isBranchManager
+      ? vehicles.filter((vehicle) => sameBranch(vehicle.sucursal, assignedBranch))
+      : vehicles
+    const scopedVehicleIds = new Set(scopedVehicles.map((vehicle) => Number(vehicle.id)))
+    const reservations = reservationService.getReservas().filter((reservation) => {
+      if (!isBranchManager) return true
+      return scopedVehicleIds.has(Number(reservation.vehiculoId))
+        || sameBranch(reservationBranch(reservation, vehicleById), assignedBranch)
+    })
+
+    const current = new Date(referenceDate)
+    const dayOfWeek = current.getDay()
+    const diffToMonday = (dayOfWeek + 6) % 7
+    const monday = new Date(current)
+    monday.setDate(current.getDate() - diffToMonday)
+    monday.setHours(0, 0, 0, 0)
+
+    const dayLabels = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom']
+    return dayLabels.map((label, idx) => {
+      const targetDate = new Date(monday)
+      targetDate.setDate(monday.getDate() + idx)
+
+      const entregas = reservations.filter((r) => {
+        const state = String(r.estado).toUpperCase()
+        const startDate = r.reservaDetalles?.fechaInicio || r.fechaInicio
+        return !CANCELLED_STATES.has(state) && isSameLocalDate(startDate, targetDate)
+      }).length
+
+      const devoluciones = reservations.filter((r) => {
+        const state = String(r.estado).toUpperCase()
+        const endDate = r.reservaDetalles?.fechaFin || r.fechaFin
+        return !CANCELLED_STATES.has(state) && isSameLocalDate(endDate, targetDate)
+      }).length
+
+      return { day: label, entregas, devoluciones }
+    })
   },
 }

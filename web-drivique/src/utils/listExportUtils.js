@@ -347,7 +347,7 @@ export function exportPdf({
       print-color-adjust: exact;
     }
     .badge-confirmada { background: var(--brand-soft-strong-light); color: var(--brand-text-light); }
-    .badge-en_curso { background: #f3e8ff; color: #7e22ce; }
+    .badge-en_curso { background: #e0f2fe; color: #0369a1; }
     .badge-finalizada { background: #dcfce7; color: #15803d; }
     .badge-pendiente { background: #fef3c7; color: #b45309; }
     .badge-cancelada { background: #fee2e2; color: #991b1b; }

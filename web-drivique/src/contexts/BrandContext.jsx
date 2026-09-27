@@ -33,4 +33,4 @@ export function BrandProvider({ children }) {
   return <BrandContext.Provider value={{ brand }}>{children}</BrandContext.Provider>
 }
 
-export const useBrand = () => useContext(BrandContext)
+export const useBrand = () => useContext(BrandContext) || { brand: null }

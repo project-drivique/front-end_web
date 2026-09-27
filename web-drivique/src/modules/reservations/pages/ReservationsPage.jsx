@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useLocation, useSearchParams } from 'react-router-dom'
-import { FaCalendarAlt, FaCar, FaCheckCircle, FaChevronDown, FaDownload, FaEye, FaEyeSlash, FaFileContract, FaFlag, FaKey, FaLock, FaMapMarkerAlt, FaMoneyBillWave, FaRegCalendarCheck, FaScroll, FaShieldAlt, FaStar, FaTimes, FaInfoCircle, FaCreditCard, FaFileSignature, FaPenNib, FaClock } from 'react-icons/fa'
+import { FaCalendarAlt, FaCar, FaCheckCircle, FaChevronDown, FaDownload, FaEye, FaEyeSlash, FaFileContract, FaFlag, FaKey, FaLock, FaMapMarkerAlt, FaMoneyBillWave, FaRegCalendarCheck, FaScroll, FaShieldAlt, FaStar, FaTimes, FaInfoCircle, FaCreditCard, FaFileSignature, FaPenNib, FaClock, FaTruck, FaUserCheck, FaWhatsapp, FaEnvelope, FaCamera } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/store/authStore'
@@ -65,32 +65,207 @@ const fechaBonita = (fecha, idioma) => {
   }
 }
 
+const ETIQUETAS_ESTRELLAS = (t) => ({
+  1: `😞 ${t('reservas.ratingLabels.1', { defaultValue: 'Mala experiencia' })}`,
+  2: `😐 ${t('reservas.ratingLabels.2', { defaultValue: 'Regular' })}`,
+  3: `🙂 ${t('reservas.ratingLabels.3', { defaultValue: 'Bueno' })}`,
+  4: `😊 ${t('reservas.ratingLabels.4', { defaultValue: 'Muy bueno' })}`,
+  5: `🤩 ${t('reservas.ratingLabels.5', { defaultValue: '¡Excelente!' })}`
+})
+
 function Estrellas({ value, onChange, disabled = false }) {
   const { t } = useTranslation()
-  return <div className="estrellas" role="radiogroup" aria-label={t('reservas.ratingAria')}>
-    {[1, 2, 3, 4, 5].map(n => <button key={n} type="button" disabled={disabled} onClick={() => onChange?.(n)}
-      className={n <= value ? 'estrella activa' : 'estrella'} aria-label={t('reservas.starsCount', { count: n })} aria-checked={value === n} role="radio"><FaStar /></button>)}
-  </div>
+  const [hoverIndex, setHoverIndex] = useState(0)
+  const activeRating = hoverIndex || value || 0
+  const etiquetas = ETIQUETAS_ESTRELLAS(t)
+
+  return (
+    <div className="minimal-estrellas-box">
+      <div
+        className="minimal-estrellas-grid"
+        role="radiogroup"
+        aria-label={t('reservas.ratingAria', { defaultValue: 'Calificación por estrellas' })}
+        onMouseLeave={() => !disabled && setHoverIndex(0)}
+      >
+        {[1, 2, 3, 4, 5].map(n => (
+          <button
+            key={n}
+            type="button"
+            disabled={disabled}
+            onClick={() => onChange?.(n)}
+            onMouseEnter={() => !disabled && setHoverIndex(n)}
+            className={`minimal-star-btn ${n <= activeRating ? 'activa' : ''}`}
+            aria-label={t('reservas.starsCount', { count: n, defaultValue: `${n} estrellas` })}
+            aria-checked={value === n}
+            role="radio"
+          >
+            <FaStar />
+          </button>
+        ))}
+      </div>
+      {!disabled && (
+        <div className="minimal-label-status">
+          {activeRating > 0 ? (
+            <span className="minimal-label-txt-light">
+              {etiquetas[activeRating]}
+            </span>
+          ) : null}
+        </div>
+      )}
+    </div>
+  )
 }
 
 function ModalValoracion({ reserva, onClose, onSave }) {
   const { t } = useTranslation()
   const [estrellas, setEstrellas] = useState(reserva.valoracion?.estrellas || 0)
   const [comentario, setComentario] = useState(reserva.valoracion?.comentario || '')
+  const [fotos, setFotos] = useState(reserva.valoracion?.fotos || [])
   const [guardando, setGuardando] = useState(false)
+  const [activeSlotIndex, setActiveSlotIndex] = useState(null)
+  const fileInputRef = useRef(null)
+
+  const vehiculoNombre = reserva.vehiculo?.nombre || reserva.vehiculoNombre || 'este vehículo'
+
+  const triggerSlotUpload = (slotIdx) => {
+    setActiveSlotIndex(slotIdx)
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+      fileInputRef.current.click()
+    }
+  }
+
+  const handleFotoFileChange = (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    const reader = new FileReader()
+    reader.onload = (event) => {
+      const targetIndex = activeSlotIndex !== null ? activeSlotIndex : fotos.length
+      setFotos((prev) => {
+        const next = [...prev]
+        if (targetIndex < 3) {
+          next[targetIndex] = event.target.result
+        }
+        return next.filter(Boolean).slice(0, 3)
+      })
+    }
+    reader.readAsDataURL(file)
+  }
+
+  const handleEliminarFoto = (idx) => {
+    setFotos((prev) => prev.filter((_, i) => i !== idx))
+  }
+
   const guardar = async () => {
     if (!estrellas) return
-    setGuardando(true); await onSave(reserva.id, { estrellas, comentario: comentario.trim() }); setGuardando(false); onClose()
+    setGuardando(true)
+    await onSave(reserva.id, {
+      estrellas,
+      comentario: comentario.trim(),
+      fotos: fotos.filter(Boolean),
+      actualizadoEn: new Date().toISOString()
+    })
+    setGuardando(false)
+    onClose()
   }
-  return <div className="modal-backdrop" onMouseDown={onClose}><section className="modal-panel" role="dialog" aria-modal="true" aria-labelledby="titulo-valoracion" onMouseDown={e => e.stopPropagation()}>
-    <button className="modal-cerrar" onClick={onClose} aria-label={t('reservas.close')}><FaTimes /></button><div className="modal-icon"><FaStar /></div>
-    <p className="eyebrow">{t('reservas.yourExperience')}</p><h2 id="titulo-valoracion">{reserva.valoracion ? t('reservas.editYourRating') : t('reservas.howWasTrip')}</h2>
-    <p className="modal-subtitulo">{t('reservas.rateExperience', { vehicle: reserva.vehiculo?.nombre })}</p><Estrellas value={estrellas} onChange={setEstrellas} />
-    <label className="comentario-label" htmlFor="comentario">{t('reservas.tellMore')} <span>({t('reservas.optional')})</span></label>
-    <textarea id="comentario" maxLength={400} value={comentario} onChange={e => setComentario(e.target.value)} placeholder={t('reservas.commentPlaceholder')} />
-    <div className="contador">{comentario.length}/400</div><button className="btn-primario modal-guardar" disabled={!estrellas || guardando} onClick={guardar}>
-      {guardando ? t('reservas.saving') : reserva.valoracion ? t('reservas.saveChanges') : t('reservas.publishRating')}</button>
-  </section></div>
+
+  return (
+    <div className="modal-backdrop minimal-modal-backdrop" onMouseDown={onClose}>
+      <section className="modal-panel minimal-modal-panel" role="dialog" aria-modal="true" aria-labelledby="titulo-valoracion" onMouseDown={e => e.stopPropagation()}>
+        <button className="minimal-close-btn" onClick={onClose} aria-label={t('reservas.close', { defaultValue: 'Cerrar' })}>
+          <FaTimes />
+        </button>
+
+        <h2 id="titulo-valoracion" className="minimal-title">
+          {reserva.valoracion
+            ? t('reservas.editYourRating', { defaultValue: 'Editar reseña' })
+            : t('reservas.howWasTrip', { defaultValue: '¿Cómo estuvo tu viaje?' })}
+        </h2>
+        <p className="minimal-subtitle">
+          {t('reservas.rateExperience', { defaultValue: `Califica tu experiencia con ${vehiculoNombre}.`, vehicle: vehiculoNombre })}
+        </p>
+
+        <Estrellas value={estrellas} onChange={setEstrellas} />
+
+        {/* Sección de Comentario Libre */}
+        <div className="minimal-textarea-group">
+          <div className="minimal-group-head">
+            <label className="minimal-label" htmlFor="comentario">
+              {t('reservas.tellMore', { defaultValue: 'Comentario' })} <span>({t('reservas.optional', { defaultValue: 'opcional' })})</span>
+            </label>
+            <span className="minimal-counter">{comentario.length}/400</span>
+          </div>
+          <textarea
+            id="comentario"
+            maxLength={400}
+            value={comentario}
+            onChange={e => setComentario(e.target.value)}
+            placeholder={t('reservas.commentPlaceholder', { defaultValue: '¿Qué tal estuvo el estado del vehículo, la limpieza o el servicio?' })}
+            className="minimal-textarea"
+          />
+        </div>
+
+        {/* 3 Slots de Fotos inmediatos */}
+        <div className="minimal-textarea-group">
+          <div className="minimal-group-head">
+            <label className="minimal-label">
+              Fotos del vehículo <span>({fotos.filter(Boolean).length}/3 opcional)</span>
+            </label>
+          </div>
+
+          <div className="minimal-fotos-grid-3">
+            {[0, 1, 2].map((slotIdx) => {
+              const src = fotos[slotIdx]
+              return (
+                <div key={slotIdx} className="minimal-slot-box">
+                  {src ? (
+                    <div className="minimal-slot-thumb">
+                      <img src={src} alt={`Foto ${slotIdx + 1}`} />
+                      <button
+                        type="button"
+                        onClick={() => handleEliminarFoto(slotIdx)}
+                        className="minimal-slot-del-btn"
+                        title="Eliminar foto"
+                      >
+                        <FaTimes size={11} />
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      className="minimal-slot-upload-btn"
+                      onClick={() => triggerSlotUpload(slotIdx)}
+                    >
+                      <FaCamera className="slot-cam-icon" />
+                      <span className="slot-num">Foto {slotIdx + 1}</span>
+                      <span className="slot-action">+ Añadir</span>
+                    </button>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+
+          <input
+            type="file"
+            ref={fileInputRef}
+            accept="image/*"
+            style={{ display: 'none' }}
+            onChange={handleFotoFileChange}
+          />
+        </div>
+
+        <button className="minimal-submit-btn" disabled={!estrellas || guardando} onClick={guardar}>
+          {guardando
+            ? t('reservas.saving', { defaultValue: 'Guardando...' })
+            : (reserva.valoracion
+                ? t('reservas.saveChanges', { defaultValue: 'Guardar cambios' })
+                : t('reservas.publishRating', { defaultValue: 'Publicar valoración' }))}
+        </button>
+      </section>
+    </div>
+  )
 }
 
 function ContratoVerCard({ reserva, contratoFirmado, reservaParaContrato, vehiculoParaContrato, identificacion }) {
@@ -189,7 +364,6 @@ function ContratoVerCard({ reserva, contratoFirmado, reservaParaContrato, vehicu
             disabled={!tieneContratoFirmado}
             className={`contrato-action-btn ${tieneContratoFirmado ? 'activo' : 'bloqueado'}`}
           >
-            <FaLock size={15} />
             <span>{t('reservas.viewContract', { defaultValue: 'Ver contrato' })}</span>
           </button>
         </div>
@@ -273,10 +447,10 @@ function Contrato({ reserva, autoDesbloquear = false, onDesbloquear }) {
         fechaFin: rd.fechaFin || reserva.fechaFin,
         horaInicio: rd.horaInicio || '08:00',
         horaFin: rd.horaFin || '18:00',
-        sucursalRetiro: rd.sucursalRetiro || reserva.sucursalRetiro || reserva.sucursal || reserva.vehiculo?.sucursal || 'Alquiler Neiva - Centro',
-        sucursalDevolucion: rd.sucursalDevolucion || reserva.sucursalDevolucion || reserva.sucursal || reserva.vehiculo?.sucursal || 'Alquiler Neiva - Centro',
+        sucursalRetiro: rd.sucursalRetiro || reserva.sucursalRetiro || reserva.sucursal || reserva.vehiculo?.sucursal || '',
+        sucursalDevolucion: rd.sucursalDevolucion || reserva.sucursalDevolucion || reserva.sucursal || reserva.vehiculo?.sucursal || '',
         metodoPago: rd.metodoPago || reserva.metodoPago || reserva.pasarela || (reserva.metodoPago === 'efectivo' ? 'efectivo' : 'tarjeta'),
-        sucursalPagoEfectivo: rd.sucursalPagoEfectivo || reserva.sucursalPagoEfectivo || reserva.sucursal || reserva.vehiculo?.sucursal || 'Alquiler Neiva - Centro'
+        sucursalPagoEfectivo: rd.sucursalPagoEfectivo || reserva.sucursalPagoEfectivo || reserva.sucursal || reserva.vehiculo?.sucursal || ''
       }
     }
   }, [reserva, contratoFirmado, reservaAlmacenada, usuario])
@@ -289,7 +463,7 @@ function Contrato({ reserva, autoDesbloquear = false, onDesbloquear }) {
       placa: base.placa || 'ABC-123',
       color: base.color || 'Plata',
       año: base.año || base.anio || 2024,
-      sucursal: base.sucursal || reserva.sucursal || 'Alquiler Neiva - Centro',
+      sucursal: base.sucursal || reserva.sucursal || '',
       servicios: base.servicios || [],
       seguros: base.seguros || [{ nombre: 'Protección Básica Estándar' }]
     }
@@ -367,6 +541,8 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
     Boolean(reservaOriginal?.fechaPagoConfirmado) ||
     Boolean(reserva.fechaPagoConfirmado)
 
+  const esFinalizadaModal = ['finalizada', 'completada', 'finalizado', 'completado'].includes(estadoNormModal)
+
   const estadoClaveModal = esConfirmadaModal
     ? (estadoNormModal === 'activa' || estadoNormModal === 'en_curso' || estadoNormModal === 'en curso' ? 'activa' : (estadoNormModal === 'finalizada' ? 'finalizada' : 'confirmada'))
     : (reserva.estado || 'pendiente')
@@ -385,7 +561,7 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
   const esPendienteWompi = !esEfectivo && !esConfirmadaModal && (estadoNormModal === 'pendiente')
   const esWompiAprobado = !esEfectivo && esConfirmadaModal
 
-  const sucursalPago = reservaOriginal?.reservaDetalles?.sucursalPagoEfectivo || reserva.vehiculo?.sucursal || 'Alquiler Neiva - Centro'
+  const sucursalPago = reservaOriginal?.reservaDetalles?.sucursalPagoEfectivo || reserva.vehiculo?.sucursal || ''
   const branchObj = SUCURSALES.find(s => s.nombre === sucursalPago)
   const ciudadPago = branchObj?.ciudad || reserva.vehiculo?.ciudad || 'Neiva'
   const direccionPago = branchObj?.direccion || 'Calle 9 # 8-25, Centro'
@@ -431,10 +607,10 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
         fechaFin: rd.fechaFin || reserva.fechaFin,
         horaInicio: rd.horaInicio || '08:00',
         horaFin: rd.horaFin || '18:00',
-        sucursalRetiro: rd.sucursalRetiro || reserva.sucursalRetiro || reserva.sucursal || reserva.vehiculo?.sucursal || 'Alquiler Neiva - Centro',
-        sucursalDevolucion: rd.sucursalDevolucion || reserva.sucursalDevolucion || reserva.sucursal || reserva.vehiculo?.sucursal || 'Alquiler Neiva - Centro',
+        sucursalRetiro: rd.sucursalRetiro || reserva.sucursalRetiro || reserva.sucursal || reserva.vehiculo?.sucursal || '',
+        sucursalDevolucion: rd.sucursalDevolucion || reserva.sucursalDevolucion || reserva.sucursal || reserva.vehiculo?.sucursal || '',
         metodoPago: rd.metodoPago || reserva.metodoPago || reserva.pasarela || (reserva.metodoPago === 'efectivo' ? 'efectivo' : 'tarjeta'),
-        sucursalPagoEfectivo: rd.sucursalPagoEfectivo || reserva.sucursalPagoEfectivo || reserva.sucursal || reserva.vehiculo?.sucursal || 'Alquiler Neiva - Centro'
+        sucursalPagoEfectivo: rd.sucursalPagoEfectivo || reserva.sucursalPagoEfectivo || reserva.sucursal || reserva.vehiculo?.sucursal || ''
       }
     }
   }, [reserva, contrato, reservaOriginal, usuario])
@@ -448,10 +624,9 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
     const fInicio = reserva.fechaInicio || reserva.reservaDetalles?.fechaInicio
     const fFin = reserva.fechaFin || reserva.reservaDetalles?.fechaFin
     if (precioDia && fInicio && fFin) {
-      const d1 = new Date(fInicio)
-      const d2 = new Date(fFin)
-      const diffTime = Math.abs(d2.getTime() - d1.getTime())
-      const diffDays = Math.max(1, Math.ceil(diffTime / (1000 * 60 * 60 * 24)))
+      const f1 = fInicio.split('T')[0]
+      const f2 = fFin.split('T')[0]
+      const diffDays = f1 === f2 ? 1 : Math.max(1, Math.round(Math.abs(new Date(`${f2}T00:00:00`) - new Date(`${f1}T00:00:00`)) / 86400000) + 1)
       return diffDays * precioDia
     }
     return rawTotal
@@ -466,7 +641,7 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
       placa: base.placa || 'ABC-123',
       color: base.color || 'Plata',
       año: base.año || base.anio || 2024,
-      sucursal: base.sucursal || reserva.sucursal || 'Alquiler Neiva - Centro',
+      sucursal: base.sucursal || reserva.sucursal || '',
       servicios: base.servicios || [],
       seguros: base.seguros || [{ nombre: 'Protección Básica Estándar' }]
     }
@@ -491,6 +666,27 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
 
   const lugarRetiro = resolverLugar(lugarRetiroRaw, domicilioRetiro)
   const lugarDevolucion = resolverLugar(lugarDevolucionRaw, domicilioDevolucion)
+
+  const esDomicilioRetiro = lugarRetiroRaw === 'domicilio' || Boolean(domicilioRetiro)
+  const esDomicilioDevolucion = lugarDevolucionRaw === 'domicilio' || Boolean(domicilioDevolucion)
+  const esDomicilio = esDomicilioRetiro || esDomicilioDevolucion
+
+  const domicilioEstado = reserva.domicilioEstado || reservaOriginal?.domicilioEstado || reservaOriginal?.reservaDetalles?.domicilioEstado || 'EN_PREPARACION'
+  const domicilioConductor = reserva.domicilioConductor || reservaOriginal?.domicilioConductor || reservaOriginal?.reservaDetalles?.domicilioConductor || ''
+  const domicilioTelefonoConductor = reserva.domicilioTelefonoConductor || reservaOriginal?.domicilioTelefonoConductor || reservaOriginal?.reservaDetalles?.domicilioTelefonoConductor || ''
+  const domicilioPin = reserva.domicilioPin || reservaOriginal?.domicilioPin || reservaOriginal?.reservaDetalles?.domicilioPin || String(Math.abs(Array.from(String(reserva.id || reserva.codigo || '1234')).reduce((acc, char) => (acc * 31 + char.charCodeAt(0)) | 0, 0)) % 9000 + 1000)
+
+  const [revelarPin, setRevelarPin] = useState(false)
+  const [verMasDomicilio, setVerMasDomicilio] = useState(false)
+  const handleEnviarCorreoPin = async () => {
+    const destinoCorreo = reserva.clienteCorreo || reserva.datosForm?.correo || usuario?.correo || 'tu correo registrado'
+    await showAlert({
+      icon: 'success',
+      title: '¡Código de Seguridad Enviado!',
+      text: `Hemos enviado el código PIN de entrega (${domicilioPin}) al correo ${destinoCorreo}. Úsalo para validar tu identidad con el conductor al recibir el vehículo.`,
+      confirmButtonText: 'Entendido',
+    })
+  }
 
   // Resolver Medio / Canal de Pago
   const resolverMedioPago = () => {
@@ -591,6 +787,15 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
     }
   }
 
+  const formatHoraAmPm = (hora24) => {
+    if (!hora24) return ''
+    const [h, m] = hora24.split(':').map(Number)
+    const ampm = h >= 12 ? 'p. m.' : 'a. m.'
+    let hour12 = h % 12
+    if (hour12 === 0) hour12 = 12
+    return `${hour12}:${String(m).padStart(2, '0')} ${ampm}`
+  }
+
   return (
     <div className="modal-backdrop" onMouseDown={onClose}>
       <section
@@ -658,7 +863,17 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
               </div>
             </div>
 
-            {/* Fila 2: Fecha de devolución / Lugar de retiro */}
+            <div className="modal-reserva-dato-celda">
+              <div className="modal-dato-icon">
+                <FaClock />
+              </div>
+              <div className="modal-dato-texto">
+                <span className="modal-dato-label">{t('reservas.pickupTime', { defaultValue: 'Hora de retiro' })}</span>
+                <strong className="modal-dato-val">{formatHoraAmPm(reserva.horaInicio) || 'N/A'}</strong>
+              </div>
+            </div>
+
+            {/* Fila 2: Fecha de devolución / Hora de devolución */}
             <div className="modal-reserva-dato-celda">
               <div className="modal-dato-icon">
                 <FaRegCalendarCheck />
@@ -666,6 +881,16 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
               <div className="modal-dato-texto">
                 <span className="modal-dato-label">{t('reservas.returnDate', { defaultValue: 'Fecha de devolución' })}</span>
                 <strong className="modal-dato-val">{fechaBonita(reserva.fechaFin, i18n.resolvedLanguage)}</strong>
+              </div>
+            </div>
+
+            <div className="modal-reserva-dato-celda">
+              <div className="modal-dato-icon">
+                <FaClock />
+              </div>
+              <div className="modal-dato-texto">
+                <span className="modal-dato-label">{t('reservas.returnTime', { defaultValue: 'Hora de devolución' })}</span>
+                <strong className="modal-dato-val">{formatHoraAmPm(reserva.horaFin) || 'N/A'}</strong>
               </div>
             </div>
 
@@ -744,6 +969,212 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
           </div>
         </div>
 
+        {/* Tarjeta de Domicilio (Logo, Código Nequi sin vencimiento, Campos Completos + Hora) */}
+        {esDomicilio && (
+          <div className="modal-wompi-card" style={{ marginTop: '16px', textAlign: 'left' }}>
+            <div className="modal-wompi-subcard" style={{ padding: '22px 20px 20px', alignItems: 'center' }}>
+              <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '14px', paddingBottom: '12px', borderBottom: '1px solid var(--borde, #e2e8f0)', textAlign: 'center' }}>
+                <h3 className="modal-wompi-titulo" style={{ fontSize: '20px', fontWeight: 800, margin: 0, color: 'var(--texto-primary)' }}>
+                  Domicilio
+                </h3>
+                <p className="modal-wompi-desc" style={{ fontSize: '12px', margin: '3px 0 0', textAlign: 'center', color: 'var(--texto-second)' }}>
+                  Código de seguridad para validación al momento de la entrega.
+                </p>
+              </div>
+
+              {/* 1. LOGO ANTES DEL CÓDIGO (logo.png) */}
+              <div className="modal-cash-logo-badge" style={{ marginBottom: '14px', width: '80px', height: '80px', padding: '12px' }}>
+                <img
+                  src={brand?.logoDataUrl || logo}
+                  alt={brand?.name || 'Drivique'}
+                  style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                />
+              </div>
+
+              {/* 2. CÓDIGO NEQUI (SIN TIEMPO DE VENCIMIENTO) + OJO DE MOSTRAR/OCULTAR */}
+              <div className="modal-wompi-total-box" style={{ width: '100%', padding: '16px 18px', marginBottom: '16px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div className="nequi-pin-boxes">
+                    {String(domicilioPin || '4829').padStart(4, '0').slice(0, 4).split('').map((char, i) => (
+                      <div key={i} className="nequi-pin-box">
+                        {revelarPin ? char : '•'}
+                      </div>
+                    ))}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setRevelarPin(v => !v)}
+                    style={{ border: 'none', background: 'transparent', color: 'var(--texto-second, #64748b)', cursor: 'pointer', padding: '6px', fontSize: '20px', display: 'grid', placeItems: 'center' }}
+                    title={revelarPin ? 'Ocultar Código' : 'Ver Código'}
+                  >
+                    {revelarPin ? <FaEyeSlash /> : <FaEye />}
+                  </button>
+                </div>
+
+                <span style={{ fontSize: '11.5px', color: 'var(--texto-second)', textAlign: 'center', fontWeight: 500 }}>
+                  Confírmale este código al conductor encargado de entregar el vehículo.
+                </span>
+              </div>
+
+              {/* 3. INFORMACIÓN COMPLETA UNIFICADA EN UNA SOLA TARJETA BLANCA CON DESPLEGABLE */}
+              <div style={{
+                width: '100%',
+                background: 'var(--bg-tarjeta, #ffffff)',
+                borderRadius: '14px',
+                border: '1px solid var(--borde, #e2e8f0)',
+                padding: '14px 16px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '12px',
+                marginBottom: '16px',
+                textAlign: 'left'
+              }}>
+                {/* Ciudad */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--texto-second, #64748b)', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+                    Ciudad:
+                  </span>
+                  <strong style={{ fontSize: '13.5px', fontWeight: 700, color: 'var(--texto-primary)' }}>
+                    {ciudadPago}
+                  </strong>
+                </div>
+
+                <div style={{ borderTop: '1px solid var(--borde, #f1f5f9)' }} />
+
+                {/* Estado del Domicilio (Ubicado antes de Conductor Asignado) */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--texto-second, #64748b)', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+                    Estado del Domicilio:
+                  </span>
+                  <strong style={{
+                    fontSize: '13.5px',
+                    fontWeight: 700,
+                    color: (domicilioEstado === 'ENTREGADO' || domicilioEstado === 'RECOGIDO')
+                      ? '#047857'
+                      : (domicilioEstado === 'EN_CAMINO' ? '#1d4ed8' : '#b45309')
+                  }}>
+                    {domicilioEstado === 'EN_PREPARACION' && 'En proceso'}
+                    {domicilioEstado === 'EN_CAMINO' && 'Agente en camino'}
+                    {domicilioEstado === 'ENTREGADO' && 'Entregado'}
+                    {domicilioEstado === 'RECOGIDO' && 'Recogido'}
+                  </strong>
+                </div>
+
+                <div style={{ borderTop: '1px solid var(--borde, #f1f5f9)' }} />
+
+                {/* Conductor Asignado */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--texto-second, #64748b)', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+                    Conductor Asignado:
+                  </span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <strong style={{ fontSize: '13.5px', fontWeight: 700, color: domicilioConductor ? 'var(--texto-primary)' : '#b45309' }}>
+                      {domicilioConductor ? domicilioConductor : 'En proceso'}
+                    </strong>
+
+                    {domicilioTelefonoConductor && (
+                      <a
+                        href={`https://wa.me/${domicilioTelefonoConductor.replace(/[^0-9]/g, '')}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn-reporte"
+                        style={{ background: '#25d366', color: '#fff', border: 'none', textDecoration: 'none', padding: '6px 12px', fontSize: '11.5px', borderRadius: '8px', fontWeight: 800 }}
+                      >
+                        <FaWhatsapp size={13} /> WhatsApp
+                      </a>
+                    )}
+                  </div>
+                </div>
+
+                {/* Detalles completos desplegables (Información de Entrega y Recogida) */}
+                {verMasDomicilio && (
+                  <>
+                    <div style={{ borderTop: '1px solid var(--borde, #f1f5f9)' }} />
+
+                    {/* Entrega a Domicilio */}
+                    {esDomicilioRetiro && (
+                      <>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                          <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--texto-second, #64748b)', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+                            Información de Entrega:
+                          </span>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <span style={{ fontSize: '12px', color: 'var(--texto-second)' }}>Dirección Exacta:</span>
+                            <strong style={{ fontSize: '13px', color: 'var(--texto-primary)' }}>{domicilioRetiro || 'A convenir'}</strong>
+                          </div>
+                          {(reserva.domicilioBarrio || reservaOriginal?.domicilioBarrio) && (
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                              <span style={{ fontSize: '12px', color: 'var(--texto-second)' }}>Barrio:</span>
+                              <strong style={{ fontSize: '12.5px', color: 'var(--texto-primary)' }}>{reserva.domicilioBarrio || reservaOriginal?.domicilioBarrio}</strong>
+                            </div>
+                          )}
+                          {(reserva.domicilioReferencias || reservaOriginal?.domicilioReferencias) && (
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                              <span style={{ fontSize: '12px', color: 'var(--texto-second)' }}>Indicaciones / Ref:</span>
+                              <strong style={{ fontSize: '12px', color: 'var(--texto-primary)' }}>{reserva.domicilioReferencias || reservaOriginal?.domicilioReferencias}</strong>
+                            </div>
+                          )}
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '2px', paddingTop: '4px', borderTop: '1px dashed var(--borde, #cbd5e1)' }}>
+                            <span style={{ fontSize: '12px', color: 'var(--texto-second)' }}>Hora de Entrega (Retiro):</span>
+                            <strong style={{ fontSize: '13px', color: 'var(--texto-primary, #0f172a)' }}>{formatHoraAmPm(reserva.horaInicio) || 'N/A'}</strong>
+                          </div>
+                        </div>
+                        {esDomicilioDevolucion && <div style={{ borderTop: '1px solid var(--borde, #f1f5f9)' }} />}
+                      </>
+                    )}
+
+                    {/* Recogida a Domicilio */}
+                    {esDomicilioDevolucion && (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                        <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--texto-second, #64748b)', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+                          Información de Recogida:
+                        </span>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <span style={{ fontSize: '12px', color: 'var(--texto-second)' }}>Dirección Exacta:</span>
+                          <strong style={{ fontSize: '13px', color: 'var(--texto-primary)' }}>{domicilioDevolucion || domicilioRetiro || 'A convenir'}</strong>
+                        </div>
+                        {(reserva.domicilioDevolucionBarrio || reservaOriginal?.domicilioDevolucionBarrio || reserva.domicilioBarrio) && (
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <span style={{ fontSize: '12px', color: 'var(--texto-second)' }}>Barrio:</span>
+                            <strong style={{ fontSize: '12.5px', color: 'var(--texto-primary)' }}>{reserva.domicilioDevolucionBarrio || reservaOriginal?.domicilioDevolucionBarrio || reserva.domicilioBarrio}</strong>
+                          </div>
+                        )}
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '2px', paddingTop: '4px', borderTop: '1px dashed var(--borde, #cbd5e1)' }}>
+                          <span style={{ fontSize: '12px', color: 'var(--texto-second)' }}>Hora de Recogida (Devolución):</span>
+                          <strong style={{ fontSize: '13px', color: 'var(--texto-primary, #0f172a)' }}>{formatHoraAmPm(reserva.horaFin) || 'N/A'}</strong>
+                        </div>
+                      </div>
+                    )}
+                  </>
+                )}
+
+                {/* Botón Ver más / Ocultar detalles */}
+                <div style={{ borderTop: '1px solid var(--borde, #f1f5f9)', paddingTop: '6px', marginTop: '2px', textAlign: 'center' }}>
+                  <button
+                    type="button"
+                    onClick={() => setVerMasDomicilio(v => !v)}
+                    style={{
+                      border: 'none',
+                      background: 'transparent',
+                      color: 'var(--brand-primary, #2563eb)',
+                      fontSize: '12px',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      padding: '4px 8px'
+                    }}
+                  >
+                    <span>{verMasDomicilio ? 'Ocultar detalles' : 'Ver más detalles'}</span>
+                    <FaChevronDown style={{ transform: verMasDomicilio ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease' }} size={12} />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Tarjeta de Pago en Efectivo por Sucursal */}
         {esPendienteEfectivo && (
           <div className="modal-cash-card">
@@ -759,7 +1190,7 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
 
               {/* Titulo */}
               <h3 className="modal-cash-titulo">
-                {t('vehiculo.reservationRegisteredTitle', { defaultValue: 'Reserva Registrada' })}
+                {t('vehiculo.cashPaymentTitle', { defaultValue: 'Pago en sucursal' })}
               </h3>
 
               {/* Subtitulo */}
@@ -773,19 +1204,19 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
               {/* Tarjeta de Resumen con datos */}
               <div className="modal-cash-summary">
                 <div className="modal-cash-row">
-                  <span className="modal-cash-row-label">{t('reservas.reference', { defaultValue: 'Referencia:' })}</span>
+                  <span className="modal-cash-row-label">{t('reservas.reference', { defaultValue: 'Referencia' }).replace(/:$/, '')}:</span>
                   <strong className="modal-cash-ref-val">{reserva.id}</strong>
                 </div>
                 <div className="modal-cash-row">
-                  <span className="modal-cash-row-label">{t('reservas.branch', { defaultValue: 'Sucursal:' })}</span>
+                  <span className="modal-cash-row-label">{t('reservas.branch', { defaultValue: 'Sucursal' }).replace(/:$/, '')}:</span>
                   <strong className="modal-cash-row-val">{sucursalPago}</strong>
                 </div>
                 <div className="modal-cash-row">
-                  <span className="modal-cash-row-label">{t('reservas.city', { defaultValue: 'Ciudad:' })}</span>
+                  <span className="modal-cash-row-label">{t('reservas.city', { defaultValue: 'Ciudad' }).replace(/:$/, '')}:</span>
                   <strong className="modal-cash-row-val">{ciudadPago}</strong>
                 </div>
                 <div className="modal-cash-row">
-                  <span className="modal-cash-row-label">{t('reservas.address', { defaultValue: 'Dirección:' })}</span>
+                  <span className="modal-cash-row-label">{t('reservas.address', { defaultValue: 'Dirección' }).replace(/:$/, '')}:</span>
                   <strong className="modal-cash-row-val">{direccionPago}</strong>
                 </div>
                 <div className="modal-cash-divider" />
@@ -802,7 +1233,8 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
                 </p>
                 <p className="modal-cash-deadline-text">
                   {t('reservas.cashDeadlineNotice', {
-                    defaultValue: 'Tienes 72 horas desde ahora para acercarte a la sucursal y pagar. Si no pagas dentro de este plazo, la reserva se cancelará automáticamente.'
+                    horas: reserva.horasLimitePago || 72,
+                    defaultValue: `Tienes aproximadamente ${reserva.horasLimitePago || 72} horas desde ahora para acercarte a la sucursal y realizar el pago. Si no realizas el pago dentro de este plazo, la reserva se cancelará automáticamente.`
                   })}
                 </p>
               </div>
@@ -844,11 +1276,51 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
                 <span>{pagandoWompi ? t('reservas.redirectingToWompi', { defaultValue: 'Redirigiendo a Wompi…' }) : t('reservas.payWithWompi', { defaultValue: 'Pagar con Wompi' })}</span>
               </button>
 
+              {/* Plazo para pagar en Wompi */}
+              <div className="modal-cash-deadline-box" style={{ marginTop: '16px', width: '100%' }}>
+                <p className="modal-cash-deadline-title">
+                  {t('reservas.paymentDeadline', { defaultValue: 'PLAZO PARA PAGAR' })}
+                </p>
+                <p className="modal-cash-deadline-text">
+                  {t('reservas.wompiDeadlineNotice', {
+                    horas: reserva.horasLimitePago || 72,
+                    defaultValue: `Tienes aproximadamente ${reserva.horasLimitePago || 72} horas desde ahora para realizar el pago seguro en línea. Si no realizas el pago dentro de este plazo, la reserva se cancelará automáticamente.`
+                  })}
+                </p>
+              </div>
+
             </div>
           </div>
         )}
 
-        <Contrato reserva={reserva} autoDesbloquear={autoDesbloquear} />
+        {esConfirmadaModal && <Contrato reserva={reserva} autoDesbloquear={autoDesbloquear} />}
+
+        {esFinalizadaModal && onValorar && (
+          <div style={{ marginTop: '20px', textOverflow: 'ellipsis' }}>
+            <button
+              type="button"
+              className="btn-secundario"
+              onClick={() => onValorar(reserva)}
+              style={{
+                width: '100%',
+                padding: '12px 18px',
+                background: '#fffbeb',
+                color: '#b45309',
+                borderColor: '#fde68a',
+                fontWeight: 800,
+                borderRadius: '14px',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                fontSize: '13px'
+              }}
+            >
+              <FaStar color="#f59e0b" size={16} />
+              <span>{reserva.valoracion ? t('reservas.editRating', { defaultValue: 'Editar Reseña' }) : t('reservas.rateVehicle', { defaultValue: 'Calificar Vehículo' })}</span>
+            </button>
+          </div>
+        )}
 
       </section>
     </div>
@@ -862,24 +1334,32 @@ function TarjetaReserva({ reserva, moneda, onValorar, onReportar, onVerDetalle }
   const reservaAlmacenada = reservationService.obtenerPorReferencia(refBusqueda) || reservationService.obtenerPorReferencia(reserva.id)
   const rawEstado = reservaAlmacenada?.estado || reserva.estado || ''
   const estadoNorm = String(rawEstado).toLowerCase()
-  const estaEnCurso = estadoNorm === 'activa' || estadoNorm === 'en_curso' || estadoNorm === 'en curso'
-  const esConfirmada =
-    estadoNorm === 'confirmada' ||
-    estaEnCurso ||
-    estadoNorm === 'finalizada' ||
-    estadoNorm === 'completada' ||
-    estadoNorm === 'pagada' ||
+  const contratoFirmado = contractService.obtenerPorReserva(refBusqueda) || contractService.obtenerPorReserva(reserva.id)
+  const tieneContratoFirmado = Boolean(contratoFirmado?.firmaUsuarioDataUrl)
+
+  const esPagoConfirmado =
     reserva.pagoEstado === 'aprobado' ||
     reservaAlmacenada?.pagoEstado === 'aprobado' ||
     Boolean(reserva.fechaPagoConfirmado) ||
     Boolean(reservaAlmacenada?.fechaPagoConfirmado)
 
-  const contratoFirmado = contractService.obtenerPorReserva(refBusqueda) || contractService.obtenerPorReserva(reserva.id)
-  const tieneContratoFirmado = Boolean(contratoFirmado?.firmaUsuarioDataUrl)
+  const esRawEnCurso = estadoNorm === 'activa' || estadoNorm === 'en_curso' || estadoNorm === 'en curso'
+  // Una reserva solo puede estar en curso si está pagada Y tiene el contrato digital firmado
+  const estaEnCurso = esRawEnCurso && tieneContratoFirmado && esPagoConfirmado
+  const esFinalizada = ['finalizada', 'completada', 'finalizado', 'completado'].includes(estadoNorm) || ['finalizada', 'completada', 'finalizado', 'completado'].includes(String(reserva.estado).toLowerCase())
+  const puedeReportar = estaEnCurso || esFinalizada
+
+  const esConfirmada =
+    estadoNorm === 'confirmada' ||
+    estaEnCurso ||
+    esFinalizada ||
+    estadoNorm === 'pagada' ||
+    esPagoConfirmado
+
   const requiereFirma = esConfirmada && !tieneContratoFirmado
 
   const estadoClave = esConfirmada
-    ? (estaEnCurso ? 'activa' : (estadoNorm === 'finalizada' ? 'finalizada' : 'confirmada'))
+    ? (estaEnCurso ? 'activa' : (esFinalizada ? 'finalizada' : 'confirmada'))
     : (reserva.estado || 'pendiente')
 
   const estado = {
@@ -898,10 +1378,9 @@ function TarjetaReserva({ reserva, moneda, onValorar, onReportar, onVerDetalle }
 
     const precioDia = reserva.vehiculo?.precioDiario || reserva.vehiculo?.precio || 0
     if (precioDia && reserva.fechaInicio && reserva.fechaFin) {
-      const d1 = new Date(reserva.fechaInicio)
-      const d2 = new Date(reserva.fechaFin)
-      const diffTime = Math.abs(d2.getTime() - d1.getTime())
-      const diffDays = Math.max(1, Math.ceil(diffTime / (1000 * 60 * 60 * 24)))
+      const f1 = reserva.fechaInicio.split('T')[0]
+      const f2 = reserva.fechaFin.split('T')[0]
+      const diffDays = f1 === f2 ? 1 : Math.max(1, Math.round(Math.abs(new Date(`${f2}T00:00:00`) - new Date(`${f1}T00:00:00`)) / 86400000) + 1)
       return diffDays * precioDia
     }
     return 0
@@ -913,16 +1392,25 @@ function TarjetaReserva({ reserva, moneda, onValorar, onReportar, onVerDetalle }
     <div className="reserva-head"><div><span className="reserva-id">{t('reservas.reservationNumber', { id: reserva.id })}</span><h2>{reserva.vehiculo?.nombre || t('reservas.vehicleUnavailable')}</h2></div><strong className="reserva-total">{formatCurrency(totalTarjeta, moneda)}</strong></div>
     <div className="reserva-meta"><div><FaCalendarAlt /><span><small>{t('reservas.pickup')}</small>{fechaBonita(reserva.fechaInicio, i18n.resolvedLanguage)}</span></div><span className="linea-fechas" />
       <div><FaRegCalendarCheck /><span><small>{t('reservas.return')}</small>{fechaBonita(reserva.fechaFin, i18n.resolvedLanguage)}</span></div><div className="meta-sede"><FaMapMarkerAlt /><span><small>{t('reservas.branch')}</small>{sede}</span></div></div>
-    {reserva.estado === 'finalizada' && <div className="valoracion-resumen">{reserva.valoracion ? <div><Estrellas value={reserva.valoracion.estrellas} disabled /><p>“{reserva.valoracion.comentario || t('reservas.noComment')}”</p></div> : <div><strong>{t('reservas.howWasTrip')}</strong><span>{t('reservas.feedbackHelps')}</span></div>}
-      <button className="btn-link" onClick={() => onValorar(reserva)}>{reserva.valoracion ? t('reservas.editRating') : t('reservas.rateVehicle')}</button></div>}
     <div className="reserva-actions">
-      {estaEnCurso && (
+      {puedeReportar && (
         <button className="btn-reporte" onClick={() => onReportar(reserva)}>
-          <FaFlag /> {t('reservas.makeReport')}
+          <FaFlag size={12} />
+          <span>{t('reservas.makeReport', { defaultValue: 'Hacer reporte' })}</span>
+        </button>
+      )}
+      {esFinalizada && (
+        <button className="btn-calificar" onClick={() => onValorar(reserva)}>
+          <FaStar color="#f59e0b" size={13} />
+          <span>
+            {reserva.valoracion
+              ? t('reservas.editRating', { defaultValue: 'Editar valoración' })
+              : t('reservas.rateVehicle', { defaultValue: 'Calificar vehículo' })}
+          </span>
         </button>
       )}
       <button className="btn-detalle" onClick={() => onVerDetalle(reserva)}>
-        {t('reservas.viewDetail')}
+        {t('reservas.viewDetail', { defaultValue: 'Ver detalle' })}
       </button>
     </div>
   </div></article>
@@ -990,5 +1478,11 @@ export default function ReservationsPage() {
     {cargando && <div className="estado-pagina">{t('reservas.loading')}</div>}{!cargando && error && <div className="estado-pagina error">{error}</div>}
   {!cargando && !error && filtradas.length === 0 && <div className="estado-pagina vacio"><div><FaCalendarAlt /></div><h2>{reservas.length ? t('reservas.noFilteredResults') : t('reservas.noReservations')}</h2><p>{reservas.length ? t('reservas.changeFilters') : t('reservas.noReservationsSubtitle')}</p>{reservas.length ? <button className="btn-primario" onClick={() => { setMes('todos'); setEstadoFiltro('todos') }}>{t('reservas.clearFilters')}</button> : <Link className="btn-primario" to="/home">{t('reservas.exploreVehicles')}</Link>}</div>}
     <section className="reservas-lista">{filtradas.map(r => <TarjetaReserva key={r.id} reserva={r} moneda={moneda} onValorar={setValorando} onReportar={reportar} onVerDetalle={handleVerDetalle} />)}</section>
-  </main>{valorando && <ModalValoracion reserva={valorando} onClose={() => setValorando(null)} onSave={guardarValoracion} />}{detalle && <ModalDetalle reserva={detalle} moneda={moneda} autoDesbloquear={autoDesbloquear} onClose={handleCerrarDetalle} />}</div>
+  </main>{detalle && <ModalDetalle reserva={detalle} moneda={moneda} autoDesbloquear={autoDesbloquear} onClose={handleCerrarDetalle} onValorar={setValorando} />}{valorando && <ModalValoracion reserva={valorando} onClose={() => setValorando(null)} onSave={async (id, val) => {
+    const res = await guardarValoracion(id, val)
+    if (detalle && (detalle.id === id || detalle.referencia === id || detalle.codigo === id)) {
+      setDetalle(prev => prev ? { ...prev, valoracion: res } : null)
+    }
+  }} />}</div>
 }
+
