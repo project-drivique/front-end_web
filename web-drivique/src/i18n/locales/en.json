@@ -1122,7 +1122,7 @@
       "poblado": "Excellent strategic location in El Poblado hotel district.",
       "executive": "The ideal choice for executive travel in the financial district.",
       "convertible": "Fast pickup at airport exit with convertible fleet available.",
-      "premium": "Premium service with optional additional driver at no extra charge.",
+      "premium": "Premium service with priority attention and fast delivery.",
       "flexible": "Wide range of modern SUVs and sedans with flexible terms.",
       "efficiency": "International rental guarantee and excellent fuel efficiency.",
       "valle": "Fast booking directly at Valle's airport terminal."
@@ -2508,6 +2508,86 @@
         "watermark": "This audit record is immutable and cannot be altered or deleted in compliance with platform traceability standards.",
         "close": "Close"
       }
+    },
+    "branchProfile": {
+      "title": "My branch",
+      "subtitle": "Data that your customers see in the catalog",
+      "unsavedChanges": "You have unsaved changes",
+      "noChanges": "No changes to save",
+      "saveSuccessTitle": "Changes saved",
+      "saveSuccessMsg": "Branch details have been successfully updated.",
+      "readOnlyHint": "Only the general administrator can change this",
+      "devSwitch": "Test Mode - Select branch:",
+      "actions": {
+        "cancel": "Cancel",
+        "save": "Save changes"
+      },
+      "general": {
+        "title": "General information"
+      },
+      "schedules": {
+        "title": "Operating hours",
+        "typeLabel": "Branch type",
+        "typeAirport": "Airport or terminal",
+        "typeStandard": "Standard branch",
+        "branchAttention": "Branch counter service",
+        "homeDelivery": "Home pickup and delivery",
+        "scheduleTypeHint": "Defined by company according to branch type",
+        "infoNote": "These operating hours determine the pickup and return hours that customers can choose when booking, based on their selected location."
+      },
+      "location": {
+        "title": "Location",
+        "mapUnavailable": "Map unavailable",
+        "getDirections": "Get directions →"
+      },
+      "deliveryByPayment": {
+        "title": "How delivery works by payment method",
+        "intro": "Operating logic applied by the booking system when selecting payment method and pickup/return location:",
+        "colPlace": "Location",
+        "colCash": "Cash",
+        "colOnline": "Online payment",
+        "rowBranch": "At this branch",
+        "rowAirport": "Airport",
+        "rowTerminal": "Terminal",
+        "rowHome": "Home delivery",
+        "noAlternateDeliveries": "Your city does not offer alternative deliveries at airport or terminal.",
+        "notAvailable": "Not available"
+      },
+      "paymentDeadline": {
+        "title": "Payment deadline for your customers",
+        "text": "When a customer confirms a reservation, they have up to 72 hours to pay. If pickup is before those 72 hours, the deadline is automatically adjusted to the remaining time (minimum 2 hours). If they do not pay on time, the reservation is automatically cancelled."
+      },
+      "summaryCard": {
+        "title": "Summary",
+        "manager": "Branch Manager",
+        "vehicles": "Vehicles",
+        "viewFleet": "View fleet →",
+        "categories": "Offered categories"
+      },
+      "status": {
+        "active": "Active",
+        "inactive": "Inactive"
+      },
+      "fields": {
+        "name": "Branch name",
+        "city": "City",
+        "status": "Status",
+        "address": "Address",
+        "phone": "Phone",
+        "pickupInstructions": "Pickup instructions",
+        "latitude": "Latitude",
+        "longitude": "Longitude"
+      },
+      "placeholders": {
+        "pickupInstructions": "In front of airport exit 3"
+      },
+      "errors": {
+        "addressRequired": "Address is required.",
+        "phoneInvalid": "Phone must contain between 7 and 13 digits.",
+        "latInvalid": "Latitude must be between -90 and 90.",
+        "lngInvalid": "Longitude must be between -180 and 180.",
+        "bothCoordsRequired": "You must provide both latitude and longitude together."
+      }
     }
   },
   "contratoFirma": {
@@ -2683,7 +2763,6 @@
     "backToAccount": "Back to My Account"
   },
   "servicios": {
-    "Conductor adicional": "Additional driver",
     "Devolución con tanque vacío": "Return with empty tank",
     "GPS Integrado": "Integrated GPS",
     "Lavado de auto post-entrega": "Post-rental car wash",
@@ -2870,6 +2949,114 @@
     "tableTime": "Registration Time",
     "tableCashier": "Cashier / Manager",
     "tableAction": "Action",
-    "viewReceipt": "View Receipt"
+    "viewReceipt": "View Receipt",
+    "branchProfile": {
+      "title": "Mi sucursal",
+      "subtitle": "Administra la informaci�n p�blica y operativa de tu sucursal.",
+      "savedSuccess": "Los datos de la sucursal han sido actualizados.",
+      "fields": {
+        "address": "Direcci�n",
+        "hours": "Horario de atenci�n",
+        "phone": "Tel�fono",
+        "latitude": "Latitud",
+        "longitude": "Longitud"
+      }
+    },
+    "dashboard": {
+      "title": "Dashboard",
+      "subtitle": "Resumen del día en tu sucursal",
+      "realtime": "En tiempo real",
+      "actions": {
+        "createReservation": "Crear reserva",
+        "reportIncident": "Reportar incidencia"
+      },
+      "kpi": {
+        "monthlyRevenue": "Ingresos del mes",
+        "revenueVsMonth": "+8,5% vs. mes anterior",
+        "todayDeliveries": "Entregas de hoy",
+        "customersAtCounter": "clientes en mostrador",
+        "todayReturns": "Devoluciones de hoy",
+        "vehiclesReturning": "vehículos retornando a la sucursal",
+        "occupancy": "Ocupación",
+        "occupancyVehicles": "{{rented}} de {{total}} vehículos"
+      },
+      "kpiTooltip": {
+        "monthlyRevenue": "Sum of reservations charged this month at your branch.",
+        "todayDeliveries": "Customers picking up their vehicle today at the counter.",
+        "todayReturns": "Vehicles returning to the branch today.",
+        "occupancy": "Percentage of your fleet currently rented."
+      },
+      "drawer": {
+        "title": "Reservation detail",
+        "client": "Customer",
+        "phone": "Phone",
+        "vehicle": "Vehicle",
+        "plate": "License plate",
+        "category": "Category",
+        "time": "Scheduled time",
+        "type": "Operation type",
+        "delivery": "Counter pickup",
+        "return": "Branch return",
+        "status": "Current status",
+        "viewFullReservation": "View full reservation",
+        "close": "Close"
+      },
+      "fleetChips": {
+        "available": "Available",
+        "rented": "Rented",
+        "maintenance": "In shop"
+      },
+      "schedule": {
+        "title": "Programación de hoy",
+        "tabs": {
+          "deliveries": "Entregas {{count}}",
+          "returns": "Devoluciones {{count}}"
+        },
+        "colTime": "Hora",
+        "colClient": "Cliente",
+        "colVehicle": "Vehículo",
+        "colStatus": "Estado",
+        "viewAllReservations": "Ver todas las reservas →",
+        "emptyDeliveries": "No hay entregas programadas para hoy.",
+        "emptyReturns": "No hay devoluciones programadas para hoy."
+      },
+      "attention": {
+        "title": "Requiere tu atención",
+        "documentsToValidate_one": "1 documento por validar",
+        "documentsToValidate_other": "{{count}} documentos por validar",
+        "openIncidents_one": "1 incidencia abierta",
+        "openIncidents_other": "{{count}} incidencias abiertas",
+        "pendingPayments_one": "1 pago pendiente",
+        "pendingPayments_other": "{{count}} pagos pendientes",
+        "expiringVehicleDocs_one": "1 vehicle document expiring",
+        "expiringVehicleDocs_other": "{{count}} vehicle documents expiring",
+        "allClear": "Todo al día"
+      },
+      "fleet": {
+        "title": "Estado de la flota",
+        "available": "Disponibles",
+        "rented": "En alquiler",
+        "maintenance": "En taller o mantenimiento",
+        "viewFleet": "Ver flota →",
+        "vehicleCount_one": "1 vehículo",
+        "vehicleCount_other": "{{count}} vehículos"
+      },
+      "notifications": {
+        "title": "Notifications",
+        "markAllAsRead": "Mark all as read",
+        "viewAll": "View all",
+        "empty": "No pending notifications."
+      },
+      "rowMenu": {
+        "viewReservation": "View full reservation",
+        "contactClient": "Contact customer",
+        "reportIncident": "Report incident"
+      },
+      "kpiMenu": {
+        "viewReportDetails": "View details in Reports",
+        "exportData": "Export data",
+        "exportComingSoon": "Export feature coming soon"
+      }
+    }
   }
 }

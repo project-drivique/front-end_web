@@ -106,7 +106,7 @@ export const INITIAL_REPORTS = [
         titulo: 'En atención',
         descripcion: 'Unidad móvil enviada con mecánico especializado.',
         hora: '12:10',
-        color: '#8b5cf6',
+        color: '#0284c7',
       },
     ],
   },

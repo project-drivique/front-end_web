@@ -1110,7 +1110,7 @@
       "poblado": "Excelente localização estratégica na zona hoteleira de El Poblado.",
       "executive": "A opção ideal para viagens executivas no setor financeiro.",
       "convertible": "Entrega rápida na saída do aeroporto com frota conversível disponível.",
-      "premium": "Serviço premium com opção de motorista adicional sem taxa extra.",
+      "premium": "Serviço premium com atendimento prioritário e entrega rápida.",
       "flexible": "Variedade de SUVs e sedãs modernos com condições flexíveis.",
       "efficiency": "Garantia internacional de aluguel e excelente eficiência de combustível.",
       "valle": "Reserva rápida diretamente no terminal aéreo do Vale."
@@ -2496,6 +2496,86 @@
         "watermark": "Este registro de auditoria é imutável e não pode ser alterado ou excluído de acordo com as normas de rastreabilidade da plataforma.",
         "close": "Fechar"
       }
+    },
+    "branchProfile": {
+      "title": "Minha agência",
+      "subtitle": "Dados que seus clientes veem no catálogo",
+      "unsavedChanges": "Você tem alterações não salvas",
+      "noChanges": "Não há alterações para salvar",
+      "saveSuccessTitle": "Alterações salvas",
+      "saveSuccessMsg": "Os dados da agência foram atualizados com sucesso.",
+      "readOnlyHint": "Apenas o administrador geral pode alterar isso",
+      "devSwitch": "Modo de Teste - Selecionar agência:",
+      "actions": {
+        "cancel": "Cancelar",
+        "save": "Salvar alterações"
+      },
+      "general": {
+        "title": "Informações gerais"
+      },
+      "schedules": {
+        "title": "Horários de atendimento",
+        "typeLabel": "Tipo de agência",
+        "typeAirport": "Aeroporto ou terminal",
+        "typeStandard": "Agência padrão",
+        "branchAttention": "Atendimento no balcão da agência",
+        "homeDelivery": "Entrega e devolução a domicílio",
+        "scheduleTypeHint": "Definido pela empresa de acordo com o tipo de agência",
+        "infoNote": "Estes horários determinam os horários de retirada e devolução que os clientes podem escolher ao reservar."
+      },
+      "location": {
+        "title": "Localização",
+        "mapUnavailable": "Mapa indisponível",
+        "getDirections": "Como chegar →"
+      },
+      "deliveryByPayment": {
+        "title": "Como funciona a entrega conforme o pagamento",
+        "intro": "Lógica operacional aplicada pelo sistema de reservas ao selecionar a forma de pagamento e local de retirada/devolução:",
+        "colPlace": "Local",
+        "colCash": "Dinheiro",
+        "colOnline": "Pagamento online",
+        "rowBranch": "Nesta agência",
+        "rowAirport": "Aeroporto",
+        "rowTerminal": "Terminal",
+        "rowHome": "A domicílio",
+        "noAlternateDeliveries": "Sua cidade não oferece entregas alternativas em aeroporto ou terminal.",
+        "notAvailable": "Não disponível"
+      },
+      "paymentDeadline": {
+        "title": "Prazo de pagamento dos seus clientes",
+        "text": "Quando um cliente confirma uma reserva, ele tem até 72 horas para pagar. Se a retirada for antes dessas 72 horas, o prazo se ajusta automaticamente ao tempo restante (mínimo 2 horas). Se não pagar a tempo, a reserva é cancelada automaticamente."
+      },
+      "summaryCard": {
+        "title": "Resumo",
+        "manager": "Encarregado",
+        "vehicles": "Veículos",
+        "viewFleet": "Ver frota →",
+        "categories": "Categorias oferecidas"
+      },
+      "status": {
+        "active": "Ativa",
+        "inactive": "Inativa"
+      },
+      "fields": {
+        "name": "Nome da agência",
+        "city": "Cidade",
+        "status": "Status",
+        "address": "Endereço",
+        "phone": "Telefone",
+        "pickupInstructions": "Instruções de retirada",
+        "latitude": "Latitude",
+        "longitude": "Longitude"
+      },
+      "placeholders": {
+        "pickupInstructions": "Em frente à saída 3 do aeroporto"
+      },
+      "errors": {
+        "addressRequired": "O endereço é obrigatório.",
+        "phoneInvalid": "O telefone deve conter entre 7 e 13 dígitos.",
+        "latInvalid": "A latitude deve estar entre -90 e 90.",
+        "lngInvalid": "A longitude deve estar entre -180 e 180.",
+        "bothCoordsRequired": "Você deve informar latitude e longitude juntas."
+      }
     }
   },
   "contratoFirma": {
@@ -2681,7 +2761,6 @@
     "backToAccount": "Voltar para Minha Conta"
   },
   "servicios": {
-    "Conductor adicional": "Motorista adicional",
     "Devolución con tanque vacío": "Devolução com tanque vazio",
     "GPS Integrado": "GPS Integrado",
     "Lavado de auto post-entrega": "Lavagem de carro após entrega",
@@ -2868,6 +2947,102 @@
     "tableTime": "Hora do Registro",
     "tableCashier": "Operador / Encarregado",
     "tableAction": "Ação",
-    "viewReceipt": "Ver Recibo"
+    "viewReceipt": "Ver Recibo",
+    "dashboard": {
+      "title": "Dashboard",
+      "subtitle": "Resumen del día en tu sucursal",
+      "realtime": "En tiempo real",
+      "actions": {
+        "createReservation": "Crear reserva",
+        "reportIncident": "Reportar incidencia"
+      },
+      "kpi": {
+        "monthlyRevenue": "Ingresos del mes",
+        "revenueVsMonth": "+8,5% vs. mes anterior",
+        "todayDeliveries": "Entregas de hoy",
+        "customersAtCounter": "clientes en mostrador",
+        "todayReturns": "Devoluciones de hoy",
+        "vehiclesReturning": "vehículos retornando a la sucursal",
+        "occupancy": "Ocupación",
+        "occupancyVehicles": "{{rented}} de {{total}} vehículos"
+      },
+      "kpiTooltip": {
+        "monthlyRevenue": "Soma de reservas cobradas este mês na sua filial.",
+        "todayDeliveries": "Clientes que retiram o veículo hoje no balcão.",
+        "todayReturns": "Veículos que retornam à filial hoje.",
+        "occupancy": "Porcentagem da sua frota atualmente alugada."
+      },
+      "drawer": {
+        "title": "Detalhe da reserva",
+        "client": "Cliente",
+        "phone": "Telefone",
+        "vehicle": "Veículo",
+        "plate": "Placa",
+        "category": "Categoria",
+        "time": "Horário agendado",
+        "type": "Tipo de operação",
+        "delivery": "Retirada no balcão",
+        "return": "Devolução na filial",
+        "status": "Status atual",
+        "viewFullReservation": "Ver reserva completa",
+        "close": "Fechar"
+      },
+      "fleetChips": {
+        "available": "Disponíveis",
+        "rented": "Em aluguel",
+        "maintenance": "Em manutenção"
+      },
+      "schedule": {
+        "title": "Programación de hoy",
+        "tabs": {
+          "deliveries": "Entregas {{count}}",
+          "returns": "Devoluciones {{count}}"
+        },
+        "colTime": "Hora",
+        "colClient": "Cliente",
+        "colVehicle": "Vehículo",
+        "colStatus": "Estado",
+        "viewAllReservations": "Ver todas las reservas →",
+        "emptyDeliveries": "No hay entregas programadas para hoy.",
+        "emptyReturns": "No hay devoluciones programadas para hoy."
+      },
+      "attention": {
+        "title": "Requiere tu atención",
+        "documentsToValidate_one": "1 documento por validar",
+        "documentsToValidate_other": "{{count}} documentos por validar",
+        "openIncidents_one": "1 incidencia abierta",
+        "openIncidents_other": "{{count}} incidencias abiertas",
+        "pendingPayments_one": "1 pago pendiente",
+        "pendingPayments_other": "{{count}} pagos pendientes",
+        "expiringVehicleDocs_one": "1 documento de veículo a vencer",
+        "expiringVehicleDocs_other": "{{count}} documentos de veículos a vencer",
+        "allClear": "Todo al día"
+      },
+      "fleet": {
+        "title": "Estado de la flota",
+        "available": "Disponibles",
+        "rented": "En alquiler",
+        "maintenance": "En taller o mantenimiento",
+        "viewFleet": "Ver flota →",
+        "vehicleCount_one": "1 vehículo",
+        "vehicleCount_other": "{{count}} vehículos"
+      },
+      "notifications": {
+        "title": "Notificações",
+        "markAllAsRead": "Marcar todas como lidas",
+        "viewAll": "Ver todas",
+        "empty": "Nenhuma notificação pendente."
+      },
+      "rowMenu": {
+        "viewReservation": "Ver reserva completa",
+        "contactClient": "Contatar cliente",
+        "reportIncident": "Reportar incidente"
+      },
+      "kpiMenu": {
+        "viewReportDetails": "Ver detalhes em Relatórios",
+        "exportData": "Exportar dado",
+        "exportComingSoon": "Função disponível em breve"
+      }
+    }
   }
 }
