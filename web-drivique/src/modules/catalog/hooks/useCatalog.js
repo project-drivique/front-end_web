@@ -154,9 +154,12 @@ export function useCatalogo({ esFavorito = () => false } = {}) {
 
   const dias = useMemo(() => {
     if (!busquedaAplicada.fechaInicio || !busquedaAplicada.fechaFin) return 0
-    const a = new Date(busquedaAplicada.fechaInicio)
-    const b = new Date(busquedaAplicada.fechaFin)
-    return Math.max(0, Math.ceil((b - a) / 86400000))
+    const fInicio = busquedaAplicada.fechaInicio.split('T')[0]
+    const fFin = busquedaAplicada.fechaFin.split('T')[0]
+    if (fInicio === fFin) return 1
+    const a = new Date(`${fInicio}T00:00:00`)
+    const b = new Date(`${fFin}T00:00:00`)
+    return Math.max(1, Math.round((b - a) / 86400000) + 1)
   }, [busquedaAplicada])
 
   // Se calculan juntos porque las tres banderas de "sin resultados" dependen de
