@@ -76,4 +76,4 @@ export function LandingProvider({ children }) {
   )
 }
 
-export const useLanding = () => useContext(LandingContext)
+export const useLanding = () => useContext(LandingContext) || { tema: 'claro', moneda: 'COP', tasaUSD: 4000 }
