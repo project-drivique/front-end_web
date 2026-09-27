@@ -290,7 +290,7 @@ export default function DatosPersonales({
     : (reserva.tipoKm === 'limitado' ? kmLimit.precio : (vehiculo.precio || kmLimit.precio || 0));
 
   const dias = reserva.fechaInicio && reserva.fechaFin
-    ? Math.max(1, Math.ceil((new Date(reserva.fechaFin) - new Date(reserva.fechaInicio)) / 86400000))
+    ? (reserva.fechaInicio === reserva.fechaFin ? 1 : Math.max(1, Math.ceil((new Date(reserva.fechaFin) - new Date(reserva.fechaInicio)) / 86400000) + 1))
     : 1;
 
   const precioSeg = seguroIdx !== null ? (vehiculo.seguros[seguroIdx]?.precio ?? 0) : 0;
@@ -754,7 +754,18 @@ export default function DatosPersonales({
           color: c?.accentText || 'var(--brand-secondary)',
           fontWeight: 500
         }}>
-          {t('vehiculo.confirmNoticeText', 'Al confirmar la reserva, quedará guardada automáticamente en tu cuenta. Tendrás un plazo de 72 horas para completar el pago antes de su cancelación automática.')}
+          {(() => {
+            let limit = 72;
+            if (reserva?.fechaInicio && reserva?.horaInicio) {
+              const pickupMs = new Date(`${reserva.fechaInicio}T${reserva.horaInicio}:00`).getTime();
+              // eslint-disable-next-line react-hooks/purity
+              limit = Math.floor(Math.min(72, Math.max(2, (pickupMs - Date.now()) / (1000 * 60 * 60))));
+            }
+            return t('vehiculo.confirmNoticeText', {
+              horas: limit,
+              defaultValue: `Al confirmar la reserva, quedará guardada automáticamente en tu cuenta. Tendrás un plazo de ${limit} horas para completar el pago antes de su cancelación automática.`
+            });
+          })()}
         </p>
       </div>
 
@@ -1165,6 +1176,9 @@ export default function DatosPersonales({
                     </p>
                     <p style={{ margin: 0 }}>
                       <strong style={{ color: c?.textPrimary || '#0f172a' }}>9. LEGISLACIÓN APLICABLE:</strong> El presente contrato de alquiler se rige en su totalidad por las leyes de la República de Colombia.
+                    </p>
+                    <p style={{ margin: 0 }}>
+                      <strong style={{ color: c?.textPrimary || '#0f172a' }}>10. POLÍTICA DE DEVOLUCIÓN PUNTUAL:</strong> Por favor entrega el vehículo en la fecha y hora acordadas. Cuentas con 30 minutos de cortesía. Pasado este tiempo, la hora adicional tendrá un valor de $30.000 COP. Si el retraso supera las 2 horas o pasa al siguiente día, se cobrará el valor equivalente a un (1) día completo de alquiler a la tarifa contratada.
                     </p>
                   </div>
                 </div>

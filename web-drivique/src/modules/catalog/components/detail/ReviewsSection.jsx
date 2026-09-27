@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { FaStar } from 'react-icons/fa'
+import { FaStar, FaTimes } from 'react-icons/fa'
+import { useAuthStore } from '../../../../store/authStore'
 
 const REVIEW_TEXT_MAP = {
   "Muy cómodo para viajes cortos, sin problemas mecánicos y el proceso de entrega fue rápido.": "vehiculo.reviews.rev1",
@@ -13,15 +14,16 @@ const REVIEW_TEXT_MAP = {
   "Espacio de sobra para toda la familia. La volveré a alquilar.": "vehiculo.reviews.rev8"
 }
 
-export default function ReviewsSection({ comentarios = [], calificacion = 0, c, embedded = false }) {
+export default function ReviewsSection({ comentarios = [], calificacion = 0, vehiculoId = null, vehiculoNombre = '', c, embedded = false }) {
   const { t, i18n } = useTranslation()
+  const usuario = useAuthStore(state => state.usuario)
   const [mostrarTodas, setMostrarTodas] = useState(false)
+  const [fotoAmpliada, setFotoAmpliada] = useState(null)
 
   const bg = embedded ? 'transparent' : (c?.cardBg || 'var(--bg-tarjeta, #ffffff)')
   const border = c?.cardBorder || 'var(--borde, #e2e8f0)'
   const textPrimary = c?.textPrimary || 'var(--texto-primary, #0f172a)'
   const textSecondary = c?.textSecondary || 'var(--texto-second, #64748b)'
-  const titleColor = c?.titleColor || 'var(--brand-secondary, #0f172a)'
   const isDark = c?.isDark || false
 
   const formatearFecha = (fechaStr) => {
@@ -36,7 +38,58 @@ export default function ReviewsSection({ comentarios = [], calificacion = 0, c, 
     }
   }
 
-  if (!comentarios || comentarios.length === 0) {
+  // Fusionar reseñas guardadas localmente por el usuario con las reseñas base del catálogo
+  const listaComentarios = useMemo(() => {
+    const fusionados = [...(comentarios || [])]
+    try {
+      const valoracionesLocales = JSON.parse(localStorage.getItem('drivique_valoraciones') || '{}')
+      const reservasLocales = JSON.parse(localStorage.getItem('drivique_reservas') || '[]')
+
+      // Recorrer las valoraciones locales guardadas
+      Object.entries(valoracionesLocales).forEach(([reservaId, val]) => {
+        if (!val) return
+        const resMatch = reservasLocales.find(r => String(r.id) === String(reservaId) || String(r.codigo) === String(reservaId) || String(r.referencia) === String(reservaId))
+        
+        // Comprobar si la reseña corresponde a este vehículo (por ID o por nombre)
+        const matchId = vehiculoId && resMatch && (Number(resMatch.vehiculoId) === Number(vehiculoId) || Number(resMatch.vehiculo?.id) === Number(vehiculoId))
+        const matchNombre = vehiculoNombre && resMatch && (resMatch.vehiculo?.nombre === vehiculoNombre)
+        const matchSinReserva = !resMatch // Si no hay match de reserva, incluir si es la valoración actual
+
+        if (matchId || matchNombre || matchSinReserva) {
+          const autorNombre = resMatch?.clienteNombre || resMatch?.datosForm?.nombre || usuario?.nombre || 'Tú (Cliente Drivique)'
+          const yaExisteIdx = fusionados.findIndex(item => item.autor === autorNombre || item.esPropia)
+          
+          const elementoResena = {
+            autor: autorNombre,
+            calificacion: Number(val.estrellas || val.calificacion || 5),
+            texto: val.comentario || 'Excelente servicio y vehículo.',
+            fecha: val.actualizadoEn ? val.actualizadoEn.split('T')[0] : new Date().toISOString().split('T')[0],
+            fotos: val.fotos || [],
+            esPropia: true
+          }
+
+          if (yaExisteIdx !== -1) {
+            fusionados[yaExisteIdx] = elementoResena
+          } else {
+            fusionados.unshift(elementoResena)
+          }
+        }
+      })
+    } catch (e) {
+      console.warn('Error recuperando valoraciones locales:', e)
+    }
+
+    return fusionados
+  }, [comentarios, vehiculoId, vehiculoNombre, usuario])
+
+  // Recalcular calificación global basada en la lista combinada
+  const calificacionFinal = useMemo(() => {
+    if (!listaComentarios.length) return calificacion || 0
+    const suma = listaComentarios.reduce((acc, curr) => acc + (Number(curr.calificacion) || 5), 0)
+    return Number((suma / listaComentarios.length).toFixed(1))
+  }, [listaComentarios, calificacion])
+
+  if (!listaComentarios || listaComentarios.length === 0) {
     return (
       <div
         className="resenas-card-wrap"
@@ -76,14 +129,15 @@ export default function ReviewsSection({ comentarios = [], calificacion = 0, c, 
     )
   }
 
-  const visibles = mostrarTodas ? comentarios : comentarios.slice(0, 3)
+  // Muestra 4 reseñas inicialmente, y el enlace Ver más al final de la lista desplegará el resto
+  const visibles = mostrarTodas ? listaComentarios : listaComentarios.slice(0, 4)
 
   const distribution = {
-    5: comentarios.filter(c => c.calificacion === 5).length,
-    4: comentarios.filter(c => c.calificacion === 4).length,
-    3: comentarios.filter(c => c.calificacion === 3).length,
-    2: comentarios.filter(c => c.calificacion === 2).length,
-    1: comentarios.filter(c => c.calificacion === 1).length,
+    5: listaComentarios.filter(c => Math.round(c.calificacion) === 5).length,
+    4: listaComentarios.filter(c => Math.round(c.calificacion) === 4).length,
+    3: listaComentarios.filter(c => Math.round(c.calificacion) === 3).length,
+    2: listaComentarios.filter(c => Math.round(c.calificacion) === 2).length,
+    1: listaComentarios.filter(c => Math.round(c.calificacion) === 1).length,
   }
 
   const renderStars = (rating) => {
@@ -113,19 +167,19 @@ export default function ReviewsSection({ comentarios = [], calificacion = 0, c, 
         {/* Columna Izquierda: Resumen */}
         <div className="resenas-resumen" style={{ flex: '1 1 200px', minWidth: 180, maxWidth: 280 }}>
           <div style={{ fontSize: 'clamp(32px, 5vw, 44px)', fontWeight: 900, color: isDark ? '#f1f5f9' : '#334155', lineHeight: 1, marginBottom: 8 }}>
-            {calificacion.toFixed(1)}
+            {calificacionFinal.toFixed(1)}
           </div>
           <div style={{ display: 'flex', gap: 4, marginBottom: 6 }}>
-            {renderStars(Math.round(calificacion))}
+            {renderStars(Math.round(calificacionFinal))}
           </div>
           <div style={{ fontSize: 12.5, fontWeight: 600, color: textSecondary, marginBottom: 16 }}>
-            {t('vehiculo.reviewsCount', { count: comentarios.length, defaultValue: `${comentarios.length} reseñas` })}
+            {t('vehiculo.reviewsCount', { count: listaComentarios.length, defaultValue: `${listaComentarios.length} reseñas` })}
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             {[5, 4, 3, 2, 1].map(star => {
               const count = distribution[star]
-              const percentage = comentarios.length > 0 ? (count / comentarios.length) * 100 : 0
+              const percentage = listaComentarios.length > 0 ? (count / listaComentarios.length) * 100 : 0
               return (
                 <div key={star} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: textSecondary }}>
                   <span style={{ width: 12, textAlign: 'right', fontWeight: 600 }}>{star}</span>
@@ -160,6 +214,8 @@ export default function ReviewsSection({ comentarios = [], calificacion = 0, c, 
           {visibles.map((item, i) => {
             const textoTraducido = REVIEW_TEXT_MAP[item.texto] ? t(REVIEW_TEXT_MAP[item.texto]) : item.texto
             const fechaFormateada = formatearFecha(item.fecha || '2026-04-15')
+            const tieneFotos = Boolean(item.fotos && item.fotos.length > 0)
+
             return (
               <div
                 key={i}
@@ -168,9 +224,10 @@ export default function ReviewsSection({ comentarios = [], calificacion = 0, c, 
                   gap: 14,
                   borderBottom: i < visibles.length - 1 ? `1px solid ${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}` : 'none',
                   paddingBottom: 16,
+                  alignItems: 'flex-start'
                 }}
               >
-                {/* Avatar */}
+                {/* Avatar con diseño neutro idéntico para todas las reseñas */}
                 <div
                   style={{
                     width: 38,
@@ -190,52 +247,151 @@ export default function ReviewsSection({ comentarios = [], calificacion = 0, c, 
                   {item.autor.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()}
                 </div>
 
-                {/* Contenido */}
+                {/* Contenido (Texto a la izquierda, Estrellas y Fotos al lado derecho) */}
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
-                    <div>
-                      <div style={{ fontSize: 13.5, fontWeight: 600, color: isDark ? '#f1f5f9' : '#334155' }}>{item.autor}</div>
-                      <div style={{ fontSize: 11.5, color: textSecondary }}>{fechaFormateada}</div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 }}>
+                    {/* Lado Izquierdo: Autor, Fecha, Comentario */}
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 13.5, fontWeight: 600, color: isDark ? '#f1f5f9' : '#334155', marginBottom: 2 }}>
+                        {item.autor} {item.esPropia && <span style={{ fontSize: 11, fontWeight: 600, color: textSecondary, marginLeft: 4 }}>(Tu reseña)</span>}
+                      </div>
+                      <div style={{ fontSize: 11.5, color: textSecondary, marginBottom: 6 }}>{fechaFormateada}</div>
+                      <p style={{ fontSize: 13, color: isDark ? '#e2e8f0' : '#334155', margin: 0, lineHeight: 1.5 }}>
+                        {textoTraducido}
+                      </p>
                     </div>
-                    <div style={{ display: 'flex', gap: 2 }}>
-                      {Array.from({ length: 5 }).map((_, j) => (
-                        <FaStar key={j} size={11} color={j < item.calificacion ? '#f59e0b' : (isDark ? '#334155' : '#e2e8f0')} />
-                      ))}
+
+                    {/* Lado Derecho: Estrellas y Fotos al lado directamente con click para ampliar */}
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6, flexShrink: 0 }}>
+                      <div style={{ display: 'flex', gap: 2 }}>
+                        {Array.from({ length: 5 }).map((_, j) => (
+                          <FaStar key={j} size={11} color={j < item.calificacion ? '#f59e0b' : (isDark ? '#334155' : '#e2e8f0')} />
+                        ))}
+                      </div>
+
+                      {tieneFotos && (
+                        <div style={{ display: 'flex', gap: 6, marginTop: 2, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                          {item.fotos.map((imgSrc, imgIdx) => (
+                            <img
+                              key={imgIdx}
+                              src={imgSrc}
+                              alt={`Foto adjunta ${imgIdx + 1}`}
+                              onClick={() => setFotoAmpliada(imgSrc)}
+                              style={{
+                                width: 48,
+                                height: 48,
+                                borderRadius: 8,
+                                objectFit: 'cover',
+                                border: `1px solid ${border}`,
+                                cursor: 'pointer',
+                                transition: 'transform 0.15s ease, border-color 0.15s ease'
+                              }}
+                              title="Haz clic para ver imagen en pantalla completa"
+                            />
+                          ))}
+                        </div>
+                      )}
                     </div>
                   </div>
-                  <p style={{ fontSize: 13, color: textSecondary, margin: 0, lineHeight: 1.5 }}>
-                    {textoTraducido}
-                  </p>
                 </div>
               </div>
             )
           })}
 
-          {comentarios.length > 3 && (
+          {/* Enlace "Ver más" / "Ver menos" abajo de las 4 reseñas */}
+          {listaComentarios.length > 4 && (
             <div style={{ textAlign: 'center', marginTop: 8 }}>
-              <button
-                type="button"
+              <span
+                role="button"
+                tabIndex={0}
                 onClick={() => setMostrarTodas(v => !v)}
+                onKeyDown={e => e.key === 'Enter' && setMostrarTodas(v => !v)}
                 style={{
-                  background: isDark ? 'rgba(255,255,255,0.05)' : '#ffffff',
-                  border: `1px solid ${border}`,
                   color: 'var(--brand-primary, #2563eb)',
-                  padding: '8px 18px',
-                  borderRadius: 10,
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 8,
-                  cursor: 'pointer',
-                  fontWeight: 700,
                   fontSize: 13,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  userSelect: 'none'
                 }}
               >
-                {mostrarTodas ? t('vehiculo.viewLessReviews', 'Ver menos reseñas') : t('vehiculo.viewMoreReviews', 'Ver más reseñas ˅')}
-              </button>
+                {mostrarTodas ? 'Ver menos' : 'Ver más'}
+              </span>
             </div>
           )}
         </div>
       </div>
+
+      {/* Modal / Lightbox para ver la foto ampliada en pantalla completa al hacer clic */}
+      {fotoAmpliada && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(15, 23, 42, 0.8)',
+            backdropFilter: 'blur(4px)',
+            zIndex: 99999,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 20
+          }}
+          onClick={() => setFotoAmpliada(null)}
+        >
+          <div
+            style={{
+              position: 'relative',
+              maxWidth: '90vw',
+              maxHeight: '85vh',
+              background: '#ffffff',
+              borderRadius: 16,
+              padding: 12,
+              boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)',
+              overflow: 'hidden'
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={() => setFotoAmpliada(null)}
+              style={{
+                position: 'absolute',
+                top: 16,
+                right: 16,
+                width: 34,
+                height: 34,
+                borderRadius: '50%',
+                background: 'rgba(15, 23, 42, 0.7)',
+                color: '#ffffff',
+                border: 'none',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: 14,
+                zIndex: 2,
+                transition: 'background 0.2s ease'
+              }}
+              title="Cerrar vista"
+            >
+              <FaTimes />
+            </button>
+            <img
+              src={fotoAmpliada}
+              alt="Foto del vehículo ampliada"
+              style={{
+                maxWidth: '100%',
+                maxHeight: '75vh',
+                objectFit: 'contain',
+                borderRadius: 10,
+                display: 'block'
+              }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   )
 }
