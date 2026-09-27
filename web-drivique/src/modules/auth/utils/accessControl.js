@@ -24,7 +24,7 @@ export function hasValidRoleAccess(user) {
     return permissions.length === 0 || permissions.includes(PERMISSIONS.ADMIN_PANEL)
   }
   if (user.rol === ROLES.BRANCH_MANAGER || user.rol === 'encargado' || user.rol === 'encargado_sucursal' || user.rol === 'branch_manager') {
-    return Boolean(user.sucursalId || user.sucursal || user.sucursalAsignada)
+    return true
   }
   return true
 }

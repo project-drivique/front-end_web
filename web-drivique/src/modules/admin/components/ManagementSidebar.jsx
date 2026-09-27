@@ -19,6 +19,9 @@ import {
   FaPalette,
   FaFileAlt,
   FaCashRegister,
+  FaSlidersH,
+  FaStar,
+  FaIdCard,
 } from 'react-icons/fa'
 import { useAuthStore } from '../../../store/authStore'
 import accessConfig from '../../../mocks/adminAccessConfig.json'
@@ -29,6 +32,8 @@ import './ManagementDashboard.css'
 
 const MODULE_ICONS = {
   dashboard: FaChartPie,
+  controlPanel: FaSlidersH,
+  myBranch: FaBuilding,
   vehicles: FaCar,
   users: FaUsers,
   roles: FaUserShield,
@@ -36,6 +41,8 @@ const MODULE_ICONS = {
   cashCollection: FaCashRegister,
   contracts: FaFileContract,
   incidents: FaExclamationTriangle,
+  documents: FaIdCard,
+  reviews: FaStar,
   cities: FaCity,
   branches: FaBuilding,
   promotions: FaTags,
@@ -45,14 +52,17 @@ const MODULE_ICONS = {
 }
 
 const NAV_LABELS = {
-  dashboard: 'Panel de Control',
-  vehicles: 'Flota y Vehículos',
+  dashboard: 'Dashboard',
+  myBranch: 'Mi sucursal',
+  vehicles: 'Flota y vehículos',
   users: 'Usuarios',
   roles: 'Roles y Permisos',
   reservations: 'Reservas',
-  cashCollection: 'Cobro en Sucursal',
+  cashCollection: 'Pagos',
   contracts: 'Contratos',
   incidents: 'Incidencias',
+  documents: 'Validación de documentos',
+  reviews: 'Reseñas y calificaciones',
   cities: 'Ciudades',
   branches: 'Sucursales',
   promotions: 'Promociones',
@@ -90,7 +100,7 @@ export default function ManagementSidebar({ branchOnly = false }) {
             src={brandLogo} 
             alt={brandName}
             style={{
-              height: 24,
+              height: 26,
               width: 'auto',
               objectFit: 'contain',
             }}
@@ -118,12 +128,16 @@ export default function ManagementSidebar({ branchOnly = false }) {
 
       <aside className={`management-sidebar ${isOpen ? 'is-open' : ''}`}>
         <div className="management-brand">
-          <Link to={isBranchManager ? '/encargado' : '/admin'} className="management-brand__link">
+          <Link to={isBranchManager ? '/encargado' : '/admin'} className="management-brand__link" title={brandName}>
             <img 
               src={brandLogo} 
               alt={brandName} 
               className="management-brand__logo"
               style={{
+                height: 32,
+                maxHeight: 32,
+                width: 'auto',
+                objectFit: 'contain',
                 filter: brand?.logoDataUrl ? 'none' : 'brightness(0) invert(1)',
               }}
             />
@@ -135,25 +149,33 @@ export default function ManagementSidebar({ branchOnly = false }) {
         </div>
 
       <nav className="management-nav" aria-label={t('admin.navigation', 'Navegación')}>
-        {navigation.map(({ key, route }) => {
+        {navigation.map(({ key, route, section }, index) => {
           const Icon = MODULE_ICONS[key] || FaChartPie
           const labelFallback = NAV_LABELS[key] || key
+          const showSectionHeader = section && (index === 0 || navigation[index - 1]?.section !== section)
           return (
-            <NavLink
-              key={key}
-              to={route}
-              end={key === 'dashboard'}
-              className={({ isActive }) => `management-nav__item ${isActive ? 'is-active' : ''}`}
-            >
-              <Icon aria-hidden="true" />
-              <span>{t(`admin.nav.${key}`, labelFallback)}</span>
-            </NavLink>
+            <div key={key} className="management-nav__group">
+              {showSectionHeader && (
+                <div className="management-nav__section-title">
+                  {section}
+                </div>
+              )}
+              <NavLink
+                to={route}
+                end={key === 'dashboard'}
+                title={t(`admin.nav.${key}`, labelFallback)}
+                className={({ isActive }) => `management-nav__item ${isActive ? 'is-active' : ''}`}
+              >
+                <Icon aria-hidden="true" />
+                <span>{t(`admin.nav.${key}`, labelFallback)}</span>
+              </NavLink>
+            </div>
           )
         })}
       </nav>
 
-      <button type="button" className="management-logout" onClick={closeSession}>
-        <FaSignOutAlt /> {t('admin.logout', 'Cerrar sesión')}
+      <button type="button" className="management-logout" onClick={closeSession} title={t('admin.logout', 'Cerrar sesión')}>
+        <FaSignOutAlt /> <span>{t('admin.logout', 'Cerrar sesión')}</span>
       </button>
     </aside>
     </>

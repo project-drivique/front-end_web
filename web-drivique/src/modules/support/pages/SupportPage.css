@@ -5,6 +5,7 @@
   color: var(--texto-primary, #0f172a);
   font-family: system-ui, -apple-system, sans-serif;
   transition: background-color 0.25s ease, color 0.25s ease;
+  zoom: 0.9;
 }
 
 .soporte-main {
@@ -201,8 +202,8 @@
 }
 
 .canal-icon-wrap.correo {
-  background: #f3e8ff;
-  color: #9333ea;
+  background: #e0f2fe;
+  color: #0284c7;
 }
 
 .canal-info {
