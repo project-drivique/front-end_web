@@ -760,14 +760,6 @@ export default function BranchDashboard({ branchOnly = true }) {
         setActiveKpiMenu(null)
       }
       if (e.type === 'mousedown') {
-        if (
-          isNotificationsOpen &&
-          notifRef.current &&
-          !notifRef.current.contains(e.target) &&
-          !notifBtnRef.current?.contains(e.target)
-        ) {
-          setIsNotificationsOpen(false)
-        }
         setActiveKpiMenu(null)
       }
     }
@@ -779,7 +771,7 @@ export default function BranchDashboard({ branchOnly = true }) {
       document.removeEventListener('keydown', handleGlobalClickAndKeys)
       document.removeEventListener('mousedown', handleGlobalClickAndKeys)
     }
-  }, [isNotificationsOpen])
+  }, [])
 
   const formatCOP = (val) => {
     try {
