@@ -51,6 +51,7 @@ const ReportsManagementPage = lazy(() => import('../modules/admin/pages/ReportsM
 const AuditLogManagementPage = lazy(() => import('../modules/admin/pages/AuditLogManagementPage'))
 const BranchReviewsPage = lazy(() => import('../modules/admin/pages/BranchReviewsPage'))
 const DocumentVerificationPage = lazy(() => import('../modules/admin/pages/DocumentVerificationPage'))
+const BranchNotificationCenterPage = lazy(() => import('../modules/admin/pages/BranchNotificationCenterPage'))
 
 function RutaPrivada({ children }) {
   const token    = useAuthStore((s) => s.token)
@@ -210,6 +211,7 @@ export default function AppRouter() {
             <Route path="/admin/brand" element={<RutaPorRol roles={[ROLES.ADMIN]}><BrandManagementPage /></RutaPorRol>} />
             <Route path="/admin/reports" element={<RutaPorRol roles={[ROLES.ADMIN]}><ReportsManagementPage /></RutaPorRol>} />
             <Route path="/admin/audit" element={<RutaPorRol roles={[ROLES.ADMIN]}><AuditLogManagementPage /></RutaPorRol>} />
+            <Route path="/admin/notifications" element={<RutaPorRol roles={[ROLES.ADMIN]}><BranchNotificationCenterPage branchOnly={false} /></RutaPorRol>} />
             <Route path="/admin/:moduleKey" element={<RutaPorRol roles={[ROLES.ADMIN]}><ManagementModulePage /></RutaPorRol>} />
             <Route path="/encargado" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER, ROLES.ADMIN]}><BranchManagerPage /></RutaPorRol>} />
             <Route path="/encargado/my-branch" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER, ROLES.ADMIN]}><BranchProfilePage /></RutaPorRol>} />
@@ -223,6 +225,7 @@ export default function AppRouter() {
             <Route path="/encargado/reviews" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER, ROLES.ADMIN]}><BranchReviewsPage branchOnly={true} /></RutaPorRol>} />
             <Route path="/encargado/reports" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER, ROLES.ADMIN]}><ReportsManagementPage branchOnly={true} /></RutaPorRol>} />
             <Route path="/encargado/audit" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER, ROLES.ADMIN]}><AuditLogManagementPage branchOnly={true} /></RutaPorRol>} />
+            <Route path="/encargado/notifications" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER, ROLES.ADMIN]}><BranchNotificationCenterPage branchOnly={true} /></RutaPorRol>} />
             <Route path="/encargado/:moduleKey" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER, ROLES.ADMIN]}><ManagementModulePage /></RutaPorRol>} />
             <Route path="/perfil" element={<RutaPrivada><ProfilePage /></RutaPrivada>} />
             <Route path="/catalogo" element={<RutaCatalogo />} />
