@@ -39,7 +39,7 @@ import ManagementSidebar from './ManagementSidebar'
 import MenuConfiguracion from '../../../components/MenuConfiguracion'
 import { exportExcel, exportPdf, printTable } from '../../../utils/listExportUtils'
 import KpiDetailModal from './KpiDetailModal'
-import BranchNotificationDrawer from './BranchNotificationDrawer'
+import BranchNotificationPopover from './BranchNotificationPopover'
 import './BranchDashboard.css'
 
 const TODAY_STR = '2026-09-25'
@@ -838,15 +838,15 @@ export default function BranchDashboard({ branchOnly = true }) {
           </div>
 
           <div className="branch-top-right-tools">
-            <div className="branch-notification-wrapper">
+            <div className="branch-notification-wrapper" style={{ position: 'relative' }}>
               <button
                 ref={notifBtnRef}
                 type="button"
                 className={`branch-icon-btn branch-notification-btn ${
                   isNotificationsOpen ? 'branch-icon-btn--active' : ''
                 }`}
-                title="Centro de Notificaciones y Alertas"
-                aria-label="Centro de Notificaciones y Alertas"
+                title="Notificaciones y Alertas"
+                aria-label="Notificaciones y Alertas"
                 aria-expanded={isNotificationsOpen}
                 onClick={(e) => {
                   e.preventDefault()
@@ -859,6 +859,18 @@ export default function BranchDashboard({ branchOnly = true }) {
                   <span className="branch-notification-badge">{unreadNotifCount}</span>
                 )}
               </button>
+
+              <BranchNotificationPopover
+                isOpen={isNotificationsOpen}
+                onClose={() => setIsNotificationsOpen(false)}
+                notifications={notifications}
+                unreadCount={unreadNotifCount}
+                onMarkRead={handleMarkNotificationRead}
+                onMarkAllRead={handleMarkAllNotificationsRead}
+                onSelectNotification={handleNotificationClick}
+                branchName={dashboardData?.branchName}
+                centerRoute="/encargado/notifications"
+              />
             </div>
 
             <div className="branch-divider-v" />
@@ -2059,21 +2071,6 @@ export default function BranchDashboard({ branchOnly = true }) {
             </footer>
           </div>
         )}
-
-        {/* PANEL LATERAL DERECHO (SLIDE-OVER DRAWER): NOTIFICACIONES Y ALERTAS */}
-        <BranchNotificationDrawer
-          isOpen={isNotificationsOpen}
-          onClose={() => setIsNotificationsOpen(false)}
-          notifications={notifications}
-          filteredNotifications={filteredNotifications}
-          unreadCount={unreadNotifCount}
-          filter={notifFilter}
-          onFilterChange={setNotifFilter}
-          onMarkRead={handleMarkNotificationRead}
-          onMarkAllRead={handleMarkAllNotificationsRead}
-          onSelectNotification={handleNotificationClick}
-          branchName={dashboardData?.branchName}
-        />
 
         {/* MODAL DETALLE DE MÉTRICA CON EXPORTACIÓN A EXCEL, PDF, IMPRESIÓN Y NAVEGACIÓN A REPORTES */}
         {activeModalMetric && (
