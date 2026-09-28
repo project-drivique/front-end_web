@@ -110,3 +110,5 @@ npm run build
 ## 👥 Equipo de Desarrollo
 * **Laura Vanessa Perez Perdomo**
 * **Danna Valentina Barrios Penagos**
+* **Emily Sharith Amezquita Saavedra**
+

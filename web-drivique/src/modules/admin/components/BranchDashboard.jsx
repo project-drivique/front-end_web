@@ -630,13 +630,7 @@ export default function BranchDashboard({ branchOnly = true }) {
 
   const handleOpenKpiDetail = (metricKey) => {
     setActiveKpiMenu(null)
-    if (metricKey === 'ingresos') {
-      navigate('/encargado/reports')
-    } else if (metricKey === 'entregas' || metricKey === 'devoluciones') {
-      navigate('/encargado/reservations')
-    } else if (metricKey === 'ocupacion') {
-      navigate('/encargado/vehicles')
-    }
+    setActiveModalMetric(metricKey)
   }
 
   const handleExportKpiExcel = (metricKey) => {
