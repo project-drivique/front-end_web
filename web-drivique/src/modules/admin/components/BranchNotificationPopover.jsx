@@ -15,8 +15,22 @@ import './BranchNotificationPopover.css'
 
 /**
  * Presentational Component: BranchNotificationPopover
+ * 
+ * @description
  * Minipantalla / Popover flotante anclada debajo de la campana de notificaciones.
  * Muestra un resumen rápido de las alertas más recientes y un acceso directo al Centro de Notificaciones.
+ * 
+ * @param {Object} props
+ * @param {boolean} props.isOpen - Estado de visibilidad del popover
+ * @param {Function} props.onClose - Callback invocado al cerrar el popover
+ * @param {Array<Object>} [props.notifications=[]] - Lista completa de notificaciones operativas
+ * @param {number} [props.unreadCount=0] - Número de notificaciones no leídas
+ * @param {Function} [props.onMarkRead] - Callback para marcar una notificación como leída
+ * @param {Function} [props.onMarkAllRead] - Callback para marcar todas las notificaciones como leídas
+ * @param {Function} [props.onSelectNotification] - Callback ejecutado al hacer clic sobre una notificación
+ * @param {string} [props.branchName='Sucursal'] - Nombre de la sucursal actual
+ * @param {string} [props.centerRoute='/encargado/notifications'] - Ruta hacia el Centro de Notificaciones
+ * @returns {JSX.Element|null}
  */
 export default function BranchNotificationPopover({
   isOpen,
