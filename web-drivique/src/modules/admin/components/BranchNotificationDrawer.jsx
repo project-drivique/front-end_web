@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import {
   FaBell,
   FaTimes,
@@ -15,6 +16,7 @@ import './BranchNotificationDrawer.css'
 /**
  * Presentational Component: BranchNotificationDrawer
  * Patrón Container/Presentational: Responsabilidad única para renderizar el panel lateral deslizable.
+ * Utiliza React Portal (document.body) para garantizar que nunca sea bloqueado por overflow o stacking contexts padres.
  */
 export default function BranchNotificationDrawer({
   isOpen,
@@ -47,7 +49,7 @@ export default function BranchNotificationDrawer({
 
   if (!isOpen) return null
 
-  return (
+  const drawerElement = (
     <div
       className="bnd-overlay"
       role="dialog"
@@ -252,5 +254,11 @@ export default function BranchNotificationDrawer({
       </div>
     </div>
   )
+
+  if (typeof document !== 'undefined' && document.body) {
+    return createPortal(drawerElement, document.body)
+  }
+
+  return drawerElement
 }
 
