@@ -25,17 +25,33 @@ import ManagementSidebar from '../components/ManagementSidebar'
 import MenuConfiguracion from '../../../components/MenuConfiguracion'
 import './BranchNotificationCenterPage.css'
 
+/**
+ * Componente de Página: BranchNotificationCenterPage
+ * 
+ * @description
+ * Pantalla completa dedicada al "Centro de Notificaciones y Alertas Operativas" para
+ * administradores y encargados de sucursal. Ofrece:
+ * - Tarjetas de métricas y estadísticas operativas del turno.
+ * - Buscador en tiempo real de notificaciones (por cliente, vehículo, código o descripción).
+ * - Filtros por pestañas (Todas, No leídas, Operaciones, Alertas & Incidencias).
+ * - Acciones rápidas de marcado masivo/individual y navegación directa a módulos de acción.
+ * 
+ * @param {Object} props
+ * @param {boolean} [props.branchOnly=true] - Si es true, restringe la vista al contexto de la sucursal asignada.
+ * @returns {JSX.Element}
+ */
 export default function BranchNotificationCenterPage({ branchOnly = true }) {
   const { t } = useTranslation()
   const { tema } = useLanding()
   const usuario = useAuthStore((state) => state.usuario)
   const navigate = useNavigate()
 
+  // Consumo del Custom Hook de datos del Dashboard
   const { data: dashboardData, loading } = useBranchDashboard(usuario)
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedType, setSelectedType] = useState('all') // 'all', 'unread', 'operations', 'attention'
 
-  // Patrón Controller / Custom Hook
+  // Patrón Controller / Custom Hook: Centraliza la lógica y mutaciones de las notificaciones
   const {
     notifications,
     unreadCount,
