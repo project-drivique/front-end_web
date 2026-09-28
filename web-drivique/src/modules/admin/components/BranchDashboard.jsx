@@ -754,7 +754,9 @@ export default function BranchDashboard({ branchOnly = true }) {
         setActiveKpiMenu(null)
       }
       if (e.type === 'mousedown') {
-        setActiveKpiMenu(null)
+        if (!e.target.closest('.branch-kpi-menu-wrapper')) {
+          setActiveKpiMenu(null)
+        }
       }
     }
 
