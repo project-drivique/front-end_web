@@ -25,6 +25,8 @@ import {
   FaPhone,
   FaChartBar,
   FaTimesCircle,
+  FaBellSlash,
+  FaInfoCircle,
   FaFileExcel,
   FaFilePdf,
   FaPrint,
@@ -32,10 +34,12 @@ import {
 import { useLanding } from '../../landing/LandingContext'
 import { useAuthStore } from '../../../store/authStore'
 import { useBranchDashboard, getScheduleForRange } from '../../../hooks/useBranchDashboard'
+import { useBranchNotifications } from '../../../hooks/useBranchNotifications'
 import ManagementSidebar from './ManagementSidebar'
 import MenuConfiguracion from '../../../components/MenuConfiguracion'
 import { exportExcel, exportPdf, printTable } from '../../../utils/listExportUtils'
 import KpiDetailModal from './KpiDetailModal'
+import BranchNotificationDrawer from './BranchNotificationDrawer'
 import './BranchDashboard.css'
 
 const TODAY_STR = '2026-09-25'
@@ -130,99 +134,6 @@ const getReservationStatusInfo = (rawStatus) => {
     IconComp: FaCheckCircle,
   }
 }
-
-const MOCK_NOTIFICATIONS = [
-  {
-    id: 'notif-1',
-    type: 'newReservation',
-    category: 'operations',
-    categoryLabel: 'Nueva Reserva',
-    icon: FaClipboardList,
-    iconColor: '#2563eb',
-    iconBg: '#eff6ff',
-    text: 'Nueva reserva #RES-8920 realizada por Carlos Restrepo',
-    detail: 'Vehículo Toyota Corolla 2024 asignado. Entrega programada para hoy a las 14:00.',
-    time: 'Hace 10 min',
-    isRead: false,
-    route: '/encargado/reservations',
-    actionLabel: 'Ver reservas',
-  },
-  {
-    id: 'notif-2',
-    type: 'pendingDocument',
-    category: 'attention',
-    categoryLabel: 'Validación Requerida',
-    icon: FaIdCard,
-    iconColor: '#b45309',
-    iconBg: '#fef3c7',
-    text: 'Documento de identidad por validar en Reserva #RES-8914',
-    detail: 'Cédula de ciudadanía pendiente de aprobación para el cliente Mariana Silva.',
-    time: 'Hace 25 min',
-    isRead: false,
-    route: '/encargado/documents',
-    actionLabel: 'Validar documentos',
-  },
-  {
-    id: 'notif-3',
-    type: 'openIncident',
-    category: 'attention',
-    categoryLabel: 'Incidencia Operativa',
-    icon: FaExclamationTriangle,
-    iconColor: '#dc2626',
-    iconBg: '#fef2f2',
-    text: 'Incidencia de rayón reportada en Toyota Corolla (ABC-123)',
-    detail: 'Reportada durante inspección previa a la entrega en bahía 2.',
-    time: 'Hace 1 hora',
-    isRead: false,
-    route: '/encargado/incidents',
-    actionLabel: 'Gestionar incidencias',
-  },
-  {
-    id: 'notif-4',
-    type: 'returnCompleted',
-    category: 'operations',
-    categoryLabel: 'Devolución Flota',
-    icon: FaUndo,
-    iconColor: '#15803d',
-    iconBg: '#dcfce7',
-    text: 'Devolución completada para vehículo Mazda CX-5 (KLS-849)',
-    detail: 'Inspección final aprobada sin novedades de kilometraje ni combustible.',
-    time: 'Hace 2 horas',
-    isRead: false,
-    route: '/encargado/reservations',
-    actionLabel: 'Ver reservas',
-  },
-  {
-    id: 'notif-5',
-    type: 'paymentReceived',
-    category: 'operations',
-    categoryLabel: 'Cobro en Mostrador',
-    icon: FaCashRegister,
-    iconColor: '#2563eb',
-    iconBg: '#eff6ff',
-    text: 'Pago recibido por $150.000 COP en mostrador de sucursal',
-    detail: 'Cobro de garantía en efectivo registrado para reserva #RES-8890.',
-    time: 'Hace 3 horas',
-    isRead: true,
-    route: '/encargado/cobro-sucursal',
-    actionLabel: 'Ver cobros',
-  },
-  {
-    id: 'notif-6',
-    type: 'expiringDocument',
-    category: 'attention',
-    categoryLabel: 'Alerta de Flota',
-    icon: FaCar,
-    iconColor: '#b45309',
-    iconBg: '#fef3c7',
-    text: 'SOAT de Chevrolet Tracker (MXP-492) próximo a vencer en 5 días',
-    detail: 'Vence el 30/09/2026. Requiere renovación para mantener disponibilidad operativa.',
-    time: 'Hace 5 horas',
-    isRead: true,
-    route: '/encargado/vehicles',
-    actionLabel: 'Ver flota y vehículos',
-  },
-]
 
 const parseISOToDate = (str) => {
   if (!str) return new Date(2026, 8, 25)
@@ -571,11 +482,19 @@ export default function BranchDashboard({ branchOnly = true }) {
 
   const [activeKpiMenu, setActiveKpiMenu] = useState(null)
   const [activeModalMetric, setActiveModalMetric] = useState(null)
-  const [notifications, setNotifications] = useState(MOCK_NOTIFICATIONS)
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false)
-  const [isAllNotifsModalOpen, setIsAllNotifsModalOpen] = useState(false)
-  const [notifModalFilter, setNotifModalFilter] = useState('all') // 'all' | 'unread' | 'operations' | 'attention'
   const [toastMessage, setToastMessage] = useState(null)
+
+  // Patrón Controller/Hook: Gestión desacoplada de notificaciones operativas
+  const {
+    notifications,
+    unreadCount: unreadNotifCount,
+    filter: notifFilter,
+    setFilter: setNotifFilter,
+    filteredNotifications,
+    markAsRead: handleMarkNotificationRead,
+    markAllAsRead: handleMarkAllNotificationsRead,
+  } = useBranchNotifications(usuario, dashboardData)
 
   const drawerRef = useRef(null)
   const lastActiveElementRef = useRef(null)
@@ -596,41 +515,17 @@ export default function BranchDashboard({ branchOnly = true }) {
     setActiveKpiMenu((prev) => (prev === id ? null : id))
   }
 
-  const unreadNotifCount = useMemo(() => {
-    return notifications.filter((n) => !n.isRead).length
-  }, [notifications])
-
   const handleToggleNotifications = () => {
     setIsNotificationsOpen((prev) => !prev)
   }
 
-  const handleMarkAllNotificationsRead = () => {
-    setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })))
-  }
-
   const handleNotificationClick = (notif) => {
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === notif.id ? { ...n, isRead: true } : n))
-    )
+    handleMarkNotificationRead(notif.id)
     setIsNotificationsOpen(false)
-    setIsAllNotifsModalOpen(false)
     if (notif.route) {
       navigate(notif.route)
     }
   }
-
-  const modalFilteredNotifications = useMemo(() => {
-    if (notifModalFilter === 'unread') {
-      return notifications.filter((n) => !n.isRead)
-    }
-    if (notifModalFilter === 'operations') {
-      return notifications.filter((n) => n.category === 'operations')
-    }
-    if (notifModalFilter === 'attention') {
-      return notifications.filter((n) => n.category === 'attention')
-    }
-    return notifications
-  }, [notifications, notifModalFilter])
 
   const getKpiDataForExport = (metricKey) => {
     const branchName = dashboardData?.branchName || 'Alamo Bogotá - Aeropuerto'
@@ -964,96 +859,20 @@ export default function BranchDashboard({ branchOnly = true }) {
                 className={`branch-icon-btn branch-notification-btn ${
                   isNotificationsOpen ? 'branch-icon-btn--active' : ''
                 }`}
-                title="Notificaciones"
-                aria-label="Notificaciones"
+                title="Centro de Notificaciones y Alertas"
+                aria-label="Centro de Notificaciones y Alertas"
                 aria-expanded={isNotificationsOpen}
-                aria-haspopup="menu"
-                onClick={handleToggleNotifications}
+                onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  setIsNotificationsOpen((prev) => !prev)
+                }}
               >
                 <FaBell aria-hidden="true" />
                 {unreadNotifCount > 0 && (
                   <span className="branch-notification-badge">{unreadNotifCount}</span>
                 )}
               </button>
-
-              {isNotificationsOpen && (
-                <div
-                  ref={notifRef}
-                  className="branch-dropdown-menu branch-notifications-dropdown"
-                  role="menu"
-                  aria-label="Panel de Notificaciones"
-                >
-                  <div className="branch-notif-header">
-                    <span className="branch-notif-title">
-                      {t('dashboard.notifications.title', 'Notificaciones')}
-                    </span>
-                    {unreadNotifCount > 0 && (
-                      <button
-                        type="button"
-                        className="branch-notif-mark-btn"
-                        onClick={handleMarkAllNotificationsRead}
-                      >
-                        <FaCheckDouble aria-hidden="true" />
-                        <span>{t('dashboard.notifications.markAllAsRead', 'Marcar todas como leídas')}</span>
-                      </button>
-                    )}
-                  </div>
-
-                  <div className="branch-notif-list">
-                    {notifications.length === 0 ? (
-                      <div className="branch-notif-empty">
-                        {t('dashboard.notifications.empty', 'No tienes notificaciones pendientes.')}
-                      </div>
-                    ) : (
-                      notifications.slice(0, 6).map((notif) => {
-                        const IconComp = notif.icon || FaBell
-                        return (
-                          <div
-                            key={notif.id}
-                            tabIndex={0}
-                            role="menuitem"
-                            className={`branch-notif-item ${
-                              !notif.isRead ? 'branch-notif-item--unread' : ''
-                            }`}
-                            onClick={() => handleNotificationClick(notif)}
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter' || e.key === ' ') {
-                                e.preventDefault()
-                                handleNotificationClick(notif)
-                              }
-                            }}
-                          >
-                            <div
-                              className="branch-notif-icon-box"
-                              style={{ background: notif.iconBg, color: notif.iconColor }}
-                            >
-                              <IconComp aria-hidden="true" />
-                            </div>
-                            <div className="branch-notif-text-wrap">
-                              <p className="branch-notif-text">{notif.text}</p>
-                              <span className="branch-notif-time">{notif.time}</span>
-                            </div>
-                            {!notif.isRead && <span className="branch-notif-unread-dot" />}
-                          </div>
-                        )
-                      })
-                    )}
-                  </div>
-
-                  <div className="branch-notif-footer">
-                    <button
-                      type="button"
-                      className="branch-notif-view-all-btn"
-                      onClick={() => {
-                        setIsNotificationsOpen(false)
-                        setIsAllNotifsModalOpen(true)
-                      }}
-                    >
-                      {t('dashboard.notifications.viewAll', 'Ver todas')}
-                    </button>
-                  </div>
-                </div>
-              )}
             </div>
 
             <div className="branch-divider-v" />
@@ -2255,190 +2074,20 @@ export default function BranchDashboard({ branchOnly = true }) {
           </div>
         )}
 
-        {/* MODAL OPERATIVO COMPLETO: CENTRO DE NOTIFICACIONES Y ALERTAS DE LA SUCURSAL */}
-        {isAllNotifsModalOpen && (
-          <div
-            className="branch-notif-modal-overlay"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="branchNotifModalTitle"
-            onClick={() => setIsAllNotifsModalOpen(false)}
-          >
-            <div
-              className="branch-notif-modal-content"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <header className="branch-notif-modal-header">
-                <div className="branch-notif-modal-title-group">
-                  <div className="branch-notif-modal-icon-badge">
-                    <FaBell aria-hidden="true" />
-                  </div>
-                  <div>
-                    <h3 id="branchNotifModalTitle" className="branch-notif-modal-title">
-                      Centro de Notificaciones y Alertas
-                    </h3>
-                    <p className="branch-notif-modal-subtitle">
-                      Monitoreo operativo en tiempo real de la sucursal
-                    </p>
-                  </div>
-                </div>
-
-                <div className="branch-notif-modal-header-actions">
-                  {unreadNotifCount > 0 && (
-                    <button
-                      type="button"
-                      className="branch-btn branch-btn--secondary branch-btn--sm"
-                      onClick={handleMarkAllNotificationsRead}
-                    >
-                      <FaCheckDouble aria-hidden="true" />
-                      <span>Marcar todas como leídas</span>
-                    </button>
-                  )}
-                  <button
-                    type="button"
-                    className="branch-modal-close-btn"
-                    onClick={() => setIsAllNotifsModalOpen(false)}
-                    aria-label="Cerrar modal de notificaciones"
-                  >
-                    <FaTimes aria-hidden="true" />
-                  </button>
-                </div>
-              </header>
-
-              {/* FILTROS OPERATIVOS */}
-              <div className="branch-notif-modal-filter-bar">
-                <button
-                  type="button"
-                  className={`branch-notif-filter-pill ${
-                    notifModalFilter === 'all' ? 'branch-notif-filter-pill--active' : ''
-                  }`}
-                  onClick={() => setNotifModalFilter('all')}
-                >
-                  Todas ({notifications.length})
-                </button>
-                <button
-                  type="button"
-                  className={`branch-notif-filter-pill ${
-                    notifModalFilter === 'unread' ? 'branch-notif-filter-pill--active' : ''
-                  }`}
-                  onClick={() => setNotifModalFilter('unread')}
-                >
-                  No leídas ({unreadNotifCount})
-                </button>
-                <button
-                  type="button"
-                  className={`branch-notif-filter-pill ${
-                    notifModalFilter === 'operations' ? 'branch-notif-filter-pill--active' : ''
-                  }`}
-                  onClick={() => setNotifModalFilter('operations')}
-                >
-                  Operaciones (Reservas / Devoluciones / Pagos)
-                </button>
-                <button
-                  type="button"
-                  className={`branch-notif-filter-pill ${
-                    notifModalFilter === 'attention' ? 'branch-notif-filter-pill--active' : ''
-                  }`}
-                  onClick={() => setNotifModalFilter('attention')}
-                >
-                  Atención requerida (Documentos / Incidencias / SOAT)
-                </button>
-              </div>
-
-              {/* LISTA DE NOTIFICACIONES */}
-              <div className="branch-notif-modal-body">
-                {modalFilteredNotifications.length === 0 ? (
-                  <div className="branch-notif-empty-state">
-                    <FaCheckCircle className="branch-notif-empty-icon" />
-                    <p className="branch-notif-empty-title">
-                      No hay notificaciones en esta categoría
-                    </p>
-                    <p className="branch-notif-empty-desc">
-                      Todas las novedades operativas están al día.
-                    </p>
-                  </div>
-                ) : (
-                  <div className="branch-notif-modal-list">
-                    {modalFilteredNotifications.map((notif) => {
-                      const IconComp = notif.icon || FaBell
-                      return (
-                        <div
-                          key={notif.id}
-                          className={`branch-notif-modal-card ${
-                            !notif.isRead ? 'branch-notif-modal-card--unread' : ''
-                          }`}
-                        >
-                          <div
-                            className="branch-notif-modal-card-icon"
-                            style={{ background: notif.iconBg, color: notif.iconColor }}
-                          >
-                            <IconComp aria-hidden="true" />
-                          </div>
-
-                          <div className="branch-notif-modal-card-main">
-                            <div className="branch-notif-modal-card-top">
-                              <span className="branch-notif-modal-category-badge">
-                                {notif.categoryLabel || 'Notificación'}
-                              </span>
-                              <span className="branch-notif-modal-time">
-                                <FaClock aria-hidden="true" />
-                                {notif.time}
-                              </span>
-                            </div>
-                            <h4 className="branch-notif-modal-card-title">{notif.text}</h4>
-                            {notif.detail && (
-                              <p className="branch-notif-modal-card-detail">{notif.detail}</p>
-                            )}
-                          </div>
-
-                          <div className="branch-notif-modal-card-actions">
-                            {!notif.isRead && (
-                              <button
-                                type="button"
-                                className="branch-notif-card-mark-read-btn"
-                                onClick={() =>
-                                  setNotifications((prev) =>
-                                    prev.map((n) =>
-                                      n.id === notif.id ? { ...n, isRead: true } : n
-                                    )
-                                  )
-                                }
-                                title="Marcar como leída"
-                              >
-                                Marcar leída
-                              </button>
-                            )}
-                            <button
-                              type="button"
-                              className="branch-btn branch-btn--primary branch-btn--sm branch-notif-card-cta"
-                              onClick={() => handleNotificationClick(notif)}
-                            >
-                              <span>{notif.actionLabel || 'Ir al módulo'}</span>
-                              <FaChevronRight aria-hidden="true" />
-                            </button>
-                          </div>
-                        </div>
-                      )
-                    })}
-                  </div>
-                )}
-              </div>
-
-              <footer className="branch-notif-modal-footer">
-                <span className="branch-notif-footer-summary">
-                  Mostrando {modalFilteredNotifications.length} de {notifications.length} alertas
-                </span>
-                <button
-                  type="button"
-                  className="branch-btn branch-btn--secondary"
-                  onClick={() => setIsAllNotifsModalOpen(false)}
-                >
-                  Cerrar
-                </button>
-              </footer>
-            </div>
-          </div>
-        )}
+        {/* PANEL LATERAL DERECHO (SLIDE-OVER DRAWER): NOTIFICACIONES Y ALERTAS */}
+        <BranchNotificationDrawer
+          isOpen={isNotificationsOpen}
+          onClose={() => setIsNotificationsOpen(false)}
+          notifications={notifications}
+          filteredNotifications={filteredNotifications}
+          unreadCount={unreadNotifCount}
+          filter={notifFilter}
+          onFilterChange={setNotifFilter}
+          onMarkRead={handleMarkNotificationRead}
+          onMarkAllRead={handleMarkAllNotificationsRead}
+          onSelectNotification={handleNotificationClick}
+          branchName={dashboardData?.branchName}
+        />
 
         {/* MODAL DETALLE DE MÉTRICA CON EXPORTACIÓN A EXCEL, PDF, IMPRESIÓN Y NAVEGACIÓN A REPORTES */}
         {activeModalMetric && (
