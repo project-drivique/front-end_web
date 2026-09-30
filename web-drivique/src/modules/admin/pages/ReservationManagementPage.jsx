@@ -773,7 +773,7 @@ export default function ReservationManagementPage() {
                       <tr>
                         <th>ID</th>
                         <th>{t('admin.reservationsManagement.table.code')}</th>
-                        <th>Nombre</th>
+                        <th>NOMBRE COMPLETO</th>
                         <th>Correo</th>
                         <th>Tipo de Documento</th>
                         <th>Nacionalidad</th>
