@@ -563,26 +563,23 @@ export default function CashCollectionPage({ branchOnly = false }) {
               <div className="cash-toolbar-row1">
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#fff', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '4px' }}>
-                  <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-                    <input
-                      type="text"
-                      placeholder="Ref. (Ej. RES-179...)"
-                      value={searchRefValue}
-                      onChange={(e) => setSearchRefValue(e.target.value)}
-                      style={{ padding: '6px 28px 6px 12px', border: 'none', background: 'transparent', fontSize: '14px', outline: 'none', width: '200px' }}
-                      onKeyDown={(e) => e.key === 'Enter' && handleSearchRef()}
-                    />
-                    {searchRefValue && (
-                      <button
-                        type="button"
-                        onClick={() => { setSearchRefValue(''); setSearch(''); }}
-                        style={{ position: 'absolute', right: '6px', background: 'transparent', border: 'none', color: '#9ca3af', fontSize: '16px', cursor: 'pointer', padding: 0 }}
-                        title="Limpiar búsqueda"
-                      >
-                        ×
-                      </button>
-                    )}
-                  </div>
+                  <input
+                    type="text"
+                    placeholder="Ref. (Ej. RES-179...)"
+                    value={searchRefValue}
+                    onChange={(e) => setSearchRefValue(e.target.value)}
+                    style={{ padding: '6px 12px', border: 'none', background: 'transparent', fontSize: '14px', outline: 'none', width: '200px' }}
+                    onKeyDown={(e) => e.key === 'Enter' && handleSearchRef()}
+                  />
+                  {searchRefValue && (
+                    <button
+                      type="button"
+                      onClick={() => { setSearchRefValue(''); setSearch(''); }}
+                      style={{ padding: '6px 10px', background: '#e5e7eb', border: 'none', borderRadius: '6px', fontSize: '12px', fontWeight: 600, color: '#6b7280', cursor: 'pointer', whiteSpace: 'nowrap' }}
+                    >
+                      Limpiar
+                    </button>
+                  )}
                   <button 
                     type="button"
                     onClick={handleSearchRef}
@@ -858,7 +855,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
                                 style={{ width: '110px', padding: '6px 12px', fontSize: '13px', background: '#3b82f6', borderColor: '#3b82f6', color: '#fff', whiteSpace: 'nowrap', textAlign: 'center' }}
                                 onClick={(e) => {
                                   e.stopPropagation()
-                                  window.print()
+                                  setComprobanteDigital(r)
                                 }}
                               >
                                 <FaFilePdf /> Descargar
@@ -1146,42 +1143,35 @@ export default function CashCollectionPage({ branchOnly = false }) {
               </div>
             </div>
 
-            <div style={{ display: 'flex', gap: '16px', justifyContent: 'center' }}>
-              <button
-                type="button"
-                onClick={() => setComprobanteDigital(null)}
-                style={{
-                  flex: 1,
-                  background: '#1f2937',
-                  color: '#fff',
-                  border: 'none',
-                  borderRadius: '24px',
-                  padding: '12px 20px',
-                  fontSize: '14px',
-                  fontWeight: 600,
-                  cursor: 'pointer'
-                }}
-              >
-                Volver al comercio
-              </button>
-              <button
-                type="button"
-                onClick={() => window.print()}
-                style={{
-                  flex: 1,
-                  background: '#fff',
-                  color: '#1f2937',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '24px',
-                  padding: '12px 20px',
-                  fontSize: '14px',
-                  fontWeight: 600,
-                  cursor: 'pointer'
-                }}
-              >
-                Descargar comprobante
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={() => {
+                const printContent = document.querySelector('.wompi-replica-modal')
+                const win = window.open('', '_blank')
+                win.document.write(`<!DOCTYPE html><html><head><title>Comprobante de Pago</title><style>body{font-family:Inter,sans-serif;margin:0;padding:24px;max-width:480px;} *{box-sizing:border-box;}</style></head><body>${printContent ? printContent.innerHTML : ''}</body></html>`)
+                win.document.close()
+                win.focus()
+                win.print()
+                win.close()
+              }}
+              style={{
+                width: '100%',
+                background: '#f59e0b',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '24px',
+                padding: '13px 20px',
+                fontSize: '14px',
+                fontWeight: 600,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px'
+              }}
+            >
+              <FaFilePdf /> Descargar comprobante
+            </button>
           </section>
         </div>
       )}
