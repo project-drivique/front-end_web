@@ -451,17 +451,6 @@ export default function CashCollectionPage({ branchOnly = false }) {
     const ref = modalReserva.codigo || modalReserva.id
     const total = modalReserva.totalCOP || modalReserva.total || 0
 
-    const confirm = await showAlert({
-      icon: 'question',
-      title: '¿Confirmar cobro en efectivo?',
-      text: `¿Confirmas haber recibido ${formatCurrency(total, moneda)} en efectivo para la reserva ${ref}?`,
-      showCancelButton: true,
-      confirmButtonText: 'Sí, registrar cobro',
-      cancelButtonText: 'Cancelar',
-    })
-
-    if (!confirm.isConfirmed) return
-
     setProcesandoPago(true)
     try {
       reservationManagementService.confirmCashPayment(ref, user, observacionesCaja)
@@ -574,14 +563,26 @@ export default function CashCollectionPage({ branchOnly = false }) {
               <div className="cash-toolbar-row1">
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#fff', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '4px' }}>
-                  <input
-                    type="text"
-                    placeholder="Ref. (Ej. RES-179...)"
-                    value={searchRefValue}
-                    onChange={(e) => setSearchRefValue(e.target.value)}
-                    style={{ padding: '6px 12px', border: 'none', background: 'transparent', fontSize: '14px', outline: 'none', width: '200px' }}
-                    onKeyDown={(e) => e.key === 'Enter' && handleSearchRef()}
-                  />
+                  <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                    <input
+                      type="text"
+                      placeholder="Ref. (Ej. RES-179...)"
+                      value={searchRefValue}
+                      onChange={(e) => setSearchRefValue(e.target.value)}
+                      style={{ padding: '6px 28px 6px 12px', border: 'none', background: 'transparent', fontSize: '14px', outline: 'none', width: '200px' }}
+                      onKeyDown={(e) => e.key === 'Enter' && handleSearchRef()}
+                    />
+                    {searchRefValue && (
+                      <button
+                        type="button"
+                        onClick={() => { setSearchRefValue(''); setSearch(''); }}
+                        style={{ position: 'absolute', right: '6px', background: 'transparent', border: 'none', color: '#9ca3af', fontSize: '16px', cursor: 'pointer', padding: 0 }}
+                        title="Limpiar búsqueda"
+                      >
+                        ×
+                      </button>
+                    )}
+                  </div>
                   <button 
                     type="button"
                     onClick={handleSearchRef}
