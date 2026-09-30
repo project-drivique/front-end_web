@@ -264,6 +264,7 @@ export default function ContractManagementPage() {
                     {t("admin.contractsPage.fields.contractNumber", "No. Contrato")}
                   </th>
                   <th>CÓDIGO RESERVA</th>
+                  <th>NOMBRE COMPLETO</th>
                   <th style={{ textAlign: "center" }}>FIRMA DE CONTRATO</th>
                   <th style={{ textAlign: "center" }}>VER CONTRATO</th>
                   <th style={{ textAlign: "center" }}>DESCARGAR CONTRATO</th>
@@ -282,6 +283,9 @@ export default function ContractManagementPage() {
                       </td>
                       <td style={{ fontWeight: "normal", color: "#374151" }}>
                         {c.reservaCodigo}
+                      </td>
+                      <td style={{ fontWeight: "normal", color: "#374151" }}>
+                        {c.clienteNombre}
                       </td>
                       <td style={{ textAlign: "center", fontWeight: "600", color: c.isSigned ? '#10b981' : '#ef4444' }}>
                         {c.isSigned ? 'Sí' : 'No'}
