@@ -461,11 +461,9 @@ export default function ContractManagementPage() {
                     gap: 8,
                   }}
                 >
-                  <FaDownload />{" "}
                   {t("admin.contractsPage.downloadPdf", "Descargar Contrato")}
                 </button>
               </div>
-            </div>
           </section>
         </div>
       )}
