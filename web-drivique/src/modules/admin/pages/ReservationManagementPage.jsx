@@ -562,6 +562,7 @@ export default function ReservationManagementPage() {
                   <>
                     <thead>
                       <tr>
+                        <th>ID</th>
                         <th>{t('admin.reservationsManagement.table.code')}</th>
                         <th>Foto</th>
                         <th>Vehículo</th>
@@ -578,7 +579,7 @@ export default function ReservationManagementPage() {
                       </tr>
                     </thead>
                     <tbody>
-                      {filtradas.map((r) => {
+                      {filtradas.map((r, idx) => {
                         const cod = r.codigo || r.referencia || `RES-${r.id}`
                         const rawMetodo = String(
                           r.reservaDetalles?.metodoPago ||
@@ -623,6 +624,7 @@ export default function ReservationManagementPage() {
 
                         return (
                           <tr key={r.id || cod}>
+                            <td>{r.id || idx + 1}</td>
                             <td>
                               <strong style={{ color: '#0f172a', fontWeight: 700 }}>{cod}</strong>
                             </td>
@@ -694,7 +696,7 @@ export default function ReservationManagementPage() {
                       </tr>
                     </thead>
                     <tbody>
-                      {filtradas.map((r) => {
+                      {filtradas.map((r, idx) => {
                         const cod = r.codigo || r.referencia || `RES-${r.id}`
                         const cliNom = r.clienteNombre || 'Cliente Registrado'
                         const cobertura = r.reservaDetalles?.cobertura?.nombre || r.cobertura || 'Protección Estándar CDW'
@@ -703,6 +705,7 @@ export default function ReservationManagementPage() {
 
                         return (
                           <tr key={r.id || cod}>
+                            <td>{r.id || idx + 1}</td>
                             <td>
                               <strong style={{ color: '#0f172a', fontWeight: 700 }}>{cod}</strong>
                             </td>
@@ -721,6 +724,7 @@ export default function ReservationManagementPage() {
                   <>
                     <thead>
                       <tr>
+                        <th>ID</th>
                         <th>{t('admin.reservationsManagement.table.code')}</th>
                         <th>Nombre</th>
                         <th>Correo</th>
@@ -739,7 +743,7 @@ export default function ReservationManagementPage() {
                       </tr>
                     </thead>
                     <tbody>
-                      {filtradas.map((r) => {
+                      {filtradas.map((r, idx) => {
                         const cod = r.codigo || r.referencia || `RES-${r.id}`
                         const cliNom = r.clienteNombre || 'Cliente Registrado'
                         const cliDoc = r.clienteDocumento || '1020304050'
@@ -773,6 +777,7 @@ export default function ReservationManagementPage() {
 
                         return (
                           <tr key={r.id || cod}>
+                            <td>{r.id || idx + 1}</td>
                             <td>
                               <strong style={{ color: '#0f172a', fontWeight: 700 }}>{cod}</strong>
                             </td>
