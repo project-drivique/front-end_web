@@ -172,50 +172,27 @@ export default function ReservationManagementPage() {
     })
   }, [reservas, search, statusFilter, branchFilter, dateFrom, dateTo])
 
-  // Configuración de exportación independiente por cada flujo de reserva
-  const flowTitleName = activeTab === 'fechas_ubicacion'
-    ? '1. Fechas y Ubicación'
-    : activeTab === 'proteccion_extras'
-    ? '2. Protección y Extras'
-    : '3. Datos Personales y Pago'
-
+  // Configuración de exportación global consolidada de reservas
   const headersExport = useMemo(() => {
-    if (activeTab === 'fechas_ubicacion') {
-      return [
-        'Código',
-        'Vehículo',
-        'Placa',
-        'Medio de Pago',
-        'Lugar de Retiro',
-        'Lugar de Devolución',
-        'Fecha de Retiro',
-        'Fecha de Devolución',
-        'Hora de Retiro',
-        'Hora de Devolución',
-        'Duración del Alquiler',
-        'Devolución Anticipada',
-        'Estado Reserva',
-      ]
-    }
-    if (activeTab === 'proteccion_extras') {
-      return ['Código', 'Plan Protección', 'Tipo Kilometraje', 'Servicios Adicionales']
-    }
     return [
       'Código',
-      'Nombre',
+      'Cliente',
+      'Teléfono',
       'Correo',
-      'Tipo de Documento',
-      'Nacionalidad',
-      'Teléfono Celular',
-      'Número de Documento',
-      'Documento de Identidad',
-      'Licencia de Conducción',
-      'Términos y Condiciones',
-      'Promociones',
-      'Pago Total',
-      'Estado del Pago',
+      'Vehículo',
+      'Placa',
+      'Sucursal / Retiro',
+      'Lugar Devolución',
+      'Fecha Retiro',
+      'Fecha Devolución',
+      'Duración',
+      'Protección',
+      'Extras',
+      'Total',
+      'Estado Pago',
+      'Estado Reserva',
     ]
-  }, [activeTab])
+  }, [])
 
   const rowsExport = useMemo(() => {
     return filtradas.map((r) => {
@@ -230,7 +207,6 @@ export default function ReservationManagementPage() {
       ).toLowerCase()
 
       const esPagoEfectivo = rawMetodo.includes('efectivo') || rawMetodo.includes('sucursal')
-      const textoMedioPago = esPagoEfectivo ? 'Pago en efectivo' : 'Pago virtual con Wompi'
 
       let lugarRetiroText = `Recoger en Sucursal (${r.sucursal || 'Alquiler Neiva - Centro'})`
       if (!esPagoEfectivo) {
@@ -251,41 +227,10 @@ export default function ReservationManagementPage() {
       const fechaRetiroVal = fInicioRaw.split('T')[0] || new Date().toISOString().slice(0, 10)
       const fechaDevolucionVal = fFinRaw.split('T')[0] || new Date(Date.now() + 86400000 * 3).toISOString().slice(0, 10)
 
-      const horaRetiroVal = r.horaInicio ? r.horaInicio : (fInicioRaw.includes('T') ? fInicioRaw.split('T')[1].slice(0, 5) : '9:00 a. m.')
-      const horaDevolucionVal = r.horaFin ? r.horaFin : (fFinRaw.includes('T') ? fFinRaw.split('T')[1].slice(0, 5) : '8:30 a. m.')
-
       const duracionText = r.reservaDetalles?.duracionDias ? `${r.reservaDetalles.duracionDias} días` : '4 días'
-      const devAnticipadaText = r.reservaDetalles?.devolucionAnticipada || (r.devolucionAnticipada ? '3 días, 23 h 30 min' : 'No registra')
+      const cobertura = r.reservaDetalles?.cobertura?.nombre || r.cobertura || 'Protección Estándar CDW'
+      const servs = (r.reservaDetalles?.serviciosAdicionales || []).map(s => typeof s === 'string' ? s : s.nombre).join(', ') || 'Ninguno'
 
-      if (activeTab === 'fechas_ubicacion') {
-        return [
-          cod,
-          r.vehiculoNombre || 'Renault Sandero 2023',
-          r.vehiculoPlaca || 'KLS-849',
-          textoMedioPago,
-          lugarRetiroText,
-          lugarDevolucionText,
-          fechaRetiroVal,
-          fechaDevolucionVal,
-          horaRetiroVal,
-          horaDevolucionVal,
-          duracionText,
-          devAnticipadaText,
-          r.estado || 'Confirmada',
-        ]
-      }
-
-      if (activeTab === 'proteccion_extras') {
-        const servs = (r.reservaDetalles?.serviciosAdicionales || []).map(s => typeof s === 'string' ? s : s.nombre).join(', ') || 'Ninguno'
-        return [
-          cod,
-          r.reservaDetalles?.cobertura?.nombre || r.cobertura || 'Protección Estándar CDW',
-          r.reservaDetalles?.kilometraje || r.kilometraje || 'Ilimitado',
-          servs,
-        ]
-      }
-
-      // activeTab === 'datos_pago'
       const esCobroPresencialPendiente =
         esPagoEfectivo &&
         !Boolean(r.metodoPagoConfirmado) &&
@@ -306,27 +251,30 @@ export default function ReservationManagementPage() {
       return [
         cod,
         r.clienteNombre || 'Cliente Registrado',
-        r.clienteCorreo || 'cliente@drivique.com',
-        r.clienteTipoDocumento || 'Cédula de Ciudadanía',
-        r.clienteNacionalidad || 'Colombia',
         r.clienteTelefono || '300 000 0000',
-        r.clienteDocumento || '1020304050',
-        r.documentoIdentidadPdf ? 'Archivo Cargado' : 'Sin cargar',
-        r.licenciaConduccionPdf ? 'Archivo Cargado' : 'Sin cargar',
-        'Aceptados',
-        r.cuponCodigo || 'Sin cupones',
+        r.clienteCorreo || 'cliente@drivique.com',
+        r.vehiculoNombre || 'Renault Sandero 2023',
+        r.vehiculoPlaca || 'KLS-849',
+        lugarRetiroText,
+        lugarDevolucionText,
+        fechaRetiroVal,
+        fechaDevolucionVal,
+        duracionText,
+        cobertura,
+        servs,
         formatCurrency(totalCOP, moneda || 'COP', tasaUSD),
         estadoPagoStr,
+        r.estado === 'en_curso' ? 'En curso' : r.estado === 'finalizada' ? 'Finalizada' : r.estado === 'cancelada' ? 'Cancelada' : 'Confirmada',
       ]
     })
-  }, [filtradas, activeTab, moneda, tasaUSD])
+  }, [filtradas, moneda, tasaUSD])
 
   const exportData = {
-    title: `${flowTitleName} - ${esEncargado ? sucursalEncargado : 'Todas las Sedes'}`,
+    title: `Reporte Consolidado de Reservas - ${esEncargado ? sucursalEncargado : 'Todas las Sedes'}`,
     headers: headersExport,
     rows: rowsExport,
     items: filtradas,
-    filename: `reservas-${activeTab}-drivique-${new Date().toISOString().slice(0, 10)}`,
+    filename: `reporte-reservas-drivique-${new Date().toISOString().slice(0, 10)}`,
   }
 
   const handleEntregarAuto = (r) => {
@@ -450,36 +398,34 @@ export default function ReservationManagementPage() {
   }
 
   return (
-    <div className={`management-shell ${esModoOscuro ? 'management-shell--dark' : ''}`}>
+    <div className={`management-shell reservations-management-page ${esModoOscuro ? 'management-shell--dark' : ''}`}>
       <ManagementSidebar branchOnly={esEncargado} />
       <main className="management-main" style={{ padding: '24px 32px' }}>
         <div className="cities-container" style={{ maxWidth: '100%' }}>
         {/* Topbar Superior */}
         <header className="cities-topbar reservations-management-header">
-          <div>
-            <p className="cities-eyebrow">
-              {esEncargado
-                ? t('admin.reservationsManagement.encargadoSucursal', { branch: sucursalEncargado })
-                : t('admin.management', 'Gestión Operativa')}
-            </p>
-            <h1>{t('admin.reservationsTitle', 'Gestión de Reservas')}</h1>
-            <p className="cities-subtitle">
-              {t(
-                'admin.reservationsSubtitle',
-                'Control operativo completo de reservas, entregas, devoluciones y cancelaciones.'
-              )}
-            </p>
+          <div className="branch-topbar-brand-title">
+            <span className="branch-topbar-badge">GESTIÓN DE SUCURSAL</span>
+            <h1 className="branch-topbar-heading">Gestión de Reservas</h1>
           </div>
 
-          <div className="cities-topbar__actions">
+          <div className="branch-topbar-actions">
             <MenuConfiguracion />
-            <button
-              className="cities-primary"
-              type="button"
-              onClick={openCrearModal}
-            >
-              <FaPlus /> {t('admin.createManualReservation', 'Reserva Manual')}
-            </button>
+            {esEncargado && (
+              <div className="branch-user-profile-chip">
+                <div className="branch-user-avatar">
+                  {(user?.nombre || user?.correo || 'A').charAt(0).toUpperCase()}
+                </div>
+                <div className="branch-user-info-text">
+                  <strong className="branch-user-name">
+                    {user?.nombre || 'Andrés Felipe Castro'}
+                  </strong>
+                  <span className="branch-user-role">
+                    {user?.rol || 'encargado_sucursal'}
+                  </span>
+                </div>
+              </div>
+            )}
           </div>
         </header>
 
@@ -493,36 +439,48 @@ export default function ReservationManagementPage() {
           </div>
         )}
 
-        {/* Pestañas de los 3 Flujos de Reserva (pegadas a la tarjeta de la tabla) */}
+        {/* Pestañas de Secciones y Botón Crear a la derecha */}
         <div className="fleet-attached-tabs">
-          <button
-            type="button"
-            onClick={() => setActiveTab('fechas_ubicacion')}
-            className={`fleet-tab-btn ${activeTab === 'fechas_ubicacion' ? 'is-active' : ''}`}
-          >
-            1. Fechas y Ubicación ({filtradas.length})
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab('proteccion_extras')}
-            className={`fleet-tab-btn ${activeTab === 'proteccion_extras' ? 'is-active' : ''}`}
-          >
-            2. Protección y Extras ({filtradas.length})
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab('datos_pago')}
-            className={`fleet-tab-btn ${activeTab === 'datos_pago' ? 'is-active' : ''}`}
-          >
-            3. Datos Personales y Pago ({filtradas.length})
-          </button>
+          <div className="fleet-tabs-nav">
+            <button
+              type="button"
+              onClick={() => setActiveTab('fechas_ubicacion')}
+              className={`fleet-tab-btn ${activeTab === 'fechas_ubicacion' ? 'is-active' : ''}`}
+            >
+              Detalles
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('proteccion_extras')}
+              className={`fleet-tab-btn ${activeTab === 'proteccion_extras' ? 'is-active' : ''}`}
+            >
+              Coberturas
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('datos_pago')}
+              className={`fleet-tab-btn ${activeTab === 'datos_pago' ? 'is-active' : ''}`}
+            >
+              Pagos
+            </button>
+          </div>
+
+          <div className="fleet-tabs-action">
+            <button
+              className="cities-primary fleet-btn-create-tab"
+              type="button"
+              onClick={openCrearModal}
+            >
+              <FaPlus style={{ marginRight: 8 }} /> {t('admin.createManualReservation', 'Reserva Manual')}
+            </button>
+          </div>
         </div>
 
         {/* Sección del Flujo Activo */}
         <section className="cities-card attached-to-tabs">
-          <div className="branches-toolbar reservations-management-toolbar">
+          <div className="reservations-toolbar-flex" style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', alignItems: 'center', marginBottom: 16 }}>
             {/* Buscador general en vivo */}
-            <label className="cities-search">
+            <label className="cities-search" style={{ flex: '1 1 250px', margin: 0 }}>
               <FaSearch />
               <input
                 value={search}
@@ -535,7 +493,7 @@ export default function ReservationManagementPage() {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="reservations-filter-select"
+              style={{ flex: '0 0 auto', padding: '10px 14px', borderRadius: '12px', border: '1.5px solid var(--city-border)', background: 'var(--city-bg)' }}
             >
               <option value="all">{t('admin.allStatuses', 'Todos los estados')}</option>
               <option value="confirmada">{t('admin.statusConfirmada', 'Confirmada')}</option>
@@ -546,15 +504,15 @@ export default function ReservationManagementPage() {
 
             {/* Filtro de Sucursal */}
             {esEncargado ? (
-              <div className="reservations-assigned-branch">
-                <FaBuilding />
-                <span>{sucursalEncargado || t('admin.reservationsManagement.noAssignedBranch')}</span>
+              <div className="reservations-assigned-branch" style={{ flex: '0 0 auto', padding: '10px 14px', borderRadius: '12px', border: '1.5px solid var(--city-border)', background: '#f8fafc', display: 'flex', alignItems: 'center' }}>
+                <FaBuilding style={{ marginRight: 8, color: '#64748b' }} />
+                <span style={{ fontWeight: 600, color: '#0f172a' }}>{sucursalEncargado || t('admin.reservationsManagement.noAssignedBranch')}</span>
               </div>
             ) : (
               <select
-                className="reservations-filter-select"
                 value={branchFilter}
                 onChange={(e) => setBranchFilter(e.target.value)}
+                style={{ flex: '0 0 auto', padding: '10px 14px', borderRadius: '12px', border: '1.5px solid var(--city-border)', background: 'var(--city-bg)' }}
               >
                 <option value="all">{t('admin.allBranches', 'Todas las sucursales')}</option>
                 {sucursalesVisibles.map((s) => (
@@ -563,29 +521,30 @@ export default function ReservationManagementPage() {
               </select>
             )}
 
-            {/* Filtros de Fecha */}
-            <div className="reservations-date-inputs">
-              <label><span>{t('admin.reservationsManagement.dateFrom')}</span><input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} /></label>
-              <label><span>{t('admin.reservationsManagement.dateTo')}</span><input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} /></label>
+            {/* Filtros de Fecha (ahora integrados en el grid) */}
+            <div className="reservations-date-inputs" style={{ display: 'flex', gap: '8px', flex: '0 0 auto' }}>
+              <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} title={t('admin.reservationsManagement.dateFrom')} style={{ padding: '8px 12px', border: '1.5px solid var(--city-border)', borderRadius: '12px', background: 'var(--city-card)' }} />
+              <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} title={t('admin.reservationsManagement.dateTo')} style={{ padding: '8px 12px', border: '1.5px solid var(--city-border)', borderRadius: '12px', background: 'var(--city-card)' }} />
             </div>
 
             {/* Botones de Exportación Independientes por Flujo */}
-            <div className="cities-export reservations-export-actions">
-              <button type="button" onClick={handleExportExcel} title="Exportar tabla actual a Excel">
-                <FaFileExcel /> Excel
+            <div className="export-pills-group" style={{ marginLeft: 'auto', display: 'flex', gap: '8px' }}>
+              <button type="button" className="export-pill export-pill--excel" onClick={handleExportExcel} title="Exportar tabla actual a Excel">
+                <FaFileExcel aria-hidden="true" /> Excel
               </button>
-              <button type="button" onClick={handleExportPdf} title="Exportar tabla actual a PDF">
-                <FaFilePdf /> PDF
+              <button type="button" className="export-pill export-pill--pdf" onClick={handleExportPdf} title="Exportar tabla actual a PDF">
+                <FaFilePdf aria-hidden="true" /> PDF
               </button>
-              <button type="button" onClick={handlePrint} title="Imprimir tabla actual">
-                <FaPrint /> {t('admin.print', 'Imprimir')}
+              <button type="button" className="export-pill export-pill--print" onClick={handlePrint} title="Imprimir tabla actual">
+                <FaPrint aria-hidden="true" /> Imprimir
               </button>
             </div>
           </div>
 
           {/* Resumen de resultados del flujo activo */}
-          <div className="cities-summary" style={{ margin: '12px 0 16px' }}>
-            <strong>{filtradas.length}</strong> {t('admin.reservationsFound', 'reservas encontradas en esta sección')}
+          <div className="cities-summary" style={{ margin: "8px 0 12px" }}>
+            <span>{filtradas.length}</span>{" "}
+            {t("admin.reservationsFound", "RESERVAS EN EL LISTADO").toUpperCase()}
           </div>
 
           {/* Tabla de Reservas del Flujo Activo */}
@@ -616,8 +575,6 @@ export default function ReservationManagementPage() {
                         <th>Hora de Devolución</th>
                         <th>Duración del Alquiler</th>
                         <th>Devolución Anticipada</th>
-                        <th>Estado Reserva</th>
-                        <th style={{ textAlign: 'center' }}>{t('admin.actions', 'Acciones')}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -718,57 +675,6 @@ export default function ReservationManagementPage() {
                             <td style={{ fontSize: 12, color: r.devolucionAnticipada ? '#0284c7' : '#94a3b8' }}>
                               {devAnticipadaText}
                             </td>
-                            <td>
-                              {r.estado === 'en_curso' ? 'En curso' : r.estado === 'finalizada' ? 'Finalizada' : r.estado === 'cancelada' ? 'Cancelada' : 'Confirmada'}
-                            </td>
-                            <td style={{ textAlign: 'center' }}>
-                              <div className="cities-row-actions">
-                                {esCobroPresencialPendiente && (
-                                  <button
-                                    type="button"
-                                    className="btn-row-action"
-                                    onClick={() => navigate(`${cashRoute}?ref=${encodeURIComponent(cod)}`)}
-                                  >
-                                    Cobrar en Caja
-                                  </button>
-                                )}
-                                {r.estado !== 'en_curso' && r.estado !== 'finalizada' && r.estado !== 'cancelada' && (
-                                  <button
-                                    type="button"
-                                    className="btn-row-action"
-                                    onClick={() => handleEntregarAuto(r)}
-                                  >
-                                    Entregar Auto
-                                  </button>
-                                )}
-                                {r.estado === 'en_curso' && (
-                                  <button
-                                    type="button"
-                                    className="btn-row-action"
-                                    onClick={() => handleRecibirDevolucion(r)}
-                                    style={{ background: 'linear-gradient(135deg, #059669 0%, #10b981 100%)' }}
-                                  >
-                                    Recibir Devolución
-                                  </button>
-                                )}
-                                <button
-                                  type="button"
-                                  className="btn-row-action"
-                                  onClick={() => setModalDetalle(r)}
-                                >
-                                  Ver Detalle
-                                </button>
-                                {r.estado !== 'cancelada' && (
-                                  <button
-                                    type="button"
-                                    className="btn-row-action is-delete"
-                                    onClick={() => setModalCancelar(r)}
-                                  >
-                                    Cancelar
-                                  </button>
-                                )}
-                              </div>
-                            </td>
                           </tr>
                         )
                       })}
@@ -785,7 +691,6 @@ export default function ReservationManagementPage() {
                         <th>Plan Protección</th>
                         <th>Tipo Kilometraje</th>
                         <th>Servicios Adicionales</th>
-                        <th style={{ textAlign: 'center' }}>{t('admin.actions', 'Acciones')}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -804,45 +709,6 @@ export default function ReservationManagementPage() {
                             <td>{cobertura}</td>
                             <td>{kilometraje}</td>
                             <td>{extras}</td>
-                            <td style={{ textAlign: 'center' }}>
-                              <div className="cities-row-actions">
-                                {r.estado !== 'en_curso' && r.estado !== 'finalizada' && r.estado !== 'cancelada' && (
-                                  <button
-                                    type="button"
-                                    className="btn-row-action"
-                                    onClick={() => handleEntregarAuto(r)}
-                                  >
-                                    Entregar Auto
-                                  </button>
-                                )}
-                                {r.estado === 'en_curso' && (
-                                  <button
-                                    type="button"
-                                    className="btn-row-action"
-                                    onClick={() => handleRecibirDevolucion(r)}
-                                    style={{ background: 'linear-gradient(135deg, #059669 0%, #10b981 100%)' }}
-                                  >
-                                    Recibir Devolución
-                                  </button>
-                                )}
-                                <button
-                                  type="button"
-                                  className="btn-row-action"
-                                  onClick={() => setModalDetalle(r)}
-                                >
-                                  Ver Detalle
-                                </button>
-                                {r.estado !== 'cancelada' && (
-                                  <button
-                                    type="button"
-                                    className="btn-row-action is-delete"
-                                    onClick={() => setModalCancelar(r)}
-                                  >
-                                    Cancelar
-                                  </button>
-                                )}
-                              </div>
-                            </td>
                           </tr>
                         )
                       })}
@@ -867,6 +733,7 @@ export default function ReservationManagementPage() {
                         <th>Términos y Condiciones</th>
                         <th>Promociones</th>
                         <th>Pago Total</th>
+                        <th>Estado Reserva</th>
                         <th>Estado del Pago</th>
                         <th style={{ textAlign: 'center' }}>{t('admin.actions', 'Acciones')}</th>
                       </tr>
@@ -941,6 +808,9 @@ export default function ReservationManagementPage() {
                               {formatCurrency(totalCOP, moneda || 'COP', tasaUSD)}
                             </td>
                             <td>
+                              {r.estado === 'en_curso' ? 'En curso' : r.estado === 'finalizada' ? 'Finalizada' : r.estado === 'cancelada' ? 'Cancelada' : 'Confirmada'}
+                            </td>
+                            <td>
                               <span
                                 className={`status-pill ${
                                   isPagoConfirmado
@@ -967,7 +837,7 @@ export default function ReservationManagementPage() {
                             </td>
                             <td style={{ textAlign: 'center' }}>
                               <div className="cities-row-actions">
-                                {esCobroPresencialPendiente && (
+                                {esEncargado && esCobroPresencialPendiente && (
                                   <button
                                     type="button"
                                     className="btn-row-action"
@@ -976,7 +846,7 @@ export default function ReservationManagementPage() {
                                     Cobrar en Caja
                                   </button>
                                 )}
-                                {r.estado !== 'en_curso' && r.estado !== 'finalizada' && r.estado !== 'cancelada' && (
+                                {esEncargado && r.estado !== 'en_curso' && r.estado !== 'finalizada' && r.estado !== 'cancelada' && (
                                   <button
                                     type="button"
                                     className="btn-row-action"
@@ -985,7 +855,7 @@ export default function ReservationManagementPage() {
                                     Entregar Auto
                                   </button>
                                 )}
-                                {r.estado === 'en_curso' && (
+                                {esEncargado && r.estado === 'en_curso' && (
                                   <button
                                     type="button"
                                     className="btn-row-action"
