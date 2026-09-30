@@ -13,7 +13,7 @@
   border: 1px solid #cbd5e1 !important;
   box-shadow: none !important;
   border-radius: 14px !important;
-  border-top-left-radius: 0 !important;
+  
 }
 
 .reservations-management-page .cities-table-wrap table {
@@ -768,7 +768,7 @@ html.dark .reservations-subtabs-nav {
 }
 
 .cities-card.attached-to-tabs {
-  border-top-left-radius: 0 !important;
+  
   border-top-right-radius: 0 !important;
   border-top: none !important;
   margin-top: 0 !important;
@@ -866,4 +866,14 @@ html.dark .reservations-subtabs-nav {
   background: #dbeafe;
   border-color: #93c5fd;
   transform: translateY(-1px);
+}
+
+
+/* Fix border radius for the table header */
+.reservations-admin-table th:first-child {
+  border-top-left-radius: 14px;
+}
+
+.reservations-admin-table th:last-child {
+  border-top-right-radius: 14px;
 }
