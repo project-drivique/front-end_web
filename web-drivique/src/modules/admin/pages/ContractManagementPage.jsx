@@ -13,6 +13,7 @@ import {
   FaCalendarAlt,
   FaDownload,
   FaCar,
+  FaReceipt,
 } from "react-icons/fa";
 import { useLanding } from "../../landing/LandingContext";
 import { useAuthStore } from "../../../store/authStore";
@@ -292,7 +293,7 @@ export default function ContractManagementPage() {
                           onClick={() => openDetalle(c)}
                           style={{ padding: '6px 12px', fontSize: '13px', background: c.isSigned ? '#10b981' : '#e5e7eb', color: c.isSigned ? '#fff' : '#9ca3af', border: 'none', borderRadius: '6px', cursor: c.isSigned ? 'pointer' : 'not-allowed', fontWeight: 'normal', minWidth: '80px', display: 'inline-flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}
                         >
-                          <FaEye /> Ver
+                          <FaReceipt /> Ver
                         </button>
                       </td>
                       <td style={{ textAlign: "center" }}>
@@ -302,7 +303,7 @@ export default function ContractManagementPage() {
                           onClick={() => handleDownloadSinglePdf(c)}
                           style={{ padding: '6px 12px', fontSize: '13px', background: c.isSigned ? '#3b82f6' : '#e5e7eb', color: c.isSigned ? '#fff' : '#9ca3af', border: 'none', borderRadius: '6px', cursor: c.isSigned ? 'pointer' : 'not-allowed', fontWeight: 'normal', minWidth: '100px', display: 'inline-flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}
                         >
-                          <FaDownload /> Descargar
+                          <FaFilePdf /> Descargar
                         </button>
                       </td>
                       <td style={{ textAlign: "center" }}>
