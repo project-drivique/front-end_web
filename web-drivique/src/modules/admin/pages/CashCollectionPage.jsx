@@ -236,6 +236,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
   const [procesandoPago, setProcesandoPago] = useState(false)
   const [isSearchRefModalOpen, setIsSearchRefModalOpen] = useState(false)
   const [searchRefValue, setSearchRefValue] = useState('')
+  const [searchRefBranch, setSearchRefBranch] = useState('')
 
   // Cargar lista de reservas
   const cargarReservas = useCallback(() => {
@@ -499,7 +500,14 @@ export default function CashCollectionPage({ branchOnly = false }) {
   }
 
   const handleSearchRef = () => {
-    if (!searchRefValue.trim()) return
+    if (!searchRefValue.trim()) {
+      showAlert('Atención', 'Debes ingresar una referencia.', 'warning')
+      return
+    }
+    if (!searchRefBranch.trim()) {
+      showAlert('Atención', 'Debes confirmar la sucursal de pago.', 'warning')
+      return
+    }
     const ref = searchRefValue.trim().toLowerCase()
     const found = todasLasReservas.find(r => 
       String(r.codigo || '').toLowerCase() === ref || 
@@ -508,6 +516,18 @@ export default function CashCollectionPage({ branchOnly = false }) {
     )
 
     if (found) {
+      // Validar Sucursal (ignorando tildes y permitiendo coincidencias parciales)
+      const resBranch = String(found.sucursal || found.sucursalPagoEfectivo || found.reservaDetalles?.sucursalPagoEfectivo || found.reservaDetalles?.sucursalRetiro || '').toLowerCase()
+      const reqBranch = searchRefBranch.trim().toLowerCase()
+      const norm = s => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      const nRes = norm(resBranch)
+      const nReq = norm(reqBranch)
+      
+      if (!nRes.includes(nReq) && !nReq.includes(nRes)) {
+        showAlert('Sucursal incorrecta', `La sucursal indicada no coincide con la registrada en la reserva.`, 'error')
+        return
+      }
+
       const rawMetodo = String(found.reservaDetalles?.metodoPago || found.pasarela || found.metodoPagoConfirmado || 'Wompi').toLowerCase()
       const esEfectivo = rawMetodo.includes('efectivo') || rawMetodo.includes('sucursal') || String(found.estado).toLowerCase().includes('efectivo')
       const pagoConfirmado = esEfectivo ? esCobradoEnSucursal(found) : (found.pagoEstado === 'aprobado' || found.estadoPago === 'aprobado' || found.estado === 'confirmada' || found.estado === 'en_curso' || found.estado === 'finalizada')
@@ -519,6 +539,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
       } else {
         setIsSearchRefModalOpen(false)
         setSearchRefValue('')
+        setSearchRefBranch('')
         openModalCobro(found)
       }
     } else {
@@ -1043,22 +1064,29 @@ export default function CashCollectionPage({ branchOnly = false }) {
           <div className="cash-modal-content" style={{ maxWidth: '400px', width: '100%' }}>
             <div className="cash-modal-header" style={{ padding: '20px 24px', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 700, color: '#0f172a' }}>Buscar por Referencia</h3>
-              <button className="cash-modal-close" onClick={() => { setIsSearchRefModalOpen(false); setSearchRefValue(''); }} style={{ background: 'transparent', border: 'none', fontSize: '24px', cursor: 'pointer', color: '#64748b' }}>×</button>
+              <button className="cash-modal-close" onClick={() => { setIsSearchRefModalOpen(false); setSearchRefValue(''); setSearchRefBranch(''); }} style={{ background: 'transparent', border: 'none', fontSize: '24px', cursor: 'pointer', color: '#64748b' }}>×</button>
             </div>
             <div className="cash-modal-body" style={{ padding: '24px' }}>
               <p style={{ fontSize: '14px', color: '#64748b', marginBottom: '16px', lineHeight: 1.5 }}>
-                Ingresa la referencia de pago (ej. RES-17908...) entregada por el cliente. Si la reserva está pendiente, podrás confirmar el pago al instante.
+                Ingresa la referencia y confirma la sucursal para poder procesar el pago.
               </p>
               <input 
                 type="text" 
-                placeholder="Ej. RES-17908..."
+                placeholder="Referencia (Ej. RES-17908...)"
                 value={searchRefValue}
                 onChange={e => setSearchRefValue(e.target.value)}
+                style={{ width: '100%', padding: '12px', border: '2px solid #e2e8f0', borderRadius: '8px', fontSize: '15px', marginBottom: '12px', outline: 'none' }}
+                autoFocus
+              />
+              <input 
+                type="text" 
+                placeholder="Confirmar Sucursal (Ej. Aeropuerto...)"
+                value={searchRefBranch}
+                onChange={e => setSearchRefBranch(e.target.value)}
                 style={{ width: '100%', padding: '12px', border: '2px solid #e2e8f0', borderRadius: '8px', fontSize: '15px', marginBottom: '20px', outline: 'none' }}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') handleSearchRef();
                 }}
-                autoFocus
               />
               <button 
                 type="button" 
