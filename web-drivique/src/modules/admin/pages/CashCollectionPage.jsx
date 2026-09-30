@@ -572,16 +572,6 @@ export default function CashCollectionPage({ branchOnly = false }) {
             <div className="cash-toolbar-container">
               {/* FILA 1: Buscador, Filtro Estado y Selector Sucursal */}
               <div className="cash-toolbar-row1">
-                {/* Buscador general */}
-                <div className="cash-search-box">
-                  <FaSearch className="cash-search-icon" />
-                  <input
-                    type="text"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    placeholder="Buscar cliente o placa..."
-                  />
-                </div>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#fff', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '4px' }}>
                   <input
