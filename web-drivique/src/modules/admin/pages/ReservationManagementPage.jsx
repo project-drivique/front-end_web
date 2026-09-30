@@ -543,7 +543,7 @@ export default function ReservationManagementPage() {
               <button type="button" className="export-pill export-pill--pdf" onClick={handleExportPdf} title="Exportar tabla actual a PDF">
                 <FaFilePdf aria-hidden="true" /> PDF
               </button>
-              <button type="button" className="export-pill export-pill--print" onClick={handlePrint} title="Imprimir tabla actual">
+              <button type="button" className="export-pill export-pill--print" onClick={handlePrint} title="Imprimir tabla actual" style={{ background: '#eff6ff', color: '#2563eb', border: '1px solid #bfdbfe' }}>
                 <FaPrint aria-hidden="true" /> Imprimir
               </button>
             </div>

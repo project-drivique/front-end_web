@@ -249,6 +249,7 @@ export default function ContractManagementPage() {
                 <button
                   onClick={handlePrint}
                   title={t("admin.contractsPage.printList")}
+                  style={{ background: '#eff6ff', color: '#2563eb', border: '1px solid #bfdbfe' }}
                 >
                   <FaPrint /> {t('admin.print', 'Imprimir')}
                 </button>
@@ -275,6 +276,7 @@ export default function ContractManagementPage() {
                   <th>MARCA</th>
                   <th>MODELO</th>
                   <th>FECHA FIRMA</th>
+                  <th>HORA FIRMA</th>
                   <th style={{ textAlign: "center" }}>ESTADO FIRMA DE CONTRATO</th>
                   <th style={{ textAlign: "center" }}>VER CONTRATO</th>
                   <th style={{ textAlign: "center" }}>DESCARGAR CONTRATO</th>
@@ -339,7 +341,10 @@ export default function ContractManagementPage() {
                         {c.vehiculoNombre ? c.vehiculoNombre.split(' ').slice(1).join(' ') || '-' : '-'}
                       </td>
                       <td style={{ fontWeight: "normal", color: "#374151" }}>
-                        {c.fechaFirma ? String(c.fechaFirma).replace('T', ' ').substring(0, 16) : '-'}
+                        {c.fechaFirma ? String(c.fechaFirma).split('T')[0] : '-'}
+                      </td>
+                      <td style={{ fontWeight: "normal", color: "#374151" }}>
+                        {c.fechaFirma && String(c.fechaFirma).includes('T') ? String(c.fechaFirma).split('T')[1].substring(0, 5) : '10:00'}
                       </td>
                       <td style={{ textAlign: "center", fontWeight: "600", color: c.isSigned ? '#10b981' : '#ef4444' }}>
                         {c.isSigned ? 'Sí' : 'No'}
@@ -383,7 +388,7 @@ export default function ContractManagementPage() {
                             };
                             printTable(singleData);
                           }}
-                          style={{ padding: '6px 12px', fontSize: '13px', background: c.isSigned ? '#8b5cf6' : '#e5e7eb', color: c.isSigned ? '#fff' : '#9ca3af', border: 'none', borderRadius: '6px', cursor: c.isSigned ? 'pointer' : 'not-allowed', fontWeight: 'normal', minWidth: '90px', display: 'inline-flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}
+                          style={{ padding: '6px 12px', fontSize: '13px', background: c.isSigned ? '#eff6ff' : '#e5e7eb', color: c.isSigned ? '#2563eb' : '#9ca3af', border: c.isSigned ? '1px solid #bfdbfe' : 'none', borderRadius: '6px', cursor: c.isSigned ? 'pointer' : 'not-allowed', fontWeight: '500', minWidth: '90px', display: 'inline-flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}
                         >
                           <FaPrint /> Imprimir
                         </button>
