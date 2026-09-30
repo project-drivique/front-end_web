@@ -40,6 +40,12 @@
   letter-spacing: 0.45px;
 }
 
+.contracts-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 8px;
+}
+
 .contracts-table-wrap table {
   min-width: 1080px;
 }
