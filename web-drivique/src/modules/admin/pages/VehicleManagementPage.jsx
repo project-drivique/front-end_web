@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
+  FaCamera,
   FaCar,
   FaCheck,
   FaCogs,
@@ -14,6 +15,7 @@ import {
   FaPlus,
   FaPrint,
   FaShieldAlt,
+  FaSyncAlt,
   FaTimes,
   FaTrash,
 } from "react-icons/fa";
@@ -484,10 +486,12 @@ export default function VehicleManagementPage() {
     });
 
   const loadImages = async (event) => {
-    const files = [...event.target.files].slice(
-      0,
-      Math.max(0, 3 - form.imagenes.length)
-    );
+    const remainingSlots = Math.max(0, 3 - (form.imagenes?.length || 0));
+    if (remainingSlots <= 0) {
+      event.target.value = "";
+      return;
+    }
+    const files = [...event.target.files].slice(0, remainingSlots);
     if (files.some((file) => file.size > 1024 * 1024)) {
       setError(
         t(
@@ -495,6 +499,7 @@ export default function VehicleManagementPage() {
           "Las imágenes no deben superar 1MB"
         )
       );
+      event.target.value = "";
       return;
     }
     const images = await Promise.all(
@@ -510,8 +515,42 @@ export default function VehicleManagementPage() {
     );
     setForm((current) => ({
       ...current,
-      imagenes: [...current.imagenes, ...images].slice(0, 3),
+      imagenes: [...(current.imagenes || []), ...images].slice(0, 3),
     }));
+    setError("");
+    event.target.value = "";
+  };
+
+  const handleReplaceImage = async (index, event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    if (file.size > 1024 * 1024) {
+      setError(
+        t(
+          "admin.vehiclesManagement.errors.imageSize",
+          "Las imágenes no deben superar 1MB"
+        )
+      );
+      event.target.value = "";
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      setForm((current) => {
+        const nextImgs = [...(current.imagenes || [])];
+        nextImgs[index] = reader.result;
+        return {
+          ...current,
+          imagenes: nextImgs,
+        };
+      });
+      setError("");
+    };
+    reader.onerror = () => {
+      setError("Error al procesar la imagen seleccionada");
+    };
+    reader.readAsDataURL(file);
+    event.target.value = "";
   };
 
   const pico = getPicoYPlacaInfo(form.placa, form.sucursal);
@@ -1955,41 +1994,89 @@ export default function VehicleManagementPage() {
                         <div className="fleet-form-card__title">
                           <FaImage className="fleet-form-card__icon" />
                           <span>5. Fotografías del Vehículo</span>
+                          <span className="fleet-photo-counter-badge">
+                            {(form.imagenes?.length || 0)} / 3 {t("admin.vehiclesManagement.photosCount", "fotos")}
+                          </span>
                         </div>
 
-                        <label className="fleet-upload-box">
-                          <FaImage size={28} className="fleet-upload-icon" />
-                          <div className="fleet-upload-text">
-                            <strong>{t("admin.vehiclesManagement.uploadImages", "Subir imágenes del vehículo")}</strong>
-                            <span>Haz clic para explorar o arrastra archivos PNG, JPG o WEBP</span>
+                        {/* BANNER SI SE ALCANZÓ EL LÍMITE (3/3) */}
+                        {form.imagenes && form.imagenes.length >= 3 && (
+                          <div className="fleet-photo-limit-banner">
+                            <div className="fleet-photo-limit-info">
+                              <FaCheck className="fleet-photo-limit-icon" />
+                              <div>
+                                <strong>{t("admin.vehiclesManagement.limitReachedTitle", "Límite de fotografías completado (3/3)")}</strong>
+                                <p>{t("admin.vehiclesManagement.limitReachedDesc", "Puedes cambiar cualquier foto directamente con el botón Cambiar o eliminarla para cargar una nueva.")}</p>
+                              </div>
+                            </div>
                           </div>
-                          <input
-                            type="file"
-                            accept="image/*"
-                            multiple
-                            onChange={loadImages}
-                            style={{ display: "none" }}
-                          />
-                        </label>
+                        )}
 
+                        {/* DROPZONE DE SUBIDA GENERAL: Solo visible si quedan cupos disponibles (< 3) */}
+                        {(!form.imagenes || form.imagenes.length < 3) && (
+                          <label className="fleet-upload-box">
+                            <FaImage size={28} className="fleet-upload-icon" />
+                            <div className="fleet-upload-text">
+                              <strong>{t("admin.vehiclesManagement.uploadImages", "Subir imágenes del vehículo")}</strong>
+                              <span>
+                                {t(
+                                  "admin.vehiclesManagement.uploadHintRemaining",
+                                  `Haz clic para explorar o arrastra archivos PNG, JPG o WEBP (Puedes agregar ${3 - (form.imagenes?.length || 0)} más, máx 1MB c/u)`
+                                )}
+                              </span>
+                            </div>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              multiple
+                              onChange={loadImages}
+                              style={{ display: "none" }}
+                            />
+                          </label>
+                        )}
+
+                        {/* GRILLA DE FOTOGRAFÍAS EXISTENTES CON ACCIÓN DE CAMBIAR Y ELIMINAR */}
                         {form.imagenes && form.imagenes.length > 0 && (
                           <div className="fleet-gallery-grid">
                             {form.imagenes.map((image, index) => (
                               <div key={`${String(image).slice(-20)}-${index}`} className="fleet-gallery-item">
-                                <img src={image} alt={`Vehículo ${index + 1}`} />
-                                <button
-                                  type="button"
-                                  className="fleet-gallery-remove-btn"
-                                  onClick={() =>
-                                    setForm({
-                                      ...form,
-                                      imagenes: form.imagenes.filter((_, current) => current !== index),
-                                    })
-                                  }
-                                  title="Eliminar foto"
-                                >
-                                  <FaTrash />
-                                </button>
+                                <div className="fleet-gallery-img-wrapper">
+                                  <img src={image} alt={`Vehículo ${index + 1}`} />
+                                  <span className={`fleet-gallery-badge ${index === 0 ? "is-main" : ""}`}>
+                                    {index === 0
+                                      ? t("admin.vehiclesManagement.mainPhoto", "Principal")
+                                      : `${t("admin.vehiclesManagement.photo", "Foto")} ${index + 1}`}
+                                  </span>
+                                </div>
+                                <div className="fleet-gallery-actions">
+                                  <label
+                                    className="fleet-gallery-btn is-edit"
+                                    title={t("admin.vehiclesManagement.changePhoto", "Cambiar fotografía")}
+                                  >
+                                    <FaSyncAlt size={11} />
+                                    <span>{t("common.change", "Cambiar")}</span>
+                                    <input
+                                      type="file"
+                                      accept="image/*"
+                                      onChange={(e) => handleReplaceImage(index, e)}
+                                      style={{ display: "none" }}
+                                    />
+                                  </label>
+                                  <button
+                                    type="button"
+                                    className="fleet-gallery-btn is-delete"
+                                    onClick={() =>
+                                      setForm({
+                                        ...form,
+                                        imagenes: form.imagenes.filter((_, current) => current !== index),
+                                      })
+                                    }
+                                    title={t("common.delete", "Eliminar foto")}
+                                  >
+                                    <FaTrash size={11} />
+                                    <span>{t("common.delete", "Eliminar")}</span>
+                                  </button>
+                                </div>
                               </div>
                             ))}
                           </div>
