@@ -1457,43 +1457,48 @@ body.dark .branch-notif-card-bottom-actions,
 .branch-status-badge {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  height: 26px;
-  padding: 0 12px;
-  border-radius: 20px;
-  font-size: 11.5px;
+  gap: 5px;
+  height: 24px;
+  padding: 0 10px;
+  border-radius: 6px;
+  font-size: 11px;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   box-sizing: border-box;
 }
 
 .branch-badge-icon {
-  font-size: 11px;
+  font-size: 10.5px;
 }
 
 .branch-status-badge--green {
-  background: #dcfce7;
+  background: rgba(16, 185, 129, 0.08);
   color: #15803d;
+  border: 1px solid rgba(16, 185, 129, 0.22);
 }
 
 .branch-status-badge--amber {
-  background: #fef3c7;
+  background: rgba(245, 158, 11, 0.08);
   color: #b45309;
+  border: 1px solid rgba(245, 158, 11, 0.22);
 }
 
 .branch-status-badge--blue {
-  background: #eff6ff;
-  color: #2563eb;
+  background: rgba(37, 99, 235, 0.08);
+  color: #1d4ed8;
+  border: 1px solid rgba(37, 99, 235, 0.22);
 }
 
 .branch-status-badge--cyan {
-  background: #e0f2fe;
+  background: rgba(2, 132, 199, 0.08);
   color: #0369a1;
+  border: 1px solid rgba(2, 132, 199, 0.22);
 }
 
 .branch-status-badge--teal {
-  background: #ccfbf1;
+  background: rgba(13, 148, 136, 0.08);
   color: #0f766e;
+  border: 1px solid rgba(13, 148, 136, 0.22);
 }
 
 .branch-td-actions {
@@ -1808,31 +1813,28 @@ body.dark .branch-notif-card-bottom-actions,
 }
 
 .branch-fleet-stat-box {
-  background: #ffffff !important;
+  background: var(--bg-tarjeta, #ffffff) !important;
   border: 1px solid var(--borde, #e2e8f0);
   border-radius: 12px;
   padding: 10px 12px;
   display: flex;
   flex-direction: column;
   gap: 3px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
   min-width: 0;
+  transition: all 140ms ease;
 }
 
-.branch-fleet-stat-box--green {
-  border-left: 4px solid #10b981;
+.branch-fleet-stat-box:hover {
+  border-color: var(--brand-primary, #93c5fd);
+  transform: translateY(-1px);
 }
 
-.branch-fleet-stat-box--blue {
-  border-left: 4px solid #2563eb;
-}
-
-.branch-fleet-stat-box--cyan {
-  border-left: 4px solid #0284c7;
-}
-
+.branch-fleet-stat-box--green,
+.branch-fleet-stat-box--blue,
+.branch-fleet-stat-box--cyan,
 .branch-fleet-stat-box--amber {
-  border-left: 4px solid #f59e0b;
+  border-left: 1px solid var(--borde, #e2e8f0);
 }
 
 .branch-fleet-stat-head {
@@ -1894,9 +1896,9 @@ body.dark .branch-notif-card-bottom-actions,
 .branch-fleet-multi-bar {
   display: flex;
   width: 100%;
-  height: 8px;
-  border-radius: 6px;
-  background: #f1f5f9;
+  height: 5px;
+  border-radius: 4px;
+  background: var(--bg-seccion1, #f1f5f9);
   overflow: hidden;
   gap: 2px;
 }
@@ -1904,6 +1906,7 @@ body.dark .branch-notif-card-bottom-actions,
 .branch-fleet-bar-seg {
   height: 100%;
   transition: width 300ms ease;
+  border-radius: 2px;
 }
 
 .branch-fleet-bar-seg--green {
@@ -1911,11 +1914,11 @@ body.dark .branch-notif-card-bottom-actions,
 }
 
 .branch-fleet-bar-seg--blue {
-  background: #2563eb;
+  background: #3b82f6;
 }
 
 .branch-fleet-bar-seg--cyan {
-  background: #0284c7;
+  background: #0ea5e9;
 }
 
 .branch-fleet-bar-seg--amber {
@@ -1928,7 +1931,7 @@ body.dark .branch-notif-card-bottom-actions,
   padding-top: 10px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
 .branch-fleet-units-title {
@@ -1944,14 +1947,19 @@ body.dark .branch-notif-card-bottom-actions,
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 6px 10px;
+  padding: 8px 12px;
   border-radius: 8px;
-  background: #f8fafc;
-  transition: background-color 150ms ease;
+  background: var(--bg-tarjeta, #ffffff);
+  border: 1px solid var(--borde, #e2e8f0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+  transition: all 140ms ease;
 }
 
 .branch-fleet-unit-item:hover {
-  background: #f1f5f9;
+  background: #ffffff;
+  border-color: var(--brand-primary, #93c5fd);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
 }
 
 .branch-fleet-unit-meta {
@@ -2568,52 +2576,31 @@ html.dark .branch-schedule-pill-tab--active,
 }
 
 .branch-status-card-item {
-  background: #ffffff !important;
+  background: var(--bg-tarjeta, #ffffff) !important;
+  border: 1px solid var(--borde, #e2e8f0);
   border-radius: 12px;
-  padding: 12px 14px;
+  padding: 14px 16px;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  transition: transform 150ms ease, box-shadow 150ms ease;
+  transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease;
   position: relative;
   overflow: hidden;
   box-sizing: border-box;
 }
 
 .branch-status-card-item:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+  transform: translateY(-1px);
+  border-color: var(--brand-primary, #93c5fd);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
 }
 
-/* Variantes cromáticas por estado - Fondo blanco, solo borde con color */
-.branch-status-card-item--amber {
-  background: #ffffff !important;
-  border: 1px solid #e2e8f0;
-  border-left: 4px solid #f59e0b;
-}
-
-.branch-status-card-item--green {
-  background: #ffffff !important;
-  border: 1px solid #e2e8f0;
-  border-left: 4px solid #10b981;
-}
-
-.branch-status-card-item--blue {
-  background: #ffffff !important;
-  border: 1px solid #e2e8f0;
-  border-left: 4px solid #2563eb;
-}
-
-.branch-status-card-item--teal {
-  background: #ffffff !important;
-  border: 1px solid #e2e8f0;
-  border-left: 4px solid #0d9488;
-}
-
+.branch-status-card-item--amber,
+.branch-status-card-item--green,
+.branch-status-card-item--blue,
+.branch-status-card-item--teal,
 .branch-status-card-item--gray {
-  background: #ffffff !important;
-  border: 1px solid #e2e8f0;
-  border-left: 4px solid #64748b;
+  border-left: 1px solid var(--borde, #e2e8f0);
 }
 
 .branch-status-card-header {
@@ -2622,31 +2609,33 @@ html.dark .branch-schedule-pill-tab--active,
 }
 
 .branch-status-card-text {
-  font-size: 11.5px;
-  color: var(--texto-primary, #334155);
+  font-size: 12px;
+  color: var(--texto-second, #475569);
   line-height: 1.45;
   margin: 0;
 }
 
 .branch-inline-code {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 10.5px;
-  font-weight: 700;
+  font-size: 10px;
+  font-weight: 600;
   padding: 1px 5px;
   border-radius: 4px;
-  background: rgba(15, 23, 42, 0.06);
-  color: #1e293b;
-  border: 1px solid rgba(15, 23, 42, 0.1);
+  background: var(--bg-seccion1, #f1f5f9);
+  color: var(--texto-main, #334155);
+  border: 1px solid var(--borde, #e2e8f0);
 }
 
 .branch-status-badge--red {
-  background: #fef2f2;
+  background: rgba(220, 38, 38, 0.08);
   color: #dc2626;
+  border: 1px solid rgba(220, 38, 38, 0.22);
 }
 
 .branch-status-badge--gray {
-  background: #f1f5f9;
+  background: rgba(100, 116, 139, 0.08);
   color: #475569;
+  border: 1px solid rgba(100, 116, 139, 0.22);
 }
 
 /* MODAL / DRAWER DETALLE DE RESERVA CONSULTA COMPLETA */

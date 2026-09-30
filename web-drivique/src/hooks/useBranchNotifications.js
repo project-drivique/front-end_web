@@ -17,8 +17,9 @@ const NotificationFactory = {
       const isDone = ['CONFIRMADA', 'COMPLETADA', 'ENTREGADA', 'completada'].includes(
         String(item.estado || '').toUpperCase()
       )
+      const resCode = item.codigo || item.id || `RES-${8820 + idx}`
       return {
-        id: `deliv-${item.id || item.codigo || idx}`,
+        id: `deliv-${resCode}`,
         type: 'delivery',
         category: 'operations',
         categoryLabel: 'Entrega Programada',
@@ -28,11 +29,17 @@ const NotificationFactory = {
         accentBorder: '#2563eb',
         badgeBg: 'rgba(37, 99, 235, 0.1)',
         badgeColor: '#1d4ed8',
-        text: `Entrega #${item.codigo || item.id}: ${item.clienteNombre}`,
+        codigo: resCode,
+        text: `Entrega #${resCode}: ${item.clienteNombre}`,
         detail: `Vehículo ${item.vehiculoNombre} (Placa: ${item.vehiculoPlaca || 'Asignada'}) programado para las ${item.hora}.`,
         time: `Hoy · ${item.hora}`,
         isRead: isDone,
         route: '/encargado/reservations',
+        navigationState: {
+          search: resCode,
+          openCodigo: resCode,
+          autoOpen: true,
+        },
         actionLabel: 'Gestionar entrega',
       }
     })
@@ -43,8 +50,9 @@ const NotificationFactory = {
       const isDone = ['RECIBIDO', 'RECIBIDA', 'COMPLETADA', 'FINALIZADA'].includes(
         String(item.estado || '').toUpperCase()
       )
+      const resCode = item.codigo || item.id || `RES-${8790 + idx}`
       return {
-        id: `return-${item.id || item.codigo || idx}`,
+        id: `return-${resCode}`,
         type: 'return',
         category: 'operations',
         categoryLabel: 'Devolución de Flota',
@@ -54,11 +62,17 @@ const NotificationFactory = {
         accentBorder: '#16a34a',
         badgeBg: 'rgba(22, 163, 74, 0.1)',
         badgeColor: '#15803d',
-        text: `Devolución #${item.codigo || item.id}: ${item.clienteNombre}`,
+        codigo: resCode,
+        text: `Devolución #${resCode}: ${item.clienteNombre}`,
         detail: `Recepción de ${item.vehiculoNombre} (Placa: ${item.vehiculoPlaca || 'Flota'}) para inspección en bahía.`,
         time: `Hoy · ${item.hora}`,
         isRead: isDone,
         route: '/encargado/reservations',
+        navigationState: {
+          search: resCode,
+          openCodigo: resCode,
+          autoOpen: true,
+        },
         actionLabel: 'Recibir vehículo',
       }
     })

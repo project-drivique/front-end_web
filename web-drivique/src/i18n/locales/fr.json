@@ -1,4 +1,29 @@
 {
+  "admin": {
+    "management": "Gestion",
+    "navigation": "Navigation",
+    "logout": "Déconnexion",
+    "nav": {
+      "dashboard": "Tableau de bord",
+      "notifications": "Notifications",
+      "myBranch": "Mon agence",
+      "vehicles": "Flotte & Véhicules",
+      "users": "Utilisateurs",
+      "roles": "Rôles & Permissions",
+      "reservations": "Réservations",
+      "cashCollection": "Paiements",
+      "contracts": "Contrats",
+      "incidents": "Incidents",
+      "documents": "Validation des documents",
+      "reviews": "Avis & Évaluations",
+      "cities": "Villes",
+      "branches": "Agences",
+      "promotions": "Promotions",
+      "brand": "Marque",
+      "reports": "Rapports",
+      "audit": "Audit"
+    }
+  },
   "common": {
     "backToHome": "Retour à l'accueil",
     "loading": "Chargement...",

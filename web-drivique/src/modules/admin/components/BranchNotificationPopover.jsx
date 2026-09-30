@@ -6,23 +6,22 @@ import {
   FaTimes,
   FaCheckDouble,
   FaCheckCircle,
-  FaClock,
-  FaChevronRight,
-  FaBellSlash,
   FaArrowRight,
-  FaExternalLinkAlt,
 } from 'react-icons/fa'
 import './BranchNotificationPopover.css'
 
 /**
- * Presentational Component: BranchNotificationPopover
+ * Componente Presentacional: BranchNotificationPopover
  * 
  * @description
- * Minipantalla / Popover flotante anclada debajo de la campana de notificaciones.
- * Muestra un resumen rápido de las alertas más recientes y un acceso directo al Centro de Notificaciones.
+ * Minipantalla / Popover flotante ultralimpio y minimalista para notificaciones operativas.
+ * Diseñado bajo estándares SaaS modernos (Linear / Stripe style):
+ * - Fondo neutro y tipografía sobria sin saturación de colores.
+ * - Indicadores sutiles de lectura (puntos circulares elegantes).
+ * - Acciones rápidas en cabecera y enlace minimalista al Centro de Notificaciones.
  * 
  * @param {Object} props
- * @param {boolean} props.isOpen - Estado de visibilidad del popover
+ * @param {boolean} props.isOpen - Estado de visibilidad del popover flotante
  * @param {Function} props.onClose - Callback invocado al cerrar el popover
  * @param {Array<Object>} [props.notifications=[]] - Lista completa de notificaciones operativas
  * @param {number} [props.unreadCount=0] - Número de notificaciones no leídas
@@ -48,7 +47,7 @@ export default function BranchNotificationPopover({
   const popoverRef = useRef(null)
   const navigate = useNavigate()
 
-  // Cerrar al presionar Escape o hacer clic fuera
+  // Manejo de cierre al presionar tecla Escape o hacer clic fuera del contenedor
   useEffect(() => {
     if (!isOpen) return
 
@@ -60,7 +59,6 @@ export default function BranchNotificationPopover({
 
     const handleOutsideClick = (e) => {
       if (popoverRef.current && !popoverRef.current.contains(e.target)) {
-        // Verificar si el clic fue en el botón de la campana (que tiene su propio handler)
         if (!e.target.closest('.branch-notification-btn')) {
           onClose?.()
         }
@@ -78,7 +76,7 @@ export default function BranchNotificationPopover({
 
   if (!isOpen) return null
 
-  // Mostrar solo las 4 alertas más prioritarias en el popover para evitar saturación
+  // Limitamos la vista a las 4 alertas más prioritarias para mantener la estética minimalista
   const previewList = notifications.slice(0, 4)
 
   const handleGoToCenter = () => {
@@ -95,28 +93,20 @@ export default function BranchNotificationPopover({
       aria-labelledby="bnpTitle"
       onClick={(e) => e.stopPropagation()}
     >
-      {/* Flecha indicadora superior */}
+      {/* Flecha indicadora superior minimalista */}
       <div className="bnp-arrow" />
 
-      {/* Encabezado del Popover */}
+      {/* Encabezado limpio y sobrio */}
       <header className="bnp-header">
         <div className="bnp-header-left">
-          <div className="bnp-icon-badge">
-            <FaBell aria-hidden="true" />
-          </div>
-          <div>
-            <div className="bnp-title-row">
-              <h4 id="bnpTitle" className="bnp-title">
-                {t('branchDashboard.notificationsPopover.title', 'Notificaciones')}
-              </h4>
-              {unreadCount > 0 && (
-                <span className="bnp-unread-pill">
-                  {t('branchDashboard.notificationsPopover.newBadge', '{{count}} nuevas', { count: unreadCount })}
-                </span>
-              )}
-            </div>
-            <span className="bnp-branch-name">{branchName}</span>
-          </div>
+          <h4 id="bnpTitle" className="bnp-title">
+            {t('branchDashboard.notificationsPopover.title', 'Notificaciones')}
+          </h4>
+          {unreadCount > 0 && (
+            <span className="bnp-unread-pill">
+              {t('branchDashboard.notificationsPopover.newBadge', '{{count}} nuevas', { count: unreadCount })}
+            </span>
+          )}
         </div>
 
         <div className="bnp-header-actions">
@@ -141,7 +131,7 @@ export default function BranchNotificationPopover({
         </div>
       </header>
 
-      {/* Lista de alertas compacta */}
+      {/* Listado de alertas minimalistas */}
       <div className="bnp-body">
         {notifications.length === 0 ? (
           <div className="bnp-empty">
@@ -157,61 +147,44 @@ export default function BranchNotificationPopover({
           </div>
         ) : (
           <div className="bnp-list">
-            {previewList.map((notif) => {
-              const IconComp = notif.icon || FaBell
-              return (
-                <div
-                  key={notif.id}
-                  className={`bnp-item ${!notif.isRead ? 'bnp-item--unread' : ''}`}
-                  onClick={() => onSelectNotification?.(notif)}
-                  role="button"
-                  tabIndex={0}
-                >
-                  <div
-                    className="bnp-item-icon"
-                    style={{ background: notif.iconBg, color: notif.iconColor }}
-                  >
-                    <IconComp aria-hidden="true" />
-                  </div>
-
-                  <div className="bnp-item-content">
-                    <div className="bnp-item-top">
-                      <span
-                        className="bnp-item-cat"
-                        style={{ color: notif.badgeColor || 'var(--brand-primary, #2563eb)' }}
-                      >
-                        {notif.categoryLabel || 'Operación'}
-                      </span>
-                      <span className="bnp-item-time">
-                        <FaClock aria-hidden="true" /> {notif.time}
-                      </span>
-                    </div>
-
-                    <p className="bnp-item-text">{notif.text}</p>
-                    {notif.detail && (
-                      <span className="bnp-item-detail">{notif.detail}</span>
-                    )}
-                  </div>
-
-                  <div className="bnp-item-chevron">
-                    <FaChevronRight aria-hidden="true" />
-                  </div>
+            {previewList.map((notif) => (
+              <div
+                key={notif.id}
+                className={`bnp-item ${!notif.isRead ? 'bnp-item--unread' : ''}`}
+                onClick={() => onSelectNotification?.(notif)}
+                role="button"
+                tabIndex={0}
+              >
+                {/* Punto sutil de no leído */}
+                <div className="bnp-item-bullet">
+                  {!notif.isRead && <span className="bnp-dot" />}
                 </div>
-              )
-            })}
+
+                <div className="bnp-item-content">
+                  <div className="bnp-item-header-row">
+                    <span className="bnp-item-title">{notif.text}</span>
+                    <span className="bnp-item-time">{notif.time}</span>
+                  </div>
+
+                  {notif.detail && (
+                    <p className="bnp-item-detail">{notif.detail}</p>
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
         )}
       </div>
 
-      {/* Pie del Popover con botón principal hacia el Centro de Notificaciones */}
+      {/* Pie del Popover con enlace minimalista y elegante */}
       <footer className="bnp-footer">
         <button
           type="button"
-          className="bnp-view-all-btn"
+          className="bnp-view-all-link"
           onClick={handleGoToCenter}
         >
-          <span>{t('branchDashboard.notificationsPopover.goToCenter', 'Ir al Centro de Notificaciones')}</span>
-          <FaArrowRight aria-hidden="true" />
+          <span>{t('branchDashboard.notificationsPopover.goToCenter', 'Ver todas las notificaciones')}</span>
+          <FaArrowRight aria-hidden="true" className="bnp-link-arrow" />
         </button>
       </footer>
     </div>

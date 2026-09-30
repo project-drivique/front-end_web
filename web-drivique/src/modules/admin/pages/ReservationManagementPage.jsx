@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import {
   FaCalendarAlt,
@@ -43,6 +43,7 @@ export default function ReservationManagementPage() {
   const { tema, moneda, tasaUSD } = useLanding()
   const user = useAuthStore((state) => state.usuario)
   const navigate = useNavigate()
+  const location = useLocation()
   const esModoOscuro = tema === 'oscuro'
 
   const esEncargado = user?.rol === 'encargado' || user?.rol === 'branch_manager' || user?.rol === 'encargado_sucursal'
@@ -53,7 +54,7 @@ export default function ReservationManagementPage() {
   const [zoomImage, setZoomImage] = useState(null)
 
   const [reservas, setReservas] = useState([])
-  const [search, setSearch] = useState('')
+  const [search, setSearch] = useState(() => location.state?.search || '')
   const [statusFilter, setStatusFilter] = useState('all')
   const [branchFilter, setBranchFilter] = useState(esEncargado ? sucursalEncargado : 'all')
   const [dateFrom, setDateFrom] = useState('')
@@ -129,6 +130,22 @@ export default function ReservationManagementPage() {
 
     return () => clearInterval(interval)
   }, [cargarYEvaluarReservas])
+
+  // Apertura directa y automática de la reserva indicada desde el Centro de Notificaciones
+  useEffect(() => {
+    if (location.state?.openCodigo && reservas.length > 0) {
+      const codeTarget = String(location.state.openCodigo).trim().toLowerCase()
+      const match = reservas.find(
+        (r) =>
+          String(r.codigo || '').trim().toLowerCase() === codeTarget ||
+          String(r.id || '').trim().toLowerCase() === codeTarget ||
+          codeTarget.includes(String(r.codigo || '').toLowerCase())
+      )
+      if (match) {
+        setModalDetalle(match)
+      }
+    }
+  }, [location.state, reservas])
 
   // Filtrado de reservas
   const filtradas = useMemo(() => {

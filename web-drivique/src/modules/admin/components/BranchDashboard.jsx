@@ -39,7 +39,7 @@ import ManagementSidebar from './ManagementSidebar'
 import MenuConfiguracion from '../../../components/MenuConfiguracion'
 import { exportExcel, exportPdf, printTable } from '../../../utils/listExportUtils'
 import KpiDetailModal from './KpiDetailModal'
-import BranchNotificationPopover from './BranchNotificationPopover'
+import BranchNotificationModal from './BranchNotificationModal'
 import './BranchDashboard.css'
 
 const TODAY_STR = '2026-09-25'
@@ -305,10 +305,10 @@ function OperationalHourlyBarChart({ hourlyData = [] }) {
   }, [hourlyData])
 
   const svgWidth = 560
-  const svgHeight = 210
-  const marginTop = 20
-  const marginBottom = 35
-  const marginLeft = 35
+  const svgHeight = 200
+  const marginTop = 15
+  const marginBottom = 32
+  const marginLeft = 30
   const marginRight = 15
 
   const chartWidth = svgWidth - marginLeft - marginRight
@@ -316,20 +316,31 @@ function OperationalHourlyBarChart({ hourlyData = [] }) {
 
   const numSlots = hourlyData.length || 10
   const slotWidth = chartWidth / numSlots
-  const barWidth = 14
+  const barWidth = 7
   const barGap = 3
 
   const yTicks = [0, Math.round(maxVal / 3), Math.round((maxVal * 2) / 3), maxVal]
 
   return (
     <div className="native-barchart-wrapper" style={{ position: 'relative', width: '100%' }}>
-      <div className="native-chart-legend">
-        <div className="native-legend-item">
-          <span className="native-legend-dot" style={{ background: '#2563eb' }} />
+      <div
+        className="native-chart-legend"
+        style={{
+          display: 'flex',
+          justifyContent: 'flex-end',
+          alignItems: 'center',
+          gap: '16px',
+          marginBottom: '10px',
+          fontSize: '11.5px',
+          color: 'var(--texto-second, #64748b)',
+        }}
+      >
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+          <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#2563eb' }} />
           <span>Entregas</span>
         </div>
-        <div className="native-legend-item">
-          <span className="native-legend-dot" style={{ background: '#10b981' }} />
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+          <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10b981' }} />
           <span>Devoluciones</span>
         </div>
       </div>
@@ -345,16 +356,16 @@ function OperationalHourlyBarChart({ hourlyData = [] }) {
                 y1={yPos}
                 x2={svgWidth - marginRight}
                 y2={yPos}
-                stroke={tick === 0 ? 'var(--borde, #cbd5e1)' : 'var(--borde-suave, #e2e8f0)'}
-                strokeWidth={tick === 0 ? '1.5' : '1'}
+                stroke={tick === 0 ? 'var(--borde, #cbd5e1)' : 'var(--borde, #f1f5f9)'}
+                strokeWidth={tick === 0 ? '1' : '1'}
                 strokeDasharray={tick === 0 ? 'none' : '3 3'}
               />
               <text
                 x={marginLeft - 8}
-                y={yPos + 4}
-                fill="var(--texto-second, #64748b)"
-                fontSize="11"
-                fontWeight="600"
+                y={yPos + 3.5}
+                fill="var(--texto-second, #94a3b8)"
+                fontSize="10"
+                fontWeight="500"
                 textAnchor="end"
               >
                 {tick}
@@ -388,39 +399,45 @@ function OperationalHourlyBarChart({ hourlyData = [] }) {
             >
               {isHovered && (
                 <rect
-                  x={groupCenterX - slotWidth / 2}
+                  x={groupCenterX - slotWidth / 2 + 2}
                   y={marginTop}
-                  width={slotWidth}
+                  width={slotWidth - 4}
                   height={chartHeight}
-                  fill="rgba(37, 99, 235, 0.06)"
+                  fill="rgba(37, 99, 235, 0.04)"
                   rx="4"
                 />
               )}
 
-              <rect
-                x={xDel}
-                y={yDel}
-                width={barWidth}
-                height={Math.max(hDel, 2)}
-                fill="#2563eb"
-                rx="3"
-              />
+              {delVal > 0 && (
+                <rect
+                  x={xDel}
+                  y={yDel}
+                  width={barWidth}
+                  height={hDel}
+                  fill="#2563eb"
+                  rx="2"
+                  ry="2"
+                />
+              )}
 
-              <rect
-                x={xRet}
-                y={yRet}
-                width={barWidth}
-                height={Math.max(hRet, 2)}
-                fill="#10b981"
-                rx="3"
-              />
+              {retVal > 0 && (
+                <rect
+                  x={xRet}
+                  y={yRet}
+                  width={barWidth}
+                  height={hRet}
+                  fill="#10b981"
+                  rx="2"
+                  ry="2"
+                />
+              )}
 
               <text
                 x={groupCenterX}
                 y={svgHeight - 10}
-                fill={isHovered ? '#2563eb' : 'var(--texto-second, #64748b)'}
-                fontSize="11"
-                fontWeight={isHovered ? '700' : '600'}
+                fill={isHovered ? 'var(--brand-primary, #2563eb)' : 'var(--texto-second, #64748b)'}
+                fontSize="10.5"
+                fontWeight={isHovered ? '700' : '500'}
                 textAnchor="middle"
               >
                 {item.label}
@@ -435,19 +452,19 @@ function OperationalHourlyBarChart({ hourlyData = [] }) {
           className="native-chart-tooltip"
           style={{
             position: 'absolute',
-            top: '30px',
+            top: '25px',
             left: `${((marginLeft + hoveredIndex * slotWidth + slotWidth / 2) / svgWidth) * 100}%`,
             transform: 'translateX(-50%)',
             background: 'var(--bg-tarjeta, #ffffff)',
             border: '1px solid var(--borde, #e2e8f0)',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
             borderRadius: '8px',
             padding: '6px 12px',
             pointerEvents: 'none',
             zIndex: 10,
           }}
         >
-          <strong style={{ display: 'block', fontSize: '12px', marginBottom: '4px', color: 'var(--texto-primary, #1e293b)' }}>
+          <strong style={{ display: 'block', fontSize: '11.5px', marginBottom: '3px', color: 'var(--texto-primary, #0f172a)' }}>
             {hourlyData[hoveredIndex].label}
           </strong>
           <div style={{ fontSize: '11px', display: 'flex', gap: '8px', alignItems: 'center', color: '#2563eb' }}>
@@ -523,7 +540,7 @@ export default function BranchDashboard({ branchOnly = true }) {
     handleMarkNotificationRead(notif.id)
     setIsNotificationsOpen(false)
     if (notif.route) {
-      navigate(notif.route)
+      navigate(notif.route, { state: notif.navigationState })
     }
   }
 
@@ -862,7 +879,7 @@ export default function BranchDashboard({ branchOnly = true }) {
                 )}
               </button>
 
-              <BranchNotificationPopover
+              <BranchNotificationModal
                 isOpen={isNotificationsOpen}
                 onClose={() => setIsNotificationsOpen(false)}
                 notifications={notifications}
@@ -871,7 +888,6 @@ export default function BranchDashboard({ branchOnly = true }) {
                 onMarkAllRead={handleMarkAllNotificationsRead}
                 onSelectNotification={handleNotificationClick}
                 branchName={dashboardData?.branchName}
-                centerRoute="/encargado/notifications"
               />
             </div>
 
@@ -1272,10 +1288,6 @@ export default function BranchDashboard({ branchOnly = true }) {
                       {getSectionTitle(startDateStr, endDateStr)}
                     </span>
                   </div>
-                </div>
-
-                <div className="branch-hourly-stats-pill">
-                  <span>Total: <strong>{deliveriesForRange.length + returnsForRange.length} ops</strong></span>
                 </div>
               </div>
 

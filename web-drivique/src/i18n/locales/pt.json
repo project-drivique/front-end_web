@@ -1,4 +1,29 @@
 {
+  "admin": {
+    "management": "Gestão",
+    "navigation": "Navegação",
+    "logout": "Terminar sessão",
+    "nav": {
+      "dashboard": "Painel",
+      "notifications": "Notificações",
+      "myBranch": "Minha filial",
+      "vehicles": "Frota e veículos",
+      "users": "Utilizadores",
+      "roles": "Funções e Permissões",
+      "reservations": "Reservas",
+      "cashCollection": "Pagamentos",
+      "contracts": "Contratos",
+      "incidents": "Incidentes",
+      "documents": "Validação de documentos",
+      "reviews": "Avaliações",
+      "cities": "Cidades",
+      "branches": "Filiais",
+      "promotions": "Promoções",
+      "brand": "Marca",
+      "reports": "Relatórios",
+      "audit": "Auditoria"
+    }
+  },
   "common": {
     "backToHome": "Voltar ao início",
     "loading": "Carregando...",
