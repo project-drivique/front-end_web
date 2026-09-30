@@ -87,4 +87,9 @@
   .back-text-desktop {
     display: none !important;
   }
-}
+}
+.catalogo-logo-link { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; flex-shrink: 0; padding: 2px 4px; transition: opacity 150ms ease; }
+.catalogo-logo-link:hover { opacity: 0.92; }
+.catalogo-logo { width: auto; height: 36px; display: block; object-fit: contain; transition: transform 150ms ease; }
+.catalogo-logo-link:hover .catalogo-logo { transform: translateY(-1px) scale(1.04); }
+.catalogo-logo-title { font-size: 14px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; line-height: 1; }

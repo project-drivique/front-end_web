@@ -256,7 +256,7 @@ export default function VehicleManagementPage() {
 
   const vehicleRows = useMemo(() => {
     return filteredVehicles.map((vehicle, idx) => [
-      vehicle.id || idx + 1,
+      idx + 1,
       vehicle.imagenes?.[0] ? "Con Foto" : "Sin Foto",
       vehicle.nombre,
       vehicle.placa,
@@ -1423,7 +1423,7 @@ export default function VehicleManagementPage() {
                     <tbody>
                       {filteredVehicles.map((vehicle, idx) => (
                         <tr key={vehicle.id}>
-                          <td>{vehicle.id || idx + 1}</td>
+                          <td>{idx + 1}</td>
                           <td>
                             {vehicle.imagenes?.[0] ? (
                               <img
