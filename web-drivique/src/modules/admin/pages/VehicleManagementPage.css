@@ -461,4 +461,35 @@
   color: #94a3b8;
 }
 
+.incident-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.incident-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.incident-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.incident-field-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--city-text, #0f172a);
+}
+
+@media (max-width: 640px) {
+  .incident-grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+
 

@@ -29,7 +29,6 @@ import MenuConfiguracion from "../../../components/MenuConfiguracion";
 import ManagementSidebar from "../components/ManagementSidebar";
 import "./CityManagementPage.css";
 import "./VehicleManagementPage.css";
-import "./IncidentManagementPage.css";
 
 const EMPTY = {
   nombre: "",

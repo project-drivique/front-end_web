@@ -20,7 +20,7 @@ import { showAlert } from '../../../utils/swalConfig'
 import MenuConfiguracion from '../../../components/MenuConfiguracion'
 import ManagementSidebar from '../components/ManagementSidebar'
 import './CityManagementPage.css'
-import './ReservationManagementPage.css'
+import './BranchReviewsPage.css'
 
 export default function BranchReviewsPage({ branchOnly = false }) {
   const { t } = useTranslation()
