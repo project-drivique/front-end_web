@@ -1,4 +1,29 @@
 {
+  "admin": {
+    "management": "Management",
+    "navigation": "Navigation",
+    "logout": "Log out",
+    "nav": {
+      "dashboard": "Dashboard",
+      "notifications": "Notifications",
+      "myBranch": "My Branch",
+      "vehicles": "Fleet & Vehicles",
+      "users": "Users",
+      "roles": "Roles & Permissions",
+      "reservations": "Reservations",
+      "cashCollection": "Payments",
+      "contracts": "Contracts",
+      "incidents": "Incidents",
+      "documents": "Document Verification",
+      "reviews": "Reviews & Ratings",
+      "cities": "Cities",
+      "branches": "Branches",
+      "promotions": "Promotions",
+      "brand": "Brand",
+      "reports": "Reports",
+      "audit": "Audit"
+    }
+  },
   "common": {
     "backToHome": "Back to home",
     "loading": "Loading...",
