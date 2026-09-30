@@ -814,7 +814,14 @@ export default function ReservationManagementPage() {
                         const cliMail = r.clienteCorreo || 'cliente@drivique.com'
                         let cliTel = String(r.reservaDetalles?.datosForm?.celular || r.clienteTelefono || '300 000 0000')
                         if (!cliTel.startsWith('+')) cliTel = `+57 ${cliTel.trim()}`
-                        const tipoDoc = r.clienteTipoDocumento || 'Cédula de Ciudadanía'
+                        const formatDoc = (val) => {
+                          const v = String(val).toUpperCase();
+                          if (v === 'CC' || v === 'CÉDULA DE CIUDADANÍA') return 'Cédula de Ciudadanía';
+                          if (v === 'CE' || v === 'CÉDULA DE EXTRANJERÍA') return 'Cédula de Extranjería';
+                          if (v === 'PAS' || v === 'PASAPORTE') return 'Pasaporte';
+                          return val || 'Cédula de Ciudadanía';
+                        };
+                        const tipoDoc = formatDoc(r.clienteTipoDocumento || r.reservaDetalles?.datosForm?.tipoDoc || 'Cédula de Ciudadanía');
                         const nacionalidad = r.clienteNacionalidad || 'Colombia'
                         const cuponCodigo = r.cuponCodigo || r.reservaDetalles?.cuponAplicado ? `Aplicó (${r.cuponCodigo || 'CUPON'})` : 'Sin cupones'
                         const totalCOP = Number(r.totalCOP || r.total || r.precioTotal || 348000)
