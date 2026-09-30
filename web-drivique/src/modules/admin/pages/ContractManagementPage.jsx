@@ -267,6 +267,7 @@ export default function ContractManagementPage() {
               <table className="cities-table">
               <thead>
                 <tr>
+                  <th>ID</th>
                   <th>
                     {t("admin.contractsPage.fields.contractNumber", "No. Contrato")}
                   </th>
@@ -278,83 +279,57 @@ export default function ContractManagementPage() {
                   <th>{t("admin.contractsPage.fields.vehicle", "Vehículo")}</th>
                   <th>{t("admin.contractsPage.fields.startDate", "Inicio")}</th>
                   <th>{t("admin.contractsPage.fields.state", "Estado")}</th>
-                  <th style={{ textAlign: "center" }}>{t('admin.contractsPage.actions')}</th>
+                  <th style={{ textAlign: "center" }}>{t('admin.contractsPage.actions', 'Acciones')}</th>
                 </tr>
               </thead>
               <tbody>
                 {filtrados.length > 0 ? (
-                  filtrados.map((c) => (
+                  filtrados.map((c, index) => (
                     <tr key={c.id}>
-                      <td className="contracts-code">
+                      <td style={{ fontWeight: "normal", color: "#374151" }}>
+                        {index + 1}
+                      </td>
+                      <td style={{ fontWeight: "normal", color: "#374151" }}>
                         {c.contratoNumero || `CTR-${c.reservaCodigo}`}
                       </td>
-                      <td>
-                        <span style={{ fontWeight: 600, color: 'var(--city-text)' }}>{c.reservaCodigo}</span>
+                      <td style={{ fontWeight: "normal", color: "#374151" }}>
+                        {c.reservaCodigo}
+                      </td>
+                      <td style={{ fontWeight: "normal", color: "#374151" }}>
+                        {c.clienteNombre || 'Cliente Drivique'}
+                      </td>
+                      <td style={{ fontWeight: "normal", color: "#374151" }}>
+                        {c.clienteDocumento || '1030507090'}
+                      </td>
+                      <td style={{ fontWeight: "normal", color: "#374151" }}>
+                        {c.vehiculoNombre || "Vehículo Drivique"}
+                      </td>
+                      <td style={{ fontWeight: "normal", color: "#374151" }}>
+                        {c.fechaInicio ? c.fechaInicio.replace("T", " ") : new Date().toISOString().slice(0, 10)}
                       </td>
                       <td>
-                        <div className="contracts-cell-with-icon">
-                          <FaUser style={{ color: "var(--city-muted, #64748b)" }} />
-                          <span>{c.clienteNombre || 'Cliente Drivique'}</span>
-                        </div>
-                      </td>
-                      <td>{c.clienteDocumento || '1030507090'}</td>
-                      <td>
-                        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                          <img
-                            src={getVehiculoImagen(c)}
-                            alt={c.vehiculoNombre || "Vehículo"}
-                            style={{
-                              width: 48,
-                              height: 34,
-                              borderRadius: 8,
-                              objectFit: "cover",
-                              border: "1px solid var(--city-border, #cbd5e1)",
-                              boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
-                              flexShrink: 0,
-                            }}
-                            onError={(e) => {
-                              e.currentTarget.onerror = null;
-                              e.currentTarget.src =
-                                "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/a2cb0b378c25efdb1e116246f84149744c2f4081.jpg";
-                            }}
-                          />
-                          <div>
-                            <span style={{ display: "block", fontSize: 13, color: "var(--city-text)" }}>
-                              {c.vehiculoNombre || "Vehículo Drivique"}
-                            </span>
-                            <small style={{ color: "#64748b" }}>{c.vehiculoPlaca || "KLS-849"}</small>
-                          </div>
-                        </div>
-                      </td>
-                      <td>{c.fechaInicio ? c.fechaInicio.replace("T", " ") : new Date().toISOString().slice(0, 10)}</td>
-                      <td>
-                        <span className={`res-status res-status--${c.estado || 'vigente'}`}>
+                        <span className={`res-status res-status--${c.estado || 'vigente'}`} style={{ fontWeight: "normal" }}>
                           {t(`admin.contractsPage.states.${c.estado || 'vigente'}`, c.estado || 'Vigente')}
                         </span>
                       </td>
                       <td>
                         <div
                           className="cities-row-actions"
-                          style={{ justifyContent: "center" }}
+                          style={{ justifyContent: "center", gap: "8px" }}
                         >
                           <button
+                            type="button"
                             onClick={() => openDetalle(c)}
-                            title={t(
-                              "admin.contractsPage.viewDetails",
-                              "Ver Detalle",
-                            )}
+                            style={{ padding: '6px 12px', fontSize: '13px', background: '#3b82f6', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'normal' }}
                           >
-                            <FaEye />
+                            Ver
                           </button>
                           <button
-                            className="is-danger"
+                            type="button"
                             onClick={() => handleDownloadSinglePdf(c)}
-                            title={t(
-                              "admin.contractsPage.downloadPdf",
-                              "Descargar Contrato",
-                            )}
+                            style={{ padding: '6px 12px', fontSize: '13px', background: '#10b981', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'normal' }}
                           >
-                            <FaDownload />
+                            Descargar
                           </button>
                         </div>
                       </td>
@@ -362,7 +337,7 @@ export default function ContractManagementPage() {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="8">
+                    <td colSpan="9">
                       <div className="cities-empty">
                         <FaFileContract className="cities-empty__icon" />
                         <h3>
