@@ -215,7 +215,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
   const [selectedMonth, setSelectedMonth] = useState('todas') // 'todas' | '01'..'12'
   const [selectedYear, setSelectedYear] = useState('todas') // 'todas' | '2026'..
   const [selectedBranch, setSelectedBranch] = useState('todas') // 'todas' | nombre sucursal
-  const [sortBy, setSortBy] = useState('reciente') // 'reciente' | 'antigua' | 'monto_desc' | 'monto_asc' | 'codigo'
+  const [sortBy, setSortBy] = useState('codigo') // 'reciente' | 'antigua' | 'monto_desc' | 'monto_asc' | 'codigo'
 
   // Lista única de sucursales disponibles
   const listaSucursales = useMemo(() => {

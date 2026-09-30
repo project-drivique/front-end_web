@@ -171,6 +171,10 @@ export default function ReservationManagementPage() {
       }
 
       return matchSearch && matchStatus && matchBranch && matchDate
+    }).sort((a, b) => {
+      const codeA = String(a.codigo || a.referencia || a.id || '');
+      const codeB = String(b.codigo || b.referencia || b.id || '');
+      return codeA.localeCompare(codeB);
     })
   }, [reservas, search, statusFilter, branchFilter, dateFrom, dateTo])
 

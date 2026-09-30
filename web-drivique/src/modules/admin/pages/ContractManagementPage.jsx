@@ -83,6 +83,10 @@ export default function ContractManagementPage() {
 
       const matchStatus = statusFilter === "all" || c.estado === statusFilter;
       return matchSearch && matchStatus;
+    }).sort((a, b) => {
+      const codeA = String(a.reservaCodigo || a.id || '');
+      const codeB = String(b.reservaCodigo || b.id || '');
+      return codeA.localeCompare(codeB);
     });
   }, [contratos, search, statusFilter]);
 
