@@ -562,31 +562,36 @@ export default function CashCollectionPage({ branchOnly = false }) {
               {/* FILA 1: Buscador, Filtro Estado y Selector Sucursal */}
               <div className="cash-toolbar-row1">
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#fff', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '4px' }}>
+                {/* Input referencia */}
+                <div style={{ display: 'flex', alignItems: 'center', background: '#fff', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '4px 8px' }}>
                   <input
                     type="text"
                     placeholder="Ref. (Ej. RES-179...)"
                     value={searchRefValue}
                     onChange={(e) => setSearchRefValue(e.target.value)}
-                    style={{ padding: '6px 12px', border: 'none', background: 'transparent', fontSize: '14px', outline: 'none', width: '200px' }}
+                    style={{ padding: '5px 8px', border: 'none', background: 'transparent', fontSize: '14px', outline: 'none', width: '190px' }}
                     onKeyDown={(e) => e.key === 'Enter' && handleSearchRef()}
                   />
+                </div>
+
+                {/* Botones Filtrar y Limpiar */}
+                <div style={{ display: 'flex', gap: '6px' }}>
+                  <button
+                    type="button"
+                    onClick={handleSearchRef}
+                    style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '7px 14px', background: '#f59e0b', borderRadius: '8px', border: 'none', color: '#fff', fontWeight: 600, cursor: 'pointer', fontSize: '13px', whiteSpace: 'nowrap' }}
+                  >
+                    <FaSearch /> Filtrar
+                  </button>
                   {searchRefValue && (
                     <button
                       type="button"
                       onClick={() => { setSearchRefValue(''); setSearch(''); }}
-                      style={{ padding: '6px 10px', background: '#e5e7eb', border: 'none', borderRadius: '6px', fontSize: '12px', fontWeight: 600, color: '#6b7280', cursor: 'pointer', whiteSpace: 'nowrap' }}
+                      style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '7px 14px', background: '#64748b', borderRadius: '8px', border: 'none', color: '#fff', fontWeight: 600, cursor: 'pointer', fontSize: '13px', whiteSpace: 'nowrap' }}
                     >
                       Limpiar
                     </button>
                   )}
-                  <button 
-                    type="button"
-                    onClick={handleSearchRef}
-                    style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 12px', background: '#f59e0b', borderRadius: '6px', border: 'none', color: '#fff', fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}
-                  >
-                    <FaSearch /> Filtrar
-                  </button>
                 </div>
 
                 {/* Dropdown Todos los estados */}
