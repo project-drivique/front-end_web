@@ -624,9 +624,9 @@ export default function ReservationManagementPage() {
 
                         return (
                           <tr key={r.id || cod}>
-                            <td>{r.id || idx + 1}</td>
+                            <td>{idx + 1}</td>
                             <td>
-                              <strong style={{ color: '#0f172a', fontWeight: 700 }}>{cod}</strong>
+                              <code>{cod}</code>
                             </td>
                             <td>
                               {r.vehiculoImagen ? (
@@ -705,9 +705,9 @@ export default function ReservationManagementPage() {
 
                         return (
                           <tr key={r.id || cod}>
-                            <td>{r.id || idx + 1}</td>
+                            <td>{idx + 1}</td>
                             <td>
-                              <strong style={{ color: '#0f172a', fontWeight: 700 }}>{cod}</strong>
+                              <code>{cod}</code>
                             </td>
                             <td>{cobertura}</td>
                             <td>{kilometraje}</td>
@@ -777,9 +777,9 @@ export default function ReservationManagementPage() {
 
                         return (
                           <tr key={r.id || cod}>
-                            <td>{r.id || idx + 1}</td>
+                            <td>{idx + 1}</td>
                             <td>
-                              <strong style={{ color: '#0f172a', fontWeight: 700 }}>{cod}</strong>
+                              <code>{cod}</code>
                             </td>
                             <td style={{ fontWeight: 600, color: '#0f172a' }}>{cliNom}</td>
                             <td style={{ color: '#64748b', fontSize: 12 }}>{cliMail}</td>
