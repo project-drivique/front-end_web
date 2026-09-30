@@ -189,17 +189,11 @@ export default function ContractManagementPage() {
       <ManagementSidebar branchOnly={esEncargado} />
       <main className="management-main" style={{ padding: "24px 32px" }}>
         <div className="cities-container" style={{ maxWidth: "100%" }}>
-          <header className="cities-topbar" style={{ marginBottom: "24px", display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-            <div>
-              <p className="cities-eyebrow" style={{ color: "#3b82f6", fontWeight: "700", textTransform: "uppercase", fontSize: "12px", letterSpacing: "0.5px", marginBottom: "4px" }}>
-                {esEncargado
-                  ? `ENCARGADO DE SUCURSAL (${sucursalEncargado})`
-                  : t("admin.management", "GESTIÓN OPERATIVA")}
-              </p>
-              <h1 style={{ fontSize: "32px", fontWeight: "900", color: "#0f172a", margin: "0 0 8px 0", letterSpacing: "-0.5px" }}>
-                {t("admin.contractsPage.title", "Gestión de Contratos")}
-              </h1>
-              <p className="cities-subtitle" style={{ fontSize: "14px", color: "#64748b", margin: 0 }}>
+          <header className="cities-topbar reservations-management-header">
+            <div className="branch-topbar-brand-title">
+              <span className="branch-topbar-badge">GESTIÓN DE SUCURSAL</span>
+              <h1 className="branch-topbar-heading">Gestión de Contratos</h1>
+              <p className="cities-subtitle" style={{ fontSize: "14px", color: "#64748b", margin: "4px 0 0 0", fontWeight: "normal" }}>
                 {t(
                   "admin.contractsPage.subtitle",
                   "Consulta y gestiona los contratos de alquiler, exporta la información e imprime documentos oficiales.",
