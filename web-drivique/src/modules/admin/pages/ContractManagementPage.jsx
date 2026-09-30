@@ -275,7 +275,7 @@ export default function ContractManagementPage() {
                   <th>MARCA</th>
                   <th>MODELO</th>
                   <th>FECHA FIRMA</th>
-                  <th style={{ textAlign: "center" }}>FIRMA DE CONTRATO</th>
+                  <th style={{ textAlign: "center" }}>ESTADO FIRMA DE CONTRATO</th>
                   <th style={{ textAlign: "center" }}>VER CONTRATO</th>
                   <th style={{ textAlign: "center" }}>DESCARGAR CONTRATO</th>
                   <th style={{ textAlign: "center" }}>IMPRIMIR CONTRATO</th>

@@ -797,7 +797,7 @@ export default function ReservationManagementPage() {
                         <th>Pago Total</th>
                         <th>Estado Reserva</th>
                         <th>Estado del Pago</th>
-                        <th style={{ textAlign: 'center' }}>Firma de Contrato</th>
+                        <th style={{ textAlign: 'center' }}>Estado Firma de Contrato</th>
                         <th style={{ textAlign: 'center' }}>Confirmar Entrega</th>
                         <th style={{ textAlign: 'center' }}>Confirmar Devolución</th>
                       </tr>
