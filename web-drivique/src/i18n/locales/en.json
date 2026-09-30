@@ -3056,6 +3056,39 @@
         "viewReportDetails": "View details in Reports",
         "exportData": "Export data",
         "exportComingSoon": "Export feature coming soon"
+      },
+      "notificationsCenter": {
+        "backToDashboard": "Back to Dashboard",
+        "title": "Notification Center",
+        "subtitle": "Real-time monitoring and traceability of operational alerts",
+        "markAllRead": "Mark all as read",
+        "statTotal": "Total Notifications",
+        "statTotalHint": "Registered during today's shift",
+        "statUnread": "Pending / Unread",
+        "statUnreadHint": "Require your attention or review",
+        "statOperations": "Today's Operations",
+        "statOperationsHint": "Deliveries, returns and payments",
+        "statAttention": "Alerts & Documents",
+        "statAttentionHint": "Validations and fleet updates",
+        "searchPlaceholder": "Search notification by customer, license plate or booking code...",
+        "filterAll": "All",
+        "filterUnread": "Unread",
+        "filterOperations": "Operations",
+        "filterAttention": "Alerts & Incidents",
+        "emptyTitle": "No notifications to show",
+        "emptyDescSearch": "No alerts found matching your search term.",
+        "emptyDescAll": "All branch tasks, deliveries, returns and validations are up to date.",
+        "markRead": "Mark as read",
+        "goToModule": "Go to module"
+      },
+      "notificationsPopover": {
+        "title": "Notifications",
+        "newBadge": "{{count}} new",
+        "markAllAsRead": "Mark all as read",
+        "close": "Close window",
+        "allClearTitle": "All caught up",
+        "allClearDesc": "No pending alerts or validations at this branch.",
+        "goToCenter": "Go to Notification Center"
       }
     }
   }

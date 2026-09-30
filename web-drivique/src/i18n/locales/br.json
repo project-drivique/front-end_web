@@ -3042,6 +3042,39 @@
         "viewReportDetails": "Ver detalhes em Relatórios",
         "exportData": "Exportar dado",
         "exportComingSoon": "Função disponível em breve"
+      },
+      "notificationsCenter": {
+        "backToDashboard": "Voltar ao Dashboard",
+        "title": "Centro de Notificações",
+        "subtitle": "Monitoramento e rastreabilidade de alertas operacionais em tempo real",
+        "markAllRead": "Marcar todas como lidas",
+        "statTotal": "Total de Notificações",
+        "statTotalHint": "Registradas no turno de hoje",
+        "statUnread": "Pendentes / Não Lidas",
+        "statUnreadHint": "Requerem sua atenção ou leitura",
+        "statOperations": "Operações do Dia",
+        "statOperationsHint": "Entregas, devoluções e recebimentos",
+        "statAttention": "Alertas & Documentos",
+        "statAttentionHint": "Validações e novidades da frota",
+        "searchPlaceholder": "Buscar notificação por cliente, placa ou código de reserva...",
+        "filterAll": "Todas",
+        "filterUnread": "Não lidas",
+        "filterOperations": "Operações",
+        "filterAttention": "Alertas & Incidentes",
+        "emptyTitle": "Nenhuma notificação para exibir",
+        "emptyDescSearch": "Nenhum alerta encontrado correspondente ao termo de busca.",
+        "emptyDescAll": "Todas as tarefas, entregas, devoluções e validações da filial estão em dia.",
+        "markRead": "Marcar como lida",
+        "goToModule": "Ir para o módulo"
+      },
+      "notificationsPopover": {
+        "title": "Notificações",
+        "newBadge": "{{count}} novas",
+        "markAllAsRead": "Marcar todas como lidas",
+        "close": "Fechar janela",
+        "allClearTitle": "Tudo em dia",
+        "allClearDesc": "Não há alertas ou validações pendentes nesta filial.",
+        "goToCenter": "Ir para o Centro de Notificações"
       }
     }
   }

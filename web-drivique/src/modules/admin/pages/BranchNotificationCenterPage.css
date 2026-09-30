@@ -7,6 +7,7 @@
   background: var(--bg-seccion1, #f8fafc);
   min-height: 100vh;
   box-sizing: border-box;
+  transition: background 200ms ease, color 200ms ease;
 }
 
 /* ENCABEZADO */
@@ -34,7 +35,7 @@
 }
 
 .bnc-back-btn:hover {
-  color: #1d4ed8;
+  color: var(--brand-primary-hover, #1d4ed8);
   transform: translateX(-3px);
 }
 
@@ -48,13 +49,14 @@
   width: 52px;
   height: 52px;
   border-radius: 14px;
-  background: rgba(37, 99, 235, 0.1);
+  background: var(--brand-soft, rgba(37, 99, 235, 0.1));
   color: var(--brand-primary, #2563eb);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 24px;
-  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.15);
+  box-shadow: 0 2px 8px var(--brand-soft-strong-light, rgba(37, 99, 235, 0.15));
+  flex-shrink: 0;
 }
 
 .bnc-title {
@@ -75,6 +77,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  flex-wrap: wrap;
 }
 
 .bnc-btn {
@@ -91,25 +94,25 @@
 }
 
 .bnc-btn--secondary {
-  background: #ffffff;
+  background: var(--bg-tarjeta, #ffffff);
   color: var(--texto-main, #0f172a);
   border: 1px solid var(--borde, #e2e8f0);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .bnc-btn--secondary:hover {
-  background: #f1f5f9;
-  border-color: #cbd5e1;
+  background: var(--bg-seccion1, #f1f5f9);
+  border-color: var(--brand-primary, #cbd5e1);
 }
 
 .bnc-btn--primary {
   background: var(--brand-primary, #2563eb);
   color: #ffffff;
-  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
+  box-shadow: 0 2px 6px var(--brand-soft-strong-light, rgba(37, 99, 235, 0.25));
 }
 
 .bnc-btn--primary:hover {
-  background: #1d4ed8;
+  background: var(--brand-primary-hover, #1d4ed8);
   transform: translateY(-1px);
 }
 
@@ -122,7 +125,7 @@
 }
 
 .bnc-stat-card {
-  background: #ffffff;
+  background: var(--bg-tarjeta, #ffffff);
   border: 1px solid var(--borde, #e2e8f0);
   border-radius: 14px;
   padding: 18px 20px;
@@ -130,6 +133,7 @@
   flex-direction: column;
   gap: 4px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+  transition: all 180ms ease;
 }
 
 .bnc-stat-label {
@@ -149,7 +153,7 @@
 
 .bnc-stat-hint {
   font-size: 12px;
-  color: #94a3b8;
+  color: var(--texto-second, #94a3b8);
   margin-top: 4px;
 }
 
@@ -158,7 +162,7 @@
 }
 
 .bnc-stat-card--brand .bnc-stat-value {
-  color: #2563eb;
+  color: var(--brand-primary, #2563eb);
 }
 
 .bnc-stat-card--warning .bnc-stat-value {
@@ -167,7 +171,7 @@
 
 /* TARJETA DE CONTROLES DE FILTRO */
 .bnc-controls-card {
-  background: #ffffff;
+  background: var(--bg-tarjeta, #ffffff);
   border: 1px solid var(--borde, #e2e8f0);
   border-radius: 14px;
   padding: 16px 20px;
@@ -188,7 +192,7 @@
   left: 14px;
   top: 50%;
   transform: translateY(-50%);
-  color: #94a3b8;
+  color: var(--texto-second, #94a3b8);
   font-size: 15px;
 }
 
@@ -206,9 +210,9 @@
 }
 
 .bnc-search-input:focus {
-  background: #ffffff;
+  background: var(--bg-tarjeta, #ffffff);
   border-color: var(--brand-primary, #2563eb);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+  box-shadow: 0 0 0 3px var(--brand-soft, rgba(37, 99, 235, 0.12));
 }
 
 .bnc-pills-bar {
@@ -225,7 +229,7 @@
   padding: 8px 16px;
   border-radius: 20px;
   border: 1px solid var(--borde, #e2e8f0);
-  background: #ffffff;
+  background: var(--bg-tarjeta, #ffffff);
   color: var(--texto-second, #64748b);
   font-size: 13px;
   font-weight: 600;
@@ -242,7 +246,7 @@
   background: var(--brand-primary, #2563eb) !important;
   color: #ffffff !important;
   border-color: var(--brand-primary, #2563eb) !important;
-  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
+  box-shadow: 0 2px 6px var(--brand-soft-strong-light, rgba(37, 99, 235, 0.25));
 }
 
 /* LISTADO DE TARJETAS DE NOTIFICACIÓN */
@@ -258,7 +262,7 @@
   gap: 18px;
   padding: 20px 24px;
   border-radius: 14px;
-  background: #ffffff;
+  background: var(--bg-tarjeta, #ffffff);
   border: 1px solid var(--borde, #e2e8f0);
   border-left: 4px solid var(--brand-primary, #2563eb);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
@@ -271,8 +275,8 @@
 }
 
 .bnc-card--unread {
-  background: #f8fbff;
-  border-color: #dbeafe;
+  background: var(--brand-soft, #f8fbff);
+  border-color: var(--borde, #dbeafe);
 }
 
 .bnc-card-icon {
@@ -310,7 +314,7 @@
 
 .bnc-card-time {
   font-size: 12px;
-  color: #94a3b8;
+  color: var(--texto-second, #94a3b8);
   display: flex;
   align-items: center;
   gap: 5px;
@@ -350,13 +354,14 @@
 }
 
 .bnc-mark-read-btn:hover {
-  background: #f1f5f9;
+  background: var(--bg-seccion1, #f1f5f9);
   color: var(--texto-main, #0f172a);
+  border-color: var(--brand-primary, #cbd5e1);
 }
 
 /* ESTADO VACÍO */
 .bnc-empty-state {
-  background: #ffffff;
+  background: var(--bg-tarjeta, #ffffff);
   border: 1px solid var(--borde, #e2e8f0);
   border-radius: 16px;
   padding: 56px 24px;
@@ -393,3 +398,249 @@
   margin: 0;
   line-height: 1.5;
 }
+
+/* ─────────────────────────────────────────────────────────────
+   MODO OSCURO (DARK THEME SUPPORT)
+   ───────────────────────────────────────────────────────────── */
+
+body.dark .bnc-main,
+.management-shell--dark .bnc-main {
+  background: #0b1329;
+}
+
+body.dark .bnc-title,
+.management-shell--dark .bnc-title {
+  color: #f8fafc;
+}
+
+body.dark .bnc-subtitle,
+.management-shell--dark .bnc-subtitle {
+  color: #94a3b8;
+}
+
+body.dark .bnc-stat-card,
+.management-shell--dark .bnc-stat-card {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+body.dark .bnc-stat-value,
+.management-shell--dark .bnc-stat-value {
+  color: #f8fafc;
+}
+
+body.dark .bnc-stat-label,
+body.dark .bnc-stat-hint,
+.management-shell--dark .bnc-stat-label,
+.management-shell--dark .bnc-stat-hint {
+  color: #94a3b8;
+}
+
+body.dark .bnc-controls-card,
+.management-shell--dark .bnc-controls-card {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+body.dark .bnc-search-input,
+.management-shell--dark .bnc-search-input {
+  background: #0f172a;
+  border-color: #334155;
+  color: #f8fafc;
+}
+
+body.dark .bnc-search-input:focus,
+.management-shell--dark .bnc-search-input:focus {
+  background: #0f172a;
+  border-color: var(--brand-primary, #3b82f6);
+}
+
+body.dark .bnc-pill,
+.management-shell--dark .bnc-pill {
+  background: #0f172a;
+  border-color: #334155;
+  color: #94a3b8;
+}
+
+body.dark .bnc-pill:hover,
+.management-shell--dark .bnc-pill:hover {
+  border-color: var(--brand-primary, #3b82f6);
+  color: #f8fafc;
+}
+
+body.dark .bnc-pill--active,
+.management-shell--dark .bnc-pill--active {
+  background: var(--brand-primary, #2563eb) !important;
+  color: #ffffff !important;
+  border-color: var(--brand-primary, #2563eb) !important;
+}
+
+body.dark .bnc-card,
+.management-shell--dark .bnc-card {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+body.dark .bnc-card:hover,
+.management-shell--dark .bnc-card:hover {
+  background: #243248;
+}
+
+body.dark .bnc-card--unread,
+.management-shell--dark .bnc-card--unread {
+  background: rgba(37, 99, 235, 0.12);
+  border-color: rgba(37, 99, 235, 0.3);
+}
+
+body.dark .bnc-card-title,
+.management-shell--dark .bnc-card-title {
+  color: #f8fafc;
+}
+
+body.dark .bnc-card-detail,
+.management-shell--dark .bnc-card-detail {
+  color: #cbd5e1;
+}
+
+body.dark .bnc-mark-read-btn,
+.management-shell--dark .bnc-mark-read-btn {
+  border-color: #334155;
+  color: #94a3b8;
+}
+
+body.dark .bnc-mark-read-btn:hover,
+.management-shell--dark .bnc-mark-read-btn:hover {
+  background: #334155;
+  color: #f8fafc;
+}
+
+body.dark .bnc-empty-state,
+.management-shell--dark .bnc-empty-state {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+body.dark .bnc-empty-title,
+.management-shell--dark .bnc-empty-title {
+  color: #f8fafc;
+}
+
+body.dark .bnc-empty-desc,
+.management-shell--dark .bnc-empty-desc {
+  color: #94a3b8;
+}
+
+body.dark .bnc-btn--secondary,
+.management-shell--dark .bnc-btn--secondary {
+  background: #1e293b;
+  border-color: #334155;
+  color: #f8fafc;
+}
+
+body.dark .bnc-btn--secondary:hover,
+.management-shell--dark .bnc-btn--secondary:hover {
+  background: #334155;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   DISEÑO RESPONSIVE (MOBILE & TABLET ADAPTATION)
+   ───────────────────────────────────────────────────────────── */
+
+@media (max-width: 1024px) {
+  .bnc-main {
+    padding: 24px 20px;
+  }
+
+  .bnc-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .bnc-main {
+    padding: 16px 14px;
+  }
+
+  .bnc-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .bnc-header-tools {
+    justify-content: flex-start;
+    width: 100%;
+  }
+
+  .bnc-title {
+    font-size: 22px;
+  }
+
+  .bnc-subtitle {
+    font-size: 13px;
+  }
+
+  .bnc-title-icon-box {
+    width: 44px;
+    height: 44px;
+    font-size: 20px;
+  }
+
+  .bnc-stats-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .bnc-stat-card {
+    padding: 14px 16px;
+  }
+
+  .bnc-stat-value {
+    font-size: 24px;
+  }
+
+  .bnc-pills-bar {
+    overflow-x: auto;
+    padding-bottom: 4px;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .bnc-pill {
+    white-space: nowrap;
+    flex-shrink: 0;
+    padding: 7px 12px;
+    font-size: 12px;
+  }
+
+  .bnc-card {
+    flex-direction: column;
+    gap: 14px;
+    padding: 16px;
+  }
+
+  .bnc-card-actions {
+    justify-content: stretch;
+    width: 100%;
+    margin-top: 6px;
+  }
+
+  .bnc-mark-read-btn,
+  .bnc-btn--primary {
+    flex: 1;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .bnc-card-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .bnc-mark-read-btn,
+  .bnc-btn--primary {
+    width: 100%;
+  }
+}
+
