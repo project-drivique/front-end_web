@@ -1,0 +1,123 @@
+/* src/modules/admin/pages/DocumentVerificationPage.css */
+
+.doc-verification-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.doc-verification-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.doc-verification-stat-card {
+  background: var(--bg-tarjeta, #ffffff);
+  border: 1px solid var(--borde, #e2e8f0);
+  border-radius: 14px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+}
+
+.doc-verification-stat-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  background: var(--brand-soft, #eff6ff);
+  color: var(--brand-primary, #2563eb);
+}
+
+.doc-verification-stat-icon--amber {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.doc-verification-stat-icon--green {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.doc-verification-stat-icon--red {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.doc-verification-stat-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.doc-verification-stat-val {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--texto-main, #0f172a);
+  line-height: 1.2;
+}
+
+.doc-verification-stat-lbl {
+  font-size: 12px;
+  color: var(--texto-second, #64748b);
+  font-weight: 500;
+}
+
+.doc-preview-modal {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.doc-preview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.doc-preview-card {
+  border: 1px solid var(--borde, #e2e8f0);
+  border-radius: 12px;
+  padding: 14px;
+  background: var(--bg-seccion1, #f8fafc);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.doc-preview-title {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--texto-main, #0f172a);
+}
+
+.doc-preview-thumb {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 8px;
+  cursor: zoom-in;
+  border: 1px solid var(--borde, #cbd5e1);
+  transition: transform 160ms ease;
+}
+
+.doc-preview-thumb:hover {
+  transform: scale(1.02);
+}
+
+@media (max-width: 768px) {
+  .doc-verification-stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .doc-preview-grid {
+    grid-template-columns: 1fr;
+  }
+}

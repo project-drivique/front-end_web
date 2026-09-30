@@ -200,7 +200,21 @@ export default function ReservationManagementPage() {
     if (activeTab === 'proteccion_extras') {
       return ['Código', 'Plan Protección', 'Tipo Kilometraje', 'Servicios Adicionales']
     }
-    return ['Código', 'Nombre', 'Correo', 'Tipo de Documento', 'Nacionalidad', 'Teléfono Celular', 'Número de Documento', 'Documento de Identidad', 'Licencia de Conducción', 'Términos y Condiciones', 'Promociones']
+    return [
+      'Código',
+      'Nombre',
+      'Correo',
+      'Tipo de Documento',
+      'Nacionalidad',
+      'Teléfono Celular',
+      'Número de Documento',
+      'Documento de Identidad',
+      'Licencia de Conducción',
+      'Términos y Condiciones',
+      'Promociones',
+      'Pago Total',
+      'Estado del Pago',
+    ]
   }, [activeTab])
 
   const rowsExport = useMemo(() => {
@@ -272,6 +286,23 @@ export default function ReservationManagementPage() {
       }
 
       // activeTab === 'datos_pago'
+      const esCobroPresencialPendiente =
+        esPagoEfectivo &&
+        !Boolean(r.metodoPagoConfirmado) &&
+        r.pagoEstado !== 'aprobado'
+
+      const isPagoConfirmado =
+        r.pagoEstado === 'aprobado' ||
+        Boolean(r.metodoPagoConfirmado) ||
+        r.estadoPago === 'aprobado' ||
+        (!esCobroPresencialPendiente && r.estado !== 'cancelada')
+
+      const estadoPagoStr = isPagoConfirmado
+        ? 'Confirmado'
+        : r.estado === 'cancelada'
+        ? 'Cancelado'
+        : 'Pendiente'
+
       return [
         cod,
         r.clienteNombre || 'Cliente Registrado',
@@ -284,6 +315,8 @@ export default function ReservationManagementPage() {
         r.licenciaConduccionPdf ? 'Archivo Cargado' : 'Sin cargar',
         'Aceptados',
         r.cuponCodigo || 'Sin cupones',
+        formatCurrency(totalCOP, moneda || 'COP', tasaUSD),
+        estadoPagoStr,
       ]
     })
   }, [filtradas, activeTab, moneda, tasaUSD])
@@ -708,6 +741,16 @@ export default function ReservationManagementPage() {
                                     Entregar Auto
                                   </button>
                                 )}
+                                {r.estado === 'en_curso' && (
+                                  <button
+                                    type="button"
+                                    className="btn-row-action"
+                                    onClick={() => handleRecibirDevolucion(r)}
+                                    style={{ background: 'linear-gradient(135deg, #059669 0%, #10b981 100%)' }}
+                                  >
+                                    Recibir Devolución
+                                  </button>
+                                )}
                                 <button
                                   type="button"
                                   className="btn-row-action"
@@ -763,6 +806,25 @@ export default function ReservationManagementPage() {
                             <td>{extras}</td>
                             <td style={{ textAlign: 'center' }}>
                               <div className="cities-row-actions">
+                                {r.estado !== 'en_curso' && r.estado !== 'finalizada' && r.estado !== 'cancelada' && (
+                                  <button
+                                    type="button"
+                                    className="btn-row-action"
+                                    onClick={() => handleEntregarAuto(r)}
+                                  >
+                                    Entregar Auto
+                                  </button>
+                                )}
+                                {r.estado === 'en_curso' && (
+                                  <button
+                                    type="button"
+                                    className="btn-row-action"
+                                    onClick={() => handleRecibirDevolucion(r)}
+                                    style={{ background: 'linear-gradient(135deg, #059669 0%, #10b981 100%)' }}
+                                  >
+                                    Recibir Devolución
+                                  </button>
+                                )}
                                 <button
                                   type="button"
                                   className="btn-row-action"
@@ -804,6 +866,8 @@ export default function ReservationManagementPage() {
                         <th>Licencia de Conducción</th>
                         <th>Términos y Condiciones</th>
                         <th>Promociones</th>
+                        <th>Pago Total</th>
+                        <th>Estado del Pago</th>
                         <th style={{ textAlign: 'center' }}>{t('admin.actions', 'Acciones')}</th>
                       </tr>
                     </thead>
@@ -817,6 +881,7 @@ export default function ReservationManagementPage() {
                         const tipoDoc = r.clienteTipoDocumento || 'Cédula de Ciudadanía'
                         const nacionalidad = r.clienteNacionalidad || 'Colombia'
                         const cuponCodigo = r.cuponCodigo || r.reservaDetalles?.cuponAplicado ? `Aplicó (${r.cuponCodigo || 'CUPON'})` : 'Sin cupones'
+                        const totalCOP = Number(r.totalCOP || r.total || r.precioTotal || 348000)
 
                         const rawMetodo = String(
                           r.reservaDetalles?.metodoPago ||
@@ -826,10 +891,18 @@ export default function ReservationManagementPage() {
                           ''
                         ).toLowerCase()
 
+                        const esPagoEfectivo = rawMetodo.includes('efectivo') || rawMetodo.includes('sucursal')
+
                         const esCobroPresencialPendiente =
-                          (rawMetodo.includes('efectivo') || rawMetodo.includes('sucursal')) &&
+                          esPagoEfectivo &&
                           !Boolean(r.metodoPagoConfirmado) &&
                           r.pagoEstado !== 'aprobado'
+
+                        const isPagoConfirmado =
+                          r.pagoEstado === 'aprobado' ||
+                          Boolean(r.metodoPagoConfirmado) ||
+                          r.estadoPago === 'aprobado' ||
+                          (!esCobroPresencialPendiente && r.estado !== 'cancelada')
 
                         return (
                           <tr key={r.id || cod}>
@@ -864,6 +937,34 @@ export default function ReservationManagementPage() {
                               <span style={{ color: '#047857', fontWeight: 600, fontSize: 12 }}>✓ Aceptados</span>
                             </td>
                             <td>{cuponCodigo}</td>
+                            <td style={{ fontWeight: 700, color: 'var(--city-text, #0f172a)', whiteSpace: 'nowrap' }}>
+                              {formatCurrency(totalCOP, moneda || 'COP', tasaUSD)}
+                            </td>
+                            <td>
+                              <span
+                                className={`status-pill ${
+                                  isPagoConfirmado
+                                    ? 'is-green'
+                                    : r.estado === 'cancelada'
+                                    ? 'is-red'
+                                    : 'is-yellow'
+                                }`}
+                                style={{
+                                  padding: '4px 10px',
+                                  borderRadius: 20,
+                                  fontSize: 11,
+                                  fontWeight: 700,
+                                  whiteSpace: 'nowrap',
+                                  ...(isPagoConfirmado
+                                    ? {}
+                                    : r.estado === 'cancelada'
+                                    ? {}
+                                    : { background: '#fef3c7', color: '#92400e' }),
+                                }}
+                              >
+                                {isPagoConfirmado ? 'Confirmado' : r.estado === 'cancelada' ? 'Cancelado' : 'Pendiente'}
+                              </span>
+                            </td>
                             <td style={{ textAlign: 'center' }}>
                               <div className="cities-row-actions">
                                 {esCobroPresencialPendiente && (
@@ -873,6 +974,25 @@ export default function ReservationManagementPage() {
                                     onClick={() => navigate(`${cashRoute}?ref=${encodeURIComponent(cod)}`)}
                                   >
                                     Cobrar en Caja
+                                  </button>
+                                )}
+                                {r.estado !== 'en_curso' && r.estado !== 'finalizada' && r.estado !== 'cancelada' && (
+                                  <button
+                                    type="button"
+                                    className="btn-row-action"
+                                    onClick={() => handleEntregarAuto(r)}
+                                  >
+                                    Entregar Auto
+                                  </button>
+                                )}
+                                {r.estado === 'en_curso' && (
+                                  <button
+                                    type="button"
+                                    className="btn-row-action"
+                                    onClick={() => handleRecibirDevolucion(r)}
+                                    style={{ background: 'linear-gradient(135deg, #059669 0%, #10b981 100%)' }}
+                                  >
+                                    Recibir Devolución
                                   </button>
                                 )}
                                 <button

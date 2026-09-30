@@ -43,7 +43,6 @@ import { showAlert } from '../../../utils/swalConfig'
 import MenuConfiguracion from '../../../components/MenuConfiguracion'
 import ManagementSidebar from '../components/ManagementSidebar'
 import './CityManagementPage.css'
-import './ReservationManagementPage.css'
 import './CashCollectionPage.css'
 
 // ── COMPONENTE DE UN SOLO CALENDARIO REUTILIZABLE PARA SELECCIÓN DE RANGO DE FECHAS ──
