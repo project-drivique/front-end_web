@@ -555,7 +555,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
           <section className="cities-card">
             <div className="cash-toolbar-container">
               {/* FILA 1: Buscador, Filtro Estado y Selector Sucursal */}
-              <div className="cash-toolbar-row1">
+              <div className="cash-toolbar-row1" style={{ flexWrap: 'wrap', gap: '8px', alignItems: 'flex-end' }}>
 
                 {/* Input referencia */}
                 <div style={{ display: 'flex', alignItems: 'center', background: '#fff', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '4px 8px' }}>
@@ -564,7 +564,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
                     placeholder="Ref. (Ej. RES-179...)"
                     value={searchRefValue}
                     onChange={(e) => setSearchRefValue(e.target.value)}
-                    style={{ padding: '5px 8px', border: 'none', background: 'transparent', fontSize: '14px', outline: 'none', width: '190px' }}
+                    style={{ padding: '5px 8px', border: 'none', background: 'transparent', fontSize: '14px', outline: 'none', width: '160px' }}
                     onKeyDown={(e) => e.key === 'Enter' && handleSearchRef()}
                   />
                 </div>
@@ -587,7 +587,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
                   </button>
                 </div>
 
-                {/* Dropdown Todos los estados */}
+                {/* Dropdown estado */}
                 <div className="cash-select-box">
                   <select
                     value={filterTab}
@@ -601,7 +601,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
                   </select>
                 </div>
 
-                {/* Dropdown Sucursal (Oculto para el encargado de sucursal) */}
+                {/* Dropdown Sucursal */}
                 {!isBranchManager && (
                   <div className="cash-branch-select-box">
                     <FaBuilding className="cash-branch-icon" />
@@ -612,18 +612,14 @@ export default function CashCollectionPage({ branchOnly = false }) {
                     >
                       <option value="todas">Todas las sucursales</option>
                       {listaSucursales.map((suc) => (
-                        <option key={suc} value={suc}>
-                          {suc}
-                        </option>
+                        <option key={suc} value={suc}>{suc}</option>
                       ))}
                     </select>
                   </div>
                 )}
-              </div>
 
-              {/* FILA 2: Fechas DESDE / HASTA y Botones de Exportación / Impresión */}
-              <div className="cash-toolbar-row2">
-                <div className="cash-date-fields-group">
+                {/* Fechas DESDE / HASTA */}
+                <div style={{ display: 'flex', alignItems: 'flex-end', gap: '8px' }}>
                   <div className="cash-date-field">
                     <label className="cash-field-label">DESDE:</label>
                     <input
@@ -631,9 +627,9 @@ export default function CashCollectionPage({ branchOnly = false }) {
                       value={dateFrom}
                       onChange={(e) => setDateFrom(e.target.value)}
                       className="cash-date-input"
+                      style={{ width: '140px' }}
                     />
                   </div>
-
                   <div className="cash-date-field">
                     <label className="cash-field-label">HASTA:</label>
                     <input
@@ -641,11 +637,12 @@ export default function CashCollectionPage({ branchOnly = false }) {
                       value={dateTo}
                       onChange={(e) => setDateTo(e.target.value)}
                       className="cash-date-input"
+                      style={{ width: '140px' }}
                     />
                   </div>
                 </div>
 
-                {/* Botones Excel, PDF e Imprimir */}
+                {/* Botones exportación */}
                 <div className="cash-export-buttons">
                   <button
                     type="button"
@@ -660,20 +657,10 @@ export default function CashCollectionPage({ branchOnly = false }) {
                   >
                     <FaFileExcel /> Excel
                   </button>
-
-                  <button
-                    type="button"
-                    className="cash-exp-btn pdf"
-                    onClick={() => window.print()}
-                  >
+                  <button type="button" className="cash-exp-btn pdf" onClick={() => window.print()}>
                     <FaFilePdf /> PDF
                   </button>
-
-                  <button
-                    type="button"
-                    className="cash-exp-btn print"
-                    onClick={() => window.print()}
-                  >
+                  <button type="button" className="cash-exp-btn print" onClick={() => window.print()}>
                     <FaPrint /> Imprimir
                   </button>
                 </div>
