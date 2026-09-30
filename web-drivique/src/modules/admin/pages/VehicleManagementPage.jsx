@@ -272,8 +272,8 @@ export default function VehicleManagementPage() {
         tasaUSD
       ),
       vehicle.picoYPlaca?.dia
-        ? `Aplica (${t(`vehiculo.picoYPlaca.dias.${vehicle.picoYPlaca.dia}`, vehicle.picoYPlaca.dia)})`
-        : "No aplica",
+        ? t("admin.vehiclesManagement.applies", "Sí aplica")
+        : t("admin.vehiclesManagement.doesNotApply", "No aplica"),
       t(`admin.vehiclesManagement.states.${vehicle.estadoEfectivo}`, vehicle.estadoEfectivo),
     ]);
   }, [filteredVehicles, esEncargado, divisa, tasaUSD, t]);
@@ -578,29 +578,6 @@ export default function VehicleManagementPage() {
             </div>
 
             <div className="branch-topbar-actions">
-              {((!esEncargado) || (esEncargado && activeTab === "vehiculos")) && (
-                <button
-                  className="cities-primary"
-                  type="button"
-                  onClick={() => {
-                    if (activeTab === "sede_central") {
-                      setNotice("Editando parámetros corporativos de Drivique Colombia.");
-                    } else if (activeTab === "sucursales") {
-                      setNotice("Para registrar nuevas sedes, dirígete al módulo de Sucursales.");
-                    } else if (activeTab === "flotas") {
-                      openCreateCategory();
-                    } else {
-                      openCreate();
-                    }
-                  }}
-                  disabled={esEncargado && activeTab === "vehiculos" && !sucursalAsignada}
-                >
-                  {activeTab === "sede_central" && "Editar Matriz"}
-                  {activeTab === "sucursales" && "+ Crear Sucursal"}
-                  {activeTab === "flotas" && t("fleetVehicles.createCategory", "+ Crear Categoría")}
-                  {activeTab === "vehiculos" && t("fleetVehicles.createVehicle", "+ Crear Vehículo")}
-                </button>
-              )}
               <MenuConfiguracion />
               {esEncargado && (
                 <div className="branch-user-profile-chip">
@@ -633,40 +610,68 @@ export default function VehicleManagementPage() {
             </div>
           )}
 
-          {/* Pestañas de Secciones (Adaptadas limpiamente al rol del usuario) */}
+          {/* Pestañas de Secciones y Botón Crear Vehículo a la derecha */}
           <div className="fleet-attached-tabs">
-            {!esEncargado && (
+            <div className="fleet-tabs-nav">
+              {!esEncargado && (
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("sede_central")}
+                  className={`fleet-tab-btn ${activeTab === "sede_central" ? "is-active" : ""}`}
+                >
+                  {t("fleetVehicles.tabHeadquarters", "Sede Central")}
+                </button>
+              )}
+              {!esEncargado && (
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("sucursales")}
+                  className={`fleet-tab-btn ${activeTab === "sucursales" ? "is-active" : ""}`}
+                >
+                  {t("fleetVehicles.tabBranches", "Sucursales")}
+                </button>
+              )}
               <button
                 type="button"
-                onClick={() => setActiveTab("sede_central")}
-                className={`fleet-tab-btn ${activeTab === "sede_central" ? "is-active" : ""}`}
+                onClick={() => setActiveTab("flotas")}
+                className={`fleet-tab-btn ${activeTab === "flotas" ? "is-active" : ""}`}
               >
-                {t("fleetVehicles.tabHeadquarters", "Sede Central")}
+                {t("fleetVehicles.tabCategories", "Categorías")}
               </button>
-            )}
-            {!esEncargado && (
               <button
                 type="button"
-                onClick={() => setActiveTab("sucursales")}
-                className={`fleet-tab-btn ${activeTab === "sucursales" ? "is-active" : ""}`}
+                onClick={() => setActiveTab("vehiculos")}
+                className={`fleet-tab-btn ${activeTab === "vehiculos" ? "is-active" : ""}`}
               >
-                {t("fleetVehicles.tabBranches", "Sucursales")}
+                {t("fleetVehicles.tabVehicles", "Vehículos")}
               </button>
-            )}
-            <button
-              type="button"
-              onClick={() => setActiveTab("flotas")}
-              className={`fleet-tab-btn ${activeTab === "flotas" ? "is-active" : ""}`}
-            >
-              {t("fleetVehicles.tabCategories", "Categorías")}
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab("vehiculos")}
-              className={`fleet-tab-btn ${activeTab === "vehiculos" ? "is-active" : ""}`}
-            >
-              {t("fleetVehicles.tabVehicles", "Vehículos")}
-            </button>
+            </div>
+
+            <div className="fleet-tabs-action">
+              {((!esEncargado) || (esEncargado && (activeTab === "vehiculos" || activeTab === "flotas"))) && (
+                <button
+                  className="cities-primary fleet-btn-create-tab"
+                  type="button"
+                  onClick={() => {
+                    if (activeTab === "sede_central") {
+                      setNotice("Editando parámetros corporativos de Drivique Colombia.");
+                    } else if (activeTab === "sucursales") {
+                      setNotice("Para registrar nuevas sedes, dirígete al módulo de Sucursales.");
+                    } else if (activeTab === "flotas") {
+                      openCreateCategory();
+                    } else {
+                      openCreate();
+                    }
+                  }}
+                  disabled={esEncargado && activeTab === "vehiculos" && !sucursalAsignada}
+                >
+                  {activeTab === "sede_central" && "Editar Matriz"}
+                  {activeTab === "sucursales" && "+ Crear Sucursal"}
+                  {activeTab === "flotas" && t("fleetVehicles.createCategory", "+ Crear Categoría")}
+                  {activeTab === "vehiculos" && t("fleetVehicles.createVehicle", "+ Crear Vehículo")}
+                </button>
+              )}
+            </div>
           </div>
 
           {/* TAB 1: SEDE CENTRAL (SOLO ADMIN GENERAL) */}
@@ -1466,12 +1471,28 @@ export default function VehicleManagementPage() {
                             )}
                           </td>
                           <td>
-                            {vehicle.picoYPlaca?.dia
-                              ? `Aplica (${t(
-                                  `vehiculo.picoYPlaca.dias.${vehicle.picoYPlaca.dia}`,
-                                  vehicle.picoYPlaca.dia
-                                )})`
-                              : "No aplica"}
+                            <span
+                              style={{
+                                display: "inline-block",
+                                padding: "4px 10px",
+                                borderRadius: 20,
+                                fontSize: 11,
+                                fontWeight: 700,
+                                background: vehicle.picoYPlaca?.dia
+                                  ? "rgba(239, 68, 68, 0.12)"
+                                  : "rgba(34, 197, 94, 0.12)",
+                                color: vehicle.picoYPlaca?.dia ? "#dc2626" : "#16a34a",
+                                border: `1px solid ${
+                                  vehicle.picoYPlaca?.dia
+                                    ? "rgba(239, 68, 68, 0.25)"
+                                    : "rgba(34, 197, 94, 0.25)"
+                                }`,
+                              }}
+                            >
+                              {vehicle.picoYPlaca?.dia
+                                ? t("admin.vehiclesManagement.applies", "Sí aplica")
+                                : t("admin.vehiclesManagement.doesNotApply", "No aplica")}
+                            </span>
                           </td>
                           <td>
                             <span
@@ -1608,8 +1629,8 @@ export default function VehicleManagementPage() {
                               />
                               <span className={`fleet-pico-badge ${pico.dia ? 'is-active' : 'is-none'}`}>
                                 {pico.dia
-                                  ? `Pico y Placa: ${t(`vehiculo.picoYPlaca.dias.${pico.dia}`, pico.dia)}`
-                                  : "Sin restricción"}
+                                  ? t("admin.vehiclesManagement.applies", "Sí aplica")
+                                  : t("admin.vehiclesManagement.doesNotApply", "No aplica")}
                               </span>
                             </div>
                           </div>
@@ -2091,7 +2112,7 @@ export default function VehicleManagementPage() {
                     </div>
 
                     <div className="fleet-modal-footer">
-                      <button type="button" className="cities-secondary" onClick={close}>
+                      <button type="button" className="fleet-btn-secondary" onClick={close}>
                         {t("common.cancel", "Cancelar")}
                       </button>
                       <button className="cities-primary" type="submit">
