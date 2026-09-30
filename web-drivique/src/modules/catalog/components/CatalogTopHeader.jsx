@@ -53,15 +53,21 @@ export default function CatalogTopHeader({
         boxShadow: c.navShadow,
       }}
     >
-      <div className={innerClassName}>
-        <Link to={modoRegistrado ? '/home' : '/catalogo'} className="catalogo-logo-link">
-          <img src={brand.logoDataUrl || logo} alt={brand.name} className="catalogo-logo" />
-          <span className="catalogo-logo-title" style={{ color: 'var(--brand-secondary)' }}>{brand.name}</span>
-        </Link>
+      <div className={innerClassName} style={{ position: 'relative' }}>
+        
+        {/* LEFT: Logo */}
+        <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-start' }}>
+          <Link to={modoRegistrado ? '/home' : '/catalogo'} className="catalogo-logo-link">
+            <img src={brand.logoDataUrl || logo} alt={brand.name} className="catalogo-logo" />
+            <span className="catalogo-logo-title" style={{ color: 'var(--brand-secondary)' }}>{brand.name}</span>
+          </Link>
+        </div>
 
-        {modoRegistrado && (
-          <nav className="catalogo-header-nav" style={{ display: 'flex', gap: '32px', alignItems: 'center', marginLeft: 'auto', marginRight: '32px' }}>
-            {menuOptions.map((option) => {
+        {/* CENTER: Navigation */}
+        <div style={{ flex: 2, display: 'flex', justifyContent: 'center' }}>
+          {modoRegistrado && (
+            <nav className="catalogo-header-nav" style={{ display: 'flex', gap: '32px', alignItems: 'center' }}>
+              {menuOptions.map((option) => {
               const isActive = currentPath === option.path;
               const esNotif = option.path === '/notificaciones';
               
@@ -122,12 +128,14 @@ export default function CatalogTopHeader({
                 </Link>
               );
             })}
-          </nav>
-        )}
+            </nav>
+          )}
+        </div>
 
-        {children}
+        {/* RIGHT: Profile & Settings */}
+        <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '12px', position: 'relative', zIndex: 10 }}>
+          {children}
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginLeft: 'auto', flexShrink: 0, position: 'relative', zIndex: 10 }}>
           <MenuConfiguracion />
 
           {mostrarVolverInicio && (
