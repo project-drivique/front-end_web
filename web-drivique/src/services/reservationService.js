@@ -60,15 +60,8 @@ const DEMO_RESERVA_FINALIZADA = {
   metodoPago: 'wompi',
   vehiculoId: 1,
   vehiculoNombre: 'Kia Cerato 2024',
-  sucursalRetiro: 'domicilio',
-  sucursalDevolucion: 'domicilio',
-  domicilioDireccion: 'Calle 20 # 1a W 23',
-  domicilioBarrio: 'Álamos Norte',
-  domicilioReferencias: 'Casa blanca de 2 pisos frente al parque',
-  domicilioPin: '5523',
-  domicilioEstado: 'ENTREGADO',
-  domicilioConductor: 'Carlos Restrepo',
-  domicilioTelefonoConductor: '+57 312 456 7890',
+  sucursalRetiro: 'Alamo Bogotá - Aeropuerto',
+  sucursalDevolucion: 'Alamo Bogotá - Aeropuerto',
   fechaInicio: '2026-09-15T07:30:00Z',
   fechaFin: '2026-09-18T19:00:00Z',
   horaInicio: '07:30',
@@ -83,7 +76,34 @@ const DEMO_RESERVA_FINALIZADA = {
   }
 }
 
-const INITIAL_RESERVATIONS_SEED = [DEMO_RESERVA_FINALIZADA];
+const DEMO_RESERVA_EFECTIVO = {
+  id: 'RES-2026-EFECTIVO',
+  referencia: 'RES-2026-EFECTIVO',
+  codigo: 'RES-2026-EFECTIVO',
+  estado: 'PENDIENTE_EFECTIVO',
+  pagoEstado: 'pendiente',
+  metodoPago: 'efectivo',
+  vehiculoId: 2,
+  vehiculoNombre: 'Renault Sandero 2024',
+  sucursalRetiro: 'Alamo Bogotá - Aeropuerto',
+  sucursalDevolucion: 'Alamo Bogotá - Aeropuerto',
+  fechaInicio: '2026-10-15T08:00:00Z',
+  fechaFin: '2026-10-18T18:00:00Z',
+  horaInicio: '08:00',
+  horaFin: '18:00',
+  fechaCreacion: new Date().toISOString(),
+  fechaLimitePago: new Date(Date.now() + 72 * 3600000).toISOString(),
+  total: 250000,
+  totalCOP: 250000,
+  datosForm: {
+    nombre: 'Prueba Efectivo',
+    correo: 'efectivo@drivique.com',
+    celular: '+57 311 222 3344',
+    numDoc: '1122334455'
+  }
+}
+
+const INITIAL_RESERVATIONS_SEED = [DEMO_RESERVA_FINALIZADA, DEMO_RESERVA_EFECTIVO];
 
 export const reservationService = {
   getReservas: () => {
@@ -94,11 +114,15 @@ export const reservationService = {
         reservas = INITIAL_RESERVATIONS_SEED;
         localStorage.setItem(STORAGE_KEY, JSON.stringify(reservas));
       } else {
-        // Asegurar que la reserva demo este presente para la vista del usuario
-        if (!reservas.some(r => r.id === 'RES-2026-DEMO' || r.referencia === 'RES-2026-DEMO')) {
+        // Asegurar que las reservas demo estén presentes para la vista del usuario
+        if (!reservas.some(r => r.id === 'RES-2026-DEMO')) {
           reservas.unshift(DEMO_RESERVA_FINALIZADA);
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(reservas));
         }
+        if (!reservas.some(r => r.id === 'RES-2026-EFECTIVO')) {
+          reservas.unshift(DEMO_RESERVA_EFECTIVO);
+        }
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(reservas));
+        
         // Limpiar reservas residuales anteriores
         const legacySeedIds = new Set(['RES-2026-9102', 'RES-1788806368641-R95O5FB', 'RES-1788806368641-R9505FB']);
         reservas = reservas.filter(r => !legacySeedIds.has(r.referencia) && !legacySeedIds.has(r.id) && !legacySeedIds.has(r.codigo));
