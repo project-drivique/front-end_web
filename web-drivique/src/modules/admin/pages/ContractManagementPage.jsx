@@ -189,15 +189,17 @@ export default function ContractManagementPage() {
       <ManagementSidebar branchOnly={esEncargado} />
       <main className="management-main" style={{ padding: "24px 32px" }}>
         <div className="cities-container" style={{ maxWidth: "100%" }}>
-          <header className="cities-topbar">
+          <header className="cities-topbar" style={{ marginBottom: "24px", display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
             <div>
-              <p className="cities-eyebrow">
+              <p className="cities-eyebrow" style={{ color: "#3b82f6", fontWeight: "700", textTransform: "uppercase", fontSize: "12px", letterSpacing: "0.5px", marginBottom: "4px" }}>
                 {esEncargado
-                  ? `${t("admin.branchRole")} (${sucursalEncargado})`
-                  : t("admin.management", "Gestión Operativa")}
+                  ? `ENCARGADO DE SUCURSAL (${sucursalEncargado})`
+                  : t("admin.management", "GESTIÓN OPERATIVA")}
               </p>
-              <h1>{t("admin.contractsPage.title", "Gestión de Contratos")}</h1>
-              <p className="cities-subtitle">
+              <h1 style={{ fontSize: "32px", fontWeight: "900", color: "#0f172a", margin: "0 0 8px 0", letterSpacing: "-0.5px" }}>
+                {t("admin.contractsPage.title", "Gestión de Contratos")}
+              </h1>
+              <p className="cities-subtitle" style={{ fontSize: "14px", color: "#64748b", margin: 0 }}>
                 {t(
                   "admin.contractsPage.subtitle",
                   "Consulta y gestiona los contratos de alquiler, exporta la información e imprime documentos oficiales.",
@@ -327,7 +329,7 @@ export default function ContractManagementPage() {
                           <button
                             type="button"
                             onClick={() => handleDownloadSinglePdf(c)}
-                            style={{ padding: '6px 12px', fontSize: '13px', background: '#10b981', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'normal' }}
+                            style={{ padding: '6px 12px', fontSize: '13px', background: '#ef4444', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'normal' }}
                           >
                             Descargar
                           </button>
