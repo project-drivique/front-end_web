@@ -877,3 +877,6 @@ html.dark .reservations-subtabs-nav {
 .reservations-admin-table th:last-child {
   border-top-right-radius: 14px;
 }
+
+.reservations-management-page .cities-table-wrap th:first-child { border-top-left-radius: 14px !important; }
+.reservations-management-page .cities-table-wrap th:last-child { border-top-right-radius: 14px !important; }
