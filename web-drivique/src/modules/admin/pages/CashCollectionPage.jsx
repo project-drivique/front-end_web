@@ -234,6 +234,8 @@ export default function CashCollectionPage({ branchOnly = false }) {
   const [modalReserva, setModalReserva] = useState(null)
   const [observacionesCaja, setObservacionesCaja] = useState('')
   const [procesandoPago, setProcesandoPago] = useState(false)
+  const [isSearchRefModalOpen, setIsSearchRefModalOpen] = useState(false)
+  const [searchRefValue, setSearchRefValue] = useState('')
 
   // Cargar lista de reservas
   const cargarReservas = useCallback(() => {
@@ -496,6 +498,34 @@ export default function CashCollectionPage({ branchOnly = false }) {
     }
   }
 
+  const handleSearchRef = () => {
+    if (!searchRefValue.trim()) return
+    const ref = searchRefValue.trim().toLowerCase()
+    const found = todasLasReservas.find(r => 
+      String(r.codigo || '').toLowerCase() === ref || 
+      String(r.referencia || '').toLowerCase() === ref || 
+      String(r.id || '').toLowerCase() === ref
+    )
+
+    if (found) {
+      const rawMetodo = String(found.reservaDetalles?.metodoPago || found.pasarela || found.metodoPagoConfirmado || 'Wompi').toLowerCase()
+      const esEfectivo = rawMetodo.includes('efectivo') || rawMetodo.includes('sucursal') || String(found.estado).toLowerCase().includes('efectivo')
+      const pagoConfirmado = esEfectivo ? esCobradoEnSucursal(found) : (found.pagoEstado === 'aprobado' || found.estadoPago === 'aprobado' || found.estado === 'confirmada' || found.estado === 'en_curso' || found.estado === 'finalizada')
+      
+      if (pagoConfirmado) {
+        showAlert('Información', 'Esta reserva ya está registrada como pagada.', 'info')
+      } else if (!esEfectivo) {
+        showAlert('Información', 'Esta reserva tiene método de pago digital.', 'info')
+      } else {
+        setIsSearchRefModalOpen(false)
+        setSearchRefValue('')
+        openModalCobro(found)
+      }
+    } else {
+      showAlert('No encontrada', 'No se encontró ninguna reserva pendiente con esta referencia.', 'error')
+    }
+  }
+
   return (
     <div className={`management-shell ${tema === 'oscuro' ? 'management-shell--dark' : ''}`}>
       <ManagementSidebar branchOnly={branchOnly} />
@@ -568,9 +598,18 @@ export default function CashCollectionPage({ branchOnly = false }) {
                     type="text"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    placeholder="Buscar por código, cliente, auto, placa..."
+                    placeholder="Buscar cliente o placa..."
                   />
                 </div>
+
+                <button 
+                  type="button"
+                  className="cash-btn-primary"
+                  onClick={() => setIsSearchRefModalOpen(true)}
+                  style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', background: '#f59e0b', borderColor: '#f59e0b', whiteSpace: 'nowrap', borderRadius: '8px', border: 'none', color: '#fff', fontWeight: 600, cursor: 'pointer' }}
+                >
+                  <FaSearch /> Cobrar por Referencia
+                </button>
 
                 {/* Dropdown Todos los estados */}
                 <div className="cash-select-box">
@@ -894,8 +933,8 @@ export default function CashCollectionPage({ branchOnly = false }) {
 
                   <div style={{ background: '#f9fafb', border: '1px solid #f3f4f6', borderRadius: '12px', padding: '20px', marginBottom: '24px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px', fontSize: '14px' }}>
-                      <span style={{ color: '#6b7280' }}>Reserva</span>
-                      <strong style={{ color: '#111827' }}>{modalReserva.codigo || modalReserva.id}</strong>
+                      <span style={{ color: '#6b7280' }}>Referencia</span>
+                      <strong style={{ color: '#111827' }}>{modalReserva.codigo || modalReserva.referencia || modalReserva.id}</strong>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px', fontSize: '14px' }}>
                       <span style={{ color: '#6b7280' }}>Cliente</span>
@@ -998,6 +1037,41 @@ export default function CashCollectionPage({ branchOnly = false }) {
           </section>
         </div>
       )}
+      {/* MODAL PARA BUSCAR POR REFERENCIA */}
+      {isSearchRefModalOpen && (
+        <div className="cash-modal-overlay">
+          <div className="cash-modal-content" style={{ maxWidth: '400px', width: '100%' }}>
+            <div className="cash-modal-header" style={{ padding: '20px 24px', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 700, color: '#0f172a' }}>Buscar por Referencia</h3>
+              <button className="cash-modal-close" onClick={() => { setIsSearchRefModalOpen(false); setSearchRefValue(''); }} style={{ background: 'transparent', border: 'none', fontSize: '24px', cursor: 'pointer', color: '#64748b' }}>×</button>
+            </div>
+            <div className="cash-modal-body" style={{ padding: '24px' }}>
+              <p style={{ fontSize: '14px', color: '#64748b', marginBottom: '16px', lineHeight: 1.5 }}>
+                Ingresa la referencia de pago (ej. RES-17908...) entregada por el cliente. Si la reserva está pendiente, podrás confirmar el pago al instante.
+              </p>
+              <input 
+                type="text" 
+                placeholder="Ej. RES-17908..."
+                value={searchRefValue}
+                onChange={e => setSearchRefValue(e.target.value)}
+                style={{ width: '100%', padding: '12px', border: '2px solid #e2e8f0', borderRadius: '8px', fontSize: '15px', marginBottom: '20px', outline: 'none' }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') handleSearchRef();
+                }}
+                autoFocus
+              />
+              <button 
+                type="button" 
+                onClick={handleSearchRef}
+                style={{ width: '100%', background: '#3b82f6', color: '#fff', border: 'none', borderRadius: '8px', padding: '12px', fontSize: '15px', fontWeight: 600, cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}
+              >
+                <FaSearch /> Buscar y Cobrar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ── MODAL COMPROBANTE DIGITAL (RÉPLICA WOMPI) ── */}
       {comprobanteDigital && (
         <div
