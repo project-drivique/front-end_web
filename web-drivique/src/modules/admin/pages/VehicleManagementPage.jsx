@@ -100,8 +100,8 @@ export default function VehicleManagementPage() {
     user?.sucursal || user?.sucursalId || user?.sucursalAsignada || "Alamo Bogotá - Aeropuerto";
   const assignedBranchKey = normalizeBranch(sucursalAsignada);
 
-  // Pestañas activas: Encargado inicia en 'flotas' (Categorías) o 'vehiculos'; Admin en 'sede_central'
-  const [activeTab, setActiveTab] = useState(() => (esEncargado ? "flotas" : "sede_central"));
+  // Pestañas activas: Encargado inicia en 'vehiculos' (o 'flotas'); Admin en 'sede_central'
+  const [activeTab, setActiveTab] = useState(() => (esEncargado ? "vehiculos" : "sede_central"));
 
   const [vehicles, setVehicles] = useState(() => vehicleManagementService.list());
   const [categories, setCategories] = useState(() => branchCategoryService.listCategories());
@@ -515,35 +515,40 @@ export default function VehicleManagementPage() {
       <ManagementSidebar branchOnly={esEncargado} />
       <main className="management-main" style={{ padding: "24px 32px" }}>
         <div className="cities-container" style={{ maxWidth: "100%" }}>
-          <header className="cities-topbar">
-            <div>
-              <p className="cities-eyebrow">
+          {/* TOPBAR OPERATIVA UNIFICADA (Idéntica a Mi Sucursal y Dashboard) */}
+          <div className="branch-topbar">
+            <div className="branch-topbar-brand-title">
+              <span className="branch-topbar-badge">
                 {esEncargado
-                  ? t("fleetVehicles.eyebrowManager", `Sucursal: ${sucursalAsignada}`)
-                  : t("fleetVehicles.eyebrowAdmin", "Administración General")}
-              </p>
-              <h1>
+                  ? t("fleetVehicles.eyebrowManager", "GESTIÓN DE SUCURSAL")
+                  : t("fleetVehicles.eyebrowAdmin", "ADMINISTRACIÓN GENERAL")}
+              </span>
+              <h1 className="branch-topbar-heading">
                 {esEncargado
-                  ? t("fleetVehicles.title", "Flota y vehículos")
+                  ? t("fleetVehicles.title", "Flota y Vehículos")
                   : t("fleetVehicles.titleAdmin", "Gestión de Vehículos")}
               </h1>
-              <p className="cities-subtitle">
-                {esEncargado
-                  ? t(
-                      "fleetVehicles.subtitleManager",
-                      `Control y gestión del estado operativo de los vehículos asignados a ${sucursalAsignada}.`,
-                      { branch: sucursalAsignada }
-                    )
-                  : t(
-                      "fleetVehicles.subtitleAdmin",
-                      "Administración integral de vehículos, categorías, asignación por sucursal y estado de operación."
-                    )}
-              </p>
             </div>
-            <div className="cities-topbar__actions">
+
+            <div className="branch-topbar-actions">
               <MenuConfiguracion />
-              {/* Botón superior dinámico según rol y pestaña activa */}
-              {(!esEncargado || activeTab === "vehiculos") && (
+              {esEncargado && (
+                <div className="branch-user-profile-chip">
+                  <div className="branch-user-avatar">
+                    {(user?.nombre || user?.correo || "A").charAt(0).toUpperCase()}
+                  </div>
+                  <div className="branch-user-info-text">
+                    <strong className="branch-user-name">
+                      {user?.nombre || "Andrés Felipe Castro"}
+                    </strong>
+                    <span className="branch-user-role">
+                      {user?.rol || "encargado_sucursal"}
+                    </span>
+                  </div>
+                </div>
+              )}
+              {/* Botón superior para Admin General */}
+              {!esEncargado && (
                 <button
                   className="cities-primary"
                   type="button"
@@ -558,16 +563,52 @@ export default function VehicleManagementPage() {
                       openCreate();
                     }
                   }}
-                  disabled={esEncargado && activeTab === "vehiculos" && !sucursalAsignada}
                 >
                   {activeTab === "sede_central" && "Editar Matriz"}
                   {activeTab === "sucursales" && "+ Crear Sucursal"}
-                  {activeTab === "flotas" && !esEncargado && t("fleetVehicles.createCategory", "+ Crear Categoría")}
+                  {activeTab === "flotas" && t("fleetVehicles.createCategory", "+ Crear Categoría")}
                   {activeTab === "vehiculos" && t("fleetVehicles.createVehicle", "+ Crear Vehículo")}
                 </button>
               )}
             </div>
-          </header>
+          </div>
+
+          {/* HERO BANNER DE LA FLOTA (Idéntico al de Mi Sucursal) */}
+          {esEncargado && (
+            <header className="branch-profile-hero-banner">
+              <div className="branch-profile-hero-content">
+                <div className="branch-profile-hero-badge-row">
+                  <div className="branch-profile-hero-badge">
+                    <span className="branch-profile-live-dot" />
+                    <span>Flota y Parque Automotor Asignado</span>
+                  </div>
+                  <span className="branch-profile-type-tag">
+                    {filteredVehicles.length} {filteredVehicles.length === 1 ? "Vehículo Registrado" : "Vehículos Registrados"}
+                  </span>
+                </div>
+
+                <h1 className="branch-profile-hero-title">
+                  {sucursalAsignada || "Alamo Bogotá - Aeropuerto"}
+                </h1>
+
+                <p className="branch-profile-hero-subtitle">
+                  Gestión integral de vehículos, categorías activas, disponibilidad operativa y mantenimiento.
+                </p>
+              </div>
+
+              <div className="branch-profile-hero-actions">
+                <button
+                  type="button"
+                  className="branch-hero-btn branch-hero-btn--white"
+                  onClick={openCreate}
+                  disabled={!sucursalAsignada}
+                >
+                  <FaPlus aria-hidden="true" />
+                  <span>{t("fleetVehicles.createVehicle", "Crear Vehículo")}</span>
+                </button>
+              </div>
+            </header>
+          )}
 
           {notice && (
             <div className="cities-notice" role="status">
@@ -1057,11 +1098,12 @@ export default function VehicleManagementPage() {
                         /* CABECERAS PARA ENCARGADO DE SUCURSAL */
                         <tr>
                           <th style={{ width: 60 }}>ID</th>
-                          <th>{t("categoriesManagement.category", "Categoría")}</th>
-                          <th style={{ textAlign: "center" }}>
+                          <th>{t("categoriesManagement.categoryName", "Nombre de la Categoría")}</th>
+                          <th>{t("categoriesManagement.description", "Descripción")}</th>
+                          <th style={{ textAlign: "center", whiteSpace: "nowrap" }}>
                             {t("categoriesManagement.vehiclesInMyBranch", "Vehículos en mi sucursal")}
                           </th>
-                          <th style={{ textAlign: "center", minWidth: 200 }}>
+                          <th style={{ textAlign: "center", minWidth: 200, whiteSpace: "nowrap" }}>
                             {t("categoriesManagement.offerThisCategory", "Ofrezco esta categoría")}
                           </th>
                         </tr>
@@ -1104,14 +1146,14 @@ export default function VehicleManagementPage() {
                             <tr key={gf.id}>
                               <td>{gf.id}</td>
                               <td>
-                                <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
-                                  <strong style={{ fontSize: 14, color: "var(--adm-text, #0f172a)" }}>
-                                    {gf.nombre}
-                                  </strong>
-                                  <span style={{ fontSize: 12.5, color: "var(--city-muted, #64748b)", lineHeight: 1.4 }}>
-                                    {gf.descripcion}
-                                  </span>
-                                </div>
+                                <strong style={{ fontSize: 13.5, color: "var(--adm-text, #0f172a)", whiteSpace: "nowrap" }}>
+                                  {gf.nombre}
+                                </strong>
+                              </td>
+                              <td>
+                                <span style={{ fontSize: 12.5, color: "var(--city-muted, #64748b)", lineHeight: 1.45 }}>
+                                  {gf.descripcion}
+                                </span>
                               </td>
                               <td style={{ textAlign: "center" }}>
                                 <span
@@ -1123,6 +1165,7 @@ export default function VehicleManagementPage() {
                                     color: vehiclesInBranch > 0 ? "var(--brand-primary, #2563eb)" : "var(--city-muted, #64748b)",
                                     fontWeight: 700,
                                     fontSize: 13,
+                                    whiteSpace: "nowrap",
                                   }}
                                 >
                                   {vehiclesInBranch}{" "}
@@ -1258,10 +1301,17 @@ export default function VehicleManagementPage() {
                   <input
                     value={search}
                     onChange={(event) => setSearch(event.target.value)}
-                    placeholder={t(
-                      "admin.vehiclesManagement.search",
-                      "Buscar por modelo, placa, categoría..."
-                    )}
+                    placeholder={
+                      esEncargado
+                        ? t(
+                            "admin.vehiclesManagement.searchManager",
+                            "Buscar por vehículo, placa o categoría..."
+                          )
+                        : t(
+                            "admin.vehiclesManagement.search",
+                            "Buscar por vehículo, placa, categoría o sucursal..."
+                          )
+                    }
                   />
                 </label>
 
