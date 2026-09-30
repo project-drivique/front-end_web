@@ -379,256 +379,61 @@ export default function ContractManagementPage() {
               </button>
             </div>
 
-            <div className="contracts-detail-body">
-              <div className="incident-grid-2 contracts-detail-grid">
-                <div className="incident-field">
-                  <span className="incident-field-label">
-                    {t("admin.contractsPage.fields.reservationCode", "Reserva")}
-                  </span>
-                  <div
-                    style={{
-                      padding: "10px 14px",
-                      background: "var(--city-bg)",
-                      borderRadius: 8,
-                      border: "1px solid var(--city-border)",
-                      fontWeight: 500,
-                    }}
-                  >
-                    {modalDetalle.reservaCodigo}
-                  </div>
-                </div>
-                <div className="incident-field">
-                  <span className="incident-field-label">
-                    {t("admin.contractsPage.fields.state", "Estado")}
-                  </span>
-                  <div
-                    style={{
-                      padding: "10px 14px",
-                      background: "var(--city-bg)",
-                      borderRadius: 8,
-                      border: "1px solid var(--city-border)",
-                    }}
-                  >
-                    <span
-                      className={`res-status res-status--${modalDetalle.estado}`}
-                      style={{ display: "inline-block" }}
-                    >
-                      {t(
-                        `admin.contractsPage.states.${modalDetalle.estado}`,
-                        modalDetalle.estado,
-                      )}
-                    </span>
-                  </div>
-                </div>
+              <div className="contracts-detail-body" style={{ background: '#f8fafc', padding: '24px', borderRadius: '8px', border: '1px solid #e2e8f0', maxHeight: '60vh', overflowY: 'auto' }}>
+                <div style={{ background: '#fff', padding: '40px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', color: '#0f172a', fontFamily: 'serif', fontSize: '14px', lineHeight: '1.6' }}>
+                  <h3 style={{ textAlign: 'center', fontSize: '18px', fontWeight: 'bold', marginBottom: '24px', textTransform: 'uppercase' }}>
+                    Contrato de Alquiler de Vehículo No. {modalDetalle.contratoNumero || `CTR-${modalDetalle.reservaCodigo}`}
+                  </h3>
+                  
+                  <p style={{ marginBottom: '16px', textAlign: 'justify' }}>
+                    Entre los suscritos a saber: por una parte <strong>Drivique Rent-A-Car</strong>, en adelante el <strong>ARRENDADOR</strong>, a través de su sucursal <strong>{modalDetalle.sucursal}</strong>, 
+                    y por la otra parte <strong>{modalDetalle.clienteNombre || 'CLIENTE NO DEFINIDO'}</strong>, mayor de edad, identificado(a) con documento número <strong>{modalDetalle.clienteDocumento || '00000000'}</strong>, en adelante el <strong>ARRENDATARIO</strong>, 
+                    hemos celebrado el presente CONTRATO DE ARRENDAMIENTO DE VEHÍCULO, el cual se regirá por las siguientes cláusulas:
+                  </p>
 
-                <div className="incident-field">
-                  <span className="incident-field-label">
-                    {t("admin.contractsPage.fields.clientName", "Cliente")}
-                  </span>
-                  <div
-                    style={{
-                      padding: "10px 14px",
-                      background: "var(--city-bg)",
-                      borderRadius: 8,
-                      border: "1px solid var(--city-border)",
-                    }}
-                  >
-                    <FaUser
-                      style={{
-                        marginRight: 8,
-                        color: "var(--city-text-muted)",
-                      }}
-                    />
-                    {modalDetalle.clienteNombre}
-                  </div>
-                </div>
-                <div className="incident-field">
-                  <span className="incident-field-label">
-                    {t("admin.contractsPage.fields.clientDoc", "Documento")}
-                  </span>
-                  <div
-                    style={{
-                      padding: "10px 14px",
-                      background: "var(--city-bg)",
-                      borderRadius: 8,
-                      border: "1px solid var(--city-border)",
-                    }}
-                  >
-                    {modalDetalle.clienteDocumento}
-                  </div>
-                </div>
+                  <p style={{ marginBottom: '16px', textAlign: 'justify' }}>
+                    <strong>PRIMERA - OBJETO:</strong> El ARRENDADOR entrega a título de arrendamiento al ARRENDATARIO, y este lo recibe a su entera satisfacción en el mismo título, el vehículo de placa <strong>{modalDetalle.vehiculoPlaca || 'XXX-000'}</strong>, 
+                    marca/modelo <strong>{modalDetalle.vehiculoNombre || 'VEHÍCULO'}</strong>, en perfecto estado de funcionamiento, limpieza y conservación.
+                  </p>
 
-                <div className="incident-field">
-                  <span className="incident-field-label">
-                    {t("admin.contractsPage.fields.clientEmail", "Correo")}
-                  </span>
-                  <div
-                    style={{
-                      padding: "10px 14px",
-                      background: "var(--city-bg)",
-                      borderRadius: 8,
-                      border: "1px solid var(--city-border)",
-                    }}
-                  >
-                    {modalDetalle.clienteCorreo}
-                  </div>
-                </div>
-                <div className="incident-field">
-                  <span className="incident-field-label">
-                    {t("admin.contractsPage.fields.clientPhone", "Teléfono")}
-                  </span>
-                  <div
-                    style={{
-                      padding: "10px 14px",
-                      background: "var(--city-bg)",
-                      borderRadius: 8,
-                      border: "1px solid var(--city-border)",
-                    }}
-                  >
-                    {modalDetalle.clienteTelefono}
-                  </div>
-                </div>
+                  <p style={{ marginBottom: '16px', textAlign: 'justify' }}>
+                    <strong>SEGUNDA - TÉRMINO:</strong> El término de duración del presente contrato inicia el <strong>{modalDetalle.fechaInicio?.replace("T", " ") || 'FECHA DE INICIO'}</strong> y finaliza el <strong>{modalDetalle.fechaFin?.replace("T", " ") || 'FECHA DE FIN'}</strong>. 
+                    El ARRENDATARIO se obliga a devolver el vehículo en las mismas condiciones en la fecha de finalización pactada, en la sucursal de origen, a menos que se haya acordado expresamente lo contrario.
+                  </p>
 
-                <div className="incident-field" style={{ gridColumn: "span 2" }}>
-                  <span className="incident-field-label">
-                    {t("admin.contractsPage.fields.vehicle", "Vehículo Asociado")}
-                  </span>
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 14,
-                      padding: "12px 16px",
-                      background: "var(--city-bg)",
-                      borderRadius: 12,
-                      border: "1px solid var(--city-border)",
-                    }}
-                  >
-                    <img
-                      src={getVehiculoImagen(modalDetalle)}
-                      alt={modalDetalle.vehiculoNombre || "Vehículo"}
-                      style={{
-                        width: 72,
-                        height: 48,
-                        objectFit: "cover",
-                        borderRadius: 8,
-                        border: "1px solid #cbd5e1",
-                        flexShrink: 0,
-                        boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
-                      }}
-                      onError={(e) => {
-                        e.currentTarget.onerror = null;
-                        e.currentTarget.src =
-                          "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/a2cb0b378c25efdb1e116246f84149744c2f4081.jpg";
-                      }}
-                    />
-                    <div>
-                      <strong style={{ display: "block", fontSize: 14, color: "var(--city-text)" }}>
-                        {modalDetalle.vehiculoNombre}
-                      </strong>
-                      <span style={{ fontSize: 12, color: "#64748b", fontWeight: 600 }}>
-                        Placa: <strong style={{ color: "var(--brand-text)" }}>{modalDetalle.vehiculoPlaca}</strong> • {modalDetalle.sucursal}
-                      </span>
+                  <p style={{ marginBottom: '16px', textAlign: 'justify' }}>
+                    <strong>TERCERA - PRECIO:</strong> El valor total del arrendamiento por el período pactado asciende a la suma de <strong>{formatCurrency(modalDetalle.totalCOP || 0)} COP</strong>, el cual incluye los seguros básicos obligatorios. 
+                    Cualquier extensión del periodo de arrendamiento, peajes, multas o daños no cubiertos por el seguro serán facturados adicionalmente al ARRENDATARIO.
+                  </p>
+
+                  <p style={{ marginBottom: '32px', textAlign: 'justify' }}>
+                    <strong>CUARTA - USO DEL VEHÍCULO:</strong> El vehículo arrendado solo podrá ser conducido por el ARRENDATARIO o los conductores adicionales expresamente autorizados. Queda estrictamente prohibido utilizar el vehículo para actividades ilícitas, 
+                    transporte de carga peligrosa, remolcar otros vehículos, o sacarlo del territorio nacional sin previa autorización escrita.
+                  </p>
+
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '60px', borderTop: '1px solid #cbd5e1', paddingTop: '20px' }}>
+                    <div style={{ width: '45%' }}>
+                      <p style={{ fontWeight: 'bold', marginBottom: '40px' }}>EL ARRENDADOR</p>
+                      <div style={{ borderBottom: '1px solid #0f172a', marginBottom: '8px' }}></div>
+                      <p>Drivique Rent-A-Car</p>
+                      <p style={{ fontSize: '12px', color: '#64748b' }}>NIT: 900.123.456-7</p>
+                    </div>
+                    <div style={{ width: '45%' }}>
+                      <p style={{ fontWeight: 'bold', marginBottom: '40px' }}>EL ARRENDATARIO</p>
+                      <div style={{ borderBottom: '1px solid #0f172a', marginBottom: '8px' }}>
+                        {modalDetalle.estado === 'firmado' && (
+                          <div style={{ fontStyle: 'italic', color: '#10b981', textAlign: 'center', marginTop: '-20px', marginBottom: '4px' }}>
+                            Firmado electrónicamente
+                          </div>
+                        )}
+                      </div>
+                      <p>{modalDetalle.clienteNombre || 'CLIENTE'}</p>
+                      <p style={{ fontSize: '12px', color: '#64748b' }}>C.C. {modalDetalle.clienteDocumento || '00000000'}</p>
                     </div>
                   </div>
-                </div>
-                <div className="incident-field">
-                  <span className="incident-field-label">
-                    {t("admin.contractsPage.fields.branch", "Sucursal")}
-                  </span>
-                  <div
-                    style={{
-                      padding: "10px 14px",
-                      background: "var(--city-bg)",
-                      borderRadius: 8,
-                      border: "1px solid var(--city-border)",
-                    }}
-                  >
-                    <FaBuilding
-                      style={{
-                        marginRight: 8,
-                        color: "var(--city-text-muted)",
-                      }}
-                    />
-                    {modalDetalle.sucursal}
-                  </div>
-                </div>
-
-                <div className="incident-field">
-                  <span className="incident-field-label">
-                    {t("admin.contractsPage.fields.startDate", "Inicio")}
-                  </span>
-                  <div
-                    style={{
-                      padding: "10px 14px",
-                      background: "var(--city-bg)",
-                      borderRadius: 8,
-                      border: "1px solid var(--city-border)",
-                    }}
-                  >
-                    <FaCalendarAlt
-                      style={{
-                        marginRight: 8,
-                        color: "var(--city-text-muted)",
-                      }}
-                    />
-                    {modalDetalle.fechaInicio?.replace("T", " ")}
-                  </div>
-                </div>
-                <div className="incident-field">
-                  <span className="incident-field-label">
-                    {t("admin.contractsPage.fields.endDate", "Fin")}
-                  </span>
-                  <div
-                    style={{
-                      padding: "10px 14px",
-                      background: "var(--city-bg)",
-                      borderRadius: 8,
-                      border: "1px solid var(--city-border)",
-                    }}
-                  >
-                    <FaCalendarAlt
-                      style={{
-                        marginRight: 8,
-                        color: "var(--city-text-muted)",
-                      }}
-                    />
-                    {modalDetalle.fechaFin?.replace("T", " ")}
-                  </div>
-                </div>
-
-                <div className="incident-field">
-                  <span className="incident-field-label">
-                    {t("admin.contractsPage.fields.total", "Total COP")}
-                  </span>
-                  <div
-                    style={{
-                      padding: "10px 14px",
-                      background: "var(--city-bg)",
-                      borderRadius: 8,
-                      border: "1px solid var(--city-border)",
-                      fontWeight: 600,
-                    }}
-                  >
-                    {formatCurrency(modalDetalle.totalCOP)}
-                  </div>
-                </div>
-                <div className="incident-field">
-                  <span className="incident-field-label">
-                    {t(
-                      "admin.contractsPage.fields.signatureDate",
-                      "Fecha de firma",
-                    )}
-                  </span>
-                  <div
-                    style={{
-                      padding: "10px 14px",
-                      background: "var(--city-bg)",
-                      borderRadius: 8,
-                      border: "1px solid var(--city-border)",
-                    }}
-                  >
-                    {modalDetalle.fechaFirma ? new Date(modalDetalle.fechaFirma).toLocaleString(i18n.resolvedLanguage || i18n.language) : t("admin.contractsPage.unsigned")}
+                  
+                  <div style={{ marginTop: '40px', fontSize: '11px', color: '#94a3b8', textAlign: 'center' }}>
+                    Documento generado el {new Date().toLocaleDateString('es-CO')} | ID Reserva: {modalDetalle.reservaCodigo} | Estado: {modalDetalle.estado?.toUpperCase()}
                   </div>
                 </div>
               </div>
