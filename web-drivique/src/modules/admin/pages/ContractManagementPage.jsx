@@ -277,8 +277,10 @@ export default function ContractManagementPage() {
                     let finalName = c.clienteNombre || 'Cliente Registrado';
                     const cod = c.reservaCodigo || c.id || '';
                     if (finalName === 'Cliente Registrado' || finalName === 'Cliente Drivique') {
+                      const rawCod = String(cod).replace('CTR-', '');
+                      const hash = rawCod.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
                       const mockNames = ['Carlos Mendoza', 'Ana Lucía Ramírez', 'Juan Diego Gómez', 'María Camila Torres', 'Andrés Felipe Castro', 'Valentina Rojas', 'Santiago Silva', 'Diana Marcela Ruiz'];
-                      const nameIdx = String(cod).charCodeAt(String(cod).length - 1) % mockNames.length;
+                      const nameIdx = hash % mockNames.length;
                       finalName = mockNames[nameIdx];
                     }
                     return (

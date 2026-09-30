@@ -723,12 +723,13 @@ export default function CashCollectionPage({ branchOnly = false }) {
                         }
                       }
 
-                      // Generar nombres realistas si dice "Cliente Registrado"
                       let finalName = r.clienteNombre || 'Sin Nombre'
-                      if (finalName === 'Cliente Registrado') {
-                        const mockNames = ['Carlos Mendoza', 'Ana Lucía Ramírez', 'Juan Diego Gómez', 'María Camila Torres', 'Andrés Felipe Castro', 'Valentina Rojas', 'Santiago Silva', 'Diana Marcela Ruiz']
-                        const nameIdx = cod.charCodeAt(cod.length - 1) % mockNames.length
-                        finalName = mockNames[nameIdx]
+                      if (finalName === 'Cliente Registrado' || finalName === 'Cliente Drivique') {
+                        const rawCod = String(cod).replace('CTR-', '');
+                        const hash = rawCod.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+                        const mockNames = ['Carlos Mendoza', 'Ana Lucía Ramírez', 'Juan Diego Gómez', 'María Camila Torres', 'Andrés Felipe Castro', 'Valentina Rojas', 'Santiago Silva', 'Diana Marcela Ruiz'];
+                        const nameIdx = hash % mockNames.length;
+                        finalName = mockNames[nameIdx];
                       }
 
                       return (
