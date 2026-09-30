@@ -704,8 +704,9 @@ export default function CashCollectionPage({ branchOnly = false }) {
                       <th>Medio de Pago</th>
                       <th>Monto Total</th>
                       <th>Estado Pago</th>
-                      <th>Comprobante de Pago</th>
+                      <th>Ver</th>
                       <th>Descargar</th>
+                      <th>Imprimir</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -803,71 +804,81 @@ export default function CashCollectionPage({ branchOnly = false }) {
                             )}
                           </td>
 
-                          <td>
-                            {!pagoConfirmado ? (
-                              esEfectivo ? (
-                                <button
-                                  type="button"
-                                  className="cash-btn-primary"
-                                  style={{ width: '100px', padding: '6px 12px', fontSize: '13px', background: '#f59e0b', borderColor: '#f59e0b', color: '#fff', whiteSpace: 'nowrap', textAlign: 'center' }}
-                                  onClick={(e) => {
-                                    e.stopPropagation()
-                                    openModalCobro(r)
-                                  }}
-                                >
-                                  <FaMoneyBillWave /> Cobrar
-                                </button>
-                              ) : (
-                                <button
-                                  type="button"
-                                  className="cash-btn-primary"
-                                  disabled
-                                  style={{ width: '100px', padding: '6px 12px', fontSize: '13px', opacity: 0.5, cursor: 'not-allowed', whiteSpace: 'nowrap', textAlign: 'center' }}
-                                >
-                                  <FaReceipt /> Ver
-                                </button>
-                              )
-                            ) : (
-                              <button
-                                type="button"
-                                className="cash-btn-primary"
-                                style={{ width: '100px', padding: '6px 12px', fontSize: '13px', background: '#10b981', borderColor: '#10b981', color: '#fff', whiteSpace: 'nowrap', textAlign: 'center' }}
-                                onClick={(e) => {
-                                  e.stopPropagation()
-                                  if (esPagadaEnEfectivo) {
-                                    openModalCobro(r) 
-                                  } else {
-                                    setComprobanteDigital(r)
-                                  }
-                                }}
-                              >
-                                <FaReceipt /> Ver
-                              </button>
-                            )}
-                          </td>
+                          {/* VER */}
                           <td>
                             {pagoConfirmado ? (
                               <button
                                 type="button"
                                 className="cash-btn-primary"
-                                style={{ width: '110px', padding: '6px 12px', fontSize: '13px', background: '#3b82f6', borderColor: '#3b82f6', color: '#fff', whiteSpace: 'nowrap', textAlign: 'center' }}
+                                style={{ width: '80px', padding: '6px 10px', fontSize: '13px', background: '#10b981', borderColor: '#10b981', color: '#fff', whiteSpace: 'nowrap', textAlign: 'center' }}
                                 onClick={(e) => {
                                   e.stopPropagation()
-                                  setComprobanteDigital(r)
+                                  if (esPagadaEnEfectivo) { openModalCobro(r) } else { setComprobanteDigital(r) }
                                 }}
                               >
-                                <FaFilePdf /> Descargar
+                                <FaReceipt /> Ver
                               </button>
-                            ) : (
+                            ) : esEfectivo ? (
                               <button
                                 type="button"
                                 className="cash-btn-primary"
-                                disabled
-                                style={{ width: '110px', padding: '6px 12px', fontSize: '13px', opacity: 0.5, cursor: 'not-allowed', whiteSpace: 'nowrap', textAlign: 'center' }}
+                                style={{ width: '80px', padding: '6px 10px', fontSize: '13px', background: '#f59e0b', borderColor: '#f59e0b', color: '#fff', whiteSpace: 'nowrap', textAlign: 'center' }}
+                                onClick={(e) => { e.stopPropagation(); openModalCobro(r) }}
                               >
-                                <FaFilePdf /> Descargar
+                                <FaMoneyBillWave /> Cobrar
+                              </button>
+                            ) : (
+                              <button type="button" className="cash-btn-primary" disabled style={{ width: '80px', padding: '6px 10px', fontSize: '13px', opacity: 0.4, cursor: 'not-allowed', whiteSpace: 'nowrap', textAlign: 'center' }}>
+                                <FaReceipt /> Ver
                               </button>
                             )}
+                          </td>
+
+                          {/* DESCARGAR - descarga real del archivo */}
+                          <td>
+                            <button
+                              type="button"
+                              className="cash-btn-primary"
+                              disabled={!pagoConfirmado}
+                              style={{ width: '100px', padding: '6px 10px', fontSize: '13px', background: pagoConfirmado ? '#3b82f6' : '#e5e7eb', borderColor: pagoConfirmado ? '#3b82f6' : '#e5e7eb', color: pagoConfirmado ? '#fff' : '#9ca3af', whiteSpace: 'nowrap', textAlign: 'center', cursor: pagoConfirmado ? 'pointer' : 'not-allowed' }}
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                if (!pagoConfirmado) return
+                                const html = `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Comprobante-${cod}</title><style>body{font-family:Arial,sans-serif;max-width:480px;margin:40px auto;padding:24px;color:#111827;}h2{text-align:center;color:#10b981;margin-bottom:8px;}p.sub{text-align:center;color:#6b7280;font-size:13px;}table{width:100%;border-collapse:collapse;margin-top:20px;}td{padding:10px 6px;font-size:14px;border-bottom:1px solid #e5e7eb;}td:last-child{text-align:right;font-weight:600;}.total-row td{border-top:2px solid #d1fae5;font-size:17px;color:#10b981;font-weight:800;padding-top:14px;}</style></head><body><h2>Comprobante de Pago</h2><p class="sub">Drivique &mdash; ${new Date().toLocaleDateString('es-CO')}</p><table><tr><td>Referencia</td><td>${cod}</td></tr><tr><td>Cliente</td><td>${r.clienteNombre || 'Cliente'}</td></tr><tr><td>Veh&iacute;culo</td><td>${r.vehiculoNombre || 'Veh&iacute;culo Reservado'}</td></tr><tr><td>M&eacute;todo de pago</td><td>${esEfectivo ? 'Efectivo en Sucursal' : 'Pasarela Digital'}</td></tr><tr><td>Fecha de pago</td><td>${r.fechaPagoConfirmado ? new Date(r.fechaPagoConfirmado).toLocaleString('es-CO') : new Date().toLocaleString('es-CO')}</td></tr><tr class="total-row"><td>TOTAL PAGADO</td><td>${formatCurrency(total, moneda)}</td></tr></table></body></html>`
+                                const blob = new Blob([html], { type: 'text/html;charset=utf-8' })
+                                const url = URL.createObjectURL(blob)
+                                const a = document.createElement('a')
+                                a.href = url
+                                a.download = `Comprobante-${cod}.html`
+                                document.body.appendChild(a)
+                                a.click()
+                                document.body.removeChild(a)
+                                URL.revokeObjectURL(url)
+                              }}
+                            >
+                              <FaFilePdf /> Descargar
+                            </button>
+                          </td>
+
+                          {/* IMPRIMIR */}
+                          <td>
+                            <button
+                              type="button"
+                              className="cash-btn-primary"
+                              disabled={!pagoConfirmado}
+                              style={{ width: '90px', padding: '6px 10px', fontSize: '13px', background: pagoConfirmado ? '#8b5cf6' : '#e5e7eb', borderColor: pagoConfirmado ? '#8b5cf6' : '#e5e7eb', color: pagoConfirmado ? '#fff' : '#9ca3af', whiteSpace: 'nowrap', textAlign: 'center', cursor: pagoConfirmado ? 'pointer' : 'not-allowed' }}
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                if (!pagoConfirmado) return
+                                const win = window.open('', '_blank')
+                                win.document.write(`<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Comprobante-${cod}</title><style>body{font-family:Arial,sans-serif;max-width:480px;margin:40px auto;padding:24px;color:#111827;}h2{text-align:center;color:#10b981;margin-bottom:8px;}p.sub{text-align:center;color:#6b7280;font-size:13px;}table{width:100%;border-collapse:collapse;margin-top:20px;}td{padding:10px 6px;font-size:14px;border-bottom:1px solid #e5e7eb;}td:last-child{text-align:right;font-weight:600;}.total-row td{border-top:2px solid #d1fae5;font-size:17px;color:#10b981;font-weight:800;padding-top:14px;}</style></head><body><h2>Comprobante de Pago</h2><p class="sub">Drivique &mdash; ${new Date().toLocaleDateString('es-CO')}</p><table><tr><td>Referencia</td><td>${cod}</td></tr><tr><td>Cliente</td><td>${r.clienteNombre || 'Cliente'}</td></tr><tr><td>Veh&iacute;culo</td><td>${r.vehiculoNombre || 'Veh&iacute;culo Reservado'}</td></tr><tr><td>M&eacute;todo de pago</td><td>${esEfectivo ? 'Efectivo en Sucursal' : 'Pasarela Digital'}</td></tr><tr><td>Fecha de pago</td><td>${r.fechaPagoConfirmado ? new Date(r.fechaPagoConfirmado).toLocaleString('es-CO') : new Date().toLocaleString('es-CO')}</td></tr><tr class="total-row"><td>TOTAL PAGADO</td><td>${formatCurrency(total, moneda)}</td></tr></table></body></html>`)
+                                win.document.close()
+                                win.focus()
+                                setTimeout(() => { win.print(); win.close() }, 500)
+                              }}
+                            >
+                              <FaPrint /> Imprimir
+                            </button>
                           </td>
                         </tr>
                       )
