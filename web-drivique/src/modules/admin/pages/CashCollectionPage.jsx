@@ -900,33 +900,31 @@ export default function CashCollectionPage({ branchOnly = false }) {
           className="cities-modal-backdrop"
           onMouseDown={(e) => e.target === e.currentTarget && setModalReserva(null)}
         >
-          <section className="cities-modal cash-modal" role="dialog" style={{ maxWidth: 660 }}>
-            <div className="cities-modal__head" style={{ borderBottom: 'none', paddingBottom: 0 }}>
-              <div>
-                {/* Headers old removed for clean look */}
-              </div>
-              <button type="button" onClick={() => setModalReserva(null)} style={{ background: '#f3f4f6', border: 'none', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#4b5563', fontSize: '18px' }}>
+          <section className="cities-modal cash-modal" role="dialog" style={{ maxWidth: 440, borderRadius: '16px' }}>
+            <div className="cities-modal__head" style={{ borderBottom: 'none', paddingBottom: 0, paddingTop: '16px', paddingRight: '16px' }}>
+              <div></div>
+              <button type="button" onClick={() => setModalReserva(null)} style={{ background: 'transparent', border: 'none', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#6b7280', fontSize: '24px' }}>
                 ×
               </button>
             </div>
 
-            <div className="cash-modal-body" style={{ padding: '32px 24px' }}>
+            <div className="cash-modal-body" style={{ padding: '0 24px 24px 24px' }}>
               {!esCobradoEnSucursal(modalReserva) ? (
                 <>
-                  <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-                    <div style={{ width: '56px', height: '56px', background: '#fef3c7', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', color: '#f59e0b', fontSize: '28px' }}>
+                  <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+                    <div style={{ width: '48px', height: '48px', background: '#fef3c7', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', color: '#f59e0b', fontSize: '24px' }}>
                       <FaMoneyBillWave />
                     </div>
-                    <h2 style={{ margin: '0 0 8px 0', fontSize: '22px', color: '#111827', fontWeight: 700 }}>Confirmar cobro en efectivo</h2>
-                    <p style={{ margin: 0, color: '#6b7280', fontSize: '14px' }}>Verifica los datos antes de registrar el ingreso en caja.</p>
+                    <h2 style={{ margin: '0 0 4px 0', fontSize: '20px', color: '#111827', fontWeight: 700 }}>Confirmar cobro en efectivo</h2>
+                    <p style={{ margin: 0, color: '#6b7280', fontSize: '13px' }}>Verifica los datos antes de registrar el ingreso en caja.</p>
                   </div>
 
-                  <div style={{ background: '#f9fafb', border: '1px solid #f3f4f6', borderRadius: '12px', padding: '20px', marginBottom: '24px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px', fontSize: '14px' }}>
+                  <div style={{ border: '1px solid #e5e7eb', borderRadius: '8px', padding: '16px', marginBottom: '20px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '14px' }}>
                       <span style={{ color: '#6b7280' }}>Referencia</span>
                       <strong style={{ color: '#111827' }}>{modalReserva.codigo || modalReserva.referencia || modalReserva.id}</strong>
                     </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px', fontSize: '14px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '14px' }}>
                       <span style={{ color: '#6b7280' }}>Cliente</span>
                       <strong style={{ color: '#111827', textAlign: 'right' }}>{modalReserva.clienteNombre || 'Cliente Registrado'}</strong>
                     </div>
@@ -934,24 +932,24 @@ export default function CashCollectionPage({ branchOnly = false }) {
                       <span style={{ color: '#6b7280' }}>Vehículo</span>
                       <strong style={{ color: '#111827', textAlign: 'right' }}>{modalReserva.vehiculoNombre || 'Vehículo Reservado'}</strong>
                     </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '16px', paddingTop: '16px', borderTop: '1px dashed #d1d5db', fontSize: '16px', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '12px', borderTop: '1px solid #e5e7eb', fontSize: '15px', alignItems: 'center' }}>
                       <span style={{ color: '#374151', fontWeight: 600 }}>Total a cobrar</span>
-                      <strong style={{ color: '#10b981', fontSize: '24px', fontWeight: 800 }}>
+                      <strong style={{ color: '#10b981', fontSize: '20px', fontWeight: 800 }}>
                         {formatCurrency(Number(modalReserva.totalCOP || modalReserva.total || 0), moneda)}
                       </strong>
                     </div>
                   </div>
 
                   <div style={{ marginBottom: '24px' }}>
-                    <label style={{ display: 'block', fontSize: '13px', color: '#374151', marginBottom: '8px', fontWeight: 600 }}>
+                    <label style={{ display: 'block', fontSize: '13px', color: '#374151', marginBottom: '6px', fontWeight: 600 }}>
                       Observaciones (opcional)
                     </label>
                     <input
                       type="text"
-                      placeholder="Ej. Billetes verificados / Recibo N° 0042"
+                      placeholder="Ej. Billetes verificados..."
                       value={observacionesCaja}
                       onChange={(e) => setObservacionesCaja(e.target.value)}
-                      style={{ width: '100%', padding: '12px 14px', border: '1px solid #d1d5db', borderRadius: '8px', fontSize: '14px', outline: 'none' }}
+                      style={{ width: '100%', padding: '10px 14px', border: '1px solid #d1d5db', borderRadius: '8px', fontSize: '14px', outline: 'none' }}
                     />
                   </div>
 
@@ -960,9 +958,9 @@ export default function CashCollectionPage({ branchOnly = false }) {
                       type="button"
                       onClick={handleConfirmarCobro}
                       disabled={procesandoPago}
-                      style={{ width: '100%', background: '#3b82f6', color: '#fff', border: 'none', borderRadius: '8px', padding: '14px', fontSize: '15px', fontWeight: 600, cursor: procesandoPago ? 'not-allowed' : 'pointer', opacity: procesandoPago ? 0.7 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                      style={{ width: '100%', background: 'var(--brand-primary, #f59e0b)', color: '#fff', border: 'none', borderRadius: '8px', padding: '12px', fontSize: '15px', fontWeight: 600, cursor: procesandoPago ? 'not-allowed' : 'pointer', opacity: procesandoPago ? 0.7 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
                     >
-                      {procesandoPago ? 'Registrando cobro...' : 'Confirmar pago en sucursal'}
+                      {procesandoPago ? 'Registrando cobro...' : 'Confirmar pago'}
                     </button>
                   ) : (
                     <div style={{ background: '#fee2e2', color: '#991b1b', padding: '12px', borderRadius: '8px', fontSize: '13px', textAlign: 'center' }}>
