@@ -132,9 +132,10 @@ export default function CatalogTopHeader({
           )}
         </div>
 
+        {children}
+
         {/* RIGHT: Profile & Settings */}
-        <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '12px', position: 'relative', zIndex: 10 }}>
-          {children}
+        <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '12px', zIndex: 10 }}>
 
           <MenuConfiguracion />
 
