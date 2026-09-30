@@ -567,7 +567,7 @@ export default function ReservationManagementPage() {
                     <thead>
                       <tr>
                         <th>ID</th>
-                        <th>{t('admin.reservationsManagement.table.code')}</th>
+                        <th>CÓDIGO RESERVA</th>
                         <th>Foto</th>
                         <th>Vehículo</th>
                         <th>Placa</th>
@@ -685,7 +685,7 @@ export default function ReservationManagementPage() {
                     <thead>
                       <tr>
                         <th>ID</th>
-                        <th>{t('admin.reservationsManagement.table.code')}</th>
+                        <th>CÓDIGO RESERVA</th>
                         <th>Plan Protección</th>
                         <th>Precio Protección</th>
                         <th>Tipo Kilometraje</th>
@@ -779,7 +779,7 @@ export default function ReservationManagementPage() {
                     <thead>
                       <tr>
                         <th>ID</th>
-                        <th>{t('admin.reservationsManagement.table.code')}</th>
+                        <th>CÓDIGO RESERVA</th>
                         <th>NOMBRE COMPLETO</th>
                         <th>Correo</th>
                         <th>Tipo de Documento</th>
