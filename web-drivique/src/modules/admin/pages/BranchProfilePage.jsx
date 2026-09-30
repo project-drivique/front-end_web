@@ -334,6 +334,37 @@ export default function BranchProfilePage() {
           </div>
 
           <div className="branch-topbar-actions">
+            {hasUnsavedChanges && (
+              <div className="branch-profile-unsaved-alert" style={{ marginRight: 4, display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 13, color: '#b45309', background: '#fef3c7', padding: '6px 12px', borderRadius: 8, fontWeight: 600 }}>
+                <FaExclamationTriangle aria-hidden="true" />
+                <span>Cambios pendientes</span>
+              </div>
+            )}
+
+            <button
+              type="button"
+              className="cities-secondary"
+              onClick={handleCancel}
+              disabled={!hasUnsavedChanges || saving}
+              title="Restablecer valores originales"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', borderRadius: 8, fontWeight: 600 }}
+            >
+              <FaUndo aria-hidden="true" />
+              <span>Descartar</span>
+            </button>
+
+            <button
+              type="button"
+              className="cities-primary"
+              onClick={handleSubmit}
+              disabled={!hasUnsavedChanges || saving}
+              title="Guardar información editada"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 18px', borderRadius: 8, fontWeight: 600 }}
+            >
+              <FaSave aria-hidden="true" />
+              <span>{saving ? 'Guardando...' : 'Guardar cambios'}</span>
+            </button>
+
             <MenuConfiguracion />
 
             <div className="branch-user-profile-chip">
@@ -351,60 +382,6 @@ export default function BranchProfilePage() {
             </div>
           </div>
         </div>
-
-        {/* HERO BANNER INFORMATIVO DE LA SUCURSAL */}
-        <header className="branch-profile-hero-banner">
-          <div className="branch-profile-hero-content">
-            <div className="branch-profile-hero-badge-row">
-              <div className="branch-profile-hero-badge">
-                <span className="branch-profile-live-dot" />
-                <span>Sucursal Activa y Operativa</span>
-              </div>
-              <span className="branch-profile-type-tag">
-                {isAirport ? 'Terminal Aeropuerto · 24 Horas' : 'Sucursal Estándar · Ciudad'}
-              </span>
-            </div>
-
-            <h1 className="branch-profile-hero-title">
-              {profile.nombre || 'Alamo Bogotá - Aeropuerto'}
-            </h1>
-
-            <p className="branch-profile-hero-subtitle">
-              Ficha informativa y técnica de la sucursal asignada · {profile.ciudad || 'Bogotá D.C.'}
-            </p>
-          </div>
-
-          <div className="branch-profile-hero-actions">
-            {hasUnsavedChanges && (
-              <div className="branch-profile-unsaved-alert">
-                <FaExclamationTriangle aria-hidden="true" />
-                <span>Cambios pendientes</span>
-              </div>
-            )}
-
-            <button
-              type="button"
-              className="branch-hero-btn branch-hero-btn--outlined"
-              onClick={handleCancel}
-              disabled={!hasUnsavedChanges || saving}
-              title="Restablecer valores originales"
-            >
-              <FaUndo aria-hidden="true" />
-              <span>Descartar</span>
-            </button>
-
-            <button
-              type="button"
-              className="branch-hero-btn branch-hero-btn--white"
-              onClick={handleSubmit}
-              disabled={!hasUnsavedChanges || saving}
-              title="Guardar información editada"
-            >
-              <FaSave aria-hidden="true" />
-              <span>{saving ? 'Guardando...' : 'Guardar cambios'}</span>
-            </button>
-          </div>
-        </header>
 
         {/* FORMULARIO Y CONTENEDOR ESTRUCTURADO */}
         <form onSubmit={handleSubmit} noValidate className="branch-profile-form-container">
