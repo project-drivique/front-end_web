@@ -16,9 +16,10 @@ Tecnólogo en Análisis y Desarrollo de Software
 * **Gestión de Estado Global:** [Zustand 5](https://zustand-demo.pmnd.rs/)
 * **Peticiones HTTP & Asincronía:** Axios + `@tanstack/react-query`
 * **Estilizado & Diseño:** CSS3 Modular con variables/tokens, Tailwind CSS y diseño adaptable (*Responsive & Dark Mode*)
-* **Internacionalización (i18n):** `react-i18next` + `i18next` (Español / Inglés)
+* **Internacionalización (i18n):** `react-i18next` + `i18next` en 5 idiomas soportados (`es` Español, `en` Inglés, `fr` Francés, `pt` Portugués, `br` Portugués Brasileño)
+* **Personalización Dinámica de Marca & Temas:** Inyección de tokens CSS variables (`--brand-primary`, `--brand-secondary`, etc.) vía `brandService` y soporte completo de Modo Claro / Modo Oscuro
 * **Visualización de Datos:** Recharts + Gráficos SVG nativos
-* **Alertas & Feedback:** SweetAlert2
+* **Alertas & Feedback:** SweetAlert2 & Feedback toast accesible
 * **Iconografía:** `react-icons/fa` (FontAwesome Icons)
 
 ---
@@ -32,10 +33,13 @@ El código sigue estrictos estándares de ingeniería de software y separación 
 2. **Patrón Factory (Fábrica):**
    * Centraliza la instanciación de procesadores de pago (`PaymentProcessorFactory`) y la generación/normalización de alertas operacionales en tiempo real (`useBranchNotifications`).
 3. **Patrón Container / Presentational:**
-   * Desacoplamiento total entre componentes inteligentes encargados del estado/servicios (ej. `BranchDashboard`) y componentes presentacionales puros (ej. `BranchNotificationDrawer`).
+   * Desacoplamiento total entre componentes inteligentes encargados del estado/servicios (ej. `BranchDashboard`, `VehicleManagementPage`) y componentes presentacionales puros (ej. `BranchNotificationPopover`, `KpiDetailModal`).
 4. **Patrón Facade (Fachada):**
-   * Interfaces unificadas y limpias que ocultan la complejidad de APIs y transformaciones de datos en la capa de servicios.
-5. **Patrón Error Boundary:**
+   * Interfaces unificadas y limpias que ocultan la complejidad de APIs y transformaciones de datos en la capa de servicios (`branchCategoryService`, `vehicleManagementService`, `branchManagementService`).
+5. **Separación de Roles & Seguridad Operativa:**
+   * **Administrador General:** Visión multi-sucursal global, gestión de sedes centrales, catálogo maestro de categorías con tarifas sugeridas, asignación de flota transversal y exportación completa (Excel/PDF/Impresión).
+   * **Encargado de Sucursal:** Control focalizado en su sede física asignada, activación selectiva de categorías ofrecidas mediante interruptores interactivos (*Sí/No*), gestión exclusiva de su flota local y exportación gobernada sin fuga de información de otras sedes.
+6. **Patrón Error Boundary:**
    * Capturador global de excepciones en runtime (`ErrorBoundary`) para garantizar resiliencia y evitar pantallas blancas ante errores no controlados.
 
 ---
@@ -49,10 +53,10 @@ front-end_web/
     │   ├── components/       # Componentes transversales (ErrorBoundary, LoadingFallback, ChatBot, Modales)
     │   ├── contexts/         # Contextos globales de UI y temas
     │   ├── hooks/            # Custom Hooks de negocio y control
-    │   ├── i18n/             # Configuración y diccionarios de traducción
+    │   ├── i18n/             # Configuración y diccionarios de traducción (es, en, fr, pt, br)
     │   ├── mocks/            # Datos locales de prueba y configuración Sandbox
     │   ├── modules/          # Arquitectura por Dominios / Features:
-    │   │   ├── admin/        # Dashboard operativo, reportes, auditoría y sucursales
+    │   │   ├── admin/        # Dashboard operativo, centro de notificaciones, vehículos, reportes y sedes
     │   │   ├── auth/         # Login, registro, recuperación y 2FA
     │   │   ├── catalog/      # Catálogo de vehículos, filtros y sedes
     │   │   ├── contracts/    # Firma electrónica y previsualización de contratos
@@ -63,7 +67,7 @@ front-end_web/
     │   │   ├── reservations/ # Flujo de reserva (3 pasos) y gestión de alquileres
     │   │   └── support/      # Módulo de PQRS y soporte al cliente
     │   ├── routes/           # Enrutamiento con Code Splitting (AppRouter)
-    │   ├── services/         # Servicios de integración con backend / API
+    │   ├── services/         # Servicios de integración (branchCategoryService, vehicleManagementService, etc.)
     │   ├── store/            # Almacenamiento de estado global con Zustand
     │   ├── styles/           # Variables, temas y diseño base
     │   └── utils/            # Utilidades puras (formatos, exportación Excel/PDF, alertas)

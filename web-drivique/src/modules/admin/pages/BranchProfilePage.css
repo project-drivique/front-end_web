@@ -13,7 +13,7 @@
 }
 
 /* ─────────────────────────────────────────────────────────────
-   TOPBAR OPERATIVA UNIFICADA (SIN BUSCADOR)
+   TOPBAR OPERATIVA UNIFICADA (SIN DUPLICACIÓN DE TÍTULOS)
    ───────────────────────────────────────────────────────────── */
 .branch-topbar {
   display: flex;
@@ -52,46 +52,11 @@
   gap: 14px;
 }
 
-.branch-profile-dev-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: #ffffff;
-  border: 1px solid #cbd5e1;
-  padding: 4px 10px;
-  border-radius: 10px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
-}
-
-.branch-profile-dev-label {
-  font-size: 11.5px;
-  font-weight: 700;
-  color: #475569;
-}
-
-.branch-profile-dev-select {
-  background: transparent;
-  border: none;
-  font-size: 12px;
-  color: #0f172a;
-  font-weight: 600;
-  cursor: pointer;
-  outline: none;
-  font-family: inherit;
-  padding-right: 4px;
-}
-
-.branch-divider-v {
-  width: 1px;
-  height: 24px;
-  background: var(--borde, #e2e8f0);
-}
-
 .branch-user-profile-chip {
   display: flex;
   align-items: center;
   gap: 10px;
-  background: #ffffff;
+  background: var(--bg-tarjeta, #ffffff);
   border: 1px solid var(--borde, #e2e8f0);
   padding: 4px 14px 4px 5px;
   border-radius: 28px;
@@ -293,21 +258,16 @@
   width: 100%;
 }
 
-.branch-profile-grid {
+.branch-profile-row-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 24px;
-  align-items: start;
-}
-
-.branch-profile-col {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
+  align-items: stretch;
+  width: 100%;
 }
 
 .branch-profile-card {
-  background: #ffffff !important;
+  background: var(--bg-tarjeta, #ffffff) !important;
   border: 1px solid var(--borde, #e2e8f0);
   border-radius: 18px;
   padding: 22px 24px;
@@ -317,6 +277,16 @@
   flex-direction: column;
   gap: 16px;
   transition: box-shadow 200ms ease;
+}
+
+.branch-profile-card--equal {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.branch-profile-card--full {
+  width: 100%;
 }
 
 .branch-profile-card:hover {
@@ -363,10 +333,17 @@
   gap: 14px;
 }
 
+.branch-profile-card-body--stretched {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
 /* Campos del formulario */
 .branch-profile-fields-row {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 14px;
 }
 
@@ -400,7 +377,7 @@
   padding: 0 12px;
   border-radius: 10px;
   border: 1px solid var(--borde, #e2e8f0);
-  background: #ffffff;
+  background: var(--bg-tarjeta, #ffffff);
   color: var(--texto-primary, #0f172a);
   font-size: 13px;
   font-weight: 500;
@@ -434,8 +411,8 @@
 }
 
 .branch-profile-input-readonly .branch-profile-input {
-  background-color: #f8fafc;
-  color: #64748b;
+  background-color: var(--bg-seccion1, #f8fafc);
+  color: var(--texto-second, #64748b);
   cursor: not-allowed;
   padding-right: 34px;
   font-weight: 600;
@@ -460,7 +437,7 @@
   padding: 10px 12px;
   border-radius: 10px;
   border: 1px solid var(--borde, #e2e8f0);
-  background: #ffffff;
+  background: var(--bg-tarjeta, #ffffff);
   color: var(--texto-primary, #0f172a);
   font-size: 13px;
   font-weight: 500;
@@ -468,7 +445,7 @@
   font-family: inherit;
   box-sizing: border-box;
   resize: vertical;
-  min-height: 60px;
+  min-height: 65px;
   transition: all 180ms ease;
 }
 
@@ -478,102 +455,12 @@
 }
 
 /* ─────────────────────────────────────────────────────────────
-   HORARIOS DE ATENCIÓN
-   ───────────────────────────────────────────────────────────── */
-.branch-profile-schedule-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 14px;
-}
-
-.branch-profile-schedule-box {
-  background: #f8fafc;
-  border: 1px solid var(--borde, #e2e8f0);
-  border-radius: 14px;
-  padding: 14px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  transition: transform 180ms ease;
-}
-
-.branch-profile-schedule-box:hover {
-  transform: translateY(-2px);
-}
-
-.branch-profile-schedule-head {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.branch-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-}
-
-.branch-dot--green {
-  background: #10b981;
-  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.25);
-}
-
-.branch-dot--blue {
-  background: #2563eb;
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.25);
-}
-
-.branch-profile-schedule-title {
-  font-size: 11.5px;
-  font-weight: 700;
-  color: var(--texto-second, #475569);
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-}
-
-.branch-profile-schedule-val {
-  font-size: 15px;
-  font-weight: 800;
-  color: var(--texto-primary, #0f172a);
-  font-variant-numeric: tabular-nums;
-}
-
-.branch-profile-schedule-desc {
-  font-size: 11.5px;
-  color: var(--texto-second, #64748b);
-}
-
-.branch-profile-info-banner {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  padding: 12px 14px;
-  background: #eff6ff;
-  border: 1px solid #bfdbfe;
-  border-radius: 12px;
-}
-
-.branch-profile-info-icon {
-  color: var(--brand-primary, #2563eb);
-  font-size: 14px;
-  flex-shrink: 0;
-  margin-top: 2px;
-}
-
-.branch-profile-info-text {
-  margin: 0;
-  font-size: 12px;
-  color: #1e40af;
-  line-height: 1.45;
-  font-weight: 500;
-}
-
-/* ─────────────────────────────────────────────────────────────
-   UBICACIÓN Y MAPA
+   UBICACIÓN Y MAPA CON ALTURA ADAPTABLE
    ───────────────────────────────────────────────────────────── */
 .branch-profile-map-wrap {
   width: 100%;
-  height: 200px;
+  min-height: 190px;
+  flex: 1 1 auto;
   border-radius: 14px;
   overflow: hidden;
   border: 1px solid var(--borde, #e2e8f0);
@@ -583,12 +470,15 @@
 .branch-profile-map-iframe {
   width: 100%;
   height: 100%;
+  min-height: 190px;
   border: none;
+  display: block;
 }
 
 .branch-profile-map-fallback {
   width: 100%;
   height: 100%;
+  min-height: 190px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -618,25 +508,157 @@
   font-weight: 700;
   color: var(--brand-primary, #2563eb);
   text-decoration: none;
-  padding: 6px 12px;
+  padding: 6px 14px;
   border-radius: 8px;
-  background: rgba(37, 99, 235, 0.08);
+  background: #ffffff;
+  border: 1px solid var(--brand-primary, #2563eb);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
   transition: all 180ms ease;
 }
 
 .branch-profile-directions-link:hover {
-  background: rgba(37, 99, 235, 0.16);
+  background: #eff6ff;
+  border-color: #1d4ed8;
+  color: #1d4ed8;
+  transform: translateY(-1px);
 }
 
 /* ─────────────────────────────────────────────────────────────
-   CÓMO FUNCIONA LA ENTREGA SEGÚN EL PAGO (TABLA PULIDA)
+   HORARIOS Y METODOS DE PAGO EN TEXTO
+   ───────────────────────────────────────────────────────────── */
+.branch-profile-info-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 14px;
+}
+
+.branch-profile-info-icon {
+  color: var(--brand-primary, #2563eb);
+  font-size: 16px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.branch-profile-info-text {
+  margin: 0;
+  font-size: 12.5px;
+  color: #1e40af;
+  line-height: 1.5;
+}
+
+.branch-payment-explanatory-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  margin-top: 14px;
+}
+
+.branch-payment-explanatory-card {
+  border-radius: 14px;
+  padding: 18px 20px;
+  border: 1px solid var(--borde, #e2e8f0);
+  background: var(--bg-tarjeta, #ffffff);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  border-top: 3px solid var(--brand-primary, #2563eb);
+}
+
+.branch-payment-explanatory-card--cash {
+  border-top: 3px solid #16a34a;
+}
+
+.branch-payment-explanatory-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.branch-payment-method-icon-box {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: rgba(37, 99, 235, 0.1);
+  color: #2563eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.branch-payment-explanatory-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--texto-primary, #0f172a);
+  margin: 0;
+}
+
+.branch-payment-explanatory-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: rgba(37, 99, 235, 0.1);
+  color: #1d4ed8;
+  display: inline-block;
+  margin-top: 3px;
+}
+
+.branch-payment-explanatory-badge--cash {
+  background: rgba(22, 163, 74, 0.1);
+  color: #15803d;
+}
+
+.branch-payment-explanatory-body {
+  font-size: 12.5px;
+  color: var(--texto-second, #475569);
+  line-height: 1.5;
+}
+
+.branch-payment-explanatory-body p {
+  margin: 0 0 8px;
+}
+
+.branch-payment-explanatory-list {
+  margin: 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.branch-payment-explanatory-list li {
+  font-size: 12px;
+  color: var(--texto-main, #334155);
+}
+
+.branch-payment-explanatory-list li strong {
+  color: var(--texto-primary, #0f172a);
+}
+
+.branch-cash-note {
+  font-size: 11px;
+  color: var(--texto-second, #64748b);
+  margin: 0;
+  font-style: italic;
+  line-height: 1.4;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   TABLA DE MATRIZ DE LUGARES Y PAGOS
    ───────────────────────────────────────────────────────────── */
 .branch-delivery-table-wrap {
   width: 100%;
   overflow-x: auto;
   border-radius: 14px;
   border: 1px solid var(--borde, #e2e8f0);
-  background: #ffffff;
+  background: var(--bg-tarjeta, #ffffff);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
 }
 
@@ -649,28 +671,28 @@
 }
 
 .branch-delivery-table thead {
-  background: #f8fafc;
+  background: var(--bg-seccion1, #f8fafc);
 }
 
 .branch-delivery-th-place {
-  padding: 12px 14px;
+  padding: 12px 16px;
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: var(--texto-second, #64748b);
-  width: 30%;
+  width: 34%;
   border-bottom: 1px solid var(--borde, #e2e8f0);
 }
 
 .branch-delivery-th {
-  padding: 12px 14px;
+  padding: 12px 16px;
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: var(--texto-second, #64748b);
-  width: 35%;
+  width: 33%;
   border-bottom: 1px solid var(--borde, #e2e8f0);
 }
 
@@ -679,12 +701,12 @@
 }
 
 .branch-delivery-table tbody tr:hover {
-  background-color: #fafbfc;
+  background-color: var(--bg-seccion1, #fafbfc);
 }
 
 .branch-delivery-table tbody tr td {
   border-bottom: 1px solid var(--borde, #f1f5f9);
-  padding: 11px 14px;
+  padding: 12px 16px;
   vertical-align: middle;
 }
 
@@ -708,76 +730,50 @@
   align-items: center;
   gap: 6px;
   padding: 4px 10px;
-  border-radius: 8px;
+  border-radius: 6px;
   font-size: 11.5px;
   font-weight: 600;
   white-space: nowrap;
-  line-height: 1.3;
 }
 
 .branch-delivery-avail-pill--active {
-  background: #ecfdf5;
-  color: #065f46;
-  border: 1px solid #a7f3d0;
+  background: rgba(16, 185, 129, 0.08);
+  color: #15803d;
+  border: 1px solid rgba(16, 185, 129, 0.22);
 }
 
 .branch-delivery-avail-pill--inactive {
-  background: #f8fafc;
+  background: rgba(100, 116, 139, 0.08);
   color: #64748b;
-  border: 1px solid #e2e8f0;
+  border: 1px solid rgba(100, 116, 139, 0.2);
 }
 
 .branch-delivery-icon-check {
-  color: #059669;
-  font-size: 11.5px;
-  flex-shrink: 0;
+  color: #16a34a;
+  font-size: 11px;
 }
 
 .branch-delivery-icon-cross {
   color: #94a3b8;
-  font-size: 11.5px;
-  flex-shrink: 0;
+  font-size: 11px;
 }
 
 .branch-delivery-schedule {
   font-size: 11.5px;
-  white-space: nowrap;
   font-variant-numeric: tabular-nums;
 }
 
-.branch-delivery-no-alternates {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 10px 0 0 0;
-  font-size: 12px;
-  color: var(--texto-second, #64748b);
-  font-style: italic;
-  padding: 8px 12px;
-  background: #f8fafc;
-  border: 1px dashed var(--borde, #e2e8f0);
-  border-radius: 8px;
-}
-
-.branch-delivery-no-alternates svg {
-  color: #94a3b8;
-  font-size: 13px;
-  flex-shrink: 0;
-}
-
 /* ─────────────────────────────────────────────────────────────
-   SECCIÓN B: PLAZO DE PAGO DE TUS CLIENTES
+   PLAZO DE PAGO DE CLIENTES (FONDO AZUL SUAVE IGUAL A PUNTOS Y HORARIOS)
    ───────────────────────────────────────────────────────────── */
 .branch-payment-deadline-section {
+  padding: 16px 18px;
+  border-radius: 14px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  margin-top: 14px;
-  padding: 14px 16px;
-  background: #f8fafc;
-  border: 1px solid var(--borde, #e2e8f0);
-  border-left: 4px solid var(--brand-primary, #2563eb);
-  border-radius: 12px;
 }
 
 .branch-payment-deadline-header {
@@ -787,52 +783,39 @@
 }
 
 .branch-payment-deadline-icon-wrap {
-  width: 24px;
-  height: 24px;
-  border-radius: 6px;
-  background: rgba(37, 99, 235, 0.1);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.branch-payment-deadline-icon {
   color: var(--brand-primary, #2563eb);
-  font-size: 12px;
+  font-size: 15px;
 }
 
 .branch-payment-deadline-title {
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 700;
-  color: var(--texto-primary, #0f172a);
+  color: #1e40af;
 }
 
 .branch-payment-deadline-text {
   margin: 0;
-  font-size: 12px;
-  color: var(--texto-second, #475569);
-  line-height: 1.55;
-  font-weight: 500;
+  font-size: 12.5px;
+  color: #1e40af;
+  line-height: 1.5;
 }
 
 /* ─────────────────────────────────────────────────────────────
-   RESUMEN OPERATIVO DE LA SUCURSAL
+   RESUMEN FLOTA Y SERVICIOS
    ───────────────────────────────────────────────────────────── */
 .branch-profile-summary-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px 24px;
 }
 
 .branch-profile-summary-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
   padding: 10px 14px;
-  border-radius: 12px;
-  background: #f8fafc;
+  border-radius: 10px;
+  background: var(--bg-seccion1, #f8fafc);
   border: 1px solid var(--borde, #f1f5f9);
 }
 
@@ -840,6 +823,7 @@
   flex-direction: column;
   align-items: flex-start;
   gap: 8px;
+  grid-column: span 2;
 }
 
 .branch-profile-summary-label {
@@ -857,42 +841,39 @@
 .branch-profile-fleet-action {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
 
 .branch-profile-link-btn {
   background: transparent;
   border: none;
+  color: var(--brand-primary, #2563eb);
   font-size: 12px;
   font-weight: 700;
-  color: var(--brand-primary, #2563eb);
   cursor: pointer;
-  padding: 2px 6px;
-  border-radius: 6px;
-  transition: background-color 150ms ease;
-  font-family: inherit;
+  padding: 0;
+  transition: opacity 150ms ease;
 }
 
 .branch-profile-link-btn:hover {
-  background: rgba(37, 99, 235, 0.08);
+  opacity: 0.8;
+  text-decoration: underline;
 }
 
 .branch-profile-tags-cloud {
   display: flex;
+  gap: 8px;
   flex-wrap: wrap;
-  gap: 6px;
-  width: 100%;
 }
 
 .branch-profile-category-tag {
-  background: #ffffff;
+  background: var(--bg-tarjeta, #ffffff);
   border: 1px solid var(--borde, #e2e8f0);
-  color: var(--texto-primary, #0f172a);
+  padding: 3px 10px;
+  border-radius: 14px;
   font-size: 11.5px;
   font-weight: 600;
-  padding: 3px 10px;
-  border-radius: 16px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+  color: var(--texto-primary, #1e293b);
 }
 
 .branch-profile-services-list {
@@ -908,44 +889,127 @@
   gap: 8px;
   font-size: 12px;
   color: var(--texto-primary, #334155);
-  font-weight: 500;
 }
 
 .branch-profile-service-icon {
-  color: #10b981;
-  font-size: 12px;
+  color: #16a34a;
+  font-size: 13px;
   flex-shrink: 0;
 }
 
-/* Skeleton Loading */
-.branch-profile-skeleton-header {
-  margin-bottom: 24px;
+/* ─────────────────────────────────────────────────────────────
+   MODO OSCURO (body.dark, .management-shell--dark)
+   ───────────────────────────────────────────────────────────── */
+body.dark .branch-profile-main,
+.management-shell--dark .branch-profile-main {
+  background-color: #0b1329;
+  color: #f8fafc;
 }
 
-.branch-skeleton-block {
-  background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
-  background-size: 200% 100%;
-  animation: branchSkeletonWave 1.5s infinite;
-  border-radius: 8px;
+body.dark .branch-profile-card,
+.management-shell--dark .branch-profile-card {
+  background: #1e293b !important;
+  border-color: #334155;
 }
 
-@keyframes branchSkeletonWave {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+body.dark .branch-profile-input,
+body.dark .branch-profile-textarea,
+.management-shell--dark .branch-profile-input,
+.management-shell--dark .branch-profile-textarea {
+  background: #0f172a;
+  color: #f8fafc;
+  border-color: #334155;
+}
+
+body.dark .branch-profile-input-readonly .branch-profile-input,
+.management-shell--dark .branch-profile-input-readonly .branch-profile-input {
+  background: #182234;
+  color: #94a3b8;
+}
+
+body.dark .branch-payment-explanatory-card,
+.management-shell--dark .branch-payment-explanatory-card {
+  background: #182234 !important;
+  border-color: #334155;
+}
+
+body.dark .branch-payment-explanatory-list li,
+.management-shell--dark .branch-payment-explanatory-list li {
+  color: #cbd5e1;
+}
+
+body.dark .branch-payment-explanatory-list li strong,
+.management-shell--dark .branch-payment-explanatory-list li strong {
+  color: #ffffff;
+}
+
+body.dark .branch-payment-explanatory-body,
+.management-shell--dark .branch-payment-explanatory-body {
+  color: #94a3b8;
+}
+
+body.dark .branch-profile-summary-row,
+body.dark .branch-payment-deadline-section,
+.management-shell--dark .branch-profile-summary-row,
+.management-shell--dark .branch-payment-deadline-section {
+  background: rgba(37, 99, 235, 0.12) !important;
+  border-color: rgba(37, 99, 235, 0.3) !important;
+}
+
+body.dark .branch-payment-deadline-title,
+.management-shell--dark .branch-payment-deadline-title {
+  color: #93c5fd !important;
+}
+
+body.dark .branch-payment-deadline-text,
+.management-shell--dark .branch-payment-deadline-text {
+  color: #bfdbfe !important;
+}
+
+body.dark .branch-delivery-table-wrap,
+.management-shell--dark .branch-delivery-table-wrap {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+body.dark .branch-delivery-table thead,
+.management-shell--dark .branch-delivery-table thead {
+  background: #0f172a;
+}
+
+body.dark .branch-delivery-table tbody tr td,
+.management-shell--dark .branch-delivery-table tbody tr td {
+  border-color: #334155;
 }
 
 /* ─────────────────────────────────────────────────────────────
-   RESPONSIVIDAD
+   RESPONSIVE MEDIA QUERIES
    ───────────────────────────────────────────────────────────── */
 @media (max-width: 1024px) {
-  .branch-profile-grid {
+  .branch-profile-row-grid,
+  .branch-payment-methods-grid,
+  .branch-profile-summary-grid {
     grid-template-columns: 1fr;
+  }
+
+  .branch-profile-summary-row--col {
+    grid-column: span 1;
+  }
+
+  .branch-profile-hero-banner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .branch-profile-hero-actions {
+    width: 100%;
+    justify-content: flex-end;
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 640px) {
   .branch-profile-main {
-    padding: 16px 16px 32px;
+    padding: 16px;
   }
 
   .branch-topbar {
@@ -953,14 +1017,21 @@
     align-items: flex-start;
   }
 
-  .branch-profile-hero-banner {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 20px;
+  .branch-profile-fields-row {
+    grid-template-columns: 1fr;
   }
 
-  .branch-profile-fields-row,
-  .branch-profile-schedule-grid {
-    grid-template-columns: 1fr;
+  .branch-profile-hero-title {
+    font-size: 20px;
+  }
+
+  .branch-hero-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .branch-profile-hero-actions {
+    flex-direction: column;
+    width: 100%;
   }
 }

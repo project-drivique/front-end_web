@@ -23,6 +23,34 @@
   min-height: 44px;
 }
 
+.branch-top-breadcrumb {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.branch-breadcrumb-subtitle {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--brand-primary, #2563eb) !important;
+}
+
+.branch-breadcrumb-title {
+  font-size: 20px !important;
+  font-weight: 800 !important;
+  color: var(--texto-primary, #0f172a) !important;
+  margin: 0 !important;
+  letter-spacing: -0.02em !important;
+  line-height: 1.2 !important;
+}
+
+body.dark .branch-breadcrumb-title,
+.management-shell--dark .branch-breadcrumb-title {
+  color: #f8fafc !important;
+}
+
 .branch-search-box {
   position: absolute;
   left: 50%;

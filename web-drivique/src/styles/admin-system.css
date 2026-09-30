@@ -68,15 +68,31 @@
 }
 
 /* Navegación */
+/* Navegación */
 .management-sidebar { 
   padding: 22px 14px; 
   box-shadow: 3px 0 24px rgba(15,23,42,.16); 
   background: var(--brand-gradient, linear-gradient(135deg, var(--brand-secondary, #1e3a8a) 0%, var(--brand-primary, #2563eb) 100%)) !important; 
+  height: 100vh;
+  max-height: 100vh;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
+}
+.management-sidebar::-webkit-scrollbar {
+  width: 5px;
+}
+.management-sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.management-sidebar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 4px;
 }
 .management-brand { gap: 11px; padding: 2px 6px 18px; border-bottom: 1px solid rgba(255, 255, 255, 0.15); margin-bottom: 6px; }
 .management-brand strong { font-size: 18px; font-weight: 800; }
 .management-brand small { color: rgba(255,255,255,.75); font-size: 10px; }
-.management-nav { gap: 4px; display: flex; flex-direction: column; }
+.management-nav { gap: 4px; display: flex; flex-direction: column; flex: 1 1 auto; }
 .management-nav__group { display: flex; flex-direction: column; gap: 4px; }
 .management-nav__section-title {
   font-size: 10px;
@@ -93,9 +109,36 @@
   margin-top: 0;
   padding-top: 4px;
 }
-.management-nav__item, .management-logout { min-height: 43px; padding: 10px 13px; border-radius: 10px; font-size: 13px; font-weight: 500; }
+.management-nav__item { min-height: 43px; padding: 10px 13px; border-radius: 10px; font-size: 13px; font-weight: 500; }
 .management-nav__item:hover { transform: none; background: rgba(255,255,255,.12); }
 .management-nav__item.is-active { transform: none; background: rgba(255,255,255,.22) !important; border: 1px solid rgba(255,255,255,.28) !important; box-shadow: 0 4px 14px rgba(0,0,0,0.12); font-weight: 600; }
+
+.management-logout {
+  min-height: 43px;
+  padding: 10px 13px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  margin-top: auto;
+  margin-bottom: 4px;
+  flex-shrink: 0;
+}
+.management-logout span, .management-logout svg {
+  color: #0f172a !important;
+}
+.management-logout:hover {
+  background: #f8fafc !important;
+  color: #dc2626 !important;
+  border-color: #fca5a5;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+}
+.management-logout:hover span, .management-logout:hover svg {
+  color: #dc2626 !important;
+}
 
 /* Encabezados y controles */
 .cities-topbar, .management-header, .brand-page__header { align-items: center; margin-bottom: 22px; }
