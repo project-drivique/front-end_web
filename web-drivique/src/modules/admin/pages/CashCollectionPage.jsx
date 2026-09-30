@@ -578,15 +578,13 @@ export default function CashCollectionPage({ branchOnly = false }) {
                   >
                     <FaSearch /> Filtrar
                   </button>
-                  {searchRefValue && (
-                    <button
-                      type="button"
-                      onClick={() => { setSearchRefValue(''); setSearch(''); }}
-                      style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '7px 14px', background: '#64748b', borderRadius: '8px', border: 'none', color: '#fff', fontWeight: 600, cursor: 'pointer', fontSize: '13px', whiteSpace: 'nowrap' }}
-                    >
-                      Limpiar
-                    </button>
-                  )}
+                  <button
+                    type="button"
+                    onClick={() => { setSearchRefValue(''); setSearch(''); }}
+                    style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '7px 14px', background: '#fff', borderRadius: '8px', border: '1.5px solid #f59e0b', color: '#f59e0b', fontWeight: 600, cursor: 'pointer', fontSize: '13px', whiteSpace: 'nowrap' }}
+                  >
+                    Limpiar
+                  </button>
                 </div>
 
                 {/* Dropdown Todos los estados */}
