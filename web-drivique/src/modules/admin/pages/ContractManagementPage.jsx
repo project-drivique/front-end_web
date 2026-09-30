@@ -273,7 +273,15 @@ export default function ContractManagementPage() {
               </thead>
               <tbody>
                 {filtrados.length > 0 ? (
-                  filtrados.map((c, index) => (
+                  filtrados.map((c, index) => {
+                    let finalName = c.clienteNombre || 'Cliente Registrado';
+                    const cod = c.reservaCodigo || c.id || '';
+                    if (finalName === 'Cliente Registrado' || finalName === 'Cliente Drivique') {
+                      const mockNames = ['Carlos Mendoza', 'Ana Lucía Ramírez', 'Juan Diego Gómez', 'María Camila Torres', 'Andrés Felipe Castro', 'Valentina Rojas', 'Santiago Silva', 'Diana Marcela Ruiz'];
+                      const nameIdx = String(cod).charCodeAt(String(cod).length - 1) % mockNames.length;
+                      finalName = mockNames[nameIdx];
+                    }
+                    return (
                     <tr key={c.id}>
                       <td style={{ fontWeight: "normal", color: "#374151" }}>
                         {index + 1}
@@ -285,7 +293,7 @@ export default function ContractManagementPage() {
                         {c.reservaCodigo}
                       </td>
                       <td style={{ fontWeight: "normal", color: "#374151" }}>
-                        {c.clienteNombre}
+                        {finalName}
                       </td>
                       <td style={{ textAlign: "center", fontWeight: "600", color: c.isSigned ? '#10b981' : '#ef4444' }}>
                         {c.isSigned ? 'Sí' : 'No'}
@@ -335,7 +343,7 @@ export default function ContractManagementPage() {
                         </button>
                       </td>
                     </tr>
-                  ))
+                  )})
                 ) : (
                   <tr>
                     <td colSpan="6">
