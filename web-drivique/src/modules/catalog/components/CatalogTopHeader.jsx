@@ -135,64 +135,65 @@ export default function CatalogTopHeader({
         {children}
 
         {/* RIGHT: Profile & Settings */}
-        <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '12px', zIndex: 10 }}>
+        <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', zIndex: 10 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <MenuConfiguracion />
 
-          <MenuConfiguracion />
+            {mostrarVolverInicio && (
+              <Link
+                to="/"
+                className="catalogo-header-back"
+                style={{
+                  border: `1px solid ${c.heroCardBorder}`,
+                  background: c.heroCardBg,
+                  color: c.accentText,
+                }}
+              >
+                <FaArrowLeft size={12} />
+                <span className="back-text-desktop">{t('catalogo.backToHome', 'Volver al inicio')}</span>
+              </Link>
+            )}
 
-          {mostrarVolverInicio && (
-            <Link
-              to="/"
-              className="catalogo-header-back"
-              style={{
-                border: `1px solid ${c.heroCardBorder}`,
-                background: c.heroCardBg,
-                color: c.accentText,
-              }}
-            >
-              <FaArrowLeft size={12} />
-              <span className="back-text-desktop">{t('catalogo.backToHome', 'Volver al inicio')}</span>
-            </Link>
-          )}
+            {modoRegistrado && (
+              <button
+                className="catalogo-mobile-menu-btn"
+                onClick={() => setIsMobileMenuOpen(true)}
+                style={{ color: c.accentText }}
+                aria-label="Abrir menú"
+              >
+                <FaBars size={22} />
+              </button>
+            )}
 
-          {modoRegistrado && (
-            <button
-              className="catalogo-mobile-menu-btn"
-              onClick={() => setIsMobileMenuOpen(true)}
-              style={{ color: c.accentText }}
-              aria-label="Abrir menú"
-            >
-              <FaBars size={22} />
-            </button>
-          )}
-
-          {mostrarPerfil && (
-            <Link
-              to="/perfil"
-              aria-label="Perfil"
-              className="catalogo-header-profile"
-              style={{ color: c.accentText, display: 'flex', alignItems: 'center' }}
-            >
-              {usuario ? (
-                <div style={{
-                  width: '32px',
-                  height: '32px',
-                  borderRadius: '50%',
-                  background: 'var(--brand-primary)',
-                  color: 'var(--brand-on-primary)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '14px',
-                  fontWeight: 'bold',
-                  border: `2px solid ${c.navBorder}`
-                }}>
-                  {iniciales(usuario.nombre, usuario.apellido, usuario.correo)}
-                </div>
-              ) : (
-                <FaUserCircle size={30} />
-              )}
-            </Link>
-          )}
+            {mostrarPerfil && (
+              <Link
+                to="/perfil"
+                aria-label="Perfil"
+                className="catalogo-header-profile"
+                style={{ color: c.accentText, display: 'flex', alignItems: 'center' }}
+              >
+                {usuario ? (
+                  <div style={{
+                    width: '32px',
+                    height: '32px',
+                    borderRadius: '50%',
+                    background: 'var(--brand-primary)',
+                    color: 'var(--brand-on-primary)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '14px',
+                    fontWeight: 'bold',
+                    border: `2px solid ${c.navBorder}`
+                  }}>
+                    {iniciales(usuario.nombre, usuario.apellido, usuario.correo)}
+                  </div>
+                ) : (
+                  <FaUserCircle size={30} />
+                )}
+              </Link>
+            )}
+          </div>
         </div>
       </div>
 
