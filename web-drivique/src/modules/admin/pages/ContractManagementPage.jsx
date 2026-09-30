@@ -270,12 +270,9 @@ export default function ContractManagementPage() {
                   <th>
                     {t("admin.contractsPage.fields.reservationCode", "Reserva")}
                   </th>
-                  <th>{t("admin.contractsPage.fields.clientName", "Cliente")}</th>
-                  <th>{t("admin.contractsPage.fields.clientDoc", "Documento")}</th>
-                  <th>{t("admin.contractsPage.fields.vehicle", "Vehículo")}</th>
-                  <th>{t("admin.contractsPage.fields.startDate", "Inicio")}</th>
-                  <th>{t("admin.contractsPage.fields.state", "Estado")}</th>
-                  <th style={{ textAlign: "center" }}>{t('admin.contractsPage.actions', 'Acciones')}</th>
+                  <th style={{ textAlign: "center" }}>VER CONTRATO</th>
+                  <th style={{ textAlign: "center" }}>DESCARGAR CONTRATO</th>
+                  <th style={{ textAlign: "center" }}>IMPRIMIR CONTRATO</th>
                 </tr>
               </thead>
               <tbody>
@@ -291,49 +288,52 @@ export default function ContractManagementPage() {
                       <td style={{ fontWeight: "normal", color: "#374151" }}>
                         {c.reservaCodigo}
                       </td>
-                      <td style={{ fontWeight: "normal", color: "#374151" }}>
-                        {c.clienteNombre || 'Cliente Drivique'}
-                      </td>
-                      <td style={{ fontWeight: "normal", color: "#374151" }}>
-                        {c.clienteDocumento || '1030507090'}
-                      </td>
-                      <td style={{ fontWeight: "normal", color: "#374151" }}>
-                        {c.vehiculoNombre || "Vehículo Drivique"}
-                      </td>
-                      <td style={{ fontWeight: "normal", color: "#374151" }}>
-                        {c.fechaInicio ? c.fechaInicio.replace("T", " ") : new Date().toISOString().slice(0, 10)}
-                      </td>
-                      <td>
-                        <span className={`res-status res-status--${c.estado || 'vigente'}`} style={{ fontWeight: "normal" }}>
-                          {t(`admin.contractsPage.states.${c.estado || 'vigente'}`, c.estado || 'Vigente')}
-                        </span>
-                      </td>
-                      <td>
-                        <div
-                          className="cities-row-actions"
-                          style={{ justifyContent: "center", gap: "8px" }}
+                      <td style={{ textAlign: "center" }}>
+                        <button
+                          type="button"
+                          onClick={() => openDetalle(c)}
+                          style={{ padding: '6px 12px', fontSize: '13px', background: '#3b82f6', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'normal', minWidth: '80px' }}
                         >
-                          <button
-                            type="button"
-                            onClick={() => openDetalle(c)}
-                            style={{ padding: '6px 12px', fontSize: '13px', background: '#3b82f6', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'normal' }}
-                          >
-                            Ver
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => handleDownloadSinglePdf(c)}
-                            style={{ padding: '6px 12px', fontSize: '13px', background: '#ef4444', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'normal' }}
-                          >
-                            Descargar
-                          </button>
-                        </div>
+                          Ver
+                        </button>
+                      </td>
+                      <td style={{ textAlign: "center" }}>
+                        <button
+                          type="button"
+                          onClick={() => handleDownloadSinglePdf(c)}
+                          style={{ padding: '6px 12px', fontSize: '13px', background: '#ef4444', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'normal', minWidth: '100px' }}
+                        >
+                          Descargar
+                        </button>
+                      </td>
+                      <td style={{ textAlign: "center" }}>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const singleData = {
+                              title: `Contrato - ${c.contratoNumero}`,
+                              headers: headersExport,
+                              rows: [[
+                                c.contratoNumero, c.reservaCodigo, c.clienteNombre, c.clienteDocumento,
+                                `${c.vehiculoNombre} (${c.vehiculoPlaca})`, c.sucursal,
+                                c.fechaInicio ? String(c.fechaInicio).replace("T", " ") : "",
+                                c.fechaFin ? String(c.fechaFin).replace("T", " ") : "",
+                                t(`admin.contractsPage.states.${c.estado}`, c.estado), c.totalCOP,
+                              ]],
+                              items: [c],
+                            };
+                            printTable(singleData);
+                          }}
+                          style={{ padding: '6px 12px', fontSize: '13px', background: '#8b5cf6', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'normal', minWidth: '90px' }}
+                        >
+                          Imprimir
+                        </button>
                       </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="9">
+                    <td colSpan="6">
                       <div className="cities-empty">
                         <FaFileContract className="cities-empty__icon" />
                         <h3>
