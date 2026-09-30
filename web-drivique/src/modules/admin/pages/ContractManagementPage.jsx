@@ -285,18 +285,18 @@ export default function ContractManagementPage() {
                         <button
                           type="button"
                           onClick={() => openDetalle(c)}
-                          style={{ padding: '6px 12px', fontSize: '13px', background: '#10b981', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'normal', minWidth: '80px' }}
+                          style={{ padding: '6px 12px', fontSize: '13px', background: '#10b981', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'normal', minWidth: '80px', display: 'inline-flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}
                         >
-                          Ver
+                          <FaEye /> Ver
                         </button>
                       </td>
                       <td style={{ textAlign: "center" }}>
                         <button
                           type="button"
                           onClick={() => handleDownloadSinglePdf(c)}
-                          style={{ padding: '6px 12px', fontSize: '13px', background: '#3b82f6', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'normal', minWidth: '100px' }}
+                          style={{ padding: '6px 12px', fontSize: '13px', background: '#3b82f6', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'normal', minWidth: '100px', display: 'inline-flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}
                         >
-                          Descargar
+                          <FaDownload /> Descargar
                         </button>
                       </td>
                       <td style={{ textAlign: "center" }}>
@@ -317,9 +317,9 @@ export default function ContractManagementPage() {
                             };
                             printTable(singleData);
                           }}
-                          style={{ padding: '6px 12px', fontSize: '13px', background: '#8b5cf6', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'normal', minWidth: '90px' }}
+                          style={{ padding: '6px 12px', fontSize: '13px', background: '#8b5cf6', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'normal', minWidth: '90px', display: 'inline-flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}
                         >
-                          Imprimir
+                          <FaPrint /> Imprimir
                         </button>
                       </td>
                     </tr>
