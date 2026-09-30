@@ -234,9 +234,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
   const [modalReserva, setModalReserva] = useState(null)
   const [observacionesCaja, setObservacionesCaja] = useState('')
   const [procesandoPago, setProcesandoPago] = useState(false)
-  const [isSearchRefModalOpen, setIsSearchRefModalOpen] = useState(false)
   const [searchRefValue, setSearchRefValue] = useState('')
-  const [searchRefBranch, setSearchRefBranch] = useState('')
 
   // Cargar lista de reservas
   const cargarReservas = useCallback(() => {
@@ -504,46 +502,9 @@ export default function CashCollectionPage({ branchOnly = false }) {
       showAlert('Atención', 'Debes ingresar una referencia.', 'warning')
       return
     }
-    if (!searchRefBranch.trim()) {
-      showAlert('Atención', 'Debes confirmar la sucursal de pago.', 'warning')
-      return
-    }
-    const ref = searchRefValue.trim().toLowerCase()
-    const found = todasLasReservas.find(r => 
-      String(r.codigo || '').toLowerCase() === ref || 
-      String(r.referencia || '').toLowerCase() === ref || 
-      String(r.id || '').toLowerCase() === ref
-    )
-
-    if (found) {
-      // Validar Sucursal (ignorando tildes y permitiendo coincidencias parciales)
-      const resBranch = String(found.sucursal || found.sucursalPagoEfectivo || found.reservaDetalles?.sucursalPagoEfectivo || found.reservaDetalles?.sucursalRetiro || '').toLowerCase()
-      const reqBranch = searchRefBranch.trim().toLowerCase()
-      const norm = s => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-      const nRes = norm(resBranch)
-      const nReq = norm(reqBranch)
-      
-      if (!nRes.includes(nReq) && !nReq.includes(nRes)) {
-        showAlert('Sucursal incorrecta', `La sucursal indicada no coincide con la registrada en la reserva.`, 'error')
-        return
-      }
-
-      const rawMetodo = String(found.reservaDetalles?.metodoPago || found.pasarela || found.metodoPagoConfirmado || 'Wompi').toLowerCase()
-      const esEfectivo = rawMetodo.includes('efectivo') || rawMetodo.includes('sucursal') || String(found.estado).toLowerCase().includes('efectivo')
-      const pagoConfirmado = esEfectivo ? esCobradoEnSucursal(found) : (found.pagoEstado === 'aprobado' || found.estadoPago === 'aprobado' || found.estado === 'confirmada' || found.estado === 'en_curso' || found.estado === 'finalizada')
-      
-      if (pagoConfirmado) {
-        showAlert('Información', 'Esta reserva ya está registrada como pagada.', 'info')
-      } else if (!esEfectivo) {
-        showAlert('Información', 'Esta reserva tiene método de pago digital.', 'info')
-      } else {
-        setSearchRefValue('')
-        setSearchRefBranch('')
-        openModalCobro(found)
-      }
-    } else {
-      showAlert('No encontrada', 'No se encontró ninguna reserva pendiente con esta referencia.', 'error')
-    }
+    
+    const ref = searchRefValue.trim()
+    setSearch(ref)
   }
 
   return (
@@ -628,16 +589,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
                     placeholder="Ref. (Ej. RES-179...)"
                     value={searchRefValue}
                     onChange={(e) => setSearchRefValue(e.target.value)}
-                    style={{ padding: '6px 12px', border: 'none', background: 'transparent', fontSize: '14px', outline: 'none', width: '160px' }}
-                    onKeyDown={(e) => e.key === 'Enter' && handleSearchRef()}
-                  />
-                  <div style={{ width: '1px', height: '24px', background: '#e2e8f0' }} />
-                  <input
-                    type="text"
-                    placeholder="Confirma Sucursal..."
-                    value={searchRefBranch}
-                    onChange={(e) => setSearchRefBranch(e.target.value)}
-                    style={{ padding: '6px 12px', border: 'none', background: 'transparent', fontSize: '14px', outline: 'none', width: '160px' }}
+                    style={{ padding: '6px 12px', border: 'none', background: 'transparent', fontSize: '14px', outline: 'none', width: '200px' }}
                     onKeyDown={(e) => e.key === 'Enter' && handleSearchRef()}
                   />
                   <button 
@@ -645,7 +597,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
                     onClick={handleSearchRef}
                     style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 12px', background: '#f59e0b', borderRadius: '6px', border: 'none', color: '#fff', fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}
                   >
-                    <FaSearch /> Cobrar
+                    <FaSearch /> Filtrar
                   </button>
                 </div>
 
