@@ -816,7 +816,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
                               type="button"
                               className="cash-btn-primary"
                               disabled={!pagoConfirmado}
-                              style={{ width: '100px', padding: '6px 10px', fontSize: '13px', background: pagoConfirmado ? '#3b82f6' : '#e5e7eb', borderColor: pagoConfirmado ? '#3b82f6' : '#e5e7eb', color: pagoConfirmado ? '#fff' : '#9ca3af', whiteSpace: 'nowrap', textAlign: 'center', cursor: pagoConfirmado ? 'pointer' : 'not-allowed' }}
+                              style={{ width: '100px', padding: '6px 10px', fontSize: '13px', background: pagoConfirmado ? '#8b5cf6' : '#e5e7eb', borderColor: pagoConfirmado ? '#8b5cf6' : '#e5e7eb', color: pagoConfirmado ? '#fff' : '#9ca3af', whiteSpace: 'nowrap', textAlign: 'center', cursor: pagoConfirmado ? 'pointer' : 'not-allowed' }}
                               onClick={async (e) => {
                                 e.stopPropagation()
                                 if (!pagoConfirmado) return
