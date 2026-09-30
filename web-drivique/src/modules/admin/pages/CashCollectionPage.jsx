@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect, useCallback } from 'react'
+import html2canvas from 'html2canvas'
 import { useTranslation } from 'react-i18next'
 import {
   startOfMonth,
@@ -821,26 +822,44 @@ export default function CashCollectionPage({ branchOnly = false }) {
                             )}
                           </td>
 
-                          {/* DESCARGAR - descarga real del archivo */}
+                          {/* DESCARGAR - descarga como PNG */}
                           <td>
                             <button
                               type="button"
                               className="cash-btn-primary"
                               disabled={!pagoConfirmado}
                               style={{ width: '100px', padding: '6px 10px', fontSize: '13px', background: pagoConfirmado ? '#3b82f6' : '#e5e7eb', borderColor: pagoConfirmado ? '#3b82f6' : '#e5e7eb', color: pagoConfirmado ? '#fff' : '#9ca3af', whiteSpace: 'nowrap', textAlign: 'center', cursor: pagoConfirmado ? 'pointer' : 'not-allowed' }}
-                              onClick={(e) => {
+                              onClick={async (e) => {
                                 e.stopPropagation()
                                 if (!pagoConfirmado) return
-                                const html = `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Comprobante-${cod}</title><style>body{font-family:Arial,sans-serif;max-width:480px;margin:40px auto;padding:24px;color:#111827;}h2{text-align:center;color:#10b981;margin-bottom:8px;}p.sub{text-align:center;color:#6b7280;font-size:13px;}table{width:100%;border-collapse:collapse;margin-top:20px;}td{padding:10px 6px;font-size:14px;border-bottom:1px solid #e5e7eb;}td:last-child{text-align:right;font-weight:600;}.total-row td{border-top:2px solid #d1fae5;font-size:17px;color:#10b981;font-weight:800;padding-top:14px;}</style></head><body><h2>Comprobante de Pago</h2><p class="sub">Drivique &mdash; ${new Date().toLocaleDateString('es-CO')}</p><table><tr><td>Referencia</td><td>${cod}</td></tr><tr><td>Cliente</td><td>${r.clienteNombre || 'Cliente'}</td></tr><tr><td>Veh&iacute;culo</td><td>${r.vehiculoNombre || 'Veh&iacute;culo Reservado'}</td></tr><tr><td>M&eacute;todo de pago</td><td>${esEfectivo ? 'Efectivo en Sucursal' : 'Pasarela Digital'}</td></tr><tr><td>Fecha de pago</td><td>${r.fechaPagoConfirmado ? new Date(r.fechaPagoConfirmado).toLocaleString('es-CO') : new Date().toLocaleString('es-CO')}</td></tr><tr class="total-row"><td>TOTAL PAGADO</td><td>${formatCurrency(total, moneda)}</td></tr></table></body></html>`
-                                const blob = new Blob([html], { type: 'text/html;charset=utf-8' })
-                                const url = URL.createObjectURL(blob)
-                                const a = document.createElement('a')
-                                a.href = url
-                                a.download = `Comprobante-${cod}.html`
-                                document.body.appendChild(a)
-                                a.click()
-                                document.body.removeChild(a)
-                                URL.revokeObjectURL(url)
+                                // Crear un div temporal con el comprobante
+                                const div = document.createElement('div')
+                                div.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:480px;padding:32px;background:#fff;font-family:Arial,sans-serif;color:#111827;border-radius:12px;'
+                                div.innerHTML = `
+                                  <div style="text-align:center;margin-bottom:20px">
+                                    <div style="display:inline-flex;align-items:center;justify-content:center;width:52px;height:52px;border-radius:50%;background:#d1fae5;color:#10b981;font-size:26px;margin-bottom:12px">✓</div>
+                                    <h2 style="margin:0 0 4px;font-size:20px;color:#111827">Comprobante de Pago</h2>
+                                    <p style="margin:0;font-size:13px;color:#6b7280">Drivique — ${new Date().toLocaleDateString('es-CO')}</p>
+                                  </div>
+                                  <table style="width:100%;border-collapse:collapse;margin-top:8px">
+                                    <tr><td style="padding:10px 6px;font-size:14px;border-bottom:1px solid #e5e7eb;color:#6b7280">Referencia</td><td style="padding:10px 6px;font-size:14px;border-bottom:1px solid #e5e7eb;text-align:right;font-weight:600">${cod}</td></tr>
+                                    <tr><td style="padding:10px 6px;font-size:14px;border-bottom:1px solid #e5e7eb;color:#6b7280">Cliente</td><td style="padding:10px 6px;font-size:14px;border-bottom:1px solid #e5e7eb;text-align:right;font-weight:600">${r.clienteNombre || 'Cliente'}</td></tr>
+                                    <tr><td style="padding:10px 6px;font-size:14px;border-bottom:1px solid #e5e7eb;color:#6b7280">Vehículo</td><td style="padding:10px 6px;font-size:14px;border-bottom:1px solid #e5e7eb;text-align:right;font-weight:600">${r.vehiculoNombre || 'Vehículo Reservado'}</td></tr>
+                                    <tr><td style="padding:10px 6px;font-size:14px;border-bottom:1px solid #e5e7eb;color:#6b7280">Método de pago</td><td style="padding:10px 6px;font-size:14px;border-bottom:1px solid #e5e7eb;text-align:right;font-weight:600">${esEfectivo ? 'Efectivo en Sucursal' : 'Pasarela Digital'}</td></tr>
+                                    <tr><td style="padding:10px 6px;font-size:14px;border-bottom:1px solid #e5e7eb;color:#6b7280">Fecha de pago</td><td style="padding:10px 6px;font-size:14px;border-bottom:1px solid #e5e7eb;text-align:right;font-weight:600">${r.fechaPagoConfirmado ? new Date(r.fechaPagoConfirmado).toLocaleString('es-CO') : new Date().toLocaleString('es-CO')}</td></tr>
+                                    <tr><td style="padding:14px 6px;font-size:17px;font-weight:800;color:#10b981;border-top:2px solid #d1fae5">TOTAL PAGADO</td><td style="padding:14px 6px;font-size:17px;font-weight:800;color:#10b981;border-top:2px solid #d1fae5;text-align:right">${formatCurrency(total, moneda)}</td></tr>
+                                  </table>
+                                `
+                                document.body.appendChild(div)
+                                try {
+                                  const canvas = await html2canvas(div, { scale: 2, backgroundColor: '#ffffff' })
+                                  const link = document.createElement('a')
+                                  link.download = `Comprobante-${cod}.png`
+                                  link.href = canvas.toDataURL('image/png')
+                                  link.click()
+                                } finally {
+                                  document.body.removeChild(div)
+                                }
                               }}
                             >
                               <FaFilePdf /> Descargar
@@ -857,11 +876,13 @@ export default function CashCollectionPage({ branchOnly = false }) {
                               onClick={(e) => {
                                 e.stopPropagation()
                                 if (!pagoConfirmado) return
-                                const win = window.open('', '_blank')
-                                win.document.write(`<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Comprobante-${cod}</title><style>body{font-family:Arial,sans-serif;max-width:480px;margin:40px auto;padding:24px;color:#111827;}h2{text-align:center;color:#10b981;margin-bottom:8px;}p.sub{text-align:center;color:#6b7280;font-size:13px;}table{width:100%;border-collapse:collapse;margin-top:20px;}td{padding:10px 6px;font-size:14px;border-bottom:1px solid #e5e7eb;}td:last-child{text-align:right;font-weight:600;}.total-row td{border-top:2px solid #d1fae5;font-size:17px;color:#10b981;font-weight:800;padding-top:14px;}</style></head><body><h2>Comprobante de Pago</h2><p class="sub">Drivique &mdash; ${new Date().toLocaleDateString('es-CO')}</p><table><tr><td>Referencia</td><td>${cod}</td></tr><tr><td>Cliente</td><td>${r.clienteNombre || 'Cliente'}</td></tr><tr><td>Veh&iacute;culo</td><td>${r.vehiculoNombre || 'Veh&iacute;culo Reservado'}</td></tr><tr><td>M&eacute;todo de pago</td><td>${esEfectivo ? 'Efectivo en Sucursal' : 'Pasarela Digital'}</td></tr><tr><td>Fecha de pago</td><td>${r.fechaPagoConfirmado ? new Date(r.fechaPagoConfirmado).toLocaleString('es-CO') : new Date().toLocaleString('es-CO')}</td></tr><tr class="total-row"><td>TOTAL PAGADO</td><td>${formatCurrency(total, moneda)}</td></tr></table></body></html>`)
+                                const contenido = `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Comprobante-${cod}</title><style>body{font-family:Arial,sans-serif;max-width:480px;margin:40px auto;padding:24px;color:#111827;}h2{text-align:center;color:#10b981;margin-bottom:8px;}p.sub{text-align:center;color:#6b7280;font-size:13px;}table{width:100%;border-collapse:collapse;margin-top:20px;}td{padding:10px 6px;font-size:14px;border-bottom:1px solid #e5e7eb;}td:last-child{text-align:right;font-weight:600;}.total-row td{border-top:2px solid #d1fae5;font-size:17px;color:#10b981;font-weight:800;padding-top:14px;}</style></head><body><h2>Comprobante de Pago</h2><p class="sub">Drivique &mdash; ${new Date().toLocaleDateString('es-CO')}</p><table><tr><td>Referencia</td><td>${cod}</td></tr><tr><td>Cliente</td><td>${r.clienteNombre || 'Cliente'}</td></tr><tr><td>Veh&iacute;culo</td><td>${r.vehiculoNombre || 'Veh&iacute;culo Reservado'}</td></tr><tr><td>M&eacute;todo de pago</td><td>${esEfectivo ? 'Efectivo en Sucursal' : 'Pasarela Digital'}</td></tr><tr><td>Fecha de pago</td><td>${r.fechaPagoConfirmado ? new Date(r.fechaPagoConfirmado).toLocaleString('es-CO') : new Date().toLocaleString('es-CO')}</td></tr><tr class="total-row"><td>TOTAL PAGADO</td><td>${formatCurrency(total, moneda)}</td></tr></table></body></html>`
+                                const win = window.open('', '_blank', 'width=600,height=700')
+                                win.document.open()
+                                win.document.write(contenido)
                                 win.document.close()
-                                win.focus()
-                                setTimeout(() => { win.print(); win.close() }, 500)
+                                // Esperar carga completa antes de imprimir
+                                win.onload = () => win.print()
                               }}
                             >
                               <FaPrint /> Imprimir
