@@ -556,95 +556,82 @@ export default function CashCollectionPage({ branchOnly = false }) {
           <section className="cities-card">
             <div className="cash-toolbar-container">
               {/* FILA 1: Buscador, Filtro Estado y Selector Sucursal */}
-              <div className="cash-toolbar-row1" style={{ flexWrap: 'wrap', gap: '8px', alignItems: 'flex-end' }}>
+              <div className="cash-toolbar-row1" style={{ flexWrap: 'nowrap', gap: '8px', alignItems: 'center', width: '100%' }}>
 
                 {/* Input referencia */}
-                <div style={{ display: 'flex', alignItems: 'center', background: '#fff', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '4px 8px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', background: '#fff', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '0 8px', height: '36px', minWidth: '160px' }}>
                   <input
                     type="text"
                     placeholder="Ref. (Ej. RES-179...)"
                     value={searchRefValue}
                     onChange={(e) => setSearchRefValue(e.target.value)}
-                    style={{ padding: '5px 8px', border: 'none', background: 'transparent', fontSize: '14px', outline: 'none', width: '160px' }}
+                    style={{ padding: '0 8px', border: 'none', background: 'transparent', fontSize: '13px', outline: 'none', width: '155px', height: '100%' }}
                     onKeyDown={(e) => e.key === 'Enter' && handleSearchRef()}
                   />
                 </div>
 
                 {/* Botones Filtrar y Limpiar */}
-                <div style={{ display: 'flex', gap: '6px' }}>
-                  <button
-                    type="button"
-                    onClick={handleSearchRef}
-                    style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '7px 14px', background: '#f59e0b', borderRadius: '8px', border: 'none', color: '#fff', fontWeight: 600, cursor: 'pointer', fontSize: '13px', whiteSpace: 'nowrap' }}
-                  >
-                    <FaSearch /> Filtrar
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => { setSearchRefValue(''); setSearch(''); }}
-                    style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '7px 14px', background: '#fff', borderRadius: '8px', border: '1.5px solid #f59e0b', color: '#f59e0b', fontWeight: 600, cursor: 'pointer', fontSize: '13px', whiteSpace: 'nowrap' }}
-                  >
-                    Limpiar
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  onClick={handleSearchRef}
+                  style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '0 12px', height: '36px', background: '#f59e0b', borderRadius: '8px', border: 'none', color: '#fff', fontWeight: 600, cursor: 'pointer', fontSize: '13px', whiteSpace: 'nowrap', flexShrink: 0 }}
+                >
+                  <FaSearch /> Filtrar
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setSearchRefValue(''); setSearch(''); }}
+                  style={{ display: 'flex', alignItems: 'center', padding: '0 12px', height: '36px', background: '#fff', borderRadius: '8px', border: '1.5px solid #f59e0b', color: '#f59e0b', fontWeight: 600, cursor: 'pointer', fontSize: '13px', whiteSpace: 'nowrap', flexShrink: 0 }}
+                >
+                  Limpiar
+                </button>
 
                 {/* Dropdown estado */}
-                <div className="cash-select-box">
-                  <select
-                    value={filterTab}
-                    onChange={(e) => setFilterTab(e.target.value)}
-                    className="cash-state-select"
-                  >
-                    <option value="todas">Todos los pagos</option>
-                    <option value="pendientes">Pendientes en Efectivo ({pendientesEfectivo.length})</option>
-                    <option value="cobradas">Cobradas hoy en Caja ({cobradasHoy.length})</option>
-                    <option value="digitales">Pagos por Pasarela Digital</option>
-                  </select>
-                </div>
+                <select
+                  value={filterTab}
+                  onChange={(e) => setFilterTab(e.target.value)}
+                  style={{ height: '36px', padding: '0 10px', border: '1px solid #e2e8f0', borderRadius: '8px', fontSize: '13px', background: '#fff', color: '#374151', cursor: 'pointer', flexShrink: 0 }}
+                >
+                  <option value="todas">Todos los pagos</option>
+                  <option value="pendientes">Pendientes Efectivo ({pendientesEfectivo.length})</option>
+                  <option value="cobradas">Cobradas Caja ({cobradasHoy.length})</option>
+                  <option value="digitales">Pasarela Digital</option>
+                </select>
 
                 {/* Dropdown Sucursal */}
                 {!isBranchManager && (
-                  <div className="cash-branch-select-box">
-                    <FaBuilding className="cash-branch-icon" />
-                    <select
-                      value={selectedBranch}
-                      onChange={(e) => setSelectedBranch(e.target.value)}
-                      className="cash-branch-select"
-                    >
-                      <option value="todas">Todas las sucursales</option>
-                      {listaSucursales.map((suc) => (
-                        <option key={suc} value={suc}>{suc}</option>
-                      ))}
-                    </select>
-                  </div>
+                  <select
+                    value={selectedBranch}
+                    onChange={(e) => setSelectedBranch(e.target.value)}
+                    style={{ height: '36px', padding: '0 10px', border: '1px solid #e2e8f0', borderRadius: '8px', fontSize: '13px', background: '#fff', color: '#374151', cursor: 'pointer', flexShrink: 0 }}
+                  >
+                    <option value="todas">Todas las sucursales</option>
+                    {listaSucursales.map((suc) => (
+                      <option key={suc} value={suc}>{suc}</option>
+                    ))}
+                  </select>
                 )}
 
-                {/* Fechas DESDE / HASTA */}
-                <div style={{ display: 'flex', alignItems: 'flex-end', gap: '8px' }}>
-                  <div className="cash-date-field">
-                    <label className="cash-field-label">DESDE:</label>
-                    <input
-                      type="date"
-                      value={dateFrom}
-                      onChange={(e) => setDateFrom(e.target.value)}
-                      className="cash-date-input"
-                      style={{ width: '140px' }}
-                    />
-                  </div>
-                  <div className="cash-date-field">
-                    <label className="cash-field-label">HASTA:</label>
-                    <input
-                      type="date"
-                      value={dateTo}
-                      onChange={(e) => setDateTo(e.target.value)}
-                      className="cash-date-input"
-                      style={{ width: '140px' }}
-                    />
-                  </div>
-                </div>
+                {/* Fechas DESDE / HASTA - inline sin label apilado */}
+                <input
+                  type="date"
+                  placeholder="Desde"
+                  title="Desde"
+                  value={dateFrom}
+                  onChange={(e) => setDateFrom(e.target.value)}
+                  style={{ height: '36px', padding: '0 8px', border: '1px solid #e2e8f0', borderRadius: '8px', fontSize: '13px', background: '#fff', color: '#374151', width: '140px', flexShrink: 0 }}
+                />
+                <input
+                  type="date"
+                  placeholder="Hasta"
+                  title="Hasta"
+                  value={dateTo}
+                  onChange={(e) => setDateTo(e.target.value)}
+                  style={{ height: '36px', padding: '0 8px', border: '1px solid #e2e8f0', borderRadius: '8px', fontSize: '13px', background: '#fff', color: '#374151', width: '140px', flexShrink: 0 }}
+                />
 
-                {/* Botones exportación */}
-                <div className="cash-export-buttons">
+                {/* Botones exportación → empujados al extremo derecho */}
+                <div style={{ marginLeft: 'auto', display: 'flex', gap: '8px', flexShrink: 0 }}>
                   <button
                     type="button"
                     className="cash-exp-btn excel"
