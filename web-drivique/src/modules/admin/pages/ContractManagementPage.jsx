@@ -267,9 +267,7 @@ export default function ContractManagementPage() {
                   <th>
                     {t("admin.contractsPage.fields.contractNumber", "No. Contrato")}
                   </th>
-                  <th>
-                    {t("admin.contractsPage.fields.reservationCode", "CÓDIGO RESERVA")}
-                  </th>
+                  <th>CÓDIGO RESERVA</th>
                   <th style={{ textAlign: "center" }}>VER CONTRATO</th>
                   <th style={{ textAlign: "center" }}>DESCARGAR CONTRATO</th>
                   <th style={{ textAlign: "center" }}>IMPRIMIR CONTRATO</th>
