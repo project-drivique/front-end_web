@@ -537,7 +537,6 @@ export default function CashCollectionPage({ branchOnly = false }) {
       } else if (!esEfectivo) {
         showAlert('Información', 'Esta reserva tiene método de pago digital.', 'info')
       } else {
-        setIsSearchRefModalOpen(false)
         setSearchRefValue('')
         setSearchRefBranch('')
         openModalCobro(found)
@@ -623,14 +622,32 @@ export default function CashCollectionPage({ branchOnly = false }) {
                   />
                 </div>
 
-                <button 
-                  type="button"
-                  className="cash-btn-primary"
-                  onClick={() => setIsSearchRefModalOpen(true)}
-                  style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', background: '#f59e0b', borderColor: '#f59e0b', whiteSpace: 'nowrap', borderRadius: '8px', border: 'none', color: '#fff', fontWeight: 600, cursor: 'pointer' }}
-                >
-                  <FaSearch /> Cobrar por Referencia
-                </button>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#fff', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '4px' }}>
+                  <input
+                    type="text"
+                    placeholder="Ref. (Ej. RES-179...)"
+                    value={searchRefValue}
+                    onChange={(e) => setSearchRefValue(e.target.value)}
+                    style={{ padding: '6px 12px', border: 'none', background: 'transparent', fontSize: '14px', outline: 'none', width: '160px' }}
+                    onKeyDown={(e) => e.key === 'Enter' && handleSearchRef()}
+                  />
+                  <div style={{ width: '1px', height: '24px', background: '#e2e8f0' }} />
+                  <input
+                    type="text"
+                    placeholder="Confirma Sucursal..."
+                    value={searchRefBranch}
+                    onChange={(e) => setSearchRefBranch(e.target.value)}
+                    style={{ padding: '6px 12px', border: 'none', background: 'transparent', fontSize: '14px', outline: 'none', width: '160px' }}
+                    onKeyDown={(e) => e.key === 'Enter' && handleSearchRef()}
+                  />
+                  <button 
+                    type="button"
+                    onClick={handleSearchRef}
+                    style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 12px', background: '#f59e0b', borderRadius: '6px', border: 'none', color: '#fff', fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}
+                  >
+                    <FaSearch /> Cobrar
+                  </button>
+                </div>
 
                 {/* Dropdown Todos los estados */}
                 <div className="cash-select-box">
@@ -1058,47 +1075,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
           </section>
         </div>
       )}
-      {/* MODAL PARA BUSCAR POR REFERENCIA */}
-      {isSearchRefModalOpen && (
-        <div className="cash-modal-overlay">
-          <div className="cash-modal-content" style={{ maxWidth: '400px', width: '100%' }}>
-            <div className="cash-modal-header" style={{ padding: '20px 24px', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 700, color: '#0f172a' }}>Buscar por Referencia</h3>
-              <button className="cash-modal-close" onClick={() => { setIsSearchRefModalOpen(false); setSearchRefValue(''); setSearchRefBranch(''); }} style={{ background: 'transparent', border: 'none', fontSize: '24px', cursor: 'pointer', color: '#64748b' }}>×</button>
-            </div>
-            <div className="cash-modal-body" style={{ padding: '24px' }}>
-              <p style={{ fontSize: '14px', color: '#64748b', marginBottom: '16px', lineHeight: 1.5 }}>
-                Ingresa la referencia y confirma la sucursal para poder procesar el pago.
-              </p>
-              <input 
-                type="text" 
-                placeholder="Referencia (Ej. RES-17908...)"
-                value={searchRefValue}
-                onChange={e => setSearchRefValue(e.target.value)}
-                style={{ width: '100%', padding: '12px', border: '2px solid #e2e8f0', borderRadius: '8px', fontSize: '15px', marginBottom: '12px', outline: 'none' }}
-                autoFocus
-              />
-              <input 
-                type="text" 
-                placeholder="Confirmar Sucursal (Ej. Aeropuerto...)"
-                value={searchRefBranch}
-                onChange={e => setSearchRefBranch(e.target.value)}
-                style={{ width: '100%', padding: '12px', border: '2px solid #e2e8f0', borderRadius: '8px', fontSize: '15px', marginBottom: '20px', outline: 'none' }}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') handleSearchRef();
-                }}
-              />
-              <button 
-                type="button" 
-                onClick={handleSearchRef}
-                style={{ width: '100%', background: '#3b82f6', color: '#fff', border: 'none', borderRadius: '8px', padding: '12px', fontSize: '15px', fontWeight: 600, cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}
-              >
-                <FaSearch /> Buscar y Cobrar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+
 
       {/* ── MODAL COMPROBANTE DIGITAL (RÉPLICA WOMPI) ── */}
       {comprobanteDigital && (
