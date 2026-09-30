@@ -26,6 +26,7 @@ import {
 import { formatCurrency } from "../../../utils/currencyUtils";
 import VEHICULOS_MOCK from "../../../mocks/vehicles.json";
 import MenuConfiguracion from "../../../components/MenuConfiguracion";
+import FirmaContrato from '@/modules/contracts/components/ContractSignature';
 import ManagementSidebar from "../components/ManagementSidebar";
 import "./CityManagementPage.css";
 import "./ContractManagementPage.css";
@@ -377,110 +378,28 @@ export default function ContractManagementPage() {
               </button>
             </div>
 
-              <div className="contracts-detail-body">
-                <div className="incident-grid-2 contracts-detail-grid">
-                  <div className="incident-field">
-                    <span className="incident-field-label">
-                      {t("admin.contractsPage.fields.reservationCode", "Reserva")}
-                    </span>
-                    <div style={{ padding: "10px 14px", background: "var(--city-bg)", borderRadius: 8, border: "1px solid var(--city-border)", fontWeight: 500 }}>
-                      {modalDetalle.reservaCodigo}
-                    </div>
-                  </div>
-                  <div className="incident-field">
-                    <span className="incident-field-label">
-                      {t("admin.contractsPage.fields.state", "Estado")}
-                    </span>
-                    <div style={{ padding: "10px 14px", background: "var(--city-bg)", borderRadius: 8, border: "1px solid var(--city-border)" }}>
-                      <span className={`res-status res-status--${modalDetalle.estado}`} style={{ display: "inline-block" }}>
-                        {t(`admin.contractsPage.states.${modalDetalle.estado}`, modalDetalle.estado)}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="incident-field">
-                    <span className="incident-field-label">
-                      {t("admin.contractsPage.fields.clientName", "Cliente")}
-                    </span>
-                    <div style={{ padding: "10px 14px", background: "var(--city-bg)", borderRadius: 8, border: "1px solid var(--city-border)" }}>
-                      <FaUser style={{ marginRight: 8, color: "var(--city-text-muted)" }} />
-                      {modalDetalle.clienteNombre}
-                    </div>
-                  </div>
-                  <div className="incident-field">
-                    <span className="incident-field-label">
-                      {t("admin.contractsPage.fields.clientDoc", "Documento")}
-                    </span>
-                    <div style={{ padding: "10px 14px", background: "var(--city-bg)", borderRadius: 8, border: "1px solid var(--city-border)" }}>
-                      {modalDetalle.clienteDocumento}
-                    </div>
-                  </div>
-                  <div className="incident-field">
-                    <span className="incident-field-label">
-                      {t("admin.contractsPage.fields.clientEmail", "Correo")}
-                    </span>
-                    <div style={{ padding: "10px 14px", background: "var(--city-bg)", borderRadius: 8, border: "1px solid var(--city-border)" }}>
-                      {modalDetalle.clienteCorreo}
-                    </div>
-                  </div>
-                  <div className="incident-field">
-                    <span className="incident-field-label">
-                      {t("admin.contractsPage.fields.clientPhone", "Teléfono")}
-                    </span>
-                    <div style={{ padding: "10px 14px", background: "var(--city-bg)", borderRadius: 8, border: "1px solid var(--city-border)" }}>
-                      {modalDetalle.clienteTelefono}
-                    </div>
-                  </div>
-                  <div className="incident-field" style={{ gridColumn: "span 2" }}>
-                    <span className="incident-field-label">
-                      {t("admin.contractsPage.fields.vehicle", "Vehículo Asociado")}
-                    </span>
-                    <div style={{ display: "flex", alignItems: "center", gap: 14, padding: "12px 16px", background: "var(--city-bg)", borderRadius: 12, border: "1px solid var(--city-border)" }}>
-                      <div>
-                        <strong style={{ display: "block", fontSize: 14, color: "var(--city-text)" }}>
-                          {modalDetalle.vehiculoNombre}
-                        </strong>
-                        <span style={{ fontSize: 12, color: "#64748b", fontWeight: 600 }}>
-                          Placa: <strong style={{ color: "var(--brand-text)" }}>{modalDetalle.vehiculoPlaca}</strong> • {modalDetalle.sucursal}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="incident-field">
-                    <span className="incident-field-label">
-                      {t("admin.contractsPage.fields.branch", "Sucursal")}
-                    </span>
-                    <div style={{ padding: "10px 14px", background: "var(--city-bg)", borderRadius: 8, border: "1px solid var(--city-border)" }}>
-                      <FaBuilding style={{ marginRight: 8, color: "var(--city-text-muted)" }} />
-                      {modalDetalle.sucursal}
-                    </div>
-                  </div>
-                  <div className="incident-field">
-                    <span className="incident-field-label">
-                      {t("admin.contractsPage.fields.startDate", "Inicio")}
-                    </span>
-                    <div style={{ padding: "10px 14px", background: "var(--city-bg)", borderRadius: 8, border: "1px solid var(--city-border)" }}>
-                      <FaCalendarAlt style={{ marginRight: 8, color: "var(--city-text-muted)" }} />
-                      {modalDetalle.fechaInicio?.replace("T", " ")}
-                    </div>
-                  </div>
-                  <div className="incident-field">
-                    <span className="incident-field-label">
-                      {t("admin.contractsPage.fields.endDate", "Fin")}
-                    </span>
-                    <div style={{ padding: "10px 14px", background: "var(--city-bg)", borderRadius: 8, border: "1px solid var(--city-border)" }}>
-                      <FaCalendarAlt style={{ marginRight: 8, color: "var(--city-text-muted)" }} />
-                      {modalDetalle.fechaFin?.replace("T", " ")}
-                    </div>
-                  </div>
-                  <div className="incident-field">
-                    <span className="incident-field-label">
-                      {t("admin.contractsPage.fields.total", "Total COP")}
-                    </span>
-                    <div style={{ padding: "10px 14px", background: "var(--city-bg)", borderRadius: 8, border: "1px solid var(--city-border)", fontWeight: 600 }}>
-                      {formatCurrency(modalDetalle.totalCOP)}
-                    </div>
-                  </div>
-                </div>
+              <div className="contracts-detail-body" style={{ background: '#f8fafc', padding: '24px', borderRadius: '8px', border: '1px solid #e2e8f0', maxHeight: '75vh', overflowY: 'auto' }}>
+                <FirmaContrato 
+                  soloLectura={true}
+                  vehiculo={{ 
+                    nombre: modalDetalle.vehiculoNombre, 
+                    placa: modalDetalle.vehiculoPlaca, 
+                    sucursal: modalDetalle.sucursal 
+                  }}
+                  reservaGuardada={{
+                    clienteNombre: modalDetalle.clienteNombre,
+                    clienteDocumento: modalDetalle.clienteDocumento,
+                    clienteCorreo: modalDetalle.clienteCorreo,
+                    clienteTelefono: modalDetalle.clienteTelefono,
+                    total: modalDetalle.totalCOP,
+                    referencia: modalDetalle.reservaCodigo,
+                    reservaDetalles: { sucursalRetiro: modalDetalle.sucursal, fechaInicio: modalDetalle.fechaInicio, fechaFin: modalDetalle.fechaFin }
+                  }}
+                  contratoFirmado={{
+                    codigo: modalDetalle.contratoNumero || `CTR-${modalDetalle.reservaCodigo}`,
+                    firmaUsuarioDataUrl: modalDetalle.firmaUsuarioDataUrl || 'mock',
+                  }}
+                />
               </div>
 
               <div
