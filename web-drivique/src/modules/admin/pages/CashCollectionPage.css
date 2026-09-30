@@ -676,9 +676,22 @@ html.dark .cash-cal-footer {
 .cash-toolbar-row1 {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 10px;
   width: 100%;
   flex-wrap: wrap;
+}
+
+.cash-toolbar-row1 input,
+.cash-toolbar-row1 select,
+.cash-toolbar-row1 button {
+  height: 36px !important;
+  min-height: 36px;
+  box-sizing: border-box;
+}
+
+.cities-table-wrap {
+  overflow-x: auto;
+  width: 100%;
 }
 
 .cash-search-box {
