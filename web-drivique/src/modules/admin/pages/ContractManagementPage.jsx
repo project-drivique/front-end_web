@@ -269,6 +269,12 @@ export default function ContractManagementPage() {
                   </th>
                   <th>CÓDIGO RESERVA</th>
                   <th>NOMBRE COMPLETO</th>
+                  <th>FOTO</th>
+                  <th>VEHÍCULO</th>
+                  <th>PLACA</th>
+                  <th>MARCA</th>
+                  <th>MODELO</th>
+                  <th>FECHA FIRMA</th>
                   <th style={{ textAlign: "center" }}>FIRMA DE CONTRATO</th>
                   <th style={{ textAlign: "center" }}>VER CONTRATO</th>
                   <th style={{ textAlign: "center" }}>DESCARGAR CONTRATO</th>
@@ -300,6 +306,40 @@ export default function ContractManagementPage() {
                       </td>
                       <td style={{ fontWeight: "normal", color: "#374151" }}>
                         {finalName}
+                      </td>
+                      <td style={{ textAlign: "center", padding: "8px" }}>
+                        {c.vehiculoImagen ? (
+                          <img
+                            src={c.vehiculoImagen}
+                            alt={c.vehiculoNombre}
+                            style={{
+                              width: "60px",
+                              height: "40px",
+                              objectFit: "cover",
+                              borderRadius: "6px",
+                              border: "1px solid #e5e7eb"
+                            }}
+                          />
+                        ) : (
+                          <div style={{ width: "60px", height: "40px", background: "#f3f4f6", borderRadius: "6px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "10px", color: "#9ca3af" }}>
+                            Auto
+                          </div>
+                        )}
+                      </td>
+                      <td style={{ fontWeight: "normal", color: "#374151" }}>
+                        {c.vehiculoNombre || '-'}
+                      </td>
+                      <td style={{ fontWeight: "normal", color: "#374151" }}>
+                        {c.vehiculoPlaca || '-'}
+                      </td>
+                      <td style={{ fontWeight: "normal", color: "#374151" }}>
+                        {c.vehiculoNombre ? c.vehiculoNombre.split(' ')[0] : '-'}
+                      </td>
+                      <td style={{ fontWeight: "normal", color: "#374151" }}>
+                        {c.vehiculoNombre ? c.vehiculoNombre.split(' ').slice(1).join(' ') || '-' : '-'}
+                      </td>
+                      <td style={{ fontWeight: "normal", color: "#374151" }}>
+                        {c.fechaFirma ? String(c.fechaFirma).replace('T', ' ').substring(0, 16) : '-'}
                       </td>
                       <td style={{ textAlign: "center", fontWeight: "600", color: c.isSigned ? '#10b981' : '#ef4444' }}>
                         {c.isSigned ? 'Sí' : 'No'}
