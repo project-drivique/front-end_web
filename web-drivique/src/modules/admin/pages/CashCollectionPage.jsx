@@ -467,12 +467,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
         snapshot: actualizada,
       }))
 
-      showAlert({
-        icon: 'success',
-        title: '¡Pago Registrado con Éxito!',
-        text: `Se confirmó el cobro en efectivo de la reserva ${ref}. La reserva ahora está CONFIRMADA.`,
-        confirmButtonText: 'Entendido',
-      })
+      // El modal cambia automáticamente al estado de recibo al actualizarse el estado
     } catch (err) {
       console.error(err)
       showAlert({
@@ -1148,35 +1143,6 @@ export default function CashCollectionPage({ branchOnly = false }) {
               </div>
             </div>
 
-            <button
-              type="button"
-              onClick={() => {
-                const printContent = document.querySelector('.wompi-replica-modal')
-                const win = window.open('', '_blank')
-                win.document.write(`<!DOCTYPE html><html><head><title>Comprobante de Pago</title><style>body{font-family:Inter,sans-serif;margin:0;padding:24px;max-width:480px;} *{box-sizing:border-box;}</style></head><body>${printContent ? printContent.innerHTML : ''}</body></html>`)
-                win.document.close()
-                win.focus()
-                win.print()
-                win.close()
-              }}
-              style={{
-                width: '100%',
-                background: '#f59e0b',
-                color: '#fff',
-                border: 'none',
-                borderRadius: '24px',
-                padding: '13px 20px',
-                fontSize: '14px',
-                fontWeight: 600,
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px'
-              }}
-            >
-              <FaFilePdf /> Descargar comprobante
-            </button>
           </section>
         </div>
       )}
