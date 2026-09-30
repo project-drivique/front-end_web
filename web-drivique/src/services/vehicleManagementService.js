@@ -8,7 +8,41 @@ const AUDIT_KEY = 'drivique_management_audit'
 const ACTIVE_RESERVATION_STATES = new Set(['PENDIENTE', 'PENDIENTE_EFECTIVO', 'PENDIENTE_VALIDACION', 'CONFIRMADA', 'ACTIVA', 'EN_CURSO'])
 export const VEHICLE_STATES = Object.freeze({ AVAILABLE: 'disponible', RESERVED: 'reservado', MAINTENANCE: 'mantenimiento' })
 
-function readArray(key, fallback = []) { try { const value = JSON.parse(localStorage.getItem(key) || 'null'); return Array.isArray(value) ? value : fallback } catch { return fallback } }
+function readArray(key, fallback = []) {
+  try {
+    const raw = localStorage.getItem(key)
+    if (!raw) return fallback
+    const value = JSON.parse(raw)
+    if (!Array.isArray(value)) return fallback
+    if (key === STORAGE_KEY) {
+      const configured = configuredVehicles()
+      let updated = value.map((v) => {
+        const match = configured.find((cv) => Number(cv.id) === Number(v.id))
+        return match ? { ...match, ...v, sucursal: v.sucursal || match.sucursal } : v
+      })
+      const missing = configured.filter((cv) => !updated.some((v) => Number(v.id) === Number(cv.id)))
+      if (missing.length > 0) updated = [...updated, ...missing]
+
+      const bogotaVehicles = updated.filter((v) => (v.sucursal || '').toLowerCase().includes('aeropuerto') && (v.sucursal || '').toLowerCase().includes('bogot'))
+      if (bogotaVehicles.length < 5) {
+        const bogotaConfigured = configured.filter((cv) => (cv.sucursal || '').toLowerCase().includes('aeropuerto') && (cv.sucursal || '').toLowerCase().includes('bogot'))
+        bogotaConfigured.forEach((bcv) => {
+          const idx = updated.findIndex((u) => Number(u.id) === Number(bcv.id))
+          if (idx >= 0) {
+            updated[idx] = { ...updated[idx], sucursal: bcv.sucursal, categoria: bcv.categoria, estadoFlota: bcv.estadoFlota, disponible: bcv.disponible }
+          } else {
+            updated.push(bcv)
+          }
+        })
+        localStorage.setItem(key, JSON.stringify(updated))
+      }
+      return updated
+    }
+    return value
+  } catch {
+    return fallback
+  }
+}
 const normalizePlate = (value) => String(value || '').trim().toUpperCase().replace(/\s+/g, '')
 const normalizeBranch = (value) => String(value || '').trim().toLocaleLowerCase()
 
