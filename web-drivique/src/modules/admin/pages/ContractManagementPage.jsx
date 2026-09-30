@@ -285,7 +285,7 @@ export default function ContractManagementPage() {
                         <button
                           type="button"
                           onClick={() => openDetalle(c)}
-                          style={{ padding: '6px 12px', fontSize: '13px', background: '#3b82f6', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'normal', minWidth: '80px' }}
+                          style={{ padding: '6px 12px', fontSize: '13px', background: '#10b981', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'normal', minWidth: '80px' }}
                         >
                           Ver
                         </button>
@@ -294,7 +294,7 @@ export default function ContractManagementPage() {
                         <button
                           type="button"
                           onClick={() => handleDownloadSinglePdf(c)}
-                          style={{ padding: '6px 12px', fontSize: '13px', background: '#ef4444', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'normal', minWidth: '100px' }}
+                          style={{ padding: '6px 12px', fontSize: '13px', background: '#3b82f6', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'normal', minWidth: '100px' }}
                         >
                           Descargar
                         </button>
