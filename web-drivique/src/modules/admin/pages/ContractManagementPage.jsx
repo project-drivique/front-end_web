@@ -263,6 +263,7 @@ export default function ContractManagementPage() {
                     {t("admin.contractsPage.fields.contractNumber", "No. Contrato")}
                   </th>
                   <th>CÓDIGO RESERVA</th>
+                  <th style={{ textAlign: "center" }}>FIRMA DE CONTRATO</th>
                   <th style={{ textAlign: "center" }}>VER CONTRATO</th>
                   <th style={{ textAlign: "center" }}>DESCARGAR CONTRATO</th>
                   <th style={{ textAlign: "center" }}>IMPRIMIR CONTRATO</th>
@@ -281,11 +282,15 @@ export default function ContractManagementPage() {
                       <td style={{ fontWeight: "normal", color: "#374151" }}>
                         {c.reservaCodigo}
                       </td>
+                      <td style={{ textAlign: "center", fontWeight: "600", color: c.estado === 'firmado' ? '#10b981' : '#ef4444' }}>
+                        {c.estado === 'firmado' ? 'Sí' : 'No'}
+                      </td>
                       <td style={{ textAlign: "center" }}>
                         <button
                           type="button"
+                          disabled={c.estado !== 'firmado'}
                           onClick={() => openDetalle(c)}
-                          style={{ padding: '6px 12px', fontSize: '13px', background: '#10b981', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'normal', minWidth: '80px', display: 'inline-flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}
+                          style={{ padding: '6px 12px', fontSize: '13px', background: c.estado === 'firmado' ? '#10b981' : '#e5e7eb', color: c.estado === 'firmado' ? '#fff' : '#9ca3af', border: 'none', borderRadius: '6px', cursor: c.estado === 'firmado' ? 'pointer' : 'not-allowed', fontWeight: 'normal', minWidth: '80px', display: 'inline-flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}
                         >
                           <FaEye /> Ver
                         </button>
@@ -293,8 +298,9 @@ export default function ContractManagementPage() {
                       <td style={{ textAlign: "center" }}>
                         <button
                           type="button"
+                          disabled={c.estado !== 'firmado'}
                           onClick={() => handleDownloadSinglePdf(c)}
-                          style={{ padding: '6px 12px', fontSize: '13px', background: '#3b82f6', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'normal', minWidth: '100px', display: 'inline-flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}
+                          style={{ padding: '6px 12px', fontSize: '13px', background: c.estado === 'firmado' ? '#3b82f6' : '#e5e7eb', color: c.estado === 'firmado' ? '#fff' : '#9ca3af', border: 'none', borderRadius: '6px', cursor: c.estado === 'firmado' ? 'pointer' : 'not-allowed', fontWeight: 'normal', minWidth: '100px', display: 'inline-flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}
                         >
                           <FaDownload /> Descargar
                         </button>
@@ -302,6 +308,7 @@ export default function ContractManagementPage() {
                       <td style={{ textAlign: "center" }}>
                         <button
                           type="button"
+                          disabled={c.estado !== 'firmado'}
                           onClick={() => {
                             const singleData = {
                               title: `Contrato - ${c.contratoNumero}`,
@@ -317,7 +324,7 @@ export default function ContractManagementPage() {
                             };
                             printTable(singleData);
                           }}
-                          style={{ padding: '6px 12px', fontSize: '13px', background: '#8b5cf6', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'normal', minWidth: '90px', display: 'inline-flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}
+                          style={{ padding: '6px 12px', fontSize: '13px', background: c.estado === 'firmado' ? '#8b5cf6' : '#e5e7eb', color: c.estado === 'firmado' ? '#fff' : '#9ca3af', border: 'none', borderRadius: '6px', cursor: c.estado === 'firmado' ? 'pointer' : 'not-allowed', fontWeight: 'normal', minWidth: '90px', display: 'inline-flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}
                         >
                           <FaPrint /> Imprimir
                         </button>
