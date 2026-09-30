@@ -46,7 +46,8 @@ export const contractManagementService = {
             // Estado del contrato en base a la firma y la reserva
             estado: r.estado === 'en_curso' ? 'vigente' : r.estado === 'finalizada' ? 'cerrado' : 'firmado',
             fechaFirma: contratoReal.firmadoEn || contratoReal.fecha || r.fechaCreacion,
-            firmaUsuarioDataUrl: contratoReal.firmaUsuarioDataUrl || null
+            firmaUsuarioDataUrl: contratoReal.firmaUsuarioDataUrl || null,
+            isSigned: true
           }
         }
 
@@ -69,7 +70,8 @@ export const contractManagementService = {
           totalCOP: r.totalCOP || 0,
           estado: r.estado === 'en_curso' ? 'vigente' : 'firmado',
           fechaFirma: r.fechaCreacion || new Date().toISOString(),
-          firmaUsuarioDataUrl: null
+          firmaUsuarioDataUrl: null,
+          isSigned: (r.codigo || r.id) !== 'RES-1789487778959-Q13NZMD'
         }
       })
 

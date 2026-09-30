@@ -282,15 +282,15 @@ export default function ContractManagementPage() {
                       <td style={{ fontWeight: "normal", color: "#374151" }}>
                         {c.reservaCodigo}
                       </td>
-                      <td style={{ textAlign: "center", fontWeight: "600", color: c.estado === 'firmado' ? '#10b981' : '#ef4444' }}>
-                        {c.estado === 'firmado' ? 'Sí' : 'No'}
+                      <td style={{ textAlign: "center", fontWeight: "600", color: c.isSigned ? '#10b981' : '#ef4444' }}>
+                        {c.isSigned ? 'Sí' : 'No'}
                       </td>
                       <td style={{ textAlign: "center" }}>
                         <button
                           type="button"
-                          disabled={c.estado !== 'firmado'}
+                          disabled={!c.isSigned}
                           onClick={() => openDetalle(c)}
-                          style={{ padding: '6px 12px', fontSize: '13px', background: c.estado === 'firmado' ? '#10b981' : '#e5e7eb', color: c.estado === 'firmado' ? '#fff' : '#9ca3af', border: 'none', borderRadius: '6px', cursor: c.estado === 'firmado' ? 'pointer' : 'not-allowed', fontWeight: 'normal', minWidth: '80px', display: 'inline-flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}
+                          style={{ padding: '6px 12px', fontSize: '13px', background: c.isSigned ? '#10b981' : '#e5e7eb', color: c.isSigned ? '#fff' : '#9ca3af', border: 'none', borderRadius: '6px', cursor: c.isSigned ? 'pointer' : 'not-allowed', fontWeight: 'normal', minWidth: '80px', display: 'inline-flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}
                         >
                           <FaEye /> Ver
                         </button>
@@ -298,9 +298,9 @@ export default function ContractManagementPage() {
                       <td style={{ textAlign: "center" }}>
                         <button
                           type="button"
-                          disabled={c.estado !== 'firmado'}
+                          disabled={!c.isSigned}
                           onClick={() => handleDownloadSinglePdf(c)}
-                          style={{ padding: '6px 12px', fontSize: '13px', background: c.estado === 'firmado' ? '#3b82f6' : '#e5e7eb', color: c.estado === 'firmado' ? '#fff' : '#9ca3af', border: 'none', borderRadius: '6px', cursor: c.estado === 'firmado' ? 'pointer' : 'not-allowed', fontWeight: 'normal', minWidth: '100px', display: 'inline-flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}
+                          style={{ padding: '6px 12px', fontSize: '13px', background: c.isSigned ? '#3b82f6' : '#e5e7eb', color: c.isSigned ? '#fff' : '#9ca3af', border: 'none', borderRadius: '6px', cursor: c.isSigned ? 'pointer' : 'not-allowed', fontWeight: 'normal', minWidth: '100px', display: 'inline-flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}
                         >
                           <FaDownload /> Descargar
                         </button>
@@ -308,7 +308,7 @@ export default function ContractManagementPage() {
                       <td style={{ textAlign: "center" }}>
                         <button
                           type="button"
-                          disabled={c.estado !== 'firmado'}
+                          disabled={!c.isSigned}
                           onClick={() => {
                             const singleData = {
                               title: `Contrato - ${c.contratoNumero}`,
@@ -324,7 +324,7 @@ export default function ContractManagementPage() {
                             };
                             printTable(singleData);
                           }}
-                          style={{ padding: '6px 12px', fontSize: '13px', background: c.estado === 'firmado' ? '#8b5cf6' : '#e5e7eb', color: c.estado === 'firmado' ? '#fff' : '#9ca3af', border: 'none', borderRadius: '6px', cursor: c.estado === 'firmado' ? 'pointer' : 'not-allowed', fontWeight: 'normal', minWidth: '90px', display: 'inline-flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}
+                          style={{ padding: '6px 12px', fontSize: '13px', background: c.isSigned ? '#8b5cf6' : '#e5e7eb', color: c.isSigned ? '#fff' : '#9ca3af', border: 'none', borderRadius: '6px', cursor: c.isSigned ? 'pointer' : 'not-allowed', fontWeight: 'normal', minWidth: '90px', display: 'inline-flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}
                         >
                           <FaPrint /> Imprimir
                         </button>
