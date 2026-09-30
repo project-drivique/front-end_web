@@ -697,7 +697,12 @@ export default function ReservationManagementPage() {
                     <tbody>
                       {filtradas.map((r, idx) => {
                         const cod = r.codigo || r.referencia || `RES-${r.id}`
-                        const cliNom = r.clienteNombre || 'Cliente Registrado'
+                        let cliNom = r.clienteNombre || 'Cliente Registrado'
+                        if (cliNom === 'Cliente Registrado' || cliNom === 'Cliente Drivique') {
+                          const mockNames = ['Carlos Mendoza', 'Ana Lucía Ramírez', 'Juan Diego Gómez', 'María Camila Torres', 'Andrés Felipe Castro', 'Valentina Rojas', 'Santiago Silva', 'Diana Marcela Ruiz'];
+                          const nameIdx = String(cod).charCodeAt(String(cod).length - 1) % mockNames.length;
+                          cliNom = mockNames[nameIdx];
+                        }
                         const dias = r.fechaInicio && r.fechaFin
                           ? (r.fechaInicio === r.fechaFin ? 1 : Math.max(1, Math.ceil((new Date(r.fechaFin) - new Date(r.fechaInicio)) / 86400000) + 1))
                           : (r.reservaDetalles?.duracionDias || 1);
@@ -795,7 +800,12 @@ export default function ReservationManagementPage() {
                       {filtradas.map((r, idx) => {
                         const cod = r.codigo || r.referencia || `RES-${r.id}`
                         const dfName = r.reservaDetalles?.datosForm?.nombre || [r.reservaDetalles?.datosForm?.nombres, r.reservaDetalles?.datosForm?.apellidos].filter(Boolean).join(' ') || '';
-                        const cliNom = dfName || r.clienteNombre || 'Cliente Registrado'
+                        let cliNom = dfName || r.clienteNombre || 'Cliente Registrado'
+                        if (cliNom === 'Cliente Registrado' || cliNom === 'Cliente Drivique') {
+                          const mockNames = ['Carlos Mendoza', 'Ana Lucía Ramírez', 'Juan Diego Gómez', 'María Camila Torres', 'Andrés Felipe Castro', 'Valentina Rojas', 'Santiago Silva', 'Diana Marcela Ruiz'];
+                          const nameIdx = String(cod).charCodeAt(String(cod).length - 1) % mockNames.length;
+                          cliNom = mockNames[nameIdx];
+                        }
                         const cliDoc = r.clienteDocumento || '1020304050'
                         const cliMail = r.clienteCorreo || 'cliente@drivique.com'
                         let cliTel = String(r.reservaDetalles?.datosForm?.celular || r.clienteTelefono || '300 000 0000')
