@@ -7,8 +7,8 @@
   top: calc(100% + 12px);
   right: 0;
   width: 390px;
-  max-width: 90vw;
-  background: #ffffff;
+  max-width: 92vw;
+  background: var(--bg-tarjeta, #ffffff);
   border: 1px solid var(--borde, #e2e8f0);
   border-radius: 16px;
   box-shadow: 0 14px 40px -8px rgba(15, 23, 42, 0.18), 0 4px 12px rgba(15, 23, 42, 0.08);
@@ -17,6 +17,7 @@
   z-index: 1000;
   animation: bnpFadeSlideDown 180ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
   transform-origin: top right;
+  transition: background 200ms ease, border-color 200ms ease;
 }
 
 @keyframes bnpFadeSlideDown {
@@ -36,7 +37,7 @@
   right: 18px;
   width: 12px;
   height: 12px;
-  background: #ffffff;
+  background: var(--bg-tarjeta, #ffffff);
   border-top: 1px solid var(--borde, #e2e8f0);
   border-left: 1px solid var(--borde, #e2e8f0);
   transform: rotate(45deg);
@@ -50,7 +51,7 @@
   justify-content: space-between;
   padding: 14px 16px;
   border-bottom: 1px solid var(--borde, #e2e8f0);
-  background: #ffffff;
+  background: var(--bg-tarjeta, #ffffff);
   border-radius: 16px 16px 0 0;
 }
 
@@ -64,7 +65,7 @@
   width: 34px;
   height: 34px;
   border-radius: 10px;
-  background: rgba(37, 99, 235, 0.1);
+  background: var(--brand-soft, rgba(37, 99, 235, 0.1));
   color: var(--brand-primary, #2563eb);
   display: flex;
   align-items: center;
@@ -124,14 +125,14 @@
 }
 
 .bnp-action-btn:hover {
-  background: #eff6ff;
+  background: var(--brand-soft, #eff6ff);
   color: var(--brand-primary, #2563eb);
-  border-color: #bfdbfe;
+  border-color: var(--brand-primary, #bfdbfe);
 }
 
 .bnp-close-btn:hover {
-  background: #f1f5f9;
-  color: #0f172a;
+  background: var(--bg-seccion1, #f1f5f9);
+  color: var(--texto-main, #0f172a);
 }
 
 /* CUERPO DEL POPOVER */
@@ -166,13 +167,13 @@
 .bnp-empty-title {
   font-size: 14px;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--texto-main, #0f172a);
 }
 
 .bnp-empty-desc {
   margin: 0;
   font-size: 12px;
-  color: #64748b;
+  color: var(--texto-second, #64748b);
   max-width: 260px;
   line-height: 1.4;
 }
@@ -190,7 +191,7 @@
   gap: 12px;
   padding: 10px 12px;
   border-radius: 12px;
-  background: #ffffff;
+  background: var(--bg-tarjeta, #ffffff);
   border: 1px solid transparent;
   cursor: pointer;
   transition: all 140ms ease;
@@ -198,18 +199,18 @@
 }
 
 .bnp-item:hover {
-  background: #f8fafc;
-  border-color: #e2e8f0;
+  background: var(--bg-seccion1, #f8fafc);
+  border-color: var(--borde, #e2e8f0);
   transform: translateX(2px);
 }
 
 .bnp-item--unread {
-  background: #f0f7ff;
-  border-color: #dbeafe;
+  background: var(--brand-soft, #f0f7ff);
+  border-color: var(--borde, #dbeafe);
 }
 
 .bnp-item--unread:hover {
-  background: #e0effe;
+  background: var(--brand-soft-strong-light, #e0effe);
 }
 
 .bnp-item-icon {
@@ -246,7 +247,7 @@
 
 .bnp-item-time {
   font-size: 10.5px;
-  color: #94a3b8;
+  color: var(--texto-second, #94a3b8);
   display: flex;
   align-items: center;
   gap: 4px;
@@ -256,7 +257,7 @@
   margin: 0;
   font-size: 12.5px;
   font-weight: 650;
-  color: #0f172a;
+  color: var(--texto-main, #0f172a);
   line-height: 1.3;
   white-space: nowrap;
   overflow: hidden;
@@ -266,7 +267,7 @@
 .bnp-item-detail {
   display: block;
   font-size: 11.5px;
-  color: #64748b;
+  color: var(--texto-second, #64748b);
   margin-top: 2px;
   line-height: 1.3;
   display: -webkit-box;
@@ -310,16 +311,19 @@
   font-weight: 650;
   cursor: pointer;
   transition: all 150ms ease;
-  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.2);
+  box-shadow: 0 2px 6px var(--brand-soft-strong-light, rgba(37, 99, 235, 0.2));
 }
 
 .bnp-view-all-btn:hover {
-  background: #1d4ed8;
+  background: var(--brand-primary-hover, #1d4ed8);
   transform: translateY(-1px);
-  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+  box-shadow: 0 4px 10px var(--brand-soft-strong-light, rgba(37, 99, 235, 0.3));
 }
 
-/* MODO OSCURO */
+/* ─────────────────────────────────────────────────────────────
+   MODO OSCURO (DARK THEME SUPPORT)
+   ───────────────────────────────────────────────────────────── */
+
 body.dark .bnp-popover,
 .management-shell--dark .bnp-popover {
   background: #1e293b;
@@ -344,6 +348,37 @@ body.dark .bnp-title,
   color: #f8fafc;
 }
 
+body.dark .bnp-branch-name,
+.management-shell--dark .bnp-branch-name {
+  color: #94a3b8;
+}
+
+body.dark .bnp-action-btn,
+body.dark .bnp-close-btn,
+.management-shell--dark .bnp-action-btn,
+.management-shell--dark .bnp-close-btn {
+  border-color: #334155;
+  color: #94a3b8;
+}
+
+body.dark .bnp-action-btn:hover,
+body.dark .bnp-close-btn:hover,
+.management-shell--dark .bnp-action-btn:hover,
+.management-shell--dark .bnp-close-btn:hover {
+  background: #334155;
+  color: #f8fafc;
+}
+
+body.dark .bnp-empty-title,
+.management-shell--dark .bnp-empty-title {
+  color: #f8fafc;
+}
+
+body.dark .bnp-empty-desc,
+.management-shell--dark .bnp-empty-desc {
+  color: #94a3b8;
+}
+
 body.dark .bnp-item,
 .management-shell--dark .bnp-item {
   background: #1e293b;
@@ -366,8 +401,29 @@ body.dark .bnp-item-text,
   color: #f8fafc;
 }
 
+body.dark .bnp-item-detail,
+.management-shell--dark .bnp-item-detail {
+  color: #cbd5e1;
+}
+
 body.dark .bnp-footer,
 .management-shell--dark .bnp-footer {
   background: #0f172a;
   border-color: #334155;
 }
+
+/* ─────────────────────────────────────────────────────────────
+   DISEÑO RESPONSIVE
+   ───────────────────────────────────────────────────────────── */
+
+@media (max-width: 480px) {
+  .bnp-popover {
+    width: calc(100vw - 28px);
+    right: -10px;
+  }
+
+  .bnp-arrow {
+    right: 24px;
+  }
+}
+

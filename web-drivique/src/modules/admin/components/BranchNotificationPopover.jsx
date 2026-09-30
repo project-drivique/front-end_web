@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import {
   FaBell,
   FaTimes,
@@ -43,6 +44,7 @@ export default function BranchNotificationPopover({
   branchName = 'Sucursal',
   centerRoute = '/encargado/notifications',
 }) {
+  const { t } = useTranslation()
   const popoverRef = useRef(null)
   const navigate = useNavigate()
 
@@ -104,9 +106,13 @@ export default function BranchNotificationPopover({
           </div>
           <div>
             <div className="bnp-title-row">
-              <h4 id="bnpTitle" className="bnp-title">Notificaciones</h4>
+              <h4 id="bnpTitle" className="bnp-title">
+                {t('branchDashboard.notificationsPopover.title', 'Notificaciones')}
+              </h4>
               {unreadCount > 0 && (
-                <span className="bnp-unread-pill">{unreadCount} nuevas</span>
+                <span className="bnp-unread-pill">
+                  {t('branchDashboard.notificationsPopover.newBadge', '{{count}} nuevas', { count: unreadCount })}
+                </span>
               )}
             </div>
             <span className="bnp-branch-name">{branchName}</span>
@@ -119,7 +125,7 @@ export default function BranchNotificationPopover({
               type="button"
               className="bnp-action-btn"
               onClick={onMarkAllRead}
-              title="Marcar todas como leídas"
+              title={t('branchDashboard.notificationsPopover.markAllAsRead', 'Marcar todas como leídas')}
             >
               <FaCheckDouble aria-hidden="true" />
             </button>
@@ -128,7 +134,7 @@ export default function BranchNotificationPopover({
             type="button"
             className="bnp-close-btn"
             onClick={onClose}
-            aria-label="Cerrar ventana"
+            aria-label={t('branchDashboard.notificationsPopover.close', 'Cerrar ventana')}
           >
             <FaTimes aria-hidden="true" />
           </button>
@@ -142,8 +148,12 @@ export default function BranchNotificationPopover({
             <div className="bnp-empty-icon-box">
               <FaCheckCircle className="bnp-empty-icon" />
             </div>
-            <strong className="bnp-empty-title">Todo al día</strong>
-            <p className="bnp-empty-desc">No hay alertas ni validaciones pendientes en esta sede.</p>
+            <strong className="bnp-empty-title">
+              {t('branchDashboard.notificationsPopover.allClearTitle', 'Todo al día')}
+            </strong>
+            <p className="bnp-empty-desc">
+              {t('branchDashboard.notificationsPopover.allClearDesc', 'No hay alertas ni validaciones pendientes en esta sede.')}
+            </p>
           </div>
         ) : (
           <div className="bnp-list">
@@ -168,7 +178,7 @@ export default function BranchNotificationPopover({
                     <div className="bnp-item-top">
                       <span
                         className="bnp-item-cat"
-                        style={{ color: notif.badgeColor || '#2563eb' }}
+                        style={{ color: notif.badgeColor || 'var(--brand-primary, #2563eb)' }}
                       >
                         {notif.categoryLabel || 'Operación'}
                       </span>
@@ -200,7 +210,7 @@ export default function BranchNotificationPopover({
           className="bnp-view-all-btn"
           onClick={handleGoToCenter}
         >
-          <span>Ir al Centro de Notificaciones</span>
+          <span>{t('branchDashboard.notificationsPopover.goToCenter', 'Ir al Centro de Notificaciones')}</span>
           <FaArrowRight aria-hidden="true" />
         </button>
       </footer>

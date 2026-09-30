@@ -3027,6 +3027,39 @@
         "viewReportDetails": "Voir les détails dans Rapports",
         "exportData": "Exporter la donnée",
         "exportComingSoon": "Fonctionnalité disponible bientôt"
+      },
+      "notificationsCenter": {
+        "backToDashboard": "Retour au tableau de bord",
+        "title": "Centre de notifications",
+        "subtitle": "Surveillance et traçabilité des alertes opérationnelles en temps réel",
+        "markAllRead": "Tout marquer comme lu",
+        "statTotal": "Total des notifications",
+        "statTotalHint": "Enregistrées pendant le quart d'aujourd'hui",
+        "statUnread": "En attente / Non lues",
+        "statUnreadHint": "Nécessitent votre attention ou lecture",
+        "statOperations": "Opérations du jour",
+        "statOperationsHint": "Livraisons, retours et encaissements",
+        "statAttention": "Alertes & Documents",
+        "statAttentionHint": "Validations et mises à jour de flotte",
+        "searchPlaceholder": "Rechercher par client, plaque ou code de réservation...",
+        "filterAll": "Toutes",
+        "filterUnread": "Non lues",
+        "filterOperations": "Opérations",
+        "filterAttention": "Alertes & Incidents",
+        "emptyTitle": "Aucune notification à afficher",
+        "emptyDescSearch": "Aucune alerte trouvée correspondant à votre recherche.",
+        "emptyDescAll": "Toutes les tâches, livraisons, retours et validations de l'agence sont à jour.",
+        "markRead": "Marquer comme lu",
+        "goToModule": "Aller au module"
+      },
+      "notificationsPopover": {
+        "title": "Notifications",
+        "newBadge": "{{count}} nouvelles",
+        "markAllAsRead": "Tout marquer comme lu",
+        "close": "Fermer la fenêtre",
+        "allClearTitle": "Tout est à jour",
+        "allClearDesc": "Aucune alerte ni validation en attente dans cette agence.",
+        "goToCenter": "Aller au centre de notifications"
       }
     }
   }
