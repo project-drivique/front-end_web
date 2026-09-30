@@ -699,8 +699,10 @@ export default function ReservationManagementPage() {
                         const cod = r.codigo || r.referencia || `RES-${r.id}`
                         let cliNom = r.clienteNombre || 'Cliente Registrado'
                         if (cliNom === 'Cliente Registrado' || cliNom === 'Cliente Drivique') {
+                          const rawCod = String(cod).replace('CTR-', '');
+                          const hash = rawCod.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
                           const mockNames = ['Carlos Mendoza', 'Ana Lucía Ramírez', 'Juan Diego Gómez', 'María Camila Torres', 'Andrés Felipe Castro', 'Valentina Rojas', 'Santiago Silva', 'Diana Marcela Ruiz'];
-                          const nameIdx = String(cod).charCodeAt(String(cod).length - 1) % mockNames.length;
+                          const nameIdx = hash % mockNames.length;
                           cliNom = mockNames[nameIdx];
                         }
                         const dias = r.fechaInicio && r.fechaFin
@@ -802,8 +804,10 @@ export default function ReservationManagementPage() {
                         const dfName = r.reservaDetalles?.datosForm?.nombre || [r.reservaDetalles?.datosForm?.nombres, r.reservaDetalles?.datosForm?.apellidos].filter(Boolean).join(' ') || '';
                         let cliNom = dfName || r.clienteNombre || 'Cliente Registrado'
                         if (cliNom === 'Cliente Registrado' || cliNom === 'Cliente Drivique') {
+                          const rawCod = String(cod).replace('CTR-', '');
+                          const hash = rawCod.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
                           const mockNames = ['Carlos Mendoza', 'Ana Lucía Ramírez', 'Juan Diego Gómez', 'María Camila Torres', 'Andrés Felipe Castro', 'Valentina Rojas', 'Santiago Silva', 'Diana Marcela Ruiz'];
-                          const nameIdx = String(cod).charCodeAt(String(cod).length - 1) % mockNames.length;
+                          const nameIdx = hash % mockNames.length;
                           cliNom = mockNames[nameIdx];
                         }
                         const cliDoc = r.clienteDocumento || '1020304050'
