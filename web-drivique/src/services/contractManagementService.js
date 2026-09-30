@@ -19,9 +19,8 @@ export const contractManagementService = {
     // 2. Obtener contratos reales firmados/generados por los clientes
     const contratosAlmacenados = readContratos()
 
-    // 3. Cruzar reservas con contratos reales, ignorando pendientes o canceladas
+    // 3. Cruzar reservas con contratos reales
     let contracts = reservations
-      .filter((r) => r.estado !== 'cancelada' && r.estado !== 'pendiente')
       .map((r) => {
         const contratoReal = contratosAlmacenados[r.id]
         
