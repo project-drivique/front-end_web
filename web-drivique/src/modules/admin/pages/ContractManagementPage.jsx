@@ -194,12 +194,6 @@ export default function ContractManagementPage() {
             <div className="branch-topbar-brand-title">
               <span className="branch-topbar-badge">GESTIÓN DE SUCURSAL</span>
               <h1 className="branch-topbar-heading">Gestión de Contratos</h1>
-              <p className="cities-subtitle" style={{ fontSize: "14px", color: "#64748b", margin: "4px 0 0 0", fontWeight: "normal" }}>
-                {t(
-                  "admin.contractsPage.subtitle",
-                  "Consulta y gestiona los contratos de alquiler, exporta la información e imprime documentos oficiales.",
-                )}
-              </p>
             </div>
             <div className="cities-topbar__actions">
               <MenuConfiguracion />
