@@ -691,9 +691,9 @@ export default function CashCollectionPage({ branchOnly = false }) {
                       <th>Medio de Pago</th>
                       <th>Monto Total</th>
                       <th>Estado Pago</th>
-                      <th>Ver</th>
-                      <th>Descargar</th>
-                      <th>Imprimir</th>
+                      <th>Comprobante de Pago</th>
+                      <th>Descargar Comprobante</th>
+                      <th>Imprimir Comprobante</th>
                     </tr>
                   </thead>
                   <tbody>
