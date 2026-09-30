@@ -1,12 +1,20 @@
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
+  FaCar,
+  FaCheck,
+  FaCogs,
   FaEdit,
   FaFileExcel,
   FaFilePdf,
   FaImage,
+  FaListUl,
+  FaLock,
+  FaMoneyBillWave,
   FaPlus,
   FaPrint,
+  FaShieldAlt,
+  FaTimes,
   FaTrash,
 } from "react-icons/fa";
 import { useLanding } from "../../landing/LandingContext";
@@ -531,6 +539,29 @@ export default function VehicleManagementPage() {
             </div>
 
             <div className="branch-topbar-actions">
+              {((!esEncargado) || (esEncargado && activeTab === "vehiculos")) && (
+                <button
+                  className="cities-primary"
+                  type="button"
+                  onClick={() => {
+                    if (activeTab === "sede_central") {
+                      setNotice("Editando parámetros corporativos de Drivique Colombia.");
+                    } else if (activeTab === "sucursales") {
+                      setNotice("Para registrar nuevas sedes, dirígete al módulo de Sucursales.");
+                    } else if (activeTab === "flotas") {
+                      openCreateCategory();
+                    } else {
+                      openCreate();
+                    }
+                  }}
+                  disabled={esEncargado && activeTab === "vehiculos" && !sucursalAsignada}
+                >
+                  {activeTab === "sede_central" && "Editar Matriz"}
+                  {activeTab === "sucursales" && "+ Crear Sucursal"}
+                  {activeTab === "flotas" && t("fleetVehicles.createCategory", "+ Crear Categoría")}
+                  {activeTab === "vehiculos" && t("fleetVehicles.createVehicle", "+ Crear Vehículo")}
+                </button>
+              )}
               <MenuConfiguracion />
               {esEncargado && (
                 <div className="branch-user-profile-chip">
@@ -547,68 +578,8 @@ export default function VehicleManagementPage() {
                   </div>
                 </div>
               )}
-              {/* Botón superior para Admin General */}
-              {!esEncargado && (
-                <button
-                  className="cities-primary"
-                  type="button"
-                  onClick={() => {
-                    if (activeTab === "sede_central") {
-                      setNotice("Editando parámetros corporativos de Drivique Colombia.");
-                    } else if (activeTab === "sucursales") {
-                      setNotice("Para registrar nuevas sedes, dirígete al módulo de Sucursales.");
-                    } else if (activeTab === "flotas") {
-                      openCreateCategory();
-                    } else {
-                      openCreate();
-                    }
-                  }}
-                >
-                  {activeTab === "sede_central" && "Editar Matriz"}
-                  {activeTab === "sucursales" && "+ Crear Sucursal"}
-                  {activeTab === "flotas" && t("fleetVehicles.createCategory", "+ Crear Categoría")}
-                  {activeTab === "vehiculos" && t("fleetVehicles.createVehicle", "+ Crear Vehículo")}
-                </button>
-              )}
             </div>
           </div>
-
-          {/* HERO BANNER DE LA FLOTA (Idéntico al de Mi Sucursal) */}
-          {esEncargado && (
-            <header className="branch-profile-hero-banner">
-              <div className="branch-profile-hero-content">
-                <div className="branch-profile-hero-badge-row">
-                  <div className="branch-profile-hero-badge">
-                    <span className="branch-profile-live-dot" />
-                    <span>Flota y Parque Automotor Asignado</span>
-                  </div>
-                  <span className="branch-profile-type-tag">
-                    {filteredVehicles.length} {filteredVehicles.length === 1 ? "Vehículo Registrado" : "Vehículos Registrados"}
-                  </span>
-                </div>
-
-                <h1 className="branch-profile-hero-title">
-                  {sucursalAsignada || "Alamo Bogotá - Aeropuerto"}
-                </h1>
-
-                <p className="branch-profile-hero-subtitle">
-                  Gestión integral de vehículos, categorías activas, disponibilidad operativa y mantenimiento.
-                </p>
-              </div>
-
-              <div className="branch-profile-hero-actions">
-                <button
-                  type="button"
-                  className="branch-hero-btn branch-hero-btn--white"
-                  onClick={openCreate}
-                  disabled={!sucursalAsignada}
-                >
-                  <FaPlus aria-hidden="true" />
-                  <span>{t("fleetVehicles.createVehicle", "Crear Vehículo")}</span>
-                </button>
-              </div>
-            </header>
-          )}
 
           {notice && (
             <div className="cities-notice" role="status">
@@ -1524,545 +1495,566 @@ export default function VehicleManagementPage() {
             }
           >
             <section
-              className="cities-modal fleet-modal"
+              className={`cities-modal ${
+                modal.type === "form"
+                  ? "fleet-modal fleet-modal--custom"
+                  : modal.type === "category_form"
+                  ? "fleet-modal fleet-modal--category"
+                  : "fleet-alert-modal-card"
+              }`}
               role="dialog"
               aria-modal="true"
             >
               {/* MODAL 1: FORMULARIO DE VEHÍCULO (CREAR / EDITAR) */}
               {modal.type === "form" ? (
                 <>
-                  <div className="cities-modal__head">
-                    <div>
-                      <p className="cities-eyebrow">
-                        {t("admin.vehiclesManagement.formLabel", "Ficha del Vehículo")}
-                      </p>
-                      <h2>
-                        {t(
-                          modal.vehicle
-                            ? "admin.vehiclesManagement.editTitle"
-                            : "admin.vehiclesManagement.createTitle",
-                          modal.vehicle ? "Editar Vehículo" : "Nuevo Vehículo"
-                        )}
+                  <div className="fleet-modal-header">
+                    <div className="fleet-modal-header__info">
+                      <span className="fleet-modal-eyebrow">
+                        <FaCar aria-hidden="true" />
+                        {modal.vehicle ? "Modificación de Ficha" : "Registro de Flota"}
+                      </span>
+                      <h2 className="fleet-modal-title">
+                        {modal.vehicle ? (form.nombre || "Editar Vehículo") : "Nuevo Vehículo"}
                       </h2>
+                      {modal.vehicle && (
+                        <div className="fleet-modal-subtags">
+                          <span className="fleet-badge-plate">{form.placa || "SIN PLACA"}</span>
+                          <span className="fleet-badge-branch">{form.sucursal || sucursalAsignada}</span>
+                          {form.categoria && <span className="fleet-badge-cat">{form.categoria}</span>}
+                        </div>
+                      )}
                     </div>
-                    <button type="button" onClick={close}>
-                      ×
+                    <button type="button" className="fleet-modal-close-btn" onClick={close} aria-label="Cerrar">
+                      <FaTimes />
                     </button>
                   </div>
-                  <form onSubmit={save} className="incident-form">
-                    <div className="incident-field" style={{ marginBottom: 4 }}>
-                      <span
-                        className="incident-field-label"
-                        style={{
-                          fontSize: 13,
-                          color: "var(--brand-text)",
-                          borderBottom: "1.5px solid var(--city-border)",
-                          paddingBottom: 6,
-                        }}
-                      >
-                        {t("admin.vehiclesManagement.sections.general", "Información General")}
-                      </span>
-                    </div>
 
-                    <div className="incident-grid-2">
-                      <div className="incident-field">
-                        <span className="incident-field-label">
-                          {t("admin.vehiclesManagement.fields.vehicle", "Vehículo (Marca y Modelo)")}
-                        </span>
-                        <input
-                          value={form.nombre}
-                          onChange={(e) => setForm({ ...form, nombre: e.target.value })}
-                          placeholder="Ej: Toyota Corolla 2024"
-                          required
-                        />
-                      </div>
-                      <div className="incident-field">
-                        <span className="incident-field-label">
-                          {t("admin.vehiclesManagement.fields.plate", "Placa")}
-                        </span>
-                        <input
-                          value={form.placa}
-                          onChange={(e) =>
-                            setForm({ ...form, placa: e.target.value.toUpperCase() })
-                          }
-                          placeholder="Ej: ABC-123"
-                          required
-                        />
-                        <small
-                          style={{
-                            color: "var(--brand-text)",
-                            fontSize: 11,
-                            fontWeight: 800,
-                            marginTop: 4,
-                          }}
-                        >
-                          {pico.dia
-                            ? `${t("admin.vehiclesManagement.picoResult", "Día Pico y Placa")}: ${t(`vehiculo.picoYPlaca.dias.${pico.dia}`, pico.dia)}`
-                            : t("admin.vehiclesManagement.picoPending", "Sin restricción")}
-                        </small>
-                      </div>
+                  <form onSubmit={save} className="fleet-modal-form">
+                    <div className="fleet-modal-body">
 
-                      {/* CAMPO SUCURSAL: Automático para Encargado, Selector para Admin */}
-                      <div className="incident-field">
-                        <span className="incident-field-label">
-                          {t("admin.vehiclesManagement.fields.branch", "Sucursal")}
-                        </span>
-                        {esEncargado ? (
-                          <div>
+                      {/* CARD 1: DATOS PRINCIPALES Y CLASIFICACIÓN */}
+                      <div className="fleet-form-card">
+                        <div className="fleet-form-card__title">
+                          <FaCar className="fleet-form-card__icon" />
+                          <span>1. Identificación y Clasificación</span>
+                        </div>
+                        <div className="fleet-form-grid-2">
+                          <div className="fleet-form-group">
+                            <label className="fleet-form-label">
+                              {t("admin.vehiclesManagement.fields.vehicle", "Vehículo (Marca y Modelo)")} *
+                            </label>
                             <input
-                              value={sucursalAsignada || ""}
-                              readOnly
-                              style={{ background: "var(--city-card-alt, #f8fafc)", cursor: "not-allowed" }}
+                              className="fleet-form-input"
+                              value={form.nombre}
+                              onChange={(e) => setForm({ ...form, nombre: e.target.value })}
+                              placeholder="Ej: Toyota Corolla 2024"
+                              required
                             />
-                            <small style={{ color: "var(--city-muted, #64748b)", fontSize: 11 }}>
-                              {t("fleetVehicles.branchAssignedAuto", "Asignada automáticamente a tu sucursal")}
-                            </small>
                           </div>
-                        ) : (
-                          <select
-                            value={form.sucursal}
-                            onChange={(e) => {
-                              const newBranch = e.target.value;
-                              const newActiveCats = branchCategoryService.getBranchCategories(newBranch);
-                              setForm((prev) => ({
-                                ...prev,
-                                sucursal: newBranch,
-                                categoria: newActiveCats.includes(prev.categoria)
-                                  ? prev.categoria
-                                  : newActiveCats[0] || "",
-                              }));
-                            }}
-                            required
-                          >
-                            {branches.map((branch) => (
-                              <option key={branch.id} value={branch.nombre}>
-                                {branch.nombre}
-                              </option>
-                            ))}
-                          </select>
-                        )}
+
+                          <div className="fleet-form-group">
+                            <label className="fleet-form-label">
+                              {t("admin.vehiclesManagement.fields.plate", "Placa de Circulación")} *
+                            </label>
+                            <div className="fleet-input-plate-wrap">
+                              <input
+                                className="fleet-form-input fleet-input-plate"
+                                value={form.placa}
+                                onChange={(e) =>
+                                  setForm({ ...form, placa: e.target.value.toUpperCase() })
+                                }
+                                placeholder="Ej: ABC-123"
+                                required
+                              />
+                              <span className={`fleet-pico-badge ${pico.dia ? 'is-active' : 'is-none'}`}>
+                                {pico.dia
+                                  ? `Pico y Placa: ${t(`vehiculo.picoYPlaca.dias.${pico.dia}`, pico.dia)}`
+                                  : "Sin restricción"}
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className="fleet-form-group">
+                            <label className="fleet-form-label">
+                              {t("admin.vehiclesManagement.fields.branch", "Sucursal Asignada")}
+                            </label>
+                            {esEncargado ? (
+                              <div className="fleet-readonly-input-wrap">
+                                <input
+                                  className="fleet-form-input fleet-input--readonly"
+                                  value={sucursalAsignada || ""}
+                                  readOnly
+                                />
+                                <span className="fleet-readonly-lock"><FaLock /> Fija</span>
+                              </div>
+                            ) : (
+                              <select
+                                className="fleet-form-select"
+                                value={form.sucursal}
+                                onChange={(e) => {
+                                  const newBranch = e.target.value;
+                                  const newActiveCats = branchCategoryService.getBranchCategories(newBranch);
+                                  setForm((prev) => ({
+                                    ...prev,
+                                    sucursal: newBranch,
+                                    categoria: newActiveCats.includes(prev.categoria)
+                                      ? prev.categoria
+                                      : newActiveCats[0] || "",
+                                  }));
+                                }}
+                                required
+                              >
+                                {branches.map((branch) => (
+                                  <option key={branch.id} value={branch.nombre}>
+                                    {branch.nombre}
+                                  </option>
+                                ))}
+                              </select>
+                            )}
+                          </div>
+
+                          <div className="fleet-form-group">
+                            <label className="fleet-form-label">
+                              {t("admin.vehiclesManagement.fields.category", "Categoría Habilitada")} *
+                            </label>
+                            {activeCategoriesForForm.length > 0 ? (
+                              <select
+                                className="fleet-form-select"
+                                value={form.categoria}
+                                onChange={(e) => {
+                                  const selectedCatName = e.target.value;
+                                  const matchedGlobal = categories.find((c) => c.nombre === selectedCatName);
+                                  setForm((prev) => ({
+                                    ...prev,
+                                    categoria: selectedCatName,
+                                    precioLimitado:
+                                      !prev.precioLimitado && matchedGlobal?.tarifaBaseSugerida
+                                        ? String(matchedGlobal.tarifaBaseSugerida)
+                                        : prev.precioLimitado,
+                                  }));
+                                }}
+                                required
+                              >
+                                <option value="">
+                                  {t("fleetVehicles.selectCategory", "Selecciona una categoría...")}
+                                </option>
+                                {activeCategoriesForForm.map((catName) => (
+                                  <option key={catName} value={catName}>
+                                    {catName}
+                                  </option>
+                                ))}
+                              </select>
+                            ) : (
+                              <div className="fleet-no-cat-warn">
+                                <select className="fleet-form-select" disabled value="">
+                                  <option value="">(Sin categorías activas)</option>
+                                </select>
+                                <small>
+                                  {t(
+                                    "fleetVehicles.noCategoriesActiveForBranch",
+                                    "Activa categorías en la pestaña Categorías para asignarlas aquí."
+                                  )}
+                                </small>
+                              </div>
+                            )}
+                          </div>
+                        </div>
                       </div>
 
-                      {/* SELECTOR DE CATEGORÍA: Solo lista categorías activas de la sucursal */}
-                      <div className="incident-field">
-                        <span className="incident-field-label">
-                          {t("admin.vehiclesManagement.fields.category", "Categoría")}
-                        </span>
-                        {activeCategoriesForForm.length > 0 ? (
-                          <select
-                            value={form.categoria}
-                            onChange={(e) => {
-                              const selectedCatName = e.target.value;
-                              const matchedGlobal = categories.find((c) => c.nombre === selectedCatName);
-                              setForm((prev) => ({
-                                ...prev,
-                                categoria: selectedCatName,
-                                // Pre-cargar tarifa y depósito de referencia si no han sido digitados
-                                precioLimitado:
-                                  !prev.precioLimitado && matchedGlobal?.tarifaBaseSugerida
-                                    ? String(matchedGlobal.tarifaBaseSugerida)
-                                    : prev.precioLimitado,
-                              }));
-                            }}
-                            required
-                          >
-                            <option value="">
-                              {t("fleetVehicles.selectCategory", "Selecciona una categoría activa")}
-                            </option>
-                            {activeCategoriesForForm.map((catName) => (
-                              <option key={catName} value={catName}>
-                                {catName}
-                              </option>
-                            ))}
-                          </select>
-                        ) : (
-                          <div>
-                            <select disabled value="">
-                              <option value="">(Sin categorías activas)</option>
+                      {/* CARD 2: ESPECIFICACIONES TÉCNICAS Y MECÁNICAS */}
+                      <div className="fleet-form-card">
+                        <div className="fleet-form-card__title">
+                          <FaCogs className="fleet-form-card__icon" />
+                          <span>2. Especificaciones Mecánicas y Capacidad</span>
+                        </div>
+                        <div className="fleet-form-grid-4">
+                          <div className="fleet-form-group">
+                            <label className="fleet-form-label">
+                              {t("admin.vehiclesManagement.fields.transmission", "Transmisión")} *
+                            </label>
+                            <select
+                              className="fleet-form-select"
+                              value={form.transmision}
+                              onChange={(e) => setForm({ ...form, transmision: e.target.value })}
+                              required
+                            >
+                              <option value="">Seleccionar...</option>
+                              <option value="Automática">Automática</option>
+                              <option value="Manual">Manual</option>
                             </select>
-                            <small style={{ color: "#ef4444", fontSize: 11, fontWeight: 600 }}>
-                              {t(
-                                "fleetVehicles.noCategoriesActiveForBranch",
-                                "Esta sucursal no tiene categorías activadas. Actívalas en la pestaña Categorías."
-                              )}
-                            </small>
                           </div>
-                        )}
-                      </div>
 
-                      <div className="incident-field">
-                        <span className="incident-field-label">
-                          {t("admin.vehiclesManagement.fields.transmission", "Transmisión")}
-                        </span>
-                        <select
-                          value={form.transmision}
-                          onChange={(e) => setForm({ ...form, transmision: e.target.value })}
-                          required
-                        >
-                          <option value="">Seleccionar...</option>
-                          <option value="Automática">Automática</option>
-                          <option value="Manual">Manual</option>
-                        </select>
-                      </div>
+                          <div className="fleet-form-group">
+                            <label className="fleet-form-label">
+                              {t("admin.vehiclesManagement.fields.fuel", "Combustible")} *
+                            </label>
+                            <select
+                              className="fleet-form-select"
+                              value={form.combustible}
+                              onChange={(e) => setForm({ ...form, combustible: e.target.value })}
+                              required
+                            >
+                              <option value="">Seleccionar...</option>
+                              <option value="Gasolina">Gasolina</option>
+                              <option value="Diésel">Diésel</option>
+                              <option value="Híbrido">Híbrido</option>
+                              <option value="Eléctrico">Eléctrico</option>
+                            </select>
+                          </div>
 
-                      <div className="incident-field">
-                        <span className="incident-field-label">
-                          {t("admin.vehiclesManagement.fields.fuel", "Combustible")}
-                        </span>
-                        <select
-                          value={form.combustible}
-                          onChange={(e) => setForm({ ...form, combustible: e.target.value })}
-                          required
-                        >
-                          <option value="">Seleccionar...</option>
-                          <option value="Gasolina">Gasolina</option>
-                          <option value="Diésel">Diésel</option>
-                          <option value="Híbrido">Híbrido</option>
-                          <option value="Eléctrico">Eléctrico</option>
-                        </select>
-                      </div>
-
-                      <div className="incident-field">
-                        <span className="incident-field-label">
-                          {t("admin.vehiclesManagement.fields.color", "Color")}
-                        </span>
-                        <input
-                          value={form.color}
-                          onChange={(e) => setForm({ ...form, color: e.target.value })}
-                          placeholder="Ej: Blanco Perla, Gris Oscuro"
-                          required
-                        />
-                      </div>
-
-                      <div className="incident-field">
-                        <span className="incident-field-label">
-                          {t("admin.vehiclesManagement.fields.year", "Año")}
-                        </span>
-                        <input
-                          type="number"
-                          value={form.año}
-                          onChange={(e) => setForm({ ...form, año: e.target.value })}
-                          placeholder="Ej: 2024"
-                          required
-                        />
-                      </div>
-                    </div>
-
-                    <div className="incident-field" style={{ margin: "16px 0 4px" }}>
-                      <span
-                        className="incident-field-label"
-                        style={{
-                          fontSize: 13,
-                          color: "var(--brand-text)",
-                          borderBottom: "1.5px solid var(--city-border)",
-                          paddingBottom: 6,
-                        }}
-                      >
-                        {t("admin.vehiclesManagement.sections.features", "Capacidad y Especificaciones")}
-                      </span>
-                    </div>
-
-                    <div className="incident-grid-2">
-                      {[
-                        ["puertas", "doors", "Ej: 4"],
-                        ["pasajeros", "passengers", "Ej: 5"],
-                        ["maletero", "trunk", "Ej: 2"],
-                      ].map(([key, label, placeholder]) => (
-                        <div className="incident-field" key={key}>
-                          <span className="incident-field-label">
-                            {t(`admin.vehiclesManagement.fields.${label}`, label)}
-                          </span>
-                          <input
-                            type="number"
-                            value={form[key]}
-                            onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-                            placeholder={placeholder}
-                            required
-                          />
-                        </div>
-                      ))}
-                      <div className="incident-field">
-                        <span className="incident-field-label">
-                          {t("admin.vehiclesManagement.fields.engine", "Cilindraje / Motor")}
-                        </span>
-                        <input
-                          value={form.cilindraje}
-                          onChange={(e) => setForm({ ...form, cilindraje: e.target.value })}
-                          placeholder="Ej: 2.0L Turbo"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="incident-field">
-                      <span className="incident-field-label">
-                        {t("admin.vehiclesManagement.fields.features", "Características Adicionales")}
-                      </span>
-                      <input
-                        value={form.caracteristicasTexto}
-                        onChange={(e) =>
-                          setForm({ ...form, caracteristicasTexto: e.target.value })
-                        }
-                        placeholder={t(
-                          "admin.vehiclesManagement.featuresHint",
-                          "Separar por comas (Ej: Aire acondicionado, GPS, Bluetooth)"
-                        )}
-                      />
-                    </div>
-
-                    <div className="incident-field">
-                      <span className="incident-field-label">
-                        {t("admin.vehiclesManagement.fields.description", "Descripción del Vehículo")}
-                      </span>
-                      <textarea
-                        value={form.descripcion}
-                        onChange={(e) => setForm({ ...form, descripcion: e.target.value })}
-                        rows={3}
-                      />
-                    </div>
-
-                    <div className="incident-field" style={{ margin: "16px 0 4px" }}>
-                      <span
-                        className="incident-field-label"
-                        style={{
-                          fontSize: 13,
-                          color: "var(--brand-text)",
-                          borderBottom: "1.5px solid var(--city-border)",
-                          paddingBottom: 6,
-                        }}
-                      >
-                        {t("admin.vehiclesManagement.sections.rates", "Tarifas de Alquiler (COP)")}
-                      </span>
-                    </div>
-
-                    <div className="incident-grid-2">
-                      {[
-                        ["kmLimitado", "limitedKm", "Ej: 200"],
-                        ["precioLimitado", "limitedPrice", "Ej: 85000"],
-                        ["precioExcedente", "extraPrice", "Ej: 500"],
-                        ["precioIlimitado", "unlimitedPrice", "Ej: 120000"],
-                      ].map(([key, label, placeholder]) => (
-                        <div className="incident-field" key={key}>
-                          <span className="incident-field-label">
-                            {t(`admin.vehiclesManagement.fields.${label}`, label)}
-                          </span>
-                          <input
-                            type="number"
-                            min="0"
-                            value={form[key]}
-                            onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-                            placeholder={placeholder}
-                          />
-                        </div>
-                      ))}
-                    </div>
-
-                    <div className="fleet-insurances" style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                      {form.seguros.map((insurance, index) => (
-                        <div
-                          key={index}
-                          style={{
-                            display: "grid",
-                            gridTemplateColumns: "1fr 140px 40px",
-                            gap: 8,
-                            alignItems: "end",
-                          }}
-                        >
-                          <div className="incident-field">
-                            <span className="incident-field-label">
-                              {t("admin.vehiclesManagement.insuranceName", "Seguro / Cobertura")}
-                            </span>
+                          <div className="fleet-form-group">
+                            <label className="fleet-form-label">
+                              {t("admin.vehiclesManagement.fields.color", "Color")} *
+                            </label>
                             <input
-                              value={insurance.nombre}
-                              onChange={(e) => updateInsurance(index, "nombre", e.target.value)}
+                              className="fleet-form-input"
+                              value={form.color}
+                              onChange={(e) => setForm({ ...form, color: e.target.value })}
+                              placeholder="Ej: Blanco Perla"
+                              required
                             />
                           </div>
-                          <div className="incident-field">
-                            <span className="incident-field-label">
-                              {t("admin.vehiclesManagement.fields.price", "Precio (COP)")}
-                            </span>
+
+                          <div className="fleet-form-group">
+                            <label className="fleet-form-label">
+                              {t("admin.vehiclesManagement.fields.year", "Año Modelo")} *
+                            </label>
                             <input
+                              className="fleet-form-input"
                               type="number"
-                              value={insurance.precio}
-                              onChange={(e) => updateInsurance(index, "precio", e.target.value)}
+                              min="2000"
+                              max="2030"
+                              value={form.año}
+                              onChange={(e) => setForm({ ...form, año: e.target.value })}
+                              placeholder="Ej: 2024"
+                              required
                             />
                           </div>
-                          <button
-                            type="button"
-                            onClick={() =>
-                              setForm({
-                                ...form,
-                                seguros: form.seguros.filter((_, current) => current !== index),
-                              })
-                            }
-                            aria-label={t("common.delete", "Eliminar")}
-                            style={{
-                              height: 42,
-                              borderRadius: 10,
-                              border: "1px solid #fecaca",
-                              background: "#fff",
-                              color: "#b91c1c",
-                              cursor: "pointer",
-                              marginBottom: 2,
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              fontSize: 18,
-                              fontWeight: "bold",
-                            }}
-                          >
-                            ×
-                          </button>
+
+                          <div className="fleet-form-group">
+                            <label className="fleet-form-label">
+                              {t("admin.vehiclesManagement.fields.doors", "Puertas")} *
+                            </label>
+                            <input
+                              className="fleet-form-input"
+                              type="number"
+                              min="2"
+                              max="8"
+                              value={form.puertas}
+                              onChange={(e) => setForm({ ...form, puertas: e.target.value })}
+                              placeholder="4"
+                              required
+                            />
+                          </div>
+
+                          <div className="fleet-form-group">
+                            <label className="fleet-form-label">
+                              {t("admin.vehiclesManagement.fields.passengers", "Pasajeros")} *
+                            </label>
+                            <input
+                              className="fleet-form-input"
+                              type="number"
+                              min="1"
+                              max="20"
+                              value={form.pasajeros}
+                              onChange={(e) => setForm({ ...form, pasajeros: e.target.value })}
+                              placeholder="5"
+                              required
+                            />
+                          </div>
+
+                          <div className="fleet-form-group">
+                            <label className="fleet-form-label">
+                              {t("admin.vehiclesManagement.fields.trunk", "Maletero (L)")}
+                            </label>
+                            <input
+                              className="fleet-form-input"
+                              type="number"
+                              min="0"
+                              value={form.maletero}
+                              onChange={(e) => setForm({ ...form, maletero: e.target.value })}
+                              placeholder="470"
+                            />
+                          </div>
+
+                          <div className="fleet-form-group">
+                            <label className="fleet-form-label">
+                              {t("admin.vehiclesManagement.fields.engine", "Cilindraje / Motor")}
+                            </label>
+                            <input
+                              className="fleet-form-input"
+                              value={form.cilindraje}
+                              onChange={(e) => setForm({ ...form, cilindraje: e.target.value })}
+                              placeholder="Ej: 1.8L Turbo"
+                            />
+                          </div>
                         </div>
-                      ))}
-                      <button
-                        type="button"
-                        onClick={addInsurance}
-                        style={{
-                          alignSelf: "flex-start",
-                          background: "transparent",
-                          border: "none",
-                          color: "var(--brand-text)",
-                          fontWeight: 800,
-                          cursor: "pointer",
-                          marginTop: 4,
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 6,
-                        }}
-                      >
-                        <FaPlus /> {t("admin.vehiclesManagement.addInsurance", "Agregar seguro")}
-                      </button>
-                    </div>
-
-                    <div className="incident-field" style={{ margin: "16px 0 4px" }}>
-                      <span
-                        className="incident-field-label"
-                        style={{
-                          fontSize: 13,
-                          color: "var(--brand-text)",
-                          borderBottom: "1.5px solid var(--city-border)",
-                          paddingBottom: 6,
-                        }}
-                      >
-                        {t("admin.vehiclesManagement.sections.images", "Fotografías")}
-                      </span>
-                    </div>
-
-                    <label
-                      className="fleet-upload"
-                      style={{
-                        border: "1.5px dashed var(--brand-border)",
-                        borderRadius: 12,
-                        padding: 24,
-                        textAlign: "center",
-                        color: "var(--brand-text)",
-                        cursor: "pointer",
-                        display: "block",
-                      }}
-                    >
-                      <FaImage size={24} style={{ marginBottom: 8 }} />
-                      <div style={{ fontSize: 13, fontWeight: 700 }}>
-                        {t("admin.vehiclesManagement.uploadImages", "Subir imágenes")}
                       </div>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        multiple
-                        onChange={loadImages}
-                        style={{ display: "none" }}
-                      />
-                    </label>
 
-                    <div
-                      className="fleet-images"
-                      style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 12 }}
-                    >
-                      {form.imagenes.map((image, index) => (
-                        <div
-                          key={`${String(image).slice(-20)}-${index}`}
-                          style={{ position: "relative" }}
-                        >
-                          <img
-                            src={image}
-                            alt=""
-                            style={{
-                              width: 140,
-                              height: 90,
-                              borderRadius: 10,
-                              objectFit: "cover",
-                              border: "1px solid var(--city-border)",
-                            }}
-                          />
+                      {/* CARD 3: CARACTERÍSTICAS Y DESCRIPCIÓN */}
+                      <div className="fleet-form-card">
+                        <div className="fleet-form-card__title">
+                          <FaListUl className="fleet-form-card__icon" />
+                          <span>3. Equipamiento y Descripción Comercial</span>
+                        </div>
+                        <div className="fleet-form-grid-1">
+                          <div className="fleet-form-group">
+                            <label className="fleet-form-label">
+                              {t("admin.vehiclesManagement.fields.features", "Equipamiento Destacado")}
+                            </label>
+                            <input
+                              className="fleet-form-input"
+                              value={form.caracteristicasTexto}
+                              onChange={(e) =>
+                                setForm({ ...form, caracteristicasTexto: e.target.value })
+                              }
+                              placeholder={t(
+                                "admin.vehiclesManagement.featuresHint",
+                                "Separar por comas (Ej: Aire acondicionado, Pantalla táctil, Sensores de parqueo, Cámara de reversa)"
+                              )}
+                            />
+                          </div>
+
+                          <div className="fleet-form-group">
+                            <label className="fleet-form-label">
+                              {t("admin.vehiclesManagement.fields.description", "Descripción Comercial")}
+                            </label>
+                            <textarea
+                              className="fleet-form-textarea"
+                              value={form.descripcion}
+                              onChange={(e) => setForm({ ...form, descripcion: e.target.value })}
+                              placeholder="Breve reseña sobre el estado, comodidades y ventajas de este vehículo para el cliente..."
+                              rows={3}
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* CARD 4: TARIFAS DE ALQUILER Y SEGUROS */}
+                      <div className="fleet-form-card">
+                        <div className="fleet-form-card__title">
+                          <FaMoneyBillWave className="fleet-form-card__icon" />
+                          <span>4. Tarifas de Alquiler y Coberturas</span>
+                        </div>
+
+                        <div className="fleet-form-grid-4">
+                          <div className="fleet-form-group">
+                            <label className="fleet-form-label">
+                              {t("admin.vehiclesManagement.fields.limitedKm", "Km Limitado / Día")}
+                            </label>
+                            <input
+                              className="fleet-form-input"
+                              type="number"
+                              min="0"
+                              value={form.kmLimitado}
+                              onChange={(e) => setForm({ ...form, kmLimitado: e.target.value })}
+                              placeholder="Ej: 200"
+                            />
+                          </div>
+
+                          <div className="fleet-form-group">
+                            <label className="fleet-form-label">
+                              {t("admin.vehiclesManagement.fields.limitedPrice", "Tarifa Km Limitado ($ COP)")}
+                            </label>
+                            <input
+                              className="fleet-form-input"
+                              type="number"
+                              min="0"
+                              value={form.precioLimitado}
+                              onChange={(e) => setForm({ ...form, precioLimitado: e.target.value })}
+                              placeholder="Ej: 85000"
+                            />
+                          </div>
+
+                          <div className="fleet-form-group">
+                            <label className="fleet-form-label">
+                              {t("admin.vehiclesManagement.fields.extraPrice", "Excedente por Km ($ COP)")}
+                            </label>
+                            <input
+                              className="fleet-form-input"
+                              type="number"
+                              min="0"
+                              value={form.precioExcedente}
+                              onChange={(e) => setForm({ ...form, precioExcedente: e.target.value })}
+                              placeholder="Ej: 800"
+                            />
+                          </div>
+
+                          <div className="fleet-form-group">
+                            <label className="fleet-form-label">
+                              {t("admin.vehiclesManagement.fields.unlimitedPrice", "Tarifa Km Ilimitado ($ COP)")}
+                            </label>
+                            <input
+                              className="fleet-form-input"
+                              type="number"
+                              min="0"
+                              value={form.precioIlimitado}
+                              onChange={(e) => setForm({ ...form, precioIlimitado: e.target.value })}
+                              placeholder="Ej: 120000"
+                            />
+                          </div>
+                        </div>
+
+                        {/* SECCIÓN SEGUROS */}
+                        <div className="fleet-insurances-container">
+                          <label className="fleet-form-label" style={{ marginBottom: 8, display: 'flex', alignItems: 'center' }}>
+                            <FaShieldAlt style={{ marginRight: 6, color: 'var(--brand-primary, #2563eb)' }} />
+                            {t("admin.vehiclesManagement.insuranceTitle", "Seguros y Coberturas")}
+                          </label>
+
+                          <div className="fleet-insurances-list">
+                            {form.seguros.map((insurance, index) => (
+                              <div key={index} className="fleet-insurance-row">
+                                <div className="fleet-form-group" style={{ flex: 1 }}>
+                                  <input
+                                    className="fleet-form-input"
+                                    value={insurance.nombre}
+                                    placeholder="Nombre del seguro (Ej: Protección Total)"
+                                    onChange={(e) => updateInsurance(index, "nombre", e.target.value)}
+                                  />
+                                </div>
+                                <div className="fleet-form-group" style={{ width: 140 }}>
+                                  <input
+                                    className="fleet-form-input"
+                                    type="number"
+                                    value={insurance.precio}
+                                    placeholder="Precio ($ COP)"
+                                    onChange={(e) => updateInsurance(index, "precio", e.target.value)}
+                                  />
+                                </div>
+                                <button
+                                  type="button"
+                                  className="fleet-btn-del-insurance"
+                                  onClick={() =>
+                                    setForm({
+                                      ...form,
+                                      seguros: form.seguros.filter((_, current) => current !== index),
+                                    })
+                                  }
+                                  title={t("common.delete", "Eliminar seguro")}
+                                >
+                                  <FaTrash />
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+
                           <button
                             type="button"
-                            onClick={() =>
-                              setForm({
-                                ...form,
-                                imagenes: form.imagenes.filter((_, current) => current !== index),
-                              })
-                            }
-                            style={{
-                              position: "absolute",
-                              top: -6,
-                              right: -6,
-                              width: 24,
-                              height: 24,
-                              borderRadius: "50%",
-                              background: "#b91c1c",
-                              color: "#fff",
-                              border: "none",
-                              cursor: "pointer",
-                              fontWeight: "bold",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                            }}
+                            className="fleet-btn-add-insurance"
+                            onClick={addInsurance}
                           >
-                            ×
+                            <FaPlus /> {t("admin.vehiclesManagement.addInsurance", "Agregar cobertura / seguro")}
                           </button>
                         </div>
-                      ))}
+                      </div>
+
+                      {/* CARD 5: FOTOGRAFÍAS DEL VEHÍCULO */}
+                      <div className="fleet-form-card">
+                        <div className="fleet-form-card__title">
+                          <FaImage className="fleet-form-card__icon" />
+                          <span>5. Fotografías del Vehículo</span>
+                        </div>
+
+                        <label className="fleet-upload-box">
+                          <FaImage size={28} className="fleet-upload-icon" />
+                          <div className="fleet-upload-text">
+                            <strong>{t("admin.vehiclesManagement.uploadImages", "Subir imágenes del vehículo")}</strong>
+                            <span>Haz clic para explorar o arrastra archivos PNG, JPG o WEBP</span>
+                          </div>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            multiple
+                            onChange={loadImages}
+                            style={{ display: "none" }}
+                          />
+                        </label>
+
+                        {form.imagenes && form.imagenes.length > 0 && (
+                          <div className="fleet-gallery-grid">
+                            {form.imagenes.map((image, index) => (
+                              <div key={`${String(image).slice(-20)}-${index}`} className="fleet-gallery-item">
+                                <img src={image} alt={`Vehículo ${index + 1}`} />
+                                <button
+                                  type="button"
+                                  className="fleet-gallery-remove-btn"
+                                  onClick={() =>
+                                    setForm({
+                                      ...form,
+                                      imagenes: form.imagenes.filter((_, current) => current !== index),
+                                    })
+                                  }
+                                  title="Eliminar foto"
+                                >
+                                  <FaTrash />
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+
+                      {error && (
+                        <div className="fleet-form-error-banner">
+                          <p>{error}</p>
+                        </div>
+                      )}
                     </div>
 
-                    {error && <p className="cities-error">{error}</p>}
-
-                    <div className="cities-modal__actions" style={{ marginTop: 24 }}>
-                      <button type="button" onClick={close}>
+                    <div className="fleet-modal-footer">
+                      <button type="button" className="cities-secondary" onClick={close}>
                         {t("common.cancel", "Cancelar")}
                       </button>
                       <button className="cities-primary" type="submit">
-                        {t("common.save", "Guardar cambios")}
+                        <FaCheck style={{ marginRight: 6 }} />
+                        {t("common.save", "Guardar vehículo")}
                       </button>
                     </div>
                   </form>
                 </>
               ) : modal.type === "delete" ? (
-                /* MODAL 2: CONFIRMAR ELIMINAR VEHÍCULO */
-                <>
-                  <div className="cities-delete-icon">
-                    <FaTrash />
+                /* MODAL 2: CONFIRMAR ELIMINAR VEHÍCULO (ESTILO ALERT MODAL CATÁLOGO) */
+                <div className="fleet-alert-content">
+                  <button
+                    type="button"
+                    className="fleet-alert-close-btn"
+                    onClick={close}
+                    aria-label={t("common.close", "Cerrar")}
+                  >
+                    <FaTimes size={13} />
+                  </button>
+                  <div className="fleet-alert-icon-wrapper is-danger">
+                    <FaTrash size={20} />
                   </div>
-                  <h2>{t("admin.vehiclesManagement.deleteTitle", "Eliminar Vehículo")}</h2>
-                  <p>
+                  <h3 className="fleet-alert-title">
+                    {t("admin.vehiclesManagement.deleteTitle", "Eliminar Vehículo")}
+                  </h3>
+                  <p className="fleet-alert-message">
                     {t(
                       "admin.vehiclesManagement.deleteText",
-                      `¿Estás seguro de que deseas eliminar el vehículo ${modal.vehicle.nombre}?`,
+                      `¿Estás seguro de que deseas eliminar el vehículo ${modal.vehicle.nombre}? Esta acción no se puede deshacer.`,
                       { vehicle: modal.vehicle.nombre }
                     )}
                   </p>
-                  <div className="cities-modal__actions">
-                    <button type="button" onClick={close}>
+                  <div className="fleet-alert-actions">
+                    <button
+                      type="button"
+                      className="fleet-alert-btn-secondary"
+                      onClick={close}
+                    >
                       {t("common.cancel", "Cancelar")}
                     </button>
                     <button
-                      className="cities-danger"
+                      className="fleet-alert-btn-danger"
                       type="button"
                       onClick={remove}
                     >
                       {t("common.delete", "Eliminar")}
                     </button>
                   </div>
-                </>
+                </div>
               ) : modal.type === "category_form" && !esEncargado ? (
                 /* MODAL 3: CREAR / EDITAR CATEGORÍA (SOLO ADMIN GENERAL) */
                 <>
@@ -2361,32 +2353,46 @@ export default function VehicleManagementPage() {
                   </form>
                 </>
               ) : modal.type === "delete_category" && !esEncargado ? (
-                /* MODAL 4: CONFIRMAR ELIMINAR CATEGORÍA */
-                <>
-                  <div className="cities-delete-icon">
-                    <FaTrash />
+                /* MODAL 4: CONFIRMAR ELIMINAR CATEGORÍA (ESTILO ALERT MODAL CATÁLOGO) */
+                <div className="fleet-alert-content">
+                  <button
+                    type="button"
+                    className="fleet-alert-close-btn"
+                    onClick={close}
+                    aria-label={t("common.close", "Cerrar")}
+                  >
+                    <FaTimes size={13} />
+                  </button>
+                  <div className="fleet-alert-icon-wrapper is-danger">
+                    <FaTrash size={20} />
                   </div>
-                  <h2>{t("categoriesManagement.deleteTitle", "Eliminar Categoría")}</h2>
-                  <p>
+                  <h3 className="fleet-alert-title">
+                    {t("categoriesManagement.deleteTitle", "Eliminar Categoría")}
+                  </h3>
+                  <p className="fleet-alert-message">
                     {t(
                       "categoriesManagement.deleteConfirm",
                       `¿Estás seguro de que deseas eliminar la categoría "${modal.category.nombre}"? Esta acción no se puede deshacer.`,
                       { name: modal.category.nombre }
                     )}
                   </p>
-                  <div className="cities-modal__actions">
-                    <button type="button" onClick={close}>
+                  <div className="fleet-alert-actions">
+                    <button
+                      type="button"
+                      className="fleet-alert-btn-secondary"
+                      onClick={close}
+                    >
                       {t("common.cancel", "Cancelar")}
                     </button>
                     <button
-                      className="cities-danger"
+                      className="fleet-alert-btn-danger"
                       type="button"
                       onClick={removeCategory}
                     >
                       {t("common.delete", "Eliminar")}
                     </button>
                   </div>
-                </>
+                </div>
               ) : null}
             </section>
           </div>
