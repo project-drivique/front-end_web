@@ -21,6 +21,7 @@ import {
   FaMapMarkerAlt,
   FaWhatsapp,
   FaMoneyBillWave,
+  FaShieldAlt,
 } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import { useAuthStore } from '../../../store/authStore'
@@ -52,6 +53,7 @@ export default function ReservationManagementPage() {
 
   const [activeTab, setActiveTab] = useState('fechas_ubicacion') // 'fechas_ubicacion' | 'proteccion_extras' | 'datos_pago'
   const [zoomImage, setZoomImage] = useState(null)
+  const [zoomPdf, setZoomPdf] = useState(null)
 
   const [reservas, setReservas] = useState([])
   const [search, setSearch] = useState(() => location.state?.search || '')
@@ -465,6 +467,7 @@ export default function ReservationManagementPage() {
             </button>
           </div>
 
+          {/*
           <div className="fleet-tabs-action">
             <button
               className="cities-primary fleet-btn-create-tab"
@@ -474,6 +477,7 @@ export default function ReservationManagementPage() {
               <FaPlus style={{ marginRight: 8 }} /> {t('admin.createManualReservation', 'Reserva Manual')}
             </button>
           </div>
+          */}
         </div>
 
         {/* Sección del Flujo Activo */}
@@ -642,16 +646,7 @@ export default function ReservationManagementPage() {
                                     objectFit: 'cover',
                                     border: '1px solid #cbd5e1',
                                     display: 'block',
-                                    cursor: 'zoom-in',
-                                    transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-                                  }}
-                                  onMouseEnter={(e) => {
-                                    e.currentTarget.style.transform = 'scale(1.15)'
-                                    e.currentTarget.style.boxShadow = '0 4px 10px rgba(0,0,0,0.18)'
-                                  }}
-                                  onMouseLeave={(e) => {
-                                    e.currentTarget.style.transform = 'scale(1)'
-                                    e.currentTarget.style.boxShadow = 'none'
+                                    cursor: 'pointer',
                                   }}
                                 />
                               ) : (
@@ -689,19 +684,68 @@ export default function ReservationManagementPage() {
                   <>
                     <thead>
                       <tr>
+                        <th>ID</th>
                         <th>{t('admin.reservationsManagement.table.code')}</th>
                         <th>Plan Protección</th>
+                        <th>Precio Protección</th>
                         <th>Tipo Kilometraje</th>
+                        <th>Precio Kilometraje</th>
                         <th>Servicios Adicionales</th>
+                        <th>Precio Servicios</th>
                       </tr>
                     </thead>
                     <tbody>
                       {filtradas.map((r, idx) => {
                         const cod = r.codigo || r.referencia || `RES-${r.id}`
                         const cliNom = r.clienteNombre || 'Cliente Registrado'
-                        const cobertura = r.reservaDetalles?.cobertura?.nombre || r.cobertura || 'Protección Estándar CDW'
-                        const kilometraje = r.reservaDetalles?.kilometraje || r.kilometraje || 'Ilimitado'
-                        const extras = (r.reservaDetalles?.serviciosAdicionales || []).map(s => typeof s === 'string' ? s : s.nombre).join(', ') || 'Ninguno'
+                        const dias = r.fechaInicio && r.fechaFin
+                          ? (r.fechaInicio === r.fechaFin ? 1 : Math.max(1, Math.ceil((new Date(r.fechaFin) - new Date(r.fechaInicio)) / 86400000) + 1))
+                          : (r.reservaDetalles?.duracionDias || 1);
+
+                        let cobNombre = r.reservaDetalles?.cobertura?.nombre || r.cobertura || 'Protección Obligatoria';
+                        let cobPrecio = Number(r.reservaDetalles?.cobertura?.precio || r.proteccionPrecio || r.coberturaPrecio || 29000);
+                        if (r.seguroIdx === 0) {
+                          cobNombre = 'Protección Obligatoria';
+                          cobPrecio = 29000;
+                        } else if (r.seguroIdx === 1) {
+                          cobNombre = 'Protección Total';
+                          cobPrecio = 67000;
+                        }
+                        const cobTotal = cobPrecio * dias;
+
+                        let kilNombre = r.reservaDetalles?.kilometraje || r.reservaDetalles?.tipoKm || r.kilometraje || 'Ilimitado';
+                        let kilPrecio = Number(r.reservaDetalles?.kilometrajePrecio || r.kilometrajePrecio || 0);
+                        if (r.reservaDetalles?.tipoKm === 'limitado' || kilNombre.toLowerCase() === 'limitado') {
+                          kilNombre = 'Kilometraje limitado';
+                          kilPrecio = r.vehiculo?.tarifas?.kmLimitado?.precio || 0;
+                        } else if (r.reservaDetalles?.tipoKm === 'ilimitado' || kilNombre.toLowerCase() === 'ilimitado') {
+                          kilNombre = 'Kilometraje ilimitado';
+                          kilPrecio = r.vehiculo?.tarifas?.kmIlimitado?.precio || 0;
+                        }
+                        const kilTotal = kilPrecio * dias;
+
+                        const extrasList = Array.isArray(r.serviciosSeleccionados) && r.serviciosSeleccionados.length > 0 
+                          ? r.serviciosSeleccionados 
+                          : (r.reservaDetalles?.serviciosAdicionales || r.serviciosAdicionales || []);
+                          
+                        let extrasPrecioTotal = 0;
+                        const extras = extrasList.length > 0 
+                          ? extrasList.map(s => {
+                              let sName = typeof s === 'string' ? s : s.nombre;
+                              let sPrecio = typeof s === 'object' ? Number(s.precio || 0) : 0;
+                              
+                              if (typeof s === 'string' && r.vehiculo?.servicios) {
+                                const found = r.vehiculo.servicios.find(xs => xs.id === s);
+                                if (found) {
+                                  sName = found.nombre;
+                                  sPrecio = found.precio;
+                                }
+                              }
+                              extrasPrecioTotal += sPrecio;
+                              return sName;
+                            }).join(', ') 
+                          : 'Ninguno'
+                        const extrasTotal = extrasPrecioTotal * dias;
 
                         return (
                           <tr key={r.id || cod}>
@@ -709,9 +753,12 @@ export default function ReservationManagementPage() {
                             <td>
                               <code>{cod}</code>
                             </td>
-                            <td>{cobertura}</td>
-                            <td>{kilometraje}</td>
+                            <td>{cobNombre}</td>
+                            <td style={{ fontWeight: 600 }}>{formatCurrency(cobTotal, moneda || 'COP', tasaUSD)}</td>
+                            <td>{kilNombre}</td>
+                            <td style={{ fontWeight: 600 }}>{formatCurrency(kilTotal, moneda || 'COP', tasaUSD)}</td>
                             <td>{extras}</td>
+                            <td style={{ fontWeight: 600 }}>{formatCurrency(extrasTotal, moneda || 'COP', tasaUSD)}</td>
                           </tr>
                         )
                       })}
@@ -739,20 +786,32 @@ export default function ReservationManagementPage() {
                         <th>Pago Total</th>
                         <th>Estado Reserva</th>
                         <th>Estado del Pago</th>
-                        <th style={{ textAlign: 'center' }}>{t('admin.actions', 'Acciones')}</th>
+                        <th style={{ textAlign: 'center' }}>Firma de Contrato</th>
+                        <th style={{ textAlign: 'center' }}>Confirmar Entrega</th>
+                        <th style={{ textAlign: 'center' }}>Confirmar Devolución</th>
                       </tr>
                     </thead>
                     <tbody>
                       {filtradas.map((r, idx) => {
                         const cod = r.codigo || r.referencia || `RES-${r.id}`
-                        const cliNom = r.clienteNombre || 'Cliente Registrado'
+                        const dfName = r.reservaDetalles?.datosForm?.nombre || [r.reservaDetalles?.datosForm?.nombres, r.reservaDetalles?.datosForm?.apellidos].filter(Boolean).join(' ') || '';
+                        const cliNom = dfName || r.clienteNombre || 'Cliente Registrado'
                         const cliDoc = r.clienteDocumento || '1020304050'
                         const cliMail = r.clienteCorreo || 'cliente@drivique.com'
-                        const cliTel = r.clienteTelefono || '300 000 0000'
+                        let cliTel = String(r.reservaDetalles?.datosForm?.celular || r.clienteTelefono || '300 000 0000')
+                        if (!cliTel.startsWith('+')) cliTel = `+57 ${cliTel.trim()}`
                         const tipoDoc = r.clienteTipoDocumento || 'Cédula de Ciudadanía'
                         const nacionalidad = r.clienteNacionalidad || 'Colombia'
                         const cuponCodigo = r.cuponCodigo || r.reservaDetalles?.cuponAplicado ? `Aplicó (${r.cuponCodigo || 'CUPON'})` : 'Sin cupones'
                         const totalCOP = Number(r.totalCOP || r.total || r.precioTotal || 348000)
+
+                        const fInicioRaw = r.fechaInicio || ''
+                        const fFinRaw = r.fechaFin || ''
+                        const fechaRetiroVal = fInicioRaw.split('T')[0] || new Date().toISOString().slice(0, 10)
+                        const fechaDevolucionVal = fFinRaw.split('T')[0] || new Date(Date.now() + 86400000 * 3).toISOString().slice(0, 10)
+                        const hoy = new Date().toISOString().slice(0, 10)
+                        const isPickupAllowed = fechaRetiroVal <= hoy
+                        const isReturnAllowed = fechaDevolucionVal <= hoy
 
                         const rawMetodo = String(
                           r.reservaDetalles?.metodoPago ||
@@ -788,25 +847,25 @@ export default function ReservationManagementPage() {
                             <td>{cliTel}</td>
                             <td><code>{cliDoc}</code></td>
                             <td>
-                              {r.documentoIdentidadPdf ? (
-                                <a href={r.documentoIdentidadPdf} target="_blank" rel="noopener noreferrer" style={{ color: '#2563eb', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 4 }}>
-                                  <FaFilePdf /> Ver PDF
-                                </a>
-                              ) : (
-                                <span style={{ color: '#94a3b8', fontSize: 12 }}>Sin archivo</span>
-                              )}
+                              <div 
+                                style={{ display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer' }}
+                                onClick={() => setZoomPdf({ url: r.documentoIdentidadPdf || `Cedula-${cliDoc}.pdf`, title: `Documento de Identidad - ${cliNom}` })}
+                              >
+                                <FaFilePdf color="#ef4444" /> 
+                                <span style={{ fontSize: 12, color: '#0f172a', textDecoration: 'underline' }}>{r.documentoIdentidadPdf || `Cedula-${cliDoc}.pdf`}</span>
+                              </div>
                             </td>
                             <td>
-                              {r.licenciaConduccionPdf ? (
-                                <a href={r.licenciaConduccionPdf} target="_blank" rel="noopener noreferrer" style={{ color: '#2563eb', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 4 }}>
-                                  <FaFilePdf /> Ver PDF
-                                </a>
-                              ) : (
-                                <span style={{ color: '#94a3b8', fontSize: 12 }}>Sin archivo</span>
-                              )}
+                              <div 
+                                style={{ display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer' }}
+                                onClick={() => setZoomPdf({ url: r.licenciaConduccionPdf || `Licencia-${cliDoc}.pdf`, title: `Licencia de Conducción - ${cliNom}` })}
+                              >
+                                <FaFilePdf color="#ef4444" /> 
+                                <span style={{ fontSize: 12, color: '#0f172a', textDecoration: 'underline' }}>{r.licenciaConduccionPdf || `Licencia-${cliDoc}.pdf`}</span>
+                              </div>
                             </td>
                             <td>
-                              <span style={{ color: '#047857', fontWeight: 600, fontSize: 12 }}>✓ Aceptados</span>
+                              <span style={{ color: '#047857', fontWeight: 600, fontSize: 12 }}>Aceptados</span>
                             </td>
                             <td>{cuponCodigo}</td>
                             <td style={{ fontWeight: 700, color: 'var(--city-text, #0f172a)', whiteSpace: 'nowrap' }}>
@@ -841,49 +900,92 @@ export default function ReservationManagementPage() {
                               </span>
                             </td>
                             <td style={{ textAlign: 'center' }}>
-                              <div className="cities-row-actions">
-                                {esEncargado && esCobroPresencialPendiente && (
+                              <span
+                                style={{
+                                  padding: '4px 10px',
+                                  borderRadius: 20,
+                                  fontSize: 11,
+                                  fontWeight: 700,
+                                  whiteSpace: 'nowrap',
+                                  ...(isPagoConfirmado
+                                    ? r.firmaContrato || r.contratoFirmado || r.estado === 'confirmada' || r.estado === 'en_curso' || r.estado === 'finalizada'
+                                      ? { background: '#d1fae5', color: '#065f46' }
+                                      : { background: '#fee2e2', color: '#991b1b' }
+                                    : { background: '#f1f5f9', color: '#64748b' }
+                                  )
+                                }}
+                              >
+                                {!isPagoConfirmado 
+                                  ? 'Requiere Pago' 
+                                  : r.firmaContrato || r.contratoFirmado || r.estado === 'confirmada' || r.estado === 'en_curso' || r.estado === 'finalizada'
+                                    ? 'Sí' 
+                                    : 'No'}
+                              </span>
+                            </td>
+                            <td style={{ textAlign: 'center' }}>
+                              <div style={{ display: 'flex', gap: 10, justifyContent: 'center', alignItems: 'center' }}>
+                                {esEncargado && esCobroPresencialPendiente && r.estado !== 'en_curso' && r.estado !== 'finalizada' && r.estado !== 'cancelada' && (
                                   <button
                                     type="button"
-                                    className="btn-row-action"
                                     onClick={() => navigate(`${cashRoute}?ref=${encodeURIComponent(cod)}`)}
+                                    style={{ background: '#f59e0b', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: 6, fontSize: 12, fontWeight: 600, whiteSpace: 'nowrap', cursor: 'pointer', transition: 'opacity 0.2s' }}
+                                    onMouseOver={(e) => e.target.style.opacity = 0.8}
+                                    onMouseOut={(e) => e.target.style.opacity = 1}
                                   >
-                                    Cobrar en Caja
+                                    Cobrar Caja
                                   </button>
                                 )}
-                                {esEncargado && r.estado !== 'en_curso' && r.estado !== 'finalizada' && r.estado !== 'cancelada' && (
+                                {esEncargado && r.estado !== 'en_curso' && r.estado !== 'finalizada' && r.estado !== 'cancelada' && !esCobroPresencialPendiente && (
                                   <button
                                     type="button"
-                                    className="btn-row-action"
                                     onClick={() => handleEntregarAuto(r)}
+                                    style={{ background: '#10b981', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: 6, fontSize: 12, fontWeight: 600, whiteSpace: 'nowrap', cursor: 'pointer', transition: 'opacity 0.2s' }}
+                                    onMouseOver={(e) => { e.target.style.opacity = 0.8 }}
+                                    onMouseOut={(e) => { e.target.style.opacity = 1 }}
                                   >
-                                    Entregar Auto
+                                    Confirmar Entrega
                                   </button>
                                 )}
+                                {(r.estado === 'en_curso' || r.estado === 'finalizada') && (
+                                  <button
+                                    type="button"
+                                    disabled
+                                    style={{ background: '#e2e8f0', color: '#64748b', border: 'none', padding: '6px 12px', borderRadius: 6, fontSize: 12, fontWeight: 600, whiteSpace: 'nowrap', cursor: 'not-allowed' }}
+                                  >
+                                    Auto Entregado
+                                  </button>
+                                )}
+                              </div>
+                            </td>
+                            <td style={{ textAlign: 'center' }}>
+                              <div style={{ display: 'flex', gap: 10, justifyContent: 'center', alignItems: 'center' }}>
                                 {esEncargado && r.estado === 'en_curso' && (
                                   <button
                                     type="button"
-                                    className="btn-row-action"
                                     onClick={() => handleRecibirDevolucion(r)}
-                                    style={{ background: 'linear-gradient(135deg, #059669 0%, #10b981 100%)' }}
+                                    style={{ background: '#059669', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: 6, fontSize: 12, fontWeight: 600, whiteSpace: 'nowrap', cursor: 'pointer', transition: 'opacity 0.2s' }}
+                                    onMouseOver={(e) => { e.target.style.opacity = 0.8 }}
+                                    onMouseOut={(e) => { e.target.style.opacity = 1 }}
                                   >
-                                    Recibir Devolución
+                                    Confirmar Devolución
                                   </button>
                                 )}
-                                <button
-                                  type="button"
-                                  className="btn-row-action"
-                                  onClick={() => setModalDetalle(r)}
-                                >
-                                  Ver Detalle
-                                </button>
-                                {r.estado !== 'cancelada' && (
+                                {r.estado !== 'en_curso' && r.estado !== 'finalizada' && r.estado !== 'cancelada' && (
                                   <button
                                     type="button"
-                                    className="btn-row-action is-delete"
-                                    onClick={() => setModalCancelar(r)}
+                                    disabled
+                                    style={{ background: '#f1f5f9', color: '#94a3b8', border: 'none', padding: '6px 12px', borderRadius: 6, fontSize: 12, fontWeight: 600, whiteSpace: 'nowrap', cursor: 'not-allowed' }}
                                   >
-                                    Cancelar
+                                    Pendiente
+                                  </button>
+                                )}
+                                {r.estado === 'finalizada' && (
+                                  <button
+                                    type="button"
+                                    disabled
+                                    style={{ background: '#e2e8f0', color: '#64748b', border: 'none', padding: '6px 12px', borderRadius: 6, fontSize: 12, fontWeight: 600, whiteSpace: 'nowrap', cursor: 'not-allowed' }}
+                                  >
+                                    Auto Devuelto
                                   </button>
                                 )}
                               </div>
@@ -1566,6 +1668,93 @@ export default function ReservationManagementPage() {
                   borderRadius: 8,
                 }}
               />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL ZOOM PDF */}
+      {zoomPdf && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 99999,
+            padding: 20,
+          }}
+          onClick={() => setZoomPdf(null)}
+        >
+          <div
+            style={{
+              background: '#ffffff',
+              borderRadius: 16,
+              padding: 20,
+              maxWidth: 800,
+              width: '100%',
+              height: '80vh',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.35)',
+              position: 'relative',
+              display: 'flex',
+              flexDirection: 'column'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+              <div>
+                <h3 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: '#0f172a' }}>{zoomPdf.title}</h3>
+                <span style={{ fontSize: 12, color: '#64748b' }}>Vista previa del documento</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setZoomPdf(null)}
+                style={{
+                  background: '#f1f5f9',
+                  border: 'none',
+                  borderRadius: '50%',
+                  width: 32,
+                  height: 32,
+                  fontWeight: 700,
+                  color: '#64748b',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: 14,
+                }}
+              >
+                ✕
+              </button>
+            </div>
+            <div style={{ flex: 1, borderRadius: 12, overflow: 'hidden', background: '#f8fafc', border: '1px solid #e2e8f0', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+              {zoomPdf.url?.toLowerCase().match(/\.(jpeg|jpg|gif|png|webp)$/i) || zoomPdf.url?.startsWith('data:image/') ? (
+                <img
+                  src={zoomPdf.url}
+                  alt={zoomPdf.title}
+                  style={{
+                    maxWidth: '100%',
+                    maxHeight: '100%',
+                    objectFit: 'contain',
+                    borderRadius: 8,
+                  }}
+                />
+              ) : (
+                <iframe
+                  src={zoomPdf.url}
+                  title={zoomPdf.title}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    border: 'none'
+                  }}
+                />
+              )}
             </div>
           </div>
         </div>

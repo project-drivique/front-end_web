@@ -81,6 +81,10 @@ function normalizarReserva(r) {
     clienteCorreo,
     clienteTelefono,
     clienteDocumento,
+    clienteTipoDocumento: df.tipoDoc || df.tipoDocumento || r.clienteTipoDocumento || 'Cédula de Ciudadanía',
+    clienteNacionalidad: df.nacionalidad || r.clienteNacionalidad || 'Colombia',
+    documentoIdentidadPdf: df.cedulaPdf || r.documentoIdentidadPdf || `Cedula-${clienteDocumento}.pdf`,
+    licenciaConduccionPdf: df.licenciaPdf || r.licenciaConduccionPdf || `Licencia-${clienteDocumento}.pdf`,
     vehiculoId: String(r.vehiculoId || matchingMockVehicle?.id || '2'),
     vehiculoNombre: vNom || matchingMockVehicle?.nombre || 'Mazda CX-5 2024',
     vehiculoPlaca: vPlaca || matchingMockVehicle?.placa || 'KLS-849',
@@ -111,6 +115,10 @@ function normalizarReserva(r) {
     domicilioTelefonoConductor: r.domicilioTelefonoConductor || rd.domicilioTelefonoConductor || '',
     domicilioPin: r.domicilioPin || rd.domicilioPin || String(Math.abs(Array.from(String(codigo)).reduce((acc, char) => (acc * 31 + char.charCodeAt(0)) | 0, 0)) % 9000 + 1000),
     fechaCreacion: r.fechaCreacion || new Date().toISOString(),
+    reservaDetalles: rd,
+    seguroIdx: r.seguroIdx,
+    serviciosSeleccionados: r.serviciosSeleccionados || [],
+    vehiculo: r.vehiculo || matchingMockVehicle,
     historialAcciones: Array.isArray(r.historialAcciones) ? r.historialAcciones : [
       { fecha: r.fechaCreacion || new Date().toISOString(), accion: 'Registro de reserva', usuario: clienteCorreo }
     ]
