@@ -786,7 +786,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
                               <button
                                 type="button"
                                 className="cash-btn-primary"
-                                style={{ width: '80px', padding: '6px 10px', fontSize: '13px', background: '#ecfeff', borderColor: '#cffafe', color: '#0891b2', whiteSpace: 'nowrap', textAlign: 'center', fontWeight: '500' }}
+                                style={{ width: '80px', padding: '6px 10px', fontSize: '13px', background: '#fff7ed', borderColor: '#fed7aa', color: '#ea580c', whiteSpace: 'nowrap', textAlign: 'center', fontWeight: '500' }}
                                 onClick={(e) => {
                                   e.stopPropagation()
                                   if (esPagadaEnEfectivo) { openModalCobro(r) } else { setComprobanteDigital(r) }
