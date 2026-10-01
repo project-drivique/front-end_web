@@ -51,6 +51,7 @@ export default function IncidentManagementPage() {
   const [branchFilter, setBranchFilter] = useState('all')
   const [originFilter, setOriginFilter] = useState('all')
   const [priorityFilter, setPriorityFilter] = useState('all')
+  const [activeTab, setActiveTab] = useState('incidentes')
   const [notice, setNotice] = useState('')
   const [errorModal, setErrorModal] = useState('')
 
@@ -114,6 +115,10 @@ export default function IncidentManagementPage() {
   const filtrados = useMemo(() => {
     const term = search.trim().toLowerCase()
     return incidents.filter((r) => {
+      // Tab filter
+      if (activeTab === 'incidentes' && r.estado === 'rechazado') return false
+      if (activeTab === 'erroneos' && r.estado !== 'rechazado') return false
+
       const matchState = stateFilter === 'all' || r.estado === stateFilter
       const matchBranch = branchFilter === 'all' || r.sucursal === branchFilter
       const matchOrigin = originFilter === 'all' || r.origen === originFilter
@@ -129,7 +134,7 @@ export default function IncidentManagementPage() {
 
       return matchState && matchBranch && matchOrigin && matchPriority && matchSearch
     })
-  }, [incidents, search, stateFilter, branchFilter, originFilter, priorityFilter])
+  }, [incidents, search, stateFilter, branchFilter, originFilter, priorityFilter, activeTab])
 
   // --- Handlers ---
   const handleCrearIncidencia = (e) => {
@@ -277,6 +282,34 @@ export default function IncidentManagementPage() {
             </div>
           )}
 
+          {/* TABS */}
+          <div className="cities-tabs" style={{ display: 'flex', gap: 16, marginBottom: 16, borderBottom: '1px solid #e2e8f0' }}>
+            <button
+              type="button"
+              onClick={() => setActiveTab('incidentes')}
+              style={{
+                padding: '12px 16px', border: 'none', background: 'transparent', cursor: 'pointer',
+                fontSize: 14, fontWeight: 600, color: activeTab === 'incidentes' ? '#2563eb' : '#64748b',
+                borderBottom: activeTab === 'incidentes' ? '2px solid #2563eb' : '2px solid transparent',
+                transition: 'all 0.2s'
+              }}
+            >
+              {t('admin.incidents.tabIncidents', 'Reportes de Incidentes')}
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('erroneos')}
+              style={{
+                padding: '12px 16px', border: 'none', background: 'transparent', cursor: 'pointer',
+                fontSize: 14, fontWeight: 600, color: activeTab === 'erroneos' ? '#ef4444' : '#64748b',
+                borderBottom: activeTab === 'erroneos' ? '2px solid #ef4444' : '2px solid transparent',
+                transition: 'all 0.2s'
+              }}
+            >
+              {t('admin.incidents.tabErrors', 'Informes Erróneos')}
+            </button>
+          </div>
+
           {/* Tarjeta Principal */}
           <section className="cities-card">
             {/* Toolbar con Buscador y Filtros */}
@@ -362,14 +395,16 @@ export default function IncidentManagementPage() {
                     <tr>
                       <th>ID</th>
                       <th>CÓDIGO RESERVA</th>
-                      <th>{t('admin.incidents.tableCode', 'Reporte / Código')}</th>
-                      <th>{t('admin.incidents.tableVehicle', 'Vehículo / Placa')}</th>
-                      <th>{t('admin.incidents.tableSender', 'Remitente')}</th>
-                      <th>{t('admin.incidents.tableBranch', 'Sucursal')}</th>
-                      <th>{t('admin.incidents.tableOrigin', 'Origen')}</th>
-                      <th>{t('admin.incidents.tablePriority', 'Prioridad / Tiempo')}</th>
-                      <th>{t('admin.incidents.tableStatus', 'Estado')}</th>
-                      <th>{t('admin.incidents.tableActions', 'Acciones')}</th>
+                      <th>CÓDIGO REPORTE</th>
+                      <th>FECHA</th>
+                      <th>VEHÍCULO</th>
+                      <th>PLACA</th>
+                      <th>REMITENTE</th>
+                      <th>SUCURSAL</th>
+                      <th>ORIGEN</th>
+                      <th>PRIORIDAD</th>
+                      <th>ESTADO</th>
+                      <th>ACCIONES</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -377,60 +412,34 @@ export default function IncidentManagementPage() {
                       <tr key={r.id}>
                         <td style={{ fontWeight: 600, color: 'var(--city-text)' }}>{index + 1}</td>
                         <td style={{ fontWeight: 500 }}>{r.codigoReserva || `RES-${r.id.split('-')[1] || Math.floor(Math.random() * 10000)}`}</td>
+                        <td style={{ fontWeight: 700, color: '#0f172a' }}>{r.codigo}</td>
+                        <td style={{ color: '#64748b' }}>{new Date(r.fechaIso).toLocaleDateString()}</td>
+                        
+                        <td style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                            <img src={getVehiculoImagen(r)} alt={r.vehiculo} style={{ width: 40, height: 28, borderRadius: 6, objectFit: 'cover' }} onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = 'https://pplx-res.cloudinary.com/image/upload/pplx_search_images/a2cb0b378c25efdb1e116246f84149744c2f4081.jpg' }} />
+                            <span>{r.vehiculo}</span>
+                        </td>
+                        <td style={{ color: '#64748b' }}>{r.placa}</td>
+                        
                         <td>
-                          <div className="cities-name">
-                            <span>
-                              <FaExclamationCircle />
-                            </span>
-                            <div>
-                              <strong>{r.codigo}</strong>
-                              <small>{new Date(r.fechaIso).toLocaleDateString()}</small>
-                            </div>
+                          <div style={{ display: 'flex', flexDirection: 'column' }}>
+                            <span style={{ color: '#0f172a' }}>{r.contactoNombre}</span>
+                            <span style={{ color: '#64748b', fontSize: 12 }}>{r.contactoEmail}</span>
                           </div>
                         </td>
-
-                        <td>
-                          <div className="fleet-vehicle" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                            <img
-                              src={getVehiculoImagen(r)}
-                              alt={r.vehiculo}
-                              style={{ width: 52, height: 36, borderRadius: 8, objectFit: 'cover', border: '1px solid var(--city-border, #cbd5e1)', boxShadow: '0 2px 6px rgba(0,0,0,0.08)', flexShrink: 0 }}
-                              onError={(e) => {
-                                e.currentTarget.onerror = null
-                                e.currentTarget.src = 'https://pplx-res.cloudinary.com/image/upload/pplx_search_images/a2cb0b378c25efdb1e116246f84149744c2f4081.jpg'
-                              }}
-                            />
-                            <div>
-                              <span style={{ display: 'block', fontSize: 13, color: 'var(--city-text)' }}>{r.vehiculo}</span>
-                              <small style={{ color: '#64748b' }}>{r.placa}</small>
-                            </div>
-                          </div>
-                        </td>
-
-                        <td>
-                          <div style={{ fontSize: 12, display: 'inline-flex', alignItems: 'center', flexWrap: 'wrap', gap: '6px 12px' }}>
-                            <span style={{ color: 'var(--city-text)', whiteSpace: 'nowrap' }}>{r.contactoNombre}</span>
-                            <small style={{ color: '#64748b', whiteSpace: 'nowrap' }}>{r.contactoEmail}</small>
-                          </div>
-                        </td>
-
-                        <td>
-                          <span style={{ fontSize: 12, color: 'var(--city-text)', display: 'inline-flex', alignItems: 'flex-start', gap: 5, lineHeight: 1.35 }}>
-                            <FaBuilding style={{ color: 'var(--city-muted, #64748b)', fontSize: 11, marginTop: 2, flexShrink: 0 }} />
-                            <span>{r.sucursal}</span>
-                          </span>
-                        </td>
-
+                        
+                        <td>{r.sucursal}</td>
+                        
                         <td>
                           <span className={`origin-badge ${r.origen}`}>
                             {r.origen === 'cliente' ? <FaUser /> : <FaUserShield />}
                             {r.origen === 'cliente' ? t('admin.incidents.client', 'Cliente') : t('admin.incidents.internal', 'Interno')}
                           </span>
                         </td>
-
+                        
                         <td>
                           <span className={`priority-badge ${t(`admin.incidents.${r.prioridad}`, r.prioridad)}`}>
-                            <FaClock /> {r.prioridad} ({r.tiempoEstimado})
+                            {r.prioridad}
                           </span>
                         </td>
 
@@ -438,37 +447,33 @@ export default function IncidentManagementPage() {
                           <span
                             className="doc-status-badge"
                             style={{
-                              background:
-                                r.estado === 'resuelto'
-                                  ? '#dcfce7'
-                                  : r.estado === 'en_reparacion'
-                                  ? '#e0f2fe'
-                                  : r.estado === 'en_revision'
-                                  ? '#f1f5f9'
-                                  : '#f1f5f9',
-                              color:
-                                r.estado === 'resuelto'
-                                  ? '#15803d'
-                                  : r.estado === 'en_reparacion'
-                                  ? '#0369a1'
-                                  : r.estado === 'en_revision'
-                                  ? '#475569'
-                                  : '#475569',
+                              background: r.estado === 'resuelto' ? '#dcfce7' : r.estado === 'en_reparacion' ? '#e0f2fe' : r.estado === 'rechazado' ? '#fee2e2' : '#f1f5f9',
+                              color: r.estado === 'resuelto' ? '#15803d' : r.estado === 'en_reparacion' ? '#0369a1' : r.estado === 'rechazado' ? '#991b1b' : '#475569',
                             }}
                           >
                             {t(`admin.incidents.${r.estado}`, r.estado)}
                           </span>
                         </td>
-
+                        
                         <td>
                           <div className="cities-row-actions" style={{ display: 'flex', gap: '8px' }}>
-                            <button
-                              type="button"
-                              onClick={() => openDetalleModal(r)}
-                              style={{ padding: '6px 12px', fontSize: '13px', background: '#fff7ed', color: '#ea580c', border: '1px solid #fed7aa', borderRadius: '6px', cursor: 'pointer', fontWeight: '500', minWidth: '80px', display: 'inline-flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}
-                            >
-                              <FaEye /> Ver
-                            </button>
+                            {activeTab === 'incidentes' ? (
+                              <button
+                                type="button"
+                                onClick={() => openDetalleModal(r)}
+                                style={{ padding: '6px 12px', fontSize: '13px', background: '#fff7ed', color: '#ea580c', border: '1px solid #fed7aa', borderRadius: '6px', cursor: 'pointer', fontWeight: '500', minWidth: '80px', display: 'inline-flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}
+                              >
+                                <FaEye /> Responder
+                              </button>
+                            ) : (
+                              <button
+                                type="button"
+                                onClick={() => openDetalleModal(r)}
+                                style={{ padding: '6px 12px', fontSize: '13px', background: '#fef2f2', color: '#dc2626', border: '1px solid #fecaca', borderRadius: '6px', cursor: 'pointer', fontWeight: '500', minWidth: '80px', display: 'inline-flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}
+                              >
+                                <FaEye /> Ver Error
+                              </button>
+                            )}
 
                             <button
                               type="button"
