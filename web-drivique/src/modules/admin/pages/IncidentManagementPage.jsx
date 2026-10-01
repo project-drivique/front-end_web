@@ -10,6 +10,7 @@ import {
   FaFileExcel,
   FaFilePdf,
   FaPaperPlane,
+  FaPhone,
   FaPlus,
   FaPrint,
   FaSearch,
@@ -70,6 +71,7 @@ export default function IncidentManagementPage() {
 
   const [respuestaTexto, setRespuestaTexto] = useState('')
   const [nuevoEstadoModal, setNuevoEstadoModal] = useState('recibido')
+  const [nuevaPrioridadModal, setNuevaPrioridadModal] = useState('urgente')
 
   const sucursales = useMemo(
     () => branchManagementService.list()
@@ -155,6 +157,7 @@ export default function IncidentManagementPage() {
     setErrorModal('')
     setRespuestaTexto('')
     setNuevoEstadoModal(r.estado)
+    setNuevaPrioridadModal(r.prioridad || 'media')
     setModalDetalle(r)
   }
 
@@ -165,7 +168,7 @@ export default function IncidentManagementPage() {
       setErrorModal('')
       incidentManagementService.updateStatusAndRespond(
         modalDetalle.id,
-        { nuevoEstado: nuevoEstadoModal, respuestaTexto },
+        { nuevoEstado: nuevoEstadoModal, respuestaTexto, nuevaPrioridad: nuevaPrioridadModal },
         user
       )
       setNotice(
@@ -586,7 +589,15 @@ export default function IncidentManagementPage() {
                   <span className="incident-info-card__label">{t('admin.incidents.sender', 'Remitente')}</span>
                   <p>{modalDetalle.contactoNombre}</p>
                   <small>{modalDetalle.contactoEmail}</small>
-                  <small>{modalDetalle.contactoTelefono}</small>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '6px' }}>
+                    <small>{modalDetalle.contactoTelefono}</small>
+                    <a 
+                      href={`tel:${modalDetalle.contactoTelefono}`}
+                      style={{ padding: '4px 8px', borderRadius: '4px', background: '#ecfeff', color: '#0891b2', border: '1px solid #cffafe', textDecoration: 'none', fontSize: '11px', display: 'inline-flex', alignItems: 'center', gap: '4px', fontWeight: 'bold' }}
+                    >
+                      <FaPhone /> {t('admin.incidents.call', 'Llamar')}
+                    </a>
+                  </div>
                 </div>
 
                 <div className="incident-info-card">
@@ -633,7 +644,19 @@ export default function IncidentManagementPage() {
                       <option value="rechazado">{t('admin.incidents.rechazado', 'Rechazado')}</option>
                     </select>
                   </div>
-                  <div className="incident-notice-box">
+                  <div className="incident-field">
+                    <span className="incident-field-label">{t('admin.incidents.changePriority', 'Priorizar Situaci\u00f3n')}</span>
+                    <select
+                      value={nuevaPrioridadModal}
+                      onChange={(e) => setNuevaPrioridadModal(e.target.value)}
+                    >
+                      <option value="urgente">{t('admin.incidents.urgente', 'Urgente (< 24h)')}</option>
+                      <option value="alta">{t('admin.incidents.alta', 'Alta (24-48h)')}</option>
+                      <option value="media">{t('admin.incidents.media', 'Media (48-72h)')}</option>
+                      <option value="baja">{t('admin.incidents.baja', 'Baja (> 72h)')}</option>
+                    </select>
+                  </div>
+                  <div className="incident-notice-box" style={{ gridColumn: '1 / -1' }}>
                     <FaPaperPlane style={{ flexShrink: 0, marginTop: 1 }} />
                     <span>{t('admin.incidents.noticeEmailMsg', 'Se enviar\u00e1 correo y notificaci\u00f3n al usuario.')}</span>
                   </div>

@@ -168,7 +168,7 @@ export const incidentManagementService = {
     return newReport
   },
 
-  updateStatusAndRespond(id, { nuevoEstado, respuestaTexto }, adminUser) {
+  updateStatusAndRespond(id, { nuevoEstado, respuestaTexto, nuevaPrioridad }, adminUser) {
     const incidents = readIncidents()
     const index = incidents.findIndex((r) => r.id === id || r.codigo === id)
     if (index < 0) throw new Error('reportNotFound')
@@ -176,6 +176,7 @@ export const incidentManagementService = {
     const current = incidents[index]
     assertIncidentScope(adminUser, current.sucursal)
     const updatedState = nuevoEstado || current.estado
+    const updatedPriority = nuevaPrioridad || current.prioridad
 
     const responseEntry = {
       estadoKey: updatedState,
@@ -190,6 +191,7 @@ export const incidentManagementService = {
     incidents[index] = {
       ...current,
       estado: updatedState,
+      prioridad: updatedPriority,
       historial: [...(current.historial || []), responseEntry],
     }
 
