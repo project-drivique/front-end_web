@@ -260,8 +260,8 @@ export default function ContractManagementPage() {
                 {filtrados.length}{" "}
                 {t("admin.contractsPage.results", "contratos encontrados")}
             </div>
-            <div className="cities-table-wrap contracts-table-wrap">
-              <table className="cities-table">
+            <div className="cities-table-wrap contracts-table-wrap" style={{ overflowX: 'auto' }}>
+              <table className="cities-table" style={{ whiteSpace: 'nowrap' }}>
               <thead>
                 <tr>
                   <th>ID</th>
