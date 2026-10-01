@@ -49,6 +49,7 @@ export default function IncidentManagementPage() {
   const [branchFilter, setBranchFilter] = useState('all')
   const [originFilter, setOriginFilter] = useState('all')
   const [priorityFilter, setPriorityFilter] = useState('all')
+  const [viewMode, setViewMode] = useState('table') // 'table' o 'grid'
   const [notice, setNotice] = useState('')
   const [errorModal, setErrorModal] = useState('')
 
@@ -325,8 +326,12 @@ export default function IncidentManagementPage() {
                 <option value="baja">{t('admin.incidents.baja', 'Baja (> 72h)')}</option>
               </select>
 
-              {/* Botones de Exportación */}
-              <div className="cities-export">
+              {/* Botones de Toggle y Exportación */}
+              <div className="cities-export" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div className="view-mode-toggle">
+                  <button type="button" onClick={() => setViewMode('table')} className={`toggle-btn ${viewMode === 'table' ? 'active' : ''}`}>Tabla</button>
+                  <button type="button" onClick={() => setViewMode('grid')} className={`toggle-btn ${viewMode === 'grid' ? 'active' : ''}`}>Tarjetas</button>
+                </div>
                 <button type="button" onClick={() => exportExcel(exportData)}>
                   <FaFileExcel /> {t('admin.exportExcel', 'Excel')}
                 </button>
@@ -350,6 +355,64 @@ export default function IncidentManagementPage() {
                 <FaExclamationTriangle />
                 <h2>{t('admin.incidents.emptyTitle', 'No se encontraron reportes de incidencias')}</h2>
                 <p>{t('admin.incidents.emptySubtitle', 'Intenta ajustar los criterios de búsqueda o los filtros seleccionados.')}</p>
+              </div>
+            ) : viewMode === 'grid' ? (
+              <div className="incidents-grid">
+                {filtrados.map((r) => (
+                  <div key={r.id} className="incident-card">
+                    <div className="incident-card-header">
+                      <div className="incident-card-title">
+                        <strong>{r.codigo}</strong>
+                        <small>{new Date(r.fechaIso).toLocaleDateString()}</small>
+                      </div>
+                      <span className="incident-card-status" style={{ background: r.estado === 'resuelto' ? '#dcfce7' : '#f1f5f9', color: r.estado === 'resuelto' ? '#15803d' : '#475569' }}>
+                        {t(`admin.incidents.status_${r.estado}`, r.estado.replace('_', ' '))}
+                      </span>
+                    </div>
+
+                    <div className="incident-card-body">
+                      <div className="incident-card-row">
+                        <span className="incident-card-label">Vehículo</span>
+                        <div className="incident-card-value" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <img src={getVehiculoImagen(r)} alt={r.vehiculo} style={{ width: 40, height: 28, borderRadius: 6, objectFit: 'cover' }} onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = 'https://pplx-res.cloudinary.com/image/upload/pplx_search_images/a2cb0b378c25efdb1e116246f84149744c2f4081.jpg' }} />
+                          <div>
+                            <span style={{ display: 'block', fontSize: '13px' }}>{r.vehiculo}</span>
+                            <span style={{ display: 'block', fontSize: '11px', color: '#64748b' }}>{r.placa}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="incident-card-row">
+                        <span className="incident-card-label">Remitente</span>
+                        <div className="incident-card-value">
+                          <span style={{ display: 'block' }}>{r.contactoNombre}</span>
+                          <span style={{ display: 'block', fontSize: '11px', color: '#64748b' }}>{r.contactoEmail}</span>
+                        </div>
+                      </div>
+
+                      <div className="incident-card-row">
+                        <span className="incident-card-label">Origen</span>
+                        <span className="incident-card-value" style={{ textTransform: 'capitalize' }}>{r.origen}</span>
+                      </div>
+
+                      <div className="incident-card-row">
+                        <span className="incident-card-label">Prioridad</span>
+                        <span className="incident-card-value" style={{ color: r.prioridad === 'urgente' ? '#ef4444' : r.prioridad === 'alta' ? '#f59e0b' : '#334155' }}>
+                          {r.prioridad} ({r.tiempoEstimado})
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="incident-card-footer">
+                      <button type="button" className="incident-card-btn btn-card-ver" onClick={() => openDetalleModal(r)}>
+                        <FaEye /> Ver Detalles
+                      </button>
+                      <button type="button" className="incident-card-btn btn-card-eliminar" onClick={() => setModalEliminar(r)}>
+                        <FaTrash /> Eliminar
+                      </button>
+                    </div>
+                  </div>
+                ))}
               </div>
             ) : (
               <div className="cities-table-wrap">
