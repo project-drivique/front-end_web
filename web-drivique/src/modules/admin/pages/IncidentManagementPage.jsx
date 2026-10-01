@@ -245,11 +245,11 @@ export default function IncidentManagementPage() {
       <main className="management-main" style={{ padding: '24px 32px' }}>
         <div className="cities-container" style={{ maxWidth: '100%' }}>
           {/* Header Superior */}
-          <header className="cities-topbar">
-            <div>
-              <p className="cities-eyebrow" style={{ textTransform: 'uppercase' }}>{t('admin.branchManagement', 'GESTIÓN DE SUCURSAL')}</p>
-              <h1>{t('admin.incidentsTitle', 'Gestión de Incidentes')}</h1>
-              <p className="cities-subtitle">
+          <header className="cities-topbar reservations-management-header">
+            <div className="branch-topbar-brand-title">
+              <span className="branch-topbar-badge">{t('admin.branchManagement', 'GESTIÓN DE SUCURSAL')}</span>
+              <h1 className="branch-topbar-heading">{t('admin.incidentsTitle', 'Reportes de Incidencias de Vehículos')}</h1>
+              <p className="cities-subtitle" style={{ marginTop: '8px' }}>
                 {t(
                   'admin.incidentsSubtitle',
                   'Control de incidencias de la flota, respuestas a clientes, priorización de reparación y trazabilidad.'
