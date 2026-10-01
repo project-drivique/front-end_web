@@ -354,7 +354,7 @@ export default function ContractManagementPage() {
                           type="button"
                           disabled={!c.isSigned}
                           onClick={() => openDetalle(c)}
-                          style={{ padding: '6px 12px', fontSize: '13px', background: c.isSigned ? '#10b981' : '#e5e7eb', color: c.isSigned ? '#fff' : '#9ca3af', border: 'none', borderRadius: '6px', cursor: c.isSigned ? 'pointer' : 'not-allowed', fontWeight: 'normal', minWidth: '80px', display: 'inline-flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}
+                          style={{ padding: '6px 12px', fontSize: '13px', background: c.isSigned ? '#f0fdf4' : '#e5e7eb', color: c.isSigned ? '#16a34a' : '#9ca3af', border: c.isSigned ? '1px solid #bbf7d0' : 'none', borderRadius: '6px', cursor: c.isSigned ? 'pointer' : 'not-allowed', fontWeight: '500', minWidth: '80px', display: 'inline-flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}
                         >
                           <FaReceipt /> Ver
                         </button>
