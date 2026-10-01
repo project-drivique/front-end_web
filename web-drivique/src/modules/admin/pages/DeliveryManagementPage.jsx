@@ -33,7 +33,7 @@ export default function DeliveryManagementPage() {
   const [conductorNombre, setConductorNombre] = useState('')
 
   const loadReservations = () => {
-    let all = reservationManagementService.listAll(user)
+    let all = reservationManagementService.list(user)
     
     // Filter only those with delivery services
     const deliveries = all.filter(r => {
