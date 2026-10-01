@@ -390,7 +390,7 @@ export default function IncidentManagementPage() {
               </div>
             ) : (
               <div className="cities-table-wrap" style={{ overflowX: 'auto' }}>
-                <table className="incidents-table" style={{ whiteSpace: 'nowrap' }}>
+                <table className="incidents-table" style={{ whiteSpace: 'nowrap', width: 'max-content', minWidth: '100%' }}>
                   <thead>
                     <tr>
                       <th>ID</th>
@@ -401,8 +401,11 @@ export default function IncidentManagementPage() {
                       <th>PLACA</th>
                       <th>TIPO DE INCIDENTE</th>
                       <th>DESCRIPCIÓN PROBLEMA</th>
-                      <th>TIEMPO ESTIMADO</th>
-                      <th>IMÁGENES</th>
+                      <th>FECHA DE REPORTE</th>
+                      <th>HORA DE REPORTE</th>
+                      <th>EVIDENCIA 1</th>
+                      <th>EVIDENCIA 2</th>
+                      <th>EVIDENCIA 3</th>
                       <th>TELÉFONO</th>
                       <th>CORREO</th>
                       <th>ESTADO DE INCIDENTE</th>
@@ -423,54 +426,48 @@ export default function IncidentManagementPage() {
                         
                         <td style={{ color: '#334155', fontWeight: 500 }}>{r.tipoIncidenciaNombre || r.tipoIncidenciaId || 'Avería Mecánica'}</td>
                         <td style={{ color: '#64748b', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.descripcion || 'Problema reportado...'}</td>
-                        <td style={{ color: '#0f172a' }}>{r.tiempoEstimado || '2 a 4 horas'}</td>
-                        <td style={{ color: '#2563eb', fontWeight: 500 }}>{(r.adjuntos && r.adjuntos.length > 0) ? r.adjuntos.length : 3} imágenes</td>
+                        <td style={{ color: '#0f172a' }}>{new Date(r.fechaIso || r.fechaRegistro || Date.now()).toLocaleDateString()}</td>
+                        <td style={{ color: '#0f172a' }}>{new Date(r.fechaIso || r.fechaRegistro || Date.now()).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</td>
                         
+                        <td>
+                          {r.adjuntos?.[0] ? <img src={r.adjuntos[0]} style={{width: 36, height: 36, objectFit: 'cover', borderRadius: 4, border: '1px solid #e2e8f0'}} /> : <span style={{color: '#94a3b8', fontSize: 12}}>No img</span>}
+                        </td>
+                        <td>
+                          {r.adjuntos?.[1] ? <img src={r.adjuntos[1]} style={{width: 36, height: 36, objectFit: 'cover', borderRadius: 4, border: '1px solid #e2e8f0'}} /> : <span style={{color: '#94a3b8', fontSize: 12}}>No img</span>}
+                        </td>
+                        <td>
+                          {r.adjuntos?.[2] ? <img src={r.adjuntos[2]} style={{width: 36, height: 36, objectFit: 'cover', borderRadius: 4, border: '1px solid #e2e8f0'}} /> : <span style={{color: '#94a3b8', fontSize: 12}}>No img</span>}
+                        </td>
+
                         <td style={{ color: '#475569' }}>{r.contactoTelefono || '+57 300 0000000'}</td>
                         <td style={{ color: '#64748b' }}>{r.contactoEmail}</td>
                         
-                        <td>
-                          <span
-                            className="doc-status-badge"
-                            style={{
-                              background: r.estado === 'resuelto' ? '#dcfce7' : r.estado === 'en_reparacion' ? '#e0f2fe' : r.estado === 'rechazado' ? '#fee2e2' : '#f1f5f9',
-                              color: r.estado === 'resuelto' ? '#15803d' : r.estado === 'en_reparacion' ? '#0369a1' : r.estado === 'rechazado' ? '#991b1b' : '#475569',
-                            }}
-                          >
-                            {r.estado === 'resuelto' ? 'Resuelto' : r.estado === 'en_reparacion' ? 'Atendiendo' : r.estado === 'rechazado' ? 'Rechazado' : r.estado === 'en_revision' ? 'En Revisión' : 'Recibido'}
-                          </span>
+                        <td style={{ fontWeight: 600, color: r.estado === 'resuelto' ? '#15803d' : r.estado === 'en_reparacion' ? '#0369a1' : r.estado === 'rechazado' ? '#991b1b' : '#475569' }}>
+                          {r.estado === 'resuelto' ? 'Resuelto' : r.estado === 'en_reparacion' ? 'Atendiendo' : r.estado === 'rechazado' ? 'Rechazado' : r.estado === 'en_revision' ? 'En Revisión' : 'Recibido'}
                         </td>
                         
                         <td>
                           <div className="cities-row-actions" style={{ display: 'flex', gap: '8px' }}>
-                            {activeTab === 'incidentes' ? (
-                              <button
-                                type="button"
-                                onClick={() => openDetalleModal(r)}
-                                style={{ padding: '6px 12px', fontSize: '13px', background: '#fff7ed', color: '#ea580c', border: '1px solid #fed7aa', borderRadius: '6px', cursor: 'pointer', fontWeight: '500', minWidth: '80px', display: 'inline-flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}
-                              >
-                                Responder
-                              </button>
-                            ) : (
-                              <button
-                                type="button"
-                                onClick={() => openDetalleModal(r)}
-                                style={{ padding: '6px 12px', fontSize: '13px', background: '#fef2f2', color: '#dc2626', border: '1px solid #fecaca', borderRadius: '6px', cursor: 'pointer', fontWeight: '500', minWidth: '80px', display: 'inline-flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}
-                              >
-                                Responder
-                              </button>
-                            )}
-
                             <button
                               type="button"
-                              onClick={() => {
-                                setErrorModal('')
-                                setModalEliminar(r)
-                              }}
-                              style={{ padding: '6px 12px', fontSize: '13px', background: '#fef2f2', color: '#dc2626', border: '1px solid #fecaca', borderRadius: '6px', cursor: 'pointer', fontWeight: '500', minWidth: '80px', display: 'inline-flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}
+                              onClick={() => openDetalleModal(r)}
+                              style={{ padding: '6px 12px', fontSize: '13px', background: 'transparent', color: '#2563eb', border: 'none', cursor: 'pointer', fontWeight: '600', textDecoration: 'underline' }}
                             >
-                              <FaTrash /> Eliminar
+                              Responder
                             </button>
+
+                            {!esEncargado && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setErrorModal('')
+                                  setModalEliminar(r)
+                                }}
+                                style={{ padding: '6px 12px', fontSize: '13px', background: 'transparent', color: '#dc2626', border: 'none', cursor: 'pointer', fontWeight: '600', textDecoration: 'underline' }}
+                              >
+                                Eliminar
+                              </button>
+                            )}
                           </div>
                         </td>
                       </tr>
