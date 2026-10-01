@@ -241,8 +241,8 @@ export default function IncidentManagementPage() {
           {/* Header Superior */}
           <header className="cities-topbar">
             <div>
-              <p className="cities-eyebrow">{t('admin.management', 'Gestión Operativa')}</p>
-              <h1>{t('admin.incidentsTitle', 'Reportes de Incidencias de Vehículos')}</h1>
+              <p className="cities-eyebrow" style={{ textTransform: 'uppercase' }}>{t('admin.branchManagement', 'GESTIÓN DE SUCURSAL')}</p>
+              <h1>{t('admin.incidentsTitle', 'Gestión de Incidentes')}</h1>
               <p className="cities-subtitle">
                 {t(
                   'admin.incidentsSubtitle',
