@@ -365,3 +365,152 @@
   text-align: center;
 }
 
+/* ─── TARJETAS (GRID VIEW) ─────────────────────────────────────────────── */
+.incidents-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+  padding: 16px 0;
+}
+
+.incident-card {
+  background: var(--city-surface, #ffffff);
+  border: 1px solid var(--city-border, #e2e8f0);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+
+.incident-card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  border-color: #cbd5e1;
+}
+
+html.dark .incident-card {
+  background: #1e293b;
+  border-color: #334155;
+}
+html.dark .incident-card:hover {
+  border-color: #475569;
+}
+
+.incident-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--city-border, #e2e8f0);
+}
+
+.incident-card-title {
+  display: flex;
+  flex-direction: column;
+}
+.incident-card-title strong {
+  font-size: 15px;
+  color: var(--city-text, #0f172a);
+}
+.incident-card-title small {
+  font-size: 12px;
+  color: var(--city-muted, #64748b);
+}
+
+.incident-card-status {
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.incident-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.incident-card-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.incident-card-label {
+  font-size: 12px;
+  color: var(--city-muted, #64748b);
+  width: 80px;
+  flex-shrink: 0;
+}
+
+.incident-card-value {
+  font-size: 13px;
+  color: var(--city-text, #334155);
+  font-weight: 500;
+  flex: 1;
+}
+
+.incident-card-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--city-border, #e2e8f0);
+}
+
+.incident-card-btn {
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: opacity 0.2s;
+}
+.incident-card-btn:hover { opacity: 0.9; }
+
+.btn-card-ver { background: #ecfeff; color: #0891b2; border: 1px solid #cffafe; }
+.btn-card-eliminar { background: #fef2f2; color: #dc2626; border: 1px solid #fee2e2; }
+
+/* ─── TOGGLE BUTTONS ─────────────────────────────────────────────── */
+.view-mode-toggle {
+  display: flex;
+  background: var(--city-bg, #f8fafc);
+  border: 1px solid var(--city-border, #e2e8f0);
+  border-radius: 8px;
+  padding: 2px;
+  margin-right: 8px;
+}
+
+.toggle-btn {
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--city-muted, #64748b);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.toggle-btn.active {
+  background: #ffffff;
+  color: #2563eb;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+html.dark .view-mode-toggle {
+  background: #1e293b;
+  border-color: #334155;
+}
+html.dark .toggle-btn.active {
+  background: #334155;
+  color: #60a5fa;
+}
