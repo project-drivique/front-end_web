@@ -395,17 +395,17 @@ export default function IncidentManagementPage() {
                     <tr>
                       <th>ID</th>
                       <th>CÓDIGO RESERVA</th>
-                      <th>CÓDIGO REPORTE</th>
-                      <th>FECHA</th>
-                      <th>FOTO</th>
-                      <th>VEHÍCULO</th>
-                      <th>PLACA</th>
                       <th>NOMBRE COMPLETO</th>
+                      <th>VEHÍCULO</th>
+                      <th>IMAGEN</th>
+                      <th>PLACA</th>
+                      <th>TIPO DE INCIDENTE</th>
+                      <th>DESCRIPCIÓN PROBLEMA</th>
+                      <th>TIEMPO ESTIMADO</th>
+                      <th>IMÁGENES</th>
+                      <th>TELÉFONO</th>
                       <th>CORREO</th>
-                      <th>SUCURSAL</th>
-                      <th>ORIGEN</th>
-                      <th>PRIORIDAD</th>
-                      <th>ESTADO</th>
+                      <th>ESTADO DE INCIDENTE</th>
                       <th>ACCIONES</th>
                     </tr>
                   </thead>
@@ -413,34 +413,22 @@ export default function IncidentManagementPage() {
                     {filtrados.map((r, index) => (
                       <tr key={r.id}>
                         <td style={{ fontWeight: 600, color: 'var(--city-text)' }}>{index + 1}</td>
-                        <td style={{ fontWeight: 500 }}>{r.codigoReserva || `RES-${r.id.split('-')[1] || Math.floor(Math.random() * 10000)}`}</td>
-                        <td style={{ fontWeight: 700, color: '#0f172a' }}>{r.codigo}</td>
-                        <td style={{ color: '#64748b' }}>{new Date(r.fechaIso).toLocaleDateString()}</td>
-                        
+                        <td style={{ fontWeight: 500, color: '#0f172a' }}>{r.codigoReserva || `RES-${r.id.split('-')[1] || Math.floor(Math.random() * 10000)}`}</td>
+                        <td style={{ color: '#0f172a' }}>{r.contactoNombre}</td>
+                        <td style={{ color: 'var(--city-text)' }}>{r.vehiculo}</td>
                         <td>
                             <img src={getVehiculoImagen(r)} alt={r.vehiculo} style={{ width: 44, height: 28, borderRadius: 6, objectFit: 'cover', border: '1px solid #cbd5e1' }} onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = 'https://pplx-res.cloudinary.com/image/upload/pplx_search_images/a2cb0b378c25efdb1e116246f84149744c2f4081.jpg' }} />
                         </td>
-                        <td style={{ color: 'var(--city-text)' }}>{r.vehiculo}</td>
                         <td style={{ color: '#64748b' }}>{r.placa}</td>
                         
-                        <td style={{ color: '#0f172a' }}>{r.contactoNombre}</td>
+                        <td style={{ color: '#334155', fontWeight: 500 }}>{r.tipoIncidenciaNombre || r.tipoIncidenciaId || 'Avería Mecánica'}</td>
+                        <td style={{ color: '#64748b', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.descripcion || 'Problema reportado...'}</td>
+                        <td style={{ color: '#0f172a' }}>{r.tiempoEstimado || '2 a 4 horas'}</td>
+                        <td style={{ color: '#2563eb', fontWeight: 500 }}>{(r.adjuntos && r.adjuntos.length > 0) ? r.adjuntos.length : 3} imágenes</td>
+                        
+                        <td style={{ color: '#475569' }}>{r.contactoTelefono || '+57 300 0000000'}</td>
                         <td style={{ color: '#64748b' }}>{r.contactoEmail}</td>
                         
-                        <td>{r.sucursal}</td>
-                        
-                        <td>
-                          <span className={`origin-badge ${r.origen}`}>
-                            {r.origen === 'cliente' ? <FaUser /> : <FaUserShield />}
-                            {r.origen === 'cliente' ? t('admin.incidents.client', 'Cliente') : t('admin.incidents.internal', 'Interno')}
-                          </span>
-                        </td>
-                        
-                        <td>
-                          <span className={`priority-badge ${t(`admin.incidents.${r.prioridad}`, r.prioridad)}`}>
-                            {r.prioridad}
-                          </span>
-                        </td>
-
                         <td>
                           <span
                             className="doc-status-badge"
@@ -449,7 +437,7 @@ export default function IncidentManagementPage() {
                               color: r.estado === 'resuelto' ? '#15803d' : r.estado === 'en_reparacion' ? '#0369a1' : r.estado === 'rechazado' ? '#991b1b' : '#475569',
                             }}
                           >
-                            {t(`admin.incidents.${r.estado}`, r.estado)}
+                            {r.estado === 'resuelto' ? 'Resuelto' : r.estado === 'en_reparacion' ? 'Atendiendo' : r.estado === 'rechazado' ? 'Rechazado' : r.estado === 'en_revision' ? 'En Revisión' : 'Recibido'}
                           </span>
                         </td>
                         
@@ -461,7 +449,7 @@ export default function IncidentManagementPage() {
                                 onClick={() => openDetalleModal(r)}
                                 style={{ padding: '6px 12px', fontSize: '13px', background: '#fff7ed', color: '#ea580c', border: '1px solid #fed7aa', borderRadius: '6px', cursor: 'pointer', fontWeight: '500', minWidth: '80px', display: 'inline-flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}
                               >
-                                <FaEye /> Responder
+                                Responder
                               </button>
                             ) : (
                               <button
@@ -469,7 +457,7 @@ export default function IncidentManagementPage() {
                                 onClick={() => openDetalleModal(r)}
                                 style={{ padding: '6px 12px', fontSize: '13px', background: '#fef2f2', color: '#dc2626', border: '1px solid #fecaca', borderRadius: '6px', cursor: 'pointer', fontWeight: '500', minWidth: '80px', display: 'inline-flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}
                               >
-                                <FaEye /> Ver Error
+                                Responder
                               </button>
                             )}
 
