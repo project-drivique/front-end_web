@@ -17,6 +17,7 @@ import {
   FaTrash,
   FaUser,
   FaUserShield,
+  FaWrench,
 } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import { useAuthStore } from '../../../store/authStore'
@@ -631,99 +632,151 @@ export default function IncidentManagementPage() {
             className="cities-modal-backdrop"
             onMouseDown={(e) => e.target === e.currentTarget && setModalCrear(false)}
           >
-            <section className="cities-modal">
-              <div className="cities-modal__head">
-                <div>
-                  <p className="cities-eyebrow">{t('admin.incidents.internalHeader', 'Reporte de Flota Interno')}</p>
-                  <h2>{t('admin.incidents.createTitle', 'Report New Incident')}</h2>
-                </div>
-                <button type="button" onClick={() => setModalCrear(false)}>
+            <section className="cities-modal" style={{ maxWidth: 700, padding: '24px 32px' }}>
+              <div className="cities-modal__head" style={{ borderBottom: 'none', paddingBottom: 0, marginBottom: 16 }}>
+                <h2 style={{ fontSize: 20, color: '#1e3a8a', display: 'flex', alignItems: 'center', gap: 10, margin: 0 }}>
+                  <FaWrench style={{ color: '#3b82f6' }} /> {t('admin.incidents.createTitle', 'Formulario de Incidencia')}
+                </h2>
+                <button type="button" onClick={() => setModalCrear(false)} style={{ background: 'transparent', border: 'none', fontSize: 24, cursor: 'pointer', color: '#64748b' }}>
                   ×
                 </button>
               </div>
 
-              <form onSubmit={handleCrearIncidencia} style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 16 }}>
-                <label style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  <span>{t('admin.incidents.selectVehicle', 'Seleccionar Vehículo Afectado:')}</span>
-                  <select
-                    required
-                    value={formCrear.vehiculoId}
-                    onChange={(e) => setFormCrear({ ...formCrear, vehiculoId: e.target.value })}
-                  >
-                    <option value="">{t('admin.incidents.chooseVehicle', 'Selecciona un vehículo de la flota...')}</option>
-                    {vehiculos.map((v) => (
-                      <option key={v.id} value={v.id}>
-                        {v.nombre} ({v.placa}) — {v.sucursal}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
-                  <label style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                    <span>{t('admin.incidents.incidentType', 'Tipo de Incidencia:')}</span>
+              <form onSubmit={handleCrearIncidencia} style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+                
+                {/* Vehículo / Reserva asociada */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                  <label style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: '#1e293b' }}>{t('admin.incidents.selectVehicle', 'Vehículo / Reserva asociada')}</span>
                     <select
-                      value={formCrear.tipoIncidenciaId}
-                      onChange={(e) => {
-                        const optText = e.target.options[e.target.selectedIndex].text
-                        setFormCrear({
-                          ...formCrear,
-                          tipoIncidenciaId: e.target.value,
-                          tipoIncidenciaNombre: optText,
-                        })
-                      }}
+                      required
+                      value={formCrear.vehiculoId}
+                      onChange={(e) => setFormCrear({ ...formCrear, vehiculoId: e.target.value })}
+                      style={{ background: '#f8fafc', border: '1px solid #e2e8f0', padding: '12px', borderRadius: 8, fontSize: 14, color: '#334155' }}
                     >
-                      <option value="averia_mecanica">{t('admin.incidents.types.averia_mecanica', 'Avería mecánica')}</option>
-                      <option value="falla_electrica">{t('admin.incidents.types.falla_electrica', 'Falla eléctrica / Batería')}</option>
-                      <option value="pinchazo_neumatico">{t('admin.incidents.types.pinchazo_neumatico', 'Pinchazo / Neumático')}</option>
-                      <option value="limpieza_estetica">{t('admin.incidents.types.limpieza_estetica', 'Limpieza / Estética')}</option>
-                      <option value="choque_carroceria">{t('admin.incidents.types.choque_carroceria', 'Choque / Carrocería')}</option>
-                      <option value="mantenimiento_preventivo">{t('admin.incidents.types.mantenimiento_preventivo', 'Mantenimiento preventivo')}</option>
+                      <option value="">{t('admin.incidents.chooseVehicle', 'Selecciona un vehículo de la flota...')}</option>
+                      {vehiculos.map((v) => (
+                        <option key={v.id} value={v.id}>{v.nombre}</option>
+                      ))}
                     </select>
                   </label>
-
-                  <label style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                    <span>{t('admin.incidents.priorityUrgency', 'Prioridad / Urgencia:')}</span>
-                    <select
-                      value={formCrear.prioridad}
-                      onChange={(e) => {
-                        const val = e.target.value
-                        let time = '2 a 6 horas'
-                        if (val === 'alta') time = '24 a 48 horas'
-                        if (val === 'media') time = '48 a 72 horas'
-                        if (val === 'baja') time = 'Más de 72 horas'
-                        setFormCrear({ ...formCrear, prioridad: val, tiempoEstimado: time })
-                      }}
-                    >
-                      <option value="urgente">{t('admin.incidents.urgente', 'Urgente (< 24h)')}</option>
-                      <option value="alta">{t('admin.incidents.alta', 'Alta (24-48h)')}</option>
-                      <option value="media">{t('admin.incidents.media', 'Media (48-72h)')}</option>
-                      <option value="baja">{t('admin.incidents.baja', 'Baja (> 72h)')}</option>
-                    </select>
+                  <label style={{ display: 'flex', flexDirection: 'column', gap: 8, justifyContent: 'flex-end' }}>
+                    <input 
+                      type="text" 
+                      readOnly 
+                      value={vehiculos.find(v => v.id === formCrear.vehiculoId)?.placa || ''}
+                      placeholder="Placa del vehículo"
+                      style={{ background: '#f8fafc', border: '1px solid #e2e8f0', padding: '12px', borderRadius: 8, fontSize: 14, color: '#64748b' }}
+                    />
                   </label>
                 </div>
 
-                <label style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  <span>{t('admin.incidents.descriptionLabel', 'Descripción detallada de la incidencia / diagnóstico:')}</span>
+                {/* Tipo de Incidencia */}
+                <div>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: '#1e293b', display: 'block', marginBottom: 12 }}>Tipo de Incidencia <span style={{ color: '#ef4444' }}>*</span></span>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+                    {[
+                      { id: 'averia_mecanica', label: 'Avería mecánica', icon: <FaCar /> },
+                      { id: 'falla_electrica', label: 'Falla eléctrica / Batería', icon: <FaExclamationTriangle /> },
+                      { id: 'pinchazo_neumatico', label: 'Pinchazo / Neumático', icon: <FaWrench /> },
+                      { id: 'limpieza_estetica', label: 'Limpieza / Estética', icon: <FaWrench /> },
+                      { id: 'documentacion_licencia', label: 'Documentación / Licencia', icon: <FaFilePdf /> },
+                      { id: 'otro_problema', label: 'Otro problema', icon: <FaExclamationCircle /> },
+                    ].map(tipo => (
+                      <button
+                        key={tipo.id}
+                        type="button"
+                        onClick={() => {
+                           let time = '2 a 4 horas';
+                           if (tipo.id === 'falla_electrica') time = '1 a 2 horas';
+                           if (tipo.id === 'limpieza_estetica') time = '1 hora';
+                           if (tipo.id === 'otro_problema') time = 'Por definir';
+                           setFormCrear({ ...formCrear, tipoIncidenciaId: tipo.id, tipoIncidenciaNombre: tipo.label, tiempoEstimado: time })
+                        }}
+                        style={{
+                          display: 'flex', alignItems: 'center', gap: 8, padding: '12px 16px', borderRadius: 10,
+                          background: formCrear.tipoIncidenciaId === tipo.id ? '#2563eb' : '#f8fafc',
+                          color: formCrear.tipoIncidenciaId === tipo.id ? '#ffffff' : '#0f172a',
+                          border: formCrear.tipoIncidenciaId === tipo.id ? '1px solid #2563eb' : '1px solid #e2e8f0',
+                          cursor: 'pointer', fontWeight: 600, fontSize: 13, transition: 'all 0.2s', justifyContent: 'center'
+                        }}
+                      >
+                        {tipo.icon} {tipo.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Notice Tiempo */}
+                <div style={{ background: '#fef3c7', border: '1px solid #fde68a', borderRadius: 10, padding: '16px', display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+                  <FaClock style={{ color: '#b45309', fontSize: 20, marginTop: 2 }} />
+                  <div>
+                    <span style={{ display: 'block', fontSize: 12, color: '#b45309', fontWeight: 600 }}>Tiempo estimado de atención técnica:</span>
+                    <strong style={{ color: '#92400e', fontSize: 14 }}>{formCrear.tiempoEstimado}</strong>
+                  </div>
+                </div>
+
+                {/* Descripcion */}
+                <label style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: '#1e293b' }}>Descripción del problema <span style={{ color: '#ef4444' }}>*</span></span>
                   <textarea
                     required
                     rows={4}
-                    placeholder={t('admin.incidents.descriptionPlaceholder', 'Describe los síntomas de la falla o los trabajos de reparación requeridos...')}
+                    placeholder="Describe los síntomas..."
                     value={formCrear.descripcion}
                     onChange={(e) => setFormCrear({ ...formCrear, descripcion: e.target.value })}
+                    style={{ background: '#f8fafc', border: '1px solid #e2e8f0', padding: '12px', borderRadius: 8, fontSize: 14, resize: 'none', color: '#334155' }}
                   />
                 </label>
 
+                {/* Evidencias */}
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: '#1e293b' }}>Evidencias (Imágenes / Videos opcionales)</span>
+                    <span style={{ fontSize: 11, color: '#94a3b8' }}>Máx 3 fotos (1/3)</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                    <button type="button" style={{ width: 80, height: 80, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4, background: '#f8fafc', border: '1.5px dashed #3b82f6', borderRadius: 12, color: '#3b82f6', cursor: 'pointer', fontSize: 12, fontWeight: 600 }}>
+                      <FaPlus style={{ fontSize: 16 }} /> Adjunto
+                    </button>
+                    <span style={{ fontSize: 13, color: '#16a34a', fontWeight: 700 }}>✓ 1 evidencia(s) adjuntada(s)</span>
+                  </div>
+                </div>
+
+                <hr style={{ borderColor: '#f1f5f9', margin: '4px 0', borderTop: 'none' }} />
+
+                {/* Datos de contacto */}
+                <div>
+                  <h3 style={{ fontSize: 16, color: '#1e3a8a', display: 'flex', alignItems: 'center', gap: 8, margin: '0 0 4px 0' }}>
+                    <FaUser style={{ color: '#1e3a8a' }} /> Datos de contacto para seguimiento
+                  </h3>
+                  <p style={{ fontSize: 12, color: '#64748b', marginBottom: 16 }}>
+                    Precargados automáticamente desde tu perfil registrado (puedes editarlos si lo requieres).
+                  </p>
+                  
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                    <label style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: '#1e293b' }}>Nombre completo <span style={{ color: '#ef4444' }}>*</span></span>
+                      <input type="text" readOnly value={user?.nombre || 'Administrador Interno'} style={{ background: '#f8fafc', border: '1px solid #e2e8f0', padding: '12px', borderRadius: 8, fontSize: 14, color: '#334155' }} />
+                    </label>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                      <label style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: '#1e293b' }}>Teléfono <span style={{ color: '#ef4444' }}>*</span></span>
+                        <input type="text" readOnly value={user?.telefono || '3100000000'} style={{ background: '#f8fafc', border: '1px solid #e2e8f0', padding: '12px', borderRadius: 8, fontSize: 14, color: '#334155' }} />
+                      </label>
+                      <label style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: '#1e293b' }}>Correo electrónico <span style={{ color: '#ef4444' }}>*</span></span>
+                        <input type="email" readOnly value={user?.correo || 'admin@drivique.com'} style={{ background: '#f8fafc', border: '1px solid #e2e8f0', padding: '12px', borderRadius: 8, fontSize: 14, color: '#334155' }} />
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
                 {errorModal && <p className="cities-error">{errorModal}</p>}
 
-                <div className="cities-modal__actions" style={{ marginTop: 12 }}>
-                  <button type="button" onClick={() => setModalCrear(false)}>
-                    {t('admin.incidents.cancel', 'Cancelar')}
-                  </button>
-                  <button type="submit" className="cities-primary">
-                    {t('admin.incidents.createBtn', 'Crear Reporte')}
-                  </button>
-                </div>
+                <button type="submit" style={{ background: '#16a34a', color: '#fff', padding: '14px', borderRadius: 10, fontSize: 15, fontWeight: 700, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8, border: 'none', cursor: 'pointer', marginTop: 8 }}>
+                  <FaPaperPlane /> {t('admin.incidents.createBtn', 'Enviar Reporte de Incidencia')}
+                </button>
               </form>
             </section>
           </div>
