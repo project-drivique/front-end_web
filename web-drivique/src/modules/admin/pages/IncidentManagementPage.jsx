@@ -397,9 +397,11 @@ export default function IncidentManagementPage() {
                       <th>CÓDIGO RESERVA</th>
                       <th>CÓDIGO REPORTE</th>
                       <th>FECHA</th>
+                      <th>FOTO</th>
                       <th>VEHÍCULO</th>
                       <th>PLACA</th>
-                      <th>REMITENTE</th>
+                      <th>NOMBRE COMPLETO</th>
+                      <th>CORREO</th>
                       <th>SUCURSAL</th>
                       <th>ORIGEN</th>
                       <th>PRIORIDAD</th>
@@ -415,18 +417,14 @@ export default function IncidentManagementPage() {
                         <td style={{ fontWeight: 700, color: '#0f172a' }}>{r.codigo}</td>
                         <td style={{ color: '#64748b' }}>{new Date(r.fechaIso).toLocaleDateString()}</td>
                         
-                        <td style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                            <img src={getVehiculoImagen(r)} alt={r.vehiculo} style={{ width: 40, height: 28, borderRadius: 6, objectFit: 'cover' }} onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = 'https://pplx-res.cloudinary.com/image/upload/pplx_search_images/a2cb0b378c25efdb1e116246f84149744c2f4081.jpg' }} />
-                            <span>{r.vehiculo}</span>
+                        <td>
+                            <img src={getVehiculoImagen(r)} alt={r.vehiculo} style={{ width: 44, height: 28, borderRadius: 6, objectFit: 'cover', border: '1px solid #cbd5e1' }} onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = 'https://pplx-res.cloudinary.com/image/upload/pplx_search_images/a2cb0b378c25efdb1e116246f84149744c2f4081.jpg' }} />
                         </td>
+                        <td style={{ color: 'var(--city-text)' }}>{r.vehiculo}</td>
                         <td style={{ color: '#64748b' }}>{r.placa}</td>
                         
-                        <td>
-                          <div style={{ display: 'flex', flexDirection: 'column' }}>
-                            <span style={{ color: '#0f172a' }}>{r.contactoNombre}</span>
-                            <span style={{ color: '#64748b', fontSize: 12 }}>{r.contactoEmail}</span>
-                          </div>
-                        </td>
+                        <td style={{ color: '#0f172a' }}>{r.contactoNombre}</td>
+                        <td style={{ color: '#64748b' }}>{r.contactoEmail}</td>
                         
                         <td>{r.sucursal}</td>
                         
