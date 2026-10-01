@@ -43,6 +43,7 @@ const ReservationManagementPage = lazy(() => import('../modules/admin/pages/Rese
 const CashCollectionPage = lazy(() => import('../modules/admin/pages/CashCollectionPage'))
 const ContractManagementPage = lazy(() => import('../modules/admin/pages/ContractManagementPage'))
 const IncidentManagementPage = lazy(() => import('../modules/admin/pages/IncidentManagementPage'))
+const DeliveryManagementPage = lazy(() => import('../modules/admin/pages/DeliveryManagementPage'))
 const UserManagementPage = lazy(() => import('../modules/admin/pages/UserManagementPage'))
 const AdminRolesManagementPage = lazy(() => import('../modules/admin/pages/AdminRolesManagementPage'))
 const PromotionManagementPage = lazy(() => import('../modules/admin/pages/PromotionManagementPage'))
@@ -203,6 +204,7 @@ export default function AppRouter() {
             <Route path="/admin/cobro-sucursal" element={<RutaPorRol roles={[ROLES.ADMIN]}><CashCollectionPage /></RutaPorRol>} />
             <Route path="/admin/contracts" element={<RutaPorRol roles={[ROLES.ADMIN]}><ContractManagementPage /></RutaPorRol>} />
             <Route path="/admin/incidents" element={<RutaPorRol roles={[ROLES.ADMIN]}><IncidentManagementPage /></RutaPorRol>} />
+            <Route path="/admin/deliveries" element={<RutaPorRol roles={[ROLES.ADMIN]}><DeliveryManagementPage /></RutaPorRol>} />
             <Route path="/admin/documents" element={<RutaPorRol roles={[ROLES.ADMIN]}><DocumentVerificationPage /></RutaPorRol>} />
             <Route path="/admin/reviews" element={<RutaPorRol roles={[ROLES.ADMIN]}><BranchReviewsPage /></RutaPorRol>} />
             <Route path="/admin/users" element={<RutaPorRol roles={[ROLES.ADMIN]}><UserManagementPage /></RutaPorRol>} />
@@ -220,6 +222,7 @@ export default function AppRouter() {
             <Route path="/encargado/cobro-sucursal" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER, ROLES.ADMIN]}><CashCollectionPage branchOnly={true} /></RutaPorRol>} />
             <Route path="/encargado/contracts" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER, ROLES.ADMIN]}><ContractManagementPage /></RutaPorRol>} />
             <Route path="/encargado/incidents" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER, ROLES.ADMIN]}><IncidentManagementPage /></RutaPorRol>} />
+            <Route path="/encargado/deliveries" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER, ROLES.ADMIN]}><DeliveryManagementPage /></RutaPorRol>} />
             <Route path="/encargado/documents" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER, ROLES.ADMIN]}><DocumentVerificationPage branchOnly={true} /></RutaPorRol>} />
             <Route path="/encargado/promotions" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER, ROLES.ADMIN]}><PromotionManagementPage /></RutaPorRol>} />
             <Route path="/encargado/reviews" element={<RutaPorRol roles={[ROLES.BRANCH_MANAGER, ROLES.ADMIN]}><BranchReviewsPage branchOnly={true} /></RutaPorRol>} />

@@ -23,6 +23,7 @@ import {
   FaStar,
   FaIdCard,
   FaBell,
+  FaTruck,
 } from 'react-icons/fa'
 import { useAuthStore } from '../../../store/authStore'
 import accessConfig from '../../../mocks/adminAccessConfig.json'
@@ -55,6 +56,7 @@ const MODULE_ICONS = {
   brand: FaPalette,
   reports: FaFileAlt,
   audit: FaShieldAlt,
+  deliveries: FaTruck,
 }
 
 /**
@@ -80,6 +82,7 @@ const NAV_LABELS = {
   brand: 'Marca',
   reports: 'Reportes',
   audit: 'Auditoría',
+  deliveries: 'Domicilios',
 }
 
 /**
