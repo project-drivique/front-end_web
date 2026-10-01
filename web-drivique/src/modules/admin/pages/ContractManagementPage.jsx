@@ -364,7 +364,7 @@ export default function ContractManagementPage() {
                           type="button"
                           disabled={!c.isSigned}
                           onClick={() => handleDownloadSinglePdf(c)}
-                          style={{ padding: '6px 12px', fontSize: '13px', background: c.isSigned ? '#eff6ff' : '#e5e7eb', color: c.isSigned ? '#2563eb' : '#9ca3af', border: c.isSigned ? '1px solid #bfdbfe' : 'none', borderRadius: '6px', cursor: c.isSigned ? 'pointer' : 'not-allowed', fontWeight: '500', minWidth: '100px', display: 'inline-flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}
+                          style={{ padding: '6px 12px', fontSize: '13px', background: c.isSigned ? '#faf5ff' : '#e5e7eb', color: c.isSigned ? '#9333ea' : '#9ca3af', border: c.isSigned ? '1px solid #e9d5ff' : 'none', borderRadius: '6px', cursor: c.isSigned ? 'pointer' : 'not-allowed', fontWeight: '500', minWidth: '100px', display: 'inline-flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}
                         >
                           <FaFilePdf /> Descargar
                         </button>
