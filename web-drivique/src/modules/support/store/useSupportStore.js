@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import { INITIAL_REPORTS, TIPOS_INCIDENCIA } from '../data/support.dummy'
 
-const STORAGE_KEY_REPORTS = 'drivique_user_reports_v4'
+const STORAGE_KEY_REPORTS = 'drivique_user_reports_v5'
 
 function leerStorageReports() {
   if (typeof window === 'undefined') return INITIAL_REPORTS

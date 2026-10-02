@@ -2,7 +2,7 @@
 import { accessAuditService } from './accessAuditService'
 import { vehicleManagementService } from './vehicleManagementService'
 
-const STORAGE_KEY = 'drivique_user_reports_v4'
+const STORAGE_KEY = 'drivique_user_reports_v5'
 const NOTIFS_KEY = 'drivique_user_notifications'
 const STORAGE_SCHEMA_KEY = 'drivique_user_reports_schema'
 const STORAGE_SCHEMA = '2'
