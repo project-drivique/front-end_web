@@ -788,31 +788,41 @@ export default function CashCollectionPage({ branchOnly = false }) {
                             {!pagoConfirmado && esEfectivo ? (
                               <button
                                 type="button"
-                                className="cash-btn-primary"
-                                style={{ padding: '6px 12px', fontSize: '13px', background: '#f59e0b', borderColor: '#f59e0b', color: '#fff', fontWeight: 600, borderRadius: '6px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '5px' }}
+                                style={{ padding: '6px 12px', fontSize: '13px', background: '#f59e0b', border: 'none', color: '#fff', fontWeight: 600, borderRadius: '6px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '5px' }}
                                 onClick={(e) => { e.stopPropagation(); openModalCobro(r) }}
                               >
                                 <FaMoneyBillWave /> {t('admin.cash.actions.charge', 'Cobrar')}
                               </button>
-                            ) : (
-                              <select
-                                value={pagoConfirmado ? 'aprobado' : 'pendiente'}
-                                onChange={(e) => handleQuickStatusChange(dbId || r.id, e.target.value, pagoConfirmado)}
+                            ) : pagoConfirmado ? (
+                              <span
                                 style={{
-                                  padding: '4px 8px',
+                                  display: 'inline-block',
+                                  padding: '4px 10px',
                                   borderRadius: '6px',
-                                  border: '1px solid #cbd5e1',
-                                  backgroundColor: pagoConfirmado ? '#dcfce7' : '#fef9c3',
-                                  color: pagoConfirmado ? '#15803d' : '#a16207',
+                                  backgroundColor: '#dcfce7',
+                                  color: '#15803d',
                                   fontWeight: 600,
                                   fontSize: '13px',
-                                  cursor: 'pointer',
-                                  outline: 'none'
+                                  textAlign: 'center'
                                 }}
                               >
-                                <option value="pendiente">{t('admin.cash.status.pending', 'Pendiente')}</option>
-                                <option value="aprobado">{t('admin.cash.status.approved', 'Aprobado')}</option>
-                              </select>
+                                {t('admin.cash.status.approved', 'Aprobado')}
+                              </span>
+                            ) : (
+                              <span
+                                style={{
+                                  display: 'inline-block',
+                                  padding: '4px 10px',
+                                  borderRadius: '6px',
+                                  backgroundColor: '#fef9c3',
+                                  color: '#a16207',
+                                  fontWeight: 600,
+                                  fontSize: '13px',
+                                  textAlign: 'center'
+                                }}
+                              >
+                                {t('admin.cash.status.pending', 'Pendiente')}
+                              </span>
                             )}
                           </td>
 
@@ -821,8 +831,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
                             {pagoConfirmado ? (
                               <button
                                 type="button"
-                                className="cash-btn-primary"
-                                style={{ width: '80px', padding: '6px 10px', fontSize: '13px', background: '#fff7ed', borderColor: '#fed7aa', color: '#ea580c', whiteSpace: 'nowrap', textAlign: 'center', fontWeight: '500' }}
+                                style={{ width: '80px', padding: '6px 10px', fontSize: '13px', background: '#fff7ed', border: '1px solid #fed7aa', color: '#ea580c', borderRadius: '6px', whiteSpace: 'nowrap', textAlign: 'center', fontWeight: '500', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '5px' }}
                                 onClick={(e) => {
                                   e.stopPropagation()
                                   if (esPagadaEnEfectivo) { openModalCobro(r) } else { setComprobanteDigital(r) }
@@ -831,7 +840,11 @@ export default function CashCollectionPage({ branchOnly = false }) {
                                 <FaReceipt /> {t('admin.cash.actions.view', 'Ver')}
                               </button>
                             ) : (
-                              <button type="button" className="cash-btn-primary" disabled style={{ width: '80px', padding: '6px 10px', fontSize: '13px', opacity: 0.4, cursor: 'not-allowed', whiteSpace: 'nowrap', textAlign: 'center' }}>
+                              <button
+                                type="button"
+                                disabled
+                                style={{ width: '80px', padding: '6px 10px', fontSize: '13px', background: '#fff7ed', border: '1px solid #fed7aa', color: '#ea580c', borderRadius: '6px', opacity: 0.4, cursor: 'not-allowed', whiteSpace: 'nowrap', textAlign: 'center', fontWeight: '500', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '5px' }}
+                              >
                                 <FaReceipt /> {t('admin.cash.actions.view', 'Ver')}
                               </button>
                             )}
