@@ -49,8 +49,6 @@ export default function IncidentManagementPage() {
   const [search, setSearch] = useState('')
   const [stateFilter, setStateFilter] = useState('all')
   const [branchFilter, setBranchFilter] = useState('all')
-  const [originFilter, setOriginFilter] = useState('all')
-  const [priorityFilter, setPriorityFilter] = useState('all')
   const [activeTab, setActiveTab] = useState('incidentes')
   const [notice, setNotice] = useState('')
   const [errorModal, setErrorModal] = useState('')
@@ -121,8 +119,6 @@ export default function IncidentManagementPage() {
 
       const matchState = stateFilter === 'all' || r.estado === stateFilter
       const matchBranch = branchFilter === 'all' || r.sucursal === branchFilter
-      const matchOrigin = originFilter === 'all' || r.origen === originFilter
-      const matchPriority = priorityFilter === 'all' || r.prioridad === priorityFilter
 
       const matchSearch =
         !term ||
@@ -132,9 +128,9 @@ export default function IncidentManagementPage() {
         r.contactoNombre?.toLowerCase().includes(term) ||
         r.descripcion?.toLowerCase().includes(term)
 
-      return matchState && matchBranch && matchOrigin && matchPriority && matchSearch
+      return matchState && matchBranch && matchSearch
     })
-  }, [incidents, search, stateFilter, branchFilter, originFilter, priorityFilter, activeTab])
+  }, [incidents, search, stateFilter, branchFilter, activeTab])
 
   // --- Handlers ---
   const handleCrearIncidencia = (e) => {
@@ -339,21 +335,7 @@ export default function IncidentManagementPage() {
                 </select>
               )}
 
-              {/* Filtro Origen */}
-              <select value={originFilter} onChange={(e) => setOriginFilter(e.target.value)}>
-                <option value="all">{t('admin.incidents.allOrigins', 'Todos los orígenes')}</option>
-                <option value="cliente">{t('admin.incidents.clientOrigin', 'Reportes de Clientes')}</option>
-                <option value="administrador">{t('admin.incidents.adminOrigin', 'Reportes Internos (Admin)')}</option>
-              </select>
 
-              {/* Filtro Prioridad */}
-              <select value={priorityFilter} onChange={(e) => setPriorityFilter(e.target.value)}>
-                <option value="all">{t('admin.incidents.allPriorities', 'Todas las prioridades')}</option>
-                <option value="urgente">{t('admin.incidents.urgente', 'Urgente (< 24h)')}</option>
-                <option value="alta">{t('admin.incidents.alta', 'Alta (24-48h)')}</option>
-                <option value="media">{t('admin.incidents.media', 'Media (48-72h)')}</option>
-                <option value="baja">{t('admin.incidents.baja', 'Baja (> 72h)')}</option>
-              </select>
 
               {/* Botones de Exportación */}
               <div className="cities-export">
