@@ -4,7 +4,7 @@ import { reservationService } from './reservationService'
 
 const STORAGE_KEY = 'drivique_reservas'
 const STORAGE_SCHEMA_KEY = 'drivique_reservas_schema'
-const STORAGE_SCHEMA = '2'
+const STORAGE_SCHEMA = '3'
 const LEGACY_RESERVATION_IDS = new Set(['RES-901', 'RES-902', 'RES-903', 'RES-904', 'RES-905'])
 const managerRoles = new Set(['encargado', 'branch_manager', 'encargado_sucursal'])
 function normalizeBranch(value) {
