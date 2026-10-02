@@ -162,6 +162,29 @@
         "notFound": "El vehículo ya no está disponible.",
         "hasActiveReservations": "No se puede eliminar: tiene {{count}} reservas activas.",
         "imageSize": "Cada imagen debe pesar máximo 1 MB."
+      },
+      "formSections": {
+        "identification": "1. Identificación y Clasificación",
+        "mechanical": "2. Especificaciones Mecánicas y Capacidad",
+        "equipment": "3. Equipamiento y Descripción Comercial",
+        "pricing": "4. Tarifas de Alquiler y Coberturas",
+        "photos": "5. Fotografías del Vehículo"
+      },
+      "transmission": {
+        "automatic": "Automática",
+        "manual": "Manual"
+      },
+      "fuel": {
+        "gasoline": "Gasolina",
+        "diesel": "Diésel",
+        "hybrid": "Híbrido",
+        "electric": "Eléctrico"
+      },
+      "expandedView": "Vista ampliada del vehículo",
+      "export": {
+        "excel": "Excel",
+        "pdf": "PDF",
+        "print": "Imprimir"
       }
     },
     "branchesManagement": {
@@ -1441,7 +1464,7 @@
     "cancel": "Cancelar",
     "edit": "Editar",
     "delete": "Eliminar",
-    "select": "Seleccionar",
+    "select": "Seleccionar...",
     "goBack": "Volver",
     "continue": "Continuar",
     "accept": "Aceptar",
