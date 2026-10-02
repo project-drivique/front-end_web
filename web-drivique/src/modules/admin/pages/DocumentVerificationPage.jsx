@@ -62,6 +62,12 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
     setObservaciones(item.observaciones || '')
   }
 
+  const handleQuickStatusChange = (id, newStatus) => {
+    documentVerificationService.actualizarEstado(id, newStatus, `Estado actualizado a ${newStatus} desde la tabla.`, user?.nombre || 'Encargado')
+    setVerifications(documentVerificationService.list(user))
+    showAlert({ icon: 'success', title: 'Estado actualizado', text: `Estado cambiado a ${newStatus}.` })
+  }
+
   const handleAprobarDocumento = async () => {
     if (!modalItem) return
 
@@ -210,9 +216,25 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
                         <td>{item.categoriaLicencia}</td>
                         <td>{item.fechaVencimientoLicencia}</td>
                         <td>
-                          <span className={`status-pill ${badgeClass}`} style={{ padding: '4px 10px', borderRadius: 20, fontSize: 11, fontWeight: 700 }}>
-                            {badgeLabel}
-                          </span>
+                          <select
+                            value={item.estado}
+                            onChange={(e) => handleQuickStatusChange(item.id, e.target.value)}
+                            style={{
+                              padding: '4px 8px',
+                              borderRadius: '6px',
+                              border: '1px solid #cbd5e1',
+                              backgroundColor: item.estado === 'aprobado' ? '#dcfce7' : item.estado === 'rechazado' ? '#fee2e2' : '#fef9c3',
+                              color: item.estado === 'aprobado' ? '#15803d' : item.estado === 'rechazado' ? '#991b1b' : '#a16207',
+                              fontWeight: 700,
+                              fontSize: '11px',
+                              cursor: 'pointer',
+                              outline: 'none'
+                            }}
+                          >
+                            <option value="pendiente">Pendiente Audit</option>
+                            <option value="aprobado">Aprobado</option>
+                            <option value="rechazado">Rechazado</option>
+                          </select>
                         </td>
                         <td style={{ textAlign: 'center' }}>
                           <button

@@ -439,6 +439,20 @@ export default function CashCollectionPage({ branchOnly = false }) {
     }
   }, [reservasSucursal])
 
+  const handleQuickStatusChange = (id, newStatus, currentState) => {
+    try {
+      if (newStatus === 'aprobado' && !currentState) {
+        reservationManagementService.update(id, { pagoEstado: 'aprobado', metodoPagoConfirmado: true, fechaPagoConfirmado: new Date().toISOString() }, user)
+      } else if (newStatus === 'pendiente' && currentState) {
+        reservationManagementService.update(id, { pagoEstado: 'pendiente', metodoPagoConfirmado: false, fechaPagoConfirmado: null }, user)
+      }
+      setTodasLasReservas(reservationManagementService.list())
+      showAlert({ icon: 'success', title: 'Estado actualizado', text: `Estado de pago cambiado a ${newStatus}.` })
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
   // Abrir Modal de Cobro / Detalle
   const openModalCobro = (reserva) => {
     setModalReserva(reserva)
@@ -769,15 +783,24 @@ export default function CashCollectionPage({ branchOnly = false }) {
                           </td>
 
                           <td>
-                            {pagoConfirmado ? (
-                              <span className="reserva-status-badge finalizada">
-                                <span className="reserva-status-dot" /> Aprobado
-                              </span>
-                            ) : (
-                              <span className="reserva-status-badge pendiente">
-                                <span className="reserva-status-dot" /> Pendiente
-                              </span>
-                            )}
+                            <select
+                              value={pagoConfirmado ? 'aprobado' : 'pendiente'}
+                              onChange={(e) => handleQuickStatusChange(dbId || r.id, e.target.value, pagoConfirmado)}
+                              style={{
+                                padding: '4px 8px',
+                                borderRadius: '6px',
+                                border: '1px solid #cbd5e1',
+                                backgroundColor: pagoConfirmado ? '#dcfce7' : '#fef9c3',
+                                color: pagoConfirmado ? '#15803d' : '#a16207',
+                                fontWeight: 600,
+                                fontSize: '13px',
+                                cursor: 'pointer',
+                                outline: 'none'
+                              }}
+                            >
+                              <option value="pendiente">Pendiente</option>
+                              <option value="aprobado">Aprobado</option>
+                            </select>
                           </td>
 
                           {/* VER */}
