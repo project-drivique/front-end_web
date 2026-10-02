@@ -11,7 +11,7 @@ const LEGACY_INCIDENT_IDS = new Set(['REP-9102', 'REP-8401', 'REP-7730', 'REP-65
 
 const normalizeBranch = (value) => String(value || '').trim().toLocaleLowerCase()
 const isBranchManager = (user) => ['encargado', 'encargado_sucursal', 'branch_manager'].includes(user?.rol)
-const assignedBranch = (user) => user?.sucursalId || user?.sucursal || user?.sucursalAsignada || ''
+const assignedBranch = (user) => user?.sucursalId || user?.sucursal || user?.sucursalAsignada || 'Alamo Bogotá - Aeropuerto'
 
 function assertIncidentScope(user, branch) {
   if (!isBranchManager(user)) return
