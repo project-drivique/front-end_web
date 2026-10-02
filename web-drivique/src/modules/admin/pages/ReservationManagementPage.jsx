@@ -462,23 +462,17 @@ export default function ReservationManagementPage() {
               type="button"
               onClick={() => setActiveTab('fechas_ubicacion')}
               className={`fleet-tab-btn ${activeTab === 'fechas_ubicacion' ? 'is-active' : ''}`}
-            >
-              Detalles
-            </button>
+            >{t('admin.reservationsManagement.tabs.details', 'Detalles')}</button>
             <button
               type="button"
               onClick={() => setActiveTab('proteccion_extras')}
               className={`fleet-tab-btn ${activeTab === 'proteccion_extras' ? 'is-active' : ''}`}
-            >
-              Coberturas
-            </button>
+            >{t('admin.reservationsManagement.tabs.coverages', 'Coberturas')}</button>
             <button
               type="button"
               onClick={() => setActiveTab('datos_pago')}
               className={`fleet-tab-btn ${activeTab === 'datos_pago' ? 'is-active' : ''}`}
-            >
-              Pagos
-            </button>
+            >{t('admin.reservationsManagement.tabs.payments', 'Pagos')}</button>
           </div>
 
           {/*
@@ -503,7 +497,7 @@ export default function ReservationManagementPage() {
               <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder={t('admin.searchReservations', 'Buscar por código, cliente, auto, placa...')}
+                placeholder={t('admin.reservationsManagement.searchPlaceholder', 'Buscar por código, cliente, vehículo, placa...')}
               />
             </label>
 
@@ -513,7 +507,7 @@ export default function ReservationManagementPage() {
               onChange={(e) => setStatusFilter(e.target.value)}
               style={{ flex: '0 0 auto', padding: '10px 14px', borderRadius: '12px', border: '1.5px solid var(--city-border)', background: 'var(--city-bg)' }}
             >
-              <option value="all">{t('admin.allStatuses', 'Todos los estados')}</option>
+              <option value="all">{t('admin.reservationsManagement.allStatuses', 'Todos los estados')}</option>
               <option value="confirmada">{t('admin.statusConfirmada', 'Confirmada')}</option>
               <option value="en_curso">{t('admin.statusEnCurso', 'En curso')}</option>
               <option value="finalizada">{t('admin.statusFinalizada', 'Finalizada')}</option>
@@ -532,7 +526,7 @@ export default function ReservationManagementPage() {
                 onChange={(e) => setBranchFilter(e.target.value)}
                 style={{ flex: '0 0 auto', padding: '10px 14px', borderRadius: '12px', border: '1.5px solid var(--city-border)', background: 'var(--city-bg)' }}
               >
-                <option value="all">{t('admin.allBranches', 'Todas las sucursales')}</option>
+                <option value="all">{t('admin.reservationsManagement.allBranches', 'Todas las sucursales')}</option>
                 {sucursalesVisibles.map((s) => (
                   <option key={s.id} value={s.nombre}>{s.nombre}</option>
                 ))}
@@ -774,11 +768,11 @@ export default function ReservationManagementPage() {
                             <td>
                               <code>{cod}</code>
                             </td>
-                            <td>{cobNombre}</td>
+                            <td>{cobNombre === 'Protección Obligatoria' ? t('admin.reservationsManagement.protectionMandatory', 'Protección Obligatoria') : cobNombre === 'Protección Total' ? t('admin.reservationsManagement.protectionTotal', 'Protección Total') : cobNombre}</td>
                             <td style={{ fontWeight: 600 }}>{formatCurrency(cobTotal, moneda || 'COP', tasaUSD)}</td>
-                            <td>{kilNombre}</td>
+                            <td>{String(kilNombre).toLowerCase().includes('ilimitado') ? t('admin.reservationsManagement.mileageUnlimited', 'Kilometraje ilimitado') : String(kilNombre).toLowerCase().includes('limitado') ? t('admin.reservationsManagement.mileageLimited', 'Kilometraje limitado') : kilNombre}</td>
                             <td style={{ fontWeight: 600 }}>{formatCurrency(kilTotal, moneda || 'COP', tasaUSD)}</td>
-                            <td>{extras}</td>
+                            <td>{extras === 'Ninguno' ? t('admin.reservationsManagement.none', 'Ninguno') : extras}</td>
                             <td style={{ fontWeight: 600 }}>{formatCurrency(extrasTotal, moneda || 'COP', tasaUSD)}</td>
                           </tr>
                         )
@@ -1068,7 +1062,7 @@ export default function ReservationManagementPage() {
                     Anterior
                   </button>
                   <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--texto-second)' }}>
-                    Página {currentPage} de {totalPages}
+                    {t('admin.reservationsManagement.pagination.page', 'Página {{current}} de {{total}}', { current: currentPage, total: totalPages })}
                   </span>
                   <button
                     onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
@@ -1094,7 +1088,7 @@ export default function ReservationManagementPage() {
           <section className="cities-modal reserva-detail-modal" role="dialog">
             <div className="cities-modal__head">
               <div>
-                <p className="cities-eyebrow">{t('admin.reservationsManagement.detailModal.eyebrow')}</p>
+                <p className="cities-eyebrow">{t('admin.reservationsManagement.subtitle', 'GESTIÓN DE SUCURSAL')}</p>
                 <h2>{modalDetalle.codigo}</h2>
               </div>
               <button type="button" onClick={() => setModalDetalle(null)}>

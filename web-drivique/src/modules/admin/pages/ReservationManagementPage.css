@@ -9,32 +9,31 @@
 
 /* OVERRIDE CITIES TABLE WRAP TO LIGHT DESIGN */
 .reservations-management-page .cities-table-wrap {
-  background: #ffffff !important;
-  border: 1px solid #cbd5e1 !important;
+  background: var(--city-card) !important;
+  border: 1px solid var(--city-border) !important;
   box-shadow: none !important;
   border-radius: 14px !important;
-  
 }
 
 .reservations-management-page .cities-table-wrap table {
-  background: #ffffff !important;
+  background: var(--city-card) !important;
 }
 
 .reservations-management-page .cities-table-wrap th {
-  background: #f8fafc !important;
-  color: #64748b !important;
+  background: var(--city-bg) !important;
+  color: var(--city-muted) !important;
   font-size: 11px !important;
   font-weight: 800 !important;
   text-transform: uppercase !important;
   letter-spacing: 0.05em !important;
-  border-bottom: 2px solid #e2e8f0 !important;
+  border-bottom: 2px solid var(--city-border) !important;
   padding: 14px 16px !important;
 }
 
 .reservations-management-page .cities-table-wrap td {
-  background: #ffffff !important;
-  color: #0f172a !important;
-  border-bottom: 1px solid #e2e8f0 !important;
+  background: var(--city-card) !important;
+  color: var(--city-text) !important;
+  border-bottom: 1px solid var(--city-border) !important;
   padding: 14px 16px !important;
   font-size: 13px !important;
   vertical-align: middle !important;
@@ -42,7 +41,7 @@
 }
 
 .reservations-management-page .cities-table-wrap tbody tr:hover td {
-  background: #f8fafc !important;
+  background: var(--city-bg) !important;
 }
 
 .reservations-admin-table th,
