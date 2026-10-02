@@ -50,8 +50,8 @@ const EMPTY = {
   año: "",
   sucursal: "",
   precioLimitado: "", // Used as Tarifa Diaria
-  aplicaPicoYPlaca: "No", // Pico y Placa manual override
-  estadoEfectivo: "disponible", // Estado manual
+  aplicaPicoYPlaca: "", // Pico y Placa manual override
+  estadoEfectivo: "", // Estado manual
   imagenes: [],
 };
 
@@ -1630,7 +1630,7 @@ export default function VehicleManagementPage() {
 
                   <form onSubmit={save} className="fleet-modal-form">
                     <div className="fleet-modal-body" style={{ padding: '24px' }}>
-                      <div className="fleet-form-grid-2" style={{ gap: '20px' }}>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px' }}>
                         
                         {/* FOTO / IMAGEN */}
                         <div className="fleet-form-group" style={{ gridColumn: "1 / -1" }}>
@@ -1638,7 +1638,7 @@ export default function VehicleManagementPage() {
                           {(!form.imagenes || form.imagenes.length === 0) ? (
                             <label className="fleet-upload-box" style={{ padding: '20px', textAlign: 'center', border: '2px dashed #cbd5e1', borderRadius: '12px', cursor: 'pointer', background: '#f8fafc' }}>
                               <FaImage size={24} style={{ color: '#94a3b8', marginBottom: '8px' }} />
-                              <div style={{ fontSize: '14px', color: '#64748b' }}>Haz clic para subir una imagen (JPG, PNG)</div>
+                              <div style={{ fontSize: '14px', color: '#64748b' }}>Haz clic para subir una imagen (JPG, PNG. Max. 1MB)</div>
                               <input type="file" accept="image/*" onChange={loadImages} style={{ display: "none" }} />
                             </label>
                           ) : (
@@ -1660,7 +1660,7 @@ export default function VehicleManagementPage() {
                         </div>
 
                         {/* NOMBRE VEHÍCULO */}
-                        <div className="fleet-form-group">
+                        <div className="fleet-form-group" style={{ gridColumn: "1 / span 2" }}>
                           <label className="fleet-form-label" style={{ fontWeight: 600 }}>Nombre Vehículo *</label>
                           <input className="fleet-form-input" value={form.nombre} onChange={(e) => setForm({ ...form, nombre: e.target.value })} placeholder="Ej: Toyota Corolla 2024" required />
                         </div>
@@ -1676,7 +1676,7 @@ export default function VehicleManagementPage() {
                           <div className="fleet-form-group">
                             <label className="fleet-form-label" style={{ fontWeight: 600 }}>Sucursal Asignada *</label>
                             <select className="fleet-form-select" value={form.sucursal} onChange={(e) => setForm({ ...form, sucursal: e.target.value, categoria: "" })} required>
-                              <option value="">Selecciona una sucursal...</option>
+                              <option value="" disabled>Selecciona una sucursal...</option>
                               {branches.map((b) => <option key={b.id} value={b.nombre}>{b.nombre}</option>)}
                             </select>
                           </div>
@@ -1686,7 +1686,7 @@ export default function VehicleManagementPage() {
                         <div className="fleet-form-group">
                           <label className="fleet-form-label" style={{ fontWeight: 600 }}>Categoría *</label>
                           <select className="fleet-form-select" value={form.categoria} onChange={(e) => setForm({ ...form, categoria: e.target.value })} required disabled={!activeCategoriesForForm.length}>
-                            <option value="">Selecciona una categoría...</option>
+                            <option value="" disabled>Selecciona una categoría...</option>
                             {activeCategoriesForForm.map((catName) => <option key={catName} value={catName}>{catName}</option>)}
                           </select>
                         </div>
@@ -1708,7 +1708,7 @@ export default function VehicleManagementPage() {
                         <div className="fleet-form-group">
                           <label className="fleet-form-label" style={{ fontWeight: 600 }}>Transmisión *</label>
                           <select className="fleet-form-select" value={form.transmision} onChange={(e) => setForm({ ...form, transmision: e.target.value })} required>
-                            <option value="">Seleccionar...</option>
+                            <option value="" disabled>Seleccionar...</option>
                             <option value="Automática">Automática</option>
                             <option value="Manual">Manual</option>
                           </select>
@@ -1718,7 +1718,7 @@ export default function VehicleManagementPage() {
                         <div className="fleet-form-group">
                           <label className="fleet-form-label" style={{ fontWeight: 600 }}>Combustible *</label>
                           <select className="fleet-form-select" value={form.combustible} onChange={(e) => setForm({ ...form, combustible: e.target.value })} required>
-                            <option value="">Seleccionar...</option>
+                            <option value="" disabled>Seleccionar...</option>
                             <option value="Gasolina">Gasolina</option>
                             <option value="Diésel">Diésel</option>
                             <option value="Híbrido">Híbrido</option>
@@ -1730,6 +1730,7 @@ export default function VehicleManagementPage() {
                         <div className="fleet-form-group">
                           <label className="fleet-form-label" style={{ fontWeight: 600 }}>Pico y Placa *</label>
                           <select className="fleet-form-select" value={form.aplicaPicoYPlaca} onChange={(e) => setForm({ ...form, aplicaPicoYPlaca: e.target.value })} required>
+                            <option value="" disabled>Seleccionar...</option>
                             <option value="Si">Sí aplica</option>
                             <option value="No">No aplica</option>
                           </select>
@@ -1745,6 +1746,7 @@ export default function VehicleManagementPage() {
                         <div className="fleet-form-group">
                           <label className="fleet-form-label" style={{ fontWeight: 600 }}>Estado del Vehículo *</label>
                           <select className="fleet-form-select" value={form.estadoEfectivo} onChange={(e) => setForm({ ...form, estadoEfectivo: e.target.value })} required>
+                            <option value="" disabled>Seleccionar...</option>
                             <option value="disponible">Disponible</option>
                             <option value="reservado">Reservado</option>
                             <option value="en mantenimiento">En Mantenimiento</option>
