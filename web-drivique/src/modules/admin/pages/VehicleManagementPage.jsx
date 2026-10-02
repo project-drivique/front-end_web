@@ -49,20 +49,9 @@ const EMPTY = {
   color: "",
   año: "",
   sucursal: "",
-  descripcion: "",
-  estadoFlota: VEHICLE_STATES.AVAILABLE,
-  puertas: "",
-  pasajeros: "",
-  maletero: "",
-  cilindraje: "",
-  destacado: false,
-  kmLimitado: "",
-  precioLimitado: "",
-  precioExcedente: "",
-  precioIlimitado: "",
-  caracteristicasTexto: "",
-  equipamientoTecnologico: [],
-  seguros: [],
+  precioLimitado: "", // Used as Tarifa Diaria
+  aplicaPicoYPlaca: "No", // Pico y Placa manual override
+  estadoEfectivo: "disponible", // Estado manual
   imagenes: [],
 };
 
@@ -274,7 +263,7 @@ export default function VehicleManagementPage() {
         moneda,
         tasaUSD
       ),
-      vehicle.picoYPlaca?.dia
+      vehicle.aplicaPicoYPlaca === "Si" || vehicle.picoYPlaca?.dia
         ? t("admin.vehiclesManagement.applies", "Sí aplica")
         : t("admin.vehiclesManagement.doesNotApply", "No aplica"),
       t(`admin.vehiclesManagement.states.${vehicle.estadoEfectivo}`, vehicle.estadoEfectivo),
@@ -1640,554 +1629,144 @@ export default function VehicleManagementPage() {
                   </div>
 
                   <form onSubmit={save} className="fleet-modal-form">
-                    <div className="fleet-modal-body">
-
-                      {/* CARD 1: DATOS PRINCIPALES Y CLASIFICACIÓN */}
-                      <div className="fleet-form-card">
-                        <div className="fleet-form-card__title">
-                          <FaCar className="fleet-form-card__icon" />
-                          <span>{t('admin.vehiclesManagement.formSections.identification', '1. Identificación y Clasificación')}</span>
-                        </div>
-                        <div className="fleet-form-grid-2">
-                          <div className="fleet-form-group">
-                            <label className="fleet-form-label">
-                              {t("admin.vehiclesManagement.fields.vehicle", "Vehículo (Marca y Modelo)")} *
+                    <div className="fleet-modal-body" style={{ padding: '24px' }}>
+                      <div className="fleet-form-grid-2" style={{ gap: '20px' }}>
+                        
+                        {/* FOTO / IMAGEN */}
+                        <div className="fleet-form-group" style={{ gridColumn: "1 / -1" }}>
+                          <label className="fleet-form-label" style={{ fontWeight: 600 }}>Imagen del Vehículo</label>
+                          {(!form.imagenes || form.imagenes.length === 0) ? (
+                            <label className="fleet-upload-box" style={{ padding: '20px', textAlign: 'center', border: '2px dashed #cbd5e1', borderRadius: '12px', cursor: 'pointer', background: '#f8fafc' }}>
+                              <FaImage size={24} style={{ color: '#94a3b8', marginBottom: '8px' }} />
+                              <div style={{ fontSize: '14px', color: '#64748b' }}>Haz clic para subir una imagen (JPG, PNG)</div>
+                              <input type="file" accept="image/*" onChange={loadImages} style={{ display: "none" }} />
                             </label>
-                            <input
-                              className="fleet-form-input"
-                              value={form.nombre}
-                              onChange={(e) => setForm({ ...form, nombre: e.target.value })}
-                              placeholder="Ej: Toyota Corolla 2024"
-                              required
-                            />
-                          </div>
-
-                          <div className="fleet-form-group">
-                            <label className="fleet-form-label">
-                              {t("admin.vehiclesManagement.fields.plate", "Placa de Circulación")} *
-                            </label>
-                            <div className="fleet-input-plate-wrap">
-                              <input
-                                className="fleet-form-input fleet-input-plate"
-                                value={form.placa}
-                                onChange={(e) =>
-                                  setForm({ ...form, placa: e.target.value.toUpperCase() })
-                                }
-                                placeholder="Ej: ABC-123"
-                                required
-                              />
-                              <span className={`fleet-pico-badge ${pico.dia ? 'is-active' : 'is-none'}`}>
-                                {pico.dia
-                                  ? t("admin.vehiclesManagement.applies", "Sí aplica")
-                                  : t("admin.vehiclesManagement.doesNotApply", "No aplica")}
-                              </span>
-                            </div>
-                          </div>
-
-                          <div className="fleet-form-group">
-                            <label className="fleet-form-label">
-                              {t("admin.vehiclesManagement.fields.branch", "Sucursal Asignada")}
-                            </label>
-                            {esEncargado ? (
-                              <div className="fleet-readonly-input-wrap">
-                                <input
-                                  className="fleet-form-input fleet-input--readonly"
-                                  value={sucursalAsignada || ""}
-                                  readOnly
-                                />
-                                <span className="fleet-readonly-lock"><FaLock /> Fija</span>
-                              </div>
-                            ) : (
-                              <select
-                                className="fleet-form-select"
-                                value={form.sucursal}
-                                onChange={(e) => {
-                                  const newBranch = e.target.value;
-                                  const newActiveCats = branchCategoryService.getBranchCategories(newBranch);
-                                  setForm((prev) => ({
-                                    ...prev,
-                                    sucursal: newBranch,
-                                    categoria: newActiveCats.includes(prev.categoria)
-                                      ? prev.categoria
-                                      : newActiveCats[0] || "",
-                                  }));
-                                }}
-                                required
-                              >
-                                {branches.map((branch) => (
-                                  <option key={branch.id} value={branch.nombre}>
-                                    {branch.nombre}
-                                  </option>
-                                ))}
-                              </select>
-                            )}
-                          </div>
-
-                          <div className="fleet-form-group">
-                            <label className="fleet-form-label">
-                              {t("admin.vehiclesManagement.fields.category", "Categoría Habilitada")} *
-                            </label>
-                            {activeCategoriesForForm.length > 0 ? (
-                              <select
-                                className="fleet-form-select"
-                                value={form.categoria}
-                                onChange={(e) => {
-                                  const selectedCatName = e.target.value;
-                                  const matchedGlobal = categories.find((c) => c.nombre === selectedCatName);
-                                  setForm((prev) => ({
-                                    ...prev,
-                                    categoria: selectedCatName,
-                                    precioLimitado:
-                                      !prev.precioLimitado && matchedGlobal?.tarifaBaseSugerida
-                                        ? String(matchedGlobal.tarifaBaseSugerida)
-                                        : prev.precioLimitado,
-                                  }));
-                                }}
-                                required
-                              >
-                                <option value="">
-                                  {t("fleetVehicles.selectCategory", "Selecciona una categoría...")}
-                                </option>
-                                {activeCategoriesForForm.map((catName) => (
-                                  <option key={catName} value={catName}>
-                                    {catName}
-                                  </option>
-                                ))}
-                              </select>
-                            ) : (
-                              <div className="fleet-no-cat-warn">
-                                <select className="fleet-form-select" disabled value="">
-                                  <option value="">(Sin categorías activas)</option>
-                                </select>
-                                <small>
-                                  {t(
-                                    "fleetVehicles.noCategoriesActiveForBranch",
-                                    "Activa categorías en la pestaña Categorías para asignarlas aquí."
-                                  )}
-                                </small>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* CARD 2: ESPECIFICACIONES TÉCNICAS Y MECÁNICAS */}
-                      <div className="fleet-form-card">
-                        <div className="fleet-form-card__title">
-                          <FaCogs className="fleet-form-card__icon" />
-                          <span>{t('admin.vehiclesManagement.formSections.mechanical', '2. Especificaciones Mecánicas y Capacidad')}</span>
-                        </div>
-                        <div className="fleet-form-grid-4">
-                          <div className="fleet-form-group">
-                            <label className="fleet-form-label">
-                              {t("admin.vehiclesManagement.fields.transmission", "Transmisión")} *
-                            </label>
-                            <select
-                              className="fleet-form-select"
-                              value={form.transmision}
-                              onChange={(e) => setForm({ ...form, transmision: e.target.value })}
-                              required
-                            >
-                              <option value="">{t('common.select', 'Seleccionar...')}</option>
-                              <option value="Automática">{t('admin.vehiclesManagement.transmission.automatic', 'Automática')}</option>
-                              <option value="Manual">{t('admin.vehiclesManagement.transmission.manual', 'Manual')}</option>
-                            </select>
-                          </div>
-
-                          <div className="fleet-form-group">
-                            <label className="fleet-form-label">
-                              {t("admin.vehiclesManagement.fields.fuel", "Combustible")} *
-                            </label>
-                            <select
-                              className="fleet-form-select"
-                              value={form.combustible}
-                              onChange={(e) => setForm({ ...form, combustible: e.target.value })}
-                              required
-                            >
-                              <option value="">{t('common.select', 'Seleccionar...')}</option>
-                              <option value="Gasolina">{t('admin.vehiclesManagement.fuel.gasoline', 'Gasolina')}</option>
-                              <option value="Diésel">{t('admin.vehiclesManagement.fuel.diesel', 'Diésel')}</option>
-                              <option value="Híbrido">{t('admin.vehiclesManagement.fuel.hybrid', 'Híbrido')}</option>
-                              <option value="Eléctrico">{t('admin.vehiclesManagement.fuel.electric', 'Eléctrico')}</option>
-                            </select>
-                          </div>
-
-                          <div className="fleet-form-group">
-                            <label className="fleet-form-label">
-                              {t("admin.vehiclesManagement.fields.color", "Color")} *
-                            </label>
-                            <input
-                              className="fleet-form-input"
-                              value={form.color}
-                              onChange={(e) => setForm({ ...form, color: e.target.value })}
-                              placeholder="Ej: Blanco Perla"
-                              required
-                            />
-                          </div>
-
-                          <div className="fleet-form-group">
-                            <label className="fleet-form-label">
-                              {t("admin.vehiclesManagement.fields.year", "Año Modelo")} *
-                            </label>
-                            <input
-                              className="fleet-form-input"
-                              type="number"
-                              min="2000"
-                              max="2030"
-                              value={form.año}
-                              onChange={(e) => setForm({ ...form, año: e.target.value })}
-                              placeholder="Ej: 2024"
-                              required
-                            />
-                          </div>
-
-                          <div className="fleet-form-group">
-                            <label className="fleet-form-label">
-                              {t("admin.vehiclesManagement.fields.doors", "Puertas")} *
-                            </label>
-                            <input
-                              className="fleet-form-input"
-                              type="number"
-                              min="2"
-                              max="8"
-                              value={form.puertas}
-                              onChange={(e) => setForm({ ...form, puertas: e.target.value })}
-                              placeholder="4"
-                              required
-                            />
-                          </div>
-
-                          <div className="fleet-form-group">
-                            <label className="fleet-form-label">
-                              {t("admin.vehiclesManagement.fields.passengers", "Pasajeros")} *
-                            </label>
-                            <input
-                              className="fleet-form-input"
-                              type="number"
-                              min="1"
-                              max="20"
-                              value={form.pasajeros}
-                              onChange={(e) => setForm({ ...form, pasajeros: e.target.value })}
-                              placeholder="5"
-                              required
-                            />
-                          </div>
-
-                          <div className="fleet-form-group">
-                            <label className="fleet-form-label">
-                              {t("admin.vehiclesManagement.fields.trunk", "Maletero (L)")}
-                            </label>
-                            <input
-                              className="fleet-form-input"
-                              type="number"
-                              min="0"
-                              value={form.maletero}
-                              onChange={(e) => setForm({ ...form, maletero: e.target.value })}
-                              placeholder="470"
-                            />
-                          </div>
-
-                          <div className="fleet-form-group">
-                            <label className="fleet-form-label">
-                              {t("admin.vehiclesManagement.fields.engine", "Cilindraje / Motor")}
-                            </label>
-                            <input
-                              className="fleet-form-input"
-                              value={form.cilindraje}
-                              onChange={(e) => setForm({ ...form, cilindraje: e.target.value })}
-                              placeholder="Ej: 1.8L Turbo"
-                            />
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* CARD 3: CARACTERÍSTICAS Y DESCRIPCIÓN */}
-                      <div className="fleet-form-card">
-                        <div className="fleet-form-card__title">
-                          <FaListUl className="fleet-form-card__icon" />
-                          <span>{t('admin.vehiclesManagement.formSections.equipment', '3. Equipamiento y Descripción Comercial')}</span>
-                        </div>
-                        <div className="fleet-form-grid-1">
-                          <div className="fleet-form-group">
-                            <label className="fleet-form-label">
-                              {t("admin.vehiclesManagement.fields.features", "Equipamiento Destacado")}
-                            </label>
-                            <input
-                              className="fleet-form-input"
-                              value={form.caracteristicasTexto}
-                              onChange={(e) =>
-                                setForm({ ...form, caracteristicasTexto: e.target.value })
-                              }
-                              placeholder={t(
-                                "admin.vehiclesManagement.featuresHint",
-                                "Separar por comas (Ej: Aire acondicionado, Pantalla táctil, Sensores de parqueo, Cámara de reversa)"
+                          ) : (
+                            <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+                              {form.imagenes.map((img, idx) => (
+                                <div key={idx} style={{ position: 'relative' }}>
+                                  <img src={img} alt="preview" style={{ width: 120, height: 80, objectFit: 'cover', borderRadius: '8px', border: '1px solid #e2e8f0' }} />
+                                  <button type="button" onClick={() => setForm({ ...form, imagenes: form.imagenes.filter((_, i) => i !== idx) })} style={{ position: 'absolute', top: -8, right: -8, background: '#ef4444', color: 'white', border: 'none', borderRadius: '50%', width: 24, height: 24, cursor: 'pointer' }}>×</button>
+                                </div>
+                              ))}
+                              {form.imagenes.length < 3 && (
+                                <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 120, height: 80, border: '2px dashed #cbd5e1', borderRadius: '8px', cursor: 'pointer', color: '#94a3b8' }}>
+                                  <FaPlus />
+                                  <input type="file" accept="image/*" onChange={loadImages} style={{ display: "none" }} />
+                                </label>
                               )}
-                            />
-                          </div>
+                            </div>
+                          )}
+                        </div>
 
+                        {/* NOMBRE VEHÍCULO */}
+                        <div className="fleet-form-group">
+                          <label className="fleet-form-label" style={{ fontWeight: 600 }}>Nombre Vehículo *</label>
+                          <input className="fleet-form-input" value={form.nombre} onChange={(e) => setForm({ ...form, nombre: e.target.value })} placeholder="Ej: Toyota Corolla 2024" required />
+                        </div>
+
+                        {/* PLACA */}
+                        <div className="fleet-form-group">
+                          <label className="fleet-form-label" style={{ fontWeight: 600 }}>Placa *</label>
+                          <input className="fleet-form-input" value={form.placa} onChange={(e) => setForm({ ...form, placa: e.target.value.toUpperCase() })} placeholder="Ej: ABC-123" required />
+                        </div>
+
+                        {/* SUCURSAL ASIGNADA */}
+                        {!esEncargado && (
                           <div className="fleet-form-group">
-                            <label className="fleet-form-label">
-                              {t("admin.vehiclesManagement.fields.description", "Descripción Comercial")}
-                            </label>
-                            <textarea
-                              className="fleet-form-textarea"
-                              value={form.descripcion}
-                              onChange={(e) => setForm({ ...form, descripcion: e.target.value })}
-                              placeholder="Breve reseña sobre el estado, comodidades y ventajas de este vehículo para el cliente..."
-                              rows={3}
-                            />
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* CARD 4: TARIFAS DE ALQUILER Y SEGUROS */}
-                      <div className="fleet-form-card">
-                        <div className="fleet-form-card__title">
-                          <FaMoneyBillWave className="fleet-form-card__icon" />
-                          <span>{t('admin.vehiclesManagement.formSections.pricing', '4. Tarifas de Alquiler y Coberturas')}</span>
-                        </div>
-
-                        <div className="fleet-form-grid-4">
-                          <div className="fleet-form-group" style={{ gridColumn: "1 / span 2" }}>
-                            <label className="fleet-form-label" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                              <input 
-                                type="checkbox" 
-                                checked={form.kmLimitado !== ""} 
-                                onChange={(e) => setForm({ ...form, kmLimitado: e.target.checked ? "200" : "", precioLimitado: e.target.checked ? form.precioLimitado || "0" : "", precioExcedente: e.target.checked ? form.precioExcedente || "0" : "" })}
-                              />
-                              {t("admin.vehiclesManagement.fields.limitedKmToggle", "Ofrece Kilometraje Limitado")}
-                            </label>
-                            {form.kmLimitado !== "" && (
-                              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16, marginTop: 12 }}>
-                                <div>
-                                  <label className="fleet-form-label">{t("admin.vehiclesManagement.fields.limitedKm", "Km Limitado / Día")}</label>
-                                  <input
-                                    className="fleet-form-input"
-                                    type="number"
-                                    min="0"
-                                    value={form.kmLimitado}
-                                    onChange={(e) => setForm({ ...form, kmLimitado: e.target.value })}
-                                    placeholder="Ej: 200"
-                                  />
-                                </div>
-                                <div>
-                                  <label className="fleet-form-label">{t("admin.vehiclesManagement.fields.limitedPrice", "Tarifa Km Limitado")}</label>
-                                  <input
-                                    className="fleet-form-input"
-                                    type="number"
-                                    min="0"
-                                    value={form.precioLimitado}
-                                    onChange={(e) => setForm({ ...form, precioLimitado: e.target.value })}
-                                    placeholder="Ej: 85000"
-                                  />
-                                </div>
-                                <div>
-                                  <label className="fleet-form-label">{t("admin.vehiclesManagement.fields.extraPrice", "Excedente por Km")}</label>
-                                  <input
-                                    className="fleet-form-input"
-                                    type="number"
-                                    min="0"
-                                    value={form.precioExcedente}
-                                    onChange={(e) => setForm({ ...form, precioExcedente: e.target.value })}
-                                    placeholder="Ej: 800"
-                                  />
-                                </div>
-                              </div>
-                            )}
-                          </div>
-
-                          <div className="fleet-form-group" style={{ gridColumn: "3 / span 2" }}>
-                            <label className="fleet-form-label" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                              <input 
-                                type="checkbox" 
-                                checked={form.precioIlimitado !== ""} 
-                                onChange={(e) => setForm({ ...form, precioIlimitado: e.target.checked ? "0" : "" })}
-                              />
-                              {t("admin.vehiclesManagement.fields.unlimitedKmToggle", "Ofrece Kilometraje Ilimitado")}
-                            </label>
-                            {form.precioIlimitado !== "" && (
-                              <div style={{ marginTop: 12 }}>
-                                <label className="fleet-form-label">{t("admin.vehiclesManagement.fields.unlimitedPrice", "Tarifa Km Ilimitado ($ COP)")}</label>
-                                <input
-                                  className="fleet-form-input"
-                                  type="number"
-                                  min="0"
-                                  value={form.precioIlimitado}
-                                  onChange={(e) => setForm({ ...form, precioIlimitado: e.target.value })}
-                                  placeholder="Ej: 120000"
-                                />
-                              </div>
-                            )}
-                          </div>
-                        </div>
-
-                        {/* SECCIÓN SEGUROS */}
-                        <div className="fleet-insurances-container">
-                          <label className="fleet-form-label" style={{ marginBottom: 8, display: 'flex', alignItems: 'center' }}>
-                            <FaShieldAlt style={{ marginRight: 6, color: 'var(--brand-primary, #2563eb)' }} />
-                            {t("admin.vehiclesManagement.insuranceTitle", "Seguros y Coberturas")}
-                          </label>
-
-                          <div className="fleet-insurances-list">
-                            {form.seguros.map((insurance, index) => (
-                              <div key={index} className="fleet-insurance-row">
-                                <div className="fleet-form-group" style={{ flex: 1 }}>
-                                  <select
-                                    className="fleet-form-input"
-                                    value={insurance.nombre}
-                                    onChange={(e) => updateInsurance(index, "nombre", e.target.value)}
-                                  >
-                                    <option value="">{t("admin.vehiclesManagement.selectInsurance", "Seleccionar seguro...")}</option>
-                                    <option value="Protección Básica">{t("admin.vehiclesManagement.insurances.basic", "Protección Básica")}</option>
-                                    <option value="Protección Estándar">{t("admin.vehiclesManagement.insurances.standard", "Protección Estándar")}</option>
-                                    <option value="Protección Total">{t("admin.vehiclesManagement.insurances.total", "Protección Total")}</option>
-                                    <option value="Protección Premium">{t("admin.vehiclesManagement.insurances.premium", "Protección Premium")}</option>
-                                  </select>
-                                </div>
-                                <div className="fleet-form-group" style={{ width: 140 }}>
-                                  <input
-                                    className="fleet-form-input"
-                                    type="number"
-                                    value={insurance.precio}
-                                    placeholder="Precio ($ COP)"
-                                    onChange={(e) => updateInsurance(index, "precio", e.target.value)}
-                                  />
-                                </div>
-                                <button
-                                  type="button"
-                                  className="fleet-btn-del-insurance"
-                                  onClick={() =>
-                                    setForm({
-                                      ...form,
-                                      seguros: form.seguros.filter((_, current) => current !== index),
-                                    })
-                                  }
-                                  title={t("common.delete", "Eliminar seguro")}
-                                >
-                                  <FaTrash />
-                                </button>
-                              </div>
-                            ))}
-                          </div>
-
-                          <button
-                            type="button"
-                            className="fleet-btn-add-insurance"
-                            onClick={addInsurance}
-                          >
-                            <FaPlus /> {t("admin.vehiclesManagement.addInsurance", "Agregar cobertura / seguro")}
-                          </button>
-                        </div>
-                      </div>
-
-                      {/* CARD 5: FOTOGRAFÍAS DEL VEHÍCULO */}
-                      <div className="fleet-form-card">
-                        <div className="fleet-form-card__title">
-                          <FaImage className="fleet-form-card__icon" />
-                          <span>{t('admin.vehiclesManagement.formSections.photos', '5. Fotografías del Vehículo')}</span>
-                          <span className="fleet-photo-counter-badge">
-                            {(form.imagenes?.length || 0)} / 3 {t("admin.vehiclesManagement.photosCount", "fotos")}
-                          </span>
-                        </div>
-
-                        {/* BANNER SI SE ALCANZÓ EL LÍMITE (3/3) */}
-                        {form.imagenes && form.imagenes.length >= 3 && (
-                          <div className="fleet-photo-limit-banner">
-                            <div className="fleet-photo-limit-info">
-                              <FaCheck className="fleet-photo-limit-icon" />
-                              <div>
-                                <strong>{t("admin.vehiclesManagement.limitReachedTitle", "Límite de fotografías completado (3/3)")}</strong>
-                                <p>{t("admin.vehiclesManagement.limitReachedDesc", "Puedes cambiar cualquier foto directamente con el botón Cambiar o eliminarla para cargar una nueva.")}</p>
-                              </div>
-                            </div>
+                            <label className="fleet-form-label" style={{ fontWeight: 600 }}>Sucursal Asignada *</label>
+                            <select className="fleet-form-select" value={form.sucursal} onChange={(e) => setForm({ ...form, sucursal: e.target.value, categoria: "" })} required>
+                              <option value="">Selecciona una sucursal...</option>
+                              {branches.map((b) => <option key={b.id} value={b.nombre}>{b.nombre}</option>)}
+                            </select>
                           </div>
                         )}
 
-                        {/* DROPZONE DE SUBIDA GENERAL: Solo visible si quedan cupos disponibles (< 3) */}
-                        {(!form.imagenes || form.imagenes.length < 3) && (
-                          <label className="fleet-upload-box">
-                            <FaImage size={28} className="fleet-upload-icon" />
-                            <div className="fleet-upload-text">
-                              <strong>{t("admin.vehiclesManagement.uploadImages", "Subir imágenes del vehículo")}</strong>
-                              <span>
-                                {t(
-                                  "admin.vehiclesManagement.uploadHintRemaining",
-                                  `Haz clic para explorar o arrastra archivos PNG, JPG o WEBP (Puedes agregar ${3 - (form.imagenes?.length || 0)} más, máx 1MB c/u)`
-                                )}
-                              </span>
-                            </div>
-                            <input
-                              type="file"
-                              accept="image/*"
-                              multiple
-                              onChange={loadImages}
-                              style={{ display: "none" }}
-                            />
-                          </label>
-                        )}
+                        {/* CATEGORÍA */}
+                        <div className="fleet-form-group">
+                          <label className="fleet-form-label" style={{ fontWeight: 600 }}>Categoría *</label>
+                          <select className="fleet-form-select" value={form.categoria} onChange={(e) => setForm({ ...form, categoria: e.target.value })} required disabled={!activeCategoriesForForm.length}>
+                            <option value="">Selecciona una categoría...</option>
+                            {activeCategoriesForForm.map((catName) => <option key={catName} value={catName}>{catName}</option>)}
+                          </select>
+                        </div>
 
-                        {/* GRILLA DE FOTOGRAFÍAS EXISTENTES CON ACCIÓN DE CAMBIAR Y ELIMINAR */}
-                        {form.imagenes && form.imagenes.length > 0 && (
-                          <div className="fleet-gallery-grid">
-                            {form.imagenes.map((image, index) => (
-                              <div key={`${String(image).slice(-20)}-${index}`} className="fleet-gallery-item">
-                                <div className="fleet-gallery-img-wrapper">
-                                  <img src={image} alt={`Vehículo ${index + 1}`} />
-                                  <span className={`fleet-gallery-badge ${index === 0 ? "is-main" : ""}`}>
-                                    {index === 0
-                                      ? t("admin.vehiclesManagement.mainPhoto", "Principal")
-                                      : `${t("admin.vehiclesManagement.photo", "Foto")} ${index + 1}`}
-                                  </span>
-                                </div>
-                                <div className="fleet-gallery-actions">
-                                  <label
-                                    className="fleet-gallery-btn is-edit"
-                                    title={t("admin.vehiclesManagement.changePhoto", "Cambiar fotografía")}
-                                  >
-                                    <FaSyncAlt size={11} />
-                                    <span>{t("common.change", "Cambiar")}</span>
-                                    <input
-                                      type="file"
-                                      accept="image/*"
-                                      onChange={(e) => handleReplaceImage(index, e)}
-                                      style={{ display: "none" }}
-                                    />
-                                  </label>
-                                  <button
-                                    type="button"
-                                    className="fleet-gallery-btn is-delete"
-                                    onClick={() =>
-                                      setForm({
-                                        ...form,
-                                        imagenes: form.imagenes.filter((_, current) => current !== index),
-                                      })
-                                    }
-                                    title={t("common.delete", "Eliminar foto")}
-                                  >
-                                    <FaTrash size={11} />
-                                    <span>{t("common.delete", "Eliminar")}</span>
-                                  </button>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        )}
+                        {/* AÑO (CALENDARIO) */}
+                        <div className="fleet-form-group">
+                          <label className="fleet-form-label" style={{ fontWeight: 600 }}>Año *</label>
+                          <input className="fleet-form-input" type="date" onChange={(e) => setForm({ ...form, año: e.target.value ? e.target.value.split('-')[0] : "" })} required />
+                          {form.año && <small style={{ color: '#64748b', marginTop: 4, display: 'block' }}>Año seleccionado: {form.año}</small>}
+                        </div>
+
+                        {/* COLOR */}
+                        <div className="fleet-form-group">
+                          <label className="fleet-form-label" style={{ fontWeight: 600 }}>Color *</label>
+                          <input className="fleet-form-input" value={form.color} onChange={(e) => setForm({ ...form, color: e.target.value })} placeholder="Ej: Blanco Perla" required />
+                        </div>
+
+                        {/* TRANSMISIÓN */}
+                        <div className="fleet-form-group">
+                          <label className="fleet-form-label" style={{ fontWeight: 600 }}>Transmisión *</label>
+                          <select className="fleet-form-select" value={form.transmision} onChange={(e) => setForm({ ...form, transmision: e.target.value })} required>
+                            <option value="">Seleccionar...</option>
+                            <option value="Automática">Automática</option>
+                            <option value="Manual">Manual</option>
+                          </select>
+                        </div>
+
+                        {/* COMBUSTIBLE */}
+                        <div className="fleet-form-group">
+                          <label className="fleet-form-label" style={{ fontWeight: 600 }}>Combustible *</label>
+                          <select className="fleet-form-select" value={form.combustible} onChange={(e) => setForm({ ...form, combustible: e.target.value })} required>
+                            <option value="">Seleccionar...</option>
+                            <option value="Gasolina">Gasolina</option>
+                            <option value="Diésel">Diésel</option>
+                            <option value="Híbrido">Híbrido</option>
+                            <option value="Eléctrico">Eléctrico</option>
+                          </select>
+                        </div>
+
+                        {/* PICO Y PLACA */}
+                        <div className="fleet-form-group">
+                          <label className="fleet-form-label" style={{ fontWeight: 600 }}>Pico y Placa *</label>
+                          <select className="fleet-form-select" value={form.aplicaPicoYPlaca} onChange={(e) => setForm({ ...form, aplicaPicoYPlaca: e.target.value })} required>
+                            <option value="Si">Sí aplica</option>
+                            <option value="No">No aplica</option>
+                          </select>
+                        </div>
+
+                        {/* TARIFA DIARIA */}
+                        <div className="fleet-form-group">
+                          <label className="fleet-form-label" style={{ fontWeight: 600 }}>Tarifa Diaria ($) *</label>
+                          <input className="fleet-form-input" type="number" min="0" value={form.precioLimitado} onChange={(e) => setForm({ ...form, precioLimitado: e.target.value })} placeholder="Ej: 150000" required />
+                        </div>
+
+                        {/* ESTADO */}
+                        <div className="fleet-form-group">
+                          <label className="fleet-form-label" style={{ fontWeight: 600 }}>Estado del Vehículo *</label>
+                          <select className="fleet-form-select" value={form.estadoEfectivo} onChange={(e) => setForm({ ...form, estadoEfectivo: e.target.value })} required>
+                            <option value="disponible">Disponible</option>
+                            <option value="reservado">Reservado</option>
+                            <option value="en mantenimiento">En Mantenimiento</option>
+                          </select>
+                        </div>
+
                       </div>
 
                       {error && (
-                        <div className="fleet-form-error-banner">
+                        <div className="fleet-form-error-banner" style={{ marginTop: 20 }}>
                           <p>{error}</p>
                         </div>
                       )}
                     </div>
 
-                    <div className="fleet-modal-footer">
+                    <div className="fleet-modal-footer" style={{ borderTop: '1px solid #e2e8f0', padding: '16px 24px', background: '#f8fafc' }}>
                       <button type="button" className="fleet-btn-secondary" onClick={close}>
-                        {t("common.cancel", "Cancelar")}
+                        Cancelar
                       </button>
                       <button className="cities-primary" type="submit">
                         <FaCheck style={{ marginRight: 6 }} />
-                        {t("common.save", "Guardar vehículo")}
+                        Guardar vehículo
                       </button>
                     </div>
                   </form>
