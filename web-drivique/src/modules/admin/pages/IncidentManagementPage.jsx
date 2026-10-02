@@ -61,8 +61,8 @@ export default function IncidentManagementPage() {
   // Formularios
   const [formCrear, setFormCrear] = useState({
     vehiculoId: '',
-    tipoIncidenciaId: 'averia_mecanica',
-    tipoIncidenciaNombre: 'Avería mecánica',
+    tipoIncidenciaId: 'choque',
+    tipoIncidenciaNombre: 'Choque',
     descripcion: '',
     prioridad: 'urgente',
     tiempoEstimado: '2 a 4 horas',
@@ -142,8 +142,8 @@ export default function IncidentManagementPage() {
       setModalCrear(false)
       setFormCrear({
         vehiculoId: '',
-        tipoIncidenciaId: 'averia_mecanica',
-        tipoIncidenciaNombre: 'Avería mecánica',
+        tipoIncidenciaId: 'choque',
+        tipoIncidenciaNombre: 'Choque',
         descripcion: '',
         prioridad: 'urgente',
         tiempoEstimado: '2 a 4 horas',
@@ -639,20 +639,22 @@ export default function IncidentManagementPage() {
                   <span style={{ fontSize: 13, fontWeight: 700, color: '#1e293b', display: 'block', marginBottom: 12 }}>Tipo de Incidencia <span style={{ color: '#ef4444' }}>*</span></span>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
                     {[
-                      { id: 'averia_mecanica', label: 'Avería mecánica', icon: <FaCar /> },
-                      { id: 'falla_electrica', label: 'Falla eléctrica / Batería', icon: <FaExclamationTriangle /> },
-                      { id: 'pinchazo_neumatico', label: 'Pinchazo / Neumático', icon: <FaWrench /> },
-                      { id: 'limpieza_estetica', label: 'Limpieza / Estética', icon: <FaWrench /> },
-                      { id: 'documentacion_licencia', label: 'Documentación / Licencia', icon: <FaFilePdf /> },
-                      { id: 'otro_problema', label: 'Otro problema', icon: <FaExclamationCircle /> },
+                      { id: 'choque', label: 'Choque', icon: <FaExclamationTriangle /> },
+                      { id: 'averia_mecanica', label: 'Avería Mecánica', icon: <FaWrench /> },
+                      { id: 'pinchazo', label: 'Pinchazo', icon: <FaCar /> },
+                      { id: 'bateria_descargada', label: 'Batería Descargada', icon: <FaExclamationTriangle /> },
+                      { id: 'falla_electrica', label: 'Falla Eléctrica', icon: <FaExclamationTriangle /> },
+                      { id: 'robo', label: 'Robo', icon: <FaExclamationCircle /> },
+                      { id: 'asistencia_general', label: 'Asistencia General', icon: <FaExclamationCircle /> },
+                      { id: 'otro_problema', label: 'Otro', icon: <FaExclamationCircle /> },
                     ].map(tipo => (
                       <button
                         key={tipo.id}
                         type="button"
                         onClick={() => {
                            let time = '2 a 4 horas';
-                           if (tipo.id === 'falla_electrica') time = '1 a 2 horas';
-                           if (tipo.id === 'limpieza_estetica') time = '1 hora';
+                           if (tipo.id === 'falla_electrica' || tipo.id === 'bateria_descargada') time = '1 a 2 horas';
+                           if (tipo.id === 'asistencia_general') time = '1 hora';
                            if (tipo.id === 'otro_problema') time = 'Por definir';
                            setFormCrear({ ...formCrear, tipoIncidenciaId: tipo.id, tipoIncidenciaNombre: tipo.label, tiempoEstimado: time })
                         }}
