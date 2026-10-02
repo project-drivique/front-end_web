@@ -648,7 +648,7 @@ export default function VehicleManagementPage() {
             </div>
 
             <div className="fleet-tabs-action">
-              {((!esEncargado) || (esEncargado && (activeTab === "vehiculos" || activeTab === "flotas"))) && (
+              {((!esEncargado) || (esEncargado && activeTab === "vehiculos")) && (
                 <button
                   className="cities-primary fleet-btn-create-tab"
                   type="button"
