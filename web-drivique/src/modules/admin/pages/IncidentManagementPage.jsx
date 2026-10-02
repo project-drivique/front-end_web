@@ -455,7 +455,7 @@ export default function IncidentManagementPage() {
                         </td>
                         
                         <td style={{ textAlign: 'center' }}>
-                          <div className="cities-row-actions" style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                          <div className="incident-row-actions" style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
                             <button
                               type="button"
                               onClick={() => openDetalleModal(r)}
