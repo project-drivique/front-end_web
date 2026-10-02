@@ -916,13 +916,13 @@ export default function BranchDashboard({ branchOnly = true }) {
           <div className="branch-gradient-hero-content">
             <div className="branch-gradient-hero-badge">
               <span className="branch-hero-live-dot" />
-              <span>En tiempo real</span>
+              <span>{t('dashboard.hero.realtime', 'En tiempo real')}</span>
             </div>
             <h1 className="branch-gradient-hero-title">
               {dashboardData.branchName || 'Alamo Bogotá - Aeropuerto'}
             </h1>
             <p className="branch-gradient-hero-subtitle">
-              Resumen general del rendimiento operativo de la sucursal
+              {t('dashboard.hero.subtitle', 'Resumen general del rendimiento operativo de la sucursal')}
             </p>
           </div>
 
@@ -933,7 +933,7 @@ export default function BranchDashboard({ branchOnly = true }) {
               onClick={() => navigate(incidentsRoute)}
             >
               <FaExclamationTriangle aria-hidden="true" />
-              <span>Reportar incidencia</span>
+              <span>{t('dashboard.hero.reportIncident', 'Reportar incidencia')}</span>
             </button>
 
             <button
@@ -942,7 +942,7 @@ export default function BranchDashboard({ branchOnly = true }) {
               onClick={() => navigate(reservationsRoute)}
             >
               <FaPlus aria-hidden="true" />
-              <span>Crear reserva</span>
+              <span>{t('dashboard.hero.createReservation', 'Crear reserva')}</span>
             </button>
           </div>
         </header>
@@ -976,28 +976,28 @@ export default function BranchDashboard({ branchOnly = true }) {
                       className="branch-kpi-dropdown-item"
                       onClick={() => handleExportKpiExcel('ingresos')}
                     >
-                      Exportar a Excel
+                      {t('common.exportExcel', 'Exportar a Excel')}
                     </button>
                     <button
                       type="button"
                       className="branch-kpi-dropdown-item"
                       onClick={() => handleExportKpiPdf('ingresos')}
                     >
-                      Exportar a PDF
+                      {t('common.exportPdf', 'Exportar a PDF')}
                     </button>
                     <button
                       type="button"
                       className="branch-kpi-dropdown-item"
                       onClick={() => handlePrintKpi('ingresos')}
                     >
-                      Imprimir
+                      {t('common.print', 'Imprimir')}
                     </button>
                     <button
                       type="button"
                       className="branch-kpi-dropdown-item"
                       onClick={() => handleOpenKpiDetail('ingresos')}
                     >
-                      Ver detalle
+                      {t('common.viewDetails', 'Ver detalle')}
                     </button>
                   </div>
                 )}
@@ -1050,30 +1050,22 @@ export default function BranchDashboard({ branchOnly = true }) {
                       type="button"
                       className="branch-kpi-dropdown-item"
                       onClick={() => handleExportKpiExcel('entregas')}
-                    >
-                      Exportar a Excel
-                    </button>
+                    >{t('common.exportExcel', 'Exportar a Excel')}</button>
                     <button
                       type="button"
                       className="branch-kpi-dropdown-item"
                       onClick={() => handleExportKpiPdf('entregas')}
-                    >
-                      Exportar a PDF
-                    </button>
+                    >{t('common.exportPdf', 'Exportar a PDF')}</button>
                     <button
                       type="button"
                       className="branch-kpi-dropdown-item"
                       onClick={() => handlePrintKpi('entregas')}
-                    >
-                      Imprimir
-                    </button>
+                    >{t('common.print', 'Imprimir')}</button>
                     <button
                       type="button"
                       className="branch-kpi-dropdown-item"
                       onClick={() => handleOpenKpiDetail('entregas')}
-                    >
-                      Ver detalle
-                    </button>
+                    >{t('common.viewDetails', 'Ver detalle')}</button>
                   </div>
                 )}
               </div>
@@ -1084,7 +1076,7 @@ export default function BranchDashboard({ branchOnly = true }) {
                 <strong className="branch-kpi-value">
                   {dashboardData.todayDeliveriesCount ?? 3}
                 </strong>
-                <span className="branch-kpi-unit">programadas</span>
+                <span className="branch-kpi-unit">{t("dashboard.kpi.scheduled", "programadas")}</span>
               </div>
 
               <div className="branch-kpi-progress-track">
@@ -1103,7 +1095,7 @@ export default function BranchDashboard({ branchOnly = true }) {
 
             <div className="branch-kpi-card-footer">
               <span className="branch-kpi-trend-text">
-                {dashboardData.todayDeliveriesCompleted} completadas · {dashboardData.todayDeliveriesPending} pendientes
+                {dashboardData.todayDeliveriesCompleted} {t("dashboard.kpi.completed", "completadas")} · {dashboardData.todayDeliveriesPending} {t("dashboard.kpi.pending", "pendientes")}
               </span>
             </div>
           </article>
@@ -1134,30 +1126,22 @@ export default function BranchDashboard({ branchOnly = true }) {
                       type="button"
                       className="branch-kpi-dropdown-item"
                       onClick={() => handleExportKpiExcel('devoluciones')}
-                    >
-                      Exportar a Excel
-                    </button>
+                    >{t('common.exportExcel', 'Exportar a Excel')}</button>
                     <button
                       type="button"
                       className="branch-kpi-dropdown-item"
                       onClick={() => handleExportKpiPdf('devoluciones')}
-                    >
-                      Exportar a PDF
-                    </button>
+                    >{t('common.exportPdf', 'Exportar a PDF')}</button>
                     <button
                       type="button"
                       className="branch-kpi-dropdown-item"
                       onClick={() => handlePrintKpi('devoluciones')}
-                    >
-                      Imprimir
-                    </button>
+                    >{t('common.print', 'Imprimir')}</button>
                     <button
                       type="button"
                       className="branch-kpi-dropdown-item"
                       onClick={() => handleOpenKpiDetail('devoluciones')}
-                    >
-                      Ver detalle
-                    </button>
+                    >{t('common.viewDetails', 'Ver detalle')}</button>
                   </div>
                 )}
               </div>
@@ -1168,7 +1152,7 @@ export default function BranchDashboard({ branchOnly = true }) {
                 <strong className="branch-kpi-value">
                   {dashboardData.todayReturnsCount ?? 2}
                 </strong>
-                <span className="branch-kpi-unit">programadas</span>
+                <span className="branch-kpi-unit">{t("dashboard.kpi.scheduled", "programadas")}</span>
               </div>
 
               <div className="branch-kpi-progress-track">
@@ -1218,30 +1202,22 @@ export default function BranchDashboard({ branchOnly = true }) {
                       type="button"
                       className="branch-kpi-dropdown-item"
                       onClick={() => handleExportKpiExcel('ocupacion')}
-                    >
-                      Exportar a Excel
-                    </button>
+                    >{t('common.exportExcel', 'Exportar a Excel')}</button>
                     <button
                       type="button"
                       className="branch-kpi-dropdown-item"
                       onClick={() => handleExportKpiPdf('ocupacion')}
-                    >
-                      Exportar a PDF
-                    </button>
+                    >{t('common.exportPdf', 'Exportar a PDF')}</button>
                     <button
                       type="button"
                       className="branch-kpi-dropdown-item"
                       onClick={() => handlePrintKpi('ocupacion')}
-                    >
-                      Imprimir
-                    </button>
+                    >{t('common.print', 'Imprimir')}</button>
                     <button
                       type="button"
                       className="branch-kpi-dropdown-item"
                       onClick={() => handleOpenKpiDetail('ocupacion')}
-                    >
-                      Ver detalle
-                    </button>
+                    >{t('common.viewDetails', 'Ver detalle')}</button>
                   </div>
                 )}
               </div>
@@ -1252,7 +1228,7 @@ export default function BranchDashboard({ branchOnly = true }) {
                 <strong className="branch-kpi-value">
                   {fleet.occupancyRate}%
                 </strong>
-                <span className="branch-kpi-unit">en alquiler</span>
+                <span className="branch-kpi-unit">{t("dashboard.kpi.rented", "en alquiler")}</span>
               </div>
 
               <div className="branch-kpi-progress-track">
@@ -1281,9 +1257,7 @@ export default function BranchDashboard({ branchOnly = true }) {
                 <div className="branch-card-title-group">
                   <div>
                     <h3 className="branch-card-title">
-                      <FaChartBar className="branch-card-title-icon" aria-hidden="true" />
-                      Carga Operativa por Franja Horaria
-                    </h3>
+                      <FaChartBar className="branch-card-title-icon" aria-hidden="true" />{t('dashboard.charts.workload', 'Carga Operativa por Franja Horaria')}</h3>
                     <span className="branch-hourly-chart-sub">
                       {getSectionTitle(startDateStr, endDateStr)}
                     </span>
@@ -1548,10 +1522,8 @@ export default function BranchDashboard({ branchOnly = true }) {
                 <div className="branch-card-title-group">
                   <div>
                     <h3 className="branch-card-title">
-                      <FaCalendarAlt className="branch-card-title-icon" aria-hidden="true" />
-                      Calendario Operativo
-                    </h3>
-                    <span className="branch-calendar-card-sub">Selecciona un rango de fechas</span>
+                      <FaCalendarAlt className="branch-card-title-icon" aria-hidden="true" />{t('dashboard.charts.calendar', 'Calendario Operativo')}</h3>
+                    <span className="branch-calendar-card-sub">{t('dashboard.charts.selectDateRange', 'Selecciona un rango de fechas')}</span>
                   </div>
                 </div>
               </div>
