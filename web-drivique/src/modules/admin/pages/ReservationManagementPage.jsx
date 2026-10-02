@@ -175,7 +175,7 @@ export default function ReservationManagementPage() {
       const codeA = String(a.codigo || a.referencia || a.id || '');
       const codeB = String(b.codigo || b.referencia || b.id || '');
       return codeA.localeCompare(codeB);
-    })
+    }).slice(0, 5)
   }, [reservas, search, statusFilter, branchFilter, dateFrom, dateTo])
 
   // Configuración de exportación global consolidada de reservas
