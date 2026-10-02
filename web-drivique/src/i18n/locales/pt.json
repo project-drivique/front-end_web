@@ -1769,7 +1769,8 @@
       "filterUnread": "Não lidas",
       "defaultAction": "Ir ao módulo",
       "filters": "Filtros de notificações"
-    }
+    },
+    "branchManagement": "GESTÃO DE FILIAL"
   },
   "common": {
     "backToHome": "Voltar ao inÃ­cio",

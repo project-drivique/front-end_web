@@ -573,7 +573,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
               <div className="cash-toolbar-row1" style={{ flexWrap: 'nowrap', gap: '8px', alignItems: 'center', width: '100%' }}>
 
                 {/* Input referencia */}
-                <div style={{ display: 'flex', alignItems: 'center', background: '#fff', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '0 8px', height: '36px', minWidth: '160px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', background: 'var(--city-card, #fff)', border: '1px solid var(--city-border, #e2e8f0)', borderRadius: '8px', padding: '0 8px', height: '36px', minWidth: '160px' }}>
                   <input
                     type="text"
                     placeholder={t('admin.cash.filterRefPlaceholder', 'Ref. (Ej. RES-179...)')}
@@ -583,7 +583,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
                       setSearchRefValue(val)
                       setSearch(val)
                     }}
-                    style={{ padding: '0 8px', border: 'none', background: 'transparent', fontSize: '13px', outline: 'none', width: '155px', height: '100%' }}
+                    style={{ padding: '0 8px', border: 'none', background: 'transparent', color: 'var(--city-text, #0f172a)', fontSize: '13px', outline: 'none', width: '155px', height: '100%' }}
                     onKeyDown={(e) => e.key === 'Enter' && handleSearchRef()}
                   />
                 </div>
@@ -599,7 +599,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
                 <button
                   type="button"
                   onClick={() => { setSearchRefValue(''); setSearch(''); }}
-                  style={{ display: 'flex', alignItems: 'center', padding: '0 12px', height: '36px', background: '#fff', borderRadius: '8px', border: '1.5px solid #f59e0b', color: '#f59e0b', fontWeight: 600, cursor: 'pointer', fontSize: '13px', whiteSpace: 'nowrap', flexShrink: 0 }}
+                  style={{ display: 'flex', alignItems: 'center', padding: '0 12px', height: '36px', background: 'var(--city-card, #fff)', borderRadius: '8px', border: '1.5px solid #f59e0b', color: '#f59e0b', fontWeight: 600, cursor: 'pointer', fontSize: '13px', whiteSpace: 'nowrap', flexShrink: 0 }}
                 >
                   {t('admin.cash.clearBtn', 'Limpiar')}
                 </button>
@@ -608,7 +608,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
                 <select
                   value={filterTab}
                   onChange={(e) => setFilterTab(e.target.value)}
-                  style={{ height: '36px', padding: '0 10px', border: '1px solid #e2e8f0', borderRadius: '8px', fontSize: '13px', background: '#fff', color: '#374151', cursor: 'pointer', flexShrink: 0 }}
+                  style={{ height: '36px', padding: '0 10px', border: '1px solid var(--city-border, #e2e8f0)', borderRadius: '8px', fontSize: '13px', background: 'var(--city-card, #fff)', color: 'var(--city-text, #374151)', cursor: 'pointer', flexShrink: 0 }}
                 >
                   <option value="todas">{t('admin.cash.allPayments', 'Todos los pagos')}</option>
                   <option value="pendientes">{t('admin.cash.pendingCashOption', 'Pendientes Efectivo ({{count}})', { count: pendientesEfectivo.length })}</option>
@@ -637,7 +637,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
                   title="Desde"
                   value={dateFrom}
                   onChange={(e) => setDateFrom(e.target.value)}
-                  style={{ height: '36px', padding: '0 8px', border: '1px solid #e2e8f0', borderRadius: '8px', fontSize: '13px', background: '#fff', color: '#374151', width: '140px', flexShrink: 0 }}
+                  style={{ height: '36px', padding: '0 8px', border: '1px solid var(--city-border, #e2e8f0)', borderRadius: '8px', fontSize: '13px', background: 'var(--city-card, #fff)', color: 'var(--city-text, #374151)', width: '140px', flexShrink: 0 }}
                 />
                 <input
                   type="date"
