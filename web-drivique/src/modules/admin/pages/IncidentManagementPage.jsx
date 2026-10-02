@@ -62,10 +62,10 @@ export default function IncidentManagementPage() {
   const [formCrear, setFormCrear] = useState({
     vehiculoId: '',
     tipoIncidenciaId: 'choque',
-    tipoIncidenciaNombre: 'Choque',
+    tipoIncidenciaNombre: t('admin.incidents.types.crash', 'Choque'),
     descripcion: '',
     prioridad: 'urgente',
-    tiempoEstimado: '2 a 4 horas',
+    tiempoEstimado: t('admin.incidents.time.twoToFourHours', '2 a 4 horas'),
   })
 
   const [respuestaTexto, setRespuestaTexto] = useState('')
@@ -143,10 +143,10 @@ export default function IncidentManagementPage() {
       setFormCrear({
         vehiculoId: '',
         tipoIncidenciaId: 'choque',
-        tipoIncidenciaNombre: 'Choque',
+        tipoIncidenciaNombre: t('admin.incidents.types.crash', 'Choque'),
         descripcion: '',
         prioridad: 'urgente',
-        tiempoEstimado: '2 a 4 horas',
+        tiempoEstimado: t('admin.incidents.time.twoToFourHours', '2 a 4 horas'),
       })
       cargarIncidencias()
     } catch {
@@ -305,8 +305,8 @@ export default function IncidentManagementPage() {
               onClick={() => setActiveTab('erroneos')}
               style={{
                 padding: '12px 16px', border: 'none', background: 'transparent', cursor: 'pointer',
-                fontSize: 14, fontWeight: 600, color: activeTab === 'erroneos' ? '#ef4444' : '#64748b',
-                borderBottom: activeTab === 'erroneos' ? '2px solid #ef4444' : '2px solid transparent',
+                fontSize: 14, fontWeight: 600, color: activeTab === 'erroneos' ? '#2563eb' : '#64748b',
+                borderBottom: activeTab === 'erroneos' ? '2px solid #2563eb' : '2px solid transparent',
                 transition: 'all 0.2s'
               }}
             >
@@ -397,8 +397,8 @@ export default function IncidentManagementPage() {
                       <th>EVIDENCIA 3</th>
                       <th>TELÉFONO</th>
                       <th>CORREO</th>
-                      <th>ESTADO DE INCIDENTE</th>
-                      <th>ACCIONES</th>
+                      <th style={{ textAlign: 'center' }}>ESTADO DE INCIDENTE</th>
+                      <th style={{ textAlign: 'center' }}>ACCIONES</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -413,7 +413,7 @@ export default function IncidentManagementPage() {
                         </td>
                         <td style={{ color: '#64748b' }}>{r.placa}</td>
                         
-                        <td style={{ color: '#334155', fontWeight: 500 }}>{r.tipoIncidenciaNombre || r.tipoIncidenciaId || 'Avería Mecánica'}</td>
+                        <td style={{ color: '#334155', fontWeight: 500 }}>{r.tipoIncidenciaNombre || r.tipoIncidenciaId || t('admin.incidents.types.mechanicalBreakdown', 'Avería Mecánica')}</td>
                         <td style={{ color: '#64748b', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.descripcion || 'Problema reportado...'}</td>
                         <td style={{ color: '#0f172a' }}>{new Date(r.fechaIso || r.fechaRegistro || Date.now()).toLocaleDateString()}</td>
                         <td style={{ color: '#0f172a' }}>{new Date(r.fechaIso || r.fechaRegistro || Date.now()).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</td>
@@ -431,7 +431,7 @@ export default function IncidentManagementPage() {
                         <td style={{ color: '#475569' }}>{r.contactoTelefono || '+57 300 0000000'}</td>
                         <td style={{ color: '#64748b' }}>{r.contactoEmail}</td>
                         
-                        <td>
+                        <td style={{ textAlign: 'center' }}>
                           <select
                             value={['resuelto', 'atendiendo', 'rechazado', 'recibido'].includes(r.estado) ? r.estado : (r.estado === 'en_revision' || r.estado === 'en_reparacion' ? 'atendiendo' : 'recibido')}
                             onChange={(e) => handleQuickStatusChange(r.id, e.target.value)}
@@ -454,14 +454,40 @@ export default function IncidentManagementPage() {
                           </select>
                         </td>
                         
-                        <td>
-                          <div className="cities-row-actions" style={{ display: 'flex', gap: '8px' }}>
+                        <td style={{ textAlign: 'center' }}>
+                          <div className="cities-row-actions" style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
                             <button
                               type="button"
                               onClick={() => openDetalleModal(r)}
-                              style={{ padding: '6px 12px', fontSize: '13px', background: 'transparent', color: '#2563eb', border: 'none', cursor: 'pointer', fontWeight: '600', textDecoration: 'underline' }}
+                              style={{
+                                width: 'auto',
+                                height: 'auto',
+                                padding: '8px 14px',
+                                fontSize: '13px',
+                                background: '#ffffff',
+                                color: '#ca8a04',
+                                border: '1.5px solid #fde047',
+                                borderRadius: '10px',
+                                cursor: 'pointer',
+                                fontWeight: '700',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '6px',
+                                boxShadow: '0 2px 4px rgba(250,204,21,0.1)',
+                                transition: 'all 0.2s ease'
+                              }}
+                              onMouseOver={(e) => { 
+                                e.currentTarget.style.background = '#fefce8'; 
+                                e.currentTarget.style.borderColor = '#facc15';
+                                e.currentTarget.style.transform = 'translateY(-1px)';
+                              }}
+                              onMouseOut={(e) => { 
+                                e.currentTarget.style.background = '#ffffff'; 
+                                e.currentTarget.style.borderColor = '#fde047'; 
+                                e.currentTarget.style.transform = 'translateY(0)';
+                              }}
                             >
-                              Responder
+                              <FaExclamationCircle /> Responder
                             </button>
 
                             {!esEncargado && (
@@ -656,26 +682,26 @@ export default function IncidentManagementPage() {
 
                 {/* Tipo de Incidencia */}
                 <div>
-                  <span style={{ fontSize: 13, fontWeight: 700, color: '#1e293b', display: 'block', marginBottom: 12 }}>Tipo de Incidencia <span style={{ color: '#ef4444' }}>*</span></span>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: '#1e293b', display: 'block', marginBottom: 12 }}>{t('admin.incidents.incidentType', 'Tipo de Incidencia')} <span style={{ color: '#ef4444' }}>*</span></span>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
                     {[
-                      { id: 'choque', label: 'Choque', icon: <FaExclamationTriangle /> },
-                      { id: 'averia_mecanica', label: 'Avería Mecánica', icon: <FaWrench /> },
-                      { id: 'pinchazo', label: 'Pinchazo', icon: <FaCar /> },
-                      { id: 'bateria_descargada', label: 'Batería Descargada', icon: <FaExclamationTriangle /> },
-                      { id: 'falla_electrica', label: 'Falla Eléctrica', icon: <FaExclamationTriangle /> },
-                      { id: 'robo', label: 'Robo', icon: <FaExclamationCircle /> },
-                      { id: 'asistencia_general', label: 'Asistencia General', icon: <FaExclamationCircle /> },
-                      { id: 'otro_problema', label: 'Otro', icon: <FaExclamationCircle /> },
+                      { id: 'choque', label: t('admin.incidents.types.crash', 'Choque'), icon: <FaExclamationTriangle /> },
+                      { id: 'averia_mecanica', label: t('admin.incidents.types.mechanicalBreakdown', 'Avería Mecánica'), icon: <FaWrench /> },
+                      { id: 'pinchazo', label: t('admin.incidents.types.flatTire', 'Pinchazo'), icon: <FaCar /> },
+                      { id: 'bateria_descargada', label: t('admin.incidents.types.deadBattery', 'Batería Descargada'), icon: <FaExclamationTriangle /> },
+                      { id: 'falla_electrica', label: t('admin.incidents.types.electricalFailure', 'Falla Eléctrica'), icon: <FaExclamationTriangle /> },
+                      { id: 'robo', label: t('admin.incidents.types.theft', 'Robo'), icon: <FaExclamationCircle /> },
+                      { id: 'asistencia_general', label: t('admin.incidents.types.generalAssistance', 'Asistencia General'), icon: <FaExclamationCircle /> },
+                      { id: 'otro_problema', label: t('admin.incidents.types.other', 'Otro'), icon: <FaExclamationCircle /> },
                     ].map(tipo => (
                       <button
                         key={tipo.id}
                         type="button"
                         onClick={() => {
-                           let time = '2 a 4 horas';
-                           if (tipo.id === 'falla_electrica' || tipo.id === 'bateria_descargada') time = '1 a 2 horas';
-                           if (tipo.id === 'asistencia_general') time = '1 hora';
-                           if (tipo.id === 'otro_problema') time = 'Por definir';
+                           let time = t('admin.incidents.time.twoToFourHours', '2 a 4 horas');
+                           if (tipo.id === 'falla_electrica' || tipo.id === 'bateria_descargada') time = t('admin.incidents.time.oneToTwoHours', '1 a 2 horas');
+                           if (tipo.id === 'asistencia_general') time = t('admin.incidents.time.oneHour', '1 hora');
+                           if (tipo.id === 'otro_problema') time = t('admin.incidents.time.toBeDefined', 'Por definir');
                            setFormCrear({ ...formCrear, tipoIncidenciaId: tipo.id, tipoIncidenciaNombre: tipo.label, tiempoEstimado: time })
                         }}
                         style={{
@@ -696,18 +722,18 @@ export default function IncidentManagementPage() {
                 <div style={{ background: '#fef3c7', border: '1px solid #fde68a', borderRadius: 10, padding: '16px', display: 'flex', alignItems: 'flex-start', gap: 12 }}>
                   <FaClock style={{ color: '#b45309', fontSize: 20, marginTop: 2 }} />
                   <div>
-                    <span style={{ display: 'block', fontSize: 12, color: '#b45309', fontWeight: 600 }}>Tiempo estimado de atención técnica:</span>
+                    <span style={{ display: 'block', fontSize: 12, color: '#b45309', fontWeight: 600 }}>{t('admin.incidents.estimatedTime', 'Tiempo estimado de atención técnica:')}</span>
                     <strong style={{ color: '#92400e', fontSize: 14 }}>{formCrear.tiempoEstimado}</strong>
                   </div>
                 </div>
 
                 {/* Descripcion */}
                 <label style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  <span style={{ fontSize: 13, fontWeight: 700, color: '#1e293b' }}>Descripción del problema <span style={{ color: '#ef4444' }}>*</span></span>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: '#1e293b' }}>{t('admin.incidents.problemDescription', 'Descripción del problema')} <span style={{ color: '#ef4444' }}>*</span></span>
                   <textarea
                     required
                     rows={4}
-                    placeholder="Describe los síntomas..."
+                    placeholder={t('admin.incidents.describeSymptoms', 'Describe los síntomas...')}
                     value={formCrear.descripcion}
                     onChange={(e) => setFormCrear({ ...formCrear, descripcion: e.target.value })}
                     style={{ background: '#f8fafc', border: '1px solid #e2e8f0', padding: '12px', borderRadius: 8, fontSize: 14, resize: 'none', color: '#334155' }}

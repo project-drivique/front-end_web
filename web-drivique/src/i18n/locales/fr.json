@@ -7,10 +7,10 @@
     "payments": "Paiements",
     "contracts": "Contrats",
     "branches": "Agences",
-    "logout": "Se déconnecter",
+    "logout": "Déconnexion",
     "adminRole": "Administrateur général",
     "management": "Gestion",
-    "navigation": "Navigation administrative",
+    "navigation": "Navigation",
     "backToDashboard": "Retour au tableau de bord",
     "modulePending": "Ce module reste accessible depuis le menu et sera développé dans sa user story correspondante.",
     "dashboard": "Tableau de bord",
@@ -228,7 +228,25 @@
     "cancelledSuccess": "Réservation {{code}} annulée avec succès.",
     "nav": {
       "contracts": "Contrats",
-      "audit": "Audit"
+      "audit": "Audit",
+      "dashboard": "Tableau de bord",
+      "notifications": "Notifications",
+      "myBranch": "Ma succursale",
+      "vehicles": "Flotte & Véhicules",
+      "users": "Utilisateurs",
+      "roles": "Rôles & Permissions",
+      "reservations": "Réservations",
+      "cashCollection": "Paiements",
+      "incidents": "Incidents",
+      "documents": "Validation des documents",
+      "reviews": "Avis & Évaluations",
+      "cities": "Villes",
+      "branches": "Succursales",
+      "promotions": "Promotions",
+      "brand": "Marque",
+      "reports": "Rapports",
+      "deliveries": "Livraisons",
+      "controlPanel": "Panneau de configuration"
     },
     "usersTitle": "Contrôle des comptes et vérification",
     "usersSubtitle": "Gestion complète des clients, administrateurs, rôles, statuts de compte et vérification des documents.",
@@ -884,7 +902,15 @@
         "pinchazo_neumatico": "Crevaison / Pneu",
         "limpieza_estetica": "Nettoyage / Esthétique",
         "choque_carroceria": "Choc / Carrosserie",
-        "mantenimiento_preventivo": "Entretien préventif"
+        "mantenimiento_preventivo": "Entretien préventif",
+        "crash": "Accident",
+        "mechanicalBreakdown": "Panne Mécanique",
+        "flatTire": "Crevaison",
+        "deadBattery": "Batterie Déchargée",
+        "electricalFailure": "Panne Électrique",
+        "theft": "Vol",
+        "generalAssistance": "Assistance Générale",
+        "other": "Autre"
       },
       "newReport": "Nouveau rapport d'incident",
       "searchPlaceholder": "Rechercher par code, véhicule, plaque ou client...",
@@ -905,7 +931,7 @@
       "print": "Imprimer",
       "registered": "incidents enregistrés",
       "detailTitle": "Gestion des incidents",
-      "estimatedTime": "Temps estimé:",
+      "estimatedTime": "Temps d'intervention technique estimé :",
       "noticeEmailMsg": "Un email et une notification seront envoyés.",
       "replyPlaceholder": "Écrivez la réponse officielle...",
       "cancel": "Annuler",
@@ -913,11 +939,19 @@
       "internalHeader": "Rapport interne flotte",
       "selectVehicle": "Sélectionner le véhicule:",
       "chooseVehicle": "Sélectionnez un véhicule...",
-      "incidentType": "Type d'incident:",
+      "incidentType": "Type d'Incident",
       "priorityUrgency": "Priorité / Urgence:",
       "descriptionLabel": "Description détaillée de l'incident:",
       "descriptionPlaceholder": "Décrivez les symptômes ou réparations nécessaires...",
-      "createBtn": "Créer le rapport"
+      "createBtn": "Créer le rapport",
+      "time": {
+        "toBeDefined": "À définir",
+        "twoToFourHours": "2 à 4 heures",
+        "oneToTwoHours": "1 à 2 heures",
+        "oneHour": "1 heure"
+      },
+      "problemDescription": "Description du problème",
+      "describeSymptoms": "Décrivez les symptômes..."
     },
     "promotions": {
       "title": "Promotions et coupons",
@@ -1471,6 +1505,12 @@
     "reviews": {
       "title": "Avis et Évaluations",
       "subtitle": "Gestion des évaluations des clients pour cette succursale."
+    },
+    "sections": {
+      "monitoreo": "SURVEILLANCE",
+      "gestión_operativa": "GESTION OPÉRATIONNELLE",
+      "consulta_y_auditoría": "CONSULTATION & AUDIT",
+      "configuración_global": "CONFIGURATION GLOBALE"
     }
   },
   "common": {
@@ -1504,7 +1544,9 @@
     "exportExcel": "Exporter vers Excel",
     "exportPdf": "Exporter vers PDF",
     "print": "Imprimer",
-    "viewDetails": "Voir les détails"
+    "viewDetails": "Voir les détails",
+    "deliveries": "Livraisons",
+    "returns": "Retours"
   },
   "login": {
     "title": "Se connecter",
@@ -3152,16 +3194,25 @@
       "received": "reçues",
       "rented": "en location",
       "of": "sur",
-      "vehiclesInUse": "véhicules utilisés"
+      "vehiclesInUse": "véhicules utilisés",
+      "monthlyRevenue": "Revenus du mois",
+      "todayDeliveries": "Livraisons du jour",
+      "todayReturns": "Retours du jour",
+      "fleetOccupancy": "Occupation de la flotte"
     },
     "charts": {
       "workload": "Charge Opérationnelle par Créneau Horaire",
       "scheduleOf": "Programme du",
       "calendar": "Calendrier Opérationnel",
-      "selectDateRange": "Sélectionnez une plage de dates"
+      "selectDateRange": "Sélectionnez une plage de dates",
+      "deliveriesList": "Liste des livraisons",
+      "returnsList": "Liste des retours",
+      "totalVehicles": "Total des véhicules"
     },
     "alerts": {
       "requiresAttention": "Nécessite votre attention"
-    }
+    },
+    "subtitle": "Panneau opérationnel",
+    "title": "Tableau de bord"
   }
 }

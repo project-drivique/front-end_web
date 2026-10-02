@@ -128,6 +128,9 @@ export default function VehicleManagementPage() {
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [zoomImage, setZoomImage] = useState(null);
+  
+  // Agregar un estado local para la actualización rápida
+  const [updatingVehicleId, setUpdatingVehicleId] = useState(null);
 
   const branches = useMemo(
     () =>
@@ -390,6 +393,30 @@ export default function VehicleManagementPage() {
     setCategoryForm(category);
     setModal({ type: "category_form", category });
     setError("");
+  };
+
+  const handleQuickStatusChange = (vehicleId, newState) => {
+    try {
+      setUpdatingVehicleId(vehicleId);
+      const vehicleToUpdate = vehicles.find((v) => Number(v.id) === Number(vehicleId));
+      if (!vehicleToUpdate) throw new Error("Vehículo no encontrado");
+
+      if (vehicleManagementService.activeReservationCount(vehicleId) > 0 && newState !== "reservado") {
+         alert("No puedes cambiar el estado manualmente porque este vehículo tiene una reserva activa.");
+         return;
+      }
+
+      const updatedData = { ...vehicleToUpdate, estadoFlota: newState };
+      vehicleManagementService.update(vehicleId, updatedData, user);
+      
+      setVehicles(vehicleManagementService.list());
+      setNotice(`Estado del vehículo actualizado a ${newState === "disponible" ? "Disponible" : "Mantenimiento"}.`);
+    } catch (error) {
+      console.error("Error updating status:", error);
+      alert("No se pudo cambiar el estado.");
+    } finally {
+      setUpdatingVehicleId(null);
+    }
   };
 
   const saveCategory = (e) => {
@@ -1495,26 +1522,48 @@ export default function VehicleManagementPage() {
                             </span>
                           </td>
                           <td>
-                            <span
-                              className={`status-pill ${
-                                vehicle.estadoEfectivo === "disponible"
-                                  ? "is-green"
-                                  : vehicle.estadoEfectivo === "reservado"
-                                  ? "is-blue"
-                                  : "is-red"
-                              }`}
-                              style={{
-                                padding: "4px 10px",
-                                borderRadius: 20,
-                                fontSize: 11,
-                                fontWeight: 700,
-                              }}
-                            >
-                              {t(
-                                `admin.vehiclesManagement.states.${vehicle.estadoEfectivo}`,
-                                vehicle.estadoEfectivo
-                              )}
-                            </span>
+                            {vehicle.estadoEfectivo === "reservado" ? (
+                              <span
+                                className="status-pill is-blue"
+                                style={{
+                                  padding: "4px 10px",
+                                  borderRadius: 20,
+                                  fontSize: 11,
+                                  fontWeight: 700,
+                                }}
+                                title="El estado es automático por reserva activa"
+                              >
+                                {t(
+                                  `admin.vehiclesManagement.states.${vehicle.estadoEfectivo}`,
+                                  "Reservado"
+                                )}
+                              </span>
+                            ) : (
+                              <select
+                                className={`cities-input status-pill ${
+                                  vehicle.estadoFlota === "disponible" ? "is-green" : "is-red"
+                                }`}
+                                value={vehicle.estadoFlota}
+                                onChange={(e) => handleQuickStatusChange(vehicle.id, e.target.value)}
+                                disabled={updatingVehicleId === vehicle.id}
+                                style={{
+                                  padding: "4px 28px 4px 10px",
+                                  borderRadius: 20,
+                                  fontSize: 11,
+                                  fontWeight: 700,
+                                  border: "none",
+                                  cursor: "pointer",
+                                  appearance: "auto",
+                                }}
+                              >
+                                <option value="disponible">
+                                  {t("admin.vehiclesManagement.states.disponible", "Disponible")}
+                                </option>
+                                <option value="mantenimiento">
+                                  {t("admin.vehiclesManagement.states.mantenimiento", "Mantenimiento")}
+                                </option>
+                              </select>
+                            )}
                           </td>
                           <td style={{ textAlign: "center" }}>
                             <div className="cities-row-actions">
@@ -1899,60 +1948,76 @@ export default function VehicleManagementPage() {
                         </div>
 
                         <div className="fleet-form-grid-4">
-                          <div className="fleet-form-group">
-                            <label className="fleet-form-label">
-                              {t("admin.vehiclesManagement.fields.limitedKm", "Km Limitado / Día")}
+                          <div className="fleet-form-group" style={{ gridColumn: "1 / span 2" }}>
+                            <label className="fleet-form-label" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                              <input 
+                                type="checkbox" 
+                                checked={form.kmLimitado !== ""} 
+                                onChange={(e) => setForm({ ...form, kmLimitado: e.target.checked ? "200" : "", precioLimitado: e.target.checked ? form.precioLimitado || "0" : "", precioExcedente: e.target.checked ? form.precioExcedente || "0" : "" })}
+                              />
+                              {t("admin.vehiclesManagement.fields.limitedKmToggle", "Ofrece Kilometraje Limitado")}
                             </label>
-                            <input
-                              className="fleet-form-input"
-                              type="number"
-                              min="0"
-                              value={form.kmLimitado}
-                              onChange={(e) => setForm({ ...form, kmLimitado: e.target.value })}
-                              placeholder="Ej: 200"
-                            />
+                            {form.kmLimitado !== "" && (
+                              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16, marginTop: 12 }}>
+                                <div>
+                                  <label className="fleet-form-label">{t("admin.vehiclesManagement.fields.limitedKm", "Km Limitado / Día")}</label>
+                                  <input
+                                    className="fleet-form-input"
+                                    type="number"
+                                    min="0"
+                                    value={form.kmLimitado}
+                                    onChange={(e) => setForm({ ...form, kmLimitado: e.target.value })}
+                                    placeholder="Ej: 200"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="fleet-form-label">{t("admin.vehiclesManagement.fields.limitedPrice", "Tarifa Km Limitado")}</label>
+                                  <input
+                                    className="fleet-form-input"
+                                    type="number"
+                                    min="0"
+                                    value={form.precioLimitado}
+                                    onChange={(e) => setForm({ ...form, precioLimitado: e.target.value })}
+                                    placeholder="Ej: 85000"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="fleet-form-label">{t("admin.vehiclesManagement.fields.extraPrice", "Excedente por Km")}</label>
+                                  <input
+                                    className="fleet-form-input"
+                                    type="number"
+                                    min="0"
+                                    value={form.precioExcedente}
+                                    onChange={(e) => setForm({ ...form, precioExcedente: e.target.value })}
+                                    placeholder="Ej: 800"
+                                  />
+                                </div>
+                              </div>
+                            )}
                           </div>
 
-                          <div className="fleet-form-group">
-                            <label className="fleet-form-label">
-                              {t("admin.vehiclesManagement.fields.limitedPrice", "Tarifa Km Limitado ($ COP)")}
+                          <div className="fleet-form-group" style={{ gridColumn: "3 / span 2" }}>
+                            <label className="fleet-form-label" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                              <input 
+                                type="checkbox" 
+                                checked={form.precioIlimitado !== ""} 
+                                onChange={(e) => setForm({ ...form, precioIlimitado: e.target.checked ? "0" : "" })}
+                              />
+                              {t("admin.vehiclesManagement.fields.unlimitedKmToggle", "Ofrece Kilometraje Ilimitado")}
                             </label>
-                            <input
-                              className="fleet-form-input"
-                              type="number"
-                              min="0"
-                              value={form.precioLimitado}
-                              onChange={(e) => setForm({ ...form, precioLimitado: e.target.value })}
-                              placeholder="Ej: 85000"
-                            />
-                          </div>
-
-                          <div className="fleet-form-group">
-                            <label className="fleet-form-label">
-                              {t("admin.vehiclesManagement.fields.extraPrice", "Excedente por Km ($ COP)")}
-                            </label>
-                            <input
-                              className="fleet-form-input"
-                              type="number"
-                              min="0"
-                              value={form.precioExcedente}
-                              onChange={(e) => setForm({ ...form, precioExcedente: e.target.value })}
-                              placeholder="Ej: 800"
-                            />
-                          </div>
-
-                          <div className="fleet-form-group">
-                            <label className="fleet-form-label">
-                              {t("admin.vehiclesManagement.fields.unlimitedPrice", "Tarifa Km Ilimitado ($ COP)")}
-                            </label>
-                            <input
-                              className="fleet-form-input"
-                              type="number"
-                              min="0"
-                              value={form.precioIlimitado}
-                              onChange={(e) => setForm({ ...form, precioIlimitado: e.target.value })}
-                              placeholder="Ej: 120000"
-                            />
+                            {form.precioIlimitado !== "" && (
+                              <div style={{ marginTop: 12 }}>
+                                <label className="fleet-form-label">{t("admin.vehiclesManagement.fields.unlimitedPrice", "Tarifa Km Ilimitado ($ COP)")}</label>
+                                <input
+                                  className="fleet-form-input"
+                                  type="number"
+                                  min="0"
+                                  value={form.precioIlimitado}
+                                  onChange={(e) => setForm({ ...form, precioIlimitado: e.target.value })}
+                                  placeholder="Ej: 120000"
+                                />
+                              </div>
+                            )}
                           </div>
                         </div>
 
@@ -1967,12 +2032,17 @@ export default function VehicleManagementPage() {
                             {form.seguros.map((insurance, index) => (
                               <div key={index} className="fleet-insurance-row">
                                 <div className="fleet-form-group" style={{ flex: 1 }}>
-                                  <input
+                                  <select
                                     className="fleet-form-input"
                                     value={insurance.nombre}
-                                    placeholder="Nombre del seguro (Ej: Protección Total)"
                                     onChange={(e) => updateInsurance(index, "nombre", e.target.value)}
-                                  />
+                                  >
+                                    <option value="">{t("admin.vehiclesManagement.selectInsurance", "Seleccionar seguro...")}</option>
+                                    <option value="Protección Básica">{t("admin.vehiclesManagement.insurances.basic", "Protección Básica")}</option>
+                                    <option value="Protección Estándar">{t("admin.vehiclesManagement.insurances.standard", "Protección Estándar")}</option>
+                                    <option value="Protección Total">{t("admin.vehiclesManagement.insurances.total", "Protección Total")}</option>
+                                    <option value="Protección Premium">{t("admin.vehiclesManagement.insurances.premium", "Protección Premium")}</option>
+                                  </select>
                                 </div>
                                 <div className="fleet-form-group" style={{ width: 140 }}>
                                   <input

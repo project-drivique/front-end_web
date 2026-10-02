@@ -1171,7 +1171,7 @@ export default function BranchDashboard({ branchOnly = true }) {
 
             <div className="branch-kpi-card-footer">
               <span className="branch-kpi-trend-text">
-                {dashboardData.todayReturnsPending} pendientes · {dashboardData.todayReturnsReceived} recibidas
+                {dashboardData.todayReturnsPending} {t("dashboard.kpi.pending", "pendientes")} · {dashboardData.todayReturnsReceived} {t("dashboard.kpi.received", "recibidas")}
               </span>
             </div>
           </article>
@@ -1182,7 +1182,7 @@ export default function BranchDashboard({ branchOnly = true }) {
               <div className="branch-kpi-title-with-icon">
                 <span className="branch-kpi-title">
                   <FaCar className="branch-kpi-inline-icon" aria-hidden="true" />
-                  {t('dashboard.kpi.occupancy', 'Ocupación de flota')}
+                  {t('dashboard.kpi.fleetOccupancy', 'Ocupación de flota')}
                 </span>
               </div>
 
@@ -1241,7 +1241,7 @@ export default function BranchDashboard({ branchOnly = true }) {
 
             <div className="branch-kpi-card-footer">
               <span className="branch-kpi-trend-text">
-                {fleet.rentedVehicles} de {fleet.totalVehicles} vehículos en uso
+                {fleet.rentedVehicles} {t('dashboard.kpi.of', 'de')} {fleet.totalVehicles} {t('dashboard.kpi.vehiclesInUse', 'vehículos en uso')}
               </span>
             </div>
           </article>
@@ -1277,7 +1277,7 @@ export default function BranchDashboard({ branchOnly = true }) {
                 <div className="branch-card-title-group">
                   <h3 className="branch-card-title">
                     <FaCalendarCheck className="branch-card-title-icon" aria-hidden="true" />
-                    {activeTab === 'entregas' ? 'Listado de Entregas' : 'Listado de Devoluciones'}
+                    {activeTab === 'entregas' ? t('dashboard.charts.deliveriesList', 'Listado de Entregas') : t('dashboard.charts.returnsList', 'Listado de Devoluciones')}
                   </h3>
                 </div>
 
@@ -1292,7 +1292,7 @@ export default function BranchDashboard({ branchOnly = true }) {
                     }`}
                     onClick={() => setActiveTab('entregas')}
                   >
-                    Entregas
+                    {t('common.deliveries', 'Entregas')}
                   </button>
 
                   <button
@@ -1304,14 +1304,14 @@ export default function BranchDashboard({ branchOnly = true }) {
                     }`}
                     onClick={() => setActiveTab('devoluciones')}
                   >
-                    Devoluciones
+                    {t('common.returns', 'Devoluciones')}
                   </button>
                 </div>
               </div>
 
               {/* RESUMEN VEHÍCULOS */}
               <div className="branch-schedule-summary-bar">
-                <span>Total de vehículos: {deliveriesForRange.length || currentList.length}</span>
+                <span>{t('dashboard.charts.totalVehicles', 'Total de vehículos')}: {deliveriesForRange.length || currentList.length}</span>
               </div>
 
               {currentList.length === 0 ? (
