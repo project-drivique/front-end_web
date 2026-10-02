@@ -320,12 +320,11 @@ export default function IncidentManagementPage() {
 
               {/* Filtro Estado */}
               <select value={stateFilter} onChange={(e) => setStateFilter(e.target.value)}>
-                <option value="all">{t('admin.incidents.allStates', 'Todos los estados')}</option>
-                <option value="recibido">{t('admin.incidents.recibido', 'Recibidos')}</option>
-                <option value="en_revision">{t('admin.incidents.en_revision', 'En Revisión')}</option>
-                <option value="en_reparacion">{t('admin.incidents.en_reparacion', 'En Reparación')}</option>
-                <option value="resuelto">{t('admin.incidents.resuelto', 'Resueltos')}</option>
-                <option value="rechazado">{t('admin.incidents.rechazado', 'Rechazados')}</option>
+                <option value="all">Todos los estados</option>
+                <option value="recibido">Recibido</option>
+                <option value="atendiendo">Atendiendo</option>
+                <option value="resuelto">Resuelto</option>
+                <option value="rechazado">Rechazado</option>
               </select>
 
               {/* Filtro Sucursal (Bloqueado para Encargado) */}
@@ -436,8 +435,8 @@ export default function IncidentManagementPage() {
                         <td style={{ color: '#475569' }}>{r.contactoTelefono || '+57 300 0000000'}</td>
                         <td style={{ color: '#64748b' }}>{r.contactoEmail}</td>
                         
-                        <td style={{ fontWeight: 600, color: r.estado === 'resuelto' ? '#15803d' : r.estado === 'en_reparacion' ? '#0369a1' : r.estado === 'rechazado' ? '#991b1b' : '#475569' }}>
-                          {r.estado === 'resuelto' ? 'Resuelto' : r.estado === 'en_reparacion' ? 'Atendiendo' : r.estado === 'rechazado' ? 'Rechazado' : r.estado === 'en_revision' ? 'En Revisión' : 'Recibido'}
+                        <td style={{ fontWeight: 600, color: r.estado === 'resuelto' ? '#15803d' : r.estado === 'atendiendo' || r.estado === 'en_reparacion' || r.estado === 'en_revision' ? '#0369a1' : r.estado === 'rechazado' ? '#991b1b' : '#475569' }}>
+                          {r.estado === 'resuelto' ? 'Resuelto' : r.estado === 'atendiendo' || r.estado === 'en_reparacion' || r.estado === 'en_revision' ? 'Atendiendo' : r.estado === 'rechazado' ? 'Rechazado' : 'Recibido'}
                         </td>
                         
                         <td>
