@@ -1511,35 +1511,33 @@ export default function VehicleManagementPage() {
                             </span>
                           </td>
                           <td>
-                            <span
+                            <div
                               style={{
-                                display: "inline-block",
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: "6px",
                                 padding: "4px 10px",
                                 borderRadius: 20,
                                 fontSize: 11,
-                                fontWeight: 700,
-                                whiteSpace: "nowrap",
-                                background:
-                                  vehicle.estadoEfectivo === "disponible"
-                                    ? "#d1fae5"
-                                    : vehicle.estadoEfectivo === "reservado"
-                                    ? "#dbeafe"
-                                    : "#fee2e2",
-                                color:
-                                  vehicle.estadoEfectivo === "disponible"
-                                    ? "#065f46"
-                                    : vehicle.estadoEfectivo === "reservado"
-                                    ? "#1e40af"
-                                    : "#991b1b",
-                                border: `1px solid ${
-                                  vehicle.estadoEfectivo === "disponible"
-                                    ? "#a7f3d0"
-                                    : vehicle.estadoEfectivo === "reservado"
-                                    ? "#bfdbfe"
-                                    : "#fecaca"
-                                }`
+                                fontWeight: 600,
+                                background: "var(--bg-seccion1, #f8fafc)",
+                                border: "1px solid var(--city-border, #e2e8f0)",
+                                color: "var(--texto-primary, #1e293b)",
                               }}
                             >
+                              <span
+                                style={{
+                                  width: 6,
+                                  height: 6,
+                                  borderRadius: "50%",
+                                  backgroundColor:
+                                    vehicle.estadoEfectivo === "disponible"
+                                      ? "#10b981"
+                                      : vehicle.estadoEfectivo === "reservado"
+                                      ? "#3b82f6"
+                                      : "#ef4444",
+                                }}
+                              />
                               {vehicle.estadoEfectivo === "disponible"
                                 ? t("admin.vehiclesManagement.states.disponible", "Disponible")
                                 : vehicle.estadoEfectivo === "reservado"
@@ -1547,7 +1545,7 @@ export default function VehicleManagementPage() {
                                 : vehicle.estadoEfectivo === "mantenimiento" || vehicle.estadoEfectivo === "en mantenimiento"
                                 ? t("admin.vehiclesManagement.states.en mantenimiento", "En Mantenimiento")
                                 : vehicle.estadoEfectivo || t("admin.vehiclesManagement.states.disponible", "Disponible")}
-                            </span>
+                            </div>
                           </td>
                           <td style={{ textAlign: "center" }}>
                             <div className="cities-row-actions">
@@ -1732,14 +1730,17 @@ export default function VehicleManagementPage() {
                         </div>
 
                         <div>
-                          <label style={{ display: 'block', fontSize: '11px', color: 'var(--texto-second, #64748b)', marginBottom: '6px', fontWeight: 600 }}>{t("admin.vehiclesManagement.modal.state", "Estado del Vehículo")}</label>
-                          <input
-                            type="text"
-                            readOnly
-                            disabled
-                            style={{ width: '100%', padding: '10px 14px', background: 'var(--bg-seccion1, #f8fafc)', border: 'none', borderRadius: '6px', fontSize: '13px', color: '#065f46', fontWeight: 700, cursor: 'not-allowed' }}
-                            value={t("admin.vehiclesManagement.states.disponible", "Disponible")}
-                          />
+                          <label style={{ display: 'block', fontSize: '11px', color: 'var(--texto-second, #64748b)', marginBottom: '6px', fontWeight: 600 }}>{t("admin.vehiclesManagement.modal.state", "Estado del Vehículo *")}</label>
+                          <select
+                            style={{ width: '100%', padding: '10px 14px', background: 'var(--bg-seccion1, #f8fafc)', border: 'none', borderRadius: '6px', fontSize: '13px', color: 'var(--texto-primary, #334155)', outline: 'none', cursor: 'pointer' }}
+                            value={form.estadoEfectivo || "disponible"}
+                            onChange={(e) => setForm({ ...form, estadoEfectivo: e.target.value })}
+                            required
+                          >
+                            <option value="disponible">{t("admin.vehiclesManagement.states.disponible", "Disponible")}</option>
+                            <option value="reservado">{t("admin.vehiclesManagement.states.reservado", "Reservado")}</option>
+                            <option value="en mantenimiento">{t("admin.vehiclesManagement.states.en mantenimiento", "En Mantenimiento")}</option>
+                          </select>
                         </div>
 
                       </div>
