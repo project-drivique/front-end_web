@@ -572,18 +572,18 @@ export default function ReservationManagementPage() {
                       <tr>
                         <th>ID</th>
                         <th>CÓDIGO RESERVA</th>
-                        <th>Foto</th>
-                        <th>Vehículo</th>
-                        <th>Placa</th>
-                        <th>Medio de Pago</th>
-                        <th>Lugar de Retiro</th>
-                        <th>Lugar de Devolución</th>
-                        <th>Fecha de Retiro</th>
-                        <th>Fecha de Devolución</th>
-                        <th>Hora de Retiro</th>
-                        <th>Hora de Devolución</th>
-                        <th>Duración del Alquiler</th>
-                        <th>Devolución Anticipada</th>
+                        <th>FOTO</th>
+                        <th>NOMBRE VEHÍCULO</th>
+                        <th>PLACA</th>
+                        <th>MEDIO DE PAGO</th>
+                        <th>LUGAR DE RETIRO</th>
+                        <th>LUGAR DE DEVOLUCIÓN</th>
+                        <th>FECHA DE RETIRO</th>
+                        <th>FECHA DE DEVOLUCIÓN</th>
+                        <th>HORA DE RETIRO</th>
+                        <th>HORA DE DEVOLUCIÓN</th>
+                        <th>DURACIÓN DEL ALQUILER</th>
+                        <th>DEVOLUCIÓN ANTICIPADA</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -690,12 +690,12 @@ export default function ReservationManagementPage() {
                       <tr>
                         <th>ID</th>
                         <th>CÓDIGO RESERVA</th>
-                        <th>Plan Protección</th>
-                        <th>Precio Protección</th>
-                        <th>Tipo Kilometraje</th>
-                        <th>Precio Kilometraje</th>
-                        <th>Servicios Adicionales</th>
-                        <th>Precio Servicios</th>
+                        <th>PLAN PROTECCIÓN</th>
+                        <th>PRECIO PROTECCIÓN</th>
+                        <th>TIPO KILOMETRAJE</th>
+                        <th>PRECIO KILOMETRAJE</th>
+                        <th>SERVICIOS ADICIONALES</th>
+                        <th>PRECIO SERVICIOS</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -785,21 +785,21 @@ export default function ReservationManagementPage() {
                         <th>ID</th>
                         <th>CÓDIGO RESERVA</th>
                         <th>NOMBRE COMPLETO</th>
-                        <th>Correo</th>
-                        <th>Tipo de Documento</th>
-                        <th>Nacionalidad</th>
-                        <th>Teléfono Celular</th>
-                        <th>Número de Documento</th>
-                        <th>Documento de Identidad</th>
-                        <th>Licencia de Conducción</th>
-                        <th>Términos y Condiciones</th>
-                        <th>Promociones</th>
-                        <th>Pago Total</th>
-                        <th>Estado Reserva</th>
-                        <th>Estado del Pago</th>
-                        <th style={{ textAlign: 'center' }}>Estado Firma de Contrato</th>
-                        <th style={{ textAlign: 'center' }}>Confirmar Entrega</th>
-                        <th style={{ textAlign: 'center' }}>Confirmar Devolución</th>
+                        <th>CORREO</th>
+                        <th>TIPO DE DOCUMENTO</th>
+                        <th>NACIONALIDAD</th>
+                        <th>TELÉFONO CELULAR</th>
+                        <th>NÚMERO DE DOCUMENTO</th>
+                        <th>DOCUMENTO DE IDENTIDAD</th>
+                        <th>LICENCIA DE CONDUCCIÓN</th>
+                        <th>TÉRMINOS Y CONDICIONES</th>
+                        <th>PROMOCIONES</th>
+                        <th>PAGO TOTAL</th>
+                        <th>ESTADO RESERVA</th>
+                        <th>ESTADO DEL PAGO</th>
+                        <th style={{ textAlign: 'center' }}>ESTADO FIRMA DE CONTRATO</th>
+                        <th style={{ textAlign: 'center' }}>CONFIRMAR ENTREGA</th>
+                        <th style={{ textAlign: 'center' }}>CONFIRMAR DEVOLUCIÓN</th>
                       </tr>
                     </thead>
                     <tbody>

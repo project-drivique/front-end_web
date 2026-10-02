@@ -329,15 +329,15 @@ export default function BranchProfilePage() {
         {/* TOPBAR OPERATIVA UNIFICADA */}
         <div className="branch-topbar">
           <div className="branch-topbar-brand-title">
-            <span className="branch-topbar-badge">Gestión de Sucursal</span>
-            <h1 className="branch-topbar-heading">Mi Sucursal</h1>
+            <span className="branch-topbar-badge">{t('branchProfile.managementBadge', 'Gestión de Sucursal')}</span>
+            <h1 className="branch-topbar-heading">{t('branchProfile.title', 'Mi Sucursal')}</h1>
           </div>
 
           <div className="branch-topbar-actions">
             {hasUnsavedChanges && (
               <div className="branch-profile-unsaved-alert" style={{ marginRight: 4, display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 13, color: '#b45309', background: '#fef3c7', padding: '6px 12px', borderRadius: 8, fontWeight: 600 }}>
                 <FaExclamationTriangle aria-hidden="true" />
-                <span>Cambios pendientes</span>
+                <span>{t('branchProfile.unsavedChanges', 'Cambios pendientes')}</span>
               </div>
             )}
 
@@ -350,7 +350,7 @@ export default function BranchProfilePage() {
               style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', borderRadius: 8, fontWeight: 600 }}
             >
               <FaUndo aria-hidden="true" />
-              <span>Descartar</span>
+              <span>{t('branchProfile.discard', 'Descartar')}</span>
             </button>
 
             <button
@@ -362,7 +362,7 @@ export default function BranchProfilePage() {
               style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 18px', borderRadius: 8, fontWeight: 600 }}
             >
               <FaSave aria-hidden="true" />
-              <span>{saving ? 'Guardando...' : 'Guardar cambios'}</span>
+              <span>{saving ? t('branchProfile.saving', 'Guardando...') : t('branchProfile.save', 'Guardar cambios')}</span>
             </button>
 
             <MenuConfiguracion />
@@ -398,7 +398,7 @@ export default function BranchProfilePage() {
                     {t('branchProfile.general.title', 'Información general')}
                   </span>
                   <span className="branch-profile-card-desc">
-                    Datos visibles para los clientes en el catálogo público
+                    {t('branchProfile.general.desc', 'Datos visibles para los clientes en el catálogo público')}
                   </span>
                 </div>
               </div>
@@ -534,7 +534,7 @@ export default function BranchProfilePage() {
                     {t('branchProfile.location.title', 'Ubicación')}
                   </span>
                   <span className="branch-profile-card-desc">
-                    Posicionamiento satelital de la sucursal
+                    {t('branchProfile.location.desc', 'Posicionamiento satelital de la sucursal')}
                   </span>
                 </div>
               </div>
@@ -620,10 +620,10 @@ export default function BranchProfilePage() {
               <div className="branch-profile-card-title-wrap">
                 <span className="branch-profile-card-title">
                   <FaCreditCard className="branch-profile-card-icon" aria-hidden="true" />
-                  Puntos de Entrega y Horarios según el Medio de Pago
+                  {t('branchProfile.paymentAndHours.title', 'Puntos de Entrega y Horarios según el Medio de Pago')}
                 </span>
                 <span className="branch-profile-card-desc">
-                  La sucursal administra múltiples puntos de recogida y devolución según el medio de pago y el lugar de retiro seleccionado por el usuario.
+                  {t('branchProfile.paymentAndHours.desc', 'La sucursal administra múltiples puntos de recogida y devolución según el medio de pago y el lugar de retiro seleccionado por el usuario.')}
                 </span>
               </div>
             </div>
@@ -632,8 +632,7 @@ export default function BranchProfilePage() {
               {/* NOTA INFORMATIVA DESTACADA */}
               <div className="branch-profile-info-banner">
                 <FaInfoCircle className="branch-profile-info-icon" aria-hidden="true" />
-                <p className="branch-profile-info-text">
-                  <strong>Puntos y horarios de la sucursal:</strong> La disponibilidad del punto de recogida y devolución depende directamente del <strong>medio de pago</strong> y del <strong>lugar de retiro seleccionado</strong> al reservar.
+                <p className="branch-profile-info-text" dangerouslySetInnerHTML={{__html: t('branchProfile.paymentAndHours.info', '<strong>Puntos y horarios de la sucursal:</strong> La disponibilidad del punto de recogida y devolución depende directamente del <strong>medio de pago</strong> y del <strong>lugar de retiro seleccionado</strong> al reservar.')}}>
                 </p>
               </div>
 
@@ -647,27 +646,27 @@ export default function BranchProfilePage() {
                       <FaCreditCard aria-hidden="true" />
                     </div>
                     <div>
-                      <h4 className="branch-payment-explanatory-title">Pago Virtual con Wompi (En línea)</h4>
-                      <span className="branch-payment-explanatory-badge">Múltiples Puntos Habilitados</span>
+                      <h4 className="branch-payment-explanatory-title">{t('branchProfile.paymentAndHours.onlinePayment', 'Pago Virtual con Wompi (En línea)')}</h4>
+                      <span className="branch-payment-explanatory-badge">{t('branchProfile.paymentAndHours.onlineBadge', 'Múltiples Puntos Habilitados')}</span>
                     </div>
                   </div>
 
                   <div className="branch-payment-explanatory-body">
                     <p>
-                      Al pagar en línea por adelantado, la sucursal habilita todos sus puntos de entrega y recogida coordinados:
+                      {t('branchProfile.paymentAndHours.onlineDesc', 'Al pagar en línea por adelantado, la sucursal habilita todos sus puntos de entrega y recogida coordinados:')}
                     </p>
                     <ul className="branch-payment-explanatory-list">
                       <li>
-                        <strong>Aeropuerto:</strong> <strong>24 Horas</strong> (Operación continua 24/7 para recepción de vuelos y viajeros).
+                        <strong dangerouslySetInnerHTML={{__html: t('branchProfile.paymentAndHours.airportTitle', 'Aeropuerto:')}} /> <span dangerouslySetInnerHTML={{__html: t('branchProfile.paymentAndHours.airportDesc', '<strong>24 Horas</strong> (Operación continua 24/7 para recepción de vuelos y viajeros).')}} />
                       </li>
                       <li>
-                        <strong>Terminal de Transporte:</strong> <strong>24 Horas</strong> (Operación continua 24/7 para llegadas de transporte terrestre).
+                        <strong dangerouslySetInnerHTML={{__html: t('branchProfile.paymentAndHours.terminalTitle', 'Terminal de Transporte:')}} /> <span dangerouslySetInnerHTML={{__html: t('branchProfile.paymentAndHours.terminalDesc', '<strong>24 Horas</strong> (Operación continua 24/7 para llegadas de transporte terrestre).')}} />
                       </li>
                       <li>
-                        <strong>Entrega a Domicilio:</strong> <strong>07:00 AM – 07:00 PM</strong> (Lunes a Sábado), servicio puerta a puerta en la ciudad.
+                        <strong dangerouslySetInnerHTML={{__html: t('branchProfile.paymentAndHours.deliveryTitle', 'Entrega a Domicilio:')}} /> <span dangerouslySetInnerHTML={{__html: t('branchProfile.paymentAndHours.deliveryDesc', '<strong>07:00 AM – 07:00 PM</strong> (Lunes a Sábado), servicio puerta a puerta en la ciudad.')}} />
                       </li>
                       <li>
-                        <strong>Instalaciones de la Sucursal ({profile.nombre}):</strong> <strong>08:00 AM – 06:00 PM</strong> (Horario regular de atención de la sucursal).
+                        <strong>{t('branchProfile.paymentAndHours.branchTitle', 'Instalaciones de la Sucursal')} ({profile.nombre}):</strong> <span dangerouslySetInnerHTML={{__html: t('branchProfile.paymentAndHours.branchDesc', '<strong>08:00 AM – 06:00 PM</strong> (Horario regular de atención de la sucursal).')}} />
                       </li>
                     </ul>
                   </div>
@@ -680,24 +679,23 @@ export default function BranchProfilePage() {
                       <FaMoneyBillWave aria-hidden="true" />
                     </div>
                     <div>
-                      <h4 className="branch-payment-explanatory-title">Pago en Efectivo (Taquilla de Sucursal)</h4>
-                      <span className="branch-payment-explanatory-badge branch-payment-explanatory-badge--cash">Presencial en Sucursal</span>
+                      <h4 className="branch-payment-explanatory-title">{t('branchProfile.paymentAndHours.cashPayment', 'Pago en Efectivo (Taquilla de Sucursal)')}</h4>
+                      <span className="branch-payment-explanatory-badge branch-payment-explanatory-badge--cash">{t('branchProfile.paymentAndHours.cashBadge', 'Presencial en Sucursal')}</span>
                     </div>
                   </div>
 
                   <div className="branch-payment-explanatory-body">
-                    <p>
-                      Cuando el cliente elige pagar en efectivo, la entrega queda <strong>estrictamente condicionada a la atención presencial en la sucursal asignada donde se encuentra el vehículo ({profile.nombre})</strong>:
+                    <p dangerouslySetInnerHTML={{__html: t('branchProfile.paymentAndHours.cashDesc', 'Cuando el cliente elige pagar en efectivo, la entrega queda <strong>estrictamente condicionada a la atención presencial en la sucursal asignada donde se encuentra el vehículo ({branchName})</strong>:', { branchName: profile.nombre })}}>
                     </p>
                     <ul className="branch-payment-explanatory-list">
                       <li>
-                        <strong>Horario de caja y mostrador:</strong> <strong>08:00 AM – 06:00 PM</strong>. El cliente debe acudir a la sucursal dentro de esta jornada para el pago presencial, arqueo de dinero en caja y firma del contrato.
+                        <strong dangerouslySetInnerHTML={{__html: t('branchProfile.paymentAndHours.cashHoursTitle', 'Horario de caja y mostrador:')}} /> <span dangerouslySetInnerHTML={{__html: t('branchProfile.paymentAndHours.cashHoursDesc', '<strong>08:00 AM – 06:00 PM</strong>. El cliente debe acudir a la sucursal dentro de esta jornada para el pago presencial, arqueo de dinero en caja y firma del contrato.')}} />
                       </li>
                       <li>
-                        <strong>Sin entregas fuera de turno:</strong> No se realizan entregas en efectivo fuera del horario de taquilla de la sucursal.
+                        <strong dangerouslySetInnerHTML={{__html: t('branchProfile.paymentAndHours.cashNoDeliveryTitle', 'Sin entregas fuera de turno:')}} /> <span dangerouslySetInnerHTML={{__html: t('branchProfile.paymentAndHours.cashNoDeliveryDesc', 'No se realizan entregas en efectivo fuera del horario de taquilla de la sucursal.')}} />
                       </li>
                       <li>
-                        <strong>Ubicación única:</strong> El cobro en efectivo solo se recibe en la sucursal física donde está inventariado el vehículo.
+                        <strong dangerouslySetInnerHTML={{__html: t('branchProfile.paymentAndHours.cashLocationTitle', 'Ubicación única:')}} /> <span dangerouslySetInnerHTML={{__html: t('branchProfile.paymentAndHours.cashLocationDesc', 'El cobro en efectivo solo se recibe en la sucursal física donde está inventariado el vehículo.')}} />
                       </li>
                     </ul>
                   </div>
@@ -717,14 +715,11 @@ export default function BranchProfilePage() {
                 </div>
 
                 <div className="branch-payment-deadline-content" style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '6px' }}>
-                  <p className="branch-payment-deadline-text">
-                    • <strong>Cálculo del plazo límite de pago:</strong> Si la reserva se realiza con anticipación suficiente, el cliente cuenta con hasta <strong>72 horas</strong> para completar el pago (virtual con Wompi o presencial en efectivo en sucursal). Si la reserva es para el mismo día o con menor antelación, el sistema <strong>calcula dinámicamente las horas disponibles según la hora exacta de retiro seleccionada</strong> antes del viaje.
+                  <p className="branch-payment-deadline-text" dangerouslySetInnerHTML={{__html: `• <strong>${t('branchProfile.paymentDeadline.rule1Title', 'Cálculo del plazo límite de pago:')}</strong> ${t('branchProfile.paymentDeadline.rule1Desc', 'Si la reserva se realiza con anticipación suficiente, el cliente cuenta con hasta <strong>72 horas</strong> para completar el pago (virtual con Wompi o presencial en efectivo en sucursal). Si la reserva es para el mismo día o con menor antelación, el sistema <strong>calcula dinámicamente las horas disponibles según la hora exacta de retiro seleccionada</strong> antes del viaje.')}`}}>
                   </p>
-                  <p className="branch-payment-deadline-text">
-                    • <strong>Cómputo de 24 horas por día de alquiler:</strong> Cada día de reserva cuenta con una duración exacta de <strong>24 horas</strong>, y el ciclo de alquiler comienza a regir a partir de la <strong>hora exacta de retiro que el cliente selecciona</strong> en el calendario.
+                  <p className="branch-payment-deadline-text" dangerouslySetInnerHTML={{__html: `• <strong>${t('branchProfile.paymentDeadline.rule2Title', 'Cómputo de 24 horas por día de alquiler:')}</strong> ${t('branchProfile.paymentDeadline.rule2Desc', 'Cada día de reserva cuenta con una duración exacta de <strong>24 horas</strong>, y el ciclo de alquiler comienza a regir a partir de la <strong>hora exacta de retiro que el cliente selecciona</strong> en el calendario.')}`}}>
                   </p>
-                  <p className="branch-payment-deadline-text">
-                    • <strong>Cancelación y liberación automática:</strong> En caso de que no se registre el pago dentro del tiempo límite calculado por el sistema, la reserva se cancela automáticamente y el vehículo queda liberado de inmediato en el catálogo para otros usuarios.
+                  <p className="branch-payment-deadline-text" dangerouslySetInnerHTML={{__html: `• <strong>${t('branchProfile.paymentDeadline.rule3Title', 'Cancelación y liberación automática:')}</strong> ${t('branchProfile.paymentDeadline.rule3Desc', 'En caso de que no se registre el pago dentro del tiempo límite calculado por el sistema, la reserva se cancela automáticamente y el vehículo queda liberado de inmediato en el catálogo para otros usuarios.')}`}}>
                   </p>
                 </div>
               </div>

@@ -6,7 +6,7 @@ import {
   FaCheck,
   FaCogs,
   FaEdit,
-  FaFile{t('admin.vehiclesManagement.export.excel', 'Excel')},
+  FaFileExcel,
   FaFilePdf,
   FaImage,
   FaListUl,
@@ -30,7 +30,7 @@ import {
   vehicleManagementService,
 } from "../../../services/vehicleManagementService";
 import {
-  export{t('admin.vehiclesManagement.export.excel', 'Excel')},
+  exportExcel,
   exportPdf,
   printTable,
 } from "../../../utils/listExportUtils";
@@ -242,36 +242,36 @@ export default function VehicleManagementPage() {
   const vehicleHeaders = useMemo(() => {
     return [
       "ID",
-      "Foto",
-      t("admin.vehiclesManagement.fields.vehicle", "Vehículo"),
-      t("admin.vehiclesManagement.fields.plate", "Placa"),
-      ...(!esEncargado ? [t("admin.vehiclesManagement.fields.branch", "Sucursal")] : []),
-      t("admin.vehiclesManagement.fields.category", "Categoría"),
-      "Año",
-      "Color",
-      "Transmisión",
-      "Combustible",
-      t("admin.vehiclesManagement.fields.price", "Tarifa"),
-      t("admin.vehiclesManagement.fields.pico", "Pico y Placa"),
-      t("admin.vehiclesManagement.fields.state", "Estado"),
+      t("admin.vehiclesManagement.fields.photo", "IMAGEN"),
+      t("admin.vehiclesManagement.fields.vehicle", "NOMBRE VEHÍCULO"),
+      t("admin.vehiclesManagement.fields.plate", "PLACA"),
+      ...(!esEncargado ? [t("admin.vehiclesManagement.fields.branch", "SUCURSAL")] : []),
+      t("admin.vehiclesManagement.fields.category", "CATEGORÍA"),
+      t("admin.vehiclesManagement.fields.year", "AÑO"),
+      t("admin.vehiclesManagement.fields.color", "COLOR"),
+      t("admin.vehiclesManagement.fields.transmission", "TRANSMISIÓN"),
+      t("admin.vehiclesManagement.fields.fuel", "COMBUSTIBLE"),
+      t("admin.vehiclesManagement.fields.price", "TARIFA DIARIA"),
+      t("admin.vehiclesManagement.fields.pico", "PICO Y PLACA"),
+      t("admin.vehiclesManagement.fields.state", "ESTADO"),
     ];
   }, [esEncargado, t]);
 
   const vehicleRows = useMemo(() => {
     return filteredVehicles.map((vehicle, idx) => [
       idx + 1,
-      vehicle.imagenes?.[0] ? "Con Foto" : "Sin Foto",
+      vehicle.imagenes?.[0] ? t("admin.vehiclesManagement.withPhoto", "Con Foto") : t("admin.vehiclesManagement.withoutPhoto", "Sin Foto"),
       vehicle.nombre,
       vehicle.placa,
       ...(!esEncargado ? [vehicle.sucursal] : []),
       vehicle.categoria,
       vehicle.año || "—",
       vehicle.color || "—",
-      vehicle.transmision || "Automática",
-      vehicle.combustible || "Gasolina",
+      vehicle.transmision || t("admin.vehiclesManagement.transmission.automatic", "Automática"),
+      vehicle.combustible || t("admin.vehiclesManagement.fuel.gasoline", "Gasolina"),
       formatCurrency(
         vehicle.precioLimitado || vehicle.precio || 0,
-        divisa,
+        moneda,
         tasaUSD
       ),
       vehicle.picoYPlaca?.dia
@@ -279,7 +279,7 @@ export default function VehicleManagementPage() {
         : t("admin.vehiclesManagement.doesNotApply", "No aplica"),
       t(`admin.vehiclesManagement.states.${vehicle.estadoEfectivo}`, vehicle.estadoEfectivo),
     ]);
-  }, [filteredVehicles, esEncargado, divisa, tasaUSD, t]);
+  }, [filteredVehicles, esEncargado, moneda, tasaUSD, t]);
 
   const vehicleExportData = useMemo(() => {
     return {
@@ -313,9 +313,9 @@ export default function VehicleManagementPage() {
       gf.nombre,
       gf.descripcion,
       ratio,
-      `${count} unidades`,
-      gf.tarifaBaseSugerida ? formatCurrency(gf.tarifaBaseSugerida, divisa, tasaUSD) : "—",
-      gf.depositoGarantiaSugerido ? formatCurrency(gf.depositoGarantiaSugerido, divisa, tasaUSD) : "—",
+      `${count} ${t("categoriesManagement.units", "unidades")}`,
+      gf.tarifaBaseSugerida ? formatCurrency(gf.tarifaBaseSugerida, moneda, tasaUSD) : "—",
+      gf.depositoGarantiaSugerido ? formatCurrency(gf.depositoGarantiaSugerido, moneda, tasaUSD) : "—",
       gf.activo !== false ? t("categoriesManagement.active", "Activa") : t("categoriesManagement.inactive", "Inactiva"),
     ];
   });
@@ -903,7 +903,7 @@ export default function VehicleManagementPage() {
                     type="button"
                     className="export-pill export-pill--excel"
                     onClick={() =>
-                      export{t('admin.vehiclesManagement.export.excel', 'Excel')}({
+                      exportExcel({
                         title: "Sucursales",
                         headers: [
                           "ID",
@@ -931,7 +931,7 @@ export default function VehicleManagementPage() {
                       })
                     }
                   >
-                    <FaFile{t('admin.vehiclesManagement.export.excel', 'Excel')} aria-hidden="true" /> {t('admin.vehiclesManagement.export.excel', 'Excel')}
+                    <FaFileExcel aria-hidden="true" /> {t('admin.vehiclesManagement.export.excel', 'Excel')}
                   </button>
                   <button
                     type="button"
@@ -1007,15 +1007,15 @@ export default function VehicleManagementPage() {
                   <thead>
                     <tr>
                       <th>ID</th>
-                      <th>Código Sede</th>
-                      <th>Nombre Sucursal</th>
-                      <th>Ciudad</th>
-                      <th>Dirección Física</th>
-                      <th>Teléfono Contacto</th>
-                      <th>Capacidad Parqueadero</th>
-                      <th>Horario Atención</th>
-                      <th>Estado</th>
-                      <th style={{ textAlign: "center" }}>Acciones</th>
+                      <th>CÓDIGO SEDE</th>
+                      <th>NOMBRE SUCURSAL</th>
+                      <th>CIUDAD</th>
+                      <th>DIRECCIÓN FÍSICA</th>
+                      <th>TELÉFONO CONTACTO</th>
+                      <th>CAPACIDAD PARQUEADERO</th>
+                      <th>HORARIO ATENCIÓN</th>
+                      <th>ESTADO</th>
+                      <th style={{ textAlign: "center" }}>ACCIONES</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -1101,9 +1101,9 @@ export default function VehicleManagementPage() {
                     <button
                       type="button"
                       className="export-pill export-pill--excel"
-                      onClick={() => export{t('admin.vehiclesManagement.export.excel', 'Excel')}(categoryExportData)}
+                      onClick={() => exportExcel(categoryExportData)}
                     >
-                      <FaFile{t('admin.vehiclesManagement.export.excel', 'Excel')} aria-hidden="true" /> {t('admin.vehiclesManagement.export.excel', 'Excel')}
+                      <FaFileExcel aria-hidden="true" /> {t('admin.vehiclesManagement.export.excel', 'Excel')}
                     </button>
                     <button
                       type="button"
@@ -1140,34 +1140,34 @@ export default function VehicleManagementPage() {
                         /* CABECERAS PARA ENCARGADO DE SUCURSAL */
                         <tr>
                           <th style={{ width: 60 }}>ID</th>
-                          <th>{t("categoriesManagement.categoryName", "Nombre de la Categoría")}</th>
-                          <th>{t("categoriesManagement.description", "Descripción")}</th>
+                          <th>{t("categoriesManagement.categoryName", "NOMBRE DE LA CATEGORÍA")}</th>
+                          <th>{t("categoriesManagement.description", "DESCRIPCIÓN")}</th>
                           <th style={{ textAlign: "center", whiteSpace: "nowrap" }}>
-                            {t("categoriesManagement.vehiclesInMyBranch", "Vehículos en mi sucursal")}
+                            {t("categoriesManagement.vehiclesInMyBranch", "VEHÍCULOS EN MI SUCURSAL")}
                           </th>
                           <th style={{ textAlign: "center", minWidth: 200, whiteSpace: "nowrap" }}>
-                            {t("categoriesManagement.offerThisCategory", "Ofrezco esta categoría")}
+                            {t("categoriesManagement.offerThisCategory", "OFREZCO ESTA CATEGORÍA")}
                           </th>
                         </tr>
                       ) : (
                         /* CABECERAS PARA ADMINISTRADOR GENERAL */
                         <tr>
                           <th style={{ width: 60 }}>ID</th>
-                          <th>{t("categoriesManagement.categoryName", "Nombre de la Categoría")}</th>
-                          <th>{t("categoriesManagement.description", "Descripción")}</th>
+                          <th>{t("categoriesManagement.categoryName", "NOMBRE DE LA CATEGORÍA")}</th>
+                          <th>{t("categoriesManagement.description", "DESCRIPCIÓN")}</th>
                           <th style={{ textAlign: "center" }}>
-                            {t("categoriesManagement.branchesOffering", "Sucursales que la ofrecen")}
+                            {t("categoriesManagement.branchesOffering", "SUCURSALES QUE LA OFRECEN")}
                           </th>
                           <th style={{ textAlign: "center" }}>
-                            {t("categoriesManagement.totalVehicles", "Total Vehículos")}
+                            {t("categoriesManagement.totalVehicles", "TOTAL VEHÍCULOS")}
                           </th>
-                          <th>{t("categoriesManagement.suggestedRate", "Tarifa Base Sugerida")}</th>
-                          <th>{t("categoriesManagement.suggestedDeposit", "Depósito Sugerido")}</th>
+                          <th>{t("categoriesManagement.suggestedRate", "TARIFA BASE SUGERIDA")}</th>
+                          <th>{t("categoriesManagement.suggestedDeposit", "DEPÓSITO SUGERIDO")}</th>
                           <th style={{ textAlign: "center" }}>
-                            {t("categoriesManagement.status", "Estado")}
+                            {t("categoriesManagement.status", "ESTADO")}
                           </th>
                           <th style={{ textAlign: "center" }}>
-                            {t("admin.cities.fields.actions", "Acciones")}
+                            {t("admin.cities.fields.actions", "ACCIONES")}
                           </th>
                         </tr>
                       )}
@@ -1399,9 +1399,9 @@ export default function VehicleManagementPage() {
                   <button
                     type="button"
                     className="export-pill export-pill--excel"
-                    onClick={() => export{t('admin.vehiclesManagement.export.excel', 'Excel')}(vehicleExportData)}
+                    onClick={() => exportExcel(vehicleExportData)}
                   >
-                    <FaFile{t('admin.vehiclesManagement.export.excel', 'Excel')} aria-hidden="true" /> {t('admin.vehiclesManagement.export.excel', 'Excel')}
+                    <FaFileExcel aria-hidden="true" /> {t('admin.vehiclesManagement.export.excel', 'Excel')}
                   </button>
                   <button
                     type="button"
@@ -1443,7 +1443,7 @@ export default function VehicleManagementPage() {
                           <th key={header}>{header}</th>
                         ))}
                         <th style={{ textAlign: "center" }}>
-                          {t("admin.cities.fields.actions", "Acciones")}
+                          {t("admin.cities.fields.actions", "ACCIONES")}
                         </th>
                       </tr>
                     </thead>

@@ -1362,7 +1362,7 @@ body.dark .branch-notif-card-bottom-actions,
 
 .branch-schedule-table {
   width: 100%;
-  min-width: 820px;
+  min-width: 1080px;
   border-collapse: collapse;
   text-align: left;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -1370,14 +1370,15 @@ body.dark .branch-notif-card-bottom-actions,
 
 .branch-schedule-table th {
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
   color: var(--texto-second, #64748b);
   letter-spacing: 0.05em;
-  padding: 12px;
+  padding: 12px 14px;
   border-bottom: 1px solid var(--borde, #e2e8f0);
   font-family: inherit;
   background: transparent;
+  white-space: nowrap;
 }
 
 .branch-th-actions {
@@ -1398,10 +1399,27 @@ body.dark .branch-notif-card-bottom-actions,
 }
 
 .branch-schedule-table td {
-  padding: 12px;
+  padding: 12px 14px;
   vertical-align: middle;
   font-size: 13px;
+  font-weight: 400;
   font-family: inherit;
+  white-space: nowrap;
+}
+
+.branch-td-id,
+.branch-td-code,
+.branch-table-res-code {
+  font-weight: 400 !important;
+  font-size: 13px;
+}
+
+/* Fuerza todas las celdas y sus spans en la tabla a no ser bold */
+.branch-schedule-table td,
+.branch-schedule-table td span,
+.branch-table-row td,
+.branch-table-row td span {
+  font-weight: 400 !important;
 }
 
 .branch-client-cell {

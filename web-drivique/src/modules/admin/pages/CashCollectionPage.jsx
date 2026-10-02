@@ -687,15 +687,15 @@ export default function CashCollectionPage({ branchOnly = false }) {
                   <thead>
                     <tr>
                       <th>ID</th>
-                      <th>Código Reserva</th>
-                      <th>Nombre Completo</th>
-                      <th>Teléfono</th>
-                      <th>Medio de Pago</th>
-                      <th>Monto Total</th>
-                      <th>Estado Pago</th>
-                      <th>Comprobante de Pago</th>
-                      <th>Descargar Comprobante</th>
-                      <th>Imprimir Comprobante</th>
+                      <th>CÓDIGO RESERVA</th>
+                      <th>NOMBRE COMPLETO</th>
+                      <th>TELÉFONO</th>
+                      <th>MEDIO DE PAGO</th>
+                      <th>MONTO TOTAL</th>
+                      <th>ESTADO PAGO</th>
+                      <th>COMPROBANTE DE PAGO</th>
+                      <th>DESCARGAR COMPROBANTE</th>
+                      <th>IMPRIMIR COMPROBANTE</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -887,7 +887,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
                               onClick={(e) => {
                                 e.stopPropagation()
                                 if (!pagoConfirmado) return
-                                const contenido = `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Comprobante-${cod}</title><style>body{font-family:Arial,sans-serif;max-width:480px;margin:40px auto;padding:24px;color:#111827;}h2{text-align:center;color:#10b981;margin-bottom:8px;}p.sub{text-align:center;color:#6b7280;font-size:13px;}table{width:100%;border-collapse:collapse;margin-top:20px;}td{padding:10px 6px;font-size:14px;border-bottom:1px solid #e5e7eb;}td:last-child{text-align:right;font-weight:600;}.total-row td{border-top:2px solid #d1fae5;font-size:17px;color:#10b981;font-weight:800;padding-top:14px;}</style></head><body><h2>Comprobante de Pago</h2><p class="sub">Drivique &mdash; ${new Date().toLocaleDateString('es-CO')}</p><table><tr><td>Referencia</td><td>${cod}</td></tr><tr><td>Cliente</td><td>${r.clienteNombre || 'Cliente'}</td></tr><tr><td>Veh&iacute;culo</td><td>${r.vehiculoNombre || 'Veh&iacute;culo Reservado'}</td></tr><tr><td>M&eacute;todo de pago</td><td>${esEfectivo ? 'Efectivo en Sucursal' : 'Pasarela Digital'}</td></tr><tr><td>Fecha de pago</td><td>${r.fechaPagoConfirmado ? new Date(r.fechaPagoConfirmado).toLocaleString('es-CO') : new Date().toLocaleString('es-CO')}</td></tr><tr class="total-row"><td>TOTAL PAGADO</td><td>${formatCurrency(total, moneda, tasaUSD)}</td></tr></table></body></html>`
+                                const contenido = `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Comprobante-${cod}</title><style>body{font-family:Arial,sans-serif;max-width:480px;margin:40px auto;padding:24px;color:#111827;}h2{text-align:center;color:#10b981;margin-bottom:8px;}p.sub{text-align:center;color:#6b7280;font-size:13px;}table{width:100%;border-collapse:collapse;margin-top:20px;}td{padding:10px 6px;font-size:14px;border-bottom:1px solid #e5e7eb;}td:last-child{text-align:right;font-weight:600;}.total-row td{border-top:2px solid #d1fae5;font-size:17px;color:#10b981;font-weight:800;padding-top:14px;}</style></head><body><h2>Comprobante de Pago</h2><p class="sub">Drivique &mdash; ${new Date().toLocaleDateString('es-CO')}</p><table><tr><td>Referencia</td><td>${cod}</td></tr><tr><td>Nombre Completo</td><td>${r.clienteNombre || 'Cliente'}</td></tr><tr><td>Veh&iacute;culo</td><td>${r.vehiculoNombre || 'Veh&iacute;culo Reservado'}</td></tr><tr><td>M&eacute;todo de pago</td><td>${esEfectivo ? 'Efectivo en Sucursal' : 'Pasarela Digital'}</td></tr><tr><td>Fecha de pago</td><td>${r.fechaPagoConfirmado ? new Date(r.fechaPagoConfirmado).toLocaleString('es-CO') : new Date().toLocaleString('es-CO')}</td></tr><tr class="total-row"><td>TOTAL PAGADO</td><td>${formatCurrency(total, moneda, tasaUSD)}</td></tr></table></body></html>`
                                 const win = window.open('', '_blank', 'width=600,height=700')
                                 win.document.open()
                                 win.document.write(contenido)

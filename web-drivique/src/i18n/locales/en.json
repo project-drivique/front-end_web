@@ -133,10 +133,6 @@
         "state": "State",
         "price": "Daily rate",
         "pico": "Driving restriction",
-        "transmission": "Transmission",
-        "fuel": "Fuel",
-        "color": "Color",
-        "year": "Year",
         "doors": "Doors",
         "passengers": "Passengers",
         "trunk": "Trunk (L)",
@@ -146,7 +142,12 @@
         "limitedKm": "Included km",
         "limitedPrice": "Limited price",
         "extraPrice": "Extra km price",
-        "unlimitedPrice": "Unlimited price"
+        "unlimitedPrice": "Unlimited price",
+        "color": "Color",
+        "photo": "Photo",
+        "fuel": "Fuel",
+        "transmission": "Transmission",
+        "year": "Year"
       },
       "messages": {
         "created": "The vehicle was created successfully.",
@@ -171,21 +172,23 @@
         "photos": "5. Vehicle Photographs"
       },
       "transmission": {
-        "automatic": "Automatic",
-        "manual": "Manual"
+        "manual": "Manual",
+        "automatic": "Automatic"
       },
       "fuel": {
-        "gasoline": "Gasoline",
         "diesel": "Diesel",
         "hybrid": "Hybrid",
-        "electric": "Electric"
+        "electric": "Electric",
+        "gasoline": "Gasoline"
       },
       "expandedView": "Expanded vehicle view",
       "export": {
         "excel": "Excel",
         "pdf": "PDF",
         "print": "Print"
-      }
+      },
+      "withPhoto": "With Photo",
+      "withoutPhoto": "No Photo"
     },
     "branchesManagement": {
       "title": "Branch management",
@@ -363,7 +366,7 @@
         "hasReservationsWarning": "This user cannot be deleted because they have {{count}} active reservation(s).",
         "confirm": "Confirm Deletion"
       },
-      "exportTitle": "User Management — Drivique Platform",
+      "exportTitle": "User Management â€” Drivique Platform",
       "fields": {
         "name": "Name",
         "email": "Email",
@@ -486,7 +489,7 @@
         "hasAccountsWarning": "This role cannot be deleted because it has {{count}} administrative account(s) assigned. Reassign the accounts before deleting it.",
         "confirm": "Confirm Deletion"
       },
-      "exportTitle": "Administrative Accounts — Drivique Platform",
+      "exportTitle": "Administrative Accounts â€” Drivique Platform",
       "fields": {
         "name": "Name",
         "email": "Email",
@@ -894,11 +897,6 @@
         "en_curso": "In Progress",
         "solucionado": "Solved"
       },
-      "priority": {
-        "alta": "High",
-        "media": "Medium",
-        "baja": "Low"
-      },
       "origin": {
         "cliente": "Client",
         "manual": "Manual"
@@ -938,11 +936,8 @@
       },
       "newReport": "New Incident Report",
       "searchPlaceholder": "Search by code, vehicle, plate, or client...",
-      "recibido": "Received",
       "en_revision": "Under Technical Review",
       "en_reparacion": "In Repair Shop",
-      "resuelto": "Resolved",
-      "rechazado": "Rejected",
       "allBranches": "All branches",
       "allOrigins": "All origins",
       "clientOrigin": "Client Reports",
@@ -957,13 +952,11 @@
       "detailTitle": "Incident Management",
       "estimatedTime": "Estimated technical service time:",
       "noticeEmailMsg": "An email and notification will be sent to the user.",
-      "replyPlaceholder": "Write the official response...",
       "cancel": "Cancel",
       "saveAndSend": "Save and Send",
       "internalHeader": "Internal Fleet Report",
       "selectVehicle": "Select Affected Vehicle:",
       "chooseVehicle": "Select a fleet vehicle...",
-      "incidentType": "Incident Type",
       "priorityUrgency": "Priority / Urgency:",
       "descriptionLabel": "Detailed description of the incident / diagnosis:",
       "descriptionPlaceholder": "Describe the failure symptoms or repair work required...",
@@ -974,8 +967,38 @@
         "oneToTwoHours": "1 to 2 hours",
         "oneHour": "1 hour"
       },
-      "problemDescription": "Problem Description",
-      "describeSymptoms": "Describe the symptoms..."
+      "describeSymptoms": "Describe the symptoms...",
+      "changeStatus": "Change status",
+      "atendiendo": "In Progress",
+      "sender": "Sender",
+      "createError": "Error creating the incident report.",
+      "replyHint": "Write your response. This notification will automatically be sent to the user's email and recorded in the incident history.",
+      "locationPriority": "Location & Priority",
+      "replyPlaceholder": "Write your response here...",
+      "call": "Call",
+      "rechazado": "Rejected",
+      "historyTitle": "Response history",
+      "updatedSuccess": "Report updated successfully and response sent.",
+      "priorities": {
+        "media": "Medium",
+        "baja": "Low",
+        "urgente": "Urgent",
+        "alta": "High"
+      },
+      "problemDescription": "Problem description",
+      "resuelto": "Resolved",
+      "close": "Close",
+      "replyMessage": "Response message",
+      "replyBtn": "Reply to Client",
+      "associatedRes": "Associated Reservation",
+      "recibido": "Received",
+      "priority": "Priority",
+      "emailClient": "Client Email",
+      "clientName": "Client",
+      "noDesc": "No description available.",
+      "notSpecified": "Not specified",
+      "incidentType": "Incident Type",
+      "problemDesc": "Problem Description"
     },
     "promotions": {
       "title": "Promotions and coupons",
@@ -1067,7 +1090,7 @@
       "identityHint": "Set the business name and primary logo.",
       "name": "Business name",
       "logo": "Upload new logo",
-      "logoHint": "PNG, JPG, WebP or SVG · 1 MB maximum",
+      "logoHint": "PNG, JPG, WebP or SVG Â· 1 MB maximum",
       "palette": "Corporate palette",
       "paletteHint": "Choose three different interface colors.",
       "colors": {
@@ -1075,7 +1098,7 @@
         "secondary": "Secondary",
         "accent": "Accent"
       },
-      "preview": "Preview — unapplied changes",
+      "preview": "Preview â€” unapplied changes",
       "previewEyebrow": "New identity",
       "previewTitle": "Explore the platform",
       "previewText": "This is how the name, logo, buttons and main accents will look.",
@@ -1207,7 +1230,7 @@
       "printReport": "Print report",
       "viewDetails": "View details & snapshot",
       "deleteReport": "Delete from history",
-      "previewModalSubtitle": "{{count}} records found • Selected format: {{format}}",
+      "previewModalSubtitle": "{{count}} records found â€¢ Selected format: {{format}}",
       "noDataMatch": "No data matching the selected filters.",
       "previewNote": "Displaying first {{count}} rows of {{total}} in live preview. The exported file will contain all data.",
       "previewLimitNote": "Displaying first {{count}} rows of {{total}} in this preview. The exported file will contain the full dataset.",
@@ -1310,7 +1333,7 @@
       "currencyLabel": "Reporting Currency",
       "currencyCop": "Colombian Pesos (COP)",
       "currencyUsd": "US Dollars (USD)",
-      "exchangeRateNotice": "Live rate: 1 USD ≈ ${{rate}} COP",
+      "exchangeRateNotice": "Live rate: 1 USD â‰ˆ ${{rate}} COP",
       "types": {
         "executive_summary_title": "Executive Summary & Operational Balance",
         "executive_summary_desc": "Comprehensive consolidated overview of activity, estimated revenue, fleet utilization, and incidents.",
@@ -1425,10 +1448,10 @@
         "device": "Device",
         "action": "Recorded Action",
         "reason": "Reason or Cause",
-        "currencyConversion": "Currency Conversion (COP ⇄ USD)",
+        "currencyConversion": "Currency Conversion (COP â‡„ USD)",
         "copLabel": "Colombian Pesos",
         "usdLabel": "US Dollars",
-        "rateApplied": "Exchange rate applied: 1 USD ≈ {{rate}} COP",
+        "rateApplied": "Exchange rate applied: 1 USD â‰ˆ {{rate}} COP",
         "jsonMetadata": "Event Metadata (JSON)",
         "watermark": "This audit record is immutable and cannot be altered or deleted in compliance with platform traceability standards.",
         "close": "Close"
@@ -1463,7 +1486,7 @@
       "location": {
         "title": "Location",
         "mapUnavailable": "Map unavailable",
-        "getDirections": "Get directions →"
+        "getDirections": "Get directions â†’"
       },
       "deliveryByPayment": {
         "title": "How delivery works by payment method",
@@ -1486,7 +1509,7 @@
         "title": "Summary",
         "manager": "Branch Manager",
         "vehicles": "Vehicles",
-        "viewFleet": "View fleet →",
+        "viewFleet": "View fleet â†’",
         "categories": "Offered categories"
       },
       "status": {
@@ -1531,10 +1554,36 @@
       "subtitle": "Management of customer ratings for this branch."
     },
     "sections": {
+      "gestiÃ³n_operativa": "OPERATIONAL MANAGEMENT",
+      "consulta_y_auditorÃ­a": "CONSULTATION & AUDIT",
+      "configuraciÃ³n_global": "GLOBAL CONFIGURATION",
+      "configuración_global": "GLOBAL CONFIGURATION",
       "monitoreo": "MONITORING",
-      "gestión_operativa": "OPERATIONAL MANAGEMENT",
       "consulta_y_auditoría": "CONSULTATION & AUDIT",
-      "configuración_global": "GLOBAL CONFIGURATION"
+      "gestión_operativa": "OPERATIONAL MANAGEMENT"
+    },
+    "notifications": {
+      "filterAll": "All",
+      "new": "new",
+      "normalOps": "100% normal operations",
+      "alertsOf": "alert(s) of",
+      "normalDesc": "The system will automatically alert you about new reservations, delivery delays or mechanical issues.",
+      "defaultCategory": "Notification",
+      "closePanel": "Close notification panel",
+      "markReadTitle": "Mark as read",
+      "realTimeMonitoring": "Real-time operational monitoring",
+      "emptyTitle": "No pending notifications",
+      "filterAlerts": "Alerts & Incidents",
+      "drawerTitle": "Notifications & Alerts",
+      "filterOps": "Operations",
+      "emptyDesc": "All deliveries, returns, document validations and payments at this branch are up to date.",
+      "clearPending": "Clear pending",
+      "closePanelBtn": "Close panel",
+      "markAllReadTitle": "Mark all notifications as read",
+      "markRead": "Mark as read",
+      "filterUnread": "Unread",
+      "defaultAction": "Go to module",
+      "filters": "Notification filters"
     }
   },
   "common": {
@@ -1555,8 +1604,8 @@
     "success": "Success",
     "verify": "Verify",
     "sending": "Sending...",
-    "processing": "Processing…",
-    "connecting": "Connecting…",
+    "processing": "Processingâ€¦",
+    "connecting": "Connectingâ€¦",
     "day": "day",
     "days": "days",
     "date": "Date",
@@ -1570,7 +1619,32 @@
     "print": "Print",
     "viewDetails": "View details",
     "deliveries": "Deliveries",
-    "returns": "Returns"
+    "returns": "Returns",
+    "daysShort": {
+      "tue": "Tu",
+      "fri": "Fr",
+      "thu": "Th",
+      "sat": "Sa",
+      "mon": "Mo",
+      "sun": "Su",
+      "wed": "We"
+    },
+    "months": {
+      "april": "April",
+      "september": "September",
+      "june": "June",
+      "october": "October",
+      "december": "December",
+      "november": "November",
+      "may": "May",
+      "march": "March",
+      "february": "February",
+      "july": "July",
+      "august": "August",
+      "january": "January"
+    },
+    "prevMonth": "Previous month",
+    "nextMonth": "Next month"
   },
   "login": {
     "title": "Sign in",
@@ -1583,8 +1657,8 @@
     "submit": "Sign in",
     "googleBtn": "Continue with Google",
     "facebookBtn": "Continue with Facebook",
-    "connectingGoogle": "Connecting with Google…",
-    "connectingFacebook": "Connecting with Facebook…",
+    "connectingGoogle": "Connecting with Googleâ€¦",
+    "connectingFacebook": "Connecting with Facebookâ€¦",
     "noAccount": "Don't have an account?",
     "registerLink": "Register here",
     "socialError": "Social login error",
@@ -1617,14 +1691,14 @@
     "termsSuffix": "and the processing of my personal data under",
     "termsLaw": "Law 1581 of 2012",
     "submit": "Create my account",
-    "processing": "Processing…",
+    "processing": "Processingâ€¦",
     "completed": "Registration complete",
     "checkEmail": "Account created. Continue to verify your email...",
     "hasAccount": "Already have an account?",
     "loginLink": "Sign in here",
     "google": "Google",
     "facebook": "Facebook",
-    "connecting": "Connecting…",
+    "connecting": "Connectingâ€¦",
     "successTitle": "Registration successful!",
     "failTitle": "Registration failed",
     "socialSuccessTitle": "Registration successful",
@@ -1643,7 +1717,7 @@
       "uppercase": "At least one uppercase letter (A-Z)",
       "lowercase": "At least one lowercase letter (a-z)",
       "number": "At least one number (0-9)",
-      "symbol": "At least one symbol (!@#…)",
+      "symbol": "At least one symbol (!@#â€¦)",
       "veryWeak": "Very weak",
       "weak": "Weak",
       "regular": "Fair",
@@ -1651,8 +1725,8 @@
       "strong": "Strong"
     },
     "modal": {
-      "title": "Terms and Conditions — Drivique",
-      "subtitle": "Read carefully before accepting · Law 1581/2012 · Law 527/1999",
+      "title": "Terms and Conditions â€” Drivique",
+      "subtitle": "Read carefully before accepting Â· Law 1581/2012 Â· Law 527/1999",
       "accept": "I accept the terms",
       "close": "Close",
       "legalNote": "By accepting, you declare that you have read and understood these terms in their entirety.",
@@ -1664,7 +1738,7 @@
         },
         {
           "num": "2",
-          "titulo": "Personal Data Processing — Law 1581 of 2012",
+          "titulo": "Personal Data Processing â€” Law 1581 of 2012",
           "texto": "In compliance with Statutory Law 1581 of 2012 and Regulatory Decree 1377 of 2013, Drivique acts as Data Controller. Collected data (email) will be used exclusively for: (i) rental service provision, (ii) sending confirmations and notifications, (iii) fulfilling legal obligations. Data will not be shared without prior consent, except as required by law. You may exercise access, correction, deletion, and revocation rights by contacting privacidad@Drivique.com."
         },
         {
@@ -1690,7 +1764,7 @@
         {
           "num": "7",
           "titulo": "Applicable Law and Jurisdiction",
-          "texto": "This agreement is governed by the laws of the Republic of Colombia. Any controversy will be resolved before competent courts in the city of Bogotá D.C."
+          "texto": "This agreement is governed by the laws of the Republic of Colombia. Any controversy will be resolved before competent courts in the city of BogotÃ¡ D.C."
         }
       ],
       "errors": {
@@ -1750,7 +1824,7 @@
     "panelCheck1": "Instant verification",
     "panelCheck2": "Secure & dynamic code",
     "panelCheck3": "Total account protection",
-    "copyright": "Drivique © 2026",
+    "copyright": "Drivique Â© 2026",
     "errors": {
       "codeRequired": "Enter the verification code",
       "codeInvalid": "The code entered is not valid",
@@ -1938,7 +2012,7 @@
     "mileageRates": "Mileage rates",
     "limitedMileage": "Limited mileage",
     "unlimitedMileage": "Unlimited mileage",
-    "kmIncludedSub": "{{km}} km/day included · Overage: {{excedente}}/extra km",
+    "kmIncludedSub": "{{km}} km/day included Â· Overage: {{excedente}}/extra km",
     "insurance": "Insurance",
     "rentalRequirements": "Rental requirements",
     "minAgeTitle": "Minimum age",
@@ -2018,7 +2092,7 @@
     "privacyPolicy": "privacy policy",
     "customerReviews": "Customer reviews",
     "reviewsCount": "{{count}} reviews",
-    "viewMoreReviews": "View more reviews ˅",
+    "viewMoreReviews": "View more reviews Ë…",
     "viewLessReviews": "View less reviews",
     "capacity": "Capacity",
     "passengers": "passengers",
@@ -2218,7 +2292,7 @@
     "wompiReservationRegisteredDesc": "Your reservation was saved as pending. To confirm it, complete the secure online payment.",
     "wompiRedirectNote": "You will be redirected to the official checkout page.",
     "wompiSuccessNote": "You will receive reservation confirmation as soon as the payment succeeds.",
-    "redirecting": "Redirecting…",
+    "redirecting": "Redirectingâ€¦",
     "payWithWompi": "Pay with Wompi",
     "logisticsFeeLabel": "Logistics Fee",
     "subtotalReservation": "Reservation Subtotal",
@@ -2448,7 +2522,7 @@
     "digitalPendingDesc": "Your reservation is saved as pending. Complete the secure payment on Wompi to confirm and enable your rental contract.",
     "totalToPay": "TOTAL TO PAY:",
     "payWithWompi": "Pay with Wompi",
-    "redirectingToWompi": "Redirecting to Wompi…",
+    "redirectingToWompi": "Redirecting to Wompiâ€¦",
     "paymentDeadline": "PAYMENT DEADLINE",
     "cashDeadlineNotice": "You have 72 hours from now to go to the branch and pay. If you do not pay within this timeframe, the reservation will be automatically cancelled.",
     "city": "City:",
@@ -2574,19 +2648,19 @@
       "Estados Unidos": "United States",
       "Alemania": "Germany",
       "Francia": "France",
-      "España": "Spain",
+      "EspaÃ±a": "Spain",
       "Italia": "Italy",
       "Reino Unido": "United Kingdom",
-      "Canadá": "Canada",
+      "CanadÃ¡": "Canada",
       "Brasil": "Brazil",
       "Argentina": "Argentina",
-      "México": "Mexico",
+      "MÃ©xico": "Mexico",
       "Venezuela": "Venezuela",
       "Ecuador": "Ecuador",
-      "Perú": "Peru",
+      "PerÃº": "Peru",
       "Chile": "Chile",
       "Australia": "Australia",
-      "Japón": "Japan",
+      "JapÃ³n": "Japan",
       "China": "China",
       "India": "India",
       "Otro": "Other"
@@ -2605,7 +2679,7 @@
     "statusFailed": "Failed",
     "loading": "Loading payments...",
     "error": "Error loading payments",
-    "preparingPayment": "Preparing payment…"
+    "preparingPayment": "Preparing paymentâ€¦"
   },
   "contratos": {
     "title": "My contracts",
@@ -2679,12 +2753,12 @@
     "check1": "Book in minutes",
     "check2": "Payment via payment gateway",
     "check3": "Cash payment at branch",
-    "copyright": "Drivique © 2026"
+    "copyright": "Drivique Â© 2026"
   },
   "contratoFirma": {
     "badgeLabel": "Digital document",
     "title": "Reservation and rental agreement",
-    "subtitle": "Drivique · Academic vehicle rental platform",
+    "subtitle": "Drivique Â· Academic vehicle rental platform",
     "autoGenNote": "Document auto-generated from your reservation data. You only need to review it and sign.",
     "contractCode": "Contract code",
     "status": "Status",
@@ -2748,7 +2822,7 @@
     "clearSignature": "Clear signature",
     "signatureRequired": "You must sign to continue.",
     "signAndContinue": "Sign contract and continue",
-    "signing": "Signing…",
+    "signing": "Signingâ€¦",
     "footerNote1": "Document automatically generated by Drivique.",
     "footerNote2": "Academic and functional use within the reservation and digital contracting flow.",
     "stepLabel": "Contract signature",
@@ -2812,7 +2886,7 @@
       "Compacto": "Compact",
       "Camioneta": "Pickup",
       "Deportivo": "Sport",
-      "Económico": "Economy"
+      "EconÃ³mico": "Economy"
     },
     "modal": {
       "successTitle": "Coupon activated successfully!",
@@ -2854,10 +2928,10 @@
     "backToAccount": "Back to My Account"
   },
   "servicios": {
-    "Devolución con tanque vacío": "Return with empty tank",
+    "DevoluciÃ³n con tanque vacÃ­o": "Return with empty tank",
     "GPS Integrado": "Integrated GPS",
     "Lavado de auto post-entrega": "Post-rental car wash",
-    "Silla de bebé": "Baby seat"
+    "Silla de bebÃ©": "Baby seat"
   },
   "favoritos": {
     "title": "My Favorites",
@@ -2890,7 +2964,7 @@
     "reservaMinima": "Minimum booking",
     "sinReservaMinima": "No minimum booking",
     "aplicarCupon": "Apply",
-    "cuponAplicado": "✓ Applied",
+    "cuponAplicado": "âœ“ Applied",
     "sinCuponesTitle": "No active coupons",
     "sinCuponesMsg": "Complete more bookings to unlock exclusive rewards.",
     "seccionPromosDestacadas": "Featured promotions",
@@ -2900,7 +2974,7 @@
       "reservaConfirmadaMsg": "Your Toyota Prado booking has been confirmed successfully. Pickup is at Neiva branch on the scheduled date.",
       "pagoValidadoTitle": "Payment validated",
       "pagoValidadoMsg": "Digital payment via Wompi was successfully validated. Keep your confirmation.",
-      "docsVerificadosTitle": "Documents verified ✓",
+      "docsVerificadosTitle": "Documents verified âœ“",
       "docsVerificadosMsg": "Your driver's license and ID document were approved by our team. You can continue with your booking.",
       "soporteRespuestaTitle": "Support answered your case",
       "soporteRespuestaMsg": "Support team responded to ticket #4821. Check the support section to read the answer.",
@@ -2956,7 +3030,7 @@
   },
   "chatbot": {
     "toggleTitle": "Drivique Support Assistant",
-    "welcomeMsg": "👋 Hi! I am the Drivique 24/7 interactive virtual assistant.\nHow can I help you today?",
+    "welcomeMsg": "ðŸ‘‹ Hi! I am the Drivique 24/7 interactive virtual assistant.\nHow can I help you today?",
     "onlineStatus": "Online | Drivique Bot 24/7",
     "minimize": "Minimize",
     "close": "Close",
@@ -2964,28 +3038,28 @@
     "inputPlaceholder": "Type your question here...",
     "send": "Send",
     "actions": {
-      "alquilar": "🚗 How to rent a vehicle?",
-      "requisitos": "📋 What are the requirements?",
-      "pagos": "💰 Payment methods and deposits",
-      "agente": "👤 Talk to an agent (WhatsApp/Phone)"
+      "alquilar": "ðŸš— How to rent a vehicle?",
+      "requisitos": "ðŸ“‹ What are the requirements?",
+      "pagos": "ðŸ’° Payment methods and deposits",
+      "agente": "ðŸ‘¤ Talk to an agent (WhatsApp/Phone)"
     },
     "responses": {
-      "hola": "👋 Hi! Welcome to Drivique. How can I assist you today? Feel free to pick a quick option or type your question.",
-      "queEsDrivique": "✨ **What is Drivique?**\n\nDrivique is the leading car rental platform in Colombia. We offer 100% digital bookings, online contracts, 24/7 roadside assistance, and a modern fleet.",
-      "dolar": "💵 **Currency Conversion & Rates:**\n\nAt Drivique you can view all vehicle prices in **COP** or **USD**.\n\n• Rates starting from approximately **{{precio}}/day**.\n• Conversion is calculated in real time based on your chosen currency.",
-      "alquilar": "🚗 **Renting at Drivique is super easy:**\n\n1. Select your preferred vehicle in the **Catalog**.\n2. Choose pickup & return dates, and your preferred branch.\n3. Upload your ID and valid driver's license.\n4. Complete secure online payment via **Wompi**.\n5. All set! You will receive instant booking confirmation.",
-      "requisitos": "📋 **Mandatory Requirements:**\n\n• **Minimum age:** 18 years old.\n• **ID Document:** ID card, Passport, Identity card or Foreigner ID.\n• **Driver's License:** Valid (national or international).\n• **Security deposit:** Credit or debit card under renter's name.",
-      "pagos": "💰 **Payment Methods & Deposits:**\n\nWe accept all digital payment methods via **Wompi**:\n• Credit cards (Visa, Mastercard, American Express).\n• Bank transfers / PSE / Nequi.\n• International credit & debit cards in COP or USD.\n\n*Security deposit is automatically released 24h after vehicle return.*",
-      "agente": "👤 **Personalized Human Support:**\n\nContact our control team directly:\n• 📱 **WhatsApp 24/7:** +57 314 478 9702\n• 📞 **Phone Line:** +57 322 3163531\n• ✉️ **Email:** soporte@drivique.com\n\n*Average response time: under 2 minutes.*",
-      "incidencia": "🛠️ **Vehicle Issue?**\n\nHead to **Support** in the top menu or go to **My Reservations** and click **\"Report issue\"**. Our roadside team will dispatch assistance right away.",
-      "cancelacion": "🔄 **Cancellation Policy:**\n\nYou can cancel your booking for a full refund up to **24 hours before** pickup from **My Reservations**.",
-      "sucursales": "🏢 **Available Branches:**\n\nWe have physical branches in Neiva, Bogotá, Medellín, Cali, and Cartagena. View exact locations in **Branches**.",
-      "default": "🤖 I understand your question. Explore our **Catalog**, check **My Reservations**, or contact an agent by typing **\"agent\"**."
+      "hola": "ðŸ‘‹ Hi! Welcome to Drivique. How can I assist you today? Feel free to pick a quick option or type your question.",
+      "queEsDrivique": "âœ¨ **What is Drivique?**\n\nDrivique is the leading car rental platform in Colombia. We offer 100% digital bookings, online contracts, 24/7 roadside assistance, and a modern fleet.",
+      "dolar": "ðŸ’µ **Currency Conversion & Rates:**\n\nAt Drivique you can view all vehicle prices in **COP** or **USD**.\n\nâ€¢ Rates starting from approximately **{{precio}}/day**.\nâ€¢ Conversion is calculated in real time based on your chosen currency.",
+      "alquilar": "ðŸš— **Renting at Drivique is super easy:**\n\n1. Select your preferred vehicle in the **Catalog**.\n2. Choose pickup & return dates, and your preferred branch.\n3. Upload your ID and valid driver's license.\n4. Complete secure online payment via **Wompi**.\n5. All set! You will receive instant booking confirmation.",
+      "requisitos": "ðŸ“‹ **Mandatory Requirements:**\n\nâ€¢ **Minimum age:** 18 years old.\nâ€¢ **ID Document:** ID card, Passport, Identity card or Foreigner ID.\nâ€¢ **Driver's License:** Valid (national or international).\nâ€¢ **Security deposit:** Credit or debit card under renter's name.",
+      "pagos": "ðŸ’° **Payment Methods & Deposits:**\n\nWe accept all digital payment methods via **Wompi**:\nâ€¢ Credit cards (Visa, Mastercard, American Express).\nâ€¢ Bank transfers / PSE / Nequi.\nâ€¢ International credit & debit cards in COP or USD.\n\n*Security deposit is automatically released 24h after vehicle return.*",
+      "agente": "ðŸ‘¤ **Personalized Human Support:**\n\nContact our control team directly:\nâ€¢ ðŸ“± **WhatsApp 24/7:** +57 314 478 9702\nâ€¢ ðŸ“ž **Phone Line:** +57 322 3163531\nâ€¢ âœ‰ï¸ **Email:** soporte@drivique.com\n\n*Average response time: under 2 minutes.*",
+      "incidencia": "ðŸ› ï¸ **Vehicle Issue?**\n\nHead to **Support** in the top menu or go to **My Reservations** and click **\"Report issue\"**. Our roadside team will dispatch assistance right away.",
+      "cancelacion": "ðŸ”„ **Cancellation Policy:**\n\nYou can cancel your booking for a full refund up to **24 hours before** pickup from **My Reservations**.",
+      "sucursales": "ðŸ¢ **Available Branches:**\n\nWe have physical branches in Neiva, BogotÃ¡, MedellÃ­n, Cali, and Cartagena. View exact locations in **Branches**.",
+      "default": "ðŸ¤– I understand your question. Explore our **Catalog**, check **My Reservations**, or contact an agent by typing **\"agent\"**."
     }
   },
   "caja": {
-    "eyebrowBranch": "Cashier Module · Branch {{sucursal}}",
-    "eyebrowCentral": "Central Administration · Cashier Module",
+    "eyebrowBranch": "Cashier Module Â· Branch {{sucursal}}",
+    "eyebrowCentral": "Central Administration Â· Cashier Module",
     "title": "Branch Reservation Collection",
     "subtitle": "Check the reservation code provided by the customer at the counter to confirm cash payments or verify Wompi / Bancolombia transactions.",
     "pendingToCollect": "Pending to Collect",
@@ -3027,7 +3101,7 @@
     "cashObservations": "Cashier Notes (Optional):",
     "cashObservationsPlaceholder": "e.g. Banknotes verified, physical ID presented...",
     "confirmCashBtn": "Confirm Cash Payment ({{total}})",
-    "processingBtn": "Processing Collection…",
+    "processingBtn": "Processing Collectionâ€¦",
     "auditModeTitle": "Audit Mode (Read Only)",
     "auditModeDesc": "Receiving cash and confirming payments is the sole responsibility of the Branch Manager ({{sucursal}}) at the counter.",
     "recentHistoryTitle": "Recent Cash Collections History",
@@ -3043,19 +3117,19 @@
     "viewReceipt": "View Receipt",
     "branchProfile": {
       "title": "Mi sucursal",
-      "subtitle": "Administra la informaci�n p�blica y operativa de tu sucursal.",
+      "subtitle": "Administra la informaciï¿½n pï¿½blica y operativa de tu sucursal.",
       "savedSuccess": "Los datos de la sucursal han sido actualizados.",
       "fields": {
-        "address": "Direcci�n",
-        "hours": "Horario de atenci�n",
-        "phone": "Tel�fono",
+        "address": "Direcciï¿½n",
+        "hours": "Horario de atenciï¿½n",
+        "phone": "Telï¿½fono",
         "latitude": "Latitud",
         "longitude": "Longitud"
       }
     },
     "dashboard": {
       "title": "Dashboard",
-      "subtitle": "Resumen del día en tu sucursal",
+      "subtitle": "Resumen del dÃ­a en tu sucursal",
       "realtime": "En tiempo real",
       "actions": {
         "createReservation": "Crear reserva",
@@ -3067,9 +3141,9 @@
         "todayDeliveries": "Entregas de hoy",
         "customersAtCounter": "clientes en mostrador",
         "todayReturns": "Devoluciones de hoy",
-        "vehiclesReturning": "vehículos retornando a la sucursal",
-        "occupancy": "Ocupación",
-        "occupancyVehicles": "{{rented}} de {{total}} vehículos"
+        "vehiclesReturning": "vehÃ­culos retornando a la sucursal",
+        "occupancy": "OcupaciÃ³n",
+        "occupancyVehicles": "{{rented}} de {{total}} vehÃ­culos"
       },
       "kpiTooltip": {
         "monthlyRevenue": "Sum of reservations charged this month at your branch.",
@@ -3098,21 +3172,21 @@
         "maintenance": "In shop"
       },
       "schedule": {
-        "title": "Programación de hoy",
+        "title": "ProgramaciÃ³n de hoy",
         "tabs": {
           "deliveries": "Entregas {{count}}",
           "returns": "Devoluciones {{count}}"
         },
         "colTime": "Hora",
         "colClient": "Cliente",
-        "colVehicle": "Vehículo",
+        "colVehicle": "VehÃ­culo",
         "colStatus": "Estado",
-        "viewAllReservations": "Ver todas las reservas →",
+        "viewAllReservations": "Ver todas las reservas â†’",
         "emptyDeliveries": "No hay entregas programadas para hoy.",
         "emptyReturns": "No hay devoluciones programadas para hoy."
       },
       "attention": {
-        "title": "Requiere tu atención",
+        "title": "Requiere tu atenciÃ³n",
         "documentsToValidate_one": "1 documento por validar",
         "documentsToValidate_other": "{{count}} documentos por validar",
         "openIncidents_one": "1 incidencia abierta",
@@ -3121,16 +3195,16 @@
         "pendingPayments_other": "{{count}} pagos pendientes",
         "expiringVehicleDocs_one": "1 vehicle document expiring",
         "expiringVehicleDocs_other": "{{count}} vehicle documents expiring",
-        "allClear": "Todo al día"
+        "allClear": "Todo al dÃ­a"
       },
       "fleet": {
         "title": "Estado de la flota",
         "available": "Disponibles",
         "rented": "En alquiler",
         "maintenance": "En taller o mantenimiento",
-        "viewFleet": "Ver flota →",
-        "vehicleCount_one": "1 vehículo",
-        "vehicleCount_other": "{{count}} vehículos"
+        "viewFleet": "Ver flota â†’",
+        "vehicleCount_one": "1 vehÃ­culo",
+        "vehicleCount_other": "{{count}} vehÃ­culos"
       },
       "notifications": {
         "title": "Notifications",
@@ -3266,6 +3340,283 @@
       "requiresAttention": "Requires your attention"
     },
     "subtitle": "Operational Panel",
-    "title": "Dashboard"
+    "title": "Dashboard",
+    "fleet": {
+      "forDeliveryToday": "For delivery today",
+      "readyForDelivery": "Ready for delivery",
+      "operative": "% operational",
+      "title": "Fleet Status",
+      "occupied": "Occupied",
+      "viewFleet": "View fleet →",
+      "vehiclesInBranch": "vehicle(s) at branch",
+      "technicalReview": "Technical review",
+      "available": "Available",
+      "distAvailability": "Availability Distribution",
+      "branchUnits": "Branch Units",
+      "reserved": "Reserved",
+      "activeContract": "In active contract",
+      "maintenance": "In Maintenance"
+    },
+    "labels": {
+      "deliveries": "Deliveries",
+      "returnsColon": "Returns:",
+      "returns": "Returns",
+      "deliveriesColon": "Deliveries:"
+    },
+    "scheduleFor": "Schedule for",
+    "statesGuide": {
+      "subtitle": "Explanatory guide of operational states and their internal equivalence",
+      "descCompleted1": "Corresponds to the internal state FINALIZED. Vehicle returned to the branch, inspected and contract closed.",
+      "descPending1": "Groups the internal states PENDING, PENDING_CASH and PENDING_VALIDATION. The reservation is awaiting payment or at the counter for document validation.",
+      "descCancelled1": "Groups the internal states CANCELLED and CANCELLED_BY_TIME. Indicates the reservation was cancelled by client request or automatically expired.",
+      "descConfirmed1": "Corresponds to the internal state CONFIRMED. Payment and documents 100% validated. Vehicle prepared and ready for delivery.",
+      "title": "Reservation States",
+      "descActive1": "Corresponds to the internal state ACTIVE. Vehicle delivered to the client at the branch with the rental contract in force."
+    },
+    "status": {
+      "pendingCash": "Pending cash payment",
+      "activeSub": "Vehicle on rental",
+      "cancelledTime": "Cancelled by timeout",
+      "pendingDocs": "Pending document validation",
+      "active": "Active",
+      "completedSub": "Contract closed",
+      "pendingSub": "Awaiting payment or validation",
+      "completed": "Completed",
+      "confirmed": "Confirmed",
+      "pending": "Pending",
+      "confirmedSub": "Payment and docs validated",
+      "cancelled": "Cancelled"
+    },
+    "attention": {
+      "expiringDocs": "vehicle document expiring soon",
+      "openIncidents": "open incident",
+      "docsToValidate": "documents to validate",
+      "title": "Requires your attention"
+    },
+    "export": {
+      "branch": "Branch",
+      "assignedRes": "Assigned Reservation",
+      "available": "Available",
+      "resId": "# Reservation",
+      "incomeAmount": "Amount",
+      "incomeVehicle": "Vehicle",
+      "vehicle": "Vehicle",
+      "fleetOccupancy": "Fleet Occupancy",
+      "incomeTitle": "Income Report - Drivique",
+      "category": "Category",
+      "pending": "Pending",
+      "incomeCode": "Code",
+      "incomeClient": "Client",
+      "received": "Received",
+      "incomeStatus": "Status",
+      "totalScheduled": "Total Scheduled",
+      "deliveriesTitle": "Deliveries List - Drivique",
+      "occupancyRate": "% Occupancy",
+      "maintenance": "In Maintenance",
+      "time": "Time",
+      "phone": "Phone",
+      "returnStatus": "Return Status",
+      "growth": "Change",
+      "deliveryStatus": "Delivery Status",
+      "client": "Client",
+      "incomeEnd": "End",
+      "completedDeliveries": "Completed Deliveries",
+      "returnsTitle": "Returns List - Drivique",
+      "occupied": "Occupied",
+      "opStatus": "Operational Status",
+      "incomeStart": "Start",
+      "totalIncome": "Total Income",
+      "plate": "Plate"
+    },
+    "schedule": {
+      "viewAllReservations": "View all reservations →",
+      "noDeliveries": "No deliveries scheduled for the selected date range in the calendar.",
+      "noReturns": "No returns scheduled for the selected date range in the calendar.",
+      "table": {
+        "image": "IMAGE",
+        "actions": "ACTIONS",
+        "viewDetails": "View complete reservation",
+        "client": "FULL NAME",
+        "time": "TIME",
+        "date": "DATE",
+        "plate": "PLATE",
+        "vehicle": "VEHICLE NAME",
+        "status": "STATUS",
+        "id": "ID",
+        "reservationCode": "RESERVATION CODE",
+        "viewBtn": "View"
+      }
+    },
+    "drawer": {
+      "step2Title": "2. Document Validation",
+      "grandTotal": "Grand Total of Reservation",
+      "mobile": "Mobile Phone",
+      "pickupDate": "Pickup Date / Time",
+      "pickupBranch": "Pickup Branch",
+      "step3Title": "3. Reservation Payment",
+      "roadAssistance": "Road Assistance",
+      "email": "Email",
+      "taxes": "Legal Taxes (19% VAT)",
+      "deposit": "Security Deposit",
+      "title": "Registered Reservation Inquiry",
+      "babyEquipment": "Baby Equipment",
+      "fuelPolicy": "Fuel Policy",
+      "transmission": "Transmission / Fuel",
+      "financeTitle": "Complete Financial Breakdown (COP)",
+      "step4Scheduled": "Scheduled for today at",
+      "category": "Category",
+      "step4Done": "Vehicle successfully delivered to customer",
+      "step4Title": "4. Vehicle Delivery at Branch",
+      "assignedPlate": "Assigned Plate",
+      "document": "Document",
+      "paymentMethod": "Payment Method",
+      "closeInquiry": "Close Inquiry",
+      "step5PendingBranch": "Pending receipt at branch",
+      "totalCoverage": "Total CDW Coverage",
+      "phone": "Phone / Mobile",
+      "model": "Model and Engine",
+      "workflowTitle": "Operational Flow (Current Progress)",
+      "clientTitle": "Reservation Holder",
+      "step3Desc": "Completed: $ 499,800 COP collected and confirmed",
+      "step1Desc": "Registered with code",
+      "step2Pending": "Pending: ID / License to be verified",
+      "registrationDate": "Registration Date",
+      "step2Done": "Completed: ID and License 100% approved",
+      "returnDate": "Return Date / Time",
+      "step5PendingContract": "Pending at end of contract",
+      "step5Title": "5. Final Return and Inspection",
+      "vehicleTitle": "Registered Vehicle",
+      "coverageTitle": "Coverage & Additional Services",
+      "step1Title": "1. Reservation Created & Registered",
+      "insurance": "Contracted Insurance",
+      "itineraryTitle": "Itinerary and Branch",
+      "license": "Driver's License",
+      "plate": "Plate",
+      "babySeatAddon": "Additional Baby Seat",
+      "returnBranch": "Return Branch",
+      "baseRental": "Base Rental (3 days x $120,000 COP)"
+    }
+  },
+  "categoriesManagement": {
+    "units": "units"
+  },
+  "branchProfile": {
+    "managementBadge": "Branch Management",
+    "discard": "Discard",
+    "location": {
+      "desc": "Satellite positioning and map",
+      "title": "Location",
+      "mapUnavailable": "Map unavailable",
+      "getDirections": "Get directions"
+    },
+    "paymentAndHours": {
+      "cashHoursTitle": "Counter and cash desk hours:",
+      "cashPayment": "Cash Payment (Branch Counter)",
+      "onlineBadge": "Multiple Locations Enabled",
+      "cashHoursDesc": "<strong>08:00 AM – 06:00 PM</strong>. Customer must visit the branch within these hours for physical payment, cash reconciliation, and contract signing.",
+      "branchDesc": "<strong>08:00 AM – 06:00 PM</strong> (Standard branch working hours).",
+      "terminalTitle": "Transport Terminal:",
+      "onlineDesc": "When paying online in advance, the branch enables all coordinated delivery and pickup locations:",
+      "desc": "The branch manages multiple pickup and return locations depending on the payment method and pickup place selected by the customer.",
+      "onlinePayment": "Virtual Payment with Wompi (Online)",
+      "info": "<strong>Branch locations and operating hours:</strong> Pickup and return availability depends directly on the <strong>payment method</strong> and the <strong>pickup location selected</strong> during booking.",
+      "cashNoDeliveryTitle": "No out-of-hours cash deliveries:",
+      "branchTitle": "Branch Facilities",
+      "terminalDesc": "<strong>24 Hours</strong> (Continuous 24/7 service for ground transport arrivals).",
+      "title": "Delivery Points and Schedules by Payment Method",
+      "deliveryDesc": "<strong>07:00 AM – 07:00 PM</strong> (Monday to Saturday), door-to-door city service.",
+      "cashBadge": "In-person at Branch",
+      "deliveryTitle": "Home Delivery:",
+      "airportDesc": "<strong>24 Hours</strong> (Continuous 24/7 service for flight arrivals and travelers).",
+      "cashDesc": "When the customer selects cash payment, vehicle handover is <strong>strictly restricted to in-person counter service at the designated branch where the vehicle is stored ({{branchName}})</strong>:",
+      "airportTitle": "Airport:",
+      "cashLocationTitle": "Single location:",
+      "cashNoDeliveryDesc": "No cash-based deliveries are conducted outside branch ticket office hours.",
+      "cashLocationDesc": "Cash payments are accepted exclusively at the physical branch where the car is stationed."
+    },
+    "saving": "Saving...",
+    "paymentDeadline": {
+      "rule1Title": "Payment deadline calculation:",
+      "rule2Title": "24-hour rental day computation:",
+      "rule3Title": "Automatic cancellation and vehicle release:",
+      "rule2Desc": "Each rental day lasts exactly <strong>24 hours</strong>, with the rental period starting at the <strong>exact pickup hour chosen by the client</strong> in the calendar.",
+      "rule1Desc": "When booking with sufficient advance notice, the customer has up to <strong>72 hours</strong> to complete payment (online with Wompi or in cash at the branch). For same-day or short-notice bookings, the system <strong>dynamically calculates available hours based on the exact scheduled pickup time</strong> before the trip.",
+      "title": "Payment Deadline, 24-Hour Calculation and Booking Expiration",
+      "rule3Desc": "If payment is not registered within the computed deadline, the reservation is canceled automatically and the vehicle is immediately released back to the public fleet."
+    },
+    "save": "Save changes",
+    "title": "My Branch",
+    "unsavedChanges": "Pending changes",
+    "general": {
+      "desc": "Visible data for customers in public catalog",
+      "title": "General Information"
+    },
+    "subtitle": "Physical branch information and configuration",
+    "generalInfo": "General Information",
+    "generalInfoDesc": "Basic contact and physical location data",
+    "schedules": "Business & Delivery Hours",
+    "schedulesDesc": "Manage operational hours and pickup policies depending on the branch type.",
+    "status": "Operational Status",
+    "paymentMethods": "Payment & Reservation Policies",
+    "paymentMethodsDesc": "Summary of payment methods, required deposits, and time limits for reservation confirmation at the branch.",
+    "mapPreview": "Map Preview",
+    "mapUnavailable": "Invalid coordinates",
+    "buttons": {
+      "save": "Save Changes",
+      "undo": "Undo Changes",
+      "saving": "Saving..."
+    },
+    "fields": {
+      "address": "Address",
+      "addressPlaceholder": "E.g: International Airport, L-12...",
+      "phone": "Phone",
+      "phonePlaceholder": "E.g: +57 300 123 4567",
+      "pickupInstructions": "Pickup Instructions",
+      "pickupPlaceholder": "E.g: Once past international arrivals, look for Alamo module 14.",
+      "latitude": "Latitude",
+      "latitudePlaceholder": "E.g: 4.699723",
+      "longitude": "Longitude",
+      "longitudePlaceholder": "E.g: -74.141525",
+      "name": "Branch Name",
+      "city": "City"
+    },
+    "errors": {
+      "addressRequired": "Address is required.",
+      "phoneInvalid": "Phone must be between 7 and 13 digits.",
+      "bothCoordsRequired": "Both latitude and longitude are required.",
+      "invalidCoords": "Coordinates must be valid numbers (-90 to 90, -180 to 180)."
+    },
+    "payment": {
+      "virtualTitle": "Electronic Payments (Wompi)",
+      "virtualDesc": "Confirmed and paid online reservations",
+      "cashTitle": "Pay on Arrival (Cash)",
+      "cashDesc": "Subject to physical verification at agency",
+      "cardRequired": "Guarantee Card Required",
+      "timeLimit": "Limit: Up to {hours}h before pickup",
+      "flexible": "Flexible at branch",
+      "timeLimitCash": "Payment Deadline (Cash)",
+      "cancellation": "Cancellation Policy",
+      "depositAmount": "Security Deposit (Credit/Debit Card Hold)"
+    },
+    "fleet": {
+      "summary": "Operational Summary (Fleet & Staff)",
+      "summaryDesc": "Current status of the active fleet assigned to this branch and the personnel in charge.",
+      "activeVehicles": "Active Vehicles",
+      "available": "available",
+      "drivers": "Drivers",
+      "onRoute": "en route / assigned",
+      "inspectors": "Yard Inspectors"
+    },
+    "alerts": {
+      "successTitle": "Branch Updated!",
+      "successText": "Branch data and configurations saved successfully.",
+      "errorTitle": "Error updating",
+      "errorText": "A problem occurred while saving the branch profile. Please review the data.",
+      "unsavedWarning": "You have unsaved changes"
+    },
+    "readOnlyHint": "Only the main administrator can change this",
+    "placeholders": {
+      "pickupInstructions": "In front of terminal exit 3 - delivery lounge."
+    }
   }
 }

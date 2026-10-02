@@ -169,14 +169,14 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
             <table className="management-table">
               <thead>
                 <tr>
-                  <th>Reserva</th>
-                  <th>Cliente / Conductor</th>
-                  <th>Cédula / DNI</th>
-                  <th>Licencia Conducir</th>
-                  <th>Categoría</th>
-                  <th>Vencimiento</th>
-                  <th>Estado</th>
-                  <th style={{ textAlign: 'center' }}>Acciones</th>
+                  <th>RESERVA</th>
+                  <th>NOMBRE COMPLETO / CONDUCTOR</th>
+                  <th>CÉDULA / DNI</th>
+                  <th>LICENCIA CONDUCIR</th>
+                  <th>CATEGORÍA</th>
+                  <th>VENCIMIENTO</th>
+                  <th>ESTADO</th>
+                  <th style={{ textAlign: 'center' }}>ACCIONES</th>
                 </tr>
               </thead>
               <tbody>
