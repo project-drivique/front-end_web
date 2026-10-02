@@ -716,7 +716,22 @@
         "previous": "Précédent",
         "next": "Suivant",
         "page": "Page {{current}} sur {{total}}"
-      }
+      },
+      "pickupBranch": "Retrait en Succursale ({{branch}})",
+      "pickupHome": "Livraison à Domicile",
+      "pickupAirport": "Livraison à l'Aéroport",
+      "pickupTerminal": "Livraison au Terminal",
+      "dropoffBranch": "Restitution en Succursale ({{branch}})",
+      "dropoffHome": "Retour à Domicile",
+      "dropoffAirport": "Retour à l'Aéroport",
+      "dropoffTerminal": "Retour au Terminal",
+      "durationDays": "{{count}} jours",
+      "noEarlyReturn": "Non enregistré",
+      "cashPaymentBtn": "Encaissement",
+      "pendingBtn": "En attente",
+      "requiresPayment": "Paiement Requis",
+      "yes": "Oui",
+      "no": "Non"
     },
     "usersPage": {
       "subtitle": "Gestion complÃ¨te des clients, administrateurs, rÃ´les, statuts de compte et rÃ©vision des documents.",

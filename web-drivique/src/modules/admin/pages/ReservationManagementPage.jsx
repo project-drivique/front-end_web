@@ -224,18 +224,20 @@ export default function ReservationManagementPage() {
 
       const esPagoEfectivo = rawMetodo.includes('efectivo') || rawMetodo.includes('sucursal')
 
-      let lugarRetiroText = `Recoger en Sucursal (${r.sucursal || 'Alquiler Neiva - Centro'})`
+      const branchRetiro = r.sucursal || 'Alquiler Neiva - Centro'
+                        let lugarRetiroText = t('admin.reservationsManagement.pickupBranch', 'Recoger en Sucursal ({{branch}})', { branch: branchRetiro })
       if (!esPagoEfectivo) {
-        if (r.sucursalRetiro === 'domicilio') lugarRetiroText = 'Entrega a Domicilio'
-        else if (r.sucursalRetiro === 'aeropuerto') lugarRetiroText = 'Entrega en Aeropuerto'
-        else if (r.sucursalRetiro === 'terminal') lugarRetiroText = 'Entrega en Terminal'
+        if (r.sucursalRetiro === 'domicilio') lugarRetiroText = t('admin.reservationsManagement.pickupHome', 'Entrega a Domicilio')
+        else if (r.sucursalRetiro === 'aeropuerto') lugarRetiroText = t('admin.reservationsManagement.pickupAirport', 'Entrega en Aeropuerto')
+        else if (r.sucursalRetiro === 'terminal') lugarRetiroText = t('admin.reservationsManagement.pickupTerminal', 'Entrega en Terminal')
       }
 
-      let lugarDevolucionText = `Devolver en Sucursal (${r.sucursal || 'Alquiler Neiva - Centro'})`
+      const branchDevolucion = r.sucursal || 'Alquiler Neiva - Centro'
+                        let lugarDevolucionText = t('admin.reservationsManagement.dropoffBranch', 'Devolver en Sucursal ({{branch}})', { branch: branchDevolucion })
       if (!esPagoEfectivo) {
-        if (r.sucursalDevolucion === 'domicilio') lugarDevolucionText = 'Devolución a Domicilio'
-        else if (r.sucursalDevolucion === 'aeropuerto') lugarDevolucionText = 'Devolución en Aeropuerto'
-        else if (r.sucursalDevolucion === 'terminal') lugarDevolucionText = 'Devolución en Terminal'
+        if (r.sucursalDevolucion === 'domicilio') lugarDevolucionText = t('admin.reservationsManagement.dropoffHome', 'Devolución a Domicilio')
+        else if (r.sucursalDevolucion === 'aeropuerto') lugarDevolucionText = t('admin.reservationsManagement.dropoffAirport', 'Devolución en Aeropuerto')
+        else if (r.sucursalDevolucion === 'terminal') lugarDevolucionText = t('admin.reservationsManagement.dropoffTerminal', 'Devolución en Terminal')
       }
 
       const fInicioRaw = r.fechaInicio || ''
@@ -243,7 +245,7 @@ export default function ReservationManagementPage() {
       const fechaRetiroVal = fInicioRaw.split('T')[0] || new Date().toISOString().slice(0, 10)
       const fechaDevolucionVal = fFinRaw.split('T')[0] || new Date(Date.now() + 86400000 * 3).toISOString().slice(0, 10)
 
-      const duracionText = r.reservaDetalles?.duracionDias ? `${r.reservaDetalles.duracionDias} días` : '4 días'
+      const duracionText = r.reservaDetalles?.duracionDias ? t('admin.reservationsManagement.durationDays', '{{count}} días', { count: r.reservaDetalles.duracionDias }) : t('admin.reservationsManagement.durationDays', '{{count}} días', { count: 4 })
       const cobertura = r.reservaDetalles?.cobertura?.nombre || r.cobertura || 'Protección Estándar CDW'
       const servs = (r.reservaDetalles?.serviciosAdicionales || []).map(s => typeof s === 'string' ? s : s.nombre).join(', ') || 'Ninguno'
 
@@ -602,20 +604,22 @@ export default function ReservationManagementPage() {
                         ).toLowerCase()
 
                         const esPagoEfectivo = rawMetodo.includes('efectivo') || rawMetodo.includes('sucursal')
-                        const textoMedioPago = esPagoEfectivo ? 'Pago en efectivo' : 'Pago virtual con Wompi'
+                        const textoMedioPago = esPagoEfectivo ? t('admin.reservationsManagement.cashPayment', 'Pago en efectivo') : t('admin.reservationsManagement.wompiPayment', 'Pago virtual con Wompi')
 
-                        let lugarRetiroText = `Recoger en Sucursal (${r.sucursal || 'Alquiler Neiva - Centro'})`
+                        const branchRetiro = r.sucursal || 'Alquiler Neiva - Centro'
+                        let lugarRetiroText = t('admin.reservationsManagement.pickupBranch', 'Recoger en Sucursal ({{branch}})', { branch: branchRetiro })
                         if (!esPagoEfectivo) {
-                          if (r.sucursalRetiro === 'domicilio') lugarRetiroText = 'Entrega a Domicilio'
-                          else if (r.sucursalRetiro === 'aeropuerto') lugarRetiroText = 'Entrega en Aeropuerto'
-                          else if (r.sucursalRetiro === 'terminal') lugarRetiroText = 'Entrega en Terminal'
+                          if (r.sucursalRetiro === 'domicilio') lugarRetiroText = t('admin.reservationsManagement.pickupHome', 'Entrega a Domicilio')
+                          else if (r.sucursalRetiro === 'aeropuerto') lugarRetiroText = t('admin.reservationsManagement.pickupAirport', 'Entrega en Aeropuerto')
+                          else if (r.sucursalRetiro === 'terminal') lugarRetiroText = t('admin.reservationsManagement.pickupTerminal', 'Entrega en Terminal')
                         }
 
-                        let lugarDevolucionText = `Devolver en Sucursal (${r.sucursal || 'Alquiler Neiva - Centro'})`
+                        const branchDevolucion = r.sucursal || 'Alquiler Neiva - Centro'
+                        let lugarDevolucionText = t('admin.reservationsManagement.dropoffBranch', 'Devolver en Sucursal ({{branch}})', { branch: branchDevolucion })
                         if (!esPagoEfectivo) {
-                          if (r.sucursalDevolucion === 'domicilio') lugarDevolucionText = 'Devolución a Domicilio'
-                          else if (r.sucursalDevolucion === 'aeropuerto') lugarDevolucionText = 'Devolución en Aeropuerto'
-                          else if (r.sucursalDevolucion === 'terminal') lugarDevolucionText = 'Devolución en Terminal'
+                          if (r.sucursalDevolucion === 'domicilio') lugarDevolucionText = t('admin.reservationsManagement.dropoffHome', 'Devolución a Domicilio')
+                          else if (r.sucursalDevolucion === 'aeropuerto') lugarDevolucionText = t('admin.reservationsManagement.dropoffAirport', 'Devolución en Aeropuerto')
+                          else if (r.sucursalDevolucion === 'terminal') lugarDevolucionText = t('admin.reservationsManagement.dropoffTerminal', 'Devolución en Terminal')
                         }
 
                         const esCobroPresencialPendiente =
@@ -631,8 +635,8 @@ export default function ReservationManagementPage() {
                         const horaRetiroVal = r.horaInicio ? r.horaInicio : (fInicioRaw.includes('T') ? fInicioRaw.split('T')[1].slice(0, 5) : '9:00 a. m.')
                         const horaDevolucionVal = r.horaFin ? r.horaFin : (fFinRaw.includes('T') ? fFinRaw.split('T')[1].slice(0, 5) : '8:30 a. m.')
 
-                        const duracionText = r.reservaDetalles?.duracionDias ? `${r.reservaDetalles.duracionDias} días` : '4 días'
-                        const devAnticipadaText = r.reservaDetalles?.devolucionAnticipada || (r.devolucionAnticipada ? '3 días, 23 h 30 min' : 'No registra')
+                        const duracionText = r.reservaDetalles?.duracionDias ? t('admin.reservationsManagement.durationDays', '{{count}} días', { count: r.reservaDetalles.duracionDias }) : t('admin.reservationsManagement.durationDays', '{{count}} días', { count: 4 })
+                        const devAnticipadaText = r.reservaDetalles?.devolucionAnticipada || (r.devolucionAnticipada ? '3 días, 23 h 30 min' : t('admin.reservationsManagement.noEarlyReturn', 'No registra'))
 
                         return (
                           <tr key={r.id || cod}>
@@ -831,7 +835,7 @@ export default function ReservationManagementPage() {
                         };
                         const tipoDoc = formatDoc(r.clienteTipoDocumento || r.reservaDetalles?.datosForm?.tipoDoc || 'Cédula de Ciudadanía');
                         const nacionalidad = r.clienteNacionalidad || 'Colombia'
-                        const cuponCodigo = r.cuponCodigo || r.reservaDetalles?.cuponAplicado ? `Aplicó (${r.cuponCodigo || 'CUPON'})` : 'Sin cupones'
+                        const cuponCodigo = r.cuponCodigo || r.reservaDetalles?.cuponAplicado ? t('admin.reservationsManagement.appliedCoupon', 'Aplicó ({{code}})', { code: r.cuponCodigo || 'CUPON' }) : t('admin.reservationsManagement.noCoupons', 'Sin cupones')
                         const totalCOP = Number(r.totalCOP || r.total || r.precioTotal || 348000)
 
                         const fInicioRaw = r.fechaInicio || ''
@@ -968,11 +972,7 @@ export default function ReservationManagementPage() {
                                   )
                                 }}
                               >
-                                {!isPagoConfirmado 
-                                  ? 'Requiere Pago' 
-                                  : r.firmaContrato || r.contratoFirmado || r.estado === 'confirmada' || r.estado === 'en_curso' || r.estado === 'finalizada'
-                                    ? 'Sí' 
-                                    : 'No'}
+                                {!isPagoConfirmado ? t('admin.reservationsManagement.requiresPayment', 'Requiere Pago') : (r.firmaContrato || r.contratoFirmado || r.estado === 'confirmada' || r.estado === 'en_curso' || r.estado === 'finalizada') ? t('admin.reservationsManagement.yes', 'Sí') : t('admin.reservationsManagement.no', 'No')}
                               </span>
                             </td>
                             <td style={{ textAlign: 'center' }}>
@@ -1028,9 +1028,7 @@ export default function ReservationManagementPage() {
                                     type="button"
                                     disabled
                                     style={{ background: '#f1f5f9', color: 'var(--texto-terciary, #94a3b8)', border: 'none', padding: '6px 12px', borderRadius: 6, fontSize: 12, fontWeight: 600, whiteSpace: 'nowrap', cursor: 'not-allowed' }}
-                                  >
-                                    Pendiente
-                                  </button>
+                                  >{t('admin.reservationsManagement.pendingBtn', 'Pendiente')}</button>
                                 )}
                                 {r.estado === 'finalizada' && (
                                   <button

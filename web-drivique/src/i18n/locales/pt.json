@@ -717,7 +717,22 @@
         "previous": "Anterior",
         "next": "Próximo",
         "page": "Página {{current}} de {{total}}"
-      }
+      },
+      "pickupBranch": "Retirar na Filial ({{branch}})",
+      "pickupHome": "Entrega em Domicílio",
+      "pickupAirport": "Entrega no Aeroporto",
+      "pickupTerminal": "Entrega no Terminal",
+      "dropoffBranch": "Devolver na Filial ({{branch}})",
+      "dropoffHome": "Devolução em Domicílio",
+      "dropoffAirport": "Devolução no Aeroporto",
+      "dropoffTerminal": "Devolução no Terminal",
+      "durationDays": "{{count}} dias",
+      "noEarlyReturn": "Não registrado",
+      "cashPaymentBtn": "Cobrar no Caixa",
+      "pendingBtn": "Pendente",
+      "requiresPayment": "Requer Pagamento",
+      "yes": "Sim",
+      "no": "Não"
     },
     "usersPage": {
       "subtitle": "GestÃ£o completa de clientes, administradores, funÃ§Ãµes, status de contas e revisÃ£o de documentos.",
