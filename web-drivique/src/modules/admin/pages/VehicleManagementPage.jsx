@@ -6,7 +6,7 @@ import {
   FaCheck,
   FaCogs,
   FaEdit,
-  FaFileExcel,
+  FaFile{t('admin.vehiclesManagement.export.excel', 'Excel')},
   FaFilePdf,
   FaImage,
   FaListUl,
@@ -30,7 +30,7 @@ import {
   vehicleManagementService,
 } from "../../../services/vehicleManagementService";
 import {
-  exportExcel,
+  export{t('admin.vehiclesManagement.export.excel', 'Excel')},
   exportPdf,
   printTable,
 } from "../../../utils/listExportUtils";
@@ -903,7 +903,7 @@ export default function VehicleManagementPage() {
                     type="button"
                     className="export-pill export-pill--excel"
                     onClick={() =>
-                      exportExcel({
+                      export{t('admin.vehiclesManagement.export.excel', 'Excel')}({
                         title: "Sucursales",
                         headers: [
                           "ID",
@@ -931,7 +931,7 @@ export default function VehicleManagementPage() {
                       })
                     }
                   >
-                    <FaFileExcel aria-hidden="true" /> Excel
+                    <FaFile{t('admin.vehiclesManagement.export.excel', 'Excel')} aria-hidden="true" /> {t('admin.vehiclesManagement.export.excel', 'Excel')}
                   </button>
                   <button
                     type="button"
@@ -965,7 +965,7 @@ export default function VehicleManagementPage() {
                       })
                     }
                   >
-                    <FaFilePdf aria-hidden="true" /> PDF
+                    <FaFilePdf aria-hidden="true" /> {t('admin.vehiclesManagement.export.pdf', 'PDF')}
                   </button>
                   <button
                     type="button"
@@ -998,7 +998,7 @@ export default function VehicleManagementPage() {
                       })
                     }
                   >
-                    <FaPrint aria-hidden="true" /> Imprimir
+                    <FaPrint aria-hidden="true" /> {t('admin.vehiclesManagement.export.print', 'Imprimir')}
                   </button>
                 </div>
               </div>
@@ -1101,23 +1101,23 @@ export default function VehicleManagementPage() {
                     <button
                       type="button"
                       className="export-pill export-pill--excel"
-                      onClick={() => exportExcel(categoryExportData)}
+                      onClick={() => export{t('admin.vehiclesManagement.export.excel', 'Excel')}(categoryExportData)}
                     >
-                      <FaFileExcel aria-hidden="true" /> Excel
+                      <FaFile{t('admin.vehiclesManagement.export.excel', 'Excel')} aria-hidden="true" /> {t('admin.vehiclesManagement.export.excel', 'Excel')}
                     </button>
                     <button
                       type="button"
                       className="export-pill export-pill--pdf"
                       onClick={() => exportPdf(categoryExportData)}
                     >
-                      <FaFilePdf aria-hidden="true" /> PDF
+                      <FaFilePdf aria-hidden="true" /> {t('admin.vehiclesManagement.export.pdf', 'PDF')}
                     </button>
                     <button
                       type="button"
                       className="export-pill export-pill--print"
                       onClick={() => printTable(categoryExportData)}
                     >
-                      <FaPrint aria-hidden="true" /> Imprimir
+                      <FaPrint aria-hidden="true" /> {t('admin.vehiclesManagement.export.print', 'Imprimir')}
                     </button>
                   </div>
                 )}
@@ -1399,23 +1399,23 @@ export default function VehicleManagementPage() {
                   <button
                     type="button"
                     className="export-pill export-pill--excel"
-                    onClick={() => exportExcel(vehicleExportData)}
+                    onClick={() => export{t('admin.vehiclesManagement.export.excel', 'Excel')}(vehicleExportData)}
                   >
-                    <FaFileExcel aria-hidden="true" /> Excel
+                    <FaFile{t('admin.vehiclesManagement.export.excel', 'Excel')} aria-hidden="true" /> {t('admin.vehiclesManagement.export.excel', 'Excel')}
                   </button>
                   <button
                     type="button"
                     className="export-pill export-pill--pdf"
                     onClick={() => exportPdf(vehicleExportData)}
                   >
-                    <FaFilePdf aria-hidden="true" /> PDF
+                    <FaFilePdf aria-hidden="true" /> {t('admin.vehiclesManagement.export.pdf', 'PDF')}
                   </button>
                   <button
                     type="button"
                     className="export-pill export-pill--print"
                     onClick={() => printTable(vehicleExportData)}
                   >
-                    <FaPrint aria-hidden="true" /> Imprimir
+                    <FaPrint aria-hidden="true" /> {t('admin.vehiclesManagement.export.print', 'Imprimir')}
                   </button>
                 </div>
               </div>
@@ -1646,7 +1646,7 @@ export default function VehicleManagementPage() {
                       <div className="fleet-form-card">
                         <div className="fleet-form-card__title">
                           <FaCar className="fleet-form-card__icon" />
-                          <span>1. Identificación y Clasificación</span>
+                          <span>{t('admin.vehiclesManagement.formSections.identification', '1. Identificación y Clasificación')}</span>
                         </div>
                         <div className="fleet-form-grid-2">
                           <div className="fleet-form-group">
@@ -1775,7 +1775,7 @@ export default function VehicleManagementPage() {
                       <div className="fleet-form-card">
                         <div className="fleet-form-card__title">
                           <FaCogs className="fleet-form-card__icon" />
-                          <span>2. Especificaciones Mecánicas y Capacidad</span>
+                          <span>{t('admin.vehiclesManagement.formSections.mechanical', '2. Especificaciones Mecánicas y Capacidad')}</span>
                         </div>
                         <div className="fleet-form-grid-4">
                           <div className="fleet-form-group">
@@ -1788,9 +1788,9 @@ export default function VehicleManagementPage() {
                               onChange={(e) => setForm({ ...form, transmision: e.target.value })}
                               required
                             >
-                              <option value="">Seleccionar...</option>
-                              <option value="Automática">Automática</option>
-                              <option value="Manual">Manual</option>
+                              <option value="">{t('common.select', 'Seleccionar...')}</option>
+                              <option value="Automática">{t('admin.vehiclesManagement.transmission.automatic', 'Automática')}</option>
+                              <option value="Manual">{t('admin.vehiclesManagement.transmission.manual', 'Manual')}</option>
                             </select>
                           </div>
 
@@ -1804,11 +1804,11 @@ export default function VehicleManagementPage() {
                               onChange={(e) => setForm({ ...form, combustible: e.target.value })}
                               required
                             >
-                              <option value="">Seleccionar...</option>
-                              <option value="Gasolina">Gasolina</option>
-                              <option value="Diésel">Diésel</option>
-                              <option value="Híbrido">Híbrido</option>
-                              <option value="Eléctrico">Eléctrico</option>
+                              <option value="">{t('common.select', 'Seleccionar...')}</option>
+                              <option value="Gasolina">{t('admin.vehiclesManagement.fuel.gasoline', 'Gasolina')}</option>
+                              <option value="Diésel">{t('admin.vehiclesManagement.fuel.diesel', 'Diésel')}</option>
+                              <option value="Híbrido">{t('admin.vehiclesManagement.fuel.hybrid', 'Híbrido')}</option>
+                              <option value="Eléctrico">{t('admin.vehiclesManagement.fuel.electric', 'Eléctrico')}</option>
                             </select>
                           </div>
 
@@ -1905,7 +1905,7 @@ export default function VehicleManagementPage() {
                       <div className="fleet-form-card">
                         <div className="fleet-form-card__title">
                           <FaListUl className="fleet-form-card__icon" />
-                          <span>3. Equipamiento y Descripción Comercial</span>
+                          <span>{t('admin.vehiclesManagement.formSections.equipment', '3. Equipamiento y Descripción Comercial')}</span>
                         </div>
                         <div className="fleet-form-grid-1">
                           <div className="fleet-form-group">
@@ -1944,7 +1944,7 @@ export default function VehicleManagementPage() {
                       <div className="fleet-form-card">
                         <div className="fleet-form-card__title">
                           <FaMoneyBillWave className="fleet-form-card__icon" />
-                          <span>4. Tarifas de Alquiler y Coberturas</span>
+                          <span>{t('admin.vehiclesManagement.formSections.pricing', '4. Tarifas de Alquiler y Coberturas')}</span>
                         </div>
 
                         <div className="fleet-form-grid-4">
@@ -2084,7 +2084,7 @@ export default function VehicleManagementPage() {
                       <div className="fleet-form-card">
                         <div className="fleet-form-card__title">
                           <FaImage className="fleet-form-card__icon" />
-                          <span>5. Fotografías del Vehículo</span>
+                          <span>{t('admin.vehiclesManagement.formSections.photos', '5. Fotografías del Vehículo')}</span>
                           <span className="fleet-photo-counter-badge">
                             {(form.imagenes?.length || 0)} / 3 {t("admin.vehiclesManagement.photosCount", "fotos")}
                           </span>
