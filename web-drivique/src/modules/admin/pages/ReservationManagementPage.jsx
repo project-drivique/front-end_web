@@ -61,6 +61,10 @@ export default function ReservationManagementPage() {
   const [branchFilter, setBranchFilter] = useState(esEncargado ? sucursalEncargado : 'all')
   const [dateFrom, setDateFrom] = useState('')
   const [dateTo, setDateTo] = useState('')
+  
+  // Paginación
+  const [currentPage, setCurrentPage] = useState(1)
+  const ITEMS_PER_PAGE = 5
 
   // Modales
   const [modalDetalle, setModalDetalle] = useState(null)
@@ -175,8 +179,14 @@ export default function ReservationManagementPage() {
       const codeA = String(a.codigo || a.referencia || a.id || '');
       const codeB = String(b.codigo || b.referencia || b.id || '');
       return codeA.localeCompare(codeB);
-    }).slice(0, 5)
+    })
   }, [reservas, search, statusFilter, branchFilter, dateFrom, dateTo])
+
+  const totalPages = Math.ceil(filtradas.length / ITEMS_PER_PAGE)
+  const paginatedReservations = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
+    return filtradas.slice(startIndex, startIndex + ITEMS_PER_PAGE)
+  }, [filtradas, currentPage])
 
   // Configuración de exportación global consolidada de reservas
   const headersExport = useMemo(() => {
@@ -512,9 +522,9 @@ export default function ReservationManagementPage() {
 
             {/* Filtro de Sucursal */}
             {esEncargado ? (
-              <div className="reservations-assigned-branch" style={{ flex: '0 0 auto', padding: '10px 14px', borderRadius: '12px', border: '1.5px solid var(--city-border)', background: '#f8fafc', display: 'flex', alignItems: 'center' }}>
-                <FaBuilding style={{ marginRight: 8, color: '#64748b' }} />
-                <span style={{ fontWeight: 600, color: '#0f172a' }}>{sucursalEncargado || t('admin.reservationsManagement.noAssignedBranch')}</span>
+              <div className="reservations-assigned-branch" style={{ flex: '0 0 auto', padding: '10px 14px', borderRadius: '12px', border: '1.5px solid var(--city-border)', background: 'var(--bg-seccion1, #f8fafc)', display: 'flex', alignItems: 'center' }}>
+                <FaBuilding style={{ marginRight: 8, color: 'var(--texto-second, #64748b)' }} />
+                <span style={{ fontWeight: 600, color: 'var(--texto-primary, #0f172a)' }}>{sucursalEncargado || t('admin.reservationsManagement.noAssignedBranch')}</span>
               </div>
             ) : (
               <select
@@ -537,14 +547,14 @@ export default function ReservationManagementPage() {
 
             {/* Botones de Exportación Independientes por Flujo */}
             <div className="export-pills-group" style={{ marginLeft: 'auto', display: 'flex', gap: '8px' }}>
-              <button type="button" className="export-pill export-pill--excel" onClick={handleExportExcel} title="Exportar tabla actual a Excel">
-                <FaFileExcel aria-hidden="true" /> Excel
+              <button type="button" className="export-pill export-pill--excel" onClick={handleExportExcel} title={t("admin.vehiclesManagement.export.excelTitle", "Exportar tabla actual a Excel")}>
+                <FaFileExcel aria-hidden="true" /> {t("admin.vehiclesManagement.export.excel", "Excel")}
               </button>
-              <button type="button" className="export-pill export-pill--pdf" onClick={handleExportPdf} title="Exportar tabla actual a PDF">
-                <FaFilePdf aria-hidden="true" /> PDF
+              <button type="button" className="export-pill export-pill--pdf" onClick={handleExportPdf} title={t("admin.vehiclesManagement.export.pdfTitle", "Exportar tabla actual a PDF")}>
+                <FaFilePdf aria-hidden="true" /> {t("admin.vehiclesManagement.export.pdf", "PDF")}
               </button>
-              <button type="button" className="export-pill export-pill--print" onClick={handlePrint} title="Imprimir tabla actual" style={{ background: '#eff6ff', color: '#2563eb', border: '1px solid #bfdbfe' }}>
-                <FaPrint aria-hidden="true" /> Imprimir
+              <button type="button" className="export-pill export-pill--print" onClick={handlePrint} title={t("admin.vehiclesManagement.export.printTitle", "Imprimir tabla actual")} style={{ background: 'var(--bg-seccion1, #eff6ff)', color: 'var(--brand-primary, #2563eb)', border: '1px solid var(--brand-secondary, #bfdbfe)' }}>
+                <FaPrint aria-hidden="true" /> {t("admin.vehiclesManagement.export.print", "Imprimir")}
               </button>
             </div>
           </div>
@@ -559,8 +569,8 @@ export default function ReservationManagementPage() {
           {filtradas.length === 0 ? (
             <div className="cities-empty">
               <FaCalendarAlt />
-              <h2>No hay reservas registradas en esta sección</h2>
-              <p>No se encontraron registros en esta categoría con los filtros aplicados.</p>
+              <h2>{t("admin.reservationsManagement.emptyTitle", "No hay reservas registradas en esta sección")}</h2>
+              <p>{t("admin.reservationsManagement.emptyText", "No se encontraron registros en esta categoría con los filtros aplicados.")}</p>
             </div>
           ) : (
             <div className="cities-table-wrap">
@@ -570,24 +580,24 @@ export default function ReservationManagementPage() {
                   <>
                     <thead>
                       <tr>
-                        <th>ID</th>
-                        <th>CÓDIGO RESERVA</th>
-                        <th>FOTO</th>
-                        <th>NOMBRE VEHÍCULO</th>
-                        <th>PLACA</th>
-                        <th>MEDIO DE PAGO</th>
-                        <th>LUGAR DE RETIRO</th>
-                        <th>LUGAR DE DEVOLUCIÓN</th>
-                        <th>FECHA DE RETIRO</th>
-                        <th>FECHA DE DEVOLUCIÓN</th>
-                        <th>HORA DE RETIRO</th>
-                        <th>HORA DE DEVOLUCIÓN</th>
-                        <th>DURACIÓN DEL ALQUILER</th>
-                        <th>DEVOLUCIÓN ANTICIPADA</th>
+                        <th style={{ textTransform: "uppercase" }}>ID</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.code", "CÓDIGO RESERVA")}</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.photo", "FOTO")}</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.vehicle", "NOMBRE VEHÍCULO")}</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.plate", "PLACA")}</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.paymentMethod", "MEDIO DE PAGO")}</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.pickup", "LUGAR DE RETIRO")}</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.dropoff", "LUGAR DE DEVOLUCIÓN")}</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.pickupDate", "FECHA DE RETIRO")}</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.dropoffDate", "FECHA DE DEVOLUCIÓN")}</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.pickupTime", "HORA DE RETIRO")}</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.dropoffTime", "HORA DE DEVOLUCIÓN")}</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.duration", "DURACIÓN DEL ALQUILER")}</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.earlyReturn", "DEVOLUCIÓN ANTICIPADA")}</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {filtradas.map((r, idx) => {
+                      {paginatedReservations.map((r, idx) => {
                         const cod = r.codigo || r.referencia || `RES-${r.id}`
                         const rawMetodo = String(
                           r.reservaDetalles?.metodoPago ||
@@ -648,16 +658,16 @@ export default function ReservationManagementPage() {
                                     height: 34,
                                     borderRadius: 8,
                                     objectFit: 'cover',
-                                    border: '1px solid #cbd5e1',
+                                    border: '1px solid var(--borde, #cbd5e1)',
                                     display: 'block',
                                     cursor: 'pointer',
                                   }}
                                 />
                               ) : (
-                                <span style={{ fontSize: 12, color: '#94a3b8' }}>—</span>
+                                <span style={{ fontSize: 12, color: 'var(--texto-terciary, #94a3b8)' }}>—</span>
                               )}
                             </td>
-                            <td style={{ fontWeight: 700, color: '#0f172a' }}>
+                            <td style={{ fontWeight: 700, color: 'var(--texto-primary, #0f172a)' }}>
                               {r.vehiculoNombre || 'Renault Sandero 2023'}
                             </td>
                             <td>
@@ -699,7 +709,7 @@ export default function ReservationManagementPage() {
                       </tr>
                     </thead>
                     <tbody>
-                      {filtradas.map((r, idx) => {
+                      {paginatedReservations.map((r, idx) => {
                         const cod = r.codigo || r.referencia || `RES-${r.id}`
                         let cliNom = r.clienteNombre || 'Cliente Registrado'
                         if (cliNom === 'Cliente Registrado' || cliNom === 'Cliente Drivique') {
@@ -803,7 +813,7 @@ export default function ReservationManagementPage() {
                       </tr>
                     </thead>
                     <tbody>
-                      {filtradas.map((r, idx) => {
+                      {paginatedReservations.map((r, idx) => {
                         const cod = r.codigo || r.referencia || `RES-${r.id}`
                         const dfName = r.reservaDetalles?.datosForm?.nombre || [r.reservaDetalles?.datosForm?.nombres, r.reservaDetalles?.datosForm?.apellidos].filter(Boolean).join(' ') || '';
                         let cliNom = dfName || r.clienteNombre || 'Cliente Registrado'
@@ -865,8 +875,8 @@ export default function ReservationManagementPage() {
                             <td>
                               <code>{cod}</code>
                             </td>
-                            <td style={{ fontWeight: 600, color: '#0f172a' }}>{cliNom}</td>
-                            <td style={{ color: '#64748b', fontSize: 12 }}>{cliMail}</td>
+                            <td style={{ fontWeight: 600, color: 'var(--texto-primary, #0f172a)' }}>{cliNom}</td>
+                            <td style={{ color: 'var(--texto-second, #64748b)', fontSize: 12 }}>{cliMail}</td>
                             <td>{tipoDoc}</td>
                             <td>{nacionalidad}</td>
                             <td>{cliTel}</td>
@@ -877,7 +887,7 @@ export default function ReservationManagementPage() {
                                 onClick={() => setZoomPdf({ url: r.documentoIdentidadPdf || `Cedula-${cliDoc}.pdf`, title: `Documento de Identidad - ${cliNom}` })}
                               >
                                 <FaFilePdf color="#ef4444" /> 
-                                <span style={{ fontSize: 12, color: '#0f172a', textDecoration: 'underline' }}>{r.documentoIdentidadPdf || `Cedula-${cliDoc}.pdf`}</span>
+                                <span style={{ fontSize: 12, color: 'var(--texto-primary, #0f172a)', textDecoration: 'underline' }}>{r.documentoIdentidadPdf || `Cedula-${cliDoc}.pdf`}</span>
                               </div>
                             </td>
                             <td>
@@ -886,7 +896,7 @@ export default function ReservationManagementPage() {
                                 onClick={() => setZoomPdf({ url: r.licenciaConduccionPdf || `Licencia-${cliDoc}.pdf`, title: `Licencia de Conducción - ${cliNom}` })}
                               >
                                 <FaFilePdf color="#ef4444" /> 
-                                <span style={{ fontSize: 12, color: '#0f172a', textDecoration: 'underline' }}>{r.licenciaConduccionPdf || `Licencia-${cliDoc}.pdf`}</span>
+                                <span style={{ fontSize: 12, color: 'var(--texto-primary, #0f172a)', textDecoration: 'underline' }}>{r.licenciaConduccionPdf || `Licencia-${cliDoc}.pdf`}</span>
                               </div>
                             </td>
                             <td>
@@ -907,7 +917,7 @@ export default function ReservationManagementPage() {
                                 style={{
                                   padding: '4px 8px',
                                   borderRadius: '6px',
-                                  border: '1px solid #cbd5e1',
+                                  border: '1px solid var(--borde, #cbd5e1)',
                                   backgroundColor: r.estado === 'en_curso' ? '#dbeafe' : r.estado === 'finalizada' ? '#dcfce7' : r.estado === 'cancelada' ? '#fee2e2' : '#f1f5f9',
                                   color: r.estado === 'en_curso' ? '#1d4ed8' : r.estado === 'finalizada' ? '#15803d' : r.estado === 'cancelada' ? '#991b1b' : '#475569',
                                   fontWeight: 600,
@@ -960,7 +970,7 @@ export default function ReservationManagementPage() {
                                     ? r.firmaContrato || r.contratoFirmado || r.estado === 'confirmada' || r.estado === 'en_curso' || r.estado === 'finalizada'
                                       ? { background: '#d1fae5', color: '#065f46' }
                                       : { background: '#fee2e2', color: '#991b1b' }
-                                    : { background: '#f1f5f9', color: '#64748b' }
+                                    : { background: '#f1f5f9', color: 'var(--texto-second, #64748b)' }
                                   )
                                 }}
                               >
@@ -977,7 +987,7 @@ export default function ReservationManagementPage() {
                                   <button
                                     type="button"
                                     onClick={() => navigate(`${cashRoute}?ref=${encodeURIComponent(cod)}`)}
-                                    style={{ background: '#f59e0b', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: 6, fontSize: 12, fontWeight: 600, whiteSpace: 'nowrap', cursor: 'pointer', transition: 'opacity 0.2s' }}
+                                    style={{ background: '#f59e0b', color: 'var(--bg-tarjeta, #ffffff)', border: 'none', padding: '6px 12px', borderRadius: 6, fontSize: 12, fontWeight: 600, whiteSpace: 'nowrap', cursor: 'pointer', transition: 'opacity 0.2s' }}
                                     onMouseOver={(e) => e.target.style.opacity = 0.8}
                                     onMouseOut={(e) => e.target.style.opacity = 1}
                                   >
@@ -988,7 +998,7 @@ export default function ReservationManagementPage() {
                                   <button
                                     type="button"
                                     onClick={() => handleEntregarAuto(r)}
-                                    style={{ background: '#10b981', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: 6, fontSize: 12, fontWeight: 600, whiteSpace: 'nowrap', cursor: 'pointer', transition: 'opacity 0.2s' }}
+                                    style={{ background: '#10b981', color: 'var(--bg-tarjeta, #ffffff)', border: 'none', padding: '6px 12px', borderRadius: 6, fontSize: 12, fontWeight: 600, whiteSpace: 'nowrap', cursor: 'pointer', transition: 'opacity 0.2s' }}
                                     onMouseOver={(e) => { e.target.style.opacity = 0.8 }}
                                     onMouseOut={(e) => { e.target.style.opacity = 1 }}
                                   >
@@ -999,7 +1009,7 @@ export default function ReservationManagementPage() {
                                   <button
                                     type="button"
                                     disabled
-                                    style={{ background: '#e2e8f0', color: '#64748b', border: 'none', padding: '6px 12px', borderRadius: 6, fontSize: 12, fontWeight: 600, whiteSpace: 'nowrap', cursor: 'not-allowed' }}
+                                    style={{ background: 'var(--borde, #e2e8f0)', color: 'var(--texto-second, #64748b)', border: 'none', padding: '6px 12px', borderRadius: 6, fontSize: 12, fontWeight: 600, whiteSpace: 'nowrap', cursor: 'not-allowed' }}
                                   >
                                     Auto Entregado
                                   </button>
@@ -1012,7 +1022,7 @@ export default function ReservationManagementPage() {
                                   <button
                                     type="button"
                                     onClick={() => handleRecibirDevolucion(r)}
-                                    style={{ background: '#059669', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: 6, fontSize: 12, fontWeight: 600, whiteSpace: 'nowrap', cursor: 'pointer', transition: 'opacity 0.2s' }}
+                                    style={{ background: '#059669', color: 'var(--bg-tarjeta, #ffffff)', border: 'none', padding: '6px 12px', borderRadius: 6, fontSize: 12, fontWeight: 600, whiteSpace: 'nowrap', cursor: 'pointer', transition: 'opacity 0.2s' }}
                                     onMouseOver={(e) => { e.target.style.opacity = 0.8 }}
                                     onMouseOut={(e) => { e.target.style.opacity = 1 }}
                                   >
@@ -1023,7 +1033,7 @@ export default function ReservationManagementPage() {
                                   <button
                                     type="button"
                                     disabled
-                                    style={{ background: '#f1f5f9', color: '#94a3b8', border: 'none', padding: '6px 12px', borderRadius: 6, fontSize: 12, fontWeight: 600, whiteSpace: 'nowrap', cursor: 'not-allowed' }}
+                                    style={{ background: '#f1f5f9', color: 'var(--texto-terciary, #94a3b8)', border: 'none', padding: '6px 12px', borderRadius: 6, fontSize: 12, fontWeight: 600, whiteSpace: 'nowrap', cursor: 'not-allowed' }}
                                   >
                                     Pendiente
                                   </button>
@@ -1032,7 +1042,7 @@ export default function ReservationManagementPage() {
                                   <button
                                     type="button"
                                     disabled
-                                    style={{ background: '#e2e8f0', color: '#64748b', border: 'none', padding: '6px 12px', borderRadius: 6, fontSize: 12, fontWeight: 600, whiteSpace: 'nowrap', cursor: 'not-allowed' }}
+                                    style={{ background: 'var(--borde, #e2e8f0)', color: 'var(--texto-second, #64748b)', border: 'none', padding: '6px 12px', borderRadius: 6, fontSize: 12, fontWeight: 600, whiteSpace: 'nowrap', cursor: 'not-allowed' }}
                                   >
                                     Auto Devuelto
                                   </button>
@@ -1045,8 +1055,32 @@ export default function ReservationManagementPage() {
                     </tbody>
                   </>
                 )}
+              
               </table>
+              
+              {totalPages > 1 && (
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '16px', marginTop: '20px', padding: '16px 0', borderTop: '1px solid var(--city-border)' }}>
+                  <button
+                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                    disabled={currentPage === 1}
+                    style={{ padding: '8px 16px', borderRadius: '8px', border: '1px solid var(--city-border)', background: currentPage === 1 ? 'var(--city-bg)' : 'var(--bg-seccion1)', cursor: currentPage === 1 ? 'not-allowed' : 'pointer', fontWeight: 600, color: currentPage === 1 ? 'var(--texto-terciary)' : 'var(--texto-primary)' }}
+                  >
+                    Anterior
+                  </button>
+                  <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--texto-second)' }}>
+                    Página {currentPage} de {totalPages}
+                  </span>
+                  <button
+                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                    disabled={currentPage === totalPages}
+                    style={{ padding: '8px 16px', borderRadius: '8px', border: '1px solid var(--city-border)', background: currentPage === totalPages ? 'var(--city-bg)' : 'var(--bg-seccion1)', cursor: currentPage === totalPages ? 'not-allowed' : 'pointer', fontWeight: 600, color: currentPage === totalPages ? 'var(--texto-terciary)' : 'var(--texto-primary)' }}
+                  >
+                    Siguiente
+                  </button>
+                </div>
+              )}
             </div>
+
           )}
         </section>
       </div>
@@ -1093,7 +1127,7 @@ export default function ReservationManagementPage() {
                   </div>
                   <div className="reserva-detail-field">
                     <small>Placa del Auto:</small>
-                    <span style={{ display: 'inline-block', background: '#f1f5f9', border: '1px solid #cbd5e1', padding: '2px 8px', borderRadius: 6, fontSize: 12, fontWeight: 700 }}>
+                    <span style={{ display: 'inline-block', background: '#f1f5f9', border: '1px solid var(--borde, #cbd5e1)', padding: '2px 8px', borderRadius: 6, fontSize: 12, fontWeight: 700 }}>
                       {modalDetalle.vehiculoPlaca || 'KLS-849'}
                     </span>
                   </div>
@@ -1192,7 +1226,7 @@ export default function ReservationManagementPage() {
                 </div>
 
                 {/* Bloque Financiero y Pago por ID Único */}
-                <div style={{ background: 'var(--city-soft, #f8fafc)', padding: 14, borderRadius: 12, border: '1px solid var(--adm-border, #cbd5e1)', marginTop: 8 }}>
+                <div style={{ background: 'var(--city-soft, var(--bg-seccion1, #f8fafc))', padding: 14, borderRadius: 12, border: '1px solid var(--adm-border, var(--borde, #cbd5e1))', marginTop: 8 }}>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 12 }}>
                     <div>
                       <small style={{ color: 'var(--city-muted)', fontSize: 11 }}>ID Único de Reserva:</small>
@@ -1225,7 +1259,7 @@ export default function ReservationManagementPage() {
                         setModalDetalle(null)
                         navigate(`${cashRoute}?ref=${encodeURIComponent(modalDetalle.codigo)}`)
                       }}
-                      style={{ width: '100%', marginTop: 8, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '10px 16px', background: '#047857', borderRadius: 10, color: '#fff', fontWeight: 800, fontSize: 12, border: 'none', cursor: 'pointer' }}
+                      style={{ width: '100%', marginTop: 8, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '10px 16px', background: '#047857', borderRadius: 10, color: 'var(--bg-tarjeta, #ffffff)', fontWeight: 800, fontSize: 12, border: 'none', cursor: 'pointer' }}
                     >
                       <FaMoneyBillWave /> Confirmar Cobro en Caja (Sucursal)
                     </button>
@@ -1236,7 +1270,7 @@ export default function ReservationManagementPage() {
 
             {/* Gestión de Logística a Domicilio (Encargado de Sucursal) */}
             {(modalDetalle.sucursalRetiro === 'domicilio' || modalDetalle.sucursalDevolucion === 'domicilio' || modalDetalle.domicilioDireccion) && (
-              <div className="reserva-detail-card-box" style={{ background: 'var(--city-bg-sub, #f8fafc)', border: '1.5px solid var(--brand-border-light, #cbd5e1)' }}>
+              <div className="reserva-detail-card-box" style={{ background: 'var(--city-bg-sub, var(--bg-seccion1, #f8fafc))', border: '1.5px solid var(--brand-border-light, var(--borde, #cbd5e1))' }}>
                 <h4 style={{ color: 'var(--brand-primary, #2563eb)' }}>
                   Gestión de Logística a Domicilio (Sucursal)
                 </h4>
@@ -1264,14 +1298,14 @@ export default function ReservationManagementPage() {
                   </div>
                 </div>
 
-                <form onSubmit={handleGuardarLogisticaDomicilio} style={{ display: 'flex', flexDirection: 'column', gap: 12, background: 'var(--bg-tarjeta, #ffffff)', padding: 14, borderRadius: 12, border: '1px solid var(--borde, #e2e8f0)' }}>
+                <form onSubmit={handleGuardarLogisticaDomicilio} style={{ display: 'flex', flexDirection: 'column', gap: 12, background: 'var(--bg-tarjeta, var(--bg-tarjeta, #ffffff))', padding: 14, borderRadius: 12, border: '1px solid var(--borde, var(--borde, #e2e8f0))' }}>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                     <div>
                       <label style={{ display: 'block', fontSize: 11, fontWeight: 700, marginBottom: 4, color: 'var(--city-text)' }}>
                         Estado de Logística:
                       </label>
                       <select
-                        style={{ width: '100%', padding: '8px 10px', borderRadius: 8, border: '1px solid #cbd5e1', fontSize: 12, fontWeight: 700 }}
+                        style={{ width: '100%', padding: '8px 10px', borderRadius: 8, border: '1px solid var(--borde, #cbd5e1)', fontSize: 12, fontWeight: 700 }}
                         value={domicilioFormState.domicilioEstado}
                         onChange={(e) => setDomicilioFormState({ ...domicilioFormState, domicilioEstado: e.target.value })}
                       >
@@ -1287,7 +1321,7 @@ export default function ReservationManagementPage() {
                         Nombre del Agente / Conductor:
                       </label>
                       <input
-                        style={{ width: '100%', padding: '8px 10px', borderRadius: 8, border: '1px solid #cbd5e1', fontSize: 12 }}
+                        style={{ width: '100%', padding: '8px 10px', borderRadius: 8, border: '1px solid var(--borde, #cbd5e1)', fontSize: 12 }}
                         placeholder="ej. Carlos Restrepo (Logística Drivique)"
                         value={domicilioFormState.domicilioConductor}
                         onChange={(e) => setDomicilioFormState({ ...domicilioFormState, domicilioConductor: e.target.value })}
@@ -1300,7 +1334,7 @@ export default function ReservationManagementPage() {
                       Teléfono / WhatsApp del Conductor:
                     </label>
                     <input
-                      style={{ width: '100%', padding: '8px 10px', borderRadius: 8, border: '1px solid #cbd5e1', fontSize: 12 }}
+                      style={{ width: '100%', padding: '8px 10px', borderRadius: 8, border: '1px solid var(--borde, #cbd5e1)', fontSize: 12 }}
                       placeholder="ej. +57 312 456 7890"
                       value={domicilioFormState.domicilioTelefonoConductor}
                       onChange={(e) => setDomicilioFormState({ ...domicilioFormState, domicilioTelefonoConductor: e.target.value })}
@@ -1309,7 +1343,7 @@ export default function ReservationManagementPage() {
 
                   <button
                     type="submit"
-                    style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '10px 16px', borderRadius: 10, background: 'var(--brand-primary, #2563eb)', color: '#ffffff', border: 'none', fontWeight: 800, fontSize: 12, cursor: 'pointer', marginTop: 4 }}
+                    style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '10px 16px', borderRadius: 10, background: 'var(--brand-primary, #2563eb)', color: 'var(--bg-tarjeta, #ffffff)', border: 'none', fontWeight: 800, fontSize: 12, cursor: 'pointer', marginTop: 4 }}
                   >
                     <FaSave /> Actualizar Logística a Domicilio
                   </button>
@@ -1670,7 +1704,7 @@ export default function ReservationManagementPage() {
         >
           <div
             style={{
-              background: '#ffffff',
+              background: 'var(--bg-tarjeta, #ffffff)',
               borderRadius: 16,
               padding: 20,
               maxWidth: 640,
@@ -1682,8 +1716,8 @@ export default function ReservationManagementPage() {
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
               <div>
-                <h3 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: '#0f172a' }}>{zoomImage.title}</h3>
-                <span style={{ fontSize: 12, color: '#64748b' }}>Vista ampliada del vehículo</span>
+                <h3 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: 'var(--texto-primary, #0f172a)' }}>{zoomImage.title}</h3>
+                <span style={{ fontSize: 12, color: 'var(--texto-second, #64748b)' }}>Vista ampliada del vehículo</span>
               </div>
               <button
                 type="button"
@@ -1695,7 +1729,7 @@ export default function ReservationManagementPage() {
                   width: 32,
                   height: 32,
                   fontWeight: 700,
-                  color: '#64748b',
+                  color: 'var(--texto-second, #64748b)',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
@@ -1706,7 +1740,7 @@ export default function ReservationManagementPage() {
                 ✕
               </button>
             </div>
-            <div style={{ borderRadius: 12, overflow: 'hidden', background: '#f8fafc', border: '1px solid #e2e8f0', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: 10 }}>
+            <div style={{ borderRadius: 12, overflow: 'hidden', background: 'var(--bg-seccion1, #f8fafc)', border: '1px solid var(--borde, #e2e8f0)', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: 10 }}>
               <img
                 src={zoomImage.url}
                 alt={zoomImage.title}
@@ -1742,7 +1776,7 @@ export default function ReservationManagementPage() {
         >
           <div
             style={{
-              background: '#ffffff',
+              background: 'var(--bg-tarjeta, #ffffff)',
               borderRadius: 16,
               padding: 20,
               maxWidth: 800,
@@ -1757,8 +1791,8 @@ export default function ReservationManagementPage() {
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
               <div>
-                <h3 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: '#0f172a' }}>{zoomPdf.title}</h3>
-                <span style={{ fontSize: 12, color: '#64748b' }}>Vista previa del documento</span>
+                <h3 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: 'var(--texto-primary, #0f172a)' }}>{zoomPdf.title}</h3>
+                <span style={{ fontSize: 12, color: 'var(--texto-second, #64748b)' }}>Vista previa del documento</span>
               </div>
               <button
                 type="button"
@@ -1770,7 +1804,7 @@ export default function ReservationManagementPage() {
                   width: 32,
                   height: 32,
                   fontWeight: 700,
-                  color: '#64748b',
+                  color: 'var(--texto-second, #64748b)',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
@@ -1781,7 +1815,7 @@ export default function ReservationManagementPage() {
                 ✕
               </button>
             </div>
-            <div style={{ flex: 1, borderRadius: 12, overflow: 'hidden', background: '#f8fafc', border: '1px solid #e2e8f0', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <div style={{ flex: 1, borderRadius: 12, overflow: 'hidden', background: 'var(--bg-seccion1, #f8fafc)', border: '1px solid var(--borde, #e2e8f0)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
               {zoomPdf.url?.toLowerCase().match(/\.(jpeg|jpg|gif|png|webp)$/i) || zoomPdf.url?.startsWith('data:image/') ? (
                 <img
                   src={zoomPdf.url}

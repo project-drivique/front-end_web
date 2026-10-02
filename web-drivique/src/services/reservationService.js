@@ -257,9 +257,7 @@ const INITIAL_RESERVATIONS_SEED = [
   SEED_RES_8824,
   SEED_RES_8830,
   SEED_RES_8799,
-  SEED_RES_8802,
-  DEMO_RESERVA_FINALIZADA,
-  DEMO_RESERVA_EFECTIVO
+  SEED_RES_8802
 ];
 
 export const reservationService = {
@@ -267,6 +265,11 @@ export const reservationService = {
     try {
       const data = localStorage.getItem(STORAGE_KEY);
       let reservas = data ? JSON.parse(data) : [];
+      // Force exactly 5 reservations if we have more
+      if (reservas.length > 5) {
+        reservas = INITIAL_RESERVATIONS_SEED;
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(reservas));
+      }
       if (!Array.isArray(reservas) || reservas.length === 0) {
         reservas = INITIAL_RESERVATIONS_SEED;
         localStorage.setItem(STORAGE_KEY, JSON.stringify(reservas));
