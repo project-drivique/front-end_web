@@ -1635,21 +1635,23 @@ export default function VehicleManagementPage() {
                         {/* IMAGEN */}
                         <div style={{ gridColumn: '1 / -1', marginBottom: '8px' }}>
                           <label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '6px', fontWeight: 600 }}>Imágenes del Vehículo (Máx. 3)</label>
-                          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-                            {(!form.imagenes || form.imagenes.length < 3) && (
-                              <label style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '140px', height: '90px', background: '#f8fafc', border: '1px dashed #3b82f6', borderRadius: '6px', cursor: 'pointer', transition: 'background 0.2s', textAlign: 'center', padding: '8px' }} onMouseEnter={(e) => e.currentTarget.style.background = '#f1f5f9'} onMouseLeave={(e) => e.currentTarget.style.background = '#f8fafc'}>
-                                <FaPlus size={16} style={{ color: '#3b82f6', marginBottom: '6px' }} />
-                                <div style={{ fontSize: '11px', color: '#475569', fontWeight: 500 }}>Subir imagen</div>
-                                <div style={{ fontSize: '9px', color: '#94a3b8', marginTop: '2px' }}>(JPG, PNG. Máx 1MB)</div>
-                                <input type="file" accept="image/*" onChange={loadImages} style={{ display: "none" }} />
-                              </label>
-                            )}
-                            {form.imagenes && form.imagenes.map((img, idx) => (
-                              <div key={idx} style={{ position: 'relative', borderRadius: '6px', overflow: 'hidden', border: '1px solid #e2e8f0', width: '140px', height: '90px' }}>
-                                <img src={img} alt="preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                <button type="button" onClick={() => setForm({ ...form, imagenes: form.imagenes.filter((_, i) => i !== idx) })} style={{ position: 'absolute', top: 4, right: 4, background: '#ef4444', color: 'white', border: 'none', borderRadius: '50%', width: 20, height: 20, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><FaTimes size={10} /></button>
-                              </div>
-                            ))}
+                          <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+                            {[0, 1, 2].map((idx) => {
+                              const img = form.imagenes && form.imagenes[idx];
+                              return img ? (
+                                <div key={idx} style={{ position: 'relative', borderRadius: '6px', overflow: 'hidden', border: '1px solid #e2e8f0', width: '160px', height: '110px' }}>
+                                  <img src={img} alt={`preview ${idx}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                  <button type="button" onClick={() => setForm({ ...form, imagenes: form.imagenes.filter((_, i) => i !== idx) })} style={{ position: 'absolute', top: 4, right: 4, background: '#ef4444', color: 'white', border: 'none', borderRadius: '50%', width: 24, height: 24, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><FaTimes size={12} /></button>
+                                </div>
+                              ) : (
+                                <label key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '160px', height: '110px', background: '#f8fafc', border: '1px dashed #3b82f6', borderRadius: '6px', cursor: 'pointer', transition: 'background 0.2s', textAlign: 'center', padding: '8px' }} onMouseEnter={(e) => e.currentTarget.style.background = '#f1f5f9'} onMouseLeave={(e) => e.currentTarget.style.background = '#f8fafc'}>
+                                  <FaPlus size={20} style={{ color: '#3b82f6', marginBottom: '8px' }} />
+                                  <div style={{ fontSize: '12px', color: '#475569', fontWeight: 500 }}>{idx === 0 ? 'Imagen Principal' : `Imagen ${idx + 1}`}</div>
+                                  <div style={{ fontSize: '10px', color: '#94a3b8', marginTop: '4px' }}>(Clic para subir)</div>
+                                  <input type="file" accept="image/*" onChange={loadImages} style={{ display: "none" }} />
+                                </label>
+                              );
+                            })}
                           </div>
                         </div>
 
