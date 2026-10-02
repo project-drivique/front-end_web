@@ -1429,9 +1429,9 @@ export default function VehicleManagementPage() {
                     <thead>
                       <tr>
                         {vehicleHeaders.map((header) => (
-                          <th key={header}>{header}</th>
+                          <th key={header} style={{ textTransform: "uppercase" }}>{header}</th>
                         ))}
-                        <th style={{ textAlign: "center" }}>
+                        <th style={{ textAlign: "center", textTransform: "uppercase" }}>
                           {t("admin.cities.fields.actions", "ACCIONES")}
                         </th>
                       </tr>
@@ -1511,28 +1511,11 @@ export default function VehicleManagementPage() {
                             </span>
                           </td>
                           <td>
-                            {vehicle.estadoEfectivo === "reservado" ? (
-                              <span
-                                className="status-pill is-blue"
-                                style={{
-                                  padding: "4px 10px",
-                                  borderRadius: 20,
-                                  fontSize: 11,
-                                  fontWeight: 700,
-                                }}
-                                title="El estado es automático por reserva activa"
-                              >
-                                {t(
-                                  `admin.vehiclesManagement.states.${vehicle.estadoEfectivo}`,
-                                  "Reservado"
-                                )}
-                              </span>
-                            ) : (
                               <select
                                 className={`cities-input status-pill ${
-                                  vehicle.estadoFlota === "disponible" ? "is-green" : "is-red"
+                                  vehicle.estadoEfectivo === "disponible" ? "is-green" : vehicle.estadoEfectivo === "reservado" ? "is-blue" : "is-red"
                                 }`}
-                                value={vehicle.estadoFlota}
+                                value={vehicle.estadoEfectivo}
                                 onChange={(e) => handleQuickStatusChange(vehicle.id, e.target.value)}
                                 disabled={updatingVehicleId === vehicle.id}
                                 style={{
@@ -1548,11 +1531,16 @@ export default function VehicleManagementPage() {
                                 <option value="disponible">
                                   {t("admin.vehiclesManagement.states.disponible", "Disponible")}
                                 </option>
+                                <option value="reservado">
+                                  {t("admin.vehiclesManagement.states.reservado", "Reservado")}
+                                </option>
                                 <option value="mantenimiento">
                                   {t("admin.vehiclesManagement.states.mantenimiento", "Mantenimiento")}
                                 </option>
+                                <option value="en mantenimiento">
+                                  {t("admin.vehiclesManagement.states.en mantenimiento", "En Mantenimiento")}
+                                </option>
                               </select>
-                            )}
                           </td>
                           <td style={{ textAlign: "center" }}>
                             <div className="cities-row-actions">
@@ -1629,25 +1617,25 @@ export default function VehicleManagementPage() {
                   </div>
 
                   <form onSubmit={save} className="fleet-modal-form">
-                    <div className="fleet-modal-body" style={{ padding: '24px 32px', background: '#ffffff' }}>
+                    <div className="fleet-modal-body" style={{ padding: '24px 32px', background: 'var(--bg-tarjeta, #ffffff)' }}>
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px 20px' }}>
                         
                         {/* IMAGEN */}
                         <div style={{ gridColumn: '1 / -1', marginBottom: '8px' }}>
-                          <label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '6px', fontWeight: 600 }}>Imágenes del Vehículo (Máx. 3)</label>
+                          <label style={{ display: 'block', fontSize: '11px', color: 'var(--texto-second, #64748b)', marginBottom: '6px', fontWeight: 600 }}>{t("admin.vehiclesManagement.modal.images", "Imágenes del Vehículo (Máx. 3)")}</label>
                           <div style={{ display: 'flex', gap: '16px', width: '100%' }}>
                             {[0, 1, 2].map((idx) => {
                               const img = form.imagenes && form.imagenes[idx];
                               return img ? (
-                                <div key={idx} style={{ position: 'relative', borderRadius: '12px', overflow: 'hidden', border: '1px solid #e2e8f0', flex: 1, height: '130px' }}>
+                                <div key={idx} style={{ position: 'relative', borderRadius: '12px', overflow: 'hidden', border: '1px solid var(--borde, #e2e8f0)', flex: 1, height: '130px' }}>
                                   <img src={img} alt={`preview ${idx}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                   <button type="button" onClick={() => setForm({ ...form, imagenes: form.imagenes.filter((_, i) => i !== idx) })} style={{ position: 'absolute', top: 6, right: 6, background: '#ef4444', color: 'white', border: 'none', borderRadius: '50%', width: 24, height: 24, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }}><FaTimes size={12} /></button>
                                 </div>
                               ) : (
-                                <label key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1, height: '130px', background: '#f8fafc', border: '2px dashed #3b82f6', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.2s', textAlign: 'center', padding: '8px' }} onMouseEnter={(e) => { e.currentTarget.style.background = '#eff6ff'; e.currentTarget.style.borderColor = '#2563eb'; }} onMouseLeave={(e) => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.borderColor = '#3b82f6'; }}>
-                                  <FaPlus size={20} style={{ color: '#3b82f6', marginBottom: '8px' }} />
-                                  <div style={{ fontSize: '12px', color: '#475569', fontWeight: 600 }}>{idx === 0 ? 'Imagen Principal' : `Imagen ${idx + 1}`}</div>
-                                  <div style={{ fontSize: '10px', color: '#94a3b8', marginTop: '4px' }}>(Clic para subir)</div>
+                                <label key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1, height: '130px', background: 'var(--bg-seccion1, #f8fafc)', border: '2px dashed var(--brand-primary, #3b82f6)', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.2s', textAlign: 'center', padding: '8px' }} onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--bg-seccion1, #eff6ff)'; e.currentTarget.style.borderColor = 'var(--brand-primary, #2563eb)'; }} onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--bg-seccion1, #f8fafc)'; e.currentTarget.style.borderColor = 'var(--brand-primary, #3b82f6)'; }}>
+                                  <FaPlus size={20} style={{ color: 'var(--brand-primary, #3b82f6)', marginBottom: '8px' }} />
+                                  <div style={{ fontSize: '12px', color: 'var(--texto-primary, #475569)', fontWeight: 600 }}>{idx === 0 ? t("admin.vehiclesManagement.modal.mainImage", "Imagen Principal") : `${t("admin.vehiclesManagement.modal.image", "Imagen")} ${idx + 1}`}</div>
+                                  <div style={{ fontSize: '10px', color: 'var(--texto-second, #94a3b8)', marginTop: '4px' }}>{t("admin.vehiclesManagement.modal.clickToUpload", "(Clic para subir)")}</div>
                                   <input type="file" accept="image/*" onChange={loadImages} style={{ display: "none" }} />
                                 </label>
                               );
@@ -1657,92 +1645,92 @@ export default function VehicleManagementPage() {
 
                         {/* INPUTS ESTILO REFERENCIA */}
                         <div>
-                          <label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '6px', fontWeight: 600 }}>Nombre Vehículo *</label>
-                          <input style={{ width: '100%', padding: '10px 14px', background: '#f8fafc', border: 'none', borderRadius: '6px', fontSize: '13px', color: '#334155', outline: 'none' }} value={form.nombre} onChange={(e) => setForm({ ...form, nombre: e.target.value })} placeholder="Ej: Toyota Corolla 2024" required />
+                          <label style={{ display: 'block', fontSize: '11px', color: 'var(--texto-second, #64748b)', marginBottom: '6px', fontWeight: 600 }}>{t("admin.vehiclesManagement.modal.vehicleName", "Nombre Vehículo *")}</label>
+                          <input style={{ width: '100%', padding: '10px 14px', background: 'var(--bg-seccion1, #f8fafc)', border: 'none', borderRadius: '6px', fontSize: '13px', color: 'var(--texto-primary, #334155)', outline: 'none' }} value={form.nombre} onChange={(e) => setForm({ ...form, nombre: e.target.value })} placeholder={t("admin.vehiclesManagement.modal.placeholderName", "Ej: Toyota Corolla 2024")} required />
                         </div>
 
                         <div>
-                          <label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '6px', fontWeight: 600 }}>Placa *</label>
-                          <input style={{ width: '100%', padding: '10px 14px', background: '#f8fafc', border: 'none', borderRadius: '6px', fontSize: '13px', color: '#334155', outline: 'none' }} value={form.placa} onChange={(e) => setForm({ ...form, placa: e.target.value.toUpperCase() })} placeholder="Ej: ABC-123" required />
+                          <label style={{ display: 'block', fontSize: '11px', color: 'var(--texto-second, #64748b)', marginBottom: '6px', fontWeight: 600 }}>{t("admin.vehiclesManagement.modal.plate", "Placa *")}</label>
+                          <input style={{ width: '100%', padding: '10px 14px', background: 'var(--bg-seccion1, #f8fafc)', border: 'none', borderRadius: '6px', fontSize: '13px', color: 'var(--texto-primary, #334155)', outline: 'none' }} value={form.placa} onChange={(e) => setForm({ ...form, placa: e.target.value.toUpperCase() })} placeholder={t("admin.vehiclesManagement.modal.placeholderPlate", "Ej: ABC-123")} required />
                         </div>
 
                         <div>
-                          <label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '6px', fontWeight: 600 }}>Categoría *</label>
-                          <select style={{ width: '100%', padding: '10px 14px', background: '#f8fafc', border: 'none', borderRadius: '6px', fontSize: '13px', color: '#334155', outline: 'none', cursor: 'pointer' }} value={form.categoria} onChange={(e) => setForm({ ...form, categoria: e.target.value })} required disabled={!activeCategoriesForForm.length}>
-                            <option value="" disabled>Seleccionar</option>
+                          <label style={{ display: 'block', fontSize: '11px', color: 'var(--texto-second, #64748b)', marginBottom: '6px', fontWeight: 600 }}>{t("admin.vehiclesManagement.modal.category", "Categoría *")}</label>
+                          <select style={{ width: '100%', padding: '10px 14px', background: 'var(--bg-seccion1, #f8fafc)', border: 'none', borderRadius: '6px', fontSize: '13px', color: 'var(--texto-primary, #334155)', outline: 'none', cursor: 'pointer' }} value={form.categoria} onChange={(e) => setForm({ ...form, categoria: e.target.value })} required disabled={!activeCategoriesForForm.length}>
+                            <option value="" disabled>{t("admin.vehiclesManagement.modal.select", "Seleccionar")}</option>
                             {activeCategoriesForForm.map((catName) => <option key={catName} value={catName}>{catName}</option>)}
                           </select>
                         </div>
 
                         {!esEncargado ? (
                           <div>
-                            <label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '6px', fontWeight: 600 }}>Sucursal Asignada *</label>
-                            <select style={{ width: '100%', padding: '10px 14px', background: '#f8fafc', border: 'none', borderRadius: '6px', fontSize: '13px', color: '#334155', outline: 'none', cursor: 'pointer' }} value={form.sucursal} onChange={(e) => setForm({ ...form, sucursal: e.target.value, categoria: "" })} required>
-                              <option value="" disabled>Seleccionar</option>
+                            <label style={{ display: 'block', fontSize: '11px', color: 'var(--texto-second, #64748b)', marginBottom: '6px', fontWeight: 600 }}>{t("admin.vehiclesManagement.modal.branch", "Sucursal Asignada *")}</label>
+                            <select style={{ width: '100%', padding: '10px 14px', background: 'var(--bg-seccion1, #f8fafc)', border: 'none', borderRadius: '6px', fontSize: '13px', color: 'var(--texto-primary, #334155)', outline: 'none', cursor: 'pointer' }} value={form.sucursal} onChange={(e) => setForm({ ...form, sucursal: e.target.value, categoria: "" })} required>
+                              <option value="" disabled>{t("admin.vehiclesManagement.modal.select", "Seleccionar")}</option>
                               {branches.map((b) => <option key={b.id} value={b.nombre}>{b.nombre}</option>)}
                             </select>
                           </div>
                         ) : (
                           <div>
-                            <label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '6px', fontWeight: 600 }}>Año *</label>
-                            <input type="number" min="1990" max="2030" style={{ width: '100%', padding: '10px 14px', background: '#f8fafc', border: 'none', borderRadius: '6px', fontSize: '13px', color: '#334155', outline: 'none' }} value={form.año} onChange={(e) => setForm({ ...form, año: e.target.value })} placeholder="Ej: 2024" required />
+                            <label style={{ display: 'block', fontSize: '11px', color: 'var(--texto-second, #64748b)', marginBottom: '6px', fontWeight: 600 }}>{t("admin.vehiclesManagement.modal.year", "Año *")}</label>
+                            <input type="number" min="1990" max="2030" style={{ width: '100%', padding: '10px 14px', background: 'var(--bg-seccion1, #f8fafc)', border: 'none', borderRadius: '6px', fontSize: '13px', color: 'var(--texto-primary, #334155)', outline: 'none' }} value={form.año} onChange={(e) => setForm({ ...form, año: e.target.value })} placeholder={t("admin.vehiclesManagement.modal.placeholderYear", "Ej: 2024")} required />
                           </div>
                         )}
 
                         {/* If esEncargado is false, Año gets pushed to next spot to keep grid aligned */}
                         {!esEncargado && (
                           <div>
-                            <label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '6px', fontWeight: 600 }}>Año *</label>
-                            <input type="number" min="1990" max="2030" style={{ width: '100%', padding: '10px 14px', background: '#f8fafc', border: 'none', borderRadius: '6px', fontSize: '13px', color: '#334155', outline: 'none' }} value={form.año} onChange={(e) => setForm({ ...form, año: e.target.value })} placeholder="Ej: 2024" required />
+                            <label style={{ display: 'block', fontSize: '11px', color: 'var(--texto-second, #64748b)', marginBottom: '6px', fontWeight: 600 }}>{t("admin.vehiclesManagement.modal.year", "Año *")}</label>
+                            <input type="number" min="1990" max="2030" style={{ width: '100%', padding: '10px 14px', background: 'var(--bg-seccion1, #f8fafc)', border: 'none', borderRadius: '6px', fontSize: '13px', color: 'var(--texto-primary, #334155)', outline: 'none' }} value={form.año} onChange={(e) => setForm({ ...form, año: e.target.value })} placeholder={t("admin.vehiclesManagement.modal.placeholderYear", "Ej: 2024")} required />
                           </div>
                         )}
 
                         <div>
-                          <label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '6px', fontWeight: 600 }}>Color *</label>
-                          <input style={{ width: '100%', padding: '10px 14px', background: '#f8fafc', border: 'none', borderRadius: '6px', fontSize: '13px', color: '#334155', outline: 'none' }} value={form.color} onChange={(e) => setForm({ ...form, color: e.target.value })} placeholder="Ej: Blanco" required />
+                          <label style={{ display: 'block', fontSize: '11px', color: 'var(--texto-second, #64748b)', marginBottom: '6px', fontWeight: 600 }}>{t("admin.vehiclesManagement.modal.color", "Color *")}</label>
+                          <input style={{ width: '100%', padding: '10px 14px', background: 'var(--bg-seccion1, #f8fafc)', border: 'none', borderRadius: '6px', fontSize: '13px', color: 'var(--texto-primary, #334155)', outline: 'none' }} value={form.color} onChange={(e) => setForm({ ...form, color: e.target.value })} placeholder={t("admin.vehiclesManagement.modal.placeholderColor", "Ej: Blanco")} required />
                         </div>
 
                         <div>
-                          <label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '6px', fontWeight: 600 }}>Transmisión *</label>
-                          <select style={{ width: '100%', padding: '10px 14px', background: '#f8fafc', border: 'none', borderRadius: '6px', fontSize: '13px', color: '#334155', outline: 'none', cursor: 'pointer' }} value={form.transmision} onChange={(e) => setForm({ ...form, transmision: e.target.value })} required>
-                            <option value="" disabled>Seleccionar</option>
-                            <option value="Automática">Automática</option>
-                            <option value="Manual">Manual</option>
+                          <label style={{ display: 'block', fontSize: '11px', color: 'var(--texto-second, #64748b)', marginBottom: '6px', fontWeight: 600 }}>{t("admin.vehiclesManagement.modal.transmission", "Transmisión *")}</label>
+                          <select style={{ width: '100%', padding: '10px 14px', background: 'var(--bg-seccion1, #f8fafc)', border: 'none', borderRadius: '6px', fontSize: '13px', color: 'var(--texto-primary, #334155)', outline: 'none', cursor: 'pointer' }} value={form.transmision} onChange={(e) => setForm({ ...form, transmision: e.target.value })} required>
+                            <option value="" disabled>{t("admin.vehiclesManagement.modal.select", "Seleccionar")}</option>
+                            <option value="Automática">{t("admin.vehiclesManagement.transmission.auto", "Automática")}</option>
+                            <option value="Manual">{t("admin.vehiclesManagement.transmission.manual", "Manual")}</option>
                           </select>
                         </div>
 
                         <div>
-                          <label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '6px', fontWeight: 600 }}>Combustible *</label>
-                          <select style={{ width: '100%', padding: '10px 14px', background: '#f8fafc', border: 'none', borderRadius: '6px', fontSize: '13px', color: '#334155', outline: 'none', cursor: 'pointer' }} value={form.combustible} onChange={(e) => setForm({ ...form, combustible: e.target.value })} required>
-                            <option value="" disabled>Seleccionar</option>
-                            <option value="Gasolina">Gasolina</option>
-                            <option value="Diésel">Diésel</option>
-                            <option value="Híbrido">Híbrido</option>
-                            <option value="Eléctrico">Eléctrico</option>
+                          <label style={{ display: 'block', fontSize: '11px', color: 'var(--texto-second, #64748b)', marginBottom: '6px', fontWeight: 600 }}>{t("admin.vehiclesManagement.modal.fuel", "Combustible *")}</label>
+                          <select style={{ width: '100%', padding: '10px 14px', background: 'var(--bg-seccion1, #f8fafc)', border: 'none', borderRadius: '6px', fontSize: '13px', color: 'var(--texto-primary, #334155)', outline: 'none', cursor: 'pointer' }} value={form.combustible} onChange={(e) => setForm({ ...form, combustible: e.target.value })} required>
+                            <option value="" disabled>{t("admin.vehiclesManagement.modal.select", "Seleccionar")}</option>
+                            <option value="Gasolina">{t("admin.vehiclesManagement.fuel.gasoline", "Gasolina")}</option>
+                            <option value="Diésel">{t("admin.vehiclesManagement.fuel.diesel", "Diésel")}</option>
+                            <option value="Híbrido">{t("admin.vehiclesManagement.fuel.hybrid", "Híbrido")}</option>
+                            <option value="Eléctrico">{t("admin.vehiclesManagement.fuel.electric", "Eléctrico")}</option>
                           </select>
                         </div>
 
                         <div>
-                          <label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '6px', fontWeight: 600 }}>Pico y Placa *</label>
-                          <select style={{ width: '100%', padding: '10px 14px', background: '#f8fafc', border: 'none', borderRadius: '6px', fontSize: '13px', color: '#334155', outline: 'none', cursor: 'pointer' }} value={form.aplicaPicoYPlaca} onChange={(e) => setForm({ ...form, aplicaPicoYPlaca: e.target.value })} required>
-                            <option value="" disabled>Seleccionar</option>
-                            <option value="Si">Sí aplica</option>
-                            <option value="No">No aplica</option>
+                          <label style={{ display: 'block', fontSize: '11px', color: 'var(--texto-second, #64748b)', marginBottom: '6px', fontWeight: 600 }}>{t("admin.vehiclesManagement.modal.restriction", "Pico y Placa *")}</label>
+                          <select style={{ width: '100%', padding: '10px 14px', background: 'var(--bg-seccion1, #f8fafc)', border: 'none', borderRadius: '6px', fontSize: '13px', color: 'var(--texto-primary, #334155)', outline: 'none', cursor: 'pointer' }} value={form.aplicaPicoYPlaca} onChange={(e) => setForm({ ...form, aplicaPicoYPlaca: e.target.value })} required>
+                            <option value="" disabled>{t("admin.vehiclesManagement.modal.select", "Seleccionar")}</option>
+                            <option value="Si">{t("admin.vehiclesManagement.restriction.yes", "Sí aplica")}</option>
+                            <option value="No">{t("admin.vehiclesManagement.restriction.no", "No aplica")}</option>
                           </select>
                         </div>
 
                         <div>
-                          <label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '6px', fontWeight: 600 }}>Tarifa Diaria ($) *</label>
-                          <input type="number" min="0" style={{ width: '100%', padding: '10px 14px', background: '#f8fafc', border: 'none', borderRadius: '6px', fontSize: '13px', color: '#334155', outline: 'none' }} value={form.precioLimitado} onChange={(e) => setForm({ ...form, precioLimitado: e.target.value })} placeholder="Ej: 150000" required />
+                          <label style={{ display: 'block', fontSize: '11px', color: 'var(--texto-second, #64748b)', marginBottom: '6px', fontWeight: 600 }}>{t("admin.vehiclesManagement.modal.dailyRate", "Tarifa Diaria ($) *")}</label>
+                          <input type="number" min="0" style={{ width: '100%', padding: '10px 14px', background: 'var(--bg-seccion1, #f8fafc)', border: 'none', borderRadius: '6px', fontSize: '13px', color: 'var(--texto-primary, #334155)', outline: 'none' }} value={form.precioLimitado} onChange={(e) => setForm({ ...form, precioLimitado: e.target.value })} placeholder="Ej: 150000" required />
                         </div>
 
                         <div>
-                          <label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '6px', fontWeight: 600 }}>Estado del Vehículo *</label>
-                          <select style={{ width: '100%', padding: '10px 14px', background: '#f8fafc', border: 'none', borderRadius: '6px', fontSize: '13px', color: '#334155', outline: 'none', cursor: 'pointer' }} value={form.estadoEfectivo} onChange={(e) => setForm({ ...form, estadoEfectivo: e.target.value })} required>
-                            <option value="" disabled>Seleccionar</option>
-                            <option value="disponible">Disponible</option>
-                            <option value="reservado">Reservado</option>
-                            <option value="en mantenimiento">En Mantenimiento</option>
+                          <label style={{ display: 'block', fontSize: '11px', color: 'var(--texto-second, #64748b)', marginBottom: '6px', fontWeight: 600 }}>{t("admin.vehiclesManagement.modal.state", "Estado del Vehículo *")}</label>
+                          <select style={{ width: '100%', padding: '10px 14px', background: 'var(--bg-seccion1, #f8fafc)', border: 'none', borderRadius: '6px', fontSize: '13px', color: 'var(--texto-primary, #334155)', outline: 'none', cursor: 'pointer' }} value={form.estadoEfectivo} onChange={(e) => setForm({ ...form, estadoEfectivo: e.target.value })} required>
+                            <option value="" disabled>{t("admin.vehiclesManagement.modal.select", "Seleccionar")}</option>
+                            <option value="disponible">{t("admin.vehiclesManagement.states.disponible", "Disponible")}</option>
+                            <option value="reservado">{t("admin.vehiclesManagement.states.reservado", "Reservado")}</option>
+                            <option value="en mantenimiento">{t("admin.vehiclesManagement.states.en mantenimiento", "En Mantenimiento")}</option>
                           </select>
                         </div>
 
@@ -1755,14 +1743,13 @@ export default function VehicleManagementPage() {
                       )}
                     </div>
 
-                    <div className="fleet-modal-footer" style={{ borderTop: '1px solid #e2e8f0', padding: '16px 24px', background: '#f8fafc', display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
-                      <button type="button" onClick={close} style={{ border: '1px solid #cbd5e1', background: '#ffffff', borderRadius: '6px', padding: '8px 16px', color: '#475569', fontSize: '13px', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s' }} onMouseEnter={(e) => { e.currentTarget.style.background = '#f1f5f9'; e.currentTarget.style.borderColor = '#94a3b8'; }} onMouseLeave={(e) => { e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.borderColor = '#cbd5e1'; }}>
-                        Cancelar
-
+                    <div className="fleet-modal-footer" style={{ borderTop: '1px solid var(--borde, #e2e8f0)', padding: '16px 24px', background: 'var(--bg-seccion1, #f8fafc)', display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+                      <button type="button" onClick={close} style={{ border: '1px solid var(--borde, #cbd5e1)', background: 'var(--bg-tarjeta, #ffffff)', borderRadius: '6px', padding: '8px 16px', color: 'var(--texto-primary, #475569)', fontSize: '13px', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s' }} onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--bg-seccion1, #f1f5f9)'; e.currentTarget.style.borderColor = 'var(--texto-second, #94a3b8)'; }} onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--bg-tarjeta, #ffffff)'; e.currentTarget.style.borderColor = 'var(--borde, #cbd5e1)'; }}>
+                        {t("common.cancel", "Cancelar")}
                       </button>
                       <button className="cities-primary" type="submit">
                         <FaCheck style={{ marginRight: 6 }} />
-                        Guardar vehículo
+                        {t("admin.vehiclesManagement.modal.save", "Guardar vehículo")}
                       </button>
                     </div>
                   </form>
