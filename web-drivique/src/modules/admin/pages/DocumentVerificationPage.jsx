@@ -104,9 +104,9 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
               <FaShieldAlt style={{ color: 'var(--brand-primary, #2563eb)' }} />
               <span>Sede: <strong>{isBranchManager ? sucursalAsignada : 'Todas las Sucursales'}</strong></span>
             </p>
-            <h1>Validación de Documentos e Identidad</h1>
+            <h1>{t('admin.documents.title', 'Validación de Documentos e Identidad')}</h1>
             <p className="cities-subtitle">
-              Inspección de Licencias de Conducir y Documentos de Identidad cargados por clientes antes de la entrega del vehículo.
+              {t('admin.documents.subtitle', 'Inspección de Licencias de Conducir y Documentos de Identidad cargados por clientes antes de la entrega del vehículo.')}
             </p>
           </div>
 

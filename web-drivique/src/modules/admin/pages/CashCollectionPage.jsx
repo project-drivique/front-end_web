@@ -515,8 +515,8 @@ export default function CashCollectionPage({ branchOnly = false }) {
           {/* Header Superior */}
           <header className="cities-topbar reservations-management-header">
             <div className="branch-topbar-brand-title">
-              <span className="branch-topbar-badge">GESTIÓN DE SUCURSAL</span>
-              <h1 className="branch-topbar-heading">Gestión de Pagos</h1>
+              <span className="branch-topbar-badge">{t('admin.branchManagement', 'GESTIÓN DE SUCURSAL')}</span>
+              <h1 className="branch-topbar-heading">{t('admin.cash.title', 'Gestión de Pagos')}</h1>
             </div>
 
             <div className="cities-topbar__actions">

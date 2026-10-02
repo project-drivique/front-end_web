@@ -113,9 +113,9 @@ export default function BranchReviewsPage({ branchOnly = false }) {
               <FaBuilding style={{ color: 'var(--brand-primary, #2563eb)' }} />
               <span>Sede: <strong>{isBranchManager ? sucursalAsignada : 'Todas las Sucursales'}</strong></span>
             </p>
-            <h1>Reseñas y Calificaciones de Sucursal</h1>
+            <h1>{t('admin.reviews.title', 'Reseñas y Calificaciones de Sucursal')}</h1>
             <p className="cities-subtitle">
-              Gestión exclusiva de opiniones, experiencias y calificaciones enviadas por clientes atendidos en esta sede.
+              {t('admin.reviews.subtitle', 'Gestión exclusiva de opiniones, experiencias y calificaciones enviadas por clientes atendidos en esta sede.')}
             </p>
           </div>
 
