@@ -368,7 +368,7 @@ export default function IncidentManagementPage() {
                 <table className="incidents-table" style={{ whiteSpace: 'nowrap', width: 'max-content', minWidth: '100%' }}>
                   <thead>
                     <tr>
-                      <th>ID</th>
+                      <th style={{ width: '40px' }}>ID</th>
                       <th>CÓDIGO RESERVA</th>
                       <th>NOMBRE COMPLETO</th>
                       <th>VEHÍCULO</th>
@@ -390,7 +390,7 @@ export default function IncidentManagementPage() {
                   <tbody>
                     {filtrados.map((r, index) => (
                       <tr key={r.id}>
-                        <td style={{ fontWeight: 600, color: 'var(--city-text)' }}>{index + 1}</td>
+                        <td style={{ fontWeight: 600, color: 'var(--city-text)', width: '40px' }}>{index + 1}</td>
                         <td style={{ fontWeight: 500, color: '#0f172a' }}>{r.codigoReserva || `RES-${r.id.split('-')[1] || Math.floor(Math.random() * 10000)}`}</td>
                         <td style={{ color: '#0f172a' }}>{r.contactoNombre}</td>
                         <td style={{ color: 'var(--city-text)' }}>{r.vehiculo}</td>
