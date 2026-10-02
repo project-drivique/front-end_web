@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useTranslation } from 'react-i18next'
 import {
   FaSearch,
   FaMapMarkerAlt,
@@ -147,12 +148,12 @@ export default function DeliveryManagementPage() {
       <div className="cities-content-area">
         <header className="cities-header">
           <div className="cities-header-left">
-            <span className="cities-eyebrow">GESTIÓN OPERATIVA</span>
+            <span className="cities-eyebrow">{t('admin.branchManagement', 'GESTIÓN OPERATIVA')}</span>
             <h1 className="cities-title">
-              Gestión de Domicilios
+              {t('admin.delivery.title', 'Gestión de Domicilios')}
             </h1>
             <p className="cities-subtitle">
-              Asignación de conductores para entregas y recogidas a domicilio.
+              {t('admin.delivery.subtitle', 'Asignación de conductores para entregas y recogidas a domicilio.')}
             </p>
           </div>
         </header>

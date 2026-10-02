@@ -258,7 +258,7 @@ export default function IncidentManagementPage() {
           <header className="cities-topbar reservations-management-header">
             <div className="branch-topbar-brand-title">
               <span className="branch-topbar-badge">{t('admin.branchManagement', 'GESTIÓN DE SUCURSAL')}</span>
-              <h1 className="branch-topbar-heading">{t('admin.incidentsTitle', 'Gestión de Incidentes')}</h1>
+              <h1 className="branch-topbar-heading">{t('admin.incidents.title', 'Gestión de Incidentes')}</h1>
             </div>
 
             <div className="cities-topbar__actions">
