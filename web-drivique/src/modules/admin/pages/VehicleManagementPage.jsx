@@ -1629,62 +1629,63 @@ export default function VehicleManagementPage() {
                   </div>
 
                   <form onSubmit={save} className="fleet-modal-form">
-                    <div className="fleet-modal-body">
-                      {/* CARD 1: FOTOGRAFÍAS */}
-                      <div className="fleet-form-card" style={{ padding: '24px', background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0', marginBottom: '20px' }}>
-                        <div className="fleet-form-card__title" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '16px', fontWeight: 600, color: '#1e293b', marginBottom: '16px', borderBottom: '1px solid #e2e8f0', paddingBottom: '12px' }}>
-                          <FaImage style={{ color: 'var(--brand-primary)' }} />
-                          <span>Imagen del Vehículo</span>
+                    <div className="fleet-modal-body" style={{ padding: '32px 40px', background: '#ffffff' }}>
+                      
+                      {/* SECTION: IMAGEN */}
+                      <div style={{ marginBottom: '32px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
+                          <FaImage style={{ color: '#2563eb', fontSize: '18px' }} />
+                          <span style={{ textTransform: 'uppercase', letterSpacing: '0.5px', fontSize: '13px', fontWeight: 700, color: '#0f172a' }}>Fotografía Principal</span>
                         </div>
-                        <div className="fleet-form-group">
-                          {(!form.imagenes || form.imagenes.length === 0) ? (
-                            <label className="fleet-upload-box" style={{ padding: '30px', textAlign: 'center', border: '2px dashed #cbd5e1', borderRadius: '12px', cursor: 'pointer', background: '#f8fafc', transition: 'all 0.2s ease', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                              <FaImage size={28} style={{ color: '#94a3b8', marginBottom: '12px' }} />
-                              <div style={{ fontSize: '15px', fontWeight: 500, color: '#475569' }}>Haz clic para subir una imagen</div>
-                              <div style={{ fontSize: '13px', color: '#94a3b8', marginTop: '4px' }}>(Formato JPG, PNG. Tamaño Max. 1MB)</div>
-                              <input type="file" accept="image/*" onChange={loadImages} style={{ display: "none" }} />
-                            </label>
-                          ) : (
-                            <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-                              {form.imagenes.map((img, idx) => (
-                                <div key={idx} style={{ position: 'relative', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}>
-                                  <img src={img} alt="preview" style={{ width: 140, height: 100, objectFit: 'cover' }} />
-                                  <button type="button" onClick={() => setForm({ ...form, imagenes: form.imagenes.filter((_, i) => i !== idx) })} style={{ position: 'absolute', top: 6, right: 6, background: '#ef4444', color: 'white', border: 'none', borderRadius: '50%', width: 26, height: 26, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }}><FaTimes size={12} /></button>
-                                </div>
-                              ))}
-                              {form.imagenes.length < 3 && (
-                                <label style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: 140, height: 100, border: '2px dashed #cbd5e1', borderRadius: '12px', cursor: 'pointer', color: '#94a3b8', background: '#f8fafc' }}>
-                                  <FaPlus size={20} style={{ marginBottom: '8px' }} />
-                                  <span style={{ fontSize: '12px', fontWeight: 500 }}>Agregar más</span>
-                                  <input type="file" accept="image/*" onChange={loadImages} style={{ display: "none" }} />
-                                </label>
-                              )}
-                            </div>
-                          )}
-                        </div>
+                        {(!form.imagenes || form.imagenes.length === 0) ? (
+                          <label style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 20px', border: '2px dashed #cbd5e1', borderRadius: '16px', cursor: 'pointer', background: '#f8fafc', transition: 'all 0.2s' }} onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#2563eb'; e.currentTarget.style.background = '#eff6ff'; }} onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#cbd5e1'; e.currentTarget.style.background = '#f8fafc'; }}>
+                            <FaImage size={32} style={{ color: '#94a3b8', marginBottom: '12px' }} />
+                            <div style={{ fontSize: '16px', fontWeight: 600, color: '#334155', marginBottom: '4px' }}>Haz clic para subir una imagen</div>
+                            <div style={{ fontSize: '13px', color: '#64748b' }}>(Formato JPG, PNG. Tamaño Máximo 1MB)</div>
+                            <input type="file" accept="image/*" onChange={loadImages} style={{ display: "none" }} />
+                          </label>
+                        ) : (
+                          <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+                            {form.imagenes.map((img, idx) => (
+                              <div key={idx} style={{ position: 'relative', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }}>
+                                <img src={img} alt="preview" style={{ width: 160, height: 110, objectFit: 'cover' }} />
+                                <button type="button" onClick={() => setForm({ ...form, imagenes: form.imagenes.filter((_, i) => i !== idx) })} style={{ position: 'absolute', top: 8, right: 8, background: '#ef4444', color: 'white', border: 'none', borderRadius: '50%', width: 28, height: 28, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }}><FaTimes size={14} /></button>
+                              </div>
+                            ))}
+                            {form.imagenes.length < 3 && (
+                              <label style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: 160, height: 110, border: '2px dashed #cbd5e1', borderRadius: '12px', cursor: 'pointer', color: '#94a3b8', background: '#f8fafc' }} onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#2563eb'; e.currentTarget.style.color = '#2563eb'; }} onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#cbd5e1'; e.currentTarget.style.color = '#94a3b8'; }}>
+                                <FaPlus size={24} style={{ marginBottom: '8px' }} />
+                                <span style={{ fontSize: '13px', fontWeight: 600 }}>Agregar más</span>
+                                <input type="file" accept="image/*" onChange={loadImages} style={{ display: "none" }} />
+                              </label>
+                            )}
+                          </div>
+                        )}
                       </div>
 
-                      {/* CARD 2: IDENTIFICACIÓN */}
-                      <div className="fleet-form-card" style={{ padding: '24px', background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0', marginBottom: '20px' }}>
-                        <div className="fleet-form-card__title" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '16px', fontWeight: 600, color: '#1e293b', marginBottom: '16px', borderBottom: '1px solid #e2e8f0', paddingBottom: '12px' }}>
-                          <FaCar style={{ color: 'var(--brand-primary)' }} />
-                          <span>Identificación y Clasificación</span>
+                      <div style={{ height: '1px', background: '#e2e8f0', margin: '32px 0' }} />
+
+                      {/* SECTION: IDENTIFICACIÓN */}
+                      <div style={{ marginBottom: '32px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
+                          <FaCar style={{ color: '#2563eb', fontSize: '18px' }} />
+                          <span style={{ textTransform: 'uppercase', letterSpacing: '0.5px', fontSize: '13px', fontWeight: 700, color: '#0f172a' }}>Identificación y Clasificación</span>
                         </div>
-                        <div className="fleet-form-grid-2" style={{ gap: '20px' }}>
+                        <div className="fleet-form-grid-2" style={{ gap: '24px' }}>
                           <div className="fleet-form-group">
-                            <label className="fleet-form-label" style={{ fontWeight: 600 }}>Nombre Vehículo *</label>
-                            <input className="fleet-form-input" value={form.nombre} onChange={(e) => setForm({ ...form, nombre: e.target.value })} placeholder="Ej: Toyota Corolla 2024" required />
+                            <label className="fleet-form-label" style={{ fontWeight: 600, color: '#475569' }}>Nombre Vehículo *</label>
+                            <input className="fleet-form-input" style={{ borderRadius: '8px', border: '1px solid #cbd5e1', padding: '12px 16px', fontSize: '14px' }} value={form.nombre} onChange={(e) => setForm({ ...form, nombre: e.target.value })} placeholder="Ej: Toyota Corolla 2024" required />
                           </div>
 
                           <div className="fleet-form-group">
-                            <label className="fleet-form-label" style={{ fontWeight: 600 }}>Placa *</label>
-                            <input className="fleet-form-input" value={form.placa} onChange={(e) => setForm({ ...form, placa: e.target.value.toUpperCase() })} placeholder="Ej: ABC-123" required />
+                            <label className="fleet-form-label" style={{ fontWeight: 600, color: '#475569' }}>Placa *</label>
+                            <input className="fleet-form-input" style={{ borderRadius: '8px', border: '1px solid #cbd5e1', padding: '12px 16px', fontSize: '14px' }} value={form.placa} onChange={(e) => setForm({ ...form, placa: e.target.value.toUpperCase() })} placeholder="Ej: ABC-123" required />
                           </div>
 
                           {!esEncargado && (
                             <div className="fleet-form-group">
-                              <label className="fleet-form-label" style={{ fontWeight: 600 }}>Sucursal Asignada *</label>
-                              <select className="fleet-form-select" value={form.sucursal} onChange={(e) => setForm({ ...form, sucursal: e.target.value, categoria: "" })} required>
+                              <label className="fleet-form-label" style={{ fontWeight: 600, color: '#475569' }}>Sucursal Asignada *</label>
+                              <select className="fleet-form-select" style={{ borderRadius: '8px', border: '1px solid #cbd5e1', padding: '12px 16px', fontSize: '14px' }} value={form.sucursal} onChange={(e) => setForm({ ...form, sucursal: e.target.value, categoria: "" })} required>
                                 <option value="" disabled>Seleccionar...</option>
                                 {branches.map((b) => <option key={b.id} value={b.nombre}>{b.nombre}</option>)}
                               </select>
@@ -1692,8 +1693,8 @@ export default function VehicleManagementPage() {
                           )}
 
                           <div className="fleet-form-group">
-                            <label className="fleet-form-label" style={{ fontWeight: 600 }}>Categoría *</label>
-                            <select className="fleet-form-select" value={form.categoria} onChange={(e) => setForm({ ...form, categoria: e.target.value })} required disabled={!activeCategoriesForForm.length}>
+                            <label className="fleet-form-label" style={{ fontWeight: 600, color: '#475569' }}>Categoría *</label>
+                            <select className="fleet-form-select" style={{ borderRadius: '8px', border: '1px solid #cbd5e1', padding: '12px 16px', fontSize: '14px' }} value={form.categoria} onChange={(e) => setForm({ ...form, categoria: e.target.value })} required disabled={!activeCategoriesForForm.length}>
                               <option value="" disabled>Seleccionar...</option>
                               {activeCategoriesForForm.map((catName) => <option key={catName} value={catName}>{catName}</option>)}
                             </select>
@@ -1701,27 +1702,29 @@ export default function VehicleManagementPage() {
                         </div>
                       </div>
 
-                      {/* CARD 3: ESPECIFICACIONES */}
-                      <div className="fleet-form-card" style={{ padding: '24px', background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0', marginBottom: '20px' }}>
-                        <div className="fleet-form-card__title" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '16px', fontWeight: 600, color: '#1e293b', marginBottom: '16px', borderBottom: '1px solid #e2e8f0', paddingBottom: '12px' }}>
-                          <FaCogs style={{ color: 'var(--brand-primary)' }} />
-                          <span>Especificaciones Técnicas</span>
+                      <div style={{ height: '1px', background: '#e2e8f0', margin: '32px 0' }} />
+
+                      {/* SECTION: ESPECIFICACIONES */}
+                      <div style={{ marginBottom: '32px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
+                          <FaCogs style={{ color: '#2563eb', fontSize: '18px' }} />
+                          <span style={{ textTransform: 'uppercase', letterSpacing: '0.5px', fontSize: '13px', fontWeight: 700, color: '#0f172a' }}>Especificaciones Técnicas</span>
                         </div>
-                        <div className="fleet-form-grid-2" style={{ gap: '20px' }}>
+                        <div className="fleet-form-grid-2" style={{ gap: '24px' }}>
                           <div className="fleet-form-group">
-                            <label className="fleet-form-label" style={{ fontWeight: 600 }}>Año *</label>
-                            <input className="fleet-form-input" type="date" onChange={(e) => setForm({ ...form, año: e.target.value ? e.target.value.split('-')[0] : "" })} required />
-                            {form.año && <small style={{ color: '#64748b', marginTop: 4, display: 'block' }}>Año seleccionado: <strong>{form.año}</strong></small>}
+                            <label className="fleet-form-label" style={{ fontWeight: 600, color: '#475569' }}>Año *</label>
+                            <input className="fleet-form-input" style={{ borderRadius: '8px', border: '1px solid #cbd5e1', padding: '12px 16px', fontSize: '14px' }} type="date" onChange={(e) => setForm({ ...form, año: e.target.value ? e.target.value.split('-')[0] : "" })} required />
+                            {form.año && <small style={{ color: '#2563eb', marginTop: 6, display: 'block', fontWeight: 500 }}>Año modelo: <strong>{form.año}</strong></small>}
                           </div>
 
                           <div className="fleet-form-group">
-                            <label className="fleet-form-label" style={{ fontWeight: 600 }}>Color *</label>
-                            <input className="fleet-form-input" value={form.color} onChange={(e) => setForm({ ...form, color: e.target.value })} placeholder="Ej: Blanco Perla" required />
+                            <label className="fleet-form-label" style={{ fontWeight: 600, color: '#475569' }}>Color *</label>
+                            <input className="fleet-form-input" style={{ borderRadius: '8px', border: '1px solid #cbd5e1', padding: '12px 16px', fontSize: '14px' }} value={form.color} onChange={(e) => setForm({ ...form, color: e.target.value })} placeholder="Ej: Blanco Perla" required />
                           </div>
 
                           <div className="fleet-form-group">
-                            <label className="fleet-form-label" style={{ fontWeight: 600 }}>Transmisión *</label>
-                            <select className="fleet-form-select" value={form.transmision} onChange={(e) => setForm({ ...form, transmision: e.target.value })} required>
+                            <label className="fleet-form-label" style={{ fontWeight: 600, color: '#475569' }}>Transmisión *</label>
+                            <select className="fleet-form-select" style={{ borderRadius: '8px', border: '1px solid #cbd5e1', padding: '12px 16px', fontSize: '14px' }} value={form.transmision} onChange={(e) => setForm({ ...form, transmision: e.target.value })} required>
                               <option value="" disabled>Seleccionar...</option>
                               <option value="Automática">Automática</option>
                               <option value="Manual">Manual</option>
@@ -1729,8 +1732,8 @@ export default function VehicleManagementPage() {
                           </div>
 
                           <div className="fleet-form-group">
-                            <label className="fleet-form-label" style={{ fontWeight: 600 }}>Combustible *</label>
-                            <select className="fleet-form-select" value={form.combustible} onChange={(e) => setForm({ ...form, combustible: e.target.value })} required>
+                            <label className="fleet-form-label" style={{ fontWeight: 600, color: '#475569' }}>Combustible *</label>
+                            <select className="fleet-form-select" style={{ borderRadius: '8px', border: '1px solid #cbd5e1', padding: '12px 16px', fontSize: '14px' }} value={form.combustible} onChange={(e) => setForm({ ...form, combustible: e.target.value })} required>
                               <option value="" disabled>Seleccionar...</option>
                               <option value="Gasolina">Gasolina</option>
                               <option value="Diésel">Diésel</option>
@@ -1741,16 +1744,18 @@ export default function VehicleManagementPage() {
                         </div>
                       </div>
 
-                      {/* CARD 4: POLÍTICAS Y TARIFAS */}
-                      <div className="fleet-form-card" style={{ padding: '24px', background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0', marginBottom: '20px' }}>
-                        <div className="fleet-form-card__title" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '16px', fontWeight: 600, color: '#1e293b', marginBottom: '16px', borderBottom: '1px solid #e2e8f0', paddingBottom: '12px' }}>
-                          <FaMoneyBillWave style={{ color: 'var(--brand-primary)' }} />
-                          <span>Políticas, Tarifas y Estado</span>
+                      <div style={{ height: '1px', background: '#e2e8f0', margin: '32px 0' }} />
+
+                      {/* SECTION: POLÍTICAS */}
+                      <div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
+                          <FaMoneyBillWave style={{ color: '#2563eb', fontSize: '18px' }} />
+                          <span style={{ textTransform: 'uppercase', letterSpacing: '0.5px', fontSize: '13px', fontWeight: 700, color: '#0f172a' }}>Políticas, Tarifas y Estado</span>
                         </div>
-                        <div className="fleet-form-grid-2" style={{ gap: '20px' }}>
+                        <div className="fleet-form-grid-2" style={{ gap: '24px' }}>
                           <div className="fleet-form-group">
-                            <label className="fleet-form-label" style={{ fontWeight: 600 }}>Pico y Placa *</label>
-                            <select className="fleet-form-select" value={form.aplicaPicoYPlaca} onChange={(e) => setForm({ ...form, aplicaPicoYPlaca: e.target.value })} required>
+                            <label className="fleet-form-label" style={{ fontWeight: 600, color: '#475569' }}>Pico y Placa *</label>
+                            <select className="fleet-form-select" style={{ borderRadius: '8px', border: '1px solid #cbd5e1', padding: '12px 16px', fontSize: '14px' }} value={form.aplicaPicoYPlaca} onChange={(e) => setForm({ ...form, aplicaPicoYPlaca: e.target.value })} required>
                               <option value="" disabled>Seleccionar...</option>
                               <option value="Si">Sí aplica</option>
                               <option value="No">No aplica</option>
@@ -1758,16 +1763,16 @@ export default function VehicleManagementPage() {
                           </div>
 
                           <div className="fleet-form-group">
-                            <label className="fleet-form-label" style={{ fontWeight: 600 }}>Tarifa Diaria ($) *</label>
+                            <label className="fleet-form-label" style={{ fontWeight: 600, color: '#475569' }}>Tarifa Diaria *</label>
                             <div style={{ position: 'relative' }}>
-                              <span style={{ position: 'absolute', left: 12, top: 10, color: '#64748b', fontWeight: 600 }}>$</span>
-                              <input className="fleet-form-input" style={{ paddingLeft: 28 }} type="number" min="0" value={form.precioLimitado} onChange={(e) => setForm({ ...form, precioLimitado: e.target.value })} placeholder="Ej: 150000" required />
+                              <span style={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)', color: '#64748b', fontWeight: 600 }}>$</span>
+                              <input className="fleet-form-input" style={{ borderRadius: '8px', border: '1px solid #cbd5e1', padding: '12px 16px 12px 32px', fontSize: '14px', width: '100%' }} type="number" min="0" value={form.precioLimitado} onChange={(e) => setForm({ ...form, precioLimitado: e.target.value })} placeholder="Ej: 150000" required />
                             </div>
                           </div>
 
                           <div className="fleet-form-group" style={{ gridColumn: "1 / -1" }}>
-                            <label className="fleet-form-label" style={{ fontWeight: 600 }}>Estado del Vehículo *</label>
-                            <select className="fleet-form-select" value={form.estadoEfectivo} onChange={(e) => setForm({ ...form, estadoEfectivo: e.target.value })} required>
+                            <label className="fleet-form-label" style={{ fontWeight: 600, color: '#475569' }}>Estado del Vehículo *</label>
+                            <select className="fleet-form-select" style={{ borderRadius: '8px', border: '1px solid #cbd5e1', padding: '12px 16px', fontSize: '14px' }} value={form.estadoEfectivo} onChange={(e) => setForm({ ...form, estadoEfectivo: e.target.value })} required>
                               <option value="" disabled>Seleccionar...</option>
                               <option value="disponible">Disponible</option>
                               <option value="reservado">Reservado</option>
@@ -1778,7 +1783,7 @@ export default function VehicleManagementPage() {
                       </div>
 
                       {error && (
-                        <div className="fleet-form-error-banner" style={{ marginTop: 20 }}>
+                        <div className="fleet-form-error-banner" style={{ marginTop: 24, borderRadius: '8px' }}>
                           <p>{error}</p>
                         </div>
                       )}
