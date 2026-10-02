@@ -84,15 +84,22 @@ const SEED_RES_8824 = {
   id: 'RES-8824',
   referencia: 'RES-8824',
   codigo: 'RES-8824',
-  estado: 'pendiente',
+  estado: 'creada',
   pagoEstado: 'pendiente',
   metodoPago: 'efectivo',
+  pasarela: 'efectivo',
+  reservaDetalles: {
+    metodoPago: 'efectivo',
+    sucursalPagoEfectivo: 'Alamo Bogotá - Aeropuerto',
+    sucursalRetiro: 'Alamo Bogotá - Aeropuerto',
+  },
   vehiculoId: '3',
   vehiculoNombre: 'Mazda CX-5 2024',
   vehiculoPlaca: 'KLS-849',
   sucursalRetiro: 'Alamo Bogotá - Aeropuerto',
   sucursalDevolucion: 'Alamo Bogotá - Aeropuerto',
   sucursal: 'Alamo Bogotá - Aeropuerto',
+  sucursalPagoEfectivo: 'Alamo Bogotá - Aeropuerto',
   fechaInicio: '2026-09-25T10:15:00Z',
   fechaFin: '2026-09-29T17:00:00Z',
   horaInicio: '10:15',
@@ -253,50 +260,10 @@ const DEMO_RESERVA_EFECTIVO = {
 }
 
 
-const SEED_RES_EFECTIVO_PRUEBA = {
-  id: 'RES-9900',
-  referencia: 'RES-9900',
-  codigo: 'RES-9900',
-  estado: 'pendiente',
-  pagoEstado: 'pendiente',
-  metodoPago: 'efectivo',
-  pasarela: 'efectivo',
-  reservaDetalles: {
-    metodoPago: 'efectivo',
-    sucursalPagoEfectivo: 'Alamo Bogotá - Aeropuerto',
-    sucursalRetiro: 'Alamo Bogotá - Aeropuerto',
-  },
-  vehiculoId: '1',
-  vehiculoNombre: 'Chevrolet Spark 2023',
-  vehiculoPlaca: 'GHI-789',
-  sucursalRetiro: 'Alamo Bogotá - Aeropuerto',
-  sucursalDevolucion: 'Alamo Bogotá - Aeropuerto',
-  sucursal: 'Alamo Bogotá - Aeropuerto',
-  sucursalPagoEfectivo: 'Alamo Bogotá - Aeropuerto',
-  fechaInicio: new Date().toISOString().slice(0, 10),
-  fechaFin: new Date(Date.now() + 86400000 * 3).toISOString().slice(0, 10),
-  horaInicio: '09:00',
-  horaFin: '18:00',
-  fechaCreacion: new Date().toISOString(),
-  fechaLimitePago: new Date(Date.now() + 72 * 3600000).toISOString(),
-  total: 350000,
-  totalCOP: 350000,
-  clienteNombre: 'Felipe Bermúdez (Prueba Efectivo)',
-  clienteTelefono: '+57 312 987 6543',
-  clienteCorreo: 'felipe.prueba@drivique.com',
-  clienteDocumento: '1098765432',
-  datosForm: {
-    nombres: 'Felipe',
-    apellidos: 'Bermúdez',
-    nombre: 'Felipe Bermúdez (Prueba Efectivo)',
-    correo: 'felipe.prueba@drivique.com',
-    celular: '+57 312 987 6543',
-    numDoc: '1098765432'
-  }
-}
+
 
 const INITIAL_RESERVATIONS_SEED = [
-  SEED_RES_EFECTIVO_PRUEBA,
+  
   SEED_RES_8821,
   SEED_RES_8824,
   SEED_RES_8830,
