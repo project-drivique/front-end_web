@@ -1422,7 +1422,11 @@
     "usdChargeAlertTitle": "El cobro siempre es en COP",
     "usdChargeAlertHtml": "Estás viendo los precios en <b>dólares (USD)</b> solo como referencia visual.<br/>El cobro real a través de Wompi siempre se realiza en <b>pesos colombianos (COP)</b>, según la tasa de cambio del momento.",
     "usdChargeAlertConfirm": "Entendido",
-    "understood": "Entendido"
+    "understood": "Entendido",
+    "exportExcel": "Exportar a Excel",
+    "exportPdf": "Exportar a PDF",
+    "print": "Imprimir",
+    "viewDetails": "Ver detalle"
   },
   "login": {
     "title": "Iniciar sesión",
@@ -3129,6 +3133,32 @@
         "unitsCount": "{{count}} unidades",
         "vehiclesCount": "{{count}} vehículos"
       }
+    }
+  },
+  "dashboard": {
+    "hero": {
+      "realtime": "En tiempo real",
+      "subtitle": "Resumen general del rendimiento operativo de la sucursal",
+      "reportIncident": "Reportar incidencia",
+      "createReservation": "Crear reserva"
+    },
+    "kpi": {
+      "scheduled": "programadas",
+      "completed": "completadas",
+      "pending": "pendientes",
+      "received": "recibidas",
+      "rented": "en alquiler",
+      "of": "de",
+      "vehiclesInUse": "vehículos en uso"
+    },
+    "charts": {
+      "workload": "Carga Operativa por Franja Horaria",
+      "scheduleOf": "Programación del",
+      "calendar": "Calendario Operativo",
+      "selectDateRange": "Selecciona un rango de fechas"
+    },
+    "alerts": {
+      "requiresAttention": "Requiere tu atención"
     }
   }
 }
