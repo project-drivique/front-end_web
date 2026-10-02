@@ -51,7 +51,7 @@ const EMPTY = {
   sucursal: "",
   precioLimitado: "", // Used as Tarifa Diaria
   aplicaPicoYPlaca: "", // Pico y Placa manual override
-  estadoEfectivo: "", // Estado manual
+  estadoEfectivo: "disponible", // Estado automático al crear
   imagenes: [],
 };
 
@@ -1511,37 +1511,43 @@ export default function VehicleManagementPage() {
                             </span>
                           </td>
                           <td>
-                              <select
-                                className="cities-input"
-                                value={vehicle.estadoEfectivo}
-                                onChange={(e) => handleQuickStatusChange(vehicle.id, e.target.value)}
-                                disabled={updatingVehicleId === vehicle.id}
-                                style={{
-                                  padding: "5px 24px 5px 10px",
-                                  borderRadius: 6,
-                                  fontSize: 11.5,
-                                  fontWeight: 600,
-                                  cursor: "pointer",
-                                  appearance: "auto",
-                                  border: "1px solid",
-                                  backgroundColor: "transparent",
-                                  borderColor: vehicle.estadoEfectivo === "disponible" ? "#86efac" : vehicle.estadoEfectivo === "reservado" ? "#93c5fd" : "#fca5a5",
-                                  color: vehicle.estadoEfectivo === "disponible" ? "#166534" : vehicle.estadoEfectivo === "reservado" ? "#1e40af" : "#991b1b"
-                                }}
-                              >
-                                <option value="disponible">
-                                  {t("admin.vehiclesManagement.states.disponible", "Disponible")}
-                                </option>
-                                <option value="reservado">
-                                  {t("admin.vehiclesManagement.states.reservado", "Reservado")}
-                                </option>
-                                <option value="mantenimiento">
-                                  {t("admin.vehiclesManagement.states.mantenimiento", "Mantenimiento")}
-                                </option>
-                                <option value="en mantenimiento">
-                                  {t("admin.vehiclesManagement.states.en mantenimiento", "En Mantenimiento")}
-                                </option>
-                              </select>
+                            <span
+                              style={{
+                                display: "inline-block",
+                                padding: "4px 10px",
+                                borderRadius: 20,
+                                fontSize: 11,
+                                fontWeight: 700,
+                                whiteSpace: "nowrap",
+                                background:
+                                  vehicle.estadoEfectivo === "disponible"
+                                    ? "#d1fae5"
+                                    : vehicle.estadoEfectivo === "reservado"
+                                    ? "#dbeafe"
+                                    : "#fee2e2",
+                                color:
+                                  vehicle.estadoEfectivo === "disponible"
+                                    ? "#065f46"
+                                    : vehicle.estadoEfectivo === "reservado"
+                                    ? "#1e40af"
+                                    : "#991b1b",
+                                border: `1px solid ${
+                                  vehicle.estadoEfectivo === "disponible"
+                                    ? "#a7f3d0"
+                                    : vehicle.estadoEfectivo === "reservado"
+                                    ? "#bfdbfe"
+                                    : "#fecaca"
+                                }`
+                              }}
+                            >
+                              {vehicle.estadoEfectivo === "disponible"
+                                ? t("admin.vehiclesManagement.states.disponible", "Disponible")
+                                : vehicle.estadoEfectivo === "reservado"
+                                ? t("admin.vehiclesManagement.states.reservado", "Reservado")
+                                : vehicle.estadoEfectivo === "mantenimiento" || vehicle.estadoEfectivo === "en mantenimiento"
+                                ? t("admin.vehiclesManagement.states.en mantenimiento", "En Mantenimiento")
+                                : vehicle.estadoEfectivo || t("admin.vehiclesManagement.states.disponible", "Disponible")}
+                            </span>
                           </td>
                           <td style={{ textAlign: "center" }}>
                             <div className="cities-row-actions">
@@ -1726,13 +1732,14 @@ export default function VehicleManagementPage() {
                         </div>
 
                         <div>
-                          <label style={{ display: 'block', fontSize: '11px', color: 'var(--texto-second, #64748b)', marginBottom: '6px', fontWeight: 600 }}>{t("admin.vehiclesManagement.modal.state", "Estado del Vehículo *")}</label>
-                          <select style={{ width: '100%', padding: '10px 14px', background: 'var(--bg-seccion1, #f8fafc)', border: 'none', borderRadius: '6px', fontSize: '13px', color: 'var(--texto-primary, #334155)', outline: 'none', cursor: 'pointer' }} value={form.estadoEfectivo} onChange={(e) => setForm({ ...form, estadoEfectivo: e.target.value })} required>
-                            <option value="" disabled>{t("admin.vehiclesManagement.modal.select", "Seleccionar")}</option>
-                            <option value="disponible">{t("admin.vehiclesManagement.states.disponible", "Disponible")}</option>
-                            <option value="reservado">{t("admin.vehiclesManagement.states.reservado", "Reservado")}</option>
-                            <option value="en mantenimiento">{t("admin.vehiclesManagement.states.en mantenimiento", "En Mantenimiento")}</option>
-                          </select>
+                          <label style={{ display: 'block', fontSize: '11px', color: 'var(--texto-second, #64748b)', marginBottom: '6px', fontWeight: 600 }}>{t("admin.vehiclesManagement.modal.state", "Estado del Vehículo")}</label>
+                          <input
+                            type="text"
+                            readOnly
+                            disabled
+                            style={{ width: '100%', padding: '10px 14px', background: 'var(--bg-seccion1, #f8fafc)', border: 'none', borderRadius: '6px', fontSize: '13px', color: '#065f46', fontWeight: 700, cursor: 'not-allowed' }}
+                            value={t("admin.vehiclesManagement.states.disponible", "Disponible")}
+                          />
                         </div>
 
                       </div>
