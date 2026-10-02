@@ -698,14 +698,14 @@ export default function ReservationManagementPage() {
                   <>
                     <thead>
                       <tr>
-                        <th>ID</th>
-                        <th>CÓDIGO RESERVA</th>
-                        <th>PLAN PROTECCIÓN</th>
-                        <th>PRECIO PROTECCIÓN</th>
-                        <th>TIPO KILOMETRAJE</th>
-                        <th>PRECIO KILOMETRAJE</th>
-                        <th>SERVICIOS ADICIONALES</th>
-                        <th>PRECIO SERVICIOS</th>
+                        <th style={{ textTransform: "uppercase" }}>ID</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.code", "CÓDIGO RESERVA")}</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.protectionPlan", "PLAN PROTECCIÓN")}</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.protectionPrice", "PRECIO PROTECCIÓN")}</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.mileageType", "TIPO KILOMETRAJE")}</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.mileagePrice", "PRECIO KILOMETRAJE")}</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.additionalServices", "SERVICIOS ADICIONALES")}</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.servicesPrice", "PRECIO SERVICIOS")}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -792,24 +792,24 @@ export default function ReservationManagementPage() {
                   <>
                     <thead>
                       <tr>
-                        <th>ID</th>
-                        <th>CÓDIGO RESERVA</th>
-                        <th>NOMBRE COMPLETO</th>
-                        <th>CORREO</th>
-                        <th>TIPO DE DOCUMENTO</th>
-                        <th>NACIONALIDAD</th>
-                        <th>TELÉFONO CELULAR</th>
-                        <th>NÚMERO DE DOCUMENTO</th>
-                        <th>DOCUMENTO DE IDENTIDAD</th>
-                        <th>LICENCIA DE CONDUCCIÓN</th>
-                        <th>TÉRMINOS Y CONDICIONES</th>
-                        <th>PROMOCIONES</th>
-                        <th>PAGO TOTAL</th>
-                        <th>ESTADO RESERVA</th>
-                        <th>ESTADO DEL PAGO</th>
-                        <th style={{ textAlign: 'center' }}>ESTADO FIRMA DE CONTRATO</th>
-                        <th style={{ textAlign: 'center' }}>CONFIRMAR ENTREGA</th>
-                        <th style={{ textAlign: 'center' }}>CONFIRMAR DEVOLUCIÓN</th>
+                        <th style={{ textTransform: "uppercase" }}>ID</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.code", "CÓDIGO RESERVA")}</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.fullName", "NOMBRE COMPLETO")}</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.email", "CORREO")}</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.docType", "TIPO DE DOCUMENTO")}</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.nationality", "NACIONALIDAD")}</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.phone", "TELÉFONO CELULAR")}</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.docNumber", "NÚMERO DE DOCUMENTO")}</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.idDocument", "DOCUMENTO DE IDENTIDAD")}</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.drivingLicense", "LICENCIA DE CONDUCCIÓN")}</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.terms", "TÉRMINOS Y CONDICIONES")}</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.promotions", "PROMOCIONES")}</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.totalPayment", "PAGO TOTAL")}</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.reservationStatus", "ESTADO RESERVA")}</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.paymentStatus", "ESTADO DEL PAGO")}</th>
+                        <th style={{ textAlign: 'center', textTransform: "uppercase" }}>{t("admin.reservationsManagement.contractStatus", "ESTADO FIRMA DE CONTRATO")}</th>
+                        <th style={{ textAlign: 'center', textTransform: "uppercase" }}>{t("admin.reservationsManagement.confirmPickup", "CONFIRMAR ENTREGA")}</th>
+                        <th style={{ textAlign: 'center', textTransform: "uppercase" }}>{t("admin.reservationsManagement.confirmReturn", "CONFIRMAR DEVOLUCIÓN")}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -900,7 +900,7 @@ export default function ReservationManagementPage() {
                               </div>
                             </td>
                             <td>
-                              <span style={{ color: '#047857', fontWeight: 600, fontSize: 12 }}>Aceptados</span>
+                              <span style={{ color: '#047857', fontWeight: 600, fontSize: 12 }}>{t('admin.reservationsManagement.accepted', 'Aceptados')}</span>
                             </td>
                             <td>{cuponCodigo}</td>
                             <td style={{ fontWeight: 700, color: 'var(--city-text, #0f172a)', whiteSpace: 'nowrap' }}>
@@ -926,11 +926,11 @@ export default function ReservationManagementPage() {
                                   outline: 'none',
                                 }}
                               >
-                                <option value="creada">Creada</option>
-                                <option value="confirmada">Confirmada</option>
-                                <option value="en_curso">En curso</option>
-                                <option value="finalizada">Finalizada</option>
-                                <option value="cancelada">Cancelada</option>
+                                <option value="creada">{t('admin.reservationsManagement.status.created', 'Creada')}</option>
+                                <option value="confirmada">{t('admin.reservationsManagement.status.confirmed', 'Confirmada')}</option>
+                                <option value="en_curso">{t('admin.reservationsManagement.status.inProgress', 'En curso')}</option>
+                                <option value="finalizada">{t('admin.reservationsManagement.status.finished', 'Finalizada')}</option>
+                                <option value="cancelada">{t('admin.reservationsManagement.status.cancelled', 'Cancelada')}</option>
                               </select>
                             </td>
                             <td>
@@ -955,7 +955,7 @@ export default function ReservationManagementPage() {
                                     : { background: '#fef3c7', color: '#92400e' }),
                                 }}
                               >
-                                {isPagoConfirmado ? 'Confirmado' : r.estado === 'cancelada' ? 'Cancelado' : 'Pendiente'}
+                                {isPagoConfirmado ? t('admin.reservationsManagement.status.confirmedStatus', 'Confirmado') : r.estado === 'cancelada' ? t('admin.reservationsManagement.status.cancelledStatus', 'Cancelado') : t('admin.reservationsManagement.status.pendingStatus', 'Pendiente')}
                               </span>
                             </td>
                             <td style={{ textAlign: 'center' }}>
@@ -991,7 +991,7 @@ export default function ReservationManagementPage() {
                                     onMouseOver={(e) => e.target.style.opacity = 0.8}
                                     onMouseOut={(e) => e.target.style.opacity = 1}
                                   >
-                                    Cobrar Caja
+                                    {t('admin.reservationsManagement.cashPayment', 'Cobrar Caja')}
                                   </button>
                                 )}
                                 {esEncargado && r.estado !== 'en_curso' && r.estado !== 'finalizada' && r.estado !== 'cancelada' && !esCobroPresencialPendiente && (
@@ -1002,7 +1002,7 @@ export default function ReservationManagementPage() {
                                     onMouseOver={(e) => { e.target.style.opacity = 0.8 }}
                                     onMouseOut={(e) => { e.target.style.opacity = 1 }}
                                   >
-                                    Confirmar Entrega
+                                    {t('admin.reservationsManagement.confirmPickupBtn', 'Confirmar Entrega')}
                                   </button>
                                 )}
                                 {(r.estado === 'en_curso' || r.estado === 'finalizada') && (
@@ -1011,7 +1011,7 @@ export default function ReservationManagementPage() {
                                     disabled
                                     style={{ background: 'var(--borde, #e2e8f0)', color: 'var(--texto-second, #64748b)', border: 'none', padding: '6px 12px', borderRadius: 6, fontSize: 12, fontWeight: 600, whiteSpace: 'nowrap', cursor: 'not-allowed' }}
                                   >
-                                    Auto Entregado
+                                    {t('admin.reservationsManagement.carDelivered', 'Auto Entregado')}
                                   </button>
                                 )}
                               </div>
@@ -1026,7 +1026,7 @@ export default function ReservationManagementPage() {
                                     onMouseOver={(e) => { e.target.style.opacity = 0.8 }}
                                     onMouseOut={(e) => { e.target.style.opacity = 1 }}
                                   >
-                                    Confirmar Devolución
+                                    {t('admin.reservationsManagement.confirmReturnBtn', 'Confirmar Devolución')}
                                   </button>
                                 )}
                                 {r.estado !== 'en_curso' && r.estado !== 'finalizada' && r.estado !== 'cancelada' && (
@@ -1044,7 +1044,7 @@ export default function ReservationManagementPage() {
                                     disabled
                                     style={{ background: 'var(--borde, #e2e8f0)', color: 'var(--texto-second, #64748b)', border: 'none', padding: '6px 12px', borderRadius: 6, fontSize: 12, fontWeight: 600, whiteSpace: 'nowrap', cursor: 'not-allowed' }}
                                   >
-                                    Auto Devuelto
+                                    {t('admin.reservationsManagement.carReturned', 'Auto Devuelto')}
                                   </button>
                                 )}
                               </div>
