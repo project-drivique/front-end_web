@@ -1,8 +1,9 @@
 // src/services/incidentManagementService.js
 import { accessAuditService } from './accessAuditService'
 import { vehicleManagementService } from './vehicleManagementService'
+import { INITIAL_REPORTS } from '../modules/support/data/support.dummy'
 
-const STORAGE_KEY = 'drivique_user_reports_v5'
+const STORAGE_KEY = 'drivique_user_reports_v6'
 const NOTIFS_KEY = 'drivique_user_notifications'
 const STORAGE_SCHEMA_KEY = 'drivique_user_reports_schema'
 const STORAGE_SCHEMA = '2'
@@ -23,9 +24,12 @@ function assertIncidentScope(user, branch) {
 function readIncidents() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) return []
-    const parsed = JSON.parse(raw)
-    let list = Array.isArray(parsed) ? parsed : []
+    if (!raw) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_REPORTS))
+      localStorage.setItem(STORAGE_SCHEMA_KEY, STORAGE_SCHEMA)
+    }
+    const rawData = raw ? JSON.parse(raw) : INITIAL_REPORTS
+    let list = Array.isArray(rawData) && rawData.length > 0 ? rawData : INITIAL_REPORTS
     if (localStorage.getItem(STORAGE_SCHEMA_KEY) !== STORAGE_SCHEMA) {
       list = list.filter((incident) => !LEGACY_INCIDENT_IDS.has(String(incident?.id || incident?.codigo || '')))
       localStorage.setItem(STORAGE_KEY, JSON.stringify(list))
