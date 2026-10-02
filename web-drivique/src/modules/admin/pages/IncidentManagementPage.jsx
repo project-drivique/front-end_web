@@ -487,7 +487,7 @@ export default function IncidentManagementPage() {
                                 e.currentTarget.style.transform = 'translateY(0)';
                               }}
                             >
-                              <FaExclamationCircle /> Responder
+                              <FaPaperPlane /> Responder al Cliente
                             </button>
 
                             {!esEncargado && (
@@ -541,10 +541,16 @@ export default function IncidentManagementPage() {
                     e.currentTarget.src = 'https://pplx-res.cloudinary.com/image/upload/pplx_search_images/a2cb0b378c25efdb1e116246f84149744c2f4081.jpg'
                   }}
                 />
-                <div>
+                <div style={{ flex: 1 }}>
                   <h3 style={{ margin: '0 0 3px', fontSize: 16, fontWeight: 800, color: 'var(--city-text)' }}>{modalDetalle.vehiculo}</h3>
                   <span style={{ fontSize: 13, color: '#64748b', fontWeight: 600 }}>Placa: <strong style={{ color: 'var(--brand-text)' }}>{modalDetalle.placa}</strong> • {modalDetalle.sucursal}</span>
                 </div>
+                {modalDetalle.codigoReserva && (
+                  <div style={{ textAlign: 'right', background: '#ffffff', padding: '8px 12px', borderRadius: '8px', border: '1px dashed #cbd5e1' }}>
+                    <span style={{ fontSize: 11, color: '#64748b', fontWeight: 700, display: 'block', textTransform: 'uppercase' }}>Reserva Asociada</span>
+                    <strong style={{ fontSize: 14, color: 'var(--brand-primary)' }}>{modalDetalle.codigoReserva}</strong>
+                  </div>
+                )}
               </div>
 
               <div className="incident-grid-2" style={{ margin: '18px 0' }}>
@@ -592,13 +598,21 @@ export default function IncidentManagementPage() {
                 ))}
               </div>
 
-              <form onSubmit={handleResponderYActualizar} className="incident-form">
+              <form onSubmit={handleResponderYActualizar} className="incident-form" style={{ background: 'var(--city-soft)', padding: '16px', borderRadius: '12px', border: '1px solid var(--city-border)', marginTop: '16px' }}>
+                <div style={{ marginBottom: '16px' }}>
+                  <strong style={{ fontSize: '14px', color: 'var(--city-text)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <FaPaperPlane color="var(--brand-primary)" /> Enviar respuesta al usuario
+                  </strong>
+                  <p style={{ fontSize: '12px', color: '#64748b', margin: '4px 0 0 0' }}>El mensaje que escribas aquí se enviará automáticamente al correo <strong style={{ color: 'var(--brand-primary)' }}>{modalDetalle.contactoEmail}</strong>, relacionándolo con la reserva asociada.</p>
+                </div>
+
                 <div className="incident-grid-2">
                   <div className="incident-field">
-                    <span className="incident-field-label">{t('admin.incidents.changeStatus', 'Cambiar estado')}</span>
+                    <span className="incident-field-label">{t('admin.incidents.changeStatus', 'Cambiar estado del incidente')}</span>
                     <select
                       value={nuevoEstadoModal}
                       onChange={(e) => setNuevoEstadoModal(e.target.value)}
+                      style={{ padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1', background: '#fff' }}
                     >
                       <option value="recibido">{t('admin.incidents.recibido', 'Recibido')}</option>
                       <option value="atendiendo">{t('admin.incidents.atendiendo', 'Atendiendo')}</option>
@@ -606,28 +620,39 @@ export default function IncidentManagementPage() {
                       <option value="rechazado">{t('admin.incidents.rechazado', 'Rechazado')}</option>
                     </select>
                   </div>
-                  <div className="incident-notice-box" style={{ gridColumn: '1 / -1' }}>
-                    <FaPaperPlane style={{ flexShrink: 0, marginTop: 1 }} />
-                    <span>{t('admin.incidents.noticeEmailMsg', 'Se enviar\u00e1 correo y notificaci\u00f3n al usuario.')}</span>
+                  <div className="incident-field">
+                    <span className="incident-field-label">Modificar Prioridad</span>
+                    <select
+                      value={nuevaPrioridadModal || modalDetalle.prioridad || 'media'}
+                      onChange={(e) => setNuevaPrioridadModal(e.target.value)}
+                      style={{ padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1', background: '#fff' }}
+                    >
+                      <option value="baja">Baja</option>
+                      <option value="media">Media</option>
+                      <option value="alta">Alta</option>
+                      <option value="urgente">Urgente</option>
+                    </select>
                   </div>
                 </div>
-                <div className="incident-field">
-                  <span className="incident-field-label">{t('admin.incidents.replyLabel', 'Mensaje de respuesta')}</span>
+
+                <div className="incident-field" style={{ marginTop: 12 }}>
+                  <span className="incident-field-label">{t('admin.incidents.replyLabel', 'Mensaje de respuesta para el usuario')}</span>
                   <textarea
                     required
                     rows={3}
-                    placeholder={t('admin.incidents.replyPlaceholder', 'Escribe la respuesta oficial...')}
+                    placeholder="Escribe la respuesta que le llegará al correo del cliente..."
                     value={respuestaTexto}
                     onChange={(e) => setRespuestaTexto(e.target.value)}
+                    style={{ padding: '12px', borderRadius: '8px', border: '1px solid #cbd5e1', width: '100%', resize: 'none' }}
                   />
                 </div>
                 {errorModal && <p className="cities-error">{errorModal}</p>}
-                <div className="cities-modal__actions">
-                  <button type="button" onClick={() => setModalDetalle(null)}>
+                <div className="cities-modal__actions" style={{ marginTop: '16px', display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+                  <button type="button" onClick={() => setModalDetalle(null)} style={{ background: '#f1f5f9', color: '#475569', border: 'none', padding: '8px 16px', borderRadius: '8px', fontWeight: 600, cursor: 'pointer' }}>
                     {t('admin.incidents.cancel', 'Cancelar')}
                   </button>
-                  <button type="submit" className="cities-primary">
-                    <FaPaperPlane /> {t('admin.incidents.saveAndSend', 'Guardar y Enviar')}
+                  <button type="submit" className="cities-primary" style={{ background: 'var(--brand-primary)', display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', borderRadius: '8px', border: 'none', color: '#fff', fontWeight: 700, cursor: 'pointer' }}>
+                    <FaPaperPlane /> {t('admin.incidents.saveAndSend', 'Enviar correo y Actualizar')}
                   </button>
                 </div>
               </form>
