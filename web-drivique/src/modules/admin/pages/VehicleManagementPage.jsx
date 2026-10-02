@@ -1512,20 +1512,21 @@ export default function VehicleManagementPage() {
                           </td>
                           <td>
                               <select
-                                className={`cities-input status-pill ${
-                                  vehicle.estadoEfectivo === "disponible" ? "is-green" : vehicle.estadoEfectivo === "reservado" ? "is-blue" : "is-red"
-                                }`}
+                                className="cities-input"
                                 value={vehicle.estadoEfectivo}
                                 onChange={(e) => handleQuickStatusChange(vehicle.id, e.target.value)}
                                 disabled={updatingVehicleId === vehicle.id}
                                 style={{
-                                  padding: "4px 28px 4px 10px",
-                                  borderRadius: 20,
-                                  fontSize: 11,
-                                  fontWeight: 700,
-                                  border: "none",
+                                  padding: "5px 24px 5px 10px",
+                                  borderRadius: 6,
+                                  fontSize: 11.5,
+                                  fontWeight: 600,
                                   cursor: "pointer",
                                   appearance: "auto",
+                                  border: "1px solid",
+                                  backgroundColor: vehicle.estadoEfectivo === "disponible" ? "#f0fdf4" : vehicle.estadoEfectivo === "reservado" ? "#eff6ff" : "#fef2f2",
+                                  borderColor: vehicle.estadoEfectivo === "disponible" ? "#86efac" : vehicle.estadoEfectivo === "reservado" ? "#93c5fd" : "#fca5a5",
+                                  color: vehicle.estadoEfectivo === "disponible" ? "#166534" : vehicle.estadoEfectivo === "reservado" ? "#1e40af" : "#991b1b"
                                 }}
                               >
                                 <option value="disponible">
