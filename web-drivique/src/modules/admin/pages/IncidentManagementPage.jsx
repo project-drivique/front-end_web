@@ -185,6 +185,20 @@ export default function IncidentManagementPage() {
     }
   }
 
+  const handleQuickStatusChange = (incidentId, newStatus) => {
+    try {
+      incidentManagementService.updateStatusAndRespond(
+        incidentId,
+        { nuevoEstado: newStatus, respuestaTexto: `El estado ha sido actualizado a ${newStatus}.`, nuevaPrioridad: 'media' },
+        user
+      )
+      setNotice(`Estado actualizado a ${newStatus} correctamente.`)
+      cargarIncidencias()
+    } catch {
+      console.error('Error al cambiar estado rápidamente')
+    }
+  }
+
   const handleEliminarIncidencia = (r) => {
     try {
       setErrorModal('')
@@ -417,8 +431,27 @@ export default function IncidentManagementPage() {
                         <td style={{ color: '#475569' }}>{r.contactoTelefono || '+57 300 0000000'}</td>
                         <td style={{ color: '#64748b' }}>{r.contactoEmail}</td>
                         
-                        <td style={{ fontWeight: 600, color: r.estado === 'resuelto' ? '#15803d' : r.estado === 'atendiendo' || r.estado === 'en_reparacion' || r.estado === 'en_revision' ? '#0369a1' : r.estado === 'rechazado' ? '#991b1b' : '#475569' }}>
-                          {r.estado === 'resuelto' ? 'Resuelto' : r.estado === 'atendiendo' || r.estado === 'en_reparacion' || r.estado === 'en_revision' ? 'Atendiendo' : r.estado === 'rechazado' ? 'Rechazado' : 'Recibido'}
+                        <td>
+                          <select
+                            value={['resuelto', 'atendiendo', 'rechazado', 'recibido'].includes(r.estado) ? r.estado : (r.estado === 'en_revision' || r.estado === 'en_reparacion' ? 'atendiendo' : 'recibido')}
+                            onChange={(e) => handleQuickStatusChange(r.id, e.target.value)}
+                            style={{
+                              padding: '4px 8px',
+                              borderRadius: '6px',
+                              border: '1px solid #cbd5e1',
+                              backgroundColor: r.estado === 'resuelto' ? '#dcfce7' : r.estado === 'atendiendo' || r.estado === 'en_revision' || r.estado === 'en_reparacion' ? '#e0f2fe' : r.estado === 'rechazado' ? '#fee2e2' : '#f1f5f9',
+                              color: r.estado === 'resuelto' ? '#15803d' : r.estado === 'atendiendo' || r.estado === 'en_revision' || r.estado === 'en_reparacion' ? '#0369a1' : r.estado === 'rechazado' ? '#991b1b' : '#475569',
+                              fontWeight: 600,
+                              fontSize: '13px',
+                              cursor: 'pointer',
+                              outline: 'none'
+                            }}
+                          >
+                            <option value="recibido">Recibido</option>
+                            <option value="atendiendo">Atendiendo</option>
+                            <option value="resuelto">Resuelto</option>
+                            <option value="rechazado">Rechazado</option>
+                          </select>
                         </td>
                         
                         <td>
@@ -542,22 +575,9 @@ export default function IncidentManagementPage() {
                       onChange={(e) => setNuevoEstadoModal(e.target.value)}
                     >
                       <option value="recibido">{t('admin.incidents.recibido', 'Recibido')}</option>
-                      <option value="en_revision">{t('admin.incidents.en_revision', 'En Revisi\u00f3n T\u00e9cnica')}</option>
-                      <option value="en_reparacion">{t('admin.incidents.en_reparacion', 'En Reparaci\u00f3n Taller')}</option>
+                      <option value="atendiendo">{t('admin.incidents.atendiendo', 'Atendiendo')}</option>
                       <option value="resuelto">{t('admin.incidents.resuelto', 'Resuelto')}</option>
                       <option value="rechazado">{t('admin.incidents.rechazado', 'Rechazado')}</option>
-                    </select>
-                  </div>
-                  <div className="incident-field">
-                    <span className="incident-field-label">{t('admin.incidents.changePriority', 'Priorizar Situaci\u00f3n')}</span>
-                    <select
-                      value={nuevaPrioridadModal}
-                      onChange={(e) => setNuevaPrioridadModal(e.target.value)}
-                    >
-                      <option value="urgente">{t('admin.incidents.urgente', 'Urgente (< 24h)')}</option>
-                      <option value="alta">{t('admin.incidents.alta', 'Alta (24-48h)')}</option>
-                      <option value="media">{t('admin.incidents.media', 'Media (48-72h)')}</option>
-                      <option value="baja">{t('admin.incidents.baja', 'Baja (> 72h)')}</option>
                     </select>
                   </div>
                   <div className="incident-notice-box" style={{ gridColumn: '1 / -1' }}>
