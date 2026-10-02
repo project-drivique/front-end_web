@@ -143,7 +143,7 @@
         "extraPrice": "Prix excÃ©dentaire",
         "unlimitedPrice": "Prix illimitÃ©",
         "color": "Couleur",
-        "photo": "Photo",
+        "photo": "IMAGE",
         "fuel": "Carburant",
         "transmission": "Transmission",
         "year": "Année"
@@ -649,7 +649,7 @@
       "emptyTitle": "Aucune réservation enregistrée dans cette section",
       "emptyText": "Aucun enregistrement trouvé avec les filtres appliqués.",
       "code": "CODE RÉSERVATION",
-      "photo": "PHOTO",
+      "photo": "IMAGE",
       "vehicle": "NOM DU VÉHICULE",
       "plate": "PLAQUE",
       "paymentMethod": "MODE DE PAIEMENT",

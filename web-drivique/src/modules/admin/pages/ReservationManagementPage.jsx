@@ -576,7 +576,7 @@ export default function ReservationManagementPage() {
                       <tr>
                         <th style={{ textTransform: "uppercase" }}>ID</th>
                         <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.code", "CÓDIGO RESERVA")}</th>
-                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.photo", "FOTO")}</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.photo", "IMAGEN")}</th>
                         <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.vehicle", "NOMBRE VEHÍCULO")}</th>
                         <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.plate", "PLACA")}</th>
                         <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.paymentMethod", "MEDIO DE PAGO")}</th>
