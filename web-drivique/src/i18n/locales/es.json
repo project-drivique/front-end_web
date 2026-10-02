@@ -1535,7 +1535,47 @@
     "documents": {},
     "delivery": {},
     "cash": {
-      "title": "Pagos y Cobros"
+      "title": "Pagos y Cobros",
+      "kpi": {
+        "pendingCash": "Pendientes (Efectivo)",
+        "pendingReservations": "Reservas por cobrar",
+        "collectedToday": "Recaudado Hoy (Caja)",
+        "confirmedIncome": "Ingresos confirmados",
+        "paymentsToday": "Cobros Realizados Hoy",
+        "receiptsIssued": "Comprobantes emitidos"
+      },
+      "filterRefPlaceholder": "Ref. (Ej. RES-179...)",
+      "filterBtn": "Filtrar",
+      "clearBtn": "Limpiar",
+      "allPayments": "Todos los pagos",
+      "pendingCashOption": "Pendientes Efectivo ({{count}})",
+      "collectedOption": "Cobradas Caja ({{count}})",
+      "digitalGateway": "Pasarela Digital",
+      "allBranches": "Todas las sucursales",
+      "dateFrom": "Desde",
+      "dateTo": "Hasta",
+      "table": {
+        "code": "CÓDIGO RESERVA",
+        "fullName": "NOMBRE COMPLETO",
+        "phone": "TELÉFONO",
+        "paymentMethod": "MEDIO DE PAGO",
+        "totalAmount": "MONTO TOTAL",
+        "paymentStatus": "ESTADO PAGO",
+        "receipt": "COMPROBANTE DE PAGO",
+        "downloadReceipt": "DESCARGAR COMPROBANTE",
+        "printReceipt": "IMPRIMIR COMPROBANTE"
+      },
+      "status": {
+        "approved": "Aprobado",
+        "pending": "Pendiente",
+        "rejected": "Rechazado"
+      },
+      "actions": {
+        "view": "Ver",
+        "charge": "Cobrar en Caja",
+        "download": "Descargar",
+        "print": "Imprimir"
+      }
     },
     "reviews": {},
     "sections": {

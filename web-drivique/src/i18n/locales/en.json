@@ -1661,7 +1661,47 @@
     },
     "cash": {
       "title": "Payments & Collections",
-      "subtitle": "Management of pending collections and billing."
+      "subtitle": "Management of pending collections and billing.",
+      "kpi": {
+        "pendingCash": "Pending (Cash)",
+        "pendingReservations": "Reservations to collect",
+        "collectedToday": "Collected Today (Register)",
+        "confirmedIncome": "Confirmed income",
+        "paymentsToday": "Payments Made Today",
+        "receiptsIssued": "Receipts issued"
+      },
+      "filterRefPlaceholder": "Ref. (e.g. RES-179...)",
+      "filterBtn": "Filter",
+      "clearBtn": "Clear",
+      "allPayments": "All payments",
+      "pendingCashOption": "Pending Cash ({{count}})",
+      "collectedOption": "Collected Register ({{count}})",
+      "digitalGateway": "Digital Gateway",
+      "allBranches": "All branches",
+      "dateFrom": "From",
+      "dateTo": "To",
+      "table": {
+        "code": "RESERVATION CODE",
+        "fullName": "FULL NAME",
+        "phone": "PHONE",
+        "paymentMethod": "PAYMENT METHOD",
+        "totalAmount": "TOTAL AMOUNT",
+        "paymentStatus": "PAYMENT STATUS",
+        "receipt": "PAYMENT RECEIPT",
+        "downloadReceipt": "DOWNLOAD RECEIPT",
+        "printReceipt": "PRINT RECEIPT"
+      },
+      "status": {
+        "approved": "Approved",
+        "pending": "Pending",
+        "rejected": "Rejected"
+      },
+      "actions": {
+        "view": "View",
+        "charge": "Collect Cash",
+        "download": "Download",
+        "print": "Print"
+      }
     },
     "reviews": {
       "title": "Reviews & Ratings",

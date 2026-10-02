@@ -1660,8 +1660,48 @@
       "subtitle": "AtribuiÃ§Ã£o de motoristas para entregas e recolhas em domicÃ­lio."
     },
     "cash": {
-      "title": "Pagamentos e CobranÃ§as",
-      "subtitle": "GestÃ£o de cobranÃ§as pendentes e faturamento."
+      "title": "Pagamentos e Cobranças",
+      "subtitle": "GestÃ£o de cobranÃ§as pendentes e faturamento.",
+      "kpi": {
+        "pendingCash": "Pendentes (Dinheiro)",
+        "pendingReservations": "Reservas a cobrar",
+        "collectedToday": "Arrecadado Hoje (Caixa)",
+        "confirmedIncome": "Receitas confirmadas",
+        "paymentsToday": "Cobranças Realizadas Hoje",
+        "receiptsIssued": "Comprovantes emitidos"
+      },
+      "filterRefPlaceholder": "Ref. (Ex. RES-179...)",
+      "filterBtn": "Filtrar",
+      "clearBtn": "Limpar",
+      "allPayments": "Todos os pagamentos",
+      "pendingCashOption": "Pendentes Dinheiro ({{count}})",
+      "collectedOption": "Cobrados Caixa ({{count}})",
+      "digitalGateway": "Gateway Digital",
+      "allBranches": "Todas as filiais",
+      "dateFrom": "De",
+      "dateTo": "Até",
+      "table": {
+        "code": "CÓDIGO DE RESERVA",
+        "fullName": "NOME COMPLETO",
+        "phone": "TELEFONE",
+        "paymentMethod": "FORMA DE PAGAMENTO",
+        "totalAmount": "VALOR TOTAL",
+        "paymentStatus": "STATUS DO PAGAMENTO",
+        "receipt": "COMPROVANTE DE PAGAMENTO",
+        "downloadReceipt": "BAIXAR COMPROVANTE",
+        "printReceipt": "IMPRIMIR COMPROVANTE"
+      },
+      "status": {
+        "approved": "Aprovado",
+        "pending": "Pendente",
+        "rejected": "Rejeitado"
+      },
+      "actions": {
+        "view": "Ver",
+        "charge": "Cobrar em Caixa",
+        "download": "Baixar",
+        "print": "Imprimir"
+      }
     },
     "reviews": {
       "title": "AvaliaÃ§Ãµes e ClassificaÃ§Ãµes",
