@@ -1636,9 +1636,9 @@ export default function VehicleManagementPage() {
                         <div style={{ gridColumn: '1 / -1', marginBottom: '8px' }}>
                           <label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '6px', fontWeight: 600 }}>Imagen del Vehículo</label>
                           {(!form.imagenes || form.imagenes.length === 0) ? (
-                            <label style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px 16px', background: '#f8fafc', borderRadius: '6px', cursor: 'pointer', transition: 'background 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.background = '#f1f5f9'} onMouseLeave={(e) => e.currentTarget.style.background = '#f8fafc'}>
-                              <div style={{ fontSize: '13px', color: '#475569', fontWeight: 500 }}>Haz clic para subir una imagen</div>
-                              <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '4px' }}>(JPG, PNG. Máx 1MB)</div>
+                            <label style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '12px', background: '#f8fafc', border: '1px dashed #3b82f6', borderRadius: '6px', cursor: 'pointer', transition: 'background 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.background = '#f1f5f9'} onMouseLeave={(e) => e.currentTarget.style.background = '#f8fafc'}>
+                              <div style={{ fontSize: '12px', color: '#475569', fontWeight: 500 }}>Haz clic para subir una imagen</div>
+                              <div style={{ fontSize: '10px', color: '#94a3b8', marginTop: '2px' }}>(JPG, PNG. Máx 1MB)</div>
                               <input type="file" accept="image/*" onChange={loadImages} style={{ display: "none" }} />
                             </label>
                           ) : (
@@ -1650,7 +1650,7 @@ export default function VehicleManagementPage() {
                                 </div>
                               ))}
                               {form.imagenes.length < 3 && (
-                                <label style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: 100, height: 70, background: '#f8fafc', borderRadius: '6px', cursor: 'pointer', color: '#64748b' }} onMouseEnter={(e) => e.currentTarget.style.background = '#f1f5f9'} onMouseLeave={(e) => e.currentTarget.style.background = '#f8fafc'}>
+                                <label style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: 100, height: 70, background: '#f8fafc', border: '1px dashed #3b82f6', borderRadius: '6px', cursor: 'pointer', color: '#64748b' }} onMouseEnter={(e) => e.currentTarget.style.background = '#f1f5f9'} onMouseLeave={(e) => e.currentTarget.style.background = '#f8fafc'}>
                                   <FaPlus size={16} />
                                   <input type="file" accept="image/*" onChange={loadImages} style={{ display: "none" }} />
                                 </label>
@@ -1660,7 +1660,7 @@ export default function VehicleManagementPage() {
                         </div>
 
                         {/* INPUTS ESTILO REFERENCIA */}
-                        <div style={{ gridColumn: '1 / -1' }}>
+                        <div>
                           <label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '6px', fontWeight: 600 }}>Nombre Vehículo *</label>
                           <input style={{ width: '100%', padding: '10px 14px', background: '#f8fafc', border: 'none', borderRadius: '6px', fontSize: '13px', color: '#334155', outline: 'none' }} value={form.nombre} onChange={(e) => setForm({ ...form, nombre: e.target.value })} placeholder="Ej: Toyota Corolla 2024" required />
                         </div>
@@ -1673,25 +1673,33 @@ export default function VehicleManagementPage() {
                         <div>
                           <label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '6px', fontWeight: 600 }}>Categoría *</label>
                           <select style={{ width: '100%', padding: '10px 14px', background: '#f8fafc', border: 'none', borderRadius: '6px', fontSize: '13px', color: '#334155', outline: 'none', cursor: 'pointer' }} value={form.categoria} onChange={(e) => setForm({ ...form, categoria: e.target.value })} required disabled={!activeCategoriesForForm.length}>
-                            <option value="" disabled>Seleccionar...</option>
+                            <option value="" disabled>Seleccionar</option>
                             {activeCategoriesForForm.map((catName) => <option key={catName} value={catName}>{catName}</option>)}
                           </select>
                         </div>
 
-                        {!esEncargado && (
-                          <div style={{ gridColumn: '1 / -1' }}>
+                        {!esEncargado ? (
+                          <div>
                             <label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '6px', fontWeight: 600 }}>Sucursal Asignada *</label>
                             <select style={{ width: '100%', padding: '10px 14px', background: '#f8fafc', border: 'none', borderRadius: '6px', fontSize: '13px', color: '#334155', outline: 'none', cursor: 'pointer' }} value={form.sucursal} onChange={(e) => setForm({ ...form, sucursal: e.target.value, categoria: "" })} required>
-                              <option value="" disabled>Seleccionar...</option>
+                              <option value="" disabled>Seleccionar</option>
                               {branches.map((b) => <option key={b.id} value={b.nombre}>{b.nombre}</option>)}
                             </select>
                           </div>
+                        ) : (
+                          <div>
+                            <label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '6px', fontWeight: 600 }}>Año *</label>
+                            <input type="number" min="1990" max="2030" style={{ width: '100%', padding: '10px 14px', background: '#f8fafc', border: 'none', borderRadius: '6px', fontSize: '13px', color: '#334155', outline: 'none' }} value={form.año} onChange={(e) => setForm({ ...form, año: e.target.value })} placeholder="Ej: 2024" required />
+                          </div>
                         )}
 
-                        <div>
-                          <label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '6px', fontWeight: 600 }}>Año *</label>
-                          <input type="number" min="1990" max="2030" style={{ width: '100%', padding: '10px 14px', background: '#f8fafc', border: 'none', borderRadius: '6px', fontSize: '13px', color: '#334155', outline: 'none' }} value={form.año} onChange={(e) => setForm({ ...form, año: e.target.value })} placeholder="Ej: 2024" required />
-                        </div>
+                        {/* If esEncargado is false, Año gets pushed to next spot to keep grid aligned */}
+                        {!esEncargado && (
+                          <div>
+                            <label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '6px', fontWeight: 600 }}>Año *</label>
+                            <input type="number" min="1990" max="2030" style={{ width: '100%', padding: '10px 14px', background: '#f8fafc', border: 'none', borderRadius: '6px', fontSize: '13px', color: '#334155', outline: 'none' }} value={form.año} onChange={(e) => setForm({ ...form, año: e.target.value })} placeholder="Ej: 2024" required />
+                          </div>
+                        )}
 
                         <div>
                           <label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '6px', fontWeight: 600 }}>Color *</label>
@@ -1701,7 +1709,7 @@ export default function VehicleManagementPage() {
                         <div>
                           <label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '6px', fontWeight: 600 }}>Transmisión *</label>
                           <select style={{ width: '100%', padding: '10px 14px', background: '#f8fafc', border: 'none', borderRadius: '6px', fontSize: '13px', color: '#334155', outline: 'none', cursor: 'pointer' }} value={form.transmision} onChange={(e) => setForm({ ...form, transmision: e.target.value })} required>
-                            <option value="" disabled>Seleccionar...</option>
+                            <option value="" disabled>Seleccionar</option>
                             <option value="Automática">Automática</option>
                             <option value="Manual">Manual</option>
                           </select>
@@ -1710,7 +1718,7 @@ export default function VehicleManagementPage() {
                         <div>
                           <label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '6px', fontWeight: 600 }}>Combustible *</label>
                           <select style={{ width: '100%', padding: '10px 14px', background: '#f8fafc', border: 'none', borderRadius: '6px', fontSize: '13px', color: '#334155', outline: 'none', cursor: 'pointer' }} value={form.combustible} onChange={(e) => setForm({ ...form, combustible: e.target.value })} required>
-                            <option value="" disabled>Seleccionar...</option>
+                            <option value="" disabled>Seleccionar</option>
                             <option value="Gasolina">Gasolina</option>
                             <option value="Diésel">Diésel</option>
                             <option value="Híbrido">Híbrido</option>
@@ -1721,7 +1729,7 @@ export default function VehicleManagementPage() {
                         <div>
                           <label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '6px', fontWeight: 600 }}>Pico y Placa *</label>
                           <select style={{ width: '100%', padding: '10px 14px', background: '#f8fafc', border: 'none', borderRadius: '6px', fontSize: '13px', color: '#334155', outline: 'none', cursor: 'pointer' }} value={form.aplicaPicoYPlaca} onChange={(e) => setForm({ ...form, aplicaPicoYPlaca: e.target.value })} required>
-                            <option value="" disabled>Seleccionar...</option>
+                            <option value="" disabled>Seleccionar</option>
                             <option value="Si">Sí aplica</option>
                             <option value="No">No aplica</option>
                           </select>
@@ -1732,10 +1740,10 @@ export default function VehicleManagementPage() {
                           <input type="number" min="0" style={{ width: '100%', padding: '10px 14px', background: '#f8fafc', border: 'none', borderRadius: '6px', fontSize: '13px', color: '#334155', outline: 'none' }} value={form.precioLimitado} onChange={(e) => setForm({ ...form, precioLimitado: e.target.value })} placeholder="Ej: 150000" required />
                         </div>
 
-                        <div style={{ gridColumn: '1 / -1' }}>
+                        <div>
                           <label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '6px', fontWeight: 600 }}>Estado del Vehículo *</label>
                           <select style={{ width: '100%', padding: '10px 14px', background: '#f8fafc', border: 'none', borderRadius: '6px', fontSize: '13px', color: '#334155', outline: 'none', cursor: 'pointer' }} value={form.estadoEfectivo} onChange={(e) => setForm({ ...form, estadoEfectivo: e.target.value })} required>
-                            <option value="" disabled>Seleccionar...</option>
+                            <option value="" disabled>Seleccionar</option>
                             <option value="disponible">Disponible</option>
                             <option value="reservado">Reservado</option>
                             <option value="en mantenimiento">En Mantenimiento</option>
