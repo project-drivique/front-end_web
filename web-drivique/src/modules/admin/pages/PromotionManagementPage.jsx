@@ -5,6 +5,7 @@ import { useLanding } from '../../landing/LandingContext'
 import { useAuthStore } from '../../../store/authStore'
 import { promotionManagementService } from '../../../services/promotionManagementService'
 import { exportExcel, exportPdf, printTable } from '../../../utils/listExportUtils'
+import { formatCurrency } from '../../../utils/currencyUtils'
 import VEHICULOS_MOCK from '../../../mocks/vehicles.json'
 import MenuConfiguracion from '../../../components/MenuConfiguracion'
 import ManagementSidebar from '../components/ManagementSidebar'
@@ -32,7 +33,7 @@ const EMPTY_FORM = {
 
 export default function PromotionManagementPage() {
   const { t } = useTranslation()
-  const { tema } = useLanding()
+  const { tema, moneda, tasaUSD } = useLanding()
   const user = useAuthStore((state) => state.usuario)
   const [promotions, setPromotions] = useState(() => promotionManagementService.list())
   const [search, setSearch] = useState('')
@@ -61,7 +62,7 @@ export default function PromotionManagementPage() {
   const labelDiscount = (item) =>
     item.tipoDescuento === 'porcentaje'
       ? `${item.valorDescuento}%`
-      : `$${Number(item.valorDescuento).toLocaleString('es-CO')}`
+      : formatCurrency(item.valorDescuento, moneda, tasaUSD)
 
   const labelTarget = (item) => {
     if (item.vehiculoNombre) return item.vehiculoNombre
@@ -458,7 +459,7 @@ export default function PromotionManagementPage() {
                 </div>
                 <div style={{ padding: 10, borderRadius: 8, background: 'var(--city-soft, rgba(0,0,0,0.02))', border: '1px solid var(--city-border, #e2e8f0)' }}>
                   <span style={{ color: 'var(--city-muted, #64748b)', display: 'block' }}>Monto Mínimo:</span>
-                  <strong>{conditionsModal.reservaMinima > 0 ? `$${Number(conditionsModal.reservaMinima).toLocaleString('es-CO')}` : 'Sin mínimo'}</strong>
+                  <strong>{conditionsModal.reservaMinima > 0 ? formatCurrency(conditionsModal.reservaMinima, moneda, tasaUSD) : 'Sin mínimo'}</strong>
                 </div>
                 <div style={{ padding: 10, borderRadius: 8, background: 'var(--city-soft, rgba(0,0,0,0.02))', border: '1px solid var(--city-border, #e2e8f0)' }}>
                   <span style={{ color: 'var(--city-muted, #64748b)', display: 'block' }}>Alcance:</span>

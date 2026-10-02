@@ -95,7 +95,7 @@ const normalizeBranch = (value) =>
 
 export default function VehicleManagementPage() {
   const { t } = useTranslation();
-  const { tema, divisa, tasaUSD } = useLanding();
+  const { tema, moneda, tasaUSD } = useLanding();
   const user = useAuthStore((state) => state.usuario);
 
   // Detección consistente de rol mediante accessControl / store
@@ -1493,7 +1493,7 @@ export default function VehicleManagementPage() {
                           <td>
                             {formatCurrency(
                               vehicle.precioLimitado || vehicle.precio || 0,
-                              divisa,
+                              moneda,
                               tasaUSD
                             )}
                           </td>
