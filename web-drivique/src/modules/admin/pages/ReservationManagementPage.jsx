@@ -803,11 +803,11 @@ export default function ReservationManagementPage() {
                         <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.terms", "TÉRMINOS Y CONDICIONES")}</th>
                         <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.promotions", "PROMOCIONES")}</th>
                         <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.totalPayment", "PAGO TOTAL")}</th>
-                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.reservationStatus", "ESTADO RESERVA")}</th>
                         <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.paymentStatus", "ESTADO DEL PAGO")}</th>
                         <th style={{ textAlign: 'center', textTransform: "uppercase" }}>{t("admin.reservationsManagement.contractStatus", "ESTADO FIRMA DE CONTRATO")}</th>
                         <th style={{ textAlign: 'center', textTransform: "uppercase" }}>{t("admin.reservationsManagement.confirmPickup", "CONFIRMAR ENTREGA")}</th>
                         <th style={{ textAlign: 'center', textTransform: "uppercase" }}>{t("admin.reservationsManagement.confirmReturn", "CONFIRMAR DEVOLUCIÓN")}</th>
+                        <th style={{ textAlign: 'center', textTransform: "uppercase" }}>{t("admin.reservationsManagement.reservationStatus", "ESTADO RESERVA")}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -903,33 +903,6 @@ export default function ReservationManagementPage() {
                             <td>{cuponCodigo}</td>
                             <td style={{ fontWeight: 700, color: 'var(--city-text, #0f172a)', whiteSpace: 'nowrap' }}>
                               {formatCurrency(totalCOP, moneda || 'COP', tasaUSD)}
-                            </td>
-                            <td>
-                              <select
-                                value={['en_curso', 'finalizada', 'cancelada', 'confirmada', 'creada'].includes(r.estado) ? r.estado : 'confirmada'}
-                                onChange={(e) => {
-                                  reservationManagementService.update(r.id, { ...r, estado: e.target.value }, user)
-                                  setReservations(reservationManagementService.list())
-                                  showAlert({ icon: 'success', title: 'Estado de reserva actualizado', text: `El estado ha sido cambiado a ${e.target.value}.` })
-                                }}
-                                style={{
-                                  padding: '4px 8px',
-                                  borderRadius: '6px',
-                                  border: '1px solid var(--borde, #cbd5e1)',
-                                  backgroundColor: r.estado === 'en_curso' ? '#dbeafe' : r.estado === 'finalizada' ? '#dcfce7' : r.estado === 'cancelada' ? '#fee2e2' : '#f1f5f9',
-                                  color: r.estado === 'en_curso' ? '#1d4ed8' : r.estado === 'finalizada' ? '#15803d' : r.estado === 'cancelada' ? '#991b1b' : '#475569',
-                                  fontWeight: 600,
-                                  fontSize: '12px',
-                                  cursor: 'pointer',
-                                  outline: 'none',
-                                }}
-                              >
-                                <option value="creada">{t('admin.reservationsManagement.status.created', 'Creada')}</option>
-                                <option value="confirmada">{t('admin.reservationsManagement.status.confirmed', 'Confirmada')}</option>
-                                <option value="en_curso">{t('admin.reservationsManagement.status.inProgress', 'En curso')}</option>
-                                <option value="finalizada">{t('admin.reservationsManagement.status.finished', 'Finalizada')}</option>
-                                <option value="cancelada">{t('admin.reservationsManagement.status.cancelled', 'Cancelada')}</option>
-                              </select>
                             </td>
                             <td>
                               <span
@@ -1040,6 +1013,33 @@ export default function ReservationManagementPage() {
                                   </button>
                                 )}
                               </div>
+                            </td>
+                            <td style={{ textAlign: 'center' }}>
+                              <select
+                                value={['en_curso', 'finalizada', 'cancelada', 'confirmada', 'creada'].includes(r.estado) ? r.estado : 'confirmada'}
+                                onChange={(e) => {
+                                  reservationManagementService.update(r.id, { ...r, estado: e.target.value }, user)
+                                  setReservations(reservationManagementService.list())
+                                  showAlert({ icon: 'success', title: 'Estado de reserva actualizado', text: `El estado ha sido cambiado a ${e.target.value}.` })
+                                }}
+                                style={{
+                                  padding: '4px 8px',
+                                  borderRadius: '6px',
+                                  border: '1px solid var(--borde, #cbd5e1)',
+                                  backgroundColor: '#ffffff',
+                                  color: '#0f172a',
+                                  fontWeight: 600,
+                                  fontSize: '12px',
+                                  cursor: 'pointer',
+                                  outline: 'none',
+                                }}
+                              >
+                                <option value="creada">{t('admin.reservationsManagement.status.created', 'Creada')}</option>
+                                <option value="confirmada">{t('admin.reservationsManagement.status.confirmed', 'Confirmada')}</option>
+                                <option value="en_curso">{t('admin.reservationsManagement.status.inProgress', 'En curso')}</option>
+                                <option value="finalizada">{t('admin.reservationsManagement.status.finished', 'Finalizada')}</option>
+                                <option value="cancelada">{t('admin.reservationsManagement.status.cancelled', 'Cancelada')}</option>
+                              </select>
                             </td>
                           </tr>
                         )
