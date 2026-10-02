@@ -93,7 +93,7 @@ function SingleCalendarRangePicker({ dateRange, onChange }) {
     } catch {
       // fallback
     }
-    return 'Filtrar por Fecha'
+    return t('admin.cash.filterByDate', 'Filtrar por Fecha')
   }
 
   return (
@@ -106,7 +106,7 @@ function SingleCalendarRangePicker({ dateRange, onChange }) {
         <FaCalendarAlt className="cash-cal-icon" />
         <span>{formatButtonLabel()}</span>
         {(startDate || endDate) && (
-          <span className="cash-cal-clear" onClick={handleClear} title="{t('admin.cash.clearBtn', 'Limpiar')} rango de fechas">
+          <span className="cash-cal-clear" onClick={handleClear} title={`${t('admin.cash.clearBtn', 'Limpiar')} ${t('admin.cash.dateRange', 'rango de fechas')}`}>
             <FaTimes />
           </span>
         )}
@@ -173,10 +173,10 @@ function SingleCalendarRangePicker({ dateRange, onChange }) {
           <div className="cash-cal-footer">
             <span className="cash-cal-hint">
               {!startDate
-                ? 'Selecciona la fecha inicial'
+                ? t('admin.cash.selectStartDate', 'Selecciona la fecha inicial')
                 : !endDate
-                ? 'Selecciona la fecha final'
-                : 'Rango seleccionado'}
+                ? t('admin.cash.selectEndDate', 'Selecciona la fecha final')
+                : t('admin.cash.rangeSelected', 'Rango seleccionado')}
             </span>
             {(startDate || endDate) && (
               <button
@@ -601,7 +601,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
                   onClick={() => { setSearchRefValue(''); setSearch(''); }}
                   style={{ display: 'flex', alignItems: 'center', padding: '0 12px', height: '36px', background: '#fff', borderRadius: '8px', border: '1.5px solid #f59e0b', color: '#f59e0b', fontWeight: 600, cursor: 'pointer', fontSize: '13px', whiteSpace: 'nowrap', flexShrink: 0 }}
                 >
-                  Limpiar
+                  {t('admin.cash.clearBtn', 'Limpiar')}
                 </button>
 
                 {/* Dropdown estado */}
@@ -661,10 +661,10 @@ export default function CashCollectionPage({ branchOnly = false }) {
                       link.click()
                     }}
                   >
-                    <FaFileExcel /> Excel
+                    <FaFileExcel /> {t('admin.cash.exportExcel', 'Excel')}
                   </button>
                   <button type="button" className="cash-exp-btn pdf" onClick={() => window.print()}>
-                    <FaFilePdf /> PDF
+                    <FaFilePdf /> {t('admin.cash.exportPdf', 'PDF')}
                   </button>
                   <button type="button" className="cash-exp-btn print" onClick={() => window.print()}>
                     <FaPrint /> {t('admin.reservationsManagement.print', 'Imprimir')}
@@ -724,7 +724,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
                       }
 
                       // Formatear Medio de Pago
-                      let medioDisplay = esEfectivo ? 'Pago en Sucursal' : 'Wompi (Tarjeta)'
+                      let medioDisplay = esEfectivo ? t('admin.cash.paymentMethodBranch', 'Pago en Sucursal') : 'Wompi (Tarjeta)'
                       if (!esEfectivo) {
                         if (rawMetodo.includes('nequi')) medioDisplay = 'Wompi (Nequi)'
                         else if (rawMetodo.includes('pse')) medioDisplay = 'Wompi (PSE)'
@@ -958,25 +958,25 @@ export default function CashCollectionPage({ branchOnly = false }) {
                     <div style={{ width: '48px', height: '48px', background: '#fef3c7', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', color: '#f59e0b', fontSize: '24px' }}>
                       <FaMoneyBillWave />
                     </div>
-                    <h2 style={{ margin: '0 0 4px 0', fontSize: '20px', color: '#111827', fontWeight: 700 }}>Confirmar cobro en efectivo</h2>
-                    <p style={{ margin: 0, color: '#6b7280', fontSize: '13px' }}>Verifica los datos antes de registrar el ingreso en caja.</p>
+                    <h2 style={{ margin: '0 0 4px 0', fontSize: '20px', color: '#111827', fontWeight: 700 }}>{t('admin.cash.modal.confirmCashTitle', 'Confirmar cobro en efectivo')}</h2>
+                    <p style={{ margin: 0, color: '#6b7280', fontSize: '13px' }}>{t('admin.cash.modal.confirmCashSubtitle', 'Verifica los datos antes de registrar el ingreso en caja.')}</p>
                   </div>
 
                   <div style={{ border: '1px solid #e5e7eb', borderRadius: '8px', padding: '16px', marginBottom: '20px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '14px' }}>
-                      <span style={{ color: '#6b7280' }}>Referencia</span>
+                      <span style={{ color: '#6b7280' }}>{t('admin.cash.modal.reference', 'Referencia')}</span>
                       <strong style={{ color: '#111827' }}>{modalReserva.codigo || modalReserva.referencia || modalReserva.id}</strong>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '14px' }}>
-                      <span style={{ color: '#6b7280' }}>Cliente</span>
+                      <span style={{ color: '#6b7280' }}>{t('admin.cash.modal.customer', 'Cliente')}</span>
                       <strong style={{ color: '#111827', textAlign: 'right' }}>{modalReserva.clienteNombre || 'Cliente Registrado'}</strong>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px', fontSize: '14px' }}>
-                      <span style={{ color: '#6b7280' }}>Vehículo</span>
+                      <span style={{ color: '#6b7280' }}>{t('admin.cash.modal.vehicle', 'Vehículo')}</span>
                       <strong style={{ color: '#111827', textAlign: 'right' }}>{modalReserva.vehiculoNombre || 'Vehículo Reservado'}</strong>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '12px', borderTop: '1px solid #e5e7eb', fontSize: '15px', alignItems: 'center' }}>
-                      <span style={{ color: '#374151', fontWeight: 600 }}>Total a cobrar</span>
+                      <span style={{ color: '#374151', fontWeight: 600 }}>{t('admin.cash.modal.totalToCollect', 'Total a cobrar')}</span>
                       <strong style={{ color: '#10b981', fontSize: '20px', fontWeight: 800 }}>
                         {formatCurrency(Number(modalReserva.totalCOP || modalReserva.total || 0), moneda, tasaUSD)}
                       </strong>
@@ -985,11 +985,11 @@ export default function CashCollectionPage({ branchOnly = false }) {
 
                   <div style={{ marginBottom: '24px' }}>
                     <label style={{ display: 'block', fontSize: '13px', color: '#374151', marginBottom: '6px', fontWeight: 600 }}>
-                      Observaciones (opcional)
+                      {t('admin.cash.modal.observations', 'Observaciones (opcional)')}
                     </label>
                     <input
                       type="text"
-                      placeholder="Ej. Billetes verificados..."
+                      placeholder={t('admin.cash.modal.observationsPlaceholder', 'Ej. Billetes verificados...')}
                       value={observacionesCaja}
                       onChange={(e) => setObservacionesCaja(e.target.value)}
                       style={{ width: '100%', padding: '10px 14px', border: '1px solid #d1d5db', borderRadius: '8px', fontSize: '14px', outline: 'none' }}
@@ -1003,7 +1003,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
                       disabled={procesandoPago}
                       style={{ width: '100%', background: 'var(--brand-primary, #f59e0b)', color: '#fff', border: 'none', borderRadius: '8px', padding: '12px', fontSize: '15px', fontWeight: 600, cursor: procesandoPago ? 'not-allowed' : 'pointer', opacity: procesandoPago ? 0.7 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
                     >
-                      {procesandoPago ? 'Registrando cobro...' : 'Confirmar pago'}
+                      {procesandoPago ? t('admin.cash.modal.recordingPayment', 'Registrando cobro...') : t('admin.cash.modal.confirmPayment', 'Confirmar pago')}
                     </button>
                   ) : (
                     <div style={{ background: '#fee2e2', color: '#991b1b', padding: '12px', borderRadius: '8px', fontSize: '13px', textAlign: 'center' }}>
@@ -1021,32 +1021,32 @@ export default function CashCollectionPage({ branchOnly = false }) {
                       
                       <FaMoneyBillWave style={{ fontSize: 32, color: '#10b981', marginBottom: 12 }} />
                       <h3>RECIBO DE CAJA</h3>
-                      <p className="text-muted" style={{ margin: '0 0 20px 0', fontSize: 13 }}>Sucursal {modalReserva.sucursalRetiro || 'Principal'}</p>
+                      <p className="text-muted" style={{ margin: '0 0 20px 0', fontSize: 13 }}>{t('admin.cash.modal.branchPrefix', 'Sucursal')} {modalReserva.sucursalRetiro || 'Principal'}</p>
                       
                       <div className="ticket-dashed-border" style={{ borderTop: '1px dashed #cbd5e1', borderBottom: '1px dashed #cbd5e1', padding: '16px 0', margin: '0 0 20px 0', textAlign: 'left' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                          <span className="text-muted" style={{ fontSize: 13 }}>Referencia:</span>
+                          <span className="text-muted" style={{ fontSize: 13 }}>{t('admin.cash.modal.reference', 'Referencia')}:</span>
                           <span style={{ fontWeight: 600, fontSize: 13 }}>{modalReserva.codigo || modalReserva.referencia || modalReserva.id}</span>
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                          <span className="text-muted" style={{ fontSize: 13 }}>Fecha:</span>
+                          <span className="text-muted" style={{ fontSize: 13 }}>{t('admin.cash.modal.date', 'Fecha')}:</span>
                           <span style={{ fontWeight: 600, fontSize: 13 }}>{format(new Date(modalReserva.fechaPagoConfirmado || Date.now()), 'dd/MM/yyyy - HH:mm')}</span>
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                          <span className="text-muted" style={{ fontSize: 13 }}>Cliente:</span>
+                          <span className="text-muted" style={{ fontSize: 13 }}>{t('admin.cash.modal.customer', 'Cliente')}:</span>
                           <span style={{ fontWeight: 600, fontSize: 13 }}>{modalReserva.clienteNombre || 'Cliente Registrado'}</span>
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                          <span className="text-muted" style={{ fontSize: 13 }}>Cajero:</span>
+                          <span className="text-muted" style={{ fontSize: 13 }}>{t('admin.cash.modal.cashier', 'Cajero')}:</span>
                           <span style={{ fontWeight: 600, fontSize: 13 }}>{modalReserva.cajeroConfirmacion || 'Encargado Mostrador'}</span>
                         </div>
                       </div>
 
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ fontSize: 16, fontWeight: 700 }}>TOTAL PAGADO</span>
+                        <span style={{ fontSize: 16, fontWeight: 700 }}>{t('admin.cash.modal.totalPaid', 'TOTAL PAGADO')}</span>
                         <span style={{ fontSize: 24, fontWeight: 800, color: '#10b981' }}>{formatCurrency(Number(modalReserva.totalCOP || modalReserva.total || 0), moneda, tasaUSD)}</span>
                       </div>
-                      <div className="text-muted" style={{ fontSize: 11, marginTop: 4, textAlign: 'right' }}>Pago en Efectivo</div>
+                      <div className="text-muted" style={{ fontSize: 11, marginTop: 4, textAlign: 'right' }}>{t('admin.cash.modal.cashPayment', 'Pago en Efectivo')}</div>
 
                       {modalReserva.observacionesCaja && (
                         <div className="ticket-note" style={{ marginTop: 20, padding: 12, borderRadius: 6, fontSize: 12, textAlign: 'left' }}>
@@ -1060,7 +1060,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
                       onClick={() => window.print()}
                       style={{ width: '100%', display: 'flex', justifyContent: 'center' }}
                     >
-                      <FaPrint /> Imprimir Comprobante de Caja
+                      <FaPrint /> {t('admin.cash.modal.printReceiptBtn', 'Imprimir Comprobante de Caja')}
                     </button>
                   </div>
                 )}
@@ -1102,7 +1102,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
               <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '56px', height: '56px', borderRadius: '50%', background: '#00a650', color: '#fff', fontSize: '28px', marginBottom: '16px' }}>
                 <FaCheckCircle />
               </div>
-              <h2 style={{ fontSize: '22px', color: '#111827', fontWeight: 700, margin: '0 0 8px 0' }}>¡Pago aprobado!</h2>
+              <h2 style={{ fontSize: '22px', color: '#111827', fontWeight: 700, margin: '0 0 8px 0' }}>{t('admin.cash.modal.paymentApprovedTitle', '¡Pago aprobado!')}</h2>
               <div style={{ fontSize: '32px', color: '#00a650', fontWeight: 800, margin: '0 0 8px 0' }}>
                 {formatCurrency(Number(comprobanteDigital.totalCOP || comprobanteDigital.total || 0), moneda, tasaUSD)}
               </div>
@@ -1121,7 +1121,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
 
             <div style={{ marginBottom: '24px' }}>
               <h4 style={{ fontSize: '15px', color: '#111827', fontWeight: 700, margin: '0 0 16px 0', borderBottom: '1px solid #f3f4f6', paddingBottom: '8px' }}>
-                Información de la transacción
+                {t('admin.cash.modal.transactionInfo', 'Información de la transacción')}
               </h4>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', marginBottom: '12px' }}>
                 <span style={{ color: '#4b5563' }}>Transacción #</span>
@@ -1166,7 +1166,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
 
             <div style={{ marginBottom: '32px' }}>
               <h4 style={{ fontSize: '15px', color: '#111827', fontWeight: 700, margin: '0 0 16px 0', borderBottom: '1px solid #f3f4f6', paddingBottom: '8px' }}>
-                Información del pagador
+                {t('admin.cash.modal.payerInfo', 'Información del pagador')}
               </h4>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', marginBottom: '12px' }}>
                 <span style={{ color: '#4b5563' }}>Nombre</span>
