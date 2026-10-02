@@ -703,7 +703,22 @@
         "previous": "Anterior",
         "next": "Siguiente",
         "page": "Página {{current}} de {{total}}"
-      }
+      },
+      "pickupBranch": "Recoger en Sucursal ({{branch}})",
+      "pickupHome": "Entrega a Domicilio",
+      "pickupAirport": "Entrega en Aeropuerto",
+      "pickupTerminal": "Entrega en Terminal",
+      "dropoffBranch": "Devolver en Sucursal ({{branch}})",
+      "dropoffHome": "Devolución a Domicilio",
+      "dropoffAirport": "Devolución en Aeropuerto",
+      "dropoffTerminal": "Devolución en Terminal",
+      "durationDays": "{{count}} días",
+      "noEarlyReturn": "No registra",
+      "cashPaymentBtn": "Cobrar Caja",
+      "pendingBtn": "Pendiente",
+      "requiresPayment": "Requiere Pago",
+      "yes": "Sí",
+      "no": "No"
     },
     "usersPage": {
       "subtitle": "Gestión completa de clientes, administradores, roles, estados de cuenta y revisión de documentos.",

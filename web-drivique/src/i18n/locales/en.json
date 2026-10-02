@@ -717,7 +717,22 @@
         "previous": "Previous",
         "next": "Next",
         "page": "Page {{current}} of {{total}}"
-      }
+      },
+      "pickupBranch": "Pick up at Branch ({{branch}})",
+      "pickupHome": "Home Delivery",
+      "pickupAirport": "Airport Delivery",
+      "pickupTerminal": "Terminal Delivery",
+      "dropoffBranch": "Return to Branch ({{branch}})",
+      "dropoffHome": "Home Dropoff",
+      "dropoffAirport": "Airport Dropoff",
+      "dropoffTerminal": "Terminal Dropoff",
+      "durationDays": "{{count}} days",
+      "noEarlyReturn": "Not registered",
+      "cashPaymentBtn": "Cash Collection",
+      "pendingBtn": "Pending",
+      "requiresPayment": "Payment Required",
+      "yes": "Yes",
+      "no": "No"
     },
     "usersPage": {
       "subtitle": "Complete management of clients, administrators, roles, account statuses, and document review.",
