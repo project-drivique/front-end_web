@@ -111,7 +111,7 @@ function WeeklyGroupedBarChart({ data = [] }) {
                 y={yEntregas}
                 width={barWidth}
                 height={hEntregas}
-                fill="#2563eb"
+                fill="var(--brand-primary, #2563eb)"
                 rx="3"
                 ry="3"
                 style={{ transition: 'all 0.4s ease' }}
@@ -122,7 +122,7 @@ function WeeklyGroupedBarChart({ data = [] }) {
               <text
                 x={xEntregas + barWidth / 2}
                 y={yEntregas - 4}
-                fill="#2563eb"
+                fill="var(--brand-primary, #2563eb)"
                 fontSize="10"
                 fontWeight="700"
                 textAnchor="middle"
@@ -283,7 +283,7 @@ export default function ManagementDashboard({ branchOnly = false }) {
           <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
             <MenuConfiguracion />
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, background: '#ffffff', padding: '6px 14px', borderRadius: 30, border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
-              <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#2563eb', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 14 }}>
+              <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'var(--brand-primary, #2563eb)', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 14 }}>
                 {(usuario?.nombre || usuario?.correo || 'U').charAt(0).toUpperCase()}
               </div>
               <div>
@@ -308,7 +308,7 @@ export default function ManagementDashboard({ branchOnly = false }) {
               alignItems: 'center',
               gap: 8,
               padding: '10px 18px',
-              background: '#2563eb',
+              background: 'var(--brand-primary, #2563eb)',
               border: 'none',
               borderRadius: 10,
               color: '#ffffff',
@@ -370,7 +370,7 @@ export default function ManagementDashboard({ branchOnly = false }) {
           <div style={{ background: '#ffffff', padding: 18, borderRadius: 14, border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-                <FaDollarSign style={{ fontSize: 13, color: '#2563eb' }} aria-hidden="true" />
+                <FaDollarSign style={{ fontSize: 13, color: 'var(--brand-primary, #2563eb)' }} aria-hidden="true" />
                 <span style={{ fontSize: 13, fontWeight: 600, color: '#64748b' }}>Ingresos del Mes</span>
               </div>
             </div>
@@ -384,7 +384,7 @@ export default function ManagementDashboard({ branchOnly = false }) {
           <div style={{ background: '#ffffff', padding: 18, borderRadius: 14, border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-                <FaChartLine style={{ fontSize: 13, color: '#2563eb' }} aria-hidden="true" />
+                <FaChartLine style={{ fontSize: 13, color: 'var(--brand-primary, #2563eb)' }} aria-hidden="true" />
                 <span style={{ fontSize: 13, fontWeight: 600, color: '#64748b' }}>Tasa de Ocupación</span>
               </div>
             </div>
@@ -435,7 +435,7 @@ export default function ManagementDashboard({ branchOnly = false }) {
                 </h3>
                 <span style={{ fontSize: 12, color: '#64748b' }}>Distribución de los {totalVehicles} vehículos de la sucursal</span>
               </div>
-              <span style={{ fontSize: 12, fontWeight: 700, color: '#2563eb', background: '#eff6ff', padding: '4px 10px', borderRadius: 20 }}>
+              <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--brand-primary, #2563eb)', background: '#eff6ff', padding: '4px 10px', borderRadius: 20 }}>
                 {totalVehicles} Vehículo{totalVehicles === 1 ? '' : 's'}
               </span>
             </div>
@@ -443,7 +443,7 @@ export default function ManagementDashboard({ branchOnly = false }) {
             {/* Barra de progreso combinada visual */}
             <div style={{ height: 12, borderRadius: 6, background: '#f1f5f9', overflow: 'hidden', display: 'flex', marginBottom: 20 }}>
               <div style={{ width: `${availPct}%`, background: '#10b981', transition: 'width 0.4s' }} title={`Disponibles: ${availPct}%`} />
-              <div style={{ width: `${rentedPct}%`, background: '#2563eb', transition: 'width 0.4s' }} title={`En Alquiler: ${rentedPct}%`} />
+              <div style={{ width: `${rentedPct}%`, background: 'var(--brand-primary, #2563eb)', transition: 'width 0.4s' }} title={`En Alquiler: ${rentedPct}%`} />
               <div style={{ width: `${maintPct}%`, background: '#f59e0b', transition: 'width 0.4s' }} title={`En Taller: ${maintPct}%`} />
             </div>
 
@@ -462,7 +462,7 @@ export default function ManagementDashboard({ branchOnly = false }) {
 
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#2563eb' }} />
+                  <span style={{ width: 10, height: 10, borderRadius: '50%', background: 'var(--brand-primary, #2563eb)' }} />
                   <span style={{ fontSize: 13, fontWeight: 600, color: '#334155' }}>En Alquiler</span>
                 </div>
                 <div style={{ textAlign: 'right' }}>
@@ -494,8 +494,8 @@ export default function ManagementDashboard({ branchOnly = false }) {
                 <span style={{ fontSize: 12, color: '#64748b' }}>Entregas vs. Devoluciones de la semana</span>
               </div>
               <div style={{ display: 'flex', gap: 10 }}>
-                <span style={{ fontSize: 11, fontWeight: 600, color: '#2563eb', display: 'flex', alignItems: 'center', gap: 4 }}>
-                  <span style={{ width: 8, height: 8, borderRadius: 2, background: '#2563eb' }} /> Entregas
+                <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--brand-primary, #2563eb)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <span style={{ width: 8, height: 8, borderRadius: 2, background: 'var(--brand-primary, #2563eb)' }} /> Entregas
                 </span>
                 <span style={{ fontSize: 11, fontWeight: 600, color: '#10b981', display: 'flex', alignItems: 'center', gap: 4 }}>
                   <span style={{ width: 8, height: 8, borderRadius: 2, background: '#10b981' }} /> Devoluciones
@@ -728,7 +728,7 @@ export default function ManagementDashboard({ branchOnly = false }) {
                             <button
                               type="button"
                               onClick={() => navigate(reservationsRoute)}
-                              style={{ background: 'linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%)', color: '#ffffff', border: 'none', padding: '6px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', boxShadow: '0 2px 6px rgba(37,99,235,0.25)', transition: 'transform 0.15s ease' }}
+                              style={{ background: 'var(--brand-gradient, linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%))', color: '#ffffff', border: 'none', padding: '6px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', boxShadow: '0 2px 6px rgba(37,99,235,0.25)', transition: 'transform 0.15s ease' }}
                               onMouseEnter={(e) => (e.currentTarget.style.transform = 'translateY(-1px)')}
                               onMouseLeave={(e) => (e.currentTarget.style.transform = 'translateY(0)')}
                             >

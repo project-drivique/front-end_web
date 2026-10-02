@@ -336,7 +336,7 @@ function OperationalHourlyBarChart({ hourlyData = [] }) {
         }}
       >
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-          <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#2563eb' }} />
+          <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--brand-primary, #2563eb)' }} />
           <span>Entregas</span>
         </div>
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
@@ -414,7 +414,7 @@ function OperationalHourlyBarChart({ hourlyData = [] }) {
                   y={yDel}
                   width={barWidth}
                   height={hDel}
-                  fill="#2563eb"
+                  fill="var(--brand-primary, #2563eb)"
                   rx="2"
                   ry="2"
                 />
@@ -467,7 +467,7 @@ function OperationalHourlyBarChart({ hourlyData = [] }) {
           <strong style={{ display: 'block', fontSize: '11.5px', marginBottom: '3px', color: 'var(--texto-primary, #0f172a)' }}>
             {hourlyData[hoveredIndex].label}
           </strong>
-          <div style={{ fontSize: '11px', display: 'flex', gap: '8px', alignItems: 'center', color: '#2563eb' }}>
+          <div style={{ fontSize: '11px', display: 'flex', gap: '8px', alignItems: 'center', color: 'var(--brand-primary, #2563eb)' }}>
             <span>Entregas:</span>
             <strong>{hourlyData[hoveredIndex].deliveries}</strong>
           </div>
