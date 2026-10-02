@@ -10,11 +10,15 @@ import {
   FaClipboardList,
   FaCheckCircle,
 } from 'react-icons/fa'
+import { useLanding } from '../../landing/LandingContext'
+import MenuConfiguracion from '../../../components/MenuConfiguracion'
+import ManagementSidebar from '../components/ManagementSidebar'
 import { useAuthStore } from '@/store/authStore'
 import { reservationManagementService } from '@/services/reservationManagementService'
 import './IncidentManagementPage.css' // Reusing some base styles from incidents
 
 export default function DeliveryManagementPage() {
+  const { tema } = useLanding()
   const { t } = useTranslation()
   const user = useAuthStore((state) => state.usuario)
 
@@ -143,19 +147,24 @@ export default function DeliveryManagementPage() {
   }
 
   return (
-    <main className="cities-main-layout fade-in">
-      <div className="cities-content-area">
-        <header className="cities-header">
-          <div className="cities-header-left">
-            <span className="cities-eyebrow">{t('admin.branchManagement', 'GESTIÓN OPERATIVA')}</span>
-            <h1 className="cities-title">
-              {t('admin.delivery.title', 'Gestión de Domicilios')}
-            </h1>
-            <p className="cities-subtitle">
-              {t('admin.delivery.subtitle', 'Asignación de conductores para entregas y recogidas a domicilio.')}
-            </p>
-          </div>
-        </header>
+    <div className={`management-shell ${tema === 'oscuro' ? 'management-shell--dark' : ''}`}>
+      <ManagementSidebar branchOnly={esEncargado} />
+      <main className="management-main" style={{ padding: '24px 32px' }}>
+        <div className="cities-container" style={{ maxWidth: '100%' }}>
+          <header className="cities-topbar">
+            <div className="branch-topbar-brand-title">
+              <span className="branch-topbar-badge">{t('admin.branchManagement', 'GESTIÓN OPERATIVA')}</span>
+              <h1 className="branch-topbar-heading">
+                {t('admin.delivery.title', 'Gestión de Domicilios')}
+              </h1>
+              <p className="cities-subtitle" style={{ color: 'var(--city-muted)' }}>
+                {t('admin.delivery.subtitle', 'Asignación de conductores para entregas y recogidas a domicilio.')}
+              </p>
+            </div>
+            <div className="cities-topbar__actions">
+              <MenuConfiguracion />
+            </div>
+          </header>
 
         <div className="cities-container" style={{ maxWidth: '100%' }}>
           {notice && (
@@ -167,13 +176,13 @@ export default function DeliveryManagementPage() {
             </div>
           )}
 
-          <div className="cities-tabs" style={{ display: 'flex', gap: 16, marginBottom: 16, borderBottom: '1px solid #e2e8f0' }}>
+          <div className="cities-tabs" style={{ display: 'flex', gap: 16, marginBottom: 16, borderBottom: '1px solid var(--city-border)' }}>
             <button
               type="button"
               onClick={() => setActiveTab('pendientes')}
               style={{
                 padding: '12px 16px', border: 'none', background: 'transparent', cursor: 'pointer',
-                fontSize: 14, fontWeight: 600, color: activeTab === 'pendientes' ? '#2563eb' : '#64748b',
+                fontSize: 14, fontWeight: 600, color: activeTab === 'pendientes' ? 'var(--brand-primary)' : 'var(--city-muted)',
                 borderBottom: activeTab === 'pendientes' ? '2px solid #2563eb' : '2px solid transparent',
                 transition: 'all 0.2s'
               }}
@@ -185,7 +194,7 @@ export default function DeliveryManagementPage() {
               onClick={() => setActiveTab('asignados')}
               style={{
                 padding: '12px 16px', border: 'none', background: 'transparent', cursor: 'pointer',
-                fontSize: 14, fontWeight: 600, color: activeTab === 'asignados' ? '#16a34a' : '#64748b',
+                fontSize: 14, fontWeight: 600, color: activeTab === 'asignados' ? '#16a34a' : 'var(--city-muted)',
                 borderBottom: activeTab === 'asignados' ? '2px solid #16a34a' : '2px solid transparent',
                 transition: 'all 0.2s'
               }}
@@ -372,5 +381,6 @@ export default function DeliveryManagementPage() {
         )}
       </div>
     </main>
-  )
+  </div>
+)
 }
