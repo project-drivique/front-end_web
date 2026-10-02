@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import { INITIAL_REPORTS, TIPOS_INCIDENCIA } from '../data/support.dummy'
 
-const STORAGE_KEY_REPORTS = 'drivique_user_reports'
+const STORAGE_KEY_REPORTS = 'drivique_user_reports_v3'
 
 function leerStorageReports() {
   if (typeof window === 'undefined') return INITIAL_REPORTS
@@ -58,7 +58,7 @@ export function useSupportStore() {
     const nuevoReporte = {
       id: nuevoCodigo,
       codigo: nuevoCodigo,
-      tipoIncidenciaId: formData.tipoIncidenciaId || 'averia_mecanica',
+      tipoIncidenciaId: formData.tipoIncidenciaId || 'choque',
       tipoIncidenciaNombre: tipoObj ? tipoObj.nombre : 'Incidencia reportada',
       vehiculo: formData.vehiculo || 'Vehículo reservado',
       placa: formData.placa || 'N/A',
