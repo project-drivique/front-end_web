@@ -1068,30 +1068,32 @@ export default function VehicleManagementPage() {
                   )}
                 </div>
 
-                {/* Botones de exportación */}
-                <div className="export-pills-group">
-                  <button
-                    type="button"
-                    className="export-pill export-pill--excel"
-                    onClick={() => exportExcel(categoryExportData)}
-                  >
-                    <FaFileExcel aria-hidden="true" /> Excel
-                  </button>
-                  <button
-                    type="button"
-                    className="export-pill export-pill--pdf"
-                    onClick={() => exportPdf(categoryExportData)}
-                  >
-                    <FaFilePdf aria-hidden="true" /> PDF
-                  </button>
-                  <button
-                    type="button"
-                    className="export-pill export-pill--print"
-                    onClick={() => printTable(categoryExportData)}
-                  >
-                    <FaPrint aria-hidden="true" /> Imprimir
-                  </button>
-                </div>
+                {/* Botones de exportación: Solo para Administrador General */}
+                {!esEncargado && (
+                  <div className="export-pills-group">
+                    <button
+                      type="button"
+                      className="export-pill export-pill--excel"
+                      onClick={() => exportExcel(categoryExportData)}
+                    >
+                      <FaFileExcel aria-hidden="true" /> Excel
+                    </button>
+                    <button
+                      type="button"
+                      className="export-pill export-pill--pdf"
+                      onClick={() => exportPdf(categoryExportData)}
+                    >
+                      <FaFilePdf aria-hidden="true" /> PDF
+                    </button>
+                    <button
+                      type="button"
+                      className="export-pill export-pill--print"
+                      onClick={() => printTable(categoryExportData)}
+                    >
+                      <FaPrint aria-hidden="true" /> Imprimir
+                    </button>
+                  </div>
+                )}
               </div>
 
               {filteredCategories.length === 0 ? (
