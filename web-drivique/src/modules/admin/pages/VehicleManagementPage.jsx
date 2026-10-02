@@ -1635,18 +1635,18 @@ export default function VehicleManagementPage() {
                         {/* IMAGEN */}
                         <div style={{ gridColumn: '1 / -1', marginBottom: '8px' }}>
                           <label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '6px', fontWeight: 600 }}>Imágenes del Vehículo (Máx. 3)</label>
-                          <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+                          <div style={{ display: 'flex', gap: '16px', width: '100%' }}>
                             {[0, 1, 2].map((idx) => {
                               const img = form.imagenes && form.imagenes[idx];
                               return img ? (
-                                <div key={idx} style={{ position: 'relative', borderRadius: '6px', overflow: 'hidden', border: '1px solid #e2e8f0', width: '160px', height: '110px' }}>
+                                <div key={idx} style={{ position: 'relative', borderRadius: '12px', overflow: 'hidden', border: '1px solid #e2e8f0', flex: 1, height: '130px' }}>
                                   <img src={img} alt={`preview ${idx}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                  <button type="button" onClick={() => setForm({ ...form, imagenes: form.imagenes.filter((_, i) => i !== idx) })} style={{ position: 'absolute', top: 4, right: 4, background: '#ef4444', color: 'white', border: 'none', borderRadius: '50%', width: 24, height: 24, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><FaTimes size={12} /></button>
+                                  <button type="button" onClick={() => setForm({ ...form, imagenes: form.imagenes.filter((_, i) => i !== idx) })} style={{ position: 'absolute', top: 6, right: 6, background: '#ef4444', color: 'white', border: 'none', borderRadius: '50%', width: 24, height: 24, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }}><FaTimes size={12} /></button>
                                 </div>
                               ) : (
-                                <label key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '160px', height: '110px', background: '#f8fafc', border: '1px dashed #3b82f6', borderRadius: '6px', cursor: 'pointer', transition: 'background 0.2s', textAlign: 'center', padding: '8px' }} onMouseEnter={(e) => e.currentTarget.style.background = '#f1f5f9'} onMouseLeave={(e) => e.currentTarget.style.background = '#f8fafc'}>
+                                <label key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1, height: '130px', background: '#f8fafc', border: '2px dashed #3b82f6', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.2s', textAlign: 'center', padding: '8px' }} onMouseEnter={(e) => { e.currentTarget.style.background = '#eff6ff'; e.currentTarget.style.borderColor = '#2563eb'; }} onMouseLeave={(e) => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.borderColor = '#3b82f6'; }}>
                                   <FaPlus size={20} style={{ color: '#3b82f6', marginBottom: '8px' }} />
-                                  <div style={{ fontSize: '12px', color: '#475569', fontWeight: 500 }}>{idx === 0 ? 'Imagen Principal' : `Imagen ${idx + 1}`}</div>
+                                  <div style={{ fontSize: '12px', color: '#475569', fontWeight: 600 }}>{idx === 0 ? 'Imagen Principal' : `Imagen ${idx + 1}`}</div>
                                   <div style={{ fontSize: '10px', color: '#94a3b8', marginTop: '4px' }}>(Clic para subir)</div>
                                   <input type="file" accept="image/*" onChange={loadImages} style={{ display: "none" }} />
                                 </label>
