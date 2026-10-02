@@ -126,7 +126,7 @@
         "images": "Images"
       },
       "fields": {
-        "vehicle": "Vehicle",
+        "vehicle": "VEHICLE NAME",
         "plate": "Plate",
         "branch": "Branch",
         "category": "Category",
@@ -144,7 +144,7 @@
         "extraPrice": "Extra km price",
         "unlimitedPrice": "Unlimited price",
         "color": "Color",
-        "photo": "Photo",
+        "photo": "PHOTO",
         "fuel": "Fuel",
         "transmission": "Transmission",
         "year": "Year"
