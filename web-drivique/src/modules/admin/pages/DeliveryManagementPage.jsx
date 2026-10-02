@@ -74,6 +74,21 @@ export default function DeliveryManagementPage() {
     setReservations(deliveries)
   }
 
+  const handleQuickStatusChange = (r, newStatus) => {
+    if (newStatus === 'Asignado') {
+      openAsignarModal(r)
+    } else {
+      try {
+        reservationManagementService.updateReservation(r.id, { domicilioConductor: '' }, user)
+        setNotice('Conductor desasignado. Estado: Pendiente.')
+        loadReservations()
+        setTimeout(() => setNotice(''), 3000)
+      } catch (err) {
+        alert('Error al desasignar conductor: ' + err.message)
+      }
+    }
+  }
+
   useEffect(() => {
     loadReservations()
   }, [user])
@@ -254,16 +269,24 @@ export default function DeliveryManagementPage() {
                         </td>
 
                         <td>
-                          <span
-                            className="doc-status-badge"
+                          <select
+                            value={r.estadoDomicilio}
+                            onChange={(e) => handleQuickStatusChange(r, e.target.value)}
                             style={{
-                              background: r.estadoDomicilio === 'Asignado' ? '#dcfce7' : '#fef9c3',
+                              padding: '4px 8px',
+                              borderRadius: '6px',
+                              border: '1px solid #cbd5e1',
+                              backgroundColor: r.estadoDomicilio === 'Asignado' ? '#dcfce7' : '#fef9c3',
                               color: r.estadoDomicilio === 'Asignado' ? '#15803d' : '#a16207',
+                              fontWeight: 600,
+                              fontSize: '13px',
+                              cursor: 'pointer',
+                              outline: 'none'
                             }}
                           >
-                            {r.estadoDomicilio === 'Asignado' ? <FaCheckCircle style={{ marginRight: 4 }} /> : <FaExclamationTriangle style={{ marginRight: 4 }} />}
-                            {r.estadoDomicilio}
-                          </span>
+                            <option value="Pendiente">Pendiente</option>
+                            <option value="Asignado">Asignado</option>
+                          </select>
                         </td>
                         
                         <td>
