@@ -423,8 +423,8 @@ export default function ReservationManagementPage() {
         {/* Topbar Superior */}
         <header className="cities-topbar reservations-management-header">
           <div className="branch-topbar-brand-title">
-            <span className="branch-topbar-badge">GESTIÓN DE SUCURSAL</span>
-            <h1 className="branch-topbar-heading">Gestión de Reservas</h1>
+            <span className="branch-topbar-badge">{t('admin.reservationsManagement.subtitle', 'GESTIÓN DE SUCURSAL')}</span>
+            <h1 className="branch-topbar-heading">{t('admin.reservationsManagement.title', 'Gestión de Reservas')}</h1>
           </div>
 
           <div className="branch-topbar-actions">
@@ -1114,29 +1114,29 @@ export default function ReservationManagementPage() {
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                   <div className="reserva-detail-field">
-                    <small>Vehículo Asociado:</small>
+                    <small>{t('admin.reservationsManagement.detailModal.associatedVehicle', 'Vehículo Asociado:')}</small>
                     <strong>{modalDetalle.vehiculoNombre}</strong>
                   </div>
                   <div className="reserva-detail-field">
-                    <small>Placa del Auto:</small>
+                    <small>{t('admin.reservationsManagement.detailModal.plate', 'Placa del Auto:')}</small>
                     <span style={{ display: 'inline-block', background: '#f1f5f9', border: '1px solid var(--borde, #cbd5e1)', padding: '2px 8px', borderRadius: 6, fontSize: 12, fontWeight: 700 }}>
                       {modalDetalle.vehiculoPlaca || 'KLS-849'}
                     </span>
                   </div>
                   <div className="reserva-detail-field">
-                    <small>Sucursal de Retiro:</small>
+                    <small>{t('admin.reservationsManagement.detailModal.pickupBranch', 'Sucursal de Retiro:')}</small>
                     <strong>{modalDetalle.sucursal || 'Bogotá - Calle 100'}</strong>
                   </div>
                   <div className="reserva-detail-field">
-                    <small>Sucursal de Devolución:</small>
+                    <small>{t('admin.reservationsManagement.detailModal.dropoffBranch', 'Sucursal de Devolución:')}</small>
                     <strong>{modalDetalle.reservaDetalles?.sucursalDevolucion || modalDetalle.sucursal || 'Bogotá - Calle 100'}</strong>
                   </div>
                   <div className="reserva-detail-field">
-                    <small>Fecha y Hora de Retiro:</small>
+                    <small>{t('admin.reservationsManagement.detailModal.pickupDateTime', 'Fecha y Hora de Retiro:')}</small>
                     <strong style={{ color: '#047857' }}>{modalDetalle.fechaInicio?.replace('T', ' ')}</strong>
                   </div>
                   <div className="reserva-detail-field">
-                    <small>Fecha y Hora de Devolución:</small>
+                    <small>{t('admin.reservationsManagement.detailModal.dropoffDateTime', 'Fecha y Hora de Devolución:')}</small>
                     <strong style={{ color: '#0284c7' }}>{modalDetalle.fechaFin?.replace('T', ' ')}</strong>
                   </div>
                 </div>
@@ -1150,17 +1150,17 @@ export default function ReservationManagementPage() {
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                   <div className="reserva-detail-field">
-                    <small>Cobertura de Seguro:</small>
+                    <small>{t('admin.reservationsManagement.detailModal.insuranceCoverage', 'Cobertura de Seguro:')}</small>
                     <strong>{modalDetalle.reservaDetalles?.cobertura?.nombre || modalDetalle.cobertura || 'Protección Estándar CDW'}</strong>
                   </div>
 
                   <div className="reserva-detail-field">
-                    <small>Tipo de Kilometraje:</small>
+                    <small>{t('admin.reservationsManagement.detailModal.mileageType', 'Tipo de Kilometraje:')}</small>
                     <strong>{modalDetalle.reservaDetalles?.kilometraje || modalDetalle.kilometraje || 'Ilimitado'}</strong>
                   </div>
 
                   <div className="reserva-detail-field" style={{ gridColumn: 'span 2' }}>
-                    <small>Servicios Adicionales Contratados:</small>
+                    <small>{t('admin.reservationsManagement.detailModal.additionalServices', 'Servicios Adicionales Contratados:')}</small>
                     <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 4 }}>
                       {(modalDetalle.reservaDetalles?.serviciosAdicionales?.length > 0) ? (
                         modalDetalle.reservaDetalles.serviciosAdicionales.map((s, idx) => (
@@ -1186,29 +1186,29 @@ export default function ReservationManagementPage() {
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 14 }}>
                   <div className="reserva-detail-field">
-                    <small>Nombre del Cliente / Titular:</small>
+                    <small>{t('admin.reservationsManagement.detailModal.clientName', 'Nombre del Cliente / Titular:')}</small>
                     <strong>{modalDetalle.clienteNombre}</strong>
                   </div>
                   <div className="reserva-detail-field">
-                    <small>Cédula / Documento Identidad:</small>
+                    <small>{t('admin.reservationsManagement.detailModal.documentId', 'Cédula / Documento Identidad:')}</small>
                     <strong>{modalDetalle.clienteDocumento || '1020304050'}</strong>
                   </div>
                   <div className="reserva-detail-field">
-                    <small>Correo Electrónico:</small>
+                    <small>{t('admin.reservationsManagement.detailModal.email', 'Correo Electrónico:')}</small>
                     <strong>{modalDetalle.clienteCorreo}</strong>
                   </div>
                   <div className="reserva-detail-field">
-                    <small>Teléfono de Contacto:</small>
+                    <small>{t('admin.reservationsManagement.detailModal.phone', 'Teléfono de Contacto:')}</small>
                     <strong>{modalDetalle.clienteTelefono}</strong>
                   </div>
                   <div className="reserva-detail-field">
-                    <small>Términos y Condiciones:</small>
+                    <small>{t('admin.reservationsManagement.detailModal.terms', 'Términos y Condiciones:')}</small>
                     <span style={{ color: '#047857', fontWeight: 700, fontSize: 12 }}>
                       ✓ Aceptados por el cliente
                     </span>
                   </div>
                   <div className="reserva-detail-field">
-                    <small>Cupón de Descuento:</small>
+                    <small>{t('admin.reservationsManagement.detailModal.discountCoupon', 'Cupón de Descuento:')}</small>
                     <strong>
                       {modalDetalle.cuponCodigo || modalDetalle.reservaDetalles?.cuponAplicado
                         ? `Aplicó (${modalDetalle.cuponCodigo || 'DRIVIQUE2026'})`
@@ -1221,21 +1221,21 @@ export default function ReservationManagementPage() {
                 <div style={{ background: 'var(--city-soft, var(--bg-seccion1, #f8fafc))', padding: 14, borderRadius: 12, border: '1px solid var(--adm-border, var(--borde, #cbd5e1))', marginTop: 8 }}>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 12 }}>
                     <div>
-                      <small style={{ color: 'var(--city-muted)', fontSize: 11 }}>ID Único de Reserva:</small>
+                      <small style={{ color: 'var(--city-muted)', fontSize: 11 }}>{t('admin.reservationsManagement.detailModal.uniqueId', 'ID Único de Reserva:')}</small>
                       <strong style={{ display: 'block', fontSize: 14, color: 'var(--brand-primary, #2563eb)' }}>{modalDetalle.codigo}</strong>
                     </div>
                     <div>
-                      <small style={{ color: 'var(--city-muted)', fontSize: 11 }}>Monto Total Reserva:</small>
+                      <small style={{ color: 'var(--city-muted)', fontSize: 11 }}>{t('admin.reservationsManagement.detailModal.totalAmount', 'Monto Total Reserva:')}</small>
                       <strong style={{ display: 'block', fontSize: 15, color: 'var(--city-text)' }}>{formatCurrency(modalDetalle.totalCOP, moneda, tasaUSD)}</strong>
                     </div>
                     <div>
-                      <small style={{ color: 'var(--city-muted)', fontSize: 11 }}>Medio de Pago:</small>
+                      <small style={{ color: 'var(--city-muted)', fontSize: 11 }}>{t('admin.reservationsManagement.detailModal.paymentMethod', 'Medio de Pago:')}</small>
                       <strong style={{ display: 'block', fontSize: 12 }}>
                         {modalDetalle.reservaDetalles?.metodoPago?.includes('efectivo') ? 'Pago Presencial en Sucursal' : 'Wompi - Pasarela Digital'}
                       </strong>
                     </div>
                     <div>
-                      <small style={{ color: 'var(--city-muted)', fontSize: 11 }}>Estado del Pago:</small>
+                      <small style={{ color: 'var(--city-muted)', fontSize: 11 }}>{t('admin.reservationsManagement.detailModal.paymentStatus', 'Estado del Pago:')}</small>
                       <span style={{ display: 'inline-block', padding: '3px 8px', borderRadius: 999, fontSize: 11, fontWeight: 700, background: modalDetalle.pagoEstado === 'aprobado' || modalDetalle.metodoPagoConfirmado ? '#ecfdf5' : '#fffbe1', color: modalDetalle.pagoEstado === 'aprobado' || modalDetalle.metodoPagoConfirmado ? '#047857' : '#b45309' }}>
                         {modalDetalle.pagoEstado === 'aprobado' || modalDetalle.metodoPagoConfirmado ? 'Pago Recibido' : 'No Recibido'}
                       </span>
