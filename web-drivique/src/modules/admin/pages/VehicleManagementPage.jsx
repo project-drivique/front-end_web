@@ -1524,7 +1524,7 @@ export default function VehicleManagementPage() {
                                   cursor: "pointer",
                                   appearance: "auto",
                                   border: "1px solid",
-                                  backgroundColor: vehicle.estadoEfectivo === "disponible" ? "#f0fdf4" : vehicle.estadoEfectivo === "reservado" ? "#eff6ff" : "#fef2f2",
+                                  backgroundColor: "transparent",
                                   borderColor: vehicle.estadoEfectivo === "disponible" ? "#86efac" : vehicle.estadoEfectivo === "reservado" ? "#93c5fd" : "#fca5a5",
                                   color: vehicle.estadoEfectivo === "disponible" ? "#166534" : vehicle.estadoEfectivo === "reservado" ? "#1e40af" : "#991b1b"
                                 }}
