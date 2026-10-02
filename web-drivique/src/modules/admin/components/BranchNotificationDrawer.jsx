@@ -11,6 +11,7 @@ import {
   FaCar,
   FaExclamationTriangle,
 } from 'react-icons/fa'
+import { useTranslation } from 'react-i18next'
 import './BranchNotificationDrawer.css'
 
 /**
@@ -31,6 +32,7 @@ export default function BranchNotificationDrawer({
   onSelectNotification,
   branchName = 'Sucursal',
 }) {
+  const { t } = useTranslation()
   const drawerRef = useRef(null)
 
   // Cerrar con tecla Escape y capturar foco
@@ -71,14 +73,14 @@ export default function BranchNotificationDrawer({
             <div>
               <div className="bnd-title-row">
                 <h3 id="bndDrawerTitle" className="bnd-title">
-                  Notificaciones y Alertas
+                  {t('admin.notifications.drawerTitle', 'Notificaciones y Alertas')}
                 </h3>
                 {unreadCount > 0 && (
-                  <span className="bnd-unread-badge">{unreadCount} nuevas</span>
+                  <span className="bnd-unread-badge">{unreadCount} {t('admin.notifications.new', 'nuevas')}</span>
                 )}
               </div>
               <p className="bnd-subtitle">
-                {branchName} · Monitoreo operativo en tiempo real
+                {branchName} · {t('admin.notifications.realTimeMonitoring', 'Monitoreo operativo en tiempo real')}
               </p>
             </div>
           </div>
@@ -89,17 +91,17 @@ export default function BranchNotificationDrawer({
                 type="button"
                 className="bnd-btn bnd-btn--secondary bnd-btn--sm"
                 onClick={onMarkAllRead}
-                title="Marcar todas las notificaciones como leídas"
+                title={t('admin.notifications.markAllReadTitle', 'Marcar todas las notificaciones como leídas')}
               >
                 <FaCheckDouble aria-hidden="true" />
-                <span>Marcar leídas</span>
+                <span>{t('admin.notifications.markRead', 'Marcar leídas')}</span>
               </button>
             )}
             <button
               type="button"
               className="bnd-close-btn"
               onClick={onClose}
-              aria-label="Cerrar panel de notificaciones"
+              aria-label={t('admin.notifications.closePanel', 'Cerrar panel de notificaciones')}
             >
               <FaTimes aria-hidden="true" />
             </button>
@@ -107,20 +109,20 @@ export default function BranchNotificationDrawer({
         </header>
 
         {/* BARRA DE FILTROS POR PASTILLAS (PILLS) */}
-        <nav className="bnd-filter-bar" aria-label="Filtros de notificaciones">
+        <nav className="bnd-filter-bar" aria-label={t('admin.notifications.filters', 'Filtros de notificaciones')}>
           <button
             type="button"
             className={`bnd-filter-pill ${filter === 'all' ? 'bnd-filter-pill--active' : ''}`}
             onClick={() => onFilterChange?.('all')}
           >
-            Todas ({notifications.length})
+            {t('admin.notifications.filterAll', 'Todas')} ({notifications.length})
           </button>
           <button
             type="button"
             className={`bnd-filter-pill ${filter === 'unread' ? 'bnd-filter-pill--active' : ''}`}
             onClick={() => onFilterChange?.('unread')}
           >
-            No leídas ({unreadCount})
+            {t('admin.notifications.filterUnread', 'No leídas')} ({unreadCount})
           </button>
           <button
             type="button"
@@ -128,7 +130,7 @@ export default function BranchNotificationDrawer({
             onClick={() => onFilterChange?.('operations')}
           >
             <FaCar aria-hidden="true" />
-            <span>Operaciones</span>
+            <span>{t('admin.notifications.filterOps', 'Operaciones')}</span>
           </button>
           <button
             type="button"
@@ -136,7 +138,7 @@ export default function BranchNotificationDrawer({
             onClick={() => onFilterChange?.('attention')}
           >
             <FaExclamationTriangle aria-hidden="true" />
-            <span>Alertas & Incidencias</span>
+            <span>{t('admin.notifications.filterAlerts', 'Alertas & Incidencias')}</span>
           </button>
         </nav>
 
@@ -147,15 +149,15 @@ export default function BranchNotificationDrawer({
               <div className="bnd-empty-icon-box">
                 <FaBellSlash className="bnd-empty-icon" aria-hidden="true" />
               </div>
-              <h4 className="bnd-empty-title">No hay notificaciones pendientes</h4>
+              <h4 className="bnd-empty-title">{t('admin.notifications.emptyTitle', 'No hay notificaciones pendientes')}</h4>
               <p className="bnd-empty-desc">
-                Todas las entregas, devoluciones, validaciones de documentos y cobros de esta sede están al día.
+                {t('admin.notifications.emptyDesc', 'Todas las entregas, devoluciones, validaciones de documentos y cobros de esta sede están al día.')}
               </p>
               <div className="bnd-empty-alert-card">
                 <FaCheckCircle className="bnd-empty-alert-icon" aria-hidden="true" />
                 <div className="bnd-empty-alert-text">
-                  <strong>Operatividad 100% normal</strong>
-                  <span>El sistema te alertará automáticamente ante nuevas reservas, retrasos de entrega o novedades mecánicas.</span>
+                  <strong>{t('admin.notifications.normalOps', 'Operatividad 100% normal')}</strong>
+                  <span>{t('admin.notifications.normalDesc', 'El sistema te alertará automáticamente ante nuevas reservas, retrasos de entrega o novedades mecánicas.')}</span>
                 </div>
               </div>
             </div>
@@ -185,7 +187,7 @@ export default function BranchNotificationDrawer({
                             color: notif.badgeColor || '#2563eb',
                           }}
                         >
-                          {notif.categoryLabel || 'Notificación'}
+                          {t(`admin.notifications.category.${notif.categoryLabel}`, notif.categoryLabel) || t('admin.notifications.defaultCategory', 'Notificación')}
                         </span>
                         <span className="bnd-time">
                           <FaClock aria-hidden="true" />
@@ -204,9 +206,9 @@ export default function BranchNotificationDrawer({
                             type="button"
                             className="bnd-mark-read-btn"
                             onClick={() => onMarkRead?.(notif.id)}
-                            title="Marcar como leída"
+                            title={t('admin.notifications.markReadTitle', 'Marcar como leída')}
                           >
-                            Marcar leída
+                            {t('admin.notifications.markRead', 'Marcar leída')}
                           </button>
                         )}
                         <button
@@ -214,7 +216,7 @@ export default function BranchNotificationDrawer({
                           className="bnd-btn bnd-btn--primary bnd-btn--sm bnd-cta-btn"
                           onClick={() => onSelectNotification?.(notif)}
                         >
-                          <span>{notif.actionLabel || 'Ir al módulo'}</span>
+                          <span>{t(`admin.notifications.action.${notif.actionLabel}`, notif.actionLabel) || t('admin.notifications.defaultAction', 'Ir al módulo')}</span>
                           <FaChevronRight aria-hidden="true" />
                         </button>
                       </div>
@@ -229,7 +231,7 @@ export default function BranchNotificationDrawer({
         {/* PIE DEL DRAWER */}
         <footer className="bnd-footer">
           <span className="bnd-footer-summary">
-            {filteredNotifications.length} alerta(s) de {notifications.length}
+            {filteredNotifications.length} {t('admin.notifications.alertsOf', 'alerta(s) de')} {notifications.length}
           </span>
           <div className="bnd-footer-btns">
             {unreadCount > 0 && (
@@ -239,7 +241,7 @@ export default function BranchNotificationDrawer({
                 onClick={onMarkAllRead}
               >
                 <FaCheckDouble aria-hidden="true" />
-                <span>Limpiar pendientes</span>
+                <span>{t('admin.notifications.clearPending', 'Limpiar pendientes')}</span>
               </button>
             )}
             <button
@@ -247,7 +249,7 @@ export default function BranchNotificationDrawer({
               className="bnd-btn bnd-btn--secondary bnd-btn--sm"
               onClick={onClose}
             >
-              Cerrar panel
+              {t('admin.notifications.closePanelBtn', 'Cerrar panel')}
             </button>
           </div>
         </footer>

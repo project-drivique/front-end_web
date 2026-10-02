@@ -271,7 +271,7 @@ export default function ContractManagementPage() {
                   <th>CÓDIGO RESERVA</th>
                   <th>NOMBRE COMPLETO</th>
                   <th>FOTO</th>
-                  <th>VEHÍCULO</th>
+                  <th>NOMBRE VEHÍCULO</th>
                   <th>PLACA</th>
                   <th>MARCA</th>
                   <th>MODELO</th>

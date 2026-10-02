@@ -600,16 +600,17 @@ export default function ManagementDashboard({ branchOnly = false }) {
               <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: 980 }}>
                 <thead>
                   <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0' }}>
-                    <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Código</th>
-                    <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Foto</th>
-                    <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Vehículo</th>
-                    <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Placa</th>
-                    <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Cliente</th>
-                    <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Fecha</th>
-                    <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Hora</th>
-                    <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Medio de Pago</th>
-                    <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Estado</th>
-                    <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px', textAlign: 'center' }}>Acción</th>
+                    <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px', textAlign: 'center', width: 50 }}>ID</th>
+                    <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' }}>CÓDIGO RESERVA</th>
+                    <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' }}>FOTO</th>
+                    <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' }}>NOMBRE VEHÍCULO</th>
+                    <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' }}>PLACA</th>
+                    <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' }}>NOMBRE COMPLETO</th>
+                    <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' }}>FECHA</th>
+                    <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' }}>HORA</th>
+                    <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' }}>MEDIO DE PAGO</th>
+                    <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' }}>ESTADO</th>
+                    <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px', textAlign: 'center' }}>ACCIÓN</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -638,8 +639,13 @@ export default function ManagementDashboard({ branchOnly = false }) {
                         onMouseEnter={(e) => (e.currentTarget.style.background = '#f8fafc')}
                         onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
                       >
+                        {/* ID */}
+                        <td style={{ padding: '12px 14px', fontSize: 13, fontWeight: 400, color: '#64748b', textAlign: 'center', whiteSpace: 'nowrap' }}>
+                          {index + 1}
+                        </td>
+
                         {/* CÓDIGO */}
-                        <td style={{ padding: '12px 14px', fontSize: 13, fontWeight: 700, color: '#0f172a', whiteSpace: 'nowrap' }}>
+                        <td style={{ padding: '12px 14px', fontSize: 13, fontWeight: 400, color: '#0f172a', whiteSpace: 'nowrap' }}>
                           {rawCod}
                         </td>
 
@@ -676,32 +682,32 @@ export default function ManagementDashboard({ branchOnly = false }) {
                         </td>
 
                         {/* VEHÍCULO */}
-                        <td style={{ padding: '12px 14px', fontSize: 13, fontWeight: 600, color: '#0f172a', whiteSpace: 'nowrap' }}>
+                        <td style={{ padding: '12px 14px', fontSize: 13, fontWeight: 400, color: '#0f172a', whiteSpace: 'nowrap' }}>
                           {r.vehiculoNombre || 'Mazda CX-5'}
                         </td>
 
                         {/* PLACA */}
-                        <td style={{ padding: '12px 14px', fontSize: 13, fontWeight: 700, color: '#0f172a', whiteSpace: 'nowrap' }}>
+                        <td style={{ padding: '12px 14px', fontSize: 13, fontWeight: 400, color: '#0f172a', whiteSpace: 'nowrap' }}>
                           {r.vehiculoPlaca || 'KLS-849'}
                         </td>
 
-                        {/* CLIENTE */}
-                        <td style={{ padding: '12px 14px', fontSize: 13, fontWeight: 500, color: '#334155', whiteSpace: 'nowrap' }}>
+                        {/* NOMBRE COMPLETO */}
+                        <td style={{ padding: '12px 14px', fontSize: 13, fontWeight: 400, color: '#334155', whiteSpace: 'nowrap' }}>
                           {clienteNombre}
                         </td>
 
                         {/* FECHA */}
-                        <td style={{ padding: '12px 14px', fontSize: 13, fontWeight: 500, color: '#334155', whiteSpace: 'nowrap' }}>
+                        <td style={{ padding: '12px 14px', fontSize: 13, fontWeight: 400, color: '#334155', whiteSpace: 'nowrap' }}>
                           {fechaSolo}
                         </td>
 
                         {/* HORA */}
-                        <td style={{ padding: '12px 14px', fontSize: 13, fontWeight: 500, color: '#334155', whiteSpace: 'nowrap' }}>
+                        <td style={{ padding: '12px 14px', fontSize: 13, fontWeight: 400, color: '#334155', whiteSpace: 'nowrap' }}>
                           {horaSolo}
                         </td>
 
                         {/* MEDIO DE PAGO */}
-                        <td style={{ padding: '12px 14px', fontSize: 13, fontWeight: 500, color: '#334155', whiteSpace: 'nowrap' }}>
+                        <td style={{ padding: '12px 14px', fontSize: 13, fontWeight: 400, color: '#334155', whiteSpace: 'nowrap' }}>
                           {textoMedio}
                         </td>
 

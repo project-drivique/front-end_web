@@ -10,7 +10,7 @@
     "logout": "Cerrar sesión",
     "adminRole": "Administrador general",
     "management": "Gestión",
-    "navigation": "Navegación",
+    "navigation": "Navegación administrativa",
     "backToDashboard": "Volver al dashboard",
     "modulePending": "Este módulo conserva su acceso desde el menú y será desarrollado en su historia de usuario correspondiente.",
     "dashboard": "Dashboard",
@@ -164,23 +164,14 @@
         "imageSize": "Cada imagen debe pesar máximo 1 MB."
       },
       "formSections": {
-        "identification": "1. Identificación y Clasificación",
-        "mechanical": "2. Especificaciones Mecánicas y Capacidad",
-        "equipment": "3. Equipamiento y Descripción Comercial",
-        "pricing": "4. Tarifas de Alquiler y Coberturas",
-        "photos": "5. Fotografías del Vehículo"
+        "pricing": "4. Tarifas de Alquiler y Coberturas"
       },
       "transmission": {
-        "automatic": "Automática",
         "manual": "Manual"
       },
       "fuel": {
-        "gasoline": "Gasolina",
-        "diesel": "Diésel",
-        "hybrid": "Híbrido",
-        "electric": "Eléctrico"
+        "gasoline": "Gasolina"
       },
-      "expandedView": "Vista ampliada del vehículo",
       "export": {
         "excel": "Excel",
         "pdf": "PDF",
@@ -256,14 +247,11 @@
       "audit": "Auditoría",
       "notifications": "Notificaciones",
       "myBranch": "Mi sucursal",
-      "vehicles": "Flota y vehículos",
       "users": "Usuarios",
       "roles": "Roles y Permisos",
       "reservations": "Reservas",
       "cashCollection": "Pagos",
       "incidents": "Incidencias",
-      "documents": "Validación de documentos",
-      "reviews": "Reseñas y calificaciones",
       "cities": "Ciudades",
       "branches": "Sucursales",
       "promotions": "Promociones",
@@ -863,7 +851,7 @@
       }
     },
     "incidents": {
-      "title": "Gestión de Incidentes",
+      "title": "Gestión de Incidencias",
       "exportTitle": "Listado de Incidencias - Drivique",
       "subtitle": "Reportes y seguimiento de contingencias.",
       "search": "Buscar por ID, placa o cliente...",
@@ -928,10 +916,7 @@
         "choque_carroceria": "Choque / Carrocería",
         "mantenimiento_preventivo": "Mantenimiento preventivo",
         "crash": "Choque",
-        "mechanicalBreakdown": "Avería Mecánica",
         "flatTire": "Pinchazo",
-        "deadBattery": "Batería Descargada",
-        "electricalFailure": "Falla Eléctrica",
         "theft": "Robo",
         "generalAssistance": "Asistencia General",
         "other": "Otro"
@@ -955,7 +940,7 @@
       "print": "Imprimir",
       "registered": "incidencias registradas",
       "detailTitle": "Gestión de Incidencia",
-      "estimatedTime": "Tiempo estimado de atención técnica:",
+      "estimatedTime": "Tiempo estimado:",
       "noticeEmailMsg": "Se enviará correo y notificación al usuario.",
       "replyPlaceholder": "Escribe la respuesta oficial...",
       "cancel": "Cancelar",
@@ -973,9 +958,7 @@
         "twoToFourHours": "2 a 4 horas",
         "oneToTwoHours": "1 a 2 horas",
         "oneHour": "1 hora"
-      },
-      "problemDescription": "Descripción del problema",
-      "describeSymptoms": "Describe los síntomas..."
+      }
     },
     "promotions": {
       "title": "Promociones y cupones",
@@ -1434,27 +1417,14 @@
         "close": "Cerrar"
       }
     },
-    "documents": {
-      "title": "Validación de Documentos",
-      "subtitle": "Revisión de licencias y documentos de identidad."
-    },
-    "delivery": {
-      "title": "Gestión de Domicilios",
-      "subtitle": "Asignación de conductores para entregas y recogidas a domicilio."
-    },
+    "documents": {},
+    "delivery": {},
     "cash": {
-      "title": "Pagos y Cobros",
-      "subtitle": "Gestión de cobros pendientes y facturación."
+      "title": "Pagos y Cobros"
     },
-    "reviews": {
-      "title": "Reseñas y Calificaciones",
-      "subtitle": "Gestión de valoraciones de los clientes sobre esta sucursal."
-    },
+    "reviews": {},
     "sections": {
-      "monitoreo": "MONITOREO",
-      "gestión_operativa": "GESTIÓN OPERATIVA",
-      "consulta_y_auditoría": "CONSULTA Y AUDITORÍA",
-      "configuración_global": "CONFIGURACIÓN GLOBAL"
+      "monitoreo": "MONITOREO"
     }
   },
   "common": {
@@ -3213,25 +3183,157 @@
       "received": "recibidas",
       "rented": "en alquiler",
       "of": "de",
-      "vehiclesInUse": "vehículos en uso",
       "monthlyRevenue": "Ingresos del mes",
       "todayDeliveries": "Entregas de hoy",
-      "todayReturns": "Devoluciones de hoy",
-      "fleetOccupancy": "Ocupación de flota"
+      "todayReturns": "Devoluciones de hoy"
     },
     "charts": {
       "workload": "Carga Operativa por Franja Horaria",
-      "scheduleOf": "Programación del",
       "calendar": "Calendario Operativo",
       "selectDateRange": "Selecciona un rango de fechas",
       "deliveriesList": "Listado de Entregas",
-      "returnsList": "Listado de Devoluciones",
-      "totalVehicles": "Total de vehículos"
+      "returnsList": "Listado de Devoluciones"
+    },
+    "alerts": {},
+    "subtitle": "Panel operativo",
+    "title": "Dashboard",
+    "schedule": {
+      "viewAllReservations": "Ver todas las reservas →",
+      "noDeliveries": "No hay entregas programadas para el rango de fechas seleccionado en el calendario.",
+      "noReturns": "No hay devoluciones programadas para el rango de fechas seleccionado en el calendario.",
+      "table": {
+        "id": "ID",
+        "reservationCode": "CÓDIGO RESERVA",
+        "client": "NOMBRE COMPLETO",
+        "image": "IMAGEN",
+        "vehicle": "NOMBRE VEHÍCULO",
+        "plate": "PLACA",
+        "date": "FECHA",
+        "time": "HORA",
+        "status": "ESTADO",
+        "actions": "ACCIONES",
+        "viewBtn": "Ver",
+        "viewDetails": "Ver reserva completa"
+      }
+    }
+  },
+  "branchProfile": {
+    "title": "Mi Sucursal",
+    "subtitle": "Información y configuración de la sede física",
+    "generalInfo": "Información General",
+    "generalInfoDesc": "Datos básicos de contacto y ubicación física",
+    "schedules": "Horarios de Atención y Entrega",
+    "schedulesDesc": "Gestión de horarios operativos y políticas de recolección según el tipo de sede.",
+    "status": "Estado Operativo",
+    "paymentMethods": "Condiciones de Pago & Reserva",
+    "paymentMethodsDesc": "Resumen de métodos de pago, depósitos requeridos y límites de tiempo para confirmación de reservas en la sucursal.",
+    "mapPreview": "Vista de Mapa",
+    "mapUnavailable": "Coordenadas no válidas",
+    "buttons": {
+      "save": "Guardar Cambios",
+      "undo": "Deshacer Cambios",
+      "saving": "Guardando..."
+    },
+    "fields": {
+      "address": "Dirección",
+      "addressPlaceholder": "Ej: Aeropuerto Internacional, L-12...",
+      "phone": "Teléfono",
+      "phonePlaceholder": "Ej: +57 300 123 4567",
+      "pickupInstructions": "Indicaciones de recogida",
+      "pickupPlaceholder": "Ej: Una vez pases la zona de llegadas internacionales, busca el módulo 14 de Alamo.",
+      "latitude": "Latitud",
+      "latitudePlaceholder": "Ej: 4.699723",
+      "longitude": "Longitud",
+      "longitudePlaceholder": "Ej: -74.141525",
+      "name": "Nombre de la sucursal",
+      "city": "Ciudad"
+    },
+    "errors": {
+      "addressRequired": "La dirección es obligatoria.",
+      "phoneInvalid": "El teléfono debe contener entre 7 y 13 dígitos.",
+      "bothCoordsRequired": "Debes ingresar latitud y longitud juntas.",
+      "invalidCoords": "Las coordenadas deben ser números válidos (-90 a 90, -180 a 180)."
+    },
+    "payment": {
+      "virtualTitle": "Pagos Electrónicos (Wompi)",
+      "virtualDesc": "Reservas confirmadas y pagadas en línea",
+      "cashTitle": "Pago en Destino (Efectivo)",
+      "cashDesc": "Sujeto a validación física en la agencia",
+      "cardRequired": "Tarjeta en Garantía Requerida",
+      "timeLimit": "Límite: Hasta {hours}h antes de recogida",
+      "flexible": "Flexible en sucursal",
+      "timeLimitCash": "Plazo de Pago (Efectivo)",
+      "cancellation": "Política de Cancelación",
+      "depositAmount": "Depósito de Garantía (Bloqueo TD/TC)"
+    },
+    "fleet": {
+      "summary": "Resumen Operativo (Flota y Personal)",
+      "summaryDesc": "Estado actual de la flota activa asignada a esta sucursal y el personal encargado.",
+      "activeVehicles": "Vehículos Activos",
+      "available": "disponibles",
+      "drivers": "Conductores",
+      "onRoute": "en ruta / asignados",
+      "inspectors": "Inspectores de Patio"
     },
     "alerts": {
-      "requiresAttention": "Requiere tu atención"
+      "successTitle": "¡Sucursal Actualizada!",
+      "successText": "Los datos y configuraciones de la sucursal se guardaron correctamente.",
+      "errorTitle": "Error al actualizar",
+      "errorText": "Ocurrió un problema guardando el perfil de la sucursal. Revisa los datos.",
+      "unsavedWarning": "Tienes cambios sin guardar"
     },
-    "subtitle": "Panel operativo",
-    "title": "Dashboard"
+    "managementBadge": "Gestión de Sucursal",
+    "unsavedChanges": "Cambios pendientes",
+    "discard": "Descartar",
+    "save": "Guardar cambios",
+    "saving": "Guardando...",
+    "readOnlyHint": "Solo el administrador general puede cambiarlo",
+    "general": {
+      "title": "Información general",
+      "desc": "Datos visibles para los clientes en el catálogo público"
+    },
+    "placeholders": {
+      "pickupInstructions": "Frente a la salida 3 del aeropuerto - hall de entregas."
+    },
+    "location": {
+      "title": "Ubicación",
+      "desc": "Posicionamiento satelital de la sucursal",
+      "mapUnavailable": "Mapa no disponible",
+      "getDirections": "Cómo llegar"
+    },
+    "paymentAndHours": {
+      "title": "Puntos de Entrega y Horarios según el Medio de Pago",
+      "desc": "La sucursal administra múltiples puntos de recogida y devolución según el medio de pago y el lugar de retiro seleccionado por el usuario.",
+      "info": "<strong>Puntos y horarios de la sucursal:</strong> La disponibilidad del punto de recogida y devolución depende directamente del <strong>medio de pago</strong> y del <strong>lugar de retiro seleccionado</strong> al reservar.",
+      "onlinePayment": "Pago Virtual con Wompi (En línea)",
+      "onlineBadge": "Múltiples Puntos Habilitados",
+      "onlineDesc": "Al pagar en línea por adelantado, la sucursal habilita todos sus puntos de entrega y recogida coordinados:",
+      "airportTitle": "Aeropuerto:",
+      "airportDesc": "<strong>24 Horas</strong> (Operación continua 24/7 para recepción de vuelos y viajeros).",
+      "terminalTitle": "Terminal de Transporte:",
+      "terminalDesc": "<strong>24 Horas</strong> (Operación continua 24/7 para llegadas de transporte terrestre).",
+      "deliveryTitle": "Entrega a Domicilio:",
+      "deliveryDesc": "<strong>07:00 AM – 07:00 PM</strong> (Lunes a Sábado), servicio puerta a puerta en la ciudad.",
+      "branchTitle": "Instalaciones de la Sucursal",
+      "branchDesc": "<strong>08:00 AM – 06:00 PM</strong> (Horario regular de atención de la sucursal).",
+      "cashPayment": "Pago en Efectivo (Taquilla de Sucursal)",
+      "cashBadge": "Presencial en Sucursal",
+      "cashDesc": "Cuando el cliente elige pagar en efectivo, la entrega queda <strong>estrictamente condicionada a la atención presencial en la sucursal asignada donde se encuentra el vehículo ({{branchName}})</strong>:",
+      "cashHoursTitle": "Horario de caja y mostrador:",
+      "cashHoursDesc": "<strong>08:00 AM – 06:00 PM</strong>. El cliente debe acudir a la sucursal dentro de esta jornada para el pago presencial, arqueo de dinero en caja y firma del contrato.",
+      "cashNoDeliveryTitle": "Sin entregas fuera de turno:",
+      "cashNoDeliveryDesc": "No se realizan entregas en efectivo fuera del horario de taquilla de la sucursal.",
+      "cashLocationTitle": "Ubicación única:",
+      "cashLocationDesc": "El cobro en efectivo solo se recibe en la sucursal física donde está inventariado el vehículo."
+    },
+    "paymentDeadline": {
+      "title": "Plazo de pago, cómputo de 24 horas y tiempo límite de reserva",
+      "rule1Title": "Cálculo del plazo límite de pago:",
+      "rule1Desc": "Si la reserva se realiza con anticipación suficiente, el cliente cuenta con hasta <strong>72 horas</strong> para completar el pago (virtual con Wompi o presencial en efectivo en sucursal). Si la reserva es para el mismo día o con menor antelación, el sistema <strong>calcula dinámicamente las horas disponibles según la hora exacta de retiro seleccionada</strong> antes del viaje.",
+      "rule2Title": "Cómputo de 24 horas por día de alquiler:",
+      "rule2Desc": "Cada día de reserva cuenta con una duración exacta de <strong>24 horas</strong>, y el ciclo de alquiler comienza a regir a partir de la <strong>hora exacta de retiro que el cliente selecciona</strong> en el calendario.",
+      "rule3Title": "Cancelación y liberación automática:",
+      "rule3Desc": "En caso de que no se registre el pago dentro del tiempo límite calculado por el sistema, la reserva se cancela automáticamente y el vehículo queda liberado de inmediato en el catálogo para otros usuarios."
+    }
   }
 }

@@ -1,6 +1,5 @@
 import { useState, useMemo, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useTranslation } from 'react-i18next'
 import {
   FaSearch,
   FaMapMarkerAlt,
@@ -11,8 +10,8 @@ import {
   FaClipboardList,
   FaCheckCircle,
 } from 'react-icons/fa'
-import { useAuthStore } from '../../../../store/authStore'
-import { reservationManagementService } from '../../../../services/reservationManagementService'
+import { useAuthStore } from '@/store/authStore'
+import { reservationManagementService } from '@/services/reservationManagementService'
 import './IncidentManagementPage.css' // Reusing some base styles from incidents
 
 export default function DeliveryManagementPage() {
@@ -225,12 +224,12 @@ export default function DeliveryManagementPage() {
                     <tr>
                       <th>ID</th>
                       <th>CÓDIGO RESERVA</th>
-                      <th>VEHÍCULO</th>
+                      <th>NOMBRE VEHÍCULO</th>
                       <th>PLACA</th>
                       <th>TIPO SERVICIO</th>
                       <th>DIRECCIÓN</th>
                       <th>FECHA Y HORA</th>
-                      <th>CLIENTE</th>
+                      <th>NOMBRE COMPLETO</th>
                       <th>SUCURSAL</th>
                       <th>CONDUCTOR</th>
                       <th>ESTADO</th>

@@ -57,6 +57,7 @@ export default function IncidentManagementPage() {
   const [modalDetalle, setModalDetalle] = useState(null)
   const [modalCrear, setModalCrear] = useState(false)
   const [modalEliminar, setModalEliminar] = useState(null)
+  const [modalResponder, setModalResponder] = useState(null)
 
   // Formularios
   const [formCrear, setFormCrear] = useState({
@@ -164,25 +165,33 @@ export default function IncidentManagementPage() {
 
   const handleResponderYActualizar = (e) => {
     e.preventDefault()
-    if (!modalDetalle) return
+    if (!modalResponder) return
     try {
       setErrorModal('')
       incidentManagementService.updateStatusAndRespond(
-        modalDetalle.id,
+        modalResponder.id,
         { nuevoEstado: nuevoEstadoModal, respuestaTexto, nuevaPrioridad: nuevaPrioridadModal },
         user
       )
       setNotice(
         t(
           'admin.incidents.updatedSuccess',
-          `Reporte ${modalDetalle.codigo} actualizado a ${nuevoEstadoModal.toUpperCase()} y respuesta enviada por correo y notificación.`
+          `Reporte ${modalResponder.codigo} actualizado a ${nuevoEstadoModal.toUpperCase()} y respuesta enviada por correo y notificación.`
         )
       )
-      setModalDetalle(null)
+      setModalResponder(null)
       cargarIncidencias()
     } catch {
-      setErrorModal(t('admin.incidents.updateError', 'Error al actualizar y responder el reporte.'))
+      setErrorModal('Error al responder o actualizar el estado del incidente.')
     }
+  }
+
+  const openResponderModal = (r) => {
+    setErrorModal('')
+    setRespuestaTexto('')
+    setNuevoEstadoModal(r.estado)
+    setNuevaPrioridadModal(r.prioridad || 'media')
+    setModalResponder(r)
   }
 
   const handleQuickStatusChange = (incidentId, newStatus) => {
@@ -385,7 +394,7 @@ export default function IncidentManagementPage() {
                       <th style={{ width: '40px' }}>ID</th>
                       <th>CÓDIGO RESERVA</th>
                       <th>NOMBRE COMPLETO</th>
-                      <th>VEHÍCULO</th>
+                      <th>NOMBRE VEHÍCULO</th>
                       <th>IMAGEN</th>
                       <th>PLACA</th>
                       <th>TIPO DE INCIDENTE</th>
@@ -458,15 +467,15 @@ export default function IncidentManagementPage() {
                           <div className="incident-row-actions" style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
                             <button
                               type="button"
-                              onClick={() => openDetalleModal(r)}
+                              onClick={() => openResponderModal(r)}
                               style={{
                                 width: 'auto',
                                 height: 'auto',
                                 padding: '8px 14px',
                                 fontSize: '13px',
-                                background: '#ffffff',
-                                color: '#ca8a04',
-                                border: '1.5px solid #fde047',
+                                background: '#eff6ff',
+                                color: '#1d4ed8',
+                                border: '1px solid #bfdbfe',
                                 borderRadius: '10px',
                                 cursor: 'pointer',
                                 fontWeight: '700',
@@ -477,17 +486,17 @@ export default function IncidentManagementPage() {
                                 transition: 'all 0.2s ease'
                               }}
                               onMouseOver={(e) => { 
-                                e.currentTarget.style.background = '#fefce8'; 
-                                e.currentTarget.style.borderColor = '#facc15';
+                                e.currentTarget.style.background = '#dbeafe'; 
+                                e.currentTarget.style.borderColor = '#93c5fd';
                                 e.currentTarget.style.transform = 'translateY(-1px)';
                               }}
                               onMouseOut={(e) => { 
-                                e.currentTarget.style.background = '#ffffff'; 
-                                e.currentTarget.style.borderColor = '#fde047'; 
+                                e.currentTarget.style.background = '#eff6ff'; 
+                                e.currentTarget.style.borderColor = '#bfdbfe'; 
                                 e.currentTarget.style.transform = 'translateY(0)';
                               }}
                             >
-                              <FaPaperPlane /> Responder al Cliente
+                              {t('admin.incidents.replyBtn', 'Responder')}
                             </button>
 
                             {!esEncargado && (
@@ -598,64 +607,11 @@ export default function IncidentManagementPage() {
                 ))}
               </div>
 
-              <form onSubmit={handleResponderYActualizar} className="incident-form" style={{ background: 'var(--city-soft)', padding: '16px', borderRadius: '12px', border: '1px solid var(--city-border)', marginTop: '16px' }}>
-                <div style={{ marginBottom: '16px' }}>
-                  <strong style={{ fontSize: '14px', color: 'var(--city-text)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <FaPaperPlane color="var(--brand-primary)" /> Enviar respuesta al usuario
-                  </strong>
-                  <p style={{ fontSize: '12px', color: '#64748b', margin: '4px 0 0 0' }}>El mensaje que escribas aquí se enviará automáticamente al correo <strong style={{ color: 'var(--brand-primary)' }}>{modalDetalle.contactoEmail}</strong>, relacionándolo con la reserva asociada.</p>
-                </div>
-
-                <div className="incident-grid-2">
-                  <div className="incident-field">
-                    <span className="incident-field-label">{t('admin.incidents.changeStatus', 'Cambiar estado del incidente')}</span>
-                    <select
-                      value={nuevoEstadoModal}
-                      onChange={(e) => setNuevoEstadoModal(e.target.value)}
-                      style={{ padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1', background: '#fff' }}
-                    >
-                      <option value="recibido">{t('admin.incidents.recibido', 'Recibido')}</option>
-                      <option value="atendiendo">{t('admin.incidents.atendiendo', 'Atendiendo')}</option>
-                      <option value="resuelto">{t('admin.incidents.resuelto', 'Resuelto')}</option>
-                      <option value="rechazado">{t('admin.incidents.rechazado', 'Rechazado')}</option>
-                    </select>
-                  </div>
-                  <div className="incident-field">
-                    <span className="incident-field-label">Modificar Prioridad</span>
-                    <select
-                      value={nuevaPrioridadModal || modalDetalle.prioridad || 'media'}
-                      onChange={(e) => setNuevaPrioridadModal(e.target.value)}
-                      style={{ padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1', background: '#fff' }}
-                    >
-                      <option value="baja">Baja</option>
-                      <option value="media">Media</option>
-                      <option value="alta">Alta</option>
-                      <option value="urgente">Urgente</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="incident-field" style={{ marginTop: 12 }}>
-                  <span className="incident-field-label">{t('admin.incidents.replyLabel', 'Mensaje de respuesta para el usuario')}</span>
-                  <textarea
-                    required
-                    rows={3}
-                    placeholder="Escribe la respuesta que le llegará al correo del cliente..."
-                    value={respuestaTexto}
-                    onChange={(e) => setRespuestaTexto(e.target.value)}
-                    style={{ padding: '12px', borderRadius: '8px', border: '1px solid #cbd5e1', width: '100%', resize: 'none' }}
-                  />
-                </div>
-                {errorModal && <p className="cities-error">{errorModal}</p>}
-                <div className="cities-modal__actions" style={{ marginTop: '16px', display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
-                  <button type="button" onClick={() => setModalDetalle(null)} style={{ background: '#f1f5f9', color: '#475569', border: 'none', padding: '8px 16px', borderRadius: '8px', fontWeight: 600, cursor: 'pointer' }}>
-                    {t('admin.incidents.cancel', 'Cancelar')}
-                  </button>
-                  <button type="submit" className="cities-primary" style={{ background: 'var(--brand-primary)', display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', borderRadius: '8px', border: 'none', color: '#fff', fontWeight: 700, cursor: 'pointer' }}>
-                    <FaPaperPlane /> {t('admin.incidents.saveAndSend', 'Enviar correo y Actualizar')}
-                  </button>
-                </div>
-              </form>
+              <div className="cities-modal__actions" style={{ marginTop: '16px', display: 'flex', justifyContent: 'flex-end' }}>
+                <button type="button" onClick={() => setModalDetalle(null)} style={{ background: '#f1f5f9', color: '#475569', border: 'none', padding: '8px 16px', borderRadius: '8px', fontWeight: 600, cursor: 'pointer' }}>
+                  {t('admin.incidents.close', 'Cerrar')}
+                </button>
+              </div>
             </section>
           </div>
         )}
@@ -889,6 +845,115 @@ export default function IncidentManagementPage() {
                 >
                   Confirmar Eliminación
                 </button>
+              </div>
+            </section>
+          </div>
+        )}
+
+        {/* MODAL RESPONDER AL INCIDENTE */}
+        {modalResponder && (
+          <div
+            className="cities-modal-backdrop"
+            onClick={(e) => {
+              if (e.target.className === 'cities-modal-backdrop') setModalResponder(null)
+            }}
+          >
+            <section className="cities-modal" style={{ maxWidth: 600 }}>
+              <div className="cities-modal__head">
+                <h2 style={{ fontSize: 20, color: 'var(--brand-primary)', display: 'flex', alignItems: 'center', gap: 10, margin: 0 }}>
+                  <FaPaperPlane /> {t('admin.incidents.replyBtn', 'Responder al Cliente')}
+                </h2>
+                <button type="button" onClick={() => setModalResponder(null)} style={{ background: 'transparent', border: 'none', fontSize: 24, cursor: 'pointer', color: '#64748b' }}>
+                  ×
+                </button>
+              </div>
+              <div className="cities-modal__body" style={{ padding: '20px 24px' }}>
+                <p style={{ fontSize: 14, color: '#475569', marginBottom: 20 }}>
+                  {t('admin.incidents.replyHint', 'Escribe tu respuesta. Esta notificación llegará automáticamente al correo del usuario y quedará registrada en el historial del incidente.')}
+                </p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 20 }}>
+                  <div style={{ display: 'flex', gap: 16 }}>
+                    {modalResponder.codigoReserva && (
+                      <div style={{ flex: 1, background: '#f8fafc', padding: '12px', borderRadius: 8, border: '1px solid #e2e8f0' }}>
+                        <span style={{ fontSize: 11, color: '#64748b', fontWeight: 700, display: 'block', textTransform: 'uppercase' }}>{t('admin.incidents.associatedRes', 'Reserva Asociada')}</span>
+                        <strong style={{ fontSize: 14, color: 'var(--brand-primary)' }}>{modalResponder.codigoReserva}</strong>
+                      </div>
+                    )}
+                    <div style={{ flex: 1, background: '#f8fafc', padding: '12px', borderRadius: 8, border: '1px solid #e2e8f0' }}>
+                      <span style={{ fontSize: 11, color: '#64748b', fontWeight: 700, display: 'block', textTransform: 'uppercase' }}>{t('admin.incidents.clientName', 'Cliente')}</span>
+                      <strong style={{ fontSize: 14, color: 'var(--brand-primary)' }}>{modalResponder.contactoNombre || 'Cliente no registrado'}</strong>
+                    </div>
+                  </div>
+                  
+                  <div style={{ display: 'flex', gap: 16 }}>
+                    <div style={{ flex: 1, background: '#f8fafc', padding: '12px', borderRadius: 8, border: '1px solid #e2e8f0' }}>
+                      <span style={{ fontSize: 11, color: '#64748b', fontWeight: 700, display: 'block', textTransform: 'uppercase' }}>{t('admin.incidents.incidentType', 'Tipo de Incidencia')}</span>
+                      <strong style={{ fontSize: 14, color: '#475569' }}>{modalResponder.tipoIncidenciaNombre || t('admin.incidents.notSpecified', 'No especificado')}</strong>
+                    </div>
+                    <div style={{ flex: 1, background: '#f8fafc', padding: '12px', borderRadius: 8, border: '1px solid #e2e8f0' }}>
+                      <span style={{ fontSize: 11, color: '#64748b', fontWeight: 700, display: 'block', textTransform: 'uppercase' }}>{t('admin.incidents.emailClient', 'Correo Cliente')}</span>
+                      <strong style={{ fontSize: 14, color: '#475569' }}>{modalResponder.contactoEmail}</strong>
+                    </div>
+                  </div>
+
+                  <div style={{ background: '#f8fafc', padding: '12px', borderRadius: 8, border: '1px solid #e2e8f0' }}>
+                    <span style={{ fontSize: 11, color: '#64748b', fontWeight: 700, display: 'block', textTransform: 'uppercase', marginBottom: 4 }}>{t('admin.incidents.problemDesc', 'Descripción del Problema')}</span>
+                    <p style={{ fontSize: 14, color: '#334155', margin: 0, lineHeight: 1.4 }}>{modalResponder.descripcion || t('admin.incidents.noDesc', 'No hay descripción disponible.')}</p>
+                  </div>
+                </div>
+
+                <form onSubmit={handleResponderYActualizar} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                  <div className="incident-grid-2">
+                    <div className="incident-field">
+                      <span className="incident-field-label" style={{ fontWeight: 600, fontSize: 13 }}>{t('admin.incidents.changeStatus', 'Cambiar estado')}</span>
+                      <select
+                        value={nuevoEstadoModal}
+                        onChange={(e) => setNuevoEstadoModal(e.target.value)}
+                        style={{ padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1', background: '#fff url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2394a3b8%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E") no-repeat right 12px center', backgroundSize: '12px', appearance: 'none', WebkitAppearance: 'none', width: '100%', cursor: 'pointer', outline: 'none' }}
+                      >
+                        <option value="recibido">{t('admin.incidents.recibido', 'Recibido')}</option>
+                        <option value="atendiendo">{t('admin.incidents.atendiendo', 'Atendiendo')}</option>
+                        <option value="resuelto">{t('admin.incidents.resuelto', 'Resuelto')}</option>
+                        <option value="rechazado">{t('admin.incidents.rechazado', 'Rechazado')}</option>
+                      </select>
+                    </div>
+                    <div className="incident-field">
+                      <span className="incident-field-label" style={{ fontWeight: 600, fontSize: 13 }}>{t('admin.incidents.priority', 'Prioridad')}</span>
+                      <select
+                        value={nuevaPrioridadModal || modalResponder.prioridad || 'media'}
+                        onChange={(e) => setNuevaPrioridadModal(e.target.value)}
+                        style={{ padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1', background: '#fff url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2394a3b8%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E") no-repeat right 12px center', backgroundSize: '12px', appearance: 'none', WebkitAppearance: 'none', width: '100%', cursor: 'pointer', outline: 'none' }}
+                      >
+                        <option value="baja">{t('admin.incidents.priorities.baja', 'Baja')}</option>
+                        <option value="media">{t('admin.incidents.priorities.media', 'Media')}</option>
+                        <option value="alta">{t('admin.incidents.priorities.alta', 'Alta')}</option>
+                        <option value="urgente">{t('admin.incidents.priorities.urgente', 'Urgente')}</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="incident-field">
+                    <span className="incident-field-label" style={{ fontWeight: 600, fontSize: 13 }}>{t('admin.incidents.replyMessage', 'Mensaje de respuesta')}</span>
+                    <textarea
+                      required
+                      rows={5}
+                      placeholder={t('admin.incidents.replyPlaceholder', 'Escribe aquí la respuesta...')}
+                      value={respuestaTexto}
+                      onChange={(e) => setRespuestaTexto(e.target.value)}
+                      style={{ padding: '12px', borderRadius: '8px', border: '1px solid #cbd5e1', width: '100%', resize: 'none' }}
+                    />
+                  </div>
+                  {errorModal && <p className="cities-error">{errorModal}</p>}
+                  
+                  <div className="cities-modal__actions" style={{ marginTop: '8px', display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+                    <button type="button" onClick={() => setModalResponder(null)} style={{ background: '#f1f5f9', color: '#475569', border: 'none', padding: '8px 16px', borderRadius: '8px', fontWeight: 600, cursor: 'pointer' }}>
+                      {t('admin.incidents.cancel', 'Cancelar')}
+                    </button>
+                    <button type="submit" className="cities-primary" style={{ background: 'var(--brand-primary)', display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', borderRadius: '8px', border: 'none', color: '#fff', fontWeight: 700, cursor: 'pointer' }}>
+                      <FaPaperPlane /> {t('admin.incidents.saveAndSend', 'Enviar correo y Actualizar')}
+                    </button>
+                  </div>
+                </form>
               </div>
             </section>
           </div>

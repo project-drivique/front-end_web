@@ -51,11 +51,156 @@ const hoyMs = Date.now()
 const fechaInicioAyer = new Date(hoyMs - 86400000).toISOString().slice(0, 10)
 const fechaFinEnTresDias = new Date(hoyMs + 86400000 * 3).toISOString().slice(0, 10)
 
+const SEED_RES_8821 = {
+  id: 'RES-8821',
+  referencia: 'RES-8821',
+  codigo: 'RES-8821',
+  estado: 'confirmada',
+  pagoEstado: 'aprobado',
+  metodoPago: 'wompi',
+  vehiculoId: '5',
+  vehiculoNombre: 'Toyota Corolla 2024',
+  vehiculoPlaca: 'ABC-123',
+  sucursalRetiro: 'Alamo Bogotá - Aeropuerto',
+  sucursalDevolucion: 'Alamo Bogotá - Aeropuerto',
+  sucursal: 'Alamo Bogotá - Aeropuerto',
+  fechaInicio: '2026-09-25T08:30:00Z',
+  fechaFin: '2026-09-28T18:00:00Z',
+  horaInicio: '08:30',
+  horaFin: '18:00',
+  total: 420000,
+  totalCOP: 420000,
+  datosForm: {
+    nombres: 'Carlos',
+    apellidos: 'Restrepo',
+    nombre: 'Carlos Restrepo',
+    correo: 'carlos.restrepo@email.com',
+    celular: '+57 310 456 7890',
+    numDoc: '1020304050'
+  }
+}
+
+const SEED_RES_8824 = {
+  id: 'RES-8824',
+  referencia: 'RES-8824',
+  codigo: 'RES-8824',
+  estado: 'pendiente',
+  pagoEstado: 'pendiente',
+  metodoPago: 'efectivo',
+  vehiculoId: '3',
+  vehiculoNombre: 'Mazda CX-5 2024',
+  vehiculoPlaca: 'KLS-849',
+  sucursalRetiro: 'Alamo Bogotá - Aeropuerto',
+  sucursalDevolucion: 'Alamo Bogotá - Aeropuerto',
+  sucursal: 'Alamo Bogotá - Aeropuerto',
+  fechaInicio: '2026-09-25T10:15:00Z',
+  fechaFin: '2026-09-29T17:00:00Z',
+  horaInicio: '10:15',
+  horaFin: '17:00',
+  total: 360000,
+  totalCOP: 360000,
+  datosForm: {
+    nombres: 'Camila',
+    apellidos: 'Montoya',
+    nombre: 'Camila Montoya',
+    correo: 'camila.montoya@email.com',
+    celular: '+57 315 890 1234',
+    numDoc: '1030405060'
+  }
+}
+
+const SEED_RES_8830 = {
+  id: 'RES-8830',
+  referencia: 'RES-8830',
+  codigo: 'RES-8830',
+  estado: 'confirmada',
+  pagoEstado: 'aprobado',
+  metodoPago: 'wompi',
+  vehiculoId: '4',
+  vehiculoNombre: 'Chevrolet Tracker 2024',
+  vehiculoPlaca: 'MXP-492',
+  sucursalRetiro: 'Alamo Bogotá - Aeropuerto',
+  sucursalDevolucion: 'Alamo Bogotá - Aeropuerto',
+  sucursal: 'Alamo Bogotá - Aeropuerto',
+  fechaInicio: '2026-09-25T14:00:00Z',
+  fechaFin: '2026-09-30T10:00:00Z',
+  horaInicio: '14:00',
+  horaFin: '10:00',
+  total: 380000,
+  totalCOP: 380000,
+  datosForm: {
+    nombres: 'Alejandro',
+    apellidos: 'Morales',
+    nombre: 'Alejandro Morales',
+    correo: 'alejandro.morales@email.com',
+    celular: '+57 300 567 8901',
+    numDoc: '1040506070'
+  }
+}
+
+const SEED_RES_8799 = {
+  id: 'RES-8799',
+  referencia: 'RES-8799',
+  codigo: 'RES-8799',
+  estado: 'en_curso',
+  pagoEstado: 'aprobado',
+  metodoPago: 'wompi',
+  vehiculoId: '2',
+  vehiculoNombre: 'Nissan Kicks 2024',
+  vehiculoPlaca: 'ZTR-771',
+  sucursalRetiro: 'Alamo Bogotá - Aeropuerto',
+  sucursalDevolucion: 'Alamo Bogotá - Aeropuerto',
+  sucursal: 'Alamo Bogotá - Aeropuerto',
+  fechaInicio: '2026-09-22T11:00:00Z',
+  fechaFin: '2026-09-25T11:00:00Z',
+  horaInicio: '11:00',
+  horaFin: '11:00',
+  total: 310000,
+  totalCOP: 310000,
+  datosForm: {
+    nombres: 'Juan Manuel',
+    apellidos: 'Gómez',
+    nombre: 'Juan Manuel Gómez',
+    correo: 'juan.gomez@email.com',
+    celular: '+57 312 345 6789',
+    numDoc: '1050607080'
+  }
+}
+
+const SEED_RES_8802 = {
+  id: 'RES-8802',
+  referencia: 'RES-8802',
+  codigo: 'RES-8802',
+  estado: 'en_curso',
+  pagoEstado: 'aprobado',
+  metodoPago: 'wompi',
+  vehiculoId: '1',
+  vehiculoNombre: 'Kia Cerato 2024',
+  vehiculoPlaca: 'BOG-992',
+  sucursalRetiro: 'Alamo Bogotá - Aeropuerto',
+  sucursalDevolucion: 'Alamo Bogotá - Aeropuerto',
+  sucursal: 'Alamo Bogotá - Aeropuerto',
+  fechaInicio: '2026-09-21T16:30:00Z',
+  fechaFin: '2026-09-25T16:30:00Z',
+  horaInicio: '16:30',
+  horaFin: '16:30',
+  total: 290000,
+  totalCOP: 290000,
+  datosForm: {
+    nombres: 'Laura Sofía',
+    apellidos: 'Silva',
+    nombre: 'Laura Sofía Silva',
+    correo: 'laura.silva@email.com',
+    celular: '+57 318 901 2345',
+    numDoc: '1060708090'
+  }
+}
+
 const DEMO_RESERVA_FINALIZADA = {
   id: 'RES-2026-DEMO',
   referencia: 'RES-2026-DEMO',
   codigo: 'RES-2026-DEMO',
-  estado: 'FINALIZADA',
+  estado: 'finalizada',
   pagoEstado: 'aprobado',
   metodoPago: 'wompi',
   vehiculoId: 1,
@@ -69,6 +214,8 @@ const DEMO_RESERVA_FINALIZADA = {
   total: 420000,
   totalCOP: 420000,
   datosForm: {
+    nombres: 'Cliente',
+    apellidos: 'Drivique',
     nombre: 'Cliente Drivique',
     correo: 'cliente@drivique.com',
     celular: '+57 300 123 4567',
@@ -80,7 +227,7 @@ const DEMO_RESERVA_EFECTIVO = {
   id: 'RES-2026-EFECTIVO',
   referencia: 'RES-2026-EFECTIVO',
   codigo: 'RES-2026-EFECTIVO',
-  estado: 'PENDIENTE_EFECTIVO',
+  estado: 'pendiente',
   pagoEstado: 'pendiente',
   metodoPago: 'efectivo',
   vehiculoId: 2,
@@ -96,6 +243,8 @@ const DEMO_RESERVA_EFECTIVO = {
   total: 250000,
   totalCOP: 250000,
   datosForm: {
+    nombres: 'Prueba',
+    apellidos: 'Efectivo',
     nombre: 'Prueba Efectivo',
     correo: 'efectivo@drivique.com',
     celular: '+57 311 222 3344',
@@ -103,7 +252,15 @@ const DEMO_RESERVA_EFECTIVO = {
   }
 }
 
-const INITIAL_RESERVATIONS_SEED = [DEMO_RESERVA_FINALIZADA, DEMO_RESERVA_EFECTIVO];
+const INITIAL_RESERVATIONS_SEED = [
+  SEED_RES_8821,
+  SEED_RES_8824,
+  SEED_RES_8830,
+  SEED_RES_8799,
+  SEED_RES_8802,
+  DEMO_RESERVA_FINALIZADA,
+  DEMO_RESERVA_EFECTIVO
+];
 
 export const reservationService = {
   getReservas: () => {
@@ -114,19 +271,25 @@ export const reservationService = {
         reservas = INITIAL_RESERVATIONS_SEED;
         localStorage.setItem(STORAGE_KEY, JSON.stringify(reservas));
       } else {
-        // Asegurar que las reservas demo estén presentes para la vista del usuario
-        if (!reservas.some(r => r.id === 'RES-2026-DEMO')) {
-          reservas.unshift(DEMO_RESERVA_FINALIZADA);
-        }
-        if (!reservas.some(r => r.id === 'RES-2026-EFECTIVO')) {
-          reservas.unshift(DEMO_RESERVA_EFECTIVO);
-        }
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(reservas));
-        
-        // Limpiar reservas residuales anteriores
-        const legacySeedIds = new Set(['RES-2026-9102', 'RES-1788806368641-R95O5FB', 'RES-1788806368641-R9505FB']);
-        reservas = reservas.filter(r => !legacySeedIds.has(r.referencia) && !legacySeedIds.has(r.id) && !legacySeedIds.has(r.codigo));
+        // Asegurar que las reservas clave estén presentes
+        const seedKeys = [
+          { key: 'RES-8821', obj: SEED_RES_8821 },
+          { key: 'RES-8824', obj: SEED_RES_8824 },
+          { key: 'RES-8830', obj: SEED_RES_8830 },
+          { key: 'RES-8799', obj: SEED_RES_8799 },
+          { key: 'RES-8802', obj: SEED_RES_8802 },
+        ];
+        seedKeys.forEach(({ key, obj }) => {
+          if (!reservas.some(r => r.id === key || r.codigo === key)) {
+            reservas.push(obj);
+          }
+        });
       }
+      
+      // Limpiar reservas residuales anteriores
+      const legacySeedIds = new Set(['RES-2026-9102', 'RES-1788806368641-R95O5FB', 'RES-1788806368641-R9505FB']);
+      reservas = reservas.filter(r => !legacySeedIds.has(r.referencia) && !legacySeedIds.has(r.id) && !legacySeedIds.has(r.codigo));
+      
       const { actualizadas, cambiaron } = vencerReservasEfectivo(reservas);
       if (cambiaron || (data && JSON.parse(data).length !== reservas.length)) {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(actualizadas));
