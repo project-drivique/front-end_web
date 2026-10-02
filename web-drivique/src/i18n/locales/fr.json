@@ -93,10 +93,10 @@
       "create": "Nouveau vÃ©hicule",
       "search": "Rechercher vÃ©hicule, plaque, catÃ©gorie ou agence...",
       "allBranches": "Toutes les agences",
-      "allStates": "Tous les Ã©tats",
-      "results": "vÃ©hicules dans la liste",
+      "allStates": "Tous les états",
+      "results": "résultats",
       "exportTitle": "Liste des vÃ©hicules - Drivique",
-      "emptyTitle": "Aucun vÃ©hicule trouvÃ©",
+      "emptyTitle": "Aucun véhicule enregistré trouvé",
       "formLabel": "Informations du vÃ©hicule",
       "createTitle": "CrÃ©er un vÃ©hicule",
       "editTitle": "Modifier le vÃ©hicule",
@@ -187,7 +187,8 @@
         "print": "Imprimer"
       },
       "withPhoto": "Avec Photo",
-      "withoutPhoto": "Sans Photo"
+      "withoutPhoto": "Sans Photo",
+      "searchManager": "Recherche par véhicule, plaque ou catégorie..."
     },
     "branchesManagement": {
       "title": "Gestion des agences",
@@ -3588,5 +3589,17 @@
     "placeholders": {
       "pickupInstructions": "En face de la sortie 3 de l’aéroport - hall des livraisons."
     }
+  },
+  "fleetVehicles": {
+    "eyebrowManager": "GESTION DE SUCCURSALE",
+    "eyebrowAdmin": "ADMINISTRATION GÉNÉRALE",
+    "title": "Flotte et Véhicules",
+    "titleAdmin": "Gestion des Véhicules",
+    "tabHeadquarters": "Siège Social",
+    "tabBranches": "Succursales",
+    "tabCategories": "Catégories",
+    "tabVehicles": "Véhicules",
+    "createCategory": "+ Créer une Catégorie",
+    "createVehicle": "+ Créer un Véhicule"
   }
 }

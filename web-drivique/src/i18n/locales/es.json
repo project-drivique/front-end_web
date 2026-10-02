@@ -94,9 +94,9 @@
       "search": "Buscar por vehículo, placa, categoría o sucursal...",
       "allBranches": "Todas las sucursales",
       "allStates": "Todos los estados",
-      "results": "vehículos en el listado",
+      "results": "resultados",
       "exportTitle": "Listado de vehículos - Drivique",
-      "emptyTitle": "No se encontraron vehículos",
+      "emptyTitle": "No se encontraron vehículos registrados",
       "formLabel": "Información del vehículo",
       "createTitle": "Crear vehículo",
       "editTitle": "Editar vehículo",
@@ -176,7 +176,8 @@
         "excel": "Excel",
         "pdf": "PDF",
         "print": "Imprimir"
-      }
+      },
+      "searchManager": "Buscar por vehículo, placa o categoría..."
     },
     "branchesManagement": {
       "title": "Gestión de sucursales",
@@ -3335,5 +3336,17 @@
       "rule3Title": "Cancelación y liberación automática:",
       "rule3Desc": "En caso de que no se registre el pago dentro del tiempo límite calculado por el sistema, la reserva se cancela automáticamente y el vehículo queda liberado de inmediato en el catálogo para otros usuarios."
     }
+  },
+  "fleetVehicles": {
+    "eyebrowManager": "GESTIÓN DE SUCURSAL",
+    "eyebrowAdmin": "ADMINISTRACIÓN GENERAL",
+    "title": "Flota y Vehículos",
+    "titleAdmin": "Gestión de Vehículos",
+    "tabHeadquarters": "Sede Central",
+    "tabBranches": "Sucursales",
+    "tabCategories": "Categorías",
+    "tabVehicles": "Vehículos",
+    "createCategory": "+ Crear Categoría",
+    "createVehicle": "+ Crear Vehículo"
   }
 }
