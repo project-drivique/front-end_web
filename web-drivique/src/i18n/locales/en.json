@@ -94,9 +94,9 @@
       "search": "Search vehicle, plate, category or branch...",
       "allBranches": "All branches",
       "allStates": "All states",
-      "results": "vehicles in the list",
+      "results": "results",
       "exportTitle": "Vehicle list - Drivique",
-      "emptyTitle": "No vehicles found",
+      "emptyTitle": "No registered vehicles found",
       "formLabel": "Vehicle information",
       "createTitle": "Create vehicle",
       "editTitle": "Edit vehicle",
@@ -188,7 +188,8 @@
         "print": "Print"
       },
       "withPhoto": "With Photo",
-      "withoutPhoto": "No Photo"
+      "withoutPhoto": "No Photo",
+      "searchManager": "Search by vehicle, plate or category..."
     },
     "branchesManagement": {
       "title": "Branch management",
@@ -3618,5 +3619,17 @@
     "placeholders": {
       "pickupInstructions": "In front of terminal exit 3 - delivery lounge."
     }
+  },
+  "fleetVehicles": {
+    "eyebrowManager": "BRANCH MANAGEMENT",
+    "eyebrowAdmin": "GENERAL ADMINISTRATION",
+    "title": "Fleet and Vehicles",
+    "titleAdmin": "Vehicles Management",
+    "tabHeadquarters": "Headquarters",
+    "tabBranches": "Branches",
+    "tabCategories": "Categories",
+    "tabVehicles": "Vehicles",
+    "createCategory": "+ Create Category",
+    "createVehicle": "+ Create Vehicle"
   }
 }

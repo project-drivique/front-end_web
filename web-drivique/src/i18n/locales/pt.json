@@ -94,9 +94,9 @@
       "search": "Pesquisar veÃ­culo, matrÃ­cula, categoria ou agÃªncia...",
       "allBranches": "Todas as agÃªncias",
       "allStates": "Todos os estados",
-      "results": "veÃ­culos na lista",
+      "results": "resultados",
       "exportTitle": "Lista de veÃ­culos - Drivique",
-      "emptyTitle": "Nenhum veÃ­culo encontrado",
+      "emptyTitle": "Nenhum veículo registrado encontrado",
       "formLabel": "InformaÃ§Ãµes do veÃ­culo",
       "createTitle": "Criar veÃ­culo",
       "editTitle": "Editar veÃ­culo",
@@ -188,7 +188,8 @@
         "print": "Imprimir"
       },
       "withPhoto": "Com Foto",
-      "withoutPhoto": "Sem Foto"
+      "withoutPhoto": "Sem Foto",
+      "searchManager": "Pesquisar por veículo, placa ou categoria..."
     },
     "branchesManagement": {
       "title": "GestÃ£o de agÃªncias",
@@ -3604,5 +3605,17 @@
     "placeholders": {
       "pickupInstructions": "Em frente à saída 3 do aeroporto - saguão de entregas."
     }
+  },
+  "fleetVehicles": {
+    "eyebrowManager": "GESTÃO DE FILIAL",
+    "eyebrowAdmin": "ADMINISTRAÇÃO GERAL",
+    "title": "Frota e Veículos",
+    "titleAdmin": "Gestão de Veículos",
+    "tabHeadquarters": "Sede",
+    "tabBranches": "Filiais",
+    "tabCategories": "Categorias",
+    "tabVehicles": "Veículos",
+    "createCategory": "+ Criar Categoria",
+    "createVehicle": "+ Criar Veículo"
   }
 }
