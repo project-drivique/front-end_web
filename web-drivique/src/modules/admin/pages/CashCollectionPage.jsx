@@ -578,7 +578,11 @@ export default function CashCollectionPage({ branchOnly = false }) {
                     type="text"
                     placeholder={t('admin.cash.filterRefPlaceholder', 'Ref. (Ej. RES-179...)')}
                     value={searchRefValue}
-                    onChange={(e) => setSearchRefValue(e.target.value)}
+                    onChange={(e) => {
+                      const val = e.target.value
+                      setSearchRefValue(val)
+                      setSearch(val)
+                    }}
                     style={{ padding: '0 8px', border: 'none', background: 'transparent', fontSize: '13px', outline: 'none', width: '155px', height: '100%' }}
                     onKeyDown={(e) => e.key === 'Enter' && handleSearchRef()}
                   />
@@ -788,22 +792,25 @@ export default function CashCollectionPage({ branchOnly = false }) {
                             {!pagoConfirmado && esEfectivo ? (
                               <button
                                 type="button"
-                                style={{ padding: '6px 12px', fontSize: '13px', background: '#f59e0b', border: 'none', color: '#fff', fontWeight: 600, borderRadius: '6px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '5px' }}
+                                style={{ width: '120px', height: '32px', fontSize: '13px', background: '#f59e0b', border: 'none', color: '#fff', fontWeight: 600, borderRadius: '6px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', boxSizing: 'border-box' }}
                                 onClick={(e) => { e.stopPropagation(); openModalCobro(r) }}
                               >
-                                <FaMoneyBillWave /> {t('admin.cash.actions.charge', 'Cobrar')}
+                                {t('admin.cash.actions.chargeBox', 'Cobrar en Caja')}
                               </button>
                             ) : pagoConfirmado ? (
                               <span
                                 style={{
-                                  display: 'inline-block',
-                                  padding: '4px 10px',
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  width: '120px',
+                                  height: '32px',
                                   borderRadius: '6px',
                                   backgroundColor: '#dcfce7',
                                   color: '#15803d',
                                   fontWeight: 600,
                                   fontSize: '13px',
-                                  textAlign: 'center'
+                                  boxSizing: 'border-box'
                                 }}
                               >
                                 {t('admin.cash.status.approved', 'Aprobado')}
@@ -811,14 +818,17 @@ export default function CashCollectionPage({ branchOnly = false }) {
                             ) : (
                               <span
                                 style={{
-                                  display: 'inline-block',
-                                  padding: '4px 10px',
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  width: '120px',
+                                  height: '32px',
                                   borderRadius: '6px',
                                   backgroundColor: '#fef9c3',
                                   color: '#a16207',
                                   fontWeight: 600,
                                   fontSize: '13px',
-                                  textAlign: 'center'
+                                  boxSizing: 'border-box'
                                 }}
                               >
                                 {t('admin.cash.status.pending', 'Pendiente')}
