@@ -182,7 +182,7 @@ export default function ManagementSidebar({ branchOnly = false }) {
             <div key={key} className="management-nav__group">
               {showSectionHeader && (
                 <div className="management-nav__section-title">
-                  {section}
+                  {t(`admin.sections.${section.toLowerCase().replace(/ /g, '_')}`, section)}
                 </div>
               )}
               <NavLink

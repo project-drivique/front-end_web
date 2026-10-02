@@ -7,10 +7,10 @@
     "payments": "Payments",
     "contracts": "Contracts",
     "branches": "Branches",
-    "logout": "Sign out",
+    "logout": "Logout",
     "adminRole": "General administrator",
     "management": "Management",
-    "navigation": "Administrative navigation",
+    "navigation": "Navigation",
     "backToDashboard": "Back to dashboard",
     "modulePending": "This module remains accessible from the menu and will be developed in its corresponding user story.",
     "dashboard": "Dashboard",
@@ -229,7 +229,25 @@
     "cancelledSuccess": "Reservation {{code}} cancelled successfully.",
     "nav": {
       "contracts": "Contracts",
-      "audit": "Audit Logs"
+      "audit": "Audit",
+      "dashboard": "Dashboard",
+      "notifications": "Notifications",
+      "myBranch": "My Branch",
+      "vehicles": "Fleet & Vehicles",
+      "users": "Users",
+      "roles": "Roles & Permissions",
+      "reservations": "Reservations",
+      "cashCollection": "Payments",
+      "incidents": "Incidents",
+      "documents": "Document Validation",
+      "reviews": "Reviews & Ratings",
+      "cities": "Cities",
+      "branches": "Branches",
+      "promotions": "Promotions",
+      "brand": "Brand",
+      "reports": "Reports",
+      "deliveries": "Deliveries",
+      "controlPanel": "Control Panel"
     },
     "usersTitle": "Account Control and Verification",
     "usersSubtitle": "Full management of customers, administrators, roles, account status and document review.",
@@ -885,7 +903,15 @@
         "pinchazo_neumatico": "Flat Tire / Puncture",
         "limpieza_estetica": "Cleaning / Aesthetics",
         "choque_carroceria": "Crash / Bodywork",
-        "mantenimiento_preventivo": "Preventive Maintenance"
+        "mantenimiento_preventivo": "Preventive Maintenance",
+        "crash": "Crash",
+        "mechanicalBreakdown": "Mechanical Breakdown",
+        "flatTire": "Flat Tire",
+        "deadBattery": "Dead Battery",
+        "electricalFailure": "Electrical Failure",
+        "theft": "Theft",
+        "generalAssistance": "General Assistance",
+        "other": "Other"
       },
       "newReport": "New Incident Report",
       "searchPlaceholder": "Search by code, vehicle, plate, or client...",
@@ -906,7 +932,7 @@
       "print": "Print",
       "registered": "incidents registered",
       "detailTitle": "Incident Management",
-      "estimatedTime": "Estimated time:",
+      "estimatedTime": "Estimated technical service time:",
       "noticeEmailMsg": "An email and notification will be sent to the user.",
       "replyPlaceholder": "Write the official response...",
       "cancel": "Cancel",
@@ -914,11 +940,19 @@
       "internalHeader": "Internal Fleet Report",
       "selectVehicle": "Select Affected Vehicle:",
       "chooseVehicle": "Select a fleet vehicle...",
-      "incidentType": "Incident Type:",
+      "incidentType": "Incident Type",
       "priorityUrgency": "Priority / Urgency:",
       "descriptionLabel": "Detailed description of the incident / diagnosis:",
       "descriptionPlaceholder": "Describe the failure symptoms or repair work required...",
-      "createBtn": "Create Report"
+      "createBtn": "Create Report",
+      "time": {
+        "toBeDefined": "To be defined",
+        "twoToFourHours": "2 to 4 hours",
+        "oneToTwoHours": "1 to 2 hours",
+        "oneHour": "1 hour"
+      },
+      "problemDescription": "Problem Description",
+      "describeSymptoms": "Describe the symptoms..."
     },
     "promotions": {
       "title": "Promotions and coupons",
@@ -1472,6 +1506,12 @@
     "reviews": {
       "title": "Reviews & Ratings",
       "subtitle": "Management of customer ratings for this branch."
+    },
+    "sections": {
+      "monitoreo": "MONITORING",
+      "gestión_operativa": "OPERATIONAL MANAGEMENT",
+      "consulta_y_auditoría": "CONSULTATION & AUDIT",
+      "configuración_global": "GLOBAL CONFIGURATION"
     }
   },
   "common": {
@@ -1505,7 +1545,9 @@
     "exportExcel": "Export to Excel",
     "exportPdf": "Export to PDF",
     "print": "Print",
-    "viewDetails": "View details"
+    "viewDetails": "View details",
+    "deliveries": "Deliveries",
+    "returns": "Returns"
   },
   "login": {
     "title": "Sign in",
@@ -3182,16 +3224,25 @@
       "received": "received",
       "rented": "rented",
       "of": "of",
-      "vehiclesInUse": "vehicles in use"
+      "vehiclesInUse": "vehicles in use",
+      "monthlyRevenue": "Monthly Revenue",
+      "todayDeliveries": "Today's Deliveries",
+      "todayReturns": "Today's Returns",
+      "fleetOccupancy": "Fleet Occupancy"
     },
     "charts": {
       "workload": "Operational Workload by Time Slot",
       "scheduleOf": "Schedule for",
       "calendar": "Operational Calendar",
-      "selectDateRange": "Select a date range"
+      "selectDateRange": "Select a date range",
+      "deliveriesList": "Deliveries List",
+      "returnsList": "Returns List",
+      "totalVehicles": "Total vehicles"
     },
     "alerts": {
       "requiresAttention": "Requires your attention"
-    }
+    },
+    "subtitle": "Operational Panel",
+    "title": "Dashboard"
   }
 }

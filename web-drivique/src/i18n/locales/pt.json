@@ -7,10 +7,10 @@
     "payments": "Pagamentos",
     "contracts": "Contratos",
     "branches": "Agências",
-    "logout": "Terminar sessão",
+    "logout": "Sair",
     "adminRole": "Administrador geral",
     "management": "Gestão",
-    "navigation": "Navegação administrativa",
+    "navigation": "Navegação",
     "backToDashboard": "Voltar ao painel",
     "modulePending": "Este módulo permanece acessível no menu e será desenvolvido na respetiva história de utilizador.",
     "dashboard": "Painel",
@@ -229,7 +229,25 @@
     "cancelledSuccess": "Reserva {{code}} cancelada com sucesso.",
     "nav": {
       "contracts": "Contratos",
-      "audit": "Auditoria"
+      "audit": "Auditoria",
+      "dashboard": "Painel",
+      "notifications": "Notificações",
+      "myBranch": "Minha filial",
+      "vehicles": "Frota e Veículos",
+      "users": "Usuários",
+      "roles": "Funções e Permissões",
+      "reservations": "Reservas",
+      "cashCollection": "Pagamentos",
+      "incidents": "Incidentes",
+      "documents": "Validação de documentos",
+      "reviews": "Avaliações e classificações",
+      "cities": "Cidades",
+      "branches": "Filiais",
+      "promotions": "Promoções",
+      "brand": "Marca",
+      "reports": "Relatórios",
+      "deliveries": "Entregas",
+      "controlPanel": "Painel de Controle"
     },
     "usersTitle": "Controlo de Contas e Verificação",
     "usersSubtitle": "Gestão completa de clientes, administradores, funções, estados de conta e revisão de documentos.",
@@ -885,7 +903,15 @@
         "pinchazo_neumatico": "Pneu Furado",
         "limpieza_estetica": "Limpeza / Estética",
         "choque_carroceria": "Colisão / Lataria",
-        "mantenimiento_preventivo": "Manutenção Preventiva"
+        "mantenimiento_preventivo": "Manutenção Preventiva",
+        "crash": "Batida",
+        "mechanicalBreakdown": "Avaria Mecânica",
+        "flatTire": "Pneu Furado",
+        "deadBattery": "Bateria Descarregada",
+        "electricalFailure": "Falha Elétrica",
+        "theft": "Roubo",
+        "generalAssistance": "Assistência Geral",
+        "other": "Outro"
       },
       "newReport": "Novo Relatório de Incidente",
       "searchPlaceholder": "Pesquisar por código, veículo, placa ou cliente...",
@@ -906,7 +932,7 @@
       "print": "Imprimir",
       "registered": "incidentes registrados",
       "detailTitle": "Gestão de Incidente",
-      "estimatedTime": "Tempo estimado:",
+      "estimatedTime": "Tempo estimado de atendimento técnico:",
       "noticeEmailMsg": "Um e-mail e notificação serão enviados.",
       "replyPlaceholder": "Escreva a resposta oficial...",
       "cancel": "Cancelar",
@@ -914,11 +940,19 @@
       "internalHeader": "Relatório Interno de Frota",
       "selectVehicle": "Selecionar Veículo:",
       "chooseVehicle": "Selecione um veículo...",
-      "incidentType": "Tipo de Incidente:",
+      "incidentType": "Tipo de Incidente",
       "priorityUrgency": "Prioridade / Urgência:",
       "descriptionLabel": "Descrição detalhada do incidente:",
       "descriptionPlaceholder": "Descreva os sintomas ou os reparos necessários...",
-      "createBtn": "Criar Relatório"
+      "createBtn": "Criar Relatório",
+      "time": {
+        "toBeDefined": "A definir",
+        "twoToFourHours": "2 a 4 horas",
+        "oneToTwoHours": "1 a 2 horas",
+        "oneHour": "1 hora"
+      },
+      "problemDescription": "Descrição do problema",
+      "describeSymptoms": "Descreva os sintomas..."
     },
     "promotions": {
       "title": "Promoções e cupons",
@@ -1472,6 +1506,12 @@
     "reviews": {
       "title": "Avaliações e Classificações",
       "subtitle": "Gestão das avaliações dos clientes sobre esta sucursal."
+    },
+    "sections": {
+      "monitoreo": "MONITORAMENTO",
+      "gestión_operativa": "GESTÃO OPERACIONAL",
+      "consulta_y_auditoría": "CONSULTA E AUDITORIA",
+      "configuración_global": "CONFIGURAÇÃO GLOBAL"
     }
   },
   "common": {
@@ -1505,7 +1545,9 @@
     "exportExcel": "Exportar para Excel",
     "exportPdf": "Exportar para PDF",
     "print": "Imprimir",
-    "viewDetails": "Ver detalhes"
+    "viewDetails": "Ver detalhes",
+    "deliveries": "Entregas",
+    "returns": "Devoluções"
   },
   "login": {
     "title": "Iniciar sessão",
@@ -3168,16 +3210,25 @@
       "received": "recebidas",
       "rented": "alugados",
       "of": "de",
-      "vehiclesInUse": "veículos em uso"
+      "vehiclesInUse": "veículos em uso",
+      "monthlyRevenue": "Receitas do mês",
+      "todayDeliveries": "Entregas de hoje",
+      "todayReturns": "Devoluções de hoje",
+      "fleetOccupancy": "Ocupação da frota"
     },
     "charts": {
       "workload": "Carga Operacional por Faixa Horária",
       "scheduleOf": "Programação de",
       "calendar": "Calendário Operacional",
-      "selectDateRange": "Selecione um intervalo de datas"
+      "selectDateRange": "Selecione um intervalo de datas",
+      "deliveriesList": "Lista de Entregas",
+      "returnsList": "Lista de Devoluções",
+      "totalVehicles": "Total de veículos"
     },
     "alerts": {
       "requiresAttention": "Requer a sua atenção"
-    }
+    },
+    "subtitle": "Painel Operacional",
+    "title": "Painel"
   }
 }
