@@ -365,7 +365,7 @@ export default function IncidentManagementPage() {
               </div>
             ) : (
               <div className="cities-table-wrap" style={{ overflowX: 'auto' }}>
-                <table className="incidents-table" style={{ whiteSpace: 'nowrap', width: 'max-content', minWidth: '100%' }}>
+                <table className="incidents-table-v2" style={{ whiteSpace: 'nowrap', width: 'max-content', borderCollapse: 'collapse' }}>
                   <thead>
                     <tr>
                       <th style={{ width: '40px' }}>ID</th>
