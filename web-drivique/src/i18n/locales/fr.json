@@ -1768,7 +1768,8 @@
       "filterUnread": "Non lues",
       "defaultAction": "Aller au module",
       "filters": "Filtres de notifications"
-    }
+    },
+    "branchManagement": "GESTION DE SUCCURSALE"
   },
   "common": {
     "backToHome": "Retour Ã  l'accueil",

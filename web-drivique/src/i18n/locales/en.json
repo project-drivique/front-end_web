@@ -1769,7 +1769,8 @@
       "filterUnread": "Unread",
       "defaultAction": "Go to module",
       "filters": "Notification filters"
-    }
+    },
+    "branchManagement": "BRANCH MANAGEMENT"
   },
   "common": {
     "backToHome": "Back to home",

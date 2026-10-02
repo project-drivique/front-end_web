@@ -1611,7 +1611,8 @@
     "reviews": {},
     "sections": {
       "monitoreo": "MONITOREO"
-    }
+    },
+    "branchManagement": "GESTIÓN DE SUCURSAL"
   },
   "common": {
     "backToHome": "Volver al inicio",
