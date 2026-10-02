@@ -146,7 +146,8 @@
         "limitedKm": "Km incluidos",
         "limitedPrice": "Precio limitado",
         "extraPrice": "Precio excedente",
-        "unlimitedPrice": "Precio ilimitado"
+        "unlimitedPrice": "Precio ilimitado",
+        "photo": "IMAGEN"
       },
       "messages": {
         "created": "El vehículo fue creado correctamente.",
@@ -635,7 +636,7 @@
       "emptyTitle": "No hay reservas registradas en esta sección",
       "emptyText": "No se encontraron registros en esta categoría con los filtros aplicados.",
       "code": "CÓDIGO RESERVA",
-      "photo": "FOTO",
+      "photo": "IMAGEN",
       "vehicle": "NOMBRE VEHÍCULO",
       "plate": "PLACA",
       "paymentMethod": "MEDIO DE PAGO",

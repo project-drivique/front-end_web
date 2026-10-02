@@ -144,7 +144,7 @@
         "extraPrice": "Extra km price",
         "unlimitedPrice": "Unlimited price",
         "color": "Color",
-        "photo": "PHOTO",
+        "photo": "IMAGE",
         "fuel": "Fuel",
         "transmission": "Transmission",
         "year": "Year"
@@ -650,7 +650,7 @@
       "emptyTitle": "No reservations registered in this section",
       "emptyText": "No records found in this category with applied filters.",
       "code": "RESERVATION CODE",
-      "photo": "PHOTO",
+      "photo": "IMAGE",
       "vehicle": "VEHICLE NAME",
       "plate": "PLATE",
       "paymentMethod": "PAYMENT METHOD",
