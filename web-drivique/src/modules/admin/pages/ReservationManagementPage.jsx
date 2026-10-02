@@ -905,31 +905,34 @@ export default function ReservationManagementPage() {
                               {formatCurrency(totalCOP, moneda || 'COP', tasaUSD)}
                             </td>
                             <td>
-                              <select
-                                value={['en_curso', 'finalizada', 'cancelada', 'confirmada', 'creada'].includes(r.estado) ? r.estado : 'confirmada'}
-                                onChange={(e) => {
-                                  reservationManagementService.update(r.id, { ...r, estado: e.target.value }, user)
-                                  setReservations(reservationManagementService.list())
-                                  showAlert({ icon: 'success', title: 'Estado de reserva actualizado', text: `El estado ha sido cambiado a ${e.target.value}.` })
-                                }}
+                              <span
                                 style={{
-                                  padding: '4px 8px',
-                                  borderRadius: '6px',
-                                  border: '1px solid var(--borde, #cbd5e1)',
-                                  backgroundColor: r.estado === 'en_curso' ? '#dbeafe' : r.estado === 'finalizada' ? '#dcfce7' : r.estado === 'cancelada' ? '#fee2e2' : '#f1f5f9',
-                                  color: r.estado === 'en_curso' ? '#1d4ed8' : r.estado === 'finalizada' ? '#15803d' : r.estado === 'cancelada' ? '#991b1b' : '#475569',
-                                  fontWeight: 600,
-                                  fontSize: '12px',
-                                  cursor: 'pointer',
-                                  outline: 'none',
+                                  padding: '4px 10px',
+                                  borderRadius: 20,
+                                  fontSize: 11,
+                                  fontWeight: 700,
+                                  whiteSpace: 'nowrap',
+                                  ...(r.estado === 'en_curso'
+                                    ? { background: '#dbeafe', color: '#1d4ed8' }
+                                    : r.estado === 'finalizada'
+                                    ? { background: '#dcfce7', color: '#15803d' }
+                                    : r.estado === 'cancelada'
+                                    ? { background: '#fee2e2', color: '#991b1b' }
+                                    : r.estado === 'confirmada'
+                                    ? { background: '#d1fae5', color: '#065f46' }
+                                    : { background: '#f1f5f9', color: '#475569' })
                                 }}
                               >
-                                <option value="creada">{t('admin.reservationsManagement.status.created', 'Creada')}</option>
-                                <option value="confirmada">{t('admin.reservationsManagement.status.confirmed', 'Confirmada')}</option>
-                                <option value="en_curso">{t('admin.reservationsManagement.status.inProgress', 'En curso')}</option>
-                                <option value="finalizada">{t('admin.reservationsManagement.status.finished', 'Finalizada')}</option>
-                                <option value="cancelada">{t('admin.reservationsManagement.status.cancelled', 'Cancelada')}</option>
-                              </select>
+                                {r.estado === 'en_curso'
+                                  ? t('admin.reservationsManagement.status.inProgress', 'En curso')
+                                  : r.estado === 'finalizada'
+                                  ? t('admin.reservationsManagement.status.finished', 'Finalizada')
+                                  : r.estado === 'cancelada'
+                                  ? t('admin.reservationsManagement.status.cancelled', 'Cancelada')
+                                  : r.estado === 'creada'
+                                  ? t('admin.reservationsManagement.status.created', 'Creada')
+                                  : t('admin.reservationsManagement.status.confirmed', 'Confirmada')}
+                              </span>
                             </td>
                             <td>
                               <span
