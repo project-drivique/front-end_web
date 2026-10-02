@@ -1660,7 +1660,47 @@
     },
     "cash": {
       "title": "Paiements et Encaissements",
-      "subtitle": "Gestion des recouvrements en attente et de la facturation."
+      "subtitle": "Gestion des recouvrements en attente et de la facturation.",
+      "kpi": {
+        "pendingCash": "En attente (Espèces)",
+        "pendingReservations": "Réservations à encaisser",
+        "collectedToday": "Encaissé Aujourd'hui (Caisse)",
+        "confirmedIncome": "Revenus confirmés",
+        "paymentsToday": "Paiements Effectués Aujourd'hui",
+        "receiptsIssued": "Reçus émis"
+      },
+      "filterRefPlaceholder": "Réf. (ex. RES-179...)",
+      "filterBtn": "Filtrer",
+      "clearBtn": "Effacer",
+      "allPayments": "Tous les paiements",
+      "pendingCashOption": "Espèces en attente ({{count}})",
+      "collectedOption": "Encaissé Caisse ({{count}})",
+      "digitalGateway": "Passerelle Numérique",
+      "allBranches": "Toutes les succursales",
+      "dateFrom": "Du",
+      "dateTo": "Au",
+      "table": {
+        "code": "CODE RÉSERVATION",
+        "fullName": "NOM COMPLET",
+        "phone": "TÉLÉPHONE",
+        "paymentMethod": "MOYEN DE PAIEMENT",
+        "totalAmount": "MONTANT TOTAL",
+        "paymentStatus": "STATUT PAIEMENT",
+        "receipt": "REÇU DE PAIEMENT",
+        "downloadReceipt": "TÉLÉCHARGER LE REÇU",
+        "printReceipt": "IMPRIMER LE REÇU"
+      },
+      "status": {
+        "approved": "Approuvé",
+        "pending": "En attente",
+        "rejected": "Rejeté"
+      },
+      "actions": {
+        "view": "Voir",
+        "charge": "Encaisser",
+        "download": "Télécharger",
+        "print": "Imprimer"
+      }
     },
     "reviews": {
       "title": "Avis et Ã‰valuations",

@@ -106,7 +106,7 @@ function SingleCalendarRangePicker({ dateRange, onChange }) {
         <FaCalendarAlt className="cash-cal-icon" />
         <span>{formatButtonLabel()}</span>
         {(startDate || endDate) && (
-          <span className="cash-cal-clear" onClick={handleClear} title="Limpiar rango de fechas">
+          <span className="cash-cal-clear" onClick={handleClear} title="{t('admin.cash.clearBtn', 'Limpiar')} rango de fechas">
             <FaTimes />
           </span>
         )}
@@ -530,39 +530,39 @@ export default function CashCollectionPage({ branchOnly = false }) {
             <div className="cash-kpi-item-light">
               <div className="cash-kpi-header-light" style={{ color: '#f59e0b' }}>
                 <FaMoneyBillWave />
-                <span>Pendientes (Efectivo)</span>
+                <span>{t('admin.cash.kpi.pendingCash', 'Pendientes (Efectivo)')}</span>
               </div>
               <strong className="cash-kpi-val-light">{pendientesEfectivo.length}</strong>
               <div className="cash-kpi-progress-bg">
                 <div className="cash-kpi-progress-fill" style={{ width: '100%', background: '#f59e0b' }}></div>
               </div>
-              <span className="cash-kpi-subtitle-light">Reservas por cobrar</span>
+              <span className="cash-kpi-subtitle-light">{t('admin.cash.kpi.pendingReservations', 'Reservas por cobrar')}</span>
             </div>
 
             {/* Tarjeta 2 */}
             <div className="cash-kpi-item-light">
               <div className="cash-kpi-header-light" style={{ color: '#10b981' }}>
                 <FaCashRegister />
-                <span>Recaudado Hoy (Caja)</span>
+                <span>{t('admin.cash.kpi.collectedToday', 'Recaudado Hoy (Caja)')}</span>
               </div>
-              <strong className="cash-kpi-val-light">{formatCurrency(totalRecaudadoHoy, moneda)}</strong>
+              <strong className="cash-kpi-val-light">{formatCurrency(totalRecaudadoHoy, moneda, tasaUSD)}</strong>
               <div className="cash-kpi-progress-bg">
                 <div className="cash-kpi-progress-fill" style={{ width: '100%', background: '#10b981' }}></div>
               </div>
-              <span className="cash-kpi-subtitle-light">Ingresos confirmados</span>
+              <span className="cash-kpi-subtitle-light">{t('admin.cash.kpi.confirmedIncome', 'Ingresos confirmados')}</span>
             </div>
 
             {/* Tarjeta 3 */}
             <div className="cash-kpi-item-light">
               <div className="cash-kpi-header-light" style={{ color: '#3b82f6' }}>
                 <FaCheckCircle />
-                <span>Cobros Realizados Hoy</span>
+                <span>{t('admin.cash.kpi.paymentsToday', 'Cobros Realizados Hoy')}</span>
               </div>
               <strong className="cash-kpi-val-light">{cobradasHoy.length}</strong>
               <div className="cash-kpi-progress-bg">
                 <div className="cash-kpi-progress-fill" style={{ width: '100%', background: '#3b82f6' }}></div>
               </div>
-              <span className="cash-kpi-subtitle-light">Comprobantes emitidos</span>
+              <span className="cash-kpi-subtitle-light">{t('admin.cash.kpi.receiptsIssued', 'Comprobantes emitidos')}</span>
             </div>
           </div>
 
@@ -576,7 +576,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
                 <div style={{ display: 'flex', alignItems: 'center', background: '#fff', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '0 8px', height: '36px', minWidth: '160px' }}>
                   <input
                     type="text"
-                    placeholder="Ref. (Ej. RES-179...)"
+                    placeholder={t('admin.cash.filterRefPlaceholder', 'Ref. (Ej. RES-179...)')}
                     value={searchRefValue}
                     onChange={(e) => setSearchRefValue(e.target.value)}
                     style={{ padding: '0 8px', border: 'none', background: 'transparent', fontSize: '13px', outline: 'none', width: '155px', height: '100%' }}
@@ -590,7 +590,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
                   onClick={handleSearchRef}
                   style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '0 12px', height: '36px', background: '#f59e0b', borderRadius: '8px', border: 'none', color: '#fff', fontWeight: 600, cursor: 'pointer', fontSize: '13px', whiteSpace: 'nowrap', flexShrink: 0 }}
                 >
-                  <FaSearch /> Filtrar
+                  <FaSearch /> {t('admin.cash.filterBtn', 'Filtrar')}
                 </button>
                 <button
                   type="button"
@@ -606,10 +606,10 @@ export default function CashCollectionPage({ branchOnly = false }) {
                   onChange={(e) => setFilterTab(e.target.value)}
                   style={{ height: '36px', padding: '0 10px', border: '1px solid #e2e8f0', borderRadius: '8px', fontSize: '13px', background: '#fff', color: '#374151', cursor: 'pointer', flexShrink: 0 }}
                 >
-                  <option value="todas">Todos los pagos</option>
-                  <option value="pendientes">Pendientes Efectivo ({pendientesEfectivo.length})</option>
-                  <option value="cobradas">Cobradas Caja ({cobradasHoy.length})</option>
-                  <option value="digitales">Pasarela Digital</option>
+                  <option value="todas">{t('admin.cash.allPayments', 'Todos los pagos')}</option>
+                  <option value="pendientes">{t('admin.cash.pendingCashOption', 'Pendientes Efectivo ({{count}})', { count: pendientesEfectivo.length })}</option>
+                  <option value="cobradas">{t('admin.cash.collectedOption', 'Cobradas Caja ({{count}})', { count: cobradasHoy.length })}</option>
+                  <option value="digitales">{t('admin.cash.digitalGateway', 'Pasarela Digital')}</option>
                 </select>
 
                 {/* Dropdown Sucursal */}
@@ -619,7 +619,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
                     onChange={(e) => setSelectedBranch(e.target.value)}
                     style={{ height: '36px', padding: '0 10px', border: '1px solid #e2e8f0', borderRadius: '8px', fontSize: '13px', background: '#fff', color: '#374151', cursor: 'pointer', flexShrink: 0 }}
                   >
-                    <option value="todas">Todas las sucursales</option>
+                    <option value="todas">{t('admin.cash.allBranches', 'Todas las sucursales')}</option>
                     {listaSucursales.map((suc) => (
                       <option key={suc} value={suc}>{suc}</option>
                     ))}
@@ -629,7 +629,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
                 {/* Fechas DESDE / HASTA - inline sin label apilado */}
                 <input
                   type="date"
-                  placeholder="Desde"
+                  placeholder={t('admin.cash.dateFrom', 'Desde')}
                   title="Desde"
                   value={dateFrom}
                   onChange={(e) => setDateFrom(e.target.value)}
@@ -637,7 +637,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
                 />
                 <input
                   type="date"
-                  placeholder="Hasta"
+                  placeholder={t('admin.cash.dateTo', 'Hasta')}
                   title="Hasta"
                   value={dateTo}
                   onChange={(e) => setDateTo(e.target.value)}
@@ -663,7 +663,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
                     <FaFilePdf /> PDF
                   </button>
                   <button type="button" className="cash-exp-btn print" onClick={() => window.print()}>
-                    <FaPrint /> Imprimir
+                    <FaPrint /> {t('admin.reservationsManagement.print', 'Imprimir')}
                   </button>
                 </div>
               </div>
@@ -671,15 +671,15 @@ export default function CashCollectionPage({ branchOnly = false }) {
 
             {/* Resumen de Resultados */}
             <div className="cities-summary">
-              <strong>{listFiltrada.length}</strong> reservas encontradas
+              <strong>{listFiltrada.length}</strong> {t('admin.cash.reservationsFound', 'reservas encontradas')}
             </div>
 
             {/* Tabla Simplificada para Cobro en Sucursal */}
             {listFiltrada.length === 0 ? (
               <div className="cities-empty">
                 <FaCashRegister style={{ fontSize: 32, color: '#94a3b8' }} />
-                <h2>No se encontraron reservas</h2>
-                <p>No hay registros coincidentes con los criterios de búsqueda o filtro seleccionados.</p>
+                <h2>{t('admin.cash.emptyTitle', 'No se encontraron reservas')}</h2>
+                <p>{t('admin.cash.emptyDesc', 'No hay registros coincidentes con los criterios de búsqueda o filtro seleccionados.')}</p>
               </div>
             ) : (
               <div className="cities-table-wrap">
@@ -687,15 +687,15 @@ export default function CashCollectionPage({ branchOnly = false }) {
                   <thead>
                     <tr>
                       <th>ID</th>
-                      <th>CÓDIGO RESERVA</th>
-                      <th>NOMBRE COMPLETO</th>
-                      <th>TELÉFONO</th>
-                      <th>MEDIO DE PAGO</th>
-                      <th>MONTO TOTAL</th>
-                      <th>ESTADO PAGO</th>
-                      <th>COMPROBANTE DE PAGO</th>
-                      <th>DESCARGAR COMPROBANTE</th>
-                      <th>IMPRIMIR COMPROBANTE</th>
+                      <th>{t('admin.cash.table.code', 'CÓDIGO RESERVA')}</th>
+                      <th>{t('admin.cash.table.fullName', 'NOMBRE COMPLETO')}</th>
+                      <th>{t('admin.cash.table.phone', 'TELÉFONO')}</th>
+                      <th>{t('admin.cash.table.paymentMethod', 'MEDIO DE PAGO')}</th>
+                      <th>{t('admin.cash.table.totalAmount', 'MONTO TOTAL')}</th>
+                      <th>{t('admin.cash.table.paymentStatus', 'ESTADO PAGO')}</th>
+                      <th>{t('admin.cash.table.receipt', 'COMPROBANTE DE PAGO')}</th>
+                      <th>{t('admin.cash.table.downloadReceipt', 'DESCARGAR COMPROBANTE')}</th>
+                      <th>{t('admin.cash.table.printReceipt', 'IMPRIMIR COMPROBANTE')}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -778,7 +778,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
 
                           <td>
                             <span style={{ color: 'var(--city-text, #0f172a)', fontSize: 13 }}>
-                              {formatCurrency(total, moneda)}
+                              {formatCurrency(total, moneda, tasaUSD)}
                             </span>
                           </td>
 
@@ -798,8 +798,8 @@ export default function CashCollectionPage({ branchOnly = false }) {
                                 outline: 'none'
                               }}
                             >
-                              <option value="pendiente">Pendiente</option>
-                              <option value="aprobado">Aprobado</option>
+                              <option value="pendiente">{t('admin.cash.status.pending', 'Pendiente')}</option>
+                              <option value="aprobado">{t('admin.cash.status.approved', 'Aprobado')}</option>
                             </select>
                           </td>
 
@@ -815,7 +815,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
                                   if (esPagadaEnEfectivo) { openModalCobro(r) } else { setComprobanteDigital(r) }
                                 }}
                               >
-                                <FaReceipt /> Ver
+                                <FaReceipt /> {t('admin.cash.actions.view', 'Ver')}
                               </button>
                             ) : esEfectivo ? (
                               <button
@@ -824,7 +824,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
                                 style={{ width: '80px', padding: '6px 10px', fontSize: '13px', background: '#f59e0b', borderColor: '#f59e0b', color: '#fff', whiteSpace: 'nowrap', textAlign: 'center' }}
                                 onClick={(e) => { e.stopPropagation(); openModalCobro(r) }}
                               >
-                                <FaMoneyBillWave /> Cobrar
+                                <FaMoneyBillWave /> {t('admin.cash.actions.charge', 'Cobrar')}
                               </button>
                             ) : (
                               <button type="button" className="cash-btn-primary" disabled style={{ width: '80px', padding: '6px 10px', fontSize: '13px', opacity: 0.4, cursor: 'not-allowed', whiteSpace: 'nowrap', textAlign: 'center' }}>
@@ -873,7 +873,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
                                 }
                               }}
                             >
-                              <FaFilePdf /> Descargar
+                              <FaFilePdf /> {t('admin.cash.actions.download', 'Descargar')}
                             </button>
                           </td>
 
@@ -951,7 +951,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
                     <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '12px', borderTop: '1px solid #e5e7eb', fontSize: '15px', alignItems: 'center' }}>
                       <span style={{ color: '#374151', fontWeight: 600 }}>Total a cobrar</span>
                       <strong style={{ color: '#10b981', fontSize: '20px', fontWeight: 800 }}>
-                        {formatCurrency(Number(modalReserva.totalCOP || modalReserva.total || 0), moneda)}
+                        {formatCurrency(Number(modalReserva.totalCOP || modalReserva.total || 0), moneda, tasaUSD)}
                       </strong>
                     </div>
                   </div>
@@ -1017,7 +1017,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
 
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <span style={{ fontSize: 16, fontWeight: 700 }}>TOTAL PAGADO</span>
-                        <span style={{ fontSize: 24, fontWeight: 800, color: '#10b981' }}>{formatCurrency(Number(modalReserva.totalCOP || modalReserva.total || 0), moneda)}</span>
+                        <span style={{ fontSize: 24, fontWeight: 800, color: '#10b981' }}>{formatCurrency(Number(modalReserva.totalCOP || modalReserva.total || 0), moneda, tasaUSD)}</span>
                       </div>
                       <div className="text-muted" style={{ fontSize: 11, marginTop: 4, textAlign: 'right' }}>Pago en Efectivo</div>
 
@@ -1077,7 +1077,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
               </div>
               <h2 style={{ fontSize: '22px', color: '#111827', fontWeight: 700, margin: '0 0 8px 0' }}>¡Pago aprobado!</h2>
               <div style={{ fontSize: '32px', color: '#00a650', fontWeight: 800, margin: '0 0 8px 0' }}>
-                {formatCurrency(Number(comprobanteDigital.totalCOP || comprobanteDigital.total || 0), moneda)}
+                {formatCurrency(Number(comprobanteDigital.totalCOP || comprobanteDigital.total || 0), moneda, tasaUSD)}
               </div>
               <div style={{ fontSize: '13px', color: '#6b7280' }}>
                 {format(new Date(), 'dd/MM/yyyy - HH:mm')}
