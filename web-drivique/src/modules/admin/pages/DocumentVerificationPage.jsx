@@ -37,20 +37,91 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
   const [search, setSearch] = useState('')
   const [activeTab, setActiveTab] = useState('todos') // 'todos' | 'pendientes' | 'aprobados' | 'rechazados'
   const [notice, setNotice] = useState('')
-
-  // Modal de Validación de Expediente
+  // Modal de Validación de Expediente
   const [modalItem, setModalItem] = useState(null)
   const [observaciones, setObservaciones] = useState('')
   const [zoomPdf, setZoomPdf] = useState(null)
 
+  // Estado del Modal de 2 Columnas
+  const [activeSection, setActiveSection] = useState('identidad') // 'identidad' | 'licencia' | 'reserva'
+  const [identidadPage, setIdentidadPage] = useState(1) // 1 | 2
+  const [licenciaPage, setLicenciaPage] = useState(1) // 1 | 2
+  const [errorMessage, setErrorMessage] = useState('')
+
   // Checklist Interactivo en el Modal
   const [modalChecklist, setModalChecklist] = useState({
-    cedulaLegible: false,
-    identidadCoincide: false,
-    licenciaVigente: false,
-    categoriaApta: false,
-    datosCompletos: false,
+    id_frente_reverso: false,
+    id_legible: false,
+    id_bordes: false,
+    id_vigente: false,
+    id_titular: false,
+    id_mayor_edad: false,
+    id_foto: false,
+    id_no_editada: false,
+    id_coinciden_lados: false,
+
+    lic_frente_reverso: false,
+    lic_legible: false,
+    lic_vigente_fechas: false,
+    lic_categoria_apta: false,
+    lic_datos_cedula: false,
+    lic_foto_cedula: false,
+    lic_antiguedad_minima: false,
+    lic_restricciones: false,
+    runt_activo: false,
+    runt_estado: false,
+    runt_categoria: false,
+    runt_vencimiento: false,
+    lic_no_editada: false,
+
+    res_titular_unico: false,
+    res_nombres_identicos: false,
+    res_datos_coinciden: false,
+    res_fechas_cobertura: false,
+    res_unicidad_cliente: false,
   })
+
+  const IDENTIDAD_KEYS = useMemo(() => [
+    'id_frente_reverso',
+    'id_legible',
+    'id_bordes',
+    'id_vigente',
+    'id_titular',
+    'id_mayor_edad',
+    'id_foto',
+    'id_no_editada',
+    'id_coinciden_lados',
+  ], [])
+
+  const LICENCIA_KEYS = useMemo(() => [
+    'lic_frente_reverso',
+    'lic_legible',
+    'lic_vigente_fechas',
+    'lic_categoria_apta',
+    'lic_datos_cedula',
+    'lic_foto_cedula',
+    'lic_antiguedad_minima',
+    'lic_restricciones',
+    'runt_activo',
+    'runt_estado',
+    'runt_categoria',
+    'runt_vencimiento',
+    'lic_no_editada',
+  ], [])
+
+  const RESERVA_KEYS = useMemo(() => [
+    'res_titular_unico',
+    'res_nombres_identicos',
+    'res_datos_coinciden',
+    'res_fechas_cobertura',
+    'res_unicidad_cliente',
+  ], [])
+
+  const countIdentidad = useMemo(() => IDENTIDAD_KEYS.filter((k) => modalChecklist[k]).length, [IDENTIDAD_KEYS, modalChecklist])
+  const countLicencia = useMemo(() => LICENCIA_KEYS.filter((k) => modalChecklist[k]).length, [LICENCIA_KEYS, modalChecklist])
+  const countReserva = useMemo(() => RESERVA_KEYS.filter((k) => modalChecklist[k]).length, [RESERVA_KEYS, modalChecklist])
+  const totalChecked = countIdentidad + countLicencia + countReserva
+  const totalPoints = 27
 
   // Obtener estado en tiempo real de las reservas asociadas
   const liveReservations = useMemo(() => {
@@ -126,20 +197,51 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
 
   const handleOpenReview = (item) => {
     setModalItem(item)
+    setActiveSection('identidad')
+    setIdentidadPage(1)
+    setLicenciaPage(1)
     setObservaciones(item.observaciones || '')
-    setModalChecklist(
-      item.checklist || {
-        cedulaLegible: item.estado === 'aprobado',
-        identidadCoincide: item.estado === 'aprobado',
-        licenciaVigente: item.estado === 'aprobado',
-        categoriaApta: item.estado === 'aprobado',
-        datosCompletos: item.estado === 'aprobado',
-      }
-    )
+    setErrorMessage('')
+
+    const isApproved = item.estado === 'aprobado'
+    const defaultChecklist = {
+      id_frente_reverso: isApproved,
+      id_legible: isApproved,
+      id_bordes: isApproved,
+      id_vigente: isApproved,
+      id_titular: isApproved,
+      id_mayor_edad: isApproved,
+      id_foto: isApproved,
+      id_no_editada: isApproved,
+      id_coinciden_lados: isApproved,
+
+      lic_frente_reverso: isApproved,
+      lic_legible: isApproved,
+      lic_vigente_fechas: isApproved,
+      lic_categoria_apta: isApproved,
+      lic_datos_cedula: isApproved,
+      lic_foto_cedula: isApproved,
+      lic_antiguedad_minima: isApproved,
+      lic_restricciones: isApproved,
+      runt_activo: isApproved,
+      runt_estado: isApproved,
+      runt_categoria: isApproved,
+      runt_vencimiento: isApproved,
+      lic_no_editada: isApproved,
+
+      res_titular_unico: isApproved,
+      res_nombres_identicos: isApproved,
+      res_datos_coinciden: isApproved,
+      res_fechas_cobertura: isApproved,
+      res_unicidad_cliente: isApproved,
+    }
+
+    setModalChecklist(item.checklist || defaultChecklist)
   }
 
   const handleToggleCheck = (key) => {
     setModalChecklist((prev) => ({ ...prev, [key]: !prev[key] }))
+    if (errorMessage) setErrorMessage('')
   }
 
   const renderDocPreview = (url, titleLabel) => {
@@ -157,7 +259,7 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
     if (!isPdf) {
       return (
         <div className="doc-preview-container" onClick={() => setZoomPdf({ url, title: titleLabel })} title={t('admin.documents.modal.clickToZoom', 'Clic para ampliar documento')}>
-          <img src={url} alt={titleLabel} className="doc-preview-img" />
+          <img src={url} alt={titleLabel} className="doc-preview-img" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           <div className="doc-preview-hover-overlay">
             <FaEye /> {t('admin.documents.modal.zoomLabel', 'Ampliar')}
           </div>
@@ -172,6 +274,7 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
           title={titleLabel}
           className="doc-preview-iframe"
           scrolling="no"
+          style={{ width: '100%', height: '100%', border: 'none' }}
         />
         <div className="doc-preview-hover-overlay">
           <FaEye /> {t('admin.documents.modal.zoomPdfLabel', 'Ampliar PDF')}
@@ -183,6 +286,11 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
   const handleAprobarDocumento = async () => {
     if (!modalItem) return
 
+    if (totalChecked < totalPoints) {
+      setErrorMessage(t('admin.documents.modal.errorCheckAll', 'Marca todos los puntos para aprobar'))
+      return
+    }
+
     documentVerificationService.actualizarEstado(
       modalItem.id,
       'aprobado',
@@ -192,36 +300,33 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
     )
     setVerifications(documentVerificationService.list(user))
     setModalItem(null)
-    setNotice(`âœ… ${t('admin.documents.alerts.approvedNotice', 'Los documentos de {{name}} ({{code}}) fueron aprobados.', { name: modalItem.clienteNombre, code: modalItem.reservaCodigo })}`)
+    setNotice(`✅ ${t('admin.documents.alerts.approvedNotice', 'Los documentos de {{name}} ({{code}}) fueron aprobados.', { name: modalItem.clienteNombre, code: modalItem.reservaCodigo })}`)
 
     showAlert({
       icon: 'success',
       title: t('admin.documents.alerts.approvedTitle', 'Documentación Aprobada'),
-      text: t('admin.documents.alerts.approvedText', 'Se ha confirmado la aprobación de documentos para la reserva {{code}}. Se envió confirmación al correo del cliente y a su panel de notificaciones.', { code: modalItem.reservaCodigo }),
+      text: t('admin.documents.alerts.approvedText', 'Se ha confirmado la aprobación de documentos para la reserva {{code}}.', { code: modalItem.reservaCodigo }),
     })
   }
 
   const handleRechazarDocumento = async () => {
     if (!modalItem) return
+
     if (!observaciones.trim()) {
-      showAlert({
-        icon: 'warning',
-        title: t('admin.documents.alerts.reasonRequiredTitle', 'Motivo requerido'),
-        text: t('admin.documents.alerts.reasonRequiredText', 'Por favor indica la razón del rechazo para que el cliente sepa qué documento corregir.'),
-      })
+      setErrorMessage(t('admin.documents.modal.errorObsRequired', 'Escribe el motivo del rechazo'))
       return
     }
 
     documentVerificationService.actualizarEstado(
       modalItem.id,
       'rechazado',
-      observaciones,
+      observaciones.trim(),
       user?.nombre || 'Encargado de Sucursal',
       modalChecklist
     )
     setVerifications(documentVerificationService.list(user))
     setModalItem(null)
-    setNotice(`âŒ ${t('admin.documents.alerts.rejectedNotice', 'Se registró el rechazo de documentos para la reserva {{code}}.', { code: modalItem.reservaCodigo })}`)
+    setNotice(`❌ ${t('admin.documents.alerts.rejectedNotice', 'Se registró el rechazo de documentos para la reserva {{code}}.', { code: modalItem.reservaCodigo })}`)
 
     showAlert({
       icon: 'error',
@@ -714,227 +819,584 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
             )}
           </section>
         </div>
-
-        {/* Modal de Validación con Checklist Independiente por Documento */}
         {modalItem && (
           <div
-            className="cities-modal-backdrop"
+            className="doc-modal-overlay"
             onClick={() => setModalItem(null)}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              position: 'fixed',
-              inset: 0,
-              zIndex: 1000,
-              background: 'rgba(15, 23, 42, 0.65)',
-              backdropFilter: 'blur(4px)',
-              padding: 16,
-            }}
           >
-            <div className="doc-modal-card" onClick={(e) => e.stopPropagation()}>
-              
-              {/* Header Limpio del Modal */}
-              <div className="doc-modal-header">
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                    <h2 style={{ margin: 0, fontSize: 18, fontWeight: 800, color: 'var(--city-text, #0f172a)' }}>
-                      {t('admin.documents.modal.title', 'Validar Documentos')}
-                    </h2>
-                    <span style={{ fontSize: 12, fontWeight: 700, padding: '2px 8px', borderRadius: 6, background: 'var(--city-soft, #eff6ff)', color: '#2563eb', border: '1px solid #bfdbfe' }}>
-                      {modalItem.reservaCodigo}
-                    </span>
-                  </div>
-                  <p style={{ margin: 0, fontSize: 12.5, color: 'var(--city-muted, #64748b)' }}>
-                    {t('admin.documents.modal.vehicle', 'Vehículo')}: <strong>{modalItem.vehiculoNombre || modalItem.vehiculo || 'Vehículo Reservado'}</strong>
+            <div className="doc-modal-container" onClick={(e) => e.stopPropagation()}>
+              {/* ENCABEZADO FIJO */}
+              <header className="doc-modal-header-fixed">
+                <div className="doc-modal-header-info">
+                  <h2 className="doc-modal-title">Validar documentos</h2>
+                  <p className="doc-modal-subtitle">
+                    Reserva N.º {modalItem.reservaCodigo} · Cliente: {modalItem.clienteNombre}
                   </p>
                 </div>
                 <button
                   type="button"
+                  className="doc-modal-close-x"
                   onClick={() => setModalItem(null)}
-                  title={t('admin.documents.modal.closeBtn', 'Cerrar')}
-                  style={{
-                    background: 'transparent',
-                    border: 'none',
-                    fontSize: 26,
-                    lineHeight: 1,
-                    cursor: 'pointer',
-                    color: 'var(--city-muted, #64748b)',
-                    padding: '0 2px',
-                    flexShrink: 0,
-                    fontWeight: 300,
-                  }}
+                  title="Cerrar"
                 >
                   &times;
                 </button>
-              </div>
+              </header>
 
-              {/* Tira Resumen de Datos Clave */}
-              <div className="doc-modal-summary-strip">
-                <div>
-                  <span style={{ color: 'var(--city-muted, #64748b)', fontSize: 11, display: 'block', marginBottom: 2 }}>{t('admin.documents.modal.client', 'Cliente / Titular')}</span>
-                  <strong style={{ fontSize: 13, color: 'var(--city-text, #0f172a)' }}>{modalItem.clienteNombre}</strong>
-                </div>
-                <div>
-                  <span style={{ color: 'var(--city-muted, #64748b)', fontSize: 11, display: 'block', marginBottom: 2 }}>{t('admin.documents.modal.docNumber', 'No. Documento')}</span>
-                  <strong style={{ fontSize: 13, color: 'var(--city-text, #0f172a)' }}>{modalItem.documentoIdentidad}</strong>
-                </div>
-                <div>
-                  <span style={{ color: 'var(--city-muted, #64748b)', fontSize: 11, display: 'block', marginBottom: 2 }}>{t('admin.documents.modal.license', 'Licencia')}</span>
-                  <strong style={{ fontSize: 13, color: 'var(--city-text, #0f172a)' }}>
-                    {modalItem.numeroLicencia} ({modalItem.categoriaLicencia})
-                  </strong>
-                </div>
-              </div>
+              {/* CUERPO EN DOS COLUMNAS */}
+              <div className="doc-modal-body-columns">
+                {/* COLUMNA IZQUIERDA (Gris claro) */}
+                <div className="doc-modal-left-col">
+                  {/* Botones Pequeños de Navegación entre Secciones */}
+                  <div className="doc-section-nav-buttons">
+                    <button
+                      type="button"
+                      className={`doc-nav-btn ${activeSection === 'identidad' ? 'is-active' : ''}`}
+                      onClick={() => setActiveSection('identidad')}
+                    >
+                      <span>Identidad</span>
+                      <span className="doc-nav-btn-badge">
+                        {countIdentidad}/9 {countIdentidad === 9 ? '✔' : ''}
+                      </span>
+                    </button>
 
-              {/* TARJETA DOCUMENTO 1: CÉDULA DE IDENTIDAD */}
-              <div className="doc-item-card">
-                <div className="doc-item-card-header">
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <FaIdCard style={{ color: '#2563eb', fontSize: 16 }} />
-                    <span style={{ fontWeight: 800, fontSize: 14, color: 'var(--city-text, #0f172a)' }}>
-                      {t('admin.documents.modal.idDocCard', 'Cédula de Identidad')}
-                    </span>
+                    <button
+                      type="button"
+                      className={`doc-nav-btn ${activeSection === 'licencia' ? 'is-active' : ''}`}
+                      onClick={() => setActiveSection('licencia')}
+                    >
+                      <span>Licencia</span>
+                      <span className="doc-nav-btn-badge">
+                        {countLicencia}/13 {countLicencia === 13 ? '✔' : ''}
+                      </span>
+                    </button>
+
+                    <button
+                      type="button"
+                      className={`doc-nav-btn ${activeSection === 'reserva' ? 'is-active' : ''}`}
+                      onClick={() => setActiveSection('reserva')}
+                    >
+                      <span>Reserva</span>
+                      <span className="doc-nav-btn-badge">
+                        {countReserva}/5 {countReserva === 5 ? '✔' : ''}
+                      </span>
+                    </button>
                   </div>
-                  <span className="doc-item-card-subinfo">
-                    {t('admin.documents.modal.docNumber', 'No. Documento')}: <strong>{modalItem.documentoIdentidad}</strong>
-                  </span>
-                </div>
-                <div className="doc-item-card-grid">
-                  <div>
-                    {renderDocPreview(
-                      modalItem.fotoCedulaFrente || modalItem.pdfCedulaUrl,
-                      `${t('admin.documents.modal.idDocCard', 'Cédula de Identidad')} - ${modalItem.clienteNombre}`
-                    )}
-                  </div>
-                  <div>
-                    <div className="doc-checklist-box" style={{ marginBottom: 0 }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12.5, fontWeight: 700, color: 'var(--city-text, #0f172a)', marginBottom: 10 }}>
-                        <FaShieldAlt style={{ color: '#2563eb' }} />
-                        <span>{t('admin.documents.modal.idChecklistTitle', 'Verificación de Cédula')}</span>
+
+                  {/* VISTA PREVIA SEGÚN SECCIÓN ACTIVA */}
+                  {activeSection === 'identidad' && (
+                    <div className="doc-left-preview-box">
+                      <div className="doc-sheet-card">
+                        {renderDocPreview(
+                          identidadPage === 1
+                            ? (modalItem.fotoCedulaFrente || modalItem.pdfCedulaUrl)
+                            : (modalItem.fotoCedulaReverso || modalItem.pdfCedulaUrl),
+                          `Cédula - Página ${identidadPage}`
+                        )}
                       </div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                        <div className="doc-check-item" onClick={() => handleToggleCheck('cedulaLegible')}>
-                          {modalChecklist.cedulaLegible ? <FaCheckSquare style={{ color: '#16a34a', fontSize: 16, flexShrink: 0 }} /> : <FaRegSquare style={{ color: '#94a3b8', fontSize: 16, flexShrink: 0 }} />}
-                          <span style={{ color: modalChecklist.cedulaLegible ? '#16a34a' : 'var(--city-text, #334155)', fontWeight: modalChecklist.cedulaLegible ? 600 : 400 }}>
-                            {t('admin.documents.modal.check1', '1. Cédula de Identidad es legible, nítida y completa.')}
-                          </span>
+                      <div className="doc-page-switch-buttons">
+                        <button
+                          type="button"
+                          className={`doc-page-btn ${identidadPage === 1 ? 'is-active' : ''}`}
+                          onClick={() => setIdentidadPage(1)}
+                        >
+                          Frente
+                        </button>
+                        <button
+                          type="button"
+                          className={`doc-page-btn ${identidadPage === 2 ? 'is-active' : ''}`}
+                          onClick={() => setIdentidadPage(2)}
+                        >
+                          Reverso
+                        </button>
+                      </div>
+                      <p className="doc-page-info-text">
+                        PDF · {modalItem.documentoIdentidadPdf || `Cedula-${modalItem.documentoIdentidad}.pdf`} · página {identidadPage} de 2
+                      </p>
+                    </div>
+                  )}
+
+                  {activeSection === 'licencia' && (
+                    <div className="doc-left-preview-box">
+                      <div className="doc-sheet-card">
+                        {renderDocPreview(
+                          licenciaPage === 1
+                            ? (modalItem.fotoLicenciaFrente || modalItem.pdfLicenciaUrl)
+                            : (modalItem.fotoLicenciaReverso || modalItem.pdfLicenciaUrl),
+                          `Licencia - Página ${licenciaPage}`
+                        )}
+                      </div>
+                      <div className="doc-page-switch-buttons">
+                        <button
+                          type="button"
+                          className={`doc-page-btn ${licenciaPage === 1 ? 'is-active' : ''}`}
+                          onClick={() => setLicenciaPage(1)}
+                        >
+                          Frente
+                        </button>
+                        <button
+                          type="button"
+                          className={`doc-page-btn ${licenciaPage === 2 ? 'is-active' : ''}`}
+                          onClick={() => setLicenciaPage(2)}
+                        >
+                          Reverso
+                        </button>
+                      </div>
+                      <p className="doc-page-info-text">
+                        PDF · {modalItem.licenciaConduccionPdf || `Licencia-${modalItem.documentoIdentidad}.pdf`} · página {licenciaPage} de 2
+                      </p>
+                    </div>
+                  )}
+
+                  {activeSection === 'reserva' && (
+                    <div className="doc-left-reserva-comparison">
+                      <h4 className="doc-reserva-card-title">Datos de la Reserva para Comparar</h4>
+                      <div className="doc-reserva-card-body">
+                        <div className="doc-reserva-row">
+                          <span className="label">Cliente / Titular:</span>
+                          <span className="value">{modalItem.clienteNombre}</span>
                         </div>
-                        <div className="doc-check-item" onClick={() => handleToggleCheck('identidadCoincide')}>
-                          {modalChecklist.identidadCoincide ? <FaCheckSquare style={{ color: '#16a34a', fontSize: 16, flexShrink: 0 }} /> : <FaRegSquare style={{ color: '#94a3b8', fontSize: 16, flexShrink: 0 }} />}
-                          <span style={{ color: modalChecklist.identidadCoincide ? '#16a34a' : 'var(--city-text, #334155)', fontWeight: modalChecklist.identidadCoincide ? 600 : 400 }}>
-                            {t('admin.documents.modal.check2', '2. Número de documento y nombre coinciden con la reserva.')}
-                          </span>
+                        <div className="doc-reserva-row">
+                          <span className="label">Número de Documento:</span>
+                          <span className="value">{modalItem.documentoIdentidad}</span>
+                        </div>
+                        <div className="doc-reserva-row">
+                          <span className="label">Licencia / Categoría:</span>
+                          <span className="value">{modalItem.numeroLicencia} ({modalItem.categoriaLicencia || 'B1'})</span>
+                        </div>
+                        <div className="doc-reserva-row">
+                          <span className="label">Vehículo Reservado:</span>
+                          <span className="value">{modalItem.vehiculoNombre || modalItem.vehiculo || 'Vehículo Reservado'}</span>
+                        </div>
+                        <div className="doc-reserva-row">
+                          <span className="label">Fecha Inicio Alquiler:</span>
+                          <span className="value">{modalItem.fechaInicio || '10 Oct 2026'}</span>
+                        </div>
+                        <div className="doc-reserva-row">
+                          <span className="label">Fecha Fin Alquiler:</span>
+                          <span className="value">{modalItem.fechaFin || '15 Oct 2026'}</span>
                         </div>
                       </div>
                     </div>
-                  </div>
+                  )}
                 </div>
-              </div>
 
-              {/* TARJETA DOCUMENTO 2: LICENCIA DE CONDUCCIÓN */}
-              <div className="doc-item-card">
-                <div className="doc-item-card-header">
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <FaIdCard style={{ color: '#2563eb', fontSize: 16 }} />
-                    <span style={{ fontWeight: 800, fontSize: 14, color: 'var(--city-text, #0f172a)' }}>
-                      {t('admin.documents.modal.licenseCard', 'Licencia de Conducción')}
-                    </span>
-                  </div>
-                  <span className="doc-item-card-subinfo">
-                    {t('admin.documents.modal.license', 'Licencia')}: <strong>{modalItem.numeroLicencia} ({modalItem.categoriaLicencia})</strong>
-                  </span>
-                </div>
-                <div className="doc-item-card-grid">
-                  <div>
-                    {renderDocPreview(
-                      modalItem.fotoLicenciaFrente || modalItem.pdfLicenciaUrl,
-                      `${t('admin.documents.modal.licenseCard', 'Licencia de Conducción')} - ${modalItem.clienteNombre}`
-                    )}
-                  </div>
-                  <div>
-                    <div className="doc-checklist-box" style={{ marginBottom: 0 }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12.5, fontWeight: 700, color: 'var(--city-text, #0f172a)', marginBottom: 10 }}>
-                        <FaShieldAlt style={{ color: '#2563eb' }} />
-                        <span>{t('admin.documents.modal.licenseChecklistTitle', 'Verificación de Licencia')}</span>
+                {/* COLUMNA DERECHA (Blanca con Checklist) */}
+                <div className="doc-modal-right-col">
+                  {/* SECCIÓN IDENTIDAD */}
+                  {activeSection === 'identidad' && (
+                    <div className="doc-checklist-section">
+                      <h3 className="doc-section-title">Documento de identidad</h3>
+
+                      <div className="doc-checklist-group">
+                        <h4 className="doc-group-subtitle">El archivo</h4>
+                        
+                        <label className="doc-check-row">
+                          <input
+                            type="checkbox"
+                            checked={!!modalChecklist.id_frente_reverso}
+                            onChange={() => handleToggleCheck('id_frente_reverso')}
+                          />
+                          <span className={`doc-check-text ${modalChecklist.id_frente_reverso ? 'is-checked' : ''}`}>
+                            Tiene frente y reverso.
+                          </span>
+                        </label>
+
+                        <label className="doc-check-row">
+                          <input
+                            type="checkbox"
+                            checked={!!modalChecklist.id_legible}
+                            onChange={() => handleToggleCheck('id_legible')}
+                          />
+                          <span className={`doc-check-text ${modalChecklist.id_legible ? 'is-checked' : ''}`}>
+                            Se lee todo, sin partes borrosas, cortadas ni con reflejos.
+                          </span>
+                        </label>
+
+                        <label className="doc-check-row">
+                          <input
+                            type="checkbox"
+                            checked={!!modalChecklist.id_bordes}
+                            onChange={() => handleToggleCheck('id_bordes')}
+                          />
+                          <span className={`doc-check-text ${modalChecklist.id_bordes ? 'is-checked' : ''}`}>
+                            Se ven los 4 bordes del documento.
+                          </span>
+                        </label>
                       </div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                        <div className="doc-check-item" onClick={() => handleToggleCheck('licenciaVigente')}>
-                          {modalChecklist.licenciaVigente ? <FaCheckSquare style={{ color: '#16a34a', fontSize: 16, flexShrink: 0 }} /> : <FaRegSquare style={{ color: '#94a3b8', fontSize: 16, flexShrink: 0 }} />}
-                          <span style={{ color: modalChecklist.licenciaVigente ? '#16a34a' : 'var(--city-text, #334155)', fontWeight: modalChecklist.licenciaVigente ? 600 : 400 }}>
-                            {t('admin.documents.modal.check3', '3. La Licencia de Conducción se encuentra vigente durante todo el alquiler.')}
+
+                      <div className="doc-checklist-group">
+                        <h4 className="doc-group-subtitle">Los datos</h4>
+
+                        <label className="doc-check-row">
+                          <input
+                            type="checkbox"
+                            checked={!!modalChecklist.id_vigente}
+                            onChange={() => handleToggleCheck('id_vigente')}
+                          />
+                          <span className={`doc-check-text ${modalChecklist.id_vigente ? 'is-checked' : ''}`}>
+                            No está vencido (aplica a pasaporte y cédula de extranjería).
                           </span>
-                        </div>
-                        <div className="doc-check-item" onClick={() => handleToggleCheck('categoriaApta')}>
-                          {modalChecklist.categoriaApta ? <FaCheckSquare style={{ color: '#16a34a', fontSize: 16, flexShrink: 0 }} /> : <FaRegSquare style={{ color: '#94a3b8', fontSize: 16, flexShrink: 0 }} />}
-                          <span style={{ color: modalChecklist.categoriaApta ? '#16a34a' : 'var(--city-text, #334155)', fontWeight: modalChecklist.categoriaApta ? 600 : 400 }}>
-                            {t('admin.documents.modal.check4', '4. La categoría de la licencia autoriza conducir el tipo de vehículo.')}
+                        </label>
+
+                        <label className="doc-check-row">
+                          <input
+                            type="checkbox"
+                            checked={!!modalChecklist.id_titular}
+                            onChange={() => handleToggleCheck('id_titular')}
+                          />
+                          <span className={`doc-check-text ${modalChecklist.id_titular ? 'is-checked' : ''}`}>
+                            El nombre y el número son los del titular de la reserva.
                           </span>
-                        </div>
+                        </label>
+
+                        <label className="doc-check-row">
+                          <input
+                            type="checkbox"
+                            checked={!!modalChecklist.id_mayor_edad}
+                            onChange={() => handleToggleCheck('id_mayor_edad')}
+                          />
+                          <span className={`doc-check-text ${modalChecklist.id_mayor_edad ? 'is-checked' : ''}`}>
+                            La fecha de nacimiento confirma que es mayor de edad.
+                          </span>
+                        </label>
+
+                        <label className="doc-check-row">
+                          <input
+                            type="checkbox"
+                            checked={!!modalChecklist.id_foto}
+                            onChange={() => handleToggleCheck('id_foto')}
+                          />
+                          <span className={`doc-check-text ${modalChecklist.id_foto ? 'is-checked' : ''}`}>
+                            La foto se parece al titular.
+                          </span>
+                        </label>
+                      </div>
+
+                      <div className="doc-checklist-group">
+                        <h4 className="doc-group-subtitle">Que sea real</h4>
+
+                        <label className="doc-check-row">
+                          <input
+                            type="checkbox"
+                            checked={!!modalChecklist.id_no_editada}
+                            onChange={() => handleToggleCheck('id_no_editada')}
+                          />
+                          <span className={`doc-check-text ${modalChecklist.id_no_editada ? 'is-checked' : ''}`}>
+                            No se ve editado (letras chuecas, fondo raro, foto pegada, tachones).
+                          </span>
+                        </label>
+
+                        <label className="doc-check-row">
+                          <input
+                            type="checkbox"
+                            checked={!!modalChecklist.id_coinciden_lados}
+                            onChange={() => handleToggleCheck('id_coinciden_lados')}
+                          />
+                          <span className={`doc-check-text ${modalChecklist.id_coinciden_lados ? 'is-checked' : ''}`}>
+                            Frente y reverso son del mismo documento.
+                          </span>
+                        </label>
                       </div>
                     </div>
+                  )}
+
+                  {/* SECCIÓN LICENCIA */}
+                  {activeSection === 'licencia' && (
+                    <div className="doc-checklist-section">
+                      <h3 className="doc-section-title">Licencia de conducción</h3>
+
+                      <div className="doc-checklist-group">
+                        <h4 className="doc-group-subtitle">El archivo</h4>
+
+                        <label className="doc-check-row">
+                          <input
+                            type="checkbox"
+                            checked={!!modalChecklist.lic_frente_reverso}
+                            onChange={() => handleToggleCheck('lic_frente_reverso')}
+                          />
+                          <span className={`doc-check-text ${modalChecklist.lic_frente_reverso ? 'is-checked' : ''}`}>
+                            Tiene frente y reverso.
+                          </span>
+                        </label>
+
+                        <label className="doc-check-row">
+                          <input
+                            type="checkbox"
+                            checked={!!modalChecklist.lic_legible}
+                            onChange={() => handleToggleCheck('lic_legible')}
+                          />
+                          <span className={`doc-check-text ${modalChecklist.lic_legible ? 'is-checked' : ''}`}>
+                            Se lee todo, sin partes borrosas, cortadas ni con reflejos.
+                          </span>
+                        </label>
+                      </div>
+
+                      <div className="doc-checklist-group">
+                        <h4 className="doc-group-subtitle">Los datos</h4>
+
+                        <label className="doc-check-row">
+                          <input
+                            type="checkbox"
+                            checked={!!modalChecklist.lic_vigente_fechas}
+                            onChange={() => handleToggleCheck('lic_vigente_fechas')}
+                          />
+                          <span className={`doc-check-text ${modalChecklist.lic_vigente_fechas ? 'is-checked' : ''}`}>
+                            Está vigente hasta después de la fecha de fin del alquiler ({modalItem.fechaFin || '15 Oct 2026'}).
+                          </span>
+                        </label>
+
+                        <label className="doc-check-row">
+                          <input
+                            type="checkbox"
+                            checked={!!modalChecklist.lic_categoria_apta}
+                            onChange={() => handleToggleCheck('lic_categoria_apta')}
+                          />
+                          <span className={`doc-check-text ${modalChecklist.lic_categoria_apta ? 'is-checked' : ''}`}>
+                            La categoría ({modalItem.categoriaLicencia || 'B1'}) sirve para el vehículo reservado ({modalItem.vehiculoNombre || modalItem.vehiculo || 'Vehículo'}).
+                          </span>
+                        </label>
+
+                        <label className="doc-check-row">
+                          <input
+                            type="checkbox"
+                            checked={!!modalChecklist.lic_datos_cedula}
+                            onChange={() => handleToggleCheck('lic_datos_cedula')}
+                          />
+                          <span className={`doc-check-text ${modalChecklist.lic_datos_cedula ? 'is-checked' : ''}`}>
+                            El nombre y el número son los mismos de la cédula.
+                          </span>
+                        </label>
+
+                        <label className="doc-check-row">
+                          <input
+                            type="checkbox"
+                            checked={!!modalChecklist.lic_foto_cedula}
+                            onChange={() => handleToggleCheck('lic_foto_cedula')}
+                          />
+                          <span className={`doc-check-text ${modalChecklist.lic_foto_cedula ? 'is-checked' : ''}`}>
+                            La foto es la misma persona de la cédula.
+                          </span>
+                        </label>
+
+                        <label className="doc-check-row">
+                          <input
+                            type="checkbox"
+                            checked={!!modalChecklist.lic_antiguedad_minima}
+                            onChange={() => handleToggleCheck('lic_antiguedad_minima')}
+                          />
+                          <span className={`doc-check-text ${modalChecklist.lic_antiguedad_minima ? 'is-checked' : ''}`}>
+                            La fecha de expedición cumple la antigüedad mínima de la empresa.
+                          </span>
+                        </label>
+
+                        <label className="doc-check-row">
+                          <input
+                            type="checkbox"
+                            checked={!!modalChecklist.lic_restricciones}
+                            onChange={() => handleToggleCheck('lic_restricciones')}
+                          />
+                          <span className={`doc-check-text ${modalChecklist.lic_restricciones ? 'is-checked' : ''}`}>
+                            Se revisaron las restricciones (ej. uso de lentes) y se informaron al cliente.
+                          </span>
+                        </label>
+                      </div>
+
+                      {/* GRUPO RUNT */}
+                      <div className="doc-checklist-group doc-runt-group">
+                        <div className="doc-runt-group-header">
+                          <h4 className="doc-group-subtitle" style={{ margin: 0, color: '#0369a1' }}>
+                            Verificación en el RUNT
+                          </h4>
+                          <a
+                            href="https://www.runt.gov.co/actores/ciudadano/consulta-por-tipo-de-documento"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="doc-runt-btn"
+                          >
+                            Abrir RUNT ↗
+                          </a>
+                        </div>
+                        <p className="doc-runt-subtext">
+                          Consulta por tipo y número de documento. Pide captcha, hazlo en la pestaña que se abre.
+                        </p>
+
+                        <label className="doc-check-row">
+                          <input
+                            type="checkbox"
+                            checked={!!modalChecklist.runt_activo}
+                            onChange={() => handleToggleCheck('runt_activo')}
+                          />
+                          <span className={`doc-check-text ${modalChecklist.runt_activo ? 'is-checked' : ''}`}>
+                            Consulté en el RUNT con el tipo y número de documento del titular.
+                          </span>
+                        </label>
+
+                        <label className="doc-check-row">
+                          <input
+                            type="checkbox"
+                            checked={!!modalChecklist.runt_estado}
+                            onChange={() => handleToggleCheck('runt_estado')}
+                          />
+                          <span className={`doc-check-text ${modalChecklist.runt_estado ? 'is-checked' : ''}`}>
+                            El estado de la persona y de la licencia es activo (sin suspensión ni cancelación).
+                          </span>
+                        </label>
+
+                        <label className="doc-check-row">
+                          <input
+                            type="checkbox"
+                            checked={!!modalChecklist.runt_categoria}
+                            onChange={() => handleToggleCheck('runt_categoria')}
+                          />
+                          <span className={`doc-check-text ${modalChecklist.runt_categoria ? 'is-checked' : ''}`}>
+                            La categoría del RUNT es la misma del PDF.
+                          </span>
+                        </label>
+
+                        <label className="doc-check-row">
+                          <input
+                            type="checkbox"
+                            checked={!!modalChecklist.runt_vencimiento}
+                            onChange={() => handleToggleCheck('runt_vencimiento')}
+                          />
+                          <span className={`doc-check-text ${modalChecklist.runt_vencimiento ? 'is-checked' : ''}`}>
+                            La fecha de vencimiento del RUNT es la misma del PDF.
+                          </span>
+                        </label>
+                      </div>
+
+                      <div className="doc-checklist-group">
+                        <h4 className="doc-group-subtitle">Que sea real</h4>
+
+                        <label className="doc-check-row">
+                          <input
+                            type="checkbox"
+                            checked={!!modalChecklist.lic_no_editada}
+                            onChange={() => handleToggleCheck('lic_no_editada')}
+                          />
+                          <span className={`doc-check-text ${modalChecklist.lic_no_editada ? 'is-checked' : ''}`}>
+                            No se ve editada (letras chuecas, fondo raro, foto pegada, tachones).
+                          </span>
+                        </label>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* SECCIÓN RESERVA */}
+                  {activeSection === 'reserva' && (
+                    <div className="doc-checklist-section">
+                      <h3 className="doc-section-title">Revisión cruzada de reserva</h3>
+
+                      <div className="doc-checklist-group">
+                        <h4 className="doc-group-subtitle">Validación cruzada de coincidencia</h4>
+
+                        <label className="doc-check-row">
+                          <input
+                            type="checkbox"
+                            checked={!!modalChecklist.res_titular_unico}
+                            onChange={() => handleToggleCheck('res_titular_unico')}
+                          />
+                          <span className={`doc-check-text ${modalChecklist.res_titular_unico ? 'is-checked' : ''}`}>
+                            Los documentos son del mismo titular que hizo la reserva.
+                          </span>
+                        </label>
+
+                        <label className="doc-check-row">
+                          <input
+                            type="checkbox"
+                            checked={!!modalChecklist.res_nombres_identicos}
+                            onChange={() => handleToggleCheck('res_nombres_identicos')}
+                          />
+                          <span className={`doc-check-text ${modalChecklist.res_nombres_identicos ? 'is-checked' : ''}`}>
+                            El nombre y el número son idénticos en la cédula y la licencia.
+                          </span>
+                        </label>
+
+                        <label className="doc-check-row">
+                          <input
+                            type="checkbox"
+                            checked={!!modalChecklist.res_datos_coinciden}
+                            onChange={() => handleToggleCheck('res_datos_coinciden')}
+                          />
+                          <span className={`doc-check-text ${modalChecklist.res_datos_coinciden ? 'is-checked' : ''}`}>
+                            Los datos de esta reserva coinciden con los de los PDF.
+                          </span>
+                        </label>
+
+                        <label className="doc-check-row">
+                          <input
+                            type="checkbox"
+                            checked={!!modalChecklist.res_fechas_cobertura}
+                            onChange={() => handleToggleCheck('res_fechas_cobertura')}
+                          />
+                          <span className={`doc-check-text ${modalChecklist.res_fechas_cobertura ? 'is-checked' : ''}`}>
+                            La licencia cubre todas las fechas de la reserva.
+                          </span>
+                        </label>
+
+                        <label className="doc-check-row">
+                          <input
+                            type="checkbox"
+                            checked={!!modalChecklist.res_unicidad_cliente}
+                            onChange={() => handleToggleCheck('res_unicidad_cliente')}
+                          />
+                          <span className={`doc-check-text ${modalChecklist.res_unicidad_cliente ? 'is-checked' : ''}`}>
+                            El documento no está asociado a otro cliente registrado.
+                          </span>
+                        </label>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* CAMPO DE OBSERVACIONES */}
+                  <div className="doc-modal-observaciones-box">
+                    <label className="doc-obs-label">
+                      Observaciones <span className="doc-obs-req">(Obligatorio si se rechaza)</span>
+                    </label>
+                    <textarea
+                      rows={3}
+                      className="doc-obs-textarea"
+                      value={observaciones}
+                      onChange={(e) => {
+                        setObservaciones(e.target.value)
+                        if (errorMessage) setErrorMessage('')
+                      }}
+                      placeholder="Escribe aquí las observaciones o el motivo de rechazo que se enviará al cliente..."
+                    />
                   </div>
                 </div>
               </div>
 
-              {/* OBSERVACIONES */}
-              <div style={{ marginBottom: 16 }}>
-                <label style={{ display: 'block', fontSize: 12, fontWeight: 700, marginBottom: 6, color: 'var(--city-muted, #64748b)' }}>
-                  {t('admin.documents.modal.observationsLabel', 'Observaciones / Motivo (se notificará al cliente):')}
-                </label>
-                <textarea
-                  rows={3}
-                  className="doc-modal-textarea"
-                  value={observaciones}
-                  onChange={(e) => setObservaciones(e.target.value)}
-                  placeholder={t('admin.documents.modal.observationsPlaceholder', 'Opcional al aprobar. Si rechazas, indica la razón para que el cliente la corrija...')}
-                  style={{ width: '100%', padding: '10px 12px', borderRadius: 10, border: '1.5px solid var(--city-border, #cbd5e1)', fontSize: 13, boxSizing: 'border-box', outline: 'none', fontFamily: 'inherit', resize: 'vertical', minHeight: '80px' }}
-                />
-              </div>
-
-              {/* BOTONES DE DECISIÓN (Sin botón Close) */}
-              <div className="doc-modal-decision-btns" style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 12, borderTop: '1px solid var(--city-border, #e2e8f0)', paddingTop: 16 }}>
-                <button
-                  type="button"
-                  onClick={handleRechazarDocumento}
-                  style={{
-                    padding: '10px 24px',
-                    borderRadius: 9999,
-                    background: '#dc2626',
-                    color: 'var(--city-card, #ffffff)',
-                    border: 'none',
-                    fontWeight: 800,
-                    fontSize: 13,
-                    cursor: 'pointer',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 6,
-                    boxShadow: '0 2px 6px rgba(220, 38, 38, 0.25)',
-                  }}
-                >
-                  {t('admin.documents.modal.rejectBtn', 'Desaprobado')}
-                </button>
-                <button
-                  type="button"
-                  onClick={handleAprobarDocumento}
-                  style={{
-                    padding: '10px 28px',
-                    borderRadius: 9999,
-                    background: '#16a34a',
-                    color: 'var(--city-card, #ffffff)',
-                    border: 'none',
-                    fontWeight: 800,
-                    fontSize: 13,
-                    cursor: 'pointer',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 6,
-                    boxShadow: '0 2px 6px rgba(22, 163, 74, 0.25)',
-                  }}
-                >
-                  {t('admin.documents.modal.approveBtn', 'Aprobado')}
-                </button>
-              </div>
+              {/* PIE FIJO */}
+              <footer className="doc-modal-footer-fixed">
+                {errorMessage && (
+                  <div className="doc-modal-error-banner">
+                    ⚠️ {errorMessage}
+                  </div>
+                )}
+                <div className="doc-modal-footer-bar">
+                  <div className="doc-modal-counter">
+                    <strong>{totalChecked} de {totalPoints}</strong> revisados
+                  </div>
+                  <div className="doc-modal-footer-btns">
+                    <button
+                      type="button"
+                      className="doc-btn-reject"
+                      onClick={handleRechazarDocumento}
+                    >
+                      Rechazar
+                    </button>
+                    <button
+                      type="button"
+                      className="doc-btn-approve"
+                      onClick={handleAprobarDocumento}
+                    >
+                      Aprobar
+                    </button>
+                  </div>
+                </div>
+              </footer>
             </div>
           </div>
         )}
