@@ -989,49 +989,65 @@ body.dark .branch-delivery-table tbody tr td,
   .branch-profile-row-grid,
   .branch-payment-methods-grid,
   .branch-profile-summary-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr !important;
   }
 
   .branch-profile-summary-row--col {
-    grid-column: span 1;
+    grid-column: span 1 !important;
   }
 
   .branch-profile-hero-banner {
-    flex-direction: column;
-    align-items: flex-start;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 16px !important;
   }
 
   .branch-profile-hero-actions {
-    width: 100%;
-    justify-content: flex-end;
+    width: 100% !important;
+    justify-content: flex-start !important;
+    flex-wrap: wrap !important;
+  }
+
+  .branch-delivery-table-wrap {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
   }
 }
 
 @media (max-width: 640px) {
   .branch-profile-main {
-    padding: 16px;
+    padding: 14px 12px 36px !important;
   }
 
   .branch-topbar {
-    flex-direction: column;
-    align-items: flex-start;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 12px !important;
   }
 
   .branch-profile-fields-row {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr !important;
   }
 
   .branch-profile-hero-title {
-    font-size: 20px;
+    font-size: 20px !important;
   }
 
   .branch-hero-btn {
-    width: 100%;
-    justify-content: center;
+    width: 100% !important;
+    justify-content: center !important;
   }
 
   .branch-profile-hero-actions {
-    flex-direction: column;
-    width: 100%;
+    flex-direction: column !important;
+    width: 100% !important;
+  }
+
+  .branch-payment-method-card {
+    padding: 14px !important;
+  }
+
+  .branch-profile-summary-card {
+    padding: 16px 14px !important;
   }
 }
