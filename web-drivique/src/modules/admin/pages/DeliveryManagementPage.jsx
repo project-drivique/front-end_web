@@ -186,9 +186,9 @@ export default function DeliveryManagementPage() {
           <header className="cities-topbar reservations-management-header">
             <div className="branch-topbar-brand-title">
               <span className="branch-topbar-badge">{t('admin.branchManagement', 'GESTION OPERATIVA')}</span>
-              <h1 className="branch-topbar-heading">{t('admin.delivery.title', 'Gestion de Domicilios')}</h1>
+              <h1 className="branch-topbar-heading">{t('admin.delivery.title', 'Domicilio Reserva')}</h1>
               <p className="cities-subtitle" style={{ color: 'var(--city-muted)', marginTop: 2 }}>
-                {t('admin.delivery.subtitle', 'Asignacion de conductores para entregas y recogidas a domicilio.')}
+                {t('admin.delivery.subtitle', 'Asignación de conductores para entregas y recogidas a domicilio de reservas.')}
               </p>
             </div>
             <div className="cities-topbar__actions" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -236,7 +236,7 @@ export default function DeliveryManagementPage() {
                 onClick={() => setActiveTab('todos')}
                 className={`fleet-tab-btn ${activeTab === 'todos' ? 'is-active' : ''}`}
               >
-                {t('admin.delivery.tabs.all', 'Todos los Domicilios')} ({reservations.length})
+                {t('admin.delivery.tabs.all', 'Todos los Domicilios Reserva')} ({reservations.length})
               </button>
               <button
                 type="button"
@@ -312,7 +312,7 @@ export default function DeliveryManagementPage() {
             {/* CONTADOR SUMARIO */}
             <div className="cities-summary" style={{ margin: '8px 0 12px' }}>
               <span>{filtrados.length}</span>{' '}
-              {t('admin.delivery.foundCount', 'DOMICILIOS EN EL LISTADO').toUpperCase()}
+              {t('admin.delivery.foundCount', 'DOMICILIOS RESERVA EN EL LISTADO').toUpperCase()}
             </div>
 
             {filtrados.length === 0 ? (

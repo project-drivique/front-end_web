@@ -82,7 +82,7 @@ const NAV_LABELS = {
   brand: 'Marca',
   reports: 'Reportes',
   audit: 'Auditoría',
-  deliveries: 'Domicilios',
+  deliveries: 'Domicilio Reserva',
 }
 
 /**
