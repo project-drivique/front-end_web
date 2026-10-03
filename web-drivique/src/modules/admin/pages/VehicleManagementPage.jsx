@@ -1,4 +1,4 @@
-﻿import { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   FaCamera,
@@ -47,7 +47,7 @@ const EMPTY = {
   transmision: "",
   combustible: "",
   color: "",
-  aÃ±o: "",
+  ano: "",
   sucursal: "",
   precioLimitado: "", // Used as Tarifa Diaria
   aplicaPicoYPlaca: "", // Pico y Placa manual override
@@ -254,8 +254,8 @@ export default function VehicleManagementPage() {
       vehicle.placa,
       ...(!esEncargado ? [vehicle.sucursal] : []),
       vehicle.categoria,
-      vehicle.aÃ±o || "â€”",
-      vehicle.color || "â€”",
+      vehicle.ano || vehicle.año || "—",
+      vehicle.color || "—",
       vehicle.transmision || t("admin.vehiclesManagement.transmission.automatic", "AutomÃ¡tica"),
       vehicle.combustible || t("admin.vehiclesManagement.fuel.gasoline", "Gasolina"),
       formatCurrency(
@@ -1475,8 +1475,8 @@ export default function VehicleManagementPage() {
                           {/* Columna Sucursal: Solo mostrada para Administrador General */}
                           {!esEncargado && <td>{vehicle.sucursal}</td>}
                           <td>{vehicle.categoria}</td>
-                          <td>{vehicle.aÃ±o || "â€”"}</td>
-                          <td>{vehicle.color || "â€”"}</td>
+                          <td>{vehicle.ano || vehicle.año || "—"}</td>
+                          <td>{vehicle.color || "—"}</td>
                           <td>{vehicle.transmision || "AutomÃ¡tica"}</td>
                           <td>{vehicle.combustible || "Gasolina"}</td>
                           <td>
@@ -1677,16 +1677,16 @@ export default function VehicleManagementPage() {
                           </div>
                         ) : (
                           <div>
-                            <label style={{ display: 'block', fontSize: '11px', color: 'var(--texto-second, #64748b)', marginBottom: '6px', fontWeight: 600 }}>{t("admin.vehiclesManagement.modal.year", "AÃ±o *")}</label>
-                            <input type="number" min="1990" max="2030" style={{ width: '100%', padding: '10px 14px', background: 'var(--bg-seccion1, #f8fafc)', border: 'none', borderRadius: '6px', fontSize: '13px', color: 'var(--texto-primary, #334155)', outline: 'none' }} value={form.aÃ±o} onChange={(e) => setForm({ ...form, aÃ±o: e.target.value })} placeholder={t("admin.vehiclesManagement.modal.placeholderYear", "Ej: 2024")} required />
+                            <label style={{ display: 'block', fontSize: '11px', color: 'var(--texto-second, #64748b)', marginBottom: '6px', fontWeight: 600 }}>{t("admin.vehiclesManagement.modal.year", "Año *")}</label>
+                            <input type="number" min="1990" max="2030" style={{ width: '100%', padding: '10px 14px', background: 'var(--bg-seccion1, #f8fafc)', border: 'none', borderRadius: '6px', fontSize: '13px', color: 'var(--texto-primary, #334155)', outline: 'none' }} value={form.ano} onChange={(e) => setForm({ ...form, ano: e.target.value })} placeholder={t("admin.vehiclesManagement.modal.placeholderYear", "Ej: 2024")} required />
                           </div>
                         )}
 
                         {/* If esEncargado is false, AÃ±o gets pushed to next spot to keep grid aligned */}
                         {!esEncargado && (
                           <div>
-                            <label style={{ display: 'block', fontSize: '11px', color: 'var(--texto-second, #64748b)', marginBottom: '6px', fontWeight: 600 }}>{t("admin.vehiclesManagement.modal.year", "AÃ±o *")}</label>
-                            <input type="number" min="1990" max="2030" style={{ width: '100%', padding: '10px 14px', background: 'var(--bg-seccion1, #f8fafc)', border: 'none', borderRadius: '6px', fontSize: '13px', color: 'var(--texto-primary, #334155)', outline: 'none' }} value={form.aÃ±o} onChange={(e) => setForm({ ...form, aÃ±o: e.target.value })} placeholder={t("admin.vehiclesManagement.modal.placeholderYear", "Ej: 2024")} required />
+                            <label style={{ display: 'block', fontSize: '11px', color: 'var(--texto-second, #64748b)', marginBottom: '6px', fontWeight: 600 }}>{t("admin.vehiclesManagement.modal.year", "Año *")}</label>
+                            <input type="number" min="1990" max="2030" style={{ width: '100%', padding: '10px 14px', background: 'var(--bg-seccion1, #f8fafc)', border: 'none', borderRadius: '6px', fontSize: '13px', color: 'var(--texto-primary, #334155)', outline: 'none' }} value={form.ano} onChange={(e) => setForm({ ...form, ano: e.target.value })} placeholder={t("admin.vehiclesManagement.modal.placeholderYear", "Ej: 2024")} required />
                           </div>
                         )}
 
