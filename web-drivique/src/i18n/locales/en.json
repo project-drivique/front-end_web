@@ -1191,8 +1191,8 @@
       }
     },
     "promotions": {
-      "title": "Promotions and coupons",
-      "subtitle": "Create controlled campaigns and manage their application rules.",
+      "title": "Promotion Management",
+      "subtitle": "Create controlled campaigns and manage coupons and promotions for users.",
       "create": "New promotion",
       "search": "Search by code, name or condition...",
       "filterStatus": "Filter by status",
@@ -1205,7 +1205,7 @@
       "deactivate": "Deactivate",
       "print": "Print",
       "results": "promotions found",
-      "emptyTitle": "No promotions",
+      "emptyTitle": "No promotions found",
       "emptyText": "Create a promotion to publish it to users.",
       "exportTitle": "Promotions and coupons - Drivique",
       "formLabel": "Campaign settings",
@@ -1254,6 +1254,68 @@
         "invalidPercentage": "The percentage must be between 1 and 100.",
         "invalidValue": "Enter a valid discount amount.",
         "notFound": "Promotion not found."
+      },
+      "searchPlaceholder": "Search by code, name, vehicle or condition...",
+      "foundCount": "PROMOTIONS & COUPONS IN LIST",
+      "createBtn": "Create Promotion",
+      "emptyDesc": "Click \"+ Create Promotion\" to register a new offer or coupon.",
+      "noMin": "No minimum",
+      "noCond": "No special conditions",
+      "viewDetailBtn": "View details",
+      "allVehicles": "All vehicles",
+      "categoryPrefix": "Category:",
+      "tabs": {
+        "all": "All Offers",
+        "coupons": "Coupons Only",
+        "promotions": "Promotions Only",
+        "active": "Active",
+        "inactive": "Inactive",
+        "featured": "Featured"
+      },
+      "kpi": {
+        "total": "Total Offers",
+        "totalDesc": "Registered coupons & promotions",
+        "active": "Active Offers",
+        "activeDesc": "Available for customers",
+        "featured": "Featured Offers",
+        "featuredDesc": "Priority catalog visibility",
+        "coupons": "Direct Coupons",
+        "couponsDesc": "Commercial redemption codes"
+      },
+      "table": {
+        "id": "ID",
+        "offerType": "OFFER TYPE",
+        "code": "CODE",
+        "name": "OFFER NAME",
+        "audience": "AUDIENCE",
+        "discount": "DISCOUNT",
+        "minimum": "MINIMUM RESERVATION",
+        "scope": "SCOPE / VEHICLE",
+        "start": "START DATE",
+        "end": "END DATE",
+        "conditions": "CONDITIONS",
+        "featured": "FEATURED",
+        "status": "STATUS",
+        "actions": "ACTIONS"
+      },
+      "offerTypes": {
+        "cupon": "Coupon",
+        "promocion": "Promotion"
+      },
+      "status": {
+        "active": "Active",
+        "inactive": "Inactive"
+      },
+      "featuredBadge": {
+        "yes": "Featured",
+        "no": "Standard"
+      },
+      "modal": {
+        "createTitle": "Create New Offer",
+        "editTitle": "Edit Offer",
+        "eyebrow": "CAMPAIGN MANAGEMENT",
+        "cancelBtn": "Cancel",
+        "saveBtn": "Save Offer"
       }
     },
     "incidentsTitle": "Vehicle Incident Reports",

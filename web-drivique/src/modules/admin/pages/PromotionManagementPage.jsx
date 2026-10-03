@@ -1,15 +1,38 @@
-﻿import { useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { FaCar, FaEdit, FaFileAlt, FaFileExcel, FaFilePdf, FaGift, FaInfoCircle, FaPlus, FaPrint, FaRegStar, FaSearch, FaStar, FaTag, FaToggleOff, FaToggleOn, FaTrash } from 'react-icons/fa'
+import {
+  FaSearch,
+  FaPlus,
+  FaEdit,
+  FaTrash,
+  FaFileExcel,
+  FaFilePdf,
+  FaPrint,
+  FaBuilding,
+  FaTag,
+  FaCar,
+  FaStar,
+  FaRegStar,
+  FaToggleOn,
+  FaToggleOff,
+  FaInfoCircle,
+  FaGift,
+  FaCheckCircle,
+  FaFileAlt,
+  FaExclamationCircle,
+} from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import { useAuthStore } from '../../../store/authStore'
 import { promotionManagementService } from '../../../services/promotionManagementService'
 import { exportExcel, exportPdf, printTable } from '../../../utils/listExportUtils'
 import { formatCurrency } from '../../../utils/currencyUtils'
+import { showAlert } from '../../../utils/swalConfig'
 import VEHICULOS_MOCK from '../../../mocks/vehicles.json'
 import MenuConfiguracion from '../../../components/MenuConfiguracion'
 import ManagementSidebar from '../components/ManagementSidebar'
 import './CityManagementPage.css'
+import './CashCollectionPage.css'
+import './DocumentVerificationPage.css'
 import './PromotionManagementPage.css'
 
 const today = () => new Date().toISOString().slice(0, 10)
@@ -35,29 +58,50 @@ export default function PromotionManagementPage() {
   const { t } = useTranslation()
   const { tema, moneda, tasaUSD } = useLanding()
   const user = useAuthStore((state) => state.usuario)
+  const esEncargado =
+    user?.rol === 'encargado' ||
+    user?.rol === 'encargado_sucursal' ||
+    user?.rol === 'branch_manager'
+
   const [promotions, setPromotions] = useState(() => promotionManagementService.list())
   const [search, setSearch] = useState('')
-  const [status, setStatus] = useState('all')
-  const [type, setType] = useState('all')
-  const [offerTypeFilter, setOfferTypeFilter] = useState('all')
-  const [featuredFilter, setFeaturedFilter] = useState('all')
+  const [activeTab, setActiveTab] = useState('todos')
+  const [discountTypeFilter, setDiscountTypeFilter] = useState('all')
+
   const [modal, setModal] = useState(null)
   const [conditionsModal, setConditionsModal] = useState(null)
   const [form, setForm] = useState(EMPTY_FORM)
   const [error, setError] = useState('')
-  const [notice, setNotice] = useState('')
+
+  const refresh = () => setPromotions(promotionManagementService.list())
+
+  const totalPromociones = useMemo(() => promotions.length, [promotions])
+  const totalActivas = useMemo(() => promotions.filter(p => p.activa).length, [promotions])
+  const totalDestacadas = useMemo(() => promotions.filter(p => p.destacada).length, [promotions])
+  const totalCupones = useMemo(() => promotions.filter(p => p.tipoOferta === 'cupon').length, [promotions])
 
   const filtered = useMemo(() => {
     const term = search.trim().toLowerCase()
-    return promotions.filter(
-      (item) =>
-        (status === 'all' || (status === 'active') === item.activa) &&
-        (type === 'all' || item.tipoDescuento === type) &&
-        (offerTypeFilter === 'all' || item.tipoOferta === offerTypeFilter) &&
-        (featuredFilter === 'all' || (featuredFilter === 'featured' ? item.destacada : !item.destacada)) &&
-        (!term || `${item.codigo} ${item.nombre} ${item.condiciones} ${item.vehiculoNombre || ''} ${item.categoriaVehiculo || ''}`.toLowerCase().includes(term))
-    )
-  }, [promotions, search, status, type, offerTypeFilter, featuredFilter])
+    return promotions.filter((item) => {
+      // Filter by activeTab
+      if (activeTab === 'cupones' && item.tipoOferta !== 'cupon') return false
+      if (activeTab === 'promociones' && item.tipoOferta !== 'promocion') return false
+      if (activeTab === 'activas' && !item.activa) return false
+      if (activeTab === 'inactivas' && item.activa) return false
+      if (activeTab === 'destacadas' && !item.destacada) return false
+
+      // Filter by discountTypeFilter
+      if (discountTypeFilter !== 'all' && item.tipoDescuento !== discountTypeFilter) return false
+
+      // Search term
+      if (term) {
+        const fullText = `${item.codigo} ${item.nombre} ${item.condiciones || ''} ${item.vehiculoNombre || ''} ${item.categoriaVehiculo || ''}`.toLowerCase()
+        if (!fullText.includes(term)) return false
+      }
+
+      return true
+    })
+  }, [promotions, search, activeTab, discountTypeFilter])
 
   const labelDiscount = (item) =>
     item.tipoDescuento === 'porcentaje'
@@ -66,37 +110,28 @@ export default function PromotionManagementPage() {
 
   const labelTarget = (item) => {
     if (item.vehiculoNombre) return item.vehiculoNombre
-    if (item.categoriaVehiculo && item.categoriaVehiculo !== 'Todos') return `CategorÃ­a: ${item.categoriaVehiculo}`
-    return 'Todos los vehÃ­culos'
+    if (item.categoriaVehiculo && item.categoriaVehiculo !== 'Todos') return `${t('admin.promotions.categoryPrefix', 'Categoría:')} ${item.categoriaVehiculo}`
+    return t('admin.promotions.allVehicles', 'Todos los vehículos')
   }
 
-  const headers = [
-    'Tipo',
-    t('admin.promotions.fields.code', 'CÃ³digo'),
-    t('admin.promotions.fields.name', 'Nombre'),
-    'Audiencia',
-    'Condiciones',
-    'Alcance / VehÃ­culo',
-    t('admin.promotions.fields.discount', 'Descuento'),
-    t('admin.promotions.fields.validity', 'Vigencia'),
-    'Destacada',
-    t('admin.promotions.fields.status', 'Estado'),
-  ]
-  const rows = filtered.map((item) => [
-    item.tipoOferta === 'promocion' ? 'PromociÃ³n' : 'CupÃ³n',
-    item.codigo,
-    item.nombre,
-    item.audiencia === 'new_users' ? 'Nuevos usuarios' : item.audiencia === 'frequent' ? 'Clientes frecuentes' : 'Todos los usuarios',
-    item.condiciones || 'â€”',
-    labelTarget(item),
-    labelDiscount(item),
-    `${item.fechaInicio} â€” ${item.fechaFin}`,
-    item.destacada ? 'SÃ­ (Destacada)' : 'No',
-    t(item.activa ? 'admin.promotions.active' : 'admin.promotions.inactive'),
-  ])
-  const exportData = { title: t('admin.promotions.exportTitle', 'Promociones y Cupones - Drivique'), headers, rows, filename: 'promociones-cupones-drivique' }
+  const exportData = useMemo(() => {
+    return filtered.map((item, i) => [
+      i + 1,
+      item.tipoOferta === 'promocion' ? t('admin.promotions.offerTypes.promocion', 'Promoción') : t('admin.promotions.offerTypes.cupon', 'Cupón'),
+      item.codigo,
+      item.nombre,
+      item.audiencia === 'nuevos' ? t('admin.promotions.audiences.nuevos', 'Nuevos usuarios') : item.audiencia === 'frecuentes' ? t('admin.promotions.audiences.frecuentes', 'Clientes frecuentes') : t('admin.promotions.audiences.todos', 'Todos los usuarios'),
+      labelDiscount(item),
+      item.reservaMinima > 0 ? formatCurrency(item.reservaMinima, moneda, tasaUSD) : t('admin.promotions.noMin', 'Sin mínimo'),
+      labelTarget(item),
+      item.fechaInicio || '-',
+      item.fechaFin || '-',
+      item.condiciones || t('admin.promotions.noCond', 'Sin condiciones'),
+      item.destacada ? t('admin.promotions.featuredBadge.yes', 'Destacada') : t('admin.promotions.featuredBadge.no', 'Normal'),
+      item.activa ? t('admin.promotions.status.active', 'Activa') : t('admin.promotions.status.inactive', 'Inactiva')
+    ])
+  }, [filtered, moneda, tasaUSD, t])
 
-  const refresh = () => setPromotions(promotionManagementService.list())
   const closeModal = () => {
     setModal(null)
     setError('')
@@ -122,34 +157,54 @@ export default function PromotionManagementPage() {
   const save = (event) => {
     event.preventDefault()
     try {
-      modal.promotion
-        ? promotionManagementService.update(modal.promotion.id, form, user)
-        : promotionManagementService.create(form, user)
+      if (modal.promotion) {
+        promotionManagementService.update(modal.promotion.id, form, user)
+        showAlert({ icon: 'success', title: t('admin.promotions.messages.updated', 'Oferta actualizada exitosamente.') })
+      } else {
+        promotionManagementService.create(form, user)
+        showAlert({ icon: 'success', title: t('admin.promotions.messages.created', 'Oferta creada exitosamente.') })
+      }
       refresh()
-      setNotice(t(modal.promotion ? 'admin.promotions.messages.updated' : 'admin.promotions.messages.created', 'Oferta guardada exitosamente.'))
       closeModal()
     } catch (caught) {
       setError(t(`admin.promotions.errors.${caught.message}`, caught.message))
     }
   }
 
-  const toggle = (promotion) => {
+  const toggleActive = (promotion) => {
     promotionManagementService.toggle(promotion.id, user)
     refresh()
-    setNotice(t(promotion.activa ? 'admin.promotions.messages.deactivated' : 'admin.promotions.messages.activated', 'Estado actualizado.'))
+    showAlert({
+      icon: 'success',
+      title: promotion.activa
+        ? t('admin.promotions.messages.deactivated', 'Promoción desactivada')
+        : t('admin.promotions.messages.activated', 'Promoción activada')
+    })
   }
 
   const toggleFeatured = (promotion) => {
     promotionManagementService.toggleFeatured(promotion.id, user)
     refresh()
-    setNotice(promotion.destacada ? 'Oferta quitada de destacadas' : 'Oferta marcada como destacada')
+    showAlert({
+      icon: 'info',
+      title: promotion.destacada ? 'Quitada de destacadas' : 'Marcada como destacada'
+    })
   }
 
-  const remove = () => {
-    promotionManagementService.remove(modal.promotion.id, user)
-    refresh()
-    setNotice(t('admin.promotions.messages.deleted', 'Oferta eliminada.'))
-    closeModal()
+  const handleDelete = async (promotion) => {
+    const result = await showAlert({
+      title: t('admin.promotions.deleteConfirmTitle', '¿Eliminar oferta?'),
+      text: t('admin.promotions.deleteConfirmText', 'Esta acción no se puede deshacer.'),
+      confirmButtonText: t('common.delete', 'Sí, eliminar'),
+      showCancelButton: true,
+      cancelButtonText: t('common.cancel', 'Cancelar'),
+      icon: 'warning'
+    })
+    if (result?.isConfirmed) {
+      promotionManagementService.remove(promotion.id, user)
+      refresh()
+      showAlert({ icon: 'success', title: t('admin.promotions.messages.deleted', 'Oferta eliminada.') })
+    }
   }
 
   const vehiculosFiltrados = useMemo(() => {
@@ -157,332 +212,564 @@ export default function PromotionManagementPage() {
     return VEHICULOS_MOCK.filter((v) => v.categoria?.toLowerCase() === form.categoriaVehiculo.toLowerCase())
   }, [form.categoriaVehiculo])
 
+  const backdropStyle = { display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(15,23,42,0.65)', padding: 16 }
+  const modalHeadStyle = { padding: '20px 24px', borderBottom: '1px solid var(--city-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }
+  const closeBtnStyle = { background: 'transparent', border: 'none', fontSize: 24, cursor: 'pointer', color: 'var(--city-muted)', lineHeight: 1, padding: 0 }
+
   return (
     <div className={`management-shell ${tema === 'oscuro' ? 'management-shell--dark' : ''}`}>
-      <ManagementSidebar />
-      <main className="management-main" style={{ padding: '24px 32px' }}>
+      <ManagementSidebar branchOnly={esEncargado} />
+      <main className="management-main doc-verification-main">
         <div className="cities-container" style={{ maxWidth: '100%' }}>
-          <header className="cities-topbar">
-            <div>
-              <p className="cities-eyebrow">{t('admin.management', 'GestiÃ³n')}</p>
-              <h1>{t('admin.promotions.title', 'Promociones y Cupones')}</h1>
-              <p className="cities-subtitle">{t('admin.promotions.subtitle', 'Crea campaÃ±as controladas y gestiona cupones y promociones para usuarios.')}</p>
+
+          {/* TOPBAR WITH BADGE AND USER PROFILE CHIP */}
+          <header className="cities-topbar reservations-management-header">
+            <div className="branch-topbar-brand-title">
+              <span className="branch-topbar-badge">{t('admin.branchManagement', 'GESTIÓN OPERATIVA')}</span>
+              <h1 className="branch-topbar-heading">{t('admin.promotions.title', 'Gestión de Promociones')}</h1>
             </div>
-            <div className="cities-topbar__actions">
+            <div className="cities-topbar__actions" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               <MenuConfiguracion />
-              <button className="cities-primary" type="button" onClick={openCreate}>
-                <FaPlus /> {t('admin.promotions.create', 'Nueva oferta')}
-              </button>
+              {user && (
+                <div className="branch-user-profile-chip">
+                  <div className="branch-user-avatar">{(user?.nombre || user?.correo || 'A').charAt(0).toUpperCase()}</div>
+                  <div className="branch-user-info-text">
+                    <strong className="branch-user-name">{[user?.nombre, user?.apellido].filter(Boolean).join(' ') || user?.correo || 'Usuario'}</strong>
+                    <span className="branch-user-role">{user?.rol || 'encargado_sucursal'}</span>
+                  </div>
+                </div>
+              )}
             </div>
           </header>
-          {notice && (
-            <div className="cities-notice" role="status">
-              <span>{notice}</span>
-              <button type="button" onClick={() => setNotice('')} aria-label={t('common.close', 'Cerrar')}>
-                Ã—
+
+          {/* KPI CARDS BAR */}
+          <div className="cash-kpi-bar">
+            {[
+              { icon: FaTag, color: '#3b82f6', label: t('admin.promotions.kpi.total', 'Total Ofertas'), value: totalPromociones, desc: t('admin.promotions.kpi.totalDesc', 'Cupones y promociones registradas') },
+              { icon: FaCheckCircle, color: '#10b981', label: t('admin.promotions.kpi.active', 'Ofertas Activas'), value: totalActivas, desc: t('admin.promotions.kpi.activeDesc', 'Disponibles para clientes') },
+              { icon: FaStar, color: '#f59e0b', label: t('admin.promotions.kpi.featured', 'Destacadas'), value: totalDestacadas, desc: t('admin.promotions.kpi.featuredDesc', 'Visibilidad prioritaria en catálogo') },
+              { icon: FaGift, color: '#8b5cf6', label: t('admin.promotions.kpi.coupons', 'Cupones Directos'), value: totalCupones, desc: t('admin.promotions.kpi.couponsDesc', 'Códigos de canje comercial') },
+            ].map(({ icon: Icon, color, label, value, desc }) => (
+              <div key={label} className="cash-kpi-item-light">
+                <div className="cash-kpi-header-light" style={{ color }}>
+                  <Icon /><span>{label}</span>
+                </div>
+                <strong className="cash-kpi-val-light">{value}</strong>
+                <div className="cash-kpi-progress-bg">
+                  <div className="cash-kpi-progress-fill" style={{ width: value > 0 ? '100%' : '0%', background: color }} />
+                </div>
+                <span className="cash-kpi-subtitle-light">{desc}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* FLEET ATTACHED TABS WITH BLUE "+ CREAR PROMOCIÓN" BUTTON ON RIGHT */}
+          <div className="fleet-attached-tabs" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
+            <div className="fleet-tabs-nav">
+              <button
+                type="button"
+                onClick={() => setActiveTab('todos')}
+                className={`fleet-tab-btn ${activeTab === 'todos' ? 'is-active' : ''}`}
+              >
+                {t('admin.promotions.tabs.all', 'Todas las Ofertas')} ({totalPromociones})
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('cupones')}
+                className={`fleet-tab-btn ${activeTab === 'cupones' ? 'is-active' : ''}`}
+              >
+                {t('admin.promotions.tabs.coupons', 'Solo Cupones')} ({totalCupones})
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('promociones')}
+                className={`fleet-tab-btn ${activeTab === 'promociones' ? 'is-active' : ''}`}
+              >
+                {t('admin.promotions.tabs.promotions', 'Solo Promociones')} ({totalPromociones - totalCupones})
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('activas')}
+                className={`fleet-tab-btn ${activeTab === 'activas' ? 'is-active' : ''}`}
+              >
+                {t('admin.promotions.tabs.active', 'Activas')} ({totalActivas})
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('inactivas')}
+                className={`fleet-tab-btn ${activeTab === 'inactivas' ? 'is-active' : ''}`}
+              >
+                {t('admin.promotions.tabs.inactive', 'Inactivas')} ({totalPromociones - totalActivas})
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('destacadas')}
+                className={`fleet-tab-btn ${activeTab === 'destacadas' ? 'is-active' : ''}`}
+              >
+                {t('admin.promotions.tabs.featured', 'Destacadas')} ({totalDestacadas})
               </button>
             </div>
-          )}
-          <section className="cities-card">
-            <div className="cities-toolbar">
-              <label className="cities-search">
+
+            {/* BLUE ACTION BUTTON */}
+            <div className="fleet-tabs-action">
+              <button
+                type="button"
+                className="city-btn city-btn--primary"
+                onClick={openCreate}
+                style={{
+                  background: 'var(--brand-primary, #2563eb)',
+                  color: '#ffffff',
+                  border: 'none',
+                  padding: '9px 18px',
+                  borderRadius: '10px',
+                  fontWeight: 800,
+                  fontSize: '13px',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 12px rgba(37, 99, 235, 0.25)',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                <FaPlus style={{ fontSize: 11 }} />
+                {t('admin.promotions.createBtn', 'Crear Promoción')}
+              </button>
+            </div>
+          </div>
+
+          {/* MAIN CARD ATTACHED TO TABS */}
+          <section className="cities-card attached-to-tabs">
+            
+            {/* TOOLBAR CON BUSCADOR, FILTROS, SUCURSAL Y EXPORT PILLS */}
+            <div className="cities-toolbar doc-toolbar-wrapper">
+              <label className="cities-search" style={{ flex: '1 1 250px', margin: 0 }}>
                 <FaSearch />
                 <input
+                  type="text"
                   value={search}
-                  onChange={(event) => setSearch(event.target.value)}
-                  placeholder={t('admin.promotions.search', 'Buscar por cÃ³digo, nombre o condiciÃ³n...')}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder={t('admin.promotions.searchPlaceholder', 'Buscar por código, nombre, vehículo o condición...')}
                 />
               </label>
 
-              {/* Filtro por ClasificaciÃ³n: Cupones vs Promociones */}
               <select
-                value={offerTypeFilter}
-                onChange={(event) => setOfferTypeFilter(event.target.value)}
-                aria-label="Filtrar por clasificaciÃ³n"
-                style={{ fontWeight: 600 }}
+                value={discountTypeFilter}
+                onChange={(e) => setDiscountTypeFilter(e.target.value)}
+                style={{ padding: '8px 12px', borderRadius: 8, border: '1.5px solid var(--city-border, #cbd5e1)', fontSize: 13, background: 'var(--city-bg, #f8fafc)', color: 'var(--city-text, #0f172a)', outline: 'none' }}
               >
-                <option value="all">Todos los registros (Cupones y Promos)</option>
-                <option value="cupon">Solo Cupones</option>
-                <option value="promocion">Solo Promociones</option>
+                <option value="all">Todos los descuentos</option>
+                <option value="porcentaje">Porcentaje (%)</option>
+                <option value="fijo">Monto Fijo ($)</option>
               </select>
 
-              <select
-                value={status}
-                onChange={(event) => setStatus(event.target.value)}
-                aria-label={t('admin.promotions.filterStatus', 'Estado')}
-              >
-                <option value="all">{t('admin.promotions.allStatuses', 'Todos los estados')}</option>
-                <option value="active">{t('admin.promotions.active', 'Activas')}</option>
-                <option value="inactive">{t('admin.promotions.inactive', 'Inactivas')}</option>
-              </select>
-              <select
-                value={type}
-                onChange={(event) => setType(event.target.value)}
-                aria-label={t('admin.promotions.filterType', 'Tipo de descuento')}
-              >
-                <option value="all">{t('admin.promotions.allTypes', 'Todos los descuentos')}</option>
-                <option value="porcentaje">{t('admin.promotions.types.percentage', 'Porcentaje')}</option>
-                <option value="fijo">{t('admin.promotions.types.fixed', 'Monto fijo')}</option>
-              </select>
-              <select
-                value={featuredFilter}
-                onChange={(event) => setFeaturedFilter(event.target.value)}
-                aria-label="Filtrar por destacada"
-              >
-                <option value="all">Todas las visibilidades</option>
-                <option value="featured">Solo Destacadas</option>
-                <option value="not_featured">No destacadas</option>
-              </select>
-              <div className="cities-export">
-                <button type="button" onClick={() => exportExcel(exportData)}>
-                  <FaFileExcel /> Excel
+              <div className="doc-branch-badge">
+                <FaBuilding style={{ color: 'var(--city-muted, #64748b)' }} />
+                <span>{user?.sucursalAsignada || user?.sucursalId || user?.sucursal || 'Alamo Bogotá - Aeropuerto'}</span>
+              </div>
+
+              <div className="export-pills-group" style={{ marginLeft: 'auto', display: 'flex', gap: '8px' }}>
+                <button
+                  type="button"
+                  className="export-pill export-pill--excel"
+                  onClick={() => exportExcel({ title: 'Promociones - Drivique', headers: ['ID', 'TIPO', 'CÓDIGO', 'NOMBRE', 'AUDIENCIA', 'DESCUENTO', 'RES MÍNIMA', 'ALCANCE', 'INICIO', 'FIN', 'CONDICIONES', 'DESTACADA', 'ESTADO'], rows: exportData })}
+                  title="Excel"
+                >
+                  <FaFileExcel aria-hidden="true" /> Excel
                 </button>
-                <button type="button" onClick={() => exportPdf(exportData)}>
-                  <FaFilePdf /> PDF
+                <button
+                  type="button"
+                  className="export-pill export-pill--pdf"
+                  onClick={() => exportPdf({ title: 'Promociones - Drivique', headers: ['ID', 'TIPO', 'CÓDIGO', 'NOMBRE', 'AUDIENCIA', 'DESCUENTO', 'RES MÍNIMA', 'ALCANCE', 'INICIO', 'FIN', 'CONDICIONES', 'DESTACADA', 'ESTADO'], rows: exportData })}
+                  title="PDF"
+                >
+                  <FaFilePdf aria-hidden="true" /> PDF
                 </button>
-                <button type="button" onClick={() => printTable(exportData)}>
-                  <FaPrint /> {t('admin.promotions.print', 'Imprimir')}
+                <button
+                  type="button"
+                  className="export-pill export-pill--print"
+                  onClick={() => printTable({ title: 'Promociones - Drivique', headers: ['ID', 'TIPO', 'CÓDIGO', 'NOMBRE', 'AUDIENCIA', 'DESCUENTO', 'RES MÍNIMA', 'ALCANCE', 'INICIO', 'FIN', 'CONDICIONES', 'DESTACADA', 'ESTADO'], rows: exportData })}
+                  title="Imprimir"
+                >
+                  <FaPrint aria-hidden="true" /> Imprimir
                 </button>
               </div>
             </div>
-            <div className="cities-summary">
-              <strong>{filtered.length}</strong> {t('admin.promotions.results', { count: filtered.length, defaultValue: 'registros encontrados' })}
+
+            {/* SUMMARY COUNT */}
+            <div className="cities-summary" style={{ margin: '8px 0 12px' }}>
+              <span>{filtered.length}</span>{' '}
+              {t('admin.promotions.foundCount', 'PROMOCIONES Y CUPONES REGISTRADOS').toUpperCase()}
             </div>
-            {!filtered.length ? (
+
+            {filtered.length === 0 ? (
               <div className="cities-empty">
-                <FaGift />
-                <h2>{t('admin.promotions.emptyTitle', 'No hay registros')}</h2>
-                <p>{t('admin.promotions.emptyText', 'Crea una oferta o cupÃ³n para publicarlo.')}</p>
+                <FaGift style={{ fontSize: 44, color: '#94a3b8', marginBottom: 12 }} />
+                <h2>{t('admin.promotions.emptyTitle', 'No hay promociones registradas')}</h2>
+                <p>{t('admin.promotions.emptyDesc', 'Haz clic en "+ Crear Promoción" para registrar una nueva oferta o cupón.')}</p>
               </div>
             ) : (
-              <div className="cities-table-wrap">
-                <table className="promotions-mgmt-table">
-                  <thead>
-                    <tr>
-                      <th>Tipo</th>
-                      <th>{t('admin.promotions.fields.code', 'CÃ³digo')}</th>
-                      <th>{t('admin.promotions.fields.name', 'Nombre')}</th>
-                      <th>Audiencia</th>
-                      <th>Condiciones</th>
-                      <th>Alcance / VehÃ­culo</th>
-                      <th>{t('admin.promotions.fields.discount', 'Descuento')}</th>
-                      <th>{t('admin.promotions.fields.validity', 'Vigencia')}</th>
-                      <th>Destacada</th>
-                      <th>{t('admin.promotions.fields.status', 'Estado')}</th>
-                      <th>{t('admin.promotions.fields.actions', 'Acciones')}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filtered.map((item) => (
-                      <tr key={item.id}>
-                        <td>
-                          <span className={`offer-type-badge ${item.tipoOferta || 'cupon'}`}>
-                            {item.tipoOferta === 'promocion' ? 'PromociÃ³n' : 'CupÃ³n'}
-                          </span>
-                        </td>
-                        <td>
-                          <div className="cities-name">
-                            <span>
-                              {item.tipoOferta === 'promocion' ? <FaCar size={13} /> : <FaTag size={12} />}
+              <>
+                {/* 1. VISTA DE TABLA CON 1 COLUMNA POR RESPONSABILIDAD DE DATOS */}
+                <div className="cities-table-wrap doc-desktop-table" style={{ overflowX: 'auto' }}>
+                  <table className="incidents-table-v2" style={{ whiteSpace: 'nowrap', width: '100%', borderCollapse: 'collapse' }}>
+                    <thead>
+                      <tr>
+                        <th style={{ width: '35px' }}>{t('admin.promotions.table.id', 'ID')}</th>
+                        <th>{t('admin.promotions.table.offerType', 'TIPO OFERTA')}</th>
+                        <th>{t('admin.promotions.table.code', 'CÓDIGO')}</th>
+                        <th>{t('admin.promotions.table.name', 'NOMBRE OFERTA')}</th>
+                        <th>{t('admin.promotions.table.audience', 'AUDIENCIA')}</th>
+                        <th>{t('admin.promotions.table.discount', 'DESCUENTO')}</th>
+                        <th>{t('admin.promotions.table.minimum', 'RESERVA MÍNIMA')}</th>
+                        <th>{t('admin.promotions.table.scope', 'ALCANCE / VEHÍCULO')}</th>
+                        <th>{t('admin.promotions.table.start', 'FECHA INICIO')}</th>
+                        <th>{t('admin.promotions.table.end', 'FECHA FIN')}</th>
+                        <th>{t('admin.promotions.table.conditions', 'CONDICIONES')}</th>
+                        <th style={{ textAlign: 'center' }}>{t('admin.promotions.table.featured', 'DESTACADA')}</th>
+                        <th style={{ textAlign: 'center' }}>{t('admin.promotions.table.status', 'ESTADO')}</th>
+                        <th style={{ textAlign: 'center' }}>{t('admin.promotions.table.actions', 'ACCIONES')}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filtered.map((item, i) => (
+                        <tr key={item.id}>
+                          {/* 1. ID */}
+                          <td style={{ fontWeight: 400, color: 'var(--city-text, #0f172a)', width: '35px' }}>{i + 1}</td>
+
+                          {/* 2. TIPO OFERTA */}
+                          <td style={{ fontWeight: 400 }}>
+                            <span className={`offer-type-badge ${item.tipoOferta || 'cupon'}`} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '3px 9px', borderRadius: 6, fontSize: 11.5, fontWeight: 700 }}>
+                              {item.tipoOferta === 'promocion' ? <FaCar size={11} /> : <FaTag size={10} />}
+                              {item.tipoOferta === 'promocion' ? t('admin.promotions.offerTypes.promocion', 'Promoción') : t('admin.promotions.offerTypes.cupon', 'Cupón')}
                             </span>
-                            <div>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                                <strong style={{ color: 'var(--city-text, #0f172a)' }}>{item.codigo}</strong>
-                                {item.destacada && (
-                                  <span className="promotion-destacada-badge">
-                                    DESTACADA
-                                  </span>
-                                )}
-                              </div>
-                              <small style={{ color: 'var(--city-muted, #64748b)' }}>{item.id}</small>
-                            </div>
-                          </div>
-                        </td>
-                        <td>
-                          <strong style={{ display: 'block', fontSize: 13.5, color: 'var(--city-text, #0f172a)' }}>{item.nombre}</strong>
-                        </td>
-                        <td>
-                          <span style={{ fontSize: 12.5, color: 'var(--city-text, #0f172a)', fontWeight: 500, whiteSpace: 'nowrap' }}>
-                            {item.audiencia === 'new_users'
-                              ? 'Nuevos usuarios'
-                              : item.audiencia === 'frequent'
-                              ? 'Clientes frecuentes'
-                              : t(`admin.promotions.audiences.${item.audiencia}`, 'Todos los usuarios')}
-                          </span>
-                        </td>
-                        <td>
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: 6, minWidth: 260 }}>
-                            <span style={{ fontSize: 12.5, color: 'var(--city-text, #0f172a)', lineHeight: 1.45 }}>
-                              {item.condiciones || 'Sin condiciones especÃ­ficas'}
-                            </span>
-                            {item.condiciones && (
+                          </td>
+
+                          {/* 3. CÓDIGO */}
+                          <td style={{ fontWeight: 600, color: 'var(--brand-primary, #2563eb)' }}>
+                            {item.codigo}
+                          </td>
+
+                          {/* 4. NOMBRE OFERTA */}
+                          <td style={{ fontWeight: 400, color: 'var(--city-text, #0f172a)' }}>
+                            {item.nombre}
+                          </td>
+
+                          {/* 5. AUDIENCIA */}
+                          <td style={{ fontWeight: 400, color: 'var(--city-text, #334155)' }}>
+                            {item.audiencia === 'nuevos'
+                              ? t('admin.promotions.audiences.nuevos', 'Nuevos usuarios')
+                              : item.audiencia === 'frecuentes'
+                              ? t('admin.promotions.audiences.frecuentes', 'Clientes frecuentes')
+                              : t('admin.promotions.audiences.todos', 'Todos los usuarios')}
+                          </td>
+
+                          {/* 6. DESCUENTO */}
+                          <td style={{ fontWeight: 600, color: '#16a34a' }}>
+                            {labelDiscount(item)}
+                          </td>
+
+                          {/* 7. RESERVA MÍNIMA */}
+                          <td style={{ fontWeight: 400, color: 'var(--city-text, #334155)' }}>
+                            {item.reservaMinima > 0
+                              ? formatCurrency(item.reservaMinima, moneda, tasaUSD)
+                              : t('admin.promotions.noMin', 'Sin mínimo')}
+                          </td>
+
+                          {/* 8. ALCANCE / VEHÍCULO */}
+                          <td style={{ fontWeight: 400, color: 'var(--city-text, #334155)' }}>
+                            {labelTarget(item)}
+                          </td>
+
+                          {/* 9. FECHA INICIO */}
+                          <td style={{ fontWeight: 400, color: 'var(--city-muted, #64748b)' }}>
+                            {item.fechaInicio || '-'}
+                          </td>
+
+                          {/* 10. FECHA FIN */}
+                          <td style={{ fontWeight: 400, color: 'var(--city-muted, #64748b)' }}>
+                            {item.fechaFin || '-'}
+                          </td>
+
+                          {/* 11. CONDICIONES */}
+                          <td style={{ fontWeight: 400 }}>
+                            {item.condiciones ? (
                               <button
                                 type="button"
                                 onClick={() => setConditionsModal(item)}
                                 className="promotion-conditions-btn"
+                                style={{
+                                  padding: '4px 10px',
+                                  borderRadius: '6px',
+                                  background: 'var(--brand-soft-light, #eff6ff)',
+                                  color: 'var(--brand-primary, #2563eb)',
+                                  border: '1px solid var(--brand-border-light, #bfdbfe)',
+                                  cursor: 'pointer',
+                                  fontWeight: 600,
+                                  fontSize: 11.5,
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: 4
+                                }}
                               >
-                                <FaInfoCircle size={11} />
-                                <span>Ver detalle</span>
+                                <FaInfoCircle size={11} /> {t('admin.promotions.viewDetailBtn', 'Ver detalle')}
                               </button>
-                            )}
-                          </div>
-                        </td>
-                        <td>
-                          {item.vehiculoId || item.vehiculoNombre ? (
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                              {item.vehiculoImagen || VEHICULOS_MOCK.find(v => (item.vehiculoId && Number(v.id) === Number(item.vehiculoId)) || (item.vehiculoNombre && v.nombre === item.vehiculoNombre))?.imagenes?.[0] ? (
-                                <img
-                                  src={item.vehiculoImagen || VEHICULOS_MOCK.find(v => (item.vehiculoId && Number(v.id) === Number(item.vehiculoId)) || (item.vehiculoNombre && v.nombre === item.vehiculoNombre))?.imagenes?.[0]}
-                                  alt={labelTarget(item)}
-                                  style={{ width: 46, height: 32, borderRadius: 8, objectFit: 'cover', border: '1px solid var(--city-border, #cbd5e1)', flexShrink: 0 }}
-                                  onError={(e) => { e.currentTarget.style.display = 'none' }}
-                                />
-                              ) : (
-                                <span style={{ width: 46, height: 32, borderRadius: 8, background: 'var(--adm-card-alt, #f1f5f9)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--adm-muted, #475569)', flexShrink: 0 }}>
-                                  <FaCar size={15} />
-                                </span>
-                              )}
-                              <div>
-                                <strong style={{ display: 'block', fontSize: 13, color: 'var(--city-text, #0f172a)' }}>{labelTarget(item)}</strong>
-                                <small style={{ color: 'var(--city-muted, #64748b)', fontSize: 11 }}>VehÃ­culo especÃ­fico</small>
-                              </div>
-                            </div>
-                          ) : (
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                              <span style={{ width: 34, height: 26, borderRadius: 6, background: 'var(--adm-card-alt, #f1f5f9)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--adm-muted, #475569)', flexShrink: 0 }}>
-                                <FaCar size={13} />
+                            ) : (
+                              <span style={{ color: 'var(--city-muted, #64748b)', fontSize: 12 }}>
+                                {t('admin.promotions.noCond', 'Sin condiciones')}
                               </span>
-                              <span style={{ fontWeight: 500, fontSize: 12, color: 'var(--city-text, #0f172a)' }}>{labelTarget(item)}</span>
+                            )}
+                          </td>
+
+                          {/* 12. DESTACADA */}
+                          <td style={{ textAlign: 'center', fontWeight: 400 }}>
+                            <button
+                              type="button"
+                              onClick={() => toggleFeatured(item)}
+                              title={item.destacada ? 'Quitar de destacadas' : 'Marcar como destacada'}
+                              style={{
+                                background: 'transparent',
+                                border: 'none',
+                                cursor: 'pointer',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: 4,
+                                color: item.destacada ? '#f59e0b' : '#94a3b8',
+                                fontWeight: 600,
+                                fontSize: 12
+                              }}
+                            >
+                              {item.destacada ? <FaStar color="#f59e0b" size={14} /> : <FaRegStar color="#94a3b8" size={14} />}
+                              <span>{item.destacada ? t('admin.promotions.featuredBadge.yes', 'Destacada') : t('admin.promotions.featuredBadge.no', 'Normal')}</span>
+                            </button>
+                          </td>
+
+                          {/* 13. ESTADO */}
+                          <td style={{ textAlign: 'center', fontWeight: 400 }}>
+                            <span className={`doc-status-badge ${item.activa ? 'aprobado' : 'rechazada'}`}>
+                              {item.activa ? t('admin.promotions.status.active', 'Activa') : t('admin.promotions.status.inactive', 'Inactiva')}
+                            </span>
+                          </td>
+
+                          {/* 14. ACCIONES */}
+                          <td style={{ textAlign: 'center', fontWeight: 400 }}>
+                            <div style={{ display: 'flex', gap: 6, justifyContent: 'center' }}>
+                              <button
+                                type="button"
+                                onClick={() => toggleActive(item)}
+                                title={item.activa ? 'Desactivar' : 'Activar'}
+                                style={{
+                                  padding: '5px 10px',
+                                  borderRadius: '8px',
+                                  background: item.activa ? '#ecfdf5' : '#f1f5f9',
+                                  color: item.activa ? '#047857' : '#64748b',
+                                  border: `1px solid ${item.activa ? '#a7f3d0' : '#cbd5e1'}`,
+                                  cursor: 'pointer',
+                                  fontWeight: 600,
+                                  fontSize: 12,
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: 4
+                                }}
+                              >
+                                {item.activa ? <FaToggleOn size={14} /> : <FaToggleOff size={14} />}
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => openEdit(item)}
+                                title="Editar"
+                                style={{
+                                  padding: '5px 10px',
+                                  borderRadius: '8px',
+                                  background: 'var(--brand-soft-light, #eff6ff)',
+                                  color: 'var(--brand-primary, #2563eb)',
+                                  border: '1px solid var(--brand-border-light, #bfdbfe)',
+                                  cursor: 'pointer',
+                                  fontWeight: 600,
+                                  fontSize: 12,
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: 4
+                                }}
+                              >
+                                <FaEdit />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleDelete(item)}
+                                title="Eliminar"
+                                style={{
+                                  padding: '5px 10px',
+                                  borderRadius: '8px',
+                                  background: '#fef2f2',
+                                  color: '#dc2626',
+                                  border: '1px solid #fecaca',
+                                  cursor: 'pointer',
+                                  fontWeight: 600,
+                                  fontSize: 12,
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: 4
+                                }}
+                              >
+                                <FaTrash />
+                              </button>
                             </div>
-                          )}
-                        </td>
-                        <td>
-                          <span className="promotion-discount">{labelDiscount(item)}</span>
-                        </td>
-                        <td>
-                          <span style={{ color: 'var(--city-text, #0f172a)' }}>{item.fechaInicio}</span>
-                          <br />
-                          <small style={{ color: 'var(--city-muted, #64748b)' }}>{item.fechaFin}</small>
-                        </td>
-                        <td>
-                          <button
-                            type="button"
-                            className="promotion-toggle-btn"
-                            onClick={() => toggleFeatured(item)}
-                            title={item.destacada ? 'Quitar de destacadas' : 'Marcar como destacada'}
-                          >
-                            {item.destacada ? <FaStar color="#f59e0b" size={13} /> : <FaRegStar color="#94a3b8" size={13} />}
-                            <span>{item.destacada ? 'Destacada' : 'Normal'}</span>
-                          </button>
-                        </td>
-                        <td>
-                          <span className={`cities-status ${item.activa ? 'is-yes' : ''}`}>
-                            {t(item.activa ? 'admin.promotions.active' : 'admin.promotions.inactive', item.activa ? 'Activa' : 'Inactiva')}
-                          </span>
-                        </td>
-                        <td>
-                          <div className="cities-row-actions">
-                            <button
-                              type="button"
-                              onClick={() => toggle(item)}
-                              aria-label={t(item.activa ? 'admin.promotions.deactivate' : 'admin.promotions.activate', 'Cambiar estado')}
-                            >
-                              {item.activa ? <FaToggleOn /> : <FaToggleOff />}
-                            </button>
-                            <button type="button" onClick={() => openEdit(item)} aria-label={t('common.edit', 'Editar')}>
-                              <FaEdit />
-                            </button>
-                            <button
-                              className="is-danger"
-                              type="button"
-                              onClick={() => setModal({ type: 'delete', promotion: item })}
-                              aria-label={t('common.delete', 'Eliminar')}
-                            >
-                              <FaTrash />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* 2. VISTA DE TARJETAS PARA MÓVIL */}
+                <div className="doc-mobile-cards">
+                  {filtered.map((item, i) => (
+                    <div key={item.id} className="doc-mobile-card">
+                      <div className="doc-mobile-card-header">
+                        <div className="doc-mobile-card-title">
+                          <span style={{ fontWeight: 400, color: 'var(--brand-primary, #2563eb)', fontSize: 13 }}>ID {i + 1}</span>
+                          <span style={{ fontWeight: 500, color: 'var(--city-text, #0f172a)', fontSize: 14 }}>{item.codigo}</span>
+                        </div>
+                        <span className={`doc-status-badge ${item.activa ? 'aprobado' : 'rechazada'}`}>
+                          {item.activa ? t('admin.promotions.status.active', 'Activa') : t('admin.promotions.status.inactive', 'Inactiva')}
+                        </span>
+                      </div>
+
+                      <div className="doc-mobile-card-body">
+                        <div className="doc-mobile-data-item doc-mobile-data-item--full">
+                          <span className="doc-mobile-data-label">{t('admin.promotions.table.name', 'NOMBRE OFERTA')}</span>
+                          <span className="doc-mobile-data-value" style={{ fontSize: 14, fontWeight: 500 }}>{item.nombre}</span>
+                        </div>
+
+                        <div className="doc-mobile-data-item">
+                          <span className="doc-mobile-data-label">{t('admin.promotions.table.offerType', 'TIPO OFERTA')}</span>
+                          <span className="doc-mobile-data-value" style={{ fontWeight: 400 }}>{item.tipoOferta === 'promocion' ? 'Promoción' : 'Cupón'}</span>
+                        </div>
+
+                        <div className="doc-mobile-data-item">
+                          <span className="doc-mobile-data-label">{t('admin.promotions.table.discount', 'DESCUENTO')}</span>
+                          <span className="doc-mobile-data-value" style={{ color: '#16a34a', fontWeight: 600 }}>{labelDiscount(item)}</span>
+                        </div>
+
+                        <div className="doc-mobile-data-item">
+                          <span className="doc-mobile-data-label">{t('admin.promotions.table.start', 'FECHA INICIO')}</span>
+                          <span className="doc-mobile-data-value" style={{ fontWeight: 400 }}>{item.fechaInicio || '-'}</span>
+                        </div>
+
+                        <div className="doc-mobile-data-item">
+                          <span className="doc-mobile-data-label">{t('admin.promotions.table.end', 'FECHA FIN')}</span>
+                          <span className="doc-mobile-data-value" style={{ fontWeight: 400 }}>{item.fechaFin || '-'}</span>
+                        </div>
+
+                        <div className="doc-mobile-data-item doc-mobile-data-item--full">
+                          <span className="doc-mobile-data-label">{t('admin.promotions.table.scope', 'ALCANCE / VEHÍCULO')}</span>
+                          <span className="doc-mobile-data-value" style={{ fontWeight: 400 }}>{labelTarget(item)}</span>
+                        </div>
+                      </div>
+
+                      <div className="doc-mobile-card-actions" style={{ display: 'flex', gap: 8 }}>
+                        <button
+                          type="button"
+                          onClick={() => toggleActive(item)}
+                          style={{
+                            flex: 1,
+                            padding: '8px',
+                            borderRadius: '8px',
+                            background: item.activa ? '#ecfdf5' : '#f1f5f9',
+                            color: item.activa ? '#047857' : '#64748b',
+                            border: 'none',
+                            fontWeight: 600,
+                            fontSize: 12
+                          }}
+                        >
+                          {item.activa ? 'Desactivar' : 'Activar'}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => openEdit(item)}
+                          style={{
+                            flex: 1,
+                            padding: '8px',
+                            borderRadius: '8px',
+                            background: 'var(--brand-soft-light, #eff6ff)',
+                            color: 'var(--brand-primary, #2563eb)',
+                            border: 'none',
+                            fontWeight: 600,
+                            fontSize: 12
+                          }}
+                        >
+                          Editar
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
             )}
           </section>
         </div>
       </main>
 
+      {/* MODAL DETALLE CONDICIONES */}
       {conditionsModal && (
-        <div
-          className="cities-modal-backdrop"
-          onMouseDown={(event) => event.target === event.currentTarget && setConditionsModal(null)}
-        >
-          <section className="cities-modal promotion-modal" style={{ maxWidth: 480 }} role="dialog" aria-modal="true">
-            <div className="cities-modal__head">
+        <div className="cities-modal-backdrop" style={backdropStyle} onMouseDown={e => e.target === e.currentTarget && setConditionsModal(null)}>
+          <section className="cities-modal" style={{ maxWidth: 480, width: '100%', background: 'var(--city-card)', borderRadius: 16, overflow: 'hidden' }}>
+            <div style={modalHeadStyle}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(var(--brand-primary-rgb, 37,99,235), 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--brand-primary, #2563eb)' }}>
+                <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(37,99,235,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--brand-primary, #2563eb)' }}>
                   <FaFileAlt size={18} />
                 </div>
                 <div>
-                  <p className="cities-eyebrow">Detalles y TÃ©rminos</p>
-                  <h2 style={{ fontSize: 18 }}>Condiciones de la Oferta</h2>
+                  <p style={{ color: 'var(--city-muted)', margin: 0, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 2 }}>TÉRMINOS Y CONDICIONES</p>
+                  <h2 style={{ color: 'var(--city-text)', margin: 0, fontSize: 18, fontWeight: 800 }}>Detalle de la Oferta</h2>
                 </div>
               </div>
-              <button type="button" onClick={() => setConditionsModal(null)}>
-                Ã—
-              </button>
+              <button type="button" onClick={() => setConditionsModal(null)} style={closeBtnStyle}>&times;</button>
             </div>
-            <div style={{ padding: '16px 24px', display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <div style={{ background: 'var(--city-soft, rgba(0,0,0,0.03))', borderRadius: 12, padding: '12px 16px', border: '1px solid var(--city-border, #e2e8f0)' }}>
+            <div style={{ padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <div style={{ background: 'var(--city-bg, #f8fafc)', borderRadius: 12, padding: '14px 16px', border: '1.5px solid var(--city-border, #cbd5e1)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <strong style={{ fontSize: 15, color: 'var(--city-text)' }}>{conditionsModal.codigo}</strong>
-                  </div>
-                  <span className="promotion-discount">{labelDiscount(conditionsModal)}</span>
+                  <strong style={{ fontSize: 15, color: 'var(--brand-primary, #2563eb)' }}>{conditionsModal.codigo}</strong>
+                  <span style={{ fontSize: 14, fontWeight: 700, color: '#16a34a' }}>{labelDiscount(conditionsModal)}</span>
                 </div>
-                <p style={{ margin: 0, fontSize: 13, color: 'var(--city-muted, #64748b)' }}>{conditionsModal.nombre}</p>
+                <p style={{ margin: 0, fontSize: 13, color: 'var(--city-text, #0f172a)', fontWeight: 500 }}>{conditionsModal.nombre}</p>
               </div>
 
               <div>
-                <strong style={{ fontSize: 13, display: 'block', marginBottom: 6, color: 'var(--city-text)' }}>
-                  Texto de condiciones configurado:
+                <strong style={{ fontSize: 12.5, display: 'block', marginBottom: 6, color: 'var(--city-text, #0f172a)', fontWeight: 600 }}>
+                  Condiciones aplicables:
                 </strong>
-                <div style={{ background: '#fff', border: '1px solid var(--city-border, #cbd5e1)', borderRadius: 10, padding: 14, fontSize: 13, color: 'var(--city-text, #334155)', lineHeight: 1.6, whiteSpace: 'pre-line' }}>
-                  {conditionsModal.condiciones || 'No se han especificado condiciones especiales para esta promociÃ³n.'}
+                <div style={{ background: 'var(--city-bg, #f8fafc)', border: '1.5px solid var(--city-border, #cbd5e1)', borderRadius: 10, padding: 14, fontSize: 13, color: 'var(--city-text, #334155)', lineHeight: 1.6, whiteSpace: 'pre-line' }}>
+                  {conditionsModal.condiciones || t('admin.promotions.noCond', 'Sin condiciones especiales')}
                 </div>
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, fontSize: 12 }}>
-                <div style={{ padding: 10, borderRadius: 8, background: 'var(--city-soft, rgba(0,0,0,0.02))', border: '1px solid var(--city-border, #e2e8f0)' }}>
+                <div style={{ padding: 10, borderRadius: 8, background: 'var(--city-bg, #f8fafc)', border: '1px solid var(--city-border, #cbd5e1)' }}>
                   <span style={{ color: 'var(--city-muted, #64748b)', display: 'block' }}>Vigencia:</span>
-                  <strong>{conditionsModal.fechaInicio} al {conditionsModal.fechaFin}</strong>
+                  <strong style={{ color: 'var(--city-text)' }}>{conditionsModal.fechaInicio} al {conditionsModal.fechaFin}</strong>
                 </div>
-                <div style={{ padding: 10, borderRadius: 8, background: 'var(--city-soft, rgba(0,0,0,0.02))', border: '1px solid var(--city-border, #e2e8f0)' }}>
-                  <span style={{ color: 'var(--city-muted, #64748b)', display: 'block' }}>Monto MÃ­nimo:</span>
-                  <strong>{conditionsModal.reservaMinima > 0 ? formatCurrency(conditionsModal.reservaMinima, moneda, tasaUSD) : 'Sin mÃ­nimo'}</strong>
+                <div style={{ padding: 10, borderRadius: 8, background: 'var(--city-bg, #f8fafc)', border: '1px solid var(--city-border, #cbd5e1)' }}>
+                  <span style={{ color: 'var(--city-muted, #64748b)', display: 'block' }}>Monto Mínimo:</span>
+                  <strong style={{ color: 'var(--city-text)' }}>{conditionsModal.reservaMinima > 0 ? formatCurrency(conditionsModal.reservaMinima, moneda, tasaUSD) : 'Sin mínimo'}</strong>
                 </div>
-                <div style={{ padding: 10, borderRadius: 8, background: 'var(--city-soft, rgba(0,0,0,0.02))', border: '1px solid var(--city-border, #e2e8f0)' }}>
+                <div style={{ padding: 10, borderRadius: 8, background: 'var(--city-bg, #f8fafc)', border: '1px solid var(--city-border, #cbd5e1)' }}>
                   <span style={{ color: 'var(--city-muted, #64748b)', display: 'block' }}>Alcance:</span>
-                  <strong>{labelTarget(conditionsModal)}</strong>
+                  <strong style={{ color: 'var(--city-text)' }}>{labelTarget(conditionsModal)}</strong>
                 </div>
-                <div style={{ padding: 10, borderRadius: 8, background: 'var(--city-soft, rgba(0,0,0,0.02))', border: '1px solid var(--city-border, #e2e8f0)' }}>
-                  <span style={{ color: 'var(--city-muted, #64748b)', display: 'block' }}>ClasificaciÃ³n:</span>
-                  <strong>{conditionsModal.tipoOferta === 'promocion' ? 'PromociÃ³n' : 'CupÃ³n'} {conditionsModal.destacada ? 'â€¢ Destacada' : ''}</strong>
+                <div style={{ padding: 10, borderRadius: 8, background: 'var(--city-bg, #f8fafc)', border: '1px solid var(--city-border, #cbd5e1)' }}>
+                  <span style={{ color: 'var(--city-muted, #64748b)', display: 'block' }}>Clasificación:</span>
+                  <strong style={{ color: 'var(--city-text)' }}>{conditionsModal.tipoOferta === 'promocion' ? 'Promoción' : 'Cupón'} {conditionsModal.destacada ? '• Destacada' : ''}</strong>
                 </div>
               </div>
             </div>
-            <div className="cities-modal__actions" style={{ padding: '12px 24px 20px' }}>
+            <div style={{ padding: '14px 24px', borderTop: '1px solid var(--city-border)', display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
               <button
                 type="button"
-                onClick={() => {
-                  const target = conditionsModal
-                  setConditionsModal(null)
-                  openEdit(target)
-                }}
+                onClick={() => setConditionsModal(null)}
+                style={{ padding: '8px 22px', borderRadius: 9999, background: 'var(--brand-primary, #2563eb)', color: '#fff', border: 'none', cursor: 'pointer', fontWeight: 800 }}
               >
-                <FaEdit /> Editar Condiciones
-              </button>
-              <button className="cities-primary" type="button" onClick={() => setConditionsModal(null)}>
                 Cerrar
               </button>
             </div>
@@ -490,286 +777,319 @@ export default function PromotionManagementPage() {
         </div>
       )}
 
-      {modal && (
-        <div
-          className="cities-modal-backdrop"
-          onMouseDown={(event) => event.target === event.currentTarget && closeModal()}
-        >
-          <section className="cities-modal promotion-modal" role="dialog" aria-modal="true">
-            {modal.type === 'form' ? (
-              <>
-                <div className="cities-modal__head">
-                  <div>
-                    <p className="cities-eyebrow">{t('admin.promotions.formLabel', 'GestiÃ³n de CampaÃ±a')}</p>
-                    <h2>{t(modal.promotion ? 'admin.promotions.editTitle' : 'admin.promotions.createTitle', modal.promotion ? 'Editar Oferta' : 'Crear Oferta')}</h2>
-                  </div>
-                  <button type="button" onClick={closeModal}>
-                    Ã—
-                  </button>
-                </div>
-                <form onSubmit={save}>
-                  <div className="promotion-form-grid">
-                    
-                    {/* Selector de ClasificaciÃ³n: CupÃ³n vs PromociÃ³n */}
-                    <div style={{ gridColumn: 'span 2', display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 6 }}>
-                      <label style={{ fontSize: 13, fontWeight: 700, color: 'var(--city-text)', margin: 0 }}>
-                        Tipo de Oferta / ClasificaciÃ³n *
-                      </label>
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-                        <button
-                          type="button"
-                          onClick={() => setForm({ ...form, tipoOferta: 'cupon' })}
-                          style={{
-                            padding: '12px 14px',
-                            borderRadius: 12,
-                            border: `2px solid ${form.tipoOferta === 'cupon' ? 'var(--brand-primary, #2563eb)' : 'var(--city-border, #cbd5e1)'}`,
-                            background: form.tipoOferta === 'cupon' ? 'var(--brand-soft-light, #eff6ff)' : 'var(--city-card, #ffffff)',
-                            cursor: 'pointer',
-                            textAlign: 'left',
-                            display: 'flex',
-                            alignItems: 'flex-start',
-                            gap: 10,
-                            transition: 'all 0.2s',
-                          }}
-                        >
-                          <span style={{ fontSize: 16, marginTop: 2, color: 'var(--brand-primary, #2563eb)' }}><FaTag /></span>
-                          <div>
-                            <strong style={{ display: 'block', fontSize: 13.5, color: form.tipoOferta === 'cupon' ? 'var(--brand-primary, #2563eb)' : 'var(--city-text, #0f172a)' }}>
-                              CupÃ³n de Descuento
-                            </strong>
-                            <small style={{ color: 'var(--city-muted, #64748b)', fontSize: 11, lineHeight: 1.3, display: 'block', marginTop: 2 }}>
-                              CÃ³digo de canje visible en pestaÃ±a "MÃ¡s cupones geniales" y aplicable en checkout.
-                            </small>
-                          </div>
-                        </button>
+      {/* MODAL CREAR / EDITAR PROMOCIÓN */}
+      {modal && modal.type === 'form' && (
+        <div className="cities-modal-backdrop" style={backdropStyle} onMouseDown={e => e.target === e.currentTarget && closeModal()}>
+          <section className="cities-modal" style={{ maxWidth: 640, width: '100%', background: 'var(--city-card)', borderRadius: 16, overflow: 'hidden' }}>
+            <div style={modalHeadStyle}>
+              <div>
+                <p style={{ color: 'var(--city-muted)', margin: 0, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>
+                  {t('admin.promotions.modal.eyebrow', 'GESTIÓN DE CAMPAÑA')}
+                </p>
+                <h2 style={{ color: 'var(--city-text)', margin: 0, fontSize: 18, fontWeight: 800 }}>
+                  {t(modal.promotion ? 'admin.promotions.modal.editTitle' : 'admin.promotions.modal.createTitle', modal.promotion ? 'Editar Oferta' : 'Crear Nueva Oferta')}
+                </h2>
+              </div>
+              <button type="button" onClick={closeModal} style={closeBtnStyle}>&times;</button>
+            </div>
 
-                        <button
-                          type="button"
-                          onClick={() => setForm({ ...form, tipoOferta: 'promocion' })}
-                          style={{
-                            padding: '12px 14px',
-                            borderRadius: 12,
-                            border: `2px solid ${form.tipoOferta === 'promocion' ? 'var(--brand-primary, #2563eb)' : 'var(--city-border, #cbd5e1)'}`,
-                            background: form.tipoOferta === 'promocion' ? 'var(--brand-soft-light, #eff6ff)' : 'var(--city-card, #ffffff)',
-                            cursor: 'pointer',
-                            textAlign: 'left',
-                            display: 'flex',
-                            alignItems: 'flex-start',
-                            gap: 10,
-                            transition: 'all 0.2s',
-                          }}
-                        >
-                          <span style={{ fontSize: 16, marginTop: 2, color: 'var(--brand-primary, #2563eb)' }}><FaCar /></span>
-                          <div>
-                            <strong style={{ display: 'block', fontSize: 13.5, color: form.tipoOferta === 'promocion' ? 'var(--brand-primary, #2563eb)' : 'var(--city-text, #0f172a)' }}>
-                              PromociÃ³n de CatÃ¡logo
-                            </strong>
-                            <small style={{ color: 'var(--city-muted, #64748b)', fontSize: 11, lineHeight: 1.3, display: 'block', marginTop: 2 }}>
-                              Oferta comercial con precio rebajado en "Promociones destacadas" con botÃ³n de reserva.
-                            </small>
-                          </div>
-                        </button>
-                      </div>
-                    </div>
-
-                    <label>
-                      {t('admin.promotions.fields.code', 'CÃ³digo')}
-                      <input
-                        autoFocus
-                        value={form.codigo}
-                        maxLength={24}
-                        onChange={(e) => setForm({ ...form, codigo: e.target.value.toUpperCase() })}
-                        placeholder="EJ: SUV20, VERANO15, BONO50K"
-                      />
-                    </label>
-                    <label>
-                      {t('admin.promotions.fields.name', 'Nombre')}
-                      <input
-                        value={form.nombre}
-                        onChange={(e) => setForm({ ...form, nombre: e.target.value })}
-                        placeholder="Nombre descriptivo de la campaÃ±a"
-                      />
-                    </label>
-                    <label>
-                      {t('admin.promotions.fields.type', 'Tipo de descuento')}
-                      <select
-                        value={form.tipoDescuento}
-                        onChange={(e) => setForm({ ...form, tipoDescuento: e.target.value })}
-                      >
-                        <option value="porcentaje">{t('admin.promotions.types.percentage', 'Porcentaje (%)')}</option>
-                        <option value="fijo">{t('admin.promotions.types.fixed', 'Monto fijo ($ COP)')}</option>
-                      </select>
-                    </label>
-                    <label>
-                      {t('admin.promotions.fields.value', 'Valor descuento')}
-                      <input
-                        type="number"
-                        min="1"
-                        max={form.tipoDescuento === 'porcentaje' ? 100 : undefined}
-                        value={form.valorDescuento}
-                        onChange={(e) => setForm({ ...form, valorDescuento: e.target.value })}
-                        placeholder={form.tipoDescuento === 'porcentaje' ? 'Ej: 20' : 'Ej: 50000'}
-                      />
-                    </label>
-                    <label>
-                      {t('admin.promotions.fields.category', 'CategorÃ­a')}
-                      <select
-                        value={form.categoriaVehiculo}
-                        onChange={(e) => {
-                          const cat = e.target.value
-                          setForm({ ...form, categoriaVehiculo: cat, vehiculoId: '', vehiculoNombre: '' })
-                        }}
-                      >
-                        {['Todos', 'SUV', 'Sedan', 'Compacto', 'Camioneta', 'Deportivo', 'EconÃ³mico'].map(
-                          (category) => (
-                            <option key={category} value={category}>
-                              {t(`promotions.categories.${category}`, category)}
-                            </option>
-                          )
-                        )}
-                      </select>
-                    </label>
-                    <label>
-                      VehÃ­culo EspecÃ­fico (Opcional)
-                      <select
-                        value={form.vehiculoId || ''}
-                        onChange={(e) => {
-                          const vId = e.target.value
-                          const selectedVeh = VEHICULOS_MOCK.find((v) => String(v.id) === String(vId))
-                          setForm({
-                            ...form,
-                            vehiculoId: vId ? Number(vId) : '',
-                            vehiculoNombre: selectedVeh ? selectedVeh.nombre : '',
-                            categoriaVehiculo: selectedVeh ? selectedVeh.categoria : form.categoriaVehiculo,
-                          })
-                        }}
-                      >
-                        <option value="">Cualquier vehÃ­culo {form.categoriaVehiculo !== 'Todos' ? `de categorÃ­a ${form.categoriaVehiculo}` : 'del catÃ¡logo'}</option>
-                        {vehiculosFiltrados.map((v) => (
-                          <option key={v.id} value={v.id}>
-                            {v.nombre} ({v.categoria})
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-                    {form.vehiculoId && (() => {
-                      const selectedV = VEHICULOS_MOCK.find((v) => Number(v.id) === Number(form.vehiculoId))
-                      const imgUrl = selectedV?.imagenes?.[0]
-                      if (!imgUrl) return null
-                      return (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 14px', background: 'var(--city-soft, rgba(0,0,0,0.03))', borderRadius: 12, border: '1px solid var(--city-border, #e2e8f0)', marginTop: -6, marginBottom: 6 }}>
-                          <img src={imgUrl} alt={selectedV.nombre} style={{ width: 64, height: 42, borderRadius: 8, objectFit: 'cover', border: '1px solid #cbd5e1' }} />
-                          <div>
-                            <strong style={{ display: 'block', fontSize: 13 }}>{selectedV.nombre}</strong>
-                            <small style={{ color: 'var(--city-muted, #64748b)', fontSize: 11 }}>{selectedV.categoria} â€¢ {selectedV.placa}</small>
-                          </div>
-                        </div>
-                      )
-                    })()}
-                    <label>
-                      {t('admin.promotions.fields.start', 'Fecha inicio')}
-                      <input
-                        type="date"
-                        value={form.fechaInicio}
-                        onChange={(e) => setForm({ ...form, fechaInicio: e.target.value })}
-                      />
-                    </label>
-                    <label>
-                      {t('admin.promotions.fields.end', 'Fecha fin')}
-                      <input
-                        type="date"
-                        value={form.fechaFin}
-                        onChange={(e) => setForm({ ...form, fechaFin: e.target.value })}
-                      />
-                    </label>
-                    <label>
-                      {t('admin.promotions.fields.minimum', 'Reserva mÃ­nima ($ COP)')}
-                      <input
-                        type="number"
-                        min="0"
-                        value={form.reservaMinima}
-                        onChange={(e) => setForm({ ...form, reservaMinima: e.target.value })}
-                        placeholder="0 para sin mÃ­nimo"
-                      />
-                    </label>
-                    <label>
-                      {t('admin.promotions.fields.audience', 'Audiencia')}
-                      <select
-                        value={form.audiencia}
-                        onChange={(e) => setForm({ ...form, audiencia: e.target.value })}
-                      >
-                        <option value="todos">{t('admin.promotions.audiences.todos', 'Todos los usuarios')}</option>
-                        <option value="nuevos">{t('admin.promotions.audiences.nuevos', 'Nuevos usuarios')}</option>
-                        <option value="frecuentes">{t('admin.promotions.audiences.frecuentes', 'Usuarios frecuentes')}</option>
-                      </select>
-                    </label>
-                    
-                    {/* Switch / Checkbox Destacada */}
-                    <div style={{ gridColumn: 'span 2', padding: '12px 16px', background: form.destacada ? 'var(--brand-soft-light, #eff6ff)' : 'rgba(0,0,0,0.02)', border: `1.5px solid ${form.destacada ? 'var(--brand-border, #bfdbfe)' : 'var(--city-border, #cbd5e1)'}`, borderRadius: 12, transition: 'all 0.2s' }}>
-                      <label style={{ display: 'flex', alignItems: 'flex-start', gap: 12, cursor: 'pointer', margin: 0 }}>
-                        <input
-                          type="checkbox"
-                          checked={form.destacada}
-                          onChange={(e) => setForm({ ...form, destacada: e.target.checked })}
-                          style={{ marginTop: 3, width: 18, height: 18, accentColor: 'var(--brand-primary, #2563eb)' }}
-                        />
-                        <div>
-                          <strong style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13.5, color: form.destacada ? 'var(--brand-primary, #2563eb)' : 'var(--city-text)' }}>
-                            <FaStar color={form.destacada ? 'var(--brand-primary, #2563eb)' : '#94a3b8'} /> Marcar como Oferta Destacada
-                          </strong>
-                          <span style={{ display: 'block', fontSize: 12, color: form.destacada ? 'var(--brand-primary, #2563eb)' : 'var(--city-muted, #64748b)', marginTop: 2 }}>
-                            AparecerÃ¡ con distintivo destacado prioritario en la vista de promociones y catÃ¡logo.
-                          </span>
-                        </div>
-                      </label>
-                    </div>
-
-                    <label className="promotion-active" style={{ gridColumn: 'span 2' }}>
-                      <input
-                        type="checkbox"
-                        checked={form.activa}
-                        onChange={(e) => setForm({ ...form, activa: e.target.checked })}
-                      />{' '}
-                      {t('admin.promotions.publishActive', 'Publicar oferta como Activa')}
-                    </label>
-                  </div>
-                  <label>
-                    {t('admin.promotions.fields.conditions', 'Condiciones')}
-                    <textarea
-                      value={form.condiciones}
-                      onChange={(e) => setForm({ ...form, condiciones: e.target.value })}
-                      placeholder="TÃ©rminos, condiciones y detalles de aplicaciÃ³n..."
-                      rows={4}
-                    />
+            <div style={{ padding: '20px 24px', maxHeight: '78vh', overflowY: 'auto' }}>
+              <form id="promo-form" onSubmit={save} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+                
+                {/* Clasificación */}
+                <div style={{ gridColumn: '1 / -1', display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  <label style={{ fontSize: 12.5, color: 'var(--city-text)', fontWeight: 600, margin: 0 }}>
+                    Tipo de Oferta / Clasificación *
                   </label>
-                  {error && <p className="cities-error">{error}</p>}
-                  <div className="cities-modal__actions">
-                    <button type="button" onClick={closeModal}>
-                      {t('common.cancel', 'Cancelar')}
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                    <button
+                      type="button"
+                      onClick={() => setForm({ ...form, tipoOferta: 'cupon' })}
+                      style={{
+                        padding: '12px 14px',
+                        borderRadius: 12,
+                        border: `2px solid ${form.tipoOferta === 'cupon' ? 'var(--brand-primary, #2563eb)' : 'var(--city-border, #cbd5e1)'}`,
+                        background: form.tipoOferta === 'cupon' ? 'var(--brand-soft-light, #eff6ff)' : 'var(--city-card, #ffffff)',
+                        cursor: 'pointer',
+                        textAlign: 'left',
+                        display: 'flex',
+                        alignItems: 'flex-start',
+                        gap: 10,
+                        transition: 'all 0.2s',
+                      }}
+                    >
+                      <span style={{ fontSize: 16, marginTop: 2, color: 'var(--brand-primary, #2563eb)' }}><FaTag /></span>
+                      <div>
+                        <strong style={{ display: 'block', fontSize: 13, color: form.tipoOferta === 'cupon' ? 'var(--brand-primary, #2563eb)' : 'var(--city-text, #0f172a)' }}>
+                          Cupón de Descuento
+                        </strong>
+                        <small style={{ color: 'var(--city-muted, #64748b)', fontSize: 11, lineHeight: 1.3, display: 'block', marginTop: 2 }}>
+                          Código de canje aplicable en el checkout de reserva.
+                        </small>
+                      </div>
                     </button>
-                    <button className="cities-primary" type="submit">
-                      {t('common.save', 'Guardar')}
+
+                    <button
+                      type="button"
+                      onClick={() => setForm({ ...form, tipoOferta: 'promocion' })}
+                      style={{
+                        padding: '12px 14px',
+                        borderRadius: 12,
+                        border: `2px solid ${form.tipoOferta === 'promocion' ? 'var(--brand-primary, #2563eb)' : 'var(--city-border, #cbd5e1)'}`,
+                        background: form.tipoOferta === 'promocion' ? 'var(--brand-soft-light, #eff6ff)' : 'var(--city-card, #ffffff)',
+                        cursor: 'pointer',
+                        textAlign: 'left',
+                        display: 'flex',
+                        alignItems: 'flex-start',
+                        gap: 10,
+                        transition: 'all 0.2s',
+                      }}
+                    >
+                      <span style={{ fontSize: 16, marginTop: 2, color: 'var(--brand-primary, #2563eb)' }}><FaCar /></span>
+                      <div>
+                        <strong style={{ display: 'block', fontSize: 13, color: form.tipoOferta === 'promocion' ? 'var(--brand-primary, #2563eb)' : 'var(--city-text, #0f172a)' }}>
+                          Promoción de Catálogo
+                        </strong>
+                        <small style={{ color: 'var(--city-muted, #64748b)', fontSize: 11, lineHeight: 1.3, display: 'block', marginTop: 2 }}>
+                          Oferta con precio rebajado en vehículos destacados.
+                        </small>
+                      </div>
                     </button>
                   </div>
-                </form>
-              </>
-            ) : (
-              <>
-                <div className="cities-delete-icon">
-                  <FaTrash />
                 </div>
-                <h2>{t('admin.promotions.deleteTitle', 'Eliminar Oferta')}</h2>
-                <p>{t('admin.promotions.deleteText', { code: modal.promotion.codigo })}</p>
-                <div className="cities-modal__actions">
-                  <button type="button" onClick={closeModal}>
-                    {t('common.cancel', 'Cancelar')}
-                  </button>
-                  <button className="cities-danger" type="button" onClick={remove}>
-                    {t('common.delete', 'Eliminar')}
-                  </button>
+
+                {/* Código */}
+                <div>
+                  <label style={{ display: 'block', fontSize: 12.5, color: 'var(--city-text)', fontWeight: 600, marginBottom: 4 }}>
+                    Código Promocional *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={form.codigo}
+                    maxLength={24}
+                    onChange={(e) => setForm({ ...form, codigo: e.target.value.toUpperCase() })}
+                    placeholder="EJ: SUV20, BONO50K"
+                    style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1.5px solid var(--city-border)', background: 'var(--city-bg)', color: 'var(--city-text)', fontSize: 13, outline: 'none' }}
+                  />
                 </div>
-              </>
-            )}
+
+                {/* Nombre */}
+                <div>
+                  <label style={{ display: 'block', fontSize: 12.5, color: 'var(--city-text)', fontWeight: 600, marginBottom: 4 }}>
+                    Nombre de la Oferta *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={form.nombre}
+                    onChange={(e) => setForm({ ...form, nombre: e.target.value })}
+                    placeholder="Ej: Especial Verano 2026"
+                    style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1.5px solid var(--city-border)', background: 'var(--city-bg)', color: 'var(--city-text)', fontSize: 13, outline: 'none' }}
+                  />
+                </div>
+
+                {/* Tipo de Descuento */}
+                <div>
+                  <label style={{ display: 'block', fontSize: 12.5, color: 'var(--city-text)', fontWeight: 600, marginBottom: 4 }}>
+                    Tipo de Descuento *
+                  </label>
+                  <select
+                    value={form.tipoDescuento}
+                    onChange={(e) => setForm({ ...form, tipoDescuento: e.target.value })}
+                    style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1.5px solid var(--city-border)', background: 'var(--city-bg)', color: 'var(--city-text)', fontSize: 13, outline: 'none' }}
+                  >
+                    <option value="porcentaje">Porcentaje (%)</option>
+                    <option value="fijo">Monto Fijo ($ COP)</option>
+                  </select>
+                </div>
+
+                {/* Valor Descuento */}
+                <div>
+                  <label style={{ display: 'block', fontSize: 12.5, color: 'var(--city-text)', fontWeight: 600, marginBottom: 4 }}>
+                    Valor del Descuento *
+                  </label>
+                  <input
+                    type="number"
+                    required
+                    min="1"
+                    max={form.tipoDescuento === 'porcentaje' ? 100 : undefined}
+                    value={form.valorDescuento}
+                    onChange={(e) => setForm({ ...form, valorDescuento: e.target.value })}
+                    placeholder={form.tipoDescuento === 'porcentaje' ? 'Ej: 20' : 'Ej: 50000'}
+                    style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1.5px solid var(--city-border)', background: 'var(--city-bg)', color: 'var(--city-text)', fontSize: 13, outline: 'none' }}
+                  />
+                </div>
+
+                {/* Categoría */}
+                <div>
+                  <label style={{ display: 'block', fontSize: 12.5, color: 'var(--city-text)', fontWeight: 600, marginBottom: 4 }}>
+                    Categoría de Vehículo
+                  </label>
+                  <select
+                    value={form.categoriaVehiculo}
+                    onChange={(e) => {
+                      const cat = e.target.value
+                      setForm({ ...form, categoriaVehiculo: cat, vehiculoId: '', vehiculoNombre: '' })
+                    }}
+                    style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1.5px solid var(--city-border)', background: 'var(--city-bg)', color: 'var(--city-text)', fontSize: 13, outline: 'none' }}
+                  >
+                    {['Todos', 'SUV', 'Sedan', 'Compacto', 'Camioneta', 'Deportivo', 'Económico'].map((cat) => (
+                      <option key={cat} value={cat}>{cat}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Vehículo específico */}
+                <div>
+                  <label style={{ display: 'block', fontSize: 12.5, color: 'var(--city-text)', fontWeight: 600, marginBottom: 4 }}>
+                    Vehículo Específico (Opcional)
+                  </label>
+                  <select
+                    value={form.vehiculoId || ''}
+                    onChange={(e) => {
+                      const vId = e.target.value
+                      const selectedVeh = VEHICULOS_MOCK.find((v) => String(v.id) === String(vId))
+                      setForm({
+                        ...form,
+                        vehiculoId: vId ? Number(vId) : '',
+                        vehiculoNombre: selectedVeh ? selectedVeh.nombre : '',
+                        categoriaVehiculo: selectedVeh ? selectedVeh.categoria : form.categoriaVehiculo,
+                      })
+                    }}
+                    style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1.5px solid var(--city-border)', background: 'var(--city-bg)', color: 'var(--city-text)', fontSize: 13, outline: 'none' }}
+                  >
+                    <option value="">Cualquier vehículo</option>
+                    {vehiculosFiltrados.map((v) => (
+                      <option key={v.id} value={v.id}>{v.nombre} ({v.categoria})</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Fecha Inicio */}
+                <div>
+                  <label style={{ display: 'block', fontSize: 12.5, color: 'var(--city-text)', fontWeight: 600, marginBottom: 4 }}>
+                    Fecha Inicio *
+                  </label>
+                  <input
+                    type="date"
+                    required
+                    value={form.fechaInicio}
+                    onChange={(e) => setForm({ ...form, fechaInicio: e.target.value })}
+                    style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1.5px solid var(--city-border)', background: 'var(--city-bg)', color: 'var(--city-text)', fontSize: 13, outline: 'none' }}
+                  />
+                </div>
+
+                {/* Fecha Fin */}
+                <div>
+                  <label style={{ display: 'block', fontSize: 12.5, color: 'var(--city-text)', fontWeight: 600, marginBottom: 4 }}>
+                    Fecha Fin *
+                  </label>
+                  <input
+                    type="date"
+                    required
+                    value={form.fechaFin}
+                    onChange={(e) => setForm({ ...form, fechaFin: e.target.value })}
+                    style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1.5px solid var(--city-border)', background: 'var(--city-bg)', color: 'var(--city-text)', fontSize: 13, outline: 'none' }}
+                  />
+                </div>
+
+                {/* Reserva Mínima */}
+                <div>
+                  <label style={{ display: 'block', fontSize: 12.5, color: 'var(--city-text)', fontWeight: 600, marginBottom: 4 }}>
+                    Reserva Mínima ($ COP)
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={form.reservaMinima}
+                    onChange={(e) => setForm({ ...form, reservaMinima: e.target.value })}
+                    placeholder="0 para sin mínimo"
+                    style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1.5px solid var(--city-border)', background: 'var(--city-bg)', color: 'var(--city-text)', fontSize: 13, outline: 'none' }}
+                  />
+                </div>
+
+                {/* Audiencia */}
+                <div>
+                  <label style={{ display: 'block', fontSize: 12.5, color: 'var(--city-text)', fontWeight: 600, marginBottom: 4 }}>
+                    Audiencia / Destinatarios
+                  </label>
+                  <select
+                    value={form.audiencia}
+                    onChange={(e) => setForm({ ...form, audiencia: e.target.value })}
+                    style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1.5px solid var(--city-border)', background: 'var(--city-bg)', color: 'var(--city-text)', fontSize: 13, outline: 'none' }}
+                  >
+                    <option value="todos">Todos los usuarios</option>
+                    <option value="nuevos">Nuevos usuarios</option>
+                    <option value="frecuentes">Clientes frecuentes</option>
+                  </select>
+                </div>
+
+                {/* Checkbox Destacada */}
+                <div style={{ gridColumn: '1 / -1', padding: '12px 14px', background: form.destacada ? 'var(--brand-soft-light, #eff6ff)' : 'var(--city-bg, #f8fafc)', border: `1.5px solid ${form.destacada ? 'var(--brand-border-light, #bfdbfe)' : 'var(--city-border, #cbd5e1)'}`, borderRadius: 10 }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', margin: 0 }}>
+                    <input
+                      type="checkbox"
+                      checked={form.destacada}
+                      onChange={(e) => setForm({ ...form, destacada: e.target.checked })}
+                      style={{ width: 17, height: 17, accentColor: 'var(--brand-primary, #2563eb)' }}
+                    />
+                    <strong style={{ fontSize: 13, color: form.destacada ? 'var(--brand-primary, #2563eb)' : 'var(--city-text, #0f172a)' }}>
+                      Marcar como Oferta Destacada en Catálogo
+                    </strong>
+                  </label>
+                </div>
+
+                {/* Checkbox Activa */}
+                <div style={{ gridColumn: '1 / -1', padding: '12px 14px', background: form.activa ? '#ecfdf5' : 'var(--city-bg, #f8fafc)', border: `1.5px solid ${form.activa ? '#a7f3d0' : 'var(--city-border, #cbd5e1)'}`, borderRadius: 10 }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', margin: 0 }}>
+                    <input
+                      type="checkbox"
+                      checked={form.activa}
+                      onChange={(e) => setForm({ ...form, activa: e.target.checked })}
+                      style={{ width: 17, height: 17, accentColor: '#10b981' }}
+                    />
+                    <strong style={{ fontSize: 13, color: form.activa ? '#047857' : 'var(--city-text, #0f172a)' }}>
+                      Publicar oferta como Activa inmediatamente
+                    </strong>
+                  </label>
+                </div>
+
+                {/* Condiciones */}
+                <div style={{ gridColumn: '1 / -1' }}>
+                  <label style={{ display: 'block', fontSize: 12.5, color: 'var(--city-text)', fontWeight: 600, marginBottom: 4 }}>
+                    Términos y Condiciones Especificos *
+                  </label>
+                  <textarea
+                    required
+                    rows={3}
+                    value={form.condiciones}
+                    onChange={(e) => setForm({ ...form, condiciones: e.target.value })}
+                    placeholder="Escribe los términos y condiciones de la oferta..."
+                    style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1.5px solid var(--city-border)', background: 'var(--city-bg)', color: 'var(--city-text)', fontSize: 13, outline: 'none', resize: 'vertical' }}
+                  />
+                </div>
+
+                {error && <p style={{ gridColumn: '1 / -1', color: '#dc2626', fontSize: 13, margin: 0 }}>{error}</p>}
+              </form>
+            </div>
+
+            <div style={{ padding: '14px 24px', borderTop: '1px solid var(--city-border)', display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
+              <button
+                type="button"
+                onClick={closeModal}
+                style={{ padding: '8px 18px', borderRadius: 9999, background: 'transparent', color: 'var(--city-muted)', border: '1.5px solid var(--city-border)', cursor: 'pointer', fontWeight: 700 }}
+              >
+                {t('admin.promotions.modal.cancelBtn', 'Cancelar')}
+              </button>
+              <button
+                type="submit"
+                form="promo-form"
+                style={{ padding: '8px 22px', borderRadius: 9999, background: 'var(--brand-primary, #2563eb)', color: '#fff', border: 'none', cursor: 'pointer', fontWeight: 800, boxShadow: '0 4px 12px rgba(37, 99, 235, 0.3)' }}
+              >
+                {t('admin.promotions.modal.saveBtn', 'Guardar Oferta')}
+              </button>
+            </div>
           </section>
         </div>
       )}
