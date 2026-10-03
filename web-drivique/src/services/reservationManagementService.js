@@ -4,7 +4,7 @@ import { reservationService } from './reservationService'
 
 const STORAGE_KEY = 'drivique_reservas'
 const STORAGE_SCHEMA_KEY = 'drivique_reservas_schema'
-const STORAGE_SCHEMA = '6'
+const STORAGE_SCHEMA = '9'
 const LEGACY_RESERVATION_IDS = new Set(['RES-901', 'RES-902', 'RES-903', 'RES-904', 'RES-905'])
 const managerRoles = new Set(['encargado', 'branch_manager', 'encargado_sucursal'])
 function normalizeBranch(value) {
@@ -59,6 +59,15 @@ function normalizarReserva(r) {
     r.reservaDetalles.metodoPago = 'efectivo'
     r.reservaDetalles.sucursalPagoEfectivo = 'Alamo Bogotá - Aeropuerto'
   }
+  // RES-8830: pago digital (Wompi/Nequi) pendiente — cliente aún no ha pagado por pasarela
+  const isRes8830 = (String(codigo) === 'RES-8830' || String(r.id) === 'RES-8830')
+  if (isRes8830) {
+    r.pagoEstado = 'pendiente'
+    r.metodoPagoConfirmado = false
+    r.fechaPagoConfirmado = null
+    r.cajeroConfirmacion = null
+  }
+
   const df = r.datosForm || {}
   const clienteNombre = [df.nombres, df.apellidos].filter(Boolean).join(' ').trim() || r.clienteNombre || 'Cliente Registrado'
   const clienteCorreo = df.correo || r.clienteCorreo || 'cliente@drivique.com'

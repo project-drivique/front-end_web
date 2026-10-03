@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+﻿import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   FaBuilding,
@@ -27,14 +27,14 @@ import './CityManagementPage.css'
 import './BranchManagementPage.css'
 
 /**
- * Estado inicial por defecto para el formulario de creación/edición de sucursales.
+ * Estado inicial por defecto para el formulario de creaciÃ³n/ediciÃ³n de sucursales.
  */
 const EMPTY = {
   nombre: '',
   ciudad: '',
   direccion: '',
   telefono: '+57 601 555 1234',
-  horario: 'Lun-Vie 08:00 - 18:00 | Sáb 08:00 - 13:00',
+  horario: 'Lun-Vie 08:00 - 18:00 | SÃ¡b 08:00 - 13:00',
   capacidadVehiculos: 25,
   estado: 'activa',
   encargadoId: '',
@@ -42,15 +42,15 @@ const EMPTY = {
 }
 
 /**
- * Componente de Página: BranchManagementPage
+ * Componente de PÃ¡gina: BranchManagementPage
  * 
  * @description
- * Módulo de Gestión de Sedes y Sucursales para el Administrador General.
+ * MÃ³dulo de GestiÃ³n de Sedes y Sucursales para el Administrador General.
  * Permite:
- * - Listado interactivo con búsqueda y filtros por ciudad, estado y autorización de efectivo.
- * - Creación, edición y desactivación segura de sedes operativas.
- * - Exportación de datos a Excel, PDF e impresión física.
- * - Asignación de encargados y control de capacidad máxima de vehículos.
+ * - Listado interactivo con bÃºsqueda y filtros por ciudad, estado y autorizaciÃ³n de efectivo.
+ * - CreaciÃ³n, ediciÃ³n y desactivaciÃ³n segura de sedes operativas.
+ * - ExportaciÃ³n de datos a Excel, PDF e impresiÃ³n fÃ­sica.
+ * - AsignaciÃ³n de encargados y control de capacidad mÃ¡xima de vehÃ­culos.
  * 
  * @returns {JSX.Element}
  */
@@ -93,8 +93,8 @@ export default function BranchManagementPage() {
   const headers = [
     'Sucursal',
     'Ciudad',
-    'Dirección / Contacto',
-    'Horario Atención',
+    'DirecciÃ³n / Contacto',
+    'Horario AtenciÃ³n',
     'Encargado Asignado',
     'Capacidad Flota',
     'Cobro Efectivo',
@@ -116,7 +116,7 @@ export default function BranchManagementPage() {
   })
 
   const exportData = {
-    title: 'Gestión Administrativa de Sucursales - Drivique',
+    title: 'GestiÃ³n Administrativa de Sucursales - Drivique',
     headers,
     rows,
     filename: 'sucursales-drivique',
@@ -143,7 +143,7 @@ export default function BranchManagementPage() {
       ciudad: branch.ciudad || '',
       direccion: branch.direccion || '',
       telefono: branch.telefono || '+57 601 555 1234',
-      horario: branch.horario || 'Lun-Vie 08:00 - 18:00 | Sáb 08:00 - 13:00',
+      horario: branch.horario || 'Lun-Vie 08:00 - 18:00 | SÃ¡b 08:00 - 13:00',
       capacidadVehiculos: branch.capacidadVehiculos || 25,
       estado: branch.estado || 'activa',
       encargadoId: branch.encargadoId || '',
@@ -162,7 +162,7 @@ export default function BranchManagementPage() {
         branchManagementService.create(form, user)
       }
       setBranches(branchManagementService.list())
-      setNotice(modal.branch ? 'Sucursal actualizada exitosamente.' : 'Nueva sucursal creada con éxito.')
+      setNotice(modal.branch ? 'Sucursal actualizada exitosamente.' : 'Nueva sucursal creada con Ã©xito.')
       close()
     } catch (caught) {
       setError(caught.message ? `Error: ${caught.message}` : 'Error al guardar la sucursal.')
@@ -178,7 +178,7 @@ export default function BranchManagementPage() {
     } catch (caught) {
       setModal(null)
       setNotice(
-        `No se puede eliminar la sucursal porque tiene ${caught.linked?.vehicles || 0} vehículos y ${
+        `No se puede eliminar la sucursal porque tiene ${caught.linked?.vehicles || 0} vehÃ­culos y ${
           caught.linked?.reservations || 0
         } reservas vinculadas.`
       )
@@ -193,10 +193,10 @@ export default function BranchManagementPage() {
           {/* Topbar */}
           <header className="cities-topbar">
             <div>
-              <p className="cities-eyebrow">{t('admin.management', 'Gestión Operativa')}</p>
-              <h1>Gestión de Sucursales</h1>
+              <p className="cities-eyebrow">{t('admin.management', 'GestiÃ³n Operativa')}</p>
+              <h1>GestiÃ³n de Sucursales</h1>
               <p className="cities-subtitle">
-                Administración integral de sedes, encargados, horarios, capacidad de vehículos y cobro en efectivo.
+                AdministraciÃ³n integral de sedes, encargados, horarios, capacidad de vehÃ­culos y cobro en efectivo.
               </p>
             </div>
             <div className="cities-topbar__actions">
@@ -207,12 +207,12 @@ export default function BranchManagementPage() {
             </div>
           </header>
 
-          {/* Notificación */}
+          {/* NotificaciÃ³n */}
           {notice && (
             <div className="cities-notice" role="status">
               <span>{notice}</span>
               <button type="button" onClick={() => setNotice('')}>
-                ×
+                Ã—
               </button>
             </div>
           )}
@@ -225,7 +225,7 @@ export default function BranchManagementPage() {
                 <input
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Buscar sucursal, ciudad, dirección..."
+                  placeholder="Buscar sucursal, ciudad, direcciÃ³n..."
                 />
               </label>
 
@@ -273,7 +273,7 @@ export default function BranchManagementPage() {
               <div className="cities-empty">
                 <FaBuilding />
                 <h2>No se encontraron sucursales</h2>
-                <p>Intenta ajustar los filtros de búsqueda o registra una nueva sede.</p>
+                <p>Intenta ajustar los filtros de bÃºsqueda o registra una nueva sede.</p>
               </div>
             ) : (
               <div className="cities-table-wrap">
@@ -282,8 +282,8 @@ export default function BranchManagementPage() {
                     <tr>
                       <th>Sucursal</th>
                       <th>Ciudad</th>
-                      <th>Dirección y Contacto</th>
-                      <th>Horario Atención</th>
+                      <th>DirecciÃ³n y Contacto</th>
+                      <th>Horario AtenciÃ³n</th>
                       <th>Encargado</th>
                       <th>Cobro Efectivo</th>
                       <th>Flota / Capacidad</th>
@@ -346,10 +346,10 @@ export default function BranchManagementPage() {
                           <td>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                               <span className="branches-linked">
-                                <FaCar /> {linked.vehicles} vehículos
+                                <FaCar /> {linked.vehicles} vehÃ­culos
                               </span>
                               <small style={{ color: 'var(--city-muted, #64748b)', fontSize: 11 }}>
-                                Máx. capacidad: {branch.capacidadVehiculos || 20}
+                                MÃ¡x. capacidad: {branch.capacidadVehiculos || 20}
                               </small>
                             </div>
                           </td>
@@ -410,7 +410,7 @@ export default function BranchManagementPage() {
                       <h2>{modal.branch ? 'Editar Sucursal' : 'Registrar Nueva Sucursal'}</h2>
                     </div>
                     <button type="button" onClick={close}>
-                      ×
+                      Ã—
                     </button>
                   </div>
 
@@ -422,7 +422,7 @@ export default function BranchManagementPage() {
                         required
                         value={form.nombre}
                         onChange={(e) => setForm({ ...form, nombre: e.target.value })}
-                        placeholder="Ej: Alamo Bogotá - Calle 100"
+                        placeholder="Ej: Alamo BogotÃ¡ - Calle 100"
                       />
                     </label>
 
@@ -451,18 +451,18 @@ export default function BranchManagementPage() {
                     </div>
 
                     <label>
-                      Dirección Completa
+                      DirecciÃ³n Completa
                       <input
                         required
                         value={form.direccion}
                         onChange={(e) => setForm({ ...form, direccion: e.target.value })}
-                        placeholder="Ej: Av. Calle 100 # 15-20, Chicó"
+                        placeholder="Ej: Av. Calle 100 # 15-20, ChicÃ³"
                       />
                     </label>
 
                     <div className="branches-form-grid">
                       <label>
-                        Teléfono de Contacto
+                        TelÃ©fono de Contacto
                         <input
                           value={form.telefono}
                           onChange={(e) => setForm({ ...form, telefono: e.target.value })}
@@ -471,7 +471,7 @@ export default function BranchManagementPage() {
                       </label>
 
                       <label>
-                        Capacidad Máxima de Autos
+                        Capacidad MÃ¡xima de Autos
                         <input
                           type="number"
                           min="1"
@@ -484,11 +484,11 @@ export default function BranchManagementPage() {
 
                     <div className="branches-form-grid">
                       <label>
-                        Horario de Atención
+                        Horario de AtenciÃ³n
                         <input
                           value={form.horario}
                           onChange={(e) => setForm({ ...form, horario: e.target.value })}
-                          placeholder="Ej: Lun-Vie 08:00 - 18:00 | Sáb 08:00 - 13:00"
+                          placeholder="Ej: Lun-Vie 08:00 - 18:00 | SÃ¡b 08:00 - 13:00"
                         />
                       </label>
 
@@ -533,8 +533,8 @@ export default function BranchManagementPage() {
                   <div className="cities-delete-icon">
                     <FaTrash />
                   </div>
-                  <h2>¿Eliminar Sucursal?</h2>
-                  <p>¿Estás seguro de eliminar la sucursal <strong>{modal.branch.nombre}</strong>?</p>
+                  <h2>Â¿Eliminar Sucursal?</h2>
+                  <p>Â¿EstÃ¡s seguro de eliminar la sucursal <strong>{modal.branch.nombre}</strong>?</p>
                   <div className="cities-modal__actions">
                     <button type="button" onClick={close}>
                       Cancelar

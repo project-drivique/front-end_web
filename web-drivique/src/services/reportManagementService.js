@@ -72,7 +72,7 @@ export const REPORT_TYPES_CONFIG = [
     descripcion: 'Listado detallado de todas las reservas registradas con filtros por código, cliente, fechas de recogida/devolución y estado operativo.',
     icono: 'FaClipboardList',
     filtrosSoportados: ['rangoFechas', 'sucursal', 'estadoReserva', 'search'],
-    defaultColumns: ['Código', 'Cliente', 'Vehículo', 'Sucursal', 'Fecha Inicio', 'Fecha Fin', 'Estado', 'Total'],
+    defaultColumns: ['Código Reserva', 'Cliente', 'Nombre Vehículo', 'Sucursal', 'Fecha Inicio', 'Fecha Fin', 'Estado', 'Total'],
   },
   {
     id: 'vehicles',
@@ -90,7 +90,7 @@ export const REPORT_TYPES_CONFIG = [
     descripcion: 'Relación de contratos de arrendamiento generados, cliente firmante, documento de identidad, vigencia, monto total y estado contractual.',
     icono: 'FaFileContract',
     filtrosSoportados: ['rangoFechas', 'sucursal', 'estadoContrato', 'search'],
-    defaultColumns: ['No. Contrato', 'Reserva', 'Cliente', 'Documento', 'Vehículo', 'Sucursal', 'Vigencia', 'Estado', 'Monto'],
+    defaultColumns: ['Código Contrato', 'Código Reserva', 'Cliente', 'Documento', 'Nombre Vehículo', 'Sucursal', 'Vigencia', 'Estado', 'Monto'],
   },
   {
     id: 'incidents',
@@ -99,7 +99,7 @@ export const REPORT_TYPES_CONFIG = [
     descripcion: 'Listado pormenorizado de reportes de novedades, choques o fallas mecánicas con fecha, vehículo involucrado, usuario y resolución.',
     icono: 'FaExclamationTriangle',
     filtrosSoportados: ['rangoFechas', 'sucursal', 'gravedad', 'estadoIncidencia', 'search'],
-    defaultColumns: ['Código', 'Fecha', 'Vehículo', 'Sucursal', 'Tipo / Título', 'Gravedad', 'Estado', 'Costo Estimado'],
+    defaultColumns: ['Código', 'Fecha', 'Nombre Vehículo', 'Sucursal', 'Tipo / Título', 'Gravedad', 'Estado', 'Costo Estimado'],
   },
   {
     id: 'users',
@@ -498,7 +498,7 @@ export const reportManagementService = {
       // 5. REPORTE ESPECÍFICO DE RESERVAS
       case 'reservations': {
         reportTitle = 'Reporte Detallado de Reservas de Vehículos'
-        headers = ['Código Reserva', 'Cliente', 'Vehículo', 'Sucursal Retiro', 'Fecha Inicio', 'Fecha Fin', 'Estado', targetCurrency === 'USD' ? 'Total USD' : 'Total COP']
+        headers = ['Código Reserva', 'Cliente', 'Nombre Vehículo', 'Sucursal Retiro', 'Fecha Inicio', 'Fecha Fin', 'Estado', targetCurrency === 'USD' ? 'Total USD' : 'Total COP']
 
         const filtered = rawReservations.filter((r) => {
           const matchDate = isDateInRange(r.fechaReserva || r.reservaDetalles?.fechaInicio, filters.fechaInicio, filters.fechaFin)
@@ -566,7 +566,7 @@ export const reportManagementService = {
       // 7. REPORTE ESPECÍFICO DE CONTRATOS
       case 'contracts': {
         reportTitle = 'Reporte Detallado de Contratos de Alquiler'
-        headers = ['No. Contrato', 'Cód. Reserva', 'Cliente', 'Documento', 'Vehículo', 'Sucursal', 'Vigencia', 'Estado', 'Monto Total']
+        headers = ['Código Contrato', 'Código Reserva', 'Cliente', 'Documento', 'Nombre Vehículo', 'Sucursal', 'Vigencia', 'Estado', 'Monto Total']
 
         const filtered = rawContracts.filter((c) => {
           const matchDate = isDateInRange(c.fechaCreacion || c.fechaInicio, filters.fechaInicio, filters.fechaFin)
@@ -600,7 +600,7 @@ export const reportManagementService = {
       // 8. REPORTE ESPECÍFICO DE INCIDENCIAS
       case 'incidents': {
         reportTitle = 'Reporte Pormenorizado de Incidencias y Daños'
-        headers = ['Código', 'Fecha', 'Vehículo', 'Sucursal', 'Título / Novedad', 'Gravedad', 'Estado', 'Costo Estimado']
+        headers = ['Código', 'Fecha', 'Nombre Vehículo', 'Sucursal', 'Título / Novedad', 'Gravedad', 'Estado', 'Costo Estimado']
 
         const filtered = rawIncidents.filter((inc) => {
           const matchDate = isDateInRange(inc.fechaCreacion, filters.fechaInicio, filters.fechaFin)

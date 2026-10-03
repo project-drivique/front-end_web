@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+﻿import { useState, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   FaEdit,
@@ -34,13 +34,13 @@ export default function AdminRolesManagementPage() {
   const { t } = useTranslation()
 
   const MODULE_KEYS = [
-    { key: 'vehicles', label: t('admin.rolesPage.modVehicles', 'Flota y Vehículos') },
-    { key: 'reservations', label: t('admin.rolesPage.modReservations', 'Gestión de Reservas') },
+    { key: 'vehicles', label: t('admin.rolesPage.modVehicles', 'Flota y VehÃ­culos') },
+    { key: 'reservations', label: t('admin.rolesPage.modReservations', 'GestiÃ³n de Reservas') },
     { key: 'users', label: t('admin.rolesPage.modUsers', 'Usuarios y Clientes') },
     { key: 'contracts', label: t('admin.rolesPage.modContracts', 'Contratos Digitales') },
     { key: 'cities', label: t('admin.rolesPage.modCities', 'Ciudades y Tarifas') },
     { key: 'branches', label: t('admin.rolesPage.modBranches', 'Sedes y Sucursales') },
-    { key: 'audit', label: t('admin.rolesPage.modAudit', 'Auditoría y Registros') },
+    { key: 'audit', label: t('admin.rolesPage.modAudit', 'AuditorÃ­a y Registros') },
   ]
   const { tema } = useLanding()
   const user = useAuthStore((state) => state.usuario)
@@ -149,7 +149,7 @@ export default function AdminRolesManagementPage() {
       setNotice(
         t(
           'admin.roles.accountCreated',
-          `Cuenta de ${formCuenta.nombre} creada exitosamente. Notificación con credenciales enviada.`
+          `Cuenta de ${formCuenta.nombre} creada exitosamente. NotificaciÃ³n con credenciales enviada.`
         )
       )
       setModalCrearCuenta(false)
@@ -157,7 +157,7 @@ export default function AdminRolesManagementPage() {
       cargarDatos()
     } catch (err) {
       if (err.message === 'mailAlreadyExists') {
-        setErrorModal('El correo ya está asignado a otra cuenta administrativa.')
+        setErrorModal('El correo ya estÃ¡ asignado a otra cuenta administrativa.')
       } else if (err.message === 'branchRequiredForManager') {
         setErrorModal('Debes asignar una sucursal obligatoria al Encargado.')
       } else {
@@ -295,8 +295,8 @@ export default function AdminRolesManagementPage() {
     })
   }
 
-  // --- Exportación ---
-  const headersExportAccounts = ['Nombre', 'Correo', 'Teléfono', 'Rol Asignado', 'Sucursal', 'Estado']
+  // --- ExportaciÃ³n ---
+  const headersExportAccounts = ['Nombre', 'Correo', 'TelÃ©fono', 'Rol Asignado', 'Sucursal', 'Estado']
   const rowsExportAccounts = cuentasFiltradas.map((acc) => [
     acc.nombre,
     acc.correo,
@@ -307,7 +307,7 @@ export default function AdminRolesManagementPage() {
   ])
 
   const exportDataAccounts = {
-    title: `Cuentas Administrativas — Plataforma ${brand?.name || 'Drivique'}`,
+    title: `Cuentas Administrativas â€” Plataforma ${brand?.name || 'Drivique'}`,
     headers: headersExportAccounts,
     rows: rowsExportAccounts,
     items: cuentasFiltradas,
@@ -322,12 +322,12 @@ export default function AdminRolesManagementPage() {
           {/* Header Superior */}
           <header className="cities-topbar">
             <div>
-              <p className="cities-eyebrow">{t('admin.management', 'Gestión de Seguridad')}</p>
+              <p className="cities-eyebrow">{t('admin.management', 'GestiÃ³n de Seguridad')}</p>
               <h1>{t('admin.rolesTitle', 'Administradores y Permisos')}</h1>
               <p className="cities-subtitle">
                 {t(
                   'admin.rolesSubtitle',
-                  'Control de acceso, creación de cuentas administrativas y matriz de permisos por rol.'
+                  'Control de acceso, creaciÃ³n de cuentas administrativas y matriz de permisos por rol.'
                 )}
               </p>
             </div>
@@ -380,17 +380,17 @@ export default function AdminRolesManagementPage() {
             </div>
           </header>
 
-          {/* Notificación de Aviso */}
+          {/* NotificaciÃ³n de Aviso */}
           {notice && (
             <div className="cities-notice" role="status">
               <span>{notice}</span>
               <button type="button" onClick={() => setNotice('')}>
-                ×
+                Ã—
               </button>
             </div>
           )}
 
-          {/* Pestañas de Navegación */}
+          {/* PestaÃ±as de NavegaciÃ³n */}
           <div className="roles-tabs">
             <button
               type="button"
@@ -468,7 +468,7 @@ export default function AdminRolesManagementPage() {
                 <div className="cities-empty">
                   <FaUserShield />
                   <h2>{t('admin.rolesPage.noAccountsFound', 'No se encontraron cuentas')}</h2>
-                  <p>Ajusta el término de búsqueda o cambia los filtros seleccionados.</p>
+                  <p>Ajusta el tÃ©rmino de bÃºsqueda o cambia los filtros seleccionados.</p>
                 </div>
               ) : (
                 <div className="cities-table-wrap">
@@ -571,7 +571,7 @@ export default function AdminRolesManagementPage() {
                   <FaSearch />
                   <input
                     type="text"
-                    placeholder={t('admin.rolesPage.searchRoleDesc', 'Buscar rol por nombre o descripción...')}
+                    placeholder={t('admin.rolesPage.searchRoleDesc', 'Buscar rol por nombre o descripciÃ³n...')}
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                   />

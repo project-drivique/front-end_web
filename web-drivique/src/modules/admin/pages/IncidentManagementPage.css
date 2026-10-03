@@ -1,6 +1,152 @@
 /* src/modules/admin/pages/IncidentManagementPage.css */
 
 /* ─── BADGES DE PRIORIDAD VISUAL ─────────────────────────────────────────── */
+/* ─── ATTACHED TABS (SAME AS RESERVATION MANAGEMENT) ─────────────────── */
+.fleet-attached-tabs {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--city-card, #ffffff);
+  border: 1px solid var(--city-border, #cbd5e1);
+  border-bottom: none !important;
+  border-radius: 22px 22px 0 0 !important;
+  padding: 8px 24px 0 24px;
+  margin-bottom: 0 !important;
+  flex-wrap: wrap;
+}
+
+.fleet-tabs-nav {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.fleet-tab-btn {
+  background: transparent;
+  border: none;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--city-muted, #64748b);
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.fleet-tab-btn:hover {
+  color: var(--brand-primary, #2563eb);
+}
+
+.fleet-tab-btn.is-active {
+  color: var(--brand-primary, #2563eb);
+  border-bottom-color: var(--brand-primary, #2563eb);
+  font-weight: 700;
+}
+
+.management-shell--dark .fleet-attached-tabs {
+  background: var(--adm-card, #1e293b);
+  border-color: var(--adm-border, #334155);
+}
+
+.management-shell--dark .fleet-tab-btn {
+  color: #94a3b8;
+}
+
+.management-shell--dark .fleet-tab-btn.is-active {
+  color: #60a5fa;
+  border-bottom-color: #60a5fa;
+}
+
+.attached-to-tabs {
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
+  border-top: none !important;
+}
+
+/* ─── MODAL BUTTONS (PILL & VIBRANT COLORS) ────────────────────────── */
+.cities-modal__actions .incident-modal-btn-cancel,
+.cities-modal__actions button.incident-modal-btn-cancel {
+  background: #f1f5f9 !important;
+  color: #475569 !important;
+  border: 1.5px solid #cbd5e1 !important;
+  border-radius: 9999px !important;
+  font-weight: 700 !important;
+  font-size: 13px !important;
+  padding: 8px 22px !important;
+  min-height: auto !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  box-shadow: none !important;
+}
+.cities-modal__actions .incident-modal-btn-cancel:hover,
+.cities-modal__actions button.incident-modal-btn-cancel:hover {
+  background: #e2e8f0 !important;
+  color: #1e293b !important;
+  border-color: #94a3b8 !important;
+}
+
+.cities-modal__actions .incident-modal-btn-submit,
+.cities-modal__actions button.incident-modal-btn-submit {
+  background: #2563eb !important;
+  color: #ffffff !important;
+  border: 1px solid #2563eb !important;
+  border-radius: 9999px !important;
+  font-weight: 800 !important;
+  font-size: 13px !important;
+  padding: 8px 24px !important;
+  min-height: auto !important;
+  cursor: pointer !important;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3) !important;
+  transition: all 0.2s ease !important;
+}
+.cities-modal__actions .incident-modal-btn-submit:hover,
+.cities-modal__actions button.incident-modal-btn-submit:hover {
+  background: #1d4ed8 !important;
+  border-color: #1d4ed8 !important;
+}
+
+.incident-modal-btn-create,
+button.incident-modal-btn-create {
+  background: #16a34a !important;
+  color: #ffffff !important;
+  border: 1px solid #16a34a !important;
+  border-radius: 9999px !important;
+  font-weight: 800 !important;
+  font-size: 14px !important;
+  padding: 12px 26px !important;
+  cursor: pointer !important;
+  box-shadow: 0 2px 6px rgba(22, 163, 74, 0.3) !important;
+  transition: all 0.2s ease !important;
+}
+.incident-modal-btn-create:hover,
+button.incident-modal-btn-create:hover {
+  background: #15803d !important;
+  border-color: #15803d !important;
+}
+
+.cities-modal__actions .incident-modal-btn-delete,
+.cities-modal__actions button.incident-modal-btn-delete {
+  background: #dc2626 !important;
+  color: #ffffff !important;
+  border: 1px solid #dc2626 !important;
+  border-radius: 9999px !important;
+  font-weight: 800 !important;
+  font-size: 13px !important;
+  padding: 8px 24px !important;
+  min-height: auto !important;
+  cursor: pointer !important;
+  box-shadow: 0 2px 6px rgba(220, 38, 38, 0.3) !important;
+  transition: all 0.2s ease !important;
+}
+.cities-modal__actions .incident-modal-btn-delete:hover,
+.cities-modal__actions button.incident-modal-btn-delete:hover {
+  background: #b91c1c !important;
+  border-color: #b91c1c !important;
+}
+
 .priority-badge {
   display: inline-flex;
   align-items: center;
@@ -513,4 +659,160 @@ html.dark .view-mode-toggle {
 html.dark .toggle-btn.active {
   background: #334155;
   color: #60a5fa;
+}
+
+/* --- EXPORT PILLS (SAME AS RESERVATION MANAGEMENT) --------------- */
+.export-pills-group {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.export-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border-radius: 14px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.export-pill--excel {
+  background: #f0fdf4 !important;
+  border: 1.5px solid #bbf7d0 !important;
+  color: #16a34a !important;
+}
+.export-pill--excel svg {
+  color: #16a34a !important;
+  font-size: 14px !important;
+}
+.export-pill--excel:hover {
+  background: #dcfce7 !important;
+  border-color: #86efac !important;
+  transform: translateY(-1px);
+}
+
+.management-shell--dark .export-pill--excel {
+  background: rgba(34, 197, 94, 0.16) !important;
+  border-color: rgba(34, 197, 94, 0.4) !important;
+  color: #4ade80 !important;
+}
+.management-shell--dark .export-pill--excel svg {
+  color: #4ade80 !important;
+}
+.management-shell--dark .export-pill--excel:hover {
+  background: rgba(34, 197, 94, 0.28) !important;
+  border-color: rgba(34, 197, 94, 0.65) !important;
+  color: #86efac !important;
+}
+
+.export-pill--pdf {
+  background: #fef2f2 !important;
+  border: 1.5px solid #fecaca !important;
+  color: #dc2626 !important;
+}
+.export-pill--pdf svg {
+  color: #dc2626 !important;
+  font-size: 14px !important;
+}
+.export-pill--pdf:hover {
+  background: #fee2e2 !important;
+  border-color: #fca5a5 !important;
+  transform: translateY(-1px);
+}
+
+.management-shell--dark .export-pill--pdf {
+  background: rgba(239, 68, 68, 0.16) !important;
+  border-color: rgba(239, 68, 68, 0.4) !important;
+  color: #f87171 !important;
+}
+.management-shell--dark .export-pill--pdf svg {
+  color: #f87171 !important;
+}
+.management-shell--dark .export-pill--pdf:hover {
+  background: rgba(239, 68, 68, 0.28) !important;
+  border-color: rgba(239, 68, 68, 0.65) !important;
+  color: #fca5a5 !important;
+}
+
+.export-pill--print {
+  background: #eff6ff !important;
+  border: 1.5px solid #bfdbfe !important;
+  color: #2563eb !important;
+}
+.export-pill--print svg {
+  color: #2563eb !important;
+  font-size: 14px !important;
+}
+.export-pill--print:hover {
+  background: #dbeafe !important;
+  border-color: #93c5fd !important;
+  transform: translateY(-1px);
+}
+
+.management-shell--dark .export-pill--print {
+  background: rgba(59, 130, 246, 0.16) !important;
+  border-color: rgba(59, 130, 246, 0.4) !important;
+  color: #60a5fa !important;
+}
+.management-shell--dark .export-pill--print svg {
+  color: #60a5fa !important;
+}
+.management-shell--dark .export-pill--print:hover {
+  background: rgba(59, 130, 246, 0.28) !important;
+  border-color: rgba(59, 130, 246, 0.65) !important;
+  color: #93c5fd !important;
+}
+
+/* ─── BOTÓN RESPONDER (TABLE ACTION) ────────────────────────────── */
+.incident-btn-reply {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 18px;
+  font-size: 13px;
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1.5px solid #fecaca;
+  border-radius: 9999px;
+  cursor: pointer;
+  font-weight: 800;
+  box-shadow: 0 1px 3px rgba(220, 38, 38, 0.08);
+  transition: all 0.2s ease;
+}
+.incident-btn-reply:hover {
+  background: #fee2e2;
+  border-color: #f87171;
+  color: #b91c1c;
+  transform: translateY(-1px);
+}
+.management-shell--dark .incident-btn-reply {
+  background: rgba(239, 68, 68, 0.16) !important;
+  color: #f87171 !important;
+  border-color: rgba(239, 68, 68, 0.4) !important;
+}
+.management-shell--dark .incident-btn-reply:hover {
+  background: rgba(239, 68, 68, 0.28) !important;
+  color: #fca5a5 !important;
+  border-color: rgba(239, 68, 68, 0.7) !important;
+}
+
+/* ─── MODAL BOTÓN CANCELAR EN MODO OSCURO ───────────────────────── */
+.management-shell--dark .cities-modal__actions .incident-modal-btn-cancel,
+.management-shell--dark .cities-modal__actions button.incident-modal-btn-cancel {
+  background: #1e293b !important;
+  color: #cbd5e1 !important;
+  border-color: #475569 !important;
+}
+.management-shell--dark .cities-modal__actions .incident-modal-btn-cancel:hover,
+.management-shell--dark .cities-modal__actions button.incident-modal-btn-cancel:hover {
+  background: #334155 !important;
+  color: #f8fafc !important;
+  border-color: #64748b !important;
 }

@@ -1,12 +1,12 @@
-/**
+﻿/**
  * Servicio temporal para simular el almacenamiento de reservas.
- * Esto debería migrarse a un backend.
+ * Esto deberÃ­a migrarse a un backend.
  */
 
 const STORAGE_KEY = 'drivique_reservas';
 
 // Tiempo que tiene el usuario para acercarse a la sucursal a pagar en
-// efectivo antes de que la reserva se cancele automáticamente (72 horas).
+// efectivo antes de que la reserva se cancele automÃ¡ticamente (72 horas).
 export const HORAS_LIMITE_PAGO_EFECTIVO = 72;
 
 function calcularFechaLimitePago(fechaInicio, horaInicio) {
@@ -28,9 +28,9 @@ function calcularFechaLimitePago(fechaInicio, horaInicio) {
 }
 
 /**
- * Recorre las reservas y cancela automáticamente (en la lógica local/mock)
+ * Recorre las reservas y cancela automÃ¡ticamente (en la lÃ³gica local/mock)
  * aquellas que quedaron en estado PENDIENTE_EFECTIVO cuyo plazo de pago ya
- * venció sin haberse marcado como pagadas.
+ * venciÃ³ sin haberse marcado como pagadas.
  */
 function vencerReservasEfectivo(reservas) {
   const ahora = Date.now();
@@ -61,9 +61,9 @@ const SEED_RES_8821 = {
   vehiculoId: '5',
   vehiculoNombre: 'Toyota Corolla 2024',
   vehiculoPlaca: 'ABC-123',
-  sucursalRetiro: 'Alamo Bogotá - Aeropuerto',
-  sucursalDevolucion: 'Alamo Bogotá - Aeropuerto',
-  sucursal: 'Alamo Bogotá - Aeropuerto',
+  sucursalRetiro: 'Alamo BogotÃ¡ - Aeropuerto',
+  sucursalDevolucion: 'Alamo BogotÃ¡ - Aeropuerto',
+  sucursal: 'Alamo BogotÃ¡ - Aeropuerto',
   fechaInicio: '2026-09-25T08:30:00Z',
   fechaFin: '2026-09-28T18:00:00Z',
   horaInicio: '08:30',
@@ -90,16 +90,16 @@ const SEED_RES_8824 = {
   pasarela: 'efectivo',
   reservaDetalles: {
     metodoPago: 'efectivo',
-    sucursalPagoEfectivo: 'Alamo Bogotá - Aeropuerto',
-    sucursalRetiro: 'Alamo Bogotá - Aeropuerto',
+    sucursalPagoEfectivo: 'Alamo BogotÃ¡ - Aeropuerto',
+    sucursalRetiro: 'Alamo BogotÃ¡ - Aeropuerto',
   },
   vehiculoId: '3',
   vehiculoNombre: 'Mazda CX-5 2024',
   vehiculoPlaca: 'KLS-849',
-  sucursalRetiro: 'Alamo Bogotá - Aeropuerto',
-  sucursalDevolucion: 'Alamo Bogotá - Aeropuerto',
-  sucursal: 'Alamo Bogotá - Aeropuerto',
-  sucursalPagoEfectivo: 'Alamo Bogotá - Aeropuerto',
+  sucursalRetiro: 'Alamo BogotÃ¡ - Aeropuerto',
+  sucursalDevolucion: 'Alamo BogotÃ¡ - Aeropuerto',
+  sucursal: 'Alamo BogotÃ¡ - Aeropuerto',
+  sucursalPagoEfectivo: 'Alamo BogotÃ¡ - Aeropuerto',
   fechaInicio: '2026-09-25T10:15:00Z',
   fechaFin: '2026-09-29T17:00:00Z',
   horaInicio: '10:15',
@@ -120,21 +120,37 @@ const SEED_RES_8830 = {
   id: 'RES-8830',
   referencia: 'RES-8830',
   codigo: 'RES-8830',
-  estado: 'confirmada',
-  pagoEstado: 'aprobado',
+  estado: 'pendiente',
+  pagoEstado: 'pendiente',
   metodoPago: 'wompi',
+  pasarela: 'wompi',
   vehiculoId: '4',
   vehiculoNombre: 'Chevrolet Tracker 2024',
   vehiculoPlaca: 'MXP-492',
-  sucursalRetiro: 'Alamo Bogotá - Aeropuerto',
-  sucursalDevolucion: 'Alamo Bogotá - Aeropuerto',
-  sucursal: 'Alamo Bogotá - Aeropuerto',
-  fechaInicio: '2026-09-25T14:00:00Z',
-  fechaFin: '2026-09-30T10:00:00Z',
+  sucursalRetiro: 'Alamo BogotÃ¡ - Aeropuerto',
+  sucursalDevolucion: 'Alamo BogotÃ¡ - Aeropuerto',
+  sucursal: 'Alamo BogotÃ¡ - Aeropuerto',
+  fechaInicio: '2026-10-05T14:00:00Z',
+  fechaFin: '2026-10-10T10:00:00Z',
   horaInicio: '14:00',
   horaFin: '10:00',
   total: 380000,
   totalCOP: 380000,
+  metodoPagoConfirmado: false,
+  fechaPagoConfirmado: null,
+  cajeroConfirmacion: null,
+  reservaDetalles: {
+    metodoPago: 'wompi',
+    sucursalRetiro: 'Alamo BogotÃ¡ - Aeropuerto',
+    datosForm: {
+      nombres: 'Alejandro',
+      apellidos: 'Morales',
+      nombre: 'Alejandro Morales',
+      correo: 'alejandro.morales@email.com',
+      celular: '+57 300 567 8901',
+      numDoc: '1040506070'
+    }
+  },
   datosForm: {
     nombres: 'Alejandro',
     apellidos: 'Morales',
@@ -155,9 +171,9 @@ const SEED_RES_8799 = {
   vehiculoId: '2',
   vehiculoNombre: 'Nissan Kicks 2024',
   vehiculoPlaca: 'ZTR-771',
-  sucursalRetiro: 'Alamo Bogotá - Aeropuerto',
-  sucursalDevolucion: 'Alamo Bogotá - Aeropuerto',
-  sucursal: 'Alamo Bogotá - Aeropuerto',
+  sucursalRetiro: 'Alamo BogotÃ¡ - Aeropuerto',
+  sucursalDevolucion: 'Alamo BogotÃ¡ - Aeropuerto',
+  sucursal: 'Alamo BogotÃ¡ - Aeropuerto',
   fechaInicio: '2026-09-22T11:00:00Z',
   fechaFin: '2026-09-25T11:00:00Z',
   horaInicio: '11:00',
@@ -166,8 +182,8 @@ const SEED_RES_8799 = {
   totalCOP: 310000,
   datosForm: {
     nombres: 'Juan Manuel',
-    apellidos: 'Gómez',
-    nombre: 'Juan Manuel Gómez',
+    apellidos: 'GÃ³mez',
+    nombre: 'Juan Manuel GÃ³mez',
     correo: 'juan.gomez@email.com',
     celular: '+57 312 345 6789',
     numDoc: '1050607080'
@@ -184,9 +200,9 @@ const SEED_RES_8802 = {
   vehiculoId: '1',
   vehiculoNombre: 'Kia Cerato 2024',
   vehiculoPlaca: 'BOG-992',
-  sucursalRetiro: 'Alamo Bogotá - Aeropuerto',
-  sucursalDevolucion: 'Alamo Bogotá - Aeropuerto',
-  sucursal: 'Alamo Bogotá - Aeropuerto',
+  sucursalRetiro: 'Alamo BogotÃ¡ - Aeropuerto',
+  sucursalDevolucion: 'Alamo BogotÃ¡ - Aeropuerto',
+  sucursal: 'Alamo BogotÃ¡ - Aeropuerto',
   fechaInicio: '2026-09-21T16:30:00Z',
   fechaFin: '2026-09-25T16:30:00Z',
   horaInicio: '16:30',
@@ -194,9 +210,9 @@ const SEED_RES_8802 = {
   total: 290000,
   totalCOP: 290000,
   datosForm: {
-    nombres: 'Laura Sofía',
+    nombres: 'Laura SofÃ­a',
     apellidos: 'Silva',
-    nombre: 'Laura Sofía Silva',
+    nombre: 'Laura SofÃ­a Silva',
     correo: 'laura.silva@email.com',
     celular: '+57 318 901 2345',
     numDoc: '1060708090'
@@ -212,8 +228,8 @@ const DEMO_RESERVA_FINALIZADA = {
   metodoPago: 'wompi',
   vehiculoId: 1,
   vehiculoNombre: 'Kia Cerato 2024',
-  sucursalRetiro: 'Alamo Bogotá - Aeropuerto',
-  sucursalDevolucion: 'Alamo Bogotá - Aeropuerto',
+  sucursalRetiro: 'Alamo BogotÃ¡ - Aeropuerto',
+  sucursalDevolucion: 'Alamo BogotÃ¡ - Aeropuerto',
   fechaInicio: '2026-09-15T07:30:00Z',
   fechaFin: '2026-09-18T19:00:00Z',
   horaInicio: '07:30',
@@ -239,8 +255,8 @@ const DEMO_RESERVA_EFECTIVO = {
   metodoPago: 'efectivo',
   vehiculoId: 2,
   vehiculoNombre: 'Renault Sandero 2024',
-  sucursalRetiro: 'Alamo Bogotá - Aeropuerto',
-  sucursalDevolucion: 'Alamo Bogotá - Aeropuerto',
+  sucursalRetiro: 'Alamo BogotÃ¡ - Aeropuerto',
+  sucursalDevolucion: 'Alamo BogotÃ¡ - Aeropuerto',
   fechaInicio: '2026-10-15T08:00:00Z',
   fechaFin: '2026-10-18T18:00:00Z',
   horaInicio: '08:00',
@@ -285,7 +301,7 @@ export const reservationService = {
         reservas = INITIAL_RESERVATIONS_SEED;
         localStorage.setItem(STORAGE_KEY, JSON.stringify(reservas));
       } else {
-        // Asegurar que las reservas clave estén presentes
+        // Asegurar que las reservas clave estÃ©n presentes
         const seedKeys = [
           { key: 'RES-8821', obj: SEED_RES_8821 },
           { key: 'RES-8824', obj: SEED_RES_8824 },
@@ -298,6 +314,9 @@ export const reservationService = {
             reservas.push(obj);
           }
         });
+        // Forzar RES-8830 siempre con seed actualizado (pago pendiente digital)
+        const idx8830 = reservas.findIndex(r => r.id === 'RES-8830' || r.codigo === 'RES-8830');
+        if (idx8830 !== -1) reservas[idx8830] = { ...SEED_RES_8830 };
       }
       
       // Limpiar reservas residuales anteriores
@@ -316,8 +335,8 @@ export const reservationService = {
   },
 
   /**
-   * Guarda una reserva nueva. Si el método de pago es 'efectivo', calcula y
-   * asigna automáticamente el plazo límite para pagar en sucursal
+   * Guarda una reserva nueva. Si el mÃ©todo de pago es 'efectivo', calcula y
+   * asigna automÃ¡ticamente el plazo lÃ­mite para pagar en sucursal
    * (fechaLimitePago) y deja el estado en PENDIENTE_EFECTIVO.
    */
   guardarReserva: (reserva) => {
@@ -415,3 +434,4 @@ export const reservationService = {
     return false;
   }
 };
+

@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useCallback } from 'react'
+﻿import { useState, useMemo, useEffect, useCallback } from 'react'
 import html2canvas from 'html2canvas'
 import { useTranslation } from 'react-i18next'
 import {
@@ -46,7 +46,7 @@ import ManagementSidebar from '../components/ManagementSidebar'
 import './CityManagementPage.css'
 import './CashCollectionPage.css'
 
-// ── COMPONENTE DE UN SOLO CALENDARIO REUTILIZABLE PARA SELECCIÓN DE RANGO DE FECHAS ──
+// â”€â”€ COMPONENTE DE UN SOLO CALENDARIO REUTILIZABLE PARA SELECCIÃ“N DE RANGO DE FECHAS â”€â”€
 function SingleCalendarRangePicker({ dateRange, onChange }) {
   const [isOpen, setIsOpen] = useState(false)
   const [currentMonth, setCurrentMonth] = useState(new Date())
@@ -137,7 +137,7 @@ function SingleCalendarRangePicker({ dateRange, onChange }) {
           </div>
 
           <div className="cash-cal-weekdays">
-            {['Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sá', 'Do'].map((d) => (
+            {['Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'SÃ¡', 'Do'].map((d) => (
               <span key={d}>{d}</span>
             ))}
           </div>
@@ -217,7 +217,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
   const [selectedBranch, setSelectedBranch] = useState('todas') // 'todas' | nombre sucursal
   const [sortBy, setSortBy] = useState('codigo') // 'reciente' | 'antigua' | 'monto_desc' | 'monto_asc' | 'codigo'
 
-  // Lista única de sucursales disponibles
+  // Lista Ãºnica de sucursales disponibles
   const listaSucursales = useMemo(() => {
     try {
       const fromService = (branchManagementService.list(user) || []).map((b) => b.nombre)
@@ -256,7 +256,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
     )
   }, [])
 
-  // Filtrar reservas según sucursal asignada
+  // Filtrar reservas segÃºn sucursal asignada
   const reservasSucursal = useMemo(() => {
     if (isBranchManager && sucursalAsignada) {
       return todasLasReservas.filter((r) => {
@@ -272,7 +272,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
     return todasLasReservas
   }, [todasLasReservas, isBranchManager, sucursalAsignada])
 
-  // Métricas rápidas
+  // MÃ©tricas rÃ¡pidas
   const todosLosPagos = useMemo(() => {
     return reservasSucursal.filter(r => r.estado !== 'cancelada')
   }, [reservasSucursal])
@@ -358,7 +358,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
       })
     }
 
-    // Filtro por Año
+    // Filtro por AÃ±o
     if (selectedYear && selectedYear !== 'todas') {
       base = base.filter((r) => {
         const fecha = String(r.fechaInicio || r.fechaCreacion || '')
@@ -482,7 +482,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
         snapshot: actualizada,
       }))
 
-      // El modal cambia automáticamente al estado de recibo al actualizarse el estado
+      // El modal cambia automÃ¡ticamente al estado de recibo al actualizarse el estado
     } catch (err) {
       console.error(err)
       showAlert({
@@ -498,7 +498,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
 
   const handleSearchRef = () => {
     if (!searchRefValue.trim()) {
-      showAlert('Atención', 'Debes ingresar una referencia.', 'warning')
+      showAlert('AtenciÃ³n', 'Debes ingresar una referencia.', 'warning')
       return
     }
     
@@ -515,12 +515,28 @@ export default function CashCollectionPage({ branchOnly = false }) {
           {/* Header Superior */}
           <header className="cities-topbar reservations-management-header">
             <div className="branch-topbar-brand-title">
-              <span className="branch-topbar-badge">{t('admin.branchManagement', 'GESTIÓN DE SUCURSAL')}</span>
-              <h1 className="branch-topbar-heading">{t('admin.cash.title', 'Gestión de Pagos')}</h1>
+              <span className="branch-topbar-badge">{t('admin.branchManagement', 'GESTIÃ“N DE SUCURSAL')}</span>
+              <h1 className="branch-topbar-heading">{t('admin.cash.title', 'GestiÃ³n de Pagos')}</h1>
             </div>
 
-            <div className="cities-topbar__actions">
+            <div className="cities-topbar__actions" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <MenuConfiguracion />
+              {/* Chip de perfil de usuario */}
+              {user && (
+                <div className="branch-user-profile-chip">
+                  <div className="branch-user-avatar">
+                    {(user?.nombre || user?.correo || 'A').charAt(0).toUpperCase()}
+                  </div>
+                  <div className="branch-user-info-text">
+                    <strong className="branch-user-name">
+                      {[user?.nombre, user?.apellido].filter(Boolean).join(' ') || user?.correo || 'Usuario'}
+                    </strong>
+                    <span className="branch-user-role">
+                      {user?.rol || 'encargado_sucursal'}
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
           </header>
 
@@ -554,19 +570,19 @@ export default function CashCollectionPage({ branchOnly = false }) {
 
             {/* Tarjeta 3 */}
             <div className="cash-kpi-item-light">
-              <div className="cash-kpi-header-light" style={{ color: '#3b82f6' }}>
+              <div className="cash-kpi-header-light" style={{ color: 'var(--brand-primary, #3b82f6)' }}>
                 <FaCheckCircle />
                 <span>{t('admin.cash.kpi.paymentsToday', 'Cobros Realizados Hoy')}</span>
               </div>
               <strong className="cash-kpi-val-light">{cobradasHoy.length}</strong>
               <div className="cash-kpi-progress-bg">
-                <div className="cash-kpi-progress-fill" style={{ width: '100%', background: '#3b82f6' }}></div>
+                <div className="cash-kpi-progress-fill" style={{ width: '100%', background: 'var(--brand-primary, #3b82f6)' }}></div>
               </div>
               <span className="cash-kpi-subtitle-light">{t('admin.cash.kpi.receiptsIssued', 'Comprobantes emitidos')}</span>
             </div>
           </div>
 
-          {/* Tarjeta Principal con Buscador, Filtros y Tabla (Estilo exacto según captura) */}
+          {/* Tarjeta Principal con Buscador, Filtros y Tabla (Estilo exacto segÃºn captura) */}
           <section className="cities-card">
             <div className="cash-toolbar-container">
               {/* FILA 1: Buscador, Filtro Estado y Selector Sucursal */}
@@ -648,7 +664,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
                   style={{ height: '36px', padding: '0 8px', border: '1px solid #e2e8f0', borderRadius: '8px', fontSize: '13px', background: '#fff', color: '#374151', width: '140px', flexShrink: 0 }}
                 />
 
-                {/* Botones exportación → empujados al extremo derecho */}
+                {/* Botones exportaciÃ³n â†’ empujados al extremo derecho */}
                 <div style={{ marginLeft: 'auto', display: 'flex', gap: '8px', flexShrink: 0 }}>
                   <button
                     type="button"
@@ -683,7 +699,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
               <div className="cities-empty">
                 <FaCashRegister style={{ fontSize: 32, color: '#94a3b8' }} />
                 <h2>{t('admin.cash.emptyTitle', 'No se encontraron reservas')}</h2>
-                <p>{t('admin.cash.emptyDesc', 'No hay registros coincidentes con los criterios de búsqueda o filtro seleccionados.')}</p>
+                <p>{t('admin.cash.emptyDesc', 'No hay registros coincidentes con los criterios de bÃºsqueda o filtro seleccionados.')}</p>
               </div>
             ) : (
               <div className="cities-table-wrap">
@@ -691,9 +707,9 @@ export default function CashCollectionPage({ branchOnly = false }) {
                   <thead>
                     <tr>
                       <th>ID</th>
-                      <th>{t('admin.cash.table.code', 'CÓDIGO RESERVA')}</th>
+                      <th>{t('admin.cash.table.code', 'CÃ“DIGO RESERVA')}</th>
                       <th>{t('admin.cash.table.fullName', 'NOMBRE COMPLETO')}</th>
-                      <th>{t('admin.cash.table.phone', 'TELÉFONO')}</th>
+                      <th>{t('admin.cash.table.phone', 'TELÃ‰FONO')}</th>
                       <th>{t('admin.cash.table.paymentMethod', 'MEDIO DE PAGO')}</th>
                       <th>{t('admin.cash.table.totalAmount', 'MONTO TOTAL')}</th>
                       <th>{t('admin.cash.table.paymentStatus', 'ESTADO PAGO')}</th>
@@ -717,9 +733,9 @@ export default function CashCollectionPage({ branchOnly = false }) {
                       
                       const pagoConfirmado = esPagadaEnEfectivo || esPagadaDigital
                       
-                      // Lógica de prefijo de país para el teléfono
-                      let tel = String(r.clienteTelefono || 'Sin teléfono').trim()
-                      if (tel !== 'Sin teléfono' && !tel.startsWith('+')) {
+                      // LÃ³gica de prefijo de paÃ­s para el telÃ©fono
+                      let tel = String(r.clienteTelefono || 'Sin telÃ©fono').trim()
+                      if (tel !== 'Sin telÃ©fono' && !tel.startsWith('+')) {
                         tel = `+57 ${tel}`
                       }
 
@@ -731,7 +747,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
                         else if (rawMetodo.includes('daviplata')) medioDisplay = 'Wompi (DaviPlata)'
                         else if (rawMetodo.includes('bancolombia')) medioDisplay = 'Wompi (Bancolombia)'
                         else if (rawMetodo !== 'wompi' && rawMetodo !== 'wompi (digital)') {
-                          // Capitalizar primera letra si viene algo específico de Wompi
+                          // Capitalizar primera letra si viene algo especÃ­fico de Wompi
                           const capitalize = s => s.charAt(0).toUpperCase() + s.slice(1)
                           medioDisplay = `Wompi (${capitalize(rawMetodo)})`
                         } else {
@@ -746,7 +762,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
                       if (finalName === 'Cliente Registrado' || finalName === 'Cliente Drivique') {
                         const rawCod = String(cod).replace('CTR-', '');
                         const hash = rawCod.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-                        const mockNames = ['Carlos Mendoza', 'Ana Lucía Ramírez', 'Juan Diego Gómez', 'María Camila Torres', 'Andrés Felipe Castro', 'Valentina Rojas', 'Santiago Silva', 'Diana Marcela Ruiz'];
+                        const mockNames = ['Carlos Mendoza', 'Ana LucÃ­a RamÃ­rez', 'Juan Diego GÃ³mez', 'MarÃ­a Camila Torres', 'AndrÃ©s Felipe Castro', 'Valentina Rojas', 'Santiago Silva', 'Diana Marcela Ruiz'];
                         const nameIdx = hash % mockNames.length;
                         finalName = mockNames[nameIdx];
                       }
@@ -757,7 +773,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
                           style={{ cursor: 'default' }}
                         >
                           <td>
-                            <span style={{ fontSize: 13, color: '#475569' }}>{sequentialId}</span>
+                            <span style={{ fontSize: 13, color: 'var(--city-muted, #475569)' }}>{sequentialId}</span>
                           </td>
                           <td>
                             <span style={{ color: 'var(--city-text, #0f172a)', fontSize: 13 }}>
@@ -770,7 +786,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
                             </span>
                           </td>
                           <td>
-                            <span style={{ fontSize: 13, color: '#475569' }}>
+                            <span style={{ fontSize: 13, color: 'var(--city-muted, #475569)' }}>
                               {tel}
                             </span>
                           </td>
@@ -875,22 +891,22 @@ export default function CashCollectionPage({ branchOnly = false }) {
                                 div.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:480px;padding:32px;background:#fff;font-family:Arial,sans-serif;color:#111827;border-radius:12px;'
                                 div.innerHTML = `
                                   <div style="text-align:center;margin-bottom:20px">
-                                    <div style="display:inline-flex;align-items:center;justify-content:center;width:52px;height:52px;border-radius:50%;background:#d1fae5;color:#10b981;font-size:26px;margin-bottom:12px">✓</div>
+                                    <div style="display:inline-flex;align-items:center;justify-content:center;width:52px;height:52px;border-radius:50%;background:#d1fae5;color:#10b981;font-size:26px;margin-bottom:12px">âœ“</div>
                                     <h2 style="margin:0 0 4px;font-size:20px;color:#111827">Comprobante de Pago</h2>
-                                    <p style="margin:0;font-size:13px;color:#6b7280">Drivique — ${new Date().toLocaleDateString('es-CO')}</p>
+                                    <p style="margin:0;font-size:13px;color:#6b7280">Drivique â€” ${new Date().toLocaleDateString('es-CO')}</p>
                                   </div>
                                   <table style="width:100%;border-collapse:collapse;margin-top:8px">
                                     <tr><td style="padding:10px 6px;font-size:14px;border-bottom:1px solid #e5e7eb;color:#6b7280">Referencia</td><td style="padding:10px 6px;font-size:14px;border-bottom:1px solid #e5e7eb;text-align:right;font-weight:600">${cod}</td></tr>
                                     <tr><td style="padding:10px 6px;font-size:14px;border-bottom:1px solid #e5e7eb;color:#6b7280">Cliente</td><td style="padding:10px 6px;font-size:14px;border-bottom:1px solid #e5e7eb;text-align:right;font-weight:600">${r.clienteNombre || 'Cliente'}</td></tr>
-                                    <tr><td style="padding:10px 6px;font-size:14px;border-bottom:1px solid #e5e7eb;color:#6b7280">Vehículo</td><td style="padding:10px 6px;font-size:14px;border-bottom:1px solid #e5e7eb;text-align:right;font-weight:600">${r.vehiculoNombre || 'Vehículo Reservado'}</td></tr>
-                                    <tr><td style="padding:10px 6px;font-size:14px;border-bottom:1px solid #e5e7eb;color:#6b7280">Método de pago</td><td style="padding:10px 6px;font-size:14px;border-bottom:1px solid #e5e7eb;text-align:right;font-weight:600">${esEfectivo ? 'Efectivo en Sucursal' : 'Pasarela Digital'}</td></tr>
+                                    <tr><td style="padding:10px 6px;font-size:14px;border-bottom:1px solid #e5e7eb;color:#6b7280">VehÃ­culo</td><td style="padding:10px 6px;font-size:14px;border-bottom:1px solid #e5e7eb;text-align:right;font-weight:600">${r.vehiculoNombre || 'VehÃ­culo Reservado'}</td></tr>
+                                    <tr><td style="padding:10px 6px;font-size:14px;border-bottom:1px solid #e5e7eb;color:#6b7280">MÃ©todo de pago</td><td style="padding:10px 6px;font-size:14px;border-bottom:1px solid #e5e7eb;text-align:right;font-weight:600">${esEfectivo ? 'Efectivo en Sucursal' : 'Pasarela Digital'}</td></tr>
                                     <tr><td style="padding:10px 6px;font-size:14px;border-bottom:1px solid #e5e7eb;color:#6b7280">Fecha de pago</td><td style="padding:10px 6px;font-size:14px;border-bottom:1px solid #e5e7eb;text-align:right;font-weight:600">${r.fechaPagoConfirmado ? new Date(r.fechaPagoConfirmado).toLocaleString('es-CO') : new Date().toLocaleString('es-CO')}</td></tr>
                                     <tr><td style="padding:14px 6px;font-size:17px;font-weight:800;color:#10b981;border-top:2px solid #d1fae5">TOTAL PAGADO</td><td style="padding:14px 6px;font-size:17px;font-weight:800;color:#10b981;border-top:2px solid #d1fae5;text-align:right">${formatCurrency(total, moneda, tasaUSD)}</td></tr>
                                   </table>
                                 `
                                 document.body.appendChild(div)
                                 try {
-                                  const canvas = await html2canvas(div, { scale: 2, backgroundColor: '#ffffff' })
+                                  const canvas = await html2canvas(div, { scale: 2, backgroundColor: 'var(--city-card, #ffffff)' })
                                   const link = document.createElement('a')
                                   link.download = `Comprobante-${cod}.png`
                                   link.href = canvas.toDataURL('image/png')
@@ -910,7 +926,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
                               type="button"
                               className="cash-btn-primary"
                               disabled={!pagoConfirmado}
-                              style={{ width: '90px', padding: '6px 10px', fontSize: '13px', background: pagoConfirmado ? '#eff6ff' : '#e5e7eb', borderColor: pagoConfirmado ? '#bfdbfe' : '#e5e7eb', color: pagoConfirmado ? '#2563eb' : '#9ca3af', whiteSpace: 'nowrap', textAlign: 'center', cursor: pagoConfirmado ? 'pointer' : 'not-allowed', fontWeight: '500' }}
+                              style={{ width: '90px', padding: '6px 10px', fontSize: '13px', background: pagoConfirmado ? 'var(--city-soft, #eff6ff)' : '#e5e7eb', borderColor: pagoConfirmado ? '#bfdbfe' : '#e5e7eb', color: pagoConfirmado ? '#2563eb' : '#9ca3af', whiteSpace: 'nowrap', textAlign: 'center', cursor: pagoConfirmado ? 'pointer' : 'not-allowed', fontWeight: '500' }}
                               onClick={(e) => {
                                 e.stopPropagation()
                                 if (!pagoConfirmado) return
@@ -937,7 +953,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
         </div>
       </main>
 
-      {/* ── MODAL ORGANIZADO DE CONFIRMACIÓN DE PAGO EN SUCURSAL ── */}
+      {/* â”€â”€ MODAL ORGANIZADO DE CONFIRMACIÃ“N DE PAGO EN SUCURSAL â”€â”€ */}
       {modalReserva && (
         <div
           className="cities-modal-backdrop"
@@ -947,7 +963,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
             <div className="cities-modal__head" style={{ borderBottom: 'none', paddingBottom: 0, paddingTop: '16px', paddingRight: '16px' }}>
               <div></div>
               <button type="button" onClick={() => setModalReserva(null)} style={{ background: 'transparent', border: 'none', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#6b7280', fontSize: '24px' }}>
-                ×
+                Ã—
               </button>
             </div>
 
@@ -972,8 +988,8 @@ export default function CashCollectionPage({ branchOnly = false }) {
                       <strong style={{ color: '#111827', textAlign: 'right' }}>{modalReserva.clienteNombre || 'Cliente Registrado'}</strong>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px', fontSize: '14px' }}>
-                      <span style={{ color: '#6b7280' }}>{t('admin.cash.modal.vehicle', 'Vehículo')}</span>
-                      <strong style={{ color: '#111827', textAlign: 'right' }}>{modalReserva.vehiculoNombre || 'Vehículo Reservado'}</strong>
+                      <span style={{ color: '#6b7280' }}>{t('admin.cash.modal.vehicle', 'VehÃ­culo')}</span>
+                      <strong style={{ color: '#111827', textAlign: 'right' }}>{modalReserva.vehiculoNombre || 'VehÃ­culo Reservado'}</strong>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '12px', borderTop: '1px solid #e5e7eb', fontSize: '15px', alignItems: 'center' }}>
                       <span style={{ color: '#374151', fontWeight: 600 }}>{t('admin.cash.modal.totalToCollect', 'Total a cobrar')}</span>
@@ -1070,7 +1086,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
       )}
 
 
-      {/* ── MODAL COMPROBANTE DIGITAL (RÉPLICA WOMPI) ── */}
+      {/* â”€â”€ MODAL COMPROBANTE DIGITAL (RÃ‰PLICA WOMPI) â”€â”€ */}
       {comprobanteDigital && (
         <div
           className="cities-modal-backdrop"
@@ -1081,7 +1097,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
             className="wompi-replica-modal"
             role="dialog"
           >
-            {/* Botón de cierre discreto */}
+            {/* BotÃ³n de cierre discreto */}
             <button
               onClick={() => setComprobanteDigital(null)}
               style={{
@@ -1102,7 +1118,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
               <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '56px', height: '56px', borderRadius: '50%', background: '#00a650', color: '#fff', fontSize: '28px', marginBottom: '16px' }}>
                 <FaCheckCircle />
               </div>
-              <h2 style={{ fontSize: '22px', color: '#111827', fontWeight: 700, margin: '0 0 8px 0' }}>{t('admin.cash.modal.paymentApprovedTitle', '¡Pago aprobado!')}</h2>
+              <h2 style={{ fontSize: '22px', color: '#111827', fontWeight: 700, margin: '0 0 8px 0' }}>{t('admin.cash.modal.paymentApprovedTitle', 'Â¡Pago aprobado!')}</h2>
               <div style={{ fontSize: '32px', color: '#00a650', fontWeight: 800, margin: '0 0 8px 0' }}>
                 {formatCurrency(Number(comprobanteDigital.totalCOP || comprobanteDigital.total || 0), moneda, tasaUSD)}
               </div>
@@ -1115,16 +1131,16 @@ export default function CashCollectionPage({ branchOnly = false }) {
               <p style={{ margin: 0, fontSize: '13px', fontWeight: 500 }}>
                 Hemos registrado tu pago.<br/>
                 Guarda estos datos por si necesitas consultar tu compra.<br/>
-                También te enviamos un comprobante a <strong>{comprobanteDigital.clienteEmail || 'cliente@drivique.com'}</strong>
+                TambiÃ©n te enviamos un comprobante a <strong>{comprobanteDigital.clienteEmail || 'cliente@drivique.com'}</strong>
               </p>
             </div>
 
             <div style={{ marginBottom: '24px' }}>
               <h4 style={{ fontSize: '15px', color: '#111827', fontWeight: 700, margin: '0 0 16px 0', borderBottom: '1px solid #f3f4f6', paddingBottom: '8px' }}>
-                {t('admin.cash.modal.transactionInfo', 'Información de la transacción')}
+                {t('admin.cash.modal.transactionInfo', 'InformaciÃ³n de la transacciÃ³n')}
               </h4>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', marginBottom: '12px' }}>
-                <span style={{ color: '#4b5563' }}>Transacción #</span>
+                <span style={{ color: '#4b5563' }}>TransacciÃ³n #</span>
                 <span style={{ color: '#111827', fontWeight: 500 }}>{Math.floor(Math.random() * 90000000) + 10000000}-{Date.now()}-{Math.floor(Math.random() * 90000) + 10000}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', marginBottom: '12px' }}>
@@ -1133,13 +1149,13 @@ export default function CashCollectionPage({ branchOnly = false }) {
                   {comprobanteDigital.codigo || comprobanteDigital.referencia || comprobanteDigital.id}
                 </span>
               </div>
-              {/* Solo mostrar número de aprobación para DaviPlata (y opcionalmente Tarjeta) como en el original */}
+              {/* Solo mostrar nÃºmero de aprobaciÃ³n para DaviPlata (y opcionalmente Tarjeta) como en el original */}
               {(() => {
                 const met = String(comprobanteDigital?.reservaDetalles?.metodoPago || comprobanteDigital?.pasarela || comprobanteDigital?.metodoPagoConfirmado || comprobanteDigital?.medioPago || 'Wompi').toLowerCase()
                 if (met.includes('daviplata')) {
                   return (
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', marginBottom: '12px' }}>
-                      <span style={{ color: '#4b5563' }}>Número de aprobación</span>
+                      <span style={{ color: '#4b5563' }}>NÃºmero de aprobaciÃ³n</span>
                       <span style={{ color: '#111827', fontWeight: 500 }}>
                         {Math.floor(Math.random() * 900000) + 100000}
                       </span>
@@ -1149,7 +1165,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
                 return null
               })()}
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', marginBottom: '12px' }}>
-                <span style={{ color: '#4b5563' }}>Método de pago</span>
+                <span style={{ color: '#4b5563' }}>MÃ©todo de pago</span>
                 <span style={{ color: '#111827', fontWeight: 600 }}>
                   {(() => {
                     const met = String(comprobanteDigital?.reservaDetalles?.metodoPago || comprobanteDigital?.pasarela || comprobanteDigital?.metodoPagoConfirmado || comprobanteDigital?.medioPago || 'Wompi').toLowerCase()
@@ -1166,7 +1182,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
 
             <div style={{ marginBottom: '32px' }}>
               <h4 style={{ fontSize: '15px', color: '#111827', fontWeight: 700, margin: '0 0 16px 0', borderBottom: '1px solid #f3f4f6', paddingBottom: '8px' }}>
-                {t('admin.cash.modal.payerInfo', 'Información del pagador')}
+                {t('admin.cash.modal.payerInfo', 'InformaciÃ³n del pagador')}
               </h4>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', marginBottom: '12px' }}>
                 <span style={{ color: '#4b5563' }}>Nombre</span>
@@ -1174,7 +1190,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
                   {(() => {
                     let finalName = comprobanteDigital.clienteNombre || 'Laura vanessa perez perdomo'
                     if (finalName === 'Cliente Registrado') {
-                      const mockNames = ['Carlos Mendoza', 'Ana Lucía Ramírez', 'Juan Diego Gómez', 'María Camila Torres', 'Andrés Felipe Castro', 'Valentina Rojas', 'Santiago Silva', 'Diana Marcela Ruiz']
+                      const mockNames = ['Carlos Mendoza', 'Ana LucÃ­a RamÃ­rez', 'Juan Diego GÃ³mez', 'MarÃ­a Camila Torres', 'AndrÃ©s Felipe Castro', 'Valentina Rojas', 'Santiago Silva', 'Diana Marcela Ruiz']
                       const cod = comprobanteDigital.codigo || comprobanteDigital.referencia || comprobanteDigital.id || 'A'
                       const nameIdx = cod.charCodeAt(cod.length - 1) % mockNames.length
                       finalName = mockNames[nameIdx]
@@ -1184,7 +1200,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
                 </span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', marginBottom: '12px' }}>
-                <span style={{ color: '#4b5563' }}>Teléfono</span>
+                <span style={{ color: '#4b5563' }}>TelÃ©fono</span>
                 <span style={{ color: '#111827', fontWeight: 500 }}>
                   {(() => {
                     const tel = String(comprobanteDigital.clienteTelefono || '+573991111111').trim()

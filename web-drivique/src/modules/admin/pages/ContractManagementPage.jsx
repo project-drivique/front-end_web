@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+﻿import { useState, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import {
   FaFileContract,
@@ -91,11 +91,11 @@ export default function ContractManagementPage() {
   }, [contratos, search, statusFilter]);
 
   const headersExport = [
-    t("admin.contractsPage.fields.contractNumber", "No. Contrato"),
-    t("admin.contractsPage.fields.reservationCode", "Reserva"),
+    t("admin.contractsPage.fields.contractNumber", "CÃ³digo Contrato"),
+    t("admin.contractsPage.fields.reservationCode", "CÃ³digo Reserva"),
     t("admin.contractsPage.fields.clientName", "Cliente"),
     t("admin.contractsPage.fields.clientDoc", "Documento"),
-    t("admin.contractsPage.fields.vehicle", "Vehículo"),
+    t("admin.contractsPage.fields.vehicle", "Nombre VehÃ­culo"),
     t("admin.contractsPage.fields.branch", "Sucursal"),
     t("admin.contractsPage.fields.startDate", "Inicio"),
     t("admin.contractsPage.fields.endDate", "Fin"),
@@ -118,7 +118,7 @@ export default function ContractManagementPage() {
 
   const exportData = {
     title: esEncargado
-      ? `${t("admin.contractsPage.title", "Gestión de Contratos")} - ${sucursalEncargado}`
+      ? `${t("admin.contractsPage.title", "GestiÃ³n de Contratos")} - ${sucursalEncargado}`
       : t("admin.contractsPage.exportTitle", `Listado de Contratos - ${brand?.name || 'Drivique'}`).replaceAll("Drivique", brand?.name || 'Drivique'),
     headers: headersExport,
     rows: rowsExport,
@@ -197,15 +197,28 @@ export default function ContractManagementPage() {
         <div className="cities-container" style={{ maxWidth: "100%" }}>
           <header className="cities-topbar reservations-management-header">
             <div className="branch-topbar-brand-title">
-              <span className="branch-topbar-badge">GESTIÓN DE SUCURSAL</span>
-              <h1 className="branch-topbar-heading">Gestión de Contratos</h1>
+              <span className="branch-topbar-badge">{t('admin.branchManagement', 'GESTIÃ“N DE SUCURSAL')}</span>
+              <h1 className="branch-topbar-heading">{t('admin.contractsPage.title', 'GestiÃ³n de Contratos')}</h1>
             </div>
-            <div className="cities-topbar__actions">
+            <div className="branch-topbar-actions">
               <MenuConfiguracion />
+              {esEncargado && (
+                <div className="branch-user-profile-chip">
+                  <div className="branch-user-avatar">
+                    {(user?.nombre || user?.correo || 'A').charAt(0).toUpperCase()}
+                  </div>
+                  <div className="branch-user-info-text">
+                    <strong className="branch-user-name">
+                      {[user?.nombre, user?.apellido].filter(Boolean).join(' ') || user?.correo || 'Usuario'}
+                    </strong>
+                    <span className="branch-user-role">{user?.rol || 'encargado_sucursal'}</span>
+                  </div>
+                </div>
+              )}
             </div>
           </header>
 
-          {notice && <div className="cities-notice" role="status"><span>{notice}</span><button type="button" onClick={() => setNotice("")} aria-label={t("common.close")}>×</button></div>}
+          {notice && <div className="cities-notice" role="status"><span>{notice}</span><button type="button" onClick={() => setNotice("")} aria-label={t("common.close")}>Ã—</button></div>}
 
           <section className="cities-card">
             <div className="cities-toolbar contracts-toolbar">
@@ -233,54 +246,53 @@ export default function ContractManagementPage() {
                 <option value="firmado">{t("admin.contractsPage.states.firmado", "Firmado")}</option>
               </select>
               <div className="cities-export contracts-export">
-
                 <button
+                  type="button"
                   onClick={handleExportExcel}
                   title={t("admin.contractsPage.exportExcel")}
                 >
-                  <FaFileExcel style={{ color: "#27ae60" }} /> Excel
+                  <FaFileExcel /> Excel
                 </button>
                 <button
+                  type="button"
                   onClick={handleExportPdf}
                   title={t("admin.contractsPage.exportPdf")}
                 >
-                  <FaFilePdf style={{ color: "#e74c3c" }} /> PDF
+                  <FaFilePdf /> PDF
                 </button>
                 <button
+                  type="button"
                   onClick={handlePrint}
                   title={t("admin.contractsPage.printList")}
-                  style={{ background: '#eff6ff', color: '#2563eb', border: '1px solid #bfdbfe' }}
                 >
                   <FaPrint /> {t('admin.print', 'Imprimir')}
                 </button>
               </div>
             </div>
 
-            <div className="contracts-summary">
+            <div className="contracts-summary" style={{ color: "#0f172a", fontWeight: "900", textTransform: "uppercase" }}><strong>
                 {filtrados.length}{" "}
-                {t("admin.contractsPage.results", "contratos encontrados")}
+                {t("admin.contractsPage.results", "contratos encontrados")}</strong>
             </div>
             <div className="cities-table-wrap contracts-table-wrap" style={{ overflowX: 'auto' }}>
               <table className="cities-table" style={{ whiteSpace: 'nowrap' }}>
               <thead>
                 <tr>
                   <th>ID</th>
-                  <th>
-                    {t("admin.contractsPage.fields.contractNumber", "No. Contrato")}
-                  </th>
-                  <th>CÓDIGO RESERVA</th>
-                  <th>NOMBRE COMPLETO</th>
-                  <th>IMAGEN</th>
-                  <th>NOMBRE VEHÍCULO</th>
-                  <th>PLACA</th>
-                  <th>MARCA</th>
-                  <th>MODELO</th>
-                  <th>FECHA FIRMA</th>
-                  <th>HORA FIRMA</th>
-                  <th style={{ textAlign: "center" }}>ESTADO FIRMA DE CONTRATO</th>
-                  <th style={{ textAlign: "center" }}>VER CONTRATO</th>
-                  <th style={{ textAlign: "center" }}>DESCARGAR CONTRATO</th>
-                  <th style={{ textAlign: "center" }}>IMPRIMIR CONTRATO</th>
+                  <th>{t('admin.contractsPage.fields.contractNumber', 'CÃ³digo Contrato')}</th>
+                  <th>{t('admin.contractsPage.fields.reservationCode', 'CÃ³digo Reserva')}</th>
+                  <th>{t('admin.contractsPage.fields.clientName', 'Nombre Completo')}</th>
+                  <th>{t('admin.contractsPage.fields.image', 'Imagen')}</th>
+                  <th>{t('admin.contractsPage.fields.vehicleName', 'Nombre VehÃ­culo')}</th>
+                  <th>{t('admin.contractsPage.fields.plate', 'Placa')}</th>
+                  <th>{t('admin.contractsPage.fields.brand', 'Marca')}</th>
+                  <th>{t('admin.contractsPage.fields.model', 'Modelo')}</th>
+                  <th>{t('admin.contractsPage.fields.signatureDate', 'Fecha Firma')}</th>
+                  <th>{t('admin.contractsPage.fields.signatureTime', 'Hora Firma')}</th>
+                  <th style={{ textAlign: 'center' }}>{t('admin.contractsPage.fields.contractSigned', 'Estado Firma')}</th>
+                  <th style={{ textAlign: 'center' }}>{t('admin.contractsPage.fields.viewContract', 'Ver Contrato')}</th>
+                  <th style={{ textAlign: 'center' }}>{t('admin.contractsPage.fields.downloadContract', 'Descargar Contrato')}</th>
+                  <th style={{ textAlign: 'center' }}>{t('admin.contractsPage.fields.printContract', 'Imprimir Contrato')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -291,7 +303,7 @@ export default function ContractManagementPage() {
                     if (finalName === 'Cliente Registrado' || finalName === 'Cliente Drivique') {
                       const rawCod = String(cod).replace('CTR-', '');
                       const hash = rawCod.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-                      const mockNames = ['Carlos Mendoza', 'Ana Lucía Ramírez', 'Juan Diego Gómez', 'María Camila Torres', 'Andrés Felipe Castro', 'Valentina Rojas', 'Santiago Silva', 'Diana Marcela Ruiz'];
+                      const mockNames = ['Carlos Mendoza', 'Ana LucÃ­a RamÃ­rez', 'Juan Diego GÃ³mez', 'MarÃ­a Camila Torres', 'AndrÃ©s Felipe Castro', 'Valentina Rojas', 'Santiago Silva', 'Diana Marcela Ruiz'];
                       const nameIdx = hash % mockNames.length;
                       finalName = mockNames[nameIdx];
                     }
@@ -346,51 +358,51 @@ export default function ContractManagementPage() {
                       <td style={{ fontWeight: "normal", color: "#374151" }}>
                         {c.fechaFirma && String(c.fechaFirma).includes('T') ? String(c.fechaFirma).split('T')[1].substring(0, 5) : '10:00'}
                       </td>
-                      <td style={{ textAlign: "center", fontWeight: "600", color: c.isSigned ? '#10b981' : '#ef4444' }}>
-                        {c.isSigned ? 'Sí' : 'No'}
+                      <td style={{ textAlign: 'center', fontWeight: '600', color: c.isSigned ? '#10b981' : '#ef4444' }}>
+                        {c.isSigned ? t('common.yes', 'SÃ­') : t('common.no', 'No')}
                       </td>
-                      <td style={{ textAlign: "center" }}>
+                      <td style={{ textAlign: 'center' }}>
                         <button
                           type="button"
                           disabled={!c.isSigned}
                           onClick={() => openDetalle(c)}
                           style={{ padding: '6px 12px', fontSize: '13px', background: c.isSigned ? '#fff7ed' : '#e5e7eb', color: c.isSigned ? '#ea580c' : '#9ca3af', border: c.isSigned ? '1px solid #fed7aa' : 'none', borderRadius: '6px', cursor: c.isSigned ? 'pointer' : 'not-allowed', fontWeight: '500', minWidth: '80px', display: 'inline-flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}
                         >
-                          <FaReceipt /> Ver
+                          <FaReceipt /> {t('admin.contractsPage.view', 'Ver')}
                         </button>
                       </td>
-                      <td style={{ textAlign: "center" }}>
+                      <td style={{ textAlign: 'center' }}>
                         <button
                           type="button"
                           disabled={!c.isSigned}
                           onClick={() => handleDownloadSinglePdf(c)}
                           style={{ padding: '6px 12px', fontSize: '13px', background: c.isSigned ? '#faf5ff' : '#e5e7eb', color: c.isSigned ? '#9333ea' : '#9ca3af', border: c.isSigned ? '1px solid #e9d5ff' : 'none', borderRadius: '6px', cursor: c.isSigned ? 'pointer' : 'not-allowed', fontWeight: '500', minWidth: '100px', display: 'inline-flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}
                         >
-                          <FaFilePdf /> Descargar
+                          <FaFilePdf /> {t('admin.contractsPage.download', 'Descargar')}
                         </button>
                       </td>
-                      <td style={{ textAlign: "center" }}>
+                      <td style={{ textAlign: 'center' }}>
                         <button
                           type="button"
                           disabled={!c.isSigned}
                           onClick={() => {
                             const singleData = {
-                              title: `Contrato - ${c.contratoNumero}`,
+                              title: `${t('admin.contractsPage.detailsTitle', 'Contrato')} - ${c.contratoNumero}`,
                               headers: headersExport,
                               rows: [[
                                 c.contratoNumero, c.reservaCodigo, c.clienteNombre, c.clienteDocumento,
                                 `${c.vehiculoNombre} (${c.vehiculoPlaca})`, c.sucursal,
-                                c.fechaInicio ? String(c.fechaInicio).replace("T", " ") : "",
-                                c.fechaFin ? String(c.fechaFin).replace("T", " ") : "",
+                                c.fechaInicio ? String(c.fechaInicio).replace('T', ' ') : '',
+                                c.fechaFin ? String(c.fechaFin).replace('T', ' ') : '',
                                 t(`admin.contractsPage.states.${c.estado}`, c.estado), c.totalCOP,
                               ]],
                               items: [c],
                             };
                             printTable(singleData);
                           }}
-                          style={{ padding: '6px 12px', fontSize: '13px', background: c.isSigned ? '#eff6ff' : '#e5e7eb', color: c.isSigned ? '#2563eb' : '#9ca3af', border: c.isSigned ? '1px solid #bfdbfe' : 'none', borderRadius: '6px', cursor: c.isSigned ? 'pointer' : 'not-allowed', fontWeight: '500', minWidth: '90px', display: 'inline-flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}
+                          style={{ padding: '6px 12px', fontSize: '13px', background: c.isSigned ? 'var(--city-soft, #eff6ff)' : '#e5e7eb', color: c.isSigned ? '#2563eb' : '#9ca3af', border: c.isSigned ? '1px solid #bfdbfe' : 'none', borderRadius: '6px', cursor: c.isSigned ? 'pointer' : 'not-allowed', fontWeight: '500', minWidth: '90px', display: 'inline-flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}
                         >
-                          <FaPrint /> Imprimir
+                          <FaPrint /> {t('admin.print', 'Imprimir')}
                         </button>
                       </td>
                     </tr>
@@ -409,7 +421,7 @@ export default function ContractManagementPage() {
                         <p>
                           {t(
                             "admin.contractsPage.emptySubtitle",
-                            "Intenta ajustar los criterios de búsqueda.",
+                            "Intenta ajustar los criterios de bÃºsqueda.",
                           )}
                         </p>
                       </div>
@@ -443,7 +455,7 @@ export default function ContractManagementPage() {
               </button>
             </div>
 
-              <div className="contracts-detail-body" style={{ background: '#f8fafc', padding: '24px', borderRadius: '8px', border: '1px solid #e2e8f0', maxHeight: '75vh', overflowY: 'auto' }}>
+              <div className="contracts-detail-body" style={{ background: 'var(--city-bg, #f8fafc)', padding: '24px', borderRadius: '8px', border: '1px solid #e2e8f0', maxHeight: '75vh', overflowY: 'auto' }}>
                 <FirmaContrato 
                   soloLectura={true}
                   vehiculo={{ 

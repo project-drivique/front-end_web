@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+﻿import { useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   FaStar,
@@ -27,7 +27,7 @@ export default function BranchReviewsPage({ branchOnly = false }) {
   const { tema } = useLanding()
   const user = useAuthStore((state) => state.usuario)
   const isBranchManager = branchOnly || user?.rol === 'encargado' || user?.rol === 'branch_manager' || user?.rol === 'encargado_sucursal'
-  const sucursalAsignada = user?.sucursalAsignada || user?.sucursalId || user?.sucursal || 'Medellín - El Poblado'
+  const sucursalAsignada = user?.sucursalAsignada || user?.sucursalId || user?.sucursal || 'MedellÃ­n - El Poblado'
 
   const [reviews, setReviews] = useState(() => branchReviewManagementService.list(user))
   const [search, setSearch] = useState('')
@@ -53,7 +53,7 @@ export default function BranchReviewsPage({ branchOnly = false }) {
     })
   }, [reviews, search, ratingFilter, statusFilter])
 
-  // Promedio de Calificación de la Sucursal
+  // Promedio de CalificaciÃ³n de la Sucursal
   const promedioRating = useMemo(() => {
     if (!reviews || reviews.length === 0) return 5.0
     const suma = reviews.reduce((acc, curr) => acc + (curr.calificacion || 5), 0)
@@ -76,28 +76,28 @@ export default function BranchReviewsPage({ branchOnly = false }) {
       return
     }
 
-    branchReviewManagementService.responderReseña(modalReview.id, respuestaTexto)
+    branchReviewManagementService.responderReseÃ±a(modalReview.id, respuestaTexto)
     setReviews(branchReviewManagementService.list(user))
     setModalReview(null)
     setRespuestaTexto('')
 
-    showAlert({ icon: 'success', title: 'Respuesta enviada', text: 'La respuesta a la reseña ha sido guardada y publicada.' })
+    showAlert({ icon: 'success', title: 'Respuesta enviada', text: 'La respuesta a la reseÃ±a ha sido guardada y publicada.' })
   }
 
-  const handleEliminarReseña = async (id) => {
+  const handleEliminarReseÃ±a = async (id) => {
     const confirm = await showAlert({
       icon: 'warning',
-      title: '¿Eliminar reseña?',
-      text: 'Esta acción removerá la reseña de la lista de la sucursal.',
+      title: 'Â¿Eliminar reseÃ±a?',
+      text: 'Esta acciÃ³n removerÃ¡ la reseÃ±a de la lista de la sucursal.',
       showCancelButton: true,
-      confirmButtonText: 'Sí, eliminar',
+      confirmButtonText: 'SÃ­, eliminar',
       cancelButtonText: 'Cancelar'
     })
 
     if (confirm.isConfirmed) {
-      const updated = branchReviewManagementService.eliminarReseña(id)
+      const updated = branchReviewManagementService.eliminarReseÃ±a(id)
       setReviews(branchReviewManagementService.list(user))
-      showAlert({ icon: 'success', title: 'Reseña eliminada' })
+      showAlert({ icon: 'success', title: 'ReseÃ±a eliminada' })
     }
   }
 
@@ -113,9 +113,9 @@ export default function BranchReviewsPage({ branchOnly = false }) {
               <FaBuilding style={{ color: 'var(--brand-primary, #2563eb)' }} />
               <span>Sede: <strong>{isBranchManager ? sucursalAsignada : 'Todas las Sucursales'}</strong></span>
             </p>
-            <h1>{t('admin.reviews.title', 'Reseñas y Calificaciones de Sucursal')}</h1>
+            <h1>{t('admin.reviews.title', 'ReseÃ±as y Calificaciones de Sucursal')}</h1>
             <p className="cities-subtitle">
-              {t('admin.reviews.subtitle', 'Gestión exclusiva de opiniones, experiencias y calificaciones enviadas por clientes atendidos en esta sede.')}
+              {t('admin.reviews.subtitle', 'GestiÃ³n exclusiva de opiniones, experiencias y calificaciones enviadas por clientes atendidos en esta sede.')}
             </p>
           </div>
 
@@ -124,20 +124,20 @@ export default function BranchReviewsPage({ branchOnly = false }) {
           </div>
         </header>
 
-        {/* Tarjetas KPI de Reseñas */}
+        {/* Tarjetas KPI de ReseÃ±as */}
         <div className="cash-kpi-bar" style={{ marginBottom: 24 }}>
           <div className="cash-kpi-item">
-            <span className="cash-kpi-title">Calificación Promedio de Sede</span>
+            <span className="cash-kpi-title">CalificaciÃ³n Promedio de Sede</span>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <strong className="cash-kpi-val success" style={{ fontSize: 24 }}>{promedioRating} / 5.0</strong>
               <div style={{ color: '#f59e0b', fontSize: 16 }}>
-                {'★'.repeat(Math.round(promedioRating))}
+                {'â˜…'.repeat(Math.round(promedioRating))}
               </div>
             </div>
           </div>
 
           <div className="cash-kpi-item">
-            <span className="cash-kpi-title">Total Reseñas Recibidas</span>
+            <span className="cash-kpi-title">Total ReseÃ±as Recibidas</span>
             <strong className="cash-kpi-val info" style={{ fontSize: 22 }}>{reviews.length} opiniones</strong>
           </div>
 
@@ -159,13 +159,13 @@ export default function BranchReviewsPage({ branchOnly = false }) {
                   type="text"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Buscar por cliente, vehículo o palabras clave..."
+                  placeholder="Buscar por cliente, vehÃ­culo o palabras clave..."
                 />
               </div>
 
               <div className="cash-select-box">
                 <select value={ratingFilter} onChange={(e) => setRatingFilter(e.target.value)}>
-                  <option value="all">⭐ Todas las estrellas</option>
+                  <option value="all">â­ Todas las estrellas</option>
                   <option value="5">5 Estrellas (Excelente)</option>
                   <option value="4">4 Estrellas (Muy Bueno)</option>
                   <option value="3">3 Estrellas (Regular)</option>
@@ -176,19 +176,19 @@ export default function BranchReviewsPage({ branchOnly = false }) {
 
               <div className="cash-select-box">
                 <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
-                  <option value="all">💬 Todos los estados</option>
-                  <option value="pendiente_respuesta">⏳ Pendientes de Respuesta</option>
-                  <option value="publicada">✅ Respondidas / Publicadas</option>
+                  <option value="all">ðŸ’¬ Todos los estados</option>
+                  <option value="pendiente_respuesta">â³ Pendientes de Respuesta</option>
+                  <option value="publicada">âœ… Respondidas / Publicadas</option>
                 </select>
               </div>
             </div>
           </div>
 
-          {/* Listado de Reseñas */}
+          {/* Listado de ReseÃ±as */}
           {filtered.length === 0 ? (
             <div className="cities-empty" style={{ padding: '40px 20px', textAlign: 'center' }}>
               <FaCommentDots style={{ fontSize: 40, color: '#94a3b8', marginBottom: 12 }} />
-              <h3>No se encontraron reseñas con los filtros seleccionados</h3>
+              <h3>No se encontraron reseÃ±as con los filtros seleccionados</h3>
             </div>
           ) : (
             <div style={{ display: 'grid', gap: 16 }}>
@@ -211,12 +211,12 @@ export default function BranchReviewsPage({ branchOnly = false }) {
                       <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
                           <strong style={{ fontSize: 16, color: 'var(--city-text, #0f172a)' }}>{item.clienteNombre}</strong>
-                          <span style={{ fontSize: 11, background: '#f1f5f9', color: '#475569', padding: '2px 8px', borderRadius: 6, fontWeight: 700 }}>
+                          <span style={{ fontSize: 11, background: 'var(--city-bg, #f1f5f9)', color: 'var(--city-muted, #475569)', padding: '2px 8px', borderRadius: 6, fontWeight: 700 }}>
                             {item.sucursal}
                           </span>
                         </div>
-                        <p style={{ margin: 0, fontSize: 12, color: '#64748b', display: 'flex', alignItems: 'center', gap: 6 }}>
-                          <FaCar /> {item.vehiculo} {item.placa ? `(${item.placa})` : ''} · <span style={{ color: '#94a3b8' }}>{item.fecha}</span>
+                        <p style={{ margin: 0, fontSize: 12, color: 'var(--city-muted, #64748b)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                          <FaCar /> {item.vehiculo} {item.placa ? `(${item.placa})` : ''} Â· <span style={{ color: '#94a3b8' }}>{item.fecha}</span>
                         </p>
                       </div>
 
@@ -226,7 +226,7 @@ export default function BranchReviewsPage({ branchOnly = false }) {
                             <FaStar key={idx} style={{ opacity: isFilled ? 1 : 0.25 }} />
                           ))}
                         </div>
-                        <span style={{ fontWeight: 800, fontSize: 14, color: '#0f172a' }}>{item.calificacion}.0</span>
+                        <span style={{ fontWeight: 800, fontSize: 14, color: 'var(--city-text, #0f172a)' }}>{item.calificacion}.0</span>
                       </div>
                     </div>
 
@@ -254,7 +254,7 @@ export default function BranchReviewsPage({ branchOnly = false }) {
                           onClick={() => handleOpenResponder(item)}
                           style={{ padding: '8px 14px', fontSize: 12, display: 'inline-flex', alignItems: 'center', gap: 6 }}
                         >
-                          <FaCommentDots /> Responder Reseña
+                          <FaCommentDots /> Responder ReseÃ±a
                         </button>
                       </div>
                     )}
@@ -265,22 +265,22 @@ export default function BranchReviewsPage({ branchOnly = false }) {
           )}
         </section>
 
-        {/* Modal de Responder Reseña */}
+        {/* Modal de Responder ReseÃ±a */}
         {modalReview && (
           <div className="cities-modal-backdrop" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'fixed', inset: 0, zIndex: 1000 }}>
             <div className="cities-modal" style={{ width: '100%', maxWidth: 540, padding: 24, borderRadius: 16 }}>
               <h2 style={{ margin: '0 0 8px', fontSize: 18, fontWeight: 800 }}>Responder a {modalReview.clienteNombre}</h2>
-              <p style={{ fontSize: 13, color: '#64748b', marginBottom: 16 }}>
-                Tu respuesta será visible públicamente para los clientes que consulten las opiniones de la sede {sucursalAsignada}.
+              <p style={{ fontSize: 13, color: 'var(--city-muted, #64748b)', marginBottom: 16 }}>
+                Tu respuesta serÃ¡ visible pÃºblicamente para los clientes que consulten las opiniones de la sede {sucursalAsignada}.
               </p>
 
-              <div style={{ padding: 12, background: '#f8fafc', borderRadius: 10, marginBottom: 16, fontSize: 13, color: '#334155' }}>
+              <div style={{ padding: 12, background: 'var(--city-bg, #f8fafc)', borderRadius: 10, marginBottom: 16, fontSize: 13, color: 'var(--city-text, #334155)' }}>
                 <strong>Comentario del cliente:</strong>
                 <p style={{ margin: '4px 0 0', fontStyle: 'italic' }}>"{modalReview.comentario}"</p>
               </div>
 
               <div style={{ marginBottom: 20 }}>
-                <label style={{ display: 'block', fontSize: 12, fontWeight: 700, marginBottom: 6, color: '#334155' }}>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 700, marginBottom: 6, color: 'var(--city-text, #334155)' }}>
                   Escribe tu respuesta oficial:
                 </label>
                 <textarea
