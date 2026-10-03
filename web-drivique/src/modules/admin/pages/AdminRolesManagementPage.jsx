@@ -1,8 +1,7 @@
-import { useState, useEffect, useMemo } from 'react'
+﻿import { useState, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   FaEdit,
-  FaExclamationTriangle,
   FaFileExcel,
   FaFilePdf,
   FaKey,
@@ -25,22 +24,23 @@ import { branchManagementService } from '../../../services/branchManagementServi
 import { exportExcel, exportPdf, printTable } from '../../../utils/listExportUtils'
 import MenuConfiguracion from '../../../components/MenuConfiguracion'
 import ManagementSidebar from '../components/ManagementSidebar'
+import AccountFormModal from '../components/AccountFormModal'
+import RolePermissionsModal from '../components/RolePermissionsModal'
+import RoleDeleteModal from '../components/RoleDeleteModal'
 import './CityManagementPage.css'
 import './AdminRolesManagementPage.css'
-
-
 
 export default function AdminRolesManagementPage() {
   const { t } = useTranslation()
 
   const MODULE_KEYS = [
-    { key: 'vehicles', label: t('admin.rolesPage.modVehicles') },
-    { key: 'reservations', label: t('admin.rolesPage.modReservations') },
-    { key: 'users', label: t('admin.rolesPage.modUsers') },
-    { key: 'contracts', label: t('admin.rolesPage.modContracts') },
-    { key: 'cities', label: t('admin.rolesPage.modCities') },
-    { key: 'branches', label: t('admin.rolesPage.modBranches') },
-    { key: 'audit', label: t('admin.rolesPage.modAudit') },
+    { key: 'vehicles', label: t('admin.rolesPage.modVehicles', 'Flota y Vehículos') },
+    { key: 'reservations', label: t('admin.rolesPage.modReservations', 'Gestión de Reservas') },
+    { key: 'users', label: t('admin.rolesPage.modUsers', 'Usuarios y Clientes') },
+    { key: 'contracts', label: t('admin.rolesPage.modContracts', 'Contratos Digitales') },
+    { key: 'cities', label: t('admin.rolesPage.modCities', 'Ciudades y Tarifas') },
+    { key: 'branches', label: t('admin.rolesPage.modBranches', 'Sedes y Sucursales') },
+    { key: 'audit', label: t('admin.rolesPage.modAudit', 'Auditoría y Registros') },
   ]
   const { tema } = useLanding()
   const user = useAuthStore((state) => state.usuario)
@@ -121,7 +121,9 @@ export default function AdminRolesManagementPage() {
         !term ||
         acc.nombre?.toLowerCase().includes(term) ||
         acc.correo?.toLowerCase().includes(term) ||
-        acc.telefono?.toLowerCase().includes(term)
+        acc.id?.toLowerCase().includes(term) ||
+        acc.rolNombre?.toLowerCase().includes(term) ||
+        acc.sucursal?.toLowerCase().includes(term)
 
       return matchRole && matchStatus && matchBranch && matchSearch
     })
@@ -338,11 +340,17 @@ export default function AdminRolesManagementPage() {
                   type="button"
                   onClick={() => {
                     setErrorModal('')
-                    setFormCuenta({ nombre: '', correo: '', telefono: '', rolId: rolesList[0]?.id || 'role-admin', sucursal: 'Neiva' })
+                    setFormCuenta({
+                      nombre: '',
+                      correo: '',
+                      telefono: '',
+                      rolId: rolesList[0]?.id || 'role-admin',
+                      sucursal: 'Neiva',
+                    })
                     setModalCrearCuenta(true)
                   }}
                 >
-                  <FaUserPlus /> {t('admin.rolesPage.newAccount')} Admin
+                  <FaUserPlus /> {t('admin.rolesPage.newAccount', 'Nuevo')} Admin
                 </button>
               ) : (
                 <button
@@ -366,7 +374,7 @@ export default function AdminRolesManagementPage() {
                     setModalCrearRol(true)
                   }}
                 >
-                  <FaPlus /> Crear Nuevo Rol
+                  <FaPlus /> {t('admin.rolesPage.createRoleTitle', 'Crear Nuevo Rol')}
                 </button>
               )}
             </div>
@@ -377,7 +385,7 @@ export default function AdminRolesManagementPage() {
             <div className="cities-notice" role="status">
               <span>{notice}</span>
               <button type="button" onClick={() => setNotice('')}>
-                ×
+                á—
               </button>
             </div>
           )}
@@ -389,14 +397,14 @@ export default function AdminRolesManagementPage() {
               className={`roles-tab-btn ${activeTab === 'accounts' ? 'is-active' : ''}`}
               onClick={() => setActiveTab('accounts')}
             >
-              <FaUserShield /> {t('admin.rolesPage.adminAccountsTab')} ({accountsList.length})
+              <FaUserShield /> {t('admin.rolesPage.adminAccountsTab', 'Cuentas Administrativas')} ({accountsList.length})
             </button>
             <button
               type="button"
               className={`roles-tab-btn ${activeTab === 'roles' ? 'is-active' : ''}`}
               onClick={() => setActiveTab('roles')}
             >
-              <FaKey /> {t('admin.rolesPage.rolesPermissionsTab')} ({rolesList.length})
+              <FaKey /> {t('admin.rolesPage.rolesPermissionsTab', 'Roles y Permisos')} ({rolesList.length})
             </button>
           </div>
 
@@ -409,27 +417,29 @@ export default function AdminRolesManagementPage() {
                   <FaSearch />
                   <input
                     type="text"
-                    placeholder={t('admin.rolesPage.searchAccPlaceholder')}
+                    placeholder={t('admin.rolesPage.searchAccPlaceholder', 'Buscar por nombre, correo, ID o sucursal...')}
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                   />
                 </label>
 
                 <select value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)}>
-                  <option value="all">{t('admin.rolesPage.allRoles')}</option>
+                  <option value="all">{t('admin.rolesPage.allRoles', 'Todos los Roles')}</option>
                   {rolesList.map((r) => (
-                    <option key={r.id} value={r.id}>{t(`admin.rolesPage.role_name_${r.id}`, r.nombre)}</option>
+                    <option key={r.id} value={r.id}>
+                      {t(`admin.rolesPage.role_name_${r.id}`, r.nombre)}
+                    </option>
                   ))}
                 </select>
 
                 <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
-                  <option value="all">{t('admin.rolesPage.allStatuses')}</option>
+                  <option value="all">{t('admin.rolesPage.allStatuses', 'Todos los Estados')}</option>
                   <option value="active">Activas</option>
                   <option value="inactive">Inactivas</option>
                 </select>
 
                 <select value={branchFilter} onChange={(e) => setBranchFilter(e.target.value)}>
-                  <option value="all">{t('admin.rolesPage.allBranches')}</option>
+                  <option value="all">{t('admin.rolesPage.allBranches', 'Todas las Sucursales')}</option>
                   {sucursales.map((s) => (
                     <option key={s.id} value={s.nombre}>
                       {s.nombre}
@@ -439,25 +449,25 @@ export default function AdminRolesManagementPage() {
 
                 <div className="cities-export">
                   <button type="button" onClick={() => exportExcel(exportDataAccounts)}>
-                    <FaFileExcel /> {t('admin.rolesPage.excel')}
+                    <FaFileExcel /> {t('admin.rolesPage.excel', 'Excel')}
                   </button>
                   <button type="button" onClick={() => exportPdf(exportDataAccounts)}>
-                    <FaFilePdf /> {t('admin.rolesPage.pdf')}
+                    <FaFilePdf /> {t('admin.rolesPage.pdf', 'PDF')}
                   </button>
                   <button type="button" onClick={() => printTable(exportDataAccounts)}>
-                    <FaPrint /> {t('admin.rolesPage.print')}
+                    <FaPrint /> {t('admin.rolesPage.print', 'Imprimir')}
                   </button>
                 </div>
               </div>
 
               <div className="cities-summary">
-                <strong>{cuentasFiltradas.length}</strong> {t('admin.rolesPage.accountsFoundCount')}
+                <strong>{cuentasFiltradas.length}</strong> {t('admin.rolesPage.accountsFoundCount', 'cuentas encontradas')}
               </div>
 
               {cuentasFiltradas.length === 0 ? (
                 <div className="cities-empty">
                   <FaUserShield />
-                  <h2>{t('admin.rolesPage.noAccountsFound')}</h2>
+                  <h2>{t('admin.rolesPage.noAccountsFound', 'No se encontraron cuentas')}</h2>
                   <p>Ajusta el término de búsqueda o cambia los filtros seleccionados.</p>
                 </div>
               ) : (
@@ -465,12 +475,12 @@ export default function AdminRolesManagementPage() {
                   <table className="roles-accounts-table">
                     <thead>
                       <tr>
-                        <th>{t('admin.rolesPage.colaborador')}</th>
-                        <th>{t('admin.rolesPage.contacto')}</th>
-                        <th>{t('admin.rolesPage.rolAsignado')}</th>
+                        <th>{t('admin.rolesPage.colaborador', 'Colaborador')}</th>
+                        <th>{t('admin.rolesPage.contacto', 'Contacto')}</th>
+                        <th>{t('admin.rolesPage.rolAsignado', 'Rol Asignado')}</th>
                         <th>Sucursal</th>
                         <th>Estado Cuenta</th>
-                        <th>{t('admin.rolesPage.tableActions')}</th>
+                        <th>{t('admin.rolesPage.tableActions', 'Acciones')}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -489,14 +499,14 @@ export default function AdminRolesManagementPage() {
                           </td>
 
                           <td>
-                            <div style={{ fontSize: 12.5, display: 'inline-flex', alignItems: 'center', flexWrap: 'wrap', gap: '8px 16px', color: 'var(--city-text, #0f172a)' }}>
-                              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' }}>
-                                <FaEnvelope style={{ color: 'var(--city-muted, #64748b)', fontSize: 11, flexShrink: 0 }} />
-                                <span>{acc.correo || '—'}</span>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12.5, color: 'var(--city-text, #0f172a)' }}>
+                                <FaEnvelope size={11} color="var(--city-muted, #64748b)" />
+                                <span>{acc.correo}</span>
                               </div>
-                              {acc.telefono && String(acc.telefono).trim() !== '' && (
-                                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: 'var(--city-muted, #64748b)', fontSize: 11.5, whiteSpace: 'nowrap' }}>
-                                  <FaPhone style={{ fontSize: 10, flexShrink: 0 }} />
+                              {acc.telefono && (
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--city-muted, #64748b)' }}>
+                                  <FaPhone size={10} />
                                   <span>{acc.telefono}</span>
                                 </div>
                               )}
@@ -514,19 +524,19 @@ export default function AdminRolesManagementPage() {
                           <td>
                             <span className={`user-account-badge ${acc.activo ? 'activo' : 'inactivo'}`}>
                               <span className="user-account-dot" />
-                              {acc.activo ? t('admin.rolesPage.active') : t('admin.rolesPage.inactive')}
+                              {acc.activo ? t('admin.rolesPage.active', 'Activo') : t('admin.rolesPage.inactive', 'Inactivo')}
                             </span>
                           </td>
 
                           <td>
                             <div className="cities-row-actions">
-                              <button type="button" onClick={() => openEditarCuenta(acc)} title={t('admin.rolesPage.actionEditAccount')}>
+                              <button type="button" onClick={() => openEditarCuenta(acc)} title={t('admin.rolesPage.actionEditAccount', 'Editar')}>
                                 <FaEdit />
                               </button>
                               <button
                                 type="button"
                                 onClick={() => handleToggleActivoCuenta(acc)}
-                                title={acc.activo ? t('admin.rolesPage.actionDeactivateAccount') : t('admin.rolesPage.actionActivateAccount')}
+                                title={acc.activo ? t('admin.rolesPage.actionDeactivateAccount', 'Desactivar') : t('admin.rolesPage.actionActivateAccount', 'Activar')}
                                 style={{ color: acc.activo ? '#16a34a' : '#94a3b8' }}
                               >
                                 {acc.activo ? <FaToggleOn size={18} /> : <FaToggleOff size={18} />}
@@ -538,7 +548,7 @@ export default function AdminRolesManagementPage() {
                                   setErrorModal('')
                                   setModalEliminarCuenta(acc)
                                 }}
-                                title={t('admin.rolesPage.actionDeleteAccount')}
+                                title={t('admin.rolesPage.actionDeleteAccount', 'Eliminar')}
                               >
                                 <FaTrash />
                               </button>
@@ -561,7 +571,7 @@ export default function AdminRolesManagementPage() {
                   <FaSearch />
                   <input
                     type="text"
-                    placeholder={t('admin.rolesPage.searchRoleDesc')}
+                    placeholder={t('admin.rolesPage.searchRoleDesc', 'Buscar rol por nombre o descripción...')}
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                   />
@@ -574,7 +584,9 @@ export default function AdminRolesManagementPage() {
                     <div>
                       <div className="role-card__head">
                         <h3>{t(`admin.rolesPage.role_name_${role.id}`, role.nombre)}</h3>
-                        <span>{role.cuentasAsignadas} {t('admin.rolesPage.accountsCount', 'Cuentas')}</span>
+                        <span>
+                          {role.cuentasAsignadas} {t('admin.rolesPage.accountsCount', 'Cuentas')}
+                        </span>
                       </div>
                       <p>{t(`admin.rolesPage.role_desc_${role.id}`, role.descripcion)}</p>
                     </div>
@@ -586,7 +598,7 @@ export default function AdminRolesManagementPage() {
                         style={{ padding: '8px 14px', fontSize: 12 }}
                         onClick={() => openEditarRol(role)}
                       >
-                        <FaEdit /> {t('admin.rolesPage.configPermissions')}
+                        <FaEdit /> {t('admin.rolesPage.configPermissions', 'Configurar Permisos')}
                       </button>
 
                       {!role.esSistema && (
@@ -611,371 +623,65 @@ export default function AdminRolesManagementPage() {
         </div>
 
         {/* MODAL CREAR CUENTA */}
-        {modalCrearCuenta && (
-          <div className="cities-modal-backdrop" onMouseDown={(e) => e.target === e.currentTarget && setModalCrearCuenta(false)}>
-            <section className="cities-modal">
-              <div className="cities-modal__head">
-                <div>
-                  <p className="cities-eyebrow">{t('admin.rolesPage.altaColaborador')}</p>
-                  <h2>Crear Cuenta Administrativa</h2>
-                </div>
-                <button type="button" onClick={() => setModalCrearCuenta(false)}>
-                  ×
-                </button>
-              </div>
-
-              <form onSubmit={handleCrearCuenta}>
-                <label>
-                  {t('admin.rolesPage.labelFullName')}
-                  <input
-                    type="text"
-                    required
-                    value={formCuenta.nombre}
-                    onChange={(e) => setFormCuenta({ ...formCuenta, nombre: e.target.value })}
-                  />
-                </label>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-                  <label>
-                    {t('admin.rolesPage.corpEmail')}
-                    <input
-                      type="email"
-                      required
-                      value={formCuenta.correo}
-                      onChange={(e) => setFormCuenta({ ...formCuenta, correo: e.target.value })}
-                    />
-                  </label>
-                  <label>
-                    {t('admin.rolesPage.contactPhone')}
-                    <input
-                      type="text"
-                      required
-                      value={formCuenta.telefono}
-                      onChange={(e) => setFormCuenta({ ...formCuenta, telefono: e.target.value })}
-                    />
-                  </label>
-                </div>
-
-                <label>
-                  {t('admin.rolesPage.labelAssignedRole')}
-                  <select
-                    value={formCuenta.rolId}
-                    onChange={(e) => setFormCuenta({ ...formCuenta, rolId: e.target.value })}
-                  >
-                    {rolesList.map((r) => (
-                    <option key={r.id} value={r.id}>{t(`admin.rolesPage.role_name_${r.id}`, r.nombre)}</option>
-                    ))}
-                  </select>
-                </label>
-
-                {(formCuenta.rolId === 'role-encargado' ||
-                  rolesList.find((r) => r.id === formCuenta.rolId)?.codigo === 'encargado_sucursal') && (
-                  <label>
-                    Sucursal Asignada (Obligatoria):
-                    <select
-                      value={formCuenta.sucursal}
-                      onChange={(e) => setFormCuenta({ ...formCuenta, sucursal: e.target.value })}
-                    >
-                      {sucursales.map((s) => (
-                        <option key={s.id} value={s.nombre}>
-                          {s.nombre}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                )}
-
-                {errorModal && <p className="cities-error">{errorModal}</p>}
-
-                <div className="cities-modal__actions">
-                  <button type="button" onClick={() => setModalCrearCuenta(false)}>
-                    Cancelar
-                  </button>
-                  <button type="submit" className="cities-primary">
-                    Crear y Enviar Notificación
-                  </button>
-                </div>
-              </form>
-            </section>
-          </div>
-        )}
+        <AccountFormModal
+          isOpen={modalCrearCuenta}
+          onClose={() => setModalCrearCuenta(false)}
+          onSubmit={handleCrearCuenta}
+          isEditing={false}
+          form={formCuenta}
+          setForm={setFormCuenta}
+          rolesList={rolesList}
+          sucursales={sucursales}
+          errorModal={errorModal}
+        />
 
         {/* MODAL EDITAR CUENTA */}
-        {modalEditarCuenta && (
-          <div className="cities-modal-backdrop" onMouseDown={(e) => e.target === e.currentTarget && setModalEditarCuenta(null)}>
-            <section className="cities-modal">
-              <div className="cities-modal__head">
-                <div>
-                  <p className="cities-eyebrow">Edición Administrativa</p>
-                  <h2>{t('admin.rolesPage.formEditAccountTitle', { nombre: modalEditarCuenta.nombre })}</h2>
-                </div>
-                <button type="button" onClick={() => setModalEditarCuenta(null)}>
-                  ×
-                </button>
-              </div>
-
-              <form onSubmit={handleEditarCuenta}>
-                <label>
-                  {t('admin.rolesPage.labelFullName')}
-                  <input
-                    type="text"
-                    required
-                    value={formCuenta.nombre}
-                    onChange={(e) => setFormCuenta({ ...formCuenta, nombre: e.target.value })}
-                  />
-                </label>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-                  <label>
-                    {t('admin.rolesPage.corpEmail')}
-                    <input
-                      type="email"
-                      required
-                      value={formCuenta.correo}
-                      onChange={(e) => setFormCuenta({ ...formCuenta, correo: e.target.value })}
-                    />
-                  </label>
-                  <label>
-                    {t('admin.rolesPage.labelPhone')}
-                    <input
-                      type="text"
-                      required
-                      value={formCuenta.telefono}
-                      onChange={(e) => setFormCuenta({ ...formCuenta, telefono: e.target.value })}
-                    />
-                  </label>
-                </div>
-
-                <label>
-                  {t('admin.rolesPage.labelAssignedRole')}
-                  <select
-                    value={formCuenta.rolId}
-                    onChange={(e) => setFormCuenta({ ...formCuenta, rolId: e.target.value })}
-                  >
-                    {rolesList.map((r) => (
-                    <option key={r.id} value={r.id}>{t(`admin.rolesPage.role_name_${r.id}`, r.nombre)}</option>
-                    ))}
-                  </select>
-                </label>
-
-                {(formCuenta.rolId === 'role-encargado' ||
-                  rolesList.find((r) => r.id === formCuenta.rolId)?.codigo === 'encargado_sucursal') && (
-                  <label>
-                    Sucursal Asignada (Obligatoria):
-                    <select
-                      value={formCuenta.sucursal}
-                      onChange={(e) => setFormCuenta({ ...formCuenta, sucursal: e.target.value })}
-                    >
-                      {sucursales.map((s) => (
-                        <option key={s.id} value={s.nombre}>
-                          {s.nombre}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                )}
-
-                {errorModal && <p className="cities-error">{errorModal}</p>}
-
-                <div className="cities-modal__actions">
-                  <button type="button" onClick={() => setModalEditarCuenta(null)}>
-                    Cancelar
-                  </button>
-                  <button type="submit" className="cities-primary">
-                    Guardar Cambios
-                  </button>
-                </div>
-              </form>
-            </section>
-          </div>
-        )}
+        <AccountFormModal
+          isOpen={Boolean(modalEditarCuenta)}
+          onClose={() => setModalEditarCuenta(null)}
+          onSubmit={handleEditarCuenta}
+          isEditing={true}
+          form={formCuenta}
+          setForm={setFormCuenta}
+          rolesList={rolesList}
+          sucursales={sucursales}
+          errorModal={errorModal}
+        />
 
         {/* MODAL CREAR / EDITAR ROL Y MATRIZ DE PERMISOS */}
-        {(modalCrearRol || modalEditarRol) && (
-          <div
-            className="cities-modal-backdrop"
-            onMouseDown={(e) => {
-              if (e.target === e.currentTarget) {
-                setModalCrearRol(false)
-                setModalEditarRol(null)
-              }
-            }}
-          >
-            <section className="cities-modal" style={{ maxWidth: 680 }}>
-              <div className="cities-modal__head">
-                <div>
-                  <p className="cities-eyebrow">{t('admin.rolesPage.securityConfigEyebrow')}</p>
-                  <h2>{modalEditarRol ? t('admin.rolesPage.editPermissionsTitle', { nombre: t(`admin.rolesPage.role_name_${modalEditarRol.id}`, modalEditarRol.nombre) }) : t('admin.rolesPage.createRoleTitle')}</h2>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setModalCrearRol(false)
-                    setModalEditarRol(null)
-                  }}
-                >
-                  ×
-                </button>
-              </div>
-
-              <form onSubmit={modalEditarRol ? handleEditarRol : handleCrearRol}>
-                <label>
-                  {t('admin.rolesPage.labelRoleName')}
-                  <input
-                    type="text"
-                    required
-                    value={t(`admin.rolesPage.role_name_${formRol.id}`, formRol.nombre)}
-                    onChange={(e) => setFormRol({ ...formRol, nombre: e.target.value })}
-                  />
-                </label>
-
-                <label>
-                  {t('admin.rolesPage.labelDescription')}
-                  <input
-                    type="text"
-                    required
-                    value={t(`admin.rolesPage.role_desc_${formRol.id}`, formRol.descripcion)}
-                    onChange={(e) => setFormRol({ ...formRol, descripcion: e.target.value })}
-                  />
-                </label>
-
-                {/* MATRIZ DE PERMISOS POR MÓDULO */}
-                <div className="permission-matrix-wrap">
-                  <table className="permission-matrix-table">
-                    <thead>
-                      <tr>
-                        <th>{t('admin.rolesPage.moduleResource')}</th>
-                        <th>{t('admin.rolesPage.permView')}</th>
-                        <th>{t('admin.rolesPage.permCreate')}</th>
-                        <th>{t('admin.rolesPage.permEdit')}</th>
-                        <th>{t('admin.rolesPage.permDelete')}</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {MODULE_KEYS.map((mod) => {
-                        const mPerms = formRol.permisos[mod.key] || {
-                          ver: false,
-                          crear: false,
-                          editar: false,
-                          eliminar: false,
-                        }
-                        return (
-                          <tr key={mod.key}>
-                            <td>{mod.label}</td>
-                            {['ver', 'crear', 'editar', 'eliminar'].map((action) => (
-                              <td key={action}>
-                                <input
-                                  type="checkbox"
-                                  checked={Boolean(mPerms[action])}
-                                  onChange={() => handleTogglePermiso(mod.key, action)}
-                                />
-                              </td>
-                            ))}
-                          </tr>
-                        )
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-
-                {errorModal && <p className="cities-error">{errorModal}</p>}
-
-                <div className="cities-modal__actions">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setModalCrearRol(false)
-                      setModalEditarRol(null)
-                    }}
-                  >
-                    Cancelar
-                  </button>
-                  <button type="submit" className="cities-primary">
-                    {modalEditarRol ? t('admin.rolesPage.btnSavePermissions') : t('admin.rolesPage.btnCreateRole')}
-                  </button>
-                </div>
-              </form>
-            </section>
-          </div>
-        )}
+        <RolePermissionsModal
+          isOpen={modalCrearRol || Boolean(modalEditarRol)}
+          onClose={() => {
+            setModalCrearRol(false)
+            setModalEditarRol(null)
+          }}
+          onSubmit={modalEditarRol ? handleEditarRol : handleCrearRol}
+          isEditing={Boolean(modalEditarRol)}
+          form={formRol}
+          setForm={setFormRol}
+          moduleKeys={MODULE_KEYS}
+          onTogglePermiso={handleTogglePermiso}
+          errorModal={errorModal}
+          roleItem={modalEditarRol}
+        />
 
         {/* MODAL ELIMINAR CUENTA */}
-        {modalEliminarCuenta && (
-          <div className="cities-modal-backdrop" onMouseDown={(e) => e.target === e.currentTarget && setModalEliminarCuenta(null)}>
-            <section className="cities-modal">
-              <div className="cities-delete-icon">
-                <FaTrash />
-              </div>
-              <h2>{t('admin.rolesPage.confirmDeleteAccountTitle')}</h2>
-              <p>
-                {t('admin.rolesPage.confirmDeleteAccountText')} <strong>{modalEliminarCuenta.nombre}</strong> (
-                {modalEliminarCuenta.correo})?
-              </p>
+        <RoleDeleteModal
+          item={modalEliminarCuenta}
+          type="account"
+          onClose={() => setModalEliminarCuenta(null)}
+          onConfirm={handleEliminarCuenta}
+          errorModal={errorModal}
+        />
 
-              <div className="cities-modal__actions">
-                <button type="button" onClick={() => setModalEliminarCuenta(null)}>
-                  Cancelar
-                </button>
-                <button
-                  className="cities-danger"
-                  type="button"
-                  onClick={() => handleEliminarCuenta(modalEliminarCuenta)}
-                >
-                  Confirmar Eliminación
-                </button>
-              </div>
-            </section>
-          </div>
-        )}
-
-        {/* MODAL ELIMINAR ROL CON VALIDACIÓN */}
-        {modalEliminarRol && (
-          <div className="cities-modal-backdrop" onMouseDown={(e) => e.target === e.currentTarget && setModalEliminarRol(null)}>
-            <section className="cities-modal">
-              <div className="cities-delete-icon">
-                <FaTrash />
-              </div>
-              <h2>{t('admin.rolesPage.confirmDeleteRoleTitle')}</h2>
-              <p>
-                {t('admin.rolesPage.confirmDeleteRoleText')} <strong>{modalEliminarRol.nombre}</strong>?
-              </p>
-
-              {modalEliminarRol.cuentasAsignadas > 0 && (
-                <div
-                  style={{
-                    background: '#fee2e2',
-                    border: '1.5px solid #fca5a5',
-                    color: '#991b1b',
-                    padding: '12px 14px',
-                    borderRadius: 12,
-                    fontSize: 12,
-                    fontWeight: 700,
-                    marginBottom: 16,
-                  }}
-                >
-                  <FaExclamationTriangle style={{ marginRight: 6 }} />
-                  {t('admin.rolesPage.roleDeleteWarning1')} {modalEliminarRol.cuentasAsignadas}  {t('admin.rolesPage.roleDeleteWarning2')}
-                </div>
-              )}
-
-              {errorModal && <p className="cities-error">{errorModal}</p>}
-
-              <div className="cities-modal__actions">
-                <button type="button" onClick={() => setModalEliminarRol(null)}>
-                  Cancelar
-                </button>
-                <button
-                  className="cities-danger"
-                  type="button"
-                  disabled={modalEliminarRol.cuentasAsignadas > 0}
-                  onClick={() => handleEliminarRol(modalEliminarRol)}
-                >
-                  Confirmar Eliminación
-                </button>
-              </div>
-            </section>
-          </div>
-        )}
+        {/* MODAL ELIMINAR ROL */}
+        <RoleDeleteModal
+          item={modalEliminarRol}
+          type="role"
+          onClose={() => setModalEliminarRol(null)}
+          onConfirm={handleEliminarRol}
+          errorModal={errorModal}
+        />
       </main>
     </div>
   )

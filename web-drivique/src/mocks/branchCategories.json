@@ -1,0 +1,46 @@
+{
+  "alamo bogota - aeropuerto": [
+    "Económico (Compactos)",
+    "Sedán Ejecutivo",
+    "Camionetas SUV",
+    "Eléctricos (Eco-Drive)"
+  ],
+  "alquiler neiva - centro": [
+    "Económico (Compactos)",
+    "Sedán Ejecutivo"
+  ],
+  "alamo medellin - el poblado": [
+    "Económico (Compactos)",
+    "Sedán Ejecutivo",
+    "Camionetas SUV",
+    "Eléctricos (Eco-Drive)",
+    "Camionetas Pickup & 4x4"
+  ],
+  "alamo cali - chipichape": [
+    "Económico (Compactos)",
+    "Sedán Ejecutivo",
+    "Camionetas SUV"
+  ],
+  "alamo cartagena - bocagrande": [
+    "Económico (Compactos)",
+    "Sedán Ejecutivo",
+    "Camionetas SUV",
+    "Eléctricos (Eco-Drive)"
+  ],
+  "alamo barranquilla - norte": [
+    "Económico (Compactos)",
+    "Sedán Ejecutivo",
+    "Camionetas SUV"
+  ],
+  "alamo bucaramanga - cabecera": [
+    "Económico (Compactos)",
+    "Sedán Ejecutivo",
+    "Camionetas SUV",
+    "Camionetas Pickup & 4x4"
+  ],
+  "alamo pereira - circunvalar": [
+    "Económico (Compactos)",
+    "Sedán Ejecutivo",
+    "Camionetas SUV"
+  ]
+}

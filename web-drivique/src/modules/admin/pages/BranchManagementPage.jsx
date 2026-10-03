@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+﻿import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   FaBuilding,
@@ -26,6 +26,9 @@ import ManagementSidebar from '../components/ManagementSidebar'
 import './CityManagementPage.css'
 import './BranchManagementPage.css'
 
+/**
+ * Estado inicial por defecto para el formulario de creación/edición de sucursales.
+ */
 const EMPTY = {
   nombre: '',
   ciudad: '',
@@ -38,6 +41,19 @@ const EMPTY = {
   autorizadoPagoEfectivo: true,
 }
 
+/**
+ * Componente de Página: BranchManagementPage
+ * 
+ * @description
+ * Módulo de Gestión de Sedes y Sucursales para el Administrador General.
+ * Permite:
+ * - Listado interactivo con búsqueda y filtros por ciudad, estado y autorización de efectivo.
+ * - Creación, edición y desactivación segura de sedes operativas.
+ * - Exportación de datos a Excel, PDF e impresión física.
+ * - Asignación de encargados y control de capacidad máxima de vehículos.
+ * 
+ * @returns {JSX.Element}
+ */
 export default function BranchManagementPage() {
   const { t } = useTranslation()
   const { tema } = useLanding()
@@ -196,7 +212,7 @@ export default function BranchManagementPage() {
             <div className="cities-notice" role="status">
               <span>{notice}</span>
               <button type="button" onClick={() => setNotice('')}>
-                ×
+                á—
               </button>
             </div>
           )}
@@ -394,7 +410,7 @@ export default function BranchManagementPage() {
                       <h2>{modal.branch ? 'Editar Sucursal' : 'Registrar Nueva Sucursal'}</h2>
                     </div>
                     <button type="button" onClick={close}>
-                      ×
+                      á—
                     </button>
                   </div>
 

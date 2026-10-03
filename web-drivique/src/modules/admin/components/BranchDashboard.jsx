@@ -22,9 +22,12 @@ import {
   FaPlus,
   FaEllipsisV,
   FaEye,
+  FaReceipt,
   FaPhone,
   FaChartBar,
   FaTimesCircle,
+  FaBellSlash,
+  FaInfoCircle,
   FaFileExcel,
   FaFilePdf,
   FaPrint,
@@ -32,10 +35,12 @@ import {
 import { useLanding } from '../../landing/LandingContext'
 import { useAuthStore } from '../../../store/authStore'
 import { useBranchDashboard, getScheduleForRange } from '../../../hooks/useBranchDashboard'
+import { useBranchNotifications } from '../../../hooks/useBranchNotifications'
 import ManagementSidebar from './ManagementSidebar'
 import MenuConfiguracion from '../../../components/MenuConfiguracion'
 import { exportExcel, exportPdf, printTable } from '../../../utils/listExportUtils'
 import KpiDetailModal from './KpiDetailModal'
+import BranchNotificationModal from './BranchNotificationModal'
 import './BranchDashboard.css'
 
 const TODAY_STR = '2026-09-25'
@@ -65,16 +70,16 @@ const getVehicleImage = (item) => {
   return 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=600&q=80'
 }
 
-const getReservationStatusInfo = (rawStatus) => {
+const getReservationStatusInfo = (rawStatus, t) => {
   const s = String(rawStatus || 'CONFIRMADA').trim().toUpperCase()
 
   if (['PENDIENTE', 'PENDIENTE_EFECTIVO', 'PENDIENTE_VALIDACION', 'DOCUMENTO_PENDIENTE'].includes(s) || s.includes('PENDIENTE')) {
-    let sublabel = 'Pendiente (Validación / Pago)'
-    if (s === 'PENDIENTE_EFECTIVO') sublabel = 'Pendiente (Pago en efectivo)'
-    else if (s === 'PENDIENTE_VALIDACION' || s === 'DOCUMENTO_PENDIENTE') sublabel = 'Pendiente (Documentación)'
+    let sublabel = t('dashboard.status.pendingSub', 'Pendiente (Validación / Pago)')
+    if (s === 'PENDIENTE_EFECTIVO') sublabel = t('dashboard.status.pendingCash', 'Pendiente (Pago en efectivo)')
+    else if (s === 'PENDIENTE_VALIDACION' || s === 'DOCUMENTO_PENDIENTE') sublabel = t('dashboard.status.pendingDocs', 'Pendiente (Documentación)')
     
     return {
-      visibleState: 'Pendiente',
+      visibleState: t('dashboard.status.pending', 'Pendiente'),
       internalStates: ['PENDIENTE', 'PENDIENTE_EFECTIVO', 'PENDIENTE_VALIDACION'],
       sublabel,
       badgeClass: 'branch-status-badge--amber',
@@ -84,9 +89,9 @@ const getReservationStatusInfo = (rawStatus) => {
 
   if (s === 'CONFIRMADA') {
     return {
-      visibleState: 'Confirmada',
+      visibleState: t('dashboard.status.confirmed', 'Confirmada'),
       internalStates: ['CONFIRMADA'],
-      sublabel: 'Aprobada y lista para entrega',
+      sublabel: t('dashboard.status.confirmedSub', 'Aprobada y lista para entrega'),
       badgeClass: 'branch-status-badge--green',
       IconComp: FaCheckCircle,
     }
@@ -94,9 +99,9 @@ const getReservationStatusInfo = (rawStatus) => {
 
   if (s === 'ACTIVA' || s === 'EN_CURSO' || s === 'EN CURSO') {
     return {
-      visibleState: 'En curso',
+      visibleState: t('dashboard.status.active', 'En curso'),
       internalStates: ['ACTIVA'],
-      sublabel: 'Vehículo entregado al cliente',
+      sublabel: t('dashboard.status.activeSub', 'Vehículo entregado al cliente'),
       badgeClass: 'branch-status-badge--blue',
       IconComp: FaCar,
     }
@@ -104,9 +109,9 @@ const getReservationStatusInfo = (rawStatus) => {
 
   if (s === 'COMPLETADA' || s === 'FINALIZADA' || s === 'RECIBIDA') {
     return {
-      visibleState: 'Finalizada',
+      visibleState: t('dashboard.status.completed', 'Finalizada'),
       internalStates: ['COMPLETADA'],
-      sublabel: 'Vehículo devuelto e inspeccionado',
+      sublabel: t('dashboard.status.completedSub', 'Vehículo devuelto e inspeccionado'),
       badgeClass: 'branch-status-badge--teal',
       IconComp: FaCheckDouble,
     }
@@ -114,115 +119,22 @@ const getReservationStatusInfo = (rawStatus) => {
 
   if (s === 'CANCELADA' || s === 'CANCELADA_POR_TIEMPO') {
     return {
-      visibleState: 'Cancelada',
+      visibleState: t('dashboard.status.cancelled', 'Cancelada'),
       internalStates: ['CANCELADA', 'CANCELADA_POR_TIEMPO'],
-      sublabel: s === 'CANCELADA_POR_TIEMPO' ? 'Expirada por tiempo' : 'Reserva anulada',
+      sublabel: s === 'CANCELADA_POR_TIEMPO' ? t('dashboard.status.cancelledTime', 'Expirada por tiempo') : t('dashboard.status.cancelledSub', 'Reserva anulada'),
       badgeClass: 'branch-status-badge--gray',
       IconComp: FaTimesCircle,
     }
   }
 
   return {
-    visibleState: 'Confirmada',
+    visibleState: t('dashboard.status.confirmed', 'Confirmada'),
     internalStates: ['CONFIRMADA'],
-    sublabel: 'Aprobada y lista para entrega',
+    sublabel: t('dashboard.status.confirmedSub', 'Aprobada y lista para entrega'),
     badgeClass: 'branch-status-badge--green',
     IconComp: FaCheckCircle,
   }
 }
-
-const MOCK_NOTIFICATIONS = [
-  {
-    id: 'notif-1',
-    type: 'newReservation',
-    category: 'operations',
-    categoryLabel: 'Nueva Reserva',
-    icon: FaClipboardList,
-    iconColor: '#2563eb',
-    iconBg: '#eff6ff',
-    text: 'Nueva reserva #RES-8920 realizada por Carlos Restrepo',
-    detail: 'Vehículo Toyota Corolla 2024 asignado. Entrega programada para hoy a las 14:00.',
-    time: 'Hace 10 min',
-    isRead: false,
-    route: '/encargado/reservations',
-    actionLabel: 'Ver reservas',
-  },
-  {
-    id: 'notif-2',
-    type: 'pendingDocument',
-    category: 'attention',
-    categoryLabel: 'Validación Requerida',
-    icon: FaIdCard,
-    iconColor: '#b45309',
-    iconBg: '#fef3c7',
-    text: 'Documento de identidad por validar en Reserva #RES-8914',
-    detail: 'Cédula de ciudadanía pendiente de aprobación para el cliente Mariana Silva.',
-    time: 'Hace 25 min',
-    isRead: false,
-    route: '/encargado/documents',
-    actionLabel: 'Validar documentos',
-  },
-  {
-    id: 'notif-3',
-    type: 'openIncident',
-    category: 'attention',
-    categoryLabel: 'Incidencia Operativa',
-    icon: FaExclamationTriangle,
-    iconColor: '#dc2626',
-    iconBg: '#fef2f2',
-    text: 'Incidencia de rayón reportada en Toyota Corolla (ABC-123)',
-    detail: 'Reportada durante inspección previa a la entrega en bahía 2.',
-    time: 'Hace 1 hora',
-    isRead: false,
-    route: '/encargado/incidents',
-    actionLabel: 'Gestionar incidencias',
-  },
-  {
-    id: 'notif-4',
-    type: 'returnCompleted',
-    category: 'operations',
-    categoryLabel: 'Devolución Flota',
-    icon: FaUndo,
-    iconColor: '#15803d',
-    iconBg: '#dcfce7',
-    text: 'Devolución completada para vehículo Mazda CX-5 (KLS-849)',
-    detail: 'Inspección final aprobada sin novedades de kilometraje ni combustible.',
-    time: 'Hace 2 horas',
-    isRead: false,
-    route: '/encargado/reservations',
-    actionLabel: 'Ver reservas',
-  },
-  {
-    id: 'notif-5',
-    type: 'paymentReceived',
-    category: 'operations',
-    categoryLabel: 'Cobro en Mostrador',
-    icon: FaCashRegister,
-    iconColor: '#2563eb',
-    iconBg: '#eff6ff',
-    text: 'Pago recibido por $150.000 COP en mostrador de sucursal',
-    detail: 'Cobro de garantía en efectivo registrado para reserva #RES-8890.',
-    time: 'Hace 3 horas',
-    isRead: true,
-    route: '/encargado/cobro-sucursal',
-    actionLabel: 'Ver cobros',
-  },
-  {
-    id: 'notif-6',
-    type: 'expiringDocument',
-    category: 'attention',
-    categoryLabel: 'Alerta de Flota',
-    icon: FaCar,
-    iconColor: '#b45309',
-    iconBg: '#fef3c7',
-    text: 'SOAT de Chevrolet Tracker (MXP-492) próximo a vencer en 5 días',
-    detail: 'Vence el 30/09/2026. Requiere renovación para mantener disponibilidad operativa.',
-    time: 'Hace 5 horas',
-    isRead: true,
-    route: '/encargado/vehicles',
-    actionLabel: 'Ver flota y vehículos',
-  },
-]
 
 const parseISOToDate = (str) => {
   if (!str) return new Date(2026, 8, 25)
@@ -250,18 +162,20 @@ const formatDateLabel = (dateStr) => {
 
 /* COMPONENTE NATIVO: CALENDARIO INLINE CON SELECCIÓN DE RANGO DE FECHAS */
 function OperationalDateRangeCalendar({ startDateStr, endDateStr, onSelectRange }) {
+  const { t } = useTranslation()
   const [currentMonthDate, setCurrentMonthDate] = useState(() => new Date(2026, 8, 1))
 
   const monthYearLabel = useMemo(() => {
-    const months = [
-      'Septiembre 2026', 'Octubre 2026', 'Noviembre 2026', 'Diciembre 2026'
-    ]
     const monthNames = [
-      'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-      'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+      t('common.months.january', 'Enero'), t('common.months.february', 'Febrero'), 
+      t('common.months.march', 'Marzo'), t('common.months.april', 'Abril'), 
+      t('common.months.may', 'Mayo'), t('common.months.june', 'Junio'),
+      t('common.months.july', 'Julio'), t('common.months.august', 'Agosto'), 
+      t('common.months.september', 'Septiembre'), t('common.months.october', 'Octubre'), 
+      t('common.months.november', 'Noviembre'), t('common.months.december', 'Diciembre')
     ]
     return `${monthNames[currentMonthDate.getMonth()]} ${currentMonthDate.getFullYear()}`
-  }, [currentMonthDate])
+  }, [currentMonthDate, t])
 
   const daysGrid = useMemo(() => {
     const year = currentMonthDate.getFullYear()
@@ -321,16 +235,21 @@ function OperationalDateRangeCalendar({ startDateStr, endDateStr, onSelectRange 
     }
   }
 
-  const weekHeaders = ['Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sá', 'Do']
+  const weekHeaders = [
+    t('common.daysShort.mon', 'Lu'), t('common.daysShort.tue', 'Ma'), 
+    t('common.daysShort.wed', 'Mi'), t('common.daysShort.thu', 'Ju'), 
+    t('common.daysShort.fri', 'Vi'), t('common.daysShort.sat', 'Sá'), 
+    t('common.daysShort.sun', 'Do')
+  ]
 
   return (
     <div className="native-inline-calendar">
       <div className="native-cal-header">
-        <button type="button" className="native-cal-nav-btn" onClick={handlePrevMonth} title="Mes anterior">
+        <button type="button" className="native-cal-nav-btn" onClick={handlePrevMonth} title={t('common.prevMonth', 'Mes anterior')}>
           &lt;
         </button>
         <strong className="native-cal-title">{monthYearLabel}</strong>
-        <button type="button" className="native-cal-nav-btn" onClick={handleNextMonth} title="Mes siguiente">
+        <button type="button" className="native-cal-nav-btn" onClick={handleNextMonth} title={t('common.nextMonth', 'Mes siguiente')}>
           &gt;
         </button>
       </div>
@@ -383,6 +302,7 @@ function OperationalDateRangeCalendar({ startDateStr, endDateStr, onSelectRange 
 
 /* COMPONENTE NATIVO: GRÁFICO SVG DE BARRAS DE CARGA OPERATIVA POR FRANJA HORARIA */
 function OperationalHourlyBarChart({ hourlyData = [] }) {
+  const { t } = useTranslation()
   const [hoveredIndex, setHoveredIndex] = useState(null)
 
   const maxVal = useMemo(() => {
@@ -394,10 +314,10 @@ function OperationalHourlyBarChart({ hourlyData = [] }) {
   }, [hourlyData])
 
   const svgWidth = 560
-  const svgHeight = 210
-  const marginTop = 20
-  const marginBottom = 35
-  const marginLeft = 35
+  const svgHeight = 200
+  const marginTop = 15
+  const marginBottom = 32
+  const marginLeft = 30
   const marginRight = 15
 
   const chartWidth = svgWidth - marginLeft - marginRight
@@ -405,21 +325,32 @@ function OperationalHourlyBarChart({ hourlyData = [] }) {
 
   const numSlots = hourlyData.length || 10
   const slotWidth = chartWidth / numSlots
-  const barWidth = 14
+  const barWidth = 7
   const barGap = 3
 
   const yTicks = [0, Math.round(maxVal / 3), Math.round((maxVal * 2) / 3), maxVal]
 
   return (
     <div className="native-barchart-wrapper" style={{ position: 'relative', width: '100%' }}>
-      <div className="native-chart-legend">
-        <div className="native-legend-item">
-          <span className="native-legend-dot" style={{ background: '#2563eb' }} />
-          <span>Entregas</span>
+      <div
+        className="native-chart-legend"
+        style={{
+          display: 'flex',
+          justifyContent: 'flex-end',
+          alignItems: 'center',
+          gap: '16px',
+          marginBottom: '10px',
+          fontSize: '11.5px',
+          color: 'var(--texto-second, #64748b)',
+        }}
+      >
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+          <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--brand-primary, #2563eb)' }} />
+          <span>{t('dashboard.labels.deliveries', 'Entregas')}</span>
         </div>
-        <div className="native-legend-item">
-          <span className="native-legend-dot" style={{ background: '#10b981' }} />
-          <span>Devoluciones</span>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+          <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10b981' }} />
+          <span>{t('dashboard.labels.returns', 'Devoluciones')}</span>
         </div>
       </div>
 
@@ -434,16 +365,16 @@ function OperationalHourlyBarChart({ hourlyData = [] }) {
                 y1={yPos}
                 x2={svgWidth - marginRight}
                 y2={yPos}
-                stroke={tick === 0 ? 'var(--borde, #cbd5e1)' : 'var(--borde-suave, #e2e8f0)'}
-                strokeWidth={tick === 0 ? '1.5' : '1'}
+                stroke={tick === 0 ? 'var(--borde, #cbd5e1)' : 'var(--borde, #f1f5f9)'}
+                strokeWidth={tick === 0 ? '1' : '1'}
                 strokeDasharray={tick === 0 ? 'none' : '3 3'}
               />
               <text
                 x={marginLeft - 8}
-                y={yPos + 4}
-                fill="var(--texto-second, #64748b)"
-                fontSize="11"
-                fontWeight="600"
+                y={yPos + 3.5}
+                fill="var(--texto-second, #94a3b8)"
+                fontSize="10"
+                fontWeight="500"
                 textAnchor="end"
               >
                 {tick}
@@ -477,39 +408,45 @@ function OperationalHourlyBarChart({ hourlyData = [] }) {
             >
               {isHovered && (
                 <rect
-                  x={groupCenterX - slotWidth / 2}
+                  x={groupCenterX - slotWidth / 2 + 2}
                   y={marginTop}
-                  width={slotWidth}
+                  width={slotWidth - 4}
                   height={chartHeight}
-                  fill="rgba(37, 99, 235, 0.06)"
+                  fill="rgba(37, 99, 235, 0.04)"
                   rx="4"
                 />
               )}
 
-              <rect
-                x={xDel}
-                y={yDel}
-                width={barWidth}
-                height={Math.max(hDel, 2)}
-                fill="#2563eb"
-                rx="3"
-              />
+              {delVal > 0 && (
+                <rect
+                  x={xDel}
+                  y={yDel}
+                  width={barWidth}
+                  height={hDel}
+                  fill="var(--brand-primary, #2563eb)"
+                  rx="2"
+                  ry="2"
+                />
+              )}
 
-              <rect
-                x={xRet}
-                y={yRet}
-                width={barWidth}
-                height={Math.max(hRet, 2)}
-                fill="#10b981"
-                rx="3"
-              />
+              {retVal > 0 && (
+                <rect
+                  x={xRet}
+                  y={yRet}
+                  width={barWidth}
+                  height={hRet}
+                  fill="#10b981"
+                  rx="2"
+                  ry="2"
+                />
+              )}
 
               <text
                 x={groupCenterX}
                 y={svgHeight - 10}
-                fill={isHovered ? '#2563eb' : 'var(--texto-second, #64748b)'}
-                fontSize="11"
-                fontWeight={isHovered ? '700' : '600'}
+                fill={isHovered ? 'var(--brand-primary, #2563eb)' : 'var(--texto-second, #64748b)'}
+                fontSize="10.5"
+                fontWeight={isHovered ? '700' : '500'}
                 textAnchor="middle"
               >
                 {item.label}
@@ -524,27 +461,27 @@ function OperationalHourlyBarChart({ hourlyData = [] }) {
           className="native-chart-tooltip"
           style={{
             position: 'absolute',
-            top: '30px',
+            top: '25px',
             left: `${((marginLeft + hoveredIndex * slotWidth + slotWidth / 2) / svgWidth) * 100}%`,
             transform: 'translateX(-50%)',
             background: 'var(--bg-tarjeta, #ffffff)',
             border: '1px solid var(--borde, #e2e8f0)',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
             borderRadius: '8px',
             padding: '6px 12px',
             pointerEvents: 'none',
             zIndex: 10,
           }}
         >
-          <strong style={{ display: 'block', fontSize: '12px', marginBottom: '4px', color: 'var(--texto-primary, #1e293b)' }}>
+          <strong style={{ display: 'block', fontSize: '11.5px', marginBottom: '3px', color: 'var(--texto-primary, #0f172a)' }}>
             {hourlyData[hoveredIndex].label}
           </strong>
-          <div style={{ fontSize: '11px', display: 'flex', gap: '8px', alignItems: 'center', color: '#2563eb' }}>
-            <span>Entregas:</span>
+          <div style={{ fontSize: '11px', display: 'flex', gap: '8px', alignItems: 'center', color: 'var(--brand-primary, #2563eb)' }}>
+            <span>{t('dashboard.labels.deliveriesColon', 'Entregas:')}</span>
             <strong>{hourlyData[hoveredIndex].deliveries}</strong>
           </div>
           <div style={{ fontSize: '11px', display: 'flex', gap: '8px', alignItems: 'center', color: '#10b981' }}>
-            <span>Devoluciones:</span>
+            <span>{t('dashboard.labels.returnsColon', 'Devoluciones:')}</span>
             <strong>{hourlyData[hoveredIndex].returns}</strong>
           </div>
         </div>
@@ -571,11 +508,19 @@ export default function BranchDashboard({ branchOnly = true }) {
 
   const [activeKpiMenu, setActiveKpiMenu] = useState(null)
   const [activeModalMetric, setActiveModalMetric] = useState(null)
-  const [notifications, setNotifications] = useState(MOCK_NOTIFICATIONS)
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false)
-  const [isAllNotifsModalOpen, setIsAllNotifsModalOpen] = useState(false)
-  const [notifModalFilter, setNotifModalFilter] = useState('all') // 'all' | 'unread' | 'operations' | 'attention'
   const [toastMessage, setToastMessage] = useState(null)
+
+  // Patrón Controller/Hook: Gestión desacoplada de notificaciones operativas
+  const {
+    notifications,
+    unreadCount: unreadNotifCount,
+    filter: notifFilter,
+    setFilter: setNotifFilter,
+    filteredNotifications,
+    markAsRead: handleMarkNotificationRead,
+    markAllAsRead: handleMarkAllNotificationsRead,
+  } = useBranchNotifications(usuario, dashboardData)
 
   const drawerRef = useRef(null)
   const lastActiveElementRef = useRef(null)
@@ -596,50 +541,34 @@ export default function BranchDashboard({ branchOnly = true }) {
     setActiveKpiMenu((prev) => (prev === id ? null : id))
   }
 
-  const unreadNotifCount = useMemo(() => {
-    return notifications.filter((n) => !n.isRead).length
-  }, [notifications])
-
   const handleToggleNotifications = () => {
     setIsNotificationsOpen((prev) => !prev)
   }
 
-  const handleMarkAllNotificationsRead = () => {
-    setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })))
-  }
-
   const handleNotificationClick = (notif) => {
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === notif.id ? { ...n, isRead: true } : n))
-    )
+    handleMarkNotificationRead(notif.id)
     setIsNotificationsOpen(false)
-    setIsAllNotifsModalOpen(false)
     if (notif.route) {
-      navigate(notif.route)
+      navigate(notif.route, { state: notif.navigationState })
     }
   }
-
-  const modalFilteredNotifications = useMemo(() => {
-    if (notifModalFilter === 'unread') {
-      return notifications.filter((n) => !n.isRead)
-    }
-    if (notifModalFilter === 'operations') {
-      return notifications.filter((n) => n.category === 'operations')
-    }
-    if (notifModalFilter === 'attention') {
-      return notifications.filter((n) => n.category === 'attention')
-    }
-    return notifications
-  }, [notifications, notifModalFilter])
 
   const getKpiDataForExport = (metricKey) => {
     const branchName = dashboardData?.branchName || 'Alamo Bogotá - Aeropuerto'
 
     if (metricKey === 'ingresos') {
       return {
-        title: 'Ingresos del Mes',
+        title: t('dashboard.export.incomeTitle', 'Ingresos del Mes'),
         filename: 'reporte_ingresos_mes',
-        headers: ['Código Reserva', 'Cliente', 'Vehículo', 'Fecha Inicio', 'Fecha Fin', 'Monto Total', 'Estado'],
+        headers: [
+          t('dashboard.export.incomeCode', 'Código Reserva'), 
+          t('dashboard.export.incomeClient', 'Cliente'), 
+          t('dashboard.export.incomeVehicle', 'Vehículo'), 
+          t('dashboard.export.incomeStart', 'Fecha Inicio'), 
+          t('dashboard.export.incomeEnd', 'Fecha Fin'), 
+          t('dashboard.export.incomeAmount', 'Monto Total'), 
+          t('dashboard.export.incomeStatus', 'Estado')
+        ],
         rows: [
           ['RES-8920', 'Carlos Restrepo', 'Toyota Corolla (ABC-123)', '2026-09-20', '2026-09-25', '$ 1.250.000 COP', 'FINALIZADA'],
           ['RES-8918', 'Ana María Gómez', 'Chevrolet Tracker (MXP-492)', '2026-09-22', '2026-09-27', '$ 1.800.000 COP', 'EN CURSO'],
@@ -648,9 +577,9 @@ export default function BranchDashboard({ branchOnly = true }) {
           ['RES-8904', 'Diego Alexander Marín', 'Nissan Kicks (WER-902)', '2026-09-10', '2026-09-14', '$ 1.100.000 COP', 'FINALIZADA'],
         ],
         kpis: [
-          { label: 'Total Ingresos Mes', value: '$ 45.200.000 COP' },
-          { label: 'Crecimiento vs. Mes Anterior', value: '+8.5%' },
-          { label: 'Sucursal', value: branchName },
+          { label: t('dashboard.export.totalIncome', 'Total Ingresos Mes'), value: '$ 45.200.000 COP' },
+          { label: t('dashboard.export.growth', 'Crecimiento vs. Mes Anterior'), value: '+8.5%' },
+          { label: t('dashboard.export.branch', 'Sucursal'), value: branchName },
         ],
       }
     }
@@ -666,18 +595,26 @@ export default function BranchDashboard({ branchOnly = true }) {
         item.estado || 'COMPLETADA',
       ])
       return {
-        title: 'Entregas de Hoy',
+        title: t('dashboard.export.deliveriesTitle', 'Entregas de Hoy'),
         filename: 'reporte_entregas_hoy',
-        headers: ['Reserva ID', 'Hora Programada', 'Cliente', 'Teléfono', 'Vehículo', 'Placa', 'Estado Entrega'],
+        headers: [
+          t('dashboard.export.resId', 'Código Reserva'), 
+          t('dashboard.export.time', 'Hora Programada'), 
+          t('dashboard.export.client', 'Cliente'), 
+          t('dashboard.export.phone', 'Teléfono'), 
+          t('dashboard.export.vehicle', 'Nombre Vehículo'), 
+          t('dashboard.export.plate', 'Placa'), 
+          t('dashboard.export.deliveryStatus', 'Estado Entrega')
+        ],
         rows: rows.length > 0 ? rows : [
           ['RES-8920', '08:30 AM', 'Carlos Restrepo', '+57 310 456 7890', 'Toyota Corolla', 'ABC-123', 'COMPLETADA'],
           ['RES-8922', '10:00 AM', 'Juan David Pérez', '+57 300 123 4567', 'Mazda CX-5', 'KLS-849', 'COMPLETADA'],
           ['RES-8925', '02:00 PM', 'Santiago Castro', '+57 315 789 0123', 'Renault Duster', 'JHK-201', 'PENDIENTE'],
         ],
         kpis: [
-          { label: 'Total Programadas', value: String(dashboardData?.todayDeliveriesCount ?? 3) },
-          { label: 'Entregadas/Completadas', value: String(dashboardData?.todayDeliveriesCompleted ?? 2) },
-          { label: 'Pendientes', value: String(dashboardData?.todayDeliveriesPending ?? 1) },
+          { label: t('dashboard.export.totalScheduled', 'Total Programadas'), value: String(dashboardData?.todayDeliveriesCount ?? 3) },
+          { label: t('dashboard.export.completedDeliveries', 'Entregadas/Completadas'), value: String(dashboardData?.todayDeliveriesCompleted ?? 2) },
+          { label: t('dashboard.export.pending', 'Pendientes'), value: String(dashboardData?.todayDeliveriesPending ?? 1) },
         ],
       }
     }
@@ -693,17 +630,25 @@ export default function BranchDashboard({ branchOnly = true }) {
         item.estado || 'RECIBIDA',
       ])
       return {
-        title: 'Devoluciones de Hoy',
+        title: t('dashboard.export.returnsTitle', 'Devoluciones de Hoy'),
         filename: 'reporte_devoluciones_hoy',
-        headers: ['Reserva ID', 'Hora Programada', 'Cliente', 'Teléfono', 'Vehículo', 'Placa', 'Estado Devolución'],
+        headers: [
+          t('dashboard.export.resId', 'Código Reserva'), 
+          t('dashboard.export.time', 'Hora Programada'), 
+          t('dashboard.export.client', 'Cliente'), 
+          t('dashboard.export.phone', 'Teléfono'), 
+          t('dashboard.export.vehicle', 'Nombre Vehículo'), 
+          t('dashboard.export.plate', 'Placa'), 
+          t('dashboard.export.returnStatus', 'Estado Devolución')
+        ],
         rows: rows.length > 0 ? rows : [
           ['RES-8914', '01:30 PM', 'Ana María Gómez', '+57 320 987 6543', 'Chevrolet Tracker', 'MXP-492', 'RECIBIDA'],
           ['RES-8916', '04:30 PM', 'Felipe Mendoza', '+57 311 234 5678', 'Nissan Kicks', 'WER-902', 'RECIBIDA'],
         ],
         kpis: [
-          { label: 'Total Programadas', value: String(dashboardData?.todayReturnsCount ?? 2) },
-          { label: 'Recibidas', value: String(dashboardData?.todayReturnsReceived ?? 2) },
-          { label: 'Pendientes', value: String(dashboardData?.todayReturnsPending ?? 0) },
+          { label: t('dashboard.export.totalScheduled', 'Total Programadas'), value: String(dashboardData?.todayReturnsCount ?? 2) },
+          { label: t('dashboard.export.received', 'Recibidas'), value: String(dashboardData?.todayReturnsReceived ?? 2) },
+          { label: t('dashboard.export.pending', 'Pendientes'), value: String(dashboardData?.todayReturnsPending ?? 0) },
         ],
       }
     }
@@ -711,9 +656,16 @@ export default function BranchDashboard({ branchOnly = true }) {
     if (metricKey === 'ocupacion') {
       const f = dashboardData?.fleet || {}
       return {
-        title: 'Ocupación de Flota',
+        title: t('dashboard.export.fleetOccupancy', 'Ocupación de Flota'),
         filename: 'reporte_ocupacion_flota',
-        headers: ['Placa', 'Vehículo', 'Categoría', 'Sucursal', 'Estado Operativo', 'Reserva Asignada'],
+        headers: [
+          t('dashboard.export.plate', 'Placa'), 
+          t('dashboard.export.vehicle', 'Nombre Vehículo'), 
+          t('dashboard.export.category', 'Categoría'), 
+          t('dashboard.export.branch', 'Sucursal'), 
+          t('dashboard.export.opStatus', 'Estado Operativo'), 
+          t('dashboard.export.assignedRes', 'Código Reserva Asignada')
+        ],
         rows: [
           ['ABC-123', 'Toyota Corolla', 'Sedán Élite', branchName, 'OCUPADO', 'RES-8920'],
           ['MXP-492', 'Chevrolet Tracker', 'SUV Compacto', branchName, 'OCUPADO', 'RES-8918'],
@@ -722,10 +674,10 @@ export default function BranchDashboard({ branchOnly = true }) {
           ['WER-902', 'Nissan Kicks', 'Crossover', branchName, 'EN MANTENIMIENTO', 'Mantenimiento preventivo'],
         ],
         kpis: [
-          { label: 'Tasa de Ocupación', value: `${f.occupancyRate || 40}%` },
-          { label: 'Ocupados', value: `${f.rentedVehicles || 2} de ${f.totalVehicles || 5}` },
-          { label: 'Disponibles', value: String(f.availableVehicles || 2) },
-          { label: 'En Mantenimiento', value: String(f.maintenanceVehicles || 1) },
+          { label: t('dashboard.export.occupancyRate', 'Tasa de Ocupación'), value: `${f.occupancyRate || 40}%` },
+          { label: t('dashboard.export.occupied', 'Ocupados'), value: `${f.rentedVehicles || 2} de ${f.totalVehicles || 5}` },
+          { label: t('dashboard.export.available', 'Disponibles'), value: String(f.availableVehicles || 2) },
+          { label: t('dashboard.export.maintenance', 'En Mantenimiento'), value: String(f.maintenanceVehicles || 1) },
         ],
       }
     }
@@ -735,13 +687,7 @@ export default function BranchDashboard({ branchOnly = true }) {
 
   const handleOpenKpiDetail = (metricKey) => {
     setActiveKpiMenu(null)
-    if (metricKey === 'ingresos') {
-      navigate('/encargado/reports')
-    } else if (metricKey === 'entregas' || metricKey === 'devoluciones') {
-      navigate('/encargado/reservations')
-    } else if (metricKey === 'ocupacion') {
-      navigate('/encargado/vehicles')
-    }
+    setActiveModalMetric(metricKey)
   }
 
   const handleExportKpiExcel = (metricKey) => {
@@ -796,9 +742,9 @@ export default function BranchDashboard({ branchOnly = true }) {
 
   const getSectionTitle = (startStr, endStr) => {
     if (startStr === endStr) {
-      return `Programación del ${formatDateLabel(startStr)}`
+      return `${t('dashboard.scheduleFor', 'Programación del')} ${formatDateLabel(startStr)}`
     }
-    return `Programación del ${formatDateLabel(startStr)} al ${formatDateLabel(endStr)}`
+    return `${t('dashboard.scheduleFor', 'Programación del')} ${formatDateLabel(startStr)} ${t('common.to', 'al')} ${formatDateLabel(endStr)}`
   }
 
   const scheduleForRange = useMemo(() => {
@@ -865,15 +811,9 @@ export default function BranchDashboard({ branchOnly = true }) {
         setActiveKpiMenu(null)
       }
       if (e.type === 'mousedown') {
-        if (
-          isNotificationsOpen &&
-          notifRef.current &&
-          !notifRef.current.contains(e.target) &&
-          !notifBtnRef.current?.contains(e.target)
-        ) {
-          setIsNotificationsOpen(false)
+        if (!e.target.closest('.branch-kpi-menu-wrapper')) {
+          setActiveKpiMenu(null)
         }
-        setActiveKpiMenu(null)
       }
     }
 
@@ -884,7 +824,7 @@ export default function BranchDashboard({ branchOnly = true }) {
       document.removeEventListener('keydown', handleGlobalClickAndKeys)
       document.removeEventListener('mousedown', handleGlobalClickAndKeys)
     }
-  }, [isNotificationsOpen])
+  }, [])
 
   const formatCOP = (val) => {
     try {
@@ -957,18 +897,21 @@ export default function BranchDashboard({ branchOnly = true }) {
           </div>
 
           <div className="branch-top-right-tools">
-            <div className="branch-notification-wrapper">
+            <div className="branch-notification-wrapper" style={{ position: 'relative' }}>
               <button
                 ref={notifBtnRef}
                 type="button"
                 className={`branch-icon-btn branch-notification-btn ${
                   isNotificationsOpen ? 'branch-icon-btn--active' : ''
                 }`}
-                title="Notificaciones"
-                aria-label="Notificaciones"
+                title="Notificaciones y Alertas"
+                aria-label="Notificaciones y Alertas"
                 aria-expanded={isNotificationsOpen}
-                aria-haspopup="menu"
-                onClick={handleToggleNotifications}
+                onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  setIsNotificationsOpen((prev) => !prev)
+                }}
               >
                 <FaBell aria-hidden="true" />
                 {unreadNotifCount > 0 && (
@@ -976,84 +919,16 @@ export default function BranchDashboard({ branchOnly = true }) {
                 )}
               </button>
 
-              {isNotificationsOpen && (
-                <div
-                  ref={notifRef}
-                  className="branch-dropdown-menu branch-notifications-dropdown"
-                  role="menu"
-                  aria-label="Panel de Notificaciones"
-                >
-                  <div className="branch-notif-header">
-                    <span className="branch-notif-title">
-                      {t('dashboard.notifications.title', 'Notificaciones')}
-                    </span>
-                    {unreadNotifCount > 0 && (
-                      <button
-                        type="button"
-                        className="branch-notif-mark-btn"
-                        onClick={handleMarkAllNotificationsRead}
-                      >
-                        <FaCheckDouble aria-hidden="true" />
-                        <span>{t('dashboard.notifications.markAllAsRead', 'Marcar todas como leídas')}</span>
-                      </button>
-                    )}
-                  </div>
-
-                  <div className="branch-notif-list">
-                    {notifications.length === 0 ? (
-                      <div className="branch-notif-empty">
-                        {t('dashboard.notifications.empty', 'No tienes notificaciones pendientes.')}
-                      </div>
-                    ) : (
-                      notifications.slice(0, 6).map((notif) => {
-                        const IconComp = notif.icon || FaBell
-                        return (
-                          <div
-                            key={notif.id}
-                            tabIndex={0}
-                            role="menuitem"
-                            className={`branch-notif-item ${
-                              !notif.isRead ? 'branch-notif-item--unread' : ''
-                            }`}
-                            onClick={() => handleNotificationClick(notif)}
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter' || e.key === ' ') {
-                                e.preventDefault()
-                                handleNotificationClick(notif)
-                              }
-                            }}
-                          >
-                            <div
-                              className="branch-notif-icon-box"
-                              style={{ background: notif.iconBg, color: notif.iconColor }}
-                            >
-                              <IconComp aria-hidden="true" />
-                            </div>
-                            <div className="branch-notif-text-wrap">
-                              <p className="branch-notif-text">{notif.text}</p>
-                              <span className="branch-notif-time">{notif.time}</span>
-                            </div>
-                            {!notif.isRead && <span className="branch-notif-unread-dot" />}
-                          </div>
-                        )
-                      })
-                    )}
-                  </div>
-
-                  <div className="branch-notif-footer">
-                    <button
-                      type="button"
-                      className="branch-notif-view-all-btn"
-                      onClick={() => {
-                        setIsNotificationsOpen(false)
-                        setIsAllNotifsModalOpen(true)
-                      }}
-                    >
-                      {t('dashboard.notifications.viewAll', 'Ver todas')}
-                    </button>
-                  </div>
-                </div>
-              )}
+              <BranchNotificationModal
+                isOpen={isNotificationsOpen}
+                onClose={() => setIsNotificationsOpen(false)}
+                notifications={notifications}
+                unreadCount={unreadNotifCount}
+                onMarkRead={handleMarkNotificationRead}
+                onMarkAllRead={handleMarkAllNotificationsRead}
+                onSelectNotification={handleNotificationClick}
+                branchName={dashboardData?.branchName}
+              />
             </div>
 
             <div className="branch-divider-v" />
@@ -1081,13 +956,13 @@ export default function BranchDashboard({ branchOnly = true }) {
           <div className="branch-gradient-hero-content">
             <div className="branch-gradient-hero-badge">
               <span className="branch-hero-live-dot" />
-              <span>En tiempo real</span>
+              <span>{t('dashboard.hero.realtime', 'En tiempo real')}</span>
             </div>
             <h1 className="branch-gradient-hero-title">
               {dashboardData.branchName || 'Alamo Bogotá - Aeropuerto'}
             </h1>
             <p className="branch-gradient-hero-subtitle">
-              Resumen general del rendimiento operativo de la sucursal
+              {t('dashboard.hero.subtitle', 'Resumen general del rendimiento operativo de la sucursal')}
             </p>
           </div>
 
@@ -1098,7 +973,7 @@ export default function BranchDashboard({ branchOnly = true }) {
               onClick={() => navigate(incidentsRoute)}
             >
               <FaExclamationTriangle aria-hidden="true" />
-              <span>Reportar incidencia</span>
+              <span>{t('dashboard.hero.reportIncident', 'Reportar incidencia')}</span>
             </button>
 
             <button
@@ -1107,7 +982,7 @@ export default function BranchDashboard({ branchOnly = true }) {
               onClick={() => navigate(reservationsRoute)}
             >
               <FaPlus aria-hidden="true" />
-              <span>Crear reserva</span>
+              <span>{t('dashboard.hero.createReservation', 'Crear reserva')}</span>
             </button>
           </div>
         </header>
@@ -1141,28 +1016,28 @@ export default function BranchDashboard({ branchOnly = true }) {
                       className="branch-kpi-dropdown-item"
                       onClick={() => handleExportKpiExcel('ingresos')}
                     >
-                      Exportar a Excel
+                      {t('common.exportExcel', 'Exportar a Excel')}
                     </button>
                     <button
                       type="button"
                       className="branch-kpi-dropdown-item"
                       onClick={() => handleExportKpiPdf('ingresos')}
                     >
-                      Exportar a PDF
+                      {t('common.exportPdf', 'Exportar a PDF')}
                     </button>
                     <button
                       type="button"
                       className="branch-kpi-dropdown-item"
                       onClick={() => handlePrintKpi('ingresos')}
                     >
-                      Imprimir
+                      {t('common.print', 'Imprimir')}
                     </button>
                     <button
                       type="button"
                       className="branch-kpi-dropdown-item"
                       onClick={() => handleOpenKpiDetail('ingresos')}
                     >
-                      Ver detalle
+                      {t('common.viewDetails', 'Ver detalle')}
                     </button>
                   </div>
                 )}
@@ -1215,30 +1090,22 @@ export default function BranchDashboard({ branchOnly = true }) {
                       type="button"
                       className="branch-kpi-dropdown-item"
                       onClick={() => handleExportKpiExcel('entregas')}
-                    >
-                      Exportar a Excel
-                    </button>
+                    >{t('common.exportExcel', 'Exportar a Excel')}</button>
                     <button
                       type="button"
                       className="branch-kpi-dropdown-item"
                       onClick={() => handleExportKpiPdf('entregas')}
-                    >
-                      Exportar a PDF
-                    </button>
+                    >{t('common.exportPdf', 'Exportar a PDF')}</button>
                     <button
                       type="button"
                       className="branch-kpi-dropdown-item"
                       onClick={() => handlePrintKpi('entregas')}
-                    >
-                      Imprimir
-                    </button>
+                    >{t('common.print', 'Imprimir')}</button>
                     <button
                       type="button"
                       className="branch-kpi-dropdown-item"
                       onClick={() => handleOpenKpiDetail('entregas')}
-                    >
-                      Ver detalle
-                    </button>
+                    >{t('common.viewDetails', 'Ver detalle')}</button>
                   </div>
                 )}
               </div>
@@ -1249,7 +1116,7 @@ export default function BranchDashboard({ branchOnly = true }) {
                 <strong className="branch-kpi-value">
                   {dashboardData.todayDeliveriesCount ?? 3}
                 </strong>
-                <span className="branch-kpi-unit">programadas</span>
+                <span className="branch-kpi-unit">{t("dashboard.kpi.scheduled", "programadas")}</span>
               </div>
 
               <div className="branch-kpi-progress-track">
@@ -1268,7 +1135,7 @@ export default function BranchDashboard({ branchOnly = true }) {
 
             <div className="branch-kpi-card-footer">
               <span className="branch-kpi-trend-text">
-                {dashboardData.todayDeliveriesCompleted} completadas · {dashboardData.todayDeliveriesPending} pendientes
+                {dashboardData.todayDeliveriesCompleted} {t("dashboard.kpi.completed", "completadas")} · {dashboardData.todayDeliveriesPending} {t("dashboard.kpi.pending", "pendientes")}
               </span>
             </div>
           </article>
@@ -1299,30 +1166,22 @@ export default function BranchDashboard({ branchOnly = true }) {
                       type="button"
                       className="branch-kpi-dropdown-item"
                       onClick={() => handleExportKpiExcel('devoluciones')}
-                    >
-                      Exportar a Excel
-                    </button>
+                    >{t('common.exportExcel', 'Exportar a Excel')}</button>
                     <button
                       type="button"
                       className="branch-kpi-dropdown-item"
                       onClick={() => handleExportKpiPdf('devoluciones')}
-                    >
-                      Exportar a PDF
-                    </button>
+                    >{t('common.exportPdf', 'Exportar a PDF')}</button>
                     <button
                       type="button"
                       className="branch-kpi-dropdown-item"
                       onClick={() => handlePrintKpi('devoluciones')}
-                    >
-                      Imprimir
-                    </button>
+                    >{t('common.print', 'Imprimir')}</button>
                     <button
                       type="button"
                       className="branch-kpi-dropdown-item"
                       onClick={() => handleOpenKpiDetail('devoluciones')}
-                    >
-                      Ver detalle
-                    </button>
+                    >{t('common.viewDetails', 'Ver detalle')}</button>
                   </div>
                 )}
               </div>
@@ -1333,7 +1192,7 @@ export default function BranchDashboard({ branchOnly = true }) {
                 <strong className="branch-kpi-value">
                   {dashboardData.todayReturnsCount ?? 2}
                 </strong>
-                <span className="branch-kpi-unit">programadas</span>
+                <span className="branch-kpi-unit">{t("dashboard.kpi.scheduled", "programadas")}</span>
               </div>
 
               <div className="branch-kpi-progress-track">
@@ -1352,7 +1211,7 @@ export default function BranchDashboard({ branchOnly = true }) {
 
             <div className="branch-kpi-card-footer">
               <span className="branch-kpi-trend-text">
-                {dashboardData.todayReturnsPending} pendientes · {dashboardData.todayReturnsReceived} recibidas
+                {dashboardData.todayReturnsPending} {t("dashboard.kpi.pending", "pendientes")} · {dashboardData.todayReturnsReceived} {t("dashboard.kpi.received", "recibidas")}
               </span>
             </div>
           </article>
@@ -1363,7 +1222,7 @@ export default function BranchDashboard({ branchOnly = true }) {
               <div className="branch-kpi-title-with-icon">
                 <span className="branch-kpi-title">
                   <FaCar className="branch-kpi-inline-icon" aria-hidden="true" />
-                  {t('dashboard.kpi.occupancy', 'Ocupación de flota')}
+                  {t('dashboard.kpi.fleetOccupancy', 'Ocupación de flota')}
                 </span>
               </div>
 
@@ -1383,30 +1242,22 @@ export default function BranchDashboard({ branchOnly = true }) {
                       type="button"
                       className="branch-kpi-dropdown-item"
                       onClick={() => handleExportKpiExcel('ocupacion')}
-                    >
-                      Exportar a Excel
-                    </button>
+                    >{t('common.exportExcel', 'Exportar a Excel')}</button>
                     <button
                       type="button"
                       className="branch-kpi-dropdown-item"
                       onClick={() => handleExportKpiPdf('ocupacion')}
-                    >
-                      Exportar a PDF
-                    </button>
+                    >{t('common.exportPdf', 'Exportar a PDF')}</button>
                     <button
                       type="button"
                       className="branch-kpi-dropdown-item"
                       onClick={() => handlePrintKpi('ocupacion')}
-                    >
-                      Imprimir
-                    </button>
+                    >{t('common.print', 'Imprimir')}</button>
                     <button
                       type="button"
                       className="branch-kpi-dropdown-item"
                       onClick={() => handleOpenKpiDetail('ocupacion')}
-                    >
-                      Ver detalle
-                    </button>
+                    >{t('common.viewDetails', 'Ver detalle')}</button>
                   </div>
                 )}
               </div>
@@ -1417,7 +1268,7 @@ export default function BranchDashboard({ branchOnly = true }) {
                 <strong className="branch-kpi-value">
                   {fleet.occupancyRate}%
                 </strong>
-                <span className="branch-kpi-unit">en alquiler</span>
+                <span className="branch-kpi-unit">{t("dashboard.kpi.rented", "en alquiler")}</span>
               </div>
 
               <div className="branch-kpi-progress-track">
@@ -1430,7 +1281,7 @@ export default function BranchDashboard({ branchOnly = true }) {
 
             <div className="branch-kpi-card-footer">
               <span className="branch-kpi-trend-text">
-                {fleet.rentedVehicles} de {fleet.totalVehicles} vehículos en uso
+                {fleet.rentedVehicles} {t('dashboard.kpi.of', 'de')} {fleet.totalVehicles} {t('dashboard.kpi.vehiclesInUse', 'vehículos en uso')}
               </span>
             </div>
           </article>
@@ -1446,17 +1297,11 @@ export default function BranchDashboard({ branchOnly = true }) {
                 <div className="branch-card-title-group">
                   <div>
                     <h3 className="branch-card-title">
-                      <FaChartBar className="branch-card-title-icon" aria-hidden="true" />
-                      Carga Operativa por Franja Horaria
-                    </h3>
+                      <FaChartBar className="branch-card-title-icon" aria-hidden="true" />{t('dashboard.charts.workload', 'Carga Operativa por Franja Horaria')}</h3>
                     <span className="branch-hourly-chart-sub">
                       {getSectionTitle(startDateStr, endDateStr)}
                     </span>
                   </div>
-                </div>
-
-                <div className="branch-hourly-stats-pill">
-                  <span>Total: <strong>{deliveriesForRange.length + returnsForRange.length} ops</strong></span>
                 </div>
               </div>
 
@@ -1472,7 +1317,7 @@ export default function BranchDashboard({ branchOnly = true }) {
                 <div className="branch-card-title-group">
                   <h3 className="branch-card-title">
                     <FaCalendarCheck className="branch-card-title-icon" aria-hidden="true" />
-                    {activeTab === 'entregas' ? 'Listado de Entregas' : 'Listado de Devoluciones'}
+                    {activeTab === 'entregas' ? t('dashboard.charts.deliveriesList', 'Listado de Entregas') : t('dashboard.charts.returnsList', 'Listado de Devoluciones')}
                   </h3>
                 </div>
 
@@ -1487,7 +1332,7 @@ export default function BranchDashboard({ branchOnly = true }) {
                     }`}
                     onClick={() => setActiveTab('entregas')}
                   >
-                    Entregas
+                    {t('common.deliveries', 'Entregas')}
                   </button>
 
                   <button
@@ -1499,22 +1344,22 @@ export default function BranchDashboard({ branchOnly = true }) {
                     }`}
                     onClick={() => setActiveTab('devoluciones')}
                   >
-                    Devoluciones
+                    {t('common.returns', 'Devoluciones')}
                   </button>
                 </div>
               </div>
 
               {/* RESUMEN VEHÍCULOS */}
               <div className="branch-schedule-summary-bar">
-                <span>Total de vehículos: {deliveriesForRange.length || currentList.length}</span>
+                <span>{t('dashboard.charts.totalVehicles', 'Total de vehículos')}: {deliveriesForRange.length || currentList.length}</span>
               </div>
 
               {currentList.length === 0 ? (
                 <div className="branch-empty-row">
                   <span>
                     {activeTab === 'entregas'
-                      ? 'No hay entregas programadas para el rango de fechas seleccionado en el calendario.'
-                      : 'No hay devoluciones programadas para el rango de fechas seleccionado en el calendario.'}
+                      ? t('dashboard.schedule.noDeliveries', 'No hay entregas programadas para el rango de fechas seleccionado en el calendario.')
+                      : t('dashboard.schedule.noReturns', 'No hay devoluciones programadas para el rango de fechas seleccionado en el calendario.')}
                   </span>
                 </div>
               ) : (
@@ -1522,19 +1367,23 @@ export default function BranchDashboard({ branchOnly = true }) {
                   <table className="branch-schedule-table">
                     <thead>
                       <tr>
-                        <th scope="col">CLIENTE</th>
-                        <th scope="col">IMAGEN</th>
-                        <th scope="col">VEHÍCULO</th>
-                        <th scope="col">PLACA</th>
-                        <th scope="col">FECHA</th>
-                        <th scope="col">HORA</th>
-                        <th scope="col">ESTADO</th>
-                        <th scope="col" className="branch-th-actions">ACCIONES</th>
+                        <th scope="col" style={{ width: '50px', textAlign: 'center' }}>{t('dashboard.schedule.table.id', 'ID')}</th>
+                        <th scope="col">{t('dashboard.schedule.table.reservationCode', 'CÓDIGO RESERVA')}</th>
+                        <th scope="col">{t('dashboard.schedule.table.client', 'NOMBRE COMPLETO')}</th>
+                        <th scope="col">{t('dashboard.schedule.table.image', 'IMAGEN')}</th>
+                        <th scope="col">{t('dashboard.schedule.table.vehicle', 'NOMBRE VEHÍCULO')}</th>
+                        <th scope="col">{t('dashboard.schedule.table.plate', 'PLACA')}</th>
+                        <th scope="col">{t('dashboard.schedule.table.date', 'FECHA')}</th>
+                        <th scope="col">{t('dashboard.schedule.table.time', 'HORA')}</th>
+                        <th scope="col">{t('dashboard.schedule.table.status', 'ESTADO')}</th>
+                        <th scope="col" className="branch-th-actions">{t('dashboard.schedule.table.actions', 'ACCIONES')}</th>
                       </tr>
                     </thead>
                     <tbody>
                       {currentList.map((item, idx) => {
                         const itemUniqueId = item.id || `item-${idx}`
+                        const itemSeqId = idx + 1
+                        const resCodigo = item.codigo || item.id || `RES-88${20 + idx}`
                         const cliente = item.clienteNombre || 'Carlos Restrepo'
                         const vehiculo = item.vehiculoNombre || 'Toyota Corolla'
                         const placa = item.vehiculoPlaca || 'ABC-123'
@@ -1544,7 +1393,19 @@ export default function BranchDashboard({ branchOnly = true }) {
 
                         return (
                           <tr key={itemUniqueId} className="branch-table-row">
-                            {/* CLIENTE */}
+                            {/* ID */}
+                            <td className="branch-td-id" style={{ textAlign: 'center', fontWeight: '400', color: '#64748b' }}>
+                              <span>{itemSeqId}</span>
+                            </td>
+
+                            {/* CÓDIGO RESERVA */}
+                            <td className="branch-td-code" style={{ fontWeight: '400', color: '#334155' }}>
+                              <span style={{ fontWeight: '400', color: '#334155', fontStyle: 'normal', display: 'inline' }}>
+                                {resCodigo}
+                              </span>
+                            </td>
+
+                            {/* NOMBRE COMPLETO */}
                             <td className="branch-td-client">
                               <span className="branch-table-client-name">{cliente}</span>
                             </td>
@@ -1581,7 +1442,7 @@ export default function BranchDashboard({ branchOnly = true }) {
                             {/* ESTADO VISIBLE */}
                             <td className="branch-td-status">
                               {(() => {
-                                const stInfo = getReservationStatusInfo(item.estado)
+                                const stInfo = getReservationStatusInfo(item.estado, t)
                                 const StatusIcon = stInfo.IconComp
                                 return (
                                   <span className={`branch-status-badge ${stInfo.badgeClass}`}>
@@ -1592,17 +1453,19 @@ export default function BranchDashboard({ branchOnly = true }) {
                               })()}
                             </td>
 
-                            {/* ACCIONES - ÍCONO VER DETALLES */}
+                            {/* ACCIONES - BOTÓN VER */}
                             <td className="branch-td-actions">
                               <div className="branch-row-actions-group">
                                 <button
                                   type="button"
-                                  className="branch-action-icon-btn branch-action-icon-btn--eye"
-                                  title="Ver reserva completa"
-                                  aria-label="Ver reserva completa"
+                                  style={{ padding: '6px 14px', fontSize: '13px', background: '#fff7ed', color: '#ea580c', border: '1px solid #fed7aa', borderRadius: '6px', cursor: 'pointer', fontWeight: '600', display: 'inline-flex', alignItems: 'center', gap: '6px', justifyContent: 'center', transition: 'all 0.18s ease' }}
+                                  title={t('dashboard.schedule.table.viewDetails', 'Ver reserva completa')}
+                                  aria-label={t('dashboard.schedule.table.viewDetails', 'Ver reserva completa')}
                                   onClick={(e) => handleOpenDrawer(item, e)}
+                                  onMouseOver={e => { e.currentTarget.style.background='#ffedd5'; e.currentTarget.style.borderColor='#fdba74'; }}
+                                  onMouseOut={e => { e.currentTarget.style.background='#fff7ed'; e.currentTarget.style.borderColor='#fed7aa'; }}
                                 >
-                                  <FaEye aria-hidden="true" />
+                                  <FaReceipt /> {t('dashboard.schedule.table.viewBtn', 'Ver')}
                                 </button>
                               </div>
                             </td>
@@ -1633,9 +1496,9 @@ export default function BranchDashboard({ branchOnly = true }) {
                   <div>
                     <h3 className="branch-card-title">
                       <FaClipboardList className="branch-card-title-icon" aria-hidden="true" />
-                      Estados de la Reserva
+                      {t('dashboard.statesGuide.title', 'Estados de la Reserva')}
                     </h3>
-                    <span className="branch-status-guide-sub">Guía explicativa de estados operativos y su equivalencia interna</span>
+                    <span className="branch-status-guide-sub">{t('dashboard.statesGuide.subtitle', 'Guía explicativa de estados operativos y su equivalencia interna')}</span>
                   </div>
                 </div>
               </div>
@@ -1646,11 +1509,11 @@ export default function BranchDashboard({ branchOnly = true }) {
                   <div className="branch-status-card-header">
                     <span className="branch-status-badge branch-status-badge--amber">
                       <FaClock className="branch-badge-icon" aria-hidden="true" />
-                      Pendiente
+                      {t('dashboard.status.pending', 'Pendiente')}
                     </span>
                   </div>
                   <p className="branch-status-card-text">
-                    Agrupa los estados internos <code className="branch-inline-code">PENDIENTE</code>, <code className="branch-inline-code">PENDIENTE_EFECTIVO</code> y <code className="branch-inline-code">PENDIENTE_VALIDACION</code>. La reserva está creada a la espera de pago en mostrador o validación de documentos.
+                    {t('dashboard.statesGuide.descPending1', 'Agrupa los estados internos')} <code className="branch-inline-code">PENDIENTE</code>, <code className="branch-inline-code">PENDIENTE_EFECTIVO</code> {t('common.and', 'y')} <code className="branch-inline-code">PENDIENTE_VALIDACION</code>. {t('dashboard.statesGuide.descPending2', 'La reserva está creada a la espera de pago en mostrador o validación de documentos.')}
                   </p>
                 </div>
 
@@ -1659,11 +1522,11 @@ export default function BranchDashboard({ branchOnly = true }) {
                   <div className="branch-status-card-header">
                     <span className="branch-status-badge branch-status-badge--green">
                       <FaCheckCircle className="branch-badge-icon" aria-hidden="true" />
-                      Confirmada
+                      {t('dashboard.status.confirmed', 'Confirmada')}
                     </span>
                   </div>
                   <p className="branch-status-card-text">
-                    Corresponde al estado interno <code className="branch-inline-code">CONFIRMADA</code>. Pago y documentos validados 100%. Vehículo alistado y listo para entrega.
+                    {t('dashboard.statesGuide.descConfirmed1', 'Corresponde al estado interno')} <code className="branch-inline-code">CONFIRMADA</code>. {t('dashboard.statesGuide.descConfirmed2', 'Pago y documentos validados 100%. Vehículo alistado y listo para entrega.')}
                   </p>
                 </div>
 
@@ -1672,11 +1535,11 @@ export default function BranchDashboard({ branchOnly = true }) {
                   <div className="branch-status-card-header">
                     <span className="branch-status-badge branch-status-badge--blue">
                       <FaCar className="branch-badge-icon" aria-hidden="true" />
-                      En curso
+                      {t('dashboard.status.active', 'En curso')}
                     </span>
                   </div>
                   <p className="branch-status-card-text">
-                    Corresponde al estado interno <code className="branch-inline-code">ACTIVA</code>. Vehículo entregado al cliente en sucursal y contrato de alquiler en ejecución.
+                    {t('dashboard.statesGuide.descActive1', 'Corresponde al estado interno')} <code className="branch-inline-code">ACTIVA</code>. {t('dashboard.statesGuide.descActive2', 'Vehículo entregado al cliente en sucursal y contrato de alquiler en ejecución.')}
                   </p>
                 </div>
 
@@ -1685,11 +1548,11 @@ export default function BranchDashboard({ branchOnly = true }) {
                   <div className="branch-status-card-header">
                     <span className="branch-status-badge branch-status-badge--teal">
                       <FaCheckDouble className="branch-badge-icon" aria-hidden="true" />
-                      Finalizada
+                      {t('dashboard.status.completed', 'Finalizada')}
                     </span>
                   </div>
                   <p className="branch-status-card-text">
-                    Corresponde al estado interno <code className="branch-inline-code">COMPLETADA</code>. Vehículo recibido en sucursal, inspeccionado y contrato cerrado.
+                    {t('dashboard.statesGuide.descCompleted1', 'Corresponde al estado interno')} <code className="branch-inline-code">COMPLETADA</code>. {t('dashboard.statesGuide.descCompleted2', 'Vehículo recibido en sucursal, inspeccionado y contrato cerrado.')}
                   </p>
                 </div>
 
@@ -1698,11 +1561,11 @@ export default function BranchDashboard({ branchOnly = true }) {
                   <div className="branch-status-card-header">
                     <span className="branch-status-badge branch-status-badge--gray">
                       <FaTimesCircle className="branch-badge-icon" aria-hidden="true" />
-                      Cancelada
+                      {t('dashboard.status.cancelled', 'Cancelada')}
                     </span>
                   </div>
                   <p className="branch-status-card-text">
-                    Agrupa los estados internos <code className="branch-inline-code">CANCELADA</code> y <code className="branch-inline-code">CANCELADA_POR_TIEMPO</code>. Indica que la reserva fue anulada por solicitud del cliente o expirada automáticamente por tiempo límite.
+                    {t('dashboard.statesGuide.descCancelled1', 'Agrupa los estados internos')} <code className="branch-inline-code">CANCELADA</code> {t('common.and', 'y')} <code className="branch-inline-code">CANCELADA_POR_TIEMPO</code>. {t('dashboard.statesGuide.descCancelled2', 'Indica que la reserva fue anulada por solicitud del cliente o expirada automáticamente por tiempo límite.')}
                   </p>
                 </div>
               </div>
@@ -1717,10 +1580,8 @@ export default function BranchDashboard({ branchOnly = true }) {
                 <div className="branch-card-title-group">
                   <div>
                     <h3 className="branch-card-title">
-                      <FaCalendarAlt className="branch-card-title-icon" aria-hidden="true" />
-                      Calendario Operativo
-                    </h3>
-                    <span className="branch-calendar-card-sub">Selecciona un rango de fechas</span>
+                      <FaCalendarAlt className="branch-card-title-icon" aria-hidden="true" />{t('dashboard.charts.calendar', 'Calendario Operativo')}</h3>
+                    <span className="branch-calendar-card-sub">{t('dashboard.charts.selectDateRange', 'Selecciona un rango de fechas')}</span>
                   </div>
                 </div>
               </div>
@@ -1758,7 +1619,7 @@ export default function BranchDashboard({ branchOnly = true }) {
                   <div className="branch-attention-left">
                     <span className="branch-dot branch-dot--amber" />
                     <span className="branch-attention-text">
-                      {attentionNeeded.pendingDocuments || 2} documentos por validar
+                      {attentionNeeded.pendingDocuments || 2} {t('dashboard.attention.docsToValidate', 'documentos por validar')}
                     </span>
                   </div>
                   <span className="branch-attention-arrow">&gt;</span>
@@ -1772,7 +1633,7 @@ export default function BranchDashboard({ branchOnly = true }) {
                   <div className="branch-attention-left">
                     <span className="branch-dot branch-dot--red" />
                     <span className="branch-attention-text">
-                      {attentionNeeded.openIncidents || 1} incidencia abierta
+                      {attentionNeeded.openIncidents || 1} {t('dashboard.attention.openIncidents', 'incidencia abierta')}
                     </span>
                   </div>
                   <span className="branch-attention-arrow">&gt;</span>
@@ -1786,7 +1647,7 @@ export default function BranchDashboard({ branchOnly = true }) {
                   <div className="branch-attention-left">
                     <span className="branch-dot branch-dot--blue" />
                     <span className="branch-attention-text">
-                      {attentionNeeded.expiringVehicleDocs || 1} documento de vehículo por vencer
+                      {attentionNeeded.expiringVehicleDocs || 1} {t('dashboard.attention.expiringDocs', 'documento de vehículo por vencer')}
                     </span>
                   </div>
                   <span className="branch-attention-arrow">&gt;</span>
@@ -1803,7 +1664,7 @@ export default function BranchDashboard({ branchOnly = true }) {
                     {t('dashboard.fleet.title', 'Estado de la flota')}
                   </h3>
                 </div>
-                <span className="branch-fleet-total-pill">{totalF} vehículos en sucursal</span>
+                <span className="branch-fleet-total-pill">{totalF} {t('dashboard.fleet.vehiclesInBranch', 'vehículos en sucursal')}</span>
               </div>
 
               {/* 4 TARJETAS RESUMEN DE ESTADO */}
@@ -1811,53 +1672,53 @@ export default function BranchDashboard({ branchOnly = true }) {
                 <div className="branch-fleet-stat-box branch-fleet-stat-box--green">
                   <div className="branch-fleet-stat-head">
                     <span className="branch-dot branch-dot--green" />
-                    <span className="branch-fleet-stat-lbl">Disponibles</span>
+                    <span className="branch-fleet-stat-lbl">{t('dashboard.fleet.available', 'Disponibles')}</span>
                   </div>
                   <div className="branch-fleet-stat-num">
                     2 <small>(40%)</small>
                   </div>
-                  <span className="branch-fleet-stat-desc">Listos para entrega</span>
+                  <span className="branch-fleet-stat-desc">{t('dashboard.fleet.readyForDelivery', 'Listos para entrega')}</span>
                 </div>
 
                 <div className="branch-fleet-stat-box branch-fleet-stat-box--blue">
                   <div className="branch-fleet-stat-head">
                     <span className="branch-dot branch-dot--blue" />
-                    <span className="branch-fleet-stat-lbl">Ocupados</span>
+                    <span className="branch-fleet-stat-lbl">{t('dashboard.fleet.occupied', 'Ocupados')}</span>
                   </div>
                   <div className="branch-fleet-stat-num">
                     1 <small>(20%)</small>
                   </div>
-                  <span className="branch-fleet-stat-desc">En contrato activo</span>
+                  <span className="branch-fleet-stat-desc">{t('dashboard.fleet.activeContract', 'En contrato activo')}</span>
                 </div>
 
                 <div className="branch-fleet-stat-box branch-fleet-stat-box--cyan">
                   <div className="branch-fleet-stat-head">
                     <span className="branch-dot branch-dot--cyan" />
-                    <span className="branch-fleet-stat-lbl">Reservados</span>
+                    <span className="branch-fleet-stat-lbl">{t('dashboard.fleet.reserved', 'Reservados')}</span>
                   </div>
                   <div className="branch-fleet-stat-num">
                     1 <small>(20%)</small>
                   </div>
-                  <span className="branch-fleet-stat-desc">Para entrega hoy</span>
+                  <span className="branch-fleet-stat-desc">{t('dashboard.fleet.forDeliveryToday', 'Para entrega hoy')}</span>
                 </div>
 
                 <div className="branch-fleet-stat-box branch-fleet-stat-box--amber">
                   <div className="branch-fleet-stat-head">
                     <span className="branch-dot branch-dot--amber" />
-                    <span className="branch-fleet-stat-lbl">En mantenimiento</span>
+                    <span className="branch-fleet-stat-lbl">{t('dashboard.fleet.maintenance', 'En mantenimiento')}</span>
                   </div>
                   <div className="branch-fleet-stat-num">
                     1 <small>(20%)</small>
                   </div>
-                  <span className="branch-fleet-stat-desc">Revisión técnica</span>
+                  <span className="branch-fleet-stat-desc">{t('dashboard.fleet.technicalReview', 'Revisión técnica')}</span>
                 </div>
               </div>
 
               {/* BARRA SEGMENTADA DE DISTRIBUCIÓN */}
               <div className="branch-fleet-bar-wrapper">
                 <div className="branch-fleet-bar-labels">
-                  <span>Distribución de disponibilidad</span>
-                  <strong>80% operativa</strong>
+                  <span>{t('dashboard.fleet.distAvailability', 'Distribución de disponibilidad')}</span>
+                  <strong>80% {t('dashboard.fleet.operative', 'operativa')}</strong>
                 </div>
                 <div className="branch-fleet-multi-bar">
                   <div
@@ -1885,13 +1746,13 @@ export default function BranchDashboard({ branchOnly = true }) {
 
               {/* LISTA RÁPIDA DE VEHÍCULOS ASIGNADOS */}
               <div className="branch-fleet-units-list">
-                <span className="branch-fleet-units-title">Unidades de la sucursal</span>
+                <span className="branch-fleet-units-title">{t('dashboard.fleet.branchUnits', 'Unidades de la sucursal')}</span>
                 <div className="branch-fleet-unit-item">
                   <div className="branch-fleet-unit-meta">
                     <span className="branch-fleet-unit-name">Toyota Corolla</span>
                     <span className="branch-fleet-unit-plate">ABC-123 · Sedán</span>
                   </div>
-                  <span className="branch-status-badge branch-status-badge--blue">Ocupado</span>
+                  <span className="branch-status-badge branch-status-badge--blue">{t('dashboard.fleet.occupied', 'Ocupado')}</span>
                 </div>
 
                 <div className="branch-fleet-unit-item">
@@ -1899,7 +1760,7 @@ export default function BranchDashboard({ branchOnly = true }) {
                     <span className="branch-fleet-unit-name">Chevrolet Tracker</span>
                     <span className="branch-fleet-unit-plate">MXP-492 · SUV</span>
                   </div>
-                  <span className="branch-status-badge branch-status-badge--green">Disponible</span>
+                  <span className="branch-status-badge branch-status-badge--green">{t('dashboard.fleet.available', 'Disponible')}</span>
                 </div>
 
                 <div className="branch-fleet-unit-item">
@@ -1907,7 +1768,7 @@ export default function BranchDashboard({ branchOnly = true }) {
                     <span className="branch-fleet-unit-name">Mazda CX-5</span>
                     <span className="branch-fleet-unit-plate">KLS-849 · SUV</span>
                   </div>
-                  <span className="branch-status-badge branch-status-badge--green">Disponible</span>
+                  <span className="branch-status-badge branch-status-badge--green">{t('dashboard.fleet.available', 'Disponible')}</span>
                 </div>
 
                 <div className="branch-fleet-unit-item">
@@ -1915,7 +1776,7 @@ export default function BranchDashboard({ branchOnly = true }) {
                     <span className="branch-fleet-unit-name">Renault Duster</span>
                     <span className="branch-fleet-unit-plate">JHK-201 · 4x4</span>
                   </div>
-                  <span className="branch-status-badge branch-status-badge--cyan">Reservado</span>
+                  <span className="branch-status-badge branch-status-badge--cyan">{t('dashboard.fleet.reserved', 'Reservado')}</span>
                 </div>
 
                 <div className="branch-fleet-unit-item">
@@ -1923,7 +1784,7 @@ export default function BranchDashboard({ branchOnly = true }) {
                     <span className="branch-fleet-unit-name">Nissan Kicks</span>
                     <span className="branch-fleet-unit-plate">WER-902 · Crossover</span>
                   </div>
-                  <span className="branch-status-badge branch-status-badge--amber">En mantenimiento</span>
+                  <span className="branch-status-badge branch-status-badge--amber">{t('dashboard.fleet.maintenance', 'En mantenimiento')}</span>
                 </div>
               </div>
 
@@ -1933,7 +1794,7 @@ export default function BranchDashboard({ branchOnly = true }) {
                   className="branch-link-btn"
                   onClick={() => navigate(vehiclesRoute)}
                 >
-                  <span>Ver flota &gt;</span>
+                  <span>{t('dashboard.fleet.viewFleet', 'Ver flota')} &gt;</span>
                 </button>
               </div>
             </article>
@@ -1941,32 +1802,37 @@ export default function BranchDashboard({ branchOnly = true }) {
         </section>
       </main>
 
-      {/* DRAWER LATERAL SLIDE-OVER PARA VISTA DE DETALLE COMPLETO (SOLO LECTURA) */}
+      {/* MODAL CENTRADO DE DETALLE DE RESERVA */}
       {selectedScheduleItem && (
         <div
-          className="branch-drawer-overlay"
-          onClick={handleCloseDrawer}
-          role="presentation"
-        />
-      )}
-
-      <div
-        ref={drawerRef}
-        className={`branch-drawer ${selectedScheduleItem ? 'branch-drawer--open' : ''}`}
-        aria-hidden={!selectedScheduleItem}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="drawer-title"
-      >
-        {selectedScheduleItem && (
-          <div className="branch-drawer-content">
-            <header className="branch-drawer-header">
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="reservation-modal-title"
+          style={{
+            position: 'fixed', inset: 0, zIndex: 9999,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            background: 'rgba(15,23,42,0.55)', backdropFilter: 'blur(2px)',
+            padding: '20px'
+          }}
+          onClick={e => { if (e.target === e.currentTarget) handleCloseDrawer(); }}
+        >
+          <div
+            style={{
+              background: 'var(--city-bg, #fff)', borderRadius: '16px',
+              boxShadow: '0 20px 60px rgba(0,0,0,0.25)',
+              width: '100%', maxWidth: '680px',
+              maxHeight: '90vh', overflowY: 'auto',
+              display: 'flex', flexDirection: 'column'
+            }}
+          >
+            <div className="branch-drawer-content">
+            <header className="branch-drawer-header" style={{ position: 'sticky', top: 0, zIndex: 2, background: 'var(--city-bg,#fff)', borderRadius: '16px 16px 0 0' }}>
               <div>
                 <span className="branch-drawer-code">
                   {selectedScheduleItem.codigo || `RES-${selectedScheduleItem.id}`}
                 </span>
-                <h3 id="drawer-title" className="branch-drawer-title">
-                  Consulta de Reserva Registrada
+                <h3 id="reservation-modal-title" className="branch-drawer-title">
+                  {t('dashboard.drawer.title', 'Consulta de Reserva Registrada')}
                 </h3>
               </div>
               <button
@@ -1983,7 +1849,7 @@ export default function BranchDashboard({ branchOnly = true }) {
               {/* Metadata de Registro */}
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 4px' }}>
                 <span style={{ fontSize: '11.5px', color: 'var(--texto-second, #64748b)', fontWeight: '500' }}>
-                  Fecha Registro: 20 sep 2026 · 02:45 PM
+                  {t('dashboard.drawer.registrationDate', 'Fecha Registro')}: 20 sep 2026 · 02:45 PM
                 </span>
                 <span style={{ fontSize: '11.5px', color: 'var(--brand-primary, #2563eb)', fontWeight: '700' }}>
                   TX: #WOMPI-994820
@@ -1992,7 +1858,7 @@ export default function BranchDashboard({ branchOnly = true }) {
 
               {/* Sección 1: Datos del Cliente */}
               <div className="branch-drawer-section">
-                <span className="branch-drawer-sec-title">Titular de la Reserva</span>
+                <span className="branch-drawer-sec-title">{t('dashboard.drawer.clientTitle', 'Titular de la Reserva')}</span>
                 <div className="branch-drawer-value-row">
                   <div className="branch-schedule-avatar branch-avatar--soft-blue">
                     {getInitials(selectedScheduleItem.clienteNombre)}
@@ -2002,25 +1868,25 @@ export default function BranchDashboard({ branchOnly = true }) {
                       {selectedScheduleItem.clienteNombre || 'Carlos Restrepo Jaramillo'}
                     </span>
                     <span className="branch-drawer-val-sub">
-                      Documento: CC 1.020.340.589 (Bogotá)
+                      {t('dashboard.drawer.document', 'Documento')}: CC 1.020.340.589 (Bogotá)
                     </span>
                   </div>
                 </div>
                 <div className="branch-drawer-grid-2" style={{ marginTop: '10px' }}>
                   <div className="branch-drawer-item-box">
-                    <span className="branch-drawer-item-lbl">Teléfono / Móvil</span>
+                    <span className="branch-drawer-item-lbl">{t('dashboard.drawer.phone', 'Teléfono / Móvil')}</span>
                     <span className="branch-drawer-item-val">{selectedScheduleItem.clienteTelefono || '+57 310 456 7890'}</span>
                   </div>
                   <div className="branch-drawer-item-box">
-                    <span className="branch-drawer-item-lbl">Correo electrónico</span>
+                    <span className="branch-drawer-item-lbl">{t('dashboard.drawer.email', 'Correo electrónico')}</span>
                     <span className="branch-drawer-item-val">carlos.restrepo@gmail.com</span>
                   </div>
                   <div className="branch-drawer-item-box">
-                    <span className="branch-drawer-item-lbl">Licencia de Conducción</span>
+                    <span className="branch-drawer-item-lbl">{t('dashboard.drawer.license', 'Licencia de Conducción')}</span>
                     <span className="branch-drawer-item-val">LIC-B1-4920194 (Vence 2028)</span>
                   </div>
                   <div className="branch-drawer-item-box">
-                    <span className="branch-drawer-item-lbl">Teléfono Móvil</span>
+                    <span className="branch-drawer-item-lbl">{t('dashboard.drawer.mobile', 'Teléfono Móvil')}</span>
                     <span className="branch-drawer-item-val">+57 312 456 7890</span>
                   </div>
                 </div>
@@ -2028,7 +1894,7 @@ export default function BranchDashboard({ branchOnly = true }) {
 
               {/* Sección 2: Vehículo Asignado y Especificaciones */}
               <div className="branch-drawer-section">
-                <span className="branch-drawer-sec-title">Vehículo Registrado</span>
+                <span className="branch-drawer-sec-title">{t('dashboard.drawer.vehicleTitle', 'Vehículo Registrado')}</span>
                 
                 <div className="branch-drawer-vehicle-banner">
                   <img
@@ -2038,25 +1904,25 @@ export default function BranchDashboard({ branchOnly = true }) {
                   />
                   <div className="branch-drawer-vehicle-banner-overlay">
                     <strong>{selectedScheduleItem.vehiculoNombre || selectedScheduleItem.vehiculo || 'Toyota Corolla 2.0 Hybrid'}</strong>
-                    <span>Placa: {selectedScheduleItem.vehiculoPlaca || selectedScheduleItem.placa || 'ABC-123'}</span>
+                    <span>{t('dashboard.drawer.plate', 'Placa')}: {selectedScheduleItem.vehiculoPlaca || selectedScheduleItem.placa || 'ABC-123'}</span>
                   </div>
                 </div>
 
                 <div className="branch-drawer-grid-2" style={{ marginTop: '12px' }}>
                   <div className="branch-drawer-item-box">
-                    <span className="branch-drawer-item-lbl">Modelo y Motor</span>
+                    <span className="branch-drawer-item-lbl">{t('dashboard.drawer.model', 'Modelo y Motor')}</span>
                     <span className="branch-drawer-item-val">{selectedScheduleItem.vehiculoNombre || 'Toyota Corolla 2.0 Hybrid'}</span>
                   </div>
                   <div className="branch-drawer-item-box">
-                    <span className="branch-drawer-item-lbl">Placa Asignada</span>
+                    <span className="branch-drawer-item-lbl">{t('dashboard.drawer.assignedPlate', 'Placa Asignada')}</span>
                     <span className="branch-drawer-item-val">{selectedScheduleItem.vehiculoPlaca || selectedScheduleItem.placa || 'ABC-123'}</span>
                   </div>
                   <div className="branch-drawer-item-box">
-                    <span className="branch-drawer-item-lbl">Categoría</span>
+                    <span className="branch-drawer-item-lbl">{t('dashboard.drawer.category', 'Categoría')}</span>
                     <span className="branch-drawer-item-val">{selectedScheduleItem.vehiculoCategoria || 'Sedán Ejecutivo'}</span>
                   </div>
                   <div className="branch-drawer-item-box">
-                    <span className="branch-drawer-item-lbl">Transmisión / Combustible</span>
+                    <span className="branch-drawer-item-lbl">{t('dashboard.drawer.transmission', 'Transmisión / Combustible')}</span>
                     <span className="branch-drawer-item-val">Automática · Híbrido (Tanque lleno)</span>
                   </div>
                 </div>
@@ -2064,24 +1930,24 @@ export default function BranchDashboard({ branchOnly = true }) {
 
               {/* Sección 3: Periodo e Itinerario del Alquiler */}
               <div className="branch-drawer-section">
-                <span className="branch-drawer-sec-title">Itinerario y Sucursal</span>
+                <span className="branch-drawer-sec-title">{t('dashboard.drawer.itineraryTitle', 'Itinerario y Sucursal')}</span>
                 <div className="branch-drawer-grid-2">
                   <div className="branch-drawer-item-box">
-                    <span className="branch-drawer-item-lbl">Fecha / Hora Recogida</span>
+                    <span className="branch-drawer-item-lbl">{t('dashboard.drawer.pickupDate', 'Fecha / Hora Recogida')}</span>
                     <span className="branch-drawer-item-val">
                       {selectedScheduleItem.fecha ? `${formatDateLabel(selectedScheduleItem.fecha)} · ${selectedScheduleItem.hora}` : selectedScheduleItem.hora || '08:30 AM'}
                     </span>
                   </div>
                   <div className="branch-drawer-item-box">
-                    <span className="branch-drawer-item-lbl">Fecha / Hora Devolución</span>
+                    <span className="branch-drawer-item-lbl">{t('dashboard.drawer.returnDate', 'Fecha / Hora Devolución')}</span>
                     <span className="branch-drawer-item-val">28 sep 2026 · 08:30 AM</span>
                   </div>
                   <div className="branch-drawer-item-box">
-                    <span className="branch-drawer-item-lbl">Sucursal de Retiro</span>
+                    <span className="branch-drawer-item-lbl">{t('dashboard.drawer.pickupBranch', 'Sucursal de Retiro')}</span>
                     <span className="branch-drawer-item-val">{dashboardData?.branchName || 'Alamo Bogotá - Aeropuerto'}</span>
                   </div>
                   <div className="branch-drawer-item-box">
-                    <span className="branch-drawer-item-lbl">Sucursal de Retorno</span>
+                    <span className="branch-drawer-item-lbl">{t('dashboard.drawer.returnBranch', 'Sucursal de Retorno')}</span>
                     <span className="branch-drawer-item-val">{dashboardData?.branchName || 'Alamo Bogotá - Aeropuerto'}</span>
                   </div>
                 </div>
@@ -2089,22 +1955,22 @@ export default function BranchDashboard({ branchOnly = true }) {
 
               {/* Sección 4: Coberturas y Servicios Adicionales */}
               <div className="branch-drawer-section">
-                <span className="branch-drawer-sec-title">Cobertura &amp; Servicios Adicionales</span>
+                <span className="branch-drawer-sec-title">{t('dashboard.drawer.coverageTitle', 'Cobertura & Servicios Adicionales')}</span>
                 <div className="branch-drawer-grid-2">
                   <div className="branch-drawer-item-box">
-                    <span className="branch-drawer-item-lbl">Seguro Contratado</span>
+                    <span className="branch-drawer-item-lbl">{t('dashboard.drawer.insurance', 'Seguro Contratado')}</span>
                     <span className="branch-drawer-item-val">Protección Total CDW + TP ($0 Deducible)</span>
                   </div>
                   <div className="branch-drawer-item-box">
-                    <span className="branch-drawer-item-lbl">Equipamiento Bebé</span>
+                    <span className="branch-drawer-item-lbl">{t('dashboard.drawer.babyEquipment', 'Equipamiento Bebé')}</span>
                     <span className="branch-drawer-item-val">1 Silla infantil instalada</span>
                   </div>
                   <div className="branch-drawer-item-box">
-                    <span className="branch-drawer-item-lbl">Asistencia en Ruta</span>
+                    <span className="branch-drawer-item-lbl">{t('dashboard.drawer.roadAssistance', 'Asistencia en Ruta')}</span>
                     <span className="branch-drawer-item-val">Servicio Grúa 24/7 Incluido</span>
                   </div>
                   <div className="branch-drawer-item-box">
-                    <span className="branch-drawer-item-lbl">Política de Combustible</span>
+                    <span className="branch-drawer-item-lbl">{t('dashboard.drawer.fuelPolicy', 'Política de Combustible')}</span>
                     <span className="branch-drawer-item-val">Lleno a Lleno</span>
                   </div>
                 </div>
@@ -2112,34 +1978,34 @@ export default function BranchDashboard({ branchOnly = true }) {
 
               {/* Sección 5: Desglose Financiero Detallado (COP) */}
               <div className="branch-drawer-section">
-                <span className="branch-drawer-sec-title">Desglose Financiero Completo (COP)</span>
+                <span className="branch-drawer-sec-title">{t('dashboard.drawer.financeTitle', 'Desglose Financiero Completo (COP)')}</span>
                 <div className="branch-drawer-price-row">
-                  <span>Alquiler Base (3 días x $120.000 COP)</span>
+                  <span>{t('dashboard.drawer.baseRental', 'Alquiler Base (3 días x $120.000 COP)')}</span>
                   <strong>$ 360.000 COP</strong>
                 </div>
                 <div className="branch-drawer-price-row">
-                  <span>Seguro Cobertura Total CDW</span>
+                  <span>{t('dashboard.drawer.totalCoverage', 'Seguro Cobertura Total CDW')}</span>
                   <strong>$ 45.000 COP</strong>
                 </div>
                 <div className="branch-drawer-price-row">
-                  <span>Silla Bebé Adicional</span>
+                  <span>{t('dashboard.drawer.babySeatAddon', 'Silla Bebé Adicional')}</span>
                   <strong>$ 15.000 COP</strong>
                 </div>
                 <div className="branch-drawer-price-row">
-                  <span>Impuestos de Ley (IVA 19%)</span>
+                  <span>{t('dashboard.drawer.taxes', 'Impuestos de Ley (IVA 19%)')}</span>
                   <strong>$ 79.800 COP</strong>
                 </div>
                 <div className="branch-drawer-price-row branch-drawer-price-total">
-                  <span>Total General de la Reserva</span>
+                  <span>{t('dashboard.drawer.grandTotal', 'Total General de la Reserva')}</span>
                   <span>$ 499.800 COP</span>
                 </div>
                 <div className="branch-drawer-grid-2" style={{ marginTop: '8px', paddingTop: '8px', borderTop: '1px solid #e2e8f0' }}>
                   <div className="branch-drawer-item-box">
-                    <span className="branch-drawer-item-lbl">Método de Pago</span>
+                    <span className="branch-drawer-item-lbl">{t('dashboard.drawer.paymentMethod', 'Método de Pago')}</span>
                     <span className="branch-drawer-item-val">Tarjeta de Crédito (Wompi)</span>
                   </div>
                   <div className="branch-drawer-item-box">
-                    <span className="branch-drawer-item-lbl">Depósito en Garantía</span>
+                    <span className="branch-drawer-item-lbl">{t('dashboard.drawer.deposit', 'Depósito en Garantía')}</span>
                     <span className="branch-drawer-item-val">$ 500.000 COP (Pre-autorizado)</span>
                   </div>
                 </div>
@@ -2147,7 +2013,7 @@ export default function BranchDashboard({ branchOnly = true }) {
 
               {/* Sección 6: Flujo Operativo y Progreso Actual (Stepper) */}
               <div className="branch-drawer-section">
-                <span className="branch-drawer-sec-title">Flujo Operativo (Progreso Actual)</span>
+                <span className="branch-drawer-sec-title">{t('dashboard.drawer.workflowTitle', 'Flujo Operativo (Progreso Actual)')}</span>
                 
                 <div className="branch-workflow-stepper">
                   {/* Paso 1: Reserva Creada */}
@@ -2156,8 +2022,8 @@ export default function BranchDashboard({ branchOnly = true }) {
                       <FaCheckCircle aria-hidden="true" />
                     </div>
                     <div className="branch-stepper-info">
-                      <strong>1. Reserva Creada &amp; Registrada</strong>
-                      <span>Registrada con código {selectedScheduleItem.codigo || 'RES-8821'}</span>
+                      <strong>{t('dashboard.drawer.step1Title', '1. Reserva Creada & Registrada')}</strong>
+                      <span>{t('dashboard.drawer.step1Desc', 'Registrada con código')} {selectedScheduleItem.codigo || 'RES-8821'}</span>
                     </div>
                   </div>
 
@@ -2177,11 +2043,11 @@ export default function BranchDashboard({ branchOnly = true }) {
                       )}
                     </div>
                     <div className="branch-stepper-info">
-                      <strong>2. Validación de Documentos</strong>
+                      <strong>{t('dashboard.drawer.step2Title', '2. Validación de Documentos')}</strong>
                       <span>
                         {String(selectedScheduleItem.estado || '').includes('DOCUMENTO')
-                          ? 'Pendiente: Cédula / Licencia por verificar'
-                          : 'Completado: Cédula y Licencia aprobadas 100%'}
+                          ? t('dashboard.drawer.step2Pending', 'Pendiente: Cédula / Licencia por verificar')
+                          : t('dashboard.drawer.step2Done', 'Completado: Cédula y Licencia aprobadas 100%')}
                       </span>
                     </div>
                   </div>
@@ -2192,8 +2058,8 @@ export default function BranchDashboard({ branchOnly = true }) {
                       <FaCheckCircle aria-hidden="true" />
                     </div>
                     <div className="branch-stepper-info">
-                      <strong>3. Pago de la Reserva</strong>
-                      <span>Completado: $ 499.800 COP cobrados y confirmados</span>
+                      <strong>{t('dashboard.drawer.step3Title', '3. Pago de la Reserva')}</strong>
+                      <span>{t('dashboard.drawer.step3Desc', 'Completado: $ 499.800 COP cobrados y confirmados')}</span>
                     </div>
                   </div>
 
@@ -2209,11 +2075,11 @@ export default function BranchDashboard({ branchOnly = true }) {
                       <FaCar aria-hidden="true" />
                     </div>
                     <div className="branch-stepper-info">
-                      <strong>4. Entrega de Vehículo en Sucursal</strong>
+                      <strong>{t('dashboard.drawer.step4Title', '4. Entrega de Vehículo en Sucursal')}</strong>
                       <span>
                         {activeTab === 'entregas'
-                          ? `Programada para hoy a las ${selectedScheduleItem.hora || '08:30 AM'}`
-                          : 'Vehículo entregado con éxito al cliente'}
+                          ? `${t('dashboard.drawer.step4Scheduled', 'Programada para hoy a las')} ${selectedScheduleItem.hora || '08:30 AM'}`
+                          : t('dashboard.drawer.step4Done', 'Vehículo entregado con éxito al cliente')}
                       </span>
                     </div>
                   </div>
@@ -2230,11 +2096,11 @@ export default function BranchDashboard({ branchOnly = true }) {
                       <FaUndo aria-hidden="true" />
                     </div>
                     <div className="branch-stepper-info">
-                      <strong>5. Devolución e Inspección Final</strong>
+                      <strong>{t('dashboard.drawer.step5Title', '5. Devolución e Inspección Final')}</strong>
                       <span>
                         {activeTab === 'devoluciones'
-                          ? 'Pendiente por recibir en sucursal'
-                          : 'Pendiente al finalizar el contrato'}
+                          ? t('dashboard.drawer.step5PendingBranch', 'Pendiente por recibir en sucursal')
+                          : t('dashboard.drawer.step5PendingContract', 'Pendiente al finalizar el contrato')}
                       </span>
                     </div>
                   </div>
@@ -2249,196 +2115,13 @@ export default function BranchDashboard({ branchOnly = true }) {
                 style={{ width: '100%', justifyContent: 'center' }}
                 onClick={handleCloseDrawer}
               >
-                Cerrar Consulta
+                {t('dashboard.drawer.closeInquiry', 'Cerrar Consulta')}
               </button>
             </footer>
           </div>
-        )}
-
-        {/* MODAL OPERATIVO COMPLETO: CENTRO DE NOTIFICACIONES Y ALERTAS DE LA SUCURSAL */}
-        {isAllNotifsModalOpen && (
-          <div
-            className="branch-notif-modal-overlay"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="branchNotifModalTitle"
-            onClick={() => setIsAllNotifsModalOpen(false)}
-          >
-            <div
-              className="branch-notif-modal-content"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <header className="branch-notif-modal-header">
-                <div className="branch-notif-modal-title-group">
-                  <div className="branch-notif-modal-icon-badge">
-                    <FaBell aria-hidden="true" />
-                  </div>
-                  <div>
-                    <h3 id="branchNotifModalTitle" className="branch-notif-modal-title">
-                      Centro de Notificaciones y Alertas
-                    </h3>
-                    <p className="branch-notif-modal-subtitle">
-                      Monitoreo operativo en tiempo real de la sucursal
-                    </p>
-                  </div>
-                </div>
-
-                <div className="branch-notif-modal-header-actions">
-                  {unreadNotifCount > 0 && (
-                    <button
-                      type="button"
-                      className="branch-btn branch-btn--secondary branch-btn--sm"
-                      onClick={handleMarkAllNotificationsRead}
-                    >
-                      <FaCheckDouble aria-hidden="true" />
-                      <span>Marcar todas como leídas</span>
-                    </button>
-                  )}
-                  <button
-                    type="button"
-                    className="branch-modal-close-btn"
-                    onClick={() => setIsAllNotifsModalOpen(false)}
-                    aria-label="Cerrar modal de notificaciones"
-                  >
-                    <FaTimes aria-hidden="true" />
-                  </button>
-                </div>
-              </header>
-
-              {/* FILTROS OPERATIVOS */}
-              <div className="branch-notif-modal-filter-bar">
-                <button
-                  type="button"
-                  className={`branch-notif-filter-pill ${
-                    notifModalFilter === 'all' ? 'branch-notif-filter-pill--active' : ''
-                  }`}
-                  onClick={() => setNotifModalFilter('all')}
-                >
-                  Todas ({notifications.length})
-                </button>
-                <button
-                  type="button"
-                  className={`branch-notif-filter-pill ${
-                    notifModalFilter === 'unread' ? 'branch-notif-filter-pill--active' : ''
-                  }`}
-                  onClick={() => setNotifModalFilter('unread')}
-                >
-                  No leídas ({unreadNotifCount})
-                </button>
-                <button
-                  type="button"
-                  className={`branch-notif-filter-pill ${
-                    notifModalFilter === 'operations' ? 'branch-notif-filter-pill--active' : ''
-                  }`}
-                  onClick={() => setNotifModalFilter('operations')}
-                >
-                  Operaciones (Reservas / Devoluciones / Pagos)
-                </button>
-                <button
-                  type="button"
-                  className={`branch-notif-filter-pill ${
-                    notifModalFilter === 'attention' ? 'branch-notif-filter-pill--active' : ''
-                  }`}
-                  onClick={() => setNotifModalFilter('attention')}
-                >
-                  Atención requerida (Documentos / Incidencias / SOAT)
-                </button>
-              </div>
-
-              {/* LISTA DE NOTIFICACIONES */}
-              <div className="branch-notif-modal-body">
-                {modalFilteredNotifications.length === 0 ? (
-                  <div className="branch-notif-empty-state">
-                    <FaCheckCircle className="branch-notif-empty-icon" />
-                    <p className="branch-notif-empty-title">
-                      No hay notificaciones en esta categoría
-                    </p>
-                    <p className="branch-notif-empty-desc">
-                      Todas las novedades operativas están al día.
-                    </p>
-                  </div>
-                ) : (
-                  <div className="branch-notif-modal-list">
-                    {modalFilteredNotifications.map((notif) => {
-                      const IconComp = notif.icon || FaBell
-                      return (
-                        <div
-                          key={notif.id}
-                          className={`branch-notif-modal-card ${
-                            !notif.isRead ? 'branch-notif-modal-card--unread' : ''
-                          }`}
-                        >
-                          <div
-                            className="branch-notif-modal-card-icon"
-                            style={{ background: notif.iconBg, color: notif.iconColor }}
-                          >
-                            <IconComp aria-hidden="true" />
-                          </div>
-
-                          <div className="branch-notif-modal-card-main">
-                            <div className="branch-notif-modal-card-top">
-                              <span className="branch-notif-modal-category-badge">
-                                {notif.categoryLabel || 'Notificación'}
-                              </span>
-                              <span className="branch-notif-modal-time">
-                                <FaClock aria-hidden="true" />
-                                {notif.time}
-                              </span>
-                            </div>
-                            <h4 className="branch-notif-modal-card-title">{notif.text}</h4>
-                            {notif.detail && (
-                              <p className="branch-notif-modal-card-detail">{notif.detail}</p>
-                            )}
-                          </div>
-
-                          <div className="branch-notif-modal-card-actions">
-                            {!notif.isRead && (
-                              <button
-                                type="button"
-                                className="branch-notif-card-mark-read-btn"
-                                onClick={() =>
-                                  setNotifications((prev) =>
-                                    prev.map((n) =>
-                                      n.id === notif.id ? { ...n, isRead: true } : n
-                                    )
-                                  )
-                                }
-                                title="Marcar como leída"
-                              >
-                                Marcar leída
-                              </button>
-                            )}
-                            <button
-                              type="button"
-                              className="branch-btn branch-btn--primary branch-btn--sm branch-notif-card-cta"
-                              onClick={() => handleNotificationClick(notif)}
-                            >
-                              <span>{notif.actionLabel || 'Ir al módulo'}</span>
-                              <FaChevronRight aria-hidden="true" />
-                            </button>
-                          </div>
-                        </div>
-                      )
-                    })}
-                  </div>
-                )}
-              </div>
-
-              <footer className="branch-notif-modal-footer">
-                <span className="branch-notif-footer-summary">
-                  Mostrando {modalFilteredNotifications.length} de {notifications.length} alertas
-                </span>
-                <button
-                  type="button"
-                  className="branch-btn branch-btn--secondary"
-                  onClick={() => setIsAllNotifsModalOpen(false)}
-                >
-                  Cerrar
-                </button>
-              </footer>
-            </div>
           </div>
-        )}
+        </div>
+      )}
 
         {/* MODAL DETALLE DE MÉTRICA CON EXPORTACIÓN A EXCEL, PDF, IMPRESIÓN Y NAVEGACIÓN A REPORTES */}
         {activeModalMetric && (
@@ -2454,7 +2137,6 @@ export default function BranchDashboard({ branchOnly = true }) {
             }}
           />
         )}
-      </div>
     </div>
   )
 }
