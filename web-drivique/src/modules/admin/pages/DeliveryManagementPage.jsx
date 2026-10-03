@@ -1,4 +1,4 @@
-﻿import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   FaSearch,
@@ -11,6 +11,10 @@ import {
   FaKey,
   FaRoute,
   FaExclamationCircle,
+  FaFileExcel,
+  FaFilePdf,
+  FaPrint,
+  FaBuilding,
 } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import MenuConfiguracion from '../../../components/MenuConfiguracion'
@@ -18,8 +22,10 @@ import ManagementSidebar from '../components/ManagementSidebar'
 import { useAuthStore } from '@/store/authStore'
 import { reservationManagementService } from '@/services/reservationManagementService'
 import { showAlert } from '@/utils/swalConfig'
+import { exportExcel, exportPdf, printTable } from '@/utils/listExportUtils'
 import './CityManagementPage.css'
 import './CashCollectionPage.css'
+import './DocumentVerificationPage.css'
 
 export default function DeliveryManagementPage() {
   const { tema } = useLanding()
@@ -128,15 +134,27 @@ export default function DeliveryManagementPage() {
   }
 
   const getBadge = (estado) => {
-    const styles = {
-      COMPLETADO: { bg: '#dcfce7', color: '#15803d', border: '#bbf7d0', label: t('admin.delivery.status.completado', 'Completado'), Icon: FaCheckCircle },
-      ASIGNADO: { bg: '#dbeafe', color: '#1d4ed8', border: '#bfdbfe', label: t('admin.delivery.status.asignado', 'Asignado'), Icon: FaUserTie },
-      PENDIENTE: { bg: '#fef9c3', color: '#a16207', border: '#fde68a', label: t('admin.delivery.status.pendiente', 'Pendiente'), Icon: FaExclamationCircle },
+    const norm = String(estado || 'PENDIENTE').toUpperCase()
+    if (norm === 'COMPLETADO') {
+      return (
+        <span className="doc-status-badge aprobado">
+          <FaCheckCircle style={{ fontSize: 11 }} />
+          {t('admin.delivery.status.completado', 'Completado')}
+        </span>
+      )
     }
-    const s = styles[estado] || styles.PENDIENTE
+    if (norm === 'ASIGNADO') {
+      return (
+        <span className="doc-status-badge pendiente" style={{ background: '#eff6ff', color: '#1d4ed8', borderColor: '#bfdbfe' }}>
+          <FaUserTie style={{ fontSize: 11 }} />
+          {t('admin.delivery.status.asignado', 'En Camino')}
+        </span>
+      )
+    }
     return (
-      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '4px 10px', borderRadius: 9999, fontSize: 12, fontWeight: 700, background: s.bg, color: s.color, border: `1px solid ${s.border}` }}>
-        <s.Icon style={{ fontSize: 11 }} />{s.label}
+      <span className="doc-status-badge pendiente">
+        <FaExclamationCircle style={{ fontSize: 11 }} />
+        {t('admin.delivery.status.pendiente', 'Pendiente')}
       </span>
     )
   }
@@ -145,10 +163,24 @@ export default function DeliveryManagementPage() {
   const modalHeadStyle = { padding: '20px 24px', borderBottom: '1px solid var(--city-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }
   const backdropStyle = { display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(15,23,42,0.65)', padding: 16 }
 
+  const exportData = useMemo(() => {
+    return filtrados.map((r, i) => [
+      i + 1,
+      r.codigo,
+      r.clienteNombre,
+      r.vehiculoNombre || r.vehiculo?.nombre || '-',
+      r.tipoServicio,
+      r.direccionInfo,
+      r.fechaEvento ? new Date(r.fechaEvento).toLocaleDateString() : '-',
+      r.domicilioConductor || t('admin.delivery.noDriver', 'Sin asignar'),
+      r.estadoDomicilio || 'PENDIENTE'
+    ])
+  }, [filtrados, t])
+
   return (
     <div className={`management-shell ${tema === 'oscuro' ? 'management-shell--dark' : ''}`}>
       <ManagementSidebar branchOnly={esEncargado} />
-      <main className="management-main" style={{ padding: '24px 32px' }}>
+      <main className="management-main doc-verification-main">
         <div className="cities-container" style={{ maxWidth: '100%' }}>
 
           <header className="cities-topbar reservations-management-header">
@@ -196,114 +228,319 @@ export default function DeliveryManagementPage() {
             ))}
           </div>
 
-          {/* TABS */}
-          <div style={{ display: 'flex', gap: 4, borderBottom: '2px solid var(--city-border)', marginBottom: 0 }}>
-            {[
-              { key: 'pendientes', label: t('admin.delivery.tabs.pending', 'Pendientes'), count: totalPendientes },
-              { key: 'asignados', label: t('admin.delivery.tabs.assigned', 'Asignados'), count: totalAsignados },
-              { key: 'completados', label: t('admin.delivery.tabs.completed', 'Completados'), count: totalCompletados },
-              { key: 'todos', label: t('admin.delivery.tabs.all', 'Todos'), count: reservations.length },
-            ].map(({ key, label, count }) => (
-              <button key={key} type="button" onClick={() => setActiveTab(key)}
-                className={activeTab === key ? 'fleet-tab-btn is-active' : 'fleet-tab-btn'}
-                style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                {label}
-                <span style={{ fontSize: 11, fontWeight: 700, padding: '2px 7px', borderRadius: 9999, background: activeTab === key ? 'var(--brand-primary, #2563eb)' : 'var(--city-bg, #f1f5f9)', color: activeTab === key ? '#fff' : 'var(--city-muted)' }}>
-                  {count}
-                </span>
+          {/* PESTAÑAS ADHERIDAS IDENTICAS A VALIDACION DOCUMENTOS */}
+          <div className="fleet-attached-tabs">
+            <div className="fleet-tabs-nav">
+              <button
+                type="button"
+                onClick={() => setActiveTab('todos')}
+                className={`fleet-tab-btn ${activeTab === 'todos' ? 'is-active' : ''}`}
+              >
+                {t('admin.delivery.tabs.all', 'Todos los Domicilios')} ({reservations.length})
               </button>
-            ))}
+              <button
+                type="button"
+                onClick={() => setActiveTab('pendientes')}
+                className={`fleet-tab-btn ${activeTab === 'pendientes' ? 'is-active' : ''}`}
+              >
+                {t('admin.delivery.tabs.pending', 'Pendientes')} ({totalPendientes})
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('asignados')}
+                className={`fleet-tab-btn ${activeTab === 'asignados' ? 'is-active' : ''}`}
+              >
+                {t('admin.delivery.tabs.assigned', 'En Camino')} ({totalAsignados})
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('completados')}
+                className={`fleet-tab-btn ${activeTab === 'completados' ? 'is-active' : ''}`}
+              >
+                {t('admin.delivery.tabs.completed', 'Completados')} ({totalCompletados})
+              </button>
+            </div>
           </div>
 
-          {/* TABLA */}
-          <section className="cities-card" style={{ borderRadius: '0 12px 12px 12px' }}>
-            <div className="cash-toolbar-container">
-              <div className="cash-toolbar-row1" style={{ gap: 8, alignItems: 'center' }}>
-                <label className="cities-search" style={{ flexGrow: 1, maxWidth: 400 }}>
-                  <FaSearch style={{ color: 'var(--city-muted)' }} />
-                  <input type="text" placeholder={t('admin.delivery.searchPlaceholder', 'Buscar por codigo, vehiculo, placa o cliente...')} value={search} onChange={e => setSearch(e.target.value)}
-                    style={{ color: 'var(--city-text)', width: '100%', border: 'none', background: 'transparent', outline: 'none' }} />
-                </label>
-                {search && (
-                  <button type="button" onClick={() => setSearch('')}
-                    style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '0 12px', height: 36, background: 'transparent', border: '1.5px solid var(--city-border)', borderRadius: 8, color: 'var(--city-muted)', cursor: 'pointer', fontSize: 13 }}>
-                    <FaTimes /> {t('admin.delivery.clearBtn', 'Limpiar')}
-                  </button>
-                )}
+          {/* TARJETA PRINCIPAL ADHERIDA A PESTAÑAS */}
+          <section className="cities-card attached-to-tabs">
+            {/* TOOLBAR CON BUSCADOR, SUCURSAL Y EXPORT PILLS */}
+            <div className="cities-toolbar doc-toolbar-wrapper">
+              <label className="cities-search" style={{ flex: '1 1 250px', margin: 0 }}>
+                <FaSearch />
+                <input
+                  type="text"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder={t('admin.delivery.searchPlaceholder', 'Buscar por código, vehículo, placa o cliente...')}
+                />
+              </label>
+
+              <div className="doc-branch-badge">
+                <FaBuilding style={{ color: 'var(--city-muted, #64748b)' }} />
+                <span>{user?.sucursalAsignada || user?.sucursalId || user?.sucursal || 'Alamo Bogotá - Aeropuerto'}</span>
+              </div>
+
+              <div className="export-pills-group" style={{ marginLeft: 'auto', display: 'flex', gap: '8px' }}>
+                <button
+                  type="button"
+                  className="export-pill export-pill--excel"
+                  onClick={() => exportExcel(exportData)}
+                  title={t('admin.exportExcel', 'Excel')}
+                >
+                  <FaFileExcel aria-hidden="true" /> {t('admin.exportExcel', 'Excel')}
+                </button>
+                <button
+                  type="button"
+                  className="export-pill export-pill--pdf"
+                  onClick={() => exportPdf(exportData)}
+                  title={t('admin.exportPdf', 'PDF')}
+                >
+                  <FaFilePdf aria-hidden="true" /> {t('admin.exportPdf', 'PDF')}
+                </button>
+                <button
+                  type="button"
+                  className="export-pill export-pill--print"
+                  onClick={() => printTable(exportData)}
+                  title={t('admin.incidents.print', 'Imprimir')}
+                >
+                  <FaPrint aria-hidden="true" /> {t('admin.incidents.print', 'Imprimir')}
+                </button>
               </div>
             </div>
-            <div className="cities-summary" style={{ color: 'var(--city-muted)', margin: '0 0 12px' }}>
-              <strong style={{ color: 'var(--city-text)' }}>{filtrados.length}</strong>{' '}
-              {t('admin.delivery.foundCount', 'DOMICILIOS ENCONTRADOS')}
+
+            {/* CONTADOR SUMARIO */}
+            <div className="cities-summary" style={{ margin: '8px 0 12px' }}>
+              <span>{filtrados.length}</span>{' '}
+              {t('admin.delivery.foundCount', 'DOMICILIOS EN EL LISTADO').toUpperCase()}
             </div>
 
             {filtrados.length === 0 ? (
               <div className="cities-empty">
-                <FaMapMarkerAlt style={{ fontSize: 44, color: 'var(--city-muted)', marginBottom: 12 }} />
-                <h2 style={{ color: 'var(--city-text)' }}>{t('admin.delivery.emptyTitle', 'No se encontraron domicilios')}</h2>
-                <p style={{ color: 'var(--city-muted)' }}>{t('admin.delivery.emptyDesc', 'No hay entregas o devoluciones a domicilio que coincidan con los filtros seleccionados.')}</p>
+                <FaMapMarkerAlt style={{ fontSize: 44, color: '#94a3b8', marginBottom: 12 }} />
+                <h2>{t('admin.delivery.emptyTitle', 'No se encontraron domicilios')}</h2>
+                <p>{t('admin.delivery.emptyDesc', 'No hay entregas o devoluciones a domicilio que coincidan con los filtros seleccionados.')}</p>
               </div>
             ) : (
-              <div className="cities-table-wrap" style={{ overflowX: 'auto' }}>
-                <table className="incidents-table-v2" style={{ whiteSpace: 'nowrap', width: 'max-content', borderCollapse: 'collapse' }}>
-                  <thead>
-                    <tr>
-                      <th style={{ width: 40 }}>{t('admin.delivery.table.id', 'ID')}</th>
-                      <th>{t('admin.delivery.table.reservationCode', 'CODIGO')}</th>
-                      <th>{t('admin.delivery.table.clientName', 'CLIENTE')}</th>
-                      <th>{t('admin.delivery.table.vehicleName', 'VEHICULO')}</th>
-                      <th>{t('admin.delivery.table.serviceType', 'TIPO SERVICIO')}</th>
-                      <th>{t('admin.delivery.table.address', 'DIRECCION')}</th>
-                      <th>{t('admin.delivery.table.dateTime', 'FECHA')}</th>
-                      <th>{t('admin.delivery.table.driver', 'CONDUCTOR')}</th>
-                      <th style={{ textAlign: 'center' }}>{t('admin.delivery.table.status', 'ESTADO')}</th>
-                      <th style={{ textAlign: 'center' }}>{t('admin.delivery.table.actions', 'ACCIONES')}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filtrados.map((r, i) => (
-                      <tr key={r.id}>
-                        <td style={{ fontWeight: 600, color: 'var(--city-text)' }}>{i + 1}</td>
-                        <td style={{ fontWeight: 800, color: 'var(--brand-primary, #2563eb)' }}>{r.codigo}</td>
-                        <td style={{ fontWeight: 600, color: 'var(--city-text)' }}>{r.clienteNombre}</td>
-                        <td style={{ color: 'var(--city-text)' }}>{r.vehiculoNombre || r.vehiculo?.nombre || '-'}</td>
-                        <td><span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, color: 'var(--city-text)', fontWeight: 500 }}><FaCar style={{ color: 'var(--city-muted)', flexShrink: 0 }} />{r.tipoServicio}</span></td>
-                        <td style={{ maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', color: 'var(--city-text)' }} title={r.direccionInfo}>
-                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><FaMapMarkerAlt style={{ color: '#ef4444', fontSize: 11, flexShrink: 0 }} />{r.direccionInfo}</span>
-                        </td>
-                        <td style={{ color: 'var(--city-muted)' }}>
-                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}><FaCalendarAlt style={{ fontSize: 11 }} />{r.fechaEvento ? new Date(r.fechaEvento).toLocaleDateString() : '-'}</span>
-                        </td>
-                        <td style={{ fontWeight: r.domicilioConductor ? 600 : 400, color: r.domicilioConductor ? 'var(--city-text)' : 'var(--city-muted)' }}>
-                          {r.domicilioConductor || t('admin.delivery.noDriver', 'Sin asignar')}
-                        </td>
-                        <td style={{ textAlign: 'center' }}>{getBadge(r.estadoDomicilio)}</td>
-                        <td style={{ textAlign: 'center' }}>
-                          <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
-                            {r.estadoDomicilio === 'PENDIENTE' && (
-                              <button type="button" onClick={() => { setModalAsignar(r); setConductorSeleccionado(r.domicilioConductor || '') }}
-                                style={{ padding: '6px 14px', fontSize: 12.5, background: 'var(--brand-primary, #2563eb)', color: '#fff', border: 'none', borderRadius: 9999, cursor: 'pointer', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 5, boxShadow: '0 2px 5px rgba(37,99,235,0.25)' }}>
-                                <FaUserTie style={{ fontSize: 11 }} />{t('admin.delivery.assignBtn', 'Asignar')}
-                              </button>
-                            )}
-                            {r.estadoDomicilio === 'ASIGNADO' && (
-                              <button type="button" onClick={() => setModalVerificar(r)}
-                                style={{ padding: '6px 14px', fontSize: 12.5, background: '#16a34a', color: '#fff', border: 'none', borderRadius: 9999, cursor: 'pointer', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 5, boxShadow: '0 2px 5px rgba(22,163,74,0.25)' }}>
-                                <FaKey style={{ fontSize: 11 }} />{t('admin.delivery.verifyBtn', 'Verificar PIN')}
-                              </button>
-                            )}
-                            {r.estadoDomicilio === 'COMPLETADO' && (
-                              <span style={{ fontSize: 12, color: '#15803d', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-                                <FaCheckCircle />{t('admin.delivery.completedLabel', 'Entregado')}
-                              </span>
-                            )}
-                          </div>
-                        </td>
+              <>
+                {/* 1. Vista de Tabla Completa para Escritorio & Tablets */}
+                <div className="cities-table-wrap doc-desktop-table" style={{ overflowX: 'auto' }}>
+                  <table className="incidents-table-v2" style={{ whiteSpace: 'nowrap', width: 'max-content', borderCollapse: 'collapse' }}>
+                    <thead>
+                      <tr>
+                        <th style={{ width: '40px' }}>{t('admin.delivery.table.id', 'ID')}</th>
+                        <th>{t('admin.delivery.table.reservationCode', 'CÓDIGO RESERVA')}</th>
+                        <th>{t('admin.delivery.table.clientName', 'NOMBRE CLIENTE')}</th>
+                        <th>{t('admin.delivery.table.vehicleName', 'VEHÍCULO')}</th>
+                        <th>{t('admin.delivery.table.serviceType', 'TIPO SERVICIO')}</th>
+                        <th>{t('admin.delivery.table.address', 'DIRECCIÓN DE ENTREGA / RECOGIDA')}</th>
+                        <th>{t('admin.delivery.table.dateTime', 'FECHA Y HORA')}</th>
+                        <th>{t('admin.delivery.table.driver', 'CONDUCTOR ASIGNADO')}</th>
+                        <th style={{ textAlign: 'center' }}>{t('admin.delivery.table.status', 'ESTADO')}</th>
+                        <th style={{ textAlign: 'center' }}>{t('admin.delivery.table.actions', 'ACCIONES')}</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody>
+                      {filtrados.map((r, i) => (
+                        <tr key={r.id}>
+                          <td style={{ fontWeight: 600, color: 'var(--city-text, #0f172a)', width: '40px' }}>{i + 1}</td>
+                          <td style={{ fontWeight: 700, color: 'var(--city-text, #0f172a)' }}>{r.codigo}</td>
+                          <td style={{ color: 'var(--city-text, #0f172a)', fontWeight: 600 }}>{r.clienteNombre}</td>
+                          <td style={{ color: 'var(--city-text, #0f172a)', fontWeight: 600 }}>{r.vehiculoNombre || r.vehiculo?.nombre || '-'}</td>
+                          <td>
+                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, color: 'var(--city-text, #334155)', fontWeight: 500 }}>
+                              <FaCar style={{ color: 'var(--city-muted, #64748b)', flexShrink: 0 }} />
+                              {r.tipoServicio}
+                            </span>
+                          </td>
+                          <td style={{ maxWidth: 220, overflow: 'hidden', textOverflow: 'ellipsis', color: 'var(--city-text, #334155)' }} title={r.direccionInfo}>
+                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                              <FaMapMarkerAlt style={{ color: '#ef4444', fontSize: 11, flexShrink: 0 }} />
+                              {r.direccionInfo}
+                            </span>
+                          </td>
+                          <td style={{ color: 'var(--city-muted, #64748b)' }}>
+                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+                              <FaCalendarAlt style={{ fontSize: 11 }} />
+                              {r.fechaEvento ? new Date(r.fechaEvento).toLocaleDateString() : '-'}
+                            </span>
+                          </td>
+                          <td style={{ fontWeight: r.domicilioConductor ? 600 : 400, color: r.domicilioConductor ? 'var(--city-text, #0f172a)' : 'var(--city-muted, #64748b)' }}>
+                            {r.domicilioConductor || t('admin.delivery.noDriver', 'Sin asignar')}
+                          </td>
+                          <td style={{ textAlign: 'center' }}>
+                            {getBadge(r.estadoDomicilio)}
+                          </td>
+                          <td style={{ textAlign: 'center' }}>
+                            <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
+                              {r.estadoDomicilio === 'PENDIENTE' && (
+                                <button
+                                  type="button"
+                                  onClick={() => { setModalAsignar(r); setConductorSeleccionado(r.domicilioConductor || '') }}
+                                  style={{
+                                    padding: '7px 22px',
+                                    borderRadius: '9999px',
+                                    background: '#2563eb',
+                                    color: 'var(--city-card, #ffffff)',
+                                    border: 'none',
+                                    fontWeight: 800,
+                                    fontSize: '12.5px',
+                                    cursor: 'pointer',
+                                    boxShadow: '0 2px 5px rgba(37, 99, 235, 0.25)',
+                                    transition: 'all 0.2s',
+                                    whiteSpace: 'nowrap',
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: 6,
+                                  }}
+                                >
+                                  <FaUserTie style={{ fontSize: 11 }} />
+                                  {t('admin.delivery.assignBtn', 'Asignar')}
+                                </button>
+                              )}
+                              {r.estadoDomicilio === 'ASIGNADO' && (
+                                <button
+                                  type="button"
+                                  onClick={() => setModalVerificar(r)}
+                                  style={{
+                                    padding: '7px 22px',
+                                    borderRadius: '9999px',
+                                    background: '#16a34a',
+                                    color: 'var(--city-card, #ffffff)',
+                                    border: 'none',
+                                    fontWeight: 800,
+                                    fontSize: '12.5px',
+                                    cursor: 'pointer',
+                                    boxShadow: '0 2px 5px rgba(22, 163, 74, 0.25)',
+                                    transition: 'all 0.2s',
+                                    whiteSpace: 'nowrap',
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: 6,
+                                  }}
+                                >
+                                  <FaKey style={{ fontSize: 11 }} />
+                                  {t('admin.delivery.verifyBtn', 'Verificar PIN')}
+                                </button>
+                              )}
+                              {r.estadoDomicilio === 'COMPLETADO' && (
+                                <span style={{ fontSize: 12.5, color: '#15803d', fontWeight: 800, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                                  <FaCheckCircle />
+                                  {t('admin.delivery.completedLabel', 'Entregado')}
+                                </span>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* 2. Vista de Tarjetas Adaptativas para Pantallas Móviles */}
+                <div className="doc-mobile-cards">
+                  {filtrados.map((r, i) => (
+                    <div key={r.id} className="doc-mobile-card">
+                      <div className="doc-mobile-card-header">
+                        <div className="doc-mobile-card-title">
+                          <span style={{ fontWeight: 800, color: 'var(--brand-primary, #2563eb)', fontSize: 13 }}>#{i + 1}</span>
+                          <span style={{ fontWeight: 800, color: 'var(--city-text, #0f172a)', fontSize: 14 }}>{r.codigo}</span>
+                        </div>
+                        {getBadge(r.estadoDomicilio)}
+                      </div>
+
+                      <div className="doc-mobile-card-body">
+                        <div className="doc-mobile-data-item doc-mobile-data-item--full">
+                          <span className="doc-mobile-data-label">{t('admin.delivery.table.clientName', 'Nombre Cliente')}</span>
+                          <span className="doc-mobile-data-value" style={{ fontSize: 14 }}>{r.clienteNombre}</span>
+                        </div>
+
+                        <div className="doc-mobile-data-item doc-mobile-data-item--full">
+                          <span className="doc-mobile-data-label">{t('admin.delivery.table.vehicleName', 'Vehículo')}</span>
+                          <span className="doc-mobile-data-value">{r.vehiculoNombre || r.vehiculo?.nombre || '-'}</span>
+                        </div>
+
+                        <div className="doc-mobile-data-item">
+                          <span className="doc-mobile-data-label">{t('admin.delivery.table.serviceType', 'Tipo Servicio')}</span>
+                          <span className="doc-mobile-data-value">{r.tipoServicio}</span>
+                        </div>
+
+                        <div className="doc-mobile-data-item">
+                          <span className="doc-mobile-data-label">{t('admin.delivery.table.dateTime', 'Fecha')}</span>
+                          <span className="doc-mobile-data-value">{r.fechaEvento ? new Date(r.fechaEvento).toLocaleDateString() : '-'}</span>
+                        </div>
+
+                        <div className="doc-mobile-data-item doc-mobile-data-item--full">
+                          <span className="doc-mobile-data-label">{t('admin.delivery.table.address', 'Dirección')}</span>
+                          <span className="doc-mobile-data-value" style={{ color: '#2563eb' }}>{r.direccionInfo}</span>
+                        </div>
+
+                        <div className="doc-mobile-data-item doc-mobile-data-item--full">
+                          <span className="doc-mobile-data-label">{t('admin.delivery.table.driver', 'Conductor Asignado')}</span>
+                          <span className="doc-mobile-data-value">{r.domicilioConductor || t('admin.delivery.noDriver', 'Sin asignar')}</span>
+                        </div>
+                      </div>
+
+                      <div className="doc-mobile-card-actions">
+                        {r.estadoDomicilio === 'PENDIENTE' && (
+                          <button
+                            type="button"
+                            onClick={() => { setModalAsignar(r); setConductorSeleccionado(r.domicilioConductor || '') }}
+                            style={{
+                              width: '100%',
+                              padding: '9px 18px',
+                              borderRadius: '12px',
+                              background: '#2563eb',
+                              color: 'var(--city-card, #ffffff)',
+                              border: 'none',
+                              fontWeight: 800,
+                              fontSize: '13px',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              gap: 8,
+                            }}
+                          >
+                            <FaUserTie style={{ fontSize: 12 }} />
+                            {t('admin.delivery.assignBtn', 'Asignar Conductor')}
+                          </button>
+                        )}
+                        {r.estadoDomicilio === 'ASIGNADO' && (
+                          <button
+                            type="button"
+                            onClick={() => setModalVerificar(r)}
+                            style={{
+                              width: '100%',
+                              padding: '9px 18px',
+                              borderRadius: '12px',
+                              background: '#16a34a',
+                              color: 'var(--city-card, #ffffff)',
+                              border: 'none',
+                              fontWeight: 800,
+                              fontSize: '13px',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              gap: 8,
+                            }}
+                          >
+                            <FaKey style={{ fontSize: 12 }} />
+                            {t('admin.delivery.verifyBtn', 'Verificar PIN')}
+                          </button>
+                        )}
+                        {r.estadoDomicilio === 'COMPLETADO' && (
+                          <span style={{ fontSize: 13, color: '#15803d', fontWeight: 800, display: 'flex', alignItems: 'center', gap: 6 }}>
+                            <FaCheckCircle />
+                            {t('admin.delivery.completedLabel', 'Servicio Entregado')}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
             )}
           </section>
         </div>
