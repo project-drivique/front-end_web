@@ -518,14 +518,14 @@ export default function DeliveryManagementPage() {
                     <table className="incidents-table-v2" style={{ whiteSpace: 'nowrap', width: '100%', borderCollapse: 'collapse' }}>
                       <thead>
                         <tr>
-                          <th style={{ width: '35px' }}>ID</th>
-                          <th>CONDUCTOR</th>
-                          <th>DOCUMENTO</th>
-                          <th>LICENCIA</th>
-                          <th>TELÉFONO</th>
-                          <th>VEHÍCULO ASIGNADO</th>
-                          <th style={{ textAlign: 'center' }}>ESTADO</th>
-                          <th style={{ textAlign: 'center' }}>ACCIONES</th>
+                          <th style={{ width: '35px' }}>{t('admin.delivery.table.id', 'ID')}</th>
+                          <th>{t('admin.delivery.drivers.name', 'CONDUCTOR')}</th>
+                          <th>{t('admin.delivery.drivers.document', 'DOCUMENTO')}</th>
+                          <th>{t('admin.delivery.drivers.license', 'LICENCIA')}</th>
+                          <th>{t('admin.delivery.drivers.phone', 'TELÉFONO')}</th>
+                          <th>{t('admin.delivery.drivers.vehicle', 'VEHÍCULO ASIGNADO')}</th>
+                          <th style={{ textAlign: 'center' }}>{t('admin.delivery.table.status', 'ESTADO')}</th>
+                          <th style={{ textAlign: 'center' }}>{t('admin.delivery.table.actions', 'ACCIONES')}</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -535,7 +535,7 @@ export default function DeliveryManagementPage() {
                             <td style={{ fontWeight: 400 }}>
                               <div style={{ display: 'flex', flexDirection: 'column' }}>
                                 <span style={{ color: 'var(--city-text, #0f172a)', fontSize: 13, fontWeight: 500 }}>{c.nombre}</span>
-                                <small style={{ color: 'var(--city-muted, #64748b)', fontSize: 11.5 }}>{c.email || 'Sin correo'}</small>
+                                <small style={{ color: 'var(--city-muted, #64748b)', fontSize: 11.5 }}>{c.email || t('admin.delivery.noEmail', 'Sin correo')}</small>
                               </div>
                             </td>
                             <td style={{ fontWeight: 400 }}>
@@ -555,7 +555,7 @@ export default function DeliveryManagementPage() {
                               {c.telefono || '-'}
                             </td>
                             <td style={{ color: 'var(--city-text, #334155)', fontWeight: 400 }}>
-                              {c.vehiculo || 'Sin vehículo asignado'}
+                              {c.vehiculo || t('admin.delivery.noVehicle', 'Sin vehículo asignado')}
                             </td>
                             <td style={{ textAlign: 'center', fontWeight: 400 }}>
                               {getConductorBadge(c.estado)}
@@ -565,7 +565,7 @@ export default function DeliveryManagementPage() {
                                 <button
                                   type="button"
                                   onClick={() => handleEditarConductor(c)}
-                                  title="Editar Conductor"
+                                  title={t('admin.delivery.drivers.editBtn', 'Editar')}
                                   style={{
                                     padding: '6px 12px',
                                     borderRadius: '8px',
@@ -580,12 +580,12 @@ export default function DeliveryManagementPage() {
                                     gap: 4
                                   }}
                                 >
-                                  <FaEdit /> Editar
+                                  <FaEdit /> {t('admin.delivery.drivers.editBtn', 'Editar')}
                                 </button>
                                 <button
                                   type="button"
                                   onClick={() => handleEliminarConductor(c.id)}
-                                  title="Eliminar Conductor"
+                                  title={t('admin.delivery.drivers.deleteBtn', 'Eliminar')}
                                   style={{
                                     padding: '6px 12px',
                                     borderRadius: '8px',
@@ -600,7 +600,7 @@ export default function DeliveryManagementPage() {
                                     gap: 4
                                   }}
                                 >
-                                  <FaTrashAlt /> Eliminar
+                                  <FaTrashAlt /> {t('admin.delivery.drivers.deleteBtn', 'Eliminar')}
                                 </button>
                               </div>
                             </td>
@@ -633,17 +633,17 @@ export default function DeliveryManagementPage() {
                       <table className="incidents-table-v2" style={{ whiteSpace: 'nowrap', width: '100%', borderCollapse: 'collapse' }}>
                         <thead>
                           <tr>
-                            <th style={{ width: '35px' }}>ID</th>
-                            <th>CÓDIGO RESERVA</th>
-                            <th>CÓDIGO DOMICILIO (PIN)</th>
-                            <th>NOMBRE CLIENTE</th>
-                            <th>VEHÍCULO</th>
-                            <th>TIPO SERVICIO</th>
-                            <th>DIRECCIÓN DE ENTREGA / RECOGIDA</th>
-                            <th>FECHA Y HORA</th>
-                            <th>CONDUCTOR ASIGNADO</th>
-                            <th style={{ textAlign: 'center' }}>ESTADO</th>
-                            <th style={{ textAlign: 'center' }}>ACCIONES</th>
+                            <th style={{ width: '35px' }}>{t('admin.delivery.table.id', 'ID')}</th>
+                            <th>{t('admin.delivery.table.reservationCode', 'CÓDIGO RESERVA')}</th>
+                            <th>{t('admin.delivery.table.deliveryCode', 'CÓDIGO DOMICILIO (PIN)')}</th>
+                            <th>{t('admin.delivery.table.clientName', 'NOMBRE CLIENTE')}</th>
+                            <th>{t('admin.delivery.table.vehicleName', 'VEHÍCULO')}</th>
+                            <th>{t('admin.delivery.table.serviceType', 'TIPO SERVICIO')}</th>
+                            <th>{t('admin.delivery.table.address', 'DIRECCIÓN DE ENTREGA / RECOGIDA')}</th>
+                            <th>{t('admin.delivery.table.dateTime', 'FECHA Y HORA')}</th>
+                            <th>{t('admin.delivery.table.driver', 'CONDUCTOR ASIGNADO')}</th>
+                            <th style={{ textAlign: 'center' }}>{t('admin.delivery.table.status', 'ESTADO')}</th>
+                            <th style={{ textAlign: 'center' }}>{t('admin.delivery.table.actions', 'ACCIONES')}</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -691,7 +691,7 @@ export default function DeliveryManagementPage() {
                                     maxWidth: 200
                                   }}
                                 >
-                                  <option value="">-- Seleccionar Conductor --</option>
+                                  <option value="">{t('admin.delivery.modal.selectDriverPlaceholder', '-- Seleccionar Conductor --')}</option>
                                   {conductores.map(c => (
                                     <option key={c.id} value={c.nombre}>
                                       {c.nombre} {c.vehiculo ? `(${c.vehiculo})` : ''}
@@ -737,7 +737,7 @@ export default function DeliveryManagementPage() {
                                   )}
                                   {r.estadoDomicilio === 'PENDIENTE' && (
                                     <span style={{ fontSize: 12, color: '#d97706', fontWeight: 400 }}>
-                                      Pendiente asignación
+                                      {t('admin.delivery.status.pendiente', 'Pendiente')}
                                     </span>
                                   )}
                                 </div>
@@ -767,7 +767,7 @@ export default function DeliveryManagementPage() {
                             </div>
 
                             <div className="doc-mobile-data-item doc-mobile-data-item--full">
-                              <span className="doc-mobile-data-label">Código Domicilio (PIN)</span>
+                              <span className="doc-mobile-data-label">{t('admin.delivery.table.deliveryCode', 'Código Domicilio (PIN)')}</span>
                               <span className="doc-mobile-data-value" style={{ color: 'var(--brand-primary, #2563eb)', fontWeight: 500 }}>
                                 {r.domicilioCodigo || `DOM-${r.domicilioPin || '1862'}`}
                               </span>
@@ -811,7 +811,7 @@ export default function DeliveryManagementPage() {
                                   marginTop: 4
                                 }}
                               >
-                                <option value="">-- Seleccionar Conductor --</option>
+                                <option value="">{t('admin.delivery.modal.selectDriverPlaceholder', '-- Seleccionar Conductor --')}</option>
                                 {conductores.map(c => (
                                   <option key={c.id} value={c.nombre}>
                                     {c.nombre} {c.vehiculo ? `(${c.vehiculo})` : ''}
@@ -885,7 +885,7 @@ export default function DeliveryManagementPage() {
                   {/* Nombre Completo */}
                   <div style={{ gridColumn: '1 / -1' }}>
                     <label style={{ display: 'block', fontSize: 12.5, color: 'var(--city-text)', fontWeight: 600, marginBottom: 4 }}>
-                      Nombre Completo del Conductor *
+                      {t('admin.delivery.modal.driverName', 'Nombre Completo del Conductor')} *
                     </label>
                     <input
                       type="text"
@@ -897,7 +897,7 @@ export default function DeliveryManagementPage() {
                     />
                   </div>
 
-                  {/* Correo Electrónico */}
+                  {/* {t('admin.delivery.modal.driverEmail', 'Correo Electrónico')} */}
                   <div>
                     <label style={{ display: 'block', fontSize: 12.5, color: 'var(--city-text)', fontWeight: 600, marginBottom: 4 }}>
                       Correo Electrónico *
@@ -915,7 +915,7 @@ export default function DeliveryManagementPage() {
                   {/* Teléfono */}
                   <div>
                     <label style={{ display: 'block', fontSize: 12.5, color: 'var(--city-text)', fontWeight: 600, marginBottom: 4 }}>
-                      Teléfono / WhatsApp *
+                      {t('admin.delivery.modal.driverPhone', 'Teléfono / WhatsApp')} *
                     </label>
                     <input
                       type="text"
@@ -927,7 +927,7 @@ export default function DeliveryManagementPage() {
                     />
                   </div>
 
-                  {/* Tipo de Documento */}
+                  {/* {t('admin.delivery.modal.driverDocType', 'Tipo de Documento')} */}
                   <div>
                     <label style={{ display: 'block', fontSize: 12.5, color: 'var(--city-text)', fontWeight: 600, marginBottom: 4 }}>
                       Tipo de Documento *
@@ -943,7 +943,7 @@ export default function DeliveryManagementPage() {
                     </select>
                   </div>
 
-                  {/* Número de Documento */}
+                  {/* {t('admin.delivery.modal.driverDocNum', 'Número de Documento')} */}
                   <div>
                     <label style={{ display: 'block', fontSize: 12.5, color: 'var(--city-text)', fontWeight: 600, marginBottom: 4 }}>
                       Número de Documento *
@@ -958,7 +958,7 @@ export default function DeliveryManagementPage() {
                     />
                   </div>
 
-                  {/* Número de Licencia */}
+                  {/* {t('admin.delivery.modal.driverLicense', 'Número de Licencia')} */}
                   <div>
                     <label style={{ display: 'block', fontSize: 12.5, color: 'var(--city-text)', fontWeight: 600, marginBottom: 4 }}>
                       Número de Licencia *
@@ -973,7 +973,7 @@ export default function DeliveryManagementPage() {
                     />
                   </div>
 
-                  {/* Categoría de Licencia */}
+                  {/* {t('admin.delivery.modal.driverLicenseCat', 'Categoría de Licencia')} */}
                   <div>
                     <label style={{ display: 'block', fontSize: 12.5, color: 'var(--city-text)', fontWeight: 600, marginBottom: 4 }}>
                       Categoría de Licencia *
@@ -994,7 +994,7 @@ export default function DeliveryManagementPage() {
                   {/* Vencimiento Licencia */}
                   <div>
                     <label style={{ display: 'block', fontSize: 12.5, color: 'var(--city-text)', fontWeight: 600, marginBottom: 4 }}>
-                      Vencimiento de Licencia *
+                      {t('admin.delivery.modal.driverLicenseExp', 'Vencimiento de Licencia')} *
                     </label>
                     <input
                       type="date"
@@ -1008,23 +1008,23 @@ export default function DeliveryManagementPage() {
                   {/* Estado Inicial */}
                   <div>
                     <label style={{ display: 'block', fontSize: 12.5, color: 'var(--city-text)', fontWeight: 600, marginBottom: 4 }}>
-                      Estado del Conductor *
+                      {t('admin.delivery.modal.driverStatus', 'Estado del Conductor')} *
                     </label>
                     <select
                       value={nuevoConductor.estado}
                       onChange={e => setNuevoConductor({ ...nuevoConductor, estado: e.target.value })}
                       style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1.5px solid var(--city-border)', background: 'var(--city-bg)', color: 'var(--city-text)', fontSize: 13, outline: 'none' }}
                     >
-                      <option value="disponible">Disponible</option>
-                      <option value="en_servicio">En Ruta / Servicio</option>
-                      <option value="inactivo">Inactivo</option>
+                      <option value="disponible">{t('admin.delivery.driverStatus.disponible', 'Disponible')}</option>
+                      <option value="en_servicio">{t('admin.delivery.driverStatus.enServicio', 'En Ruta')}</option>
+                      <option value="inactivo">{t('admin.delivery.driverStatus.inactivo', 'Inactivo')}</option>
                     </select>
                   </div>
 
                   {/* Vehículo Asignado */}
                   <div style={{ gridColumn: '1 / -1' }}>
                     <label style={{ display: 'block', fontSize: 12.5, color: 'var(--city-text)', fontWeight: 600, marginBottom: 4 }}>
-                      Vehículo o Medio de Transporte Asignado
+                      {t('admin.delivery.modal.driverVehicle', 'Vehículo o Medio de Transporte Asignado')}
                     </label>
                     <input
                       type="text"
@@ -1072,8 +1072,8 @@ export default function DeliveryManagementPage() {
               <div style={{ padding: 24 }}>
                 <p style={{ fontSize: 13.5, color: 'var(--city-muted)', marginBottom: 14, lineHeight: 1.5 }}>{t('admin.delivery.modal.verifyDescription', 'El conductor solicita el PIN al cliente y lo digita aqui para confirmar la entrega.')}</p>
                 <div style={{ marginBottom: 18, padding: 14, background: 'var(--city-bg)', borderRadius: 10, border: '1.5px solid var(--city-border)' }}>
-                  <p style={{ margin: 0, fontSize: 12, color: 'var(--city-muted)', marginBottom: 2 }}>{t('admin.delivery.modal.pinReservation', 'Reserva')} <strong style={{ color: 'var(--brand-primary, #2563eb)' }}>{modalVerificar.codigo}</strong></p>
-                  <p style={{ margin: 0, fontSize: 12, color: 'var(--city-muted)' }}>{t('admin.delivery.modal.pinClient', 'Cliente')} <strong style={{ color: 'var(--city-text)' }}>{modalVerificar.clienteNombre}</strong></p>
+                  <p style={{ margin: 0, fontSize: 12, color: 'var(--city-muted)', marginBottom: 2 }}>{t('admin.delivery.modal.reservation', 'Reserva')} <strong style={{ color: 'var(--brand-primary, #2563eb)' }}>{modalVerificar.codigo}</strong></p>
+                  <p style={{ margin: 0, fontSize: 12, color: 'var(--city-muted)' }}>{t('admin.delivery.modal.clientLabel', 'Cliente')} <strong style={{ color: 'var(--city-text)' }}>{modalVerificar.clienteNombre}</strong></p>
                 </div>
                 <form id="verificar-form" onSubmit={handleVerificar}>
                   <label style={{ display: 'block', textAlign: 'center', fontWeight: 700, color: 'var(--city-text)', fontSize: 13, marginBottom: 10 }}>{t('admin.delivery.modal.pinLabel', 'PIN de Verificacion')}</label>
