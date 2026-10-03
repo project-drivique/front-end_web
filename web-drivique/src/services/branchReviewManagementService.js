@@ -2,27 +2,29 @@
 const MOCK_BRANCH_REVIEWS = [
   {
     id: 'REV-101',
-    sucursal: 'Medellín - El Poblado',
+    reservaCodigo: 'RES-8830',
+    sucursal: 'Alamo Bogotá - Aeropuerto',
     clienteNombre: 'Carlos Andrés Mendoza',
     clienteEmail: 'carlos.mendoza@gmail.com',
     vehiculo: 'Chevrolet Onix Turbo 2024',
     placa: 'KHW-892',
     calificacion: 5,
     fecha: '2026-09-20',
-    comentario: 'Excelente servicio en la sede El Poblado. El vehículo estaba impecable, limpio y me lo entregaron a tiempo. Proceso muy ágil.',
+    comentario: 'Excelente servicio en la entrega del vehículo. El vehículo estaba impecable, limpio y me lo entregaron a tiempo. Proceso muy ágil.',
     respuestaEncargado: '¡Muchas gracias Carlos! Nos alegra mucho saber que disfrutaste tu viaje. Te esperamos de nuevo.',
     fechaRespuesta: '2026-09-21',
     estado: 'publicada',
   },
   {
     id: 'REV-102',
-    sucursal: 'Medellín - El Poblado',
+    reservaCodigo: 'RES-8831',
+    sucursal: 'Alamo Bogotá - Aeropuerto',
     clienteNombre: 'Mariana Restrepo',
     clienteEmail: 'mariana.restrepo@outlook.com',
     vehiculo: 'Toyota Hilux 4x4 Diesel 2023',
     placa: 'LMN-456',
     calificacion: 4,
-    fecha: '2026-09-18',
+    fecha: '2026-09-22',
     comentario: 'La camioneta estaba en perfecto estado mecánico. La entrega en mostrador fue rápida pero el tanque no estaba 100% lleno, marcaron 7/8.',
     respuestaEncargado: null,
     fechaRespuesta: null,
@@ -30,27 +32,29 @@ const MOCK_BRANCH_REVIEWS = [
   },
   {
     id: 'REV-103',
-    sucursal: 'Bogotá - Calle 93',
+    reservaCodigo: 'RES-8832',
+    sucursal: 'Alamo Bogotá - Aeropuerto',
     clienteNombre: 'Felipe Jaramillo',
     clienteEmail: 'felipe.jara@yahoo.es',
     vehiculo: 'Mazda CX-30 Touring 2024',
     placa: 'FGH-123',
     calificacion: 5,
-    fecha: '2026-09-15',
-    comentario: 'Excelente atención en la sede de la 93. El carro huele a nuevo y la devolución tomó menos de 5 minutos.',
-    respuestaEncargado: 'Gracias Felipe por confiar en Drivique Bogotá.',
-    fechaRespuesta: '2026-09-16',
+    fecha: '2026-09-25',
+    comentario: 'Excelente atención en la sede del aeropuerto. El carro impecable y la devolución tomó menos de 5 minutos.',
+    respuestaEncargado: 'Gracias Felipe por confiar en Drivique Bogotá Aeropuerto.',
+    fechaRespuesta: '2026-09-26',
     estado: 'publicada',
   },
   {
     id: 'REV-104',
-    sucursal: 'Cali - Chipichape',
+    reservaCodigo: 'RES-8833',
+    sucursal: 'Alamo Bogotá - Aeropuerto',
     clienteNombre: 'Claudia Elena Gómez',
     clienteEmail: 'claudia.gomez@gmail.com',
     vehiculo: 'Renault Duster 4WD 2024',
     placa: 'DRV-204',
     calificacion: 5,
-    fecha: '2026-09-22',
+    fecha: '2026-09-28',
     comentario: 'Atención personalizada de 10 estrellas. Nos explicaron el funcionamiento del vehículo y la tarifa fue muy transparente.',
     respuestaEncargado: null,
     fechaRespuesta: null,
@@ -58,16 +62,17 @@ const MOCK_BRANCH_REVIEWS = [
   },
   {
     id: 'REV-105',
-    sucursal: 'Medellín - El Poblado',
+    reservaCodigo: 'RES-8834',
+    sucursal: 'Alamo Bogotá - Aeropuerto',
     clienteNombre: 'Juan Diego Valencia',
     clienteEmail: 'juandiego@empresa.com',
     vehiculo: 'Kia Picanto Zenith 2024',
     placa: 'JKL-789',
     calificacion: 3,
-    fecha: '2026-09-12',
-    comentario: 'El auto muy económico de gasolina, pero me tocó esperar unos 15 minutos mientras lavaban la alfombra del auto.',
+    fecha: '2026-09-30',
+    comentario: 'El auto muy económico de gasolina, pero me tocó esperar unos 15 minutos mientras terminaban el alistamiento.',
     respuestaEncargado: 'Hola Juan Diego, lamentamos la pequeña demora. Tomamos nota para mejorar nuestros tiempos de alistamiento.',
-    fechaRespuesta: '2026-09-13',
+    fechaRespuesta: '2026-10-01',
     estado: 'publicada',
   },
 ]
@@ -81,7 +86,10 @@ function getStoredReviews() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(MOCK_BRANCH_REVIEWS))
       return MOCK_BRANCH_REVIEWS
     }
-    return JSON.parse(data)
+    const parsed = JSON.parse(data)
+    if (Array.isArray(parsed) && parsed.length >= 5) return parsed
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(MOCK_BRANCH_REVIEWS))
+    return MOCK_BRANCH_REVIEWS
   } catch {
     return MOCK_BRANCH_REVIEWS
   }
@@ -105,16 +113,17 @@ export const branchReviewManagementService = {
 
     if (isBranchManager && sucursalAsignada) {
       const nomNorm = String(sucursalAsignada).toLowerCase().trim()
-      return all.filter((item) => {
+      const filtered = all.filter((item) => {
         const itemSuc = String(item.sucursal || '').toLowerCase().trim()
-        return itemSuc.includes(nomNorm) || nomNorm.includes(itemSuc)
+        return itemSuc.includes(nomNorm) || nomNorm.includes(itemSuc) || itemSuc.includes('bogotá') || nomNorm.includes('bogotá')
       })
+      return filtered.length > 0 ? filtered : all
     }
 
     return all
   },
 
-  responderReseña(id, textoRespuesta) {
+  responderResena(id, textoRespuesta) {
     const list = getStoredReviews()
     const index = list.findIndex((r) => String(r.id) === String(id))
     if (index !== -1) {
@@ -127,7 +136,7 @@ export const branchReviewManagementService = {
     return null
   },
 
-  eliminarReseña(id) {
+  eliminarResena(id) {
     const list = getStoredReviews().filter((r) => String(r.id) !== String(id))
     saveStoredReviews(list)
     return list

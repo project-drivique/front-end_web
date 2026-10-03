@@ -2051,17 +2051,65 @@
       "subtitle": "Management of pending collections and billing."
     },
     "reviews": {
-      "title": "Reviews & Ratings",
-      "subtitle": "Management of customer ratings for this branch."
+      "title": "Reseñas y Calificaciones",
+      "subtitle": "Monitoreo de experiencia de usuario, auditoría de satisfacción y respuestas oficiales de sucursal.",
+      "searchPlaceholder": "Buscar por cliente, vehículo, reserva o comentario...",
+      "foundCount": "RESEÑAS REGISTRADAS EN SUCURSAL",
+      "emptyTitle": "No hay reseñas registradas",
+      "emptyDesc": "Ajusta los filtros para consultar otras calificaciones.",
+      "noReply": "Sin respuesta oficial",
+      "replyBtn": "Responder",
+      "editReplyBtn": "Editar Respuesta",
+      "deleteBtn": "Eliminar",
+      "tabs": {
+        "all": "Todas las Reseñas",
+        "pending": "Pendientes de Respuesta",
+        "answered": "Respondidas",
+        "star5": "5 Estrellas",
+        "star4": "4 Estrellas",
+        "low": "1 - 3 Estrellas"
+      },
+      "kpi": {
+        "average": "Promedio Sede",
+        "averageDesc": "Puntuación acumulada",
+        "total": "Total Reseñas",
+        "totalDesc": "Opiniones recibidas",
+        "pending": "Pendientes por Responder",
+        "pendingDesc": "Requieren atención del encargado",
+        "answered": "Respuestas Publicadas",
+        "answeredDesc": "Atención completada"
+      },
+      "table": {
+        "id": "ID",
+        "reservationCode": "CÓDIGO RESERVA",
+        "clientName": "CLIENTE",
+        "vehicle": "VEHÍCULO ALQUILADO",
+        "rating": "CALIFICACIÓN",
+        "comment": "COMENTARIO CLIENTE",
+        "date": "FECHA RESEÑA",
+        "reply": "RESPUESTA DE SUCURSAL",
+        "status": "ESTADO RESPUESTA",
+        "actions": "ACCIONES"
+      },
+      "status": {
+        "pending": "Pendiente",
+        "published": "Respondida"
+      },
+      "modal": {
+        "title": "Responder Reseña",
+        "eyebrow": "RESPUESTA OFICIAL DE SUCURSAL",
+        "description": "Tu respuesta será visible públicamente para los clientes que consulten las opiniones de la sede.",
+        "clientComment": "Comentario del cliente:",
+        "placeholder": "Escribe la respuesta oficial de la sucursal...",
+        "publishSubmit": "Publicar Respuesta",
+        "cancelBtn": "Cancelar"
+      }
     },
     "sections": {
       "monitoreo": "MONITOREO",
       "gestión_operativa": "OPERATIONAL MANAGEMENT",
       "consulta_y_auditoría": "CONSULTATION & AUDIT",
-      "configuración_global": "GLOBAL CONFIGURATION",
-      "configuración_global": "GLOBAL CONFIGURATION",
-      "consulta_y_auditoría": "CONSULTATION & AUDIT",
-      "gestión_operativa": "OPERATIONAL MANAGEMENT"
+      "configuración_global": "GLOBAL CONFIGURATION"
     },
     "branchManagement": "GESTIÓN OPERATIVA",
     "branchProfile": {
@@ -3270,27 +3318,22 @@
       "Estados Unidos": "Estados Unidos",
       "Alemania": "Alemania",
       "Francia": "Francia",
-      "España": "España",
+      "España": "Spain",
       "Italia": "Italia",
       "Reino Unido": "Reino Unido",
-      "Canadá": "Canadá",
+      "Canadá": "Canada",
       "Brasil": "Brasil",
       "Argentina": "Argentina",
-      "México": "México",
+      "México": "Mexico",
       "Venezuela": "Venezuela",
       "Ecuador": "Ecuador",
-      "Perú": "Perú",
+      "Perú": "Peru",
       "Chile": "Chile",
       "Australia": "Australia",
-      "Japón": "Japón",
+      "Japón": "Japan",
       "China": "China",
       "India": "India",
-      "Otro": "Otro",
-      "España": "Spain",
-      "Canadá": "Canada",
-      "México": "Mexico",
-      "Perú": "Peru",
-      "Japón": "Japan"
+      "Otro": "Otro"
     },
     "completeProfile": "Completar perfil"
   },
@@ -3514,7 +3557,6 @@
       "Compacto": "Compacto",
       "Camioneta": "Camioneta",
       "Deportivo": "Deportivo",
-      "Económico": "Económico",
       "Económico": "Economy"
     },
     "modal": {
@@ -3557,11 +3599,9 @@
     "backToAccount": "Volver a Mi Cuenta"
   },
   "servicios": {
-    "Devolución con tanque vacío": "Devolución con tanque vacío",
+    "Devolución con tanque vacío": "Return with empty tank",
     "GPS Integrado": "GPS Integrado",
     "Lavado de auto post-entrega": "Lavado de auto post-entrega",
-    "Silla de bebé": "Silla de bebé",
-    "Devolución con tanque vacío": "Return with empty tank",
     "Silla de bebé": "Baby seat"
   },
   "favoritos": {

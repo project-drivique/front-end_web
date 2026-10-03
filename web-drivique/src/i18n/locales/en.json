@@ -2132,16 +2132,64 @@
     },
     "reviews": {
       "title": "Reviews & Ratings",
-      "subtitle": "Management of customer ratings for this branch."
+      "subtitle": "User experience monitoring, satisfaction auditing and official branch responses.",
+      "searchPlaceholder": "Search by customer, vehicle, reservation or comment...",
+      "foundCount": "REVIEWS IN BRANCH LIST",
+      "emptyTitle": "No reviews found",
+      "emptyDesc": "Adjust filters to check other ratings.",
+      "noReply": "No official response",
+      "replyBtn": "Reply",
+      "editReplyBtn": "Edit Reply",
+      "deleteBtn": "Delete",
+      "tabs": {
+        "all": "All Reviews",
+        "pending": "Pending Reply",
+        "answered": "Answered",
+        "star5": "5 Stars",
+        "star4": "4 Stars",
+        "low": "1 - 3 Stars"
+      },
+      "kpi": {
+        "average": "Branch Average",
+        "averageDesc": "Accumulated score",
+        "total": "Total Reviews",
+        "totalDesc": "Opinions received",
+        "pending": "Pending Reply",
+        "pendingDesc": "Requires manager attention",
+        "answered": "Published Replies",
+        "answeredDesc": "Service completed"
+      },
+      "table": {
+        "id": "ID",
+        "reservationCode": "RESERVATION CODE",
+        "clientName": "CUSTOMER",
+        "vehicle": "RENTED VEHICLE",
+        "rating": "RATING",
+        "comment": "CUSTOMER COMMENT",
+        "date": "REVIEW DATE",
+        "reply": "BRANCH RESPONSE",
+        "status": "RESPONSE STATUS",
+        "actions": "ACTIONS"
+      },
+      "status": {
+        "pending": "Pending",
+        "published": "Answered"
+      },
+      "modal": {
+        "title": "Reply to Review",
+        "eyebrow": "OFFICIAL BRANCH RESPONSE",
+        "description": "Your response will be publicly visible to customers checking branch reviews.",
+        "clientComment": "Customer comment:",
+        "placeholder": "Write the official branch response...",
+        "publishSubmit": "Publish Response",
+        "cancelBtn": "Cancel"
+      }
     },
     "sections": {
       "gestión_operativa": "OPERATIONAL MANAGEMENT",
       "consulta_y_auditoría": "CONSULTATION & AUDIT",
       "configuración_global": "GLOBAL CONFIGURATION",
-      "configuración_global": "GLOBAL CONFIGURATION",
-      "monitoreo": "MONITORING",
-      "consulta_y_auditoría": "CONSULTATION & AUDIT",
-      "gestión_operativa": "OPERATIONAL MANAGEMENT"
+      "monitoreo": "MONITORING"
     },
     "notifications": {
       "filterAll": "All",
@@ -3270,27 +3318,22 @@
       "Estados Unidos": "United States",
       "Alemania": "Germany",
       "Francia": "France",
-      "España": "Spain",
+      "España": "España",
       "Italia": "Italy",
       "Reino Unido": "United Kingdom",
-      "Canadá": "Canada",
+      "Canadá": "Canadá",
       "Brasil": "Brazil",
       "Argentina": "Argentina",
-      "México": "Mexico",
+      "México": "México",
       "Venezuela": "Venezuela",
       "Ecuador": "Ecuador",
-      "Perú": "Peru",
+      "Perú": "Perú",
       "Chile": "Chile",
       "Australia": "Australia",
-      "Japón": "Japan",
+      "Japón": "Japón",
       "China": "China",
       "India": "India",
-      "Otro": "Other",
-      "España": "España",
-      "Canadá": "Canadá",
-      "México": "México",
-      "Perú": "Perú",
-      "Japón": "Japón"
+      "Otro": "Other"
     },
     "completeProfile": "Completar perfil"
   },
@@ -3514,7 +3557,6 @@
       "Compacto": "Compact",
       "Camioneta": "Pickup",
       "Deportivo": "Sport",
-      "Económico": "Economy",
       "Económico": "Económico"
     },
     "modal": {
@@ -3557,11 +3599,9 @@
     "backToAccount": "Back to My Account"
   },
   "servicios": {
-    "Devolución con tanque vacío": "Return with empty tank",
+    "Devolución con tanque vacío": "Devolución con tanque vacío",
     "GPS Integrado": "Integrated GPS",
     "Lavado de auto post-entrega": "Post-rental car wash",
-    "Silla de bebé": "Baby seat",
-    "Devolución con tanque vacío": "Devolución con tanque vacío",
     "Silla de bebé": "Silla de bebé"
   },
   "favoritos": {

@@ -2132,16 +2132,64 @@
     },
     "reviews": {
       "title": "Avaliações e Classificações",
-      "subtitle": "Gestão das avaliações dos clientes sobre esta sucursal."
+      "subtitle": "Monitorização da experiência do utilizador e respostas oficiais da sucursal.",
+      "searchPlaceholder": "Pesquisar por cliente, veículo, reserva ou comentário...",
+      "foundCount": "AVALIAÇÕES REGISTADAS NA SUCURSAL",
+      "emptyTitle": "Nenhuma avaliação encontrada",
+      "emptyDesc": "Ajuste os filtros para consultar outras avaliações.",
+      "noReply": "Sem resposta oficial",
+      "replyBtn": "Responder",
+      "editReplyBtn": "Editar Resposta",
+      "deleteBtn": "Eliminar",
+      "tabs": {
+        "all": "Todas as avaliações",
+        "pending": "Pendentes de resposta",
+        "answered": "Respondidas",
+        "star5": "5 Estrelas",
+        "star4": "4 Estrelas",
+        "low": "1 - 3 Estrelas"
+      },
+      "kpi": {
+        "average": "Média da sucursal",
+        "averageDesc": "Pontuação acumulada",
+        "total": "Total de avaliações",
+        "totalDesc": "Opiniões recebidas",
+        "pending": "Pendentes de resposta",
+        "pendingDesc": "Requer atenção do responsável",
+        "answered": "Respostas publicadas",
+        "answeredDesc": "Serviço concluído"
+      },
+      "table": {
+        "id": "ID",
+        "reservationCode": "CÓDIGO RESERVA",
+        "clientName": "CLIENTE",
+        "vehicle": "VEÍCULO ALUGADO",
+        "rating": "CLASSIFICAÇÃO",
+        "comment": "COMENTÁRIO DO CLIENTE",
+        "date": "DATA DA AVALIAÇÃO",
+        "reply": "RESPOSTA DA SUCURSAL",
+        "status": "ESTADO RESPOSTA",
+        "actions": "AÇÕES"
+      },
+      "status": {
+        "pending": "Pendente",
+        "published": "Respondida"
+      },
+      "modal": {
+        "title": "Responder à Avaliação",
+        "eyebrow": "RESPOSTA OFICIAL DA SUCURSAL",
+        "description": "A sua resposta será visível publicamente para os clientes.",
+        "clientComment": "Comentário do cliente:",
+        "placeholder": "Escreva a resposta oficial da sucursal...",
+        "publishSubmit": "Publicar Resposta",
+        "cancelBtn": "Cancelar"
+      }
     },
     "sections": {
-      "gestión_operativa": "GESTÒO OPERACIONAL",
-      "consulta_y_auditoría": "CONSULTA E AUDITORIA",
-      "configuración_global": "CONFIGURAá‡áƒO GLOBAL",
-      "configuración_global": "CONFIGURAÇáO GLOBAL",
-      "monitoreo": "MONITORIZAÇáO",
+      "gestión_operativa": "GESTáO OPERACIONAL",
       "consulta_y_auditoría": "CONSULTA & AUDITORIA",
-      "gestión_operativa": "GESTáO OPERACIONAL"
+      "configuración_global": "CONFIGURAÇáO GLOBAL",
+      "monitoreo": "MONITORIZAÇáO"
     },
     "notifications": {
       "filterAll": "Todas",
@@ -3260,7 +3308,7 @@
       "Estados Unidos": "Estados Unidos",
       "Alemania": "Alemanha",
       "Francia": "França",
-      "España": "Espanha",
+      "España": "España",
       "Italia": "Itália",
       "Reino Unido": "Reino Unido",
       "Canadá": "Canadá",
@@ -3269,18 +3317,13 @@
       "México": "México",
       "Venezuela": "Venezuela",
       "Ecuador": "Equador",
-      "Perú": "Peru",
+      "Perú": "Perú",
       "Chile": "Chile",
       "Australia": "Austrália",
-      "Japón": "Japão",
+      "Japón": "Japón",
       "China": "China",
       "India": "Índia",
-      "Otro": "Outro",
-      "España": "España",
-      "Canadá": "Canadá",
-      "México": "México",
-      "Perú": "Perú",
-      "Japón": "Japón"
+      "Otro": "Outro"
     },
     "completeProfile": "Completar perfil"
   },
@@ -3504,7 +3547,6 @@
       "Compacto": "Compacto",
       "Camioneta": "Caminhonete",
       "Deportivo": "Esportivo",
-      "Económico": "Econômico",
       "Económico": "Económico"
     },
     "modal": {
@@ -3557,11 +3599,9 @@
     "backToAccount": "Voltar à Minha Conta"
   },
   "servicios": {
-    "Devolución con tanque vacío": "Devolução com tanque vazio",
+    "Devolución con tanque vacío": "Devolución con tanque vacío",
     "GPS Integrado": "GPS Integrado",
     "Lavado de auto post-entrega": "Lavagem de carro após entrega",
-    "Silla de bebé": "Cadeira de bebê",
-    "Devolución con tanque vacío": "Devolución con tanque vacío",
     "Silla de bebé": "Silla de bebé"
   },
   "favoritos": {
