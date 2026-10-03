@@ -318,9 +318,6 @@ export default function DeliveryManagementPage() {
             <div className="branch-topbar-brand-title">
               <span className="branch-topbar-badge">{t('admin.branchManagement', 'GESTION OPERATIVA')}</span>
               <h1 className="branch-topbar-heading">{t('admin.delivery.title', 'Domicilio Reserva')}</h1>
-              <p className="cities-subtitle" style={{ color: 'var(--city-muted)', marginTop: 2 }}>
-                {t('admin.delivery.subtitle', 'Asignación de conductores para entregas y recogidas a domicilio de reservas.')}
-              </p>
             </div>
             <div className="cities-topbar__actions" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               <MenuConfiguracion />
