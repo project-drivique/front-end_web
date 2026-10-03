@@ -395,7 +395,7 @@ export default function BranchReviewsPage({ branchOnly = false }) {
                                     boxShadow: tieneRespuesta ? 'none' : '0 2px 5px rgba(22, 163, 74, 0.25)'
                                   }}
                                 >
-                                  <FaCommentDots /> {tieneRespuesta ? t('admin.reviews.editReplyBtn', 'Editar') : t('admin.reviews.replyBtn', 'Responder')}
+                                  <FaCommentDots /> {tieneRespuesta ? t('admin.reviews.editReplyBtn', 'Editar Respuesta') : t('admin.reviews.replyBtn', 'Responder')}
                                 </button>
 
                                 <button
@@ -409,14 +409,15 @@ export default function BranchReviewsPage({ branchOnly = false }) {
                                     color: '#dc2626',
                                     border: '1px solid #fecaca',
                                     cursor: 'pointer',
-                                    fontWeight: 600,
+                                    fontWeight: 700,
                                     fontSize: 12,
                                     display: 'inline-flex',
                                     alignItems: 'center',
-                                    gap: 4
+                                    gap: 5,
+                                    whiteSpace: 'nowrap'
                                   }}
                                 >
-                                  <FaTrash />
+                                  <FaTrash /> {t('admin.reviews.deleteBtn', 'Eliminar')}
                                 </button>
                               </div>
                             </td>
@@ -477,13 +478,13 @@ export default function BranchReviewsPage({ branchOnly = false }) {
                           )}
                         </div>
 
-                        <div className="doc-mobile-card-actions">
+                        <div className="doc-mobile-card-actions" style={{ display: 'flex', gap: 8 }}>
                           <button
                             type="button"
                             onClick={() => handleOpenResponder(item)}
                             style={{
-                              width: '100%',
-                              padding: '9px 18px',
+                              flex: 1,
+                              padding: '9px 14px',
                               borderRadius: '12px',
                               background: tieneRespuesta ? 'var(--brand-soft-light, #eff6ff)' : '#16a34a',
                               color: tieneRespuesta ? 'var(--brand-primary, #2563eb)' : '#ffffff',
@@ -494,10 +495,31 @@ export default function BranchReviewsPage({ branchOnly = false }) {
                               display: 'flex',
                               alignItems: 'center',
                               justifyContent: 'center',
-                              gap: 8,
+                              gap: 6,
                             }}
                           >
-                            <FaCommentDots /> {tieneRespuesta ? t('admin.reviews.editReplyBtn', 'Editar Respuesta') : t('admin.reviews.replyBtn', 'Responder Reseña')}
+                            <FaCommentDots /> {tieneRespuesta ? t('admin.reviews.editReplyBtn', 'Editar Respuesta') : t('admin.reviews.replyBtn', 'Responder')}
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => handleEliminarResena(item.id)}
+                            style={{
+                              padding: '9px 16px',
+                              borderRadius: '12px',
+                              background: '#fef2f2',
+                              color: '#dc2626',
+                              border: '1px solid #fecaca',
+                              fontWeight: 700,
+                              fontSize: '13px',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              gap: 6,
+                            }}
+                          >
+                            <FaTrash /> {t('admin.reviews.deleteBtn', 'Eliminar')}
                           </button>
                         </div>
                       </div>
@@ -520,7 +542,7 @@ export default function BranchReviewsPage({ branchOnly = false }) {
                   {t('admin.reviews.modal.eyebrow', 'RESPUESTA OFICIAL DE SUCURSAL')}
                 </p>
                 <h2 style={{ color: 'var(--city-text)', margin: 0, fontSize: 18, fontWeight: 800 }}>
-                  Responder a {modalReview.clienteNombre}
+                  {t('admin.reviews.modal.replyTo', 'Responder a {{name}}', { name: modalReview.clienteNombre })}
                 </h2>
               </div>
               <button type="button" onClick={() => setModalReview(null)} style={closeBtnStyle}>&times;</button>
@@ -542,7 +564,7 @@ export default function BranchReviewsPage({ branchOnly = false }) {
 
               <div>
                 <label style={{ display: 'block', fontSize: 12.5, fontWeight: 700, color: 'var(--city-text, #0f172a)', marginBottom: 6 }}>
-                  Respuesta Oficial de Sucursal *
+                  {t('admin.reviews.modal.officialResponseLabel', 'Respuesta Oficial de Sucursal *')}
                 </label>
                 <textarea
                   rows={4}
