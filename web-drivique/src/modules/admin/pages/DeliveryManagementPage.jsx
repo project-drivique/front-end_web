@@ -390,7 +390,6 @@ export default function DeliveryManagementPage() {
                 onClick={() => setActiveTab('conductores')}
                 className={`fleet-tab-btn ${activeTab === 'conductores' ? 'is-active' : ''}`}
               >
-                <FaUserTie style={{ fontSize: 12, marginRight: 5 }} />
                 {t('admin.delivery.tabs.drivers', 'Conductores')} ({conductores.length})
               </button>
             </div>
