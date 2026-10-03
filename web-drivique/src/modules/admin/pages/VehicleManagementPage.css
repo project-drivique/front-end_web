@@ -409,19 +409,19 @@
 }
 
 .export-pill--print {
-  background: #eff6ff;
-  border: 1.5px solid #bfdbfe;
-  color: #2563eb;
+  background: var(--brand-soft-light, #eff6ff);
+  border: 1.5px solid var(--brand-border-light, #bfdbfe);
+  color: var(--brand-primary, #2563eb);
 }
 
 .export-pill--print svg {
-  color: #2563eb;
+  color: var(--brand-primary, #2563eb);
   font-size: 14px;
 }
 
 .export-pill--print:hover {
-  background: #dbeafe;
-  border-color: #93c5fd;
+  background: var(--brand-soft-strong-light, #dbeafe);
+  border-color: var(--brand-border-light, #93c5fd);
   transform: translateY(-1px);
 }
 
@@ -541,7 +541,7 @@
    HERO BANNER ELEGANTE PARA ENCARGADO DE SUCURSAL
    ───────────────────────────────────────────────────────────── */
 .branch-profile-hero-banner {
-  background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 55%, #3b82f6 100%);
+  background: var(--brand-gradient, linear-gradient(135deg, var(--brand-secondary, #1e3a8a) 0%, var(--brand-primary, #2563eb) 55%, var(--brand-accent, #3b82f6) 100%));
   border-radius: 20px;
   padding: 24px 28px;
   margin-bottom: 24px;
@@ -1427,7 +1427,7 @@ body.dark .fleet-gallery-btn.is-edit {
 
 .management-shell--dark .fleet-gallery-btn.is-edit:hover,
 body.dark .fleet-gallery-btn.is-edit:hover {
-  background: #2563eb;
+  background: var(--brand-primary, #2563eb);
   color: #ffffff;
 }
 
