@@ -21,8 +21,8 @@
     "maxRecords": 100
   },
   "dashboardModules": {
-    "administrador": ["vehicles", "users", "roles", "reservations", "cashCollection", "contracts", "incidents", "documents", "reviews", "cities", "branches", "promotions", "brand", "reports", "audit"],
-    "encargado_sucursal": ["vehicles", "reservations", "cashCollection", "contracts", "incidents", "documents", "promotions", "reviews", "reports", "audit"]
+    "administrador": ["vehicles", "users", "roles", "reservations", "cashCollection", "contracts", "incidents", "documents", "deliveries", "reviews", "cities", "branches", "promotions", "brand", "reports", "audit"],
+    "encargado_sucursal": ["vehicles", "reservations", "cashCollection", "contracts", "incidents", "documents", "deliveries", "promotions", "reviews", "reports", "audit"]
   },
   "dashboardNavigation": {
     "administrador": [
@@ -33,6 +33,7 @@
       { "key": "contracts", "route": "/admin/contracts", "section": "GESTIÓN OPERATIVA" },
       { "key": "incidents", "route": "/admin/incidents", "section": "GESTIÓN OPERATIVA" },
       { "key": "documents", "route": "/admin/documents", "section": "GESTIÓN OPERATIVA" },
+      { "key": "deliveries", "route": "/admin/deliveries", "section": "GESTIÓN OPERATIVA" },
       { "key": "reviews", "route": "/admin/reviews", "section": "CONSULTA Y AUDITORÍA" },
       { "key": "reports", "route": "/admin/reports", "section": "CONSULTA Y AUDITORÍA" },
       { "key": "audit", "route": "/admin/audit", "section": "CONSULTA Y AUDITORÍA" },
@@ -52,6 +53,7 @@
       { "key": "contracts", "route": "/encargado/contracts", "section": "GESTIÓN OPERATIVA" },
       { "key": "incidents", "route": "/encargado/incidents", "section": "GESTIÓN OPERATIVA" },
       { "key": "documents", "route": "/encargado/documents", "section": "GESTIÓN OPERATIVA" },
+      { "key": "deliveries", "route": "/encargado/deliveries", "section": "GESTIÓN OPERATIVA" },
       { "key": "promotions", "route": "/encargado/promotions", "section": "GESTIÓN OPERATIVA" },
       { "key": "reviews", "route": "/encargado/reviews", "section": "CONSULTA Y AUDITORÍA" },
       { "key": "reports", "route": "/encargado/reports", "section": "CONSULTA Y AUDITORÍA" },

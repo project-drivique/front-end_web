@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+﻿import { useState, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   FaCheckCircle,
@@ -253,7 +253,7 @@ export default function UserManagementPage() {
             <div className="cities-notice" role="status">
               <span>{notice}</span>
               <button type="button" onClick={() => setNotice('')}>
-                ×
+                á—
               </button>
             </div>
           )}
@@ -484,7 +484,7 @@ export default function UserManagementPage() {
                   <h2>{t('admin.usersPage.docsOf', { nombre: modalDocumentos.nombre })}</h2>
                 </div>
                 <button type="button" onClick={() => setModalDocumentos(null)}>
-                  ×
+                  á—
                 </button>
               </div>
 
@@ -559,7 +559,7 @@ export default function UserManagementPage() {
                   <h2>{t('admin.usersPage.createNewUserTitle')}</h2>
                 </div>
                 <button type="button" onClick={() => setModalCrear(false)}>
-                  ×
+                  á—
                 </button>
               </div>
 
@@ -662,7 +662,7 @@ export default function UserManagementPage() {
                   <h2>{t('admin.usersPage.editUserTitleOf', 'Editar Datos de {{nombre}}', { nombre: modalEditar.nombre })}</h2>
                 </div>
                 <button type="button" onClick={() => setModalEditar(null)}>
-                  ×
+                  á—
                 </button>
               </div>
 

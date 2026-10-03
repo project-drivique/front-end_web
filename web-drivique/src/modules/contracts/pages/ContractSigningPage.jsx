@@ -190,6 +190,11 @@ export default function ContractSigningPage() {
   }
 
   const handleFirmado = async (contrato) => {
+    // Si la reserva está PENDIENTE o PENDIENTE_EFECTIVO, la pasamos a CONFIRMADA tras firmar.
+    if (reserva?.estado === 'PENDIENTE_EFECTIVO' || reserva?.estado === 'PENDIENTE') {
+      reservationService.actualizarEstado(targetId, 'CONFIRMADA')
+    }
+
     await showAlert({
       icon: 'success',
       title: '¡Contrato Firmado con Éxito!',

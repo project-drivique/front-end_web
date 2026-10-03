@@ -7,6 +7,43 @@
   table-layout: auto !important;
 }
 
+/* OVERRIDE CITIES TABLE WRAP TO LIGHT DESIGN */
+.reservations-management-page .cities-table-wrap {
+  background: var(--city-card) !important;
+  border: 1px solid var(--city-border) !important;
+  box-shadow: none !important;
+  border-radius: 14px !important;
+}
+
+.reservations-management-page .cities-table-wrap table {
+  background: var(--city-card) !important;
+}
+
+.reservations-management-page .cities-table-wrap th {
+  background: var(--city-bg) !important;
+  color: var(--city-muted) !important;
+  font-size: 11px !important;
+  font-weight: 800 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  border-bottom: 2px solid var(--city-border) !important;
+  padding: 14px 16px !important;
+}
+
+.reservations-management-page .cities-table-wrap td {
+  background: var(--city-card) !important;
+  color: var(--city-text) !important;
+  border-bottom: 1px solid var(--city-border) !important;
+  padding: 14px 16px !important;
+  font-size: 13px !important;
+  vertical-align: middle !important;
+  white-space: nowrap !important;
+}
+
+.reservations-management-page .cities-table-wrap tbody tr:hover td {
+  background: var(--city-bg) !important;
+}
+
 .reservations-admin-table th,
 .reservations-admin-table td {
   padding: 14px 16px !important;
@@ -232,7 +269,7 @@ html.dark .reserva-timeline-line {
 }
 
 .reservations-assigned-branch {
-  min-height: 44px;
+  min-height: 40px;
   min-width: 0;
   display: flex;
   align-items: center;
@@ -482,8 +519,8 @@ html.dark .reserva-timeline-line {
 .reservations-management-toolbar .cities-search,
 .reservations-management-toolbar .reservations-filter-select,
 .reservations-management-toolbar .reservations-assigned-branch {
-  min-height: 48px;
-  border-radius: 12px;
+  min-height: 40px;
+  border-radius: 10px;
 }
 
 .reservations-management-toolbar .cities-search {
@@ -516,11 +553,11 @@ html.dark .reserva-timeline-line {
 
 .reservations-management-toolbar .reservations-date-inputs input[type='date'] {
   width: 100%;
-  min-height: 44px;
+  min-height: 40px;
   box-sizing: border-box;
   border: 1px solid var(--city-border);
-  border-radius: 11px;
-  padding: 9px 12px;
+  border-radius: 10px;
+  padding: 6px 12px;
   background: var(--city-bg);
   box-shadow: none;
   transform: none;
@@ -543,10 +580,10 @@ html.dark .reserva-timeline-line {
 .reservations-management-toolbar .reservations-export-actions button {
   width: 100%;
   min-width: 0;
-  min-height: 44px;
-  padding: 9px 10px;
+  min-height: 40px;
+  padding: 6px 10px;
   justify-content: center;
-  border-radius: 11px;
+  border-radius: 10px;
 }
 
 @media (max-width: 1180px) {
@@ -660,4 +697,204 @@ html.dark .reservations-subtabs-nav {
   height: 3px;
   background-color: var(--brand-primary, #047857);
   border-radius: 3px 3px 0 0;
+}
+
+
+/* Tabs for Reservations */
+.fleet-attached-tabs {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--city-card, #ffffff);
+  border: 1px solid var(--city-border, #cbd5e1);
+  border-bottom: none !important;
+  border-radius: 22px 22px 0 0 !important;
+  padding: 8px 24px 0 24px;
+  margin-bottom: 0 !important;
+  flex-wrap: wrap;
+}
+
+.fleet-tabs-nav {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.fleet-tabs-action {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+  padding-bottom: 6px;
+}
+
+.fleet-btn-create-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 18px !important;
+  font-size: 13.5px !important;
+  font-weight: 700 !important;
+  border-radius: 10px !important;
+  white-space: nowrap;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.2);
+  transition: all 0.2s ease;
+}
+
+.fleet-tab-btn {
+  background: transparent;
+  border: none;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--city-muted, #64748b);
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.fleet-tab-btn:hover {
+  color: var(--brand-primary, #2563eb);
+}
+
+.fleet-tab-btn.is-active {
+  font-weight: 800;
+  color: var(--brand-primary, #2563eb);
+  border-bottom-color: var(--brand-primary, #2563eb);
+}
+
+.cities-card.attached-to-tabs {
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
+  border-bottom-left-radius: 22px !important;
+  border-bottom-right-radius: 22px !important;
+  border-top: none !important;
+  margin-top: 0 !important;
+  padding: 20px 24px;
+}
+
+@media (max-width: 768px) {
+  .fleet-attached-tabs {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 10px 12px;
+    gap: 10px;
+  }
+  .fleet-tabs-nav {
+    width: 100%;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .fleet-tabs-action {
+    width: 100%;
+    margin-left: 0;
+    justify-content: stretch;
+  }
+  .fleet-tabs-action .fleet-btn-create-tab {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+
+/* Export Pills */
+.export-pills-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.export-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border-radius: 14px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.export-pill--excel {
+  background: #f0fdf4;
+  border: 1.5px solid #bbf7d0;
+  color: #16a34a;
+}
+.export-pill--excel svg {
+  color: #16a34a;
+  font-size: 14px;
+}
+.export-pill--excel:hover {
+  background: #dcfce7;
+  border-color: #86efac;
+  transform: translateY(-1px);
+}
+
+.export-pill--pdf {
+  background: #fef2f2;
+  border: 1.5px solid #fecaca;
+  color: #dc2626;
+}
+.export-pill--pdf svg {
+  color: #dc2626;
+  font-size: 14px;
+}
+.export-pill--pdf:hover {
+  background: #fee2e2;
+  border-color: #fca5a5;
+  transform: translateY(-1px);
+}
+
+.export-pill--print {
+  background: #eff6ff;
+  border: 1.5px solid #bfdbfe;
+  color: #2563eb;
+}
+.export-pill--print svg {
+  color: #2563eb;
+  font-size: 14px;
+}
+.export-pill--print:hover {
+  background: #dbeafe;
+  border-color: #93c5fd;
+  transform: translateY(-1px);
+}
+
+
+/* Fix border radius for the table header */
+.reservations-admin-table th:first-child {
+  border-top-left-radius: 14px;
+}
+
+.reservations-admin-table th:last-child {
+  border-top-right-radius: 14px;
+}
+
+.reservations-management-page .cities-table-wrap th:first-child { border-top-left-radius: 14px !important; }
+.reservations-management-page .cities-table-wrap th:last-child { border-top-right-radius: 14px !important; }
+
+
+/* Scrollbar personalizado para tablas anchas */
+.cities-table-wrap::-webkit-scrollbar {
+  height: 8px;
+}
+.cities-table-wrap::-webkit-scrollbar-track {
+  background: var(--city-bg, #f8fafc);
+  border-radius: 4px;
+}
+.cities-table-wrap::-webkit-scrollbar-thumb {
+  background: var(--city-border, #cbd5e1);
+  border-radius: 4px;
+}
+.cities-table-wrap::-webkit-scrollbar-thumb:hover {
+  background: var(--brand-primary, #2563eb);
 }
