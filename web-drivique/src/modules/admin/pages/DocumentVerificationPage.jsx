@@ -31,14 +31,14 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
   const { t } = useTranslation()
   const { tema } = useLanding()
   const user = useAuthStore((state) => state.usuario)
-  const sucursalAsignada = user?.sucursalAsignada || user?.sucursalId || user?.sucursal || 'Alamo BogotÃ¡ - Aeropuerto'
+  const sucursalAsignada = user?.sucursalAsignada || user?.sucursalId || user?.sucursal || 'Alamo Bogotá - Aeropuerto'
 
   const [verifications, setVerifications] = useState(() => documentVerificationService.list(user))
   const [search, setSearch] = useState('')
   const [activeTab, setActiveTab] = useState('todos') // 'todos' | 'pendientes' | 'aprobados' | 'rechazados'
   const [notice, setNotice] = useState('')
 
-  // Modal de ValidaciÃ³n de Expediente
+  // Modal de Validación de Expediente
   const [modalItem, setModalItem] = useState(null)
   const [observaciones, setObservaciones] = useState('')
   const [zoomPdf, setZoomPdf] = useState(null)
@@ -73,9 +73,9 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
   }, [liveReservations])
 
   const getUploadDateTime = (fechaSubida) => {
-    if (!fechaSubida) return { fecha: 'â€”', hora: 'â€”' }
+    if (!fechaSubida) return { fecha: '—', hora: '—' }
     const parts = String(fechaSubida).trim().split(' ')
-    const fecha = parts[0] || 'â€”'
+    const fecha = parts[0] || '—'
     const hora = parts[1] || '10:00'
     return { fecha, hora }
   }
@@ -196,8 +196,8 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
 
     showAlert({
       icon: 'success',
-      title: t('admin.documents.alerts.approvedTitle', 'DocumentaciÃ³n Aprobada'),
-      text: t('admin.documents.alerts.approvedText', 'Se ha confirmado la aprobaciÃ³n de documentos para la reserva {{code}}. Se enviÃ³ confirmaciÃ³n al correo del cliente y a su panel de notificaciones.', { code: modalItem.reservaCodigo }),
+      title: t('admin.documents.alerts.approvedTitle', 'Documentación Aprobada'),
+      text: t('admin.documents.alerts.approvedText', 'Se ha confirmado la aprobación de documentos para la reserva {{code}}. Se envió confirmación al correo del cliente y a su panel de notificaciones.', { code: modalItem.reservaCodigo }),
     })
   }
 
@@ -207,7 +207,7 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
       showAlert({
         icon: 'warning',
         title: t('admin.documents.alerts.reasonRequiredTitle', 'Motivo requerido'),
-        text: t('admin.documents.alerts.reasonRequiredText', 'Por favor indica la razÃ³n del rechazo para que el cliente sepa quÃ© documento corregir.'),
+        text: t('admin.documents.alerts.reasonRequiredText', 'Por favor indica la razón del rechazo para que el cliente sepa qué documento corregir.'),
       })
       return
     }
@@ -221,25 +221,25 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
     )
     setVerifications(documentVerificationService.list(user))
     setModalItem(null)
-    setNotice(`âŒ ${t('admin.documents.alerts.rejectedNotice', 'Se registrÃ³ el rechazo de documentos para la reserva {{code}}.', { code: modalItem.reservaCodigo })}`)
+    setNotice(`âŒ ${t('admin.documents.alerts.rejectedNotice', 'Se registró el rechazo de documentos para la reserva {{code}}.', { code: modalItem.reservaCodigo })}`)
 
     showAlert({
       icon: 'error',
-      title: t('admin.documents.alerts.rejectedTitle', 'DocumentaciÃ³n Rechazada'),
+      title: t('admin.documents.alerts.rejectedTitle', 'Documentación Rechazada'),
       text: t('admin.documents.alerts.rejectedText', 'Se ha notificado el rechazo de documentos para la reserva {{code}} al correo y notificaciones del usuario.', { code: modalItem.reservaCodigo }),
     })
   }
 
-  // ExportaciÃ³n
+  // Exportación
   const exportData = {
-    title: t('admin.documents.exportTitle', 'ValidaciÃ³n de Documentos de Identidad y Licencias â€” Drivique'),
+    title: t('admin.documents.exportTitle', 'Validación de Documentos de Identidad y Licencias — Drivique'),
     headers: [
       t('admin.documents.table.id', 'ID'),
-      t('admin.documents.table.reservationCode', 'CÃ“DIGO RESERVA'),
+      t('admin.documents.table.reservationCode', 'CÓDIGO RESERVA'),
       t('admin.documents.table.clientName', 'NOMBRE CLIENTE'),
-      t('admin.documents.table.documentNumber', 'NÃšMERO DE DOCUMENTO'),
-      t('admin.documents.table.licenseNumber', 'NÃšMERO DE CONDUCCIÃ“N'),
-      t('admin.documents.table.vehicleName', 'NOMBRE VEHÃCULO'),
+      t('admin.documents.table.documentNumber', 'NÚMERO DE DOCUMENTO'),
+      t('admin.documents.table.licenseNumber', 'NÚMERO DE CONDUCCIÓN'),
+      t('admin.documents.table.vehicleName', 'NOMBRE VEHÍCULO'),
       t('admin.documents.table.reservationStatus', 'ESTADO DE RESERVA'),
       t('admin.documents.table.uploadDate', 'FECHA SUBIDA'),
       t('admin.documents.table.uploadTime', 'HORA SUBIDA'),
@@ -255,7 +255,7 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
         item.clienteNombre,
         item.documentoIdentidad,
         item.numeroLicencia,
-        item.vehiculoNombre || item.vehiculo || 'VehÃ­culo Reservado',
+        item.vehiculoNombre || item.vehiculo || 'Vehículo Reservado',
         resState,
         fecha,
         hora,
@@ -285,11 +285,11 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
 
       <main className="management-main doc-verification-main">
         <div className="cities-container" style={{ maxWidth: '100%' }}>
-          {/* Header Superior idÃ©ntico al estÃ¡ndar del Administrador */}
+          {/* Header Superior idéntico al estándar del Administrador */}
           <header className="cities-topbar reservations-management-header">
             <div className="branch-topbar-brand-title">
-              <span className="branch-topbar-badge">{t('admin.branchManagement', 'GESTIÃ“N DE SUCURSAL')}</span>
-              <h1 className="branch-topbar-heading">{t('admin.documents.title', 'ValidaciÃ³n de Documentos')}</h1>
+              <span className="branch-topbar-badge">{t('admin.branchManagement', 'GESTIÓN DE SUCURSAL')}</span>
+              <h1 className="branch-topbar-heading">{t('admin.documents.title', 'Validación de Documentos')}</h1>
             </div>
 
             <div className="cities-topbar__actions" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
@@ -320,7 +320,7 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
               <div className="cash-kpi-progress-bg" style={{ width: '100%', height: 4, background: 'var(--city-border, #f1f5f9)', borderRadius: 2, marginBottom: 8 }}>
                 <div className="cash-kpi-progress-fill" style={{ width: '100%', height: '100%', background: '#f59e0b', borderRadius: 2 }}></div>
               </div>
-              <span className="cash-kpi-subtitle-light" style={{ fontSize: '11.5px', color: 'var(--city-muted, #64748b)' }}>{t('admin.documents.kpis.pendingSub', 'En espera de revisiÃ³n')}</span>
+              <span className="cash-kpi-subtitle-light" style={{ fontSize: '11.5px', color: 'var(--city-muted, #64748b)' }}>{t('admin.documents.kpis.pendingSub', 'En espera de revisión')}</span>
             </div>
 
             {/* KPI 2: Aprobados por Sucursal */}
@@ -350,7 +350,7 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
               <div className="cash-kpi-progress-bg" style={{ width: '100%', height: 4, background: 'var(--city-border, #f1f5f9)', borderRadius: 2, marginBottom: 8 }}>
                 <div className="cash-kpi-progress-fill" style={{ width: '100%', height: '100%', background: '#ef4444', borderRadius: 2 }}></div>
               </div>
-              <span className="cash-kpi-subtitle-light" style={{ fontSize: '11.5px', color: 'var(--city-muted, #64748b)' }}>{t('admin.documents.kpis.rejectedSub', 'Requieren correcciÃ³n del cliente')}</span>
+              <span className="cash-kpi-subtitle-light" style={{ fontSize: '11.5px', color: 'var(--city-muted, #64748b)' }}>{t('admin.documents.kpis.rejectedSub', 'Requieren corrección del cliente')}</span>
             </div>
 
             {/* KPI 4: Total Expedientes */}
@@ -369,17 +369,17 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
             </div>
           </div>
 
-          {/* NotificaciÃ³n de Aviso */}
+          {/* Notificación de Aviso */}
           {notice && (
             <div className="cities-notice" role="status" style={{ marginBottom: 16 }}>
               <span>{notice}</span>
               <button type="button" onClick={() => setNotice('')}>
-                Ã—
+                á—
               </button>
             </div>
           )}
 
-          {/* PestaÃ±as de Secciones Adheridas */}
+          {/* Pestañas de Secciones Adheridas */}
           <div className="fleet-attached-tabs">
             <div className="fleet-tabs-nav">
               <button
@@ -415,7 +415,7 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
 
           {/* Tarjeta Principal */}
           <section className="cities-card attached-to-tabs">
-            {/* Toolbar con Buscador, Filtros y Botones de ExportaciÃ³n */}
+            {/* Toolbar con Buscador, Filtros y Botones de Exportación */}
             <div className="cities-toolbar doc-toolbar-wrapper">
               {/* Buscador general en vivo */}
               <label className="cities-search" style={{ flex: '1 1 250px', margin: 0 }}>
@@ -424,7 +424,7 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
                   type="text"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  placeholder={t('admin.documents.searchPlaceholder', 'Buscar por cÃ³digo, cliente, cÃ©dula, licencia...')}
+                  placeholder={t('admin.documents.searchPlaceholder', 'Buscar por código, cliente, cédula, licencia...')}
                 />
               </label>
 
@@ -434,7 +434,7 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
                 <span>{sucursalAsignada}</span>
               </div>
 
-              {/* Botones de ExportaciÃ³n con pÃ­ldoras */}
+              {/* Botones de Exportación con píldoras */}
               <div className="export-pills-group" style={{ marginLeft: 'auto', display: 'flex', gap: '8px' }}>
                 <button
                   type="button"
@@ -469,12 +469,12 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
               {t('admin.documents.foundCount', 'EXPEDIENTES EN EL LISTADO').toUpperCase()}
             </div>
 
-            {/* Contenido: Tabla para Desktop + Cards para MÃ³vil */}
+            {/* Contenido: Tabla para Desktop + Cards para Móvil */}
             {filtered.length === 0 ? (
               <div className="cities-empty">
                 <FaIdCard style={{ fontSize: 44, color: '#94a3b8', marginBottom: 12 }} />
-                <h2>{t('admin.documents.emptyTitle', 'No se encontraron expedientes de documentaciÃ³n')}</h2>
-                <p>{t('admin.documents.emptyDesc', 'No hay registros que coincidan con la pestaÃ±a o los tÃ©rminos de bÃºsqueda seleccionados.')}</p>
+                <h2>{t('admin.documents.emptyTitle', 'No se encontraron expedientes de documentación')}</h2>
+                <p>{t('admin.documents.emptyDesc', 'No hay registros que coincidan con la pestaña o los términos de búsqueda seleccionados.')}</p>
               </div>
             ) : (
               <>
@@ -484,13 +484,13 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
                     <thead>
                       <tr>
                         <th style={{ width: '40px' }}>{t('admin.documents.table.id', 'ID')}</th>
-                        <th>{t('admin.documents.table.reservationCode', 'CÃ“DIGO RESERVA')}</th>
+                        <th>{t('admin.documents.table.reservationCode', 'CÓDIGO RESERVA')}</th>
                         <th>{t('admin.documents.table.clientName', 'NOMBRE CLIENTE')}</th>
-                        <th>{t('admin.documents.table.documentNumber', 'NÃšMERO DE DOCUMENTO')}</th>
+                        <th>{t('admin.documents.table.documentNumber', 'NÚMERO DE DOCUMENTO')}</th>
                         <th>{t('admin.documents.table.identityDoc', 'DOCUMENTO DE IDENTIDAD')}</th>
-                        <th>{t('admin.documents.table.licenseNumber', 'NÃšMERO DE CONDUCCIÃ“N')}</th>
-                        <th>{t('admin.documents.table.driverLicense', 'LICENCIA DE CONDUCCIÃ“N')}</th>
-                        <th>{t('admin.documents.table.vehicleName', 'NOMBRE VEHÃCULO')}</th>
+                        <th>{t('admin.documents.table.licenseNumber', 'NÚMERO DE CONDUCCIÓN')}</th>
+                        <th>{t('admin.documents.table.driverLicense', 'LICENCIA DE CONDUCCIÓN')}</th>
+                        <th>{t('admin.documents.table.vehicleName', 'NOMBRE VEHÍCULO')}</th>
                         <th style={{ textAlign: 'center' }}>{t('admin.documents.table.reservationStatus', 'ESTADO DE RESERVA')}</th>
                         <th>{t('admin.documents.table.uploadDate', 'FECHA SUBIDA')}</th>
                         <th>{t('admin.documents.table.uploadTime', 'HORA SUBIDA')}</th>
@@ -514,7 +514,7 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
                             <td style={{ color: 'var(--city-text, #0f172a)', fontWeight: 600 }}>{item.clienteNombre}</td>
                             <td style={{ color: 'var(--city-text, #334155)' }}>{item.documentoIdentidad}</td>
                             
-                            {/* Columna Documento de Identidad (Link PDF con Ã­cono rojo) */}
+                            {/* Columna Documento de Identidad (Link PDF con ícono rojo) */}
                             <td>
                               <div
                                 className="doc-table-pdf-link"
@@ -529,18 +529,18 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
                               </div>
                             </td>
 
-                            {/* Columna NÃºmero de ConducciÃ³n (Texto limpio, sin fondo gris) */}
+                            {/* Columna Número de Conducción (Texto limpio, sin fondo gris) */}
                             <td style={{ color: 'var(--city-text, #334155)', fontWeight: 600 }}>
                               {item.numeroLicencia}
                             </td>
 
-                            {/* Columna Licencia de ConducciÃ³n (Link PDF con Ã­cono rojo) */}
+                            {/* Columna Licencia de Conducción (Link PDF con ícono rojo) */}
                             <td>
                               <div
                                 className="doc-table-pdf-link"
                                 onClick={() => setZoomPdf({
                                   url: licUrl,
-                                  title: `${t('admin.documents.table.driverLicense', 'Licencia de ConducciÃ³n')} - ${item.clienteNombre}`
+                                  title: `${t('admin.documents.table.driverLicense', 'Licencia de Conducción')} - ${item.clienteNombre}`
                                 })}
                                 title={t('admin.documents.table.openDocTooltip', 'Clic para abrir documento')}
                               >
@@ -549,9 +549,9 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
                               </div>
                             </td>
 
-                            {/* Columna Nombre VehÃ­culo */}
+                            {/* Columna Nombre Vehículo */}
                             <td style={{ color: 'var(--city-text, #0f172a)', fontWeight: 600 }}>
-                              {item.vehiculoNombre || item.vehiculo || 'VehÃ­culo Reservado'}
+                              {item.vehiculoNombre || item.vehiculo || 'Vehículo Reservado'}
                             </td>
 
                             {/* Columna Estado de Reserva (Actualizado en tiempo real) */}
@@ -565,7 +565,7 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
                             {/* Columna Hora Subida */}
                             <td style={{ color: 'var(--city-muted, #64748b)' }}>{hora}</td>
 
-                            {/* Columna Estado de ValidaciÃ³n */}
+                            {/* Columna Estado de Validación */}
                             <td style={{ textAlign: 'center' }}>
                               {getStatusBadge(item.estado)}
                             </td>
@@ -601,7 +601,7 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
                   </table>
                 </div>
 
-                {/* 2. Vista de Tarjetas Adaptativas para Pantallas MÃ³viles */}
+                {/* 2. Vista de Tarjetas Adaptativas para Pantallas Móviles */}
                 <div className="doc-mobile-cards">
                   {filtered.map((item, index) => {
                     const docIdFile = item.documentoIdentidadPdf || `Cedula-${item.documentoIdentidad}.pdf`
@@ -628,20 +628,20 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
                           </div>
 
                           <div className="doc-mobile-data-item">
-                            <span className="doc-mobile-data-label">{t('admin.documents.table.documentNumber', 'NÂº Documento')}</span>
+                            <span className="doc-mobile-data-label">{t('admin.documents.table.documentNumber', 'Nº Documento')}</span>
                             <span className="doc-mobile-data-value">{item.documentoIdentidad}</span>
                           </div>
 
                           <div className="doc-mobile-data-item">
-                            <span className="doc-mobile-data-label">{t('admin.documents.table.licenseNumber', 'NÃºmero de ConducciÃ³n')}</span>
+                            <span className="doc-mobile-data-label">{t('admin.documents.table.licenseNumber', 'Número de Conducción')}</span>
                             <span className="doc-mobile-data-value" style={{ fontWeight: 600 }}>
                               {item.numeroLicencia}
                             </span>
                           </div>
 
                           <div className="doc-mobile-data-item doc-mobile-data-item--full">
-                            <span className="doc-mobile-data-label">{t('admin.documents.table.vehicleName', 'Nombre VehÃ­culo')}</span>
-                            <span className="doc-mobile-data-value">{item.vehiculoNombre || item.vehiculo || 'VehÃ­culo Reservado'}</span>
+                            <span className="doc-mobile-data-label">{t('admin.documents.table.vehicleName', 'Nombre Vehículo')}</span>
+                            <span className="doc-mobile-data-value">{item.vehiculoNombre || item.vehiculo || 'Vehículo Reservado'}</span>
                           </div>
 
                           <div className="doc-mobile-data-item">
@@ -652,12 +652,12 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
                           <div className="doc-mobile-data-item">
                             <span className="doc-mobile-data-label">{t('admin.documents.table.uploadDate', 'Fecha / Hora Subida')}</span>
                             <span className="doc-mobile-data-value" style={{ color: 'var(--city-muted, #64748b)', fontSize: 12 }}>
-                              {fecha} â€¢ {hora}
+                              {fecha} ⬢ {hora}
                             </span>
                           </div>
                         </div>
 
-                        {/* Documentos subidos links mÃ³viles */}
+                        {/* Documentos subidos links móviles */}
                         <div className="doc-mobile-card-docs">
                           <div
                             className="doc-table-pdf-link"
@@ -667,14 +667,14 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
                             })}
                           >
                             <FaFilePdf />
-                            <span>{t('admin.documents.modal.idDocCard', 'CÃ©dula')}: {docIdFile}</span>
+                            <span>{t('admin.documents.modal.idDocCard', 'Cédula')}: {docIdFile}</span>
                           </div>
 
                           <div
                             className="doc-table-pdf-link"
                             onClick={() => setZoomPdf({
                               url: licUrl,
-                              title: `${t('admin.documents.table.driverLicense', 'Licencia de ConducciÃ³n')} - ${item.clienteNombre}`
+                              title: `${t('admin.documents.table.driverLicense', 'Licencia de Conducción')} - ${item.clienteNombre}`
                             })}
                           >
                             <FaFilePdf />

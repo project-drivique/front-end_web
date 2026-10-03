@@ -56,18 +56,18 @@ export default function AuditLogManagementPage({ branchOnly = false }) {
   const TIPOS_EVENTO = [
     { value: 'all', label: t('admin.audit_module.types.all', 'Todos los tipos de evento') },
     { value: 'COBRO_SUCURSAL', label: 'Cobro en Mostrador / Sucursal' },
-    { value: 'GESTION_RESERVAS', label: t('admin.audit_module.types.reservations', 'GestiÃ³n de Reservas') },
-    { value: 'AUTENTICACION', label: t('admin.audit_module.types.auth', 'AutenticaciÃ³n y Acceso') },
+    { value: 'GESTION_RESERVAS', label: t('admin.audit_module.types.reservations', 'Gestión de Reservas') },
+    { value: 'AUTENTICACION', label: t('admin.audit_module.types.auth', 'Autenticación y Acceso') },
     { value: 'SEGURIDAD_2FA', label: t('admin.audit_module.types.security2fa', 'Seguridad y 2FA') },
-    { value: 'CRUD_VEHICULOS', label: t('admin.audit_module.types.vehicles', 'GestiÃ³n de Flota y VehÃ­culos') },
-    { value: 'GESTION_CONTRATOS', label: t('admin.audit_module.types.contracts', 'GestiÃ³n de Contratos') },
-    { value: 'GESTION_INCIDENCIAS', label: t('admin.audit_module.types.incidents', 'GestiÃ³n de Incidencias') },
-    { value: 'GESTION_USUARIOS', label: t('admin.audit_module.types.users', 'GestiÃ³n de Usuarios') },
+    { value: 'CRUD_VEHICULOS', label: t('admin.audit_module.types.vehicles', 'Gestión de Flota y Vehículos') },
+    { value: 'GESTION_CONTRATOS', label: t('admin.audit_module.types.contracts', 'Gestión de Contratos') },
+    { value: 'GESTION_INCIDENCIAS', label: t('admin.audit_module.types.incidents', 'Gestión de Incidencias') },
+    { value: 'GESTION_USUARIOS', label: t('admin.audit_module.types.users', 'Gestión de Usuarios') },
     { value: 'ROLES_PERMISOS', label: t('admin.audit_module.types.roles', 'Roles y Permisos') },
     { value: 'PROMOCIONES', label: t('admin.audit_module.types.promotions', 'Promociones y Descuentos') },
-    { value: 'REPORTES_EXPORTACION', label: t('admin.audit_module.types.reports', 'Reportes y ExportaciÃ³n') },
-    { value: 'SISTEMA_CONFIGURACION', label: t('admin.audit_module.types.system', 'ConfiguraciÃ³n del Sistema') },
-    { value: 'NAVEGACION', label: t('admin.audit_module.types.navigation', 'NavegaciÃ³n y CatÃ¡logo') },
+    { value: 'REPORTES_EXPORTACION', label: t('admin.audit_module.types.reports', 'Reportes y Exportación') },
+    { value: 'SISTEMA_CONFIGURACION', label: t('admin.audit_module.types.system', 'Configuración del Sistema') },
+    { value: 'NAVEGACION', label: t('admin.audit_module.types.navigation', 'Navegación y Catálogo') },
   ]
 
   const [logs, setLogs] = useState(() => accessAuditService.listForUser(user))
@@ -167,7 +167,7 @@ export default function AuditLogManagementPage({ branchOnly = false }) {
         if (logDate && logDate > endDate) return false
       }
 
-      // 6. BÃºsqueda por texto (Actor, Correo, AcciÃ³n, IP, ID, MÃ³dulo)
+      // 6. Búsqueda por texto (Actor, Correo, Acción, IP, ID, Módulo)
       if (search.trim()) {
         const query = search.toLowerCase()
         const matchId = String(log.id || '').toLowerCase().includes(query)
@@ -210,7 +210,7 @@ export default function AuditLogManagementPage({ branchOnly = false }) {
     if (res === 'EXITO' || res === 'EXITOSO') {
       return (
         <span className="audit-badge audit-badge--success">
-          <FaCheckCircle size={10} /> {t('admin.audit_module.results.success', 'Ã‰XITO')}
+          <FaCheckCircle size={10} /> {t('admin.audit_module.results.success', 'ÉXITO')}
         </span>
       )
     }
@@ -235,18 +235,18 @@ export default function AuditLogManagementPage({ branchOnly = false }) {
     )
   }
 
-  // ExportaciÃ³n Excel
+  // Exportación Excel
   const handleExportExcel = () => {
     const headers = [
       t('admin.audit_module.modal.copyId', 'ID Registro'),
       t('admin.audit_module.table.dateTime', 'Fecha / Hora'),
-      t('admin.audit_module.table.moduleType', 'MÃ³dulo / Tipo'),
+      t('admin.audit_module.table.moduleType', 'Módulo / Tipo'),
       t('admin.audit_module.table.actorUser', 'Actor / Usuario'),
       'Correo',
       t('admin.audit_module.actorRole', 'Rol'),
       t('admin.audit_module.table.branch', 'Sucursal'),
       'IP',
-      t('admin.audit_module.table.action', 'AcciÃ³n Realizada'),
+      t('admin.audit_module.table.action', 'Acción Realizada'),
       t('admin.audit_module.table.result', 'Resultado'),
       t('admin.audit_module.modal.reason', 'Motivo o Causa'),
     ]
@@ -269,8 +269,8 @@ export default function AuditLogManagementPage({ branchOnly = false }) {
 
     exportExcel({
       title: esEncargado
-        ? `${t('admin.audit_module.title', 'AuditorÃ­a')} - ${sucursalEncargado}`
-        : t('admin.audit_module.title', 'AuditorÃ­a y Registro de Actividad'),
+        ? `${t('admin.audit_module.title', 'Auditoría')} - ${sucursalEncargado}`
+        : t('admin.audit_module.title', 'Auditoría y Registro de Actividad'),
       headers,
       rows,
       kpis: [
@@ -288,15 +288,15 @@ export default function AuditLogManagementPage({ branchOnly = false }) {
     })
   }
 
-  // ExportaciÃ³n PDF
+  // Exportación PDF
   const handleExportPdf = () => {
     const headers = [
       t('admin.audit_module.table.dateTime', 'Fecha / Hora'),
-      t('admin.audit_module.table.moduleType', 'MÃ³dulo / Tipo'),
+      t('admin.audit_module.table.moduleType', 'Módulo / Tipo'),
       t('admin.audit_module.table.actorUser', 'Actor / Usuario'),
       t('admin.audit_module.table.branch', 'Sucursal'),
       t('admin.audit_module.table.ipDevice', 'IP / Dispositivo'),
-      t('admin.audit_module.table.action', 'AcciÃ³n Realizada'),
+      t('admin.audit_module.table.action', 'Acción Realizada'),
       t('admin.audit_module.table.result', 'Resultado'),
     ]
     const rows = filteredLogs.map((log) => {
@@ -314,8 +314,8 @@ export default function AuditLogManagementPage({ branchOnly = false }) {
 
     exportPdf({
       title: esEncargado
-        ? `${t('admin.audit_module.title', 'AuditorÃ­a')} - ${sucursalEncargado}`
-        : t('admin.audit_module.title', 'AuditorÃ­a y Registro de Actividad'),
+        ? `${t('admin.audit_module.title', 'Auditoría')} - ${sucursalEncargado}`
+        : t('admin.audit_module.title', 'Auditoría y Registro de Actividad'),
       headers,
       rows,
       filename: `auditoria_${esEncargado ? 'sucursal' : 'global'}_${new Date().toISOString().slice(0, 10)}`,
@@ -330,7 +330,7 @@ export default function AuditLogManagementPage({ branchOnly = false }) {
       t('admin.audit_module.table.actorUser', 'Actor / Correo'),
       t('admin.audit_module.table.branch', 'Sucursal'),
       'IP',
-      t('admin.audit_module.table.action', 'AcciÃ³n / Detalle'),
+      t('admin.audit_module.table.action', 'Acción / Detalle'),
       t('admin.audit_module.table.result', 'Resultado'),
     ]
     const rows = filteredLogs.map((log) => {
@@ -348,8 +348,8 @@ export default function AuditLogManagementPage({ branchOnly = false }) {
 
     printTable({
       title: esEncargado
-        ? `${t('admin.audit_module.title', 'AuditorÃ­a')} - ${sucursalEncargado}`
-        : t('admin.audit_module.title', 'AuditorÃ­a Centralizada y Registro de Actividad'),
+        ? `${t('admin.audit_module.title', 'Auditoría')} - ${sucursalEncargado}`
+        : t('admin.audit_module.title', 'Auditoría Centralizada y Registro de Actividad'),
       headers,
       rows,
       subtitle: `Generado por ${user?.nombre || 'Administrador'} (${user?.correo}) - ${new Date().toLocaleString()}`,
@@ -384,9 +384,9 @@ export default function AuditLogManagementPage({ branchOnly = false }) {
         <header className="audit-header">
           <div className="audit-header-titles">
             <span className="audit-eyebrow">
-              <FaShieldAlt size={12} /> {t('admin.audit_module.eyebrow', 'SupervisiÃ³n Forense y Seguridad')}
+              <FaShieldAlt size={12} /> {t('admin.audit_module.eyebrow', 'Supervisión Forense y Seguridad')}
             </span>
-            <h1 className="audit-title">{t('admin.audit_module.title', 'AuditorÃ­a y Registro de Actividad')}</h1>
+            <h1 className="audit-title">{t('admin.audit_module.title', 'Auditoría y Registro de Actividad')}</h1>
             <p className="audit-subtitle">
               {t('admin.audit_module.subtitle', 'Consolidado inmutable de todos los eventos, accesos, verificaciones 2FA, acciones CRUD y cambios de estado.')}
             </p>
@@ -409,12 +409,12 @@ export default function AuditLogManagementPage({ branchOnly = false }) {
             <strong>
               {esEncargado
                 ? t('admin.audit_module.branchScope', { branch: sucursalEncargado || 'Sucursal Autorizada' })
-                : t('admin.audit_module.globalScope', 'Alcance Global del Sistema (SupervisiÃ³n Total)')}
+                : t('admin.audit_module.globalScope', 'Alcance Global del Sistema (Supervisión Total)')}
             </strong>
             <p>
               {esEncargado
                 ? t('admin.audit_module.branchScopeDesc', 'Solo puedes consultar los eventos registrados para tu sucursal autorizada.')
-                : t('admin.audit_module.globalScopeDesc', 'SupervisiÃ³n completa de todas las sedes y mÃ³dulos de la plataforma.')}
+                : t('admin.audit_module.globalScopeDesc', 'Supervisión completa de todas las sedes y módulos de la plataforma.')}
             </p>
           </div>
         </div>
@@ -439,7 +439,7 @@ export default function AuditLogManagementPage({ branchOnly = false }) {
           <div
             className={`audit-kpi-card ${resultFilter === 'EXITO' ? 'audit-kpi-card--active' : ''}`}
             onClick={() => setResultFilter(resultFilter === 'EXITO' ? 'all' : 'EXITO')}
-            title={t('admin.audit_module.successfulEventsSub', 'Operaciones vÃ¡lidas')}
+            title={t('admin.audit_module.successfulEventsSub', 'Operaciones válidas')}
           >
             <div className="audit-kpi-card__head">
               <span className="audit-kpi-card__label">{t('admin.audit_module.successfulEvents', 'Exitosos')}</span>
@@ -448,7 +448,7 @@ export default function AuditLogManagementPage({ branchOnly = false }) {
               </span>
             </div>
             <p className="audit-kpi-card__value">{stats.exitosos}</p>
-            <span className="audit-kpi-card__sub">{t('admin.audit_module.successfulEventsSub', 'Operaciones vÃ¡lidas')}</span>
+            <span className="audit-kpi-card__sub">{t('admin.audit_module.successfulEventsSub', 'Operaciones válidas')}</span>
           </div>
 
           <div
@@ -482,7 +482,7 @@ export default function AuditLogManagementPage({ branchOnly = false }) {
           </div>
         </section>
 
-        {/* PANEL DE CONTROL, BÃšSQUEDA Y FILTROS */}
+        {/* PANEL DE CONTROL, BÚSQUEDA Y FILTROS */}
         <section className="audit-panel-card">
           <div className="audit-panel-head">
             <div className="audit-panel-head-title">
@@ -528,7 +528,7 @@ export default function AuditLogManagementPage({ branchOnly = false }) {
                 <FaSearch className="audit-search-input-icon" />
                 <input
                   type="text"
-                  placeholder={t('admin.audit_module.searchPlaceholder', 'Buscar por usuario, correo, IP, acciÃ³n o ID...')}
+                  placeholder={t('admin.audit_module.searchPlaceholder', 'Buscar por usuario, correo, IP, acción o ID...')}
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   className="audit-input audit-input--search"
@@ -566,7 +566,7 @@ export default function AuditLogManagementPage({ branchOnly = false }) {
                 className="audit-select"
               >
                 <option value="all">{t('admin.audit_module.allResults', 'Todos los resultados')}</option>
-                <option value="EXITO">{t('admin.audit_module.results.success', 'Ã‰xito')}</option>
+                <option value="EXITO">{t('admin.audit_module.results.success', 'Éxito')}</option>
                 <option value="FALLO">{t('admin.audit_module.results.failure', 'Fallo')}</option>
                 <option value="DENEGADO">{t('admin.audit_module.results.denied', 'Denegado')}</option>
                 <option value="ADVERTENCIA">{t('admin.audit_module.results.warning', 'Advertencia')}</option>
@@ -578,7 +578,7 @@ export default function AuditLogManagementPage({ branchOnly = false }) {
               className="audit-btn-toggle-filters"
               onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
             >
-              <FaSlidersH size={11} /> {mobileFiltersOpen ? t('admin.audit_module.lessFilters', 'Menos filtros') : t('admin.audit_module.moreFilters', 'MÃ¡s filtros')}
+              <FaSlidersH size={11} /> {mobileFiltersOpen ? t('admin.audit_module.lessFilters', 'Menos filtros') : t('admin.audit_module.moreFilters', 'Más filtros')}
             </button>
           </div>
 
@@ -655,12 +655,12 @@ export default function AuditLogManagementPage({ branchOnly = false }) {
           </div>
         </section>
 
-        {/* VISTA DUAL: TABLA PARA PANTALLAS GRANDES Y CARDS PARA MÃ“VIL */}
+        {/* VISTA DUAL: TABLA PARA PANTALLAS GRANDES Y CARDS PARA MÓVIL */}
         {filteredLogs.length === 0 ? (
           <div className="audit-empty-card">
             <FaShieldAlt className="audit-empty-icon" />
-            <h3>{t('admin.audit_module.empty.title', 'No se encontraron registros de auditorÃ­a')}</h3>
-            <p>{t('admin.audit_module.empty.desc', 'Prueba ajustando los criterios de bÃºsqueda o el rango de fechas.')}</p>
+            <h3>{t('admin.audit_module.empty.title', 'No se encontraron registros de auditoría')}</h3>
+            <p>{t('admin.audit_module.empty.desc', 'Prueba ajustando los criterios de búsqueda o el rango de fechas.')}</p>
             <button
               type="button"
               className="audit-btn-reset audit-btn-reset--inline"
@@ -678,11 +678,11 @@ export default function AuditLogManagementPage({ branchOnly = false }) {
                   <thead>
                     <tr>
                       <th>{t('admin.audit_module.table.dateTime', 'Fecha / Hora')}</th>
-                      <th>{t('admin.audit_module.table.moduleType', 'MÃ³dulo / Tipo')}</th>
+                      <th>{t('admin.audit_module.table.moduleType', 'Módulo / Tipo')}</th>
                       <th>{t('admin.audit_module.table.actorUser', 'Actor / Usuario')}</th>
                       <th>{t('admin.audit_module.table.branch', 'Sucursal')}</th>
                       <th>{t('admin.audit_module.table.ipDevice', 'IP / Dispositivo')}</th>
-                      <th>{t('admin.audit_module.table.action', 'AcciÃ³n Realizada')}</th>
+                      <th>{t('admin.audit_module.table.action', 'Acción Realizada')}</th>
                       <th>{t('admin.audit_module.table.result', 'Resultado')}</th>
                       <th style={{ textAlign: 'center' }}>{t('admin.audit_module.table.detail', 'Detalle')}</th>
                     </tr>
@@ -702,7 +702,7 @@ export default function AuditLogManagementPage({ branchOnly = false }) {
                             </span>
                           </td>
 
-                          {/* MÃ³dulo / Tipo */}
+                          {/* Módulo / Tipo */}
                           <td className="audit-td-module">
                             <span className="audit-module-pill">{log.tipo}</span>
                             <span className="audit-module-name">{log.modulo}</span>
@@ -732,7 +732,7 @@ export default function AuditLogManagementPage({ branchOnly = false }) {
                             </span>
                           </td>
 
-                          {/* AcciÃ³n Realizada */}
+                          {/* Acción Realizada */}
                           <td className="audit-td-action">
                             <p className="audit-action-text">{log.accion}</p>
                             {log.motivo && (
@@ -766,7 +766,7 @@ export default function AuditLogManagementPage({ branchOnly = false }) {
               </div>
             </div>
 
-            {/* 2. VISTA DE CARDS PARA MÃ“VILES */}
+            {/* 2. VISTA DE CARDS PARA MÓVILES */}
             <div className="audit-cards-view">
               {filteredLogs.map((log) => {
                 const d = new Date(log.fecha)
@@ -817,7 +817,7 @@ export default function AuditLogManagementPage({ branchOnly = false }) {
               <div className="audit-modal-head">
                 <div className="audit-modal-head-title">
                   <span className="audit-modal-eyebrow">
-                    <FaShieldAlt size={11} /> {t('admin.audit_module.modal.eyebrow', 'REGISTRO FORENSE DE AUDITORÃA')}
+                    <FaShieldAlt size={11} /> {t('admin.audit_module.modal.eyebrow', 'REGISTRO FORENSE DE AUDITORÍA')}
                   </span>
                   <h2>{selectedLogModal.id}</h2>
                 </div>
@@ -866,7 +866,7 @@ export default function AuditLogManagementPage({ branchOnly = false }) {
                   </div>
 
                   <div className="audit-modal-meta-item">
-                    <span className="audit-modal-meta-label">{t('admin.audit_module.modal.moduleType', 'MÃ³dulo / Tipo')}</span>
+                    <span className="audit-modal-meta-label">{t('admin.audit_module.modal.moduleType', 'Módulo / Tipo')}</span>
                     <strong>{selectedLogModal.modulo}</strong>
                     <small>{selectedLogModal.tipo}</small>
                   </div>
@@ -883,7 +883,7 @@ export default function AuditLogManagementPage({ branchOnly = false }) {
                   </div>
 
                   <div className="audit-modal-meta-item">
-                    <span className="audit-modal-meta-label">{t('admin.audit_module.modal.ipAddress', 'DirecciÃ³n IP')}</span>
+                    <span className="audit-modal-meta-label">{t('admin.audit_module.modal.ipAddress', 'Dirección IP')}</span>
                     <strong style={{ fontFamily: 'monospace' }}>{selectedLogModal.ip}</strong>
                   </div>
 
@@ -893,9 +893,9 @@ export default function AuditLogManagementPage({ branchOnly = false }) {
                   </div>
                 </div>
 
-                {/* AcciÃ³n Registrada */}
+                {/* Acción Registrada */}
                 <div className="audit-modal-section">
-                  <span className="audit-modal-meta-label">{t('admin.audit_module.modal.action', 'AcciÃ³n Registrada')}</span>
+                  <span className="audit-modal-meta-label">{t('admin.audit_module.modal.action', 'Acción Registrada')}</span>
                   <div className="audit-modal-box">
                     <p>{selectedLogModal.accion}</p>
                   </div>
@@ -911,7 +911,7 @@ export default function AuditLogManagementPage({ branchOnly = false }) {
                   </div>
                 )}
 
-                {/* ConversiÃ³n de Moneda si el evento contiene montos */}
+                {/* Conversión de Moneda si el evento contiene montos */}
                 {selectedLogModal.detalles &&
                   (selectedLogModal.detalles.total ||
                     selectedLogModal.detalles.precioNuevo ||
@@ -919,7 +919,7 @@ export default function AuditLogManagementPage({ branchOnly = false }) {
                     selectedLogModal.detalles.precioAnterior) && (
                     <div className="audit-modal-section">
                       <span className="audit-modal-meta-label">
-                        {t('admin.audit_module.modal.currencyConversion', 'ConversiÃ³n Monetaria (COP â‡„ USD)')}
+                        {t('admin.audit_module.modal.currencyConversion', 'Conversión Monetaria (COP â‡„ USD)')}
                       </span>
                       <div className="audit-modal-currency-card">
                         <div className="audit-currency-box audit-currency-box--cop">
@@ -937,7 +937,7 @@ export default function AuditLogManagementPage({ branchOnly = false }) {
                         </div>
                         <span className="audit-currency-transfer-icon">â‡„</span>
                         <div className="audit-currency-box audit-currency-box--usd">
-                          <span className="audit-currency-label">{t('admin.audit_module.modal.usdLabel', 'DÃ³lares Americanos')}</span>
+                          <span className="audit-currency-label">{t('admin.audit_module.modal.usdLabel', 'Dólares Americanos')}</span>
                           <strong>
                             â‰ˆ $
                             {Math.round(
@@ -972,7 +972,7 @@ export default function AuditLogManagementPage({ branchOnly = false }) {
                 <div className="audit-modal-watermark">
                   <FaLock size={13} className="audit-modal-watermark-icon" />
                   <span>
-                    {t('admin.audit_module.modal.watermark', 'Este registro de auditorÃ­a es inmutable y no puede ser alterado ni eliminado segÃºn las normativas de trazabilidad de la plataforma.')}
+                    {t('admin.audit_module.modal.watermark', 'Este registro de auditoría es inmutable y no puede ser alterado ni eliminado según las normativas de trazabilidad de la plataforma.')}
                   </span>
                 </div>
               </div>

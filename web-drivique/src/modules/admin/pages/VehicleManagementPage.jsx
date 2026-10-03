@@ -51,7 +51,7 @@ const EMPTY = {
   sucursal: "",
   precioLimitado: "", // Used as Tarifa Diaria
   aplicaPicoYPlaca: "", // Pico y Placa manual override
-  estadoEfectivo: "disponible", // Estado automÃ¡tico al crear
+  estadoEfectivo: "disponible", // Estado automático al crear
   imagenes: [],
 };
 
@@ -87,7 +87,7 @@ export default function VehicleManagementPage() {
   const { tema, moneda, tasaUSD } = useLanding();
   const user = useAuthStore((state) => state.usuario);
 
-  // DetecciÃ³n consistente de rol mediante accessControl / store
+  // Detección consistente de rol mediante accessControl / store
   const esEncargado =
     user?.rol === ROLES.BRANCH_MANAGER ||
     user?.rol === "encargado" ||
@@ -96,10 +96,10 @@ export default function VehicleManagementPage() {
 
   // Sucursal asignada para el encargado
   const sucursalAsignada =
-    user?.sucursal || user?.sucursalId || user?.sucursalAsignada || "Alamo BogotÃ¡ - Aeropuerto";
+    user?.sucursal || user?.sucursalId || user?.sucursalAsignada || "Alamo Bogotá - Aeropuerto";
   const assignedBranchKey = normalizeBranch(sucursalAsignada);
 
-  // PestaÃ±as activas: Encargado inicia en 'vehiculos' (o 'flotas'); Admin en 'sede_central'
+  // Pestañas activas: Encargado inicia en 'vehiculos' (o 'flotas'); Admin en 'sede_central'
   const [activeTab, setActiveTab] = useState(() => (esEncargado ? "vehiculos" : "sede_central"));
 
   const [vehicles, setVehicles] = useState(() => vehicleManagementService.list());
@@ -118,7 +118,7 @@ export default function VehicleManagementPage() {
   const [notice, setNotice] = useState("");
   const [zoomImage, setZoomImage] = useState(null);
   
-  // Agregar un estado local para la actualizaciÃ³n rÃ¡pida
+  // Agregar un estado local para la actualización rápida
   const [updatingVehicleId, setUpdatingVehicleId] = useState(null);
 
   const branches = useMemo(
@@ -130,7 +130,7 @@ export default function VehicleManagementPage() {
     []
   );
 
-  // Mapeo / Filtro de vehÃ­culos
+  // Mapeo / Filtro de vehículos
   const filteredVehicles = useMemo(() => {
     const term = search.trim().toLocaleLowerCase();
     return vehicles
@@ -152,7 +152,7 @@ export default function VehicleManagementPage() {
       .sort((a, b) => a.nombre.localeCompare(b.nombre));
   }, [branchFilter, search, stateFilter, vehicles, esEncargado, assignedBranchKey]);
 
-  // Filtro de categorÃ­as
+  // Filtro de categorías
   const filteredCategories = useMemo(() => {
     const term = search.trim().toLowerCase();
     return categories.filter(
@@ -162,7 +162,7 @@ export default function VehicleManagementPage() {
     );
   }, [search, categories]);
 
-  // Contar vehÃ­culos de una categorÃ­a en la sucursal del encargado
+  // Contar vehículos de una categoría en la sucursal del encargado
   const getVehiclesInMyBranchCount = (catName) => {
     const norm = normalize(catName);
     return vehicles.filter(
@@ -172,7 +172,7 @@ export default function VehicleManagementPage() {
     ).length;
   };
 
-  // Contar vehÃ­culos totales de una categorÃ­a en el sistema (Admin General)
+  // Contar vehículos totales de una categoría en el sistema (Admin General)
   const getTotalVehiclesInCategory = (catName) => {
     const norm = normalize(catName);
     return vehicles.filter(
@@ -189,17 +189,17 @@ export default function VehicleManagementPage() {
         nombre: "Sede Central Principal Drivique",
         nit: "901.458.920-3",
         razonSocial: "Drivique Colombia S.A.S.",
-        direccion: "Cl. 100 #19-61, Edificio Capital Tower, BogotÃ¡ D.C.",
+        direccion: "Cl. 100 #19-61, Edificio Capital Tower, Bogotá D.C.",
         telefono: "+57 (601) 745-0000",
         correo: "contacto@drivique.com.co",
         director: "Carlos Eduardo Restrepo",
         estado: "Activa",
         descripcion:
-          "Drivique es la empresa lÃ­der en soluciones de movilidad y alquiler de vehÃ­culos, ofreciendo un servicio premium con presencia a nivel nacional.",
+          "Drivique es la empresa líder en soluciones de movilidad y alquiler de vehículos, ofreciendo un servicio premium con presencia a nivel nacional.",
         mision:
-          "Brindar a nuestros clientes la mejor experiencia de alquiler de vehÃ­culos con un servicio Ã¡gil, seguro y de alta calidad.",
+          "Brindar a nuestros clientes la mejor experiencia de alquiler de vehículos con un servicio ágil, seguro y de alta calidad.",
         vision:
-          "Ser reconocidos para el 2030 como la principal empresa de movilidad y renta de autos en AmÃ©rica Latina, destacando por nuestra innovaciÃ³n.",
+          "Ser reconocidos para el 2030 como la principal empresa de movilidad y renta de autos en América Latina, destacando por nuestra innovación.",
       },
     ],
     []
@@ -227,18 +227,18 @@ export default function VehicleManagementPage() {
     );
   }, [search, branches]);
 
-  // Headers y exportables para tabla de vehÃ­culos (Condicionados por rol)
+  // Headers y exportables para tabla de vehículos (Condicionados por rol)
   const vehicleHeaders = useMemo(() => {
     return [
       "ID",
       t("admin.vehiclesManagement.fields.photo", "IMAGEN"),
-      t("admin.vehiclesManagement.fields.vehicle", "NOMBRE VEHÃCULO"),
+      t("admin.vehiclesManagement.fields.vehicle", "NOMBRE VEHÍCULO"),
       t("admin.vehiclesManagement.fields.plate", "PLACA"),
       ...(!esEncargado ? [t("admin.vehiclesManagement.fields.branch", "SUCURSAL")] : []),
-      t("admin.vehiclesManagement.fields.category", "CATEGORÃA"),
-      t("admin.vehiclesManagement.fields.year", "AÃ‘O"),
+      t("admin.vehiclesManagement.fields.category", "CATEGORÍA"),
+      t("admin.vehiclesManagement.fields.year", "AÑO"),
       t("admin.vehiclesManagement.fields.color", "COLOR"),
-      t("admin.vehiclesManagement.fields.transmission", "TRANSMISIÃ“N"),
+      t("admin.vehiclesManagement.fields.transmission", "TRANSMISIÓN"),
       t("admin.vehiclesManagement.fields.fuel", "COMBUSTIBLE"),
       t("admin.vehiclesManagement.fields.price", "TARIFA DIARIA"),
       t("admin.vehiclesManagement.fields.pico", "PICO Y PLACA"),
@@ -256,7 +256,7 @@ export default function VehicleManagementPage() {
       vehicle.categoria,
       vehicle.ano || vehicle.año || "—",
       vehicle.color || "—",
-      vehicle.transmision || t("admin.vehiclesManagement.transmission.automatic", "AutomÃ¡tica"),
+      vehicle.transmision || t("admin.vehiclesManagement.transmission.automatic", "Automática"),
       vehicle.combustible || t("admin.vehiclesManagement.fuel.gasoline", "Gasolina"),
       formatCurrency(
         vehicle.precioLimitado || vehicle.precio || 0,
@@ -264,7 +264,7 @@ export default function VehicleManagementPage() {
         tasaUSD
       ),
       vehicle.aplicaPicoYPlaca === "Si" || vehicle.picoYPlaca?.dia
-        ? t("admin.vehiclesManagement.applies", "SÃ­ aplica")
+        ? t("admin.vehiclesManagement.applies", "Sí aplica")
         : t("admin.vehiclesManagement.doesNotApply", "No aplica"),
       t(`admin.vehiclesManagement.states.${vehicle.estadoEfectivo}`, vehicle.estadoEfectivo),
     ]);
@@ -273,8 +273,8 @@ export default function VehicleManagementPage() {
   const vehicleExportData = useMemo(() => {
     return {
       title: esEncargado
-        ? `Flota de VehÃ­culos - ${sucursalAsignada}`
-        : t("admin.vehiclesManagement.exportTitle", "GestiÃ³n de Flota y VehÃ­culos Drivique"),
+        ? `Flota de Vehículos - ${sucursalAsignada}`
+        : t("admin.vehiclesManagement.exportTitle", "Gestión de Flota y Vehículos Drivique"),
       headers: vehicleHeaders,
       rows: vehicleRows,
       items: filteredVehicles,
@@ -282,15 +282,15 @@ export default function VehicleManagementPage() {
     };
   }, [esEncargado, sucursalAsignada, vehicleHeaders, vehicleRows, filteredVehicles, t]);
 
-  // Exportable para CategorÃ­as (Solo Admin General)
+  // Exportable para Categorías (Solo Admin General)
   const categoryHeaders = [
     "ID",
-    t("categoriesManagement.categoryName", "Nombre de la CategorÃ­a"),
-    t("categoriesManagement.description", "DescripciÃ³n"),
+    t("categoriesManagement.categoryName", "Nombre de la Categoría"),
+    t("categoriesManagement.description", "Descripción"),
     t("categoriesManagement.branchesOffering", "Sucursales que la ofrecen"),
-    t("categoriesManagement.totalVehicles", "Total VehÃ­culos"),
+    t("categoriesManagement.totalVehicles", "Total Vehículos"),
     t("categoriesManagement.suggestedRate", "Tarifa Base Sugerida"),
-    t("categoriesManagement.suggestedDeposit", "DepÃ³sito Sugerido"),
+    t("categoriesManagement.suggestedDeposit", "Depósito Sugerido"),
     t("categoriesManagement.status", "Estado"),
   ];
 
@@ -303,14 +303,14 @@ export default function VehicleManagementPage() {
       gf.descripcion,
       ratio,
       `${count} ${t("categoriesManagement.units", "unidades")}`,
-      gf.tarifaBaseSugerida ? formatCurrency(gf.tarifaBaseSugerida, moneda, tasaUSD) : "â€”",
-      gf.depositoGarantiaSugerido ? formatCurrency(gf.depositoGarantiaSugerido, moneda, tasaUSD) : "â€”",
+      gf.tarifaBaseSugerida ? formatCurrency(gf.tarifaBaseSugerida, moneda, tasaUSD) : "—",
+      gf.depositoGarantiaSugerido ? formatCurrency(gf.depositoGarantiaSugerido, moneda, tasaUSD) : "—",
       gf.activo !== false ? t("categoriesManagement.active", "Activa") : t("categoriesManagement.inactive", "Inactiva"),
     ];
   });
 
   const categoryExportData = {
-    title: t("categoriesManagement.title", "CategorÃ­as de VehÃ­culos"),
+    title: t("categoriesManagement.title", "Categorías de Vehículos"),
     headers: categoryHeaders,
     rows: categoryRows,
     items: filteredCategories,
@@ -322,19 +322,19 @@ export default function VehicleManagementPage() {
     setError("");
   };
 
-  // Toggle de categorÃ­a para la sucursal del encargado
+  // Toggle de categoría para la sucursal del encargado
   const handleToggleCategory = (catName, currentEnabled) => {
     const nextState = !currentEnabled;
     branchCategoryService.toggleBranchCategory(sucursalAsignada, catName, nextState);
     setBranchCategoriesMap(branchCategoryService.getBranchCategoriesMap());
     setNotice(
       nextState
-        ? t("categoriesManagement.enabledForBranchNotice", "CategorÃ­a habilitada para tu sucursal")
-        : t("categoriesManagement.disabledForBranchNotice", "CategorÃ­a deshabilitada para tu sucursal")
+        ? t("categoriesManagement.enabledForBranchNotice", "Categoría habilitada para tu sucursal")
+        : t("categoriesManagement.disabledForBranchNotice", "Categoría deshabilitada para tu sucursal")
     );
   };
 
-  // CategorÃ­as activas disponibles en el formulario segÃºn la sucursal seleccionada
+  // Categorías activas disponibles en el formulario según la sucursal seleccionada
   const targetBranchForForm = esEncargado
     ? sucursalAsignada
     : form.sucursal || branches[0]?.nombre || "";
@@ -388,10 +388,10 @@ export default function VehicleManagementPage() {
     try {
       setUpdatingVehicleId(vehicleId);
       const vehicleToUpdate = vehicles.find((v) => Number(v.id) === Number(vehicleId));
-      if (!vehicleToUpdate) throw new Error("VehÃ­culo no encontrado");
+      if (!vehicleToUpdate) throw new Error("Vehículo no encontrado");
 
       if (vehicleManagementService.activeReservationCount(vehicleId) > 0 && newState !== "reservado") {
-         alert("No puedes cambiar el estado manualmente porque este vehÃ­culo tiene una reserva activa.");
+         alert("No puedes cambiar el estado manualmente porque este vehículo tiene una reserva activa.");
          return;
       }
 
@@ -399,7 +399,7 @@ export default function VehicleManagementPage() {
       vehicleManagementService.update(vehicleId, updatedData, user);
       
       setVehicles(vehicleManagementService.list());
-      setNotice(`Estado del vehÃ­culo actualizado a ${newState === "disponible" ? "Disponible" : "Mantenimiento"}.`);
+      setNotice(`Estado del vehículo actualizado a ${newState === "disponible" ? "Disponible" : "Mantenimiento"}.`);
     } catch (error) {
       console.error("Error updating status:", error);
       alert("No se pudo cambiar el estado.");
@@ -423,8 +423,8 @@ export default function VehicleManagementPage() {
     setCategories(updated);
     setNotice(
       categoryForm.id
-        ? t("categoriesManagement.updatedNotice", "CategorÃ­a actualizada correctamente")
-        : t("categoriesManagement.createdNotice", "CategorÃ­a creada correctamente")
+        ? t("categoriesManagement.updatedNotice", "Categoría actualizada correctamente")
+        : t("categoriesManagement.createdNotice", "Categoría creada correctamente")
     );
     close();
   };
@@ -434,7 +434,7 @@ export default function VehicleManagementPage() {
     const updated = branchCategoryService.deleteCategory(modal.category.id);
     setCategories(updated);
     setBranchCategoriesMap(branchCategoryService.getBranchCategoriesMap());
-    setNotice(t("categoriesManagement.deletedNotice", "CategorÃ­a eliminada correctamente"));
+    setNotice(t("categoriesManagement.deletedNotice", "Categoría eliminada correctamente"));
     close();
   };
 
@@ -455,7 +455,7 @@ export default function VehicleManagementPage() {
           modal.vehicle
             ? "admin.vehiclesManagement.messages.updated"
             : "admin.vehiclesManagement.messages.created",
-          "VehÃ­culo guardado correctamente"
+          "Vehículo guardado correctamente"
         )
       );
       close();
@@ -463,7 +463,7 @@ export default function VehicleManagementPage() {
       setError(
         t(
           `admin.vehiclesManagement.errors.${caught.message}`,
-          caught.message || "Error al procesar vehÃ­culo"
+          caught.message || "Error al procesar vehículo"
         )
       );
     }
@@ -475,7 +475,7 @@ export default function VehicleManagementPage() {
       vehicleManagementService.remove(modal.vehicle.id, user);
       setVehicles(vehicleManagementService.list());
       setNotice(
-        t("admin.vehiclesManagement.messages.deleted", "VehÃ­culo eliminado correctamente")
+        t("admin.vehiclesManagement.messages.deleted", "Vehículo eliminado correctamente")
       );
       close();
     } catch (caught) {
@@ -512,7 +512,7 @@ export default function VehicleManagementPage() {
       setError(
         t(
           "admin.vehiclesManagement.errors.imageSize",
-          "Las imÃ¡genes no deben superar 1MB"
+          "Las imágenes no deben superar 1MB"
         )
       );
       event.target.value = "";
@@ -544,7 +544,7 @@ export default function VehicleManagementPage() {
       setError(
         t(
           "admin.vehiclesManagement.errors.imageSize",
-          "Las imÃ¡genes no deben superar 1MB"
+          "Las imágenes no deben superar 1MB"
         )
       );
       event.target.value = "";
@@ -578,18 +578,18 @@ export default function VehicleManagementPage() {
       <ManagementSidebar branchOnly={esEncargado} />
       <main className="management-main" style={{ padding: "24px 32px" }}>
         <div className="cities-container" style={{ maxWidth: "100%" }}>
-          {/* TOPBAR OPERATIVA UNIFICADA (IdÃ©ntica a Mi Sucursal y Dashboard) */}
+          {/* TOPBAR OPERATIVA UNIFICADA (Idéntica a Mi Sucursal y Dashboard) */}
           <div className="branch-topbar">
             <div className="branch-topbar-brand-title">
               <span className="branch-topbar-badge">
                 {esEncargado
-                  ? t("fleetVehicles.eyebrowManager", "GESTIÃ“N DE SUCURSAL")
-                  : t("fleetVehicles.eyebrowAdmin", "ADMINISTRACIÃ“N GENERAL")}
+                  ? t("fleetVehicles.eyebrowManager", "GESTIÓN DE SUCURSAL")
+                  : t("fleetVehicles.eyebrowAdmin", "ADMINISTRACIÓN GENERAL")}
               </span>
               <h1 className="branch-topbar-heading">
                 {esEncargado
-                  ? t("fleetVehicles.title", "Flota y VehÃ­culos")
-                  : t("fleetVehicles.titleAdmin", "GestiÃ³n de VehÃ­culos")}
+                  ? t("fleetVehicles.title", "Flota y Vehículos")
+                  : t("fleetVehicles.titleAdmin", "Gestión de Vehículos")}
               </h1>
             </div>
 
@@ -602,7 +602,7 @@ export default function VehicleManagementPage() {
                   </div>
                   <div className="branch-user-info-text">
                     <strong className="branch-user-name">
-                      {user?.nombre || "AndrÃ©s Felipe Castro"}
+                      {user?.nombre || "Andrés Felipe Castro"}
                     </strong>
                     <span className="branch-user-role">
                       {user?.rol || "encargado_sucursal"}
@@ -621,12 +621,12 @@ export default function VehicleManagementPage() {
                 onClick={() => setNotice("")}
                 aria-label={t("common.close", "Cerrar")}
               >
-                Ã—
+                á—
               </button>
             </div>
           )}
 
-          {/* PestaÃ±as de Secciones y BotÃ³n Crear VehÃ­culo a la derecha */}
+          {/* Pestañas de Secciones y Botón Crear Vehículo a la derecha */}
           <div className="fleet-attached-tabs">
             <div className="fleet-tabs-nav">
               {!esEncargado && (
@@ -652,14 +652,14 @@ export default function VehicleManagementPage() {
                 onClick={() => setActiveTab("flotas")}
                 className={`fleet-tab-btn ${activeTab === "flotas" ? "is-active" : ""}`}
               >
-                {t("fleetVehicles.tabCategories", "CategorÃ­as")}
+                {t("fleetVehicles.tabCategories", "Categorías")}
               </button>
               <button
                 type="button"
                 onClick={() => setActiveTab("vehiculos")}
                 className={`fleet-tab-btn ${activeTab === "vehiculos" ? "is-active" : ""}`}
               >
-                {t("fleetVehicles.tabVehicles", "VehÃ­culos")}
+                {t("fleetVehicles.tabVehicles", "Vehículos")}
               </button>
             </div>
 
@@ -670,9 +670,9 @@ export default function VehicleManagementPage() {
                   type="button"
                   onClick={() => {
                     if (activeTab === "sede_central") {
-                      setNotice("Editando parÃ¡metros corporativos de Drivique Colombia.");
+                      setNotice("Editando parámetros corporativos de Drivique Colombia.");
                     } else if (activeTab === "sucursales") {
-                      setNotice("Para registrar nuevas sedes, dirÃ­gete al mÃ³dulo de Sucursales.");
+                      setNotice("Para registrar nuevas sedes, dirígete al módulo de Sucursales.");
                     } else if (activeTab === "flotas") {
                       openCreateCategory();
                     } else {
@@ -683,8 +683,8 @@ export default function VehicleManagementPage() {
                 >
                   {activeTab === "sede_central" && "Editar Matriz"}
                   {activeTab === "sucursales" && "+ Crear Sucursal"}
-                  {activeTab === "flotas" && t("fleetVehicles.createCategory", "+ Crear CategorÃ­a")}
-                  {activeTab === "vehiculos" && t("fleetVehicles.createVehicle", "+ Crear VehÃ­culo")}
+                  {activeTab === "flotas" && t("fleetVehicles.createCategory", "+ Crear Categoría")}
+                  {activeTab === "vehiculos" && t("fleetVehicles.createVehicle", "+ Crear Vehículo")}
                 </button>
               )}
             </div>
@@ -811,7 +811,7 @@ export default function VehicleManagementPage() {
                             fontWeight: 700,
                           }}
                         >
-                          Nuestra MisiÃ³n
+                          Nuestra Misión
                         </h3>
                         <p
                           style={{
@@ -855,7 +855,7 @@ export default function VehicleManagementPage() {
                             fontWeight: 700,
                           }}
                         >
-                          Nuestra VisiÃ³n
+                          Nuestra Visión
                         </h3>
                         <p
                           style={{
@@ -896,11 +896,11 @@ export default function VehicleManagementPage() {
                         title: "Sucursales",
                         headers: [
                           "ID",
-                          "CÃ³digo",
+                          "Código",
                           "Sucursal",
                           "Ciudad",
-                          "DirecciÃ³n",
-                          "TelÃ©fono",
+                          "Dirección",
+                          "Teléfono",
                           "Capacidad",
                           "Horario",
                           "Estado",
@@ -930,11 +930,11 @@ export default function VehicleManagementPage() {
                         title: "Sucursales",
                         headers: [
                           "ID",
-                          "CÃ³digo",
+                          "Código",
                           "Sucursal",
                           "Ciudad",
-                          "DirecciÃ³n",
-                          "TelÃ©fono",
+                          "Dirección",
+                          "Teléfono",
                           "Capacidad",
                           "Horario",
                           "Estado",
@@ -964,11 +964,11 @@ export default function VehicleManagementPage() {
                         title: "Sucursales",
                         headers: [
                           "ID",
-                          "CÃ³digo",
+                          "Código",
                           "Sucursal",
                           "Ciudad",
-                          "DirecciÃ³n",
-                          "TelÃ©fono",
+                          "Dirección",
+                          "Teléfono",
                           "Capacidad",
                           "Horario",
                           "Estado",
@@ -996,13 +996,13 @@ export default function VehicleManagementPage() {
                   <thead>
                     <tr>
                       <th>ID</th>
-                      <th>CÃ“DIGO SEDE</th>
+                      <th>CÓDIGO SEDE</th>
                       <th>NOMBRE SUCURSAL</th>
                       <th>CIUDAD</th>
-                      <th>DIRECCIÃ“N FÃSICA</th>
-                      <th>TELÃ‰FONO CONTACTO</th>
+                      <th>DIRECCIÓN FÍSICA</th>
+                      <th>TELÉFONO CONTACTO</th>
                       <th>CAPACIDAD PARQUEADERO</th>
-                      <th>HORARIO ATENCIÃ“N</th>
+                      <th>HORARIO ATENCIÓN</th>
                       <th>ESTADO</th>
                       <th style={{ textAlign: "center" }}>ACCIONES</th>
                     </tr>
@@ -1016,10 +1016,10 @@ export default function VehicleManagementPage() {
                         </td>
                         <td>{b.nombre}</td>
                         <td>{b.ciudad || "Colombia"}</td>
-                        <td>{b.direccion || "DirecciÃ³n comercial de sede"}</td>
+                        <td>{b.direccion || "Dirección comercial de sede"}</td>
                         <td>{b.telefono || "300 000 0000"}</td>
                         <td>{b.capacidadVehiculos || 25} autos</td>
-                        <td>{b.horario || "Lun a SÃ¡b 7:00 am - 7:00 pm"}</td>
+                        <td>{b.horario || "Lun a Sáb 7:00 am - 7:00 pm"}</td>
                         <td>
                           <span
                             className={`status-pill ${b.estado === "inactiva" ? "is-red" : "is-green"}`}
@@ -1039,7 +1039,7 @@ export default function VehicleManagementPage() {
                               type="button"
                               className="btn-row-action"
                               onClick={() =>
-                                setNotice(`Modificando parÃ¡metros de la ${b.nombre}.`)
+                                setNotice(`Modificando parámetros de la ${b.nombre}.`)
                               }
                             >
                               Editar
@@ -1054,7 +1054,7 @@ export default function VehicleManagementPage() {
             </section>
           )}
 
-          {/* TAB 3: CATEGORÃAS (Diferenciadas estrictamente por rol) */}
+          {/* TAB 3: CATEGORÍAS (Diferenciadas estrictamente por rol) */}
           {activeTab === "flotas" && (
             <section className="cities-card attached-to-tabs">
               <div className="fleet-datatable-header">
@@ -1068,7 +1068,7 @@ export default function VehicleManagementPage() {
                     onChange={(e) => setSearch(e.target.value)}
                     placeholder={t(
                       "categoriesManagement.searchPlaceholder",
-                      "Buscar categorÃ­a por nombre o descripciÃ³n..."
+                      "Buscar categoría por nombre o descripción..."
                     )}
                   />
                   {!esEncargado && (
@@ -1079,12 +1079,12 @@ export default function VehicleManagementPage() {
                       style={{ whiteSpace: "nowrap", padding: "0 24px" }}
                     >
                       <FaPlus style={{ marginRight: 8 }} />{" "}
-                      {t("categoriesManagement.createTitle", "Crear CategorÃ­a")}
+                      {t("categoriesManagement.createTitle", "Crear Categoría")}
                     </button>
                   )}
                 </div>
 
-                {/* Botones de exportaciÃ³n: Solo para Administrador General */}
+                {/* Botones de exportación: Solo para Administrador General */}
                 {!esEncargado && (
                   <div className="export-pills-group">
                     <button
@@ -1117,7 +1117,7 @@ export default function VehicleManagementPage() {
                   <h2>
                     {t(
                       "categoriesManagement.noCategoriesFound",
-                      "No se encontraron categorÃ­as"
+                      "No se encontraron categorías"
                     )}
                   </h2>
                 </div>
@@ -1129,29 +1129,29 @@ export default function VehicleManagementPage() {
                         /* CABECERAS PARA ENCARGADO DE SUCURSAL */
                         <tr>
                           <th style={{ width: 60 }}>ID</th>
-                          <th>{t("categoriesManagement.categoryName", "NOMBRE DE LA CATEGORÃA")}</th>
-                          <th>{t("categoriesManagement.description", "DESCRIPCIÃ“N")}</th>
+                          <th>{t("categoriesManagement.categoryName", "NOMBRE DE LA CATEGORÍA")}</th>
+                          <th>{t("categoriesManagement.description", "DESCRIPCIÓN")}</th>
                           <th style={{ textAlign: "center", whiteSpace: "nowrap" }}>
-                            {t("categoriesManagement.vehiclesInMyBranch", "VEHÃCULOS EN MI SUCURSAL")}
+                            {t("categoriesManagement.vehiclesInMyBranch", "VEHÍCULOS EN MI SUCURSAL")}
                           </th>
                           <th style={{ textAlign: "center", minWidth: 200, whiteSpace: "nowrap" }}>
-                            {t("categoriesManagement.offerThisCategory", "OFREZCO ESTA CATEGORÃA")}
+                            {t("categoriesManagement.offerThisCategory", "OFREZCO ESTA CATEGORÍA")}
                           </th>
                         </tr>
                       ) : (
                         /* CABECERAS PARA ADMINISTRADOR GENERAL */
                         <tr>
                           <th style={{ width: 60 }}>ID</th>
-                          <th>{t("categoriesManagement.categoryName", "NOMBRE DE LA CATEGORÃA")}</th>
-                          <th>{t("categoriesManagement.description", "DESCRIPCIÃ“N")}</th>
+                          <th>{t("categoriesManagement.categoryName", "NOMBRE DE LA CATEGORÍA")}</th>
+                          <th>{t("categoriesManagement.description", "DESCRIPCIÓN")}</th>
                           <th style={{ textAlign: "center" }}>
                             {t("categoriesManagement.branchesOffering", "SUCURSALES QUE LA OFRECEN")}
                           </th>
                           <th style={{ textAlign: "center" }}>
-                            {t("categoriesManagement.totalVehicles", "TOTAL VEHÃCULOS")}
+                            {t("categoriesManagement.totalVehicles", "TOTAL VEHÍCULOS")}
                           </th>
                           <th>{t("categoriesManagement.suggestedRate", "TARIFA BASE SUGERIDA")}</th>
-                          <th>{t("categoriesManagement.suggestedDeposit", "DEPÃ“SITO SUGERIDO")}</th>
+                          <th>{t("categoriesManagement.suggestedDeposit", "DEPÓSITO SUGERIDO")}</th>
                           <th style={{ textAlign: "center" }}>
                             {t("categoriesManagement.status", "ESTADO")}
                           </th>
@@ -1200,7 +1200,7 @@ export default function VehicleManagementPage() {
                                   }}
                                 >
                                   {vehiclesInBranch}{" "}
-                                  {vehiclesInBranch === 1 ? "vehÃ­culo" : "vehÃ­culos"}
+                                  {vehiclesInBranch === 1 ? "vehículo" : "vehículos"}
                                 </span>
                               </td>
                               <td style={{ textAlign: "center" }}>
@@ -1219,7 +1219,7 @@ export default function VehicleManagementPage() {
                                     }`}
                                   >
                                     {isOfferedInMyBranch
-                                      ? `SÃ­ (${t("categoriesManagement.offered", "Ofrecida")})`
+                                      ? `Sí (${t("categoriesManagement.offered", "Ofrecida")})`
                                       : `No (${t("categoriesManagement.notOffered", "No ofrecida")})`}
                                   </span>
                                 </div>
@@ -1269,12 +1269,12 @@ export default function VehicleManagementPage() {
                             <td>
                               {gf.tarifaBaseSugerida
                                 ? formatCurrency(gf.tarifaBaseSugerida, divisa, tasaUSD)
-                                : "â€”"}
+                                : "—"}
                             </td>
                             <td>
                               {gf.depositoGarantiaSugerido
                                 ? formatCurrency(gf.depositoGarantiaSugerido, divisa, tasaUSD)
-                                : "â€”"}
+                                : "—"}
                             </td>
                             <td style={{ textAlign: "center" }}>
                               <span
@@ -1321,7 +1321,7 @@ export default function VehicleManagementPage() {
             </section>
           )}
 
-          {/* TAB 4: VEHÃCULOS */}
+          {/* TAB 4: VEHÍCULOS */}
           {activeTab === "vehiculos" && (
             <section className="cities-card attached-to-tabs">
               <div
@@ -1336,11 +1336,11 @@ export default function VehicleManagementPage() {
                       esEncargado
                         ? t(
                             "admin.vehiclesManagement.searchManager",
-                            "Buscar por vehÃ­culo, placa o categorÃ­a..."
+                            "Buscar por vehículo, placa o categoría..."
                           )
                         : t(
                             "admin.vehiclesManagement.search",
-                            "Buscar por vehÃ­culo, placa, categorÃ­a o sucursal..."
+                            "Buscar por vehículo, placa, categoría o sucursal..."
                           )
                     }
                   />
@@ -1419,7 +1419,7 @@ export default function VehicleManagementPage() {
                   <h2>
                     {t(
                       "admin.vehiclesManagement.emptyTitle",
-                      "No se encontraron vehÃ­culos registrados"
+                      "No se encontraron vehículos registrados"
                     )}
                   </h2>
                 </div>
@@ -1449,7 +1449,7 @@ export default function VehicleManagementPage() {
                                 onClick={() =>
                                   setZoomImage({
                                     url: vehicle.imagenes[0],
-                                    title: `${vehicle.nombre || "VehÃ­culo"} (${vehicle.placa || "Placa"})`,
+                                    title: `${vehicle.nombre || "Vehículo"} (${vehicle.placa || "Placa"})`,
                                   })
                                 }
                                 style={{
@@ -1463,7 +1463,7 @@ export default function VehicleManagementPage() {
                                 }}
                               />
                             ) : (
-                              <span style={{ fontSize: 12, color: "#94a3b8" }}>â€”</span>
+                              <span style={{ fontSize: 12, color: "#94a3b8" }}>—</span>
                             )}
                           </td>
                           <td style={{ fontWeight: 700, color: "#0f172a" }}>
@@ -1477,7 +1477,7 @@ export default function VehicleManagementPage() {
                           <td>{vehicle.categoria}</td>
                           <td>{vehicle.ano || vehicle.año || "—"}</td>
                           <td>{vehicle.color || "—"}</td>
-                          <td>{vehicle.transmision || "AutomÃ¡tica"}</td>
+                          <td>{vehicle.transmision || "Automática"}</td>
                           <td>{vehicle.combustible || "Gasolina"}</td>
                           <td>
                             {formatCurrency(
@@ -1506,7 +1506,7 @@ export default function VehicleManagementPage() {
                               }}
                             >
                               {vehicle.picoYPlaca?.dia
-                                ? t("admin.vehiclesManagement.applies", "SÃ­ aplica")
+                                ? t("admin.vehiclesManagement.applies", "Sí aplica")
                                 : t("admin.vehiclesManagement.doesNotApply", "No aplica")}
                             </span>
                           </td>
@@ -1596,17 +1596,17 @@ export default function VehicleManagementPage() {
               role="dialog"
               aria-modal="true"
             >
-              {/* MODAL 1: FORMULARIO DE VEHÃCULO (CREAR / EDITAR) */}
+              {/* MODAL 1: FORMULARIO DE VEHÍCULO (CREAR / EDITAR) */}
               {modal.type === "form" ? (
                 <>
                   <div className="fleet-modal-header">
                     <div className="fleet-modal-header__info">
                       <span className="fleet-modal-eyebrow">
                         <FaCar aria-hidden="true" />
-                        {modal.vehicle ? "ModificaciÃ³n de Ficha" : "Registro de Flota"}
+                        {modal.vehicle ? "Modificación de Ficha" : "Registro de Flota"}
                       </span>
                       <h2 className="fleet-modal-title">
-                        {modal.vehicle ? (form.nombre || "Editar VehÃ­culo") : "Nuevo VehÃ­culo"}
+                        {modal.vehicle ? (form.nombre || "Editar Vehículo") : "Nuevo Vehículo"}
                       </h2>
                       {modal.vehicle && (
                         <div className="fleet-modal-subtags">
@@ -1627,7 +1627,7 @@ export default function VehicleManagementPage() {
                         
                         {/* IMAGEN */}
                         <div style={{ gridColumn: '1 / -1', marginBottom: '8px' }}>
-                          <label style={{ display: 'block', fontSize: '11px', color: 'var(--texto-second, #64748b)', marginBottom: '6px', fontWeight: 600 }}>{t("admin.vehiclesManagement.modal.images", "ImÃ¡genes del VehÃ­culo (MÃ¡x. 3)")}</label>
+                          <label style={{ display: 'block', fontSize: '11px', color: 'var(--texto-second, #64748b)', marginBottom: '6px', fontWeight: 600 }}>{t("admin.vehiclesManagement.modal.images", "Imágenes del Vehículo (Máx. 3)")}</label>
                           <div style={{ display: 'flex', gap: '16px', width: '100%' }}>
                             {[0, 1, 2].map((idx) => {
                               const img = form.imagenes && form.imagenes[idx];
@@ -1650,7 +1650,7 @@ export default function VehicleManagementPage() {
 
                         {/* INPUTS ESTILO REFERENCIA */}
                         <div>
-                          <label style={{ display: 'block', fontSize: '11px', color: 'var(--texto-second, #64748b)', marginBottom: '6px', fontWeight: 600 }}>{t("admin.vehiclesManagement.modal.vehicleName", "Nombre VehÃ­culo *")}</label>
+                          <label style={{ display: 'block', fontSize: '11px', color: 'var(--texto-second, #64748b)', marginBottom: '6px', fontWeight: 600 }}>{t("admin.vehiclesManagement.modal.vehicleName", "Nombre Vehículo *")}</label>
                           <input style={{ width: '100%', padding: '10px 14px', background: 'var(--bg-seccion1, #f8fafc)', border: 'none', borderRadius: '6px', fontSize: '13px', color: 'var(--texto-primary, #334155)', outline: 'none' }} value={form.nombre} onChange={(e) => setForm({ ...form, nombre: e.target.value })} placeholder={t("admin.vehiclesManagement.modal.placeholderName", "Ej: Toyota Corolla 2024")} required />
                         </div>
 
@@ -1660,7 +1660,7 @@ export default function VehicleManagementPage() {
                         </div>
 
                         <div>
-                          <label style={{ display: 'block', fontSize: '11px', color: 'var(--texto-second, #64748b)', marginBottom: '6px', fontWeight: 600 }}>{t("admin.vehiclesManagement.modal.category", "CategorÃ­a *")}</label>
+                          <label style={{ display: 'block', fontSize: '11px', color: 'var(--texto-second, #64748b)', marginBottom: '6px', fontWeight: 600 }}>{t("admin.vehiclesManagement.modal.category", "Categoría *")}</label>
                           <select style={{ width: '100%', padding: '10px 14px', background: 'var(--bg-seccion1, #f8fafc)', border: 'none', borderRadius: '6px', fontSize: '13px', color: 'var(--texto-primary, #334155)', outline: 'none', cursor: 'pointer' }} value={form.categoria} onChange={(e) => setForm({ ...form, categoria: e.target.value })} required disabled={!activeCategoriesForForm.length}>
                             <option value="" disabled>{t("admin.vehiclesManagement.modal.select", "Seleccionar")}</option>
                             {activeCategoriesForForm.map((catName) => <option key={catName} value={catName}>{catName}</option>)}
@@ -1682,7 +1682,7 @@ export default function VehicleManagementPage() {
                           </div>
                         )}
 
-                        {/* If esEncargado is false, AÃ±o gets pushed to next spot to keep grid aligned */}
+                        {/* If esEncargado is false, Año gets pushed to next spot to keep grid aligned */}
                         {!esEncargado && (
                           <div>
                             <label style={{ display: 'block', fontSize: '11px', color: 'var(--texto-second, #64748b)', marginBottom: '6px', fontWeight: 600 }}>{t("admin.vehiclesManagement.modal.year", "Año *")}</label>
@@ -1696,10 +1696,10 @@ export default function VehicleManagementPage() {
                         </div>
 
                         <div>
-                          <label style={{ display: 'block', fontSize: '11px', color: 'var(--texto-second, #64748b)', marginBottom: '6px', fontWeight: 600 }}>{t("admin.vehiclesManagement.modal.transmission", "TransmisiÃ³n *")}</label>
+                          <label style={{ display: 'block', fontSize: '11px', color: 'var(--texto-second, #64748b)', marginBottom: '6px', fontWeight: 600 }}>{t("admin.vehiclesManagement.modal.transmission", "Transmisión *")}</label>
                           <select style={{ width: '100%', padding: '10px 14px', background: 'var(--bg-seccion1, #f8fafc)', border: 'none', borderRadius: '6px', fontSize: '13px', color: 'var(--texto-primary, #334155)', outline: 'none', cursor: 'pointer' }} value={form.transmision} onChange={(e) => setForm({ ...form, transmision: e.target.value })} required>
                             <option value="" disabled>{t("admin.vehiclesManagement.modal.select", "Seleccionar")}</option>
-                            <option value="AutomÃ¡tica">{t("admin.vehiclesManagement.transmission.auto", "AutomÃ¡tica")}</option>
+                            <option value="Automática">{t("admin.vehiclesManagement.transmission.auto", "Automática")}</option>
                             <option value="Manual">{t("admin.vehiclesManagement.transmission.manual", "Manual")}</option>
                           </select>
                         </div>
@@ -1709,9 +1709,9 @@ export default function VehicleManagementPage() {
                           <select style={{ width: '100%', padding: '10px 14px', background: 'var(--bg-seccion1, #f8fafc)', border: 'none', borderRadius: '6px', fontSize: '13px', color: 'var(--texto-primary, #334155)', outline: 'none', cursor: 'pointer' }} value={form.combustible} onChange={(e) => setForm({ ...form, combustible: e.target.value })} required>
                             <option value="" disabled>{t("admin.vehiclesManagement.modal.select", "Seleccionar")}</option>
                             <option value="Gasolina">{t("admin.vehiclesManagement.fuel.gasoline", "Gasolina")}</option>
-                            <option value="DiÃ©sel">{t("admin.vehiclesManagement.fuel.diesel", "DiÃ©sel")}</option>
-                            <option value="HÃ­brido">{t("admin.vehiclesManagement.fuel.hybrid", "HÃ­brido")}</option>
-                            <option value="ElÃ©ctrico">{t("admin.vehiclesManagement.fuel.electric", "ElÃ©ctrico")}</option>
+                            <option value="Diésel">{t("admin.vehiclesManagement.fuel.diesel", "Diésel")}</option>
+                            <option value="Híbrido">{t("admin.vehiclesManagement.fuel.hybrid", "Híbrido")}</option>
+                            <option value="Eléctrico">{t("admin.vehiclesManagement.fuel.electric", "Eléctrico")}</option>
                           </select>
                         </div>
 
@@ -1719,7 +1719,7 @@ export default function VehicleManagementPage() {
                           <label style={{ display: 'block', fontSize: '11px', color: 'var(--texto-second, #64748b)', marginBottom: '6px', fontWeight: 600 }}>{t("admin.vehiclesManagement.modal.restriction", "Pico y Placa *")}</label>
                           <select style={{ width: '100%', padding: '10px 14px', background: 'var(--bg-seccion1, #f8fafc)', border: 'none', borderRadius: '6px', fontSize: '13px', color: 'var(--texto-primary, #334155)', outline: 'none', cursor: 'pointer' }} value={form.aplicaPicoYPlaca} onChange={(e) => setForm({ ...form, aplicaPicoYPlaca: e.target.value })} required>
                             <option value="" disabled>{t("admin.vehiclesManagement.modal.select", "Seleccionar")}</option>
-                            <option value="Si">{t("admin.vehiclesManagement.restriction.yes", "SÃ­ aplica")}</option>
+                            <option value="Si">{t("admin.vehiclesManagement.restriction.yes", "Sí aplica")}</option>
                             <option value="No">{t("admin.vehiclesManagement.restriction.no", "No aplica")}</option>
                           </select>
                         </div>
@@ -1730,7 +1730,7 @@ export default function VehicleManagementPage() {
                         </div>
 
                         <div>
-                          <label style={{ display: 'block', fontSize: '11px', color: 'var(--texto-second, #64748b)', marginBottom: '6px', fontWeight: 600 }}>{t("admin.vehiclesManagement.modal.state", "Estado del VehÃ­culo *")}</label>
+                          <label style={{ display: 'block', fontSize: '11px', color: 'var(--texto-second, #64748b)', marginBottom: '6px', fontWeight: 600 }}>{t("admin.vehiclesManagement.modal.state", "Estado del Vehículo *")}</label>
                           <select
                             style={{ width: '100%', padding: '10px 14px', background: 'var(--bg-seccion1, #f8fafc)', border: 'none', borderRadius: '6px', fontSize: '13px', color: 'var(--texto-primary, #334155)', outline: 'none', cursor: 'pointer' }}
                             value={form.estadoEfectivo || "disponible"}
@@ -1758,13 +1758,13 @@ export default function VehicleManagementPage() {
                       </button>
                       <button className="cities-primary" type="submit">
                         <FaCheck style={{ marginRight: 6 }} />
-                        {t("admin.vehiclesManagement.modal.save", "Guardar vehÃ­culo")}
+                        {t("admin.vehiclesManagement.modal.save", "Guardar vehículo")}
                       </button>
                     </div>
                   </form>
                 </>
               ) : modal.type === "delete" ? (
-                /* MODAL 2: CONFIRMAR ELIMINAR VEHÃCULO (ESTILO ALERT MODAL CATÃLOGO) */
+                /* MODAL 2: CONFIRMAR ELIMINAR VEHÍCULO (ESTILO ALERT MODAL CATÁLOGO) */
                 <div className="fleet-alert-content">
                   <button
                     type="button"
@@ -1778,12 +1778,12 @@ export default function VehicleManagementPage() {
                     <FaTrash size={20} />
                   </div>
                   <h3 className="fleet-alert-title">
-                    {t("admin.vehiclesManagement.deleteTitle", "Eliminar VehÃ­culo")}
+                    {t("admin.vehiclesManagement.deleteTitle", "Eliminar Vehículo")}
                   </h3>
                   <p className="fleet-alert-message">
                     {t(
                       "admin.vehiclesManagement.deleteText",
-                      `Â¿EstÃ¡s seguro de que deseas eliminar el vehÃ­culo ${modal.vehicle.nombre}? Esta acciÃ³n no se puede deshacer.`,
+                      `¿Estás seguro de que deseas eliminar el vehículo ${modal.vehicle.nombre}? Esta acción no se puede deshacer.`,
                       { vehicle: modal.vehicle.nombre }
                     )}
                   </p>
@@ -1805,21 +1805,21 @@ export default function VehicleManagementPage() {
                   </div>
                 </div>
               ) : modal.type === "category_form" && !esEncargado ? (
-                /* MODAL 3: CREAR / EDITAR CATEGORÃA (SOLO ADMIN GENERAL) */
+                /* MODAL 3: CREAR / EDITAR CATEGORÍA (SOLO ADMIN GENERAL) */
                 <>
                   <div className="cities-modal__head">
                     <div>
                       <p className="cities-eyebrow">
-                        {t("categoriesManagement.title", "CategorÃ­as")}
+                        {t("categoriesManagement.title", "Categorías")}
                       </p>
                       <h2>
                         {modal.category
-                          ? t("categoriesManagement.editTitle", "Editar CategorÃ­a")
-                          : t("categoriesManagement.createTitle", "Nueva CategorÃ­a")}
+                          ? t("categoriesManagement.editTitle", "Editar Categoría")
+                          : t("categoriesManagement.createTitle", "Nueva Categoría")}
                       </h2>
                     </div>
                     <button type="button" onClick={close}>
-                      Ã—
+                      á—
                     </button>
                   </div>
                   <form
@@ -1845,7 +1845,7 @@ export default function VehicleManagementPage() {
                           letterSpacing: "0.5px",
                         }}
                       >
-                        {t("categoriesManagement.category", "Detalles de la CategorÃ­a")}
+                        {t("categoriesManagement.category", "Detalles de la Categoría")}
                       </span>
                     </div>
 
@@ -1855,14 +1855,14 @@ export default function VehicleManagementPage() {
                           className="incident-field-label"
                           style={{ fontWeight: 600, color: "var(--brand-text)" }}
                         >
-                          {t("categoriesManagement.categoryName", "Nombre de la CategorÃ­a")} *
+                          {t("categoriesManagement.categoryName", "Nombre de la Categoría")} *
                         </span>
                         <input
                           value={categoryForm.nombre}
                           onChange={(e) =>
                             setCategoryForm({ ...categoryForm, nombre: e.target.value })
                           }
-                          placeholder="Ej: Camionetas SUV, SedÃ¡n Ejecutivo..."
+                          placeholder="Ej: Camionetas SUV, Sedán Ejecutivo..."
                           required
                           style={{
                             width: "100%",
@@ -1880,14 +1880,14 @@ export default function VehicleManagementPage() {
                           className="incident-field-label"
                           style={{ fontWeight: 600, color: "var(--brand-text)" }}
                         >
-                          {t("categoriesManagement.description", "DescripciÃ³n")} *
+                          {t("categoriesManagement.description", "Descripción")} *
                         </span>
                         <textarea
                           value={categoryForm.descripcion}
                           onChange={(e) =>
                             setCategoryForm({ ...categoryForm, descripcion: e.target.value })
                           }
-                          placeholder="Breve explicaciÃ³n de los tipos de vehÃ­culos que comprende esta categorÃ­a..."
+                          placeholder="Breve explicación de los tipos de vehículos que comprende esta categoría..."
                           rows={3}
                           style={{
                             width: "100%",
@@ -1965,7 +1965,7 @@ export default function VehicleManagementPage() {
                         <small style={{ color: "var(--city-muted, #64748b)", fontSize: 11 }}>
                           {t(
                             "categoriesManagement.suggestedRateHint",
-                            "Valor de referencia pre-cargado al crear vehÃ­culos en esta categorÃ­a"
+                            "Valor de referencia pre-cargado al crear vehículos en esta categoría"
                           )}
                         </small>
                       </div>
@@ -1975,7 +1975,7 @@ export default function VehicleManagementPage() {
                           className="incident-field-label"
                           style={{ fontWeight: 600, color: "var(--brand-text)" }}
                         >
-                          {t("categoriesManagement.suggestedDeposit", "DepÃ³sito de GarantÃ­a Sugerido (COP)")}
+                          {t("categoriesManagement.suggestedDeposit", "Depósito de Garantía Sugerido (COP)")}
                         </span>
                         <div style={{ position: "relative" }}>
                           <span
@@ -2013,7 +2013,7 @@ export default function VehicleManagementPage() {
                         <small style={{ color: "var(--city-muted, #64748b)", fontSize: 11 }}>
                           {t(
                             "categoriesManagement.suggestedDepositHint",
-                            "Valor sugerido de depÃ³sito en garantÃ­a"
+                            "Valor sugerido de depósito en garantía"
                           )}
                         </small>
                       </div>
@@ -2096,13 +2096,13 @@ export default function VehicleManagementPage() {
                           boxShadow: "0 4px 12px rgba(37,99,235,0.2)",
                         }}
                       >
-                        {t("common.save", "Guardar categorÃ­a")}
+                        {t("common.save", "Guardar categoría")}
                       </button>
                     </div>
                   </form>
                 </>
               ) : modal.type === "delete_category" && !esEncargado ? (
-                /* MODAL 4: CONFIRMAR ELIMINAR CATEGORÃA (ESTILO ALERT MODAL CATÃLOGO) */
+                /* MODAL 4: CONFIRMAR ELIMINAR CATEGORÍA (ESTILO ALERT MODAL CATÁLOGO) */
                 <div className="fleet-alert-content">
                   <button
                     type="button"
@@ -2116,12 +2116,12 @@ export default function VehicleManagementPage() {
                     <FaTrash size={20} />
                   </div>
                   <h3 className="fleet-alert-title">
-                    {t("categoriesManagement.deleteTitle", "Eliminar CategorÃ­a")}
+                    {t("categoriesManagement.deleteTitle", "Eliminar Categoría")}
                   </h3>
                   <p className="fleet-alert-message">
                     {t(
                       "categoriesManagement.deleteConfirm",
-                      `Â¿EstÃ¡s seguro de que deseas eliminar la categorÃ­a "${modal.category.nombre}"? Esta acciÃ³n no se puede deshacer.`,
+                      `¿Estás seguro de que deseas eliminar la categoría "${modal.category.nombre}"? Esta acción no se puede deshacer.`,
                       { name: modal.category.nombre }
                     )}
                   </p>
@@ -2198,7 +2198,7 @@ export default function VehicleManagementPage() {
                     {zoomImage.title}
                   </h3>
                   <span style={{ fontSize: 12, color: "#64748b" }}>
-                    Vista ampliada del vehÃ­culo
+                    Vista ampliada del vehículo
                   </span>
                 </div>
                 <button

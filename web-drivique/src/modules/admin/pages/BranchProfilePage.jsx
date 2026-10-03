@@ -36,16 +36,16 @@ import './BranchProfilePage.css'
  * Componente: BranchProfilePage
  * 
  * @description
- * PÃ¡gina de gestiÃ³n y consulta operativa del perfil de la sucursal asignada al Encargado.
+ * Página de gestión y consulta operativa del perfil de la sucursal asignada al Encargado.
  * 
- * CaracterÃ­sticas principales:
- * 1. Tarjeta de InformaciÃ³n General y UbicaciÃ³n Satelital alineadas en la misma fila con altura equilibrada.
- * 2. MÃ³dulo detallado de Horarios de AtenciÃ³n y Entrega segÃºn el MÃ©todo de Pago:
- *    - Pago Virtual (Wompi): Desglose de horarios por Aeropuerto (24h), Terminal (06:00-22:00), Sede fÃ­sica y Domicilio.
- *    - Pago en Efectivo: Exclusivamente limitado al horario de atenciÃ³n fÃ­sica de la sucursal asignada.
+ * Características principales:
+ * 1. Tarjeta de Información General y Ubicación Satelital alineadas en la misma fila con altura equilibrada.
+ * 2. Módulo detallado de Horarios de Atención y Entrega según el Método de Pago:
+ *    - Pago Virtual (Wompi): Desglose de horarios por Aeropuerto (24h), Terminal (06:00-22:00), Sede física y Domicilio.
+ *    - Pago en Efectivo: Exclusivamente limitado al horario de atención física de la sucursal asignada.
  * 3. Matriz comparativa de disponibilidad y plazos de pago para clientes.
  * 4. Resumen de flota y servicios activos.
- * 5. Soporte para tema oscuro, personalizaciÃ³n de marca e internacionalizaciÃ³n (i18n).
+ * 5. Soporte para tema oscuro, personalización de marca e internacionalización (i18n).
  * 
  * @returns {JSX.Element}
  */
@@ -71,7 +71,7 @@ export default function BranchProfilePage() {
     longitud: '',
   })
 
-  // Estado original para detecciÃ³n de cambios sin guardar
+  // Estado original para detección de cambios sin guardar
   const [originalForm, setOriginalForm] = useState({
     direccion: '',
     telefono: '',
@@ -80,7 +80,7 @@ export default function BranchProfilePage() {
     longitud: '',
   })
 
-  // Errores de validaciÃ³n en lÃ­nea
+  // Errores de validación en línea
   const [errors, setErrors] = useState({})
 
   // Referencias para autofoco en errores
@@ -105,7 +105,7 @@ export default function BranchProfilePage() {
     }
   }, [profile])
 
-  // EvaluaciÃ³n de cambios pendientes sin guardar
+  // Evaluación de cambios pendientes sin guardar
   const hasUnsavedChanges = useMemo(() => {
     return (
       form.direccion !== originalForm.direccion ||
@@ -116,23 +116,23 @@ export default function BranchProfilePage() {
     )
   }, [form, originalForm])
 
-  // ValidaciÃ³n de campos
+  // Validación de campos
   const validateForm = () => {
     const errs = {}
 
-    // DirecciÃ³n obligatoria
+    // Dirección obligatoria
     if (!form.direccion.trim()) {
-      errs.direccion = t('branchProfile.errors.addressRequired', 'La direcciÃ³n es obligatoria.')
+      errs.direccion = t('branchProfile.errors.addressRequired', 'La dirección es obligatoria.')
     }
 
-    // TelÃ©fono opcional: solo dÃ­gitos, espacios, +, -, de 7 a 13 dÃ­gitos
+    // Teléfono opcional: solo dígitos, espacios, +, -, de 7 a 13 dígitos
     if (form.telefono.trim()) {
       const digitsOnly = form.telefono.replace(/[^\d]/g, '')
       const validChars = /^[0-9\s+\-]+$/.test(form.telefono)
       if (!validChars || digitsOnly.length < 7 || digitsOnly.length > 13) {
         errs.telefono = t(
           'branchProfile.errors.phoneInvalid',
-          'El telÃ©fono debe contener entre 7 y 13 dÃ­gitos.'
+          'El teléfono debe contener entre 7 y 13 dígitos.'
         )
       }
     }
@@ -200,7 +200,7 @@ export default function BranchProfilePage() {
       showAlert({
         icon: 'info',
         title: t('branchProfile.noChanges', 'No hay cambios por guardar'),
-        text: t('branchProfile.noChangesHint', 'No has modificado ningÃºn campo de la sucursal.'),
+        text: t('branchProfile.noChangesHint', 'No has modificado ningún campo de la sucursal.'),
         confirmButtonText: t('common.accept', 'Aceptar'),
       })
       return
@@ -228,7 +228,7 @@ export default function BranchProfilePage() {
           title: t('branchProfile.saveSuccessTitle', 'Cambios guardados'),
           text: t(
             'branchProfile.saveSuccessMsg',
-            'Los datos de la sucursal han sido actualizados con Ã©xito.'
+            'Los datos de la sucursal han sido actualizados con éxito.'
           ),
           confirmButtonText: t('common.accept', 'Aceptar'),
         })
@@ -238,7 +238,7 @@ export default function BranchProfilePage() {
       })
   }
 
-  // Mapa iframe URL dinÃ¡mica
+  // Mapa iframe URL dinámica
   const isValidMapCoord =
     !isNaN(parseFloat(form.latitud)) &&
     !isNaN(parseFloat(form.longitud)) &&
@@ -329,7 +329,7 @@ export default function BranchProfilePage() {
         {/* TOPBAR OPERATIVA UNIFICADA */}
         <div className="branch-topbar">
           <div className="branch-topbar-brand-title">
-            <span className="branch-topbar-badge">{t('branchProfile.managementBadge', 'GestiÃ³n de Sucursal')}</span>
+            <span className="branch-topbar-badge">{t('branchProfile.managementBadge', 'Gestión de Sucursal')}</span>
             <h1 className="branch-topbar-heading">{t('branchProfile.title', 'Mi Sucursal')}</h1>
           </div>
 
@@ -358,7 +358,7 @@ export default function BranchProfilePage() {
               className="cities-primary"
               onClick={handleSubmit}
               disabled={!hasUnsavedChanges || saving}
-              title="Guardar informaciÃ³n editada"
+              title="Guardar información editada"
               style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 18px', borderRadius: 8, fontWeight: 600 }}
             >
               <FaSave aria-hidden="true" />
@@ -373,7 +373,7 @@ export default function BranchProfilePage() {
               </div>
               <div className="branch-user-info-text">
                 <strong className="branch-user-name">
-                  {user?.nombre || 'AndrÃ©s Felipe Castro'}
+                  {user?.nombre || 'Andrés Felipe Castro'}
                 </strong>
                 <span className="branch-user-role">
                   {user?.rol || 'encargado_sucursal'}
@@ -386,19 +386,19 @@ export default function BranchProfilePage() {
         {/* FORMULARIO Y CONTENEDOR ESTRUCTURADO */}
         <form onSubmit={handleSubmit} noValidate className="branch-profile-form-container">
           
-          {/* FILA 1: INFORMACIÃ“N GENERAL Y UBICACIÃ“N (MISMA ALTURA Y PROPORCIÃ“N) */}
+          {/* FILA 1: INFORMACIÓN GENERAL Y UBICACIÓN (MISMA ALTURA Y PROPORCIÓN) */}
           <div className="branch-profile-row-grid">
             
-            {/* TARJETA 1: INFORMACIÃ“N GENERAL (DATOS Y CONTACTO) */}
+            {/* TARJETA 1: INFORMACIÓN GENERAL (DATOS Y CONTACTO) */}
             <article className="branch-profile-card branch-profile-card--equal">
               <div className="branch-profile-card-header">
                 <div className="branch-profile-card-title-wrap">
                   <span className="branch-profile-card-title">
                     <FaBuilding className="branch-profile-card-icon" aria-hidden="true" />
-                    {t('branchProfile.general.title', 'InformaciÃ³n general')}
+                    {t('branchProfile.general.title', 'Información general')}
                   </span>
                   <span className="branch-profile-card-desc">
-                    {t('branchProfile.general.desc', 'Datos visibles para los clientes en el catÃ¡logo pÃºblico')}
+                    {t('branchProfile.general.desc', 'Datos visibles para los clientes en el catálogo público')}
                   </span>
                 </div>
               </div>
@@ -447,10 +447,10 @@ export default function BranchProfilePage() {
                 </div>
 
                 <div className="branch-profile-fields-row">
-                  {/* DirecciÃ³n FÃ­sica (Editable, Obligatoria) */}
+                  {/* Dirección Física (Editable, Obligatoria) */}
                   <div className="branch-profile-field">
                     <label htmlFor="branchAddress" className="branch-profile-label">
-                      {t('branchProfile.fields.address', 'DirecciÃ³n')} *
+                      {t('branchProfile.fields.address', 'Dirección')} *
                     </label>
                     <input
                       id="branchAddress"
@@ -462,7 +462,7 @@ export default function BranchProfilePage() {
                         setForm({ ...form, direccion: e.target.value })
                         if (errors.direccion) setErrors({ ...errors, direccion: null })
                       }}
-                      placeholder="Ej. Av. El Dorado # 103-09, FontibÃ³n"
+                      placeholder="Ej. Av. El Dorado # 103-09, Fontibón"
                       required
                     />
                     {errors.direccion && (
@@ -472,10 +472,10 @@ export default function BranchProfilePage() {
                     )}
                   </div>
 
-                  {/* TelÃ©fono de Contacto (Editable, Opcional) */}
+                  {/* Teléfono de Contacto (Editable, Opcional) */}
                   <div className="branch-profile-field">
                     <label htmlFor="branchPhone" className="branch-profile-label">
-                      {t('branchProfile.fields.phone', 'TelÃ©fono')}
+                      {t('branchProfile.fields.phone', 'Teléfono')}
                     </label>
                     <input
                       id="branchPhone"
@@ -525,13 +525,13 @@ export default function BranchProfilePage() {
               </div>
             </article>
 
-            {/* TARJETA 2: UBICACIÃ“N Y GOOGLE MAPS (MISMA ALTURA QUE INFORMACIÃ“N GENERAL) */}
+            {/* TARJETA 2: UBICACIÓN Y GOOGLE MAPS (MISMA ALTURA QUE INFORMACIÓN GENERAL) */}
             <article className="branch-profile-card branch-profile-card--equal">
               <div className="branch-profile-card-header">
                 <div className="branch-profile-card-title-wrap">
                   <span className="branch-profile-card-title">
                     <FaMapMarkerAlt className="branch-profile-card-icon" aria-hidden="true" />
-                    {t('branchProfile.location.title', 'UbicaciÃ³n')}
+                    {t('branchProfile.location.title', 'Ubicación')}
                   </span>
                   <span className="branch-profile-card-desc">
                     {t('branchProfile.location.desc', 'Posicionamiento satelital de la sucursal')}
@@ -544,7 +544,7 @@ export default function BranchProfilePage() {
                 <div className="branch-profile-map-wrap">
                   {mapIframeUrl ? (
                     <iframe
-                      title={t('branchProfile.location.title', 'UbicaciÃ³n')}
+                      title={t('branchProfile.location.title', 'Ubicación')}
                       src={mapIframeUrl}
                       className="branch-profile-map-iframe"
                       loading="lazy"
@@ -605,7 +605,7 @@ export default function BranchProfilePage() {
                       className="branch-profile-directions-link"
                     >
                       <FaDirections aria-hidden="true" />
-                      <span>{t('branchProfile.location.getDirections', 'CÃ³mo llegar')}</span>
+                      <span>{t('branchProfile.location.getDirections', 'Cómo llegar')}</span>
                     </a>
                   </div>
                 )}
@@ -614,16 +614,16 @@ export default function BranchProfilePage() {
 
           </div>
 
-          {/* FILA 2: CÃ“MO FUNCIONA LA ENTREGA SEGÃšN EL PAGO (TEXTO EXPLICATIVO COMPLETO) */}
+          {/* FILA 2: CÓMO FUNCIONA LA ENTREGA SEGÚN EL PAGO (TEXTO EXPLICATIVO COMPLETO) */}
           <article className="branch-profile-card branch-profile-card--full" style={{ marginTop: 24 }}>
             <div className="branch-profile-card-header">
               <div className="branch-profile-card-title-wrap">
                 <span className="branch-profile-card-title">
                   <FaCreditCard className="branch-profile-card-icon" aria-hidden="true" />
-                  {t('branchProfile.paymentAndHours.title', 'Puntos de Entrega y Horarios segÃºn el Medio de Pago')}
+                  {t('branchProfile.paymentAndHours.title', 'Puntos de Entrega y Horarios según el Medio de Pago')}
                 </span>
                 <span className="branch-profile-card-desc">
-                  {t('branchProfile.paymentAndHours.desc', 'La sucursal administra mÃºltiples puntos de recogida y devoluciÃ³n segÃºn el medio de pago y el lugar de retiro seleccionado por el usuario.')}
+                  {t('branchProfile.paymentAndHours.desc', 'La sucursal administra múltiples puntos de recogida y devolución según el medio de pago y el lugar de retiro seleccionado por el usuario.')}
                 </span>
               </div>
             </div>
@@ -632,7 +632,7 @@ export default function BranchProfilePage() {
               {/* NOTA INFORMATIVA DESTACADA */}
               <div className="branch-profile-info-banner">
                 <FaInfoCircle className="branch-profile-info-icon" aria-hidden="true" />
-                <p className="branch-profile-info-text" dangerouslySetInnerHTML={{__html: t('branchProfile.paymentAndHours.info', '<strong>Puntos y horarios de la sucursal:</strong> La disponibilidad del punto de recogida y devoluciÃ³n depende directamente del <strong>medio de pago</strong> y del <strong>lugar de retiro seleccionado</strong> al reservar.')}}>
+                <p className="branch-profile-info-text" dangerouslySetInnerHTML={{__html: t('branchProfile.paymentAndHours.info', '<strong>Puntos y horarios de la sucursal:</strong> La disponibilidad del punto de recogida y devolución depende directamente del <strong>medio de pago</strong> y del <strong>lugar de retiro seleccionado</strong> al reservar.')}}>
                 </p>
               </div>
 
@@ -646,27 +646,27 @@ export default function BranchProfilePage() {
                       <FaCreditCard aria-hidden="true" />
                     </div>
                     <div>
-                      <h4 className="branch-payment-explanatory-title">{t('branchProfile.paymentAndHours.onlinePayment', 'Pago Virtual con Wompi (En lÃ­nea)')}</h4>
-                      <span className="branch-payment-explanatory-badge">{t('branchProfile.paymentAndHours.onlineBadge', 'MÃºltiples Puntos Habilitados')}</span>
+                      <h4 className="branch-payment-explanatory-title">{t('branchProfile.paymentAndHours.onlinePayment', 'Pago Virtual con Wompi (En línea)')}</h4>
+                      <span className="branch-payment-explanatory-badge">{t('branchProfile.paymentAndHours.onlineBadge', 'Múltiples Puntos Habilitados')}</span>
                     </div>
                   </div>
 
                   <div className="branch-payment-explanatory-body">
                     <p>
-                      {t('branchProfile.paymentAndHours.onlineDesc', 'Al pagar en lÃ­nea por adelantado, la sucursal habilita todos sus puntos de entrega y recogida coordinados:')}
+                      {t('branchProfile.paymentAndHours.onlineDesc', 'Al pagar en línea por adelantado, la sucursal habilita todos sus puntos de entrega y recogida coordinados:')}
                     </p>
                     <ul className="branch-payment-explanatory-list">
                       <li>
-                        <strong dangerouslySetInnerHTML={{__html: t('branchProfile.paymentAndHours.airportTitle', 'Aeropuerto:')}} /> <span dangerouslySetInnerHTML={{__html: t('branchProfile.paymentAndHours.airportDesc', '<strong>24 Horas</strong> (OperaciÃ³n continua 24/7 para recepciÃ³n de vuelos y viajeros).')}} />
+                        <strong dangerouslySetInnerHTML={{__html: t('branchProfile.paymentAndHours.airportTitle', 'Aeropuerto:')}} /> <span dangerouslySetInnerHTML={{__html: t('branchProfile.paymentAndHours.airportDesc', '<strong>24 Horas</strong> (Operación continua 24/7 para recepción de vuelos y viajeros).')}} />
                       </li>
                       <li>
-                        <strong dangerouslySetInnerHTML={{__html: t('branchProfile.paymentAndHours.terminalTitle', 'Terminal de Transporte:')}} /> <span dangerouslySetInnerHTML={{__html: t('branchProfile.paymentAndHours.terminalDesc', '<strong>24 Horas</strong> (OperaciÃ³n continua 24/7 para llegadas de transporte terrestre).')}} />
+                        <strong dangerouslySetInnerHTML={{__html: t('branchProfile.paymentAndHours.terminalTitle', 'Terminal de Transporte:')}} /> <span dangerouslySetInnerHTML={{__html: t('branchProfile.paymentAndHours.terminalDesc', '<strong>24 Horas</strong> (Operación continua 24/7 para llegadas de transporte terrestre).')}} />
                       </li>
                       <li>
-                        <strong dangerouslySetInnerHTML={{__html: t('branchProfile.paymentAndHours.deliveryTitle', 'Entrega a Domicilio:')}} /> <span dangerouslySetInnerHTML={{__html: t('branchProfile.paymentAndHours.deliveryDesc', '<strong>07:00 AM â€“ 07:00 PM</strong> (Lunes a SÃ¡bado), servicio puerta a puerta en la ciudad.')}} />
+                        <strong dangerouslySetInnerHTML={{__html: t('branchProfile.paymentAndHours.deliveryTitle', 'Entrega a Domicilio:')}} /> <span dangerouslySetInnerHTML={{__html: t('branchProfile.paymentAndHours.deliveryDesc', '<strong>07:00 AM – 07:00 PM</strong> (Lunes a Sábado), servicio puerta a puerta en la ciudad.')}} />
                       </li>
                       <li>
-                        <strong>{t('branchProfile.paymentAndHours.branchTitle', 'Instalaciones de la Sucursal')} ({profile.nombre}):</strong> <span dangerouslySetInnerHTML={{__html: t('branchProfile.paymentAndHours.branchDesc', '<strong>08:00 AM â€“ 06:00 PM</strong> (Horario regular de atenciÃ³n de la sucursal).')}} />
+                        <strong>{t('branchProfile.paymentAndHours.branchTitle', 'Instalaciones de la Sucursal')} ({profile.nombre}):</strong> <span dangerouslySetInnerHTML={{__html: t('branchProfile.paymentAndHours.branchDesc', '<strong>08:00 AM – 06:00 PM</strong> (Horario regular de atención de la sucursal).')}} />
                       </li>
                     </ul>
                   </div>
@@ -685,17 +685,17 @@ export default function BranchProfilePage() {
                   </div>
 
                   <div className="branch-payment-explanatory-body">
-                    <p dangerouslySetInnerHTML={{__html: t('branchProfile.paymentAndHours.cashDesc', 'Cuando el cliente elige pagar en efectivo, la entrega queda <strong>estrictamente condicionada a la atenciÃ³n presencial en la sucursal asignada donde se encuentra el vehÃ­culo ({branchName})</strong>:', { branchName: profile.nombre })}}>
+                    <p dangerouslySetInnerHTML={{__html: t('branchProfile.paymentAndHours.cashDesc', 'Cuando el cliente elige pagar en efectivo, la entrega queda <strong>estrictamente condicionada a la atención presencial en la sucursal asignada donde se encuentra el vehículo ({branchName})</strong>:', { branchName: profile.nombre })}}>
                     </p>
                     <ul className="branch-payment-explanatory-list">
                       <li>
-                        <strong dangerouslySetInnerHTML={{__html: t('branchProfile.paymentAndHours.cashHoursTitle', 'Horario de caja y mostrador:')}} /> <span dangerouslySetInnerHTML={{__html: t('branchProfile.paymentAndHours.cashHoursDesc', '<strong>08:00 AM â€“ 06:00 PM</strong>. El cliente debe acudir a la sucursal dentro de esta jornada para el pago presencial, arqueo de dinero en caja y firma del contrato.')}} />
+                        <strong dangerouslySetInnerHTML={{__html: t('branchProfile.paymentAndHours.cashHoursTitle', 'Horario de caja y mostrador:')}} /> <span dangerouslySetInnerHTML={{__html: t('branchProfile.paymentAndHours.cashHoursDesc', '<strong>08:00 AM – 06:00 PM</strong>. El cliente debe acudir a la sucursal dentro de esta jornada para el pago presencial, arqueo de dinero en caja y firma del contrato.')}} />
                       </li>
                       <li>
                         <strong dangerouslySetInnerHTML={{__html: t('branchProfile.paymentAndHours.cashNoDeliveryTitle', 'Sin entregas fuera de turno:')}} /> <span dangerouslySetInnerHTML={{__html: t('branchProfile.paymentAndHours.cashNoDeliveryDesc', 'No se realizan entregas en efectivo fuera del horario de taquilla de la sucursal.')}} />
                       </li>
                       <li>
-                        <strong dangerouslySetInnerHTML={{__html: t('branchProfile.paymentAndHours.cashLocationTitle', 'UbicaciÃ³n Ãºnica:')}} /> <span dangerouslySetInnerHTML={{__html: t('branchProfile.paymentAndHours.cashLocationDesc', 'El cobro en efectivo solo se recibe en la sucursal fÃ­sica donde estÃ¡ inventariado el vehÃ­culo.')}} />
+                        <strong dangerouslySetInnerHTML={{__html: t('branchProfile.paymentAndHours.cashLocationTitle', 'Ubicación única:')}} /> <span dangerouslySetInnerHTML={{__html: t('branchProfile.paymentAndHours.cashLocationDesc', 'El cobro en efectivo solo se recibe en la sucursal física donde está inventariado el vehículo.')}} />
                       </li>
                     </ul>
                   </div>
@@ -703,23 +703,23 @@ export default function BranchProfilePage() {
 
               </div>
 
-              {/* SECCIÃ“N: PLAZO DE PAGO Y EXPIRACIÃ“N AUTOMÃTICA */}
+              {/* SECCIÓN: PLAZO DE PAGO Y EXPIRACIÓN AUTOMÁTICA */}
               <div className="branch-payment-deadline-section" style={{ marginTop: 14 }}>
                 <div className="branch-payment-deadline-header">
                   <div className="branch-payment-deadline-icon-wrap">
                     <FaHourglassHalf className="branch-payment-deadline-icon" aria-hidden="true" />
                   </div>
                   <span className="branch-payment-deadline-title">
-                    {t('branchProfile.paymentDeadline.title', 'Plazo de pago, cÃ³mputo de 24 horas y tiempo lÃ­mite de reserva')}
+                    {t('branchProfile.paymentDeadline.title', 'Plazo de pago, cómputo de 24 horas y tiempo límite de reserva')}
                   </span>
                 </div>
 
                 <div className="branch-payment-deadline-content" style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '6px' }}>
-                  <p className="branch-payment-deadline-text" dangerouslySetInnerHTML={{__html: `â€¢ <strong>${t('branchProfile.paymentDeadline.rule1Title', 'CÃ¡lculo del plazo lÃ­mite de pago:')}</strong> ${t('branchProfile.paymentDeadline.rule1Desc', 'Si la reserva se realiza con anticipaciÃ³n suficiente, el cliente cuenta con hasta <strong>72 horas</strong> para completar el pago (virtual con Wompi o presencial en efectivo en sucursal). Si la reserva es para el mismo dÃ­a o con menor antelaciÃ³n, el sistema <strong>calcula dinÃ¡micamente las horas disponibles segÃºn la hora exacta de retiro seleccionada</strong> antes del viaje.')}`}}>
+                  <p className="branch-payment-deadline-text" dangerouslySetInnerHTML={{__html: `⬢ <strong>${t('branchProfile.paymentDeadline.rule1Title', 'Cálculo del plazo límite de pago:')}</strong> ${t('branchProfile.paymentDeadline.rule1Desc', 'Si la reserva se realiza con anticipación suficiente, el cliente cuenta con hasta <strong>72 horas</strong> para completar el pago (virtual con Wompi o presencial en efectivo en sucursal). Si la reserva es para el mismo día o con menor antelación, el sistema <strong>calcula dinámicamente las horas disponibles según la hora exacta de retiro seleccionada</strong> antes del viaje.')}`}}>
                   </p>
-                  <p className="branch-payment-deadline-text" dangerouslySetInnerHTML={{__html: `â€¢ <strong>${t('branchProfile.paymentDeadline.rule2Title', 'CÃ³mputo de 24 horas por dÃ­a de alquiler:')}</strong> ${t('branchProfile.paymentDeadline.rule2Desc', 'Cada dÃ­a de reserva cuenta con una duraciÃ³n exacta de <strong>24 horas</strong>, y el ciclo de alquiler comienza a regir a partir de la <strong>hora exacta de retiro que el cliente selecciona</strong> en el calendario.')}`}}>
+                  <p className="branch-payment-deadline-text" dangerouslySetInnerHTML={{__html: `⬢ <strong>${t('branchProfile.paymentDeadline.rule2Title', 'Cómputo de 24 horas por día de alquiler:')}</strong> ${t('branchProfile.paymentDeadline.rule2Desc', 'Cada día de reserva cuenta con una duración exacta de <strong>24 horas</strong>, y el ciclo de alquiler comienza a regir a partir de la <strong>hora exacta de retiro que el cliente selecciona</strong> en el calendario.')}`}}>
                   </p>
-                  <p className="branch-payment-deadline-text" dangerouslySetInnerHTML={{__html: `â€¢ <strong>${t('branchProfile.paymentDeadline.rule3Title', 'CancelaciÃ³n y liberaciÃ³n automÃ¡tica:')}</strong> ${t('branchProfile.paymentDeadline.rule3Desc', 'En caso de que no se registre el pago dentro del tiempo lÃ­mite calculado por el sistema, la reserva se cancela automÃ¡ticamente y el vehÃ­culo queda liberado de inmediato en el catÃ¡logo para otros usuarios.')}`}}>
+                  <p className="branch-payment-deadline-text" dangerouslySetInnerHTML={{__html: `⬢ <strong>${t('branchProfile.paymentDeadline.rule3Title', 'Cancelación y liberación automática:')}</strong> ${t('branchProfile.paymentDeadline.rule3Desc', 'En caso de que no se registre el pago dentro del tiempo límite calculado por el sistema, la reserva se cancela automáticamente y el vehículo queda liberado de inmediato en el catálogo para otros usuarios.')}`}}>
                   </p>
                 </div>
               </div>

@@ -91,11 +91,11 @@ export default function ContractManagementPage() {
   }, [contratos, search, statusFilter]);
 
   const headersExport = [
-    t("admin.contractsPage.fields.contractNumber", "CÃ³digo Contrato"),
-    t("admin.contractsPage.fields.reservationCode", "CÃ³digo Reserva"),
+    t("admin.contractsPage.fields.contractNumber", "Código Contrato"),
+    t("admin.contractsPage.fields.reservationCode", "Código Reserva"),
     t("admin.contractsPage.fields.clientName", "Cliente"),
     t("admin.contractsPage.fields.clientDoc", "Documento"),
-    t("admin.contractsPage.fields.vehicle", "Nombre VehÃ­culo"),
+    t("admin.contractsPage.fields.vehicle", "Nombre Vehículo"),
     t("admin.contractsPage.fields.branch", "Sucursal"),
     t("admin.contractsPage.fields.startDate", "Inicio"),
     t("admin.contractsPage.fields.endDate", "Fin"),
@@ -118,7 +118,7 @@ export default function ContractManagementPage() {
 
   const exportData = {
     title: esEncargado
-      ? `${t("admin.contractsPage.title", "GestiÃ³n de Contratos")} - ${sucursalEncargado}`
+      ? `${t("admin.contractsPage.title", "Gestión de Contratos")} - ${sucursalEncargado}`
       : t("admin.contractsPage.exportTitle", `Listado de Contratos - ${brand?.name || 'Drivique'}`).replaceAll("Drivique", brand?.name || 'Drivique'),
     headers: headersExport,
     rows: rowsExport,
@@ -197,8 +197,8 @@ export default function ContractManagementPage() {
         <div className="cities-container" style={{ maxWidth: "100%" }}>
           <header className="cities-topbar reservations-management-header">
             <div className="branch-topbar-brand-title">
-              <span className="branch-topbar-badge">{t('admin.branchManagement', 'GESTIÃ“N DE SUCURSAL')}</span>
-              <h1 className="branch-topbar-heading">{t('admin.contractsPage.title', 'GestiÃ³n de Contratos')}</h1>
+              <span className="branch-topbar-badge">{t('admin.branchManagement', 'GESTIÓN DE SUCURSAL')}</span>
+              <h1 className="branch-topbar-heading">{t('admin.contractsPage.title', 'Gestión de Contratos')}</h1>
             </div>
             <div className="branch-topbar-actions">
               <MenuConfiguracion />
@@ -218,7 +218,7 @@ export default function ContractManagementPage() {
             </div>
           </header>
 
-          {notice && <div className="cities-notice" role="status"><span>{notice}</span><button type="button" onClick={() => setNotice("")} aria-label={t("common.close")}>Ã—</button></div>}
+          {notice && <div className="cities-notice" role="status"><span>{notice}</span><button type="button" onClick={() => setNotice("")} aria-label={t("common.close")}>á—</button></div>}
 
           <section className="cities-card">
             <div className="cities-toolbar contracts-toolbar">
@@ -279,11 +279,11 @@ export default function ContractManagementPage() {
               <thead>
                 <tr>
                   <th>ID</th>
-                  <th>{t('admin.contractsPage.fields.contractNumber', 'CÃ³digo Contrato')}</th>
-                  <th>{t('admin.contractsPage.fields.reservationCode', 'CÃ³digo Reserva')}</th>
+                  <th>{t('admin.contractsPage.fields.contractNumber', 'Código Contrato')}</th>
+                  <th>{t('admin.contractsPage.fields.reservationCode', 'Código Reserva')}</th>
                   <th>{t('admin.contractsPage.fields.clientName', 'Nombre Completo')}</th>
                   <th>{t('admin.contractsPage.fields.image', 'Imagen')}</th>
-                  <th>{t('admin.contractsPage.fields.vehicleName', 'Nombre VehÃ­culo')}</th>
+                  <th>{t('admin.contractsPage.fields.vehicleName', 'Nombre Vehículo')}</th>
                   <th>{t('admin.contractsPage.fields.plate', 'Placa')}</th>
                   <th>{t('admin.contractsPage.fields.brand', 'Marca')}</th>
                   <th>{t('admin.contractsPage.fields.model', 'Modelo')}</th>
@@ -303,7 +303,7 @@ export default function ContractManagementPage() {
                     if (finalName === 'Cliente Registrado' || finalName === 'Cliente Drivique') {
                       const rawCod = String(cod).replace('CTR-', '');
                       const hash = rawCod.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-                      const mockNames = ['Carlos Mendoza', 'Ana LucÃ­a RamÃ­rez', 'Juan Diego GÃ³mez', 'MarÃ­a Camila Torres', 'AndrÃ©s Felipe Castro', 'Valentina Rojas', 'Santiago Silva', 'Diana Marcela Ruiz'];
+                      const mockNames = ['Carlos Mendoza', 'Ana Lucía Ramírez', 'Juan Diego Gómez', 'María Camila Torres', 'Andrés Felipe Castro', 'Valentina Rojas', 'Santiago Silva', 'Diana Marcela Ruiz'];
                       const nameIdx = hash % mockNames.length;
                       finalName = mockNames[nameIdx];
                     }
@@ -359,7 +359,7 @@ export default function ContractManagementPage() {
                         {c.fechaFirma && String(c.fechaFirma).includes('T') ? String(c.fechaFirma).split('T')[1].substring(0, 5) : '10:00'}
                       </td>
                       <td style={{ textAlign: 'center', fontWeight: '600', color: c.isSigned ? '#10b981' : '#ef4444' }}>
-                        {c.isSigned ? t('common.yes', 'SÃ­') : t('common.no', 'No')}
+                        {c.isSigned ? t('common.yes', 'Sí') : t('common.no', 'No')}
                       </td>
                       <td style={{ textAlign: 'center' }}>
                         <button
@@ -421,7 +421,7 @@ export default function ContractManagementPage() {
                         <p>
                           {t(
                             "admin.contractsPage.emptySubtitle",
-                            "Intenta ajustar los criterios de bÃºsqueda.",
+                            "Intenta ajustar los criterios de búsqueda.",
                           )}
                         </p>
                       </div>
