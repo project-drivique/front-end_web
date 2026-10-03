@@ -1191,8 +1191,8 @@
       }
     },
     "promotions": {
-      "title": "Promotions et coupons",
-      "subtitle": "CrÃ©ez des campagnes contrÃ´lÃ©es et gÃ©rez leurs conditions.",
+      "title": "Gestion des Promotions",
+      "subtitle": "Créez des campagnes contrôlées et gérez les coupons et promotions pour les utilisateurs.",
       "create": "Nouvelle promotion",
       "search": "Rechercher par code, nom ou condition...",
       "filterStatus": "Filtrer par statut",
@@ -1205,7 +1205,7 @@
       "deactivate": "DÃ©sactiver",
       "print": "Imprimer",
       "results": "promotions trouvÃ©es",
-      "emptyTitle": "Aucune promotion",
+      "emptyTitle": "Aucune promotion trouvée",
       "emptyText": "CrÃ©ez une promotion pour la publier.",
       "exportTitle": "Promotions et coupons - Drivique",
       "formLabel": "Configuration de campagne",
@@ -1237,7 +1237,7 @@
       "audiences": {
         "todos": "Tous les utilisateurs",
         "nuevos": "Nouveaux utilisateurs",
-        "frecuentes": "Clients frÃ©quents"
+        "frecuentes": "Clients fréquents"
       },
       "messages": {
         "created": "Promotion crÃ©Ã©e et publiÃ©e.",
@@ -1254,6 +1254,68 @@
         "invalidPercentage": "Le pourcentage doit Ãªtre compris entre 1 et 100.",
         "invalidValue": "Saisissez une remise valide.",
         "notFound": "Promotion introuvable."
+      },
+      "searchPlaceholder": "Rechercher par code, nom, véhicule ou condition...",
+      "foundCount": "PROMOTIONS ET COUPONS ENREGISTRÉS",
+      "createBtn": "Créer une promotion",
+      "emptyDesc": "Cliquez sur \"+ Créer une promotion\" pour enregistrer une nouvelle offre ou un coupon.",
+      "noMin": "Sans minimum",
+      "noCond": "Pas de conditions particulières",
+      "viewDetailBtn": "Voir les détails",
+      "allVehicles": "Tous les véhicules",
+      "categoryPrefix": "Catégorie :",
+      "tabs": {
+        "all": "Toutes les offres",
+        "coupons": "Coupons uniquement",
+        "promotions": "Promotions uniquement",
+        "active": "Actives",
+        "inactive": "Inactives",
+        "featured": "En vedette"
+      },
+      "kpi": {
+        "total": "Total des offres",
+        "totalDesc": "Coupons et promotions enregistrés",
+        "active": "Offres actives",
+        "activeDesc": "Disponibles pour les clients",
+        "featured": "Offres en vedette",
+        "featuredDesc": "Visibilité prioritaire dans le catalogue",
+        "coupons": "Coupons directs",
+        "couponsDesc": "Codes de réduction commerciaux"
+      },
+      "table": {
+        "id": "ID",
+        "offerType": "TYPE D'OFFRE",
+        "code": "CODE",
+        "name": "NOM DE L'OFFRE",
+        "audience": "AUDIENCE",
+        "discount": "RÉDUCTION",
+        "minimum": "RÉSERVATION MINIMALE",
+        "scope": "PORTÉE / VÉHICULE",
+        "start": "DATE DE DÉBUT",
+        "end": "DATE DE FIN",
+        "conditions": "CONDITIONS",
+        "featured": "EN VEDETTE",
+        "status": "STATUT",
+        "actions": "ACTIONS"
+      },
+      "offerTypes": {
+        "cupon": "Coupon",
+        "promocion": "Promotion"
+      },
+      "status": {
+        "active": "Active",
+        "inactive": "Inactive"
+      },
+      "featuredBadge": {
+        "yes": "En vedette",
+        "no": "Standard"
+      },
+      "modal": {
+        "createTitle": "Créer une nouvelle offre",
+        "editTitle": "Modifier l'offre",
+        "eyebrow": "GESTION DE CAMPAGNE",
+        "cancelBtn": "Annuler",
+        "saveBtn": "Enregistrer l'offre"
       }
     },
     "incidentsTitle": "Rapports d'incidents de vÃ©hicules",

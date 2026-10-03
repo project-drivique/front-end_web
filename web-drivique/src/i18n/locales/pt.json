@@ -1191,8 +1191,8 @@
       }
     },
     "promotions": {
-      "title": "PromoÃ§Ãµes e cupons",
-      "subtitle": "Crie campanhas controladas e gerencie suas condiÃ§Ãµes.",
+      "title": "Gestão de Promoções",
+      "subtitle": "Crie campanhas controladas e gira cupões e promoções para utilizadores.",
       "create": "Nova promoÃ§Ã£o",
       "search": "Buscar por cÃ³digo, nome ou condiÃ§Ã£o...",
       "filterStatus": "Filtrar por status",
@@ -1205,7 +1205,7 @@
       "deactivate": "Desativar",
       "print": "Imprimir",
       "results": "promoÃ§Ãµes encontradas",
-      "emptyTitle": "NÃ£o hÃ¡ promoÃ§Ãµes",
+      "emptyTitle": "Nenhuma promoção encontrada",
       "emptyText": "Crie uma promoÃ§Ã£o para publicÃ¡-la.",
       "exportTitle": "PromoÃ§Ãµes e cupons - Drivique",
       "formLabel": "ConfiguraÃ§Ã£o da campanha",
@@ -1235,8 +1235,8 @@
         "fixed": "Valor fixo"
       },
       "audiences": {
-        "todos": "Todos os usuÃ¡rios",
-        "nuevos": "Novos usuÃ¡rios",
+        "todos": "Todos os utilizadores",
+        "nuevos": "Novos utilizadores",
         "frecuentes": "Clientes frequentes"
       },
       "messages": {
@@ -1254,6 +1254,68 @@
         "invalidPercentage": "A porcentagem deve estar entre 1 e 100.",
         "invalidValue": "Informe um desconto vÃ¡lido.",
         "notFound": "PromoÃ§Ã£o nÃ£o encontrada."
+      },
+      "searchPlaceholder": "Pesquisar por código, nome, veículo ou condição...",
+      "foundCount": "PROMOÇÕES E CUPÕES REGISTADOS",
+      "createBtn": "Criar Promoção",
+      "emptyDesc": "Clique em \"+ Criar Promoção\" para registar uma nova oferta ou cupão.",
+      "noMin": "Sem mínimo",
+      "noCond": "Sem condições especiais",
+      "viewDetailBtn": "Ver detalhes",
+      "allVehicles": "Todos os veículos",
+      "categoryPrefix": "Categoria:",
+      "tabs": {
+        "all": "Todas as ofertas",
+        "coupons": "Apenas Cupões",
+        "promotions": "Apenas Promoções",
+        "active": "Ativas",
+        "inactive": "Inativas",
+        "featured": "Em destaque"
+      },
+      "kpi": {
+        "total": "Total de ofertas",
+        "totalDesc": "Cupões e promoções registados",
+        "active": "Ofertas ativas",
+        "activeDesc": "Disponíveis para clientes",
+        "featured": "Ofertas em destaque",
+        "featuredDesc": "Visibilidade prioritária no catálogo",
+        "coupons": "Cupões diretos",
+        "couponsDesc": "Códigos de resgate comercial"
+      },
+      "table": {
+        "id": "ID",
+        "offerType": "TIPO DE OFERTA",
+        "code": "CÓDIGO",
+        "name": "NOME DA OFERTA",
+        "audience": "PÚBLICO-ALVO",
+        "discount": "DESCONTO",
+        "minimum": "RESERVA MÍNIMA",
+        "scope": "ALCANCE / VEÍCULO",
+        "start": "DATA DE INÍCIO",
+        "end": "DATA DE FIM",
+        "conditions": "CONDIÇÕES",
+        "featured": "EM DESTAQUE",
+        "status": "ESTADO",
+        "actions": "AÇÕES"
+      },
+      "offerTypes": {
+        "cupon": "Cupão",
+        "promocion": "Promoção"
+      },
+      "status": {
+        "active": "Ativa",
+        "inactive": "Inativa"
+      },
+      "featuredBadge": {
+        "yes": "Em destaque",
+        "no": "Padrão"
+      },
+      "modal": {
+        "createTitle": "Criar Nova Oferta",
+        "editTitle": "Editar Oferta",
+        "eyebrow": "GESTÃO DE CAMPANHA",
+        "cancelBtn": "Cancelar",
+        "saveBtn": "Guardar Oferta"
       }
     },
     "incidentsTitle": "RelatÃ³rios de Incidentes de VeÃ­culos",
