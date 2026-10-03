@@ -11,6 +11,11 @@ import {
   FaFilePdf,
   FaPrint,
   FaExclamationCircle,
+  FaFileImage,
+  FaPaperPlane,
+  FaEye,
+  FaExternalLinkAlt,
+  FaCheck,
 } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import { useAuthStore } from '../../../store/authStore'
@@ -35,9 +40,10 @@ export default function BranchReviewsPage({ branchOnly = false }) {
   const [search, setSearch] = useState('')
   const [activeTab, setActiveTab] = useState('todos')
 
-  // Modal de Respuesta
+  // Modal de Respuesta y Visor Lightbox
   const [modalReview, setModalReview] = useState(null)
   const [respuestaTexto, setRespuestaTexto] = useState('')
+  const [zoomMedia, setZoomMedia] = useState(null)
 
   const refresh = () => setReviews(branchReviewManagementService.list(user))
 
@@ -274,18 +280,20 @@ export default function BranchReviewsPage({ branchOnly = false }) {
               <>
                 {/* 1. VISTA DE TABLA DESKTOP CON 1 COLUMNA POR RESPONSABILIDAD DE DATOS */}
                 <div className="cities-table-wrap doc-desktop-table" style={{ overflowX: 'auto' }}>
-                  <table className="incidents-table-v2" style={{ whiteSpace: 'nowrap', width: '100%', borderCollapse: 'collapse' }}>
+                  <table className="incidents-table-v2" style={{ whiteSpace: 'nowrap', width: 'max-content', minWidth: '100%', borderCollapse: 'collapse' }}>
                     <thead>
                       <tr>
-                        <th style={{ width: '35px' }}>{t('admin.reviews.table.id', 'ID')}</th>
+                        <th style={{ width: '35px' }}>ID</th>
+                        <th>{t('admin.reviews.table.comment', 'DESCRIPCIÓN OPCIONAL')}</th>
+                        <th>{t('admin.reviews.table.clientName', 'NOMBRE COMPLETO')}</th>
+                        <th>{t('admin.reviews.table.vehicle', 'NOMBRE VEHÍCULO')}</th>
                         <th>{t('admin.reviews.table.reservationCode', 'CÓDIGO RESERVA')}</th>
-                        <th>{t('admin.reviews.table.clientName', 'CLIENTE')}</th>
-                        <th>{t('admin.reviews.table.vehicle', 'VEHÍCULO ALQUILADO')}</th>
+                        <th style={{ textAlign: 'center' }}>EVIDENCIA FOTO 1</th>
+                        <th style={{ textAlign: 'center' }}>EVIDENCIA FOTO 2</th>
+                        <th style={{ textAlign: 'center' }}>EVIDENCIA FOTO 3</th>
                         <th style={{ textAlign: 'center' }}>{t('admin.reviews.table.rating', 'CALIFICACIÓN')}</th>
-                        <th>{t('admin.reviews.table.comment', 'COMENTARIO CLIENTE')}</th>
-                        <th>{t('admin.reviews.table.date', 'FECHA RESEÑA')}</th>
+                        <th>{t('admin.reviews.table.date', 'FECHA DE RESEÑA')}</th>
                         <th>{t('admin.reviews.table.reply', 'RESPUESTA DE SUCURSAL')}</th>
-                        <th style={{ textAlign: 'center' }}>{t('admin.reviews.table.status', 'ESTADO RESPUESTA')}</th>
                         <th style={{ textAlign: 'center' }}>{t('admin.reviews.table.actions', 'ACCIONES')}</th>
                       </tr>
                     </thead>
@@ -295,88 +303,183 @@ export default function BranchReviewsPage({ branchOnly = false }) {
                         return (
                           <tr key={item.id}>
                             {/* 1. ID */}
-                            <td style={{ fontWeight: 400, color: 'var(--city-text, #0f172a)', width: '35px' }}>{i + 1}</td>
+                            <td style={{ fontWeight: 600, color: 'var(--city-text, #0f172a)', width: '35px' }}>{i + 1}</td>
 
-                            {/* 2. CÓDIGO RESERVA */}
-                            <td style={{ fontWeight: 500, color: 'var(--city-text, #0f172a)' }}>
-                              {item.reservaCodigo || `RES-${item.id}`}
+                            {/* 2. DESCRIPCIÓN OPCIONAL */}
+                            <td style={{ maxWidth: 260, overflow: 'hidden', textOverflow: 'ellipsis', color: 'var(--city-text, #334155)', fontWeight: 400 }} title={item.comentario || 'Sin comentario'}>
+                              {item.comentario ? `"${item.comentario}"` : <span style={{ color: '#94a3b8', fontStyle: 'italic' }}>Sin descripción</span>}
                             </td>
 
-                            {/* 3. CLIENTE */}
-                            <td style={{ fontWeight: 400, color: 'var(--city-text, #0f172a)' }}>
+                            {/* 3. NOMBRE COMPLETO */}
+                            <td style={{ fontWeight: 700, color: 'var(--city-text, #0f172a)' }}>
                               {item.clienteNombre}
                             </td>
 
-                            {/* 4. VEHÍCULO ALQUILADO */}
-                            <td style={{ fontWeight: 400, color: 'var(--city-text, #0f172a)' }}>
+                            {/* 4. NOMBRE VEHÍCULO */}
+                            <td style={{ fontWeight: 600, color: 'var(--city-text, #0f172a)' }}>
                               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
-                                <FaCar style={{ color: 'var(--city-muted, #64748b)', flexShrink: 0 }} />
+                                <FaCar style={{ color: '#2563eb', flexShrink: 0 }} />
                                 {item.vehiculo}
                               </span>
                             </td>
 
-                            {/* 5. CALIFICACIÓN */}
-                            <td style={{ textAlign: 'center', fontWeight: 700 }}>
+                            {/* 5. CÓDIGO RESERVA */}
+                            <td style={{ fontWeight: 700, color: '#2563eb' }}>
+                              {item.reservaCodigo || `RES-${item.id}`}
+                            </td>
+
+                            {/* 6. EVIDENCIA FOTO 1 */}
+                            <td style={{ textAlign: 'center' }}>
+                              {item.evidenciaFoto1Url ? (
+                                <button
+                                  type="button"
+                                  onClick={() => setZoomMedia({ title: item.evidenciaFoto1, url: item.evidenciaFoto1Url })}
+                                  style={{
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: 4,
+                                    padding: '4px 10px',
+                                    borderRadius: 9999,
+                                    background: '#eff6ff',
+                                    color: '#2563eb',
+                                    border: '1px solid #bfdbfe',
+                                    fontWeight: 700,
+                                    fontSize: 12,
+                                    cursor: 'pointer',
+                                  }}
+                                >
+                                  <FaFileImage /> {item.evidenciaFoto1}
+                                </button>
+                              ) : (
+                                <span style={{ color: '#94a3b8', fontSize: 12 }}>Sin foto 1</span>
+                              )}
+                            </td>
+
+                            {/* 7. EVIDENCIA FOTO 2 */}
+                            <td style={{ textAlign: 'center' }}>
+                              {item.evidenciaFoto2Url ? (
+                                <button
+                                  type="button"
+                                  onClick={() => setZoomMedia({ title: item.evidenciaFoto2, url: item.evidenciaFoto2Url })}
+                                  style={{
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: 4,
+                                    padding: '4px 10px',
+                                    borderRadius: 9999,
+                                    background: '#eff6ff',
+                                    color: '#2563eb',
+                                    border: '1px solid #bfdbfe',
+                                    fontWeight: 700,
+                                    fontSize: 12,
+                                    cursor: 'pointer',
+                                  }}
+                                >
+                                  <FaFileImage /> {item.evidenciaFoto2}
+                                </button>
+                              ) : (
+                                <span style={{ color: '#94a3b8', fontSize: 12 }}>Sin foto 2</span>
+                              )}
+                            </td>
+
+                            {/* 8. EVIDENCIA FOTO 3 */}
+                            <td style={{ textAlign: 'center' }}>
+                              {item.evidenciaFoto3Url ? (
+                                <button
+                                  type="button"
+                                  onClick={() => setZoomMedia({ title: item.evidenciaFoto3, url: item.evidenciaFoto3Url })}
+                                  style={{
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: 4,
+                                    padding: '4px 10px',
+                                    borderRadius: 9999,
+                                    background: '#eff6ff',
+                                    color: '#2563eb',
+                                    border: '1px solid #bfdbfe',
+                                    fontWeight: 700,
+                                    fontSize: 12,
+                                    cursor: 'pointer',
+                                  }}
+                                >
+                                  <FaFileImage /> {item.evidenciaFoto3}
+                                </button>
+                              ) : (
+                                <span style={{ color: '#94a3b8', fontSize: 12 }}>Sin foto 3</span>
+                              )}
+                            </td>
+
+                            {/* 9. CALIFICACIÓN (ESTRELLAS) */}
+                            <td style={{ textAlign: 'center', fontWeight: 800 }}>
                               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: '#f59e0b', fontSize: 13 }}>
                                 <FaStar /> {item.calificacion}.0
                               </span>
                             </td>
 
-                            {/* 6. COMENTARIO CLIENTE */}
-                            <td style={{ maxWidth: 280, overflow: 'hidden', textOverflow: 'ellipsis', color: 'var(--city-text, #334155)', fontWeight: 400 }} title={item.comentario}>
-                              "{item.comentario}"
-                            </td>
-
-                            {/* 7. FECHA RESEÑA */}
-                            <td style={{ color: 'var(--city-muted, #64748b)', fontWeight: 400 }}>
+                            {/* 10. FECHA DE RESEÑA */}
+                            <td style={{ color: 'var(--city-muted, #64748b)', fontWeight: 500 }}>
                               {item.fecha || '-'}
                             </td>
 
-                            {/* 8. RESPUESTA DE SUCURSAL */}
-                            <td style={{ maxWidth: 260, overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: 400 }} title={item.respuestaEncargado || ''}>
+                            {/* 11. RESPUESTA DE SUCURSAL (Solo lectura inmutable) */}
+                            <td style={{ maxWidth: 260, overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: 500 }} title={item.respuestaEncargado || ''}>
                               {tieneRespuesta ? (
-                                <span style={{ color: '#166534', fontSize: 12.5, fontWeight: 500 }}>
+                                <span style={{ color: '#15803d', fontSize: 12.5, fontWeight: 600 }}>
                                   {item.respuestaEncargado}
                                 </span>
                               ) : (
-                                <span style={{ color: 'var(--city-muted, #64748b)', fontSize: 12 }}>
+                                <span style={{ color: 'var(--city-muted, #94a3b8)', fontSize: 12, fontStyle: 'italic' }}>
                                   {t('admin.reviews.noReply', 'Sin respuesta oficial')}
                                 </span>
                               )}
                             </td>
 
-                            {/* 9. ESTADO RESPUESTA */}
-                            <td style={{ textAlign: 'center', fontWeight: 400 }}>
-                              <span className={`doc-status-badge ${tieneRespuesta ? 'aprobado' : 'pendiente'}`}>
-                                {tieneRespuesta ? t('admin.reviews.status.published', 'Respondida') : t('admin.reviews.status.pending', 'Pendiente')}
-                              </span>
-                            </td>
-
-                            {/* 10. ACCIONES */}
+                            {/* 12. ACCIONES (Botón Verde "Responder" - Inmutable tras publicar) */}
                             <td style={{ textAlign: 'center', fontWeight: 400 }}>
                               <div style={{ display: 'flex', gap: 6, justifyContent: 'center' }}>
-                                <button
-                                  type="button"
-                                  onClick={() => handleOpenResponder(item)}
-                                  title={tieneRespuesta ? t('admin.reviews.editReplyBtn', 'Editar Respuesta') : t('admin.reviews.replyBtn', 'Responder')}
-                                  style={{
-                                    padding: '7px 18px',
-                                    borderRadius: '9999px',
-                                    background: tieneRespuesta ? 'var(--brand-soft-light, #eff6ff)' : '#2563eb',
-                                    color: tieneRespuesta ? 'var(--brand-primary, #2563eb)' : '#ffffff',
-                                    border: tieneRespuesta ? '1px solid var(--brand-border-light, #bfdbfe)' : 'none',
-                                    cursor: 'pointer',
-                                    fontWeight: 700,
-                                    fontSize: 12.5,
-                                    display: 'inline-flex',
-                                    alignItems: 'center',
-                                    gap: 5,
-                                    boxShadow: tieneRespuesta ? 'none' : '0 2px 5px rgba(37, 99, 235, 0.25)',
-                                    whiteSpace: 'nowrap'
-                                  }}
-                                >
-                                  <FaCommentDots /> {tieneRespuesta ? t('admin.reviews.editReplyBtn', 'Editar Respuesta') : t('admin.reviews.replyBtn', 'Responder')}
-                                </button>
+                                {tieneRespuesta ? (
+                                  <span
+                                    style={{
+                                      padding: '6px 16px',
+                                      borderRadius: '9999px',
+                                      background: '#f0fdf4',
+                                      color: '#15803d',
+                                      border: '1px solid #bbf7d0',
+                                      fontWeight: 800,
+                                      fontSize: 12,
+                                      display: 'inline-flex',
+                                      alignItems: 'center',
+                                      gap: 4,
+                                    }}
+                                  >
+                                    <FaCheck style={{ color: '#16a34a' }} /> Respondida
+                                  </span>
+                                ) : (
+                                  <button
+                                    type="button"
+                                    onClick={() => handleOpenResponder(item)}
+                                    title="Responder a la reseña"
+                                    style={{
+                                      padding: '7px 20px',
+                                      borderRadius: '9999px',
+                                      background: '#16a34a',
+                                      color: '#ffffff',
+                                      border: 'none',
+                                      fontWeight: 800,
+                                      fontSize: '12.5px',
+                                      cursor: 'pointer',
+                                      display: 'inline-flex',
+                                      alignItems: 'center',
+                                      gap: 6,
+                                      boxShadow: '0 2px 6px rgba(22, 163, 74, 0.3)',
+                                      transition: 'all 0.2s',
+                                    }}
+                                    onMouseOver={(e) => { e.currentTarget.style.background = '#15803d' }}
+                                    onMouseOut={(e) => { e.currentTarget.style.background = '#16a34a' }}
+                                  >
+                                    <FaCommentDots /> {t('admin.reviews.replyBtn', 'Responder')}
+                                  </button>
+                                )}
                               </div>
                             </td>
                           </tr>
@@ -525,9 +628,35 @@ export default function BranchReviewsPage({ branchOnly = false }) {
               <button
                 type="button"
                 onClick={handleEnviarRespuesta}
-                style={{ padding: '8px 22px', borderRadius: 9999, background: 'var(--brand-primary, #2563eb)', color: '#fff', border: 'none', cursor: 'pointer', fontWeight: 800, display: 'inline-flex', alignItems: 'center', gap: 6, boxShadow: '0 4px 12px rgba(37, 99, 235, 0.3)' }}
+                style={{ padding: '9px 24px', borderRadius: 9999, background: '#16a34a', color: '#fff', border: 'none', cursor: 'pointer', fontWeight: 800, display: 'inline-flex', alignItems: 'center', gap: 6, boxShadow: '0 4px 12px rgba(22, 163, 74, 0.3)' }}
               >
                 <FaPaperPlane size={12} /> {t('admin.reviews.modal.publishSubmit', 'Publicar Respuesta')}
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
+
+      {/* MODAL LIGHTBOX PARA EVIDENCIAS DE FOTOS */}
+      {zoomMedia && (
+        <div className="cities-modal-backdrop" style={backdropStyle} onMouseDown={(e) => e.target === e.currentTarget && setZoomMedia(null)}>
+          <section className="cities-modal" style={{ maxWidth: 720, width: '100%', background: '#0f172a', borderRadius: 20, overflow: 'hidden', border: '1px solid #334155', color: '#ffffff' }}>
+            <div style={{ padding: '16px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #1e293b' }}>
+              <div>
+                <span style={{ fontSize: 11, fontWeight: 700, color: '#38bdf8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>EVIDENCIA DE FOTO ADJUNTADA</span>
+                <h3 style={{ margin: 0, fontSize: 16, color: '#ffffff', fontWeight: 700 }}>{zoomMedia.title}</h3>
+              </div>
+              <button type="button" onClick={() => setZoomMedia(null)} style={{ background: 'transparent', border: 'none', fontSize: 24, color: '#94a3b8', cursor: 'pointer' }}>&times;</button>
+            </div>
+            <div style={{ padding: 24, display: 'flex', justifyContent: 'center', alignItems: 'center', background: '#020617', minHeight: 320 }}>
+              <img src={zoomMedia.url} alt={zoomMedia.title} style={{ maxWidth: '100%', maxHeight: '60vh', borderRadius: 12, objectFit: 'contain' }} />
+            </div>
+            <div style={{ padding: '14px 24px', background: '#0f172a', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid #1e293b' }}>
+              <a href={zoomMedia.url} target="_blank" rel="noreferrer" style={{ color: '#38bdf8', fontSize: 13, fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                <FaExternalLinkAlt size={11} /> Abrir imagen original
+              </a>
+              <button type="button" onClick={() => setZoomMedia(null)} style={{ padding: '6px 18px', borderRadius: 9999, background: '#334155', color: '#fff', border: 'none', fontWeight: 700, cursor: 'pointer' }}>
+                Cerrar
               </button>
             </div>
           </section>
