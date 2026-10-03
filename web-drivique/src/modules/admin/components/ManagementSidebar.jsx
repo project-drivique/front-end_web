@@ -22,6 +22,8 @@ import {
   FaSlidersH,
   FaStar,
   FaIdCard,
+  FaBell,
+  FaTruck,
 } from 'react-icons/fa'
 import { useAuthStore } from '../../../store/authStore'
 import accessConfig from '../../../mocks/adminAccessConfig.json'
@@ -30,8 +32,13 @@ import logo from '../../../assets/logocatalog.png'
 import { useBrand } from '../../../contexts/BrandContext'
 import './ManagementDashboard.css'
 
+/**
+ * Mapeo de iconos para cada módulo del panel de administración y sucursal.
+ * Permite una asignación visual consistente y centralizada.
+ */
 const MODULE_ICONS = {
   dashboard: FaChartPie,
+  notifications: FaBell,
   controlPanel: FaSlidersH,
   myBranch: FaBuilding,
   vehicles: FaCar,
@@ -49,10 +56,16 @@ const MODULE_ICONS = {
   brand: FaPalette,
   reports: FaFileAlt,
   audit: FaShieldAlt,
+  deliveries: FaTruck,
 }
 
+/**
+ * Etiquetas de navegación por defecto (fallback) en caso de que
+ * no se encuentre la clave de traducción correspondiente en i18n.
+ */
 const NAV_LABELS = {
   dashboard: 'Dashboard',
+  notifications: 'Notificaciones',
   myBranch: 'Mi sucursal',
   vehicles: 'Flota y vehículos',
   users: 'Usuarios',
@@ -69,8 +82,20 @@ const NAV_LABELS = {
   brand: 'Marca',
   reports: 'Reportes',
   audit: 'Auditoría',
+  deliveries: 'Domicilio Reserva',
 }
 
+/**
+ * Componente: ManagementSidebar
+ * 
+ * @description
+ * Barra lateral de navegación responsive para los roles Administrador General y Encargado de Sucursal.
+ * Integra filtrado de rutas por rol, soporte de tema oscuro, personalización de marca e i18n.
+ * 
+ * @param {Object} props
+ * @param {boolean} [props.branchOnly=false] - Forzar vista exclusiva de sucursal
+ * @returns {JSX.Element}
+ */
 export default function ManagementSidebar({ branchOnly = false }) {
   const [isOpen, setIsOpen] = useState(false)
   const { t } = useTranslation()
@@ -157,7 +182,7 @@ export default function ManagementSidebar({ branchOnly = false }) {
             <div key={key} className="management-nav__group">
               {showSectionHeader && (
                 <div className="management-nav__section-title">
-                  {section}
+                  {t(`admin.sections.${section.toLowerCase().replace(/ /g, '_')}`, section)}
                 </div>
               )}
               <NavLink
