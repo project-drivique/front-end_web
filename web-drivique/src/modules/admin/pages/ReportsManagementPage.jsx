@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   FaChartPie,
@@ -186,7 +186,7 @@ function translateFilterLabel(label, t) {
 
 function translateFilterValue(val) {
   if (typeof val !== 'string') return val
-  return val.replace(/\s+al\s+/g, ' â†’ ')
+  return val.replace(/\s+al\s+/g, ' → ')
 }
 
 export default function ReportsManagementPage({ branchOnly = false }) {
@@ -701,7 +701,7 @@ export default function ReportsManagementPage({ branchOnly = false }) {
                         <span className="badge-dot" />
                         <span>
                           {filterStartDate || filterEndDate
-                            ? `${filterStartDate || 'Inicio'} â†’ ${filterEndDate || 'Hoy'}`
+                            ? `${filterStartDate || 'Inicio'} → ${filterEndDate || 'Hoy'}`
                             : t('admin.reports.allHistory', 'Todo el histórico')}
                         </span>
                       </div>
@@ -1053,14 +1053,15 @@ export default function ReportsManagementPage({ branchOnly = false }) {
                         <th>{t('admin.reports.thFormat', 'Formato')}</th>
                         <th>{t('admin.reports.thGeneratedBy', 'Generado Por')}</th>
                         <th>{t('admin.reports.thDate', 'Fecha y Hora')}</th>
-                        <th>{t('admin.reports.thRows', 'Registros / Tamaño')}</th>
+                        <th>{t('admin.reports.thRecords', 'Total Registros')}</th>
+                        <th>{t('admin.reports.thFileSize', 'Tamaño Estimado')}</th>
                         <th style={{ textAlign: 'center' }}>{t('admin.reports.thActions', 'Acciones')}</th>
                       </tr>
                     </thead>
                     <tbody>
                       {filteredHistory.length === 0 ? (
                         <tr>
-                          <td colSpan={8}>
+                          <td colSpan={9}>
                             <div className="reports-empty-state">
                               <FaHistory />
                               <h3>{t('admin.reports.emptyHistoryTitle', 'No se encontraron reportes')}</h3>
@@ -1125,12 +1126,14 @@ export default function ReportsManagementPage({ branchOnly = false }) {
                               </small>
                             </td>
                             <td>
-                              <span>
+                              <span style={{ fontWeight: 600, color: 'var(--adm-text, #0f172a)' }}>
                                 {report.totalRegistros} {t('admin.reports.records', 'reg.')}
                               </span>
-                              <small style={{ display: 'block', color: 'var(--adm-muted)' }}>
+                            </td>
+                            <td>
+                              <span style={{ fontSize: 12, color: 'var(--adm-muted)' }}>
                                 {report.tamanoEstimado}
-                              </small>
+                              </span>
                             </td>
                             <td>
                               <div className="history-table-row-actions">
