@@ -127,15 +127,15 @@ export default function IncidentManagementPage() {
       lower.includes('voyant moteur')
     ) {
       if (isEn) return 'The check engine warning light came on during the trip to Neiva.'
-      if (isFr) return "Le voyant moteur s'est allumÃ© sur le tableau de bord pendant le trajet vers Neiva."
-      if (isPt) return 'A luz de verificaÃ§Ã£o do motor acendeu no painel durante a viagem para Neiva.'
-      return t('admin.incidents.dummyDesc1', 'Se encendiÃ³ el testigo de revisiÃ³n de motor en el tablero durante el trayecto a Neiva.')
+      if (isFr) return "Le voyant moteur s'est allumé sur le tableau de bord pendant le trajet vers Neiva."
+      if (isPt) return 'A luz de verificação do motor acendeu no painel durante a viagem para Neiva.'
+      return t('admin.incidents.dummyDesc1', 'Se encendió el testigo de revisión de motor en el tablero durante el trayecto a Neiva.')
     }
     if (
       lower.includes('choque') ||
       lower.includes('parachoques') ||
       lower.includes('rear-end') ||
-      lower.includes('semÃ¡foro') ||
+      lower.includes('semáforo') ||
       lower.includes('semaforo') ||
       lower.includes('parqueadero') ||
       lower.includes('trasera') ||
@@ -144,9 +144,9 @@ export default function IncidentManagementPage() {
       lower.includes('accrochage')
     ) {
       if (isEn) return 'Minor rear-end collision at a traffic light. Only minor damage to the rear bumper.'
-      if (isFr) return 'Accrochage lÃ©ger Ã  l\'arriÃ¨re Ã  un feu tricolore. Seuls dÃ©gÃ¢ts sur le pare-chocs arriÃ¨re.'
-      if (isPt) return 'Pequena colisÃ£o traseira no semÃ¡foro. Apenas danos no para-choque traseiro.'
-      return t('admin.incidents.dummyDesc2', 'Choque leve en la parte trasera en un semÃ¡foro. Solo daÃ±os en el parachoques trasero.')
+      if (isFr) return 'Accrochage léger à l\'arrière à un feu tricolore. Seuls dégâts sur le pare-chocs arrière.'
+      if (isPt) return 'Pequena colisão traseira no semáforo. Apenas danos no para-choque traseiro.'
+      return t('admin.incidents.dummyDesc2', 'Choque leve en la parte trasera en un semáforo. Solo daños en el parachoques trasero.')
     }
     return text
   }
@@ -228,7 +228,7 @@ export default function IncidentManagementPage() {
     )
   }
 
-  // Filtrado dinÃ¡mico
+  // Filtrado dinámico
   const filtrados = useMemo(() => {
     const term = search.trim().toLowerCase()
     return incidents.filter((r) => {
@@ -295,7 +295,7 @@ export default function IncidentManagementPage() {
       setNotice(
         t(
           'admin.incidents.updatedSuccess',
-          `Reporte ${modalResponder.codigo} actualizado a ${nuevoEstadoModal.toUpperCase()} y respuesta enviada por correo y notificaciÃ³n.`
+          `Reporte ${modalResponder.codigo} actualizado a ${nuevoEstadoModal.toUpperCase()} y respuesta enviada por correo y notificación.`
         )
       )
       setModalResponder(null)
@@ -323,7 +323,7 @@ export default function IncidentManagementPage() {
       setNotice(`Estado actualizado a ${newStatus} correctamente.`)
       cargarIncidencias()
     } catch {
-      console.error('Error al cambiar estado rÃ¡pidamente')
+      console.error('Error al cambiar estado rápidamente')
     }
   }
 
@@ -339,14 +339,14 @@ export default function IncidentManagementPage() {
         setErrorModal(
           t(
             'admin.incidents.clientReportDeleteError',
-            'Los reportes creados por los clientes no pueden ser eliminados por control de auditorÃ­a.'
+            'Los reportes creados por los clientes no pueden ser eliminados por control de auditoría.'
           )
         )
       } else if (err.message === 'onlyReceivedOwnReportsCanBeDeleted') {
         setErrorModal(
           t(
             'admin.incidents.ownReportStateDeleteError',
-            'No se puede eliminar un reporte propio que ya ha pasado a estado de revisiÃ³n o reparaciÃ³n.'
+            'No se puede eliminar un reporte propio que ya ha pasado a estado de revisión o reparación.'
           )
         )
       } else {
@@ -355,8 +355,8 @@ export default function IncidentManagementPage() {
     }
   }
 
-  // ExportaciÃ³n
-  const headersExport = ['CÃ³digo', 'VehÃ­culo', 'Placa', 'Sucursal', 'Remitente', 'Origen', 'Prioridad', 'Estado', 'DescripciÃ³n']
+  // Exportación
+  const headersExport = ['Código', 'Vehículo', 'Placa', 'Sucursal', 'Remitente', 'Origen', 'Prioridad', 'Estado', 'Descripción']
   const rowsExport = filtrados.map((r) => [
     r.codigo,
     r.vehiculo,
@@ -370,7 +370,7 @@ export default function IncidentManagementPage() {
   ])
 
   const exportData = {
-    title: `Reportes de Incidencias de VehÃ­culos â€” ${brand?.name || 'Drivique'}`,
+    title: `Reportes de Incidencias de Vehículos — ${brand?.name || 'Drivique'}`,
     headers: headersExport,
     rows: rowsExport,
     items: filtrados,
@@ -385,8 +385,8 @@ export default function IncidentManagementPage() {
           {/* Header Superior */}
           <header className="cities-topbar reservations-management-header">
             <div className="branch-topbar-brand-title">
-              <span className="branch-topbar-badge">{t('admin.branchManagement', 'GESTIÃ“N DE SUCURSAL')}</span>
-              <h1 className="branch-topbar-heading">{t('admin.incidents.title', 'GestiÃ³n de Incidentes')}</h1>
+              <span className="branch-topbar-badge">{t('admin.branchManagement', 'GESTIÓN DE SUCURSAL')}</span>
+              <h1 className="branch-topbar-heading">{t('admin.incidents.title', 'Gestión de Incidentes')}</h1>
             </div>
 
             <div className="cities-topbar__actions" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
@@ -403,17 +403,17 @@ export default function IncidentManagementPage() {
             </div>
           </header>
 
-          {/* NotificaciÃ³n de Aviso */}
+          {/* Notificación de Aviso */}
           {notice && (
             <div className="cities-notice" role="status">
               <span>{notice}</span>
               <button type="button" onClick={() => setNotice('')}>
-                Ã—
+                á—
               </button>
             </div>
           )}
 
-          {/* PestaÃ±as de Secciones IdÃ©nticas a Reservas */}
+          {/* Pestañas de Secciones Idénticas a Reservas */}
           <div className="fleet-attached-tabs">
             <div className="fleet-tabs-nav">
               <button
@@ -433,15 +433,15 @@ export default function IncidentManagementPage() {
             </div>
           </div>
 
-          {/* Tarjeta Principal Adherida a las PestaÃ±as */}
+          {/* Tarjeta Principal Adherida a las Pestañas */}
           <section className="cities-card attached-to-tabs">
-            {/* Toolbar con Buscador, Filtros, BotÃ³n Crear y ExportaciÃ³n */}
+            {/* Toolbar con Buscador, Filtros, Botón Crear y Exportación */}
             <div className="cities-toolbar">
               <label className="cities-search">
                 <FaSearch />
                 <input
                   type="text"
-                  placeholder={t('admin.incidents.searchPlaceholder', 'Buscar por cÃ³digo, vehÃ­culo, placa o cliente...')}
+                  placeholder={t('admin.incidents.searchPlaceholder', 'Buscar por código, vehículo, placa o cliente...')}
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                 />
@@ -469,11 +469,11 @@ export default function IncidentManagementPage() {
               ) : (
                 <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '10px 14px', borderRadius: '12px', border: '1.5px solid var(--city-border, #e2e8f0)', background: 'var(--city-bg, #f8fafc)', fontSize: '13px', color: 'var(--city-text, #334155)', fontWeight: 600 }}>
                   <FaBuilding style={{ color: 'var(--city-muted, #64748b)' }} />
-                  <span>{sucursalEncargado || 'Alamo BogotÃ¡ - Aeropuerto'}</span>
+                  <span>{sucursalEncargado || 'Alamo Bogotá - Aeropuerto'}</span>
                 </div>
               )}
 
-              {/* BotÃ³n Nuevo Reporte */}
+              {/* Botón Nuevo Reporte */}
               <button
                 type="button"
                 onClick={() => {
@@ -502,7 +502,7 @@ export default function IncidentManagementPage() {
                 <FaPlus /> {t('admin.incidents.newReport', 'Nuevo Reporte de Incidencia')}
               </button>
 
-              {/* Botones de ExportaciÃ³n */}
+              {/* Botones de Exportación */}
               <div className="export-pills-group" style={{ marginLeft: 'auto', display: 'flex', gap: '8px' }}>
                 <button
                   type="button"
@@ -542,7 +542,7 @@ export default function IncidentManagementPage() {
               <div className="cities-empty">
                 <FaExclamationTriangle />
                 <h2>{t('admin.incidents.emptyTitle', 'No se encontraron reportes de incidencias')}</h2>
-                <p>{t('admin.incidents.emptySubtitle', 'Intenta ajustar los criterios de bÃºsqueda o los filtros seleccionados.')}</p>
+                <p>{t('admin.incidents.emptySubtitle', 'Intenta ajustar los criterios de búsqueda o los filtros seleccionados.')}</p>
               </div>
             ) : (
               <div className="cities-table-wrap" style={{ overflowX: 'auto' }}>
@@ -550,19 +550,19 @@ export default function IncidentManagementPage() {
                   <thead>
                     <tr>
                       <th style={{ width: '40px' }}>ID</th>
-                      <th>{t('admin.incidents.table.reservationCode', 'CÃ“DIGO RESERVA')}</th>
+                      <th>{t('admin.incidents.table.reservationCode', 'CÓDIGO RESERVA')}</th>
                       <th>{t('admin.incidents.table.fullName', 'NOMBRE COMPLETO')}</th>
-                      <th>{t('admin.incidents.table.vehicleName', 'NOMBRE VEHÃCULO')}</th>
+                      <th>{t('admin.incidents.table.vehicleName', 'NOMBRE VEHÍCULO')}</th>
                       <th>{t('admin.incidents.table.image', 'IMAGEN')}</th>
                       <th>{t('admin.incidents.table.plate', 'PLACA')}</th>
                       <th>{t('admin.incidents.table.incidentType', 'TIPO DE INCIDENTE')}</th>
-                      <th>{t('admin.incidents.table.problemDesc', 'DESCRIPCIÃ“N PROBLEMA')}</th>
+                      <th>{t('admin.incidents.table.problemDesc', 'DESCRIPCIÓN PROBLEMA')}</th>
                       <th>{t('admin.incidents.table.reportDate', 'FECHA DE REPORTE')}</th>
                       <th>{t('admin.incidents.table.reportTime', 'HORA DE REPORTE')}</th>
                       <th>{t('admin.incidents.table.evidence1', 'EVIDENCIA 1')}</th>
                       <th>{t('admin.incidents.table.evidence2', 'EVIDENCIA 2')}</th>
                       <th>{t('admin.incidents.table.evidence3', 'EVIDENCIA 3')}</th>
-                      <th>{t('admin.incidents.table.phone', 'TELÃ‰FONO')}</th>
+                      <th>{t('admin.incidents.table.phone', 'TELÉFONO')}</th>
                       <th>{t('admin.incidents.table.email', 'CORREO')}</th>
                       <th style={{ textAlign: 'center' }}>{t('admin.incidents.table.incidentStatus', 'ESTADO DE INCIDENTE')}</th>
                       <th style={{ textAlign: 'center' }}>{t('admin.incidents.table.actions', 'ACCIONES')}</th>
@@ -580,7 +580,7 @@ export default function IncidentManagementPage() {
                         </td>
                         <td style={{ color: 'var(--city-muted, #64748b)' }}>{r.placa}</td>
                         
-                        <td style={{ color: 'var(--city-text, #334155)', fontWeight: 500 }}>{t(`admin.incidents.types.${r.tipoIncidenciaId || 'averia_mecanica'}`, r.tipoIncidenciaNombre || 'AverÃ­a MecÃ¡nica')}</td>
+                        <td style={{ color: 'var(--city-text, #334155)', fontWeight: 500 }}>{t(`admin.incidents.types.${r.tipoIncidenciaId || 'averia_mecanica'}`, r.tipoIncidenciaNombre || 'Avería Mecánica')}</td>
                         <td style={{ color: 'var(--city-muted, #64748b)', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis' }}>{translateDescription(r.descripcion)}</td>
                         <td style={{ color: 'var(--city-text, #0f172a)' }}>{new Date(r.fechaIso || r.fechaRegistro || Date.now()).toLocaleDateString()}</td>
                         <td style={{ color: 'var(--city-text, #0f172a)' }}>{new Date(r.fechaIso || r.fechaRegistro || Date.now()).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</td>
@@ -644,15 +644,15 @@ export default function IncidentManagementPage() {
             <section className="cities-modal" style={{ maxWidth: 680 }}>
               <div className="cities-modal__head">
                 <div>
-                  <p className="cities-eyebrow">{t('admin.incidents.detailTitle', 'GestiÃ³n de Incidencia')} {modalDetalle.codigo}</p>
+                  <p className="cities-eyebrow">{t('admin.incidents.detailTitle', 'Gestión de Incidencia')} {modalDetalle.codigo}</p>
                   <h2>{modalDetalle.vehiculo} ({modalDetalle.placa})</h2>
                 </div>
                 <button type="button" onClick={() => setModalDetalle(null)}>
-                  Ã—
+                  á—
                 </button>
               </div>
 
-              {/* Banner de VehÃ­culo con Imagen */}
+              {/* Banner de Vehículo con Imagen */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 14, margin: '14px 0', padding: '12px 16px', background: 'var(--city-soft)', borderRadius: 14, border: '1px solid var(--city-border)' }}>
                 <img
                   src={getVehiculoImagen(modalDetalle)}
@@ -665,7 +665,7 @@ export default function IncidentManagementPage() {
                 />
                 <div style={{ flex: 1 }}>
                   <h3 style={{ margin: '0 0 3px', fontSize: 16, fontWeight: 800, color: 'var(--city-text)' }}>{modalDetalle.vehiculo}</h3>
-                  <span style={{ fontSize: 13, color: 'var(--city-muted, #64748b)', fontWeight: 600 }}>{t('admin.incidents.table.plate', 'Placa')}: <strong style={{ color: 'var(--brand-text)' }}>{modalDetalle.placa}</strong> â€¢ {modalDetalle.sucursal}</span>
+                  <span style={{ fontSize: 13, color: 'var(--city-muted, #64748b)', fontWeight: 600 }}>{t('admin.incidents.table.plate', 'Placa')}: <strong style={{ color: 'var(--brand-text)' }}>{modalDetalle.placa}</strong> ⬢ {modalDetalle.sucursal}</span>
                 </div>
                 {modalDetalle.codigoReserva && (
                   <div style={{ textAlign: 'right', background: 'var(--city-card, #ffffff)', padding: '8px 12px', borderRadius: '8px', border: '1px dashed #cbd5e1' }}>
@@ -692,7 +692,7 @@ export default function IncidentManagementPage() {
                 </div>
 
                 <div className="incident-info-card">
-                  <span className="incident-info-card__label">{t('admin.incidents.locationPriority', 'UbicaciÃ³n y Prioridad')}</span>
+                  <span className="incident-info-card__label">{t('admin.incidents.locationPriority', 'Ubicación y Prioridad')}</span>
                   <p>{modalDetalle.sucursal}</p>
                   <span className={`priority-badge ${modalDetalle.prioridad}`} style={{ marginTop: 6 }}>
                     <FaClock /> {t('admin.incidents.estimatedTime', 'Tiempo estimado:')} {modalDetalle.tiempoEstimado}
@@ -702,7 +702,7 @@ export default function IncidentManagementPage() {
 
 
               <div className="incident-field" style={{ margin: '4px 0 12px' }}>
-                <span className="incident-field-label">{t('admin.incidents.problemDescription', 'DescripciÃ³n del problema')}</span>
+                <span className="incident-field-label">{t('admin.incidents.problemDescription', 'Descripción del problema')}</span>
                 <p style={{ background: 'var(--city-soft)', border: '1.5px solid var(--city-border)', padding: '12px 16px', borderRadius: 12, fontSize: 13, margin: 0 }}>
                   {translateDescription(modalDetalle.descripcion)}
                 </p>
@@ -713,7 +713,7 @@ export default function IncidentManagementPage() {
               <div className="incident-timeline">
                 {(modalDetalle.historial || []).map((h, i) => (
                   <div key={i} className="incident-timeline-item" style={{ borderLeftColor: h.color || 'var(--brand-primary)' }}>
-                    <strong>{translateTimelineTitle(h.titulo)} â€” {h.autor}</strong>
+                    <strong>{translateTimelineTitle(h.titulo)} — {h.autor}</strong>
                     <p style={{ margin: '4px 0', fontSize: 12 }}>{translateTimelineDesc(h.descripcion)}</p>
                     <small>{h.hora} ({new Date(h.fecha).toLocaleDateString()})</small>
                   </div>
@@ -757,22 +757,22 @@ export default function IncidentManagementPage() {
                   {t('admin.incidents.createTitle', 'Formulario de Incidencia')}
                 </h2>
                 <button type="button" onClick={() => setModalCrear(false)} style={{ background: 'transparent', border: 'none', fontSize: 24, cursor: 'pointer', color: 'var(--city-muted, #64748b)' }}>
-                  Ã—
+                  á—
                 </button>
               </div>
 
               <form onSubmit={handleCrearIncidencia} style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
                 
-                {/* VehÃ­culo / Reserva asociada (Opcional) */}
+                {/* Vehículo / Reserva asociada (Opcional) */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                   <label style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                    <span style={{ fontSize: 13, fontWeight: 700, color: '#1e293b' }}>{t('admin.incidents.selectVehicle', 'VehÃ­culo / Reserva asociada')} <span style={{ color: '#94a3b8', fontWeight: 500, fontSize: 12 }}>({t('common.optional', 'Opcional')})</span></span>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: '#1e293b' }}>{t('admin.incidents.selectVehicle', 'Vehículo / Reserva asociada')} <span style={{ color: '#94a3b8', fontWeight: 500, fontSize: 12 }}>({t('common.optional', 'Opcional')})</span></span>
                     <select
                       value={formCrear.vehiculoId}
                       onChange={(e) => setFormCrear({ ...formCrear, vehiculoId: e.target.value })}
                       style={{ background: 'var(--city-bg, #f8fafc)', border: '1px solid #e2e8f0', padding: '12px', borderRadius: 8, fontSize: 14, color: 'var(--city-text, #334155)' }}
                     >
-                      <option value="">{t('admin.incidents.chooseVehicleOptional', 'Sin vehÃ­culo / General...')}</option>
+                      <option value="">{t('admin.incidents.chooseVehicleOptional', 'Sin vehículo / General...')}</option>
                       {vehiculos.map((v) => (
                         <option key={v.id} value={v.id}>{v.nombre}</option>
                       ))}
@@ -783,7 +783,7 @@ export default function IncidentManagementPage() {
                       type="text" 
                       readOnly 
                       value={vehiculos.find(v => v.id === formCrear.vehiculoId)?.placa || ''}
-                      placeholder={t('admin.incidents.vehiclePlatePlaceholder', 'Placa del vehÃ­culo (si aplica)')}
+                      placeholder={t('admin.incidents.vehiclePlatePlaceholder', 'Placa del vehículo (si aplica)')}
                       style={{ background: 'var(--city-bg, #f8fafc)', border: '1px solid #e2e8f0', padding: '12px', borderRadius: 8, fontSize: 14, color: 'var(--city-muted, #64748b)' }}
                     />
                   </label>
@@ -795,10 +795,10 @@ export default function IncidentManagementPage() {
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
                     {[
                       { id: 'choque', label: t('admin.incidents.types.crash', 'Choque') },
-                      { id: 'averia_mecanica', label: t('admin.incidents.types.mechanicalBreakdown', 'AverÃ­a MecÃ¡nica') },
+                      { id: 'averia_mecanica', label: t('admin.incidents.types.mechanicalBreakdown', 'Avería Mecánica') },
                       { id: 'pinchazo', label: t('admin.incidents.types.flatTire', 'Pinchazo') },
-                      { id: 'bateria_descargada', label: t('admin.incidents.types.deadBattery', 'BaterÃ­a Descargada') },
-                      { id: 'falla_electrica', label: t('admin.incidents.types.electricalFailure', 'Falla ElÃ©ctrica') },
+                      { id: 'bateria_descargada', label: t('admin.incidents.types.deadBattery', 'Batería Descargada') },
+                      { id: 'falla_electrica', label: t('admin.incidents.types.electricalFailure', 'Falla Eléctrica') },
                       { id: 'robo', label: t('admin.incidents.types.theft', 'Robo') },
                       { id: 'asistencia_general', label: t('admin.incidents.types.generalAssistance', 'Asistencia General') },
                       { id: 'otro_problema', label: t('admin.incidents.types.other', 'Otro') },
@@ -831,18 +831,18 @@ export default function IncidentManagementPage() {
                 <div style={{ background: '#fef3c7', border: '1px solid #fde68a', borderRadius: 10, padding: '16px', display: 'flex', alignItems: 'flex-start', gap: 12 }}>
                   <FaClock style={{ color: '#b45309', fontSize: 20, marginTop: 2 }} />
                   <div>
-                    <span style={{ display: 'block', fontSize: 12, color: '#b45309', fontWeight: 600 }}>{t('admin.incidents.estimatedTime', 'Tiempo estimado de atenciÃ³n tÃ©cnica:')}</span>
+                    <span style={{ display: 'block', fontSize: 12, color: '#b45309', fontWeight: 600 }}>{t('admin.incidents.estimatedTime', 'Tiempo estimado de atención técnica:')}</span>
                     <strong style={{ color: '#92400e', fontSize: 14 }}>{formCrear.tiempoEstimado}</strong>
                   </div>
                 </div>
 
                 {/* Descripcion */}
                 <label style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  <span style={{ fontSize: 13, fontWeight: 700, color: '#1e293b' }}>{t('admin.incidents.problemDescription', 'DescripciÃ³n del problema')} <span style={{ color: '#ef4444' }}>*</span></span>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: '#1e293b' }}>{t('admin.incidents.problemDescription', 'Descripción del problema')} <span style={{ color: '#ef4444' }}>*</span></span>
                   <textarea
                     required
                     rows={4}
-                    placeholder={t('admin.incidents.describeSymptoms', 'Describe los sÃ­ntomas...')}
+                    placeholder={t('admin.incidents.describeSymptoms', 'Describe los síntomas...')}
                     value={formCrear.descripcion}
                     onChange={(e) => setFormCrear({ ...formCrear, descripcion: e.target.value })}
                     style={{ background: 'var(--city-bg, #f8fafc)', border: '1px solid #e2e8f0', padding: '12px', borderRadius: 8, fontSize: 14, resize: 'none', color: 'var(--city-text, #334155)' }}
@@ -852,8 +852,8 @@ export default function IncidentManagementPage() {
                 {/* Evidencias */}
                 <div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                    <span style={{ fontSize: 13, fontWeight: 700, color: '#1e293b' }}>{t('admin.incidents.evidencesOptional', 'Evidencias (ImÃ¡genes / Videos opcionales)')}</span>
-                    <span style={{ fontSize: 11, color: '#94a3b8' }}>{t('admin.incidents.maxPhotos', 'MÃ¡x 3 fotos')} (1/3)</span>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: '#1e293b' }}>{t('admin.incidents.evidencesOptional', 'Evidencias (Imágenes / Videos opcionales)')}</span>
+                    <span style={{ fontSize: 11, color: '#94a3b8' }}>{t('admin.incidents.maxPhotos', 'Máx 3 fotos')} (1/3)</span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
                     <button type="button" style={{ width: 80, height: 80, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4, background: 'var(--city-bg, #f8fafc)', border: '1.5px dashed #3b82f6', borderRadius: 12, color: 'var(--brand-primary, #3b82f6)', cursor: 'pointer', fontSize: 12, fontWeight: 600 }}>
@@ -871,7 +871,7 @@ export default function IncidentManagementPage() {
                     <FaUser style={{ color: 'var(--city-text, #1e3a8a)' }} /> {t('admin.incidents.contactDataTitle', 'Datos de contacto para seguimiento')}
                   </h3>
                   <p style={{ fontSize: 12, color: 'var(--city-muted, #64748b)', marginBottom: 16 }}>
-                    {t('admin.incidents.contactDataSubtitle', 'Precargados automÃ¡ticamente desde tu perfil registrado (puedes editarlos si lo requieres).')}
+                    {t('admin.incidents.contactDataSubtitle', 'Precargados automáticamente desde tu perfil registrado (puedes editarlos si lo requieres).')}
                   </p>
                   
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -881,11 +881,11 @@ export default function IncidentManagementPage() {
                     </label>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                       <label style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                        <span style={{ fontSize: 13, fontWeight: 700, color: '#1e293b' }}>{t('admin.incidents.phone', 'TelÃ©fono')} <span style={{ color: '#ef4444' }}>*</span></span>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: '#1e293b' }}>{t('admin.incidents.phone', 'Teléfono')} <span style={{ color: '#ef4444' }}>*</span></span>
                         <input type="text" readOnly value={user?.telefono || '3100000000'} style={{ background: 'var(--city-bg, #f8fafc)', border: '1px solid #e2e8f0', padding: '12px', borderRadius: 8, fontSize: 14, color: 'var(--city-text, #334155)' }} />
                       </label>
                       <label style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                        <span style={{ fontSize: 13, fontWeight: 700, color: '#1e293b' }}>{t('admin.incidents.email', 'Correo electrÃ³nico')} <span style={{ color: '#ef4444' }}>*</span></span>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: '#1e293b' }}>{t('admin.incidents.email', 'Correo electrónico')} <span style={{ color: '#ef4444' }}>*</span></span>
                         <input type="email" readOnly value={user?.correo || 'admin@drivique.com'} style={{ background: 'var(--city-bg, #f8fafc)', border: '1px solid #e2e8f0', padding: '12px', borderRadius: 8, fontSize: 14, color: 'var(--city-text, #334155)' }} />
                       </label>
                     </div>
@@ -923,7 +923,7 @@ export default function IncidentManagementPage() {
           </div>
         )}
 
-        {/* MODAL ELIMINAR REPORTES CON VALIDACIÃ“N */}
+        {/* MODAL ELIMINAR REPORTES CON VALIDACIÓN */}
         {modalEliminar && (
           <div
             className="cities-modal-backdrop"
@@ -933,13 +933,13 @@ export default function IncidentManagementPage() {
               <div className="cities-delete-icon">
                 <FaTrash />
               </div>
-              <h2>{t('admin.incidents.deleteConfirmTitle', 'Confirmar EliminaciÃ³n de Reporte')}</h2>
+              <h2>{t('admin.incidents.deleteConfirmTitle', 'Confirmar Eliminación de Reporte')}</h2>
               <p>
-                {t('admin.incidents.deleteConfirmDesc1', 'Â¿Deseas eliminar el reporte')} <strong>{modalEliminar.codigo}</strong> (
+                {t('admin.incidents.deleteConfirmDesc1', '¿Deseas eliminar el reporte')} <strong>{modalEliminar.codigo}</strong> (
                 {modalEliminar.vehiculo})?
               </p>
 
-              {/* VALIDACIÃ“N 1: CLIENTES */}
+              {/* VALIDACIÓN 1: CLIENTES */}
               {modalEliminar.origen === 'cliente' && (
                 <div
                   style={{
@@ -954,11 +954,11 @@ export default function IncidentManagementPage() {
                   }}
                 >
                   <FaExclamationTriangle style={{ marginRight: 6 }} />
-                  {t('admin.incidents.clientReportDeleteError', 'Los reportes creados por los clientes no pueden ser eliminados por control de auditorÃ­a.')}
+                  {t('admin.incidents.clientReportDeleteError', 'Los reportes creados por los clientes no pueden ser eliminados por control de auditoría.')}
                 </div>
               )}
 
-              {/* VALIDACIÃ“N 2: PROPIOS EN ESTADO DIFERENTE A RECIBIDO */}
+              {/* VALIDACIÓN 2: PROPIOS EN ESTADO DIFERENTE A RECIBIDO */}
               {modalEliminar.origen === 'administrador' && modalEliminar.estado !== 'recibido' && (
                 <div
                   style={{
@@ -973,7 +973,7 @@ export default function IncidentManagementPage() {
                   }}
                 >
                   <FaExclamationTriangle style={{ marginRight: 6 }} />
-                  {t('admin.incidents.ownReportStateDeleteError', 'No se puede eliminar un reporte propio que ya ha pasado a estado de revisiÃ³n o reparaciÃ³n.')}
+                  {t('admin.incidents.ownReportStateDeleteError', 'No se puede eliminar un reporte propio que ya ha pasado a estado de revisión o reparación.')}
                 </div>
               )}
 
@@ -1024,7 +1024,7 @@ export default function IncidentManagementPage() {
                   onMouseOver={(e) => { e.currentTarget.style.background = '#b91c1c' }}
                   onMouseOut={(e) => { e.currentTarget.style.background = '#dc2626' }}
                 >
-                  {t('admin.incidents.confirmDelete', 'Confirmar EliminaciÃ³n')}
+                  {t('admin.incidents.confirmDelete', 'Confirmar Eliminación')}
                 </button>
               </div>
             </section>
@@ -1045,12 +1045,12 @@ export default function IncidentManagementPage() {
                   {t('admin.incidents.replyBtn', 'Responder al Cliente')}
                 </h2>
                 <button type="button" onClick={() => setModalResponder(null)} style={{ background: 'transparent', border: 'none', fontSize: 24, cursor: 'pointer', color: 'var(--city-muted, #64748b)' }}>
-                  Ã—
+                  á—
                 </button>
               </div>
               <div className="cities-modal__body" style={{ padding: '20px 24px' }}>
                 <p style={{ fontSize: 14, color: 'var(--city-muted, #475569)', marginBottom: 20 }}>
-                  {t('admin.incidents.replyHint', 'Escribe tu respuesta. Esta notificaciÃ³n llegarÃ¡ automÃ¡ticamente al correo del usuario y quedarÃ¡ registrada en el historial del incidente.')}
+                  {t('admin.incidents.replyHint', 'Escribe tu respuesta. Esta notificación llegará automáticamente al correo del usuario y quedará registrada en el historial del incidente.')}
                 </p>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 20 }}>
                   <div style={{ display: 'flex', gap: 16 }}>
@@ -1078,7 +1078,7 @@ export default function IncidentManagementPage() {
                   </div>
 
                   <div style={{ background: 'var(--city-bg, #f8fafc)', padding: '12px', borderRadius: 8, border: '1px solid #e2e8f0' }}>
-                    <span style={{ fontSize: 11, color: 'var(--city-muted, #64748b)', fontWeight: 700, display: 'block', textTransform: 'uppercase', marginBottom: 4 }}>{t('admin.incidents.problemDesc', 'DescripciÃ³n del Problema')}</span>
+                    <span style={{ fontSize: 11, color: 'var(--city-muted, #64748b)', fontWeight: 700, display: 'block', textTransform: 'uppercase', marginBottom: 4 }}>{t('admin.incidents.problemDesc', 'Descripción del Problema')}</span>
                     <p style={{ fontSize: 14, color: 'var(--city-text, #334155)', margin: 0, lineHeight: 1.4 }}>{translateDescription(modalResponder.descripcion)}</p>
                   </div>
                 </div>
@@ -1118,7 +1118,7 @@ export default function IncidentManagementPage() {
                     <textarea
                       required
                       rows={5}
-                      placeholder={t('admin.incidents.replyPlaceholder', 'Escribe aquÃ­ la respuesta...')}
+                      placeholder={t('admin.incidents.replyPlaceholder', 'Escribe aquí la respuesta...')}
                       value={respuestaTexto}
                       onChange={(e) => setRespuestaTexto(e.target.value)}
                       style={{ padding: '12px', borderRadius: '8px', border: '1px solid #cbd5e1', width: '100%', resize: 'none' }}

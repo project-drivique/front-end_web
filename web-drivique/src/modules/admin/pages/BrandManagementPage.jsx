@@ -86,7 +86,7 @@ export default function BrandManagementPage() {
           <MenuConfiguracion />
         </header>
 
-        {notice && <div className="cities-notice" role="status"><span><FaCheck /> {notice}</span><button type="button" aria-label={t('common.close', 'Cerrar')} onClick={() => setNotice('')}>Ã—</button></div>}
+        {notice && <div className="cities-notice" role="status"><span><FaCheck /> {notice}</span><button type="button" aria-label={t('common.close', 'Cerrar')} onClick={() => setNotice('')}>á—</button></div>}
         {error && <div className="brand-error" role="alert">{error}</div>}
 
         <div className="brand-layout">

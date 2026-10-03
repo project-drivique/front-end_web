@@ -566,7 +566,7 @@
         "hasReservationsWarning": "This user cannot be deleted because they have {{count}} active reservation(s).",
         "confirm": "Confirm Deletion"
       },
-      "exportTitle": "User Management â€” Drivique Platform",
+      "exportTitle": "User Management — Drivique Platform",
       "fields": {
         "name": "Name",
         "email": "Email",
@@ -689,7 +689,7 @@
         "hasAccountsWarning": "This role cannot be deleted because it has {{count}} administrative account(s) assigned. Reassign the accounts before deleting it.",
         "confirm": "Confirm Deletion"
       },
-      "exportTitle": "Administrative Accounts â€” Drivique Platform",
+      "exportTitle": "Administrative Accounts — Drivique Platform",
       "fields": {
         "name": "Name",
         "email": "Email",
@@ -1342,7 +1342,7 @@
       "identityHint": "Set the business name and primary logo.",
       "name": "Business name",
       "logo": "Upload new logo",
-      "logoHint": "PNG, JPG, WebP or SVG Â· 1 MB maximum",
+      "logoHint": "PNG, JPG, WebP or SVG · 1 MB maximum",
       "palette": "Corporate palette",
       "paletteHint": "Choose three different interface colors.",
       "colors": {
@@ -1350,7 +1350,7 @@
         "secondary": "Secondary",
         "accent": "Accent"
       },
-      "preview": "Preview â€” unapplied changes",
+      "preview": "Preview — unapplied changes",
       "previewEyebrow": "New identity",
       "previewTitle": "Explore the platform",
       "previewText": "This is how the name, logo, buttons and main accents will look.",
@@ -1482,7 +1482,7 @@
       "printReport": "Print report",
       "viewDetails": "View details & snapshot",
       "deleteReport": "Delete from history",
-      "previewModalSubtitle": "{{count}} records found â€¢ Selected format: {{format}}",
+      "previewModalSubtitle": "{{count}} records found ⬢ Selected format: {{format}}",
       "noDataMatch": "No data matching the selected filters.",
       "previewNote": "Displaying first {{count}} rows of {{total}} in live preview. The exported file will contain all data.",
       "previewLimitNote": "Displaying first {{count}} rows of {{total}} in this preview. The exported file will contain the full dataset.",
@@ -2135,9 +2135,9 @@
       "subtitle": "Management of customer ratings for this branch."
     },
     "sections": {
-      "gestiÃ³n_operativa": "OPERATIONAL MANAGEMENT",
-      "consulta_y_auditorÃ­a": "CONSULTATION & AUDIT",
-      "configuraciÃ³n_global": "GLOBAL CONFIGURATION",
+      "gestión_operativa": "OPERATIONAL MANAGEMENT",
+      "consulta_y_auditoría": "CONSULTATION & AUDIT",
+      "configuración_global": "GLOBAL CONFIGURATION",
       "configuración_global": "GLOBAL CONFIGURATION",
       "monitoreo": "MONITORING",
       "consulta_y_auditoría": "CONSULTATION & AUDIT",
@@ -2186,8 +2186,8 @@
     "success": "Success",
     "verify": "Verify",
     "sending": "Sending...",
-    "processing": "Processingâ€¦",
-    "connecting": "Connectingâ€¦",
+    "processing": "Processing⬦",
+    "connecting": "Connecting⬦",
     "day": "day",
     "days": "days",
     "date": "Date",
@@ -2239,8 +2239,8 @@
     "submit": "Sign in",
     "googleBtn": "Continue with Google",
     "facebookBtn": "Continue with Facebook",
-    "connectingGoogle": "Connecting with Googleâ€¦",
-    "connectingFacebook": "Connecting with Facebookâ€¦",
+    "connectingGoogle": "Connecting with Google⬦",
+    "connectingFacebook": "Connecting with Facebook⬦",
     "noAccount": "Don't have an account?",
     "registerLink": "Register here",
     "socialError": "Social login error",
@@ -2273,14 +2273,14 @@
     "termsSuffix": "and the processing of my personal data under",
     "termsLaw": "Law 1581 of 2012",
     "submit": "Create my account",
-    "processing": "Processingâ€¦",
+    "processing": "Processing⬦",
     "completed": "Registration complete",
     "checkEmail": "Account created. Continue to verify your email...",
     "hasAccount": "Already have an account?",
     "loginLink": "Sign in here",
     "google": "Google",
     "facebook": "Facebook",
-    "connecting": "Connectingâ€¦",
+    "connecting": "Connecting⬦",
     "successTitle": "Registration successful!",
     "failTitle": "Registration failed",
     "socialSuccessTitle": "Registration successful",
@@ -2299,7 +2299,7 @@
       "uppercase": "At least one uppercase letter (A-Z)",
       "lowercase": "At least one lowercase letter (a-z)",
       "number": "At least one number (0-9)",
-      "symbol": "At least one symbol (!@#â€¦)",
+      "symbol": "At least one symbol (!@#⬦)",
       "veryWeak": "Very weak",
       "weak": "Weak",
       "regular": "Fair",
@@ -2307,8 +2307,8 @@
       "strong": "Strong"
     },
     "modal": {
-      "title": "Terms and Conditions â€” Drivique",
-      "subtitle": "Read carefully before accepting Â· Law 1581/2012 Â· Law 527/1999",
+      "title": "Terms and Conditions — Drivique",
+      "subtitle": "Read carefully before accepting · Law 1581/2012 · Law 527/1999",
       "accept": "I accept the terms",
       "close": "Close",
       "legalNote": "By accepting, you declare that you have read and understood these terms in their entirety.",
@@ -2320,7 +2320,7 @@
         },
         {
           "num": "2",
-          "titulo": "Personal Data Processing â€” Law 1581 of 2012",
+          "titulo": "Personal Data Processing — Law 1581 of 2012",
           "texto": "In compliance with Statutory Law 1581 of 2012 and Regulatory Decree 1377 of 2013, Drivique acts as Data Controller. Collected data (email) will be used exclusively for: (i) rental service provision, (ii) sending confirmations and notifications, (iii) fulfilling legal obligations. Data will not be shared without prior consent, except as required by law. You may exercise access, correction, deletion, and revocation rights by contacting privacidad@Drivique.com."
         },
         {
@@ -2346,7 +2346,7 @@
         {
           "num": "7",
           "titulo": "Applicable Law and Jurisdiction",
-          "texto": "This agreement is governed by the laws of the Republic of Colombia. Any controversy will be resolved before competent courts in the city of BogotÃ¡ D.C."
+          "texto": "This agreement is governed by the laws of the Republic of Colombia. Any controversy will be resolved before competent courts in the city of Bogotá D.C."
         }
       ],
       "errors": {
@@ -2441,7 +2441,7 @@
     "panelCheck1": "Instant verification",
     "panelCheck2": "Secure & dynamic code",
     "panelCheck3": "Total account protection",
-    "copyright": "Drivique Â© 2026",
+    "copyright": "Drivique © 2026",
     "errors": {
       "codeRequired": "Enter the verification code",
       "codeInvalid": "The code entered is not valid",
@@ -2629,7 +2629,7 @@
     "mileageRates": "Mileage rates",
     "limitedMileage": "Limited mileage",
     "unlimitedMileage": "Unlimited mileage",
-    "kmIncludedSub": "{{km}} km/day included Â· Overage: {{excedente}}/extra km",
+    "kmIncludedSub": "{{km}} km/day included · Overage: {{excedente}}/extra km",
     "insurance": "Insurance",
     "rentalRequirements": "Rental requirements",
     "minAgeTitle": "Minimum age",
@@ -2909,7 +2909,7 @@
     "wompiReservationRegisteredDesc": "Your reservation was saved as pending. To confirm it, complete the secure online payment.",
     "wompiRedirectNote": "You will be redirected to the official checkout page.",
     "wompiSuccessNote": "You will receive reservation confirmation as soon as the payment succeeds.",
-    "redirecting": "Redirectingâ€¦",
+    "redirecting": "Redirecting⬦",
     "payWithWompi": "Pay with Wompi",
     "logisticsFeeLabel": "Logistics Fee",
     "subtotalReservation": "Reservation Subtotal",
@@ -3142,7 +3142,7 @@
     "digitalPendingDesc": "Your reservation is saved as pending. Complete the secure payment on Wompi to confirm and enable your rental contract.",
     "totalToPay": "TOTAL TO PAY:",
     "payWithWompi": "Pay with Wompi",
-    "redirectingToWompi": "Redirecting to Wompiâ€¦",
+    "redirectingToWompi": "Redirecting to Wompi⬦",
     "paymentDeadline": "PAYMENT DEADLINE",
     "cashDeadlineNotice": "You have 72 hours from now to go to the branch and pay. If you do not pay within this timeframe, the reservation will be automatically cancelled.",
     "city": "City:",
@@ -3270,19 +3270,19 @@
       "Estados Unidos": "United States",
       "Alemania": "Germany",
       "Francia": "France",
-      "EspaÃ±a": "Spain",
+      "España": "Spain",
       "Italia": "Italy",
       "Reino Unido": "United Kingdom",
-      "CanadÃ¡": "Canada",
+      "Canadá": "Canada",
       "Brasil": "Brazil",
       "Argentina": "Argentina",
-      "MÃ©xico": "Mexico",
+      "México": "Mexico",
       "Venezuela": "Venezuela",
       "Ecuador": "Ecuador",
-      "PerÃº": "Peru",
+      "Perú": "Peru",
       "Chile": "Chile",
       "Australia": "Australia",
-      "JapÃ³n": "Japan",
+      "Japón": "Japan",
       "China": "China",
       "India": "India",
       "Otro": "Other",
@@ -3307,7 +3307,7 @@
     "statusFailed": "Failed",
     "loading": "Loading payments...",
     "error": "Error loading payments",
-    "preparingPayment": "Preparing paymentâ€¦"
+    "preparingPayment": "Preparing payment⬦"
   },
   "contratos": {
     "title": "My contracts",
@@ -3381,12 +3381,12 @@
     "check1": "Book in minutes",
     "check2": "Payment via payment gateway",
     "check3": "Cash payment at branch",
-    "copyright": "Drivique Â© 2026"
+    "copyright": "Drivique © 2026"
   },
   "contratoFirma": {
     "badgeLabel": "Digital document",
     "title": "Reservation and rental agreement",
-    "subtitle": "Drivique Â· Academic vehicle rental platform",
+    "subtitle": "Drivique · Academic vehicle rental platform",
     "autoGenNote": "Document auto-generated from your reservation data. You only need to review it and sign.",
     "contractCode": "Contract code",
     "status": "Status",
@@ -3450,7 +3450,7 @@
     "clearSignature": "Clear signature",
     "signatureRequired": "You must sign to continue.",
     "signAndContinue": "Sign contract and continue",
-    "signing": "Signingâ€¦",
+    "signing": "Signing⬦",
     "footerNote1": "Document automatically generated by Drivique.",
     "footerNote2": "Academic and functional use within the reservation and digital contracting flow.",
     "stepLabel": "Contract signature",
@@ -3514,7 +3514,7 @@
       "Compacto": "Compact",
       "Camioneta": "Pickup",
       "Deportivo": "Sport",
-      "EconÃ³mico": "Economy",
+      "Económico": "Economy",
       "Económico": "Económico"
     },
     "modal": {
@@ -3557,10 +3557,10 @@
     "backToAccount": "Back to My Account"
   },
   "servicios": {
-    "DevoluciÃ³n con tanque vacÃ­o": "Return with empty tank",
+    "Devolución con tanque vacío": "Return with empty tank",
     "GPS Integrado": "Integrated GPS",
     "Lavado de auto post-entrega": "Post-rental car wash",
-    "Silla de bebÃ©": "Baby seat",
+    "Silla de bebé": "Baby seat",
     "Devolución con tanque vacío": "Devolución con tanque vacío",
     "Silla de bebé": "Silla de bebé"
   },
@@ -3677,20 +3677,20 @@
     "responses": {
       "hola": "ðŸ‘‹ Hi! Welcome to Drivique. How can I assist you today? Feel free to pick a quick option or type your question.",
       "queEsDrivique": "âœ¨ **What is Drivique?**\n\nDrivique is the leading car rental platform in Colombia. We offer 100% digital bookings, online contracts, 24/7 roadside assistance, and a modern fleet.",
-      "dolar": "ðŸ’µ **Currency Conversion & Rates:**\n\nAt Drivique you can view all vehicle prices in **COP** or **USD**.\n\nâ€¢ Rates starting from approximately **{{precio}}/day**.\nâ€¢ Conversion is calculated in real time based on your chosen currency.",
+      "dolar": "ðŸ’µ **Currency Conversion & Rates:**\n\nAt Drivique you can view all vehicle prices in **COP** or **USD**.\n\n• Rates starting from approximately **{{precio}}/day**.\n• Conversion is calculated in real time based on your chosen currency.",
       "alquilar": "ðŸš— **Renting at Drivique is super easy:**\n\n1. Select your preferred vehicle in the **Catalog**.\n2. Choose pickup & return dates, and your preferred branch.\n3. Upload your ID and valid driver's license.\n4. Complete secure online payment via **Wompi**.\n5. All set! You will receive instant booking confirmation.",
-      "requisitos": "ðŸ“‹ **Mandatory Requirements:**\n\nâ€¢ **Minimum age:** 18 years old.\nâ€¢ **ID Document:** ID card, Passport, Identity card or Foreigner ID.\nâ€¢ **Driver's License:** Valid (national or international).\nâ€¢ **Security deposit:** Credit or debit card under renter's name.",
-      "pagos": "ðŸ’° **Payment Methods & Deposits:**\n\nWe accept all digital payment methods via **Wompi**:\nâ€¢ Credit cards (Visa, Mastercard, American Express).\nâ€¢ Bank transfers / PSE / Nequi.\nâ€¢ International credit & debit cards in COP or USD.\n\n*Security deposit is automatically released 24h after vehicle return.*",
-      "agente": "ðŸ‘¤ **Personalized Human Support:**\n\nContact our control team directly:\nâ€¢ ðŸ“± **WhatsApp 24/7:** +57 314 478 9702\nâ€¢ ðŸ“ž **Phone Line:** +57 322 3163531\nâ€¢ âœ‰ï¸ **Email:** soporte@drivique.com\n\n*Average response time: under 2 minutes.*",
+      "requisitos": "ðŸ“‹ **Mandatory Requirements:**\n\n• **Minimum age:** 18 years old.\n• **ID Document:** ID card, Passport, Identity card or Foreigner ID.\n• **Driver's License:** Valid (national or international).\n• **Security deposit:** Credit or debit card under renter's name.",
+      "pagos": "ðŸ’° **Payment Methods & Deposits:**\n\nWe accept all digital payment methods via **Wompi**:\n• Credit cards (Visa, Mastercard, American Express).\n• Bank transfers / PSE / Nequi.\n• International credit & debit cards in COP or USD.\n\n*Security deposit is automatically released 24h after vehicle return.*",
+      "agente": "ðŸ‘¤ **Personalized Human Support:**\n\nContact our control team directly:\n• ðŸ“± **WhatsApp 24/7:** +57 314 478 9702\n• ðŸ“ž **Phone Line:** +57 322 3163531\n• âœ‰ï¸ **Email:** soporte@drivique.com\n\n*Average response time: under 2 minutes.*",
       "incidencia": "ðŸ› ï¸ **Vehicle Issue?**\n\nHead to **Support** in the top menu or go to **My Reservations** and click **\"Report issue\"**. Our roadside team will dispatch assistance right away.",
       "cancelacion": "ðŸ”„ **Cancellation Policy:**\n\nYou can cancel your booking for a full refund up to **24 hours before** pickup from **My Reservations**.",
-      "sucursales": "ðŸ¢ **Available Branches:**\n\nWe have physical branches in Neiva, BogotÃ¡, MedellÃ­n, Cali, and Cartagena. View exact locations in **Branches**.",
+      "sucursales": "ðŸ¢ **Available Branches:**\n\nWe have physical branches in Neiva, Bogotá, Medellín, Cali, and Cartagena. View exact locations in **Branches**.",
       "default": "ðŸ¤– I understand your question. Explore our **Catalog**, check **My Reservations**, or contact an agent by typing **\"agent\"**."
     }
   },
   "caja": {
-    "eyebrowBranch": "Cashier Module Â· Branch {{sucursal}}",
-    "eyebrowCentral": "Central Administration Â· Cashier Module",
+    "eyebrowBranch": "Cashier Module · Branch {{sucursal}}",
+    "eyebrowCentral": "Central Administration · Cashier Module",
     "title": "Branch Reservation Collection",
     "subtitle": "Check the reservation code provided by the customer at the counter to confirm cash payments or verify Wompi / Bancolombia transactions.",
     "pendingToCollect": "Pending to Collect",
@@ -3732,7 +3732,7 @@
     "cashObservations": "Cashier Notes (Optional):",
     "cashObservationsPlaceholder": "e.g. Banknotes verified, physical ID presented...",
     "confirmCashBtn": "Confirm Cash Payment ({{total}})",
-    "processingBtn": "Processing Collectionâ€¦",
+    "processingBtn": "Processing Collection⬦",
     "auditModeTitle": "Audit Mode (Read Only)",
     "auditModeDesc": "Receiving cash and confirming payments is the sole responsibility of the Branch Manager ({{sucursal}}) at the counter.",
     "recentHistoryTitle": "Recent Cash Collections History",
@@ -3830,7 +3830,7 @@
     },
     "dashboard": {
       "title": "Dashboard",
-      "subtitle": "Resumen del dÃ­a en tu sucursal",
+      "subtitle": "Resumen del día en tu sucursal",
       "realtime": "En tiempo real",
       "actions": {
         "createReservation": "Crear reserva",
@@ -3842,9 +3842,9 @@
         "todayDeliveries": "Entregas de hoy",
         "customersAtCounter": "clientes en mostrador",
         "todayReturns": "Devoluciones de hoy",
-        "vehiclesReturning": "vehÃ­culos retornando a la sucursal",
-        "occupancy": "OcupaciÃ³n",
-        "occupancyVehicles": "{{rented}} de {{total}} vehÃ­culos"
+        "vehiclesReturning": "vehículos retornando a la sucursal",
+        "occupancy": "Ocupación",
+        "occupancyVehicles": "{{rented}} de {{total}} vehículos"
       },
       "kpiTooltip": {
         "monthlyRevenue": "Sum of reservations charged this month at your branch.",
@@ -3873,7 +3873,7 @@
         "maintenance": "In shop"
       },
       "schedule": {
-        "title": "ProgramaciÃ³n de hoy",
+        "title": "Programación de hoy",
         "tabs": {
           "deliveries": "Entregas {{count}}",
           "returns": "Devoluciones {{count}}"
@@ -3887,7 +3887,7 @@
         "emptyReturns": "No hay devoluciones programadas para hoy."
       },
       "attention": {
-        "title": "Requiere tu atenciÃ³n",
+        "title": "Requiere tu atención",
         "documentsToValidate_one": "1 documento por validar",
         "documentsToValidate_other": "{{count}} documentos por validar",
         "openIncidents_one": "1 incidencia abierta",
@@ -3896,7 +3896,7 @@
         "pendingPayments_other": "{{count}} pagos pendientes",
         "expiringVehicleDocs_one": "1 vehicle document expiring",
         "expiringVehicleDocs_other": "{{count}} vehicle documents expiring",
-        "allClear": "Todo al dÃ­a"
+        "allClear": "Todo al día"
       },
       "fleet": {
         "title": "Estado de la flota",
@@ -3904,8 +3904,8 @@
         "rented": "En alquiler",
         "maintenance": "En taller o mantenimiento",
         "viewFleet": "Ver flota â†’",
-        "vehicleCount_one": "1 vehÃ­culo",
-        "vehicleCount_other": "{{count}} vehÃ­culos"
+        "vehicleCount_one": "1 vehículo",
+        "vehicleCount_other": "{{count}} vehículos"
       },
       "notifications": {
         "title": "Notifications",

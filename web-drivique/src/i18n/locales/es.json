@@ -2056,9 +2056,9 @@
     },
     "sections": {
       "monitoreo": "MONITOREO",
-      "gestiÃ³n_operativa": "OPERATIONAL MANAGEMENT",
-      "consulta_y_auditorÃ­a": "CONSULTATION & AUDIT",
-      "configuraciÃ³n_global": "GLOBAL CONFIGURATION",
+      "gestión_operativa": "OPERATIONAL MANAGEMENT",
+      "consulta_y_auditoría": "CONSULTATION & AUDIT",
+      "configuración_global": "GLOBAL CONFIGURATION",
       "configuración_global": "GLOBAL CONFIGURATION",
       "consulta_y_auditoría": "CONSULTATION & AUDIT",
       "gestión_operativa": "OPERATIONAL MANAGEMENT"
@@ -3286,11 +3286,11 @@
       "China": "China",
       "India": "India",
       "Otro": "Otro",
-      "EspaÃ±a": "Spain",
-      "CanadÃ¡": "Canada",
-      "MÃ©xico": "Mexico",
-      "PerÃº": "Peru",
-      "JapÃ³n": "Japan"
+      "España": "Spain",
+      "Canadá": "Canada",
+      "México": "Mexico",
+      "Perú": "Peru",
+      "Japón": "Japan"
     },
     "completeProfile": "Completar perfil"
   },
@@ -3515,7 +3515,7 @@
       "Camioneta": "Camioneta",
       "Deportivo": "Deportivo",
       "Económico": "Económico",
-      "EconÃ³mico": "Economy"
+      "Económico": "Economy"
     },
     "modal": {
       "successTitle": "¡Cupón activado con éxito!",
@@ -3561,8 +3561,8 @@
     "GPS Integrado": "GPS Integrado",
     "Lavado de auto post-entrega": "Lavado de auto post-entrega",
     "Silla de bebé": "Silla de bebé",
-    "DevoluciÃ³n con tanque vacÃ­o": "Return with empty tank",
-    "Silla de bebÃ©": "Baby seat"
+    "Devolución con tanque vacío": "Return with empty tank",
+    "Silla de bebé": "Baby seat"
   },
   "favoritos": {
     "title": "Mis Favoritos",

@@ -58,9 +58,9 @@ const ICONS_MAP = {
 }
 
 const HEADER_KEY_MAP = {
-  'MÃ©trica / Indicador': 'metric_indicator',
+  'Métrica / Indicador': 'metric_indicator',
   'Valor Actual': 'current_value',
-  'ParticipaciÃ³n / Estado': 'share_status',
+  'Participación / Estado': 'share_status',
   'Observaciones': 'observations',
   'Sucursal / Concepto': 'branch_concept',
   'Reservas Facturadas': 'billed_reservations',
@@ -68,25 +68,25 @@ const HEADER_KEY_MAP = {
   'Ingresos Netos COP': 'net_revenue',
   'Ingresos Netos USD': 'net_revenue',
   'Ticket Promedio': 'average_ticket',
-  'ParticipaciÃ³n %': 'share_percent',
-  'CategorÃ­a / Tipo': 'category_type',
+  'Participación %': 'share_percent',
+  'Categoría / Tipo': 'category_type',
   'Total Unidades': 'total_units',
   'En Alquiler': 'rented_units',
   'Disponibles': 'available_units',
   'En Taller': 'maintenance_units',
-  'Tasa OcupaciÃ³n': 'occupancy_rate',
-  'Gravedad / CategorÃ­a': 'severity_category',
+  'Tasa Ocupación': 'occupancy_rate',
+  'Gravedad / Categoría': 'severity_category',
   'Casos Reportados': 'reported_cases',
   'Resueltos': 'resolved_cases',
-  'En RevisiÃ³n': 'under_review_cases',
+  'En Revisión': 'under_review_cases',
   'Costo Estimado COP': 'estimated_cost_cop',
   'Costo Estimado USD': 'estimated_cost',
-  'CÃ³digo': 'code',
-  'CÃ³digo Reserva': 'reservation',
-  'CÃ³d. Reserva': 'reservation',
+  'Código': 'code',
+  'Código Reserva': 'reservation',
+  'Cód. Reserva': 'reservation',
   'Cliente': 'client',
-  'VehÃ­culo': 'vehicle',
-  'Nombre VehÃ­culo': 'vehicle',
+  'Vehículo': 'vehicle',
+  'Nombre Vehículo': 'vehicle',
   'Sucursal': 'branch',
   'Fecha Inicio': 'start_date',
   'Fecha Fin': 'end_date',
@@ -96,51 +96,51 @@ const HEADER_KEY_MAP = {
   'Total USD': 'total',
   'Placa': 'plate',
   'Marca / Modelo': 'brand_model',
-  'CategorÃ­a': 'category',
-  'TransmisiÃ³n': 'transmission',
+  'Categoría': 'category',
+  'Transmisión': 'transmission',
   'Combustible': 'fuel',
-  'Tarifa / DÃ­a': 'daily_rate',
-  'Tarifa/DÃ­a': 'daily_rate',
+  'Tarifa / Día': 'daily_rate',
+  'Tarifa/Día': 'daily_rate',
   'No. Contrato': 'contract_number',
-  'CÃ³digo Contrato': 'contract_number',
+  'Código Contrato': 'contract_number',
   'Reserva': 'reservation',
   'Documento': 'document',
   'Vigencia': 'validity',
   'Monto': 'amount',
   'Monto Total': 'amount',
   'Fecha': 'date',
-  'Tipo / TÃ­tulo': 'type_title',
+  'Tipo / Título': 'type_title',
   'Gravedad': 'severity',
   'Costo Estimado': 'estimated_cost',
   'Nombre Completo': 'full_name',
-  'Correo ElectrÃ³nico': 'email',
-  'TelÃ©fono': 'phone',
+  'Correo Electrónico': 'email',
+  'Teléfono': 'phone',
   'Rol': 'role',
   'Registro': 'registration',
-  'CÃ³digo CupÃ³n': 'coupon_code',
-  'TÃ­tulo': 'title',
+  'Código Cupón': 'coupon_code',
+  'Título': 'title',
   'Descuento': 'discount',
-  'VÃ¡lido Desde': 'valid_from',
-  'VÃ¡lido Hasta': 'valid_until',
-  'Usos MÃ¡x.': 'max_uses',
+  'Válido Desde': 'valid_from',
+  'Válido Hasta': 'valid_until',
+  'Usos Máx.': 'max_uses',
 }
 
 const KPI_KEY_MAP = {
   'Total Reservas': 'total_reservations',
   'Ingresos Estimados': 'estimated_revenue',
-  'Tasa OcupaciÃ³n Flota': 'fleet_occupancy_rate',
-  'Tasa OcupaciÃ³n': 'fleet_occupancy_rate',
+  'Tasa Ocupación Flota': 'fleet_occupancy_rate',
+  'Tasa Ocupación': 'fleet_occupancy_rate',
   'Incidencias Activas': 'active_incidents',
-  'Total VehÃ­culos': 'total_vehicles',
+  'Total Vehículos': 'total_vehicles',
   'Disponibles': 'available_vehicles',
-  'VehÃ­culos Disponibles': 'available_vehicles',
+  'Vehículos Disponibles': 'available_vehicles',
   'En Alquiler': 'rented_vehicles',
   'En Taller / Mant.': 'maintenance_vehicles',
   'En Taller': 'maintenance_units',
   'Ocupados / Taller': 'rented_or_workshop',
   'Total Incidencias': 'total_incidents',
   'Costo Acumulado': 'cumulative_cost',
-  'Costo Estimado DaÃ±os': 'cumulative_cost',
+  'Costo Estimado Daños': 'cumulative_cost',
   'Costo Estimado Total': 'cumulative_cost',
   'Total Contratos': 'total_contracts',
   'Monto Facturado': 'billed_amount',
@@ -157,12 +157,12 @@ const KPI_KEY_MAP = {
 }
 
 const FILTER_LABEL_MAP = {
-  'PerÃ­odo': 'period',
+  'Período': 'period',
   'Sucursal': 'branch',
   'Estado': 'status',
   'Gravedad': 'severity',
   'Rol': 'role',
-  'BÃºsqueda': 'search',
+  'Búsqueda': 'search',
   'Moneda': 'currency',
 }
 
@@ -204,10 +204,10 @@ export default function ReportsManagementPage({ branchOnly = false }) {
   const sucursalEncargado =
     user?.sucursalAsignada || user?.sucursalId || user?.sucursal || ''
 
-  // PestaÃ±a activa ('builder' | 'history')
+  // Pestaña activa ('builder' | 'history')
   const [activeTab, setActiveTab] = useState('builder')
 
-  // CatÃ¡logo de tipos de reportes
+  // Catálogo de tipos de reportes
   const reportTypes = useMemo(() => reportManagementService.getReportTypes(), [])
   const [sucursales, setSucursales] = useState([])
 
@@ -278,12 +278,12 @@ export default function ReportsManagementPage({ branchOnly = false }) {
     }
   }
 
-  // Filtrar tipos de reportes segÃºn categorÃ­a
+  // Filtrar tipos de reportes según categoría
   const availableTypes = useMemo(() => {
     return reportTypes.filter((t) => t.categoria === selectedCategory)
   }, [reportTypes, selectedCategory])
 
-  // Cuando cambia de categorÃ­a, asegurar que el tipo seleccionado sea vÃ¡lido
+  // Cuando cambia de categoría, asegurar que el tipo seleccionado sea válido
   useEffect(() => {
     if (availableTypes.length > 0 && !availableTypes.some((t) => t.id === selectedTypeId)) {
       setSelectedTypeId(availableTypes[0].id)
@@ -353,12 +353,12 @@ export default function ReportsManagementPage({ branchOnly = false }) {
 
       await showAlert({
         icon: 'success',
-        title: t('admin.reports.successTitle', 'Â¡Reporte Generado con Ã‰xito!'),
+        title: t('admin.reports.successTitle', '¡Reporte Generado con Éxito!'),
         text: t('admin.reports.successMsg', {
           title: generated.titulo,
           format: generated.formato,
           code: generated.codigo,
-          defaultValue: `El reporte "${generated.titulo}" ha sido generado en formato ${generated.formato} y guardado en el historial con el cÃ³digo ${generated.codigo}.`,
+          defaultValue: `El reporte "${generated.titulo}" ha sido generado en formato ${generated.formato} y guardado en el historial con el código ${generated.codigo}.`,
         }),
         confirmButtonText: t('admin.reports.understood', 'Entendido'),
       })
@@ -367,7 +367,7 @@ export default function ReportsManagementPage({ branchOnly = false }) {
       showAlert({
         icon: 'error',
         title: t('admin.reports.errorTitle', 'Error al generar reporte'),
-        text: error.message || t('admin.reports.errorGeneric', 'OcurriÃ³ un error inesperado al procesar el archivo.'),
+        text: error.message || t('admin.reports.errorGeneric', 'Ocurrió un error inesperado al procesar el archivo.'),
       })
     } finally {
       setIsGenerating(false)
@@ -383,7 +383,7 @@ export default function ReportsManagementPage({ branchOnly = false }) {
       showAlert({
         icon: 'error',
         title: t('admin.reports.errorPrint', 'Error al imprimir'),
-        text: t('admin.reports.errorPrintMsg', 'Verifica que tu navegador permita ventanas emergentes para la impresiÃ³n.'),
+        text: t('admin.reports.errorPrintMsg', 'Verifica que tu navegador permita ventanas emergentes para la impresión.'),
       })
     }
   }
@@ -412,7 +412,7 @@ export default function ReportsManagementPage({ branchOnly = false }) {
       showAlert({
         icon: 'error',
         title: t('admin.reports.errorPrint', 'Error al imprimir'),
-        text: 'No se pudo abrir el diÃ¡logo de impresiÃ³n.',
+        text: 'No se pudo abrir el diálogo de impresión.',
       })
     }
   }
@@ -421,14 +421,14 @@ export default function ReportsManagementPage({ branchOnly = false }) {
   const handleDeleteFromHistory = async (report) => {
     const res = await showAlert({
       icon: 'question',
-      title: t('admin.reports.confirmDeleteTitle', 'Â¿Eliminar del historial?'),
+      title: t('admin.reports.confirmDeleteTitle', '¿Eliminar del historial?'),
       text: t('admin.reports.confirmDeleteMsg', {
         title: report.titulo,
         code: report.codigo,
-        defaultValue: `Â¿Deseas eliminar el registro del reporte "${report.titulo}" (${report.codigo})? Esta acciÃ³n quedarÃ¡ registrada en auditorÃ­a.`,
+        defaultValue: `¿Deseas eliminar el registro del reporte "${report.titulo}" (${report.codigo})? Esta acción quedará registrada en auditoría.`,
       }),
       showCancelButton: true,
-      confirmButtonText: t('admin.reports.deleteBtn', 'SÃ­, eliminar'),
+      confirmButtonText: t('admin.reports.deleteBtn', 'Sí, eliminar'),
       cancelButtonText: t('admin.reports.cancelBtn', 'Cancelar'),
     })
 
@@ -444,10 +444,10 @@ export default function ReportsManagementPage({ branchOnly = false }) {
     if (history.length === 0) return
     const res = await showAlert({
       icon: 'warning',
-      title: t('admin.reports.clearAllTitle', 'Â¿Vaciar historial completo?'),
-      text: t('admin.reports.clearAllMsg', 'Se eliminarÃ¡n todos los registros de reportes generados anteriormente. Esta acciÃ³n quedarÃ¡ registrada en auditorÃ­a.'),
+      title: t('admin.reports.clearAllTitle', '¿Vaciar historial completo?'),
+      text: t('admin.reports.clearAllMsg', 'Se eliminarán todos los registros de reportes generados anteriormente. Esta acción quedará registrada en auditoría.'),
       showCancelButton: true,
-      confirmButtonText: t('admin.reports.clearConfirmBtn', 'SÃ­, vaciar historial'),
+      confirmButtonText: t('admin.reports.clearConfirmBtn', 'Sí, vaciar historial'),
       cancelButtonText: t('admin.reports.cancelBtn', 'Cancelar'),
     })
 
@@ -457,7 +457,7 @@ export default function ReportsManagementPage({ branchOnly = false }) {
     }
   }
 
-  // Filtrado del historial para visualizaciÃ³n
+  // Filtrado del historial para visualización
   const filteredHistory = useMemo(() => {
     return reportManagementService.getHistory({
       search: historySearch,
@@ -467,7 +467,7 @@ export default function ReportsManagementPage({ branchOnly = false }) {
     })
   }, [history, historySearch, historyCategory, historyFormat, historyDateFilter])
 
-  // EstadÃ­sticas rÃ¡pidas del historial
+  // Estadísticas rápidas del historial
   const historyStats = useMemo(() => {
     const total = history.length
     const pdfCount = history.filter((h) => h.formato === REPORT_FORMATS.PDF).length
@@ -496,9 +496,9 @@ export default function ReportsManagementPage({ branchOnly = false }) {
               {esEncargado
                 ? t('admin.reports.branchSubtitle', {
                     branch: sucursalEncargado,
-                    defaultValue: `GeneraciÃ³n de informes operativos, reservas y contratos para ${sucursalEncargado}.`,
+                    defaultValue: `Generación de informes operativos, reservas y contratos para ${sucursalEncargado}.`,
                   })
-                : t('admin.reports.mainSubtitle', 'Genera informes analÃ­ticos, consolidados financieros y reportes especÃ­ficos en formatos Word, PDF y Excel con respaldo automÃ¡tico en historial y trazabilidad.')}
+                : t('admin.reports.mainSubtitle', 'Genera informes analíticos, consolidados financieros y reportes específicos en formatos Word, PDF y Excel con respaldo automático en historial y trazabilidad.')}
             </p>
           </div>
 
@@ -507,7 +507,7 @@ export default function ReportsManagementPage({ branchOnly = false }) {
           </div>
         </div>
 
-        {/* SELECTOR DE PESTAÃ‘AS TIPO SEGMENTED CONTROL */}
+        {/* SELECTOR DE PESTAÑAS TIPO SEGMENTED CONTROL */}
         <div className="reports-tabs-pill-container">
           <button
             type="button"
@@ -530,18 +530,18 @@ export default function ReportsManagementPage({ branchOnly = false }) {
         </div>
 
         {/* =========================================================
-            PESTAÃ‘A 1: GENERADOR DE REPORTES (DISEÃ‘O ESPACIOSO)
+            PESTAÑA 1: GENERADOR DE REPORTES (DISEÑO ESPACIOSO)
            ========================================================= */}
         {activeTab === 'builder' && (
           <div className="reports-builder-flow">
-            {/* PASO 1: SELECCIÃ“N DEL REPORTE */}
+            {/* PASO 1: SELECCIÓN DEL REPORTE */}
             <div className="builder-section-card">
               <div className="builder-section-header">
                 <div className="builder-step-indicator">
                   <div className="step-circle-badge">1</div>
                   <div>
                     <h3 className="step-title-text">{t('admin.reports.step1Title', 'Selecciona el Tipo de Reporte')}</h3>
-                    <p className="step-subtitle-text">{t('admin.reports.step1Subtitle', 'Elige la plantilla analÃ­tica o el reporte especÃ­fico que deseas generar')}</p>
+                    <p className="step-subtitle-text">{t('admin.reports.step1Subtitle', 'Elige la plantilla analítica o el reporte específico que deseas generar')}</p>
                   </div>
                 </div>
 
@@ -558,7 +558,7 @@ export default function ReportsManagementPage({ branchOnly = false }) {
                     className={`category-switch-btn ${selectedCategory === REPORT_CATEGORIES.SPECIFIC ? 'active' : ''}`}
                     onClick={() => setSelectedCategory(REPORT_CATEGORIES.SPECIFIC)}
                   >
-                    {t('admin.reports.catSpecific', 'Reportes EspecÃ­ficos')}
+                    {t('admin.reports.catSpecific', 'Reportes Específicos')}
                   </button>
                 </div>
               </div>
@@ -594,14 +594,14 @@ export default function ReportsManagementPage({ branchOnly = false }) {
               </div>
             </div>
 
-            {/* PASO 2: PARÃMETROS Y FILTROS */}
+            {/* PASO 2: PARÁMETROS Y FILTROS */}
             <div className="builder-section-card">
               <div className="builder-section-header">
                 <div className="builder-step-indicator">
                   <div className="step-circle-badge">2</div>
                   <div>
-                    <h3 className="step-title-text">{t('admin.reports.step2Title', 'ParÃ¡metros y Filtros de BÃºsqueda')}</h3>
-                    <p className="step-subtitle-text">{t('admin.reports.step2Subtitle', 'Ajusta el perÃ­odo, sucursal y criterios para filtrar los datos a incluir')}</p>
+                    <h3 className="step-title-text">{t('admin.reports.step2Title', 'Parámetros y Filtros de Búsqueda')}</h3>
+                    <p className="step-subtitle-text">{t('admin.reports.step2Subtitle', 'Ajusta el período, sucursal y criterios para filtrar los datos a incluir')}</p>
                   </div>
                 </div>
               </div>
@@ -616,8 +616,8 @@ export default function ReportsManagementPage({ branchOnly = false }) {
                           <FaCalendarAlt />
                         </div>
                         <div>
-                          <h4>{t('admin.reports.dateRangeLabel', 'PerÃ­odo del Reporte')}</h4>
-                          <p>{t('admin.reports.dateRangeDesc', 'Filtra por perÃ­odos predefinidos o ingresa un rango personalizado')}</p>
+                          <h4>{t('admin.reports.dateRangeLabel', 'Período del Reporte')}</h4>
+                          <p>{t('admin.reports.dateRangeDesc', 'Filtra por períodos predefinidos o ingresa un rango personalizado')}</p>
                         </div>
                       </div>
 
@@ -641,7 +641,7 @@ export default function ReportsManagementPage({ branchOnly = false }) {
                           className={`date-preset-pill ${datePreset === 'week' ? 'active' : ''}`}
                           onClick={() => handleDatePreset('week')}
                         >
-                          {t('admin.reports.presetWeek', '7 DÃ­as')}
+                          {t('admin.reports.presetWeek', '7 Días')}
                         </button>
                         <button
                           type="button"
@@ -655,7 +655,7 @@ export default function ReportsManagementPage({ branchOnly = false }) {
                           className={`date-preset-pill ${datePreset === 'year' ? 'active' : ''}`}
                           onClick={() => handleDatePreset('year')}
                         >
-                          {t('admin.reports.presetYear', 'Este AÃ±o')}
+                          {t('admin.reports.presetYear', 'Este Año')}
                         </button>
                       </div>
                     </div>
@@ -702,7 +702,7 @@ export default function ReportsManagementPage({ branchOnly = false }) {
                         <span>
                           {filterStartDate || filterEndDate
                             ? `${filterStartDate || 'Inicio'} â†’ ${filterEndDate || 'Hoy'}`
-                            : t('admin.reports.allHistory', 'Todo el histÃ³rico')}
+                            : t('admin.reports.allHistory', 'Todo el histórico')}
                         </span>
                       </div>
                     </div>
@@ -730,7 +730,7 @@ export default function ReportsManagementPage({ branchOnly = false }) {
                   </div>
                 )}
 
-                {/* Estado dinÃ¡mico */}
+                {/* Estado dinámico */}
                 {(currentTypeConfig.filtrosSoportados.includes('estadoReserva') ||
                   currentTypeConfig.filtrosSoportados.includes('estadoContrato') ||
                   currentTypeConfig.filtrosSoportados.includes('estadoVehiculo') ||
@@ -767,7 +767,7 @@ export default function ReportsManagementPage({ branchOnly = false }) {
                       {currentTypeConfig.id === 'incidents' && (
                         <>
                           <option value="pendiente">{t('admin.reports.statePending', 'Pendiente')}</option>
-                          <option value="en_revision">{t('admin.reports.stateInReview', 'En RevisiÃ³n')}</option>
+                          <option value="en_revision">{t('admin.reports.stateInReview', 'En Revisión')}</option>
                           <option value="resuelto">{t('admin.reports.stateResolved', 'Resuelto')}</option>
                         </>
                       )}
@@ -790,7 +790,7 @@ export default function ReportsManagementPage({ branchOnly = false }) {
                       onChange={(e) => setFilterSeverity(e.target.value)}
                     >
                       <option value="all">{t('admin.reports.allSeverities', 'Todas las Gravedades')}</option>
-                      <option value="alta">{t('admin.reports.severityHigh', 'Alta / CrÃ­tica')}</option>
+                      <option value="alta">{t('admin.reports.severityHigh', 'Alta / Crítica')}</option>
                       <option value="media">{t('admin.reports.severityMedium', 'Media / Moderada')}</option>
                       <option value="baja">{t('admin.reports.severityLow', 'Baja / Leve')}</option>
                     </select>
@@ -813,13 +813,13 @@ export default function ReportsManagementPage({ branchOnly = false }) {
                   </div>
                 )}
 
-                {/* BÃºsqueda por texto */}
+                {/* Búsqueda por texto */}
                 {currentTypeConfig.filtrosSoportados.includes('search') && (
                   <div className="filter-input-card">
-                    <label>{t('admin.reports.textSearchLabel', 'BÃºsqueda por Texto')}</label>
+                    <label>{t('admin.reports.textSearchLabel', 'Búsqueda por Texto')}</label>
                     <input
                       type="text"
-                      placeholder={t('admin.reports.searchPlaceholder', 'Buscar cliente, placa, cÃ³digo...')}
+                      placeholder={t('admin.reports.searchPlaceholder', 'Buscar cliente, placa, código...')}
                       value={filterSearch}
                       onChange={(e) => setFilterSearch(e.target.value)}
                     />
@@ -828,7 +828,7 @@ export default function ReportsManagementPage({ branchOnly = false }) {
               </div>
             </div>
 
-            {/* PASO 3: FORMATO DE EXPORTACIÃ“N Y ACCIONES */}
+            {/* PASO 3: FORMATO DE EXPORTACIÓN Y ACCIONES */}
             <div className="builder-section-card">
               <div className="builder-section-header">
                 <div className="builder-step-indicator">
@@ -877,7 +877,7 @@ export default function ReportsManagementPage({ branchOnly = false }) {
                     </div>
                     <div className="format-info-group">
                       <strong>{t('admin.reports.formatExcelTitle', 'Microsoft Excel')}</strong>
-                      <span>{t('admin.reports.formatExcelDesc', 'Hoja de cÃ¡lculo (.xls)')}</span>
+                      <span>{t('admin.reports.formatExcelDesc', 'Hoja de cálculo (.xls)')}</span>
                     </div>
                   </div>
                 </div>
@@ -937,7 +937,7 @@ export default function ReportsManagementPage({ branchOnly = false }) {
         )}
 
         {/* =========================================================
-            PESTAÃ‘A 2: HISTORIAL DE REPORTES
+            PESTAÑA 2: HISTORIAL DE REPORTES
            ========================================================= */}
         {activeTab === 'history' && (
           <div>
@@ -984,14 +984,14 @@ export default function ReportsManagementPage({ branchOnly = false }) {
               </div>
             </div>
 
-            {/* BARRA DE BÃšSQUEDA Y FILTROS */}
+            {/* BARRA DE BÚSQUEDA Y FILTROS */}
             <div className="history-control-toolbar">
               <div className="history-search-box">
                 <FaSearch />
                 <input
                   type="text"
                   className="history-search-input-field"
-                  placeholder={t('admin.reports.searchHistoryPlaceholder', 'Buscar en el historial por cÃ³digo, tÃ­tulo, usuario o filtro...')}
+                  placeholder={t('admin.reports.searchHistoryPlaceholder', 'Buscar en el historial por código, título, usuario o filtro...')}
                   value={historySearch}
                   onChange={(e) => setHistorySearch(e.target.value)}
                 />
@@ -1002,9 +1002,9 @@ export default function ReportsManagementPage({ branchOnly = false }) {
                   value={historyCategory}
                   onChange={(e) => setHistoryCategory(e.target.value)}
                 >
-                  <option value="all">{t('admin.reports.allCategories', 'Todas las categorÃ­as')}</option>
+                  <option value="all">{t('admin.reports.allCategories', 'Todas las categorías')}</option>
                   <option value={REPORT_CATEGORIES.GENERAL}>{t('admin.reports.catGeneral', 'Generales')}</option>
-                  <option value={REPORT_CATEGORIES.SPECIFIC}>{t('admin.reports.catSpecific', 'EspecÃ­ficos')}</option>
+                  <option value={REPORT_CATEGORIES.SPECIFIC}>{t('admin.reports.catSpecific', 'Específicos')}</option>
                 </select>
 
                 <select
@@ -1023,7 +1023,7 @@ export default function ReportsManagementPage({ branchOnly = false }) {
                 >
                   <option value="all">{t('admin.reports.allDates', 'Cualquier fecha')}</option>
                   <option value="today">{t('admin.reports.today', 'Hoy')}</option>
-                  <option value="week">{t('admin.reports.lastWeek', 'Ãšltimos 7 dÃ­as')}</option>
+                  <option value="week">{t('admin.reports.lastWeek', 'Últimos 7 días')}</option>
                   <option value="month">{t('admin.reports.thisMonth', 'Este mes')}</option>
                 </select>
 
@@ -1047,13 +1047,13 @@ export default function ReportsManagementPage({ branchOnly = false }) {
                   <table className="reports-data-table">
                     <thead>
                       <tr>
-                        <th>{t('admin.reports.thCode', 'CÃ³digo / ID')}</th>
-                        <th>{t('admin.reports.thTitle', 'TÃ­tulo del Reporte')}</th>
-                        <th>{t('admin.reports.thCategory', 'CategorÃ­a')}</th>
+                        <th>{t('admin.reports.thCode', 'Código / ID')}</th>
+                        <th>{t('admin.reports.thTitle', 'Título del Reporte')}</th>
+                        <th>{t('admin.reports.thCategory', 'Categoría')}</th>
                         <th>{t('admin.reports.thFormat', 'Formato')}</th>
                         <th>{t('admin.reports.thGeneratedBy', 'Generado Por')}</th>
                         <th>{t('admin.reports.thDate', 'Fecha y Hora')}</th>
-                        <th>{t('admin.reports.thRows', 'Registros / TamaÃ±o')}</th>
+                        <th>{t('admin.reports.thRows', 'Registros / Tamaño')}</th>
                         <th style={{ textAlign: 'center' }}>{t('admin.reports.thActions', 'Acciones')}</th>
                       </tr>
                     </thead>
@@ -1064,7 +1064,7 @@ export default function ReportsManagementPage({ branchOnly = false }) {
                             <div className="reports-empty-state">
                               <FaHistory />
                               <h3>{t('admin.reports.emptyHistoryTitle', 'No se encontraron reportes')}</h3>
-                              <p>{t('admin.reports.emptyHistorySubtitle', 'AÃºn no has generado reportes que coincidan con los filtros de bÃºsqueda.')}</p>
+                              <p>{t('admin.reports.emptyHistorySubtitle', 'Aún no has generado reportes que coincidan con los filtros de búsqueda.')}</p>
                             </div>
                           </td>
                         </tr>
@@ -1084,7 +1084,7 @@ export default function ReportsManagementPage({ branchOnly = false }) {
                                 <div style={{ fontSize: 11, color: 'var(--adm-muted)', marginTop: 3 }}>
                                   {report.filtersSummary
                                     .map((f) => `${translateFilterLabel(f.label, t)}: ${translateFilterValue(f.value)}`)
-                                    .join(' â€¢ ')}
+                                    .join(' ⬢ ')}
                                 </div>
                               )}
                             </td>
@@ -1092,7 +1092,7 @@ export default function ReportsManagementPage({ branchOnly = false }) {
                               <span className={`category-pill-tag ${report.tipoCategoria}`}>
                                 {report.tipoCategoria === REPORT_CATEGORIES.GENERAL
                                   ? t('admin.reports.catGeneralTag', 'General')
-                                  : t('admin.reports.catSpecificTag', 'EspecÃ­fico')}
+                                  : t('admin.reports.catSpecificTag', 'Específico')}
                               </span>
                             </td>
                             <td>
@@ -1180,13 +1180,13 @@ export default function ReportsManagementPage({ branchOnly = false }) {
               </div>
             </div>
 
-            {/* VISTA MÃ“VIL EN TARJETAS (SOLO PANTALLAS PEQUEÃ‘AS) */}
+            {/* VISTA MÓVIL EN TARJETAS (SOLO PANTALLAS PEQUEÑAS) */}
             <div className="history-mobile-cards-container">
               {filteredHistory.length === 0 ? (
                 <div className="reports-empty-state">
                   <FaHistory />
                   <h3>{t('admin.reports.emptyHistoryTitle', 'No se encontraron reportes')}</h3>
-                  <p>{t('admin.reports.emptyHistorySubtitle', 'AÃºn no has generado reportes que coincidan con los filtros de bÃºsqueda.')}</p>
+                  <p>{t('admin.reports.emptyHistorySubtitle', 'Aún no has generado reportes que coincidan con los filtros de búsqueda.')}</p>
                 </div>
               ) : (
                 filteredHistory.map((report) => (
@@ -1206,7 +1206,7 @@ export default function ReportsManagementPage({ branchOnly = false }) {
                       <span className={`category-pill-tag ${report.tipoCategoria}`}>
                         {report.tipoCategoria === REPORT_CATEGORIES.GENERAL
                           ? t('admin.reports.catGeneralTag', 'General')
-                          : t('admin.reports.catSpecificTag', 'EspecÃ­fico')}
+                          : t('admin.reports.catSpecificTag', 'Específico')}
                       </span>
                     </div>
 
@@ -1244,7 +1244,7 @@ export default function ReportsManagementPage({ branchOnly = false }) {
                         </span>
                       </div>
                       <div className="hm-meta-item">
-                        <small>{t('admin.reports.thRows', 'Registros / TamaÃ±o')}</small>
+                        <small>{t('admin.reports.thRows', 'Registros / Tamaño')}</small>
                         <span>
                           <strong>{report.totalRegistros} {t('admin.reports.records', 'reg.')}</strong> ({report.tamanoEstimado})
                         </span>
@@ -1302,7 +1302,7 @@ export default function ReportsManagementPage({ branchOnly = false }) {
                     {t('admin.reports.previewModalSubtitle', {
                       count: livePreviewData.totalRegistros,
                       format: selectedFormat,
-                      defaultValue: `${livePreviewData.totalRegistros} registros encontrados â€¢ Formato seleccionado: ${selectedFormat}`,
+                      defaultValue: `${livePreviewData.totalRegistros} registros encontrados ⬢ Formato seleccionado: ${selectedFormat}`,
                     })}
                   </small>
                 </div>
@@ -1367,7 +1367,7 @@ export default function ReportsManagementPage({ branchOnly = false }) {
                       {t('admin.reports.previewLimitNote', {
                         count: 25,
                         total: livePreviewData.totalRegistros,
-                        defaultValue: `Mostrando las primeras 25 filas de ${livePreviewData.totalRegistros} en esta vista previa. El archivo exportado contendrÃ¡ la totalidad de los datos.`,
+                        defaultValue: `Mostrando las primeras 25 filas de ${livePreviewData.totalRegistros} en esta vista previa. El archivo exportado contendrá la totalidad de los datos.`,
                       })}
                     </em>
                   </div>
@@ -1409,7 +1409,7 @@ export default function ReportsManagementPage({ branchOnly = false }) {
                     {t(`admin.reports.types.${modalReport.tipoId}_title`, modalReport.titulo)}
                   </h3>
                   <small style={{ color: 'var(--adm-muted, #64748b)', fontWeight: 600 }}>
-                    {modalReport.codigo} â€¢ {modalReport.formato}
+                    {modalReport.codigo} ⬢ {modalReport.formato}
                   </small>
                 </div>
                 <button
@@ -1426,7 +1426,7 @@ export default function ReportsManagementPage({ branchOnly = false }) {
                 <div className="modal-metadata-grid">
                   <div>
                     <span className="meta-label">
-                      {t('admin.reports.generationDate', 'Fecha GeneraciÃ³n')}
+                      {t('admin.reports.generationDate', 'Fecha Generación')}
                     </span>
                     <strong className="meta-value">
                       {new Date(modalReport.fechaGeneracion).toLocaleString(i18n.language || undefined)}

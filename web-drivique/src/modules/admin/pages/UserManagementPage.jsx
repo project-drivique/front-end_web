@@ -77,7 +77,7 @@ export default function UserManagementPage() {
     cargarUsuarios()
   }, [])
 
-  // Filtrado dinÃ¡mico
+  // Filtrado dinámico
   const filtrados = useMemo(() => {
     const term = search.trim().toLowerCase()
     return usersList.filter((u) => {
@@ -103,13 +103,13 @@ export default function UserManagementPage() {
     try {
       setErrorModal('')
       userManagementService.create(formCrear, user)
-      setNotice(t('admin.users.createdSuccess', `Usuario ${formCrear.nombre} creado con Ã©xito.`))
+      setNotice(t('admin.users.createdSuccess', `Usuario ${formCrear.nombre} creado con éxito.`))
       setModalCrear(false)
       setFormCrear({ nombre: '', correo: '', telefono: '', cedula: '', rol: 'cliente', sucursal: 'Neiva' })
       cargarUsuarios()
     } catch (err) {
       if (err.message === 'mailAlreadyExists') {
-        setErrorModal(t('admin.users.mailExists', 'El correo electrÃ³nico ya estÃ¡ registrado.'))
+        setErrorModal(t('admin.users.mailExists', 'El correo electrónico ya está registrado.'))
       } else {
         setErrorModal(t('admin.users.createError', 'Error al crear el usuario.'))
       }
@@ -197,7 +197,7 @@ export default function UserManagementPage() {
   }
 
   // --- Exportaciones ---
-  const headersExport = ['Nombre', 'Correo', 'TelÃ©fono', 'CÃ©dula', 'Rol', 'Sucursal', 'Estado Cuenta', 'VerificaciÃ³n Documentos', 'Reservas Activas']
+  const headersExport = ['Nombre', 'Correo', 'Teléfono', 'Cédula', 'Rol', 'Sucursal', 'Estado Cuenta', 'Verificación Documentos', 'Reservas Activas']
   const rowsExport = filtrados.map((u) => [
     u.nombre,
     u.correo,
@@ -211,7 +211,7 @@ export default function UserManagementPage() {
   ])
 
   const exportData = {
-    title: `GestiÃ³n de Usuarios â€” Plataforma ${brand?.name || 'Drivique'}`,
+    title: `Gestión de Usuarios — Plataforma ${brand?.name || 'Drivique'}`,
     headers: headersExport,
     rows: rowsExport,
     items: filtrados,
@@ -226,8 +226,8 @@ export default function UserManagementPage() {
           {/* Header Superior */}
           <header className="cities-topbar">
             <div>
-              <p className="cities-eyebrow">{t('admin.management', 'GestiÃ³n de Usuarios')}</p>
-              <h1>{t('admin.usersTitle', 'Control de Cuentas y VerificaciÃ³n')}</h1>
+              <p className="cities-eyebrow">{t('admin.management', 'Gestión de Usuarios')}</p>
+              <h1>{t('admin.usersTitle', 'Control de Cuentas y Verificación')}</h1>
               <p className="cities-subtitle">
                 {t('admin.usersPage.subtitle')}
               </p>
@@ -248,12 +248,12 @@ export default function UserManagementPage() {
             </div>
           </header>
 
-          {/* NotificaciÃ³n de Aviso */}
+          {/* Notificación de Aviso */}
           {notice && (
             <div className="cities-notice" role="status">
               <span>{notice}</span>
               <button type="button" onClick={() => setNotice('')}>
-                Ã—
+                á—
               </button>
             </div>
           )}
@@ -266,7 +266,7 @@ export default function UserManagementPage() {
                 <FaSearch />
                 <input
                   type="text"
-                  placeholder={t('admin.searchUsers', 'Buscar por nombre, correo, telÃ©fono o cÃ©dula...')}
+                  placeholder={t('admin.searchUsers', 'Buscar por nombre, correo, teléfono o cédula...')}
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                 />
@@ -295,7 +295,7 @@ export default function UserManagementPage() {
                 <option value="rechazado">{t('admin.usersPage.rejectedDocs')}</option>
               </select>
 
-              {/* Botones de ExportaciÃ³n */}
+              {/* Botones de Exportación */}
               <div className="cities-export">
                 <button type="button" onClick={() => exportExcel(exportData)}>
                   <FaFileExcel /> {t('admin.usersPage.excel')}
@@ -420,7 +420,7 @@ export default function UserManagementPage() {
 
                         <td>
                           <div className="cities-row-actions">
-                            {/* RevisiÃ³n de Documentos */}
+                            {/* Revisión de Documentos */}
                             <button
                               type="button"
                               onClick={() => openDocumentosModal(u)}
@@ -471,7 +471,7 @@ export default function UserManagementPage() {
           </section>
         </div>
 
-        {/* MODAL REVISIÃ“N DE DOCUMENTOS */}
+        {/* MODAL REVISIÓN DE DOCUMENTOS */}
         {modalDocumentos && (
           <div
             className="cities-modal-backdrop"
@@ -484,7 +484,7 @@ export default function UserManagementPage() {
                   <h2>{t('admin.usersPage.docsOf', { nombre: modalDocumentos.nombre })}</h2>
                 </div>
                 <button type="button" onClick={() => setModalDocumentos(null)}>
-                  Ã—
+                  á—
                 </button>
               </div>
 
@@ -492,7 +492,7 @@ export default function UserManagementPage() {
                 <div className="user-doc-card">
                   <strong>{t('admin.usersPage.idOrPassport')}</strong>
                   {modalDocumentos.documentoCedula ? (
-                    <img src={modalDocumentos.documentoCedula} alt="CÃ©dula" className="user-doc-preview" />
+                    <img src={modalDocumentos.documentoCedula} alt="Cédula" className="user-doc-preview" />
                   ) : (
                     <div className="user-doc-placeholder">{t('admin.usersPage.noIdAttached')}</div>
                   )}
@@ -559,7 +559,7 @@ export default function UserManagementPage() {
                   <h2>{t('admin.usersPage.createNewUserTitle')}</h2>
                 </div>
                 <button type="button" onClick={() => setModalCrear(false)}>
-                  Ã—
+                  á—
                 </button>
               </div>
 
@@ -658,11 +658,11 @@ export default function UserManagementPage() {
             <section className="cities-modal">
               <div className="cities-modal__head">
                 <div>
-                  <p className="cities-eyebrow">{t('admin.usersPage.editProfileTitle', 'EdiciÃ³n de Perfil')}</p>
+                  <p className="cities-eyebrow">{t('admin.usersPage.editProfileTitle', 'Edición de Perfil')}</p>
                   <h2>{t('admin.usersPage.editUserTitleOf', 'Editar Datos de {{nombre}}', { nombre: modalEditar.nombre })}</h2>
                 </div>
                 <button type="button" onClick={() => setModalEditar(null)}>
-                  Ã—
+                  á—
                 </button>
               </div>
 
@@ -761,9 +761,9 @@ export default function UserManagementPage() {
               <div className="cities-delete-icon">
                 <FaTrash />
               </div>
-              <h2>Confirmar EliminaciÃ³n de Usuario</h2>
+              <h2>Confirmar Eliminación de Usuario</h2>
               <p>
-                Â¿EstÃ¡s seguro de que deseas eliminar a <strong>{modalEliminar.nombre}</strong> (
+                ¿Estás seguro de que deseas eliminar a <strong>{modalEliminar.nombre}</strong> (
                 {modalEliminar.correo})?
               </p>
 
@@ -798,7 +798,7 @@ export default function UserManagementPage() {
                   disabled={modalEliminar.reservasActivas > 0}
                   onClick={() => handleEliminarUsuario(modalEliminar)}
                 >
-                  Confirmar EliminaciÃ³n
+                  Confirmar Eliminación
                 </button>
               </div>
             </section>
