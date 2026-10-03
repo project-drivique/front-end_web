@@ -677,14 +677,17 @@ export default function AuditLogManagementPage({ branchOnly = false }) {
                 <table className="audit-data-table">
                   <thead>
                     <tr>
-                      <th>{t('admin.audit_module.table.dateTime', 'Fecha / Hora')}</th>
-                      <th>{t('admin.audit_module.table.moduleType', 'Módulo / Tipo')}</th>
+                      <th>{t('admin.audit_module.table.id', 'ID Registro')}</th>
+                      <th>{t('admin.audit_module.table.dateTime', 'Fecha y Hora')}</th>
+                      <th>{t('admin.audit_module.table.type', 'Tipo Evento')}</th>
+                      <th>{t('admin.audit_module.table.module', 'Módulo')}</th>
                       <th>{t('admin.audit_module.table.actorUser', 'Actor / Usuario')}</th>
+                      <th>{t('admin.audit_module.table.role', 'Rol')}</th>
                       <th>{t('admin.audit_module.table.branch', 'Sucursal')}</th>
-                      <th>{t('admin.audit_module.table.ipDevice', 'IP / Dispositivo')}</th>
+                      <th>{t('admin.audit_module.table.ip', 'Dirección IP')}</th>
                       <th>{t('admin.audit_module.table.action', 'Acción Realizada')}</th>
                       <th>{t('admin.audit_module.table.result', 'Resultado')}</th>
-                      <th style={{ textAlign: 'center' }}>{t('admin.audit_module.table.detail', 'Detalle')}</th>
+                      <th style={{ textAlign: 'center' }}>{t('admin.audit_module.table.actions', 'Acciones')}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -692,6 +695,11 @@ export default function AuditLogManagementPage({ branchOnly = false }) {
                       const d = new Date(log.fecha)
                       return (
                         <tr key={log.id} className="audit-table-row">
+                          {/* ID Registro */}
+                          <td className="audit-td-id">
+                            <span className="audit-id-badge">{log.id}</span>
+                          </td>
+
                           {/* Fecha y Hora */}
                           <td className="audit-td-timestamp">
                             <span className="audit-td-date">
@@ -702,9 +710,13 @@ export default function AuditLogManagementPage({ branchOnly = false }) {
                             </span>
                           </td>
 
-                          {/* Módulo / Tipo */}
+                          {/* Tipo Evento */}
+                          <td className="audit-td-type">
+                            <span className="audit-type-pill">{log.tipo}</span>
+                          </td>
+
+                          {/* Módulo */}
                           <td className="audit-td-module">
-                            <span className="audit-module-pill">{log.tipo}</span>
                             <span className="audit-module-name">{log.modulo}</span>
                           </td>
 
@@ -716,6 +728,11 @@ export default function AuditLogManagementPage({ branchOnly = false }) {
                             </div>
                           </td>
 
+                          {/* Rol */}
+                          <td className="audit-td-role">
+                            <span className="audit-role-badge">{log.rol}</span>
+                          </td>
+
                           {/* Sucursal */}
                           <td className="audit-td-branch">
                             <div className="audit-branch-tag">
@@ -724,12 +741,9 @@ export default function AuditLogManagementPage({ branchOnly = false }) {
                             </div>
                           </td>
 
-                          {/* IP / Dispositivo */}
+                          {/* Dirección IP */}
                           <td className="audit-td-ip">
                             <span className="audit-ip-code">{log.ip}</span>
-                            <span className="audit-device-text" title={log.dispositivo}>
-                              {log.dispositivo ? log.dispositivo.slice(0, 22) + '...' : 'Cliente Web'}
-                            </span>
                           </td>
 
                           {/* Acción Realizada */}
@@ -747,8 +761,8 @@ export default function AuditLogManagementPage({ branchOnly = false }) {
                             {renderResultBadge(log.resultado)}
                           </td>
 
-                          {/* Detalle */}
-                          <td className="audit-td-detail">
+                          {/* Acciones */}
+                          <td className="audit-td-detail" style={{ textAlign: 'center' }}>
                             <button
                               type="button"
                               className="audit-btn-detail"

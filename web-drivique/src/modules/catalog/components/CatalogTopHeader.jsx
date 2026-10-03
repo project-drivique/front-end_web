@@ -53,15 +53,21 @@ export default function CatalogTopHeader({
         boxShadow: c.navShadow,
       }}
     >
-      <div className={innerClassName}>
-        <Link to={modoRegistrado ? '/home' : '/catalogo'} className="catalogo-logo-link">
-          <img src={brand.logoDataUrl || logo} alt={brand.name} className="catalogo-logo" />
-          <span className="catalogo-logo-title" style={{ color: 'var(--brand-secondary)' }}>{brand.name}</span>
-        </Link>
+      <div className={innerClassName} style={{ position: 'relative' }}>
+        
+        {/* LEFT: Logo */}
+        <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-start' }}>
+          <Link to={modoRegistrado ? '/home' : '/catalogo'} className="catalogo-logo-link">
+            <img src={brand.logoDataUrl || logo} alt={brand.name} className="catalogo-logo" />
+            <span className="catalogo-logo-title" style={{ color: 'var(--brand-secondary)' }}>{brand.name}</span>
+          </Link>
+        </div>
 
-        {modoRegistrado && (
-          <nav className="catalogo-header-nav" style={{ display: 'flex', gap: '32px', alignItems: 'center', marginLeft: 'auto', marginRight: '32px' }}>
-            {menuOptions.map((option) => {
+        {/* CENTER: Navigation */}
+        <div style={{ flex: 2, display: 'flex', justifyContent: 'center' }}>
+          {modoRegistrado && (
+            <nav className="catalogo-header-nav" style={{ display: 'flex', gap: '32px', alignItems: 'center' }}>
+              {menuOptions.map((option) => {
               const isActive = currentPath === option.path;
               const esNotif = option.path === '/notificaciones';
               
@@ -122,68 +128,72 @@ export default function CatalogTopHeader({
                 </Link>
               );
             })}
-          </nav>
-        )}
+            </nav>
+          )}
+        </div>
 
         {children}
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginLeft: 'auto', flexShrink: 0, position: 'relative', zIndex: 10 }}>
-          <MenuConfiguracion />
+        {/* RIGHT: Profile & Settings */}
+        <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', zIndex: 10 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <MenuConfiguracion />
 
-          {mostrarVolverInicio && (
-            <Link
-              to="/"
-              className="catalogo-header-back"
-              style={{
-                border: `1px solid ${c.heroCardBorder}`,
-                background: c.heroCardBg,
-                color: c.accentText,
-              }}
-            >
-              <FaArrowLeft size={12} />
-              <span className="back-text-desktop">{t('catalogo.backToHome', 'Volver al inicio')}</span>
-            </Link>
-          )}
+            {mostrarVolverInicio && (
+              <Link
+                to="/"
+                className="catalogo-header-back"
+                style={{
+                  border: `1px solid ${c.heroCardBorder}`,
+                  background: c.heroCardBg,
+                  color: c.accentText,
+                }}
+              >
+                <FaArrowLeft size={12} />
+                <span className="back-text-desktop">{t('catalogo.backToHome', 'Volver al inicio')}</span>
+              </Link>
+            )}
 
-          {modoRegistrado && (
-            <button
-              className="catalogo-mobile-menu-btn"
-              onClick={() => setIsMobileMenuOpen(true)}
-              style={{ color: c.accentText }}
-              aria-label="Abrir menú"
-            >
-              <FaBars size={22} />
-            </button>
-          )}
+            {modoRegistrado && (
+              <button
+                className="catalogo-mobile-menu-btn"
+                onClick={() => setIsMobileMenuOpen(true)}
+                style={{ color: c.accentText }}
+                aria-label="Abrir menú"
+              >
+                <FaBars size={22} />
+              </button>
+            )}
 
-          {mostrarPerfil && (
-            <Link
-              to="/perfil"
-              aria-label="Perfil"
-              className="catalogo-header-profile"
-              style={{ color: c.accentText, display: 'flex', alignItems: 'center' }}
-            >
-              {usuario ? (
-                <div style={{
-                  width: '32px',
-                  height: '32px',
-                  borderRadius: '50%',
-                  background: 'var(--brand-primary)',
-                  color: 'var(--brand-on-primary)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '14px',
-                  fontWeight: 'bold',
-                  border: `2px solid ${c.navBorder}`
-                }}>
-                  {iniciales(usuario.nombre, usuario.apellido, usuario.correo)}
-                </div>
-              ) : (
-                <FaUserCircle size={30} />
-              )}
-            </Link>
-          )}
+            {mostrarPerfil && (
+              <Link
+                to="/perfil"
+                aria-label="Perfil"
+                className="catalogo-header-profile"
+                style={{ color: c.accentText, display: 'flex', alignItems: 'center' }}
+              >
+                {usuario ? (
+                  <div style={{
+                    width: '32px',
+                    height: '32px',
+                    borderRadius: '50%',
+                    background: 'var(--brand-primary)',
+                    color: 'var(--brand-on-primary)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '14px',
+                    fontWeight: 'bold',
+                    border: `2px solid ${c.navBorder}`
+                  }}>
+                    {iniciales(usuario.nombre, usuario.apellido, usuario.correo)}
+                  </div>
+                ) : (
+                  <FaUserCircle size={30} />
+                )}
+              </Link>
+            )}
+          </div>
         </div>
       </div>
 

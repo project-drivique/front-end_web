@@ -28,6 +28,9 @@ import {
   FaSyncAlt,
   FaCheck,
   FaArrowRight,
+  FaStar,
+  FaArrowUp,
+  FaCreditCard,
 } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import { useAuthStore } from '../../../store/authStore'
@@ -82,8 +85,11 @@ const HEADER_KEY_MAP = {
   'Costo Estimado COP': 'estimated_cost_cop',
   'Costo Estimado USD': 'estimated_cost',
   'Código': 'code',
+  'Código Reserva': 'reservation',
+  'Cód. Reserva': 'reservation',
   'Cliente': 'client',
   'Vehículo': 'vehicle',
+  'Nombre Vehículo': 'vehicle',
   'Sucursal': 'branch',
   'Fecha Inicio': 'start_date',
   'Fecha Fin': 'end_date',
@@ -99,6 +105,7 @@ const HEADER_KEY_MAP = {
   'Tarifa / Día': 'daily_rate',
   'Tarifa/Día': 'daily_rate',
   'No. Contrato': 'contract_number',
+  'Código Contrato': 'contract_number',
   'Reserva': 'reservation',
   'Documento': 'document',
   'Vigencia': 'validity',
@@ -200,8 +207,8 @@ export default function ReportsManagementPage({ branchOnly = false }) {
   const sucursalEncargado =
     user?.sucursalAsignada || user?.sucursalId || user?.sucursal || ''
 
-  // Pestaña activa ('builder' | 'history')
-  const [activeTab, setActiveTab] = useState('builder')
+  // Pestaña activa ('dashboard' | 'builder' | 'history')
+  const [activeTab, setActiveTab] = useState('dashboard')
 
   // Catálogo de tipos de reportes
   const reportTypes = useMemo(() => reportManagementService.getReportTypes(), [])
@@ -507,6 +514,15 @@ export default function ReportsManagementPage({ branchOnly = false }) {
         <div className="reports-tabs-pill-container">
           <button
             type="button"
+            className={`reports-tab-pill-btn ${activeTab === 'dashboard' ? 'active' : ''}`}
+            onClick={() => setActiveTab('dashboard')}
+          >
+            <FaChartPie />
+            <span>{t('admin.reports.tabDashboard', 'Dashboard de Inteligencia')}</span>
+          </button>
+
+          <button
+            type="button"
             className={`reports-tab-pill-btn ${activeTab === 'builder' ? 'active' : ''}`}
             onClick={() => setActiveTab('builder')}
           >
@@ -524,6 +540,265 @@ export default function ReportsManagementPage({ branchOnly = false }) {
             <span className="reports-tab-counter-badge">{history.length}</span>
           </button>
         </div>
+
+        {/* =========================================================
+            PESTAÑA DASHBOARD: DASHBOARD ANALÍTICO DE INTELIGENCIA
+           ========================================================= */}
+        {activeTab === 'dashboard' && (
+          <div className="reports-dashboard-view">
+            {/* 4 TARJETAS KPI EJECUTIVAS */}
+            <div className="cash-kpi-bar">
+              <div className="cash-kpi-item-light">
+                <div className="cash-kpi-header-light" style={{ color: '#10b981' }}>
+                  <FaMoneyBillWave />
+                  <span>{t('admin.reports.kpi.totalRevenue', 'INGRESOS TOTALES NETOS')}</span>
+                </div>
+                <strong className="cash-kpi-val-light">$ 248.500.000 COP</strong>
+                <div className="cash-kpi-progress-bg">
+                  <div className="cash-kpi-progress-fill" style={{ width: '85%', background: '#10b981' }}></div>
+                </div>
+                <span className="cash-kpi-subtitle-light" style={{ color: '#10b981', fontWeight: 700 }}>
+                  <FaArrowUp style={{ fontSize: 11 }} /> +14.2% {t('admin.reports.kpi.vsLastMonth', 'vs mes anterior')}
+                </span>
+              </div>
+
+              <div className="cash-kpi-item-light">
+                <div className="cash-kpi-header-light" style={{ color: '#2563eb' }}>
+                  <FaClipboardList />
+                  <span>{t('admin.reports.kpi.totalReservations', 'RESERVAS FACTURADAS')}</span>
+                </div>
+                <strong className="cash-kpi-val-light">1,420 reservas</strong>
+                <div className="cash-kpi-progress-bg">
+                  <div className="cash-kpi-progress-fill" style={{ width: '88%', background: '#2563eb' }}></div>
+                </div>
+                <span className="cash-kpi-subtitle-light">{t('admin.reports.kpi.completedRate', '88% completadas sin novedad')}</span>
+              </div>
+
+              <div className="cash-kpi-item-light">
+                <div className="cash-kpi-header-light" style={{ color: '#f59e0b' }}>
+                  <FaCar />
+                  <span>{t('admin.reports.kpi.fleetOccupancy', 'TASA OCUPACIÓN FLOTA')}</span>
+                </div>
+                <strong className="cash-kpi-val-light">82.5% activa</strong>
+                <div className="cash-kpi-progress-bg">
+                  <div className="cash-kpi-progress-fill" style={{ width: '82.5%', background: '#f59e0b' }}></div>
+                </div>
+                <span className="cash-kpi-subtitle-light">{t('admin.reports.kpi.rentedUnits', '165 de 200 vehículos alquilados')}</span>
+              </div>
+
+              <div className="cash-kpi-item-light">
+                <div className="cash-kpi-header-light" style={{ color: '#8b5cf6' }}>
+                  <FaStar />
+                  <span>{t('admin.reports.kpi.avgRating', 'CALIFICACIÓN PROMEDIO')}</span>
+                </div>
+                <strong className="cash-kpi-val-light">4.8 / 5.0 ★</strong>
+                <div className="cash-kpi-progress-bg">
+                  <div className="cash-kpi-progress-fill" style={{ width: '96%', background: '#8b5cf6' }}></div>
+                </div>
+                <span className="cash-kpi-subtitle-light">{t('admin.reports.kpi.basedOnReviews', 'Basado en 320 valoraciones de sedes')}</span>
+              </div>
+            </div>
+
+            {/* SECCIÓN DE GRÁFICAS VISUALES INTERACTIVAS */}
+            <div className="reports-charts-grid">
+              {/* Gráfica 1: Facturación Mensual */}
+              <div className="reports-chart-card">
+                <div className="reports-chart-header">
+                  <h3 className="reports-chart-title">
+                    <FaMoneyBillWave style={{ color: '#10b981' }} />
+                    {t('admin.reports.chart.revenueTitle', 'Facturación Mensual Acumulada')}
+                  </h3>
+                  <span className="reports-chart-badge">{t('admin.reports.chart.year2026', 'Año 2026')}</span>
+                </div>
+                <div className="reports-bars-container">
+                  {[
+                    { label: 'Ene', height: '60%', val: '$18M' },
+                    { label: 'Feb', height: '70%', val: '$21M' },
+                    { label: 'Mar', height: '65%', val: '$19.5M' },
+                    { label: 'Abr', height: '80%', val: '$24M' },
+                    { label: 'May', height: '75%', val: '$22.5M' },
+                    { label: 'Jun', height: '90%', val: '$27M' },
+                    { label: 'Jul', height: '85%', val: '$25.5M' },
+                    { label: 'Ago', height: '95%', val: '$28.5M' },
+                    { label: 'Sep', height: '70%', val: '$21M' },
+                    { label: 'Oct', height: '100%', val: '$30M' },
+                  ].map((bar, idx) => (
+                    <div key={idx} className="reports-bar-item" title={`${bar.label}: ${bar.val}`}>
+                      <div className="reports-bar-fill-wrap">
+                        <div
+                          className="reports-bar-fill"
+                          style={{ height: bar.height, background: idx === 9 ? '#2563eb' : '#3b82f6' }}
+                        />
+                      </div>
+                      <span className="reports-bar-label">{bar.label}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Gráfica 2: Estado de la Flota (Donut SVG) */}
+              <div className="reports-chart-card">
+                <div className="reports-chart-header">
+                  <h3 className="reports-chart-title">
+                    <FaCar style={{ color: '#2563eb' }} />
+                    {t('admin.reports.chart.fleetTitle', 'Estado Actual de la Flota')}
+                  </h3>
+                  <span className="reports-chart-badge">200 Vehículos</span>
+                </div>
+                <div className="reports-donut-wrap">
+                  <svg width="140" height="140" viewBox="0 0 42 42" className="reports-donut-svg">
+                    <circle cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#e2e8f0" strokeWidth="5" />
+                    {/* Alquilados 65% */}
+                    <circle cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#2563eb" strokeWidth="5" strokeDasharray="65 35" strokeDashoffset="25" />
+                    {/* Disponibles 25% */}
+                    <circle cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#10b981" strokeWidth="5" strokeDasharray="25 75" strokeDashoffset="60" />
+                    {/* Mantenimiento 10% */}
+                    <circle cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#f59e0b" strokeWidth="5" strokeDasharray="10 90" strokeDashoffset="35" />
+                  </svg>
+                  <div className="reports-donut-legend">
+                    <div className="reports-legend-item">
+                      <div className="reports-legend-dot" style={{ background: '#2563eb' }} />
+                      <span>{t('admin.reports.chart.rented', 'En Alquiler (65%)')}</span>
+                    </div>
+                    <div className="reports-legend-item">
+                      <div className="reports-legend-dot" style={{ background: '#10b981' }} />
+                      <span>{t('admin.reports.chart.available', 'Disponibles (25%)')}</span>
+                    </div>
+                    <div className="reports-legend-item">
+                      <div className="reports-legend-dot" style={{ background: '#f59e0b' }} />
+                      <span>{t('admin.reports.chart.maintenance', 'En Taller (10%)')}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Gráfica 3: Métodos de Pago */}
+              <div className="reports-chart-card">
+                <div className="reports-chart-header">
+                  <h3 className="reports-chart-title">
+                    <FaCreditCard style={{ color: '#8b5cf6' }} />
+                    {t('admin.reports.chart.paymentsTitle', 'Métodos de Pago Preferidos')}
+                  </h3>
+                  <span className="reports-chart-badge">Total Transacciones</span>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 14, paddingTop: 8 }}>
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, fontWeight: 700, marginBottom: 4 }}>
+                      <span>💳 Wompi / Tarjetas de Crédito / PSE</span>
+                      <span style={{ color: '#2563eb' }}>62%</span>
+                    </div>
+                    <div className="cash-kpi-progress-bg">
+                      <div className="cash-kpi-progress-fill" style={{ width: '62%', background: '#2563eb' }} />
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, fontWeight: 700, marginBottom: 4 }}>
+                      <span>💵 Pago en Caja (Efectivo en Sucursal)</span>
+                      <span style={{ color: '#10b981' }}>38%</span>
+                    </div>
+                    <div className="cash-kpi-progress-bg">
+                      <div className="cash-kpi-progress-fill" style={{ width: '38%', background: '#10b981' }} />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* SECCIÓN DE TABLA CON RESPONSABILIDAD ÚNICA POR COLUMNA */}
+            <section className="cities-card">
+              <div className="cash-toolbar-container">
+                <div className="cash-toolbar-row1" style={{ width: '100%', justifyContent: 'space-between' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <FaBuilding style={{ color: '#2563eb', fontSize: 18 }} />
+                    <h3 style={{ margin: 0, fontSize: 17, fontWeight: 800 }}>
+                      {t('admin.reports.performanceTableTitle', 'Desempeño Operativo y Financiero por Sucursal')}
+                    </h3>
+                  </div>
+                  <div className="cash-export-pills" style={{ display: 'flex', gap: 8 }}>
+                    <button
+                      type="button"
+                      className="cash-btn-pill-export cash-btn-excel"
+                      onClick={() => handleDownloadDirect('excel')}
+                    >
+                      <FaFileExcel /> <span>Excel</span>
+                    </button>
+                    <button
+                      type="button"
+                      className="cash-btn-pill-export cash-btn-pdf"
+                      onClick={() => handleDownloadDirect('pdf')}
+                    >
+                      <FaFilePdf /> <span>PDF</span>
+                    </button>
+                    <button
+                      type="button"
+                      className="cash-btn-pill-export cash-btn-print"
+                      onClick={handlePrintReport}
+                    >
+                      <FaPrint /> <span>Imprimir</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="cities-table-wrap" style={{ overflowX: 'auto' }}>
+                <table className="incidents-table-v2" style={{ whiteSpace: 'nowrap', width: 'max-content', borderCollapse: 'collapse' }}>
+                  <thead>
+                    <tr>
+                      <th style={{ width: '40px' }}>ID</th>
+                      <th>{t('admin.reports.table.branch', 'SUCURSAL / SEDE')}</th>
+                      <th>{t('admin.reports.table.city', 'CIUDAD')}</th>
+                      <th>{t('admin.reports.table.topVehicle', 'VEHÍCULO MÁS DEMANDADO')}</th>
+                      <th>{t('admin.reports.table.reservationsCount', 'RESERVAS REALIZADAS')}</th>
+                      <th>{t('admin.reports.table.rentedDays', 'DÍAS ALQUILADOS')}</th>
+                      <th>{t('admin.reports.table.netRevenue', 'INGRESOS NETOS (COP)')}</th>
+                      <th>{t('admin.reports.table.occupancyRate', 'TASA OCUPACIÓN (%)')}</th>
+                      <th>{t('admin.reports.table.incidentsCount', 'INCIDENCIAS REPORTADAS')}</th>
+                      <th>{t('admin.reports.table.rating', 'CALIFICACIÓN PROMEDIO')}</th>
+                      <th style={{ textAlign: 'center' }}>{t('admin.reports.table.actions', 'ACCIONES')}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[
+                      { id: 1, sucursal: 'El Poblado Main Branch', ciudad: 'Medellín', vehiculoTop: 'Toyota Fortuner TXL', reservas: 340, dias: 1250, ingresos: '$ 68,000,000', ocupacion: '88.5%', incidencias: 2, calificacion: '4.9 ★' },
+                      { id: 2, sucursal: 'Calle 100 Financial Hub', ciudad: 'Bogotá', vehiculoTop: 'BMW X5 xDrive40i', reservas: 290, dias: 1100, ingresos: '$ 59,500,000', ocupacion: '84.0%', incidencias: 1, calificacion: '4.8 ★' },
+                      { id: 3, sucursal: 'Granada Premium Hub', ciudad: 'Cali', vehiculoTop: 'Chevrolet Tracker Turbo', reservas: 210, dias: 780, ingresos: '$ 38,200,000', ocupacion: '79.2%', incidencias: 0, calificacion: '4.7 ★' },
+                      { id: 4, sucursal: 'Bocagrande Executive Desk', ciudad: 'Cartagena', vehiculoTop: 'Jeep Wrangler Rubicon', reservas: 310, dias: 1180, ingresos: '$ 52,800,000', ocupacion: '86.0%', incidencias: 3, calificacion: '4.9 ★' },
+                      { id: 5, sucursal: 'Alto Prado Office', ciudad: 'Barranquilla', vehiculoTop: 'Renault Duster 4x4', reservas: 270, dias: 960, ingresos: '$ 30,000,000', ocupacion: '75.8%', incidencias: 1, calificacion: '4.6 ★' },
+                    ].map((row) => (
+                      <tr key={row.id}>
+                        <td style={{ fontWeight: 600, color: 'var(--adm-text)' }}>{row.id}</td>
+                        <td style={{ fontWeight: 700, color: '#0f172a' }}>{row.sucursal}</td>
+                        <td style={{ color: '#475569' }}>{row.ciudad}</td>
+                        <td style={{ color: '#2563eb', fontWeight: 600 }}>{row.vehiculoTop}</td>
+                        <td style={{ fontWeight: 600 }}>{row.reservas}</td>
+                        <td style={{ color: '#64748b' }}>{row.dias} días</td>
+                        <td style={{ fontWeight: 800, color: '#10b981' }}>{row.ingresos}</td>
+                        <td>
+                          <span style={{ padding: '3px 10px', borderRadius: 999, background: '#dbeafe', color: '#1e40af', fontWeight: 700, fontSize: 12 }}>
+                            {row.ocupacion}
+                          </span>
+                        </td>
+                        <td style={{ color: row.incidencias > 0 ? '#ef4444' : '#10b981', fontWeight: 700 }}>
+                          {row.incidencias} casos
+                        </td>
+                        <td style={{ color: '#8b5cf6', fontWeight: 800 }}>{row.calificacion}</td>
+                        <td style={{ textAlign: 'center' }}>
+                          <button
+                            type="button"
+                            className="incident-btn-reply"
+                            onClick={() => handleDownloadDirect('pdf')}
+                          >
+                            <FaDownload /> PDF
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          </div>
+        )}
 
         {/* =========================================================
             PESTAÑA 1: GENERADOR DE REPORTES (DISEÑO ESPACIOSO)
@@ -1049,14 +1324,15 @@ export default function ReportsManagementPage({ branchOnly = false }) {
                         <th>{t('admin.reports.thFormat', 'Formato')}</th>
                         <th>{t('admin.reports.thGeneratedBy', 'Generado Por')}</th>
                         <th>{t('admin.reports.thDate', 'Fecha y Hora')}</th>
-                        <th>{t('admin.reports.thRows', 'Registros / Tamaño')}</th>
+                        <th>{t('admin.reports.thRecords', 'Total Registros')}</th>
+                        <th>{t('admin.reports.thFileSize', 'Tamaño Estimado')}</th>
                         <th style={{ textAlign: 'center' }}>{t('admin.reports.thActions', 'Acciones')}</th>
                       </tr>
                     </thead>
                     <tbody>
                       {filteredHistory.length === 0 ? (
                         <tr>
-                          <td colSpan={8}>
+                          <td colSpan={9}>
                             <div className="reports-empty-state">
                               <FaHistory />
                               <h3>{t('admin.reports.emptyHistoryTitle', 'No se encontraron reportes')}</h3>
@@ -1080,7 +1356,7 @@ export default function ReportsManagementPage({ branchOnly = false }) {
                                 <div style={{ fontSize: 11, color: 'var(--adm-muted)', marginTop: 3 }}>
                                   {report.filtersSummary
                                     .map((f) => `${translateFilterLabel(f.label, t)}: ${translateFilterValue(f.value)}`)
-                                    .join(' • ')}
+                                    .join(' ⬢ ')}
                                 </div>
                               )}
                             </td>
@@ -1121,12 +1397,14 @@ export default function ReportsManagementPage({ branchOnly = false }) {
                               </small>
                             </td>
                             <td>
-                              <span>
+                              <span style={{ fontWeight: 600, color: 'var(--adm-text, #0f172a)' }}>
                                 {report.totalRegistros} {t('admin.reports.records', 'reg.')}
                               </span>
-                              <small style={{ display: 'block', color: 'var(--adm-muted)' }}>
+                            </td>
+                            <td>
+                              <span style={{ fontSize: 12, color: 'var(--adm-muted)' }}>
                                 {report.tamanoEstimado}
-                              </small>
+                              </span>
                             </td>
                             <td>
                               <div className="history-table-row-actions">
@@ -1298,7 +1576,7 @@ export default function ReportsManagementPage({ branchOnly = false }) {
                     {t('admin.reports.previewModalSubtitle', {
                       count: livePreviewData.totalRegistros,
                       format: selectedFormat,
-                      defaultValue: `${livePreviewData.totalRegistros} registros encontrados • Formato seleccionado: ${selectedFormat}`,
+                      defaultValue: `${livePreviewData.totalRegistros} registros encontrados ⬢ Formato seleccionado: ${selectedFormat}`,
                     })}
                   </small>
                 </div>
@@ -1405,7 +1683,7 @@ export default function ReportsManagementPage({ branchOnly = false }) {
                     {t(`admin.reports.types.${modalReport.tipoId}_title`, modalReport.titulo)}
                   </h3>
                   <small style={{ color: 'var(--adm-muted, #64748b)', fontWeight: 600 }}>
-                    {modalReport.codigo} • {modalReport.formato}
+                    {modalReport.codigo} ⬢ {modalReport.formato}
                   </small>
                 </div>
                 <button

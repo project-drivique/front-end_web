@@ -230,7 +230,7 @@ export default function SupportPage() {
             className={`soporte-tab-btn ${pestanaActiva === 'informes' ? 'activa' : ''}`}
             onClick={() => setPestanaActiva('informes')}
           >
-            <FaFolderOpen /> {t('soporte.tabInformes', 'Informes erróneos')}
+            <FaFolderOpen /> {t('soporte.tabInformes', 'Mis reportes')}
             {conteoReportesActivos > 0 && (
               <span className="soporte-tab-badge">{conteoReportesActivos}</span>
             )}

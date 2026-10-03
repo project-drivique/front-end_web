@@ -1,0 +1,50 @@
+[
+  {
+    "id": 1,
+    "nombre": "Económico (Compactos)",
+    "descripcion": "Vehículos pequeños, ideales para la ciudad y ahorro de combustible.",
+    "tarifaBaseSugerida": 110000,
+    "depositoGarantiaSugerido": 500000,
+    "activo": true
+  },
+  {
+    "id": 2,
+    "nombre": "Sedán Ejecutivo",
+    "descripcion": "Mayor espacio interior y baúl, perfectos para viajes largos y negocios.",
+    "tarifaBaseSugerida": 160000,
+    "depositoGarantiaSugerido": 700000,
+    "activo": true
+  },
+  {
+    "id": 3,
+    "nombre": "Camionetas SUV",
+    "descripcion": "Vehículos altos y robustos para cualquier terreno o viajes familiares.",
+    "tarifaBaseSugerida": 280000,
+    "depositoGarantiaSugerido": 1200000,
+    "activo": true
+  },
+  {
+    "id": 4,
+    "nombre": "Eléctricos (Eco-Drive)",
+    "descripcion": "Amigables con el medio ambiente, silenciosos y sin pico y placa.",
+    "tarifaBaseSugerida": 240000,
+    "depositoGarantiaSugerido": 1000000,
+    "activo": true
+  },
+  {
+    "id": 5,
+    "nombre": "Camionetas Pickup & 4x4",
+    "descripcion": "Vehículos de carga y trabajo pesado con tracción 4x4 para terrenos difíciles.",
+    "tarifaBaseSugerida": 320000,
+    "depositoGarantiaSugerido": 1500000,
+    "activo": true
+  },
+  {
+    "id": 6,
+    "nombre": "Vans & Pasajeros",
+    "descripcion": "Transporte amplio para grupos familiares o corporativos de hasta 9 pasajeros.",
+    "tarifaBaseSugerida": 350000,
+    "depositoGarantiaSugerido": 1500000,
+    "activo": true
+  }
+]

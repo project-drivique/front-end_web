@@ -143,11 +143,11 @@
     "color": "Soul Red Crystal",
     "año": 2024,
     "placa": "DEF-456",
-    "sucursal": "Alamo Medellín Poblado",
+    "sucursal": "Alamo Bogotá - Aeropuerto",
     "sucursalInfo": {
-      "nombre": "Alamo Medellín Poblado",
-      "direccion": "Cra 43A # 5A-113, El Poblado, Medellín",
-      "horario": "Lun a dom, 7:00 am - 9:00 pm"
+      "nombre": "Alamo Bogotá - Aeropuerto",
+      "direccion": "Av. El Dorado # 103-09, Bogotá, Cundinamarca",
+      "horario": "Todos los días, 6:00 am - 10:00 pm"
     },
     "descripcion": "SUV premium que destaca por su gran presencia y comodidad para toda la familia. Incluye techo panorámico, acabados de lujo y tecnología de seguridad avanzada para brindarte tranquilidad. Excelente diseño.",
     "caracteristicas": [
@@ -254,7 +254,7 @@
   {
     "id": 3,
     "nombre": "Chevrolet Spark 2023",
-    "categoria": "Económico",
+    "categoria": "Económico (Compactos)",
     "transmision": "Manual",
     "combustible": "Gasolina",
     "precio": 60000,
@@ -268,11 +268,11 @@
     "color": "Rojo Passion",
     "año": 2023,
     "placa": "GHI-789",
-    "sucursal": "National Downtown Barranquilla",
+    "sucursal": "Alamo Bogotá - Aeropuerto",
     "sucursalInfo": {
-      "nombre": "National Downtown Barranquilla",
-      "direccion": "Calle 76 # 54-11, Barranquilla, Atlántico",
-      "horario": "Lun a sáb, 7:00 am - 7:00 pm"
+      "nombre": "Alamo Bogotá - Aeropuerto",
+      "direccion": "Av. El Dorado # 103-09, Bogotá, Cundinamarca",
+      "horario": "Todos los días, 6:00 am - 10:00 pm"
     },
     "descripcion": "Vehículo compacto, ágil y muy económico, perfecto para moverte rápidamente por la ciudad. Te permite estacionar sin complicaciones y ofrece un rendimiento de combustible insuperable para el día a día. Gran elección.",
     "caracteristicas": [
@@ -729,11 +729,11 @@
     "color": "Phantom Black",
     "año": 2024,
     "placa": "STU-901",
-    "sucursal": "Alamo Bucaramanga - Aeropuerto",
+    "sucursal": "Alamo Bogotá - Aeropuerto",
     "sucursalInfo": {
-      "nombre": "Alamo Bucaramanga - Aeropuerto",
-      "direccion": "Aeropuerto Palonegro, Lebrija, Santander",
-      "horario": "Todos los días, 6:00 am - 9:00 pm"
+      "nombre": "Alamo Bogotá - Aeropuerto",
+      "direccion": "Av. El Dorado # 103-09, Bogotá, Cundinamarca",
+      "horario": "Todos los días, 6:00 am - 10:00 pm"
     },
     "descripcion": "Sofisticada SUV híbrida, reconocida por ser muy eficiente y silenciosa. Cuenta con un amplio espacio de carga y lo último en tecnología de asistencia al conductor para mayor seguridad. Tecnología limpia.",
     "caracteristicas": [
@@ -833,26 +833,27 @@
   },
   {
     "id": 8,
-    "nombre": "Kia Cerato 2024",
-    "categoria": "Sedan",
+    "nombre": "Nissan Leaf E-Tech 2024",
+    "categoria": "Eléctricos (Eco-Drive)",
     "transmision": "Automática",
-    "combustible": "Gasolina",
+    "combustible": "Eléctrico",
     "precio": 95000,
     "calificacion": 4.4,
-    "disponible": true,
+    "disponible": false,
+    "estadoFlota": "mantenimiento",
     "destacado": false,
     "puertas": 4,
     "pasajeros": 5,
-    "maletero": 502,
-    "cilindraje": "2.0L",
+    "maletero": 435,
+    "cilindraje": "100% Eléctrico",
     "color": "Snow White Pearl",
     "año": 2024,
-    "placa": "VWX-234",
-    "sucursal": "Alamo Pereira - Aeropuerto",
+    "placa": "ELC-902",
+    "sucursal": "Alamo Bogotá - Aeropuerto",
     "sucursalInfo": {
-      "nombre": "Alamo Pereira - Aeropuerto",
-      "direccion": "Aeropuerto Matecaña, Pereira, Risaralda",
-      "horario": "Todos los días, 6:00 am - 9:00 pm"
+      "nombre": "Alamo Bogotá - Aeropuerto",
+      "direccion": "Av. El Dorado # 103-09, Bogotá, Cundinamarca",
+      "horario": "Todos los días, 6:00 am - 10:00 pm"
     },
     "descripcion": "Elegante sedán moderno y confortable, diseñado con un gran maletero y acabados de altísima calidad. Es el compañero perfecto tanto para trayectos diarios como para viajes importantes de negocios. Confort garantizado.",
     "caracteristicas": [
