@@ -5,7 +5,8 @@ import { useAuthStore } from '@/store/authStore'
 import { showAlert } from '@/utils/swalConfig'
 import { reservationService } from '@/services/reservationService'
 import { documentsService } from '@/services/documentsService'
-import { generarReferenciaUnica, aCentavos, construirUrlCheckout } from '@/services/wompiService'
+import { generarReferenciaUnica, aCentavos } from '@/services/wompiService'
+import { paymentFactory, PaymentContext } from '@/modules/payments/strategies'
 import { RECARGOS_LOGISTICOS, SUCURSALES, CIUDADES } from '../../catalog/constants'
 import { branchManagementService } from '../../../services/branchManagementService'
 import { promotionManagementService } from '../../../services/promotionManagementService'
@@ -479,26 +480,36 @@ export function useReservationFlow() {
     setErrorPago('')
     setRedirigiendoPago(true)
     try {
-      const baseRef = datosPago.referencia
-      const attemptRef = `${baseRef}_${Date.now()}`
-      sessionStorage.setItem('current_wompi_reference', baseRef)
-      sessionStorage.setItem('current_wompi_attempt_ref', attemptRef)
-      const url = await construirUrlCheckout({
-        reference: attemptRef,
+      const wompiStrategy = paymentFactory.getStrategy('wompi')
+      const context = new PaymentContext(wompiStrategy)
+      const result = await context.execute({
+        reference: datosPago.referencia,
         amountInCents: datosPago.amountInCents,
         redirectUrl: `${window.location.origin}/respuesta`,
       })
-      window.location.href = url
+      if (result?.redirectUrl) {
+        window.location.href = result.redirectUrl
+      }
     } catch (err) {
-      console.error('[Wompi] Error:', err)
+      console.error('[Payment Strategy: Wompi] Error:', err)
       setErrorPago('No se pudo iniciar el pago. Intenta de nuevo.')
       setRedirigiendoPago(false)
     }
   }
 
-  const handlePagoEfectivo = () => {
+  const handlePagoEfectivo = async () => {
     if (!datosPago) return
-    console.log('[Pago en efectivo] Pendiente. Referencia:', datosPago.referencia)
+    try {
+      const cashStrategy = paymentFactory.getStrategy('cash')
+      const context = new PaymentContext(cashStrategy)
+      const result = await context.execute({
+        reference: datosPago.referencia,
+        amountInCents: datosPago.amountInCents,
+      })
+      console.log('[Payment Strategy: Cash]', result?.message, 'Referencia:', result?.reference)
+    } catch (err) {
+      console.error('[Payment Strategy: Cash] Error:', err)
+    }
   }
 
   // Totales para footer móvil

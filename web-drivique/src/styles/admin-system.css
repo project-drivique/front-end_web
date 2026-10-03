@@ -68,15 +68,31 @@
 }
 
 /* Navegación */
+/* Navegación */
 .management-sidebar { 
   padding: 22px 14px; 
   box-shadow: 3px 0 24px rgba(15,23,42,.16); 
   background: var(--brand-gradient, linear-gradient(135deg, var(--brand-secondary, #1e3a8a) 0%, var(--brand-primary, #2563eb) 100%)) !important; 
+  height: 100vh;
+  max-height: 100vh;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
+}
+.management-sidebar::-webkit-scrollbar {
+  width: 5px;
+}
+.management-sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.management-sidebar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 4px;
 }
 .management-brand { gap: 11px; padding: 2px 6px 18px; border-bottom: 1px solid rgba(255, 255, 255, 0.15); margin-bottom: 6px; }
 .management-brand strong { font-size: 18px; font-weight: 800; }
 .management-brand small { color: rgba(255,255,255,.75); font-size: 10px; }
-.management-nav { gap: 4px; display: flex; flex-direction: column; }
+.management-nav { gap: 4px; display: flex; flex-direction: column; flex: 1 1 auto; }
 .management-nav__group { display: flex; flex-direction: column; gap: 4px; }
 .management-nav__section-title {
   font-size: 10px;
@@ -93,9 +109,36 @@
   margin-top: 0;
   padding-top: 4px;
 }
-.management-nav__item, .management-logout { min-height: 43px; padding: 10px 13px; border-radius: 10px; font-size: 13px; font-weight: 500; }
+.management-nav__item { min-height: 43px; padding: 10px 13px; border-radius: 10px; font-size: 13px; font-weight: 500; }
 .management-nav__item:hover { transform: none; background: rgba(255,255,255,.12); }
 .management-nav__item.is-active { transform: none; background: rgba(255,255,255,.22) !important; border: 1px solid rgba(255,255,255,.28) !important; box-shadow: 0 4px 14px rgba(0,0,0,0.12); font-weight: 600; }
+
+.management-logout {
+  min-height: 43px;
+  padding: 10px 13px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  margin-top: auto;
+  margin-bottom: 4px;
+  flex-shrink: 0;
+}
+.management-logout span, .management-logout svg {
+  color: #0f172a !important;
+}
+.management-logout:hover {
+  background: #f8fafc !important;
+  color: #dc2626 !important;
+  border-color: #fca5a5;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+}
+.management-logout:hover span, .management-logout:hover svg {
+  color: #dc2626 !important;
+}
 
 /* Encabezados y controles */
 .cities-topbar, .management-header, .brand-page__header { align-items: center; margin-bottom: 22px; }
@@ -137,108 +180,224 @@
   transform: none !important;
 }
 .cities-primary:hover, .management-action:hover, .brand-primary:hover { filter: brightness(.94); transform: translateY(-1px) !important; }
-.cities-export { display: flex; gap: 8px; flex-wrap: wrap; }
-.cities-export button {
-  min-height: 40px;
-  padding: 8px 14px !important;
-  border-radius: 10px !important;
-  font-size: 12px !important;
-  font-weight: 700 !important;
+/* ==========================================================================
+   EXPORT BUTTONS (Excel, PDF, Imprimir) - GLOBAL PALETTE & PILL SHAPE
+   ========================================================================== */
+.cities-export,
+.export-pills-group {
   display: inline-flex !important;
   align-items: center !important;
+  gap: 8px !important;
+  flex-wrap: wrap !important;
+}
+
+.cities-export button,
+.export-pill,
+.export-btn,
+.audit-btn-action,
+.cash-exp-btn,
+.kpi-action-btn {
+  min-height: 38px !important;
+  height: 38px !important;
+  padding: 6px 18px !important;
+  border-radius: 9999px !important;
+  font-size: 13px !important;
+  font-weight: 800 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
   gap: 7px !important;
-  cursor: pointer;
+  cursor: pointer !important;
   transition: all 0.2s ease !important;
+  text-decoration: none !important;
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 /* 1. Botón Excel (Verde) */
-.cities-export button:nth-child(1) {
+.cities-export button:nth-child(1),
+.cities-export button.export-btn-excel,
+.export-pill--excel,
+.export-btn--excel,
+.audit-btn-action--excel,
+.cash-exp-btn.excel,
+.kpi-action-btn--excel {
   background: #f0fdf4 !important;
-  border: 1.5px solid #86efac !important;
-  color: #15803d !important;
-  box-shadow: 0 2px 6px rgba(22, 163, 74, 0.08) !important;
-}
-.cities-export button:nth-child(1) svg {
+  border: 1.5px solid #bbf7d0 !important;
   color: #16a34a !important;
 }
-.cities-export button:nth-child(1):hover {
+.cities-export button:nth-child(1) svg,
+.cities-export button.export-btn-excel svg,
+.export-pill--excel svg,
+.export-btn--excel svg,
+.audit-btn-action--excel svg,
+.cash-exp-btn.excel svg,
+.kpi-action-btn--excel svg {
+  color: #16a34a !important;
+  font-size: 14px !important;
+}
+.cities-export button:nth-child(1):hover,
+.cities-export button.export-btn-excel:hover,
+.export-pill--excel:hover,
+.export-btn--excel:hover,
+.audit-btn-action--excel:hover,
+.cash-exp-btn.excel:hover,
+.kpi-action-btn--excel:hover {
   background: #dcfce7 !important;
-  border-color: #16a34a !important;
-  color: #166534 !important;
-  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.2) !important;
+  border-color: #86efac !important;
+  color: #15803d !important;
   transform: translateY(-1px) !important;
 }
-.management-shell--dark .cities-export button:nth-child(1) {
+.management-shell--dark .cities-export button:nth-child(1),
+.management-shell--dark .cities-export button.export-btn-excel,
+.management-shell--dark .export-pill--excel,
+.management-shell--dark .audit-btn-action--excel,
+.management-shell--dark .cash-exp-btn.excel,
+.management-shell--dark .kpi-action-btn--excel {
   background: rgba(34, 197, 94, 0.14) !important;
   border-color: rgba(34, 197, 94, 0.38) !important;
   color: #4ade80 !important;
 }
-.management-shell--dark .cities-export button:nth-child(1) svg {
+.management-shell--dark .cities-export button:nth-child(1) svg,
+.management-shell--dark .cities-export button.export-btn-excel svg,
+.management-shell--dark .export-pill--excel svg,
+.management-shell--dark .audit-btn-action--excel svg,
+.management-shell--dark .cash-exp-btn.excel svg,
+.management-shell--dark .kpi-action-btn--excel svg {
   color: #4ade80 !important;
 }
-.management-shell--dark .cities-export button:nth-child(1):hover {
+.management-shell--dark .cities-export button:nth-child(1):hover,
+.management-shell--dark .cities-export button.export-btn-excel:hover,
+.management-shell--dark .export-pill--excel:hover,
+.management-shell--dark .audit-btn-action--excel:hover,
+.management-shell--dark .cash-exp-btn.excel:hover,
+.management-shell--dark .kpi-action-btn--excel:hover {
   background: rgba(34, 197, 94, 0.24) !important;
   border-color: rgba(34, 197, 94, 0.6) !important;
   color: #86efac !important;
 }
 
 /* 2. Botón PDF (Rojo) */
-.cities-export button:nth-child(2) {
+.cities-export button:nth-child(2),
+.cities-export button.export-btn-pdf,
+.export-pill--pdf,
+.export-btn--pdf,
+.audit-btn-action--pdf,
+.cash-exp-btn.pdf,
+.kpi-action-btn--pdf {
   background: #fef2f2 !important;
-  border: 1.5px solid #fca5a5 !important;
+  border: 1.5px solid #fecaca !important;
   color: #dc2626 !important;
-  box-shadow: 0 2px 6px rgba(220, 38, 38, 0.08) !important;
 }
-.cities-export button:nth-child(2) svg {
-  color: #ef4444 !important;
+.cities-export button:nth-child(2) svg,
+.cities-export button.export-btn-pdf svg,
+.export-pill--pdf svg,
+.export-btn--pdf svg,
+.audit-btn-action--pdf svg,
+.cash-exp-btn.pdf svg,
+.kpi-action-btn--pdf svg {
+  color: #dc2626 !important;
+  font-size: 14px !important;
 }
-.cities-export button:nth-child(2):hover {
+.cities-export button:nth-child(2):hover,
+.cities-export button.export-btn-pdf:hover,
+.export-pill--pdf:hover,
+.export-btn--pdf:hover,
+.audit-btn-action--pdf:hover,
+.cash-exp-btn.pdf:hover,
+.kpi-action-btn--pdf:hover {
   background: #fee2e2 !important;
-  border-color: #b91c1c !important;
-  color: #991b1b !important;
-  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2) !important;
+  border-color: #fca5a5 !important;
+  color: #b91c1c !important;
   transform: translateY(-1px) !important;
 }
-.management-shell--dark .cities-export button:nth-child(2) {
+.management-shell--dark .cities-export button:nth-child(2),
+.management-shell--dark .cities-export button.export-btn-pdf,
+.management-shell--dark .export-pill--pdf,
+.management-shell--dark .audit-btn-action--pdf,
+.management-shell--dark .cash-exp-btn.pdf,
+.management-shell--dark .kpi-action-btn--pdf {
   background: rgba(239, 68, 68, 0.14) !important;
   border-color: rgba(239, 68, 68, 0.38) !important;
   color: #f87171 !important;
 }
-.management-shell--dark .cities-export button:nth-child(2) svg {
+.management-shell--dark .cities-export button:nth-child(2) svg,
+.management-shell--dark .cities-export button.export-btn-pdf svg,
+.management-shell--dark .export-pill--pdf svg,
+.management-shell--dark .audit-btn-action--pdf svg,
+.management-shell--dark .cash-exp-btn.pdf svg,
+.management-shell--dark .kpi-action-btn--pdf svg {
   color: #f87171 !important;
 }
-.management-shell--dark .cities-export button:nth-child(2):hover {
+.management-shell--dark .cities-export button:nth-child(2):hover,
+.management-shell--dark .cities-export button.export-btn-pdf:hover,
+.management-shell--dark .export-pill--pdf:hover,
+.management-shell--dark .audit-btn-action--pdf:hover,
+.management-shell--dark .cash-exp-btn.pdf:hover,
+.management-shell--dark .kpi-action-btn--pdf:hover {
   background: rgba(239, 68, 68, 0.24) !important;
   border-color: rgba(239, 68, 68, 0.6) !important;
   color: #fca5a5 !important;
 }
 
 /* 3. Botón Imprimir (Azul) */
-.cities-export button:nth-child(3) {
+.cities-export button:nth-child(3),
+.cities-export button.export-btn-print,
+.export-pill--print,
+.export-btn--print,
+.audit-btn-action--print,
+.cash-exp-btn.print,
+.kpi-action-btn--print {
   background: #eff6ff !important;
   border: 1.5px solid #bfdbfe !important;
   color: #2563eb !important;
-  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.08) !important;
 }
-.cities-export button:nth-child(3) svg {
+.cities-export button:nth-child(3) svg,
+.cities-export button.export-btn-print svg,
+.export-pill--print svg,
+.export-btn--print svg,
+.audit-btn-action--print svg,
+.cash-exp-btn.print svg,
+.kpi-action-btn--print svg {
   color: #2563eb !important;
+  font-size: 14px !important;
 }
-.cities-export button:nth-child(3):hover {
+.cities-export button:nth-child(3):hover,
+.cities-export button.export-btn-print:hover,
+.export-pill--print:hover,
+.export-btn--print:hover,
+.audit-btn-action--print:hover,
+.cash-exp-btn.print:hover,
+.kpi-action-btn--print:hover {
   background: #dbeafe !important;
-  border-color: #1d4ed8 !important;
-  color: #1e40af !important;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2) !important;
+  border-color: #93c5fd !important;
+  color: #1d4ed8 !important;
   transform: translateY(-1px) !important;
 }
-.management-shell--dark .cities-export button:nth-child(3) {
+.management-shell--dark .cities-export button:nth-child(3),
+.management-shell--dark .cities-export button.export-btn-print,
+.management-shell--dark .export-pill--print,
+.management-shell--dark .audit-btn-action--print,
+.management-shell--dark .cash-exp-btn.print,
+.management-shell--dark .kpi-action-btn--print {
   background: rgba(59, 130, 246, 0.14) !important;
   border-color: rgba(59, 130, 246, 0.38) !important;
   color: #60a5fa !important;
 }
-.management-shell--dark .cities-export button:nth-child(3) svg {
+.management-shell--dark .cities-export button:nth-child(3) svg,
+.management-shell--dark .cities-export button.export-btn-print svg,
+.management-shell--dark .export-pill--print svg,
+.management-shell--dark .audit-btn-action--print svg,
+.management-shell--dark .cash-exp-btn.print svg,
+.management-shell--dark .kpi-action-btn--print svg {
   color: #60a5fa !important;
 }
-.management-shell--dark .cities-export button:nth-child(3):hover {
+.management-shell--dark .cities-export button:nth-child(3):hover,
+.management-shell--dark .cities-export button.export-btn-print:hover,
+.management-shell--dark .export-pill--print:hover,
+.management-shell--dark .audit-btn-action--print:hover,
+.management-shell--dark .cash-exp-btn.print:hover,
+.management-shell--dark .kpi-action-btn--print:hover {
   background: rgba(59, 130, 246, 0.24) !important;
   border-color: rgba(59, 130, 246, 0.6) !important;
   color: #93c5fd !important;

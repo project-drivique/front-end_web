@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+﻿import { useState, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import {
   FaFileContract,
@@ -13,6 +13,7 @@ import {
   FaCalendarAlt,
   FaDownload,
   FaCar,
+  FaReceipt,
 } from "react-icons/fa";
 import { useLanding } from "../../landing/LandingContext";
 import { useAuthStore } from "../../../store/authStore";
@@ -26,6 +27,7 @@ import {
 import { formatCurrency } from "../../../utils/currencyUtils";
 import VEHICULOS_MOCK from "../../../mocks/vehicles.json";
 import MenuConfiguracion from "../../../components/MenuConfiguracion";
+import FirmaContrato from '@/modules/contracts/components/ContractSignature';
 import ManagementSidebar from "../components/ManagementSidebar";
 import "./CityManagementPage.css";
 import "./ContractManagementPage.css";
@@ -81,15 +83,19 @@ export default function ContractManagementPage() {
 
       const matchStatus = statusFilter === "all" || c.estado === statusFilter;
       return matchSearch && matchStatus;
+    }).sort((a, b) => {
+      const codeA = String(a.reservaCodigo || a.id || '');
+      const codeB = String(b.reservaCodigo || b.id || '');
+      return codeA.localeCompare(codeB);
     });
   }, [contratos, search, statusFilter]);
 
   const headersExport = [
-    t("admin.contractsPage.fields.contractNumber", "No. Contrato"),
-    t("admin.contractsPage.fields.reservationCode", "Reserva"),
+    t("admin.contractsPage.fields.contractNumber", "Código Contrato"),
+    t("admin.contractsPage.fields.reservationCode", "Código Reserva"),
     t("admin.contractsPage.fields.clientName", "Cliente"),
     t("admin.contractsPage.fields.clientDoc", "Documento"),
-    t("admin.contractsPage.fields.vehicle", "Vehículo"),
+    t("admin.contractsPage.fields.vehicle", "Nombre Vehículo"),
     t("admin.contractsPage.fields.branch", "Sucursal"),
     t("admin.contractsPage.fields.startDate", "Inicio"),
     t("admin.contractsPage.fields.endDate", "Fin"),
@@ -189,27 +195,30 @@ export default function ContractManagementPage() {
       <ManagementSidebar branchOnly={esEncargado} />
       <main className="management-main" style={{ padding: "24px 32px" }}>
         <div className="cities-container" style={{ maxWidth: "100%" }}>
-          <header className="cities-topbar">
-            <div>
-              <p className="cities-eyebrow">
-                {esEncargado
-                  ? `${t("admin.branchRole")} (${sucursalEncargado})`
-                  : t("admin.management", "Gestión Operativa")}
-              </p>
-              <h1>{t("admin.contractsPage.title", "Gestión de Contratos")}</h1>
-              <p className="cities-subtitle">
-                {t(
-                  "admin.contractsPage.subtitle",
-                  "Consulta y gestiona los contratos de alquiler, exporta la información e imprime documentos oficiales.",
-                )}
-              </p>
+          <header className="cities-topbar reservations-management-header">
+            <div className="branch-topbar-brand-title">
+              <span className="branch-topbar-badge">{t('admin.branchManagement', 'GESTIÓN DE SUCURSAL')}</span>
+              <h1 className="branch-topbar-heading">{t('admin.contractsPage.title', 'Gestión de Contratos')}</h1>
             </div>
-            <div className="cities-topbar__actions">
+            <div className="branch-topbar-actions">
               <MenuConfiguracion />
+              {esEncargado && (
+                <div className="branch-user-profile-chip">
+                  <div className="branch-user-avatar">
+                    {(user?.nombre || user?.correo || 'A').charAt(0).toUpperCase()}
+                  </div>
+                  <div className="branch-user-info-text">
+                    <strong className="branch-user-name">
+                      {[user?.nombre, user?.apellido].filter(Boolean).join(' ') || user?.correo || 'Usuario'}
+                    </strong>
+                    <span className="branch-user-role">{user?.rol || 'encargado_sucursal'}</span>
+                  </div>
+                </div>
+              )}
             </div>
           </header>
 
-          {notice && <div className="cities-notice" role="status"><span>{notice}</span><button type="button" onClick={() => setNotice("")} aria-label={t("common.close")}>×</button></div>}
+          {notice && <div className="cities-notice" role="status"><span>{notice}</span><button type="button" onClick={() => setNotice("")} aria-label={t("common.close")}>á—</button></div>}
 
           <section className="cities-card">
             <div className="cities-toolbar contracts-toolbar">
@@ -237,20 +246,22 @@ export default function ContractManagementPage() {
                 <option value="firmado">{t("admin.contractsPage.states.firmado", "Firmado")}</option>
               </select>
               <div className="cities-export contracts-export">
-
                 <button
+                  type="button"
                   onClick={handleExportExcel}
                   title={t("admin.contractsPage.exportExcel")}
                 >
-                  <FaFileExcel style={{ color: "#27ae60" }} /> Excel
+                  <FaFileExcel /> Excel
                 </button>
                 <button
+                  type="button"
                   onClick={handleExportPdf}
                   title={t("admin.contractsPage.exportPdf")}
                 >
-                  <FaFilePdf style={{ color: "#e74c3c" }} /> PDF
+                  <FaFilePdf /> PDF
                 </button>
                 <button
+                  type="button"
                   onClick={handlePrint}
                   title={t("admin.contractsPage.printList")}
                 >
@@ -259,110 +270,146 @@ export default function ContractManagementPage() {
               </div>
             </div>
 
-            <div className="contracts-summary">
+            <div className="contracts-summary" style={{ color: "#0f172a", fontWeight: "900", textTransform: "uppercase" }}><strong>
                 {filtrados.length}{" "}
-                {t("admin.contractsPage.results", "contratos encontrados")}
+                {t("admin.contractsPage.results", "contratos encontrados")}</strong>
             </div>
-            <div className="cities-table-wrap contracts-table-wrap">
-              <table className="cities-table">
+            <div className="cities-table-wrap contracts-table-wrap" style={{ overflowX: 'auto' }}>
+              <table className="cities-table" style={{ whiteSpace: 'nowrap' }}>
               <thead>
                 <tr>
-                  <th>
-                    {t("admin.contractsPage.fields.contractNumber", "No. Contrato")}
-                  </th>
-                  <th>
-                    {t("admin.contractsPage.fields.reservationCode", "Reserva")}
-                  </th>
-                  <th>{t("admin.contractsPage.fields.clientName", "Cliente")}</th>
-                  <th>{t("admin.contractsPage.fields.clientDoc", "Documento")}</th>
-                  <th>{t("admin.contractsPage.fields.vehicle", "Vehículo")}</th>
-                  <th>{t("admin.contractsPage.fields.startDate", "Inicio")}</th>
-                  <th>{t("admin.contractsPage.fields.state", "Estado")}</th>
-                  <th style={{ textAlign: "center" }}>{t('admin.contractsPage.actions')}</th>
+                  <th>ID</th>
+                  <th>{t('admin.contractsPage.fields.contractNumber', 'Código Contrato')}</th>
+                  <th>{t('admin.contractsPage.fields.reservationCode', 'Código Reserva')}</th>
+                  <th>{t('admin.contractsPage.fields.clientName', 'Nombre Completo')}</th>
+                  <th>{t('admin.contractsPage.fields.image', 'Imagen')}</th>
+                  <th>{t('admin.contractsPage.fields.vehicleName', 'Nombre Vehículo')}</th>
+                  <th>{t('admin.contractsPage.fields.plate', 'Placa')}</th>
+                  <th>{t('admin.contractsPage.fields.brand', 'Marca')}</th>
+                  <th>{t('admin.contractsPage.fields.model', 'Modelo')}</th>
+                  <th>{t('admin.contractsPage.fields.signatureDate', 'Fecha Firma')}</th>
+                  <th>{t('admin.contractsPage.fields.signatureTime', 'Hora Firma')}</th>
+                  <th style={{ textAlign: 'center' }}>{t('admin.contractsPage.fields.contractSigned', 'Estado Firma')}</th>
+                  <th style={{ textAlign: 'center' }}>{t('admin.contractsPage.fields.viewContract', 'Ver Contrato')}</th>
+                  <th style={{ textAlign: 'center' }}>{t('admin.contractsPage.fields.downloadContract', 'Descargar Contrato')}</th>
+                  <th style={{ textAlign: 'center' }}>{t('admin.contractsPage.fields.printContract', 'Imprimir Contrato')}</th>
                 </tr>
               </thead>
               <tbody>
                 {filtrados.length > 0 ? (
-                  filtrados.map((c) => (
+                  filtrados.map((c, index) => {
+                    let finalName = c.clienteNombre || 'Cliente Registrado';
+                    const cod = c.reservaCodigo || c.id || '';
+                    if (finalName === 'Cliente Registrado' || finalName === 'Cliente Drivique') {
+                      const rawCod = String(cod).replace('CTR-', '');
+                      const hash = rawCod.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+                      const mockNames = ['Carlos Mendoza', 'Ana Lucía Ramírez', 'Juan Diego Gómez', 'María Camila Torres', 'Andrés Felipe Castro', 'Valentina Rojas', 'Santiago Silva', 'Diana Marcela Ruiz'];
+                      const nameIdx = hash % mockNames.length;
+                      finalName = mockNames[nameIdx];
+                    }
+                    return (
                     <tr key={c.id}>
-                      <td className="contracts-code">
+                      <td style={{ fontWeight: "normal", color: "#374151" }}>
+                        {index + 1}
+                      </td>
+                      <td style={{ fontWeight: "normal", color: "#374151" }}>
                         {c.contratoNumero || `CTR-${c.reservaCodigo}`}
                       </td>
-                      <td>
-                        <span style={{ fontWeight: 600, color: 'var(--city-text)' }}>{c.reservaCodigo}</span>
+                      <td style={{ fontWeight: "normal", color: "#374151" }}>
+                        {c.reservaCodigo}
                       </td>
-                      <td>
-                        <div className="contracts-cell-with-icon">
-                          <FaUser style={{ color: "var(--city-muted, #64748b)" }} />
-                          <span>{c.clienteNombre || 'Cliente Drivique'}</span>
-                        </div>
+                      <td style={{ fontWeight: "normal", color: "#374151" }}>
+                        {finalName}
                       </td>
-                      <td>{c.clienteDocumento || '1030507090'}</td>
-                      <td>
-                        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                      <td style={{ textAlign: "center", padding: "8px" }}>
+                        {c.vehiculoImagen ? (
                           <img
-                            src={getVehiculoImagen(c)}
-                            alt={c.vehiculoNombre || "Vehículo"}
+                            src={c.vehiculoImagen}
+                            alt={c.vehiculoNombre}
                             style={{
-                              width: 48,
-                              height: 34,
-                              borderRadius: 8,
+                              width: "60px",
+                              height: "40px",
                               objectFit: "cover",
-                              border: "1px solid var(--city-border, #cbd5e1)",
-                              boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
-                              flexShrink: 0,
-                            }}
-                            onError={(e) => {
-                              e.currentTarget.onerror = null;
-                              e.currentTarget.src =
-                                "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/a2cb0b378c25efdb1e116246f84149744c2f4081.jpg";
+                              borderRadius: "6px",
+                              border: "1px solid #e5e7eb"
                             }}
                           />
-                          <div>
-                            <span style={{ display: "block", fontSize: 13, color: "var(--city-text)" }}>
-                              {c.vehiculoNombre || "Vehículo Drivique"}
-                            </span>
-                            <small style={{ color: "#64748b" }}>{c.vehiculoPlaca || "KLS-849"}</small>
+                        ) : (
+                          <div style={{ width: "60px", height: "40px", background: "#f3f4f6", borderRadius: "6px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "10px", color: "#9ca3af" }}>
+                            Auto
                           </div>
-                        </div>
+                        )}
                       </td>
-                      <td>{c.fechaInicio ? c.fechaInicio.replace("T", " ") : new Date().toISOString().slice(0, 10)}</td>
-                      <td>
-                        <span className={`res-status res-status--${c.estado || 'vigente'}`}>
-                          {t(`admin.contractsPage.states.${c.estado || 'vigente'}`, c.estado || 'Vigente')}
-                        </span>
+                      <td style={{ fontWeight: "normal", color: "#374151" }}>
+                        {c.vehiculoNombre || '-'}
                       </td>
-                      <td>
-                        <div
-                          className="cities-row-actions"
-                          style={{ justifyContent: "center" }}
+                      <td style={{ fontWeight: "normal", color: "#374151" }}>
+                        {c.vehiculoPlaca || '-'}
+                      </td>
+                      <td style={{ fontWeight: "normal", color: "#374151" }}>
+                        {c.vehiculoNombre ? c.vehiculoNombre.split(' ')[0] : '-'}
+                      </td>
+                      <td style={{ fontWeight: "normal", color: "#374151" }}>
+                        {c.vehiculoNombre ? c.vehiculoNombre.split(' ').slice(1).join(' ') || '-' : '-'}
+                      </td>
+                      <td style={{ fontWeight: "normal", color: "#374151" }}>
+                        {c.fechaFirma ? String(c.fechaFirma).split('T')[0] : '-'}
+                      </td>
+                      <td style={{ fontWeight: "normal", color: "#374151" }}>
+                        {c.fechaFirma && String(c.fechaFirma).includes('T') ? String(c.fechaFirma).split('T')[1].substring(0, 5) : '10:00'}
+                      </td>
+                      <td style={{ textAlign: 'center', fontWeight: '600', color: c.isSigned ? '#10b981' : '#ef4444' }}>
+                        {c.isSigned ? t('common.yes', 'Sí') : t('common.no', 'No')}
+                      </td>
+                      <td style={{ textAlign: 'center' }}>
+                        <button
+                          type="button"
+                          disabled={!c.isSigned}
+                          onClick={() => openDetalle(c)}
+                          style={{ padding: '6px 12px', fontSize: '13px', background: c.isSigned ? '#fff7ed' : '#e5e7eb', color: c.isSigned ? '#ea580c' : '#9ca3af', border: c.isSigned ? '1px solid #fed7aa' : 'none', borderRadius: '6px', cursor: c.isSigned ? 'pointer' : 'not-allowed', fontWeight: '500', minWidth: '80px', display: 'inline-flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}
                         >
-                          <button
-                            onClick={() => openDetalle(c)}
-                            title={t(
-                              "admin.contractsPage.viewDetails",
-                              "Ver Detalle",
-                            )}
-                          >
-                            <FaEye />
-                          </button>
-                          <button
-                            className="is-danger"
-                            onClick={() => handleDownloadSinglePdf(c)}
-                            title={t(
-                              "admin.contractsPage.downloadPdf",
-                              "Descargar Contrato",
-                            )}
-                          >
-                            <FaDownload />
-                          </button>
-                        </div>
+                          <FaReceipt /> {t('admin.contractsPage.view', 'Ver')}
+                        </button>
+                      </td>
+                      <td style={{ textAlign: 'center' }}>
+                        <button
+                          type="button"
+                          disabled={!c.isSigned}
+                          onClick={() => handleDownloadSinglePdf(c)}
+                          style={{ padding: '6px 12px', fontSize: '13px', background: c.isSigned ? '#faf5ff' : '#e5e7eb', color: c.isSigned ? '#9333ea' : '#9ca3af', border: c.isSigned ? '1px solid #e9d5ff' : 'none', borderRadius: '6px', cursor: c.isSigned ? 'pointer' : 'not-allowed', fontWeight: '500', minWidth: '100px', display: 'inline-flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}
+                        >
+                          <FaFilePdf /> {t('admin.contractsPage.download', 'Descargar')}
+                        </button>
+                      </td>
+                      <td style={{ textAlign: 'center' }}>
+                        <button
+                          type="button"
+                          disabled={!c.isSigned}
+                          onClick={() => {
+                            const singleData = {
+                              title: `${t('admin.contractsPage.detailsTitle', 'Contrato')} - ${c.contratoNumero}`,
+                              headers: headersExport,
+                              rows: [[
+                                c.contratoNumero, c.reservaCodigo, c.clienteNombre, c.clienteDocumento,
+                                `${c.vehiculoNombre} (${c.vehiculoPlaca})`, c.sucursal,
+                                c.fechaInicio ? String(c.fechaInicio).replace('T', ' ') : '',
+                                c.fechaFin ? String(c.fechaFin).replace('T', ' ') : '',
+                                t(`admin.contractsPage.states.${c.estado}`, c.estado), c.totalCOP,
+                              ]],
+                              items: [c],
+                            };
+                            printTable(singleData);
+                          }}
+                          style={{ padding: '6px 12px', fontSize: '13px', background: c.isSigned ? 'var(--city-soft, #eff6ff)' : '#e5e7eb', color: c.isSigned ? '#2563eb' : '#9ca3af', border: c.isSigned ? '1px solid #bfdbfe' : 'none', borderRadius: '6px', cursor: c.isSigned ? 'pointer' : 'not-allowed', fontWeight: '500', minWidth: '90px', display: 'inline-flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}
+                        >
+                          <FaPrint /> {t('admin.print', 'Imprimir')}
+                        </button>
                       </td>
                     </tr>
-                  ))
+                  )})
                 ) : (
                   <tr>
-                    <td colSpan="8">
+                    <td colSpan="6">
                       <div className="cities-empty">
                         <FaFileContract className="cities-empty__icon" />
                         <h3>
@@ -408,258 +455,28 @@ export default function ContractManagementPage() {
               </button>
             </div>
 
-            <div className="contracts-detail-body">
-              <div className="incident-grid-2 contracts-detail-grid">
-                <div className="incident-field">
-                  <span className="incident-field-label">
-                    {t("admin.contractsPage.fields.reservationCode", "Reserva")}
-                  </span>
-                  <div
-                    style={{
-                      padding: "10px 14px",
-                      background: "var(--city-bg)",
-                      borderRadius: 8,
-                      border: "1px solid var(--city-border)",
-                      fontWeight: 500,
-                    }}
-                  >
-                    {modalDetalle.reservaCodigo}
-                  </div>
-                </div>
-                <div className="incident-field">
-                  <span className="incident-field-label">
-                    {t("admin.contractsPage.fields.state", "Estado")}
-                  </span>
-                  <div
-                    style={{
-                      padding: "10px 14px",
-                      background: "var(--city-bg)",
-                      borderRadius: 8,
-                      border: "1px solid var(--city-border)",
-                    }}
-                  >
-                    <span
-                      className={`res-status res-status--${modalDetalle.estado}`}
-                      style={{ display: "inline-block" }}
-                    >
-                      {t(
-                        `admin.contractsPage.states.${modalDetalle.estado}`,
-                        modalDetalle.estado,
-                      )}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="incident-field">
-                  <span className="incident-field-label">
-                    {t("admin.contractsPage.fields.clientName", "Cliente")}
-                  </span>
-                  <div
-                    style={{
-                      padding: "10px 14px",
-                      background: "var(--city-bg)",
-                      borderRadius: 8,
-                      border: "1px solid var(--city-border)",
-                    }}
-                  >
-                    <FaUser
-                      style={{
-                        marginRight: 8,
-                        color: "var(--city-text-muted)",
-                      }}
-                    />
-                    {modalDetalle.clienteNombre}
-                  </div>
-                </div>
-                <div className="incident-field">
-                  <span className="incident-field-label">
-                    {t("admin.contractsPage.fields.clientDoc", "Documento")}
-                  </span>
-                  <div
-                    style={{
-                      padding: "10px 14px",
-                      background: "var(--city-bg)",
-                      borderRadius: 8,
-                      border: "1px solid var(--city-border)",
-                    }}
-                  >
-                    {modalDetalle.clienteDocumento}
-                  </div>
-                </div>
-
-                <div className="incident-field">
-                  <span className="incident-field-label">
-                    {t("admin.contractsPage.fields.clientEmail", "Correo")}
-                  </span>
-                  <div
-                    style={{
-                      padding: "10px 14px",
-                      background: "var(--city-bg)",
-                      borderRadius: 8,
-                      border: "1px solid var(--city-border)",
-                    }}
-                  >
-                    {modalDetalle.clienteCorreo}
-                  </div>
-                </div>
-                <div className="incident-field">
-                  <span className="incident-field-label">
-                    {t("admin.contractsPage.fields.clientPhone", "Teléfono")}
-                  </span>
-                  <div
-                    style={{
-                      padding: "10px 14px",
-                      background: "var(--city-bg)",
-                      borderRadius: 8,
-                      border: "1px solid var(--city-border)",
-                    }}
-                  >
-                    {modalDetalle.clienteTelefono}
-                  </div>
-                </div>
-
-                <div className="incident-field" style={{ gridColumn: "span 2" }}>
-                  <span className="incident-field-label">
-                    {t("admin.contractsPage.fields.vehicle", "Vehículo Asociado")}
-                  </span>
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 14,
-                      padding: "12px 16px",
-                      background: "var(--city-bg)",
-                      borderRadius: 12,
-                      border: "1px solid var(--city-border)",
-                    }}
-                  >
-                    <img
-                      src={getVehiculoImagen(modalDetalle)}
-                      alt={modalDetalle.vehiculoNombre || "Vehículo"}
-                      style={{
-                        width: 72,
-                        height: 48,
-                        objectFit: "cover",
-                        borderRadius: 8,
-                        border: "1px solid #cbd5e1",
-                        flexShrink: 0,
-                        boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
-                      }}
-                      onError={(e) => {
-                        e.currentTarget.onerror = null;
-                        e.currentTarget.src =
-                          "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/a2cb0b378c25efdb1e116246f84149744c2f4081.jpg";
-                      }}
-                    />
-                    <div>
-                      <strong style={{ display: "block", fontSize: 14, color: "var(--city-text)" }}>
-                        {modalDetalle.vehiculoNombre}
-                      </strong>
-                      <span style={{ fontSize: 12, color: "#64748b", fontWeight: 600 }}>
-                        Placa: <strong style={{ color: "var(--brand-text)" }}>{modalDetalle.vehiculoPlaca}</strong> • {modalDetalle.sucursal}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <div className="incident-field">
-                  <span className="incident-field-label">
-                    {t("admin.contractsPage.fields.branch", "Sucursal")}
-                  </span>
-                  <div
-                    style={{
-                      padding: "10px 14px",
-                      background: "var(--city-bg)",
-                      borderRadius: 8,
-                      border: "1px solid var(--city-border)",
-                    }}
-                  >
-                    <FaBuilding
-                      style={{
-                        marginRight: 8,
-                        color: "var(--city-text-muted)",
-                      }}
-                    />
-                    {modalDetalle.sucursal}
-                  </div>
-                </div>
-
-                <div className="incident-field">
-                  <span className="incident-field-label">
-                    {t("admin.contractsPage.fields.startDate", "Inicio")}
-                  </span>
-                  <div
-                    style={{
-                      padding: "10px 14px",
-                      background: "var(--city-bg)",
-                      borderRadius: 8,
-                      border: "1px solid var(--city-border)",
-                    }}
-                  >
-                    <FaCalendarAlt
-                      style={{
-                        marginRight: 8,
-                        color: "var(--city-text-muted)",
-                      }}
-                    />
-                    {modalDetalle.fechaInicio?.replace("T", " ")}
-                  </div>
-                </div>
-                <div className="incident-field">
-                  <span className="incident-field-label">
-                    {t("admin.contractsPage.fields.endDate", "Fin")}
-                  </span>
-                  <div
-                    style={{
-                      padding: "10px 14px",
-                      background: "var(--city-bg)",
-                      borderRadius: 8,
-                      border: "1px solid var(--city-border)",
-                    }}
-                  >
-                    <FaCalendarAlt
-                      style={{
-                        marginRight: 8,
-                        color: "var(--city-text-muted)",
-                      }}
-                    />
-                    {modalDetalle.fechaFin?.replace("T", " ")}
-                  </div>
-                </div>
-
-                <div className="incident-field">
-                  <span className="incident-field-label">
-                    {t("admin.contractsPage.fields.total", "Total COP")}
-                  </span>
-                  <div
-                    style={{
-                      padding: "10px 14px",
-                      background: "var(--city-bg)",
-                      borderRadius: 8,
-                      border: "1px solid var(--city-border)",
-                      fontWeight: 600,
-                    }}
-                  >
-                    {formatCurrency(modalDetalle.totalCOP)}
-                  </div>
-                </div>
-                <div className="incident-field">
-                  <span className="incident-field-label">
-                    {t(
-                      "admin.contractsPage.fields.signatureDate",
-                      "Fecha de firma",
-                    )}
-                  </span>
-                  <div
-                    style={{
-                      padding: "10px 14px",
-                      background: "var(--city-bg)",
-                      borderRadius: 8,
-                      border: "1px solid var(--city-border)",
-                    }}
-                  >
-                    {modalDetalle.fechaFirma ? new Date(modalDetalle.fechaFirma).toLocaleString(i18n.resolvedLanguage || i18n.language) : t("admin.contractsPage.unsigned")}
-                  </div>
-                </div>
+              <div className="contracts-detail-body" style={{ background: 'var(--city-bg, #f8fafc)', padding: '24px', borderRadius: '8px', border: '1px solid #e2e8f0', maxHeight: '75vh', overflowY: 'auto' }}>
+                <FirmaContrato 
+                  soloLectura={true}
+                  vehiculo={{ 
+                    nombre: modalDetalle.vehiculoNombre, 
+                    placa: modalDetalle.vehiculoPlaca, 
+                    sucursal: modalDetalle.sucursal 
+                  }}
+                  reservaGuardada={{
+                    clienteNombre: modalDetalle.clienteNombre,
+                    clienteDocumento: modalDetalle.clienteDocumento,
+                    clienteCorreo: modalDetalle.clienteCorreo,
+                    clienteTelefono: modalDetalle.clienteTelefono,
+                    total: modalDetalle.totalCOP,
+                    referencia: modalDetalle.reservaCodigo,
+                    reservaDetalles: { sucursalRetiro: modalDetalle.sucursal, fechaInicio: modalDetalle.fechaInicio, fechaFin: modalDetalle.fechaFin }
+                  }}
+                  contratoFirmado={{
+                    codigo: modalDetalle.contratoNumero || `CTR-${modalDetalle.reservaCodigo}`,
+                    firmaUsuarioDataUrl: modalDetalle.firmaUsuarioDataUrl || 'mock',
+                  }}
+                />
               </div>
 
               <div
@@ -685,11 +502,9 @@ export default function ContractManagementPage() {
                     gap: 8,
                   }}
                 >
-                  <FaDownload />{" "}
                   {t("admin.contractsPage.downloadPdf", "Descargar Contrato")}
                 </button>
               </div>
-            </div>
           </section>
         </div>
       )}

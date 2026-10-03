@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import {
   FaCalendarAlt,
@@ -21,6 +21,7 @@ import {
   FaMapMarkerAlt,
   FaWhatsapp,
   FaMoneyBillWave,
+  FaShieldAlt,
 } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import { useAuthStore } from '../../../store/authStore'
@@ -43,6 +44,7 @@ export default function ReservationManagementPage() {
   const { tema, moneda, tasaUSD } = useLanding()
   const user = useAuthStore((state) => state.usuario)
   const navigate = useNavigate()
+  const location = useLocation()
   const esModoOscuro = tema === 'oscuro'
 
   const esEncargado = user?.rol === 'encargado' || user?.rol === 'branch_manager' || user?.rol === 'encargado_sucursal'
@@ -51,13 +53,18 @@ export default function ReservationManagementPage() {
 
   const [activeTab, setActiveTab] = useState('fechas_ubicacion') // 'fechas_ubicacion' | 'proteccion_extras' | 'datos_pago'
   const [zoomImage, setZoomImage] = useState(null)
+  const [zoomPdf, setZoomPdf] = useState(null)
 
   const [reservas, setReservas] = useState([])
-  const [search, setSearch] = useState('')
+  const [search, setSearch] = useState(() => location.state?.search || '')
   const [statusFilter, setStatusFilter] = useState('all')
   const [branchFilter, setBranchFilter] = useState(esEncargado ? sucursalEncargado : 'all')
   const [dateFrom, setDateFrom] = useState('')
   const [dateTo, setDateTo] = useState('')
+  
+  // Paginación
+  const [currentPage, setCurrentPage] = useState(1)
+  const ITEMS_PER_PAGE = 5
 
   // Modales
   const [modalDetalle, setModalDetalle] = useState(null)
@@ -130,6 +137,22 @@ export default function ReservationManagementPage() {
     return () => clearInterval(interval)
   }, [cargarYEvaluarReservas])
 
+  // Apertura directa y automática de la reserva indicada desde el Centro de Notificaciones
+  useEffect(() => {
+    if (location.state?.openCodigo && reservas.length > 0) {
+      const codeTarget = String(location.state.openCodigo).trim().toLowerCase()
+      const match = reservas.find(
+        (r) =>
+          String(r.codigo || '').trim().toLowerCase() === codeTarget ||
+          String(r.id || '').trim().toLowerCase() === codeTarget ||
+          codeTarget.includes(String(r.codigo || '').toLowerCase())
+      )
+      if (match) {
+        setModalDetalle(match)
+      }
+    }
+  }, [location.state, reservas])
+
   // Filtrado de reservas
   const filtradas = useMemo(() => {
     const term = search.trim().toLowerCase()
@@ -152,39 +175,40 @@ export default function ReservationManagementPage() {
       }
 
       return matchSearch && matchStatus && matchBranch && matchDate
+    }).sort((a, b) => {
+      const codeA = String(a.codigo || a.referencia || a.id || '');
+      const codeB = String(b.codigo || b.referencia || b.id || '');
+      return codeA.localeCompare(codeB);
     })
   }, [reservas, search, statusFilter, branchFilter, dateFrom, dateTo])
 
-  // Configuración de exportación independiente por cada flujo de reserva
-  const flowTitleName = activeTab === 'fechas_ubicacion'
-    ? '1. Fechas y Ubicación'
-    : activeTab === 'proteccion_extras'
-    ? '2. Protección y Extras'
-    : '3. Datos Personales y Pago'
+  const totalPages = Math.ceil(filtradas.length / ITEMS_PER_PAGE)
+  const paginatedReservations = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
+    return filtradas.slice(startIndex, startIndex + ITEMS_PER_PAGE)
+  }, [filtradas, currentPage])
 
+  // Configuración de exportación global consolidada de reservas
   const headersExport = useMemo(() => {
-    if (activeTab === 'fechas_ubicacion') {
-      return [
-        'Código',
-        'Vehículo',
-        'Placa',
-        'Medio de Pago',
-        'Lugar de Retiro',
-        'Lugar de Devolución',
-        'Fecha de Retiro',
-        'Fecha de Devolución',
-        'Hora de Retiro',
-        'Hora de Devolución',
-        'Duración del Alquiler',
-        'Devolución Anticipada',
-        'Estado Reserva',
-      ]
-    }
-    if (activeTab === 'proteccion_extras') {
-      return ['Código', 'Plan Protección', 'Tipo Kilometraje', 'Servicios Adicionales']
-    }
-    return ['Código', 'Nombre', 'Correo', 'Tipo de Documento', 'Nacionalidad', 'Teléfono Celular', 'Número de Documento', 'Documento de Identidad', 'Licencia de Conducción', 'Términos y Condiciones', 'Promociones']
-  }, [activeTab])
+    return [
+      'Código',
+      'Cliente',
+      'Teléfono',
+      'Correo',
+      'Vehículo',
+      'Placa',
+      'Sucursal / Retiro',
+      'Lugar Devolución',
+      'Fecha Retiro',
+      'Fecha Devolución',
+      'Duración',
+      'Protección',
+      'Extras',
+      'Total',
+      'Estado Pago',
+      'Estado Reserva',
+    ]
+  }, [])
 
   const rowsExport = useMemo(() => {
     return filtradas.map((r) => {
@@ -199,20 +223,21 @@ export default function ReservationManagementPage() {
       ).toLowerCase()
 
       const esPagoEfectivo = rawMetodo.includes('efectivo') || rawMetodo.includes('sucursal')
-      const textoMedioPago = esPagoEfectivo ? 'Pago en efectivo' : 'Pago virtual con Wompi'
 
-      let lugarRetiroText = `Recoger en Sucursal (${r.sucursal || 'Alquiler Neiva - Centro'})`
+      const branchRetiro = r.sucursal || 'Alquiler Neiva - Centro'
+                        let lugarRetiroText = t('admin.reservationsManagement.pickupBranch', 'Recoger en Sucursal ({{branch}})', { branch: branchRetiro })
       if (!esPagoEfectivo) {
-        if (r.sucursalRetiro === 'domicilio') lugarRetiroText = 'Entrega a Domicilio'
-        else if (r.sucursalRetiro === 'aeropuerto') lugarRetiroText = 'Entrega en Aeropuerto'
-        else if (r.sucursalRetiro === 'terminal') lugarRetiroText = 'Entrega en Terminal'
+        if (r.sucursalRetiro === 'domicilio') lugarRetiroText = t('admin.reservationsManagement.pickupHome', 'Entrega a Domicilio')
+        else if (r.sucursalRetiro === 'aeropuerto') lugarRetiroText = t('admin.reservationsManagement.pickupAirport', 'Entrega en Aeropuerto')
+        else if (r.sucursalRetiro === 'terminal') lugarRetiroText = t('admin.reservationsManagement.pickupTerminal', 'Entrega en Terminal')
       }
 
-      let lugarDevolucionText = `Devolver en Sucursal (${r.sucursal || 'Alquiler Neiva - Centro'})`
+      const branchDevolucion = r.sucursal || 'Alquiler Neiva - Centro'
+                        let lugarDevolucionText = t('admin.reservationsManagement.dropoffBranch', 'Devolver en Sucursal ({{branch}})', { branch: branchDevolucion })
       if (!esPagoEfectivo) {
-        if (r.sucursalDevolucion === 'domicilio') lugarDevolucionText = 'Devolución a Domicilio'
-        else if (r.sucursalDevolucion === 'aeropuerto') lugarDevolucionText = 'Devolución en Aeropuerto'
-        else if (r.sucursalDevolucion === 'terminal') lugarDevolucionText = 'Devolución en Terminal'
+        if (r.sucursalDevolucion === 'domicilio') lugarDevolucionText = t('admin.reservationsManagement.dropoffHome', 'Devolución a Domicilio')
+        else if (r.sucursalDevolucion === 'aeropuerto') lugarDevolucionText = t('admin.reservationsManagement.dropoffAirport', 'Devolución en Aeropuerto')
+        else if (r.sucursalDevolucion === 'terminal') lugarDevolucionText = t('admin.reservationsManagement.dropoffTerminal', 'Devolución en Terminal')
       }
 
       const fInicioRaw = r.fechaInicio || ''
@@ -220,63 +245,54 @@ export default function ReservationManagementPage() {
       const fechaRetiroVal = fInicioRaw.split('T')[0] || new Date().toISOString().slice(0, 10)
       const fechaDevolucionVal = fFinRaw.split('T')[0] || new Date(Date.now() + 86400000 * 3).toISOString().slice(0, 10)
 
-      const horaRetiroVal = r.horaInicio ? r.horaInicio : (fInicioRaw.includes('T') ? fInicioRaw.split('T')[1].slice(0, 5) : '9:00 a. m.')
-      const horaDevolucionVal = r.horaFin ? r.horaFin : (fFinRaw.includes('T') ? fFinRaw.split('T')[1].slice(0, 5) : '8:30 a. m.')
+      const duracionText = r.reservaDetalles?.duracionDias ? t('admin.reservationsManagement.durationDays', '{{count}} días', { count: r.reservaDetalles.duracionDias }) : t('admin.reservationsManagement.durationDays', '{{count}} días', { count: 4 })
+      const cobertura = r.reservaDetalles?.cobertura?.nombre || r.cobertura || 'Protección Estándar CDW'
+      const servs = (r.reservaDetalles?.serviciosAdicionales || []).map(s => typeof s === 'string' ? s : s.nombre).join(', ') || 'Ninguno'
 
-      const duracionText = r.reservaDetalles?.duracionDias ? `${r.reservaDetalles.duracionDias} días` : '4 días'
-      const devAnticipadaText = r.reservaDetalles?.devolucionAnticipada || (r.devolucionAnticipada ? '3 días, 23 h 30 min' : 'No registra')
+      const esCobroPresencialPendiente =
+        esPagoEfectivo &&
+        !Boolean(r.metodoPagoConfirmado) &&
+        r.pagoEstado !== 'aprobado'
 
-      if (activeTab === 'fechas_ubicacion') {
-        return [
-          cod,
-          r.vehiculoNombre || 'Renault Sandero 2023',
-          r.vehiculoPlaca || 'KLS-849',
-          textoMedioPago,
-          lugarRetiroText,
-          lugarDevolucionText,
-          fechaRetiroVal,
-          fechaDevolucionVal,
-          horaRetiroVal,
-          horaDevolucionVal,
-          duracionText,
-          devAnticipadaText,
-          r.estado || 'Confirmada',
-        ]
-      }
+      const isPagoConfirmado =
+        r.pagoEstado === 'aprobado' ||
+        Boolean(r.metodoPagoConfirmado) ||
+        r.estadoPago === 'aprobado' ||
+        (!esCobroPresencialPendiente && r.estado !== 'cancelada')
 
-      if (activeTab === 'proteccion_extras') {
-        const servs = (r.reservaDetalles?.serviciosAdicionales || []).map(s => typeof s === 'string' ? s : s.nombre).join(', ') || 'Ninguno'
-        return [
-          cod,
-          r.reservaDetalles?.cobertura?.nombre || r.cobertura || 'Protección Estándar CDW',
-          r.reservaDetalles?.kilometraje || r.kilometraje || 'Ilimitado',
-          servs,
-        ]
-      }
+      const estadoPagoStr = isPagoConfirmado
+        ? 'Confirmado'
+        : r.estado === 'cancelada'
+        ? 'Cancelado'
+        : 'Pendiente'
 
-      // activeTab === 'datos_pago'
       return [
         cod,
         r.clienteNombre || 'Cliente Registrado',
-        r.clienteCorreo || 'cliente@drivique.com',
-        r.clienteTipoDocumento || 'Cédula de Ciudadanía',
-        r.clienteNacionalidad || 'Colombia',
         r.clienteTelefono || '300 000 0000',
-        r.clienteDocumento || '1020304050',
-        r.documentoIdentidadPdf ? 'Archivo Cargado' : 'Sin cargar',
-        r.licenciaConduccionPdf ? 'Archivo Cargado' : 'Sin cargar',
-        'Aceptados',
-        r.cuponCodigo || 'Sin cupones',
+        r.clienteCorreo || 'cliente@drivique.com',
+        r.vehiculoNombre || 'Renault Sandero 2023',
+        r.vehiculoPlaca || 'KLS-849',
+        lugarRetiroText,
+        lugarDevolucionText,
+        fechaRetiroVal,
+        fechaDevolucionVal,
+        duracionText,
+        cobertura,
+        servs,
+        formatCurrency(totalCOP, moneda || 'COP', tasaUSD),
+        estadoPagoStr,
+        r.estado === 'en_curso' ? 'En curso' : r.estado === 'finalizada' ? 'Finalizada' : r.estado === 'cancelada' ? 'Cancelada' : 'Confirmada',
       ]
     })
-  }, [filtradas, activeTab, moneda, tasaUSD])
+  }, [filtradas, moneda, tasaUSD])
 
   const exportData = {
-    title: `${flowTitleName} - ${esEncargado ? sucursalEncargado : 'Todas las Sedes'}`,
+    title: `Reporte Consolidado de Reservas - ${esEncargado ? sucursalEncargado : 'Todas las Sedes'}`,
     headers: headersExport,
     rows: rowsExport,
     items: filtradas,
-    filename: `reservas-${activeTab}-drivique-${new Date().toISOString().slice(0, 10)}`,
+    filename: `reporte-reservas-drivique-${new Date().toISOString().slice(0, 10)}`,
   }
 
   const handleEntregarAuto = (r) => {
@@ -400,36 +416,34 @@ export default function ReservationManagementPage() {
   }
 
   return (
-    <div className={`management-shell ${esModoOscuro ? 'management-shell--dark' : ''}`}>
+    <div className={`management-shell reservations-management-page ${esModoOscuro ? 'management-shell--dark' : ''}`}>
       <ManagementSidebar branchOnly={esEncargado} />
       <main className="management-main" style={{ padding: '24px 32px' }}>
         <div className="cities-container" style={{ maxWidth: '100%' }}>
         {/* Topbar Superior */}
         <header className="cities-topbar reservations-management-header">
-          <div>
-            <p className="cities-eyebrow">
-              {esEncargado
-                ? t('admin.reservationsManagement.encargadoSucursal', { branch: sucursalEncargado })
-                : t('admin.management', 'Gestión Operativa')}
-            </p>
-            <h1>{t('admin.reservationsTitle', 'Gestión de Reservas')}</h1>
-            <p className="cities-subtitle">
-              {t(
-                'admin.reservationsSubtitle',
-                'Control operativo completo de reservas, entregas, devoluciones y cancelaciones.'
-              )}
-            </p>
+          <div className="branch-topbar-brand-title">
+            <span className="branch-topbar-badge">{t('admin.reservationsManagement.subtitle', 'GESTIÓN DE SUCURSAL')}</span>
+            <h1 className="branch-topbar-heading">{t('admin.reservationsManagement.title', 'Gestión de Reservas')}</h1>
           </div>
 
-          <div className="cities-topbar__actions">
+          <div className="branch-topbar-actions">
             <MenuConfiguracion />
-            <button
-              className="cities-primary"
-              type="button"
-              onClick={openCrearModal}
-            >
-              <FaPlus /> {t('admin.createManualReservation', 'Reserva Manual')}
-            </button>
+            {esEncargado && (
+              <div className="branch-user-profile-chip">
+                <div className="branch-user-avatar">
+                  {(user?.nombre || user?.correo || 'A').charAt(0).toUpperCase()}
+                </div>
+                <div className="branch-user-info-text">
+                  <strong className="branch-user-name">
+                    {user?.nombre || 'Andrés Felipe Castro'}
+                  </strong>
+                  <span className="branch-user-role">
+                    {user?.rol || 'encargado_sucursal'}
+                  </span>
+                </div>
+              </div>
+            )}
           </div>
         </header>
 
@@ -438,46 +452,54 @@ export default function ReservationManagementPage() {
           <div className="cities-notice" role="status">
             <span>{notice}</span>
             <button type="button" onClick={() => setNotice('')}>
-              ×
+              á—
             </button>
           </div>
         )}
 
-        {/* Pestañas de los 3 Flujos de Reserva (pegadas a la tarjeta de la tabla) */}
+        {/* Pestañas de Secciones y Botón Crear a la derecha */}
         <div className="fleet-attached-tabs">
-          <button
-            type="button"
-            onClick={() => setActiveTab('fechas_ubicacion')}
-            className={`fleet-tab-btn ${activeTab === 'fechas_ubicacion' ? 'is-active' : ''}`}
-          >
-            1. Fechas y Ubicación ({filtradas.length})
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab('proteccion_extras')}
-            className={`fleet-tab-btn ${activeTab === 'proteccion_extras' ? 'is-active' : ''}`}
-          >
-            2. Protección y Extras ({filtradas.length})
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab('datos_pago')}
-            className={`fleet-tab-btn ${activeTab === 'datos_pago' ? 'is-active' : ''}`}
-          >
-            3. Datos Personales y Pago ({filtradas.length})
-          </button>
+          <div className="fleet-tabs-nav">
+            <button
+              type="button"
+              onClick={() => setActiveTab('fechas_ubicacion')}
+              className={`fleet-tab-btn ${activeTab === 'fechas_ubicacion' ? 'is-active' : ''}`}
+            >{t('admin.reservationsManagement.tabs.details', 'Detalles')}</button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('proteccion_extras')}
+              className={`fleet-tab-btn ${activeTab === 'proteccion_extras' ? 'is-active' : ''}`}
+            >{t('admin.reservationsManagement.tabs.coverages', 'Coberturas')}</button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('datos_pago')}
+              className={`fleet-tab-btn ${activeTab === 'datos_pago' ? 'is-active' : ''}`}
+            >{t('admin.reservationsManagement.tabs.payments', 'Pagos')}</button>
+          </div>
+
+          {/*
+          <div className="fleet-tabs-action">
+            <button
+              className="cities-primary fleet-btn-create-tab"
+              type="button"
+              onClick={openCrearModal}
+            >
+              <FaPlus style={{ marginRight: 8 }} /> {t('admin.createManualReservation', 'Reserva Manual')}
+            </button>
+          </div>
+          */}
         </div>
 
         {/* Sección del Flujo Activo */}
         <section className="cities-card attached-to-tabs">
-          <div className="branches-toolbar reservations-management-toolbar">
+          <div className="reservations-toolbar-flex" style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', alignItems: 'center', marginBottom: 16 }}>
             {/* Buscador general en vivo */}
-            <label className="cities-search">
+            <label className="cities-search" style={{ flex: '1 1 250px', margin: 0 }}>
               <FaSearch />
               <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder={t('admin.searchReservations', 'Buscar por código, cliente, auto, placa...')}
+                placeholder={t('admin.reservationsManagement.searchPlaceholder', 'Buscar por código, cliente, vehículo, placa...')}
               />
             </label>
 
@@ -485,9 +507,9 @@ export default function ReservationManagementPage() {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="reservations-filter-select"
+              style={{ flex: '0 0 auto', padding: '10px 14px', borderRadius: '12px', border: '1.5px solid var(--city-border)', background: 'var(--city-bg)' }}
             >
-              <option value="all">{t('admin.allStatuses', 'Todos los estados')}</option>
+              <option value="all">{t('admin.reservationsManagement.allStatuses', 'Todos los estados')}</option>
               <option value="confirmada">{t('admin.statusConfirmada', 'Confirmada')}</option>
               <option value="en_curso">{t('admin.statusEnCurso', 'En curso')}</option>
               <option value="finalizada">{t('admin.statusFinalizada', 'Finalizada')}</option>
@@ -496,82 +518,82 @@ export default function ReservationManagementPage() {
 
             {/* Filtro de Sucursal */}
             {esEncargado ? (
-              <div className="reservations-assigned-branch">
-                <FaBuilding />
-                <span>{sucursalEncargado || t('admin.reservationsManagement.noAssignedBranch')}</span>
+              <div className="reservations-assigned-branch" style={{ flex: '0 0 auto', padding: '10px 14px', borderRadius: '12px', border: '1.5px solid var(--city-border)', background: 'var(--bg-seccion1, #f8fafc)', display: 'flex', alignItems: 'center' }}>
+                <FaBuilding style={{ marginRight: 8, color: 'var(--texto-second, #64748b)' }} />
+                <span style={{ fontWeight: 600, color: 'var(--texto-primary, #0f172a)' }}>{sucursalEncargado || t('admin.reservationsManagement.noAssignedBranch')}</span>
               </div>
             ) : (
               <select
-                className="reservations-filter-select"
                 value={branchFilter}
                 onChange={(e) => setBranchFilter(e.target.value)}
+                style={{ flex: '0 0 auto', padding: '10px 14px', borderRadius: '12px', border: '1.5px solid var(--city-border)', background: 'var(--city-bg)' }}
               >
-                <option value="all">{t('admin.allBranches', 'Todas las sucursales')}</option>
+                <option value="all">{t('admin.reservationsManagement.allBranches', 'Todas las sucursales')}</option>
                 {sucursalesVisibles.map((s) => (
                   <option key={s.id} value={s.nombre}>{s.nombre}</option>
                 ))}
               </select>
             )}
 
-            {/* Filtros de Fecha */}
-            <div className="reservations-date-inputs">
-              <label><span>{t('admin.reservationsManagement.dateFrom')}</span><input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} /></label>
-              <label><span>{t('admin.reservationsManagement.dateTo')}</span><input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} /></label>
+            {/* Filtros de Fecha (ahora integrados en el grid) */}
+            <div className="reservations-date-inputs" style={{ display: 'flex', gap: '8px', flex: '0 0 auto' }}>
+              <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} title={t('admin.reservationsManagement.dateFrom')} style={{ padding: '8px 12px', border: '1.5px solid var(--city-border)', borderRadius: '12px', background: 'var(--city-card)' }} />
+              <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} title={t('admin.reservationsManagement.dateTo')} style={{ padding: '8px 12px', border: '1.5px solid var(--city-border)', borderRadius: '12px', background: 'var(--city-card)' }} />
             </div>
 
             {/* Botones de Exportación Independientes por Flujo */}
-            <div className="cities-export reservations-export-actions">
-              <button type="button" onClick={handleExportExcel} title="Exportar tabla actual a Excel">
-                <FaFileExcel /> Excel
+            <div className="export-pills-group" style={{ marginLeft: 'auto', display: 'flex', gap: '8px' }}>
+              <button type="button" className="export-pill export-pill--excel" onClick={handleExportExcel} title={t("admin.vehiclesManagement.export.excelTitle", "Exportar tabla actual a Excel")}>
+                <FaFileExcel aria-hidden="true" /> {t("admin.vehiclesManagement.export.excel", "Excel")}
               </button>
-              <button type="button" onClick={handleExportPdf} title="Exportar tabla actual a PDF">
-                <FaFilePdf /> PDF
+              <button type="button" className="export-pill export-pill--pdf" onClick={handleExportPdf} title={t("admin.vehiclesManagement.export.pdfTitle", "Exportar tabla actual a PDF")}>
+                <FaFilePdf aria-hidden="true" /> {t("admin.vehiclesManagement.export.pdf", "PDF")}
               </button>
-              <button type="button" onClick={handlePrint} title="Imprimir tabla actual">
-                <FaPrint /> {t('admin.print', 'Imprimir')}
+              <button type="button" className="export-pill export-pill--print" onClick={handlePrint} title={t("admin.vehiclesManagement.export.printTitle", "Imprimir tabla actual")}>
+                <FaPrint aria-hidden="true" /> {t("admin.vehiclesManagement.export.print", "Imprimir")}
               </button>
             </div>
           </div>
 
           {/* Resumen de resultados del flujo activo */}
-          <div className="cities-summary" style={{ margin: '12px 0 16px' }}>
-            <strong>{filtradas.length}</strong> {t('admin.reservationsFound', 'reservas encontradas en esta sección')}
+          <div className="cities-summary" style={{ margin: "8px 0 12px" }}>
+            <span>{filtradas.length}</span>{" "}
+            {t("admin.reservationsFound", "RESERVAS EN EL LISTADO").toUpperCase()}
           </div>
 
           {/* Tabla de Reservas del Flujo Activo */}
           {filtradas.length === 0 ? (
             <div className="cities-empty">
               <FaCalendarAlt />
-              <h2>No hay reservas registradas en esta sección</h2>
-              <p>No se encontraron registros en esta categoría con los filtros aplicados.</p>
+              <h2>{t("admin.reservationsManagement.emptyTitle", "No hay reservas registradas en esta sección")}</h2>
+              <p>{t("admin.reservationsManagement.emptyText", "No se encontraron registros en esta categoría con los filtros aplicados.")}</p>
             </div>
           ) : (
             <div className="cities-table-wrap">
               <table className="branches-table reservations-admin-table">
-                {/* ── TABLA 1: FECHAS Y UBICACIÓN (PASO 1 DE RESERVA) ── */}
+                {/* â”€â”€ TABLA 1: FECHAS Y UBICACIÓN (PASO 1 DE RESERVA) â”€â”€ */}
                 {activeTab === 'fechas_ubicacion' && (
                   <>
                     <thead>
                       <tr>
-                        <th>{t('admin.reservationsManagement.table.code')}</th>
-                        <th>Foto</th>
-                        <th>Vehículo</th>
-                        <th>Placa</th>
-                        <th>Medio de Pago</th>
-                        <th>Lugar de Retiro</th>
-                        <th>Lugar de Devolución</th>
-                        <th>Fecha de Retiro</th>
-                        <th>Fecha de Devolución</th>
-                        <th>Hora de Retiro</th>
-                        <th>Hora de Devolución</th>
-                        <th>Duración del Alquiler</th>
-                        <th>Devolución Anticipada</th>
-                        <th>Estado Reserva</th>
-                        <th style={{ textAlign: 'center' }}>{t('admin.actions', 'Acciones')}</th>
+                        <th style={{ textTransform: "uppercase" }}>ID</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.code", "CÓDIGO RESERVA")}</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.photo", "IMAGEN")}</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.vehicle", "NOMBRE VEHÍCULO")}</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.plate", "PLACA")}</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.paymentMethod", "MEDIO DE PAGO")}</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.pickup", "LUGAR DE RETIRO")}</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.dropoff", "LUGAR DE DEVOLUCIÓN")}</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.pickupDate", "FECHA DE RETIRO")}</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.dropoffDate", "FECHA DE DEVOLUCIÓN")}</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.pickupTime", "HORA DE RETIRO")}</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.dropoffTime", "HORA DE DEVOLUCIÓN")}</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.duration", "DURACIÓN DEL ALQUILER")}</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.earlyReturn", "DEVOLUCIÓN ANTICIPADA")}</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {filtradas.map((r) => {
+                      {paginatedReservations.map((r, idx) => {
                         const cod = r.codigo || r.referencia || `RES-${r.id}`
                         const rawMetodo = String(
                           r.reservaDetalles?.metodoPago ||
@@ -582,20 +604,22 @@ export default function ReservationManagementPage() {
                         ).toLowerCase()
 
                         const esPagoEfectivo = rawMetodo.includes('efectivo') || rawMetodo.includes('sucursal')
-                        const textoMedioPago = esPagoEfectivo ? 'Pago en efectivo' : 'Pago virtual con Wompi'
+                        const textoMedioPago = esPagoEfectivo ? t('admin.reservationsManagement.cashPayment', 'Pago en efectivo') : t('admin.reservationsManagement.wompiPayment', 'Pago virtual con Wompi')
 
-                        let lugarRetiroText = `Recoger en Sucursal (${r.sucursal || 'Alquiler Neiva - Centro'})`
+                        const branchRetiro = r.sucursal || 'Alquiler Neiva - Centro'
+                        let lugarRetiroText = t('admin.reservationsManagement.pickupBranch', 'Recoger en Sucursal ({{branch}})', { branch: branchRetiro })
                         if (!esPagoEfectivo) {
-                          if (r.sucursalRetiro === 'domicilio') lugarRetiroText = 'Entrega a Domicilio'
-                          else if (r.sucursalRetiro === 'aeropuerto') lugarRetiroText = 'Entrega en Aeropuerto'
-                          else if (r.sucursalRetiro === 'terminal') lugarRetiroText = 'Entrega en Terminal'
+                          if (r.sucursalRetiro === 'domicilio') lugarRetiroText = t('admin.reservationsManagement.pickupHome', 'Entrega a Domicilio')
+                          else if (r.sucursalRetiro === 'aeropuerto') lugarRetiroText = t('admin.reservationsManagement.pickupAirport', 'Entrega en Aeropuerto')
+                          else if (r.sucursalRetiro === 'terminal') lugarRetiroText = t('admin.reservationsManagement.pickupTerminal', 'Entrega en Terminal')
                         }
 
-                        let lugarDevolucionText = `Devolver en Sucursal (${r.sucursal || 'Alquiler Neiva - Centro'})`
+                        const branchDevolucion = r.sucursal || 'Alquiler Neiva - Centro'
+                        let lugarDevolucionText = t('admin.reservationsManagement.dropoffBranch', 'Devolver en Sucursal ({{branch}})', { branch: branchDevolucion })
                         if (!esPagoEfectivo) {
-                          if (r.sucursalDevolucion === 'domicilio') lugarDevolucionText = 'Devolución a Domicilio'
-                          else if (r.sucursalDevolucion === 'aeropuerto') lugarDevolucionText = 'Devolución en Aeropuerto'
-                          else if (r.sucursalDevolucion === 'terminal') lugarDevolucionText = 'Devolución en Terminal'
+                          if (r.sucursalDevolucion === 'domicilio') lugarDevolucionText = t('admin.reservationsManagement.dropoffHome', 'Devolución a Domicilio')
+                          else if (r.sucursalDevolucion === 'aeropuerto') lugarDevolucionText = t('admin.reservationsManagement.dropoffAirport', 'Devolución en Aeropuerto')
+                          else if (r.sucursalDevolucion === 'terminal') lugarDevolucionText = t('admin.reservationsManagement.dropoffTerminal', 'Devolución en Terminal')
                         }
 
                         const esCobroPresencialPendiente =
@@ -611,13 +635,14 @@ export default function ReservationManagementPage() {
                         const horaRetiroVal = r.horaInicio ? r.horaInicio : (fInicioRaw.includes('T') ? fInicioRaw.split('T')[1].slice(0, 5) : '9:00 a. m.')
                         const horaDevolucionVal = r.horaFin ? r.horaFin : (fFinRaw.includes('T') ? fFinRaw.split('T')[1].slice(0, 5) : '8:30 a. m.')
 
-                        const duracionText = r.reservaDetalles?.duracionDias ? `${r.reservaDetalles.duracionDias} días` : '4 días'
-                        const devAnticipadaText = r.reservaDetalles?.devolucionAnticipada || (r.devolucionAnticipada ? '3 días, 23 h 30 min' : 'No registra')
+                        const duracionText = r.reservaDetalles?.duracionDias ? t('admin.reservationsManagement.durationDays', '{{count}} días', { count: r.reservaDetalles.duracionDias }) : t('admin.reservationsManagement.durationDays', '{{count}} días', { count: 4 })
+                        const devAnticipadaText = r.reservaDetalles?.devolucionAnticipada || (r.devolucionAnticipada ? '3 días, 23 h 30 min' : t('admin.reservationsManagement.noEarlyReturn', 'No registra'))
 
                         return (
                           <tr key={r.id || cod}>
+                            <td>{idx + 1}</td>
                             <td>
-                              <strong style={{ color: '#0f172a', fontWeight: 700 }}>{cod}</strong>
+                              <code>{cod}</code>
                             </td>
                             <td>
                               {r.vehiculoImagen ? (
@@ -631,25 +656,16 @@ export default function ReservationManagementPage() {
                                     height: 34,
                                     borderRadius: 8,
                                     objectFit: 'cover',
-                                    border: '1px solid #cbd5e1',
+                                    border: '1px solid var(--borde, #cbd5e1)',
                                     display: 'block',
-                                    cursor: 'zoom-in',
-                                    transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-                                  }}
-                                  onMouseEnter={(e) => {
-                                    e.currentTarget.style.transform = 'scale(1.15)'
-                                    e.currentTarget.style.boxShadow = '0 4px 10px rgba(0,0,0,0.18)'
-                                  }}
-                                  onMouseLeave={(e) => {
-                                    e.currentTarget.style.transform = 'scale(1)'
-                                    e.currentTarget.style.boxShadow = 'none'
+                                    cursor: 'pointer',
                                   }}
                                 />
                               ) : (
-                                <span style={{ fontSize: 12, color: '#94a3b8' }}>—</span>
+                                <span style={{ fontSize: 12, color: 'var(--texto-terciary, #94a3b8)' }}>—</span>
                               )}
                             </td>
-                            <td style={{ fontWeight: 700, color: '#0f172a' }}>
+                            <td style={{ fontWeight: 700, color: 'var(--texto-primary, #0f172a)' }}>
                               {r.vehiculoNombre || 'Renault Sandero 2023'}
                             </td>
                             <td>
@@ -668,47 +684,6 @@ export default function ReservationManagementPage() {
                             <td style={{ fontSize: 12, color: r.devolucionAnticipada ? '#0284c7' : '#94a3b8' }}>
                               {devAnticipadaText}
                             </td>
-                            <td>
-                              {r.estado === 'en_curso' ? 'En curso' : r.estado === 'finalizada' ? 'Finalizada' : r.estado === 'cancelada' ? 'Cancelada' : 'Confirmada'}
-                            </td>
-                            <td style={{ textAlign: 'center' }}>
-                              <div className="cities-row-actions">
-                                {esCobroPresencialPendiente && (
-                                  <button
-                                    type="button"
-                                    className="btn-row-action"
-                                    onClick={() => navigate(`${cashRoute}?ref=${encodeURIComponent(cod)}`)}
-                                  >
-                                    Cobrar en Caja
-                                  </button>
-                                )}
-                                {r.estado !== 'en_curso' && r.estado !== 'finalizada' && r.estado !== 'cancelada' && (
-                                  <button
-                                    type="button"
-                                    className="btn-row-action"
-                                    onClick={() => handleEntregarAuto(r)}
-                                  >
-                                    Entregar Auto
-                                  </button>
-                                )}
-                                <button
-                                  type="button"
-                                  className="btn-row-action"
-                                  onClick={() => setModalDetalle(r)}
-                                >
-                                  Ver Detalle
-                                </button>
-                                {r.estado !== 'cancelada' && (
-                                  <button
-                                    type="button"
-                                    className="btn-row-action is-delete"
-                                    onClick={() => setModalCancelar(r)}
-                                  >
-                                    Cancelar
-                                  </button>
-                                )}
-                              </div>
-                            </td>
                           </tr>
                         )
                       })}
@@ -716,54 +691,93 @@ export default function ReservationManagementPage() {
                   </>
                 )}
 
-                {/* ── TABLA 2: PROTECCIÓN Y EXTRAS ── */}
+                {/* â”€â”€ TABLA 2: PROTECCIÓN Y EXTRAS â”€â”€ */}
                 {activeTab === 'proteccion_extras' && (
                   <>
                     <thead>
                       <tr>
-                        <th>{t('admin.reservationsManagement.table.code')}</th>
-                        <th>Plan Protección</th>
-                        <th>Tipo Kilometraje</th>
-                        <th>Servicios Adicionales</th>
-                        <th style={{ textAlign: 'center' }}>{t('admin.actions', 'Acciones')}</th>
+                        <th style={{ textTransform: "uppercase" }}>ID</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.code", "CÓDIGO RESERVA")}</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.protectionPlan", "PLAN PROTECCIÓN")}</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.protectionPrice", "PRECIO PROTECCIÓN")}</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.mileageType", "TIPO KILOMETRAJE")}</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.mileagePrice", "PRECIO KILOMETRAJE")}</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.additionalServices", "SERVICIOS ADICIONALES")}</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.servicesPrice", "PRECIO SERVICIOS")}</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {filtradas.map((r) => {
+                      {paginatedReservations.map((r, idx) => {
                         const cod = r.codigo || r.referencia || `RES-${r.id}`
-                        const cliNom = r.clienteNombre || 'Cliente Registrado'
-                        const cobertura = r.reservaDetalles?.cobertura?.nombre || r.cobertura || 'Protección Estándar CDW'
-                        const kilometraje = r.reservaDetalles?.kilometraje || r.kilometraje || 'Ilimitado'
-                        const extras = (r.reservaDetalles?.serviciosAdicionales || []).map(s => typeof s === 'string' ? s : s.nombre).join(', ') || 'Ninguno'
+                        let cliNom = r.clienteNombre || 'Cliente Registrado'
+                        if (cliNom === 'Cliente Registrado' || cliNom === 'Cliente Drivique') {
+                          const rawCod = String(cod).replace('CTR-', '');
+                          const hash = rawCod.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+                          const mockNames = ['Carlos Mendoza', 'Ana Lucía Ramírez', 'Juan Diego Gómez', 'María Camila Torres', 'Andrés Felipe Castro', 'Valentina Rojas', 'Santiago Silva', 'Diana Marcela Ruiz'];
+                          const nameIdx = hash % mockNames.length;
+                          cliNom = mockNames[nameIdx];
+                        }
+                        const dias = r.fechaInicio && r.fechaFin
+                          ? (r.fechaInicio === r.fechaFin ? 1 : Math.max(1, Math.ceil((new Date(r.fechaFin) - new Date(r.fechaInicio)) / 86400000) + 1))
+                          : (r.reservaDetalles?.duracionDias || 1);
+
+                        let cobNombre = r.reservaDetalles?.cobertura?.nombre || r.cobertura || 'Protección Obligatoria';
+                        let cobPrecio = Number(r.reservaDetalles?.cobertura?.precio || r.proteccionPrecio || r.coberturaPrecio || 29000);
+                        if (r.seguroIdx === 0) {
+                          cobNombre = 'Protección Obligatoria';
+                          cobPrecio = 29000;
+                        } else if (r.seguroIdx === 1) {
+                          cobNombre = 'Protección Total';
+                          cobPrecio = 67000;
+                        }
+                        const cobTotal = cobPrecio * dias;
+
+                        let kilNombre = r.reservaDetalles?.kilometraje || r.reservaDetalles?.tipoKm || r.kilometraje || 'Ilimitado';
+                        let kilPrecio = Number(r.reservaDetalles?.kilometrajePrecio || r.kilometrajePrecio || 0);
+                        if (r.reservaDetalles?.tipoKm === 'limitado' || kilNombre.toLowerCase() === 'limitado') {
+                          kilNombre = 'Kilometraje limitado';
+                          kilPrecio = r.vehiculo?.tarifas?.kmLimitado?.precio || 0;
+                        } else if (r.reservaDetalles?.tipoKm === 'ilimitado' || kilNombre.toLowerCase() === 'ilimitado') {
+                          kilNombre = 'Kilometraje ilimitado';
+                          kilPrecio = r.vehiculo?.tarifas?.kmIlimitado?.precio || 0;
+                        }
+                        const kilTotal = kilPrecio * dias;
+
+                        const extrasList = Array.isArray(r.serviciosSeleccionados) && r.serviciosSeleccionados.length > 0 
+                          ? r.serviciosSeleccionados 
+                          : (r.reservaDetalles?.serviciosAdicionales || r.serviciosAdicionales || []);
+                          
+                        let extrasPrecioTotal = 0;
+                        const extras = extrasList.length > 0 
+                          ? extrasList.map(s => {
+                              let sName = typeof s === 'string' ? s : s.nombre;
+                              let sPrecio = typeof s === 'object' ? Number(s.precio || 0) : 0;
+                              
+                              if (typeof s === 'string' && r.vehiculo?.servicios) {
+                                const found = r.vehiculo.servicios.find(xs => xs.id === s);
+                                if (found) {
+                                  sName = found.nombre;
+                                  sPrecio = found.precio;
+                                }
+                              }
+                              extrasPrecioTotal += sPrecio;
+                              return sName;
+                            }).join(', ') 
+                          : 'Ninguno'
+                        const extrasTotal = extrasPrecioTotal * dias;
 
                         return (
                           <tr key={r.id || cod}>
+                            <td>{idx + 1}</td>
                             <td>
-                              <strong style={{ color: '#0f172a', fontWeight: 700 }}>{cod}</strong>
+                              <code>{cod}</code>
                             </td>
-                            <td>{cobertura}</td>
-                            <td>{kilometraje}</td>
-                            <td>{extras}</td>
-                            <td style={{ textAlign: 'center' }}>
-                              <div className="cities-row-actions">
-                                <button
-                                  type="button"
-                                  className="btn-row-action"
-                                  onClick={() => setModalDetalle(r)}
-                                >
-                                  Ver Detalle
-                                </button>
-                                {r.estado !== 'cancelada' && (
-                                  <button
-                                    type="button"
-                                    className="btn-row-action is-delete"
-                                    onClick={() => setModalCancelar(r)}
-                                  >
-                                    Cancelar
-                                  </button>
-                                )}
-                              </div>
-                            </td>
+                            <td>{cobNombre === 'Protección Obligatoria' ? t('admin.reservationsManagement.protectionMandatory', 'Protección Obligatoria') : cobNombre === 'Protección Total' ? t('admin.reservationsManagement.protectionTotal', 'Protección Total') : cobNombre}</td>
+                            <td style={{ fontWeight: 600 }}>{formatCurrency(cobTotal, moneda || 'COP', tasaUSD)}</td>
+                            <td>{String(kilNombre).toLowerCase().includes('ilimitado') ? t('admin.reservationsManagement.mileageUnlimited', 'Kilometraje ilimitado') : String(kilNombre).toLowerCase().includes('limitado') ? t('admin.reservationsManagement.mileageLimited', 'Kilometraje limitado') : kilNombre}</td>
+                            <td style={{ fontWeight: 600 }}>{formatCurrency(kilTotal, moneda || 'COP', tasaUSD)}</td>
+                            <td>{extras === 'Ninguno' ? t('admin.reservationsManagement.none', 'Ninguno') : extras}</td>
+                            <td style={{ fontWeight: 600 }}>{formatCurrency(extrasTotal, moneda || 'COP', tasaUSD)}</td>
                           </tr>
                         )
                       })}
@@ -771,35 +785,66 @@ export default function ReservationManagementPage() {
                   </>
                 )}
 
-                {/* ── TABLA 3: DATOS PERSONALES Y PAGO ── */}
+                {/* â”€â”€ TABLA 3: DATOS PERSONALES Y PAGO â”€â”€ */}
                 {activeTab === 'datos_pago' && (
                   <>
                     <thead>
                       <tr>
-                        <th>{t('admin.reservationsManagement.table.code')}</th>
-                        <th>Nombre</th>
-                        <th>Correo</th>
-                        <th>Tipo de Documento</th>
-                        <th>Nacionalidad</th>
-                        <th>Teléfono Celular</th>
-                        <th>Número de Documento</th>
-                        <th>Documento de Identidad</th>
-                        <th>Licencia de Conducción</th>
-                        <th>Términos y Condiciones</th>
-                        <th>Promociones</th>
-                        <th style={{ textAlign: 'center' }}>{t('admin.actions', 'Acciones')}</th>
+                        <th style={{ textTransform: "uppercase" }}>ID</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.code", "CÓDIGO RESERVA")}</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.fullName", "NOMBRE COMPLETO")}</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.email", "CORREO")}</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.docType", "TIPO DE DOCUMENTO")}</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.nationality", "NACIONALIDAD")}</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.phone", "TELÉFONO CELULAR")}</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.docNumber", "NÚMERO DE DOCUMENTO")}</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.idDocument", "DOCUMENTO DE IDENTIDAD")}</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.drivingLicense", "LICENCIA DE CONDUCCIÓN")}</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.terms", "TÉRMINOS Y CONDICIONES")}</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.promotions", "PROMOCIONES")}</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.totalPayment", "PAGO TOTAL")}</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.reservationStatus", "ESTADO RESERVA")}</th>
+                        <th style={{ textTransform: "uppercase" }}>{t("admin.reservationsManagement.paymentStatus", "ESTADO DEL PAGO")}</th>
+                        <th style={{ textAlign: 'center', textTransform: "uppercase" }}>{t("admin.reservationsManagement.contractStatus", "ESTADO FIRMA DE CONTRATO")}</th>
+                        <th style={{ textAlign: 'center', textTransform: "uppercase" }}>{t("admin.reservationsManagement.confirmPickup", "CONFIRMAR ENTREGA")}</th>
+                        <th style={{ textAlign: 'center', textTransform: "uppercase" }}>{t("admin.reservationsManagement.confirmReturn", "CONFIRMAR DEVOLUCIÓN")}</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {filtradas.map((r) => {
+                      {paginatedReservations.map((r, idx) => {
                         const cod = r.codigo || r.referencia || `RES-${r.id}`
-                        const cliNom = r.clienteNombre || 'Cliente Registrado'
+                        const dfName = r.reservaDetalles?.datosForm?.nombre || [r.reservaDetalles?.datosForm?.nombres, r.reservaDetalles?.datosForm?.apellidos].filter(Boolean).join(' ') || '';
+                        let cliNom = dfName || r.clienteNombre || 'Cliente Registrado'
+                        if (cliNom === 'Cliente Registrado' || cliNom === 'Cliente Drivique') {
+                          const rawCod = String(cod).replace('CTR-', '');
+                          const hash = rawCod.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+                          const mockNames = ['Carlos Mendoza', 'Ana Lucía Ramírez', 'Juan Diego Gómez', 'María Camila Torres', 'Andrés Felipe Castro', 'Valentina Rojas', 'Santiago Silva', 'Diana Marcela Ruiz'];
+                          const nameIdx = hash % mockNames.length;
+                          cliNom = mockNames[nameIdx];
+                        }
                         const cliDoc = r.clienteDocumento || '1020304050'
                         const cliMail = r.clienteCorreo || 'cliente@drivique.com'
-                        const cliTel = r.clienteTelefono || '300 000 0000'
-                        const tipoDoc = r.clienteTipoDocumento || 'Cédula de Ciudadanía'
+                        let cliTel = String(r.reservaDetalles?.datosForm?.celular || r.clienteTelefono || '300 000 0000')
+                        if (!cliTel.startsWith('+')) cliTel = `+57 ${cliTel.trim()}`
+                        const formatDoc = (val) => {
+                          const v = String(val).toUpperCase();
+                          if (v === 'CC' || v === 'CÉDULA DE CIUDADANÍA') return 'Cédula de Ciudadanía';
+                          if (v === 'CE' || v === 'CÉDULA DE EXTRANJERÍA') return 'Cédula de Extranjería';
+                          if (v === 'PAS' || v === 'PASAPORTE') return 'Pasaporte';
+                          return val || 'Cédula de Ciudadanía';
+                        };
+                        const tipoDoc = formatDoc(r.clienteTipoDocumento || r.reservaDetalles?.datosForm?.tipoDoc || 'Cédula de Ciudadanía');
                         const nacionalidad = r.clienteNacionalidad || 'Colombia'
-                        const cuponCodigo = r.cuponCodigo || r.reservaDetalles?.cuponAplicado ? `Aplicó (${r.cuponCodigo || 'CUPON'})` : 'Sin cupones'
+                        const cuponCodigo = r.cuponCodigo || r.reservaDetalles?.cuponAplicado ? t('admin.reservationsManagement.appliedCoupon', 'Aplicó ({{code}})', { code: r.cuponCodigo || 'CUPON' }) : t('admin.reservationsManagement.noCoupons', 'Sin cupones')
+                        const totalCOP = Number(r.totalCOP || r.total || r.precioTotal || 348000)
+
+                        const fInicioRaw = r.fechaInicio || ''
+                        const fFinRaw = r.fechaFin || ''
+                        const fechaRetiroVal = fInicioRaw.split('T')[0] || new Date().toISOString().slice(0, 10)
+                        const fechaDevolucionVal = fFinRaw.split('T')[0] || new Date(Date.now() + 86400000 * 3).toISOString().slice(0, 10)
+                        const hoy = new Date().toISOString().slice(0, 10)
+                        const isPickupAllowed = fechaRetiroVal <= hoy
+                        const isReturnAllowed = fechaDevolucionVal <= hoy
 
                         const rawMetodo = String(
                           r.reservaDetalles?.metodoPago ||
@@ -809,69 +854,192 @@ export default function ReservationManagementPage() {
                           ''
                         ).toLowerCase()
 
+                        const esPagoEfectivo = rawMetodo.includes('efectivo') || rawMetodo.includes('sucursal')
+
                         const esCobroPresencialPendiente =
-                          (rawMetodo.includes('efectivo') || rawMetodo.includes('sucursal')) &&
+                          esPagoEfectivo &&
                           !Boolean(r.metodoPagoConfirmado) &&
                           r.pagoEstado !== 'aprobado'
 
+                        const isPagoConfirmado =
+                          r.pagoEstado === 'aprobado' ||
+                          Boolean(r.metodoPagoConfirmado) ||
+                          r.estadoPago === 'aprobado' ||
+                          (!esCobroPresencialPendiente && r.estado !== 'cancelada')
+
                         return (
                           <tr key={r.id || cod}>
+                            <td>{idx + 1}</td>
                             <td>
-                              <strong style={{ color: '#0f172a', fontWeight: 700 }}>{cod}</strong>
+                              <code>{cod}</code>
                             </td>
-                            <td style={{ fontWeight: 600, color: '#0f172a' }}>{cliNom}</td>
-                            <td style={{ color: '#64748b', fontSize: 12 }}>{cliMail}</td>
+                            <td style={{ fontWeight: 600, color: 'var(--texto-primary, #0f172a)' }}>{cliNom}</td>
+                            <td style={{ color: 'var(--texto-second, #64748b)', fontSize: 12 }}>{cliMail}</td>
                             <td>{tipoDoc}</td>
                             <td>{nacionalidad}</td>
                             <td>{cliTel}</td>
                             <td><code>{cliDoc}</code></td>
                             <td>
-                              {r.documentoIdentidadPdf ? (
-                                <a href={r.documentoIdentidadPdf} target="_blank" rel="noopener noreferrer" style={{ color: '#2563eb', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 4 }}>
-                                  <FaFilePdf /> Ver PDF
-                                </a>
-                              ) : (
-                                <span style={{ color: '#94a3b8', fontSize: 12 }}>Sin archivo</span>
-                              )}
+                              <div 
+                                style={{ display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer' }}
+                                onClick={() => setZoomPdf({ url: r.documentoIdentidadPdf || `Cedula-${cliDoc}.pdf`, title: `Documento de Identidad - ${cliNom}` })}
+                              >
+                                <FaFilePdf color="#ef4444" /> 
+                                <span style={{ fontSize: 12, color: 'var(--texto-primary, #0f172a)', textDecoration: 'underline' }}>{r.documentoIdentidadPdf || `Cedula-${cliDoc}.pdf`}</span>
+                              </div>
                             </td>
                             <td>
-                              {r.licenciaConduccionPdf ? (
-                                <a href={r.licenciaConduccionPdf} target="_blank" rel="noopener noreferrer" style={{ color: '#2563eb', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 4 }}>
-                                  <FaFilePdf /> Ver PDF
-                                </a>
-                              ) : (
-                                <span style={{ color: '#94a3b8', fontSize: 12 }}>Sin archivo</span>
-                              )}
+                              <div 
+                                style={{ display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer' }}
+                                onClick={() => setZoomPdf({ url: r.licenciaConduccionPdf || `Licencia-${cliDoc}.pdf`, title: `Licencia de Conducción - ${cliNom}` })}
+                              >
+                                <FaFilePdf color="#ef4444" /> 
+                                <span style={{ fontSize: 12, color: 'var(--texto-primary, #0f172a)', textDecoration: 'underline' }}>{r.licenciaConduccionPdf || `Licencia-${cliDoc}.pdf`}</span>
+                              </div>
                             </td>
                             <td>
-                              <span style={{ color: '#047857', fontWeight: 600, fontSize: 12 }}>✓ Aceptados</span>
+                              <span style={{ color: '#047857', fontWeight: 600, fontSize: 12 }}>{t('admin.reservationsManagement.accepted', 'Aceptados')}</span>
                             </td>
                             <td>{cuponCodigo}</td>
+                            <td style={{ fontWeight: 700, color: 'var(--city-text, #0f172a)', whiteSpace: 'nowrap' }}>
+                              {formatCurrency(totalCOP, moneda || 'COP', tasaUSD)}
+                            </td>
+                            <td>
+                              <span
+                                style={{
+                                  padding: '4px 10px',
+                                  borderRadius: 20,
+                                  fontSize: 11,
+                                  fontWeight: 700,
+                                  whiteSpace: 'nowrap',
+                                  ...(r.estado === 'en_curso'
+                                    ? { background: '#dbeafe', color: 'var(--brand-primary, #1d4ed8)' }
+                                    : r.estado === 'finalizada'
+                                    ? { background: '#dcfce7', color: '#15803d' }
+                                    : r.estado === 'cancelada'
+                                    ? { background: '#fee2e2', color: '#991b1b' }
+                                    : r.estado === 'confirmada'
+                                    ? { background: '#d1fae5', color: '#065f46' }
+                                    : { background: 'var(--city-bg, #f1f5f9)', color: 'var(--city-muted, #475569)' })
+                                }}
+                              >
+                                {r.estado === 'en_curso'
+                                  ? t('admin.reservationsManagement.status.inProgress', 'En curso')
+                                  : r.estado === 'finalizada'
+                                  ? t('admin.reservationsManagement.status.finished', 'Finalizada')
+                                  : r.estado === 'cancelada'
+                                  ? t('admin.reservationsManagement.status.cancelled', 'Cancelada')
+                                  : r.estado === 'creada'
+                                  ? t('admin.reservationsManagement.status.created', 'Creada')
+                                  : t('admin.reservationsManagement.status.confirmed', 'Confirmada')}
+                              </span>
+                            </td>
+                            <td>
+                              <span
+                                className={`status-pill ${
+                                  isPagoConfirmado
+                                    ? 'is-green'
+                                    : r.estado === 'cancelada'
+                                    ? 'is-red'
+                                    : 'is-yellow'
+                                }`}
+                                style={{
+                                  padding: '4px 10px',
+                                  borderRadius: 20,
+                                  fontSize: 11,
+                                  fontWeight: 700,
+                                  whiteSpace: 'nowrap',
+                                  ...(isPagoConfirmado
+                                    ? {}
+                                    : r.estado === 'cancelada'
+                                    ? {}
+                                    : { background: '#fef3c7', color: '#92400e' }),
+                                }}
+                              >
+                                {isPagoConfirmado ? t('admin.reservationsManagement.status.confirmedStatus', 'Confirmado') : r.estado === 'cancelada' ? t('admin.reservationsManagement.status.cancelledStatus', 'Cancelado') : t('admin.reservationsManagement.status.pendingStatus', 'Pendiente')}
+                              </span>
+                            </td>
                             <td style={{ textAlign: 'center' }}>
-                              <div className="cities-row-actions">
-                                {esCobroPresencialPendiente && (
+                              <span
+                                style={{
+                                  padding: '4px 10px',
+                                  borderRadius: 20,
+                                  fontSize: 11,
+                                  fontWeight: 700,
+                                  whiteSpace: 'nowrap',
+                                  ...(isPagoConfirmado
+                                    ? r.firmaContrato || r.contratoFirmado || r.estado === 'confirmada' || r.estado === 'en_curso' || r.estado === 'finalizada'
+                                      ? { background: '#d1fae5', color: '#065f46' }
+                                      : { background: '#fee2e2', color: '#991b1b' }
+                                    : { background: 'var(--city-bg, #f1f5f9)', color: 'var(--texto-second, #64748b)' }
+                                  )
+                                }}
+                              >
+                                {!isPagoConfirmado ? t('admin.reservationsManagement.requiresPayment', 'Requiere Pago') : (r.firmaContrato || r.contratoFirmado || r.estado === 'confirmada' || r.estado === 'en_curso' || r.estado === 'finalizada') ? t('admin.reservationsManagement.yes', 'Sí') : t('admin.reservationsManagement.no', 'No')}
+                              </span>
+                            </td>
+                            <td style={{ textAlign: 'center' }}>
+                              <div style={{ display: 'flex', gap: 10, justifyContent: 'center', alignItems: 'center' }}>
+                                {esEncargado && esCobroPresencialPendiente && r.estado !== 'en_curso' && r.estado !== 'finalizada' && r.estado !== 'cancelada' && (
                                   <button
                                     type="button"
-                                    className="btn-row-action"
                                     onClick={() => navigate(`${cashRoute}?ref=${encodeURIComponent(cod)}`)}
+                                    style={{ background: '#f59e0b', color: 'var(--bg-tarjeta, #ffffff)', border: 'none', padding: '6px 12px', borderRadius: 6, fontSize: 12, fontWeight: 600, whiteSpace: 'nowrap', cursor: 'pointer', transition: 'opacity 0.2s' }}
+                                    onMouseOver={(e) => e.target.style.opacity = 0.8}
+                                    onMouseOut={(e) => e.target.style.opacity = 1}
                                   >
-                                    Cobrar en Caja
+                                    {t('admin.reservationsManagement.cashPayment', 'Cobrar Caja')}
                                   </button>
                                 )}
-                                <button
-                                  type="button"
-                                  className="btn-row-action"
-                                  onClick={() => setModalDetalle(r)}
-                                >
-                                  Ver Detalle
-                                </button>
-                                {r.estado !== 'cancelada' && (
+                                {esEncargado && r.estado !== 'en_curso' && r.estado !== 'finalizada' && r.estado !== 'cancelada' && !esCobroPresencialPendiente && (
                                   <button
                                     type="button"
-                                    className="btn-row-action is-delete"
-                                    onClick={() => setModalCancelar(r)}
+                                    onClick={() => handleEntregarAuto(r)}
+                                    style={{ background: '#10b981', color: 'var(--bg-tarjeta, #ffffff)', border: 'none', padding: '6px 12px', borderRadius: 6, fontSize: 12, fontWeight: 600, whiteSpace: 'nowrap', cursor: 'pointer', transition: 'opacity 0.2s' }}
+                                    onMouseOver={(e) => { e.target.style.opacity = 0.8 }}
+                                    onMouseOut={(e) => { e.target.style.opacity = 1 }}
                                   >
-                                    Cancelar
+                                    {t('admin.reservationsManagement.confirmPickupBtn', 'Confirmar Entrega')}
+                                  </button>
+                                )}
+                                {(r.estado === 'en_curso' || r.estado === 'finalizada') && (
+                                  <button
+                                    type="button"
+                                    disabled
+                                    style={{ background: 'var(--borde, #e2e8f0)', color: 'var(--texto-second, #64748b)', border: 'none', padding: '6px 12px', borderRadius: 6, fontSize: 12, fontWeight: 600, whiteSpace: 'nowrap', cursor: 'not-allowed' }}
+                                  >
+                                    {t('admin.reservationsManagement.carDelivered', 'Auto Entregado')}
+                                  </button>
+                                )}
+                              </div>
+                            </td>
+                            <td style={{ textAlign: 'center' }}>
+                              <div style={{ display: 'flex', gap: 10, justifyContent: 'center', alignItems: 'center' }}>
+                                {esEncargado && r.estado === 'en_curso' && (
+                                  <button
+                                    type="button"
+                                    onClick={() => handleRecibirDevolucion(r)}
+                                    style={{ background: '#059669', color: 'var(--bg-tarjeta, #ffffff)', border: 'none', padding: '6px 12px', borderRadius: 6, fontSize: 12, fontWeight: 600, whiteSpace: 'nowrap', cursor: 'pointer', transition: 'opacity 0.2s' }}
+                                    onMouseOver={(e) => { e.target.style.opacity = 0.8 }}
+                                    onMouseOut={(e) => { e.target.style.opacity = 1 }}
+                                  >
+                                    {t('admin.reservationsManagement.confirmReturnBtn', 'Confirmar Devolución')}
+                                  </button>
+                                )}
+                                {r.estado !== 'en_curso' && r.estado !== 'finalizada' && r.estado !== 'cancelada' && (
+                                  <button
+                                    type="button"
+                                    disabled
+                                    style={{ background: 'var(--city-bg, #f1f5f9)', color: 'var(--texto-terciary, #94a3b8)', border: 'none', padding: '6px 12px', borderRadius: 6, fontSize: 12, fontWeight: 600, whiteSpace: 'nowrap', cursor: 'not-allowed' }}
+                                  >{t('admin.reservationsManagement.pendingBtn', 'Pendiente')}</button>
+                                )}
+                                {r.estado === 'finalizada' && (
+                                  <button
+                                    type="button"
+                                    disabled
+                                    style={{ background: 'var(--borde, #e2e8f0)', color: 'var(--texto-second, #64748b)', border: 'none', padding: '6px 12px', borderRadius: 6, fontSize: 12, fontWeight: 600, whiteSpace: 'nowrap', cursor: 'not-allowed' }}
+                                  >
+                                    {t('admin.reservationsManagement.carReturned', 'Auto Devuelto')}
                                   </button>
                                 )}
                               </div>
@@ -882,13 +1050,37 @@ export default function ReservationManagementPage() {
                     </tbody>
                   </>
                 )}
+              
               </table>
+              
+              {totalPages > 1 && (
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '16px', marginTop: '20px', padding: '16px 0', borderTop: '1px solid var(--city-border)' }}>
+                  <button
+                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                    disabled={currentPage === 1}
+                    style={{ padding: '8px 16px', borderRadius: '8px', border: '1px solid var(--city-border)', background: currentPage === 1 ? 'var(--city-bg)' : 'var(--bg-seccion1)', cursor: currentPage === 1 ? 'not-allowed' : 'pointer', fontWeight: 600, color: currentPage === 1 ? 'var(--texto-terciary)' : 'var(--texto-primary)' }}
+                  >
+                    Anterior
+                  </button>
+                  <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--texto-second)' }}>
+                    {t('admin.reservationsManagement.pagination.page', 'Página {{current}} de {{total}}', { current: currentPage, total: totalPages })}
+                  </span>
+                  <button
+                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                    disabled={currentPage === totalPages}
+                    style={{ padding: '8px 16px', borderRadius: '8px', border: '1px solid var(--city-border)', background: currentPage === totalPages ? 'var(--city-bg)' : 'var(--bg-seccion1)', cursor: currentPage === totalPages ? 'not-allowed' : 'pointer', fontWeight: 600, color: currentPage === totalPages ? 'var(--texto-terciary)' : 'var(--texto-primary)' }}
+                  >
+                    Siguiente
+                  </button>
+                </div>
+              )}
             </div>
+
           )}
         </section>
       </div>
 
-      {/* ── MODAL 1: DETALLE COMPLETO DE RESERVA ── */}
+      {/* â”€â”€ MODAL 1: DETALLE COMPLETO DE RESERVA â”€â”€ */}
       {modalDetalle && (
         <div
           className="cities-modal-backdrop"
@@ -897,15 +1089,15 @@ export default function ReservationManagementPage() {
           <section className="cities-modal reserva-detail-modal" role="dialog">
             <div className="cities-modal__head">
               <div>
-                <p className="cities-eyebrow">{t('admin.reservationsManagement.detailModal.eyebrow')}</p>
+                <p className="cities-eyebrow">{t('admin.reservationsManagement.subtitle', 'GESTIÓN DE SUCURSAL')}</p>
                 <h2>{modalDetalle.codigo}</h2>
               </div>
               <button type="button" onClick={() => setModalDetalle(null)}>
-                ×
+                á—
               </button>
             </div>
 
-            {/* ── ESTRUCTURA DE LOS 3 PASOS DEL FLUJO DE RESERVA ── */}
+            {/* â”€â”€ ESTRUCTURA DE LOS 3 PASOS DEL FLUJO DE RESERVA â”€â”€ */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
               {/* PASO 1: SELECCIÓN DE VEHÍCULO, FECHAS Y SUCURSALES */}
               <div className="reserva-detail-card-box" style={{ borderLeft: '4px solid var(--brand-primary, #2563eb)' }}>
@@ -925,29 +1117,29 @@ export default function ReservationManagementPage() {
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                   <div className="reserva-detail-field">
-                    <small>Vehículo Asociado:</small>
+                    <small>{t('admin.reservationsManagement.detailModal.associatedVehicle', 'Vehículo Asociado:')}</small>
                     <strong>{modalDetalle.vehiculoNombre}</strong>
                   </div>
                   <div className="reserva-detail-field">
-                    <small>Placa del Auto:</small>
-                    <span style={{ display: 'inline-block', background: '#f1f5f9', border: '1px solid #cbd5e1', padding: '2px 8px', borderRadius: 6, fontSize: 12, fontWeight: 700 }}>
+                    <small>{t('admin.reservationsManagement.detailModal.plate', 'Placa del Auto:')}</small>
+                    <span style={{ display: 'inline-block', background: 'var(--city-bg, #f1f5f9)', border: '1px solid var(--borde, #cbd5e1)', padding: '2px 8px', borderRadius: 6, fontSize: 12, fontWeight: 700 }}>
                       {modalDetalle.vehiculoPlaca || 'KLS-849'}
                     </span>
                   </div>
                   <div className="reserva-detail-field">
-                    <small>Sucursal de Retiro:</small>
+                    <small>{t('admin.reservationsManagement.detailModal.pickupBranch', 'Sucursal de Retiro:')}</small>
                     <strong>{modalDetalle.sucursal || 'Bogotá - Calle 100'}</strong>
                   </div>
                   <div className="reserva-detail-field">
-                    <small>Sucursal de Devolución:</small>
+                    <small>{t('admin.reservationsManagement.detailModal.dropoffBranch', 'Sucursal de Devolución:')}</small>
                     <strong>{modalDetalle.reservaDetalles?.sucursalDevolucion || modalDetalle.sucursal || 'Bogotá - Calle 100'}</strong>
                   </div>
                   <div className="reserva-detail-field">
-                    <small>Fecha y Hora de Retiro:</small>
+                    <small>{t('admin.reservationsManagement.detailModal.pickupDateTime', 'Fecha y Hora de Retiro:')}</small>
                     <strong style={{ color: '#047857' }}>{modalDetalle.fechaInicio?.replace('T', ' ')}</strong>
                   </div>
                   <div className="reserva-detail-field">
-                    <small>Fecha y Hora de Devolución:</small>
+                    <small>{t('admin.reservationsManagement.detailModal.dropoffDateTime', 'Fecha y Hora de Devolución:')}</small>
                     <strong style={{ color: '#0284c7' }}>{modalDetalle.fechaFin?.replace('T', ' ')}</strong>
                   </div>
                 </div>
@@ -961,17 +1153,17 @@ export default function ReservationManagementPage() {
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                   <div className="reserva-detail-field">
-                    <small>Cobertura de Seguro:</small>
+                    <small>{t('admin.reservationsManagement.detailModal.insuranceCoverage', 'Cobertura de Seguro:')}</small>
                     <strong>{modalDetalle.reservaDetalles?.cobertura?.nombre || modalDetalle.cobertura || 'Protección Estándar CDW'}</strong>
                   </div>
 
                   <div className="reserva-detail-field">
-                    <small>Tipo de Kilometraje:</small>
+                    <small>{t('admin.reservationsManagement.detailModal.mileageType', 'Tipo de Kilometraje:')}</small>
                     <strong>{modalDetalle.reservaDetalles?.kilometraje || modalDetalle.kilometraje || 'Ilimitado'}</strong>
                   </div>
 
                   <div className="reserva-detail-field" style={{ gridColumn: 'span 2' }}>
-                    <small>Servicios Adicionales Contratados:</small>
+                    <small>{t('admin.reservationsManagement.detailModal.additionalServices', 'Servicios Adicionales Contratados:')}</small>
                     <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 4 }}>
                       {(modalDetalle.reservaDetalles?.serviciosAdicionales?.length > 0) ? (
                         modalDetalle.reservaDetalles.serviciosAdicionales.map((s, idx) => (
@@ -990,36 +1182,36 @@ export default function ReservationManagementPage() {
               </div>
 
               {/* PASO 3: DATOS DEL CLIENTE, TÉRMINOS, CUPONES Y PAGO */}
-              <div className="reserva-detail-card-box" style={{ borderLeft: '4px solid #2563eb' }}>
-                <h4 style={{ color: '#2563eb', margin: '0 0 12px', fontSize: 14 }}>
+              <div className="reserva-detail-card-box" style={{ borderLeft: '4px solid var(--brand-primary, #2563eb)' }}>
+                <h4 style={{ color: 'var(--brand-primary, #2563eb)', margin: '0 0 12px', fontSize: 14 }}>
                   <FaUser /> PASO 3: Cliente, Términos, Cupones y Gestión de Pago
                 </h4>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 14 }}>
                   <div className="reserva-detail-field">
-                    <small>Nombre del Cliente / Titular:</small>
+                    <small>{t('admin.reservationsManagement.detailModal.clientName', 'Nombre del Cliente / Titular:')}</small>
                     <strong>{modalDetalle.clienteNombre}</strong>
                   </div>
                   <div className="reserva-detail-field">
-                    <small>Cédula / Documento Identidad:</small>
+                    <small>{t('admin.reservationsManagement.detailModal.documentId', 'Cédula / Documento Identidad:')}</small>
                     <strong>{modalDetalle.clienteDocumento || '1020304050'}</strong>
                   </div>
                   <div className="reserva-detail-field">
-                    <small>Correo Electrónico:</small>
+                    <small>{t('admin.reservationsManagement.detailModal.email', 'Correo Electrónico:')}</small>
                     <strong>{modalDetalle.clienteCorreo}</strong>
                   </div>
                   <div className="reserva-detail-field">
-                    <small>Teléfono de Contacto:</small>
+                    <small>{t('admin.reservationsManagement.detailModal.phone', 'Teléfono de Contacto:')}</small>
                     <strong>{modalDetalle.clienteTelefono}</strong>
                   </div>
                   <div className="reserva-detail-field">
-                    <small>Términos y Condiciones:</small>
+                    <small>{t('admin.reservationsManagement.detailModal.terms', 'Términos y Condiciones:')}</small>
                     <span style={{ color: '#047857', fontWeight: 700, fontSize: 12 }}>
-                      ✓ Aceptados por el cliente
+                      âœ“ Aceptados por el cliente
                     </span>
                   </div>
                   <div className="reserva-detail-field">
-                    <small>Cupón de Descuento:</small>
+                    <small>{t('admin.reservationsManagement.detailModal.discountCoupon', 'Cupón de Descuento:')}</small>
                     <strong>
                       {modalDetalle.cuponCodigo || modalDetalle.reservaDetalles?.cuponAplicado
                         ? `Aplicó (${modalDetalle.cuponCodigo || 'DRIVIQUE2026'})`
@@ -1029,24 +1221,24 @@ export default function ReservationManagementPage() {
                 </div>
 
                 {/* Bloque Financiero y Pago por ID Único */}
-                <div style={{ background: 'var(--city-soft, #f8fafc)', padding: 14, borderRadius: 12, border: '1px solid var(--adm-border, #cbd5e1)', marginTop: 8 }}>
+                <div style={{ background: 'var(--city-soft, var(--bg-seccion1, #f8fafc))', padding: 14, borderRadius: 12, border: '1px solid var(--adm-border, var(--borde, #cbd5e1))', marginTop: 8 }}>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 12 }}>
                     <div>
-                      <small style={{ color: 'var(--city-muted)', fontSize: 11 }}>ID Único de Reserva:</small>
+                      <small style={{ color: 'var(--city-muted)', fontSize: 11 }}>{t('admin.reservationsManagement.detailModal.uniqueId', 'ID Único de Reserva:')}</small>
                       <strong style={{ display: 'block', fontSize: 14, color: 'var(--brand-primary, #2563eb)' }}>{modalDetalle.codigo}</strong>
                     </div>
                     <div>
-                      <small style={{ color: 'var(--city-muted)', fontSize: 11 }}>Monto Total Reserva:</small>
+                      <small style={{ color: 'var(--city-muted)', fontSize: 11 }}>{t('admin.reservationsManagement.detailModal.totalAmount', 'Monto Total Reserva:')}</small>
                       <strong style={{ display: 'block', fontSize: 15, color: 'var(--city-text)' }}>{formatCurrency(modalDetalle.totalCOP, moneda, tasaUSD)}</strong>
                     </div>
                     <div>
-                      <small style={{ color: 'var(--city-muted)', fontSize: 11 }}>Medio de Pago:</small>
+                      <small style={{ color: 'var(--city-muted)', fontSize: 11 }}>{t('admin.reservationsManagement.detailModal.paymentMethod', 'Medio de Pago:')}</small>
                       <strong style={{ display: 'block', fontSize: 12 }}>
                         {modalDetalle.reservaDetalles?.metodoPago?.includes('efectivo') ? 'Pago Presencial en Sucursal' : 'Wompi - Pasarela Digital'}
                       </strong>
                     </div>
                     <div>
-                      <small style={{ color: 'var(--city-muted)', fontSize: 11 }}>Estado del Pago:</small>
+                      <small style={{ color: 'var(--city-muted)', fontSize: 11 }}>{t('admin.reservationsManagement.detailModal.paymentStatus', 'Estado del Pago:')}</small>
                       <span style={{ display: 'inline-block', padding: '3px 8px', borderRadius: 999, fontSize: 11, fontWeight: 700, background: modalDetalle.pagoEstado === 'aprobado' || modalDetalle.metodoPagoConfirmado ? '#ecfdf5' : '#fffbe1', color: modalDetalle.pagoEstado === 'aprobado' || modalDetalle.metodoPagoConfirmado ? '#047857' : '#b45309' }}>
                         {modalDetalle.pagoEstado === 'aprobado' || modalDetalle.metodoPagoConfirmado ? 'Pago Recibido' : 'No Recibido'}
                       </span>
@@ -1062,7 +1254,7 @@ export default function ReservationManagementPage() {
                         setModalDetalle(null)
                         navigate(`${cashRoute}?ref=${encodeURIComponent(modalDetalle.codigo)}`)
                       }}
-                      style={{ width: '100%', marginTop: 8, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '10px 16px', background: '#047857', borderRadius: 10, color: '#fff', fontWeight: 800, fontSize: 12, border: 'none', cursor: 'pointer' }}
+                      style={{ width: '100%', marginTop: 8, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '10px 16px', background: '#047857', borderRadius: 10, color: 'var(--bg-tarjeta, #ffffff)', fontWeight: 800, fontSize: 12, border: 'none', cursor: 'pointer' }}
                     >
                       <FaMoneyBillWave /> Confirmar Cobro en Caja (Sucursal)
                     </button>
@@ -1073,7 +1265,7 @@ export default function ReservationManagementPage() {
 
             {/* Gestión de Logística a Domicilio (Encargado de Sucursal) */}
             {(modalDetalle.sucursalRetiro === 'domicilio' || modalDetalle.sucursalDevolucion === 'domicilio' || modalDetalle.domicilioDireccion) && (
-              <div className="reserva-detail-card-box" style={{ background: 'var(--city-bg-sub, #f8fafc)', border: '1.5px solid var(--brand-border-light, #cbd5e1)' }}>
+              <div className="reserva-detail-card-box" style={{ background: 'var(--city-bg-sub, var(--bg-seccion1, #f8fafc))', border: '1.5px solid var(--brand-border-light, var(--borde, #cbd5e1))' }}>
                 <h4 style={{ color: 'var(--brand-primary, #2563eb)' }}>
                   Gestión de Logística a Domicilio (Sucursal)
                 </h4>
@@ -1093,22 +1285,22 @@ export default function ReservationManagementPage() {
                       <strong>{modalDetalle.domicilioDevolucionDireccion}</strong>
                     </div>
                   )}
-                  <div className="reserva-detail-field" style={{ background: '#eff6ff', padding: '8px 12px', borderRadius: 8, border: '1px solid #bfdbfe', gridColumn: 'span 2' }}>
-                    <small style={{ color: '#1d4ed8', fontWeight: 800 }}>PIN DE SEGURIDAD PARA VALIDAR ENTREGA:</small>
+                  <div className="reserva-detail-field" style={{ background: 'var(--city-soft, #eff6ff)', padding: '8px 12px', borderRadius: 8, border: '1px solid #bfdbfe', gridColumn: 'span 2' }}>
+                    <small style={{ color: 'var(--brand-primary, #1d4ed8)', fontWeight: 800 }}>PIN DE SEGURIDAD PARA VALIDAR ENTREGA:</small>
                     <strong style={{ fontSize: 16, color: '#1e40af', letterSpacing: '0.12em' }}>
                       {modalDetalle.domicilioPin || '4829'}
                     </strong>
                   </div>
                 </div>
 
-                <form onSubmit={handleGuardarLogisticaDomicilio} style={{ display: 'flex', flexDirection: 'column', gap: 12, background: 'var(--bg-tarjeta, #ffffff)', padding: 14, borderRadius: 12, border: '1px solid var(--borde, #e2e8f0)' }}>
+                <form onSubmit={handleGuardarLogisticaDomicilio} style={{ display: 'flex', flexDirection: 'column', gap: 12, background: 'var(--bg-tarjeta, var(--bg-tarjeta, #ffffff))', padding: 14, borderRadius: 12, border: '1px solid var(--borde, var(--borde, #e2e8f0))' }}>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                     <div>
                       <label style={{ display: 'block', fontSize: 11, fontWeight: 700, marginBottom: 4, color: 'var(--city-text)' }}>
                         Estado de Logística:
                       </label>
                       <select
-                        style={{ width: '100%', padding: '8px 10px', borderRadius: 8, border: '1px solid #cbd5e1', fontSize: 12, fontWeight: 700 }}
+                        style={{ width: '100%', padding: '8px 10px', borderRadius: 8, border: '1px solid var(--borde, #cbd5e1)', fontSize: 12, fontWeight: 700 }}
                         value={domicilioFormState.domicilioEstado}
                         onChange={(e) => setDomicilioFormState({ ...domicilioFormState, domicilioEstado: e.target.value })}
                       >
@@ -1124,7 +1316,7 @@ export default function ReservationManagementPage() {
                         Nombre del Agente / Conductor:
                       </label>
                       <input
-                        style={{ width: '100%', padding: '8px 10px', borderRadius: 8, border: '1px solid #cbd5e1', fontSize: 12 }}
+                        style={{ width: '100%', padding: '8px 10px', borderRadius: 8, border: '1px solid var(--borde, #cbd5e1)', fontSize: 12 }}
                         placeholder="ej. Carlos Restrepo (Logística Drivique)"
                         value={domicilioFormState.domicilioConductor}
                         onChange={(e) => setDomicilioFormState({ ...domicilioFormState, domicilioConductor: e.target.value })}
@@ -1137,7 +1329,7 @@ export default function ReservationManagementPage() {
                       Teléfono / WhatsApp del Conductor:
                     </label>
                     <input
-                      style={{ width: '100%', padding: '8px 10px', borderRadius: 8, border: '1px solid #cbd5e1', fontSize: 12 }}
+                      style={{ width: '100%', padding: '8px 10px', borderRadius: 8, border: '1px solid var(--borde, #cbd5e1)', fontSize: 12 }}
                       placeholder="ej. +57 312 456 7890"
                       value={domicilioFormState.domicilioTelefonoConductor}
                       onChange={(e) => setDomicilioFormState({ ...domicilioFormState, domicilioTelefonoConductor: e.target.value })}
@@ -1146,7 +1338,7 @@ export default function ReservationManagementPage() {
 
                   <button
                     type="submit"
-                    style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '10px 16px', borderRadius: 10, background: 'var(--brand-primary, #2563eb)', color: '#ffffff', border: 'none', fontWeight: 800, fontSize: 12, cursor: 'pointer', marginTop: 4 }}
+                    style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '10px 16px', borderRadius: 10, background: 'var(--brand-primary, #2563eb)', color: 'var(--bg-tarjeta, #ffffff)', border: 'none', fontWeight: 800, fontSize: 12, cursor: 'pointer', marginTop: 4 }}
                   >
                     <FaSave /> Actualizar Logística a Domicilio
                   </button>
@@ -1171,7 +1363,7 @@ export default function ReservationManagementPage() {
                     <div className="reserva-timeline-content">
                       <p>{h.accion}</p>
                       <small>
-                        {h.usuario} • {new Date(h.fecha).toLocaleString()}
+                        {h.usuario} ⬢ {new Date(h.fecha).toLocaleString()}
                       </small>
                     </div>
                   </div>
@@ -1188,7 +1380,7 @@ export default function ReservationManagementPage() {
         </div>
       )}
 
-      {/* ── MODAL 2: CREAR RESERVA MANUAL ── */}
+      {/* â”€â”€ MODAL 2: CREAR RESERVA MANUAL â”€â”€ */}
       {modalCrear && (
         <div
           className="cities-modal-backdrop"
@@ -1201,7 +1393,7 @@ export default function ReservationManagementPage() {
                 <h2>{t('admin.reservationsModal.createManualResTitle')}</h2>
               </div>
               <button type="button" onClick={() => setModalCrear(false)}>
-                ×
+                á—
               </button>
             </div>
 
@@ -1344,7 +1536,7 @@ export default function ReservationManagementPage() {
         </div>
       )}
 
-      {/* ── MODAL 3: EDITAR RESERVA ── */}
+      {/* â”€â”€ MODAL 3: EDITAR RESERVA â”€â”€ */}
       {modalEditar && (
         <div
           className="cities-modal-backdrop"
@@ -1357,7 +1549,7 @@ export default function ReservationManagementPage() {
                 <h2>{t('admin.reservationsManagement.editModal.titlePrefix', { code: modalEditar.codigo })}</h2>
               </div>
               <button type="button" onClick={() => setModalEditar(null)}>
-                ×
+                á—
               </button>
             </div>
 
@@ -1450,7 +1642,7 @@ export default function ReservationManagementPage() {
         </div>
       )}
 
-      {/* ── MODAL 4: CANCELAR RESERVA ── */}
+      {/* â”€â”€ MODAL 4: CANCELAR RESERVA â”€â”€ */}
       {modalCancelar && (
         <div
           className="cities-modal-backdrop"
@@ -1486,7 +1678,7 @@ export default function ReservationManagementPage() {
           </section>
         </div>
       )}
-      {/* ── MODAL DE IMAGEN AMPLIADA ── */}
+      {/* â”€â”€ MODAL DE IMAGEN AMPLIADA â”€â”€ */}
       {zoomImage && (
         <div
           style={{
@@ -1507,7 +1699,7 @@ export default function ReservationManagementPage() {
         >
           <div
             style={{
-              background: '#ffffff',
+              background: 'var(--bg-tarjeta, #ffffff)',
               borderRadius: 16,
               padding: 20,
               maxWidth: 640,
@@ -1519,20 +1711,20 @@ export default function ReservationManagementPage() {
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
               <div>
-                <h3 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: '#0f172a' }}>{zoomImage.title}</h3>
-                <span style={{ fontSize: 12, color: '#64748b' }}>Vista ampliada del vehículo</span>
+                <h3 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: 'var(--texto-primary, #0f172a)' }}>{zoomImage.title}</h3>
+                <span style={{ fontSize: 12, color: 'var(--texto-second, #64748b)' }}>Vista ampliada del vehículo</span>
               </div>
               <button
                 type="button"
                 onClick={() => setZoomImage(null)}
                 style={{
-                  background: '#f1f5f9',
+                  background: 'var(--city-bg, #f1f5f9)',
                   border: 'none',
                   borderRadius: '50%',
                   width: 32,
                   height: 32,
                   fontWeight: 700,
-                  color: '#64748b',
+                  color: 'var(--texto-second, #64748b)',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
@@ -1540,10 +1732,10 @@ export default function ReservationManagementPage() {
                   fontSize: 14,
                 }}
               >
-                ✕
+                âœ•
               </button>
             </div>
-            <div style={{ borderRadius: 12, overflow: 'hidden', background: '#f8fafc', border: '1px solid #e2e8f0', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: 10 }}>
+            <div style={{ borderRadius: 12, overflow: 'hidden', background: 'var(--bg-seccion1, #f8fafc)', border: '1px solid var(--borde, #e2e8f0)', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: 10 }}>
               <img
                 src={zoomImage.url}
                 alt={zoomImage.title}
@@ -1554,6 +1746,93 @@ export default function ReservationManagementPage() {
                   borderRadius: 8,
                 }}
               />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL ZOOM PDF */}
+      {zoomPdf && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 99999,
+            padding: 20,
+          }}
+          onClick={() => setZoomPdf(null)}
+        >
+          <div
+            style={{
+              background: 'var(--bg-tarjeta, #ffffff)',
+              borderRadius: 16,
+              padding: 20,
+              maxWidth: 800,
+              width: '100%',
+              height: '80vh',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.35)',
+              position: 'relative',
+              display: 'flex',
+              flexDirection: 'column'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+              <div>
+                <h3 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: 'var(--texto-primary, #0f172a)' }}>{zoomPdf.title}</h3>
+                <span style={{ fontSize: 12, color: 'var(--texto-second, #64748b)' }}>Vista previa del documento</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setZoomPdf(null)}
+                style={{
+                  background: 'var(--city-bg, #f1f5f9)',
+                  border: 'none',
+                  borderRadius: '50%',
+                  width: 32,
+                  height: 32,
+                  fontWeight: 700,
+                  color: 'var(--texto-second, #64748b)',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: 14,
+                }}
+              >
+                âœ•
+              </button>
+            </div>
+            <div style={{ flex: 1, borderRadius: 12, overflow: 'hidden', background: 'var(--bg-seccion1, #f8fafc)', border: '1px solid var(--borde, #e2e8f0)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+              {zoomPdf.url?.toLowerCase().match(/\.(jpeg|jpg|gif|png|webp)$/i) || zoomPdf.url?.startsWith('data:image/') ? (
+                <img
+                  src={zoomPdf.url}
+                  alt={zoomPdf.title}
+                  style={{
+                    maxWidth: '100%',
+                    maxHeight: '100%',
+                    objectFit: 'contain',
+                    borderRadius: 8,
+                  }}
+                />
+              ) : (
+                <iframe
+                  src={zoomPdf.url}
+                  title={zoomPdf.title}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    border: 'none'
+                  }}
+                />
+              )}
             </div>
           </div>
         </div>

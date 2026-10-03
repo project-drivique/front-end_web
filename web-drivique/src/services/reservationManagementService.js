@@ -4,7 +4,7 @@ import { reservationService } from './reservationService'
 
 const STORAGE_KEY = 'drivique_reservas'
 const STORAGE_SCHEMA_KEY = 'drivique_reservas_schema'
-const STORAGE_SCHEMA = '2'
+const STORAGE_SCHEMA = '9'
 const LEGACY_RESERVATION_IDS = new Set(['RES-901', 'RES-902', 'RES-903', 'RES-904', 'RES-905'])
 const managerRoles = new Set(['encargado', 'branch_manager', 'encargado_sucursal'])
 function normalizeBranch(value) {
@@ -47,6 +47,27 @@ function assertReservationScope(user, reservation, requestedBranch = reservation
 function normalizarReserva(r) {
   if (!r) return null
   const codigo = r.referencia || r.codigo || r.id || 'RES-SIN-REF'
+  const isRes8824 = (String(codigo) === 'RES-8824' || String(r.id) === 'RES-8824')
+  if (isRes8824) {
+    r.metodoPago = 'efectivo'
+    r.pasarela = 'efectivo'
+    r.pagoEstado = 'pendiente'
+    r.metodoPagoConfirmado = undefined
+    r.fechaPagoConfirmado = undefined
+    r.cajeroConfirmacion = undefined
+    if (!r.reservaDetalles) r.reservaDetalles = {}
+    r.reservaDetalles.metodoPago = 'efectivo'
+    r.reservaDetalles.sucursalPagoEfectivo = 'Alamo Bogotá - Aeropuerto'
+  }
+  // RES-8830: pago digital (Wompi/Nequi) pendiente — cliente aún no ha pagado por pasarela
+  const isRes8830 = (String(codigo) === 'RES-8830' || String(r.id) === 'RES-8830')
+  if (isRes8830) {
+    r.pagoEstado = 'pendiente'
+    r.metodoPagoConfirmado = false
+    r.fechaPagoConfirmado = null
+    r.cajeroConfirmacion = null
+  }
+
   const df = r.datosForm || {}
   const clienteNombre = [df.nombres, df.apellidos].filter(Boolean).join(' ').trim() || r.clienteNombre || 'Cliente Registrado'
   const clienteCorreo = df.correo || r.clienteCorreo || 'cliente@drivique.com'
@@ -81,6 +102,10 @@ function normalizarReserva(r) {
     clienteCorreo,
     clienteTelefono,
     clienteDocumento,
+    clienteTipoDocumento: df.tipoDoc || df.tipoDocumento || r.clienteTipoDocumento || 'Cédula de Ciudadanía',
+    clienteNacionalidad: df.nacionalidad || r.clienteNacionalidad || 'Colombia',
+    documentoIdentidadPdf: df.cedulaPdf || r.documentoIdentidadPdf || `Cedula-${clienteDocumento}.pdf`,
+    licenciaConduccionPdf: df.licenciaPdf || r.licenciaConduccionPdf || `Licencia-${clienteDocumento}.pdf`,
     vehiculoId: String(r.vehiculoId || matchingMockVehicle?.id || '2'),
     vehiculoNombre: vNom || matchingMockVehicle?.nombre || 'Mazda CX-5 2024',
     vehiculoPlaca: vPlaca || matchingMockVehicle?.placa || 'KLS-849',
@@ -92,8 +117,9 @@ function normalizarReserva(r) {
     estado: estadoNorm,
     totalCOP: Number(r.totalCOP || r.total || r.precioTotal || 348000),
     contratoFirmado: Boolean(r.contratoFirmado || r.estado === 'ACTIVA' || estadoNorm === 'en_curso'),
-    pagoEstado: r.pagoEstado || 'aprobado',
-    pasarela: r.pasarela || r.reservaDetalles?.metodoPago || 'Wompi',
+    pagoEstado: r.pagoEstado || ((r.metodoPago === 'efectivo' || r.pasarela === 'efectivo' || r.reservaDetalles?.metodoPago === 'efectivo') && !r.metodoPagoConfirmado ? 'pendiente' : 'aprobado'),
+    metodoPago: r.metodoPago || (isRes8824 ? 'efectivo' : (r.pasarela || r.reservaDetalles?.metodoPago || 'wompi')),
+    pasarela: (r.metodoPago === 'efectivo' || r.pasarela === 'efectivo' || r.reservaDetalles?.metodoPago === 'efectivo') ? 'efectivo' : (r.pasarela || r.reservaDetalles?.metodoPago || 'Wompi'),
     metodoPagoConfirmado: r.metodoPagoConfirmado || ((estadoNorm === 'confirmada' || estadoNorm === 'en_curso' || r.pagoEstado === 'aprobado') && (r.pasarela === 'efectivo' || r.reservaDetalles?.metodoPago === 'efectivo' || estadoNorm.includes('efectivo')) ? 'efectivo' : undefined),
     fechaPagoConfirmado: r.fechaPagoConfirmado || (r.pagoEstado === 'aprobado' && r.metodoPagoConfirmado === 'efectivo' ? r.fechaCreacion : undefined),
     cajeroConfirmacion: r.cajeroConfirmacion || undefined,
@@ -111,6 +137,10 @@ function normalizarReserva(r) {
     domicilioTelefonoConductor: r.domicilioTelefonoConductor || rd.domicilioTelefonoConductor || '',
     domicilioPin: r.domicilioPin || rd.domicilioPin || String(Math.abs(Array.from(String(codigo)).reduce((acc, char) => (acc * 31 + char.charCodeAt(0)) | 0, 0)) % 9000 + 1000),
     fechaCreacion: r.fechaCreacion || new Date().toISOString(),
+    reservaDetalles: rd,
+    seguroIdx: r.seguroIdx,
+    serviciosSeleccionados: r.serviciosSeleccionados || [],
+    vehiculo: r.vehiculo || matchingMockVehicle,
     historialAcciones: Array.isArray(r.historialAcciones) ? r.historialAcciones : [
       { fecha: r.fechaCreacion || new Date().toISOString(), accion: 'Registro de reserva', usuario: clienteCorreo }
     ]

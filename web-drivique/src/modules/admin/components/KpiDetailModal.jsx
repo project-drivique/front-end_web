@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react'
+import { createPortal } from 'react-dom'
 import {
   FaTimes,
   FaFileExcel,
@@ -83,7 +84,7 @@ export default function KpiDetailModal({
     })
   }
 
-  return (
+  const modalContent = (
     <div className="kpi-modal-overlay" onClick={onClose}>
       <div
         className="kpi-modal-container"
@@ -243,4 +244,10 @@ export default function KpiDetailModal({
       </div>
     </div>
   )
+
+  if (typeof document !== 'undefined' && document.body) {
+    return createPortal(modalContent, document.body)
+  }
+
+  return modalContent
 }
