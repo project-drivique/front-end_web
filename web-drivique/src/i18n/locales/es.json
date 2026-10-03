@@ -242,7 +242,9 @@
         "reportCreated": "Reporte Creado",
         "responseSent": "Respuesta enviada",
         "statusChanged": "El estado fue actualizado a {status}"
-      }
+      },
+      "atendiendo": "In Progress",
+      "updatedSuccess": "Report updated successfully and response sent."
     },
     "cities": {
       "title": "Gestión de ciudades",
@@ -362,20 +364,31 @@
         "imageSize": "Cada imagen debe pesar máximo 1 MB."
       },
       "formSections": {
-        "pricing": "4. Tarifas de Alquiler y Coberturas"
+        "pricing": "4. Tarifas de Alquiler y Coberturas",
+        "identification": "1. Identification & Classification",
+        "mechanical": "2. Mechanical Specs & Capacity",
+        "equipment": "3. Equipment & Commercial Description",
+        "photos": "5. Vehicle Photographs"
       },
       "transmission": {
-        "manual": "Manual"
+        "manual": "Manual",
+        "automatic": "Automatic"
       },
       "fuel": {
-        "gasoline": "Gasolina"
+        "gasoline": "Gasolina",
+        "diesel": "Diesel",
+        "hybrid": "Hybrid",
+        "electric": "Electric"
       },
       "export": {
         "excel": "Excel",
         "pdf": "PDF",
         "print": "Imprimir"
       },
-      "searchManager": "Buscar por vehículo, placa o categoría..."
+      "searchManager": "Buscar por vehículo, placa o categoría...",
+      "expandedView": "Expanded vehicle view",
+      "withPhoto": "With Photo",
+      "withoutPhoto": "No Photo"
     },
     "branchesManagement": {
       "title": "Gestión de sucursales",
@@ -1923,13 +1936,126 @@
         "paymentApprovedTitle": "¡Pago aprobado!",
         "transactionInfo": "Información de la transacción",
         "payerInfo": "Información del pagador"
+      },
+      "subtitle": "Management of pending collections and billing."
+    },
+    "reviews": {
+      "title": "Reviews & Ratings",
+      "subtitle": "Management of customer ratings for this branch."
+    },
+    "sections": {
+      "monitoreo": "MONITOREO",
+      "gestiÃ³n_operativa": "OPERATIONAL MANAGEMENT",
+      "consulta_y_auditorÃ­a": "CONSULTATION & AUDIT",
+      "configuraciÃ³n_global": "GLOBAL CONFIGURATION",
+      "configuración_global": "GLOBAL CONFIGURATION",
+      "consulta_y_auditoría": "CONSULTATION & AUDIT",
+      "gestión_operativa": "OPERATIONAL MANAGEMENT"
+    },
+    "branchManagement": "GESTIÓN DE SUCURSAL",
+    "branchProfile": {
+      "title": "My branch",
+      "subtitle": "Data that your customers see in the catalog",
+      "unsavedChanges": "You have unsaved changes",
+      "noChanges": "No changes to save",
+      "saveSuccessTitle": "Changes saved",
+      "saveSuccessMsg": "Branch details have been successfully updated.",
+      "readOnlyHint": "Only the general administrator can change this",
+      "devSwitch": "Test Mode - Select branch:",
+      "actions": {
+        "cancel": "Cancel",
+        "save": "Save changes"
+      },
+      "general": {
+        "title": "General information"
+      },
+      "schedules": {
+        "title": "Operating hours",
+        "typeLabel": "Branch type",
+        "typeAirport": "Airport or terminal",
+        "typeStandard": "Standard branch",
+        "branchAttention": "Branch counter service",
+        "homeDelivery": "Home pickup and delivery",
+        "scheduleTypeHint": "Defined by company according to branch type",
+        "infoNote": "These operating hours determine the pickup and return hours that customers can choose when booking, based on their selected location."
+      },
+      "location": {
+        "title": "Location",
+        "mapUnavailable": "Map unavailable",
+        "getDirections": "Get directions â†’"
+      },
+      "deliveryByPayment": {
+        "title": "How delivery works by payment method",
+        "intro": "Operating logic applied by the booking system when selecting payment method and pickup/return location:",
+        "colPlace": "Location",
+        "colCash": "Cash",
+        "colOnline": "Online payment",
+        "rowBranch": "At this branch",
+        "rowAirport": "Airport",
+        "rowTerminal": "Terminal",
+        "rowHome": "Home delivery",
+        "noAlternateDeliveries": "Your city does not offer alternative deliveries at airport or terminal.",
+        "notAvailable": "Not available"
+      },
+      "paymentDeadline": {
+        "title": "Payment deadline for your customers",
+        "text": "When a customer confirms a reservation, they have up to 72 hours to pay. If pickup is before those 72 hours, the deadline is automatically adjusted to the remaining time (minimum 2 hours). If they do not pay on time, the reservation is automatically cancelled."
+      },
+      "summaryCard": {
+        "title": "Summary",
+        "manager": "Branch Manager",
+        "vehicles": "Vehicles",
+        "viewFleet": "View fleet â†’",
+        "categories": "Offered categories"
+      },
+      "status": {
+        "active": "Active",
+        "inactive": "Inactive"
+      },
+      "fields": {
+        "name": "Branch name",
+        "city": "City",
+        "status": "Status",
+        "address": "Address",
+        "phone": "Phone",
+        "pickupInstructions": "Pickup instructions",
+        "latitude": "Latitude",
+        "longitude": "Longitude"
+      },
+      "placeholders": {
+        "pickupInstructions": "In front of airport exit 3"
+      },
+      "errors": {
+        "addressRequired": "Address is required.",
+        "phoneInvalid": "Phone must contain between 7 and 13 digits.",
+        "latInvalid": "Latitude must be between -90 and 90.",
+        "lngInvalid": "Longitude must be between -180 and 180.",
+        "bothCoordsRequired": "You must provide both latitude and longitude together."
       }
     },
-    "reviews": {},
-    "sections": {
-      "monitoreo": "MONITOREO"
-    },
-    "branchManagement": "GESTIÓN DE SUCURSAL"
+    "notifications": {
+      "filterAll": "All",
+      "new": "new",
+      "normalOps": "100% normal operations",
+      "alertsOf": "alert(s) of",
+      "normalDesc": "The system will automatically alert you about new reservations, delivery delays or mechanical issues.",
+      "defaultCategory": "Notification",
+      "closePanel": "Close notification panel",
+      "markReadTitle": "Mark as read",
+      "realTimeMonitoring": "Real-time operational monitoring",
+      "emptyTitle": "No pending notifications",
+      "filterAlerts": "Alerts & Incidents",
+      "drawerTitle": "Notifications & Alerts",
+      "filterOps": "Operations",
+      "emptyDesc": "All deliveries, returns, document validations and payments at this branch are up to date.",
+      "clearPending": "Clear pending",
+      "closePanelBtn": "Close panel",
+      "markAllReadTitle": "Mark all notifications as read",
+      "markRead": "Mark as read",
+      "filterUnread": "Unread",
+      "defaultAction": "Go to module",
+      "filters": "Notification filters"
+    }
   },
   "common": {
     "backToHome": "Volver al inicio",
@@ -1964,7 +2090,32 @@
     "print": "Imprimir",
     "viewDetails": "Ver detalle",
     "deliveries": "Entregas",
-    "returns": "Devoluciones"
+    "returns": "Devoluciones",
+    "daysShort": {
+      "tue": "Tu",
+      "fri": "Fr",
+      "thu": "Th",
+      "sat": "Sa",
+      "mon": "Mo",
+      "sun": "Su",
+      "wed": "We"
+    },
+    "months": {
+      "april": "April",
+      "september": "September",
+      "june": "June",
+      "october": "October",
+      "december": "December",
+      "november": "November",
+      "may": "May",
+      "march": "March",
+      "february": "February",
+      "july": "July",
+      "august": "August",
+      "january": "January"
+    },
+    "prevMonth": "Previous month",
+    "nextMonth": "Next month"
   },
   "login": {
     "title": "Iniciar sesión",
@@ -2350,7 +2501,11 @@
     "selectCityMsg": "Por favor selecciona la ciudad y sucursal donde deseas consultar los vehículos disponibles.",
     "selectBranchMsg": "Por favor selecciona la sucursal de entrega para continuar con tu consulta de disponibilidad.",
     "selectDatesMsg": "Por favor indica la fecha de recogida y la fecha de devolución para comprobar la flota disponible.",
-    "selectDateRangeMsg": "La fecha de devolución debe ser posterior a la fecha de recogida. Revisa tu itinerario."
+    "selectDateRangeMsg": "La fecha de devolución debe ser posterior a la fecha de recogida. Revisa tu itinerario.",
+    "searchPickupLocation": "Select pickup location.",
+    "searchPickupDate": "Select pickup date.",
+    "searchReturnDate": "Select return date.",
+    "searchReturnAfter": "Return date must be after pickup date."
   },
   "vehiculo": {
     "reviews": {
@@ -2588,7 +2743,16 @@
     "protectionAndExtras": "Tu Protección y Extras",
     "errors": {
       "cedulaPdfRequired": "Debes subir tu cédula en formato PDF.",
-      "licenciaPdfRequired": "Debes subir tu licencia de conducción en formato PDF."
+      "licenciaPdfRequired": "Debes subir tu licencia de conducción en formato PDF.",
+      "nameRequired": "Name is required",
+      "emailInvalid": "Invalid email",
+      "phoneInvalid": "Invalid number (10 digits)",
+      "docRequired": "Document number is required",
+      "termsRequired": "You must accept the terms and conditions",
+      "datesRequired": "You must select pickup and return dates.",
+      "datesOrder": "The return date cannot be earlier than the pickup date.",
+      "hoursOrder": "The return time cannot be earlier than the pickup time on the same day.",
+      "domicilioRequired": "Please complete all fields for home delivery (neighborhood, address, and references)."
     },
     "cashBranchTitle": "Pago en efectivo: retiro en sucursal",
     "cashPaymentBranchLabel": "Punto autorizado para pago en efectivo",
@@ -2673,7 +2837,56 @@
     "totalProtection": "Protección Total",
     "totalPlansExtras": "Total de planes y extras",
     "select": "Seleccionar",
-    "selected": "Seleccionado"
+    "selected": "Seleccionado",
+    "details": "Vehicle details",
+    "gallery": "Gallery",
+    "specifications": "Specifications",
+    "brand": "Brand",
+    "model": "Model",
+    "seats": "Seats",
+    "dailyRate": "Daily rate",
+    "pickupBranch": "Pickup branch",
+    "selectBranch": "Select a branch",
+    "protection": "Protection plan",
+    "namePlaceholder": "Your full name",
+    "emailPlaceholder": "your@email.com",
+    "phone": "Phone",
+    "phonePlaceholder": "3001234567",
+    "docPlaceholder": "Your document number",
+    "summary": "Booking summary",
+    "subtotal": "Subtotal",
+    "taxes": "Taxes",
+    "processing": "Processing...",
+    "successTitle": "Booking confirmed!",
+    "successText": "Your booking was created successfully.",
+    "errorTitle": "Booking error",
+    "selectProtection": "Select a protection plan",
+    "noProtection": "No additional protection",
+    "gastosAdmin": "Administrative fees",
+    "backToProtection": "Back to protection",
+    "successVehicle": "Your reservation for {{nombre}} has been successfully registered.",
+    "successRedirecting": "You will receive an email with all the details. Redirecting...",
+    "limitedKmPlan": "Limited mileage plan:",
+    "unlimitedKmPlan": "Unlimited mileage plan:",
+    "unlimitedKmText": "There is no mileage limit. You can drive without restrictions throughout the rental period.",
+    "group": "Group",
+    "expectedTotal": "Expected total value",
+    "editPickup": "Edit Pickup",
+    "editReturn": "Edit Return",
+    "saveChanges": "Save Changes",
+    "inGallery": "In gallery",
+    "airConditioning": "Air conditioning",
+    "windowsElec": "Electric windows",
+    "centralLock": "Central locking",
+    "doors": "doors",
+    "available": "Available",
+    "flightOptional": "I will arrive by flight (optional)",
+    "flightNumber": "Flight number",
+    "bookTitle": "Book",
+    "cashBranchNoAddress": "Confirm the address at the branch when booking",
+    "cashBranchFootnote": "",
+    "domicilioCityPlaceholder": "e.g., Neiva",
+    "documentVerificationNote": "Your documents are strictly used for identity verification and digital contract creation."
   },
   "reservas": {
     "title": "Mis reservas",
@@ -2961,8 +3174,14 @@
       "Japón": "Japón",
       "China": "China",
       "India": "India",
-      "Otro": "Otro"
-    }
+      "Otro": "Otro",
+      "EspaÃ±a": "Spain",
+      "CanadÃ¡": "Canada",
+      "MÃ©xico": "Mexico",
+      "PerÃº": "Peru",
+      "JapÃ³n": "Japan"
+    },
+    "completeProfile": "Completar perfil"
   },
   "pagos": {
     "title": "Mis pagos",
@@ -3184,7 +3403,8 @@
       "Compacto": "Compacto",
       "Camioneta": "Camioneta",
       "Deportivo": "Deportivo",
-      "Económico": "Económico"
+      "Económico": "Económico",
+      "EconÃ³mico": "Economy"
     },
     "modal": {
       "successTitle": "¡Cupón activado con éxito!",
@@ -3229,7 +3449,9 @@
     "Devolución con tanque vacío": "Devolución con tanque vacío",
     "GPS Integrado": "GPS Integrado",
     "Lavado de auto post-entrega": "Lavado de auto post-entrega",
-    "Silla de bebé": "Silla de bebé"
+    "Silla de bebé": "Silla de bebé",
+    "DevoluciÃ³n con tanque vacÃ­o": "Return with empty tank",
+    "Silla de bebÃ©": "Baby seat"
   },
   "favoritos": {
     "title": "Mis Favoritos",
@@ -3480,7 +3702,8 @@
         "phone": "Teléfono",
         "pickupInstructions": "Indicaciones de recogida",
         "latitude": "Latitud",
-        "longitude": "Longitud"
+        "longitude": "Longitud",
+        "hours": "Horario de atenciï¿½n"
       },
       "placeholders": {
         "pickupInstructions": "Frente a la salida 3 del aeropuerto"
@@ -3491,7 +3714,8 @@
         "latInvalid": "La latitud debe estar entre -90 y 90.",
         "lngInvalid": "La longitud debe estar entre -180 y 180.",
         "bothCoordsRequired": "Debes ingresar latitud y longitud juntas."
-      }
+      },
+      "savedSuccess": "Los datos de la sucursal han sido actualizados."
     },
     "dashboard": {
       "title": "Dashboard",
@@ -3689,16 +3913,22 @@
       "of": "de",
       "monthlyRevenue": "Ingresos del mes",
       "todayDeliveries": "Entregas de hoy",
-      "todayReturns": "Devoluciones de hoy"
+      "todayReturns": "Devoluciones de hoy",
+      "vehiclesInUse": "vehicles in use",
+      "fleetOccupancy": "Fleet Occupancy"
     },
     "charts": {
       "workload": "Carga Operativa por Franja Horaria",
       "calendar": "Calendario Operativo",
       "selectDateRange": "Selecciona un rango de fechas",
       "deliveriesList": "Listado de Entregas",
-      "returnsList": "Listado de Devoluciones"
+      "returnsList": "Listado de Devoluciones",
+      "scheduleOf": "Schedule for",
+      "totalVehicles": "Total vehicles"
     },
-    "alerts": {},
+    "alerts": {
+      "requiresAttention": "Requires your attention"
+    },
     "subtitle": "Panel operativo",
     "title": "Dashboard",
     "schedule": {
@@ -3719,6 +3949,142 @@
         "viewBtn": "Ver",
         "viewDetails": "Ver reserva completa"
       }
+    },
+    "fleet": {
+      "forDeliveryToday": "For delivery today",
+      "readyForDelivery": "Ready for delivery",
+      "operative": "% operational",
+      "title": "Fleet Status",
+      "occupied": "Occupied",
+      "viewFleet": "View fleet →",
+      "vehiclesInBranch": "vehicle(s) at branch",
+      "technicalReview": "Technical review",
+      "available": "Available",
+      "distAvailability": "Availability Distribution",
+      "branchUnits": "Branch Units",
+      "reserved": "Reserved",
+      "activeContract": "In active contract",
+      "maintenance": "In Maintenance"
+    },
+    "labels": {
+      "deliveries": "Deliveries",
+      "returnsColon": "Returns:",
+      "returns": "Returns",
+      "deliveriesColon": "Deliveries:"
+    },
+    "scheduleFor": "Schedule for",
+    "statesGuide": {
+      "subtitle": "Explanatory guide of operational states and their internal equivalence",
+      "descCompleted1": "Corresponds to the internal state FINALIZED. Vehicle returned to the branch, inspected and contract closed.",
+      "descPending1": "Groups the internal states PENDING, PENDING_CASH and PENDING_VALIDATION. The reservation is awaiting payment or at the counter for document validation.",
+      "descCancelled1": "Groups the internal states CANCELLED and CANCELLED_BY_TIME. Indicates the reservation was cancelled by client request or automatically expired.",
+      "descConfirmed1": "Corresponds to the internal state CONFIRMED. Payment and documents 100% validated. Vehicle prepared and ready for delivery.",
+      "title": "Reservation States",
+      "descActive1": "Corresponds to the internal state ACTIVE. Vehicle delivered to the client at the branch with the rental contract in force."
+    },
+    "status": {
+      "pendingCash": "Pending cash payment",
+      "activeSub": "Vehicle on rental",
+      "cancelledTime": "Cancelled by timeout",
+      "pendingDocs": "Pending document validation",
+      "active": "Active",
+      "completedSub": "Contract closed",
+      "pendingSub": "Awaiting payment or validation",
+      "completed": "Completed",
+      "confirmed": "Confirmed",
+      "pending": "Pending",
+      "confirmedSub": "Payment and docs validated",
+      "cancelled": "Cancelled"
+    },
+    "attention": {
+      "expiringDocs": "vehicle document expiring soon",
+      "openIncidents": "open incident",
+      "docsToValidate": "documents to validate",
+      "title": "Requires your attention"
+    },
+    "export": {
+      "branch": "Branch",
+      "assignedRes": "Assigned Reservation",
+      "available": "Available",
+      "resId": "# Reservation",
+      "incomeAmount": "Amount",
+      "incomeVehicle": "Vehicle",
+      "vehicle": "Vehicle",
+      "fleetOccupancy": "Fleet Occupancy",
+      "incomeTitle": "Income Report - Drivique",
+      "category": "Category",
+      "pending": "Pending",
+      "incomeCode": "Code",
+      "incomeClient": "Client",
+      "received": "Received",
+      "incomeStatus": "Status",
+      "totalScheduled": "Total Scheduled",
+      "deliveriesTitle": "Deliveries List - Drivique",
+      "occupancyRate": "% Occupancy",
+      "maintenance": "In Maintenance",
+      "time": "Time",
+      "phone": "Phone",
+      "returnStatus": "Return Status",
+      "growth": "Change",
+      "deliveryStatus": "Delivery Status",
+      "client": "Client",
+      "incomeEnd": "End",
+      "completedDeliveries": "Completed Deliveries",
+      "returnsTitle": "Returns List - Drivique",
+      "occupied": "Occupied",
+      "opStatus": "Operational Status",
+      "incomeStart": "Start",
+      "totalIncome": "Total Income",
+      "plate": "Plate"
+    },
+    "drawer": {
+      "step2Title": "2. Document Validation",
+      "grandTotal": "Grand Total of Reservation",
+      "mobile": "Mobile Phone",
+      "pickupDate": "Pickup Date / Time",
+      "pickupBranch": "Pickup Branch",
+      "step3Title": "3. Reservation Payment",
+      "roadAssistance": "Road Assistance",
+      "email": "Email",
+      "taxes": "Legal Taxes (19% VAT)",
+      "deposit": "Security Deposit",
+      "title": "Registered Reservation Inquiry",
+      "babyEquipment": "Baby Equipment",
+      "fuelPolicy": "Fuel Policy",
+      "transmission": "Transmission / Fuel",
+      "financeTitle": "Complete Financial Breakdown (COP)",
+      "step4Scheduled": "Scheduled for today at",
+      "category": "Category",
+      "step4Done": "Vehicle successfully delivered to customer",
+      "step4Title": "4. Vehicle Delivery at Branch",
+      "assignedPlate": "Assigned Plate",
+      "document": "Document",
+      "paymentMethod": "Payment Method",
+      "closeInquiry": "Close Inquiry",
+      "step5PendingBranch": "Pending receipt at branch",
+      "totalCoverage": "Total CDW Coverage",
+      "phone": "Phone / Mobile",
+      "model": "Model and Engine",
+      "workflowTitle": "Operational Flow (Current Progress)",
+      "clientTitle": "Reservation Holder",
+      "step3Desc": "Completed: $ 499,800 COP collected and confirmed",
+      "step1Desc": "Registered with code",
+      "step2Pending": "Pending: ID / License to be verified",
+      "registrationDate": "Registration Date",
+      "step2Done": "Completed: ID and License 100% approved",
+      "returnDate": "Return Date / Time",
+      "step5PendingContract": "Pending at end of contract",
+      "step5Title": "5. Final Return and Inspection",
+      "vehicleTitle": "Registered Vehicle",
+      "coverageTitle": "Coverage & Additional Services",
+      "step1Title": "1. Reservation Created & Registered",
+      "insurance": "Contracted Insurance",
+      "itineraryTitle": "Itinerary and Branch",
+      "license": "Driver's License",
+      "plate": "Plate",
+      "babySeatAddon": "Additional Baby Seat",
+      "returnBranch": "Return Branch",
+      "baseRental": "Base Rental (3 days x $120,000 COP)"
     }
   },
   "branchProfile": {
@@ -3808,5 +4174,8 @@
     "tabVehicles": "Vehículos",
     "createCategory": "+ Crear Categoría",
     "createVehicle": "+ Crear Vehículo"
+  },
+  "categoriesManagement": {
+    "units": "unidades"
   }
 }

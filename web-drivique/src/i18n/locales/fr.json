@@ -387,7 +387,8 @@
       },
       "withPhoto": "Avec Photo",
       "withoutPhoto": "Sans Photo",
-      "searchManager": "Recherche par véhicule, plaque ou catégorie..."
+      "searchManager": "Recherche par véhicule, plaque ou catégorie...",
+      "insuranceName": "Nombre del seguro"
     },
     "branchesManagement": {
       "title": "Gestion des agences",
@@ -2246,6 +2247,41 @@
         "confirmMismatch": "Les mots de passe ne correspondent pas",
         "termsRequired": "Vous devez accepter les conditions d'utilisation pour continuer"
       }
+    },
+    "privacyPolicy": "política de privacidad",
+    "customerReviews": "Reseñas de clientes",
+    "reviewsCount": "{{count}} reseñas",
+    "viewMoreReviews": "Ver más reseñas ˅",
+    "viewLessReviews": "Ver menos reseñas",
+    "capacity": "Capacidad",
+    "passengers": "pasajeros",
+    "doorsLabel": "Puertas",
+    "trunk": "Maletero",
+    "engine": "Motor",
+    "colorLabel": "Color",
+    "colorGrisHighland": "Gris Highland",
+    "colorBlanco": "Blanco",
+    "colorNegro": "Negro",
+    "colorRojo": "Rojo",
+    "colorAzul": "Azul",
+    "colorPlata": "Plata",
+    "eqAirConditioning": "Aire acondicionado",
+    "eqElectricWindows": "Vidrios eléctricos",
+    "eqCentralLocking": "Cierre centralizado",
+    "eqAbsBrakes": "Frenos ABS",
+    "eqAirbags": "Airbags",
+    "eqGpsNavigation": "Navegación GPS",
+    "eqParkingSensors": "Sensores de parqueo",
+    "eqCruiseControl": "Control de crucero",
+    "eqSunroof": "Techo panorámico",
+    "eqLeatherSeats": "Asientos de cuero",
+    "scheduleMonSat": "Lun a sáb, 7:00 am - 7:00 pm",
+    "scheduleMonSun": "Lun a dom, 6:00 am - 10:00 pm",
+    "readTerms": "Leer términos y condiciones",
+    "errors": {
+      "googleSDKError": "No se pudo cargar el SDK de Google",
+      "googleError": "No se pudo completar el registro con Google. Intenta nuevamente.",
+      "facebookError": "No se pudo completar el registro con Facebook. Intenta nuevamente."
     }
   },
   "recuperar": {
@@ -2681,7 +2717,8 @@
       "datesOrder": "La date de restitution ne peut pas Ãªtre antÃ©rieure Ã  la date de prise en charge.",
       "hoursOrder": "L'heure de restitution ne peut pas Ãªtre antÃ©rieure Ã  l'heure de prise en charge le mÃªme jour.",
       "cedulaPdfRequired": "Vous devez tÃ©lÃ©charger votre piÃ¨ce d'identitÃ© au format PDF.",
-      "licenciaPdfRequired": "Vous devez tÃ©lÃ©charger votre permis de conduire au format PDF."
+      "licenciaPdfRequired": "Vous devez tÃ©lÃ©charger votre permis de conduire au format PDF.",
+      "domicilioRequired": "Please complete all fields for home delivery (neighborhood, address, and references)."
     },
     "paymentMethodTitle": "SÃ©lectionner le mode de paiement prÃ©fÃ©rÃ©",
     "paymentWompiTitle": "Paiement NumÃ©rique SÃ©curisÃ© (Wompi)",
@@ -2835,7 +2872,11 @@
     "totalProtection": "Protection Totale",
     "totalPlansExtras": "Total des plans et supplÃ©ments",
     "select": "SÃ©lectionner",
-    "selected": "SÃ©lectionnÃ©"
+    "selected": "SÃ©lectionnÃ©",
+    "policiesAndSecurity": "Políticas y seguridad",
+    "termsAgreementText": "Acepto los términos, condiciones del contrato de alquiler y la política de privacidad",
+    "viewTermsAndConditions": "Ver términos y condiciones",
+    "domicilioCityPlaceholder": "e.g., Neiva"
   },
   "reservas": {
     "title": "Mes rÃ©servations",
@@ -2984,7 +3025,8 @@
     "paymentDeadline": "DÃ‰LAI DE PAIEMENT",
     "cashDeadlineNotice": "Vous avez 72 heures Ã  compter de maintenant pour vous rendre Ã  l'agence et payer. Si vous ne payez pas dans ce dÃ©lai, la rÃ©servation sera automatiquement annulÃ©e.",
     "city": "Ville :",
-    "address": "Adresse :"
+    "address": "Adresse :",
+    "bookingDateTime": "Fecha y hora de reserva"
   },
   "perfil": {
     "title": "Mon profil",
@@ -3099,7 +3141,8 @@
       "CC": "Carte d'identitÃ© (CC)",
       "TI": "Carte d'identitÃ© jeune (TI)",
       "CE": "Document Ã©tranger (CE)",
-      "PAS": "Passeport (PAS)"
+      "PAS": "Passeport (PAS)",
+      "PA": "Pasaporte"
     },
     "countries": {
       "Colombia": "Colombie",
@@ -3121,7 +3164,12 @@
       "JapÃ³n": "Japon",
       "China": "Chine",
       "India": "Inde",
-      "Otro": "Autre"
+      "Otro": "Autre",
+      "España": "España",
+      "Canadá": "Canadá",
+      "México": "México",
+      "Perú": "Perú",
+      "Japón": "Japón"
     },
     "completeProfile": "Completar perfil"
   },
@@ -3329,7 +3377,8 @@
       "Compacto": "Compacte",
       "Camioneta": "Camionnette",
       "Deportivo": "Sport",
-      "EconÃ³mico": "Ã‰conomique"
+      "EconÃ³mico": "Ã‰conomique",
+      "Económico": "Económico"
     },
     "modal": {
       "successTitle": "Coupon activÃ© avec succÃ¨s !",
@@ -3354,7 +3403,23 @@
       "minimum": "La rÃ©servation n'atteint pas le montant minimum.",
       "category": "Le coupon ne s'applique pas Ã  cette catÃ©gorie.",
       "vehicleMismatch": "Le coupon n'est pas valable pour ce vÃ©hicule spÃ©cifique."
-    }
+    },
+    "codeLabelOptional": "Cupón de descuento (Opcional)",
+    "viewAvailableCoupons": "Ver cupones disponibles",
+    "availableCouponsTitle": "Cupones Disponibles",
+    "noCouponsAvailable": "No hay cupones disponibles en este momento.",
+    "couponConditionsTitle": "Condiciones del Cupón",
+    "termsAndConditionsHeader": "Términos y condiciones:",
+    "termsDigitalPayments": "Válido para pagos digitales e iniciales.",
+    "termsNonTransferable": "No transferible a otros usuarios.",
+    "termsOnePerReservation": "Solo se puede aplicar un cupón por reserva.",
+    "termsValidCategories": "Categorías válidas:",
+    "termsMinAmount": "Requiere un monto mínimo de reserva de",
+    "termsNonCumulative": "No acumulable con otras promociones.",
+    "termsGeneralConditions": "Válido para vehículos de la flota. No acumulable con otras promociones.",
+    "termsExpires": "Vence:",
+    "discountOnReservation": "Descuento en tu reserva",
+    "conditions": "Condiciones"
   },
   "placeholder": {
     "title": "Cet Ã©cran n'est pas encore implÃ©mentÃ©",
@@ -3384,7 +3449,9 @@
     "DevoluciÃ³n con tanque vacÃ­o": "Retour avec rÃ©servoir vide",
     "GPS Integrado": "GPS IntÃ©grÃ©",
     "Lavado de auto post-entrega": "Lavage de voiture aprÃ¨s location",
-    "Silla de bebÃ©": "SiÃ¨ge bÃ©bÃ©"
+    "Silla de bebÃ©": "SiÃ¨ge bÃ©bÃ©",
+    "Devolución con tanque vacío": "Devolución con tanque vacío",
+    "Silla de bebé": "Silla de bebé"
   },
   "favoritos": {
     "title": "Mes Favoris",
@@ -3746,6 +3813,88 @@
         "unitsCount": "{{count}} unitÃ©s",
         "vehiclesCount": "{{count}} vÃ©hicules"
       }
+    },
+    "branchProfile": {
+      "title": "Mi sucursal",
+      "subtitle": "Datos que ven tus clientes en el catálogo",
+      "unsavedChanges": "Tienes cambios sin guardar",
+      "noChanges": "No hay cambios por guardar",
+      "saveSuccessTitle": "Cambios guardados",
+      "saveSuccessMsg": "Los datos de la sucursal han sido actualizados con éxito.",
+      "readOnlyHint": "Solo el administrador general puede cambiarlo",
+      "devSwitch": "Modo Pruebas - Seleccionar sucursal:",
+      "actions": {
+        "cancel": "Cancelar",
+        "save": "Guardar cambios"
+      },
+      "general": {
+        "title": "Información general"
+      },
+      "schedules": {
+        "title": "Horarios de atención",
+        "typeLabel": "Tipo de sucursal",
+        "typeAirport": "Aeropuerto o terminal",
+        "typeStandard": "Sucursal estándar",
+        "branchAttention": "Atención en la sucursal",
+        "homeDelivery": "Entrega y recogida a domicilio",
+        "scheduleTypeHint": "Definido por la empresa según el tipo de sucursal",
+        "infoNote": "Estos horarios determinan las horas de retiro y devolución que pueden elegir tus clientes al reservar, según el lugar que escojan."
+      },
+      "location": {
+        "title": "Ubicación",
+        "mapUnavailable": "Mapa no disponible",
+        "getDirections": "Cómo llegar →"
+      },
+      "deliveryByPayment": {
+        "title": "Cómo funciona la entrega según el pago",
+        "intro": "Lógica operativa que aplica el sistema de reservas al seleccionar el método de pago y lugar de entrega/devolución:",
+        "colPlace": "Lugar",
+        "colCash": "Efectivo",
+        "colOnline": "Pago en línea",
+        "rowBranch": "En esta sucursal",
+        "rowAirport": "Aeropuerto",
+        "rowTerminal": "Terminal",
+        "rowHome": "A domicilio",
+        "noAlternateDeliveries": "Tu ciudad no ofrece entregas alternas en aeropuerto o terminal.",
+        "notAvailable": "No disponible"
+      },
+      "paymentDeadline": {
+        "title": "Plazo de pago de tus clientes",
+        "text": "Cuando un cliente confirma una reserva, tiene hasta 72 horas para pagar. Si el retiro es antes de esas 72 horas, el plazo se ajusta automáticamente al tiempo que falta (mínimo 2 horas). Si no paga a tiempo, la reserva se cancela sola."
+      },
+      "summaryCard": {
+        "title": "Resumen",
+        "manager": "Encargado",
+        "vehicles": "Vehículos",
+        "viewFleet": "Ver flota →",
+        "categories": "Categorías que ofrece"
+      },
+      "status": {
+        "active": "Activa",
+        "inactive": "Inactiva"
+      },
+      "fields": {
+        "name": "Nombre de la sucursal",
+        "city": "Ciudad",
+        "status": "Estado",
+        "address": "Dirección",
+        "phone": "Teléfono",
+        "pickupInstructions": "Indicaciones de recogida",
+        "latitude": "Latitud",
+        "longitude": "Longitud",
+        "hours": "Horario de atenciï¿½n"
+      },
+      "placeholders": {
+        "pickupInstructions": "Frente a la salida 3 del aeropuerto"
+      },
+      "errors": {
+        "addressRequired": "La dirección es obligatoria.",
+        "phoneInvalid": "El teléfono debe contener entre 7 y 13 dígitos.",
+        "latInvalid": "La latitud debe estar entre -90 y 90.",
+        "lngInvalid": "La longitud debe estar entre -180 y 180.",
+        "bothCoordsRequired": "Debes ingresar latitud y longitud juntas."
+      },
+      "savedSuccess": "Los datos de la sucursal han sido actualizados."
     }
   },
   "dashboard": {
