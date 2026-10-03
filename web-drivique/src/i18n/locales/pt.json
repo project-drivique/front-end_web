@@ -149,6 +149,66 @@
         "close": "Fechar"
       }
     },
+    "reviews": {
+      "sectionEyebrow": "GESTÃO OPERACIONAL",
+      "title": "Avaliações e Classificações",
+      "subtitle": "Gerencie a reputação da sua sucursal, responda a comentários de clientes e monitorize a pontuação média.",
+      "kpis": {
+        "average": "Média Sucursal",
+        "averageDesc": "Pontuação acumulada",
+        "total": "Total Avaliações",
+        "totalDesc": "Opiniões recebidas",
+        "pending": "Pendentes de Resposta",
+        "pendingDesc": "Requerem atenção do encarregado",
+        "published": "Respostas Publicadas",
+        "publishedDesc": "Atenção concluída"
+      },
+      "tabs": {
+        "all": "Todas as Avaliações",
+        "pending": "Pendentes de Resposta",
+        "replied": "Respondidas",
+        "stars5": "5 Estrelas",
+        "stars4": "4 Estrelas",
+        "stars1to3": "1 - 3 Estrelas"
+      },
+      "searchPlaceholder": "Pesquisar por cliente, veículo, reserva ou comentário...",
+      "exportTitle": "Lista de Avaliações da Sucursal",
+      "tableHeader": "AVALIAÇÕES REGISTADAS NA SUCURSAL",
+      "table": {
+        "id": "ID",
+        "reservationCode": "CÓDIGO RESERVA",
+        "clientName": "CLIENTE",
+        "vehicle": "VEHÍCULO ALUGADO",
+        "rating": "CLASSIFICAÇÃO",
+        "comment": "COMENTÁRIO CLIENTE",
+        "date": "DATA AVALIAÇÃO",
+        "reply": "RESPOSTA DA SUCURSAL",
+        "status": "ESTADO RESPOSTA",
+        "actions": "AÇÕES"
+      },
+      "status": {
+        "published": "Respondida",
+        "pending": "Pendente"
+      },
+      "noReply": "Sem resposta oficial",
+      "editReplyBtn": "Editar Resposta",
+      "replyBtn": "Responder",
+      "deleteBtn": "Eliminar",
+      "modal": {
+        "eyebrow": "RESPOSTA OFICIAL DA SUCURSAL",
+        "replyTo": "Responder a {{name}}",
+        "description": "A sua resposta será visível publicamente para os clientes que consultarem as opiniões da sucursal.",
+        "clientComment": "Comentário do cliente:",
+        "officialResponseLabel": "Resposta Oficial da Sucursal *",
+        "placeholder": "Escreva a resposta oficial da sucursal aqui...",
+        "cancelBtn": "Cancelar",
+        "publishSubmit": "Publicar Resposta"
+      },
+      "confirmDeleteTitle": "Eliminar esta avaliação?",
+      "confirmDeleteMsg": "Esta ação eliminará permanentemente o registo da avaliação selecionada.",
+      "deleteSuccess": "Avaliação eliminada com sucesso.",
+      "replySuccess": "Resposta publicada com sucesso."
+    },
     "reports": {
       "sectionEyebrow": "CENTRO DE INTELIGÊNCIA E RELATÓRIOS",
       "title": "Relatórios Administrativos",

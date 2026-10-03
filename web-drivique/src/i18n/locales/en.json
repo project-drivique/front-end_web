@@ -149,6 +149,66 @@
         "close": "Close"
       }
     },
+    "reviews": {
+      "sectionEyebrow": "OPERATIONAL MANAGEMENT",
+      "title": "Reviews & Ratings",
+      "subtitle": "Manage your branch reputation, respond to customer feedback, and monitor average rating.",
+      "kpis": {
+        "average": "Branch Average",
+        "averageDesc": "Accumulated rating",
+        "total": "Total Reviews",
+        "totalDesc": "Opinions received",
+        "pending": "Pending Response",
+        "pendingDesc": "Require manager attention",
+        "published": "Published Replies",
+        "publishedDesc": "Attention completed"
+      },
+      "tabs": {
+        "all": "All Reviews",
+        "pending": "Pending Response",
+        "replied": "Replied",
+        "stars5": "5 Stars",
+        "stars4": "4 Stars",
+        "stars1to3": "1 - 3 Stars"
+      },
+      "searchPlaceholder": "Search by customer, vehicle, reservation, or comment...",
+      "exportTitle": "Branch Reviews List",
+      "tableHeader": "REVIEWS REGISTERED AT BRANCH",
+      "table": {
+        "id": "ID",
+        "reservationCode": "RESERVATION CODE",
+        "clientName": "CUSTOMER",
+        "vehicle": "RENTED VEHICLE",
+        "rating": "RATING",
+        "comment": "CUSTOMER COMMENT",
+        "date": "REVIEW DATE",
+        "reply": "BRANCH REPLY",
+        "status": "REPLY STATUS",
+        "actions": "ACTIONS"
+      },
+      "status": {
+        "published": "Replied",
+        "pending": "Pending"
+      },
+      "noReply": "No official reply",
+      "editReplyBtn": "Edit Reply",
+      "replyBtn": "Reply",
+      "deleteBtn": "Delete",
+      "modal": {
+        "eyebrow": "OFFICIAL BRANCH REPLY",
+        "replyTo": "Reply to {{name}}",
+        "description": "Your response will be publicly visible to customers checking branch reviews.",
+        "clientComment": "Customer comment:",
+        "officialResponseLabel": "Official Branch Reply *",
+        "placeholder": "Write the official branch reply here...",
+        "cancelBtn": "Cancel",
+        "publishSubmit": "Publish Reply"
+      },
+      "confirmDeleteTitle": "Delete this review?",
+      "confirmDeleteMsg": "This action will permanently delete the selected review record.",
+      "deleteSuccess": "Review deleted successfully.",
+      "replySuccess": "Reply published successfully."
+    },
     "reports": {
       "sectionEyebrow": "INTELLIGENCE & REPORTS CENTER",
       "title": "Administrative Reports",

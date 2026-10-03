@@ -149,6 +149,66 @@
         "close": "Fermer"
       }
     },
+    "reviews": {
+      "sectionEyebrow": "GESTION OPÉRATIONNELLE",
+      "title": "Avis et Évaluations",
+      "subtitle": "Gérez la réputation de votre agence, répondez aux remarques des clients et suivez la note moyenne.",
+      "kpis": {
+        "average": "Moyenne Agence",
+        "averageDesc": "Note accumulée",
+        "total": "Total Avis",
+        "totalDesc": "Avis reçus",
+        "pending": "En attente de réponse",
+        "pendingDesc": "Nécessite l'attention du responsable",
+        "published": "Réponses Publiées",
+        "publishedDesc": "Traitement terminé"
+      },
+      "tabs": {
+        "all": "Tous les Avis",
+        "pending": "En attente de Réponse",
+        "replied": "Répondu",
+        "stars5": "5 Étoiles",
+        "stars4": "4 Étoiles",
+        "stars1to3": "1 - 3 Étoiles"
+      },
+      "searchPlaceholder": "Rechercher par client, véhicule, réservation ou commentaire...",
+      "exportTitle": "Liste des Avis d'Agence",
+      "tableHeader": "AVIS ENREGISTRÉS DANS L'AGENCE",
+      "table": {
+        "id": "ID",
+        "reservationCode": "CODE RÉSERVATION",
+        "clientName": "CLIENT",
+        "vehicle": "VÉHICULE LOUÉ",
+        "rating": "ÉVALUATION",
+        "comment": "COMMENTAIRE CLIENT",
+        "date": "DATE DE L'AVIS",
+        "reply": "RÉPONSE DE L'AGENCE",
+        "status": "STATUT RÉPONSE",
+        "actions": "ACTIONS"
+      },
+      "status": {
+        "published": "Répondu",
+        "pending": "En attente"
+      },
+      "noReply": "Sans réponse officielle",
+      "editReplyBtn": "Modifier la réponse",
+      "replyBtn": "Répondre",
+      "deleteBtn": "Supprimer",
+      "modal": {
+        "eyebrow": "RÉPONSE OFFICIELLE DE L'AGENCE",
+        "replyTo": "Répondre à {{name}}",
+        "description": "Votre réponse sera visible publiquement par les clients qui consultent les avis de l'agence.",
+        "clientComment": "Commentaire du client:",
+        "officialResponseLabel": "Réponse Officielle de l'Agence *",
+        "placeholder": "Rédigez la réponse officielle de l'agence ici...",
+        "cancelBtn": "Annuler",
+        "publishSubmit": "Publier la réponse"
+      },
+      "confirmDeleteTitle": "Supprimer cet avis?",
+      "confirmDeleteMsg": "Cette action supprimera définitivement l'enregistrement de l'avis sélectionné.",
+      "deleteSuccess": "Avis supprimé avec succès.",
+      "replySuccess": "Réponse publiée avec succès."
+    },
     "reports": {
       "sectionEyebrow": "CENTRE D'INTELLIGENCE ET DE RAPPORTS",
       "title": "Rapports Administratifs",
