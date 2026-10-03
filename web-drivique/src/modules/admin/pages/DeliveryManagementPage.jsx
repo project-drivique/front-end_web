@@ -34,7 +34,9 @@ import './DocumentVerificationPage.css'
 const DEFAULT_CONDUCTORES = [
   { id: 'COND-1', nombre: 'Carlos Eduardo Ramírez', tipoDoc: 'CC', numDoc: '1018432910', licencia: 'C1-84920412', categoriaLic: 'C1', vencimientoLic: '2028-11-15', telefono: '+57 310 492 8102', email: 'carlos.ramirez@drivique.com', vehiculo: 'Moto Yamaha NMAX 155 (ABC-12D)', estado: 'disponible' },
   { id: 'COND-2', nombre: 'Jhon Alejandro Gómez', tipoDoc: 'CC', numDoc: '1020491823', licencia: 'C2-94812039', categoriaLic: 'C2', vencimientoLic: '2027-06-30', telefono: '+57 315 829 1049', email: 'jhon.gomez@drivique.com', vehiculo: 'Renault Kangoo (EFG-456)', estado: 'en_servicio' },
-  { id: 'COND-3', nombre: 'María Camila Mendoza', tipoDoc: 'CC', numDoc: '1032481920', licencia: 'B1-74839201', categoriaLic: 'B1', vencimientoLic: '2029-03-20', telefono: '+57 320 918 2736', email: 'camila.mendoza@drivique.com', vehiculo: 'Chevrolet Spark GT (HJK-789)', estado: 'disponible' }
+  { id: 'COND-3', nombre: 'María Camila Mendoza', tipoDoc: 'CC', numDoc: '1032481920', licencia: 'B1-74839201', categoriaLic: 'B1', vencimientoLic: '2029-03-20', telefono: '+57 320 918 2736', email: 'camila.mendoza@drivique.com', vehiculo: 'Chevrolet Spark GT (HJK-789)', estado: 'disponible' },
+  { id: 'COND-4', nombre: 'Andrés Felipe Castro', tipoDoc: 'CC', numDoc: '1098234120', licencia: 'B2-89210492', categoriaLic: 'B2', vencimientoLic: '2028-08-10', telefono: '+57 300 123 4567', email: 'andres.castro@drivique.com', vehiculo: 'Chevrolet N300 (WXY-123)', estado: 'disponible' },
+  { id: 'COND-5', nombre: 'Laura Sofía Morales', tipoDoc: 'CE', numDoc: '94810293', licencia: 'C1-78192034', categoriaLic: 'C1', vencimientoLic: '2026-12-05', telefono: '+57 318 765 4321', email: 'laura.morales@drivique.com', vehiculo: 'Suzuki Swift (QWE-987)', estado: 'en_servicio' }
 ]
 
 const INITIAL_CONDUCTOR = {
@@ -69,12 +71,12 @@ export default function DeliveryManagementPage() {
   const [conductorSeleccionado, setConductorSeleccionado] = useState('')
   const [pinIngresado, setPinIngresado] = useState('')
 
-  const [conductores, setConductores] = useState(() => {
+    const [conductores, setConductores] = useState(() => {
     try {
       const stored = localStorage.getItem('drivique_conductores')
       if (stored) {
         const parsed = JSON.parse(stored)
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed
+        if (Array.isArray(parsed) && parsed.length >= 5) return parsed
       }
       localStorage.setItem('drivique_conductores', JSON.stringify(DEFAULT_CONDUCTORES))
       return DEFAULT_CONDUCTORES
@@ -312,10 +314,13 @@ export default function DeliveryManagementPage() {
       return conductoresFiltrados.map((c, i) => [
         i + 1,
         c.nombre,
-        `${c.tipoDoc || 'CC'} ${c.numDoc || '-'}`,
-        `${c.licencia || '-'} (${c.categoriaLic || '-'})`,
-        c.telefono || '-',
         c.email || '-',
+        c.tipoDoc || 'CC',
+        c.numDoc || '-',
+        c.licencia || '-',
+        c.categoriaLic || '-',
+        c.vencimientoLic || '-',
+        c.telefono || '-',
         c.vehiculo || 'Sin asignar',
         c.estado || 'disponible'
       ])
@@ -519,9 +524,13 @@ export default function DeliveryManagementPage() {
                       <thead>
                         <tr>
                           <th style={{ width: '35px' }}>{t('admin.delivery.table.id', 'ID')}</th>
-                          <th>{t('admin.delivery.drivers.name', 'CONDUCTOR')}</th>
-                          <th>{t('admin.delivery.drivers.document', 'DOCUMENTO')}</th>
-                          <th>{t('admin.delivery.drivers.license', 'LICENCIA')}</th>
+                          <th>{t('admin.delivery.drivers.name', 'NOMBRE CONDUCTOR')}</th>
+                          <th>{t('admin.delivery.drivers.email', 'CORREO ELECTRÓNICO')}</th>
+                          <th>{t('admin.delivery.drivers.docType', 'TIPO DOC')}</th>
+                          <th>{t('admin.delivery.drivers.docNum', 'NÚMERO DOC')}</th>
+                          <th>{t('admin.delivery.drivers.licenseNum', 'NÚMERO LICENCIA')}</th>
+                          <th>{t('admin.delivery.drivers.licenseCat', 'CATEGORÍA LICENCIA')}</th>
+                          <th>{t('admin.delivery.drivers.licenseExp', 'VENCIMIENTO LICENCIA')}</th>
                           <th>{t('admin.delivery.drivers.phone', 'TELÉFONO')}</th>
                           <th>{t('admin.delivery.drivers.vehicle', 'VEHÍCULO ASIGNADO')}</th>
                           <th style={{ textAlign: 'center' }}>{t('admin.delivery.table.status', 'ESTADO')}</th>
@@ -532,31 +541,15 @@ export default function DeliveryManagementPage() {
                         {conductoresFiltrados.map((c, i) => (
                           <tr key={c.id}>
                             <td style={{ fontWeight: 400, color: 'var(--city-text, #0f172a)', width: '35px' }}>{i + 1}</td>
-                            <td style={{ fontWeight: 400 }}>
-                              <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                <span style={{ color: 'var(--city-text, #0f172a)', fontSize: 13, fontWeight: 500 }}>{c.nombre}</span>
-                                <small style={{ color: 'var(--city-muted, #64748b)', fontSize: 11.5 }}>{c.email || t('admin.delivery.noEmail', 'Sin correo')}</small>
-                              </div>
-                            </td>
-                            <td style={{ fontWeight: 400 }}>
-                              <span style={{ color: 'var(--city-text, #334155)' }}>
-                                {c.tipoDoc || 'CC'} {c.numDoc || '-'}
-                              </span>
-                            </td>
-                            <td style={{ fontWeight: 400 }}>
-                              <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                <span style={{ color: 'var(--brand-primary, #2563eb)', fontSize: 12.5, fontWeight: 500 }}>{c.licencia || '-'}</span>
-                                <small style={{ color: 'var(--city-muted, #64748b)', fontSize: 11 }}>
-                                  Cat: {c.categoriaLic || '-'} | Vence: {c.vencimientoLic || '-'}
-                                </small>
-                              </div>
-                            </td>
-                            <td style={{ color: 'var(--city-text, #334155)', fontWeight: 400 }}>
-                              {c.telefono || '-'}
-                            </td>
-                            <td style={{ color: 'var(--city-text, #334155)', fontWeight: 400 }}>
-                              {c.vehiculo || t('admin.delivery.noVehicle', 'Sin vehículo asignado')}
-                            </td>
+                            <td style={{ fontWeight: 500, color: 'var(--city-text, #0f172a)' }}>{c.nombre}</td>
+                            <td style={{ fontWeight: 400, color: 'var(--city-muted, #64748b)' }}>{c.email || t('admin.delivery.noEmail', 'Sin correo')}</td>
+                            <td style={{ fontWeight: 400, color: 'var(--city-text, #334155)' }}>{c.tipoDoc || 'CC'}</td>
+                            <td style={{ fontWeight: 400, color: 'var(--city-text, #334155)' }}>{c.numDoc || '-'}</td>
+                            <td style={{ fontWeight: 500, color: 'var(--brand-primary, #2563eb)' }}>{c.licencia || '-'}</td>
+                            <td style={{ fontWeight: 400, color: 'var(--city-text, #334155)' }}>{c.categoriaLic || '-'}</td>
+                            <td style={{ fontWeight: 400, color: 'var(--city-muted, #64748b)' }}>{c.vencimientoLic || '-'}</td>
+                            <td style={{ fontWeight: 400, color: 'var(--city-text, #334155)' }}>{c.telefono || '-'}</td>
+                            <td style={{ fontWeight: 400, color: 'var(--city-text, #334155)' }}>{c.vehiculo || t('admin.delivery.noVehicle', 'Sin vehículo asignado')}</td>
                             <td style={{ textAlign: 'center', fontWeight: 400 }}>
                               {getConductorBadge(c.estado)}
                             </td>

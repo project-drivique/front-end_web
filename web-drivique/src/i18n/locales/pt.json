@@ -1942,7 +1942,7 @@
       },
       "drivers": {
         "title": "Motoristas",
-        "name": "MOTORISTA",
+        "name": "NOME MOTORISTA",
         "phone": "TELEFONE",
         "license": "CARTA DE CONDUÇÃO",
         "vehicle": "VEÍCULO ATRIBUÍDO",
@@ -1955,7 +1955,13 @@
         "inactive": "Inativo",
         "emptyTitle": "Sem motoristas",
         "emptyDesc": "Crie um motorista para atribuir.",
-        "document": "DOCUMENTO"
+        "document": "DOCUMENTO",
+        "email": "CORREIO ELETRÓNICO",
+        "docType": "TIPO DOC",
+        "docNum": "NÚMERO DOC",
+        "licenseNum": "NÚMERO CARTA",
+        "licenseCat": "CATEGORIA CARTA",
+        "licenseExp": "VALIDADE CARTA"
       },
       "notification": {
         "assignedToUser": "Motorista atribuído à reserva {{code}}. PIN: {{pin}}",

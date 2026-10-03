@@ -1942,7 +1942,7 @@
       },
       "drivers": {
         "title": "Motoristas",
-        "name": "MOTORISTA",
+        "name": "NOME MOTORISTA",
         "phone": "TELEFONE",
         "license": "CNH",
         "vehicle": "VEÍCULO ATRIBUÍDO",
@@ -1955,7 +1955,13 @@
         "inactive": "Inativo",
         "emptyTitle": "Sem motoristas",
         "emptyDesc": "Crie um motorista para atribuir.",
-        "document": "DOCUMENTO"
+        "document": "DOCUMENTO",
+        "email": "E-MAIL",
+        "docType": "TIPO DOC",
+        "docNum": "NÚMERO DOC",
+        "licenseNum": "NÚMERO CNH",
+        "licenseCat": "CATEGORIA CNH",
+        "licenseExp": "VALIDADE CNH"
       },
       "notification": {
         "assignedToUser": "Motorista atribuído à reserva {{code}}. PIN: {{pin}}",
