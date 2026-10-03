@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useMemo, useCallback } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import {
@@ -1182,8 +1182,8 @@ export default function ReservationManagementPage() {
               </div>
 
               {/* PASO 3: DATOS DEL CLIENTE, TÃ‰RMINOS, CUPONES Y PAGO */}
-              <div className="reserva-detail-card-box" style={{ borderLeft: '4px solid #2563eb' }}>
-                <h4 style={{ color: '#2563eb', margin: '0 0 12px', fontSize: 14 }}>
+              <div className="reserva-detail-card-box" style={{ borderLeft: '4px solid var(--brand-primary, #2563eb)' }}>
+                <h4 style={{ color: 'var(--brand-primary, #2563eb)', margin: '0 0 12px', fontSize: 14 }}>
                   <FaUser /> PASO 3: Cliente, TÃ©rminos, Cupones y GestiÃ³n de Pago
                 </h4>
 

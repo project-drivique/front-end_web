@@ -1,4 +1,4 @@
-﻿import { useMemo, useState, useEffect } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { FaCheck, FaImage, FaPalette, FaSave, FaUndo } from 'react-icons/fa'
 import { useAuthStore } from '../../../store/authStore'
@@ -38,7 +38,7 @@ export default function BrandManagementPage() {
       applyBrand(updated)
       try {
         brandService.save(updated, user)
-        setNotice('Color de marca actualizado y aplicado automÃ¡ticamente.')
+        setNotice('Color de marca actualizado y aplicado automáticamente.')
       } catch {}
     }
   }
@@ -50,7 +50,7 @@ export default function BrandManagementPage() {
     setError('')
     try {
       brandService.save(updated, user)
-      setNotice('Color de marca actualizado y aplicado automÃ¡ticamente.')
+      setNotice('Color de marca actualizado y aplicado automáticamente.')
     } catch {}
   }
 
