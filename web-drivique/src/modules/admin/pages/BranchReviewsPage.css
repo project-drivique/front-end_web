@@ -1,0 +1,229 @@
+/* src/modules/admin/pages/BranchReviewsPage.css */
+
+.branch-reviews-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.branch-reviews-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.branch-reviews-stat-card {
+  background: var(--bg-tarjeta, #ffffff);
+  border: 1px solid var(--borde, #e2e8f0);
+  border-radius: 14px;
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+}
+
+.branch-reviews-stat-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  background: var(--brand-soft, #eff6ff);
+  color: var(--brand-primary, #2563eb);
+}
+
+.branch-reviews-stat-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.branch-reviews-stat-val {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--texto-main, #0f172a);
+  line-height: 1.2;
+}
+
+.branch-reviews-stat-lbl {
+  font-size: 12px;
+  color: var(--texto-second, #64748b);
+  font-weight: 500;
+}
+
+.branch-reviews-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-tarjeta, #ffffff);
+  padding: 14px 18px;
+  border-radius: 12px;
+  border: 1px solid var(--borde, #e2e8f0);
+}
+
+.branch-reviews-search {
+  flex: 1;
+  min-width: 240px;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.branch-reviews-search input {
+  width: 100%;
+  padding: 9px 14px 9px 36px;
+  border-radius: 8px;
+  border: 1px solid var(--borde, #cbd5e1);
+  font-size: 13px;
+  color: var(--texto-main, #0f172a);
+  background: var(--bg-seccion1, #f8fafc);
+  outline: none;
+}
+
+.branch-reviews-search input:focus {
+  border-color: var(--brand-primary, #2563eb);
+  background: #ffffff;
+}
+
+.branch-reviews-search-icon {
+  position: absolute;
+  left: 12px;
+  color: var(--texto-second, #94a3b8);
+  font-size: 13px;
+}
+
+.branch-reviews-filter-select {
+  padding: 9px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--borde, #cbd5e1);
+  font-size: 13px;
+  color: var(--texto-main, #0f172a);
+  background: var(--bg-tarjeta, #ffffff);
+  cursor: pointer;
+  outline: none;
+}
+
+.branch-reviews-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.branch-review-card {
+  background: var(--bg-tarjeta, #ffffff);
+  border: 1px solid var(--borde, #e2e8f0);
+  border-radius: 14px;
+  padding: 18px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
+  transition: transform 140ms ease, box-shadow 140ms ease;
+}
+
+.branch-review-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+}
+
+.branch-review-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.branch-review-author {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.branch-review-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--brand-soft, #eff6ff);
+  color: var(--brand-primary, #2563eb);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.branch-review-meta strong {
+  display: block;
+  font-size: 14px;
+  color: var(--texto-main, #0f172a);
+}
+
+.branch-review-meta span {
+  font-size: 12px;
+  color: var(--texto-second, #64748b);
+}
+
+.branch-review-stars {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  color: #f59e0b;
+  font-size: 14px;
+}
+
+.branch-review-body {
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--texto-main, #334155);
+}
+
+.branch-review-response-box {
+  background: var(--bg-seccion1, #f8fafc);
+  border-left: 3px solid var(--brand-primary, #2563eb);
+  border-radius: 0 8px 8px 0;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.branch-review-response-header {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--brand-primary, #2563eb);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.branch-review-response-text {
+  font-size: 13px;
+  color: var(--texto-main, #334155);
+  line-height: 1.5;
+}
+
+.branch-review-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: flex-end;
+  padding-top: 8px;
+  border-top: 1px solid var(--borde, #f1f5f9);
+}
+
+@media (max-width: 768px) {
+  .branch-reviews-stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .branch-reviews-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

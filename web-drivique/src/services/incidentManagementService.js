@@ -1,16 +1,17 @@
 // src/services/incidentManagementService.js
 import { accessAuditService } from './accessAuditService'
 import { vehicleManagementService } from './vehicleManagementService'
+import { INITIAL_REPORTS } from '../modules/support/data/support.dummy'
 
-const STORAGE_KEY = 'drivique_user_reports'
+const STORAGE_KEY = 'drivique_user_reports_v7'
 const NOTIFS_KEY = 'drivique_user_notifications'
 const STORAGE_SCHEMA_KEY = 'drivique_user_reports_schema'
-const STORAGE_SCHEMA = '2'
+const STORAGE_SCHEMA = '3'
 const LEGACY_INCIDENT_IDS = new Set(['REP-9102', 'REP-8401', 'REP-7730', 'REP-6521'])
 
 const normalizeBranch = (value) => String(value || '').trim().toLocaleLowerCase()
 const isBranchManager = (user) => ['encargado', 'encargado_sucursal', 'branch_manager'].includes(user?.rol)
-const assignedBranch = (user) => user?.sucursalId || user?.sucursal || user?.sucursalAsignada || ''
+const assignedBranch = (user) => user?.sucursalId || user?.sucursal || user?.sucursalAsignada || 'Alamo Bogotá - Aeropuerto'
 
 function assertIncidentScope(user, branch) {
   if (!isBranchManager(user)) return
@@ -19,18 +20,15 @@ function assertIncidentScope(user, branch) {
   }
 }
 
-
 function readIncidents() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) return []
-    const parsed = JSON.parse(raw)
-    let list = Array.isArray(parsed) ? parsed : []
-    if (localStorage.getItem(STORAGE_SCHEMA_KEY) !== STORAGE_SCHEMA) {
-      list = list.filter((incident) => !LEGACY_INCIDENT_IDS.has(String(incident?.id || incident?.codigo || '')))
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(list))
+    if (!raw) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_REPORTS))
       localStorage.setItem(STORAGE_SCHEMA_KEY, STORAGE_SCHEMA)
     }
+    const rawData = raw ? JSON.parse(raw) : INITIAL_REPORTS
+    let list = Array.isArray(rawData) && rawData.length > 0 ? rawData : INITIAL_REPORTS
 
     const vehiclesList = vehicleManagementService.list()
     return list.map(r => {
@@ -43,10 +41,27 @@ function readIncidents() {
                (vBrand && v.nombre && v.nombre.toLowerCase().includes(vBrand))
         )
       const fallbackImg = vehiclesList[0]?.imagenes?.[0] || 'https://pplx-res.cloudinary.com/image/upload/pplx_search_images/a2cb0b378c25efdb1e116246f84149744c2f4081.jpg'
+      
+      const code = r.codigo || r.id || 'INC'
+
       return {
         ...r,
-        sucursal: r.sucursal || matchingVehicle?.sucursal || '',
-        vehiculoImagen: r.vehiculoImagen || matchingVehicle?.imagenes?.[0] || matchingVehicle?.imagen || fallbackImg
+        sucursal: r.sucursal || matchingVehicle?.sucursal || 'Alamo Bogotá - Aeropuerto',
+        vehiculoImagen: r.vehiculoImagen || matchingVehicle?.imagenes?.[0] || matchingVehicle?.imagen || fallbackImg,
+        
+        // Evidencias Fotos (Obligatorias - Nunca null)
+        evidenciaFoto1: r.evidenciaFoto1 || `Evidencia-Foto-1-${code}.jpg`,
+        evidenciaFoto1Url: r.evidenciaFoto1Url || r.adjuntos?.[0] || 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=800&q=80',
+        
+        evidenciaFoto2: r.evidenciaFoto2 || `Evidencia-Foto-2-${code}.jpg`,
+        evidenciaFoto2Url: r.evidenciaFoto2Url || r.adjuntos?.[1] || 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=800&q=80',
+        
+        evidenciaFoto3: r.evidenciaFoto3 || `Evidencia-Foto-3-${code}.jpg`,
+        evidenciaFoto3Url: r.evidenciaFoto3Url || r.adjuntos?.[2] || 'https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=800&q=80',
+        
+        // Evidencia Video (Opcional - Puede ser null)
+        evidenciaVideo: r.evidenciaVideo !== undefined ? r.evidenciaVideo : (code === 'REP-9102' ? 'Evidencia-Video-REP-9102.mp4' : null),
+        evidenciaVideoUrl: r.evidenciaVideoUrl !== undefined ? r.evidenciaVideoUrl : (code === 'REP-9102' ? 'https://www.w3schools.com/html/mov_bbb.mp4' : null),
       }
     });
   } catch {
@@ -168,7 +183,7 @@ export const incidentManagementService = {
     return newReport
   },
 
-  updateStatusAndRespond(id, { nuevoEstado, respuestaTexto }, adminUser) {
+  updateStatusAndRespond(id, { nuevoEstado, respuestaTexto, nuevaPrioridad }, adminUser) {
     const incidents = readIncidents()
     const index = incidents.findIndex((r) => r.id === id || r.codigo === id)
     if (index < 0) throw new Error('reportNotFound')
@@ -176,6 +191,7 @@ export const incidentManagementService = {
     const current = incidents[index]
     assertIncidentScope(adminUser, current.sucursal)
     const updatedState = nuevoEstado || current.estado
+    const updatedPriority = nuevaPrioridad || current.prioridad
 
     const responseEntry = {
       estadoKey: updatedState,
@@ -190,6 +206,7 @@ export const incidentManagementService = {
     incidents[index] = {
       ...current,
       estado: updatedState,
+      prioridad: updatedPriority,
       historial: [...(current.historial || []), responseEntry],
     }
 

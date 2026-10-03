@@ -33,6 +33,10 @@
   position: sticky;
   top: 0;
   height: 100vh;
+  max-height: 100vh;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
   background: var(--brand-gradient, linear-gradient(135deg, var(--brand-secondary, #1e3a8a) 0%, var(--brand-primary, #2563eb) 100%)) !important;
   color: #ffffff;
   padding: 22px 14px;
@@ -42,6 +46,19 @@
   box-shadow: 4px 0 25px rgba(0, 0, 0, 0.18);
   z-index: 10;
   transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1), padding 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.management-sidebar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.management-sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.management-sidebar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 4px;
 }
 
 .management-brand {
@@ -216,17 +233,33 @@
 
 .management-logout {
   margin-top: auto;
-  border: 0;
-  background: rgba(255, 255, 255, 0.08);
-  color: #fee2e2;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  background: #ffffff !important;
+  color: #0f172a !important;
   cursor: pointer;
   width: 100%;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  margin-bottom: 4px;
+  flex-shrink: 0;
+}
+
+.management-logout span,
+.management-logout svg {
+  color: #0f172a !important;
 }
 
 .management-logout:hover {
-  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
-  color: #ffffff;
-  box-shadow: 0 6px 18px rgba(220, 38, 38, 0.35);
+  background: #f8fafc !important;
+  color: #dc2626 !important;
+  border-color: #fca5a5;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+  transform: translateY(-1px);
+}
+
+.management-logout:hover span,
+.management-logout:hover svg {
+  color: #dc2626 !important;
 }
 
 /* Área Principal */
@@ -673,4 +706,40 @@
   .management-sidebar-overlay {
     z-index: 1000 !important;
   }
+}
+
+/* ─── MODO OSCURO PARA SIDEBAR Y SHELL ─────────────────────────────────────── */
+.management-shell--dark .management-sidebar {
+  background: linear-gradient(135deg, #07111f 0%, #111c2e 100%) !important;
+  border-right: 1px solid var(--adm-border);
+  box-shadow: 4px 0 25px rgba(0, 0, 0, 0.4);
+}
+
+.management-shell--dark .management-nav__item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+.management-shell--dark .management-nav__item.is-active {
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  border-left: 3px solid #60a5fa; /* A softer blue for dark mode */
+}
+
+.management-shell--dark .management-logout:hover {
+  background: rgba(239, 68, 68, 0.2);
+  color: #fca5a5;
+}
+
+.management-shell--dark .management-brand {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.management-shell--dark .management-nav__section-title {
+  color: #64748b;
+}
+
+/* Modificamos el scrollbar en modo oscuro para el sidebar */
+.management-shell--dark .management-sidebar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
 }
