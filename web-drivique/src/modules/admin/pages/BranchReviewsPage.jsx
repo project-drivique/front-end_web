@@ -5,16 +5,12 @@ import {
   FaSearch,
   FaCommentDots,
   FaCheckCircle,
-  FaPaperPlane,
-  FaTrash,
   FaBuilding,
-  FaUserCheck,
   FaCar,
   FaFileExcel,
   FaFilePdf,
   FaPrint,
   FaExclamationCircle,
-  FaQuoteLeft,
 } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import { useAuthStore } from '../../../store/authStore'
@@ -112,23 +108,6 @@ export default function BranchReviewsPage({ branchOnly = false }) {
     setRespuestaTexto('')
 
     showAlert({ icon: 'success', title: 'Respuesta publicada', text: 'La respuesta a la reseña ha sido guardada exitosamente.' })
-  }
-
-  const handleEliminarResena = async (id) => {
-    const confirm = await showAlert({
-      icon: 'warning',
-      title: '¿Eliminar reseña?',
-      text: 'Esta acción removerá la reseña del sistema.',
-      showCancelButton: true,
-      confirmButtonText: t('common.delete', 'Sí, eliminar'),
-      cancelButtonText: t('common.cancel', 'Cancelar')
-    })
-
-    if (confirm.isConfirmed) {
-      branchReviewManagementService.eliminarResena(id)
-      refresh()
-      showAlert({ icon: 'success', title: 'Reseña eliminada' })
-    }
   }
 
   const backdropStyle = { display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(15,23,42,0.65)', padding: 16 }
@@ -381,43 +360,22 @@ export default function BranchReviewsPage({ branchOnly = false }) {
                                   onClick={() => handleOpenResponder(item)}
                                   title={tieneRespuesta ? t('admin.reviews.editReplyBtn', 'Editar Respuesta') : t('admin.reviews.replyBtn', 'Responder')}
                                   style={{
-                                    padding: '6px 14px',
-                                    borderRadius: '8px',
-                                    background: tieneRespuesta ? 'var(--brand-soft-light, #eff6ff)' : '#16a34a',
+                                    padding: '7px 18px',
+                                    borderRadius: '9999px',
+                                    background: tieneRespuesta ? 'var(--brand-soft-light, #eff6ff)' : '#2563eb',
                                     color: tieneRespuesta ? 'var(--brand-primary, #2563eb)' : '#ffffff',
                                     border: tieneRespuesta ? '1px solid var(--brand-border-light, #bfdbfe)' : 'none',
                                     cursor: 'pointer',
                                     fontWeight: 700,
-                                    fontSize: 12,
+                                    fontSize: 12.5,
                                     display: 'inline-flex',
                                     alignItems: 'center',
                                     gap: 5,
-                                    boxShadow: tieneRespuesta ? 'none' : '0 2px 5px rgba(22, 163, 74, 0.25)'
-                                  }}
-                                >
-                                  <FaCommentDots /> {tieneRespuesta ? t('admin.reviews.editReplyBtn', 'Editar Respuesta') : t('admin.reviews.replyBtn', 'Responder')}
-                                </button>
-
-                                <button
-                                  type="button"
-                                  onClick={() => handleEliminarResena(item.id)}
-                                  title={t('admin.reviews.deleteBtn', 'Eliminar')}
-                                  style={{
-                                    padding: '6px 12px',
-                                    borderRadius: '8px',
-                                    background: '#fef2f2',
-                                    color: '#dc2626',
-                                    border: '1px solid #fecaca',
-                                    cursor: 'pointer',
-                                    fontWeight: 700,
-                                    fontSize: 12,
-                                    display: 'inline-flex',
-                                    alignItems: 'center',
-                                    gap: 5,
+                                    boxShadow: tieneRespuesta ? 'none' : '0 2px 5px rgba(37, 99, 235, 0.25)',
                                     whiteSpace: 'nowrap'
                                   }}
                                 >
-                                  <FaTrash /> {t('admin.reviews.deleteBtn', 'Eliminar')}
+                                  <FaCommentDots /> {tieneRespuesta ? t('admin.reviews.editReplyBtn', 'Editar Respuesta') : t('admin.reviews.replyBtn', 'Responder')}
                                 </button>
                               </div>
                             </td>
@@ -478,15 +436,15 @@ export default function BranchReviewsPage({ branchOnly = false }) {
                           )}
                         </div>
 
-                        <div className="doc-mobile-card-actions" style={{ display: 'flex', gap: 8 }}>
+                        <div className="doc-mobile-card-actions">
                           <button
                             type="button"
                             onClick={() => handleOpenResponder(item)}
                             style={{
-                              flex: 1,
+                              width: '100%',
                               padding: '9px 14px',
                               borderRadius: '12px',
-                              background: tieneRespuesta ? 'var(--brand-soft-light, #eff6ff)' : '#16a34a',
+                              background: tieneRespuesta ? 'var(--brand-soft-light, #eff6ff)' : '#2563eb',
                               color: tieneRespuesta ? 'var(--brand-primary, #2563eb)' : '#ffffff',
                               border: tieneRespuesta ? '1px solid var(--brand-border-light, #bfdbfe)' : 'none',
                               fontWeight: 700,
@@ -499,27 +457,6 @@ export default function BranchReviewsPage({ branchOnly = false }) {
                             }}
                           >
                             <FaCommentDots /> {tieneRespuesta ? t('admin.reviews.editReplyBtn', 'Editar Respuesta') : t('admin.reviews.replyBtn', 'Responder')}
-                          </button>
-
-                          <button
-                            type="button"
-                            onClick={() => handleEliminarResena(item.id)}
-                            style={{
-                              padding: '9px 16px',
-                              borderRadius: '12px',
-                              background: '#fef2f2',
-                              color: '#dc2626',
-                              border: '1px solid #fecaca',
-                              fontWeight: 700,
-                              fontSize: '13px',
-                              cursor: 'pointer',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              gap: 6,
-                            }}
-                          >
-                            <FaTrash /> {t('admin.reviews.deleteBtn', 'Eliminar')}
                           </button>
                         </div>
                       </div>
