@@ -9,17 +9,23 @@ import {
   FaTrash,
   FaBuilding,
   FaUserCheck,
-  FaQuoteLeft,
   FaCar,
-  FaFilter,
+  FaFileExcel,
+  FaFilePdf,
+  FaPrint,
+  FaExclamationCircle,
+  FaQuoteLeft,
 } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import { useAuthStore } from '../../../store/authStore'
 import { branchReviewManagementService } from '../../../services/branchReviewManagementService'
+import { exportExcel, exportPdf, printTable } from '../../../utils/listExportUtils'
 import { showAlert } from '../../../utils/swalConfig'
 import MenuConfiguracion from '../../../components/MenuConfiguracion'
 import ManagementSidebar from '../components/ManagementSidebar'
 import './CityManagementPage.css'
+import './CashCollectionPage.css'
+import './DocumentVerificationPage.css'
 import './BranchReviewsPage.css'
 
 export default function BranchReviewsPage({ branchOnly = false }) {
@@ -27,35 +33,21 @@ export default function BranchReviewsPage({ branchOnly = false }) {
   const { tema } = useLanding()
   const user = useAuthStore((state) => state.usuario)
   const isBranchManager = branchOnly || user?.rol === 'encargado' || user?.rol === 'branch_manager' || user?.rol === 'encargado_sucursal'
-  const sucursalAsignada = user?.sucursalAsignada || user?.sucursalId || user?.sucursal || 'Medellín - El Poblado'
+  const sucursalAsignada = user?.sucursalAsignada || user?.sucursalId || user?.sucursal || 'Alamo Bogotá - Aeropuerto'
 
   const [reviews, setReviews] = useState(() => branchReviewManagementService.list(user))
   const [search, setSearch] = useState('')
-  const [ratingFilter, setRatingFilter] = useState('all') // 'all' | '5' | '4' | '3' | '2' | '1'
-  const [statusFilter, setStatusFilter] = useState('all') // 'all' | 'pendiente_respuesta' | 'publicada'
-  
+  const [activeTab, setActiveTab] = useState('todos')
+
   // Modal de Respuesta
   const [modalReview, setModalReview] = useState(null)
   const [respuestaTexto, setRespuestaTexto] = useState('')
 
-  const filtered = useMemo(() => {
-    const q = search.trim().toLowerCase()
-    return reviews.filter((item) => {
-      const matchRating = ratingFilter === 'all' || Number(item.calificacion) === Number(ratingFilter)
-      const matchStatus = statusFilter === 'all' || item.estado === statusFilter
-      const matchQuery =
-        !q ||
-        item.clienteNombre.toLowerCase().includes(q) ||
-        item.vehiculo.toLowerCase().includes(q) ||
-        item.comentario.toLowerCase().includes(q)
+  const refresh = () => setReviews(branchReviewManagementService.list(user))
 
-      return matchRating && matchStatus && matchQuery
-    })
-  }, [reviews, search, ratingFilter, statusFilter])
-
-  // Promedio de Calificación de la Sucursal
+  // KPI Calculations
   const promedioRating = useMemo(() => {
-    if (!reviews || reviews.length === 0) return 5.0
+    if (!reviews || reviews.length === 0) return '5.0'
     const suma = reviews.reduce((acc, curr) => acc + (curr.calificacion || 5), 0)
     return (suma / reviews.length).toFixed(1)
   }, [reviews])
@@ -63,6 +55,44 @@ export default function BranchReviewsPage({ branchOnly = false }) {
   const pendientesContador = useMemo(() => {
     return reviews.filter((r) => r.estado === 'pendiente_respuesta' || !r.respuestaEncargado).length
   }, [reviews])
+
+  const respondidasContador = useMemo(() => {
+    return reviews.filter((r) => r.estado === 'publicada' || Boolean(r.respuestaEncargado)).length
+  }, [reviews])
+
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase()
+    return reviews.filter((item) => {
+      // Tab filtering
+      if (activeTab === 'pendientes' && (item.estado === 'publicada' && Boolean(item.respuestaEncargado))) return false
+      if (activeTab === 'respondidas' && (!item.respuestaEncargado || item.estado !== 'publicada')) return false
+      if (activeTab === '5estrellas' && item.calificacion !== 5) return false
+      if (activeTab === '4estrellas' && item.calificacion !== 4) return false
+      if (activeTab === 'bajas' && item.calificacion > 3) return false
+
+      // Search query
+      if (q) {
+        const text = `${item.reservaCodigo || ''} ${item.clienteNombre || ''} ${item.vehiculo || ''} ${item.comentario || ''} ${item.respuestaEncargado || ''}`.toLowerCase()
+        if (!text.includes(q)) return false
+      }
+
+      return true
+    })
+  }, [reviews, search, activeTab])
+
+  const exportData = useMemo(() => {
+    return filtered.map((r, i) => [
+      i + 1,
+      r.reservaCodigo || `RES-${r.id}`,
+      r.clienteNombre,
+      r.vehiculo || '-',
+      `${r.calificacion}.0 ★`,
+      r.comentario,
+      r.fecha || '-',
+      r.respuestaEncargado || t('admin.reviews.noReply', 'Sin respuesta oficial'),
+      r.respuestaEncargado ? t('admin.reviews.status.published', 'Respondida') : t('admin.reviews.status.pending', 'Pendiente')
+    ])
+  }, [filtered, t])
 
   const handleOpenResponder = (review) => {
     setModalReview(review)
@@ -77,233 +107,473 @@ export default function BranchReviewsPage({ branchOnly = false }) {
     }
 
     branchReviewManagementService.responderResena(modalReview.id, respuestaTexto)
-    setReviews(branchReviewManagementService.list(user))
+    refresh()
     setModalReview(null)
     setRespuestaTexto('')
 
-    showAlert({ icon: 'success', title: 'Respuesta enviada', text: 'La respuesta a la reseña ha sido guardada y publicada.' })
+    showAlert({ icon: 'success', title: 'Respuesta publicada', text: 'La respuesta a la reseña ha sido guardada exitosamente.' })
   }
 
   const handleEliminarResena = async (id) => {
     const confirm = await showAlert({
       icon: 'warning',
       title: '¿Eliminar reseña?',
-      text: 'Esta acción removerá la reseña de la lista de la sucursal.',
+      text: 'Esta acción removerá la reseña del sistema.',
       showCancelButton: true,
-      confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar'
+      confirmButtonText: t('common.delete', 'Sí, eliminar'),
+      cancelButtonText: t('common.cancel', 'Cancelar')
     })
 
     if (confirm.isConfirmed) {
-      const updated = branchReviewManagementService.eliminarResena(id)
-      setReviews(branchReviewManagementService.list(user))
+      branchReviewManagementService.eliminarResena(id)
+      refresh()
       showAlert({ icon: 'success', title: 'Reseña eliminada' })
     }
   }
 
+  const backdropStyle = { display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(15,23,42,0.65)', padding: 16 }
+  const modalHeadStyle = { padding: '20px 24px', borderBottom: '1px solid var(--city-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }
+  const closeBtnStyle = { background: 'transparent', border: 'none', fontSize: 24, cursor: 'pointer', color: 'var(--city-muted)', lineHeight: 1, padding: 0 }
+
   return (
     <div className={`management-shell ${tema === 'oscuro' ? 'management-shell--dark' : ''}`}>
-      <ManagementSidebar branchOnly={branchOnly} />
+      <ManagementSidebar branchOnly={isBranchManager} />
 
-      <main className="management-main" style={{ padding: '24px 32px' }}>
-        {/* Encabezado */}
-        <header className="management-header" style={{ marginBottom: 20 }}>
-          <div>
-            <p className="management-eyebrow" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <FaBuilding style={{ color: 'var(--brand-primary, #2563eb)' }} />
-              <span>Sede: <strong>{isBranchManager ? sucursalAsignada : 'Todas las Sucursales'}</strong></span>
-            </p>
-            <h1>{t('admin.reviews.title', 'Reseñas y Calificaciones de Sucursal')}</h1>
-            <p className="cities-subtitle">
-              {t('admin.reviews.subtitle', 'Gestión exclusiva de opiniones, experiencias y calificaciones enviadas por clientes atendidos en esta sede.')}
-            </p>
-          </div>
+      <main className="management-main doc-verification-main">
+        <div className="cities-container" style={{ maxWidth: '100%' }}>
 
-          <div className="management-header__actions">
-            <MenuConfiguracion />
-          </div>
-        </header>
+          {/* TOPBAR HEADER WITH BADGE AND PROFILE CHIP */}
+          <header className="cities-topbar reservations-management-header">
+            <div className="branch-topbar-brand-title">
+              <span className="branch-topbar-badge">{t('admin.branchManagement', 'GESTIÓN OPERATIVA')}</span>
+              <h1 className="branch-topbar-heading">{t('admin.reviews.title', 'Reseñas y Calificaciones')}</h1>
+            </div>
+            <div className="cities-topbar__actions" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <MenuConfiguracion />
+              {user && (
+                <div className="branch-user-profile-chip">
+                  <div className="branch-user-avatar">{(user?.nombre || user?.correo || 'A').charAt(0).toUpperCase()}</div>
+                  <div className="branch-user-info-text">
+                    <strong className="branch-user-name">{[user?.nombre, user?.apellido].filter(Boolean).join(' ') || user?.correo || 'Usuario'}</strong>
+                    <span className="branch-user-role">{user?.rol || 'encargado_sucursal'}</span>
+                  </div>
+                </div>
+              )}
+            </div>
+          </header>
 
-        {/* Tarjetas KPI de Reseñas */}
-        <div className="cash-kpi-bar" style={{ marginBottom: 24 }}>
-          <div className="cash-kpi-item">
-            <span className="cash-kpi-title">Calificación Promedio de Sede</span>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <strong className="cash-kpi-val success" style={{ fontSize: 24 }}>{promedioRating} / 5.0</strong>
-              <div style={{ color: '#f59e0b', fontSize: 16 }}>
-                {'â˜…'.repeat(Math.round(promedioRating))}
+          {/* KPI CARDS BAR */}
+          <div className="cash-kpi-bar">
+            {[
+              { icon: FaStar, color: '#f59e0b', label: t('admin.reviews.kpi.average', 'Promedio Sede'), value: `${promedioRating} / 5.0 ★`, desc: t('admin.reviews.kpi.averageDesc', 'Puntuación acumulada') },
+              { icon: FaCommentDots, color: '#3b82f6', label: t('admin.reviews.kpi.total', 'Total Reseñas'), value: reviews.length, desc: t('admin.reviews.kpi.totalDesc', 'Opiniones recibidas') },
+              { icon: FaExclamationCircle, color: '#ef4444', label: t('admin.reviews.kpi.pending', 'Pendientes por Responder'), value: pendientesContador, desc: t('admin.reviews.kpi.pendingDesc', 'Requieren atención del encargado') },
+              { icon: FaCheckCircle, color: '#10b981', label: t('admin.reviews.kpi.answered', 'Respuestas Publicadas'), value: respondidasContador, desc: t('admin.reviews.kpi.answeredDesc', 'Atención completada') },
+            ].map(({ icon: Icon, color, label, value, desc }) => (
+              <div key={label} className="cash-kpi-item-light">
+                <div className="cash-kpi-header-light" style={{ color }}>
+                  <Icon /><span>{label}</span>
+                </div>
+                <strong className="cash-kpi-val-light">{value}</strong>
+                <div className="cash-kpi-progress-bg">
+                  <div className="cash-kpi-progress-fill" style={{ width: reviews.length > 0 ? '100%' : '0%', background: color }} />
+                </div>
+                <span className="cash-kpi-subtitle-light">{desc}</span>
               </div>
+            ))}
+          </div>
+
+          {/* FLEET ATTACHED TABS */}
+          <div className="fleet-attached-tabs" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
+            <div className="fleet-tabs-nav">
+              <button
+                type="button"
+                onClick={() => setActiveTab('todos')}
+                className={`fleet-tab-btn ${activeTab === 'todos' ? 'is-active' : ''}`}
+              >
+                {t('admin.reviews.tabs.all', 'Todas las Reseñas')} ({reviews.length})
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('pendientes')}
+                className={`fleet-tab-btn ${activeTab === 'pendientes' ? 'is-active' : ''}`}
+              >
+                {t('admin.reviews.tabs.pending', 'Pendientes de Respuesta')} ({pendientesContador})
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('respondidas')}
+                className={`fleet-tab-btn ${activeTab === 'respondidas' ? 'is-active' : ''}`}
+              >
+                {t('admin.reviews.tabs.answered', 'Respondidas')} ({respondidasContador})
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('5estrellas')}
+                className={`fleet-tab-btn ${activeTab === '5estrellas' ? 'is-active' : ''}`}
+              >
+                {t('admin.reviews.tabs.star5', '5 Estrellas')} ({reviews.filter(r => r.calificacion === 5).length})
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('4estrellas')}
+                className={`fleet-tab-btn ${activeTab === '4estrellas' ? 'is-active' : ''}`}
+              >
+                {t('admin.reviews.tabs.star4', '4 Estrellas')} ({reviews.filter(r => r.calificacion === 4).length})
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('bajas')}
+                className={`fleet-tab-btn ${activeTab === 'bajas' ? 'is-active' : ''}`}
+              >
+                {t('admin.reviews.tabs.low', '1 - 3 Estrellas')} ({reviews.filter(r => r.calificacion <= 3).length})
+              </button>
             </div>
           </div>
 
-          <div className="cash-kpi-item">
-            <span className="cash-kpi-title">Total Reseñas Recibidas</span>
-            <strong className="cash-kpi-val info" style={{ fontSize: 22 }}>{reviews.length} opiniones</strong>
-          </div>
+          {/* MAIN CARD ATTACHED TO TABS */}
+          <section className="cities-card attached-to-tabs">
 
-          <div className="cash-kpi-item">
-            <span className="cash-kpi-title">Pendientes por Responder</span>
-            <strong className={`cash-kpi-val ${pendientesContador > 0 ? 'warning' : 'success'}`} style={{ fontSize: 22 }}>
-              {pendientesContador} pendientes
-            </strong>
-          </div>
-        </div>
-
-        {/* Filtros y Contenedor Principal */}
-        <section className="cities-card" style={{ padding: 24 }}>
-          <div className="cash-toolbar-container" style={{ marginBottom: 20 }}>
-            <div className="cash-toolbar-row1" style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-              <div className="cash-search-box" style={{ flex: 1, minWidth: 260 }}>
-                <FaSearch className="cash-search-icon" />
+            {/* TOOLBAR CON BUSCADOR, SUCURSAL Y EXPORT PILLS */}
+            <div className="cities-toolbar doc-toolbar-wrapper">
+              <label className="cities-search" style={{ flex: '1 1 250px', margin: 0 }}>
+                <FaSearch />
                 <input
                   type="text"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Buscar por cliente, vehículo o palabras clave..."
+                  placeholder={t('admin.reviews.searchPlaceholder', 'Buscar por cliente, vehículo, reserva o comentario...')}
                 />
+              </label>
+
+              <div className="doc-branch-badge">
+                <FaBuilding style={{ color: 'var(--city-muted, #64748b)' }} />
+                <span>{sucursalAsignada}</span>
               </div>
 
-              <div className="cash-select-box">
-                <select value={ratingFilter} onChange={(e) => setRatingFilter(e.target.value)}>
-                  <option value="all">⭐ Todas las estrellas</option>
-                  <option value="5">5 Estrellas (Excelente)</option>
-                  <option value="4">4 Estrellas (Muy Bueno)</option>
-                  <option value="3">3 Estrellas (Regular)</option>
-                  <option value="2">2 Estrellas (Malo)</option>
-                  <option value="1">1 Estrella (Deficiente)</option>
-                </select>
-              </div>
-
-              <div className="cash-select-box">
-                <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
-                  <option value="all">ðŸ’¬ Todos los estados</option>
-                  <option value="pendiente_respuesta">⏳ Pendientes de Respuesta</option>
-                  <option value="publicada">âœ… Respondidas / Publicadas</option>
-                </select>
+              <div className="export-pills-group" style={{ marginLeft: 'auto', display: 'flex', gap: '8px' }}>
+                <button
+                  type="button"
+                  className="export-pill export-pill--excel"
+                  onClick={() => exportExcel({ title: 'Reseñas - Drivique', headers: ['ID', 'RESERVA', 'CLIENTE', 'VEHÍCULO', 'CALIFICACIÓN', 'COMENTARIO', 'FECHA', 'RESPUESTA SUCURSAL', 'ESTADO'], rows: exportData })}
+                  title="Excel"
+                >
+                  <FaFileExcel aria-hidden="true" /> Excel
+                </button>
+                <button
+                  type="button"
+                  className="export-pill export-pill--pdf"
+                  onClick={() => exportPdf({ title: 'Reseñas - Drivique', headers: ['ID', 'RESERVA', 'CLIENTE', 'VEHÍCULO', 'CALIFICACIÓN', 'COMENTARIO', 'FECHA', 'RESPUESTA SUCURSAL', 'ESTADO'], rows: exportData })}
+                  title="PDF"
+                >
+                  <FaFilePdf aria-hidden="true" /> PDF
+                </button>
+                <button
+                  type="button"
+                  className="export-pill export-pill--print"
+                  onClick={() => printTable({ title: 'Reseñas - Drivique', headers: ['ID', 'RESERVA', 'CLIENTE', 'VEHÍCULO', 'CALIFICACIÓN', 'COMENTARIO', 'FECHA', 'RESPUESTA SUCURSAL', 'ESTADO'], rows: exportData })}
+                  title="Imprimir"
+                >
+                  <FaPrint aria-hidden="true" /> Imprimir
+                </button>
               </div>
             </div>
-          </div>
 
-          {/* Listado de Reseñas */}
-          {filtered.length === 0 ? (
-            <div className="cities-empty" style={{ padding: '40px 20px', textAlign: 'center' }}>
-              <FaCommentDots style={{ fontSize: 40, color: '#94a3b8', marginBottom: 12 }} />
-              <h3>No se encontraron reseñas con los filtros seleccionados</h3>
+            {/* SUMMARY COUNT */}
+            <div className="cities-summary" style={{ margin: '8px 0 12px' }}>
+              <span>{filtered.length}</span>{' '}
+              {t('admin.reviews.foundCount', 'RESEÑAS REGISTRADAS EN SUCURSAL').toUpperCase()}
             </div>
-          ) : (
-            <div style={{ display: 'grid', gap: 16 }}>
-              {filtered.map((item) => {
-                const estrellas = Array.from({ length: 5 }, (_, i) => i < item.calificacion)
-                const tieneRespuesta = Boolean(item.respuestaEncargado)
 
-                return (
-                  <div
-                    key={item.id}
-                    style={{
-                      border: '1px solid var(--city-border, #e2e8f0)',
-                      borderRadius: 14,
-                      padding: 20,
-                      background: 'var(--city-card, #ffffff)',
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.03)',
-                    }}
-                  >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 10 }}>
-                      <div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
-                          <strong style={{ fontSize: 16, color: 'var(--city-text, #0f172a)' }}>{item.clienteNombre}</strong>
-                          <span style={{ fontSize: 11, background: 'var(--city-bg, #f1f5f9)', color: 'var(--city-muted, #475569)', padding: '2px 8px', borderRadius: 6, fontWeight: 700 }}>
-                            {item.sucursal}
+            {filtered.length === 0 ? (
+              <div className="cities-empty">
+                <FaCommentDots style={{ fontSize: 44, color: '#94a3b8', marginBottom: 12 }} />
+                <h2>{t('admin.reviews.emptyTitle', 'No hay reseñas registradas')}</h2>
+                <p>{t('admin.reviews.emptyDesc', 'Ajusta los filtros para consultar otras calificaciones.')}</p>
+              </div>
+            ) : (
+              <>
+                {/* 1. VISTA DE TABLA DESKTOP CON 1 COLUMNA POR RESPONSABILIDAD DE DATOS */}
+                <div className="cities-table-wrap doc-desktop-table" style={{ overflowX: 'auto' }}>
+                  <table className="incidents-table-v2" style={{ whiteSpace: 'nowrap', width: '100%', borderCollapse: 'collapse' }}>
+                    <thead>
+                      <tr>
+                        <th style={{ width: '35px' }}>{t('admin.reviews.table.id', 'ID')}</th>
+                        <th>{t('admin.reviews.table.reservationCode', 'CÓDIGO RESERVA')}</th>
+                        <th>{t('admin.reviews.table.clientName', 'CLIENTE')}</th>
+                        <th>{t('admin.reviews.table.vehicle', 'VEHÍCULO ALQUILADO')}</th>
+                        <th style={{ textAlign: 'center' }}>{t('admin.reviews.table.rating', 'CALIFICACIÓN')}</th>
+                        <th>{t('admin.reviews.table.comment', 'COMENTARIO CLIENTE')}</th>
+                        <th>{t('admin.reviews.table.date', 'FECHA RESEÑA')}</th>
+                        <th>{t('admin.reviews.table.reply', 'RESPUESTA DE SUCURSAL')}</th>
+                        <th style={{ textAlign: 'center' }}>{t('admin.reviews.table.status', 'ESTADO RESPUESTA')}</th>
+                        <th style={{ textAlign: 'center' }}>{t('admin.reviews.table.actions', 'ACCIONES')}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filtered.map((item, i) => {
+                        const tieneRespuesta = Boolean(item.respuestaEncargado)
+                        return (
+                          <tr key={item.id}>
+                            {/* 1. ID */}
+                            <td style={{ fontWeight: 400, color: 'var(--city-text, #0f172a)', width: '35px' }}>{i + 1}</td>
+
+                            {/* 2. CÓDIGO RESERVA */}
+                            <td style={{ fontWeight: 500, color: 'var(--city-text, #0f172a)' }}>
+                              {item.reservaCodigo || `RES-${item.id}`}
+                            </td>
+
+                            {/* 3. CLIENTE */}
+                            <td style={{ fontWeight: 400, color: 'var(--city-text, #0f172a)' }}>
+                              {item.clienteNombre}
+                            </td>
+
+                            {/* 4. VEHÍCULO ALQUILADO */}
+                            <td style={{ fontWeight: 400, color: 'var(--city-text, #0f172a)' }}>
+                              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+                                <FaCar style={{ color: 'var(--city-muted, #64748b)', flexShrink: 0 }} />
+                                {item.vehiculo}
+                              </span>
+                            </td>
+
+                            {/* 5. CALIFICACIÓN */}
+                            <td style={{ textAlign: 'center', fontWeight: 700 }}>
+                              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: '#f59e0b', fontSize: 13 }}>
+                                <FaStar /> {item.calificacion}.0
+                              </span>
+                            </td>
+
+                            {/* 6. COMENTARIO CLIENTE */}
+                            <td style={{ maxWidth: 280, overflow: 'hidden', textOverflow: 'ellipsis', color: 'var(--city-text, #334155)', fontWeight: 400 }} title={item.comentario}>
+                              "{item.comentario}"
+                            </td>
+
+                            {/* 7. FECHA RESEÑA */}
+                            <td style={{ color: 'var(--city-muted, #64748b)', fontWeight: 400 }}>
+                              {item.fecha || '-'}
+                            </td>
+
+                            {/* 8. RESPUESTA DE SUCURSAL */}
+                            <td style={{ maxWidth: 260, overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: 400 }} title={item.respuestaEncargado || ''}>
+                              {tieneRespuesta ? (
+                                <span style={{ color: '#166534', fontSize: 12.5, fontWeight: 500 }}>
+                                  {item.respuestaEncargado}
+                                </span>
+                              ) : (
+                                <span style={{ color: 'var(--city-muted, #64748b)', fontSize: 12 }}>
+                                  {t('admin.reviews.noReply', 'Sin respuesta oficial')}
+                                </span>
+                              )}
+                            </td>
+
+                            {/* 9. ESTADO RESPUESTA */}
+                            <td style={{ textAlign: 'center', fontWeight: 400 }}>
+                              <span className={`doc-status-badge ${tieneRespuesta ? 'aprobado' : 'pendiente'}`}>
+                                {tieneRespuesta ? t('admin.reviews.status.published', 'Respondida') : t('admin.reviews.status.pending', 'Pendiente')}
+                              </span>
+                            </td>
+
+                            {/* 10. ACCIONES */}
+                            <td style={{ textAlign: 'center', fontWeight: 400 }}>
+                              <div style={{ display: 'flex', gap: 6, justifyContent: 'center' }}>
+                                <button
+                                  type="button"
+                                  onClick={() => handleOpenResponder(item)}
+                                  title={tieneRespuesta ? t('admin.reviews.editReplyBtn', 'Editar Respuesta') : t('admin.reviews.replyBtn', 'Responder')}
+                                  style={{
+                                    padding: '6px 14px',
+                                    borderRadius: '8px',
+                                    background: tieneRespuesta ? 'var(--brand-soft-light, #eff6ff)' : '#16a34a',
+                                    color: tieneRespuesta ? 'var(--brand-primary, #2563eb)' : '#ffffff',
+                                    border: tieneRespuesta ? '1px solid var(--brand-border-light, #bfdbfe)' : 'none',
+                                    cursor: 'pointer',
+                                    fontWeight: 700,
+                                    fontSize: 12,
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: 5,
+                                    boxShadow: tieneRespuesta ? 'none' : '0 2px 5px rgba(22, 163, 74, 0.25)'
+                                  }}
+                                >
+                                  <FaCommentDots /> {tieneRespuesta ? t('admin.reviews.editReplyBtn', 'Editar') : t('admin.reviews.replyBtn', 'Responder')}
+                                </button>
+
+                                <button
+                                  type="button"
+                                  onClick={() => handleEliminarResena(item.id)}
+                                  title={t('admin.reviews.deleteBtn', 'Eliminar')}
+                                  style={{
+                                    padding: '6px 12px',
+                                    borderRadius: '8px',
+                                    background: '#fef2f2',
+                                    color: '#dc2626',
+                                    border: '1px solid #fecaca',
+                                    cursor: 'pointer',
+                                    fontWeight: 600,
+                                    fontSize: 12,
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: 4
+                                  }}
+                                >
+                                  <FaTrash />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* 2. VISTA DE TARJETAS MÓVILES */}
+                <div className="doc-mobile-cards">
+                  {filtered.map((item, i) => {
+                    const tieneRespuesta = Boolean(item.respuestaEncargado)
+                    return (
+                      <div key={item.id} className="doc-mobile-card">
+                        <div className="doc-mobile-card-header">
+                          <div className="doc-mobile-card-title">
+                            <span style={{ fontWeight: 400, color: 'var(--brand-primary, #2563eb)', fontSize: 13 }}>ID {i + 1}</span>
+                            <span style={{ fontWeight: 500, color: 'var(--city-text, #0f172a)', fontSize: 14 }}>{item.reservaCodigo || `RES-${item.id}`}</span>
+                          </div>
+                          <span className={`doc-status-badge ${tieneRespuesta ? 'aprobado' : 'pendiente'}`}>
+                            {tieneRespuesta ? t('admin.reviews.status.published', 'Respondida') : t('admin.reviews.status.pending', 'Pendiente')}
                           </span>
                         </div>
-                        <p style={{ margin: 0, fontSize: 12, color: 'var(--city-muted, #64748b)', display: 'flex', alignItems: 'center', gap: 6 }}>
-                          <FaCar /> {item.vehiculo} {item.placa ? `(${item.placa})` : ''} · <span style={{ color: '#94a3b8' }}>{item.fecha}</span>
-                        </p>
-                      </div>
 
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                        <div style={{ display: 'flex', color: '#f59e0b', fontSize: 16 }}>
-                          {estrellas.map((isFilled, idx) => (
-                            <FaStar key={idx} style={{ opacity: isFilled ? 1 : 0.25 }} />
-                          ))}
+                        <div className="doc-mobile-card-body">
+                          <div className="doc-mobile-data-item doc-mobile-data-item--full">
+                            <span className="doc-mobile-data-label">{t('admin.reviews.table.clientName', 'CLIENTE')}</span>
+                            <span className="doc-mobile-data-value" style={{ fontSize: 14, fontWeight: 500 }}>{item.clienteNombre}</span>
+                          </div>
+
+                          <div className="doc-mobile-data-item doc-mobile-data-item--full">
+                            <span className="doc-mobile-data-label">{t('admin.reviews.table.vehicle', 'VEHÍCULO')}</span>
+                            <span className="doc-mobile-data-value" style={{ fontWeight: 400 }}>{item.vehiculo}</span>
+                          </div>
+
+                          <div className="doc-mobile-data-item">
+                            <span className="doc-mobile-data-label">{t('admin.reviews.table.rating', 'CALIFICACIÓN')}</span>
+                            <span className="doc-mobile-data-value" style={{ color: '#f59e0b', fontWeight: 700 }}>{item.calificacion}.0 ★</span>
+                          </div>
+
+                          <div className="doc-mobile-data-item">
+                            <span className="doc-mobile-data-label">{t('admin.reviews.table.date', 'FECHA')}</span>
+                            <span className="doc-mobile-data-value" style={{ fontWeight: 400 }}>{item.fecha || '-'}</span>
+                          </div>
+
+                          <div className="doc-mobile-data-item doc-mobile-data-item--full">
+                            <span className="doc-mobile-data-label">{t('admin.reviews.table.comment', 'COMENTARIO')}</span>
+                            <span className="doc-mobile-data-value" style={{ fontStyle: 'italic', color: 'var(--city-text, #334155)', fontWeight: 400 }}>"{item.comentario}"</span>
+                          </div>
+
+                          {tieneRespuesta && (
+                            <div className="doc-mobile-data-item doc-mobile-data-item--full">
+                              <span className="doc-mobile-data-label">{t('admin.reviews.table.reply', 'RESPUESTA SUCURSAL')}</span>
+                              <span className="doc-mobile-data-value" style={{ color: '#166534', fontWeight: 500 }}>{item.respuestaEncargado}</span>
+                            </div>
+                          )}
                         </div>
-                        <span style={{ fontWeight: 800, fontSize: 14, color: 'var(--city-text, #0f172a)' }}>{item.calificacion}.0</span>
-                      </div>
-                    </div>
 
-                    <div style={{ marginTop: 14, padding: 12, background: 'var(--adm-card-alt, #f8fafc)', borderRadius: 10, borderLeft: '4px solid var(--brand-primary, #2563eb)' }}>
-                      <p style={{ margin: 0, fontSize: 13.5, color: 'var(--city-text, #1e293b)', fontStyle: 'italic', lineHeight: 1.5 }}>
-                        "{item.comentario}"
-                      </p>
-                    </div>
-
-                    {tieneRespuesta ? (
-                      <div style={{ marginTop: 14, padding: 12, background: '#f0fdf4', borderRadius: 10, border: '1px solid #bbf7d0' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
-                          <FaUserCheck style={{ color: '#16a34a', fontSize: 13 }} />
-                          <strong style={{ fontSize: 12, color: '#15803d' }}>Respuesta de la Sucursal ({item.fechaRespuesta || 'Reciente'})</strong>
+                        <div className="doc-mobile-card-actions">
+                          <button
+                            type="button"
+                            onClick={() => handleOpenResponder(item)}
+                            style={{
+                              width: '100%',
+                              padding: '9px 18px',
+                              borderRadius: '12px',
+                              background: tieneRespuesta ? 'var(--brand-soft-light, #eff6ff)' : '#16a34a',
+                              color: tieneRespuesta ? 'var(--brand-primary, #2563eb)' : '#ffffff',
+                              border: tieneRespuesta ? '1px solid var(--brand-border-light, #bfdbfe)' : 'none',
+                              fontWeight: 700,
+                              fontSize: '13px',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              gap: 8,
+                            }}
+                          >
+                            <FaCommentDots /> {tieneRespuesta ? t('admin.reviews.editReplyBtn', 'Editar Respuesta') : t('admin.reviews.replyBtn', 'Responder Reseña')}
+                          </button>
                         </div>
-                        <p style={{ margin: 0, fontSize: 13, color: '#166534', lineHeight: 1.4 }}>
-                          {item.respuestaEncargado}
-                        </p>
                       </div>
-                    ) : (
-                      <div style={{ marginTop: 12, display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
-                        <button
-                          type="button"
-                          className="cities-primary"
-                          onClick={() => handleOpenResponder(item)}
-                          style={{ padding: '8px 14px', fontSize: 12, display: 'inline-flex', alignItems: 'center', gap: 6 }}
-                        >
-                          <FaCommentDots /> Responder Reseña
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                )
-              })}
+                    )
+                  })}
+                </div>
+              </>
+            )}
+          </section>
+        </div>
+      </main>
+
+      {/* MODAL DE RESPONDER RESEÑA */}
+      {modalReview && (
+        <div className="cities-modal-backdrop" style={backdropStyle} onMouseDown={e => e.target === e.currentTarget && setModalReview(null)}>
+          <section className="cities-modal" style={{ maxWidth: 520, width: '100%', background: 'var(--city-card)', borderRadius: 16, overflow: 'hidden' }}>
+            <div style={modalHeadStyle}>
+              <div>
+                <p style={{ color: 'var(--city-muted)', margin: 0, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>
+                  {t('admin.reviews.modal.eyebrow', 'RESPUESTA OFICIAL DE SUCURSAL')}
+                </p>
+                <h2 style={{ color: 'var(--city-text)', margin: 0, fontSize: 18, fontWeight: 800 }}>
+                  Responder a {modalReview.clienteNombre}
+                </h2>
+              </div>
+              <button type="button" onClick={() => setModalReview(null)} style={closeBtnStyle}>&times;</button>
             </div>
-          )}
-        </section>
 
-        {/* Modal de Responder Reseña */}
-        {modalReview && (
-          <div className="cities-modal-backdrop" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'fixed', inset: 0, zIndex: 1000 }}>
-            <div className="cities-modal" style={{ width: '100%', maxWidth: 540, padding: 24, borderRadius: 16 }}>
-              <h2 style={{ margin: '0 0 8px', fontSize: 18, fontWeight: 800 }}>Responder a {modalReview.clienteNombre}</h2>
-              <p style={{ fontSize: 13, color: 'var(--city-muted, #64748b)', marginBottom: 16 }}>
-                Tu respuesta será visible públicamente para los clientes que consulten las opiniones de la sede {sucursalAsignada}.
+            <div style={{ padding: '20px 24px' }}>
+              <p style={{ fontSize: 13, color: 'var(--city-muted, #64748b)', marginBottom: 14, lineHeight: 1.5 }}>
+                {t('admin.reviews.modal.description', 'Tu respuesta será visible públicamente para los clientes que consulten las opiniones de la sede.')}
               </p>
 
-              <div style={{ padding: 12, background: 'var(--city-bg, #f8fafc)', borderRadius: 10, marginBottom: 16, fontSize: 13, color: 'var(--city-text, #334155)' }}>
-                <strong>Comentario del cliente:</strong>
-                <p style={{ margin: '4px 0 0', fontStyle: 'italic' }}>"{modalReview.comentario}"</p>
+              <div style={{ padding: 14, background: 'var(--city-bg, #f8fafc)', borderRadius: 10, border: '1.5px solid var(--city-border, #cbd5e1)', marginBottom: 16 }}>
+                <p style={{ margin: '0 0 4px', fontSize: 12, color: 'var(--city-muted, #64748b)', fontWeight: 600 }}>
+                  {t('admin.reviews.modal.clientComment', 'Comentario del cliente:')}
+                </p>
+                <p style={{ margin: 0, fontSize: 13.5, color: 'var(--city-text, #0f172a)', fontStyle: 'italic', lineHeight: 1.5 }}>
+                  "{modalReview.comentario}"
+                </p>
               </div>
 
-              <div style={{ marginBottom: 20 }}>
-                <label style={{ display: 'block', fontSize: 12, fontWeight: 700, marginBottom: 6, color: 'var(--city-text, #334155)' }}>
-                  Escribe tu respuesta oficial:
+              <div>
+                <label style={{ display: 'block', fontSize: 12.5, fontWeight: 700, color: 'var(--city-text, #0f172a)', marginBottom: 6 }}>
+                  Respuesta Oficial de Sucursal *
                 </label>
                 <textarea
                   rows={4}
+                  required
                   value={respuestaTexto}
                   onChange={(e) => setRespuestaTexto(e.target.value)}
-                  placeholder="Ej: Hola, muchas gracias por tus comentarios. Nos complace saber que tuviste una gran experiencia..."
-                  style={{ width: '100%', padding: 12, borderRadius: 10, border: '1px solid #cbd5e1', fontSize: 13 }}
+                  placeholder={t('admin.reviews.modal.placeholder', 'Escribe la respuesta oficial de la sucursal...')}
+                  style={{ width: '100%', padding: '10px 12px', borderRadius: 10, border: '1.5px solid var(--city-border, #cbd5e1)', background: 'var(--city-bg, #f8fafc)', color: 'var(--city-text, #0f172a)', fontSize: 13, outline: 'none', resize: 'vertical' }}
                 />
               </div>
-
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
-                <button type="button" className="brand-secondary" onClick={() => setModalReview(null)}>
-                  Cancelar
-                </button>
-                <button type="button" className="cities-primary" onClick={handleEnviarRespuesta}>
-                  <FaPaperPlane /> Publicar Respuesta
-                </button>
-              </div>
             </div>
-          </div>
-        )}
-      </main>
+
+            <div style={{ padding: '14px 24px', borderTop: '1px solid var(--city-border)', display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
+              <button
+                type="button"
+                onClick={() => setModalReview(null)}
+                style={{ padding: '8px 18px', borderRadius: 9999, background: 'transparent', color: 'var(--city-muted)', border: '1.5px solid var(--city-border)', cursor: 'pointer', fontWeight: 700 }}
+              >
+                {t('admin.reviews.modal.cancelBtn', 'Cancelar')}
+              </button>
+              <button
+                type="button"
+                onClick={handleEnviarRespuesta}
+                style={{ padding: '8px 22px', borderRadius: 9999, background: 'var(--brand-primary, #2563eb)', color: '#fff', border: 'none', cursor: 'pointer', fontWeight: 800, display: 'inline-flex', alignItems: 'center', gap: 6, boxShadow: '0 4px 12px rgba(37, 99, 235, 0.3)' }}
+              >
+                <FaPaperPlane size={12} /> {t('admin.reviews.modal.publishSubmit', 'Publicar Respuesta')}
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
     </div>
   )
 }

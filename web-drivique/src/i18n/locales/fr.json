@@ -2132,16 +2132,64 @@
     },
     "reviews": {
       "title": "Avis et Évaluations",
-      "subtitle": "Gestion des évaluations des clients pour cette succursale."
+      "subtitle": "Surveillance de l'expérience utilisateur et réponses officielles de la succursale.",
+      "searchPlaceholder": "Rechercher par client, véhicule, réservation ou commentaire...",
+      "foundCount": "AVIS ENREGISTRÉS DANS LA SUCCURSALE",
+      "emptyTitle": "Aucun avis trouvé",
+      "emptyDesc": "Ajustez les filtres pour consulter d'autres évaluations.",
+      "noReply": "Pas de réponse officielle",
+      "replyBtn": "Répondre",
+      "editReplyBtn": "Modifier la réponse",
+      "deleteBtn": "Supprimer",
+      "tabs": {
+        "all": "Tous les avis",
+        "pending": "En attente de réponse",
+        "answered": "Répondues",
+        "star5": "5 Étoiles",
+        "star4": "4 Étoiles",
+        "low": "1 - 3 Étoiles"
+      },
+      "kpi": {
+        "average": "Moyenne de la succursale",
+        "averageDesc": "Note accumulée",
+        "total": "Total des avis",
+        "totalDesc": "Avis reçus",
+        "pending": "En attente de réponse",
+        "pendingDesc": "Nécessite l'attention del responsable",
+        "answered": "Réponses publiées",
+        "answeredDesc": "Service terminé"
+      },
+      "table": {
+        "id": "ID",
+        "reservationCode": "CODE RÉSERVATION",
+        "clientName": "CLIENT",
+        "vehicle": "VÉHICULE LOUÉ",
+        "rating": "ÉVALUATION",
+        "comment": "COMMENTAIRE CLIENT",
+        "date": "DATE DE L'AVIS",
+        "reply": "RÉPONSE DE LA SUCCURSALE",
+        "status": "STATUT RÉPONSE",
+        "actions": "ACTIONS"
+      },
+      "status": {
+        "pending": "En attente",
+        "published": "Répondue"
+      },
+      "modal": {
+        "title": "Répondre à l'avis",
+        "eyebrow": "RÉPONSE OFFICIELLE DE LA SUCCURSALE",
+        "description": "Votre réponse sera visible publiquement par les clients consultat les avis.",
+        "clientComment": "Commentaire du client :",
+        "placeholder": "Écrivez la réponse officielle de la succursale...",
+        "publishSubmit": "Publier la réponse",
+        "cancelBtn": "Annuler"
+      }
     },
     "sections": {
       "gestión_operativa": "GESTION OPÉRATIONNELLE",
       "consulta_y_auditoría": "CONSULTATION & AUDIT",
       "configuración_global": "CONFIGURATION GLOBALE",
-      "configuración_global": "CONFIGURATION GLOBALE",
-      "monitoreo": "SURVEILLANCE",
-      "consulta_y_auditoría": "CONSULTATION & AUDIT",
-      "gestión_operativa": "GESTION OPÉRATIONNELLE"
+      "monitoreo": "SURVEILLANCE"
     },
     "notifications": {
       "filterAll": "Toutes",
@@ -3260,27 +3308,22 @@
       "Estados Unidos": "États-Unis",
       "Alemania": "Allemagne",
       "Francia": "France",
-      "España": "Espagne",
+      "España": "España",
       "Italia": "Italie",
       "Reino Unido": "Royaume-Uni",
-      "Canadá": "Canada",
+      "Canadá": "Canadá",
       "Brasil": "Brésil",
       "Argentina": "Argentine",
-      "México": "Mexique",
+      "México": "México",
       "Venezuela": "Venezuela",
       "Ecuador": "Équateur",
-      "Perú": "Pérou",
+      "Perú": "Perú",
       "Chile": "Chili",
       "Australia": "Australie",
-      "Japón": "Japon",
+      "Japón": "Japón",
       "China": "Chine",
       "India": "Inde",
-      "Otro": "Autre",
-      "España": "España",
-      "Canadá": "Canadá",
-      "México": "México",
-      "Perú": "Perú",
-      "Japón": "Japón"
+      "Otro": "Autre"
     },
     "completeProfile": "Completar perfil"
   },
@@ -3488,7 +3531,6 @@
       "Compacto": "Compacte",
       "Camioneta": "Camionnette",
       "Deportivo": "Sport",
-      "Económico": "Économique",
       "Económico": "Económico"
     },
     "modal": {
@@ -3557,11 +3599,9 @@
     "backToAccount": "Retour à Mon Compte"
   },
   "servicios": {
-    "Devolución con tanque vacío": "Retour avec réservoir vide",
+    "Devolución con tanque vacío": "Devolución con tanque vacío",
     "GPS Integrado": "GPS Intégré",
     "Lavado de auto post-entrega": "Lavage de voiture après location",
-    "Silla de bebé": "Siège bébé",
-    "Devolución con tanque vacío": "Devolución con tanque vacío",
     "Silla de bebé": "Silla de bebé"
   },
   "favoritos": {
