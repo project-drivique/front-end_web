@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   FaBuilding,
@@ -6,8 +6,10 @@ import {
   FaClock,
   FaExclamationCircle,
   FaExclamationTriangle,
+  FaExternalLinkAlt,
   FaEye,
   FaFileExcel,
+  FaFileImage,
   FaFilePdf,
   FaPaperPlane,
   FaPhone,
@@ -17,6 +19,7 @@ import {
   FaTrash,
   FaUser,
   FaUserShield,
+  FaVideo,
   FaWrench,
 } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
@@ -30,6 +33,7 @@ import MenuConfiguracion from '../../../components/MenuConfiguracion'
 import ManagementSidebar from '../components/ManagementSidebar'
 import './CityManagementPage.css'
 import './IncidentManagementPage.css'
+import './DocumentVerificationPage.css'
 
 export default function IncidentManagementPage() {
   const { t, i18n } = useTranslation()
@@ -58,6 +62,7 @@ export default function IncidentManagementPage() {
   const [modalCrear, setModalCrear] = useState(false)
   const [modalEliminar, setModalEliminar] = useState(null)
   const [modalResponder, setModalResponder] = useState(null)
+  const [zoomMedia, setZoomMedia] = useState(null)
 
   // Formularios
   const [formCrear, setFormCrear] = useState({
@@ -356,17 +361,20 @@ export default function IncidentManagementPage() {
   }
 
   // Exportación
-  const headersExport = ['Código', 'Vehículo', 'Placa', 'Sucursal', 'Remitente', 'Origen', 'Prioridad', 'Estado', 'Descripción']
+  const headersExport = ['Código Reserva', 'Remitente', 'Vehículo', 'Placa', 'Tipo Incidencia', 'Evidencia Foto 1', 'Evidencia Foto 2', 'Evidencia Foto 3', 'Evidencia Video', 'Teléfono', 'Correo', 'Estado']
   const rowsExport = filtrados.map((r) => [
-    r.codigo,
+    r.codigoReserva || r.codigo,
+    r.contactoNombre,
     r.vehiculo,
     r.placa,
-    r.sucursal,
-    r.contactoNombre,
-    r.origen === 'cliente' ? 'Cliente' : 'Administrador',
-    r.prioridad,
+    r.tipoIncidenciaNombre || 'Avería Mecánica',
+    r.evidenciaFoto1 || '-',
+    r.evidenciaFoto2 || '-',
+    r.evidenciaFoto3 || '-',
+    r.evidenciaVideo || 'Sin video',
+    r.contactoTelefono || '',
+    r.contactoEmail || '',
     r.estado,
-    r.descripcion,
   ])
 
   const exportData = {
@@ -559,9 +567,10 @@ export default function IncidentManagementPage() {
                       <th>{t('admin.incidents.table.problemDesc', 'DESCRIPCIÓN PROBLEMA')}</th>
                       <th>{t('admin.incidents.table.reportDate', 'FECHA DE REPORTE')}</th>
                       <th>{t('admin.incidents.table.reportTime', 'HORA DE REPORTE')}</th>
-                      <th>{t('admin.incidents.table.evidence1', 'EVIDENCIA 1')}</th>
-                      <th>{t('admin.incidents.table.evidence2', 'EVIDENCIA 2')}</th>
-                      <th>{t('admin.incidents.table.evidence3', 'EVIDENCIA 3')}</th>
+                      <th>{t('admin.incidents.table.evidence1', 'EVIDENCIA FOTO 1')}</th>
+                      <th>{t('admin.incidents.table.evidence2', 'EVIDENCIA FOTO 2')}</th>
+                      <th>{t('admin.incidents.table.evidence3', 'EVIDENCIA FOTO 3')}</th>
+                      <th>{t('admin.incidents.table.evidenceVideo', 'EVIDENCIA VIDEO')}</th>
                       <th>{t('admin.incidents.table.phone', 'TELÉFONO')}</th>
                       <th>{t('admin.incidents.table.email', 'CORREO')}</th>
                       <th style={{ textAlign: 'center' }}>{t('admin.incidents.table.incidentStatus', 'ESTADO DE INCIDENTE')}</th>
@@ -586,13 +595,50 @@ export default function IncidentManagementPage() {
                         <td style={{ color: 'var(--city-text, #0f172a)' }}>{new Date(r.fechaIso || r.fechaRegistro || Date.now()).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</td>
                         
                         <td>
-                          {r.adjuntos?.[0] ? <img src={r.adjuntos[0]} style={{width: 36, height: 36, objectFit: 'cover', borderRadius: 4, border: '1px solid #e2e8f0'}} /> : <span style={{color: '#94a3b8', fontSize: 12}}>{t('admin.incidents.table.noImg', 'Sin img')}</span>}
+                          <div
+                            className="doc-table-pdf-link"
+                            onClick={() => setZoomMedia({ url: r.evidenciaFoto1Url, title: `Evidencia Foto 1 — ${r.codigoReserva || r.codigo}`, isVideo: false })}
+                            title="Abrir foto de evidencia 1"
+                          >
+                            <FaFileImage style={{ color: '#2563eb', fontSize: 13 }} />
+                            <span>{r.evidenciaFoto1 || `Evidencia-Foto-1-${r.codigo}.jpg`}</span>
+                          </div>
                         </td>
                         <td>
-                          {r.adjuntos?.[1] ? <img src={r.adjuntos[1]} style={{width: 36, height: 36, objectFit: 'cover', borderRadius: 4, border: '1px solid #e2e8f0'}} /> : <span style={{color: '#94a3b8', fontSize: 12}}>{t('admin.incidents.table.noImg', 'Sin img')}</span>}
+                          <div
+                            className="doc-table-pdf-link"
+                            onClick={() => setZoomMedia({ url: r.evidenciaFoto2Url, title: `Evidencia Foto 2 — ${r.codigoReserva || r.codigo}`, isVideo: false })}
+                            title="Abrir foto de evidencia 2"
+                          >
+                            <FaFileImage style={{ color: '#2563eb', fontSize: 13 }} />
+                            <span>{r.evidenciaFoto2 || `Evidencia-Foto-2-${r.codigo}.jpg`}</span>
+                          </div>
                         </td>
                         <td>
-                          {r.adjuntos?.[2] ? <img src={r.adjuntos[2]} style={{width: 36, height: 36, objectFit: 'cover', borderRadius: 4, border: '1px solid #e2e8f0'}} /> : <span style={{color: '#94a3b8', fontSize: 12}}>{t('admin.incidents.table.noImg', 'Sin img')}</span>}
+                          <div
+                            className="doc-table-pdf-link"
+                            onClick={() => setZoomMedia({ url: r.evidenciaFoto3Url, title: `Evidencia Foto 3 — ${r.codigoReserva || r.codigo}`, isVideo: false })}
+                            title="Abrir foto de evidencia 3"
+                          >
+                            <FaFileImage style={{ color: '#2563eb', fontSize: 13 }} />
+                            <span>{r.evidenciaFoto3 || `Evidencia-Foto-3-${r.codigo}.jpg`}</span>
+                          </div>
+                        </td>
+                        <td>
+                          {r.evidenciaVideo ? (
+                            <div
+                              className="doc-table-pdf-link"
+                              onClick={() => setZoomMedia({ url: r.evidenciaVideoUrl, title: `Evidencia Video — ${r.codigoReserva || r.codigo}`, isVideo: true })}
+                              title="Reproducir video de evidencia"
+                            >
+                              <FaVideo style={{ color: '#0284c7', fontSize: 13 }} />
+                              <span>{r.evidenciaVideo}</span>
+                            </div>
+                          ) : (
+                            <span style={{ color: 'var(--city-muted, #94a3b8)', fontSize: 12.5, fontStyle: 'italic' }}>
+                              Sin video
+                            </span>
+                          )}
                         </td>
 
                         <td style={{ color: 'var(--city-muted, #475569)' }}>{r.contactoTelefono || '+57 300 0000000'}</td>
@@ -1174,6 +1220,69 @@ export default function IncidentManagementPage() {
                 </form>
               </div>
             </section>
+          </div>
+        )}
+        {/* Modal Visor de Evidencias (Imagen / Video) */}
+        {zoomMedia && (
+          <div
+            className="doc-zoom-backdrop"
+            onClick={() => setZoomMedia(null)}
+          >
+            <div
+              className="doc-zoom-modal"
+              onClick={(e) => e.stopPropagation()}
+              style={{ maxWidth: zoomMedia.isVideo ? 720 : 640 }}
+            >
+              <div className="doc-zoom-header">
+                <div className="doc-zoom-title-box">
+                  <h3 className="doc-zoom-title">{zoomMedia.title}</h3>
+                  <span className="doc-zoom-subtitle">
+                    <FaEye style={{ color: '#2563eb' }} />
+                    {zoomMedia.isVideo ? 'Reproductor de evidencia en video' : 'Vista previa de evidencia fotográfica'}
+                  </span>
+                </div>
+                <div className="doc-zoom-actions">
+                  {zoomMedia.url && (
+                    <a
+                      href={zoomMedia.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="doc-zoom-btn-action"
+                      title="Abrir original"
+                    >
+                      <FaExternalLinkAlt style={{ fontSize: 11 }} />
+                      <span>Abrir original</span>
+                    </a>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => setZoomMedia(null)}
+                    className="doc-modal-close"
+                    title="Cerrar"
+                  >
+                    &times;
+                  </button>
+                </div>
+              </div>
+
+              <div className="doc-zoom-preview-box" style={{ padding: 16, display: 'flex', justifyContent: 'center' }}>
+                {zoomMedia.isVideo ? (
+                  <video
+                    src={zoomMedia.url}
+                    controls
+                    autoPlay
+                    style={{ width: '100%', maxHeight: '65vh', borderRadius: 12, outline: 'none' }}
+                  />
+                ) : (
+                  <img
+                    src={zoomMedia.url}
+                    alt={zoomMedia.title}
+                    className="doc-zoom-img"
+                    style={{ maxWidth: '100%', maxHeight: '65vh', borderRadius: 12, objectFit: 'contain' }}
+                  />
+                )}
+              </div>
+            </div>
           </div>
         )}
       </main>
