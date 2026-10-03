@@ -1942,7 +1942,7 @@
       },
       "drivers": {
         "title": "Registered Drivers",
-        "name": "DRIVER",
+        "name": "DRIVER NAME",
         "phone": "PHONE",
         "license": "LICENSE",
         "vehicle": "ASSIGNED VEHICLE",
@@ -1955,7 +1955,13 @@
         "inactive": "Inactive",
         "emptyTitle": "No drivers registered",
         "emptyDesc": "Create a driver to start assigning deliveries.",
-        "document": "DOCUMENT"
+        "document": "DOCUMENT",
+        "email": "EMAIL ADDRESS",
+        "docType": "DOC TYPE",
+        "docNum": "DOC NUMBER",
+        "licenseNum": "LICENSE NUMBER",
+        "licenseCat": "LICENSE CATEGORY",
+        "licenseExp": "LICENSE EXPIRATION"
       },
       "notification": {
         "assignedToUser": "A driver has been assigned for your reservation {{code}}. Your verification PIN is: {{pin}}",

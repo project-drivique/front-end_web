@@ -1942,7 +1942,7 @@
       },
       "drivers": {
         "title": "Chauffeurs Enregistrés",
-        "name": "CHAUFFEUR",
+        "name": "NOM CHAUFFEUR",
         "phone": "TÉLÉPHONE",
         "license": "PERMIS",
         "vehicle": "VÉHICULE ATTRIBUÉ",
@@ -1955,7 +1955,13 @@
         "inactive": "Inactif",
         "emptyTitle": "Aucun chauffeur enregistré",
         "emptyDesc": "Créez un chauffeur pour commencer à attribuer des livraisons.",
-        "document": "DOCUMENT"
+        "document": "DOCUMENT",
+        "email": "ADRESSE EMAIL",
+        "docType": "TYPE DOC",
+        "docNum": "N° DOCUMENT",
+        "licenseNum": "N° PERMIS",
+        "licenseCat": "CATÉGORIE PERMIS",
+        "licenseExp": "EXPIRATION PERMIS"
       },
       "notification": {
         "assignedToUser": "Un chauffeur a été attribué pour votre réservation {{code}}. Votre PIN de vérification est : {{pin}}",

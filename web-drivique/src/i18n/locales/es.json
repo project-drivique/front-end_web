@@ -1862,7 +1862,7 @@
       },
       "drivers": {
         "title": "Conductores Registrados",
-        "name": "CONDUCTOR",
+        "name": "NOMBRE CONDUCTOR",
         "phone": "TELÉFONO",
         "license": "LICENCIA",
         "vehicle": "VEHÍCULO ASIGNADO",
@@ -1875,7 +1875,13 @@
         "inactive": "Inactivo",
         "emptyTitle": "No hay conductores registrados",
         "emptyDesc": "Crea un conductor para poder asignar domicilios.",
-        "document": "DOCUMENTO"
+        "document": "DOCUMENTO",
+        "email": "CORREO ELECTRÓNICO",
+        "docType": "TIPO DOC",
+        "docNum": "NÚMERO DOC",
+        "licenseNum": "NÚMERO LICENCIA",
+        "licenseCat": "CATEGORÍA LICENCIA",
+        "licenseExp": "VENCIMIENTO LICENCIA"
       },
       "notification": {
         "assignedToUser": "Se ha asignado un conductor para tu reserva {{code}}. Tu PIN de verificación es: {{pin}}",
