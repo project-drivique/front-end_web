@@ -7,15 +7,20 @@ import {
   FaTimesCircle,
   FaEye,
   FaBuilding,
-  FaExclamationTriangle,
-  FaFileAlt,
-  FaUserCheck,
-  FaTimes,
   FaShieldAlt,
+  FaFileExcel,
+  FaFilePdf,
+  FaPrint,
+  FaTimes,
+  FaCheckSquare,
+  FaRegSquare,
+  FaExternalLinkAlt,
 } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import { useAuthStore } from '../../../store/authStore'
 import { documentVerificationService } from '../../../services/documentVerificationService'
+import { reservationManagementService } from '../../../services/reservationManagementService'
+import { exportExcel, exportPdf, printTable } from '../../../utils/listExportUtils'
 import { showAlert } from '../../../utils/swalConfig'
 import MenuConfiguracion from '../../../components/MenuConfiguracion'
 import ManagementSidebar from '../components/ManagementSidebar'
@@ -26,329 +31,891 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
   const { t } = useTranslation()
   const { tema } = useLanding()
   const user = useAuthStore((state) => state.usuario)
-  const isBranchManager = branchOnly || user?.rol === 'encargado' || user?.rol === 'branch_manager' || user?.rol === 'encargado_sucursal'
-  const sucursalAsignada = user?.sucursalAsignada || user?.sucursalId || user?.sucursal || 'Medellín - El Poblado'
+  const sucursalAsignada = user?.sucursalAsignada || user?.sucursalId || user?.sucursal || 'Alamo BogotÃ¡ - Aeropuerto'
 
   const [verifications, setVerifications] = useState(() => documentVerificationService.list(user))
   const [search, setSearch] = useState('')
-  const [statusFilter, setStatusFilter] = useState('all') // 'all' | 'pendiente' | 'aprobado' | 'rechazado'
+  const [activeTab, setActiveTab] = useState('todos') // 'todos' | 'pendientes' | 'aprobados' | 'rechazados'
+  const [notice, setNotice] = useState('')
 
-  // Modal de Detalle / Revisión de Documento
+  // Modal de ValidaciÃ³n de Expediente
   const [modalItem, setModalItem] = useState(null)
   const [observaciones, setObservaciones] = useState('')
-  const [zoomImagen, setZoomImagen] = useState(null)
+  const [zoomPdf, setZoomPdf] = useState(null)
+
+  // Checklist Interactivo en el Modal
+  const [modalChecklist, setModalChecklist] = useState({
+    cedulaLegible: false,
+    identidadCoincide: false,
+    licenciaVigente: false,
+    categoriaApta: false,
+    datosCompletos: false,
+  })
+
+  // Obtener estado en tiempo real de las reservas asociadas
+  const liveReservations = useMemo(() => {
+    try {
+      return reservationManagementService.list(user) || []
+    } catch {
+      return []
+    }
+  }, [user])
+
+  const reservationMap = useMemo(() => {
+    const map = {}
+    liveReservations.forEach((r) => {
+      const code = r.referencia || r.codigo || r.id
+      if (code) {
+        map[code] = r.estado || 'confirmada'
+      }
+    })
+    return map
+  }, [liveReservations])
+
+  const getUploadDateTime = (fechaSubida) => {
+    if (!fechaSubida) return { fecha: 'â€”', hora: 'â€”' }
+    const parts = String(fechaSubida).trim().split(' ')
+    const fecha = parts[0] || 'â€”'
+    const hora = parts[1] || '10:00'
+    return { fecha, hora }
+  }
+
+  const getReservaStatusBadge = (estadoReserva) => {
+    const norm = String(estadoReserva || 'confirmada').toLowerCase().trim()
+    if (norm.includes('confirma')) {
+      return <span className="doc-reserva-badge confirmada">{t('admin.documents.reservationStatus.confirmed', 'Confirmada')}</span>
+    }
+    if (norm.includes('curso') || norm.includes('activa')) {
+      return <span className="doc-reserva-badge en_curso">{t('admin.documents.reservationStatus.inProgress', 'En curso')}</span>
+    }
+    if (norm.includes('pend')) {
+      return <span className="doc-reserva-badge pendiente">{t('admin.documents.reservationStatus.pending', 'Pendiente')}</span>
+    }
+    if (norm.includes('fin') || norm.includes('comp')) {
+      return <span className="doc-reserva-badge finalizada">{t('admin.documents.reservationStatus.completed', 'Completada')}</span>
+    }
+    if (norm.includes('canc')) {
+      return <span className="doc-reserva-badge cancelada">{t('admin.documents.reservationStatus.cancelled', 'Cancelada')}</span>
+    }
+    return <span className="doc-reserva-badge confirmada">{estadoReserva}</span>
+  }
+
+  const conteoPendientes = useMemo(() => verifications.filter((v) => v.estado === 'pendiente').length, [verifications])
+  const conteoAprobados = useMemo(() => verifications.filter((v) => v.estado === 'aprobado').length, [verifications])
+  const conteoRechazados = useMemo(() => verifications.filter((v) => v.estado === 'rechazado').length, [verifications])
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase()
     return verifications.filter((item) => {
-      const matchStatus = statusFilter === 'all' || item.estado === statusFilter
+      // Tab filter
+      if (activeTab === 'pendientes' && item.estado !== 'pendiente') return false
+      if (activeTab === 'aprobados' && item.estado !== 'aprobado') return false
+      if (activeTab === 'rechazados' && item.estado !== 'rechazado') return false
+
       const matchQuery =
         !q ||
-        item.clienteNombre.toLowerCase().includes(q) ||
-        item.documentoIdentidad.toLowerCase().includes(q) ||
-        item.reservaCodigo.toLowerCase().includes(q) ||
-        item.numeroLicencia.toLowerCase().includes(q)
+        item.clienteNombre?.toLowerCase().includes(q) ||
+        item.documentoIdentidad?.toLowerCase().includes(q) ||
+        item.reservaCodigo?.toLowerCase().includes(q) ||
+        item.numeroLicencia?.toLowerCase().includes(q) ||
+        item.vehiculoNombre?.toLowerCase().includes(q)
 
-      return matchStatus && matchQuery
+      return matchQuery
     })
-  }, [verifications, search, statusFilter])
-
-  const pendientesContador = useMemo(() => {
-    return verifications.filter((v) => v.estado === 'pendiente').length
-  }, [verifications])
+  }, [verifications, search, activeTab])
 
   const handleOpenReview = (item) => {
     setModalItem(item)
     setObservaciones(item.observaciones || '')
+    setModalChecklist(
+      item.checklist || {
+        cedulaLegible: item.estado === 'aprobado',
+        identidadCoincide: item.estado === 'aprobado',
+        licenciaVigente: item.estado === 'aprobado',
+        categoriaApta: item.estado === 'aprobado',
+        datosCompletos: item.estado === 'aprobado',
+      }
+    )
   }
 
-  const handleQuickStatusChange = (id, newStatus) => {
-    documentVerificationService.actualizarEstado(id, newStatus, `Estado actualizado a ${newStatus} desde la tabla.`, user?.nombre || 'Encargado')
-    setVerifications(documentVerificationService.list(user))
-    showAlert({ icon: 'success', title: 'Estado actualizado', text: `Estado cambiado a ${newStatus}.` })
+  const handleToggleCheck = (key) => {
+    setModalChecklist((prev) => ({ ...prev, [key]: !prev[key] }))
   }
 
   const handleAprobarDocumento = async () => {
     if (!modalItem) return
 
-    documentVerificationService.actualizarEstado(modalItem.id, 'aprobado', observaciones || 'Documentos verificados correctamente.', user?.nombre || 'Encargado')
+    documentVerificationService.actualizarEstado(
+      modalItem.id,
+      'aprobado',
+      observaciones || t('admin.documents.defaultApproveObs', 'Documentos validados y aprobados correctamente por la sucursal.'),
+      user?.nombre || 'Encargado de Sucursal',
+      modalChecklist
+    )
     setVerifications(documentVerificationService.list(user))
     setModalItem(null)
+    setNotice(`âœ… ${t('admin.documents.alerts.approvedNotice', 'Los documentos de {{name}} ({{code}}) fueron aprobados.', { name: modalItem.clienteNombre, code: modalItem.reservaCodigo })}`)
 
-    showAlert({ icon: 'success', title: 'Documentación Aprobada', text: `Los documentos de ${modalItem.clienteNombre} han sido aprobados.` })
+    showAlert({
+      icon: 'success',
+      title: t('admin.documents.alerts.approvedTitle', 'DocumentaciÃ³n Aprobada'),
+      text: t('admin.documents.alerts.approvedText', 'Se ha confirmado la aprobaciÃ³n de documentos para la reserva {{code}}. Se enviÃ³ confirmaciÃ³n al correo del cliente y a su panel de notificaciones.', { code: modalItem.reservaCodigo }),
+    })
   }
 
   const handleRechazarDocumento = async () => {
     if (!modalItem) return
     if (!observaciones.trim()) {
-      showAlert({ icon: 'warning', title: 'Motivo requerido', text: 'Por favor indica la razón del rechazo (ej: foto de licencia borrosa, vencida, etc).' })
+      showAlert({
+        icon: 'warning',
+        title: t('admin.documents.alerts.reasonRequiredTitle', 'Motivo requerido'),
+        text: t('admin.documents.alerts.reasonRequiredText', 'Por favor indica la razÃ³n del rechazo para que el cliente sepa quÃ© documento corregir.'),
+      })
       return
     }
 
-    documentVerificationService.actualizarEstado(modalItem.id, 'rechazado', observaciones, user?.nombre || 'Encargado')
+    documentVerificationService.actualizarEstado(
+      modalItem.id,
+      'rechazado',
+      observaciones,
+      user?.nombre || 'Encargado de Sucursal',
+      modalChecklist
+    )
     setVerifications(documentVerificationService.list(user))
     setModalItem(null)
+    setNotice(`âŒ ${t('admin.documents.alerts.rejectedNotice', 'Se registrÃ³ el rechazo de documentos para la reserva {{code}}.', { code: modalItem.reservaCodigo })}`)
 
-    showAlert({ icon: 'error', title: 'Documentación Rechazada', text: `Se ha notificado el rechazo de documentos para la reserva ${modalItem.reservaCodigo}.` })
+    showAlert({
+      icon: 'error',
+      title: t('admin.documents.alerts.rejectedTitle', 'DocumentaciÃ³n Rechazada'),
+      text: t('admin.documents.alerts.rejectedText', 'Se ha notificado el rechazo de documentos para la reserva {{code}} al correo y notificaciones del usuario.', { code: modalItem.reservaCodigo }),
+    })
+  }
+
+  // ExportaciÃ³n
+  const exportData = {
+    title: t('admin.documents.exportTitle', 'ValidaciÃ³n de Documentos de Identidad y Licencias â€” Drivique'),
+    headers: [
+      t('admin.documents.table.id', 'ID'),
+      t('admin.documents.table.reservationCode', 'CÃ“DIGO RESERVA'),
+      t('admin.documents.table.clientName', 'NOMBRE CLIENTE'),
+      t('admin.documents.table.documentNumber', 'NÃšMERO DE DOCUMENTO'),
+      t('admin.documents.table.licenseNumber', 'NÃšMERO DE CONDUCCIÃ“N'),
+      t('admin.documents.table.vehicleName', 'NOMBRE VEHÃCULO'),
+      t('admin.documents.table.reservationStatus', 'ESTADO DE RESERVA'),
+      t('admin.documents.table.uploadDate', 'FECHA SUBIDA'),
+      t('admin.documents.table.uploadTime', 'HORA SUBIDA'),
+      t('admin.documents.table.status', 'ESTADO'),
+      t('admin.documents.table.observations', 'Observaciones'),
+    ],
+    rows: filtered.map((item, index) => {
+      const { fecha, hora } = getUploadDateTime(item.fechaSubida)
+      const resState = reservationMap[item.reservaCodigo] || item.reservaEstado || 'confirmada'
+      return [
+        index + 1,
+        item.reservaCodigo,
+        item.clienteNombre,
+        item.documentoIdentidad,
+        item.numeroLicencia,
+        item.vehiculoNombre || item.vehiculo || 'VehÃ­culo Reservado',
+        resState,
+        fecha,
+        hora,
+        item.estado,
+        item.observaciones || t('admin.documents.noObservations', 'Sin observaciones'),
+      ]
+    }),
+    items: filtered,
+    filename: `documentos-sucursal-${new Date().toISOString().slice(0, 10)}`,
+  }
+
+  const getStatusBadge = (estado) => {
+    switch (estado) {
+      case 'aprobado':
+        return <span className="doc-status-badge aprobado">{t('admin.documents.status.approved', 'Aprobado')}</span>
+      case 'rechazado':
+        return <span className="doc-status-badge rechazado">{t('admin.documents.status.rejected', 'Rechazado')}</span>
+      case 'pendiente':
+      default:
+        return <span className="doc-status-badge pendiente">{t('admin.documents.status.pending', 'Pendiente')}</span>
+    }
   }
 
   return (
     <div className={`management-shell ${tema === 'oscuro' ? 'management-shell--dark' : ''}`}>
       <ManagementSidebar branchOnly={branchOnly} />
 
-      <main className="management-main" style={{ padding: '24px 32px' }}>
-        {/* Encabezado */}
-        <header className="management-header" style={{ marginBottom: 20 }}>
-          <div>
-            <p className="management-eyebrow" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <FaShieldAlt style={{ color: 'var(--brand-primary, #2563eb)' }} />
-              <span>Sede: <strong>{isBranchManager ? sucursalAsignada : 'Todas las Sucursales'}</strong></span>
-            </p>
-            <h1>{t('admin.documents.title', 'Validación de Documentos e Identidad')}</h1>
-            <p className="cities-subtitle">
-              {t('admin.documents.subtitle', 'Inspección de Licencias de Conducir y Documentos de Identidad cargados por clientes antes de la entrega del vehículo.')}
-            </p>
+      <main className="management-main doc-verification-main">
+        <div className="cities-container" style={{ maxWidth: '100%' }}>
+          {/* Header Superior idÃ©ntico al estÃ¡ndar del Administrador */}
+          <header className="cities-topbar reservations-management-header">
+            <div className="branch-topbar-brand-title">
+              <span className="branch-topbar-badge">{t('admin.branchManagement', 'GESTIÃ“N DE SUCURSAL')}</span>
+              <h1 className="branch-topbar-heading">{t('admin.documents.title', 'ValidaciÃ³n de Documentos')}</h1>
+            </div>
+
+            <div className="cities-topbar__actions" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              <MenuConfiguracion />
+              <div className="doc-topbar-profile" style={{ display: 'flex', alignItems: 'center', gap: '10px', background: 'var(--city-card, #ffffff)', border: '1.5px solid var(--city-border, #e2e8f0)', borderRadius: '30px', padding: '4px 16px 4px 6px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+                <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#2563eb', color: 'var(--city-card, #ffffff)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '14px' }}>
+                  {user?.nombre ? user.nombre.charAt(0).toUpperCase() : 'A'}
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <span className="doc-topbar-profile-name" style={{ fontSize: '13px', fontWeight: '700', color: 'var(--city-text, #0f172a)', lineHeight: '1.2' }}>{user?.nombre || 'Administrador'}</span>
+                  <span className="doc-topbar-profile-role" style={{ fontSize: '11px', color: 'var(--city-muted, #64748b)', lineHeight: '1.2' }}>{user?.rol || 'encargado'}</span>
+                </div>
+              </div>
+            </div>
+          </header>
+
+          {/* Tarjetas KPI Superiores */}
+          <div className="cash-kpi-bar doc-kpi-bar">
+            {/* KPI 1: Pendientes */}
+            <div className="cash-kpi-item-light" style={{ background: 'var(--city-card, #ffffff)', border: '1px solid var(--city-border, #e2e8f0)', borderRadius: '16px', padding: '16px 20px', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+              <div className="cash-kpi-header-light" style={{ color: '#f59e0b', display: 'flex', alignItems: 'center', gap: 8, fontSize: '13px', fontWeight: 700, marginBottom: 8 }}>
+                <FaIdCard />
+                <span>{t('admin.documents.kpis.pending', 'Pendientes por Validar')}</span>
+              </div>
+              <strong className="cash-kpi-val-light" style={{ fontSize: '26px', fontWeight: 800, color: 'var(--city-text, #0f172a)', display: 'block', marginBottom: 8 }}>
+                {conteoPendientes}
+              </strong>
+              <div className="cash-kpi-progress-bg" style={{ width: '100%', height: 4, background: 'var(--city-border, #f1f5f9)', borderRadius: 2, marginBottom: 8 }}>
+                <div className="cash-kpi-progress-fill" style={{ width: '100%', height: '100%', background: '#f59e0b', borderRadius: 2 }}></div>
+              </div>
+              <span className="cash-kpi-subtitle-light" style={{ fontSize: '11.5px', color: 'var(--city-muted, #64748b)' }}>{t('admin.documents.kpis.pendingSub', 'En espera de revisiÃ³n')}</span>
+            </div>
+
+            {/* KPI 2: Aprobados por Sucursal */}
+            <div className="cash-kpi-item-light" style={{ background: 'var(--city-card, #ffffff)', border: '1px solid var(--city-border, #e2e8f0)', borderRadius: '16px', padding: '16px 20px', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+              <div className="cash-kpi-header-light" style={{ color: '#10b981', display: 'flex', alignItems: 'center', gap: 8, fontSize: '13px', fontWeight: 700, marginBottom: 8 }}>
+                <FaCheckCircle />
+                <span>{t('admin.documents.kpis.approved', 'Aprobados por Sucursal')}</span>
+              </div>
+              <strong className="cash-kpi-val-light" style={{ fontSize: '26px', fontWeight: 800, color: 'var(--city-text, #0f172a)', display: 'block', marginBottom: 8 }}>
+                {conteoAprobados}
+              </strong>
+              <div className="cash-kpi-progress-bg" style={{ width: '100%', height: 4, background: 'var(--city-border, #f1f5f9)', borderRadius: 2, marginBottom: 8 }}>
+                <div className="cash-kpi-progress-fill" style={{ width: '100%', height: '100%', background: '#10b981', borderRadius: 2 }}></div>
+              </div>
+              <span className="cash-kpi-subtitle-light" style={{ fontSize: '11.5px', color: 'var(--city-muted, #64748b)' }}>{t('admin.documents.kpis.approvedSub', 'Verificados por el encargado')}</span>
+            </div>
+
+            {/* KPI 3: Rechazados por Sucursal */}
+            <div className="cash-kpi-item-light" style={{ background: 'var(--city-card, #ffffff)', border: '1px solid var(--city-border, #e2e8f0)', borderRadius: '16px', padding: '16px 20px', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+              <div className="cash-kpi-header-light" style={{ color: '#ef4444', display: 'flex', alignItems: 'center', gap: 8, fontSize: '13px', fontWeight: 700, marginBottom: 8 }}>
+                <FaTimesCircle />
+                <span>{t('admin.documents.kpis.rejected', 'Rechazados por Sucursal')}</span>
+              </div>
+              <strong className="cash-kpi-val-light" style={{ fontSize: '26px', fontWeight: 800, color: 'var(--city-text, #0f172a)', display: 'block', marginBottom: 8 }}>
+                {conteoRechazados}
+              </strong>
+              <div className="cash-kpi-progress-bg" style={{ width: '100%', height: 4, background: 'var(--city-border, #f1f5f9)', borderRadius: 2, marginBottom: 8 }}>
+                <div className="cash-kpi-progress-fill" style={{ width: '100%', height: '100%', background: '#ef4444', borderRadius: 2 }}></div>
+              </div>
+              <span className="cash-kpi-subtitle-light" style={{ fontSize: '11.5px', color: 'var(--city-muted, #64748b)' }}>{t('admin.documents.kpis.rejectedSub', 'Requieren correcciÃ³n del cliente')}</span>
+            </div>
+
+            {/* KPI 4: Total Expedientes */}
+            <div className="cash-kpi-item-light" style={{ background: 'var(--city-card, #ffffff)', border: '1px solid var(--city-border, #e2e8f0)', borderRadius: '16px', padding: '16px 20px', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+              <div className="cash-kpi-header-light" style={{ color: 'var(--brand-primary, #3b82f6)', display: 'flex', alignItems: 'center', gap: 8, fontSize: '13px', fontWeight: 700, marginBottom: 8 }}>
+                <FaShieldAlt />
+                <span>{t('admin.documents.kpis.total', 'Total Expedientes')}</span>
+              </div>
+              <strong className="cash-kpi-val-light" style={{ fontSize: '26px', fontWeight: 800, color: 'var(--city-text, #0f172a)', display: 'block', marginBottom: 8 }}>
+                {verifications.length}
+              </strong>
+              <div className="cash-kpi-progress-bg" style={{ width: '100%', height: 4, background: 'var(--city-border, #f1f5f9)', borderRadius: 2, marginBottom: 8 }}>
+                <div className="cash-kpi-progress-fill" style={{ width: '100%', height: '100%', background: 'var(--brand-primary, #3b82f6)', borderRadius: 2 }}></div>
+              </div>
+              <span className="cash-kpi-subtitle-light" style={{ fontSize: '11.5px', color: 'var(--city-muted, #64748b)' }}>{t('admin.documents.kpis.totalSub', 'Registros en sucursal')}</span>
+            </div>
           </div>
 
-          <div className="management-header__actions">
-            <MenuConfiguracion />
-          </div>
-        </header>
+          {/* NotificaciÃ³n de Aviso */}
+          {notice && (
+            <div className="cities-notice" role="status" style={{ marginBottom: 16 }}>
+              <span>{notice}</span>
+              <button type="button" onClick={() => setNotice('')}>
+                Ã—
+              </button>
+            </div>
+          )}
 
-        {/* Tarjetas KPI de Verificación */}
-        <div className="cash-kpi-bar" style={{ marginBottom: 24 }}>
-          <div className="cash-kpi-item">
-            <span className="cash-kpi-title">Pendientes por Auditar</span>
-            <strong className={`cash-kpi-val ${pendientesContador > 0 ? 'warning' : 'success'}`} style={{ fontSize: 24 }}>
-              {pendientesContador} expedientes
-            </strong>
+          {/* PestaÃ±as de Secciones Adheridas */}
+          <div className="fleet-attached-tabs">
+            <div className="fleet-tabs-nav">
+              <button
+                type="button"
+                onClick={() => setActiveTab('todos')}
+                className={`fleet-tab-btn ${activeTab === 'todos' ? 'is-active' : ''}`}
+              >
+                {t('admin.documents.tabs.all', 'Todos los Expedientes')} ({verifications.length})
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('pendientes')}
+                className={`fleet-tab-btn ${activeTab === 'pendientes' ? 'is-active' : ''}`}
+              >
+                {t('admin.documents.tabs.pending', 'Pendientes')} ({conteoPendientes})
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('aprobados')}
+                className={`fleet-tab-btn ${activeTab === 'aprobados' ? 'is-active' : ''}`}
+              >
+                {t('admin.documents.tabs.approved', 'Aprobados')} ({conteoAprobados})
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('rechazados')}
+                className={`fleet-tab-btn ${activeTab === 'rechazados' ? 'is-active' : ''}`}
+              >
+                {t('admin.documents.tabs.rejected', 'Rechazados')} ({conteoRechazados})
+              </button>
+            </div>
           </div>
 
-          <div className="cash-kpi-item">
-            <span className="cash-kpi-title">Aprobados en Sede</span>
-            <strong className="cash-kpi-val success" style={{ fontSize: 22 }}>
-              {verifications.filter((v) => v.estado === 'aprobado').length} verificados
-            </strong>
-          </div>
-
-          <div className="cash-kpi-item">
-            <span className="cash-kpi-title">Rechazados por Novedad</span>
-            <strong className="cash-kpi-val info" style={{ fontSize: 22 }}>
-              {verifications.filter((v) => v.estado === 'rechazado').length} rechazados
-            </strong>
-          </div>
-        </div>
-
-        {/* Filtros y Tabla Principal */}
-        <section className="cities-card" style={{ padding: 24 }}>
-          <div className="cash-toolbar-container" style={{ marginBottom: 20 }}>
-            <div className="cash-toolbar-row1" style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-              <div className="cash-search-box" style={{ flex: 1, minWidth: 260 }}>
-                <FaSearch className="cash-search-icon" />
+          {/* Tarjeta Principal */}
+          <section className="cities-card attached-to-tabs">
+            {/* Toolbar con Buscador, Filtros y Botones de ExportaciÃ³n */}
+            <div className="cities-toolbar doc-toolbar-wrapper">
+              {/* Buscador general en vivo */}
+              <label className="cities-search" style={{ flex: '1 1 250px', margin: 0 }}>
+                <FaSearch />
                 <input
                   type="text"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Buscar por cliente, cédula, licencia o código reserva..."
+                  placeholder={t('admin.documents.searchPlaceholder', 'Buscar por cÃ³digo, cliente, cÃ©dula, licencia...')}
                 />
+              </label>
+
+              {/* Indicador de Sucursal Asignada */}
+              <div className="doc-branch-badge">
+                <FaBuilding style={{ color: 'var(--city-muted, #64748b)' }} />
+                <span>{sucursalAsignada}</span>
               </div>
 
-              <div className="cash-select-box">
-                <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
-                  <option value="all">🔍 Todos los estados</option>
-                  <option value="pendiente">⏳ Pendientes de Auditoría</option>
-                  <option value="aprobado">✅ Documentos Aprobados</option>
-                  <option value="rechazado">❌ Documentos Rechazados</option>
-                </select>
+              {/* Botones de ExportaciÃ³n con pÃ­ldoras */}
+              <div className="export-pills-group" style={{ marginLeft: 'auto', display: 'flex', gap: '8px' }}>
+                <button
+                  type="button"
+                  className="export-pill export-pill--excel"
+                  onClick={() => exportExcel(exportData)}
+                  title={t('admin.exportExcel', 'Excel')}
+                >
+                  <FaFileExcel aria-hidden="true" /> {t('admin.exportExcel', 'Excel')}
+                </button>
+                <button
+                  type="button"
+                  className="export-pill export-pill--pdf"
+                  onClick={() => exportPdf(exportData)}
+                  title={t('admin.exportPdf', 'PDF')}
+                >
+                  <FaFilePdf aria-hidden="true" /> {t('admin.exportPdf', 'PDF')}
+                </button>
+                <button
+                  type="button"
+                  className="export-pill export-pill--print"
+                  onClick={() => printTable(exportData)}
+                  title={t('admin.incidents.print', 'Imprimir')}
+                >
+                  <FaPrint aria-hidden="true" /> {t('admin.incidents.print', 'Imprimir')}
+                </button>
               </div>
             </div>
-          </div>
 
-          {/* Tabla de Verificaciones */}
-          <div className="cities-table-wrap">
-            <table className="management-table">
-              <thead>
-                <tr>
-                  <th>RESERVA</th>
-                  <th>NOMBRE COMPLETO / CONDUCTOR</th>
-                  <th>CÉDULA / DNI</th>
-                  <th>LICENCIA CONDUCIR</th>
-                  <th>CATEGORÍA</th>
-                  <th>VENCIMIENTO</th>
-                  <th>ESTADO</th>
-                  <th style={{ textAlign: 'center' }}>ACCIONES</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.length === 0 ? (
-                  <tr>
-                    <td colSpan={8} style={{ textAlign: 'center', padding: 36 }}>
-                      <FaIdCard style={{ fontSize: 36, color: '#94a3b8', marginBottom: 8 }} />
-                      <p style={{ margin: 0, fontWeight: 600 }}>No hay expedientes de documentación con los filtros actuales</p>
-                    </td>
-                  </tr>
-                ) : (
-                  filtered.map((item) => {
-                    let badgeClass = 'is-yellow'
-                    let badgeLabel = 'Pendiente Audit'
-                    if (item.estado === 'aprobado') {
-                      badgeClass = 'is-green'
-                      badgeLabel = 'Aprobado'
-                    } else if (item.estado === 'rechazado') {
-                      badgeClass = 'is-red'
-                      badgeLabel = 'Rechazado'
-                    }
+            {/* Contador de Resultados */}
+            <div className="cities-summary" style={{ margin: '8px 0 12px' }}>
+              <span>{filtered.length}</span>{' '}
+              {t('admin.documents.foundCount', 'EXPEDIENTES EN EL LISTADO').toUpperCase()}
+            </div>
+
+            {/* Contenido: Tabla para Desktop + Cards para MÃ³vil */}
+            {filtered.length === 0 ? (
+              <div className="cities-empty">
+                <FaIdCard style={{ fontSize: 44, color: '#94a3b8', marginBottom: 12 }} />
+                <h2>{t('admin.documents.emptyTitle', 'No se encontraron expedientes de documentaciÃ³n')}</h2>
+                <p>{t('admin.documents.emptyDesc', 'No hay registros que coincidan con la pestaÃ±a o los tÃ©rminos de bÃºsqueda seleccionados.')}</p>
+              </div>
+            ) : (
+              <>
+                {/* 1. Vista de Tabla Completa para Escritorio & Tablets */}
+                <div className="cities-table-wrap doc-desktop-table" style={{ overflowX: 'auto' }}>
+                  <table className="incidents-table-v2" style={{ whiteSpace: 'nowrap', width: 'max-content', borderCollapse: 'collapse' }}>
+                    <thead>
+                      <tr>
+                        <th style={{ width: '40px' }}>{t('admin.documents.table.id', 'ID')}</th>
+                        <th>{t('admin.documents.table.reservationCode', 'CÃ“DIGO RESERVA')}</th>
+                        <th>{t('admin.documents.table.clientName', 'NOMBRE CLIENTE')}</th>
+                        <th>{t('admin.documents.table.documentNumber', 'NÃšMERO DE DOCUMENTO')}</th>
+                        <th>{t('admin.documents.table.identityDoc', 'DOCUMENTO DE IDENTIDAD')}</th>
+                        <th>{t('admin.documents.table.licenseNumber', 'NÃšMERO DE CONDUCCIÃ“N')}</th>
+                        <th>{t('admin.documents.table.driverLicense', 'LICENCIA DE CONDUCCIÃ“N')}</th>
+                        <th>{t('admin.documents.table.vehicleName', 'NOMBRE VEHÃCULO')}</th>
+                        <th style={{ textAlign: 'center' }}>{t('admin.documents.table.reservationStatus', 'ESTADO DE RESERVA')}</th>
+                        <th>{t('admin.documents.table.uploadDate', 'FECHA SUBIDA')}</th>
+                        <th>{t('admin.documents.table.uploadTime', 'HORA SUBIDA')}</th>
+                        <th style={{ textAlign: 'center' }}>{t('admin.documents.table.status', 'ESTADO')}</th>
+                        <th style={{ textAlign: 'center' }}>{t('admin.documents.table.actions', 'ACCIONES')}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filtered.map((item, index) => {
+                        const docIdFile = item.documentoIdentidadPdf || `Cedula-${item.documentoIdentidad}.pdf`
+                        const licFile = item.licenciaConduccionPdf || `Licencia-${item.documentoIdentidad}.pdf`
+                        const docIdUrl = item.fotoCedulaFrente || item.pdfCedulaUrl || 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
+                        const licUrl = item.fotoLicenciaFrente || item.pdfLicenciaUrl || 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
+                        const { fecha, hora } = getUploadDateTime(item.fechaSubida)
+                        const resState = reservationMap[item.reservaCodigo] || item.reservaEstado || 'confirmada'
+
+                        return (
+                          <tr key={item.id}>
+                            <td style={{ fontWeight: 600, color: 'var(--city-text, #0f172a)', width: '40px' }}>{index + 1}</td>
+                            <td style={{ fontWeight: 700, color: 'var(--city-text, #0f172a)' }}>{item.reservaCodigo}</td>
+                            <td style={{ color: 'var(--city-text, #0f172a)', fontWeight: 600 }}>{item.clienteNombre}</td>
+                            <td style={{ color: 'var(--city-text, #334155)' }}>{item.documentoIdentidad}</td>
+                            
+                            {/* Columna Documento de Identidad (Link PDF con Ã­cono rojo) */}
+                            <td>
+                              <div
+                                className="doc-table-pdf-link"
+                                onClick={() => setZoomPdf({
+                                  url: docIdUrl,
+                                  title: `${t('admin.documents.table.identityDoc', 'Documento de Identidad')} - ${item.clienteNombre}`
+                                })}
+                                title={t('admin.documents.table.openDocTooltip', 'Clic para abrir documento')}
+                              >
+                                <FaFilePdf />
+                                <span>{docIdFile}</span>
+                              </div>
+                            </td>
+
+                            {/* Columna NÃºmero de ConducciÃ³n (Texto limpio, sin fondo gris) */}
+                            <td style={{ color: 'var(--city-text, #334155)', fontWeight: 600 }}>
+                              {item.numeroLicencia}
+                            </td>
+
+                            {/* Columna Licencia de ConducciÃ³n (Link PDF con Ã­cono rojo) */}
+                            <td>
+                              <div
+                                className="doc-table-pdf-link"
+                                onClick={() => setZoomPdf({
+                                  url: licUrl,
+                                  title: `${t('admin.documents.table.driverLicense', 'Licencia de ConducciÃ³n')} - ${item.clienteNombre}`
+                                })}
+                                title={t('admin.documents.table.openDocTooltip', 'Clic para abrir documento')}
+                              >
+                                <FaFilePdf />
+                                <span>{licFile}</span>
+                              </div>
+                            </td>
+
+                            {/* Columna Nombre VehÃ­culo */}
+                            <td style={{ color: 'var(--city-text, #0f172a)', fontWeight: 600 }}>
+                              {item.vehiculoNombre || item.vehiculo || 'VehÃ­culo Reservado'}
+                            </td>
+
+                            {/* Columna Estado de Reserva (Actualizado en tiempo real) */}
+                            <td style={{ textAlign: 'center' }}>
+                              {getReservaStatusBadge(resState)}
+                            </td>
+
+                            {/* Columna Fecha Subida */}
+                            <td style={{ color: 'var(--city-muted, #64748b)' }}>{fecha}</td>
+
+                            {/* Columna Hora Subida */}
+                            <td style={{ color: 'var(--city-muted, #64748b)' }}>{hora}</td>
+
+                            {/* Columna Estado de ValidaciÃ³n */}
+                            <td style={{ textAlign: 'center' }}>
+                              {getStatusBadge(item.estado)}
+                            </td>
+
+                            {/* Columna Acciones */}
+                            <td style={{ textAlign: 'center' }}>
+                              <button
+                                type="button"
+                                onClick={() => handleOpenReview(item)}
+                                style={{
+                                  padding: '7px 22px',
+                                  borderRadius: '9999px',
+                                  background: '#2563eb',
+                                  color: 'var(--city-card, #ffffff)',
+                                  border: 'none',
+                                  fontWeight: 800,
+                                  fontSize: '12.5px',
+                                  cursor: 'pointer',
+                                  boxShadow: '0 2px 5px rgba(37, 99, 235, 0.25)',
+                                  transition: 'all 0.2s',
+                                  whiteSpace: 'nowrap',
+                                }}
+                                onMouseOver={(e) => { e.currentTarget.style.background = 'var(--brand-primary, #1d4ed8)' }}
+                                onMouseOut={(e) => { e.currentTarget.style.background = '#2563eb' }}
+                              >
+                                {t('admin.documents.table.validateBtn', 'Validar')}
+                              </button>
+                            </td>
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* 2. Vista de Tarjetas Adaptativas para Pantallas MÃ³viles */}
+                <div className="doc-mobile-cards">
+                  {filtered.map((item, index) => {
+                    const docIdFile = item.documentoIdentidadPdf || `Cedula-${item.documentoIdentidad}.pdf`
+                    const licFile = item.licenciaConduccionPdf || `Licencia-${item.documentoIdentidad}.pdf`
+                    const docIdUrl = item.fotoCedulaFrente || item.pdfCedulaUrl || 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
+                    const licUrl = item.fotoLicenciaFrente || item.pdfLicenciaUrl || 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
+                    const { fecha, hora } = getUploadDateTime(item.fechaSubida)
+                    const resState = reservationMap[item.reservaCodigo] || item.reservaEstado || 'confirmada'
 
                     return (
-                      <tr key={item.id}>
-                        <td>
-                          <strong>{item.reservaCodigo}</strong>
-                        </td>
-                        <td>
-                          <div>
-                            <strong>{item.clienteNombre}</strong>
+                      <div key={item.id} className="doc-mobile-card">
+                        <div className="doc-mobile-card-header">
+                          <div className="doc-mobile-card-title">
+                            <span style={{ fontWeight: 800, color: 'var(--brand-primary, #2563eb)', fontSize: 13 }}>#{index + 1}</span>
+                            <span style={{ fontWeight: 800, color: 'var(--city-text, #0f172a)', fontSize: 14 }}>{item.reservaCodigo}</span>
                           </div>
-                        </td>
-                        <td>{item.documentoIdentidad}</td>
-                        <td>
-                          <code>{item.numeroLicencia}</code>
-                        </td>
-                        <td>{item.categoriaLicencia}</td>
-                        <td>{item.fechaVencimientoLicencia}</td>
-                        <td>
-                          <select
-                            value={item.estado}
-                            onChange={(e) => handleQuickStatusChange(item.id, e.target.value)}
-                            style={{
-                              padding: '4px 8px',
-                              borderRadius: '6px',
-                              border: '1px solid #cbd5e1',
-                              backgroundColor: item.estado === 'aprobado' ? '#dcfce7' : item.estado === 'rechazado' ? '#fee2e2' : '#fef9c3',
-                              color: item.estado === 'aprobado' ? '#15803d' : item.estado === 'rechazado' ? '#991b1b' : '#a16207',
-                              fontWeight: 700,
-                              fontSize: '11px',
-                              cursor: 'pointer',
-                              outline: 'none'
-                            }}
+                          {getStatusBadge(item.estado)}
+                        </div>
+
+                        <div className="doc-mobile-card-body">
+                          <div className="doc-mobile-data-item doc-mobile-data-item--full">
+                            <span className="doc-mobile-data-label">{t('admin.documents.table.clientName', 'Nombre Cliente')}</span>
+                            <span className="doc-mobile-data-value" style={{ fontSize: 14 }}>{item.clienteNombre}</span>
+                          </div>
+
+                          <div className="doc-mobile-data-item">
+                            <span className="doc-mobile-data-label">{t('admin.documents.table.documentNumber', 'NÂº Documento')}</span>
+                            <span className="doc-mobile-data-value">{item.documentoIdentidad}</span>
+                          </div>
+
+                          <div className="doc-mobile-data-item">
+                            <span className="doc-mobile-data-label">{t('admin.documents.table.licenseNumber', 'NÃºmero de ConducciÃ³n')}</span>
+                            <span className="doc-mobile-data-value" style={{ fontWeight: 600 }}>
+                              {item.numeroLicencia}
+                            </span>
+                          </div>
+
+                          <div className="doc-mobile-data-item doc-mobile-data-item--full">
+                            <span className="doc-mobile-data-label">{t('admin.documents.table.vehicleName', 'Nombre VehÃ­culo')}</span>
+                            <span className="doc-mobile-data-value">{item.vehiculoNombre || item.vehiculo || 'VehÃ­culo Reservado'}</span>
+                          </div>
+
+                          <div className="doc-mobile-data-item">
+                            <span className="doc-mobile-data-label">{t('admin.documents.table.reservationStatus', 'Estado de Reserva')}</span>
+                            <div style={{ marginTop: 2 }}>{getReservaStatusBadge(resState)}</div>
+                          </div>
+
+                          <div className="doc-mobile-data-item">
+                            <span className="doc-mobile-data-label">{t('admin.documents.table.uploadDate', 'Fecha / Hora Subida')}</span>
+                            <span className="doc-mobile-data-value" style={{ color: 'var(--city-muted, #64748b)', fontSize: 12 }}>
+                              {fecha} â€¢ {hora}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Documentos subidos links mÃ³viles */}
+                        <div className="doc-mobile-card-docs">
+                          <div
+                            className="doc-table-pdf-link"
+                            onClick={() => setZoomPdf({
+                              url: docIdUrl,
+                              title: `${t('admin.documents.table.identityDoc', 'Documento de Identidad')} - ${item.clienteNombre}`
+                            })}
                           >
-                            <option value="pendiente">Pendiente Audit</option>
-                            <option value="aprobado">Aprobado</option>
-                            <option value="rechazado">Rechazado</option>
-                          </select>
-                        </td>
-                        <td style={{ textAlign: 'center' }}>
+                            <FaFilePdf />
+                            <span>{t('admin.documents.modal.idDocCard', 'CÃ©dula')}: {docIdFile}</span>
+                          </div>
+
+                          <div
+                            className="doc-table-pdf-link"
+                            onClick={() => setZoomPdf({
+                              url: licUrl,
+                              title: `${t('admin.documents.table.driverLicense', 'Licencia de ConducciÃ³n')} - ${item.clienteNombre}`
+                            })}
+                          >
+                            <FaFilePdf />
+                            <span>{t('admin.documents.modal.licenseCard', 'Licencia')}: {licFile}</span>
+                          </div>
+                        </div>
+
+                        <div className="doc-mobile-card-actions">
                           <button
                             type="button"
-                            className="cities-primary"
                             onClick={() => handleOpenReview(item)}
-                            style={{ padding: '6px 12px', fontSize: 12, display: 'inline-flex', alignItems: 'center', gap: 6 }}
+                            style={{
+                              width: '100%',
+                              padding: '9px 18px',
+                              borderRadius: '12px',
+                              background: '#2563eb',
+                              color: 'var(--city-card, #ffffff)',
+                              border: 'none',
+                              fontWeight: 800,
+                              fontSize: '13px',
+                              cursor: 'pointer',
+                              boxShadow: '0 2px 5px rgba(37, 99, 235, 0.25)',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              gap: 8,
+                            }}
                           >
-                            <FaEye /> Auditar Fotos
+                            {t('admin.documents.table.validateBtn', 'Validar')}
                           </button>
-                        </td>
-                      </tr>
+                        </div>
+                      </div>
                     )
-                  })
-                )}
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        {/* Modal de Auditoría de Documentación */}
-        {modalItem && (
-          <div className="cities-modal-backdrop" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'fixed', inset: 0, zIndex: 1000 }}>
-            <div className="cities-modal" style={{ width: '100%', maxWidth: 780, maxHeight: '90vh', overflowY: 'auto', padding: 26, borderRadius: 18 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                <div>
-                  <h2 style={{ margin: 0, fontSize: 20, fontWeight: 800 }}>Expediente Digital: {modalItem.clienteNombre}</h2>
-                  <p style={{ margin: '4px 0 0', fontSize: 12, color: '#64748b' }}>Reserva <strong>{modalItem.reservaCodigo}</strong> · Sede {modalItem.sucursal}</p>
+                  })}
                 </div>
-                <button type="button" onClick={() => setModalItem(null)} style={{ background: 'none', border: 'none', fontSize: 20, cursor: 'pointer', color: '#64748b' }}>
-                  <FaTimes />
+              </>
+            )}
+          </section>
+        </div>
+
+        {/* Modal de ValidaciÃ³n Mejorado, Limpio y Elegante */}
+        {modalItem && (
+          <div
+            className="cities-modal-backdrop"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              position: 'fixed',
+              inset: 0,
+              zIndex: 1000,
+              background: 'rgba(15, 23, 42, 0.65)',
+              padding: 16,
+            }}
+          >
+            <div className="doc-modal-card">
+              
+              {/* Header Limpio del Modal */}
+              <div className="doc-modal-header">
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                    <h2 style={{ margin: 0, fontSize: 18, fontWeight: 800, color: 'var(--city-text, #0f172a)' }}>
+                      {t('admin.documents.modal.title', 'Validar Documentos')}
+                    </h2>
+                    <span style={{ fontSize: 12, fontWeight: 700, padding: '2px 8px', borderRadius: 6, background: 'var(--city-soft, #eff6ff)', color: '#2563eb', border: '1px solid #bfdbfe' }}>
+                      {modalItem.reservaCodigo}
+                    </span>
+                  </div>
+                  <p style={{ margin: 0, fontSize: 12.5, color: 'var(--city-muted, #64748b)' }}>
+                    {t('admin.documents.modal.vehicle', 'Vehículo')}: <strong>{modalItem.vehiculoNombre || modalItem.vehiculo || 'Vehículo Reservado'}</strong>
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setModalItem(null)}
+                  title={t('admin.documents.modal.closeBtn', 'Cerrar')}
+                  style={{
+                    background: 'transparent',
+                    border: 'none',
+                    fontSize: 26,
+                    lineHeight: 1,
+                    cursor: 'pointer',
+                    color: 'var(--city-muted, #64748b)',
+                    padding: '0 2px',
+                    flexShrink: 0,
+                    fontWeight: 300,
+                  }}
+                >
+                  &times;
                 </button>
               </div>
 
-              {/* Información General */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12, padding: 14, background: '#f8fafc', borderRadius: 12, marginBottom: 20, fontSize: 12.5 }}>
-                <div><strong>Tipo Doc:</strong> {modalItem.tipoDocumento}</div>
-                <div><strong>No. Documento:</strong> {modalItem.documentoIdentidad}</div>
-                <div><strong>Licencia:</strong> {modalItem.numeroLicencia}</div>
-                <div><strong>Categoría:</strong> {modalItem.categoriaLicencia}</div>
-                <div><strong>Vencimiento Licencia:</strong> {modalItem.fechaVencimientoLicencia}</div>
-                <div><strong>Fecha Subida:</strong> {modalItem.fechaSubida}</div>
+              {/* Tira Resumen de Datos Clave */}
+              <div className="doc-modal-summary-strip">
+                <div>
+                  <span style={{ color: 'var(--city-muted, #64748b)', fontSize: 11, display: 'block', marginBottom: 2 }}>{t('admin.documents.modal.client', 'Cliente / Titular')}</span>
+                  <strong style={{ fontSize: 13, color: 'var(--city-text, #0f172a)' }}>{modalItem.clienteNombre}</strong>
+                </div>
+                <div>
+                  <span style={{ color: 'var(--city-muted, #64748b)', fontSize: 11, display: 'block', marginBottom: 2 }}>{t('admin.documents.modal.docNumber', 'No. Documento')}</span>
+                  <strong style={{ fontSize: 13, color: 'var(--city-text, #0f172a)' }}>{modalItem.documentoIdentidad}</strong>
+                </div>
+                <div>
+                  <span style={{ color: 'var(--city-muted, #64748b)', fontSize: 11, display: 'block', marginBottom: 2 }}>{t('admin.documents.modal.license', 'Licencia')}</span>
+                  <strong style={{ fontSize: 13, color: 'var(--city-text, #0f172a)' }}>
+                    {modalItem.numeroLicencia} ({modalItem.categoriaLicencia})
+                  </strong>
+                </div>
               </div>
 
-              {/* Fotos del Documento y Licencia */}
-              <h3 style={{ fontSize: 14, fontWeight: 800, marginBottom: 12 }}>Inspección de Imágenes Subidas:</h3>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 14, marginBottom: 20 }}>
-                {modalItem.fotoLicenciaFrente && (
-                  <div style={{ border: '1px solid #cbd5e1', borderRadius: 12, padding: 10, textAlign: 'center', background: '#fff' }}>
-                    <small style={{ fontWeight: 700, display: 'block', marginBottom: 6 }}>Licencia Conducir (Frente)</small>
-                    <img
-                      src={modalItem.fotoLicenciaFrente}
-                      alt="Licencia Frente"
-                      style={{ width: '100%', height: 130, objectFit: 'cover', borderRadius: 8, cursor: 'zoom-in' }}
-                      onClick={() => setZoomImagen(modalItem.fotoLicenciaFrente)}
+              {/* CUERPO PRINCIPAL: Izquierda PDFs — Derecha Checklist + Textarea */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, marginBottom: 20 }}>
+
+                {/* COLUMNA IZQUIERDA: Documentos digitales */}
+                <div>
+                  <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--city-muted, #64748b)', display: 'block', marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    {t('admin.documents.modal.uploadedDocsTitle', 'Documentos subidos')}
+                  </label>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+
+                    {/* Cédula */}
+                    <div>
+                      <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--city-text, #0f172a)', display: 'block', marginBottom: 6 }}>
+                        {t('admin.documents.modal.idDocCard', 'Cédula de Identidad')}
+                      </span>
+                      {(modalItem.fotoCedulaFrente || modalItem.pdfCedulaUrl) ? (
+                        (modalItem.fotoCedulaFrente || modalItem.pdfCedulaUrl).match(/\.(jpeg|jpg|gif|png|webp)$/i) || (modalItem.fotoCedulaFrente || modalItem.pdfCedulaUrl).startsWith('data:image/') ? (
+                          <img src={modalItem.fotoCedulaFrente || modalItem.pdfCedulaUrl} alt="Cédula" style={{ width: '100%', height: '230px', objectFit: 'contain', background: 'var(--city-bg, #f8fafc)', borderRadius: 10, border: '1.5px solid var(--city-border, #e2e8f0)' }} />
+                        ) : (
+                          <iframe src={modalItem.fotoCedulaFrente || modalItem.pdfCedulaUrl} title="Cédula PDF" style={{ width: '100%', height: '230px', border: '1.5px solid var(--city-border, #e2e8f0)', borderRadius: 10, background: 'var(--city-bg, #f8fafc)' }} />
+                        )
+                      ) : (
+                        <div style={{ width: '100%', height: '230px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'var(--city-bg, #f8fafc)', border: '1.5px dashed var(--city-border, #e2e8f0)', borderRadius: 10, color: 'var(--city-muted, #94a3b8)', gap: 8 }}>
+                          <FaFilePdf style={{ fontSize: 28, opacity: 0.4 }} />
+                          <span style={{ fontSize: 12 }}>No disponible</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Licencia */}
+                    <div>
+                      <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--city-text, #0f172a)', display: 'block', marginBottom: 6 }}>
+                        {t('admin.documents.modal.licenseCard', 'Licencia de Conducción')}
+                      </span>
+                      {(modalItem.fotoLicenciaFrente || modalItem.pdfLicenciaUrl) ? (
+                        (modalItem.fotoLicenciaFrente || modalItem.pdfLicenciaUrl).match(/\.(jpeg|jpg|gif|png|webp)$/i) || (modalItem.fotoLicenciaFrente || modalItem.pdfLicenciaUrl).startsWith('data:image/') ? (
+                          <img src={modalItem.fotoLicenciaFrente || modalItem.pdfLicenciaUrl} alt="Licencia" style={{ width: '100%', height: '230px', objectFit: 'contain', background: 'var(--city-bg, #f8fafc)', borderRadius: 10, border: '1.5px solid var(--city-border, #e2e8f0)' }} />
+                        ) : (
+                          <iframe src={modalItem.fotoLicenciaFrente || modalItem.pdfLicenciaUrl} title="Licencia PDF" style={{ width: '100%', height: '230px', border: '1.5px solid var(--city-border, #e2e8f0)', borderRadius: 10, background: 'var(--city-bg, #f8fafc)' }} />
+                        )
+                      ) : (
+                        <div style={{ width: '100%', height: '230px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'var(--city-bg, #f8fafc)', border: '1.5px dashed var(--city-border, #e2e8f0)', borderRadius: 10, color: 'var(--city-muted, #94a3b8)', gap: 8 }}>
+                          <FaFilePdf style={{ fontSize: 28, opacity: 0.4 }} />
+                          <span style={{ fontSize: 12 }}>No disponible</span>
+                        </div>
+                      )}
+                    </div>
+
+                  </div>
+                </div>
+
+                {/* COLUMNA DERECHA: Checklist + Observaciones */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+
+                  {/* Checklist */}
+                  <div className="doc-checklist-box">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12.5, fontWeight: 700, color: 'var(--city-text, #0f172a)', marginBottom: 10 }}>
+                      <FaShieldAlt style={{ color: '#2563eb' }} />
+                      <span>{t('admin.documents.modal.checklistTitle', 'Lista de Verificación')}</span>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+
+                      <div className="doc-check-item" onClick={() => handleToggleCheck('cedulaLegible')}>
+                        {modalChecklist.cedulaLegible ? <FaCheckSquare style={{ color: '#16a34a', fontSize: 16, flexShrink: 0 }} /> : <FaRegSquare style={{ color: '#94a3b8', fontSize: 16, flexShrink: 0 }} />}
+                        <span style={{ color: modalChecklist.cedulaLegible ? '#16a34a' : 'var(--city-text, #334155)', fontWeight: modalChecklist.cedulaLegible ? 600 : 400 }}>
+                          {t('admin.documents.modal.check1', '1. Cédula de Identidad es legible, nítida y completa.')}
+                        </span>
+                      </div>
+
+                      <div className="doc-check-item" onClick={() => handleToggleCheck('identidadCoincide')}>
+                        {modalChecklist.identidadCoincide ? <FaCheckSquare style={{ color: '#16a34a', fontSize: 16, flexShrink: 0 }} /> : <FaRegSquare style={{ color: '#94a3b8', fontSize: 16, flexShrink: 0 }} />}
+                        <span style={{ color: modalChecklist.identidadCoincide ? '#16a34a' : 'var(--city-text, #334155)', fontWeight: modalChecklist.identidadCoincide ? 600 : 400 }}>
+                          {t('admin.documents.modal.check2', '2. Número de documento y nombre coinciden con el titular de la reserva.')}
+                        </span>
+                      </div>
+
+                      <div className="doc-check-item" onClick={() => handleToggleCheck('licenciaVigente')}>
+                        {modalChecklist.licenciaVigente ? <FaCheckSquare style={{ color: '#16a34a', fontSize: 16, flexShrink: 0 }} /> : <FaRegSquare style={{ color: '#94a3b8', fontSize: 16, flexShrink: 0 }} />}
+                        <span style={{ color: modalChecklist.licenciaVigente ? '#16a34a' : 'var(--city-text, #334155)', fontWeight: modalChecklist.licenciaVigente ? 600 : 400 }}>
+                          {t('admin.documents.modal.check3', '3. La Licencia de Conducción se encuentra vigente durante todo el periodo de alquiler.')}
+                        </span>
+                      </div>
+
+                      <div className="doc-check-item" onClick={() => handleToggleCheck('categoriaApta')}>
+                        {modalChecklist.categoriaApta ? <FaCheckSquare style={{ color: '#16a34a', fontSize: 16, flexShrink: 0 }} /> : <FaRegSquare style={{ color: '#94a3b8', fontSize: 16, flexShrink: 0 }} />}
+                        <span style={{ color: modalChecklist.categoriaApta ? '#16a34a' : 'var(--city-text, #334155)', fontWeight: modalChecklist.categoriaApta ? 600 : 400 }}>
+                          {t('admin.documents.modal.check4', '4. La categoría de la licencia autoriza conducir el tipo de vehículo.')}
+                        </span>
+                      </div>
+
+                    </div>
+                  </div>
+
+                  {/* Observaciones */}
+                  <div style={{ flexGrow: 1 }}>
+                    <label style={{ display: 'block', fontSize: 12, fontWeight: 700, marginBottom: 6, color: 'var(--city-muted, #64748b)' }}>
+                      {t('admin.documents.modal.observationsLabel', 'Observaciones / Motivo (se notificará al cliente):')}
+                    </label>
+                    <textarea
+                      rows={5}
+                      className="doc-modal-textarea"
+                      value={observaciones}
+                      onChange={(e) => setObservaciones(e.target.value)}
+                      placeholder={t('admin.documents.modal.observationsPlaceholder', 'Opcional al aprobar. Si rechazas, indica la razón para que el cliente la corrija...')}
+                      style={{ width: '100%', padding: '10px 12px', borderRadius: 10, border: '1.5px solid var(--city-border, #cbd5e1)', fontSize: 13, boxSizing: 'border-box', outline: 'none', fontFamily: 'inherit', resize: 'vertical', minHeight: '120px' }}
                     />
                   </div>
-                )}
-                {modalItem.fotoLicenciaReverso && (
-                  <div style={{ border: '1px solid #cbd5e1', borderRadius: 12, padding: 10, textAlign: 'center', background: '#fff' }}>
-                    <small style={{ fontWeight: 700, display: 'block', marginBottom: 6 }}>Licencia Conducir (Reverso)</small>
-                    <img
-                      src={modalItem.fotoLicenciaReverso}
-                      alt="Licencia Reverso"
-                      style={{ width: '100%', height: 130, objectFit: 'cover', borderRadius: 8, cursor: 'zoom-in' }}
-                      onClick={() => setZoomImagen(modalItem.fotoLicenciaReverso)}
-                    />
-                  </div>
-                )}
-                {modalItem.fotoCedulaFrente && (
-                  <div style={{ border: '1px solid #cbd5e1', borderRadius: 12, padding: 10, textAlign: 'center', background: '#fff' }}>
-                    <small style={{ fontWeight: 700, display: 'block', marginBottom: 6 }}>Documento Identidad (Frente)</small>
-                    <img
-                      src={modalItem.fotoCedulaFrente}
-                      alt="Cédula Frente"
-                      style={{ width: '100%', height: 130, objectFit: 'cover', borderRadius: 8, cursor: 'zoom-in' }}
-                      onClick={() => setZoomImagen(modalItem.fotoCedulaFrente)}
-                    />
-                  </div>
-                )}
+
+                </div>
               </div>
 
-              {/* Observaciones y Dictamen */}
-              <div style={{ marginBottom: 20 }}>
-                <label style={{ display: 'block', fontSize: 12, fontWeight: 700, marginBottom: 6, color: '#334155' }}>
-                  Observaciones / Notas del Auditor de Sucursal:
-                </label>
-                <textarea
-                  rows={3}
-                  value={observaciones}
-                  onChange={(e) => setObservaciones(e.target.value)}
-                  placeholder="Ej: Licencia verificada y válida. Coincide con la cédula presentada..."
-                  style={{ width: '100%', padding: 12, borderRadius: 10, border: '1px solid #cbd5e1', fontSize: 13 }}
-                />
-              </div>
-
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-                <button type="button" className="brand-secondary" onClick={() => setModalItem(null)}>
-                  Cerrar sin cambiar
+              {/* Botones de DecisiÃ³n Responsive */}
+              <div className="doc-modal-decision-btns" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10, flexWrap: 'wrap', borderTop: '1px solid var(--city-border, #e2e8f0)', paddingTop: 16 }}>
+                <button
+                  type="button"
+                  onClick={() => setModalItem(null)}
+                  style={{
+                    padding: '8px 20px',
+                    borderRadius: 9999,
+                    background: 'var(--city-bg, #f1f5f9)',
+                    color: 'var(--city-muted, #475569)',
+                    border: '1.5px solid var(--city-border, #cbd5e1)',
+                    fontWeight: 700,
+                    fontSize: 13,
+                    cursor: 'pointer',
+                  }}
+                >
+                  {t('admin.documents.modal.closeBtn', 'Cerrar')}
                 </button>
                 <div style={{ display: 'flex', gap: 10 }}>
                   <button
                     type="button"
                     onClick={handleRechazarDocumento}
-                    style={{ padding: '10px 16px', borderRadius: 10, background: '#ef4444', color: '#fff', border: 'none', fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6 }}
+                    style={{
+                      padding: '8px 22px',
+                      borderRadius: 9999,
+                      background: '#dc2626',
+                      color: 'var(--city-card, #ffffff)',
+                      border: 'none',
+                      fontWeight: 800,
+                      fontSize: 13,
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 6,
+                      boxShadow: '0 2px 6px rgba(220, 38, 38, 0.2)',
+                    }}
                   >
-                    <FaTimesCircle /> Rechazar Documentación
+                    {t('admin.documents.modal.rejectBtn', 'Desaprobado')}
                   </button>
                   <button
                     type="button"
                     onClick={handleAprobarDocumento}
-                    style={{ padding: '10px 16px', borderRadius: 10, background: '#16a34a', color: '#fff', border: 'none', fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6 }}
+                    style={{
+                      padding: '8px 24px',
+                      borderRadius: 9999,
+                      background: '#16a34a',
+                      color: 'var(--city-card, #ffffff)',
+                      border: 'none',
+                      fontWeight: 800,
+                      fontSize: 13,
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 6,
+                      boxShadow: '0 2px 6px rgba(22, 163, 74, 0.2)',
+                    }}
                   >
-                    <FaCheckCircle /> Aprobar Documentación
+                    {t('admin.documents.modal.approveBtn', 'Aprobado')}
                   </button>
                 </div>
               </div>
@@ -356,13 +923,79 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
           </div>
         )}
 
-        {/* Modal de Zoom de Imagen */}
-        {zoomImagen && (
-          <div className="cities-modal-backdrop" onClick={() => setZoomImagen(null)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'fixed', inset: 0, zIndex: 1100, background: 'rgba(0,0,0,0.85)' }}>
-            <img src={zoomImagen} alt="Documento ampliado" style={{ maxWidth: '90%', maxHeight: '90%', borderRadius: 12, border: '3px solid #fff' }} />
+        {/* Modal Visor de Documentos / Lightbox Adaptable a la Imagen */}
+        {zoomPdf && (
+          <div
+            className="doc-zoom-backdrop"
+            onClick={() => setZoomPdf(null)}
+          >
+            <div
+              className={`doc-zoom-modal ${
+                zoomPdf.url?.toLowerCase().match(/\.(jpeg|jpg|gif|png|webp)$/i) || zoomPdf.url?.startsWith('data:image/')
+                  ? ''
+                  : 'doc-zoom-modal--iframe'
+              }`}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="doc-zoom-header">
+                <div className="doc-zoom-title-box">
+                  <h3 className="doc-zoom-title">{zoomPdf.title}</h3>
+                  <span className="doc-zoom-subtitle">
+                    <FaEye style={{ color: '#2563eb' }} />
+                    {t('admin.documents.modal.previewTitle', 'Vista previa del documento')}
+                  </span>
+                </div>
+                <div className="doc-zoom-actions">
+                  {zoomPdf.url && (
+                    <a
+                      href={zoomPdf.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="doc-zoom-btn-action"
+                      title={t('admin.documents.openNewTab', 'Abrir original')}
+                    >
+                      <FaExternalLinkAlt style={{ fontSize: 11 }} />
+                      <span>{t('admin.documents.openNewTab', 'Abrir original')}</span>
+                    </a>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => setZoomPdf(null)}
+                    className="doc-modal-close"
+                    title={t('admin.documents.modal.closeBtn', 'Cerrar')}
+                  >
+                    âœ•
+                  </button>
+                </div>
+              </div>
+
+              <div className="doc-zoom-preview-box">
+                {zoomPdf.url?.toLowerCase().match(/\.(jpeg|jpg|gif|png|webp)$/i) || zoomPdf.url?.startsWith('data:image/') ? (
+                  <img
+                    src={zoomPdf.url}
+                    alt={zoomPdf.title}
+                    className="doc-zoom-img"
+                  />
+                ) : (
+                  <iframe
+                    src={zoomPdf.url}
+                    title={zoomPdf.title}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      minHeight: '65vh',
+                      border: 'none',
+                      borderRadius: 8,
+                    }}
+                  />
+                )}
+              </div>
+            </div>
           </div>
         )}
       </main>
     </div>
   )
 }
+
+

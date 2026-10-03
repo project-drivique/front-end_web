@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react'
+﻿import React, { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import {
@@ -26,15 +26,15 @@ import MenuConfiguracion from '../../../components/MenuConfiguracion'
 import './BranchNotificationCenterPage.css'
 
 /**
- * Componente de Página: BranchNotificationCenterPage
+ * Componente de PÃ¡gina: BranchNotificationCenterPage
  * 
  * @description
  * Pantalla completa dedicada al "Centro de Notificaciones y Alertas Operativas" para
  * administradores y encargados de sucursal. Ofrece:
- * - Tarjetas de métricas y estadísticas operativas del turno.
- * - Buscador en tiempo real de notificaciones (por cliente, vehículo, código o descripción).
- * - Filtros por pestañas (Todas, No leídas, Operaciones, Alertas & Incidencias).
- * - Acciones rápidas de marcado masivo/individual y navegación directa a módulos de acción.
+ * - Tarjetas de mÃ©tricas y estadÃ­sticas operativas del turno.
+ * - Buscador en tiempo real de notificaciones (por cliente, vehÃ­culo, cÃ³digo o descripciÃ³n).
+ * - Filtros por pestaÃ±as (Todas, No leÃ­das, Operaciones, Alertas & Incidencias).
+ * - Acciones rÃ¡pidas de marcado masivo/individual y navegaciÃ³n directa a mÃ³dulos de acciÃ³n.
  * 
  * @param {Object} props
  * @param {boolean} [props.branchOnly=true] - Si es true, restringe la vista al contexto de la sucursal asignada.
@@ -51,7 +51,7 @@ export default function BranchNotificationCenterPage({ branchOnly = true }) {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedType, setSelectedType] = useState('all') // 'all', 'unread', 'operations', 'attention'
 
-  // Patrón Controller / Custom Hook: Centraliza la lógica y mutaciones de las notificaciones
+  // PatrÃ³n Controller / Custom Hook: Centraliza la lÃ³gica y mutaciones de las notificaciones
   const {
     notifications,
     unreadCount,
@@ -90,14 +90,14 @@ export default function BranchNotificationCenterPage({ branchOnly = true }) {
     }
   }
 
-  const branchTitle = dashboardData?.branchName || 'Alamo Bogotá - Aeropuerto'
+  const branchTitle = dashboardData?.branchName || 'Alamo BogotÃ¡ - Aeropuerto'
 
   return (
     <div className={`management-shell ${tema === 'oscuro' ? 'management-shell--dark' : ''}`}>
       <ManagementSidebar branchOnly={branchOnly} />
 
       <main className="management-main bnc-main">
-        {/* ENCABEZADO DE LA PÁGINA */}
+        {/* ENCABEZADO DE LA PÃGINA */}
         <header className="bnc-header">
           <div>
             <button
@@ -116,7 +116,7 @@ export default function BranchNotificationCenterPage({ branchOnly = true }) {
               <div>
                 <h1 className="bnc-title">{t('branchDashboard.notificationsCenter.title', 'Centro de Notificaciones')}</h1>
                 <p className="bnc-subtitle">
-                  {branchTitle} · {t('branchDashboard.notificationsCenter.subtitle', 'Monitoreo y trazabilidad de alertas operativas en tiempo real')}
+                  {branchTitle} Â· {t('branchDashboard.notificationsCenter.subtitle', 'Monitoreo y trazabilidad de alertas operativas en tiempo real')}
                 </p>
               </div>
             </div>
@@ -132,14 +132,14 @@ export default function BranchNotificationCenterPage({ branchOnly = true }) {
               >
                 <FaCheckDouble aria-hidden="true" />
                 <span>
-                  {t('branchDashboard.notificationsCenter.markAllRead', 'Marcar todas como leídas')} ({unreadCount})
+                  {t('branchDashboard.notificationsCenter.markAllRead', 'Marcar todas como leÃ­das')} ({unreadCount})
                 </span>
               </button>
             )}
           </div>
         </header>
 
-        {/* TARJETAS DE ESTADÍSTICAS RÁPIDAS */}
+        {/* TARJETAS DE ESTADÃSTICAS RÃPIDAS */}
         <section className="bnc-stats-grid">
           <div className="bnc-stat-card">
             <span className="bnc-stat-label">
@@ -153,17 +153,17 @@ export default function BranchNotificationCenterPage({ branchOnly = true }) {
 
           <div className="bnc-stat-card bnc-stat-card--danger">
             <span className="bnc-stat-label">
-              {t('branchDashboard.notificationsCenter.statUnread', 'Pendientes / No Leídas')}
+              {t('branchDashboard.notificationsCenter.statUnread', 'Pendientes / No LeÃ­das')}
             </span>
             <strong className="bnc-stat-value">{unreadCount}</strong>
             <span className="bnc-stat-hint">
-              {t('branchDashboard.notificationsCenter.statUnreadHint', 'Requieren tu atención o lectura')}
+              {t('branchDashboard.notificationsCenter.statUnreadHint', 'Requieren tu atenciÃ³n o lectura')}
             </span>
           </div>
 
           <div className="bnc-stat-card bnc-stat-card--brand">
             <span className="bnc-stat-label">
-              {t('branchDashboard.notificationsCenter.statOperations', 'Operaciones del Día')}
+              {t('branchDashboard.notificationsCenter.statOperations', 'Operaciones del DÃ­a')}
             </span>
             <strong className="bnc-stat-value">
               {notifications.filter((n) => n.category === 'operations').length}
@@ -186,14 +186,14 @@ export default function BranchNotificationCenterPage({ branchOnly = true }) {
           </div>
         </section>
 
-        {/* CONTROLES DE FILTRO Y BÚSQUEDA */}
+        {/* CONTROLES DE FILTRO Y BÃšSQUEDA */}
         <section className="bnc-controls-card">
           <div className="bnc-search-box">
             <FaSearch className="bnc-search-icon" aria-hidden="true" />
             <input
               type="text"
               className="bnc-search-input"
-              placeholder={t('branchDashboard.notificationsCenter.searchPlaceholder', 'Buscar notificación por cliente, placa o código de reserva...')}
+              placeholder={t('branchDashboard.notificationsCenter.searchPlaceholder', 'Buscar notificaciÃ³n por cliente, placa o cÃ³digo de reserva...')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -212,7 +212,7 @@ export default function BranchNotificationCenterPage({ branchOnly = true }) {
               className={`bnc-pill ${selectedType === 'unread' ? 'bnc-pill--active' : ''}`}
               onClick={() => setSelectedType('unread')}
             >
-              {t('branchDashboard.notificationsCenter.filterUnread', 'No leídas')} ({unreadCount})
+              {t('branchDashboard.notificationsCenter.filterUnread', 'No leÃ­das')} ({unreadCount})
             </button>
             <button
               type="button"
@@ -249,8 +249,8 @@ export default function BranchNotificationCenterPage({ branchOnly = true }) {
               </h3>
               <p className="bnc-empty-desc">
                 {searchTerm
-                  ? t('branchDashboard.notificationsCenter.emptyDescSearch', 'No se encontraron alertas que coincidan con tu término de búsqueda.')
-                  : t('branchDashboard.notificationsCenter.emptyDescAll', 'Todas las tareas, entregas, devoluciones y validaciones de la sucursal están al día.')}
+                  ? t('branchDashboard.notificationsCenter.emptyDescSearch', 'No se encontraron alertas que coincidan con tu tÃ©rmino de bÃºsqueda.')
+                  : t('branchDashboard.notificationsCenter.emptyDescAll', 'Todas las tareas, entregas, devoluciones y validaciones de la sucursal estÃ¡n al dÃ­a.')}
               </p>
             </div>
           ) : (
@@ -279,7 +279,7 @@ export default function BranchNotificationCenterPage({ branchOnly = true }) {
                             color: notif.badgeColor || 'var(--brand-primary, #2563eb)',
                           }}
                         >
-                          {notif.categoryLabel || 'Notificación'}
+                          {notif.categoryLabel || 'NotificaciÃ³n'}
                         </span>
                         <span className="bnc-card-time">
                           <FaClock aria-hidden="true" />
@@ -299,7 +299,7 @@ export default function BranchNotificationCenterPage({ branchOnly = true }) {
                             className="bnc-mark-read-btn"
                             onClick={() => markAsRead(notif.id)}
                           >
-                            {t('branchDashboard.notificationsCenter.markRead', 'Marcar leída')}
+                            {t('branchDashboard.notificationsCenter.markRead', 'Marcar leÃ­da')}
                           </button>
                         )}
                         <button
@@ -307,7 +307,7 @@ export default function BranchNotificationCenterPage({ branchOnly = true }) {
                           className="bnc-btn bnc-btn--primary"
                           onClick={() => handleActionClick(notif)}
                         >
-                          <span>{notif.actionLabel || t('branchDashboard.notificationsCenter.goToModule', 'Ir al módulo')}</span>
+                          <span>{notif.actionLabel || t('branchDashboard.notificationsCenter.goToModule', 'Ir al mÃ³dulo')}</span>
                           <FaChevronRight aria-hidden="true" />
                         </button>
                       </div>

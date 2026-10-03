@@ -220,8 +220,8 @@ export function exportPdf({
       const cellsHtml = row
         .map((cell, cIdx) => {
           const val = String(cell ?? '')
-          // Si la columna es Vehículo y tenemos imagen, renderizar la miniatura
-          if (headers[cIdx] === 'Vehículo' && vehicleImg) {
+          // Si la columna es Vehículo / Nombre Vehículo y tenemos imagen, renderizar la miniatura
+          if ((headers[cIdx] === 'Vehículo' || headers[cIdx] === 'Nombre Vehículo' || headers[cIdx] === 'NOMBRE VEHÍCULO' || String(headers[cIdx] || '').toLowerCase().includes('vehículo') || String(headers[cIdx] || '').toLowerCase().includes('vehiculo')) && vehicleImg) {
             return `
               <td>
                 <div style="display:flex; align-items:center; gap:8px;">

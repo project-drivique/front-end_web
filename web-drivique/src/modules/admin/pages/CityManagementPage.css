@@ -305,6 +305,15 @@ body.dark .cities-topbar h1 {
 
 .management-shell--dark .cities-table-wrap td {
   background: #0f1b2d;
+  color: #e2e8f0 !important;
+}
+
+/* Override inline color styles set in JSX for dark mode — all management pages */
+.management-shell--dark .cities-table-wrap td *,
+.management-shell--dark .cities-table-wrap td span,
+.management-shell--dark .cities-table-wrap td strong,
+.management-shell--dark .cities-table-wrap td a {
+  color: inherit;
 }
 
 .cities-table-wrap tbody tr:nth-child(even) td {

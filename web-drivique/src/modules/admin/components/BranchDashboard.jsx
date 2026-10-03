@@ -598,11 +598,11 @@ export default function BranchDashboard({ branchOnly = true }) {
         title: t('dashboard.export.deliveriesTitle', 'Entregas de Hoy'),
         filename: 'reporte_entregas_hoy',
         headers: [
-          t('dashboard.export.resId', 'Reserva ID'), 
+          t('dashboard.export.resId', 'Código Reserva'), 
           t('dashboard.export.time', 'Hora Programada'), 
           t('dashboard.export.client', 'Cliente'), 
           t('dashboard.export.phone', 'Teléfono'), 
-          t('dashboard.export.vehicle', 'Vehículo'), 
+          t('dashboard.export.vehicle', 'Nombre Vehículo'), 
           t('dashboard.export.plate', 'Placa'), 
           t('dashboard.export.deliveryStatus', 'Estado Entrega')
         ],
@@ -633,11 +633,11 @@ export default function BranchDashboard({ branchOnly = true }) {
         title: t('dashboard.export.returnsTitle', 'Devoluciones de Hoy'),
         filename: 'reporte_devoluciones_hoy',
         headers: [
-          t('dashboard.export.resId', 'Reserva ID'), 
+          t('dashboard.export.resId', 'Código Reserva'), 
           t('dashboard.export.time', 'Hora Programada'), 
           t('dashboard.export.client', 'Cliente'), 
           t('dashboard.export.phone', 'Teléfono'), 
-          t('dashboard.export.vehicle', 'Vehículo'), 
+          t('dashboard.export.vehicle', 'Nombre Vehículo'), 
           t('dashboard.export.plate', 'Placa'), 
           t('dashboard.export.returnStatus', 'Estado Devolución')
         ],
@@ -660,11 +660,11 @@ export default function BranchDashboard({ branchOnly = true }) {
         filename: 'reporte_ocupacion_flota',
         headers: [
           t('dashboard.export.plate', 'Placa'), 
-          t('dashboard.export.vehicle', 'Vehículo'), 
+          t('dashboard.export.vehicle', 'Nombre Vehículo'), 
           t('dashboard.export.category', 'Categoría'), 
           t('dashboard.export.branch', 'Sucursal'), 
           t('dashboard.export.opStatus', 'Estado Operativo'), 
-          t('dashboard.export.assignedRes', 'Reserva Asignada')
+          t('dashboard.export.assignedRes', 'Código Reserva Asignada')
         ],
         rows: [
           ['ABC-123', 'Toyota Corolla', 'Sedán Élite', branchName, 'OCUPADO', 'RES-8920'],

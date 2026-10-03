@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+﻿import { useState, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   FaBuilding,
@@ -32,7 +32,7 @@ import './CityManagementPage.css'
 import './IncidentManagementPage.css'
 
 export default function IncidentManagementPage() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { tema } = useLanding()
   const user = useAuthStore((state) => state.usuario)
   const { brand } = useBrand()
@@ -49,7 +49,7 @@ export default function IncidentManagementPage() {
   const [search, setSearch] = useState('')
   const [stateFilter, setStateFilter] = useState('all')
   const [branchFilter, setBranchFilter] = useState('all')
-  const [activeTab, setActiveTab] = useState('incidentes')
+  const [activeTab, setActiveTab] = useState('clientes')
   const [notice, setNotice] = useState('')
   const [errorModal, setErrorModal] = useState('')
 
@@ -110,13 +110,132 @@ export default function IncidentManagementPage() {
     return match?.imagenes?.[0] || match?.imagen || vehiculos[0]?.imagenes?.[0] || 'https://pplx-res.cloudinary.com/image/upload/pplx_search_images/a2cb0b378c25efdb1e116246f84149744c2f4081.jpg'
   }
 
-  // Filtrado dinámico
+  const translateDescription = (text) => {
+    if (!text) return t('admin.incidents.table.noDesc', 'Problema reportado...')
+    const lang = (i18n?.language || '').toLowerCase()
+    const isEn = lang.startsWith('en')
+    const isFr = lang.startsWith('fr')
+    const isPt = lang.startsWith('pt') || lang.startsWith('br')
+
+    const lower = text.toLowerCase()
+    if (
+      lower.includes('testigo') ||
+      lower.includes('motor') ||
+      lower.includes('check engine') ||
+      lower.includes('neiva') ||
+      lower.includes('warning light') ||
+      lower.includes('voyant moteur')
+    ) {
+      if (isEn) return 'The check engine warning light came on during the trip to Neiva.'
+      if (isFr) return "Le voyant moteur s'est allumÃ© sur le tableau de bord pendant le trajet vers Neiva."
+      if (isPt) return 'A luz de verificaÃ§Ã£o do motor acendeu no painel durante a viagem para Neiva.'
+      return t('admin.incidents.dummyDesc1', 'Se encendiÃ³ el testigo de revisiÃ³n de motor en el tablero durante el trayecto a Neiva.')
+    }
+    if (
+      lower.includes('choque') ||
+      lower.includes('parachoques') ||
+      lower.includes('rear-end') ||
+      lower.includes('semÃ¡foro') ||
+      lower.includes('semaforo') ||
+      lower.includes('parqueadero') ||
+      lower.includes('trasera') ||
+      lower.includes('bumper') ||
+      lower.includes('collision') ||
+      lower.includes('accrochage')
+    ) {
+      if (isEn) return 'Minor rear-end collision at a traffic light. Only minor damage to the rear bumper.'
+      if (isFr) return 'Accrochage lÃ©ger Ã  l\'arriÃ¨re Ã  un feu tricolore. Seuls dÃ©gÃ¢ts sur le pare-chocs arriÃ¨re.'
+      if (isPt) return 'Pequena colisÃ£o traseira no semÃ¡foro. Apenas danos no para-choque traseiro.'
+      return t('admin.incidents.dummyDesc2', 'Choque leve en la parte trasera en un semÃ¡foro. Solo daÃ±os en el parachoques trasero.')
+    }
+    return text
+  }
+
+  const translateTimelineTitle = (title) => {
+    if (!title) return ''
+    const lower = title.toLowerCase()
+    if (lower.includes('interno') || lower.includes('internal')) return t('admin.incidents.timeline.internalCreated', 'Reporte Interno Creado')
+    if (lower.includes('creado') || lower.includes('created')) return t('admin.incidents.timeline.reportCreated', 'Reporte Creado por el Cliente')
+    if (lower.includes('respuesta') || lower.includes('response')) return t('admin.incidents.timeline.responseSent', 'Respuesta Enviada al Cliente')
+    if (lower.includes('estado') || lower.includes('status')) return t('admin.incidents.timeline.statusChanged', 'Cambio de Estado')
+    return title
+  }
+
+  const translateTimelineDesc = (desc) => {
+    if (!desc) return ''
+    const lower = desc.toLowerCase()
+    if (lower.includes('directamente por el administrador') || lower.includes('directly by the administrator')) {
+      return t('admin.incidents.timeline.adminGeneratedDesc', 'Reporte generado directamente por el administrador/encargado.')
+    }
+    if (lower.includes('registrado por el cliente') || lower.includes('registered by the client')) {
+      return t('admin.incidents.timeline.clientGeneratedDesc', 'Reporte de incidente registrado por el cliente desde el portal de soporte.')
+    }
+    return desc
+  }
+
+  const getStatusBadge = (estado) => {
+    const norm = ['resuelto', 'atendiendo', 'rechazado', 'recibido'].includes(estado)
+      ? estado
+      : (estado === 'en_revision' || estado === 'en_reparacion' ? 'atendiendo' : 'recibido')
+
+    const styles = {
+      recibido: {
+        bg: 'var(--city-bg, #f1f5f9)',
+        color: 'var(--city-muted, #475569)',
+        border: '1px solid #cbd5e1',
+        label: t('admin.incidents.status.received', 'Recibido'),
+      },
+      atendiendo: {
+        bg: '#e0f2fe',
+        color: '#0369a1',
+        border: '1px solid #bae6fd',
+        label: t('admin.incidents.status.attending', 'Atendiendo'),
+      },
+      resuelto: {
+        bg: '#dcfce7',
+        color: '#15803d',
+        border: '1px solid #bbf7d0',
+        label: t('admin.incidents.status.resolved', 'Resuelto'),
+      },
+      rechazado: {
+        bg: '#fee2e2',
+        color: '#991b1b',
+        border: '1px solid #fecaca',
+        label: t('admin.incidents.status.rejected', 'Rechazado'),
+      },
+    }
+
+    const current = styles[norm] || styles.recibido
+
+    return (
+      <span
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '5px 14px',
+          borderRadius: '9999px',
+          backgroundColor: current.bg,
+          color: current.color,
+          border: current.border,
+          fontWeight: '700',
+          fontSize: '12px',
+          textTransform: 'capitalize',
+        }}
+      >
+        {current.label}
+      </span>
+    )
+  }
+
+  // Filtrado dinÃ¡mico
   const filtrados = useMemo(() => {
     const term = search.trim().toLowerCase()
     return incidents.filter((r) => {
-      // Tab filter
-      if (activeTab === 'incidentes' && r.estado === 'rechazado') return false
-      if (activeTab === 'erroneos' && r.estado !== 'rechazado') return false
+      // Tab filter (Clientes vs Internos)
+      const isInternal = r.origen === 'admin' || r.origen === 'sucursal' || r.origen === 'interno'
+      if (activeTab === 'clientes' && isInternal) return false
+      if (activeTab === 'internos' && !isInternal) return false
 
       const matchState = stateFilter === 'all' || r.estado === stateFilter
       const matchBranch = branchFilter === 'all' || r.sucursal === branchFilter
@@ -176,7 +295,7 @@ export default function IncidentManagementPage() {
       setNotice(
         t(
           'admin.incidents.updatedSuccess',
-          `Reporte ${modalResponder.codigo} actualizado a ${nuevoEstadoModal.toUpperCase()} y respuesta enviada por correo y notificación.`
+          `Reporte ${modalResponder.codigo} actualizado a ${nuevoEstadoModal.toUpperCase()} y respuesta enviada por correo y notificaciÃ³n.`
         )
       )
       setModalResponder(null)
@@ -204,7 +323,7 @@ export default function IncidentManagementPage() {
       setNotice(`Estado actualizado a ${newStatus} correctamente.`)
       cargarIncidencias()
     } catch {
-      console.error('Error al cambiar estado rápidamente')
+      console.error('Error al cambiar estado rÃ¡pidamente')
     }
   }
 
@@ -220,14 +339,14 @@ export default function IncidentManagementPage() {
         setErrorModal(
           t(
             'admin.incidents.clientReportDeleteError',
-            'Los reportes creados por los clientes no pueden ser eliminados por control de auditoría.'
+            'Los reportes creados por los clientes no pueden ser eliminados por control de auditorÃ­a.'
           )
         )
       } else if (err.message === 'onlyReceivedOwnReportsCanBeDeleted') {
         setErrorModal(
           t(
             'admin.incidents.ownReportStateDeleteError',
-            'No se puede eliminar un reporte propio que ya ha pasado a estado de revisión o reparación.'
+            'No se puede eliminar un reporte propio que ya ha pasado a estado de revisiÃ³n o reparaciÃ³n.'
           )
         )
       } else {
@@ -236,8 +355,8 @@ export default function IncidentManagementPage() {
     }
   }
 
-  // Exportación
-  const headersExport = ['Código', 'Vehículo', 'Placa', 'Sucursal', 'Remitente', 'Origen', 'Prioridad', 'Estado', 'Descripción']
+  // ExportaciÃ³n
+  const headersExport = ['CÃ³digo', 'VehÃ­culo', 'Placa', 'Sucursal', 'Remitente', 'Origen', 'Prioridad', 'Estado', 'DescripciÃ³n']
   const rowsExport = filtrados.map((r) => [
     r.codigo,
     r.vehiculo,
@@ -251,7 +370,7 @@ export default function IncidentManagementPage() {
   ])
 
   const exportData = {
-    title: `Reportes de Incidencias de Vehículos — ${brand?.name || 'Drivique'}`,
+    title: `Reportes de Incidencias de VehÃ­culos â€” ${brand?.name || 'Drivique'}`,
     headers: headersExport,
     rows: rowsExport,
     items: filtrados,
@@ -266,72 +385,63 @@ export default function IncidentManagementPage() {
           {/* Header Superior */}
           <header className="cities-topbar reservations-management-header">
             <div className="branch-topbar-brand-title">
-              <span className="branch-topbar-badge">{t('admin.branchManagement', 'GESTIÓN DE SUCURSAL')}</span>
-              <h1 className="branch-topbar-heading">{t('admin.incidents.title', 'Gestión de Incidentes')}</h1>
+              <span className="branch-topbar-badge">{t('admin.branchManagement', 'GESTIÃ“N DE SUCURSAL')}</span>
+              <h1 className="branch-topbar-heading">{t('admin.incidents.title', 'GestiÃ³n de Incidentes')}</h1>
             </div>
 
-            <div className="cities-topbar__actions">
+            <div className="cities-topbar__actions" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
               <MenuConfiguracion />
-              <button
-                className="cities-primary"
-                type="button"
-                onClick={() => {
-                  setErrorModal('')
-                  setModalCrear(true)
-                }}
-              >
-                <FaPlus /> {t('admin.incidents.newReport', 'Nuevo Reporte de Incidencia')}
-              </button>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', background: 'var(--city-card, #ffffff)', border: '1px solid #e2e8f0', borderRadius: '30px', padding: '4px 16px 4px 6px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+                <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#2563eb', color: 'var(--city-card, #ffffff)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '14px' }}>
+                  {user?.nombre ? user.nombre.charAt(0).toUpperCase() : 'A'}
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--city-text, #0f172a)', lineHeight: '1.2' }}>{user?.nombre || 'Administrador'}</span>
+                  <span style={{ fontSize: '11px', color: 'var(--city-muted, #64748b)', lineHeight: '1.2' }}>{user?.rol || 'encargado'}</span>
+                </div>
+              </div>
             </div>
           </header>
 
-          {/* Notificación de Aviso */}
+          {/* NotificaciÃ³n de Aviso */}
           {notice && (
             <div className="cities-notice" role="status">
               <span>{notice}</span>
               <button type="button" onClick={() => setNotice('')}>
-                ×
+                Ã—
               </button>
             </div>
           )}
 
-          {/* TABS */}
-          <div className="cities-tabs" style={{ display: 'flex', gap: 16, marginBottom: 16, borderBottom: '1px solid #e2e8f0' }}>
-            <button
-              type="button"
-              onClick={() => setActiveTab('incidentes')}
-              style={{
-                padding: '12px 16px', border: 'none', background: 'transparent', cursor: 'pointer',
-                fontSize: 14, fontWeight: 600, color: activeTab === 'incidentes' ? '#2563eb' : '#64748b',
-                borderBottom: activeTab === 'incidentes' ? '2px solid #2563eb' : '2px solid transparent',
-                transition: 'all 0.2s'
-              }}
-            >
-              {t('admin.incidents.tabIncidents', 'Reportes de Incidentes')}
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab('erroneos')}
-              style={{
-                padding: '12px 16px', border: 'none', background: 'transparent', cursor: 'pointer',
-                fontSize: 14, fontWeight: 600, color: activeTab === 'erroneos' ? '#2563eb' : '#64748b',
-                borderBottom: activeTab === 'erroneos' ? '2px solid #2563eb' : '2px solid transparent',
-                transition: 'all 0.2s'
-              }}
-            >
-              {t('admin.incidents.tabErrors', 'Informes Erróneos')}
-            </button>
+          {/* PestaÃ±as de Secciones IdÃ©nticas a Reservas */}
+          <div className="fleet-attached-tabs">
+            <div className="fleet-tabs-nav">
+              <button
+                type="button"
+                onClick={() => setActiveTab('clientes')}
+                className={`fleet-tab-btn ${activeTab === 'clientes' ? 'is-active' : ''}`}
+              >
+                {t('admin.incidents.tabIncidents', 'Reportes de Clientes')}
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('internos')}
+                className={`fleet-tab-btn ${activeTab === 'internos' ? 'is-active' : ''}`}
+              >
+                {t('admin.incidents.tabInternal', 'Reportes Internos')}
+              </button>
+            </div>
           </div>
 
-          {/* Tarjeta Principal */}
-          <section className="cities-card">
-            {/* Toolbar con Buscador y Filtros */}
+          {/* Tarjeta Principal Adherida a las PestaÃ±as */}
+          <section className="cities-card attached-to-tabs">
+            {/* Toolbar con Buscador, Filtros, BotÃ³n Crear y ExportaciÃ³n */}
             <div className="cities-toolbar">
               <label className="cities-search">
                 <FaSearch />
                 <input
                   type="text"
-                  placeholder={t('admin.incidents.searchPlaceholder', 'Buscar por código, vehículo, placa o cliente...')}
+                  placeholder={t('admin.incidents.searchPlaceholder', 'Buscar por cÃ³digo, vehÃ­culo, placa o cliente...')}
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                 />
@@ -339,15 +449,15 @@ export default function IncidentManagementPage() {
 
               {/* Filtro Estado */}
               <select value={stateFilter} onChange={(e) => setStateFilter(e.target.value)}>
-                <option value="all">Todos los estados</option>
-                <option value="recibido">Recibido</option>
-                <option value="atendiendo">Atendiendo</option>
-                <option value="resuelto">Resuelto</option>
-                <option value="rechazado">Rechazado</option>
+                <option value="all">{t('admin.incidents.allStatuses', 'Todos los estados')}</option>
+                <option value="recibido">{t('admin.incidents.status.received', 'Recibido')}</option>
+                <option value="atendiendo">{t('admin.incidents.status.attending', 'Atendiendo')}</option>
+                <option value="resuelto">{t('admin.incidents.status.resolved', 'Resuelto')}</option>
+                <option value="rechazado">{t('admin.incidents.status.rejected', 'Rechazado')}</option>
               </select>
 
-              {/* Filtro Sucursal (Bloqueado para Encargado) */}
-              {!esEncargado && (
+              {/* Filtro Sucursal (Bloqueado para Encargado o Selector para Admin) */}
+              {!esEncargado ? (
                 <select value={branchFilter} onChange={(e) => setBranchFilter(e.target.value)}>
                   <option value="all">{t('admin.incidents.allBranches', 'Todas las sucursales')}</option>
                   {sucursales.map((s) => (
@@ -356,27 +466,75 @@ export default function IncidentManagementPage() {
                     </option>
                   ))}
                 </select>
+              ) : (
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '10px 14px', borderRadius: '12px', border: '1.5px solid var(--city-border, #e2e8f0)', background: 'var(--city-bg, #f8fafc)', fontSize: '13px', color: 'var(--city-text, #334155)', fontWeight: 600 }}>
+                  <FaBuilding style={{ color: 'var(--city-muted, #64748b)' }} />
+                  <span>{sucursalEncargado || 'Alamo BogotÃ¡ - Aeropuerto'}</span>
+                </div>
               )}
 
+              {/* BotÃ³n Nuevo Reporte */}
+              <button
+                type="button"
+                onClick={() => {
+                  setErrorModal('')
+                  setModalCrear(true)
+                }}
+                style={{
+                  padding: '8px 20px',
+                  background: '#2563eb',
+                  color: 'var(--city-card, #ffffff)',
+                  borderRadius: '9999px',
+                  fontWeight: '800',
+                  fontSize: '13px',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '7px',
+                  border: 'none',
+                  cursor: 'pointer',
+                  boxShadow: '0 2px 6px rgba(37, 99, 235, 0.25)',
+                  transition: 'all 0.2s',
+                  whiteSpace: 'nowrap'
+                }}
+                onMouseOver={(e) => { e.currentTarget.style.background = 'var(--brand-primary, #1d4ed8)' }}
+                onMouseOut={(e) => { e.currentTarget.style.background = '#2563eb' }}
+              >
+                <FaPlus /> {t('admin.incidents.newReport', 'Nuevo Reporte de Incidencia')}
+              </button>
 
-
-              {/* Botones de Exportación */}
-              <div className="cities-export">
-                <button type="button" onClick={() => exportExcel(exportData)}>
-                  <FaFileExcel /> {t('admin.exportExcel', 'Excel')}
+              {/* Botones de ExportaciÃ³n */}
+              <div className="export-pills-group" style={{ marginLeft: 'auto', display: 'flex', gap: '8px' }}>
+                <button
+                  type="button"
+                  className="export-pill export-pill--excel"
+                  onClick={() => exportExcel(exportData)}
+                  title={t('admin.exportExcel', 'Excel')}
+                >
+                  <FaFileExcel aria-hidden="true" /> {t('admin.exportExcel', 'Excel')}
                 </button>
-                <button type="button" onClick={() => exportPdf(exportData)}>
-                  <FaFilePdf /> {t('admin.exportPdf', 'PDF')}
+                <button
+                  type="button"
+                  className="export-pill export-pill--pdf"
+                  onClick={() => exportPdf(exportData)}
+                  title={t('admin.exportPdf', 'PDF')}
+                >
+                  <FaFilePdf aria-hidden="true" /> {t('admin.exportPdf', 'PDF')}
                 </button>
-                <button type="button" onClick={() => printTable(exportData)}>
-                  <FaPrint /> {t('admin.incidents.print', 'Imprimir')}
+                <button
+                  type="button"
+                  className="export-pill export-pill--print"
+                  onClick={() => printTable(exportData)}
+                  title={t('admin.incidents.print', 'Imprimir')}
+                >
+                  <FaPrint aria-hidden="true" /> {t('admin.incidents.print', 'Imprimir')}
                 </button>
               </div>
             </div>
 
             {/* Contador de Resultados */}
-            <div className="cities-summary">
-              <strong>{filtrados.length}</strong> {t('admin.incidents.registered', 'incidencias registradas')}
+            <div className="cities-summary" style={{ margin: '8px 0 12px' }}>
+              <span>{filtrados.length}</span>{' '}
+              {t('admin.incidents.registered', 'INCIDENCIAS REGISTRADAS').toUpperCase()}
             </div>
 
             {/* Tabla Estilizada de Incidencias */}
@@ -384,7 +542,7 @@ export default function IncidentManagementPage() {
               <div className="cities-empty">
                 <FaExclamationTriangle />
                 <h2>{t('admin.incidents.emptyTitle', 'No se encontraron reportes de incidencias')}</h2>
-                <p>{t('admin.incidents.emptySubtitle', 'Intenta ajustar los criterios de búsqueda o los filtros seleccionados.')}</p>
+                <p>{t('admin.incidents.emptySubtitle', 'Intenta ajustar los criterios de bÃºsqueda o los filtros seleccionados.')}</p>
               </div>
             ) : (
               <div className="cities-table-wrap" style={{ overflowX: 'auto' }}>
@@ -392,109 +550,64 @@ export default function IncidentManagementPage() {
                   <thead>
                     <tr>
                       <th style={{ width: '40px' }}>ID</th>
-                      <th>CÓDIGO RESERVA</th>
-                      <th>NOMBRE COMPLETO</th>
-                      <th>NOMBRE VEHÍCULO</th>
-                      <th>IMAGEN</th>
-                      <th>PLACA</th>
-                      <th>TIPO DE INCIDENTE</th>
-                      <th>DESCRIPCIÓN PROBLEMA</th>
-                      <th>FECHA DE REPORTE</th>
-                      <th>HORA DE REPORTE</th>
-                      <th>EVIDENCIA 1</th>
-                      <th>EVIDENCIA 2</th>
-                      <th>EVIDENCIA 3</th>
-                      <th>TELÉFONO</th>
-                      <th>CORREO</th>
-                      <th style={{ textAlign: 'center' }}>ESTADO DE INCIDENTE</th>
-                      <th style={{ textAlign: 'center' }}>ACCIONES</th>
+                      <th>{t('admin.incidents.table.reservationCode', 'CÃ“DIGO RESERVA')}</th>
+                      <th>{t('admin.incidents.table.fullName', 'NOMBRE COMPLETO')}</th>
+                      <th>{t('admin.incidents.table.vehicleName', 'NOMBRE VEHÃCULO')}</th>
+                      <th>{t('admin.incidents.table.image', 'IMAGEN')}</th>
+                      <th>{t('admin.incidents.table.plate', 'PLACA')}</th>
+                      <th>{t('admin.incidents.table.incidentType', 'TIPO DE INCIDENTE')}</th>
+                      <th>{t('admin.incidents.table.problemDesc', 'DESCRIPCIÃ“N PROBLEMA')}</th>
+                      <th>{t('admin.incidents.table.reportDate', 'FECHA DE REPORTE')}</th>
+                      <th>{t('admin.incidents.table.reportTime', 'HORA DE REPORTE')}</th>
+                      <th>{t('admin.incidents.table.evidence1', 'EVIDENCIA 1')}</th>
+                      <th>{t('admin.incidents.table.evidence2', 'EVIDENCIA 2')}</th>
+                      <th>{t('admin.incidents.table.evidence3', 'EVIDENCIA 3')}</th>
+                      <th>{t('admin.incidents.table.phone', 'TELÃ‰FONO')}</th>
+                      <th>{t('admin.incidents.table.email', 'CORREO')}</th>
+                      <th style={{ textAlign: 'center' }}>{t('admin.incidents.table.incidentStatus', 'ESTADO DE INCIDENTE')}</th>
+                      <th style={{ textAlign: 'center' }}>{t('admin.incidents.table.actions', 'ACCIONES')}</th>
                     </tr>
                   </thead>
                   <tbody>
                     {filtrados.map((r, index) => (
                       <tr key={r.id}>
                         <td style={{ fontWeight: 600, color: 'var(--city-text)', width: '40px' }}>{index + 1}</td>
-                        <td style={{ fontWeight: 500, color: '#0f172a' }}>{r.codigoReserva || `RES-${r.id.split('-')[1] || Math.floor(Math.random() * 10000)}`}</td>
-                        <td style={{ color: '#0f172a' }}>{r.contactoNombre}</td>
+                        <td style={{ fontWeight: 500, color: 'var(--city-text, #0f172a)' }}>{r.codigoReserva || `RES-${r.id.split('-')[1] || Math.floor(Math.random() * 10000)}`}</td>
+                        <td style={{ color: 'var(--city-text, #0f172a)' }}>{r.contactoNombre}</td>
                         <td style={{ color: 'var(--city-text)' }}>{r.vehiculo}</td>
                         <td>
                             <img src={getVehiculoImagen(r)} alt={r.vehiculo} style={{ width: 44, height: 28, borderRadius: 6, objectFit: 'cover', border: '1px solid #cbd5e1' }} onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = 'https://pplx-res.cloudinary.com/image/upload/pplx_search_images/a2cb0b378c25efdb1e116246f84149744c2f4081.jpg' }} />
                         </td>
-                        <td style={{ color: '#64748b' }}>{r.placa}</td>
+                        <td style={{ color: 'var(--city-muted, #64748b)' }}>{r.placa}</td>
                         
-                        <td style={{ color: '#334155', fontWeight: 500 }}>{r.tipoIncidenciaNombre || r.tipoIncidenciaId || t('admin.incidents.types.mechanicalBreakdown', 'Avería Mecánica')}</td>
-                        <td style={{ color: '#64748b', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.descripcion || 'Problema reportado...'}</td>
-                        <td style={{ color: '#0f172a' }}>{new Date(r.fechaIso || r.fechaRegistro || Date.now()).toLocaleDateString()}</td>
-                        <td style={{ color: '#0f172a' }}>{new Date(r.fechaIso || r.fechaRegistro || Date.now()).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</td>
+                        <td style={{ color: 'var(--city-text, #334155)', fontWeight: 500 }}>{t(`admin.incidents.types.${r.tipoIncidenciaId || 'averia_mecanica'}`, r.tipoIncidenciaNombre || 'AverÃ­a MecÃ¡nica')}</td>
+                        <td style={{ color: 'var(--city-muted, #64748b)', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis' }}>{translateDescription(r.descripcion)}</td>
+                        <td style={{ color: 'var(--city-text, #0f172a)' }}>{new Date(r.fechaIso || r.fechaRegistro || Date.now()).toLocaleDateString()}</td>
+                        <td style={{ color: 'var(--city-text, #0f172a)' }}>{new Date(r.fechaIso || r.fechaRegistro || Date.now()).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</td>
                         
                         <td>
-                          {r.adjuntos?.[0] ? <img src={r.adjuntos[0]} style={{width: 36, height: 36, objectFit: 'cover', borderRadius: 4, border: '1px solid #e2e8f0'}} /> : <span style={{color: '#94a3b8', fontSize: 12}}>No img</span>}
+                          {r.adjuntos?.[0] ? <img src={r.adjuntos[0]} style={{width: 36, height: 36, objectFit: 'cover', borderRadius: 4, border: '1px solid #e2e8f0'}} /> : <span style={{color: '#94a3b8', fontSize: 12}}>{t('admin.incidents.table.noImg', 'Sin img')}</span>}
                         </td>
                         <td>
-                          {r.adjuntos?.[1] ? <img src={r.adjuntos[1]} style={{width: 36, height: 36, objectFit: 'cover', borderRadius: 4, border: '1px solid #e2e8f0'}} /> : <span style={{color: '#94a3b8', fontSize: 12}}>No img</span>}
+                          {r.adjuntos?.[1] ? <img src={r.adjuntos[1]} style={{width: 36, height: 36, objectFit: 'cover', borderRadius: 4, border: '1px solid #e2e8f0'}} /> : <span style={{color: '#94a3b8', fontSize: 12}}>{t('admin.incidents.table.noImg', 'Sin img')}</span>}
                         </td>
                         <td>
-                          {r.adjuntos?.[2] ? <img src={r.adjuntos[2]} style={{width: 36, height: 36, objectFit: 'cover', borderRadius: 4, border: '1px solid #e2e8f0'}} /> : <span style={{color: '#94a3b8', fontSize: 12}}>No img</span>}
+                          {r.adjuntos?.[2] ? <img src={r.adjuntos[2]} style={{width: 36, height: 36, objectFit: 'cover', borderRadius: 4, border: '1px solid #e2e8f0'}} /> : <span style={{color: '#94a3b8', fontSize: 12}}>{t('admin.incidents.table.noImg', 'Sin img')}</span>}
                         </td>
 
-                        <td style={{ color: '#475569' }}>{r.contactoTelefono || '+57 300 0000000'}</td>
-                        <td style={{ color: '#64748b' }}>{r.contactoEmail}</td>
+                        <td style={{ color: 'var(--city-muted, #475569)' }}>{r.contactoTelefono || '+57 300 0000000'}</td>
+                        <td style={{ color: 'var(--city-muted, #64748b)' }}>{r.contactoEmail}</td>
                         
                         <td style={{ textAlign: 'center' }}>
-                          <select
-                            value={['resuelto', 'atendiendo', 'rechazado', 'recibido'].includes(r.estado) ? r.estado : (r.estado === 'en_revision' || r.estado === 'en_reparacion' ? 'atendiendo' : 'recibido')}
-                            onChange={(e) => handleQuickStatusChange(r.id, e.target.value)}
-                            style={{
-                              padding: '4px 8px',
-                              borderRadius: '6px',
-                              border: '1px solid #cbd5e1',
-                              backgroundColor: r.estado === 'resuelto' ? '#dcfce7' : r.estado === 'atendiendo' || r.estado === 'en_revision' || r.estado === 'en_reparacion' ? '#e0f2fe' : r.estado === 'rechazado' ? '#fee2e2' : '#f1f5f9',
-                              color: r.estado === 'resuelto' ? '#15803d' : r.estado === 'atendiendo' || r.estado === 'en_revision' || r.estado === 'en_reparacion' ? '#0369a1' : r.estado === 'rechazado' ? '#991b1b' : '#475569',
-                              fontWeight: 600,
-                              fontSize: '13px',
-                              cursor: 'pointer',
-                              outline: 'none'
-                            }}
-                          >
-                            <option value="recibido">Recibido</option>
-                            <option value="atendiendo">Atendiendo</option>
-                            <option value="resuelto">Resuelto</option>
-                            <option value="rechazado">Rechazado</option>
-                          </select>
+                          {getStatusBadge(r.estado)}
                         </td>
                         
                         <td style={{ textAlign: 'center' }}>
                           <div className="incident-row-actions" style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
                             <button
                               type="button"
+                              className="incident-btn-reply"
                               onClick={() => openResponderModal(r)}
-                              style={{
-                                width: 'auto',
-                                height: 'auto',
-                                padding: '8px 14px',
-                                fontSize: '13px',
-                                background: '#eff6ff',
-                                color: '#1d4ed8',
-                                border: '1px solid #bfdbfe',
-                                borderRadius: '10px',
-                                cursor: 'pointer',
-                                fontWeight: '700',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '6px',
-                                boxShadow: '0 2px 4px rgba(250,204,21,0.1)',
-                                transition: 'all 0.2s ease'
-                              }}
-                              onMouseOver={(e) => { 
-                                e.currentTarget.style.background = '#dbeafe'; 
-                                e.currentTarget.style.borderColor = '#93c5fd';
-                                e.currentTarget.style.transform = 'translateY(-1px)';
-                              }}
-                              onMouseOut={(e) => { 
-                                e.currentTarget.style.background = '#eff6ff'; 
-                                e.currentTarget.style.borderColor = '#bfdbfe'; 
-                                e.currentTarget.style.transform = 'translateY(0)';
-                              }}
                             >
                               {t('admin.incidents.replyBtn', 'Responder')}
                             </button>
@@ -508,7 +621,7 @@ export default function IncidentManagementPage() {
                                 }}
                                 style={{ padding: '6px 12px', fontSize: '13px', background: 'transparent', color: '#dc2626', border: 'none', cursor: 'pointer', fontWeight: '600', textDecoration: 'underline' }}
                               >
-                                Eliminar
+                                {t('admin.incidents.deleteBtn', 'Eliminar')}
                               </button>
                             )}
                           </div>
@@ -531,15 +644,15 @@ export default function IncidentManagementPage() {
             <section className="cities-modal" style={{ maxWidth: 680 }}>
               <div className="cities-modal__head">
                 <div>
-                  <p className="cities-eyebrow">{t('admin.incidents.detailTitle', 'Gestión de Incidencia')} {modalDetalle.codigo}</p>
+                  <p className="cities-eyebrow">{t('admin.incidents.detailTitle', 'GestiÃ³n de Incidencia')} {modalDetalle.codigo}</p>
                   <h2>{modalDetalle.vehiculo} ({modalDetalle.placa})</h2>
                 </div>
                 <button type="button" onClick={() => setModalDetalle(null)}>
-                  ×
+                  Ã—
                 </button>
               </div>
 
-              {/* Banner de Vehículo con Imagen */}
+              {/* Banner de VehÃ­culo con Imagen */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 14, margin: '14px 0', padding: '12px 16px', background: 'var(--city-soft)', borderRadius: 14, border: '1px solid var(--city-border)' }}>
                 <img
                   src={getVehiculoImagen(modalDetalle)}
@@ -552,11 +665,11 @@ export default function IncidentManagementPage() {
                 />
                 <div style={{ flex: 1 }}>
                   <h3 style={{ margin: '0 0 3px', fontSize: 16, fontWeight: 800, color: 'var(--city-text)' }}>{modalDetalle.vehiculo}</h3>
-                  <span style={{ fontSize: 13, color: '#64748b', fontWeight: 600 }}>Placa: <strong style={{ color: 'var(--brand-text)' }}>{modalDetalle.placa}</strong> • {modalDetalle.sucursal}</span>
+                  <span style={{ fontSize: 13, color: 'var(--city-muted, #64748b)', fontWeight: 600 }}>{t('admin.incidents.table.plate', 'Placa')}: <strong style={{ color: 'var(--brand-text)' }}>{modalDetalle.placa}</strong> â€¢ {modalDetalle.sucursal}</span>
                 </div>
                 {modalDetalle.codigoReserva && (
-                  <div style={{ textAlign: 'right', background: '#ffffff', padding: '8px 12px', borderRadius: '8px', border: '1px dashed #cbd5e1' }}>
-                    <span style={{ fontSize: 11, color: '#64748b', fontWeight: 700, display: 'block', textTransform: 'uppercase' }}>Reserva Asociada</span>
+                  <div style={{ textAlign: 'right', background: 'var(--city-card, #ffffff)', padding: '8px 12px', borderRadius: '8px', border: '1px dashed #cbd5e1' }}>
+                    <span style={{ fontSize: 11, color: 'var(--city-muted, #64748b)', fontWeight: 700, display: 'block', textTransform: 'uppercase' }}>{t('admin.incidents.associatedRes', 'Reserva Asociada')}</span>
                     <strong style={{ fontSize: 14, color: 'var(--brand-primary)' }}>{modalDetalle.codigoReserva}</strong>
                   </div>
                 )}
@@ -579,7 +692,7 @@ export default function IncidentManagementPage() {
                 </div>
 
                 <div className="incident-info-card">
-                  <span className="incident-info-card__label">{t('admin.incidents.locationPriority', 'Ubicación y Prioridad')}</span>
+                  <span className="incident-info-card__label">{t('admin.incidents.locationPriority', 'UbicaciÃ³n y Prioridad')}</span>
                   <p>{modalDetalle.sucursal}</p>
                   <span className={`priority-badge ${modalDetalle.prioridad}`} style={{ marginTop: 6 }}>
                     <FaClock /> {t('admin.incidents.estimatedTime', 'Tiempo estimado:')} {modalDetalle.tiempoEstimado}
@@ -589,9 +702,9 @@ export default function IncidentManagementPage() {
 
 
               <div className="incident-field" style={{ margin: '4px 0 12px' }}>
-                <span className="incident-field-label">{t('admin.incidents.problemDescription', 'Descripci\u00f3n del problema')}</span>
+                <span className="incident-field-label">{t('admin.incidents.problemDescription', 'DescripciÃ³n del problema')}</span>
                 <p style={{ background: 'var(--city-soft)', border: '1.5px solid var(--city-border)', padding: '12px 16px', borderRadius: 12, fontSize: 13, margin: 0 }}>
-                  {modalDetalle.descripcion}
+                  {translateDescription(modalDetalle.descripcion)}
                 </p>
               </div>
 
@@ -600,15 +713,31 @@ export default function IncidentManagementPage() {
               <div className="incident-timeline">
                 {(modalDetalle.historial || []).map((h, i) => (
                   <div key={i} className="incident-timeline-item" style={{ borderLeftColor: h.color || 'var(--brand-primary)' }}>
-                    <strong>{h.titulo} \u2014 {h.autor}</strong>
-                    <p style={{ margin: '4px 0', fontSize: 12 }}>{h.descripcion}</p>
+                    <strong>{translateTimelineTitle(h.titulo)} â€” {h.autor}</strong>
+                    <p style={{ margin: '4px 0', fontSize: 12 }}>{translateTimelineDesc(h.descripcion)}</p>
                     <small>{h.hora} ({new Date(h.fecha).toLocaleDateString()})</small>
                   </div>
                 ))}
               </div>
 
               <div className="cities-modal__actions" style={{ marginTop: '16px', display: 'flex', justifyContent: 'flex-end' }}>
-                <button type="button" onClick={() => setModalDetalle(null)} style={{ background: '#f1f5f9', color: '#475569', border: 'none', padding: '8px 16px', borderRadius: '8px', fontWeight: 600, cursor: 'pointer' }}>
+                <button 
+                  type="button" 
+                  onClick={() => setModalDetalle(null)} 
+                  style={{ 
+                    background: 'var(--city-bg, #f1f5f9)', 
+                    color: 'var(--city-muted, #475569)', 
+                    border: '1.5px solid #cbd5e1', 
+                    padding: '8px 22px', 
+                    borderRadius: '9999px', 
+                    fontWeight: 700, 
+                    fontSize: '13px', 
+                    cursor: 'pointer',
+                    transition: 'all 0.2s'
+                  }}
+                  onMouseOver={(e) => { e.currentTarget.style.background = '#e2e8f0' }}
+                  onMouseOut={(e) => { e.currentTarget.style.background = 'var(--city-bg, #f1f5f9)' }}
+                >
                   {t('admin.incidents.close', 'Cerrar')}
                 </button>
               </div>
@@ -624,27 +753,26 @@ export default function IncidentManagementPage() {
           >
             <section className="cities-modal" style={{ maxWidth: 700, padding: '24px 32px' }}>
               <div className="cities-modal__head" style={{ borderBottom: 'none', paddingBottom: 0, marginBottom: 16 }}>
-                <h2 style={{ fontSize: 20, color: '#1e3a8a', display: 'flex', alignItems: 'center', gap: 10, margin: 0 }}>
-                  <FaWrench style={{ color: '#3b82f6' }} /> {t('admin.incidents.createTitle', 'Formulario de Incidencia')}
+                <h2 style={{ fontSize: 20, color: 'var(--city-text, #1e3a8a)', margin: 0 }}>
+                  {t('admin.incidents.createTitle', 'Formulario de Incidencia')}
                 </h2>
-                <button type="button" onClick={() => setModalCrear(false)} style={{ background: 'transparent', border: 'none', fontSize: 24, cursor: 'pointer', color: '#64748b' }}>
-                  ×
+                <button type="button" onClick={() => setModalCrear(false)} style={{ background: 'transparent', border: 'none', fontSize: 24, cursor: 'pointer', color: 'var(--city-muted, #64748b)' }}>
+                  Ã—
                 </button>
               </div>
 
               <form onSubmit={handleCrearIncidencia} style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
                 
-                {/* Vehículo / Reserva asociada */}
+                {/* VehÃ­culo / Reserva asociada (Opcional) */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                   <label style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                    <span style={{ fontSize: 13, fontWeight: 700, color: '#1e293b' }}>{t('admin.incidents.selectVehicle', 'Vehículo / Reserva asociada')}</span>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: '#1e293b' }}>{t('admin.incidents.selectVehicle', 'VehÃ­culo / Reserva asociada')} <span style={{ color: '#94a3b8', fontWeight: 500, fontSize: 12 }}>({t('common.optional', 'Opcional')})</span></span>
                     <select
-                      required
                       value={formCrear.vehiculoId}
                       onChange={(e) => setFormCrear({ ...formCrear, vehiculoId: e.target.value })}
-                      style={{ background: '#f8fafc', border: '1px solid #e2e8f0', padding: '12px', borderRadius: 8, fontSize: 14, color: '#334155' }}
+                      style={{ background: 'var(--city-bg, #f8fafc)', border: '1px solid #e2e8f0', padding: '12px', borderRadius: 8, fontSize: 14, color: 'var(--city-text, #334155)' }}
                     >
-                      <option value="">{t('admin.incidents.chooseVehicle', 'Selecciona un vehículo de la flota...')}</option>
+                      <option value="">{t('admin.incidents.chooseVehicleOptional', 'Sin vehÃ­culo / General...')}</option>
                       {vehiculos.map((v) => (
                         <option key={v.id} value={v.id}>{v.nombre}</option>
                       ))}
@@ -655,8 +783,8 @@ export default function IncidentManagementPage() {
                       type="text" 
                       readOnly 
                       value={vehiculos.find(v => v.id === formCrear.vehiculoId)?.placa || ''}
-                      placeholder="Placa del vehículo"
-                      style={{ background: '#f8fafc', border: '1px solid #e2e8f0', padding: '12px', borderRadius: 8, fontSize: 14, color: '#64748b' }}
+                      placeholder={t('admin.incidents.vehiclePlatePlaceholder', 'Placa del vehÃ­culo (si aplica)')}
+                      style={{ background: 'var(--city-bg, #f8fafc)', border: '1px solid #e2e8f0', padding: '12px', borderRadius: 8, fontSize: 14, color: 'var(--city-muted, #64748b)' }}
                     />
                   </label>
                 </div>
@@ -666,14 +794,14 @@ export default function IncidentManagementPage() {
                   <span style={{ fontSize: 13, fontWeight: 700, color: '#1e293b', display: 'block', marginBottom: 12 }}>{t('admin.incidents.incidentType', 'Tipo de Incidencia')} <span style={{ color: '#ef4444' }}>*</span></span>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
                     {[
-                      { id: 'choque', label: t('admin.incidents.types.crash', 'Choque'), icon: <FaExclamationTriangle /> },
-                      { id: 'averia_mecanica', label: t('admin.incidents.types.mechanicalBreakdown', 'Avería Mecánica'), icon: <FaWrench /> },
-                      { id: 'pinchazo', label: t('admin.incidents.types.flatTire', 'Pinchazo'), icon: <FaCar /> },
-                      { id: 'bateria_descargada', label: t('admin.incidents.types.deadBattery', 'Batería Descargada'), icon: <FaExclamationTriangle /> },
-                      { id: 'falla_electrica', label: t('admin.incidents.types.electricalFailure', 'Falla Eléctrica'), icon: <FaExclamationTriangle /> },
-                      { id: 'robo', label: t('admin.incidents.types.theft', 'Robo'), icon: <FaExclamationCircle /> },
-                      { id: 'asistencia_general', label: t('admin.incidents.types.generalAssistance', 'Asistencia General'), icon: <FaExclamationCircle /> },
-                      { id: 'otro_problema', label: t('admin.incidents.types.other', 'Otro'), icon: <FaExclamationCircle /> },
+                      { id: 'choque', label: t('admin.incidents.types.crash', 'Choque') },
+                      { id: 'averia_mecanica', label: t('admin.incidents.types.mechanicalBreakdown', 'AverÃ­a MecÃ¡nica') },
+                      { id: 'pinchazo', label: t('admin.incidents.types.flatTire', 'Pinchazo') },
+                      { id: 'bateria_descargada', label: t('admin.incidents.types.deadBattery', 'BaterÃ­a Descargada') },
+                      { id: 'falla_electrica', label: t('admin.incidents.types.electricalFailure', 'Falla ElÃ©ctrica') },
+                      { id: 'robo', label: t('admin.incidents.types.theft', 'Robo') },
+                      { id: 'asistencia_general', label: t('admin.incidents.types.generalAssistance', 'Asistencia General') },
+                      { id: 'otro_problema', label: t('admin.incidents.types.other', 'Otro') },
                     ].map(tipo => (
                       <button
                         key={tipo.id}
@@ -687,13 +815,13 @@ export default function IncidentManagementPage() {
                         }}
                         style={{
                           display: 'flex', alignItems: 'center', gap: 8, padding: '12px 16px', borderRadius: 10,
-                          background: formCrear.tipoIncidenciaId === tipo.id ? '#2563eb' : '#f8fafc',
-                          color: formCrear.tipoIncidenciaId === tipo.id ? '#ffffff' : '#0f172a',
+                          background: formCrear.tipoIncidenciaId === tipo.id ? '#2563eb' : 'var(--city-bg, #f8fafc)',
+                          color: formCrear.tipoIncidenciaId === tipo.id ? 'var(--city-card, #ffffff)' : 'var(--city-text, #0f172a)',
                           border: formCrear.tipoIncidenciaId === tipo.id ? '1px solid #2563eb' : '1px solid #e2e8f0',
                           cursor: 'pointer', fontWeight: 600, fontSize: 13, transition: 'all 0.2s', justifyContent: 'center'
                         }}
                       >
-                        {tipo.icon} {tipo.label}
+                        {tipo.label}
                       </button>
                     ))}
                   </div>
@@ -703,62 +831,62 @@ export default function IncidentManagementPage() {
                 <div style={{ background: '#fef3c7', border: '1px solid #fde68a', borderRadius: 10, padding: '16px', display: 'flex', alignItems: 'flex-start', gap: 12 }}>
                   <FaClock style={{ color: '#b45309', fontSize: 20, marginTop: 2 }} />
                   <div>
-                    <span style={{ display: 'block', fontSize: 12, color: '#b45309', fontWeight: 600 }}>{t('admin.incidents.estimatedTime', 'Tiempo estimado de atención técnica:')}</span>
+                    <span style={{ display: 'block', fontSize: 12, color: '#b45309', fontWeight: 600 }}>{t('admin.incidents.estimatedTime', 'Tiempo estimado de atenciÃ³n tÃ©cnica:')}</span>
                     <strong style={{ color: '#92400e', fontSize: 14 }}>{formCrear.tiempoEstimado}</strong>
                   </div>
                 </div>
 
                 {/* Descripcion */}
                 <label style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  <span style={{ fontSize: 13, fontWeight: 700, color: '#1e293b' }}>{t('admin.incidents.problemDescription', 'Descripción del problema')} <span style={{ color: '#ef4444' }}>*</span></span>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: '#1e293b' }}>{t('admin.incidents.problemDescription', 'DescripciÃ³n del problema')} <span style={{ color: '#ef4444' }}>*</span></span>
                   <textarea
                     required
                     rows={4}
-                    placeholder={t('admin.incidents.describeSymptoms', 'Describe los síntomas...')}
+                    placeholder={t('admin.incidents.describeSymptoms', 'Describe los sÃ­ntomas...')}
                     value={formCrear.descripcion}
                     onChange={(e) => setFormCrear({ ...formCrear, descripcion: e.target.value })}
-                    style={{ background: '#f8fafc', border: '1px solid #e2e8f0', padding: '12px', borderRadius: 8, fontSize: 14, resize: 'none', color: '#334155' }}
+                    style={{ background: 'var(--city-bg, #f8fafc)', border: '1px solid #e2e8f0', padding: '12px', borderRadius: 8, fontSize: 14, resize: 'none', color: 'var(--city-text, #334155)' }}
                   />
                 </label>
 
                 {/* Evidencias */}
                 <div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                    <span style={{ fontSize: 13, fontWeight: 700, color: '#1e293b' }}>Evidencias (Imágenes / Videos opcionales)</span>
-                    <span style={{ fontSize: 11, color: '#94a3b8' }}>Máx 3 fotos (1/3)</span>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: '#1e293b' }}>{t('admin.incidents.evidencesOptional', 'Evidencias (ImÃ¡genes / Videos opcionales)')}</span>
+                    <span style={{ fontSize: 11, color: '#94a3b8' }}>{t('admin.incidents.maxPhotos', 'MÃ¡x 3 fotos')} (1/3)</span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                    <button type="button" style={{ width: 80, height: 80, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4, background: '#f8fafc', border: '1.5px dashed #3b82f6', borderRadius: 12, color: '#3b82f6', cursor: 'pointer', fontSize: 12, fontWeight: 600 }}>
-                      <FaPlus style={{ fontSize: 16 }} /> Adjunto
+                    <button type="button" style={{ width: 80, height: 80, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4, background: 'var(--city-bg, #f8fafc)', border: '1.5px dashed #3b82f6', borderRadius: 12, color: 'var(--brand-primary, #3b82f6)', cursor: 'pointer', fontSize: 12, fontWeight: 600 }}>
+                      <FaPlus style={{ fontSize: 16 }} /> {t('admin.incidents.attachment', 'Adjunto')}
                     </button>
-                    <span style={{ fontSize: 13, color: '#16a34a', fontWeight: 700 }}>✓ 1 evidencia(s) adjuntada(s)</span>
+                    <span style={{ fontSize: 13, color: '#16a34a', fontWeight: 700 }}>{t('admin.incidents.evidenceAttached', 'âœ“ 1 evidencia(s) adjuntada(s)')}</span>
                   </div>
                 </div>
 
-                <hr style={{ borderColor: '#f1f5f9', margin: '4px 0', borderTop: 'none' }} />
+                <hr style={{ borderColor: 'var(--city-bg, #f1f5f9)', margin: '4px 0', borderTop: 'none' }} />
 
                 {/* Datos de contacto */}
                 <div>
-                  <h3 style={{ fontSize: 16, color: '#1e3a8a', display: 'flex', alignItems: 'center', gap: 8, margin: '0 0 4px 0' }}>
-                    <FaUser style={{ color: '#1e3a8a' }} /> Datos de contacto para seguimiento
+                  <h3 style={{ fontSize: 16, color: 'var(--city-text, #1e3a8a)', display: 'flex', alignItems: 'center', gap: 8, margin: '0 0 4px 0' }}>
+                    <FaUser style={{ color: 'var(--city-text, #1e3a8a)' }} /> {t('admin.incidents.contactDataTitle', 'Datos de contacto para seguimiento')}
                   </h3>
-                  <p style={{ fontSize: 12, color: '#64748b', marginBottom: 16 }}>
-                    Precargados automáticamente desde tu perfil registrado (puedes editarlos si lo requieres).
+                  <p style={{ fontSize: 12, color: 'var(--city-muted, #64748b)', marginBottom: 16 }}>
+                    {t('admin.incidents.contactDataSubtitle', 'Precargados automÃ¡ticamente desde tu perfil registrado (puedes editarlos si lo requieres).')}
                   </p>
                   
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                     <label style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                      <span style={{ fontSize: 13, fontWeight: 700, color: '#1e293b' }}>Nombre completo <span style={{ color: '#ef4444' }}>*</span></span>
-                      <input type="text" readOnly value={user?.nombre || 'Administrador Interno'} style={{ background: '#f8fafc', border: '1px solid #e2e8f0', padding: '12px', borderRadius: 8, fontSize: 14, color: '#334155' }} />
+                      <span style={{ fontSize: 13, fontWeight: 700, color: '#1e293b' }}>{t('admin.incidents.fullName', 'Nombre completo')} <span style={{ color: '#ef4444' }}>*</span></span>
+                      <input type="text" readOnly value={user?.nombre || 'Administrador Interno'} style={{ background: 'var(--city-bg, #f8fafc)', border: '1px solid #e2e8f0', padding: '12px', borderRadius: 8, fontSize: 14, color: 'var(--city-text, #334155)' }} />
                     </label>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                       <label style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                        <span style={{ fontSize: 13, fontWeight: 700, color: '#1e293b' }}>Teléfono <span style={{ color: '#ef4444' }}>*</span></span>
-                        <input type="text" readOnly value={user?.telefono || '3100000000'} style={{ background: '#f8fafc', border: '1px solid #e2e8f0', padding: '12px', borderRadius: 8, fontSize: 14, color: '#334155' }} />
+                        <span style={{ fontSize: 13, fontWeight: 700, color: '#1e293b' }}>{t('admin.incidents.phone', 'TelÃ©fono')} <span style={{ color: '#ef4444' }}>*</span></span>
+                        <input type="text" readOnly value={user?.telefono || '3100000000'} style={{ background: 'var(--city-bg, #f8fafc)', border: '1px solid #e2e8f0', padding: '12px', borderRadius: 8, fontSize: 14, color: 'var(--city-text, #334155)' }} />
                       </label>
                       <label style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                        <span style={{ fontSize: 13, fontWeight: 700, color: '#1e293b' }}>Correo electrónico <span style={{ color: '#ef4444' }}>*</span></span>
-                        <input type="email" readOnly value={user?.correo || 'admin@drivique.com'} style={{ background: '#f8fafc', border: '1px solid #e2e8f0', padding: '12px', borderRadius: 8, fontSize: 14, color: '#334155' }} />
+                        <span style={{ fontSize: 13, fontWeight: 700, color: '#1e293b' }}>{t('admin.incidents.email', 'Correo electrÃ³nico')} <span style={{ color: '#ef4444' }}>*</span></span>
+                        <input type="email" readOnly value={user?.correo || 'admin@drivique.com'} style={{ background: 'var(--city-bg, #f8fafc)', border: '1px solid #e2e8f0', padding: '12px', borderRadius: 8, fontSize: 14, color: 'var(--city-text, #334155)' }} />
                       </label>
                     </div>
                   </div>
@@ -766,15 +894,36 @@ export default function IncidentManagementPage() {
 
                 {errorModal && <p className="cities-error">{errorModal}</p>}
 
-                <button type="submit" style={{ background: '#16a34a', color: '#fff', padding: '14px', borderRadius: 10, fontSize: 15, fontWeight: 700, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8, border: 'none', cursor: 'pointer', marginTop: 8 }}>
-                  <FaPaperPlane /> {t('admin.incidents.createBtn', 'Enviar Reporte de Incidencia')}
+                <button 
+                  type="submit" 
+                  className="cities-primary incident-modal-btn-create"
+                  style={{ 
+                    background: '#16a34a', 
+                    color: '#fff', 
+                    padding: '12px 24px', 
+                    borderRadius: '9999px', 
+                    fontSize: '14px', 
+                    fontWeight: 800, 
+                    display: 'flex', 
+                    justifyContent: 'center', 
+                    alignItems: 'center', 
+                    border: 'none', 
+                    cursor: 'pointer', 
+                    marginTop: 8,
+                    boxShadow: '0 2px 6px rgba(22, 163, 74, 0.25)',
+                    transition: 'all 0.2s'
+                  }}
+                  onMouseOver={(e) => { e.currentTarget.style.background = '#15803d' }}
+                  onMouseOut={(e) => { e.currentTarget.style.background = '#16a34a' }}
+                >
+                  {t('admin.incidents.createBtn', 'Enviar Reporte de Incidencia')}
                 </button>
               </form>
             </section>
           </div>
         )}
 
-        {/* MODAL ELIMINAR REPORTES CON VALIDACIÓN */}
+        {/* MODAL ELIMINAR REPORTES CON VALIDACIÃ“N */}
         {modalEliminar && (
           <div
             className="cities-modal-backdrop"
@@ -784,13 +933,13 @@ export default function IncidentManagementPage() {
               <div className="cities-delete-icon">
                 <FaTrash />
               </div>
-              <h2>{t('admin.incidents.deleteConfirmTitle', 'Confirmar Eliminación de Reporte')}</h2>
+              <h2>{t('admin.incidents.deleteConfirmTitle', 'Confirmar EliminaciÃ³n de Reporte')}</h2>
               <p>
-                {t('admin.incidents.deleteConfirmDesc1', '¿Deseas eliminar el reporte')} <strong>{modalEliminar.codigo}</strong> (
+                {t('admin.incidents.deleteConfirmDesc1', 'Â¿Deseas eliminar el reporte')} <strong>{modalEliminar.codigo}</strong> (
                 {modalEliminar.vehiculo})?
               </p>
 
-              {/* VALIDACIÓN 1: CLIENTES */}
+              {/* VALIDACIÃ“N 1: CLIENTES */}
               {modalEliminar.origen === 'cliente' && (
                 <div
                   style={{
@@ -805,11 +954,11 @@ export default function IncidentManagementPage() {
                   }}
                 >
                   <FaExclamationTriangle style={{ marginRight: 6 }} />
-                  {t('admin.incidents.clientReportDeleteError', 'Los reportes creados por los clientes no pueden ser eliminados por control de auditoría.')}
+                  {t('admin.incidents.clientReportDeleteError', 'Los reportes creados por los clientes no pueden ser eliminados por control de auditorÃ­a.')}
                 </div>
               )}
 
-              {/* VALIDACIÓN 2: PROPIOS EN ESTADO DIFERENTE A RECIBIDO */}
+              {/* VALIDACIÃ“N 2: PROPIOS EN ESTADO DIFERENTE A RECIBIDO */}
               {modalEliminar.origen === 'administrador' && modalEliminar.estado !== 'recibido' && (
                 <div
                   style={{
@@ -824,26 +973,58 @@ export default function IncidentManagementPage() {
                   }}
                 >
                   <FaExclamationTriangle style={{ marginRight: 6 }} />
-                  {t('admin.incidents.ownReportStateDeleteError', 'No se puede eliminar un reporte propio que ya ha pasado a estado de revisión o reparación.')}
+                  {t('admin.incidents.ownReportStateDeleteError', 'No se puede eliminar un reporte propio que ya ha pasado a estado de revisiÃ³n o reparaciÃ³n.')}
                 </div>
               )}
 
               {errorModal && <p className="cities-error">{errorModal}</p>}
 
-              <div className="cities-modal__actions">
-                <button type="button" onClick={() => setModalEliminar(null)}>
-                  Cancelar
+              <div className="cities-modal__actions" style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+                <button 
+                  type="button" 
+                  className="incident-modal-btn-cancel"
+                  onClick={() => setModalEliminar(null)}
+                  style={{ 
+                    background: 'var(--city-bg, #f1f5f9)', 
+                    color: 'var(--city-muted, #475569)', 
+                    border: '1.5px solid #cbd5e1', 
+                    padding: '8px 20px', 
+                    borderRadius: '9999px', 
+                    fontWeight: 700, 
+                    fontSize: '13px', 
+                    cursor: 'pointer',
+                    transition: 'all 0.2s'
+                  }}
+                  onMouseOver={(e) => { e.currentTarget.style.background = '#e2e8f0' }}
+                  onMouseOut={(e) => { e.currentTarget.style.background = 'var(--city-bg, #f1f5f9)' }}
+                >
+                  {t('admin.incidents.cancel', 'Cancelar')}
                 </button>
                 <button
-                  className="cities-danger"
                   type="button"
+                  className="cities-danger incident-modal-btn-delete"
                   disabled={
                     modalEliminar.origen === 'cliente' ||
                     (modalEliminar.origen === 'administrador' && modalEliminar.estado !== 'recibido')
                   }
                   onClick={() => handleEliminarIncidencia(modalEliminar)}
+                  style={{ 
+                    background: '#dc2626', 
+                    color: 'var(--city-card, #ffffff)', 
+                    border: 'none', 
+                    padding: '8px 24px', 
+                    borderRadius: '9999px', 
+                    fontWeight: 800, 
+                    fontSize: '13px', 
+                    cursor: 'pointer',
+                    boxShadow: '0 2px 6px rgba(220, 38, 38, 0.25)',
+                    opacity: modalEliminar.origen === 'cliente' || (modalEliminar.origen === 'administrador' && modalEliminar.estado !== 'recibido') ? 0.5 : 1,
+                    transition: 'all 0.2s'
+                  }}
+                  onMouseOver={(e) => { e.currentTarget.style.background = '#b91c1c' }}
+                  onMouseOut={(e) => { e.currentTarget.style.background = '#dc2626' }}
                 >
-                  Confirmar Eliminación
+                  {t('admin.incidents.confirmDelete', 'Confirmar EliminaciÃ³n')}
                 </button>
               </div>
             </section>
@@ -860,45 +1041,45 @@ export default function IncidentManagementPage() {
           >
             <section className="cities-modal" style={{ maxWidth: 600 }}>
               <div className="cities-modal__head">
-                <h2 style={{ fontSize: 20, color: 'var(--brand-primary)', display: 'flex', alignItems: 'center', gap: 10, margin: 0 }}>
-                  <FaPaperPlane /> {t('admin.incidents.replyBtn', 'Responder al Cliente')}
+                <h2 style={{ fontSize: 20, color: 'var(--brand-primary)', margin: 0 }}>
+                  {t('admin.incidents.replyBtn', 'Responder al Cliente')}
                 </h2>
-                <button type="button" onClick={() => setModalResponder(null)} style={{ background: 'transparent', border: 'none', fontSize: 24, cursor: 'pointer', color: '#64748b' }}>
-                  ×
+                <button type="button" onClick={() => setModalResponder(null)} style={{ background: 'transparent', border: 'none', fontSize: 24, cursor: 'pointer', color: 'var(--city-muted, #64748b)' }}>
+                  Ã—
                 </button>
               </div>
               <div className="cities-modal__body" style={{ padding: '20px 24px' }}>
-                <p style={{ fontSize: 14, color: '#475569', marginBottom: 20 }}>
-                  {t('admin.incidents.replyHint', 'Escribe tu respuesta. Esta notificación llegará automáticamente al correo del usuario y quedará registrada en el historial del incidente.')}
+                <p style={{ fontSize: 14, color: 'var(--city-muted, #475569)', marginBottom: 20 }}>
+                  {t('admin.incidents.replyHint', 'Escribe tu respuesta. Esta notificaciÃ³n llegarÃ¡ automÃ¡ticamente al correo del usuario y quedarÃ¡ registrada en el historial del incidente.')}
                 </p>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 20 }}>
                   <div style={{ display: 'flex', gap: 16 }}>
                     {modalResponder.codigoReserva && (
-                      <div style={{ flex: 1, background: '#f8fafc', padding: '12px', borderRadius: 8, border: '1px solid #e2e8f0' }}>
-                        <span style={{ fontSize: 11, color: '#64748b', fontWeight: 700, display: 'block', textTransform: 'uppercase' }}>{t('admin.incidents.associatedRes', 'Reserva Asociada')}</span>
+                      <div style={{ flex: 1, background: 'var(--city-bg, #f8fafc)', padding: '12px', borderRadius: 8, border: '1px solid #e2e8f0' }}>
+                        <span style={{ fontSize: 11, color: 'var(--city-muted, #64748b)', fontWeight: 700, display: 'block', textTransform: 'uppercase' }}>{t('admin.incidents.associatedRes', 'Reserva Asociada')}</span>
                         <strong style={{ fontSize: 14, color: 'var(--brand-primary)' }}>{modalResponder.codigoReserva}</strong>
                       </div>
                     )}
-                    <div style={{ flex: 1, background: '#f8fafc', padding: '12px', borderRadius: 8, border: '1px solid #e2e8f0' }}>
-                      <span style={{ fontSize: 11, color: '#64748b', fontWeight: 700, display: 'block', textTransform: 'uppercase' }}>{t('admin.incidents.clientName', 'Cliente')}</span>
+                    <div style={{ flex: 1, background: 'var(--city-bg, #f8fafc)', padding: '12px', borderRadius: 8, border: '1px solid #e2e8f0' }}>
+                      <span style={{ fontSize: 11, color: 'var(--city-muted, #64748b)', fontWeight: 700, display: 'block', textTransform: 'uppercase' }}>{t('admin.incidents.clientName', 'Cliente')}</span>
                       <strong style={{ fontSize: 14, color: 'var(--brand-primary)' }}>{modalResponder.contactoNombre || 'Cliente no registrado'}</strong>
                     </div>
                   </div>
                   
                   <div style={{ display: 'flex', gap: 16 }}>
-                    <div style={{ flex: 1, background: '#f8fafc', padding: '12px', borderRadius: 8, border: '1px solid #e2e8f0' }}>
-                      <span style={{ fontSize: 11, color: '#64748b', fontWeight: 700, display: 'block', textTransform: 'uppercase' }}>{t('admin.incidents.incidentType', 'Tipo de Incidencia')}</span>
-                      <strong style={{ fontSize: 14, color: '#475569' }}>{modalResponder.tipoIncidenciaNombre || t('admin.incidents.notSpecified', 'No especificado')}</strong>
+                    <div style={{ flex: 1, background: 'var(--city-bg, #f8fafc)', padding: '12px', borderRadius: 8, border: '1px solid #e2e8f0' }}>
+                      <span style={{ fontSize: 11, color: 'var(--city-muted, #64748b)', fontWeight: 700, display: 'block', textTransform: 'uppercase' }}>{t('admin.incidents.incidentType', 'Tipo de Incidencia')}</span>
+                      <strong style={{ fontSize: 14, color: 'var(--city-muted, #475569)' }}>{t(`admin.incidents.types.${modalResponder.tipoIncidenciaId || 'averia_mecanica'}`, modalResponder.tipoIncidenciaNombre || t('admin.incidents.notSpecified', 'No especificado'))}</strong>
                     </div>
-                    <div style={{ flex: 1, background: '#f8fafc', padding: '12px', borderRadius: 8, border: '1px solid #e2e8f0' }}>
-                      <span style={{ fontSize: 11, color: '#64748b', fontWeight: 700, display: 'block', textTransform: 'uppercase' }}>{t('admin.incidents.emailClient', 'Correo Cliente')}</span>
-                      <strong style={{ fontSize: 14, color: '#475569' }}>{modalResponder.contactoEmail}</strong>
+                    <div style={{ flex: 1, background: 'var(--city-bg, #f8fafc)', padding: '12px', borderRadius: 8, border: '1px solid #e2e8f0' }}>
+                      <span style={{ fontSize: 11, color: 'var(--city-muted, #64748b)', fontWeight: 700, display: 'block', textTransform: 'uppercase' }}>{t('admin.incidents.emailClient', 'Correo Cliente')}</span>
+                      <strong style={{ fontSize: 14, color: 'var(--city-muted, #475569)' }}>{modalResponder.contactoEmail}</strong>
                     </div>
                   </div>
 
-                  <div style={{ background: '#f8fafc', padding: '12px', borderRadius: 8, border: '1px solid #e2e8f0' }}>
-                    <span style={{ fontSize: 11, color: '#64748b', fontWeight: 700, display: 'block', textTransform: 'uppercase', marginBottom: 4 }}>{t('admin.incidents.problemDesc', 'Descripción del Problema')}</span>
-                    <p style={{ fontSize: 14, color: '#334155', margin: 0, lineHeight: 1.4 }}>{modalResponder.descripcion || t('admin.incidents.noDesc', 'No hay descripción disponible.')}</p>
+                  <div style={{ background: 'var(--city-bg, #f8fafc)', padding: '12px', borderRadius: 8, border: '1px solid #e2e8f0' }}>
+                    <span style={{ fontSize: 11, color: 'var(--city-muted, #64748b)', fontWeight: 700, display: 'block', textTransform: 'uppercase', marginBottom: 4 }}>{t('admin.incidents.problemDesc', 'DescripciÃ³n del Problema')}</span>
+                    <p style={{ fontSize: 14, color: 'var(--city-text, #334155)', margin: 0, lineHeight: 1.4 }}>{translateDescription(modalResponder.descripcion)}</p>
                   </div>
                 </div>
 
@@ -911,10 +1092,10 @@ export default function IncidentManagementPage() {
                         onChange={(e) => setNuevoEstadoModal(e.target.value)}
                         style={{ padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1', background: '#fff url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2394a3b8%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E") no-repeat right 12px center', backgroundSize: '12px', appearance: 'none', WebkitAppearance: 'none', width: '100%', cursor: 'pointer', outline: 'none' }}
                       >
-                        <option value="recibido">{t('admin.incidents.recibido', 'Recibido')}</option>
-                        <option value="atendiendo">{t('admin.incidents.atendiendo', 'Atendiendo')}</option>
-                        <option value="resuelto">{t('admin.incidents.resuelto', 'Resuelto')}</option>
-                        <option value="rechazado">{t('admin.incidents.rechazado', 'Rechazado')}</option>
+                        <option value="recibido">{t('admin.incidents.status.received', 'Recibido')}</option>
+                        <option value="atendiendo">{t('admin.incidents.status.attending', 'Atendiendo')}</option>
+                        <option value="resuelto">{t('admin.incidents.status.resolved', 'Resuelto')}</option>
+                        <option value="rechazado">{t('admin.incidents.status.rejected', 'Rechazado')}</option>
                       </select>
                     </div>
                     <div className="incident-field">
@@ -937,7 +1118,7 @@ export default function IncidentManagementPage() {
                     <textarea
                       required
                       rows={5}
-                      placeholder={t('admin.incidents.replyPlaceholder', 'Escribe aquí la respuesta...')}
+                      placeholder={t('admin.incidents.replyPlaceholder', 'Escribe aquÃ­ la respuesta...')}
                       value={respuestaTexto}
                       onChange={(e) => setRespuestaTexto(e.target.value)}
                       style={{ padding: '12px', borderRadius: '8px', border: '1px solid #cbd5e1', width: '100%', resize: 'none' }}
@@ -945,12 +1126,49 @@ export default function IncidentManagementPage() {
                   </div>
                   {errorModal && <p className="cities-error">{errorModal}</p>}
                   
-                  <div className="cities-modal__actions" style={{ marginTop: '8px', display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
-                    <button type="button" onClick={() => setModalResponder(null)} style={{ background: '#f1f5f9', color: '#475569', border: 'none', padding: '8px 16px', borderRadius: '8px', fontWeight: 600, cursor: 'pointer' }}>
+                  <div className="cities-modal__actions" style={{ marginTop: '16px', display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+                    <button 
+                      type="button" 
+                      className="incident-modal-btn-cancel"
+                      onClick={() => setModalResponder(null)} 
+                      style={{ 
+                        background: 'var(--city-bg, #f1f5f9)', 
+                        color: 'var(--city-muted, #475569)', 
+                        border: '1.5px solid #cbd5e1', 
+                        padding: '8px 20px', 
+                        borderRadius: '9999px', 
+                        fontWeight: 700, 
+                        fontSize: '13px', 
+                        cursor: 'pointer',
+                        transition: 'all 0.2s'
+                      }}
+                      onMouseOver={(e) => { e.currentTarget.style.background = '#e2e8f0' }}
+                      onMouseOut={(e) => { e.currentTarget.style.background = 'var(--city-bg, #f1f5f9)' }}
+                    >
                       {t('admin.incidents.cancel', 'Cancelar')}
                     </button>
-                    <button type="submit" className="cities-primary" style={{ background: 'var(--brand-primary)', display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', borderRadius: '8px', border: 'none', color: '#fff', fontWeight: 700, cursor: 'pointer' }}>
-                      <FaPaperPlane /> {t('admin.incidents.saveAndSend', 'Enviar correo y Actualizar')}
+                    <button 
+                      type="submit" 
+                      className="cities-primary incident-modal-btn-submit"
+                      style={{ 
+                        background: '#2563eb', 
+                        display: 'inline-flex', 
+                        alignItems: 'center', 
+                        justifyContent: 'center', 
+                        padding: '8px 24px', 
+                        borderRadius: '9999px', 
+                        border: 'none', 
+                        color: 'var(--city-card, #ffffff)', 
+                        fontWeight: 800, 
+                        fontSize: '13px', 
+                        cursor: 'pointer', 
+                        boxShadow: '0 2px 6px rgba(37, 99, 235, 0.25)',
+                        transition: 'all 0.2s'
+                      }}
+                      onMouseOver={(e) => { e.currentTarget.style.background = 'var(--brand-primary, #1d4ed8)' }}
+                      onMouseOut={(e) => { e.currentTarget.style.background = '#2563eb' }}
+                    >
+                      {t('admin.incidents.saveAndSend', 'Enviar correo y Actualizar')}
                     </button>
                   </div>
                 </form>
