@@ -1,4 +1,4 @@
-﻿import { useState, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   FaStar,
@@ -76,7 +76,7 @@ export default function BranchReviewsPage({ branchOnly = false }) {
       return
     }
 
-    branchReviewManagementService.responderReseÃ±a(modalReview.id, respuestaTexto)
+    branchReviewManagementService.responderResena(modalReview.id, respuestaTexto)
     setReviews(branchReviewManagementService.list(user))
     setModalReview(null)
     setRespuestaTexto('')
@@ -84,7 +84,7 @@ export default function BranchReviewsPage({ branchOnly = false }) {
     showAlert({ icon: 'success', title: 'Respuesta enviada', text: 'La respuesta a la reseÃ±a ha sido guardada y publicada.' })
   }
 
-  const handleEliminarReseÃ±a = async (id) => {
+  const handleEliminarResena = async (id) => {
     const confirm = await showAlert({
       icon: 'warning',
       title: 'Â¿Eliminar reseÃ±a?',
@@ -95,7 +95,7 @@ export default function BranchReviewsPage({ branchOnly = false }) {
     })
 
     if (confirm.isConfirmed) {
-      const updated = branchReviewManagementService.eliminarReseÃ±a(id)
+      const updated = branchReviewManagementService.eliminarResena(id)
       setReviews(branchReviewManagementService.list(user))
       showAlert({ icon: 'success', title: 'ReseÃ±a eliminada' })
     }

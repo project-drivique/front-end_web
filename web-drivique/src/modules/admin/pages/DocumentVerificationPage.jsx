@@ -142,6 +142,44 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
     setModalChecklist((prev) => ({ ...prev, [key]: !prev[key] }))
   }
 
+  const renderDocPreview = (url, titleLabel) => {
+    if (!url) {
+      return (
+        <div className="doc-preview-empty">
+          <FaFilePdf style={{ fontSize: 32, opacity: 0.4 }} />
+          <span>{t('admin.documents.modal.notAvailable', 'No disponible')}</span>
+        </div>
+      )
+    }
+
+    const isPdf = url.toLowerCase().includes('.pdf')
+
+    if (!isPdf) {
+      return (
+        <div className="doc-preview-container" onClick={() => setZoomPdf({ url, title: titleLabel })} title={t('admin.documents.modal.clickToZoom', 'Clic para ampliar documento')}>
+          <img src={url} alt={titleLabel} className="doc-preview-img" />
+          <div className="doc-preview-hover-overlay">
+            <FaEye /> {t('admin.documents.modal.zoomLabel', 'Ampliar')}
+          </div>
+        </div>
+      )
+    }
+
+    return (
+      <div className="doc-preview-container" onClick={() => setZoomPdf({ url, title: titleLabel })} title={t('admin.documents.modal.clickToZoom', 'Clic para ampliar documento')}>
+        <iframe
+          src={`${url}#toolbar=0&navpanes=0&scrollbar=0`}
+          title={titleLabel}
+          className="doc-preview-iframe"
+          scrolling="no"
+        />
+        <div className="doc-preview-hover-overlay">
+          <FaEye /> {t('admin.documents.modal.zoomPdfLabel', 'Ampliar PDF')}
+        </div>
+      </div>
+    )
+  }
+
   const handleAprobarDocumento = async () => {
     if (!modalItem) return
 
@@ -677,10 +715,11 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
           </section>
         </div>
 
-        {/* Modal de ValidaciÃ³n Mejorado, Limpio y Elegante */}
+        {/* Modal de Validación con Checklist Independiente por Documento */}
         {modalItem && (
           <div
             className="cities-modal-backdrop"
+            onClick={() => setModalItem(null)}
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -689,10 +728,11 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
               inset: 0,
               zIndex: 1000,
               background: 'rgba(15, 23, 42, 0.65)',
+              backdropFilter: 'blur(4px)',
               padding: 16,
             }}
           >
-            <div className="doc-modal-card">
+            <div className="doc-modal-card" onClick={(e) => e.stopPropagation()}>
               
               {/* Header Limpio del Modal */}
               <div className="doc-modal-header">
@@ -747,183 +787,159 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
                 </div>
               </div>
 
-              {/* CUERPO PRINCIPAL: Izquierda PDFs — Derecha Checklist + Textarea */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, marginBottom: 20 }}>
-
-                {/* COLUMNA IZQUIERDA: Documentos digitales */}
-                <div>
-                  <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--city-muted, #64748b)', display: 'block', marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                    {t('admin.documents.modal.uploadedDocsTitle', 'Documentos subidos')}
-                  </label>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-
-                    {/* Cédula */}
-                    <div>
-                      <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--city-text, #0f172a)', display: 'block', marginBottom: 6 }}>
-                        {t('admin.documents.modal.idDocCard', 'Cédula de Identidad')}
-                      </span>
-                      {(modalItem.fotoCedulaFrente || modalItem.pdfCedulaUrl) ? (
-                        (modalItem.fotoCedulaFrente || modalItem.pdfCedulaUrl).match(/\.(jpeg|jpg|gif|png|webp)$/i) || (modalItem.fotoCedulaFrente || modalItem.pdfCedulaUrl).startsWith('data:image/') ? (
-                          <img src={modalItem.fotoCedulaFrente || modalItem.pdfCedulaUrl} alt="Cédula" style={{ width: '100%', height: '230px', objectFit: 'contain', background: 'var(--city-bg, #f8fafc)', borderRadius: 10, border: '1.5px solid var(--city-border, #e2e8f0)' }} />
-                        ) : (
-                          <iframe src={modalItem.fotoCedulaFrente || modalItem.pdfCedulaUrl} title="Cédula PDF" style={{ width: '100%', height: '230px', border: '1.5px solid var(--city-border, #e2e8f0)', borderRadius: 10, background: 'var(--city-bg, #f8fafc)' }} />
-                        )
-                      ) : (
-                        <div style={{ width: '100%', height: '230px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'var(--city-bg, #f8fafc)', border: '1.5px dashed var(--city-border, #e2e8f0)', borderRadius: 10, color: 'var(--city-muted, #94a3b8)', gap: 8 }}>
-                          <FaFilePdf style={{ fontSize: 28, opacity: 0.4 }} />
-                          <span style={{ fontSize: 12 }}>No disponible</span>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Licencia */}
-                    <div>
-                      <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--city-text, #0f172a)', display: 'block', marginBottom: 6 }}>
-                        {t('admin.documents.modal.licenseCard', 'Licencia de Conducción')}
-                      </span>
-                      {(modalItem.fotoLicenciaFrente || modalItem.pdfLicenciaUrl) ? (
-                        (modalItem.fotoLicenciaFrente || modalItem.pdfLicenciaUrl).match(/\.(jpeg|jpg|gif|png|webp)$/i) || (modalItem.fotoLicenciaFrente || modalItem.pdfLicenciaUrl).startsWith('data:image/') ? (
-                          <img src={modalItem.fotoLicenciaFrente || modalItem.pdfLicenciaUrl} alt="Licencia" style={{ width: '100%', height: '230px', objectFit: 'contain', background: 'var(--city-bg, #f8fafc)', borderRadius: 10, border: '1.5px solid var(--city-border, #e2e8f0)' }} />
-                        ) : (
-                          <iframe src={modalItem.fotoLicenciaFrente || modalItem.pdfLicenciaUrl} title="Licencia PDF" style={{ width: '100%', height: '230px', border: '1.5px solid var(--city-border, #e2e8f0)', borderRadius: 10, background: 'var(--city-bg, #f8fafc)' }} />
-                        )
-                      ) : (
-                        <div style={{ width: '100%', height: '230px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'var(--city-bg, #f8fafc)', border: '1.5px dashed var(--city-border, #e2e8f0)', borderRadius: 10, color: 'var(--city-muted, #94a3b8)', gap: 8 }}>
-                          <FaFilePdf style={{ fontSize: 28, opacity: 0.4 }} />
-                          <span style={{ fontSize: 12 }}>No disponible</span>
-                        </div>
-                      )}
-                    </div>
-
+              {/* TARJETA DOCUMENTO 1: CÉDULA DE IDENTIDAD */}
+              <div className="doc-item-card">
+                <div className="doc-item-card-header">
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <FaIdCard style={{ color: '#2563eb', fontSize: 16 }} />
+                    <span style={{ fontWeight: 800, fontSize: 14, color: 'var(--city-text, #0f172a)' }}>
+                      {t('admin.documents.modal.idDocCard', 'Cédula de Identidad')}
+                    </span>
                   </div>
+                  <span className="doc-item-card-subinfo">
+                    {t('admin.documents.modal.docNumber', 'No. Documento')}: <strong>{modalItem.documentoIdentidad}</strong>
+                  </span>
                 </div>
-
-                {/* COLUMNA DERECHA: Checklist + Observaciones */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-
-                  {/* Checklist */}
-                  <div className="doc-checklist-box">
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12.5, fontWeight: 700, color: 'var(--city-text, #0f172a)', marginBottom: 10 }}>
-                      <FaShieldAlt style={{ color: '#2563eb' }} />
-                      <span>{t('admin.documents.modal.checklistTitle', 'Lista de Verificación')}</span>
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-
-                      <div className="doc-check-item" onClick={() => handleToggleCheck('cedulaLegible')}>
-                        {modalChecklist.cedulaLegible ? <FaCheckSquare style={{ color: '#16a34a', fontSize: 16, flexShrink: 0 }} /> : <FaRegSquare style={{ color: '#94a3b8', fontSize: 16, flexShrink: 0 }} />}
-                        <span style={{ color: modalChecklist.cedulaLegible ? '#16a34a' : 'var(--city-text, #334155)', fontWeight: modalChecklist.cedulaLegible ? 600 : 400 }}>
-                          {t('admin.documents.modal.check1', '1. Cédula de Identidad es legible, nítida y completa.')}
-                        </span>
+                <div className="doc-item-card-grid">
+                  <div>
+                    {renderDocPreview(
+                      modalItem.fotoCedulaFrente || modalItem.pdfCedulaUrl,
+                      `${t('admin.documents.modal.idDocCard', 'Cédula de Identidad')} - ${modalItem.clienteNombre}`
+                    )}
+                  </div>
+                  <div>
+                    <div className="doc-checklist-box" style={{ marginBottom: 0 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12.5, fontWeight: 700, color: 'var(--city-text, #0f172a)', marginBottom: 10 }}>
+                        <FaShieldAlt style={{ color: '#2563eb' }} />
+                        <span>{t('admin.documents.modal.idChecklistTitle', 'Verificación de Cédula')}</span>
                       </div>
-
-                      <div className="doc-check-item" onClick={() => handleToggleCheck('identidadCoincide')}>
-                        {modalChecklist.identidadCoincide ? <FaCheckSquare style={{ color: '#16a34a', fontSize: 16, flexShrink: 0 }} /> : <FaRegSquare style={{ color: '#94a3b8', fontSize: 16, flexShrink: 0 }} />}
-                        <span style={{ color: modalChecklist.identidadCoincide ? '#16a34a' : 'var(--city-text, #334155)', fontWeight: modalChecklist.identidadCoincide ? 600 : 400 }}>
-                          {t('admin.documents.modal.check2', '2. Número de documento y nombre coinciden con el titular de la reserva.')}
-                        </span>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                        <div className="doc-check-item" onClick={() => handleToggleCheck('cedulaLegible')}>
+                          {modalChecklist.cedulaLegible ? <FaCheckSquare style={{ color: '#16a34a', fontSize: 16, flexShrink: 0 }} /> : <FaRegSquare style={{ color: '#94a3b8', fontSize: 16, flexShrink: 0 }} />}
+                          <span style={{ color: modalChecklist.cedulaLegible ? '#16a34a' : 'var(--city-text, #334155)', fontWeight: modalChecklist.cedulaLegible ? 600 : 400 }}>
+                            {t('admin.documents.modal.check1', '1. Cédula de Identidad es legible, nítida y completa.')}
+                          </span>
+                        </div>
+                        <div className="doc-check-item" onClick={() => handleToggleCheck('identidadCoincide')}>
+                          {modalChecklist.identidadCoincide ? <FaCheckSquare style={{ color: '#16a34a', fontSize: 16, flexShrink: 0 }} /> : <FaRegSquare style={{ color: '#94a3b8', fontSize: 16, flexShrink: 0 }} />}
+                          <span style={{ color: modalChecklist.identidadCoincide ? '#16a34a' : 'var(--city-text, #334155)', fontWeight: modalChecklist.identidadCoincide ? 600 : 400 }}>
+                            {t('admin.documents.modal.check2', '2. Número de documento y nombre coinciden con la reserva.')}
+                          </span>
+                        </div>
                       </div>
-
-                      <div className="doc-check-item" onClick={() => handleToggleCheck('licenciaVigente')}>
-                        {modalChecklist.licenciaVigente ? <FaCheckSquare style={{ color: '#16a34a', fontSize: 16, flexShrink: 0 }} /> : <FaRegSquare style={{ color: '#94a3b8', fontSize: 16, flexShrink: 0 }} />}
-                        <span style={{ color: modalChecklist.licenciaVigente ? '#16a34a' : 'var(--city-text, #334155)', fontWeight: modalChecklist.licenciaVigente ? 600 : 400 }}>
-                          {t('admin.documents.modal.check3', '3. La Licencia de Conducción se encuentra vigente durante todo el periodo de alquiler.')}
-                        </span>
-                      </div>
-
-                      <div className="doc-check-item" onClick={() => handleToggleCheck('categoriaApta')}>
-                        {modalChecklist.categoriaApta ? <FaCheckSquare style={{ color: '#16a34a', fontSize: 16, flexShrink: 0 }} /> : <FaRegSquare style={{ color: '#94a3b8', fontSize: 16, flexShrink: 0 }} />}
-                        <span style={{ color: modalChecklist.categoriaApta ? '#16a34a' : 'var(--city-text, #334155)', fontWeight: modalChecklist.categoriaApta ? 600 : 400 }}>
-                          {t('admin.documents.modal.check4', '4. La categoría de la licencia autoriza conducir el tipo de vehículo.')}
-                        </span>
-                      </div>
-
                     </div>
                   </div>
-
-                  {/* Observaciones */}
-                  <div style={{ flexGrow: 1 }}>
-                    <label style={{ display: 'block', fontSize: 12, fontWeight: 700, marginBottom: 6, color: 'var(--city-muted, #64748b)' }}>
-                      {t('admin.documents.modal.observationsLabel', 'Observaciones / Motivo (se notificará al cliente):')}
-                    </label>
-                    <textarea
-                      rows={5}
-                      className="doc-modal-textarea"
-                      value={observaciones}
-                      onChange={(e) => setObservaciones(e.target.value)}
-                      placeholder={t('admin.documents.modal.observationsPlaceholder', 'Opcional al aprobar. Si rechazas, indica la razón para que el cliente la corrija...')}
-                      style={{ width: '100%', padding: '10px 12px', borderRadius: 10, border: '1.5px solid var(--city-border, #cbd5e1)', fontSize: 13, boxSizing: 'border-box', outline: 'none', fontFamily: 'inherit', resize: 'vertical', minHeight: '120px' }}
-                    />
-                  </div>
-
                 </div>
               </div>
 
-              {/* Botones de DecisiÃ³n Responsive */}
-              <div className="doc-modal-decision-btns" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10, flexWrap: 'wrap', borderTop: '1px solid var(--city-border, #e2e8f0)', paddingTop: 16 }}>
+              {/* TARJETA DOCUMENTO 2: LICENCIA DE CONDUCCIÓN */}
+              <div className="doc-item-card">
+                <div className="doc-item-card-header">
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <FaIdCard style={{ color: '#2563eb', fontSize: 16 }} />
+                    <span style={{ fontWeight: 800, fontSize: 14, color: 'var(--city-text, #0f172a)' }}>
+                      {t('admin.documents.modal.licenseCard', 'Licencia de Conducción')}
+                    </span>
+                  </div>
+                  <span className="doc-item-card-subinfo">
+                    {t('admin.documents.modal.license', 'Licencia')}: <strong>{modalItem.numeroLicencia} ({modalItem.categoriaLicencia})</strong>
+                  </span>
+                </div>
+                <div className="doc-item-card-grid">
+                  <div>
+                    {renderDocPreview(
+                      modalItem.fotoLicenciaFrente || modalItem.pdfLicenciaUrl,
+                      `${t('admin.documents.modal.licenseCard', 'Licencia de Conducción')} - ${modalItem.clienteNombre}`
+                    )}
+                  </div>
+                  <div>
+                    <div className="doc-checklist-box" style={{ marginBottom: 0 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12.5, fontWeight: 700, color: 'var(--city-text, #0f172a)', marginBottom: 10 }}>
+                        <FaShieldAlt style={{ color: '#2563eb' }} />
+                        <span>{t('admin.documents.modal.licenseChecklistTitle', 'Verificación de Licencia')}</span>
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                        <div className="doc-check-item" onClick={() => handleToggleCheck('licenciaVigente')}>
+                          {modalChecklist.licenciaVigente ? <FaCheckSquare style={{ color: '#16a34a', fontSize: 16, flexShrink: 0 }} /> : <FaRegSquare style={{ color: '#94a3b8', fontSize: 16, flexShrink: 0 }} />}
+                          <span style={{ color: modalChecklist.licenciaVigente ? '#16a34a' : 'var(--city-text, #334155)', fontWeight: modalChecklist.licenciaVigente ? 600 : 400 }}>
+                            {t('admin.documents.modal.check3', '3. La Licencia de Conducción se encuentra vigente durante todo el alquiler.')}
+                          </span>
+                        </div>
+                        <div className="doc-check-item" onClick={() => handleToggleCheck('categoriaApta')}>
+                          {modalChecklist.categoriaApta ? <FaCheckSquare style={{ color: '#16a34a', fontSize: 16, flexShrink: 0 }} /> : <FaRegSquare style={{ color: '#94a3b8', fontSize: 16, flexShrink: 0 }} />}
+                          <span style={{ color: modalChecklist.categoriaApta ? '#16a34a' : 'var(--city-text, #334155)', fontWeight: modalChecklist.categoriaApta ? 600 : 400 }}>
+                            {t('admin.documents.modal.check4', '4. La categoría de la licencia autoriza conducir el tipo de vehículo.')}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* OBSERVACIONES */}
+              <div style={{ marginBottom: 16 }}>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 700, marginBottom: 6, color: 'var(--city-muted, #64748b)' }}>
+                  {t('admin.documents.modal.observationsLabel', 'Observaciones / Motivo (se notificará al cliente):')}
+                </label>
+                <textarea
+                  rows={3}
+                  className="doc-modal-textarea"
+                  value={observaciones}
+                  onChange={(e) => setObservaciones(e.target.value)}
+                  placeholder={t('admin.documents.modal.observationsPlaceholder', 'Opcional al aprobar. Si rechazas, indica la razón para que el cliente la corrija...')}
+                  style={{ width: '100%', padding: '10px 12px', borderRadius: 10, border: '1.5px solid var(--city-border, #cbd5e1)', fontSize: 13, boxSizing: 'border-box', outline: 'none', fontFamily: 'inherit', resize: 'vertical', minHeight: '80px' }}
+                />
+              </div>
+
+              {/* BOTONES DE DECISIÓN (Sin botón Close) */}
+              <div className="doc-modal-decision-btns" style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 12, borderTop: '1px solid var(--city-border, #e2e8f0)', paddingTop: 16 }}>
                 <button
                   type="button"
-                  onClick={() => setModalItem(null)}
+                  onClick={handleRechazarDocumento}
                   style={{
-                    padding: '8px 20px',
+                    padding: '10px 24px',
                     borderRadius: 9999,
-                    background: 'var(--city-bg, #f1f5f9)',
-                    color: 'var(--city-muted, #475569)',
-                    border: '1.5px solid var(--city-border, #cbd5e1)',
-                    fontWeight: 700,
+                    background: '#dc2626',
+                    color: 'var(--city-card, #ffffff)',
+                    border: 'none',
+                    fontWeight: 800,
                     fontSize: 13,
                     cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    boxShadow: '0 2px 6px rgba(220, 38, 38, 0.25)',
                   }}
                 >
-                  {t('admin.documents.modal.closeBtn', 'Cerrar')}
+                  {t('admin.documents.modal.rejectBtn', 'Desaprobado')}
                 </button>
-                <div style={{ display: 'flex', gap: 10 }}>
-                  <button
-                    type="button"
-                    onClick={handleRechazarDocumento}
-                    style={{
-                      padding: '8px 22px',
-                      borderRadius: 9999,
-                      background: '#dc2626',
-                      color: 'var(--city-card, #ffffff)',
-                      border: 'none',
-                      fontWeight: 800,
-                      fontSize: 13,
-                      cursor: 'pointer',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: 6,
-                      boxShadow: '0 2px 6px rgba(220, 38, 38, 0.2)',
-                    }}
-                  >
-                    {t('admin.documents.modal.rejectBtn', 'Desaprobado')}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleAprobarDocumento}
-                    style={{
-                      padding: '8px 24px',
-                      borderRadius: 9999,
-                      background: '#16a34a',
-                      color: 'var(--city-card, #ffffff)',
-                      border: 'none',
-                      fontWeight: 800,
-                      fontSize: 13,
-                      cursor: 'pointer',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: 6,
-                      boxShadow: '0 2px 6px rgba(22, 163, 74, 0.2)',
-                    }}
-                  >
-                    {t('admin.documents.modal.approveBtn', 'Aprobado')}
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  onClick={handleAprobarDocumento}
+                  style={{
+                    padding: '10px 28px',
+                    borderRadius: 9999,
+                    background: '#16a34a',
+                    color: 'var(--city-card, #ffffff)',
+                    border: 'none',
+                    fontWeight: 800,
+                    fontSize: 13,
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    boxShadow: '0 2px 6px rgba(22, 163, 74, 0.25)',
+                  }}
+                >
+                  {t('admin.documents.modal.approveBtn', 'Aprobado')}
+                </button>
               </div>
             </div>
           </div>
         )}
 
-        {/* Modal Visor de Documentos / Lightbox Adaptable a la Imagen */}
+        {/* Modal Visor de Documentos / Lightbox Adaptable */}
         {zoomPdf && (
           <div
             className="doc-zoom-backdrop"
@@ -931,9 +947,9 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
           >
             <div
               className={`doc-zoom-modal ${
-                zoomPdf.url?.toLowerCase().match(/\.(jpeg|jpg|gif|png|webp)$/i) || zoomPdf.url?.startsWith('data:image/')
-                  ? ''
-                  : 'doc-zoom-modal--iframe'
+                zoomPdf.url?.toLowerCase().includes('.pdf')
+                  ? 'doc-zoom-modal--iframe'
+                  : ''
               }`}
               onClick={(e) => e.stopPropagation()}
             >
@@ -964,13 +980,13 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
                     className="doc-modal-close"
                     title={t('admin.documents.modal.closeBtn', 'Cerrar')}
                   >
-                    âœ•
+                    &times;
                   </button>
                 </div>
               </div>
 
               <div className="doc-zoom-preview-box">
-                {zoomPdf.url?.toLowerCase().match(/\.(jpeg|jpg|gif|png|webp)$/i) || zoomPdf.url?.startsWith('data:image/') ? (
+                {!zoomPdf.url?.toLowerCase().includes('.pdf') ? (
                   <img
                     src={zoomPdf.url}
                     alt={zoomPdf.title}

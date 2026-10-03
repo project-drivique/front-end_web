@@ -1,4 +1,4 @@
-﻿/* src/modules/admin/pages/DocumentVerificationPage.css */
+/* src/modules/admin/pages/DocumentVerificationPage.css */
 
 /* â”€â”€â”€ ATTACHED TABS (SAME AS RESERVATION & INCIDENT MANAGEMENT) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .fleet-attached-tabs {
@@ -970,6 +970,123 @@
     padding: 6px 6px;
   }
 }
+
+/* Document Card layout in Modal */
+.doc-item-card {
+  background: var(--city-card, #ffffff);
+  border: 1.5px solid var(--city-border, #e2e8f0);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.management-shell--dark .doc-item-card {
+  background: #0f172a;
+  border-color: #334155;
+}
+
+.doc-item-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed var(--city-border, #e2e8f0);
+}
+
+.management-shell--dark .doc-item-card-header {
+  border-bottom-color: #334155;
+}
+
+.doc-item-card-subinfo {
+  font-size: 12px;
+  color: var(--city-muted, #64748b);
+}
+
+.doc-item-card-grid {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+@media (max-width: 640px) {
+  .doc-item-card-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.doc-preview-container {
+  position: relative;
+  width: 100%;
+  height: 170px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1.5px solid var(--city-border, #cbd5e1);
+  background: var(--city-bg, #f8fafc);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.doc-preview-container:hover {
+  border-color: #3b82f6;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+}
+
+.doc-preview-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.doc-preview-iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.doc-preview-hover-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 12.5px;
+  font-weight: 700;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  backdrop-filter: blur(2px);
+}
+
+.doc-preview-container:hover .doc-preview-hover-overlay {
+  opacity: 1;
+}
+
+.doc-preview-empty {
+  width: 100%;
+  height: 170px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--city-bg, #f8fafc);
+  border: 1.5px dashed var(--city-border, #cbd5e1);
+  border-radius: 12px;
+  color: var(--city-muted, #94a3b8);
+  gap: 8px;
+  font-size: 12px;
+}
+
 
 
 
