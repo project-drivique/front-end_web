@@ -18,10 +18,7 @@ import {
   FaPlus,
   FaEdit,
   FaTrashAlt,
-  FaIdCard,
-  FaPhone,
-  FaEnvelope,
-  FaUserCheck,
+  FaHashtag,
 } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import MenuConfiguracion from '../../../components/MenuConfiguracion'
@@ -95,7 +92,7 @@ export default function DeliveryManagementPage() {
       const hasE = r.domicilioDireccion || r.serviciosSeleccionados?.some(s => s.id === 'srv-entrega-domicilio' || s.nombre?.toLowerCase().includes('entrega'))
       const hasD = r.domicilioDevolucionDireccion || r.serviciosSeleccionados?.some(s => s.id === 'srv-devolucion-domicilio' || s.nombre?.toLowerCase().includes('devolucion'))
       return hasE || hasD
-    }).map(r => {
+    }).map((r) => {
       const hasE = r.domicilioDireccion || r.serviciosSeleccionados?.some(s => s.id === 'srv-entrega-domicilio' || s.nombre?.toLowerCase().includes('entrega'))
       const hasD = r.domicilioDevolucionDireccion || r.serviciosSeleccionados?.some(s => s.id === 'srv-devolucion-domicilio' || s.nombre?.toLowerCase().includes('devolucion'))
       let tipoServicio = t('admin.delivery.serviceTypes.delivery', 'Entrega a Domicilio')
@@ -109,7 +106,16 @@ export default function DeliveryManagementPage() {
         direccion = r.domicilioDevolucionDireccion || 'No registrada'
         fecha = r.fechaFin
       }
-      return { ...r, tipoServicio, direccionInfo: direccion, fechaEvento: fecha, estadoDomicilio: r.domicilioEstado || (r.domicilioConductor ? 'ASIGNADO' : 'PENDIENTE') }
+      const pinCalculado = r.domicilioPin || String(Math.abs(Array.from(String(r.codigo || r.id)).reduce((acc, char) => (acc * 31 + char.charCodeAt(0)) | 0, 0)) % 9000 + 1000)
+      return {
+        ...r,
+        tipoServicio,
+        direccionInfo: direccion,
+        fechaEvento: fecha,
+        domicilioPin: pinCalculado,
+        domicilioCodigo: `DOM-${pinCalculado}`,
+        estadoDomicilio: r.domicilioEstado || (r.domicilioConductor ? 'ASIGNADO' : 'PENDIENTE')
+      }
     })
     setReservations(deliveries)
   }
@@ -172,6 +178,28 @@ export default function DeliveryManagementPage() {
     }
   }
 
+  const handleDirectSelectConductor = (reserva, nombreConductor) => {
+    if (!nombreConductor) return
+    try {
+      const conductorObj = conductores.find(c => c.nombre === nombreConductor)
+      const pin = reserva.domicilioPin || String(Math.floor(1000 + Math.random() * 9000))
+      reservationManagementService.updateReservation(reserva.id, {
+        domicilioConductor: nombreConductor,
+        domicilioTelefonoConductor: conductorObj?.telefono || '',
+        domicilioEstado: 'ASIGNADO',
+        domicilioPin: pin
+      }, user)
+      showAlert({
+        icon: 'success',
+        title: t('admin.delivery.modal.assignSuccess', 'Conductor asignado'),
+        text: `Conductor: ${nombreConductor} | Código Domicilio (PIN): ${pin}`
+      })
+      loadReservations()
+    } catch (err) {
+      showAlert({ icon: 'error', title: 'Error', text: err.message })
+    }
+  }
+
   const totalPendientes = useMemo(() => reservations.filter(r => r.estadoDomicilio === 'PENDIENTE').length, [reservations])
   const totalAsignados = useMemo(() => reservations.filter(r => r.estadoDomicilio === 'ASIGNADO').length, [reservations])
   const totalCompletados = useMemo(() => reservations.filter(r => r.estadoDomicilio === 'COMPLETADO').length, [reservations])
@@ -182,7 +210,7 @@ export default function DeliveryManagementPage() {
     if (activeTab === 'completados' && r.estadoDomicilio !== 'COMPLETADO') return false
     if (search && activeTab !== 'conductores') {
       const lower = search.toLowerCase()
-      return r.codigo?.toLowerCase().includes(lower) || r.vehiculoNombre?.toLowerCase().includes(lower) || r.vehiculoPlaca?.toLowerCase().includes(lower) || r.clienteNombre?.toLowerCase().includes(lower) || r.domicilioConductor?.toLowerCase().includes(lower)
+      return r.codigo?.toLowerCase().includes(lower) || r.domicilioCodigo?.toLowerCase().includes(lower) || r.vehiculoNombre?.toLowerCase().includes(lower) || r.vehiculoPlaca?.toLowerCase().includes(lower) || r.clienteNombre?.toLowerCase().includes(lower) || r.domicilioConductor?.toLowerCase().includes(lower)
     }
     return true
   }).sort((a, b) => new Date(a.fechaEvento) - new Date(b.fechaEvento)), [reservations, search, activeTab])
@@ -257,7 +285,6 @@ export default function DeliveryManagementPage() {
     if (norm === 'disponible') {
       return (
         <span className="doc-status-badge aprobado" style={{ background: '#ecfdf5', color: '#047857', borderColor: '#a7f3d0' }}>
-          <FaUserCheck style={{ fontSize: 11 }} />
           {t('admin.delivery.driverStatus.disponible', 'Disponible')}
         </span>
       )
@@ -265,14 +292,12 @@ export default function DeliveryManagementPage() {
     if (norm === 'en_servicio') {
       return (
         <span className="doc-status-badge pendiente" style={{ background: '#eff6ff', color: '#1d4ed8', borderColor: '#bfdbfe' }}>
-          <FaRoute style={{ fontSize: 11 }} />
           {t('admin.delivery.driverStatus.enServicio', 'En Ruta')}
         </span>
       )
     }
     return (
       <span className="doc-status-badge rechazada" style={{ background: '#f1f5f9', color: '#64748b', borderColor: '#cbd5e1' }}>
-        <FaTimes style={{ fontSize: 11 }} />
         {t('admin.delivery.driverStatus.inactivo', 'Inactivo')}
       </span>
     )
@@ -298,6 +323,7 @@ export default function DeliveryManagementPage() {
     return filtrados.map((r, i) => [
       i + 1,
       r.codigo,
+      r.domicilioCodigo || `DOM-${r.domicilioPin || '1862'}`,
       r.clienteNombre,
       r.vehiculoNombre || r.vehiculo?.nombre || '-',
       r.tipoServicio,
@@ -492,7 +518,7 @@ export default function DeliveryManagementPage() {
                     <table className="incidents-table-v2" style={{ whiteSpace: 'nowrap', width: '100%', borderCollapse: 'collapse' }}>
                       <thead>
                         <tr>
-                          <th style={{ width: '40px' }}>ID</th>
+                          <th style={{ width: '35px' }}>ID</th>
                           <th>CONDUCTOR</th>
                           <th>DOCUMENTO</th>
                           <th>LICENCIA</th>
@@ -505,36 +531,36 @@ export default function DeliveryManagementPage() {
                       <tbody>
                         {conductoresFiltrados.map((c, i) => (
                           <tr key={c.id}>
-                            <td style={{ fontWeight: 600, color: 'var(--city-text, #0f172a)', width: '40px' }}>#{i + 1}</td>
-                            <td>
+                            <td style={{ fontWeight: 400, color: 'var(--city-text, #0f172a)', width: '35px' }}>{i + 1}</td>
+                            <td style={{ fontWeight: 400 }}>
                               <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                <strong style={{ color: 'var(--city-text, #0f172a)', fontSize: 13.5 }}>{c.nombre}</strong>
+                                <span style={{ color: 'var(--city-text, #0f172a)', fontSize: 13, fontWeight: 500 }}>{c.nombre}</span>
                                 <small style={{ color: 'var(--city-muted, #64748b)', fontSize: 11.5 }}>{c.email || 'Sin correo'}</small>
                               </div>
                             </td>
-                            <td>
-                              <span style={{ fontWeight: 600, color: 'var(--city-text, #334155)' }}>
+                            <td style={{ fontWeight: 400 }}>
+                              <span style={{ color: 'var(--city-text, #334155)' }}>
                                 {c.tipoDoc || 'CC'} {c.numDoc || '-'}
                               </span>
                             </td>
-                            <td>
+                            <td style={{ fontWeight: 400 }}>
                               <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                <strong style={{ color: 'var(--brand-primary, #2563eb)', fontSize: 12.5 }}>{c.licencia || '-'}</strong>
+                                <span style={{ color: 'var(--brand-primary, #2563eb)', fontSize: 12.5, fontWeight: 500 }}>{c.licencia || '-'}</span>
                                 <small style={{ color: 'var(--city-muted, #64748b)', fontSize: 11 }}>
                                   Cat: {c.categoriaLic || '-'} | Vence: {c.vencimientoLic || '-'}
                                 </small>
                               </div>
                             </td>
-                            <td style={{ color: 'var(--city-text, #334155)', fontWeight: 500 }}>
+                            <td style={{ color: 'var(--city-text, #334155)', fontWeight: 400 }}>
                               {c.telefono || '-'}
                             </td>
-                            <td style={{ color: 'var(--city-text, #334155)', fontWeight: 500 }}>
+                            <td style={{ color: 'var(--city-text, #334155)', fontWeight: 400 }}>
                               {c.vehiculo || 'Sin vehículo asignado'}
                             </td>
-                            <td style={{ textAlign: 'center' }}>
+                            <td style={{ textAlign: 'center', fontWeight: 400 }}>
                               {getConductorBadge(c.estado)}
                             </td>
-                            <td style={{ textAlign: 'center' }}>
+                            <td style={{ textAlign: 'center', fontWeight: 400 }}>
                               <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
                                 <button
                                   type="button"
@@ -547,7 +573,7 @@ export default function DeliveryManagementPage() {
                                     color: 'var(--brand-primary, #2563eb)',
                                     border: '1px solid var(--brand-border-light, #bfdbfe)',
                                     cursor: 'pointer',
-                                    fontWeight: 700,
+                                    fontWeight: 600,
                                     fontSize: 12,
                                     display: 'inline-flex',
                                     alignItems: 'center',
@@ -567,7 +593,7 @@ export default function DeliveryManagementPage() {
                                     color: '#dc2626',
                                     border: '1px solid #fecaca',
                                     cursor: 'pointer',
-                                    fontWeight: 700,
+                                    fontWeight: 600,
                                     fontSize: 12,
                                     display: 'inline-flex',
                                     alignItems: 'center',
@@ -604,91 +630,92 @@ export default function DeliveryManagementPage() {
                   <>
                     {/* 1. Vista de Tabla Completa para Escritorio & Tablets */}
                     <div className="cities-table-wrap doc-desktop-table" style={{ overflowX: 'auto' }}>
-                      <table className="incidents-table-v2" style={{ whiteSpace: 'nowrap', width: 'max-content', borderCollapse: 'collapse' }}>
+                      <table className="incidents-table-v2" style={{ whiteSpace: 'nowrap', width: '100%', borderCollapse: 'collapse' }}>
                         <thead>
                           <tr>
-                            <th style={{ width: '40px' }}>{t('admin.delivery.table.id', 'ID')}</th>
-                            <th>{t('admin.delivery.table.reservationCode', 'CÓDIGO RESERVA')}</th>
-                            <th>{t('admin.delivery.table.clientName', 'NOMBRE CLIENTE')}</th>
-                            <th>{t('admin.delivery.table.vehicleName', 'VEHÍCULO')}</th>
-                            <th>{t('admin.delivery.table.serviceType', 'TIPO SERVICIO')}</th>
-                            <th>{t('admin.delivery.table.address', 'DIRECCIÓN DE ENTREGA / RECOGIDA')}</th>
-                            <th>{t('admin.delivery.table.dateTime', 'FECHA Y HORA')}</th>
-                            <th>{t('admin.delivery.table.driver', 'CONDUCTOR ASIGNADO')}</th>
-                            <th style={{ textAlign: 'center' }}>{t('admin.delivery.table.status', 'ESTADO')}</th>
-                            <th style={{ textAlign: 'center' }}>{t('admin.delivery.table.actions', 'ACCIONES')}</th>
+                            <th style={{ width: '35px' }}>ID</th>
+                            <th>CÓDIGO RESERVA</th>
+                            <th>CÓDIGO DOMICILIO (PIN)</th>
+                            <th>NOMBRE CLIENTE</th>
+                            <th>VEHÍCULO</th>
+                            <th>TIPO SERVICIO</th>
+                            <th>DIRECCIÓN DE ENTREGA / RECOGIDA</th>
+                            <th>FECHA Y HORA</th>
+                            <th>CONDUCTOR ASIGNADO</th>
+                            <th style={{ textAlign: 'center' }}>ESTADO</th>
+                            <th style={{ textAlign: 'center' }}>ACCIONES</th>
                           </tr>
                         </thead>
                         <tbody>
                           {filtrados.map((r, i) => (
                             <tr key={r.id}>
-                              <td style={{ fontWeight: 600, color: 'var(--city-text, #0f172a)', width: '40px' }}>{i + 1}</td>
-                              <td style={{ fontWeight: 700, color: 'var(--city-text, #0f172a)' }}>{r.codigo}</td>
-                              <td style={{ color: 'var(--city-text, #0f172a)', fontWeight: 600 }}>{r.clienteNombre}</td>
-                              <td style={{ color: 'var(--city-text, #0f172a)', fontWeight: 600 }}>{r.vehiculoNombre || r.vehiculo?.nombre || '-'}</td>
-                              <td>
-                                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, color: 'var(--city-text, #334155)', fontWeight: 500 }}>
+                              <td style={{ fontWeight: 400, color: 'var(--city-text, #0f172a)', width: '35px' }}>{i + 1}</td>
+                              <td style={{ fontWeight: 500, color: 'var(--city-text, #0f172a)' }}>{r.codigo}</td>
+                              <td style={{ fontWeight: 500, color: 'var(--brand-primary, #2563eb)' }}>
+                                {r.domicilioCodigo || `DOM-${r.domicilioPin || '1862'}`}
+                              </td>
+                              <td style={{ fontWeight: 400, color: 'var(--city-text, #0f172a)' }}>{r.clienteNombre}</td>
+                              <td style={{ fontWeight: 400, color: 'var(--city-text, #0f172a)' }}>{r.vehiculoNombre || r.vehiculo?.nombre || '-'}</td>
+                              <td style={{ fontWeight: 400 }}>
+                                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, color: 'var(--city-text, #334155)', fontWeight: 400 }}>
                                   <FaCar style={{ color: 'var(--city-muted, #64748b)', flexShrink: 0 }} />
                                   {r.tipoServicio}
                                 </span>
                               </td>
-                              <td style={{ maxWidth: 220, overflow: 'hidden', textOverflow: 'ellipsis', color: 'var(--city-text, #334155)' }} title={r.direccionInfo}>
+                              <td style={{ maxWidth: 220, overflow: 'hidden', textOverflow: 'ellipsis', color: 'var(--city-text, #334155)', fontWeight: 400 }} title={r.direccionInfo}>
                                 <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                                   <FaMapMarkerAlt style={{ color: '#ef4444', fontSize: 11, flexShrink: 0 }} />
                                   {r.direccionInfo}
                                 </span>
                               </td>
-                              <td style={{ color: 'var(--city-muted, #64748b)' }}>
+                              <td style={{ color: 'var(--city-muted, #64748b)', fontWeight: 400 }}>
                                 <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
                                   <FaCalendarAlt style={{ fontSize: 11 }} />
                                   {r.fechaEvento ? new Date(r.fechaEvento).toLocaleDateString() : '-'}
                                 </span>
                               </td>
-                              <td style={{ fontWeight: r.domicilioConductor ? 600 : 400, color: r.domicilioConductor ? 'var(--city-text, #0f172a)' : 'var(--city-muted, #64748b)' }}>
-                                {r.domicilioConductor || t('admin.delivery.noDriver', 'Sin asignar')}
+                              <td style={{ fontWeight: 400 }}>
+                                <select
+                                  value={r.domicilioConductor || ''}
+                                  onChange={(e) => handleDirectSelectConductor(r, e.target.value)}
+                                  style={{
+                                    padding: '6px 10px',
+                                    borderRadius: 8,
+                                    border: '1.5px solid var(--city-border, #cbd5e1)',
+                                    background: 'var(--city-bg, #f8fafc)',
+                                    color: r.domicilioConductor ? 'var(--city-text, #0f172a)' : 'var(--city-muted, #64748b)',
+                                    fontSize: 12.5,
+                                    fontWeight: 400,
+                                    outline: 'none',
+                                    cursor: 'pointer',
+                                    maxWidth: 200
+                                  }}
+                                >
+                                  <option value="">-- Seleccionar Conductor --</option>
+                                  {conductores.map(c => (
+                                    <option key={c.id} value={c.nombre}>
+                                      {c.nombre} {c.vehiculo ? `(${c.vehiculo})` : ''}
+                                    </option>
+                                  ))}
+                                </select>
                               </td>
-                              <td style={{ textAlign: 'center' }}>
+                              <td style={{ textAlign: 'center', fontWeight: 400 }}>
                                 {getBadge(r.estadoDomicilio)}
                               </td>
-                              <td style={{ textAlign: 'center' }}>
+                              <td style={{ textAlign: 'center', fontWeight: 400 }}>
                                 <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
-                                  {r.estadoDomicilio === 'PENDIENTE' && (
-                                    <button
-                                      type="button"
-                                      onClick={() => { setModalAsignar(r); setConductorSeleccionado(r.domicilioConductor || '') }}
-                                      style={{
-                                        padding: '7px 22px',
-                                        borderRadius: '9999px',
-                                        background: 'var(--brand-primary, #2563eb)',
-                                        color: 'var(--city-card, #ffffff)',
-                                        border: 'none',
-                                        fontWeight: 800,
-                                        fontSize: '12.5px',
-                                        cursor: 'pointer',
-                                        boxShadow: '0 2px 5px rgba(37, 99, 235, 0.25)',
-                                        transition: 'all 0.2s',
-                                        whiteSpace: 'nowrap',
-                                        display: 'inline-flex',
-                                        alignItems: 'center',
-                                        gap: 6,
-                                      }}
-                                    >
-                                      <FaUserTie style={{ fontSize: 11 }} />
-                                      {t('admin.delivery.assignBtn', 'Asignar')}
-                                    </button>
-                                  )}
                                   {r.estadoDomicilio === 'ASIGNADO' && (
                                     <button
                                       type="button"
                                       onClick={() => setModalVerificar(r)}
                                       style={{
-                                        padding: '7px 22px',
+                                        padding: '6px 16px',
                                         borderRadius: '9999px',
                                         background: '#16a34a',
                                         color: 'var(--city-card, #ffffff)',
                                         border: 'none',
-                                        fontWeight: 800,
-                                        fontSize: '12.5px',
+                                        fontWeight: 700,
+                                        fontSize: '12px',
                                         cursor: 'pointer',
                                         boxShadow: '0 2px 5px rgba(22, 163, 74, 0.25)',
                                         transition: 'all 0.2s',
@@ -703,9 +730,14 @@ export default function DeliveryManagementPage() {
                                     </button>
                                   )}
                                   {r.estadoDomicilio === 'COMPLETADO' && (
-                                    <span style={{ fontSize: 12.5, color: '#15803d', fontWeight: 800, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                                    <span style={{ fontSize: 12, color: '#15803d', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                                       <FaCheckCircle />
                                       {t('admin.delivery.completedLabel', 'Entregado')}
+                                    </span>
+                                  )}
+                                  {r.estadoDomicilio === 'PENDIENTE' && (
+                                    <span style={{ fontSize: 12, color: '#d97706', fontWeight: 400 }}>
+                                      Pendiente asignación
                                     </span>
                                   )}
                                 </div>
@@ -722,8 +754,8 @@ export default function DeliveryManagementPage() {
                         <div key={r.id} className="doc-mobile-card">
                           <div className="doc-mobile-card-header">
                             <div className="doc-mobile-card-title">
-                              <span style={{ fontWeight: 800, color: 'var(--brand-primary, #2563eb)', fontSize: 13 }}>#{i + 1}</span>
-                              <span style={{ fontWeight: 800, color: 'var(--city-text, #0f172a)', fontSize: 14 }}>{r.codigo}</span>
+                              <span style={{ fontWeight: 400, color: 'var(--brand-primary, #2563eb)', fontSize: 13 }}>ID {i + 1}</span>
+                              <span style={{ fontWeight: 500, color: 'var(--city-text, #0f172a)', fontSize: 14 }}>{r.codigo}</span>
                             </div>
                             {getBadge(r.estadoDomicilio)}
                           </div>
@@ -731,60 +763,65 @@ export default function DeliveryManagementPage() {
                           <div className="doc-mobile-card-body">
                             <div className="doc-mobile-data-item doc-mobile-data-item--full">
                               <span className="doc-mobile-data-label">{t('admin.delivery.table.clientName', 'Nombre Cliente')}</span>
-                              <span className="doc-mobile-data-value" style={{ fontSize: 14 }}>{r.clienteNombre}</span>
+                              <span className="doc-mobile-data-value" style={{ fontSize: 14, fontWeight: 400 }}>{r.clienteNombre}</span>
+                            </div>
+
+                            <div className="doc-mobile-data-item doc-mobile-data-item--full">
+                              <span className="doc-mobile-data-label">Código Domicilio (PIN)</span>
+                              <span className="doc-mobile-data-value" style={{ color: 'var(--brand-primary, #2563eb)', fontWeight: 500 }}>
+                                {r.domicilioCodigo || `DOM-${r.domicilioPin || '1862'}`}
+                              </span>
                             </div>
 
                             <div className="doc-mobile-data-item doc-mobile-data-item--full">
                               <span className="doc-mobile-data-label">{t('admin.delivery.table.vehicleName', 'Vehículo')}</span>
-                              <span className="doc-mobile-data-value">{r.vehiculoNombre || r.vehiculo?.nombre || '-'}</span>
+                              <span className="doc-mobile-data-value" style={{ fontWeight: 400 }}>{r.vehiculoNombre || r.vehiculo?.nombre || '-'}</span>
                             </div>
 
                             <div className="doc-mobile-data-item">
                               <span className="doc-mobile-data-label">{t('admin.delivery.table.serviceType', 'Tipo Servicio')}</span>
-                              <span className="doc-mobile-data-value">{r.tipoServicio}</span>
+                              <span className="doc-mobile-data-value" style={{ fontWeight: 400 }}>{r.tipoServicio}</span>
                             </div>
 
                             <div className="doc-mobile-data-item">
                               <span className="doc-mobile-data-label">{t('admin.delivery.table.dateTime', 'Fecha')}</span>
-                              <span className="doc-mobile-data-value">{r.fechaEvento ? new Date(r.fechaEvento).toLocaleDateString() : '-'}</span>
+                              <span className="doc-mobile-data-value" style={{ fontWeight: 400 }}>{r.fechaEvento ? new Date(r.fechaEvento).toLocaleDateString() : '-'}</span>
                             </div>
 
                             <div className="doc-mobile-data-item doc-mobile-data-item--full">
                               <span className="doc-mobile-data-label">{t('admin.delivery.table.address', 'Dirección')}</span>
-                              <span className="doc-mobile-data-value" style={{ color: 'var(--brand-primary, #2563eb)' }}>{r.direccionInfo}</span>
+                              <span className="doc-mobile-data-value" style={{ color: 'var(--brand-primary, #2563eb)', fontWeight: 400 }}>{r.direccionInfo}</span>
                             </div>
 
                             <div className="doc-mobile-data-item doc-mobile-data-item--full">
                               <span className="doc-mobile-data-label">{t('admin.delivery.table.driver', 'Conductor Asignado')}</span>
-                              <span className="doc-mobile-data-value">{r.domicilioConductor || t('admin.delivery.noDriver', 'Sin asignar')}</span>
+                              <select
+                                value={r.domicilioConductor || ''}
+                                onChange={(e) => handleDirectSelectConductor(r, e.target.value)}
+                                style={{
+                                  width: '100%',
+                                  padding: '8px 10px',
+                                  borderRadius: 8,
+                                  border: '1.5px solid var(--city-border, #cbd5e1)',
+                                  background: 'var(--city-bg, #f8fafc)',
+                                  color: r.domicilioConductor ? 'var(--city-text, #0f172a)' : 'var(--city-muted, #64748b)',
+                                  fontSize: 13,
+                                  fontWeight: 400,
+                                  outline: 'none',
+                                  marginTop: 4
+                                }}
+                              >
+                                <option value="">-- Seleccionar Conductor --</option>
+                                {conductores.map(c => (
+                                  <option key={c.id} value={c.nombre}>
+                                    {c.nombre} {c.vehiculo ? `(${c.vehiculo})` : ''}
+                                  </option>
+                                ))}
+                              </select>
                             </div>
                           </div>
 
                           <div className="doc-mobile-card-actions">
-                            {r.estadoDomicilio === 'PENDIENTE' && (
-                              <button
-                                type="button"
-                                onClick={() => { setModalAsignar(r); setConductorSeleccionado(r.domicilioConductor || '') }}
-                                style={{
-                                  width: '100%',
-                                  padding: '9px 18px',
-                                  borderRadius: '12px',
-                                  background: 'var(--brand-primary, #2563eb)',
-                                  color: 'var(--city-card, #ffffff)',
-                                  border: 'none',
-                                  fontWeight: 800,
-                                  fontSize: '13px',
-                                  cursor: 'pointer',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'center',
-                                  gap: 8,
-                                }}
-                              >
-                                <FaUserTie style={{ fontSize: 12 }} />
-                                {t('admin.delivery.assignBtn', 'Asignar Conductor')}
-                              </button>
-                            )}
                             {r.estadoDomicilio === 'ASIGNADO' && (
                               <button
                                 type="button"
@@ -796,7 +833,7 @@ export default function DeliveryManagementPage() {
                                   background: '#16a34a',
                                   color: 'var(--city-card, #ffffff)',
                                   border: 'none',
-                                  fontWeight: 800,
+                                  fontWeight: 700,
                                   fontSize: '13px',
                                   cursor: 'pointer',
                                   display: 'flex',
@@ -810,7 +847,7 @@ export default function DeliveryManagementPage() {
                               </button>
                             )}
                             {r.estadoDomicilio === 'COMPLETADO' && (
-                              <span style={{ fontSize: 13, color: '#15803d', fontWeight: 800, display: 'flex', alignItems: 'center', gap: 6 }}>
+                              <span style={{ fontSize: 13, color: '#15803d', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 6 }}>
                                 <FaCheckCircle />
                                 {t('admin.delivery.completedLabel', 'Servicio Entregado')}
                               </span>
@@ -847,7 +884,7 @@ export default function DeliveryManagementPage() {
                   
                   {/* Nombre Completo */}
                   <div style={{ gridColumn: '1 / -1' }}>
-                    <label style={{ display: 'block', fontSize: 12.5, color: 'var(--city-text)', fontWeight: 700, marginBottom: 4 }}>
+                    <label style={{ display: 'block', fontSize: 12.5, color: 'var(--city-text)', fontWeight: 600, marginBottom: 4 }}>
                       Nombre Completo del Conductor *
                     </label>
                     <input
@@ -862,7 +899,7 @@ export default function DeliveryManagementPage() {
 
                   {/* Correo Electrónico */}
                   <div>
-                    <label style={{ display: 'block', fontSize: 12.5, color: 'var(--city-text)', fontWeight: 700, marginBottom: 4 }}>
+                    <label style={{ display: 'block', fontSize: 12.5, color: 'var(--city-text)', fontWeight: 600, marginBottom: 4 }}>
                       Correo Electrónico *
                     </label>
                     <input
@@ -877,7 +914,7 @@ export default function DeliveryManagementPage() {
 
                   {/* Teléfono */}
                   <div>
-                    <label style={{ display: 'block', fontSize: 12.5, color: 'var(--city-text)', fontWeight: 700, marginBottom: 4 }}>
+                    <label style={{ display: 'block', fontSize: 12.5, color: 'var(--city-text)', fontWeight: 600, marginBottom: 4 }}>
                       Teléfono / WhatsApp *
                     </label>
                     <input
@@ -892,7 +929,7 @@ export default function DeliveryManagementPage() {
 
                   {/* Tipo de Documento */}
                   <div>
-                    <label style={{ display: 'block', fontSize: 12.5, color: 'var(--city-text)', fontWeight: 700, marginBottom: 4 }}>
+                    <label style={{ display: 'block', fontSize: 12.5, color: 'var(--city-text)', fontWeight: 600, marginBottom: 4 }}>
                       Tipo de Documento *
                     </label>
                     <select
@@ -908,7 +945,7 @@ export default function DeliveryManagementPage() {
 
                   {/* Número de Documento */}
                   <div>
-                    <label style={{ display: 'block', fontSize: 12.5, color: 'var(--city-text)', fontWeight: 700, marginBottom: 4 }}>
+                    <label style={{ display: 'block', fontSize: 12.5, color: 'var(--city-text)', fontWeight: 600, marginBottom: 4 }}>
                       Número de Documento *
                     </label>
                     <input
@@ -923,7 +960,7 @@ export default function DeliveryManagementPage() {
 
                   {/* Número de Licencia */}
                   <div>
-                    <label style={{ display: 'block', fontSize: 12.5, color: 'var(--city-text)', fontWeight: 700, marginBottom: 4 }}>
+                    <label style={{ display: 'block', fontSize: 12.5, color: 'var(--city-text)', fontWeight: 600, marginBottom: 4 }}>
                       Número de Licencia *
                     </label>
                     <input
@@ -938,7 +975,7 @@ export default function DeliveryManagementPage() {
 
                   {/* Categoría de Licencia */}
                   <div>
-                    <label style={{ display: 'block', fontSize: 12.5, color: 'var(--city-text)', fontWeight: 700, marginBottom: 4 }}>
+                    <label style={{ display: 'block', fontSize: 12.5, color: 'var(--city-text)', fontWeight: 600, marginBottom: 4 }}>
                       Categoría de Licencia *
                     </label>
                     <select
@@ -956,7 +993,7 @@ export default function DeliveryManagementPage() {
 
                   {/* Vencimiento Licencia */}
                   <div>
-                    <label style={{ display: 'block', fontSize: 12.5, color: 'var(--city-text)', fontWeight: 700, marginBottom: 4 }}>
+                    <label style={{ display: 'block', fontSize: 12.5, color: 'var(--city-text)', fontWeight: 600, marginBottom: 4 }}>
                       Vencimiento de Licencia *
                     </label>
                     <input
@@ -970,7 +1007,7 @@ export default function DeliveryManagementPage() {
 
                   {/* Estado Inicial */}
                   <div>
-                    <label style={{ display: 'block', fontSize: 12.5, color: 'var(--city-text)', fontWeight: 700, marginBottom: 4 }}>
+                    <label style={{ display: 'block', fontSize: 12.5, color: 'var(--city-text)', fontWeight: 600, marginBottom: 4 }}>
                       Estado del Conductor *
                     </label>
                     <select
@@ -986,7 +1023,7 @@ export default function DeliveryManagementPage() {
 
                   {/* Vehículo Asignado */}
                   <div style={{ gridColumn: '1 / -1' }}>
-                    <label style={{ display: 'block', fontSize: 12.5, color: 'var(--city-text)', fontWeight: 700, marginBottom: 4 }}>
+                    <label style={{ display: 'block', fontSize: 12.5, color: 'var(--city-text)', fontWeight: 600, marginBottom: 4 }}>
                       Vehículo o Medio de Transporte Asignado
                     </label>
                     <input
@@ -1015,48 +1052,6 @@ export default function DeliveryManagementPage() {
                   style={{ padding: '8px 22px', borderRadius: 9999, background: 'var(--brand-primary, #2563eb)', color: '#fff', border: 'none', cursor: 'pointer', fontWeight: 800, boxShadow: '0 4px 12px rgba(37, 99, 235, 0.3)' }}
                 >
                   {editingConductor ? t('common.saveChanges', 'Guardar Cambios') : t('admin.delivery.modal.saveBtn', 'Crear Conductor')}
-                </button>
-              </div>
-            </section>
-          </div>
-        )}
-
-        {/* MODAL ASIGNAR CONDUCTOR */}
-        {modalAsignar && (
-          <div className="cities-modal-backdrop" style={backdropStyle} onMouseDown={e => e.target === e.currentTarget && setModalAsignar(null)}>
-            <section className="cities-modal" style={{ maxWidth: 460, background: 'var(--city-card)', borderRadius: 16, overflow: 'hidden' }}>
-              <div style={modalHeadStyle}>
-                <div>
-                  <p style={{ color: 'var(--city-muted)', margin: 0, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>{t('admin.delivery.modal.assignEyebrow', 'ASIGNACION DE PERSONAL')}</p>
-                  <h2 style={{ color: 'var(--city-text)', margin: 0, fontSize: 18, fontWeight: 800 }}>{t('admin.delivery.modal.assignTitle', 'Asignar Conductor')}</h2>
-                </div>
-                <button type="button" onClick={() => setModalAsignar(null)} style={closeBtnStyle}>&times;</button>
-              </div>
-              <div style={{ padding: 24 }}>
-                <div style={{ marginBottom: 18, padding: 14, background: 'var(--city-bg)', borderRadius: 10, border: '1.5px solid var(--city-border)' }}>
-                  <p style={{ margin: 0, fontSize: 12, color: 'var(--city-muted)', marginBottom: 2 }}>{t('admin.delivery.modal.reservation', 'Reserva')}</p>
-                  <p style={{ margin: 0, fontSize: 16, fontWeight: 800, color: 'var(--brand-primary, #2563eb)', marginBottom: 10 }}>{modalAsignar.codigo}</p>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-                    <div><p style={{ margin: 0, fontSize: 11, color: 'var(--city-muted)' }}>{t('admin.delivery.modal.clientLabel', 'Cliente')}</p><p style={{ margin: 0, fontSize: 13, fontWeight: 600, color: 'var(--city-text)' }}>{modalAsignar.clienteNombre}</p></div>
-                    <div><p style={{ margin: 0, fontSize: 11, color: 'var(--city-muted)' }}>{t('admin.delivery.modal.service', 'Servicio')}</p><p style={{ margin: 0, fontSize: 13, fontWeight: 600, color: 'var(--city-text)' }}>{modalAsignar.tipoServicio}</p></div>
-                    <div style={{ gridColumn: '1/-1' }}><p style={{ margin: 0, fontSize: 11, color: 'var(--city-muted)' }}>{t('admin.delivery.table.address', 'Direccion')}</p><p style={{ margin: 0, fontSize: 13, fontWeight: 600, color: 'var(--city-text)' }}>{modalAsignar.direccionInfo}</p></div>
-                  </div>
-                </div>
-                <form id="asignar-form" onSubmit={handleAsignar}>
-                  <label style={{ display: 'block', fontSize: 13, color: 'var(--city-text)', fontWeight: 700, marginBottom: 6 }}>{t('admin.delivery.modal.selectDriver', 'Seleccionar Conductor')}</label>
-                  <select value={conductorSeleccionado} onChange={e => setConductorSeleccionado(e.target.value)} required
-                    style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1.5px solid var(--city-border)', background: 'var(--city-bg)', color: 'var(--city-text)', fontSize: 13, outline: 'none' }}>
-                    <option value="">{t('admin.delivery.modal.selectDriverPlaceholder', 'Elige un conductor disponible...')}</option>
-                    {conductores.map(c => <option key={c.id} value={c.nombre}>{c.nombre}{c.vehiculo ? ` - ${c.vehiculo}` : ''}</option>)}
-                  </select>
-                  {conductores.length === 0 && <p style={{ fontSize: 12, color: '#ef4444', marginTop: 8 }}>{t('admin.delivery.modal.noDrivers', 'No hay conductores. Crea uno primero.')}</p>}
-                </form>
-              </div>
-              <div style={{ padding: '14px 24px', borderTop: '1px solid var(--city-border)', display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
-                <button type="button" onClick={() => setModalAsignar(null)} style={{ padding: '8px 18px', borderRadius: 9999, background: 'transparent', color: 'var(--city-muted)', border: '1.5px solid var(--city-border)', cursor: 'pointer', fontWeight: 700 }}>{t('admin.delivery.modal.cancelBtn', 'Cancelar')}</button>
-                <button type="submit" form="asignar-form" disabled={conductores.length === 0}
-                  style={{ padding: '8px 22px', borderRadius: 9999, background: 'var(--brand-primary, #2563eb)', color: '#fff', border: 'none', cursor: conductores.length === 0 ? 'not-allowed' : 'pointer', fontWeight: 700, opacity: conductores.length === 0 ? 0.5 : 1, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                  <FaUserTie style={{ fontSize: 12 }} />{t('admin.delivery.modal.saveBtn', 'Asignar Conductor')}
                 </button>
               </div>
             </section>
