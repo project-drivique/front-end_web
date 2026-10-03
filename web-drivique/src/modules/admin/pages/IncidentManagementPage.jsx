@@ -23,12 +23,14 @@ import {
   FaWrench,
 } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
-import { useAuthStore } from '../../../store/authStore'
 import { useBrand } from '../../../contexts/BrandContext'
 import { incidentManagementService } from '../../../services/incidentManagementService'
 import { vehicleManagementService } from '../../../services/vehicleManagementService'
 import { branchManagementService } from '../../../services/branchManagementService'
-import { exportExcel, exportPdf, printTable } from '../../../utils/listExportUtils'
+import { useBranchScope } from '../../../hooks/useBranchScope'
+import { useManagementTable } from '../../../hooks/useManagementTable'
+import { useManagementModal } from '../../../hooks/useManagementModal'
+import { useManagementExport } from '../../../hooks/useManagementExport'
 import MenuConfiguracion from '../../../components/MenuConfiguracion'
 import ManagementSidebar from '../components/ManagementSidebar'
 import './CityManagementPage.css'
@@ -38,31 +40,32 @@ import './DocumentVerificationPage.css'
 export default function IncidentManagementPage() {
   const { t, i18n } = useTranslation()
   const { tema } = useLanding()
-  const user = useAuthStore((state) => state.usuario)
   const { brand } = useBrand()
   const esModoOscuro = tema === 'oscuro'
 
-  const esEncargado =
-    user?.rol === 'encargado' ||
-    user?.rol === 'encargado_sucursal' ||
-    user?.rol === 'branch_manager'
-  const sucursalEncargado = user?.sucursalId || user?.sucursal || user?.sucursalAsignada || ''
-  const branchKey = String(sucursalEncargado).trim().toLocaleLowerCase()
+  // Patrón Custom Hook: useBranchScope
+  const { user, isBranchManager: esEncargado, assignedBranch: sucursalEncargado, branchKey } = useBranchScope()
 
-  const [incidents, setIncidents] = useState([])
-  const [search, setSearch] = useState('')
-  const [stateFilter, setStateFilter] = useState('all')
-  const [branchFilter, setBranchFilter] = useState('all')
-  const [activeTab, setActiveTab] = useState('clientes')
-  const [notice, setNotice] = useState('')
-  const [errorModal, setErrorModal] = useState('')
+  // Patrón Custom Hook: useManagementModal
+  const {
+    modalDetail: modalDetalle,
+    setModalDetail: setModalDetalle,
+    modalCreate: modalCrear,
+    setModalCreate: setModalCrear,
+    modalDelete: modalEliminar,
+    setModalDelete: setModalEliminar,
+    modalReply: modalResponder,
+    setModalReply: setModalResponder,
+    zoomMedia,
+    setZoomMedia,
+    notice,
+    setNotice,
+    errorModal,
+    setErrorModal,
+  } = useManagementModal()
 
-  // Modales
-  const [modalDetalle, setModalDetalle] = useState(null)
-  const [modalCrear, setModalCrear] = useState(false)
-  const [modalEliminar, setModalEliminar] = useState(null)
-  const [modalResponder, setModalResponder] = useState(null)
-  const [zoomMedia, setZoomMedia] = useState(null)
+  // Patrón Custom Hook: useManagementExport
+  const { handleExportExcel, handleExportPdf, handlePrint } = useManagementExport(setNotice)
 
   // Formularios
   const [formCrear, setFormCrear] = useState({
