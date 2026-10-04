@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { useAuthStore } from '../store/authStore'
 
-const configuredApiUrl = import.meta.env.VITE_API_URL?.trim().replace(/\/$/, '')
+const configuredApiUrl = (import.meta.env.VITE_API_URL?.trim().replace(/\/$/, '') || (import.meta.env.DEV ? 'http://localhost:8080/api/v1' : ''))
 const mockMode = import.meta.env.VITE_USAR_MOCK === 'true'
 
 if (!configuredApiUrl && !mockMode) {
