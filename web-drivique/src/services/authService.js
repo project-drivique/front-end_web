@@ -1,6 +1,4 @@
-import axios from 'axios'
 // Importa Axios, una librería para hacer peticiones HTTP a una API.
-import { useAuthStore } from '../store/authStore'
 import { mockUsersStorage } from './mockUsersStorage'
 import { accessAuditService } from './accessAuditService'
 import { hasValidRoleAccess, PERMISSIONS, ROLES } from '../modules/auth/utils/accessControl'
@@ -8,38 +6,8 @@ import accessConfig from '../mocks/adminAccessConfig.json'
 import branchAccounts from '../mocks/branchAccounts.json'
 // Store de Zustand: fuente de verdad del token en memoria.
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
-// Define la URL base de la API.
-// Primero intenta leer la variable de entorno VITE_API_URL.
-// Si no existe, usa la URL local por defecto.
-
-const USAR_MOCK =
-  import.meta.env.VITE_USAR_MOCK === 'true' || !import.meta.env.VITE_API_URL
-// Mismo patrón que catalogoService.js / reservasService.js:
-// usa mock si VITE_USAR_MOCK es 'true' o si no hay VITE_API_URL configurada.
-
-export const api = axios.create({
-  baseURL: API_URL,
-  // Todas las peticiones hechas con esta instancia usarán esta URL base.
-
-  headers: { 'Content-Type': 'application/json' },
-  // Indica que el contenido enviado y recibido será JSON.
-})
-// Crea una instancia personalizada de Axios para reutilizar configuración.
-
-api.interceptors.request.use((config) => {
-  // Interceptor que se ejecuta antes de cada petición.
-
-  const token = useAuthStore.getState().token
-  // Lee el token directo del store (ya rehidratado, siempre el JWT plano).
-
-  if (token) config.headers.Authorization = `Bearer ${token}`
-  // Si existe token, lo agrega al header Authorization
-  // con el formato Bearer.
-
-  return config
-  // Devuelve la configuración modificada para que la petición continúe.
-})
+import { api, setSessionTokens } from './httpClient'
+export { api } from './httpClient'
 
 const generateMockToken = () => {
   return 'mock_token_' + Math.random().toString(36).substring(2) + Date.now()
@@ -153,8 +121,23 @@ function prepararUsuariosLocales() {
 export const authService = {
   login: async ({ correo, contrasena }) => {
     if (!USAR_MOCK) {
-      const { data } = await api.post('/auth/login', { correo, contrasena })
-      return data
+      const { data } = await api.post('/auth/login', {
+        email: correo,
+        password: contrasena,
+        deviceInfo: navigator.userAgent,
+      })
+      setSessionTokens(data)
+      const profile = data.userProfile || {}
+      return {
+        token: data.accessToken,
+        correo: profile.email,
+        nombre: profile.firstName,
+        apellido: profile.lastName,
+        telefono: profile.phone,
+        rol: profile.roles?.[0] || 'USER',
+        roles: profile.roles || [],
+        activo: profile.accountStatus === 'ACTIVE',
+      }
     }
     prepararUsuariosLocales()
     // Método asíncrono para iniciar sesión.
