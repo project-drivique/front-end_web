@@ -117,20 +117,7 @@ export function useVerifyEmail() {
         await authService.verificarCodigoRegistro(verificacionCorreo.correo, codigo)
       }
 
-      const token = verificacionCorreo?.datosAcceso?.token || 'mock_token_' + Date.now()
-      const usuario = {
-        correo: verificacionCorreo?.correo || '',
-        nombre: verificacionCorreo?.datosAcceso?.nombre || '',
-        apellido: verificacionCorreo?.datosAcceso?.apellido || '',
-        rol: verificacionCorreo?.datosAcceso?.rol || 'usuario',
-        telefono: verificacionCorreo?.datosAcceso?.telefono || '',
-        cedula: verificacionCorreo?.datosAcceso?.cedula || '',
-        fechaNacimiento: verificacionCorreo?.datosAcceso?.fechaNacimiento || '',
-        emailVerificado: true,
-      }
-
-      storeLogin(token, usuario)
-
+      cancelarVerificacionCorreo()
       setExito(true)
 
       showAlert({
@@ -141,8 +128,7 @@ export function useVerifyEmail() {
         showConfirmButton: false,
       })
 
-      const destino = getRoleHome(verificacionCorreo?.datosAcceso?.rol)
-      navigate(destino, { replace: true })
+      navigate('/login', { replace: true })
     } catch (err) {
       const status = err?.response?.status
       if (status === 410) {
