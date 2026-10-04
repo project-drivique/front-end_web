@@ -1,4 +1,4 @@
-﻿import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   FaBuilding,
@@ -18,6 +18,7 @@ import {
 } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import { useAuthStore } from '../../../store/authStore'
+import { api } from '../../../services/httpClient'
 import { branchManagementService } from '../../../services/branchManagementService'
 import { cityManagementService } from '../../../services/cityManagementService'
 import { exportExcel, exportPdf, printTable } from '../../../utils/listExportUtils'
@@ -59,7 +60,8 @@ export default function BranchManagementPage() {
   const { tema } = useLanding()
   const user = useAuthStore((state) => state.usuario)
 
-  const [branches, setBranches] = useState(() => branchManagementService.list())
+  const [branches, setBranches] = useState([])
+  const [loadingBranches, setLoadingBranches] = useState(true)
   const [search, setSearch] = useState('')
   const [cityFilter, setCityFilter] = useState('all')
   const [cashFilter, setCashFilter] = useState('all')
@@ -70,6 +72,24 @@ export default function BranchManagementPage() {
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
 
+  useEffect(() => {
+    let active = true
+    api.get('/branches')
+      .then(({ data }) => {
+        if (!active) return
+        setBranches(data.map((branch) => ({
+          id: branch.id, nombre: branch.name, ciudad: branch.cityName,
+          direccion: branch.address, telefono: branch.phone,
+          horario: `${branch.openingTime} - ${branch.closingTime}`,
+          autorizadoPagoEfectivo: branch.allowsCashPayment,
+          estado: branch.isActive ? 'activa' : 'inactiva',
+          capacidadVehiculos: 0, encargadoId: '',
+        })))
+      })
+      .catch(() => active && setError('No fue posible cargar las sucursales reales.'))
+      .finally(() => active && setLoadingBranches(false))
+    return () => { active = false }
+  }, [])
   const cities = cityManagementService.list().sort((a, b) => a.nombre.localeCompare(b.nombre))
   const managers = branchManagementService.managers()
 
@@ -269,7 +289,7 @@ export default function BranchManagementPage() {
             </div>
 
             {/* Tabla */}
-            {filtered.length === 0 ? (
+            {loadingBranches ? (<div className="cities-empty"><p>Cargando sucursales...</p></div>) : filtered.length === 0 ? (
               <div className="cities-empty">
                 <FaBuilding />
                 <h2>No se encontraron sucursales</h2>
@@ -552,3 +572,4 @@ export default function BranchManagementPage() {
     </div>
   )
 }
+
