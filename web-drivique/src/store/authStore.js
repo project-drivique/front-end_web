@@ -97,8 +97,8 @@ export const useAuthStore = create(
         set({ verificacionCorreo: null })
       },
 
-      iniciarRecuperacionCorreo: (correo) => {
-        set({ recuperacionCorreo: correo })
+      iniciarRecuperacionCorreo: (correo, codigo = null) => {
+        set({ recuperacionCorreo: { correo, codigo } })
       },
 
       cancelarRecuperacionCorreo: () => {
