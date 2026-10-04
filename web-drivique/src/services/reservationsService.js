@@ -2,7 +2,7 @@ import { reservationService } from './reservationService'
 import { useAuthStore } from '../store/authStore'
 
 const USAR_MOCK =
-  import.meta.env.VITE_USAR_MOCK === 'true' || !import.meta.env.VITE_API_URL
+  import.meta.env.VITE_USAR_MOCK === 'true'
 
 let apiInstance = null
 
