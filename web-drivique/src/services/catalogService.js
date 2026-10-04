@@ -2,7 +2,7 @@ import { vehicleManagementService } from './vehicleManagementService'
 // Importa el archivo JSON con los vehículos de prueba (mock).
 
 const USAR_MOCK =
-  import.meta.env.VITE_USAR_MOCK === 'true' || !import.meta.env.VITE_API_URL
+  import.meta.env.VITE_USAR_MOCK === 'true'
 // Define si se usarán datos mock o API real.
 // Usa mock cuando:
 // 1. VITE_USAR_MOCK sea exactamente 'true', o
