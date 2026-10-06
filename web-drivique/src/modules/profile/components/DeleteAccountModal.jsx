@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { FaTimes, FaEye, FaEyeSlash, FaTrashAlt } from 'react-icons/fa'
 import { showAlert } from '@/utils/swalConfig'
 import { useAuthStore } from '@/store/authStore'
+import { authService } from '@/services/authService'
 
 export default function DeleteAccountModal({ isOpen, onClose, c, esModoOscuro }) {
   const { t } = useTranslation()
@@ -24,8 +25,7 @@ export default function DeleteAccountModal({ isOpen, onClose, c, esModoOscuro })
     setError('')
 
     try {
-      // Simulación de respuesta de backend
-      await new Promise(resolve => setTimeout(resolve, 800))
+      await authService.eliminarCuenta(password)
       
       onClose()
       setPassword('')
@@ -41,7 +41,11 @@ export default function DeleteAccountModal({ isOpen, onClose, c, esModoOscuro })
       logout()
       window.location.replace('/')
     } catch (err) {
-      setError(err?.message || t('perfil.deleteAccountFail', 'Error al eliminar la cuenta.'))
+      const data = err?.response?.data || {}
+      const message = err?.response?.status === 401
+        ? t('perfil.currentPasswordWrong', 'Contraseña actual incorrecta')
+        : data.detail || data.message || t('perfil.deleteAccountFail', 'Error al eliminar la cuenta.')
+      setError(message)
     } finally {
       setCargando(false)
     }
