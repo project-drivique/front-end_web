@@ -179,20 +179,35 @@ export const catalogService = {
     // Devuelve la lista según el formato de respuesta.
   },
 
-  toggleFavorito: async (vehiculoId) => {
-    // Marca o desmarca un vehículo como favorito.
-
-    if (USAR_MOCK) return { vehiculoId, favorito: true }
-    // En mock, solo simula una respuesta positiva.
-    // Ojo: aquí siempre devuelve favorito: true, no alterna realmente.
-
+  getCiudades: async () => {
     const api = await getApi()
-    // Si usa backend real, obtiene la API.
+    const { data } = await api.get('/cities')
+    return Array.isArray(data) ? data : []
+  },
 
-    const { data } = await api.post(`/vehiculos/${vehiculoId}/favorito`)
-    // Hace POST para marcar/desmarcar favorito en el backend.
+  getSedes: async (ciudadId) => {
+    const api = await getApi()
+    const url = ciudadId ? `/cities/${ciudadId}/branches` : '/branches'
+    const { data } = await api.get(url)
+    return Array.isArray(data) ? data : []
+  },
 
+  getCategorias: async () => {
+    const api = await getApi()
+    const { data } = await api.get('/vehicle-categories')
+    return Array.isArray(data) ? data : []
+  },
+
+  getCaracteristicas: async (vehiculoId) => {
+    const api = await getApi()
+    const { data } = await api.get(`/vehicles/${vehiculoId}/features`)
+    return Array.isArray(data) ? data : []
+  },
+
+  toggleFavorito: async (vehiculoId) => {
+    if (USAR_MOCK) return { vehiculoId, favorito: true }
+    const api = await getApi()
+    const { data } = await api.post(`/v1/users/me/favorites/${vehiculoId}`)
     return data
-    // Devuelve la respuesta del backend.
   },
 }
