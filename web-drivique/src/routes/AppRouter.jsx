@@ -112,15 +112,47 @@ function RutaPorRol({ children, roles }) {
   if (!hydrated) return null
   const esValido = isValidAuthToken(token)
   if (!esValido) return <Navigate to="/login" replace />
-  const isMatch = roles.some(
-    (r) =>
-      r === usuario?.rol ||
-      (r === ROLES.BRANCH_MANAGER && (usuario?.rol === 'encargado_sucursal' || usuario?.rol === 'encargado' || usuario?.rol === 'branch_manager')) ||
-      (r === ROLES.ADMIN && (usuario?.rol === 'administrador' || usuario?.rol === 'admin'))
-  )
-  return isMatch && hasValidRoleAccess(usuario)
-    ? children
-    : <Navigate to="/login" replace />
+  if (!hasValidRoleAccess(usuario)) return <Navigate to="/login" replace />
+
+  const userRoles = Array.isArray(usuario?.roles) && usuario.roles.length > 0
+    ? usuario.roles.map((r) => String(r).toUpperCase())
+    : [String(usuario?.rol || '').toUpperCase()]
+
+  const isMatch = roles.some((r) => {
+    const roleUpper = String(r).toUpperCase()
+    if (roleUpper === 'ADMIN' || roleUpper === 'SUPER_ADMIN' || r === ROLES.ADMIN || r === ROLES.SUPER_ADMIN) {
+      return (
+        userRoles.includes('SUPER_ADMIN') ||
+        userRoles.includes('ADMIN') ||
+        usuario?.rol === 'administrador' ||
+        usuario?.rol === 'admin'
+      )
+    }
+    if (
+      roleUpper === 'BRANCH_MANAGER' ||
+      roleUpper === 'BRANCH_ADMIN' ||
+      roleUpper === 'EMPLOYEE' ||
+      r === ROLES.BRANCH_MANAGER ||
+      r === ROLES.BRANCH_ADMIN ||
+      r === ROLES.EMPLOYEE
+    ) {
+      return (
+        userRoles.includes('BRANCH_ADMIN') ||
+        userRoles.includes('EMPLOYEE') ||
+        userRoles.includes('BRANCH_MANAGER') ||
+        userRoles.includes('SUPER_ADMIN') ||
+        userRoles.includes('ADMIN') ||
+        usuario?.rol === 'encargado_sucursal' ||
+        usuario?.rol === 'encargado' ||
+        usuario?.rol === 'branch_manager' ||
+        usuario?.rol === 'administrador' ||
+        usuario?.rol === 'admin'
+      )
+    }
+    return userRoles.includes(roleUpper) || usuario?.rol === r
+  })
+
+  return isMatch ? children : <Navigate to="/login" replace />
 }
 
 function Ruta2FA({ children }) {
