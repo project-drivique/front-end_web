@@ -9,6 +9,7 @@ import { coloresLogin, loginTokens } from '../styles/loginStyles'
 import SpinnerButton from '../components/SpinnerButton'
 import AlertModal from '../../catalog/components/AlertModal'
 import AuthHeaderControls from '../components/AuthHeaderControls'
+import OAuthConsentModal from '../components/OAuthConsentModal'
 import { getRoleHome } from '../utils/accessControl'
 import { useBrand } from '@/contexts/BrandContext'
 import logocatalog from '@/assets/logocatalog.png'
@@ -57,6 +58,7 @@ export default function LoginPage() {
   const {
     cargandoGoogle, cargandoFacebook, errorSocial,
     proveedorExito, iniciarGoogle, iniciarFacebook,
+    modalConsentimiento, cerrarConsentimiento, confirmarConsentimiento,
   } = useSocialRegistration({ onExito: (_, data) => {
     const rol = data?.usuario?.rol
     navigate(getRoleHome(rol))
@@ -401,6 +403,14 @@ export default function LoginPage() {
           showCloseButton
         />
       )}
+
+      <OAuthConsentModal
+        visible={modalConsentimiento.visible}
+        provider={modalConsentimiento.provider}
+        onConfirm={confirmarConsentimiento}
+        onClose={cerrarConsentimiento}
+        esModoOscuro={esModoOscuro}
+      />
 
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }

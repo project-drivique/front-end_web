@@ -14,6 +14,7 @@ import {
   FaCheck,
 } from 'react-icons/fa'
 import AuthHeaderControls from '../components/AuthHeaderControls'
+import OAuthConsentModal from '../components/OAuthConsentModal'
 import { getRoleHome } from '../utils/accessControl'
 
 const COLOR_MARCA = 'var(--brand-secondary)'
@@ -362,6 +363,7 @@ export default function RegistroPage() {
   const {
     cargandoGoogle, cargandoFacebook, errorSocial,
     proveedorExito, iniciarGoogle, iniciarFacebook,
+    modalConsentimiento, cerrarConsentimiento, confirmarConsentimiento,
   } = useSocialRegistration({
     onExito: (_, data) => {
       exitoRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
@@ -455,6 +457,14 @@ export default function RegistroPage() {
           }}
         />
       )}
+
+      <OAuthConsentModal
+        visible={modalConsentimiento.visible}
+        provider={modalConsentimiento.provider}
+        onConfirm={confirmarConsentimiento}
+        onClose={cerrarConsentimiento}
+        esModoOscuro={esModoOscuro}
+      />
 
       <div style={{
         minHeight: '112vh',

@@ -368,7 +368,23 @@ export const authService = {
           emailVerificado: true,
         }
         mockUsersStorage.registrar(usuario)
+      } else {
+        if (payload?.firstName) usuario.nombre = payload.firstName
+        if (payload?.lastName) usuario.apellido = payload.lastName
       }
+
+      accessAuditService.record({
+        correo: usuario.correo,
+        rol: usuario.rol,
+        resultado: 'exitoso',
+        actor: `${usuario.nombre} ${usuario.apellido}`.trim() || usuario.correo,
+        sucursal: 'Web / Portal Clientes',
+        tipo: 'AUTENTICACION',
+        modulo: 'OAuth 2.0 / Social Login',
+        accion: `Inicio de sesión con ${provider === 'FACEBOOK' ? 'Facebook' : 'Google'}`,
+        motivo: 'Autenticación social exitosa (PKCE + OIDC)',
+      })
+
       return {
         token: generateMockToken(),
         accessToken: generateMockToken(),
