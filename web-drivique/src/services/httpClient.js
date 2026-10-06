@@ -16,9 +16,10 @@ export const api = axios.create({
   headers: { 'Content-Type': 'application/json' },
 })
 
-export function setSessionTokens({ accessToken, refreshToken }) {
+export function setSessionTokens({ accessToken, refreshToken, userProfile }) {
   if (accessToken) useAuthStore.setState({ token: accessToken })
   if (refreshToken) sessionStorage.setItem(REFRESH_TOKEN_KEY, refreshToken)
+  if (userProfile) useAuthStore.getState().actualizarUsuario(userProfile)
 }
 
 export function clearSessionTokens() {
