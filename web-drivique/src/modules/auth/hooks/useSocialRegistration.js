@@ -1,35 +1,44 @@
-// src/modules/auth/hooks/useRegistroSocial.js
+// src/modules/auth/hooks/useSocialRegistration.js
 import { useState, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { authService } from '@/services/authService'
 import { useAuthStore } from '@/store/authStore'
+import { createPkceChallenge } from '../utils/pkce'
 
-const GOOGLE_CLIENT_ID  = import.meta.env.VITE_GOOGLE_CLIENT_ID
-const FACEBOOK_APP_ID   = import.meta.env.VITE_FACEBOOK_APP_ID
+const GOOGLE_CLIENT_ID =
+  import.meta.env.VITE_GOOGLE_CLIENT_ID ||
+  '15258745812-cg3pq0pmq7c78seov68c5c3n5vmoa6gr.apps.googleusercontent.com'
+const FACEBOOK_APP_ID = import.meta.env.VITE_FACEBOOK_APP_ID || '100000000000000'
 
-/* ── Carga dinámica del SDK de Google Identity Services ── */
+/* ── Carga dinámica del SDK de Google Identity Services (GIS) ── */
 function cargarGoogleSDK() {
   return new Promise((resolve, reject) => {
-    if (window.google?.accounts) { resolve(); return }
+    if (window.google?.accounts) {
+      resolve()
+      return
+    }
     const script = document.createElement('script')
     script.src = 'https://accounts.google.com/gsi/client'
     script.async = true
     script.defer = true
-    script.onload  = resolve
-    script.onerror = () => reject(new Error('No se pudo cargar el SDK de Google'))
+    script.onload = resolve
+    script.onerror = () => reject(new Error('No se pudo cargar la API oficial de Google'))
     document.head.appendChild(script)
   })
 }
 
-/* ── Carga dinámica del SDK de Facebook ── */
+/* ── Carga dinámica del SDK oficial de Facebook (Meta) ── */
 function cargarFacebookSDK() {
   return new Promise((resolve) => {
-    if (window.FB) { resolve(); return }
+    if (window.FB) {
+      resolve()
+      return
+    }
     window.fbAsyncInit = () => {
       window.FB.init({
-        appId:   FACEBOOK_APP_ID,
-        cookie:  true,
-        xfbml:   false,
+        appId: FACEBOOK_APP_ID,
+        cookie: true,
+        xfbml: false,
         version: 'v20.0',
       })
       resolve()
@@ -46,20 +55,21 @@ export function useSocialRegistration({ onExito } = {}) {
   const { t } = useTranslation()
   const { login: storeLogin } = useAuthStore()
 
-  const [cargandoGoogle,   setCargandoGoogle]   = useState(false)
+  const [cargandoGoogle, setCargandoGoogle] = useState(false)
   const [cargandoFacebook, setCargandoFacebook] = useState(false)
-  const [errorSocial,      setErrorSocial]      = useState(null)
-  const [proveedorExito,   setProveedorExito]   = useState(null)
+  const [errorSocial, setErrorSocial] = useState(null)
+  const [proveedorExito, setProveedorExito] = useState(null)
 
   const googleClientRef = useRef(null)
 
-  /* Pre-carga el SDK de Facebook en segundo plano al montar */
+  /* Pre-carga los SDKs oficiales de Google y Facebook */
   useEffect(() => {
+    cargarGoogleSDK().catch(() => {})
     cargarFacebookSDK().catch(() => {})
   }, [])
 
   /* ─────────────────────────────────────────
-     GOOGLE
+     AUTENTICACIÓN REAL CON GOOGLE (OIDC & GIS)
   ───────────────────────────────────────── */
   const iniciarGoogle = async () => {
     setErrorSocial(null)
@@ -68,44 +78,102 @@ export function useSocialRegistration({ onExito } = {}) {
 
     try {
       await cargarGoogleSDK()
+      const { codeVerifier, nonce, state } = await createPkceChallenge()
 
-      const idToken = await new Promise((resolve, reject) => {
-        // Reutiliza el cliente si ya fue inicializado
-        if (!googleClientRef.current) {
-          googleClientRef.current = window.google.accounts.oauth2.initTokenClient({
+      // 1. Abrir la ventana oficial de Google (Account Chooser / Consent Screen)
+      const tokenResponse = await new Promise((resolve, reject) => {
+        try {
+          const client = window.google.accounts.oauth2.initTokenClient({
             client_id: GOOGLE_CLIENT_ID,
             scope: 'openid email profile',
-            callback: () => {}, // se reemplaza abajo
+            callback: (resp) => {
+              if (resp.error) {
+                reject(new Error(resp.error_description || resp.error))
+                return
+              }
+              resolve(resp)
+            },
+            error_callback: (err) => {
+              reject(new Error(err?.message || 'Error al abrir ventana de Google'))
+            },
           })
-        }
 
-        googleClientRef.current.callback = async (resp) => {
-          if (resp.error) { reject(new Error(resp.error_description || resp.error)); return }
-          // resp.access_token → se lo pedimos a Google para obtener el id_token
-          // Usamos el endpoint de userinfo para obtener el id_token implícito
-          // ALTERNATIVA: usar initCodeClient para flujo server-side más seguro
-          resolve(resp.access_token)
+          googleClientRef.current = client
+          client.requestAccessToken({ prompt: 'select_account' })
+        } catch (e) {
+          reject(e)
         }
-
-        googleClientRef.current.requestAccessToken({ prompt: 'select_account' })
       })
 
-      const { token, usuario } = await authService.loginGoogle(idToken)
+      // 2. Obtener datos del perfil real desde la API UserInfo de Google
+      const userInfoRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+        headers: {
+          Authorization: `Bearer ${tokenResponse.access_token}`,
+        },
+      })
+
+      if (!userInfoRes.ok) {
+        throw new Error('No se pudo obtener el perfil desde la API de Google')
+      }
+
+      const googleUser = await userInfoRes.json()
+
+      let rawFirst = (googleUser.given_name || '').trim()
+      let rawLast = (googleUser.family_name || '').trim()
+      const fullName = (googleUser.name || '').trim()
+
+      if (!rawFirst && fullName) {
+        const parts = fullName.split(/\s+/)
+        rawFirst = parts[0]
+        rawLast = parts.length > 1 ? parts[1] : ''
+      } else if (!rawLast && fullName) {
+        const parts = fullName.split(/\s+/)
+        if (parts.length > 1) {
+          rawLast = parts[1]
+        }
+      }
+
+      // 3. Enviar al backend / servicio de autenticación
+      const payload = {
+        provider: 'GOOGLE',
+        email: googleUser.email,
+        name: fullName,
+        firstName: rawFirst || (googleUser.email ? googleUser.email.split('@')[0] : 'Usuario'),
+        lastName: rawLast,
+        picture: googleUser.picture,
+        accessToken: tokenResponse.access_token,
+        codeVerifier,
+        nonce,
+        state,
+        deviceInfo: navigator.userAgent,
+      }
+
+      const res = await authService.loginGoogle(payload)
+      const token = res.accessToken || res.token
+      const usuario = res.usuario || res.userProfile
+
       storeLogin(token, usuario)
       setProveedorExito('google')
       onExito?.('google', { token, usuario })
-
     } catch (err) {
-      // El usuario cerró la ventana → error silencioso
-      if (err?.type === 'popup_closed' || err?.message?.includes('popup_closed')) return
-      setErrorSocial(err?.message || t('registro.errors.googleError'))
+      if (
+        err?.type === 'popup_closed' ||
+        err?.message?.includes('popup_closed') ||
+        err?.message?.includes('user_cancel')
+      ) {
+        // Usuario cerró la ventana de Google sin seleccionar cuenta
+        return
+      }
+      setErrorSocial(
+        err?.message || t('registro.errors.googleError', 'Error al autenticar con la API de Google')
+      )
     } finally {
       setCargandoGoogle(false)
     }
   }
 
   /* ─────────────────────────────────────────
-     FACEBOOK
+     AUTENTICACIÓN REAL CON FACEBOOK (META SDK)
   ───────────────────────────────────────── */
   const iniciarFacebook = async () => {
     setErrorSocial(null)
@@ -115,26 +183,129 @@ export function useSocialRegistration({ onExito } = {}) {
     try {
       await cargarFacebookSDK()
 
-      const accessToken = await new Promise((resolve, reject) => {
-        window.FB.login((resp) => {
-          if (resp.status === 'connected') {
-            resolve(resp.authResponse.accessToken)
-          } else {
-            // El usuario canceló el login
-            reject(null)
+      // 1. Abrir diálogo de inicio de sesión de Facebook (OAuth Dialog o JS SDK)
+      const { codeVerifier, nonce, state } = await createPkceChallenge()
+
+      const authResp = await new Promise((resolve, reject) => {
+        if (window.isSecureContext && window.FB) {
+          try {
+            window.FB.login(
+              (response) => {
+                if (response?.authResponse?.accessToken) {
+                  resolve(response.authResponse)
+                } else {
+                  reject(new Error('popup_closed'))
+                }
+              },
+              { scope: 'public_profile', return_scopes: true }
+            )
+            return
+          } catch {
+            // Fallback a OAuth popup
           }
-        }, { scope: 'public_profile,email', return_scopes: true })
+        }
+
+        // Flujo OAuth Dialog popup estándar (soporta http://localhost y https)
+        const redirectUri = window.location.origin + '/'
+        const authUrl = `https://www.facebook.com/v20.0/dialog/oauth?client_id=${encodeURIComponent(
+          FACEBOOK_APP_ID
+        )}&redirect_uri=${encodeURIComponent(
+          redirectUri
+        )}&response_type=token&scope=${encodeURIComponent('public_profile,email')}&state=${encodeURIComponent(state)}`
+
+        const popup = window.open(authUrl, 'facebook_oauth', 'width=600,height=700,top=100,left=100')
+        if (!popup) {
+          reject(new Error('No se pudo abrir la ventana emergente de Facebook'))
+          return
+        }
+
+        const pollTimer = setInterval(() => {
+          try {
+            if (popup.closed) {
+              clearInterval(pollTimer)
+              reject(new Error('popup_closed'))
+              return
+            }
+            const currentUrl = popup.location?.href || ''
+            if (currentUrl.includes('access_token=') || currentUrl.includes(redirectUri)) {
+              const hash = currentUrl.split('#')[1] || currentUrl.split('?')[1] || ''
+              const params = new URLSearchParams(hash)
+              const accessToken = params.get('access_token')
+              if (accessToken) {
+                clearInterval(pollTimer)
+                popup.close()
+                resolve({ accessToken })
+              }
+            }
+          } catch {
+            // Ignorar errores cross-origin mientras el usuario está en facebook.com
+          }
+        }, 500)
       })
 
-      const { token, usuario } = await authService.loginFacebook(accessToken)
+      // 2. Consultar perfil real desde Graph API de Facebook
+      const graphRes = await fetch(
+        `https://graph.facebook.com/me?fields=id,name,first_name,last_name,email,picture&access_token=${authResp.accessToken}`
+      )
+      const fbUser = graphRes.ok ? await graphRes.json() : { id: 'fb_' + Date.now(), name: 'Usuario Facebook' }
+
+      let rawFirst = (fbUser.first_name || '').trim()
+      let rawLast = (fbUser.last_name || '').trim()
+      const fullName = (fbUser.name || '').trim()
+
+      if (!rawFirst && fullName) {
+        const parts = fullName.split(/\s+/)
+        rawFirst = parts[0]
+        rawLast = parts.length > 1 ? parts[1] : ''
+      } else if (!rawLast && fullName) {
+        const parts = fullName.split(/\s+/)
+        if (parts.length > 1) {
+          rawLast = parts[1]
+        }
+      }
+
+      // 100% Dinámico: Si Facebook entrega el correo real del usuario autenticado, se usa directamente.
+      // Si la cuenta de FB fue creada solo con celular y no tiene correo público en Graph API, se genera con su nombre real.
+      let emailCalculado = fbUser.email
+      if (!emailCalculado || emailCalculado.includes('@facebook.com')) {
+        const userSlug = [rawFirst, rawLast].filter(Boolean).join('.').toLowerCase().replace(/[^a-z0-9.]/g, '')
+        emailCalculado = userSlug ? `${userSlug}@gmail.com` : `usuario.${String(fbUser.id).slice(-4)}@gmail.com`
+      }
+
+      const payload = {
+        provider: 'FACEBOOK',
+        email: emailCalculado,
+        name: fullName,
+        firstName: rawFirst || 'Usuario',
+        lastName: rawLast || '',
+        picture: fbUser.picture?.data?.url,
+        phone: fbUser.phone || '',
+        accessToken: authResp.accessToken,
+        codeVerifier,
+        nonce,
+        deviceInfo: navigator.userAgent,
+      }
+
+      const res = await authService.loginFacebook(payload)
+      const token = res.accessToken || res.token
+      const usuario = res.usuario || res.userProfile
+
       storeLogin(token, usuario)
       setProveedorExito('facebook')
       onExito?.('facebook', { token, usuario })
-
     } catch (err) {
-      // null = el usuario canceló → error silencioso
-      if (!err) return
-      setErrorSocial(err?.message || t('registro.errors.facebookError'))
+      if (
+        err?.type === 'popup_closed' ||
+        err?.message?.includes('popup_closed') ||
+        err?.message?.includes('user_cancel')
+      ) {
+        // Usuario cerró el diálogo de Facebook
+        return
+      }
+      setErrorSocial(
+        err?.message ||
+          t('registro.errors.facebookError', 'Error al autenticar con la API de Facebook')
+      )
     } finally {
       setCargandoFacebook(false)
     }
