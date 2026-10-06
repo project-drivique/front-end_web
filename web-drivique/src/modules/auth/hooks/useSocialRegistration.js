@@ -5,10 +5,12 @@ import { authService } from '@/services/authService'
 import { useAuthStore } from '@/store/authStore'
 import { createPkceChallenge } from '../utils/pkce'
 
-const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID
-const FACEBOOK_APP_ID = import.meta.env.VITE_FACEBOOK_APP_ID
+const GOOGLE_CLIENT_ID =
+  import.meta.env.VITE_GOOGLE_CLIENT_ID ||
+  '15258745812-cg3pq0pmq7c78seov68c5c3n5vmoa6gr.apps.googleusercontent.com'
+const FACEBOOK_APP_ID = import.meta.env.VITE_FACEBOOK_APP_ID || '100000000000000'
 
-/* ── Carga dinámica del SDK de Google Identity Services ── */
+/* ── Carga dinámica del SDK de Google Identity Services (GIS) ── */
 function cargarGoogleSDK() {
   return new Promise((resolve, reject) => {
     if (window.google?.accounts) {
@@ -20,12 +22,12 @@ function cargarGoogleSDK() {
     script.async = true
     script.defer = true
     script.onload = resolve
-    script.onerror = () => reject(new Error('No se pudo cargar el SDK de Google'))
+    script.onerror = () => reject(new Error('No se pudo cargar la API oficial de Google'))
     document.head.appendChild(script)
   })
 }
 
-/* ── Carga dinámica del SDK de Facebook ── */
+/* ── Carga dinámica del SDK oficial de Facebook (Meta) ── */
 function cargarFacebookSDK() {
   return new Promise((resolve) => {
     if (window.FB) {
@@ -34,7 +36,7 @@ function cargarFacebookSDK() {
     }
     window.fbAsyncInit = () => {
       window.FB.init({
-        appId: FACEBOOK_APP_ID || '100000000000000',
+        appId: FACEBOOK_APP_ID,
         cookie: true,
         xfbml: false,
         version: 'v20.0',
@@ -58,194 +60,183 @@ export function useSocialRegistration({ onExito } = {}) {
   const [errorSocial, setErrorSocial] = useState(null)
   const [proveedorExito, setProveedorExito] = useState(null)
 
-  // Estado del modal de consentimiento/cuenta interactiva
-  const [modalConsentimiento, setModalConsentimiento] = useState({
-    visible: false,
-    provider: 'GOOGLE',
-  })
-
   const googleClientRef = useRef(null)
 
-  /* Pre-carga el SDK de Facebook en segundo plano al montar */
+  /* Pre-carga los SDKs oficiales de Google y Facebook */
   useEffect(() => {
-    if (FACEBOOK_APP_ID) {
-      cargarFacebookSDK().catch(() => {})
-    }
+    cargarGoogleSDK().catch(() => {})
+    cargarFacebookSDK().catch(() => {})
   }, [])
 
   /* ─────────────────────────────────────────
-     PROCESAR LOGIN SOCIAL CON DATOS REALES
-  ───────────────────────────────────────── */
-  const procesarLoginSocial = async ({ provider, email, firstName, lastName, tokenPayload }) => {
-    try {
-      const { codeVerifier, nonce } = await createPkceChallenge()
-
-      const payload = {
-        provider: provider.toUpperCase(),
-        email: email,
-        firstName: firstName,
-        lastName: lastName,
-        codeVerifier,
-        nonce,
-        deviceInfo: navigator.userAgent,
-        ...tokenPayload,
-      }
-
-      const res = await authService.socialLogin(payload)
-      const token = res.accessToken || res.token
-      const usuario = res.usuario || res.userProfile
-
-      storeLogin(token, usuario)
-      setProveedorExito(provider.toLowerCase())
-      onExito?.(provider.toLowerCase(), { token, usuario })
-      return true
-    } catch (err) {
-      const msg = err?.message || t('registro.errors.socialError', 'Error al procesar el inicio de sesión social')
-      setErrorSocial(msg)
-      return false
-    }
-  }
-
-  /* ─────────────────────────────────────────
-     GOOGLE (PKCE & OIDC / GIS)
+     AUTENTICACIÓN REAL CON GOOGLE (OIDC & GIS)
   ───────────────────────────────────────── */
   const iniciarGoogle = async () => {
     setErrorSocial(null)
     setProveedorExito(null)
+    setCargandoGoogle(true)
 
-    if (GOOGLE_CLIENT_ID && GOOGLE_CLIENT_ID !== 'TU_GOOGLE_CLIENT_ID') {
-      setCargandoGoogle(true)
-      try {
-        const { codeVerifier, nonce, state } = await createPkceChallenge()
-        await cargarGoogleSDK()
+    try {
+      await cargarGoogleSDK()
+      const { codeVerifier, nonce, state } = await createPkceChallenge()
 
-        const tokenResp = await new Promise((resolve, reject) => {
-          if (!googleClientRef.current) {
-            googleClientRef.current = window.google.accounts.oauth2.initTokenClient({
-              client_id: GOOGLE_CLIENT_ID,
-              scope: 'openid email profile',
-              callback: () => {},
-            })
-          }
+      // 1. Abrir la ventana oficial de Google (Account Chooser / Consent Screen)
+      const tokenResponse = await new Promise((resolve, reject) => {
+        try {
+          const client = window.google.accounts.oauth2.initTokenClient({
+            client_id: GOOGLE_CLIENT_ID,
+            scope: 'openid email profile',
+            callback: (resp) => {
+              if (resp.error) {
+                reject(new Error(resp.error_description || resp.error))
+                return
+              }
+              resolve(resp)
+            },
+            error_callback: (err) => {
+              reject(new Error(err?.message || 'Error al abrir ventana de Google'))
+            },
+          })
 
-          googleClientRef.current.callback = (resp) => {
-            if (resp.error) {
-              reject(new Error(resp.error_description || resp.error))
-              return
-            }
-            resolve(resp)
-          }
-
-          googleClientRef.current.requestAccessToken({ prompt: 'select_account' })
-        })
-
-        // Consultar perfil real del usuario desde Google OAuth2 UserInfo
-        const userinfoRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-          headers: { Authorization: `Bearer ${tokenResp.access_token}` },
-        })
-        const googleProfile = await userinfoRes.json()
-
-        await procesarLoginSocial({
-          provider: 'GOOGLE',
-          email: googleProfile.email,
-          firstName: googleProfile.given_name || googleProfile.name || 'Usuario',
-          lastName: googleProfile.family_name || '',
-          tokenPayload: {
-            accessToken: tokenResp.access_token,
-            codeVerifier,
-            nonce,
-            state,
-          },
-        })
-      } catch (err) {
-        if (err?.type === 'popup_closed' || err?.message?.includes('popup_closed')) {
-          setCargandoGoogle(false)
-          return
+          googleClientRef.current = client
+          client.requestAccessToken({ prompt: 'select_account' })
+        } catch (e) {
+          reject(e)
         }
-        // Si falla GIS, permitir seleccionar su cuenta mediante el diálogo de consentimiento
-        setModalConsentimiento({ visible: true, provider: 'GOOGLE' })
-      } finally {
-        setCargandoGoogle(false)
+      })
+
+      // 2. Obtener datos del perfil real desde la API UserInfo de Google
+      const userInfoRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+        headers: {
+          Authorization: `Bearer ${tokenResponse.access_token}`,
+        },
+      })
+
+      if (!userInfoRes.ok) {
+        throw new Error('No se pudo obtener el perfil desde la API de Google')
       }
-    } else {
-      // Abre el diálogo interactivo de consentimiento para que el usuario ingrese su cuenta real
-      setModalConsentimiento({ visible: true, provider: 'GOOGLE' })
+
+      const googleUser = await userInfoRes.json()
+
+      // 3. Enviar al backend / servicio de autenticación
+      const payload = {
+        provider: 'GOOGLE',
+        email: googleUser.email,
+        firstName: googleUser.given_name || googleUser.name || 'Usuario',
+        lastName: googleUser.family_name || '',
+        picture: googleUser.picture,
+        accessToken: tokenResponse.access_token,
+        codeVerifier,
+        nonce,
+        state,
+        deviceInfo: navigator.userAgent,
+      }
+
+      const res = await authService.loginGoogle(payload)
+      const token = res.accessToken || res.token
+      const usuario = res.usuario || res.userProfile
+
+      storeLogin(token, usuario)
+      setProveedorExito('google')
+      onExito?.('google', { token, usuario })
+    } catch (err) {
+      if (
+        err?.type === 'popup_closed' ||
+        err?.message?.includes('popup_closed') ||
+        err?.message?.includes('user_cancel')
+      ) {
+        // Usuario cerró la ventana de Google sin seleccionar cuenta
+        return
+      }
+      setErrorSocial(
+        err?.message || t('registro.errors.googleError', 'Error al autenticar con la API de Google')
+      )
+    } finally {
+      setCargandoGoogle(false)
     }
   }
 
   /* ─────────────────────────────────────────
-     FACEBOOK (SDK / DIALOG)
+     AUTENTICACIÓN REAL CON FACEBOOK (META SDK)
   ───────────────────────────────────────── */
   const iniciarFacebook = async () => {
     setErrorSocial(null)
     setProveedorExito(null)
-
-    if (FACEBOOK_APP_ID && FACEBOOK_APP_ID !== 'TU_FACEBOOK_APP_ID' && window.FB) {
-      setCargandoFacebook(true)
-      try {
-        await cargarFacebookSDK()
-
-        const authResp = await new Promise((resolve, reject) => {
-          window.FB.login(
-            (resp) => {
-              if (resp.status === 'connected') {
-                resolve(resp.authResponse)
-              } else {
-                reject(new Error('Inicio de sesión con Facebook cancelado'))
-              }
-            },
-            { scope: 'public_profile,email', return_scopes: true }
-          )
-        })
-
-        const fbProfile = await new Promise((resolve) => {
-          window.FB.api('/me', { fields: 'id,name,first_name,last_name,email,picture' }, (res) => resolve(res))
-        })
-
-        await procesarLoginSocial({
-          provider: 'FACEBOOK',
-          email: fbProfile.email || `${fbProfile.id}@facebook.com`,
-          firstName: fbProfile.first_name || fbProfile.name || 'Usuario',
-          lastName: fbProfile.last_name || '',
-          tokenPayload: {
-            accessToken: authResp.accessToken,
-          },
-        })
-      } catch (err) {
-        if (!err) {
-          setCargandoFacebook(false)
-          return
-        }
-        setModalConsentimiento({ visible: true, provider: 'FACEBOOK' })
-      } finally {
-        setCargandoFacebook(false)
-      }
-    } else {
-      // Abre el diálogo interactivo de consentimiento para que el usuario ingrese su cuenta real
-      setModalConsentimiento({ visible: true, provider: 'FACEBOOK' })
-    }
-  }
-
-  const cerrarConsentimiento = () => {
-    setModalConsentimiento({ visible: false, provider: 'GOOGLE' })
-  }
-
-  const confirmarConsentimiento = async (datos) => {
-    cerrarConsentimiento()
-    const isGoogle = datos.provider === 'GOOGLE'
-    if (isGoogle) setCargandoGoogle(true)
-    else setCargandoFacebook(true)
+    setCargandoFacebook(true)
 
     try {
-      await procesarLoginSocial({
-        provider: datos.provider,
-        email: datos.email,
-        firstName: datos.firstName,
-        lastName: datos.lastName,
+      await cargarFacebookSDK()
+
+      // 1. Abrir el diálogo oficial de inicio de sesión de Facebook
+      const authResp = await new Promise((resolve, reject) => {
+        if (!window.FB) {
+          reject(new Error('El SDK oficial de Facebook no está disponible en este navegador'))
+          return
+        }
+
+        window.FB.login(
+          (response) => {
+            if (response.authResponse) {
+              resolve(response.authResponse)
+            } else {
+              reject(new Error('popup_closed'))
+            }
+          },
+          { scope: 'public_profile,email', return_scopes: true }
+        )
       })
+
+      // 2. Consultar perfil real desde Graph API de Facebook
+      const fbUser = await new Promise((resolve, reject) => {
+        window.FB.api(
+          '/me',
+          { fields: 'id,name,first_name,last_name,email,picture' },
+          (response) => {
+            if (response.error) {
+              reject(new Error(response.error.message))
+            } else {
+              resolve(response)
+            }
+          }
+        )
+      })
+
+      const { codeVerifier, nonce } = await createPkceChallenge()
+
+      const payload = {
+        provider: 'FACEBOOK',
+        email: fbUser.email || `${fbUser.id}@facebook.com`,
+        firstName: fbUser.first_name || fbUser.name || 'Usuario',
+        lastName: fbUser.last_name || '',
+        picture: fbUser.picture?.data?.url,
+        accessToken: authResp.accessToken,
+        codeVerifier,
+        nonce,
+        deviceInfo: navigator.userAgent,
+      }
+
+      const res = await authService.loginFacebook(payload)
+      const token = res.accessToken || res.token
+      const usuario = res.usuario || res.userProfile
+
+      storeLogin(token, usuario)
+      setProveedorExito('facebook')
+      onExito?.('facebook', { token, usuario })
+    } catch (err) {
+      if (
+        err?.type === 'popup_closed' ||
+        err?.message?.includes('popup_closed') ||
+        err?.message?.includes('user_cancel')
+      ) {
+        // Usuario cerró el diálogo de Facebook
+        return
+      }
+      setErrorSocial(
+        err?.message ||
+          t('registro.errors.facebookError', 'Error al autenticar con la API de Facebook')
+      )
     } finally {
-      if (isGoogle) setCargandoGoogle(false)
-      else setCargandoFacebook(false)
+      setCargandoFacebook(false)
     }
   }
 
@@ -256,8 +247,5 @@ export function useSocialRegistration({ onExito } = {}) {
     proveedorExito,
     iniciarGoogle,
     iniciarFacebook,
-    modalConsentimiento,
-    cerrarConsentimiento,
-    confirmarConsentimiento,
   }
 }
