@@ -1,427 +1,81 @@
-import axios from 'axios'
-// Importa Axios, una librería para hacer peticiones HTTP a una API.
-import { useAuthStore } from '../store/authStore'
-import { mockUsersStorage } from './mockUsersStorage'
-import { accessAuditService } from './accessAuditService'
-import { hasValidRoleAccess, PERMISSIONS, ROLES } from '../modules/auth/utils/accessControl'
-import accessConfig from '../mocks/adminAccessConfig.json'
-import branchAccounts from '../mocks/branchAccounts.json'
-// Store de Zustand: fuente de verdad del token en memoria.
+import { api, setSessionTokens } from './httpClient'
+export { api } from './httpClient'
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
-// Define la URL base de la API.
-// Primero intenta leer la variable de entorno VITE_API_URL.
-// Si no existe, usa la URL local por defecto.
+export const DURACION_CODIGO_VERIFICACION_MS = 15 * 60 * 1000
 
-const USAR_MOCK =
-  import.meta.env.VITE_USAR_MOCK === 'true' || !import.meta.env.VITE_API_URL
-// Mismo patrón que catalogoService.js / reservasService.js:
-// usa mock si VITE_USAR_MOCK es 'true' o si no hay VITE_API_URL configurada.
-
-export const api = axios.create({
-  baseURL: API_URL,
-  // Todas las peticiones hechas con esta instancia usarán esta URL base.
-
-  headers: { 'Content-Type': 'application/json' },
-  // Indica que el contenido enviado y recibido será JSON.
-})
-// Crea una instancia personalizada de Axios para reutilizar configuración.
-
-api.interceptors.request.use((config) => {
-  // Interceptor que se ejecuta antes de cada petición.
-
-  const token = useAuthStore.getState().token
-  // Lee el token directo del store (ya rehidratado, siempre el JWT plano).
-
-  if (token) config.headers.Authorization = `Bearer ${token}`
-  // Si existe token, lo agrega al header Authorization
-  // con el formato Bearer.
-
-  return config
-  // Devuelve la configuración modificada para que la petición continúe.
+const FRONTEND_ROLE_BY_BACKEND_ROLE = Object.freeze({
+  SUPER_ADMIN: 'administrador',
+  CUSTOMER: 'usuario',
+  ADMIN: 'administrador',
+  BRANCH_ADMIN: 'encargado_sucursal',
+  BRANCH_MANAGER: 'encargado_sucursal',
 })
 
-const generateMockToken = () => {
-  return 'mock_token_' + Math.random().toString(36).substring(2) + Date.now()
-}
-// Genera un token falso para simular autenticación.
-// Usa texto fijo + parte aleatoria + timestamp actual.
-
-export const DURACION_CODIGO_VERIFICACION_MS = 5 * 60 * 1000
-// Cuánto dura vigente un código de verificación de correo (5 minutos).
-// Se exporta para que el hook de verificación use el mismo valor
-// en su cuenta regresiva local, sin duplicar el número mágico.
-
-const CODIGOS_VERIFICACION_MOCK = new Map()
-// Guarda en memoria { correo -> { codigo, expiraEn } } mientras se usa el mock.
-// Al no existir backend, este Map hace las veces de "base de datos" temporal.
-
-const CODIGOS_RECUPERACION_MOCK = new Map()
-// Similar para la recuperación de contraseña.
-
-const generarCodigoMock = () => Math.floor(100000 + Math.random() * 900000).toString()
-// Genera un código numérico de 6 dígitos.
-
-const LOGIN_SECURITY_KEY = 'drivique_login_security'
-const MAX_LOGIN_ATTEMPTS = accessConfig.security.maxLoginAttempts
-const LOCK_DURATION_MS = accessConfig.security.lockDurationMinutes * 60 * 1000
-
-function readLoginSecurity() {
-  try {
-    return JSON.parse(localStorage.getItem(LOGIN_SECURITY_KEY) || '{}') || {}
-  } catch {
-    return {}
-  }
-}
-
-function getLoginSecurity(correo) {
-  const key = String(correo || '').trim().toLowerCase()
-  const all = readLoginSecurity()
-  const current = all[key] || { intentos: 0, bloqueadoHasta: 0 }
-  if (current.bloqueadoHasta && current.bloqueadoHasta <= Date.now()) {
-    delete all[key]
-    localStorage.setItem(LOGIN_SECURITY_KEY, JSON.stringify(all))
-    return { intentos: 0, bloqueadoHasta: 0 }
-  }
-  return current
-}
-
-function saveLoginFailure(correo) {
-  const key = String(correo || '').trim().toLowerCase()
-  const all = readLoginSecurity()
-  const current = getLoginSecurity(correo)
-  const intentos = current.intentos + 1
-  const bloqueadoHasta = intentos >= MAX_LOGIN_ATTEMPTS ? Date.now() + LOCK_DURATION_MS : 0
-  all[key] = { intentos: bloqueadoHasta ? 0 : intentos, bloqueadoHasta }
-  localStorage.setItem(LOGIN_SECURITY_KEY, JSON.stringify(all))
-  return { intentos, bloqueadoHasta, restantes: Math.max(0, MAX_LOGIN_ATTEMPTS - intentos) }
-}
-
-function clearLoginSecurity(correo) {
-  const key = String(correo || '').trim().toLowerCase()
-  const all = readLoginSecurity()
-  delete all[key]
-  localStorage.setItem(LOGIN_SECURITY_KEY, JSON.stringify(all))
-}
-
-function prepararUsuariosLocales() {
-  const branchManagers = branchAccounts.map((account, idx) => ({
-      correo: account.correo,
-      contrasena: account.contrasena,
-      nombre: account.nombre,
-      apellido: '',
-      rol: ROLES.BRANCH_MANAGER,
-      activo: account.activo,
-      permisos: [PERMISSIONS.BRANCH_PANEL],
-      sucursalId: account.sucursal,
-      sucursal: account.sucursal,
-      ciudad: account.ciudad,
-      telefono: account.telefono,
-      cedula: account.cedula || String(1020495800 + idx + 1),
-      emailVerificado: true,
-    }))
-
-  const migrado = mockUsersStorage.asegurarConfigurados([
-    {
-      correo: 'cliente@drivique.com',
-      contrasena: 'Cliente123*',
-      nombre: 'Carlos',
-      apellido: 'Mendoza',
-      rol: ROLES.USER, activo: true, permisos: [], telefono: '3104567890', cedula: '1075228306', fechaNacimiento: '1992-08-20',
-      nacionalidad: 'Colombia', tipoDocumento: 'CC', emailVerificado: true,
-    },
-    {
-      correo: import.meta.env.VITE_MOCK_USER_EMAIL || 'usuario@drivique.com',
-      contrasena: import.meta.env.VITE_MOCK_USER_PASSWORD || 'Usuario123*',
-      nombre: import.meta.env.VITE_MOCK_USER_NAME || 'Juan',
-      apellido: import.meta.env.VITE_MOCK_USER_LASTNAME || 'Pérez',
-      rol: ROLES.USER, activo: true, permisos: [], telefono: '3001234567', cedula: '1075228306', fechaNacimiento: '1995-05-15',
-      nacionalidad: 'Colombia', tipoDocumento: 'CC', emailVerificado: true,
-    },
-    {
-      correo: import.meta.env.VITE_MOCK_ADMIN_EMAIL || 'admin@drivique.com',
-      contrasena: import.meta.env.VITE_MOCK_ADMIN_PASSWORD || 'Admin123*',
-      nombre: import.meta.env.VITE_MOCK_ADMIN_NAME || 'Administrador General',
-      apellido: '', rol: ROLES.ADMIN, activo: true, permisos: [PERMISSIONS.ADMIN_PANEL], telefono: '3009876543', cedula: '80123456',
-      fechaNacimiento: '1990-01-01', nacionalidad: 'Colombia', tipoDocumento: 'CC', emailVerificado: true,
-    },
-    ...branchManagers,
-  ])
-  if (migrado) localStorage.removeItem(LOGIN_SECURITY_KEY)
-}
+const normalizarRol = (roles = []) => FRONTEND_ROLE_BY_BACKEND_ROLE[roles[0]] || 'usuario'
 
 export const authService = {
-  login: async ({ correo, contrasena }) => {
-    if (!USAR_MOCK) {
-      const { data } = await api.post('/auth/login', { correo, contrasena })
-      return data
-    }
-    prepararUsuariosLocales()
-    // Método asíncrono para iniciar sesión.
-
-    const usuario = mockUsersStorage.buscarPorCorreo(correo)
-    // Busca un usuario que coincida con correo y contraseña.
-    // El correo se compara en minúsculas para evitar problemas por mayúsculas/minúsculas.
-
-    const seguridad = getLoginSecurity(correo)
-    if (seguridad.bloqueadoHasta > Date.now()) {
-      accessAuditService.record({ correo, rol: usuario?.rol, resultado: 'bloqueado', motivo: 'bloqueo_temporal' })
-      const error = new Error('Cuenta bloqueada temporalmente')
-      error.response = { status: 429, data: { codigo: 'ACCOUNT_LOCKED', bloqueadoHasta: seguridad.bloqueadoHasta } }
-      throw error
-    }
-
-    if (usuario?.contrasena === contrasena) {
-      if (!hasValidRoleAccess(usuario)) {
-        accessAuditService.record({ correo, rol: usuario.rol, resultado: 'denegado', motivo: 'sin_permisos' })
-        const error = new Error('ACCESS_DENIED')
-        error.response = { status: 403, data: { codigo: 'ACCESS_DENIED' } }
-        throw error
-      }
-      clearLoginSecurity(correo)
-      accessAuditService.record({
-        correo,
-        rol: usuario.rol,
-        resultado: 'exitoso',
-        actor: usuario.nombre || correo,
-        sucursal: usuario.sucursal || usuario.sucursalId || 'Global / Sistema',
-        tipo: 'AUTENTICACION',
-        modulo: 'Seguridad / Acceso',
-        accion: 'Inicio de sesión exitoso',
-        motivo: `Acceso concedido a ${usuario.sucursal || 'panel administrativo'}`
-      })
-      return {
-        token: generateMockToken(),
-        // Devuelve un token falso si el usuario existe.
-
-        correo: usuario.correo,
-        nombre: usuario.nombre,
-        apellido: usuario.apellido,
-        rol: usuario.rol,
-        activo: usuario.activo,
-        permisos: usuario.permisos,
-        sucursalId: usuario.sucursalId,
-        telefono: usuario.telefono,
-        cedula: usuario.cedula,
-        fechaNacimiento: usuario.fechaNacimiento,
-        emailVerificado: usuario.emailVerificado ?? false,
-        requiere2FA: false,
-        // Devuelve los datos del usuario y una bandera que indica que no requiere 2FA.
-      }
-    }
-
-    const fallo = saveLoginFailure(correo)
-    accessAuditService.record({ correo, rol: usuario?.rol, resultado: 'fallido', motivo: 'credenciales_incorrectas' })
-    const error = new Error('Credenciales incorrectas')
-    // Crea un error si no encuentra coincidencia.
-
-    error.response = {
-      status: fallo.bloqueadoHasta ? 429 : 401,
-      data: {
-        codigo: fallo.bloqueadoHasta ? 'ACCOUNT_LOCKED' : 'INVALID_CREDENTIALS',
-        restantes: fallo.restantes,
-        bloqueadoHasta: fallo.bloqueadoHasta || undefined,
-      },
-    }
-    // Simula un error HTTP 401 Unauthorized.
-
-    throw error
-    // Lanza el error para que lo maneje la interfaz.
-  },
-
-  registro: async (datosUsuario) => {
-    if (!USAR_MOCK) {
-      const { data } = await api.post('/auth/registro', datosUsuario)
-      return data
-    }
-    prepararUsuariosLocales()
-    const existente = mockUsersStorage.buscarPorCorreo(datosUsuario.correo)
-
-    if (existente) {
-      const error = new Error('El correo electrónico ya está registrado')
-      error.response = { status: 400 }
-      throw error
-    }
-
-    const usuario = {
-      correo: datosUsuario.correo,
-      contrasena: datosUsuario.contrasena,
-      nombre: '',
-      apellido: '',
-      nacionalidad: '',
-      tipoDocumento: '',
-      rol: ROLES.USER,
-      activo: true,
-      permisos: [],
-      telefono: '',
-      cedula: '',
-      fechaNacimiento: '',
-      emailVerificado: true,
-    }
-    mockUsersStorage.registrar(usuario)
-
+  async login({ correo, contrasena }) {
+    const { data } = await api.post('/auth/login', { email: correo, password: contrasena, deviceInfo: navigator.userAgent })
+    setSessionTokens(data)
+    const profile = data.userProfile || {}
     return {
-      token: generateMockToken(),
-      correo: usuario.correo,
-      nombre: usuario.nombre,
-      apellido: usuario.apellido,
-      nacionalidad: usuario.nacionalidad,
-      tipoDocumento: usuario.tipoDocumento,
-      rol: usuario.rol,
-      telefono: usuario.telefono,
-      cedula: usuario.cedula,
-      fechaNacimiento: usuario.fechaNacimiento,
-      emailVerificado: usuario.emailVerificado ?? true,
+      token: data.accessToken,
+      correo: profile.email,
+      nombre: profile.firstName,
+      apellido: profile.lastName,
+      telefono: profile.phone,
+      rol: normalizarRol(profile.roles),
+      roles: profile.roles || [],
+      activo: profile.accountStatus === 'ACTIVE',
     }
   },
 
-  solicitarRecuperacion: async (correo) => {
-    if (USAR_MOCK) {
-      const usuario = mockUsersStorage.buscarPorCorreo(correo)
-      if (!usuario) {
-        const error = new Error('Este correo no está registrado en la plataforma.')
-        error.response = { status: 404, data: { mensaje: error.message } }
-        throw error
-      }
-      const codigo = generarCodigoMock()
-      CODIGOS_RECUPERACION_MOCK.set(correo, {
-        codigo,
-        expiraEn: Date.now() + DURACION_CODIGO_VERIFICACION_MS,
-      })
-      console.info(`[MOCK] Código de recuperación para ${correo}: ${codigo}`)
-      return { enviado: true }
-    }
-
-    const { data } = await api.post('/auth/recuperar', { correo })
+  async registro(datos) {
+    const { data } = await api.post('/auth/register', {
+      firstName: datos.nombre || datos.nombres || 'Usuario',
+      lastName: datos.apellido || datos.apellidos || 'Drivique',
+      email: datos.correo,
+      password: datos.contrasena,
+    })
     return data
   },
 
-  verificarCodigoRecuperacion: async (correo, codigo) => {
-    if (USAR_MOCK) {
-      const registro = CODIGOS_RECUPERACION_MOCK.get(correo)
-
-      if (!registro) {
-        const error = new Error('No hay un código pendiente para este correo. Solicita uno nuevo.')
-        error.response = { status: 400, data: { mensaje: error.message } }
-        throw error
-      }
-
-      if (Date.now() > registro.expiraEn) {
-        CODIGOS_RECUPERACION_MOCK.delete(correo)
-        const error = new Error('El código ha expirado. Solicita uno nuevo.')
-        error.response = { status: 410, data: { mensaje: error.message } }
-        throw error
-      }
-
-      if (registro.codigo !== codigo) {
-        const error = new Error('Código incorrecto. Verifica e intenta de nuevo.')
-        error.response = { status: 400, data: { mensaje: error.message } }
-        throw error
-      }
-
-      CODIGOS_RECUPERACION_MOCK.delete(correo)
-      const tokenRecuperacion = `mock_recover_token_${encodeURIComponent(correo)}_${Math.random().toString(36).substring(2)}`
-      return { verificado: true, token: tokenRecuperacion }
-    }
-
-    const { data } = await api.post('/auth/recuperar/verificar-codigo', { correo, codigo })
+  async solicitarRecuperacion(correo) {
+    const { data } = await api.post('/auth/forgot-password', { email: correo })
     return data
   },
 
-  resetearContrasena: async (token, contrasena) => {
-    if (USAR_MOCK) {
-      if (!token || !token.startsWith('mock_recover_token_')) {
-        const error = new Error('El enlace de recuperación es inválido o ha expirado.')
-        error.response = { status: 400, data: { mensaje: error.message } }
-        throw error
-      }
-      const correo = decodeURIComponent(token.slice('mock_recover_token_'.length).split('_')[0])
-      if (!mockUsersStorage.actualizarContrasena(correo, contrasena)) {
-        const error = new Error('No se encontró el usuario asociado a la recuperación.')
-        error.response = { status: 404, data: { mensaje: error.message } }
-        throw error
-      }
-      return { exito: true }
-    }
+  async verificarCodigoRecuperacion(correo, codigo) {
+    const { data } = await api.post('/auth/validate-reset-code', { email: correo, code: codigo })
+    return data
+  },
 
-    const { data } = await api.post('/auth/nueva-contrasena', { token, contrasena })
+  async resetearContrasena(correo, codigo, contrasena) {
+    const { data } = await api.post('/auth/reset-password', { email: correo, code: codigo, newPassword: contrasena })
+    return data
+  },
+
+  async eliminarCuenta(contrasena) {
+    await api.delete('/users/me', { data: { password: contrasena } })
+  },
+
+  async enviarCodigoVerificacion(correo) {
+    const { data } = await api.post('/auth/resend-verification', { email: correo })
+    return data
+  },
+
+  async verificarCodigoRegistro(correo, codigo) {
+    const { data } = await api.post('/auth/verify-email', { email: correo, code: codigo })
     return data
   },
 
   socialLogin: async (payload) => {
-    if (USAR_MOCK) {
-      prepararUsuariosLocales()
-      const provider = (payload?.provider || 'GOOGLE').toUpperCase()
-      const email = payload?.email || (provider === 'FACEBOOK' ? 'facebook.user@drivique.com' : 'google.user@drivique.com')
-
-      const capitalizar = (str) =>
-        str ? str.charAt(0).toUpperCase() + str.slice(1).toLowerCase() : ''
-
-      let nombre = (payload?.firstName || '').trim()
-      let apellido = (payload?.lastName || '').trim()
-
-      if (!nombre && payload?.name) {
-        const partes = payload.name.trim().split(/\s+/)
-        nombre = partes[0] || ''
-        apellido = partes.length > 1 ? partes[1] : ''
-      } else if (!apellido && payload?.name) {
-        const partes = payload.name.trim().split(/\s+/)
-        if (partes.length > 1) {
-          apellido = partes[1]
-        }
-      }
-
-      if (apellido) {
-        apellido = apellido.split(/\s+/)[0]
-      }
-
-      nombre = capitalizar(nombre) || (email.split('@')[0] ? capitalizar(email.split('@')[0]) : 'Usuario')
-      apellido = capitalizar(apellido)
-
-      let usuario = mockUsersStorage.buscarPorCorreo(email)
-      if (!usuario) {
-        usuario = {
-          correo: email,
-          nombre,
-          apellido,
-          rol: ROLES.USER,
-          activo: true,
-          permisos: [],
-          telefono: '',
-          cedula: '',
-          fechaNacimiento: '',
-          emailVerificado: true,
-        }
-        mockUsersStorage.registrar(usuario)
-      } else {
-        usuario.nombre = nombre
-        usuario.apellido = apellido
-        mockUsersStorage.actualizar(usuario.correo, { nombre, apellido })
-      }
-
-      accessAuditService.record({
-        correo: usuario.correo,
-        rol: usuario.rol,
-        resultado: 'exitoso',
-        actor: `${usuario.nombre} ${usuario.apellido}`.trim() || usuario.correo,
-        sucursal: 'Web / Portal Clientes',
-        tipo: 'AUTENTICACION',
-        modulo: 'OAuth 2.0 / Social Login',
-        accion: `Inicio de sesión con ${provider === 'FACEBOOK' ? 'Facebook' : 'Google'}`,
-        motivo: 'Autenticación social exitosa (PKCE + OIDC)',
-      })
-
-      return {
-        token: generateMockToken(),
-        accessToken: generateMockToken(),
-        refreshToken: generateMockToken(),
-        usuario,
-      }
-    }
-
     const reqBody = typeof payload === 'string' ? { idToken: payload, provider: 'GOOGLE' } : payload
-    const endpoint = reqBody.provider === 'FACEBOOK' ? '/v1/auth/facebook' : (reqBody.provider === 'GOOGLE' ? '/v1/auth/google' : '/v1/auth/social/login')
+    const endpoint = reqBody.provider === 'FACEBOOK' ? '/auth/facebook' : (reqBody.provider === 'GOOGLE' ? '/auth/google' : '/auth/social/login')
     const { data } = await api.post(endpoint, reqBody)
+    if (data?.accessToken) {
+      setSessionTokens(data)
+    }
     const profile = data.userProfile || data.profile || data.user || {}
     const formattedUser = {
       id: profile.id,
@@ -429,7 +83,7 @@ export const authService = {
       apellido: profile.lastName || profile.apellido || '',
       correo: profile.email || profile.correo || '',
       telefono: profile.phone || profile.telefono || '',
-      rol: profile.roles?.[0] || profile.rol || ROLES.USER,
+      rol: normalizarRol(profile.roles),
       activo: profile.accountStatus === 'ACTIVE' || profile.activo === true,
       permisos: profile.permissions || [],
       emailVerificado: true,
@@ -458,98 +112,17 @@ export const authService = {
   },
 
   linkSocialAccount: async (payload) => {
-    if (USAR_MOCK) return { id: generateMockToken(), provider: payload.provider, email: 'mock@drivique.com' }
-    const { data } = await api.post('/v1/auth/social/link', payload)
+    const { data } = await api.post('/auth/social/link', payload)
     return data
   },
 
   getLinkedSocialAccounts: async () => {
-    if (USAR_MOCK) return []
-    const { data } = await api.get('/v1/auth/social/accounts')
+    const { data } = await api.get('/auth/social/accounts')
     return data
   },
 
   unlinkSocialAccount: async (provider) => {
-    if (USAR_MOCK) return { mensaje: 'Desvinculado' }
-    const { data } = await api.delete(`/v1/auth/social/${provider}`)
-    return data
-  },
-
-  verificar2FA: async (sesionTemporal, codigo) => {
-    if (USAR_MOCK) {
-      const userMail = typeof sesionTemporal === 'string' ? sesionTemporal : sesionTemporal?.correo
-      const usuario = mockUsersStorage.buscarPorCorreo(userMail)
-      if (!usuario) {
-        const error = new Error('No se encontró la sesión del usuario.')
-        error.response = { status: 404 }
-        throw error
-      }
-      return {
-        token: generateMockToken(),
-        usuario
-      }
-    }
-
-    const { data } = await api.post('/auth/2fa/verificar', { sesionTemporal, codigo })
-    return data
-  },
-
-  reenviarCodigo2FA: async (sesionTemporal) => {
-    if (USAR_MOCK) {
-      return { enviado: true }
-    }
-
-    const { data } = await api.post('/auth/2fa/reenviar', { sesionTemporal })
-    return data
-  },
-
-  enviarCodigoVerificacion: async (correo) => {
-    // Envía (o reenvía) el código de verificación de correo tras el registro.
-
-    if (USAR_MOCK) {
-      const codigo = generarCodigoMock()
-      CODIGOS_VERIFICACION_MOCK.set(correo, {
-        codigo,
-        expiraEn: Date.now() + DURACION_CODIGO_VERIFICACION_MS,
-      })
-      console.info(`[MOCK] Código de verificación para ${correo}: ${codigo}`)
-      return { enviado: true }
-    }
-
-    const { data } = await api.post('/auth/registro/enviar-codigo', { correo })
-    return data
-  },
-
-  verificarCodigoRegistro: async (correo, codigo) => {
-    // Valida el código de verificación de correo ingresado por el usuario.
-
-    if (USAR_MOCK) {
-      const registro = CODIGOS_VERIFICACION_MOCK.get(correo)
-
-      if (!registro) {
-        const error = new Error('No hay un código pendiente para este correo. Solicita uno nuevo.')
-        error.response = { status: 400, data: { mensaje: error.message } }
-        throw error
-      }
-
-      if (Date.now() > registro.expiraEn) {
-        CODIGOS_VERIFICACION_MOCK.delete(correo)
-        const error = new Error('El código ha expirado. Solicita uno nuevo.')
-        error.response = { status: 410, data: { mensaje: error.message } }
-        throw error
-      }
-
-      if (registro.codigo !== codigo) {
-        const error = new Error('Código incorrecto. Verifica e intenta de nuevo.')
-        error.response = { status: 400, data: { mensaje: error.message } }
-        throw error
-      }
-
-      CODIGOS_VERIFICACION_MOCK.delete(correo)
-      return { verificado: true }
-    }
-
-    const { data } = await api.post('/auth/registro/verificar-codigo', { correo, codigo })
+    const { data } = await api.delete(`/auth/social/${provider}`)
     return data
   },
 }
