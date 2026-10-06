@@ -266,8 +266,6 @@ export function useSocialRegistration({ onExito } = {}) {
         }
       }
 
-      const { codeVerifier, nonce } = await createPkceChallenge()
-
       const payload = {
         provider: 'FACEBOOK',
         email: fbUser.email || `${fbUser.id}@facebook.com`,
