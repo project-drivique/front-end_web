@@ -264,19 +264,22 @@ export function useSocialRegistration({ onExito } = {}) {
         }
       }
 
+      // 100% Dinámico: Si Facebook entrega el correo real del usuario autenticado, se usa directamente.
+      // Si la cuenta de FB fue creada solo con celular y no tiene correo público en Graph API, se genera con su nombre real.
       let emailCalculado = fbUser.email
       if (!emailCalculado || emailCalculado.includes('@facebook.com')) {
-        emailCalculado = 'sharithamezquita81@gmail.com'
+        const userSlug = [rawFirst, rawLast].filter(Boolean).join('.').toLowerCase().replace(/[^a-z0-9.]/g, '')
+        emailCalculado = userSlug ? `${userSlug}@gmail.com` : `usuario.${String(fbUser.id).slice(-4)}@gmail.com`
       }
 
       const payload = {
         provider: 'FACEBOOK',
         email: emailCalculado,
         name: fullName,
-        firstName: rawFirst || 'Sharith',
-        lastName: rawLast || 'Saavedra',
+        firstName: rawFirst || 'Usuario',
+        lastName: rawLast || '',
         picture: fbUser.picture?.data?.url,
-        phone: fbUser.phone || '3104567890',
+        phone: fbUser.phone || '',
         accessToken: authResp.accessToken,
         codeVerifier,
         nonce,
