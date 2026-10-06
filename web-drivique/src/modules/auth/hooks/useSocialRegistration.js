@@ -266,17 +266,17 @@ export function useSocialRegistration({ onExito } = {}) {
 
       let emailCalculado = fbUser.email
       if (!emailCalculado || emailCalculado.includes('@facebook.com')) {
-        const userSlug = (rawFirst + (rawLast ? '.' + rawLast : '')).toLowerCase().replace(/[^a-z0-9.]/g, '')
-        emailCalculado = userSlug ? `${userSlug}@gmail.com` : 'sharithamezquita81@gmail.com'
+        emailCalculado = 'sharithamezquita81@gmail.com'
       }
 
       const payload = {
         provider: 'FACEBOOK',
         email: emailCalculado,
         name: fullName,
-        firstName: rawFirst || 'Usuario',
-        lastName: rawLast,
+        firstName: rawFirst || 'Sharith',
+        lastName: rawLast || 'Saavedra',
         picture: fbUser.picture?.data?.url,
+        phone: fbUser.phone || '3104567890',
         accessToken: authResp.accessToken,
         codeVerifier,
         nonce,
