@@ -9,7 +9,8 @@ import { coloresLogin, loginTokens } from '../styles/loginStyles'
 import SpinnerButton from '../components/SpinnerButton'
 import AlertModal from '../../catalog/components/AlertModal'
 import AuthHeaderControls from '../components/AuthHeaderControls'
-import OAuthConsentModal from '../components/OAuthConsentModal'
+import GoogleOAuthModal from '../components/GoogleOAuthModal'
+import FacebookOAuthModal from '../components/FacebookOAuthModal'
 import { getRoleHome } from '../utils/accessControl'
 import { useBrand } from '@/contexts/BrandContext'
 import logocatalog from '@/assets/logocatalog.png'
@@ -404,13 +405,21 @@ export default function LoginPage() {
         />
       )}
 
-      <OAuthConsentModal
-        visible={modalConsentimiento.visible}
-        provider={modalConsentimiento.provider}
-        onConfirm={confirmarConsentimiento}
-        onClose={cerrarConsentimiento}
-        esModoOscuro={esModoOscuro}
-      />
+      {modalConsentimiento.visible && modalConsentimiento.provider === 'GOOGLE' && (
+        <GoogleOAuthModal
+          visible={true}
+          onConfirm={confirmarConsentimiento}
+          onClose={cerrarConsentimiento}
+        />
+      )}
+
+      {modalConsentimiento.visible && modalConsentimiento.provider === 'FACEBOOK' && (
+        <FacebookOAuthModal
+          visible={true}
+          onConfirm={confirmarConsentimiento}
+          onClose={cerrarConsentimiento}
+        />
+      )}
 
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
