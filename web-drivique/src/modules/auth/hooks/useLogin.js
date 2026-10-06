@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { authService } from '../../../services/authService'
 import { useAuthStore } from '../../../store/authStore'
@@ -10,6 +10,7 @@ const MAX_INTENTOS = 3
 export function useLogin() {
   const { t } = useTranslation()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const storeLogin = useAuthStore((s) => s.login)
   const iniciar2FA = useAuthStore((s) => s.iniciar2FA)
 
@@ -93,7 +94,11 @@ export function useLogin() {
       setExito(t('login.successRedirecting'))
 
       setTimeout(() => {
-        navigate(getRoleHome(datos.rol))
+        const redirect = searchParams.get('redirect')
+        const destino = redirect?.startsWith('/') && !redirect.startsWith('//')
+          ? redirect
+          : getRoleHome(datos.rol)
+        navigate(destino, { replace: true })
       }, 1000)
     } catch (error) {
       const status = error?.response?.status
@@ -104,10 +109,18 @@ export function useLogin() {
         return
       }
 
+      if (status >= 500) {
+        setErrores((prev) => ({
+          ...prev,
+          general: data.detail || t('login.errors.serviceUnavailable'),
+        }))
+        return
+      }
+
       const nuevosIntentos = intentos + 1
       setIntentos(nuevosIntentos)
 
-      if (status === 429) {
+      if (status === 423 || status === 429) {
         setBloqueadoHasta(data.bloqueadoHasta || Date.now() + 5 * 60 * 1000)
         setErrores((prev) => ({
           ...prev,

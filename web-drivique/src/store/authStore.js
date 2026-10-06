@@ -6,6 +6,20 @@ export const AUTH_KEYS = {
   usuario: 'renta_user',
 }
 
+export const isValidAuthToken = (token) => {
+  if (!token || token === 'null' || token === 'undefined') return false
+  try {
+    const [, payload] = token.split('.')
+    if (!payload) return false
+    const normalized = payload.replace(/-/g, '+').replace(/_/g, '/')
+    const padded = normalized.padEnd(Math.ceil(normalized.length / 4) * 4, '=')
+    const decoded = JSON.parse(atob(padded))
+    return typeof decoded.exp === 'number' && decoded.exp * 1000 > Date.now()
+  } catch {
+    return false
+  }
+}
+
 // Storage personalizado: en vez de envolver { token, usuario } en un solo
 // blob JSON bajo una key, guarda cada campo en su propia key real de
 // localStorage. renta_token queda como el JWT plano (sin comillas ni JSON
@@ -20,9 +34,8 @@ const authStorage = {
     } catch {
       usuario = null
     }
-    if (token === 'null' || token === 'undefined') return null
-    if (!token && !usuario) return null
-    return { state: { token: (token === 'null' || token === 'undefined') ? null : token, usuario }, version: 0 }
+    if (!isValidAuthToken(token)) return null
+    return { state: { token, usuario }, version: 0 }
   },
   setItem: (_name, value) => {
     const { token, usuario } = value.state
@@ -49,7 +62,11 @@ const getInitialAuthState = () => {
     const token = localStorage.getItem(AUTH_KEYS.token)
     const usuarioRaw = localStorage.getItem(AUTH_KEYS.usuario)
     const usuario = usuarioRaw ? JSON.parse(usuarioRaw) : null
-    const esValido = token && token !== 'null' && token !== 'undefined'
+    const esValido = isValidAuthToken(token)
+    if (!esValido) {
+      localStorage.removeItem(AUTH_KEYS.token)
+      localStorage.removeItem(AUTH_KEYS.usuario)
+    }
     return {
       token: esValido ? token : null,
       usuario: esValido ? usuario : null,
