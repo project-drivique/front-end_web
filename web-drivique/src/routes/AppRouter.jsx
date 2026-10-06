@@ -1,6 +1,6 @@
 import { useEffect, lazy, Suspense } from 'react'
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
-import { useAuthStore } from '../store/authStore'
+import { isValidAuthToken, useAuthStore } from '../store/authStore'
 import { useHydration } from '../hooks/useHydration'
 import { getRoleHome, hasValidRoleAccess, ROLES } from '../modules/auth/utils/accessControl'
 import ErrorBoundary from '../components/ErrorBoundary/ErrorBoundary'
@@ -57,9 +57,11 @@ const BranchNotificationCenterPage = lazy(() => import('../modules/admin/pages/B
 function RutaPrivada({ children }) {
   const token    = useAuthStore((s) => s.token)
   const hydrated = useHydration()
+  const location = useLocation()
   if (!hydrated) return null
-  const esValido = token && token !== 'null' && token !== 'undefined'
-  return esValido ? children : <Navigate to="/" replace />
+  return isValidAuthToken(token)
+    ? children
+    : <Navigate to={`/login?redirect=${encodeURIComponent(location.pathname + location.search)}`} replace />
 }
 
 function RutaLanding() {
@@ -67,7 +69,7 @@ function RutaLanding() {
   const usuario = useAuthStore((s) => s.usuario)
   const hydrated = useHydration()
   if (!hydrated) return null
-  const esValido = token && token !== 'null' && token !== 'undefined'
+  const esValido = isValidAuthToken(token)
   if (esValido) {
     return <Navigate to={getRoleHome(usuario?.rol)} replace />
   }
@@ -79,7 +81,7 @@ function RutaCatalogo() {
   const usuario = useAuthStore((s) => s.usuario)
   const hydrated = useHydration()
   if (!hydrated) return null
-  const esValido = token && token !== 'null' && token !== 'undefined'
+  const esValido = isValidAuthToken(token)
   if (esValido) {
     return <Navigate to={getRoleHome(usuario?.rol)} replace />
   }
@@ -90,10 +92,15 @@ function RutaPublicaAuth({ children }) {
   const token = useAuthStore((s) => s.token)
   const usuario = useAuthStore((s) => s.usuario)
   const hydrated = useHydration()
+  const location = useLocation()
   if (!hydrated) return null
-  const esValido = token && token !== 'null' && token !== 'undefined'
+  const esValido = isValidAuthToken(token)
   if (esValido) {
-    return <Navigate to={getRoleHome(usuario?.rol)} replace />
+    const redirect = new URLSearchParams(location.search).get('redirect')
+    const destino = redirect?.startsWith('/') && !redirect.startsWith('//')
+      ? redirect
+      : getRoleHome(usuario?.rol)
+    return <Navigate to={destino} replace />
   }
   return children
 }
@@ -103,7 +110,7 @@ function RutaPorRol({ children, roles }) {
   const usuario = useAuthStore((s) => s.usuario)
   const hydrated = useHydration()
   if (!hydrated) return null
-  const esValido = token && token !== 'null' && token !== 'undefined'
+  const esValido = isValidAuthToken(token)
   if (!esValido) return <Navigate to="/login" replace />
   const isMatch = roles.some(
     (r) =>
@@ -122,7 +129,7 @@ function Ruta2FA({ children }) {
   const usuario   = useAuthStore((s) => s.usuario)
   const hydrated  = useHydration()
   if (!hydrated) return null
-  if (token) {
+  if (isValidAuthToken(token)) {
     return <Navigate to={getRoleHome(usuario?.rol)} replace />
   }
   return sesion2FA ? children : <Navigate to="/login" replace />
@@ -134,10 +141,10 @@ function RutaVerificacionCorreo({ children }) {
   const usuario            = useAuthStore((s) => s.usuario)
   const hydrated           = useHydration()
   if (!hydrated) return null
-  if (token) {
+  if (isValidAuthToken(token)) {
     return <Navigate to={getRoleHome(usuario?.rol)} replace />
   }
-  return verificacionCorreo ? children : <Navigate to="/home" replace />
+  return verificacionCorreo ? children : <Navigate to="/login" replace />
 }
 
 function RutaRecuperacionCorreo({ children }) {
@@ -146,7 +153,7 @@ function RutaRecuperacionCorreo({ children }) {
   const usuario            = useAuthStore((s) => s.usuario)
   const hydrated           = useHydration()
   if (!hydrated) return null
-  if (token) {
+  if (isValidAuthToken(token)) {
     return <Navigate to={getRoleHome(usuario?.rol)} replace />
   }
   return recuperacionCorreo ? children : <Navigate to="/login" replace />

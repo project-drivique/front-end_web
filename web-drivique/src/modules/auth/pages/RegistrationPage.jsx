@@ -188,7 +188,7 @@ function ChecklistPassword({ password, c }) {
   if (!password) return null
 
   const reglas = [
-    { id: 'len', label: t('registro.checklist.min8'),      ok: password.length >= 8 },
+    { id: 'len', label: t('registro.checklist.min12'),     ok: password.length >= 12 },
     { id: 'may', label: t('registro.checklist.uppercase'), ok: /[A-Z]/.test(password) },
     { id: 'min', label: t('registro.checklist.lowercase'), ok: /[a-z]/.test(password) },
     { id: 'num', label: t('registro.checklist.number'),    ok: /\d/.test(password) },
@@ -393,7 +393,7 @@ export default function RegistroPage() {
     if (!correo.trim()) e.correo = t('registro.modal.errors.emailRequired')
     else if (!rxCorreo.test(correo)) e.correo = t('registro.modal.errors.emailInvalid')
     if (!password) e.password = t('registro.modal.errors.passwordRequired')
-    else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z\d]).{8,}$/.test(password)) e.password = t('registro.modal.errors.passwordWeak')
+    else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z\d\s]).{12,}$/.test(password)) e.password = t('registro.modal.errors.passwordWeak')
     if (!confirmar) e.confirmar = t('registro.modal.errors.confirmRequired')
     else if (password !== confirmar) e.confirmar = t('registro.modal.errors.confirmMismatch')
     if (!terminos) e.terminos = t('registro.modal.errors.termsRequired')
