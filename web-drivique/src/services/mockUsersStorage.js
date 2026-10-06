@@ -85,6 +85,15 @@ export const mockUsersStorage = {
     if (requiereMigracion) localStorage.setItem(SCHEMA_KEY, CURRENT_SCHEMA)
     return requiereMigracion
   },
+  actualizar(correo, datos) {
+    const normalizado = String(correo || '').trim().toLowerCase()
+    const usuarios = leerUsuarios()
+    const indice = usuarios.findIndex((usuario) => usuario.correo.toLowerCase() === normalizado)
+    if (indice < 0) return false
+    usuarios[indice] = { ...usuarios[indice], ...datos }
+    guardarUsuarios(usuarios)
+    return true
+  },
   actualizarContrasena(correo, contrasena) {
     const normalizado = String(correo || '').trim().toLowerCase()
     const usuarios = leerUsuarios()
