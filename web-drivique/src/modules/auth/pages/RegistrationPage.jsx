@@ -14,8 +14,6 @@ import {
   FaCheck,
 } from 'react-icons/fa'
 import AuthHeaderControls from '../components/AuthHeaderControls'
-import GoogleOAuthModal from '../components/GoogleOAuthModal'
-import FacebookOAuthModal from '../components/FacebookOAuthModal'
 import { getRoleHome } from '../utils/accessControl'
 
 const COLOR_MARCA = 'var(--brand-secondary)'
@@ -364,7 +362,6 @@ export default function RegistroPage() {
   const {
     cargandoGoogle, cargandoFacebook, errorSocial,
     proveedorExito, iniciarGoogle, iniciarFacebook,
-    modalConsentimiento, cerrarConsentimiento, confirmarConsentimiento,
   } = useSocialRegistration({
     onExito: (_, data) => {
       exitoRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
@@ -456,22 +453,6 @@ export default function RegistroPage() {
             setModalAbierto(false)
             setErrores(prev => ({ ...prev, terminos: '' }))
           }}
-        />
-      )}
-
-      {modalConsentimiento.visible && modalConsentimiento.provider === 'GOOGLE' && (
-        <GoogleOAuthModal
-          visible={true}
-          onConfirm={confirmarConsentimiento}
-          onClose={cerrarConsentimiento}
-        />
-      )}
-
-      {modalConsentimiento.visible && modalConsentimiento.provider === 'FACEBOOK' && (
-        <FacebookOAuthModal
-          visible={true}
-          onConfirm={confirmarConsentimiento}
-          onClose={cerrarConsentimiento}
         />
       )}
 
