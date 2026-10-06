@@ -69,13 +69,60 @@ export const authService = {
     return data
   },
 
-  async loginGoogle(accessToken) {
-    const { data } = await api.post('/auth/google', { accessToken })
+  socialLogin: async (payload) => {
+    const reqBody = typeof payload === 'string' ? { idToken: payload, provider: 'GOOGLE' } : payload
+    const endpoint = reqBody.provider === 'FACEBOOK' ? '/auth/facebook' : (reqBody.provider === 'GOOGLE' ? '/auth/google' : '/auth/social/login')
+    const { data } = await api.post(endpoint, reqBody)
+    if (data?.accessToken) {
+      setSessionTokens(data)
+    }
+    const profile = data.userProfile || data.profile || data.user || {}
+    const formattedUser = {
+      id: profile.id,
+      nombre: profile.firstName || profile.nombre || 'Usuario',
+      apellido: profile.lastName || profile.apellido || '',
+      correo: profile.email || profile.correo || '',
+      telefono: profile.phone || profile.telefono || '',
+      rol: normalizarRol(profile.roles),
+      activo: profile.accountStatus === 'ACTIVE' || profile.activo === true,
+      permisos: profile.permissions || [],
+      emailVerificado: true,
+    }
+    return {
+      token: data.accessToken,
+      accessToken: data.accessToken,
+      refreshToken: data.refreshToken,
+      usuario: formattedUser,
+      ...data,
+    }
+  },
+
+  loginGoogle: async (param) => {
+    const payload = typeof param === 'string'
+      ? { idToken: param, provider: 'GOOGLE' }
+      : { provider: 'GOOGLE', ...param }
+    return authService.socialLogin(payload)
+  },
+
+  loginFacebook: async (param) => {
+    const payload = typeof param === 'string'
+      ? { accessToken: param, provider: 'FACEBOOK' }
+      : { provider: 'FACEBOOK', ...param }
+    return authService.socialLogin(payload)
+  },
+
+  linkSocialAccount: async (payload) => {
+    const { data } = await api.post('/auth/social/link', payload)
     return data
   },
 
-  async loginFacebook(accessToken) {
-    const { data } = await api.post('/auth/facebook', { accessToken })
+  getLinkedSocialAccounts: async () => {
+    const { data } = await api.get('/auth/social/accounts')
+    return data
+  },
+
+  unlinkSocialAccount: async (provider) => {
+    const { data } = await api.delete(`/auth/social/${provider}`)
     return data
   },
 }
