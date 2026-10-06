@@ -348,17 +348,88 @@ export const authService = {
     return data
   },
 
-  loginGoogle: async (accessToken) => {
-    // Inicia sesión con Google enviando el accessToken.
+  socialLogin: async (payload) => {
+    if (USAR_MOCK) {
+      prepararUsuariosLocales()
+      const provider = (payload?.provider || 'GOOGLE').toUpperCase()
+      const email = payload?.email || (provider === 'FACEBOOK' ? 'facebook.user@drivique.com' : 'google.user@drivique.com')
+      let usuario = mockUsersStorage.buscarPorCorreo(email)
+      if (!usuario) {
+        usuario = {
+          correo: email,
+          nombre: payload?.firstName || (provider === 'FACEBOOK' ? 'Usuario' : 'Usuario'),
+          apellido: payload?.lastName || (provider === 'FACEBOOK' ? 'Facebook' : 'Google'),
+          rol: ROLES.USER,
+          activo: true,
+          permisos: [],
+          telefono: '',
+          cedula: '',
+          fechaNacimiento: '',
+          emailVerificado: true,
+        }
+        mockUsersStorage.registrar(usuario)
+      }
+      return {
+        token: generateMockToken(),
+        accessToken: generateMockToken(),
+        refreshToken: generateMockToken(),
+        usuario,
+      }
+    }
 
-    const { data } = await api.post('/auth/google', { accessToken })
+    const reqBody = typeof payload === 'string' ? { idToken: payload, provider: 'GOOGLE' } : payload
+    const endpoint = reqBody.provider === 'FACEBOOK' ? '/v1/auth/facebook' : (reqBody.provider === 'GOOGLE' ? '/v1/auth/google' : '/v1/auth/social/login')
+    const { data } = await api.post(endpoint, reqBody)
+    const profile = data.userProfile || data.profile || data.user || {}
+    const formattedUser = {
+      id: profile.id,
+      nombre: profile.firstName || profile.nombre || 'Usuario',
+      apellido: profile.lastName || profile.apellido || '',
+      correo: profile.email || profile.correo || '',
+      telefono: profile.phone || profile.telefono || '',
+      rol: profile.roles?.[0] || profile.rol || ROLES.USER,
+      activo: profile.accountStatus === 'ACTIVE' || profile.activo === true,
+      permisos: profile.permissions || [],
+      emailVerificado: true,
+    }
+    return {
+      token: data.accessToken,
+      accessToken: data.accessToken,
+      refreshToken: data.refreshToken,
+      usuario: formattedUser,
+      ...data,
+    }
+  },
+
+  loginGoogle: async (param) => {
+    const payload = typeof param === 'string'
+      ? { idToken: param, provider: 'GOOGLE' }
+      : { provider: 'GOOGLE', ...param }
+    return authService.socialLogin(payload)
+  },
+
+  loginFacebook: async (param) => {
+    const payload = typeof param === 'string'
+      ? { accessToken: param, provider: 'FACEBOOK' }
+      : { provider: 'FACEBOOK', ...param }
+    return authService.socialLogin(payload)
+  },
+
+  linkSocialAccount: async (payload) => {
+    if (USAR_MOCK) return { id: generateMockToken(), provider: payload.provider, email: 'mock@drivique.com' }
+    const { data } = await api.post('/v1/auth/social/link', payload)
     return data
   },
 
-  loginFacebook: async (accessToken) => {
-    // Inicia sesión con Facebook enviando el accessToken.
+  getLinkedSocialAccounts: async () => {
+    if (USAR_MOCK) return []
+    const { data } = await api.get('/v1/auth/social/accounts')
+    return data
+  },
 
-    const { data } = await api.post('/auth/facebook', { accessToken })
+  unlinkSocialAccount: async (provider) => {
+    if (USAR_MOCK) return { mensaje: 'Desvinculado' }
+    const { data } = await api.delete(`/v1/auth/social/${provider}`)
     return data
   },
 
