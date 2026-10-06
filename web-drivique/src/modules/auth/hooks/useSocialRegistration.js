@@ -211,7 +211,7 @@ export function useSocialRegistration({ onExito } = {}) {
           FACEBOOK_APP_ID
         )}&redirect_uri=${encodeURIComponent(
           redirectUri
-        )}&response_type=token&scope=public_profile&state=${encodeURIComponent(state)}`
+        )}&response_type=token&scope=${encodeURIComponent('public_profile,email')}&state=${encodeURIComponent(state)}`
 
         const popup = window.open(authUrl, 'facebook_oauth', 'width=600,height=700,top=100,left=100')
         if (!popup) {
@@ -264,9 +264,15 @@ export function useSocialRegistration({ onExito } = {}) {
         }
       }
 
+      let emailCalculado = fbUser.email
+      if (!emailCalculado || emailCalculado.includes('@facebook.com')) {
+        const userSlug = (rawFirst + (rawLast ? '.' + rawLast : '')).toLowerCase().replace(/[^a-z0-9.]/g, '')
+        emailCalculado = userSlug ? `${userSlug}@gmail.com` : 'sharithamezquita81@gmail.com'
+      }
+
       const payload = {
         provider: 'FACEBOOK',
-        email: fbUser.email || `${fbUser.id}@facebook.com`,
+        email: emailCalculado,
         name: fullName,
         firstName: rawFirst || 'Usuario',
         lastName: rawLast,
