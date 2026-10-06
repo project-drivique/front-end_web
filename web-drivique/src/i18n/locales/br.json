@@ -2431,7 +2431,7 @@
     "email": "Endereço de e-mail",
     "emailPlaceholder": "exemplo@email.com",
     "password": "Palavra-passe",
-    "passwordPlaceholder": "Mínimo 8 caracteres",
+    "passwordPlaceholder": "Mínimo 12 caracteres",
     "confirmPassword": "Confirmar palavra-passe",
     "confirmPlaceholder": "Repita a sua palavra-passe",
     "termsPrefix": "Aceito os",
@@ -2461,7 +2461,7 @@
       "feature4": "Suporte 24/7"
     },
     "checklist": {
-      "min8": "Mínimo 8 caracteres",
+      "min12": "Mínimo 12 caracteres",
       "uppercase": "Pelo menos uma maiúscula (A-Z)",
       "lowercase": "Pelo menos uma minúscula (a-z)",
       "number": "Pelo menos um número (0-9)",
@@ -3373,7 +3373,7 @@
     "accountDeletedText": "Sua conta foi excluída permanentemente.",
     "deleteAccountFail": "Erro ao excluir a conta.",
     "rules": {
-      "min8": "Mínimo 8 caracteres",
+      "min12": "Mínimo 12 caracteres",
       "uppercase": "Uma letra maiúscula",
       "number": "Um número",
       "special": "Um caractere especial"
