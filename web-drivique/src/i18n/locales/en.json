@@ -2423,6 +2423,7 @@
       "maxAttemptsReached": "Account locked after {{max}} failed attempts.",
       "temporaryLock": "Account temporarily locked for {{minutes}} minutes.",
       "accessDenied": "You do not have permission to access. Contact the main administrator."
+      ,"serviceUnavailable": "The server could not start your session. Please try again."
     }
   },
   "registro": {
@@ -2431,7 +2432,7 @@
     "email": "Email address",
     "emailPlaceholder": "example@email.com",
     "password": "Password",
-    "passwordPlaceholder": "Minimum 8 characters",
+    "passwordPlaceholder": "Minimum 12 characters",
     "confirmPassword": "Confirm password",
     "confirmPlaceholder": "Repeat your password",
     "termsPrefix": "I accept the",
@@ -2461,7 +2462,7 @@
       "feature4": "24/7 support"
     },
     "checklist": {
-      "min8": "Minimum 8 characters",
+      "min12": "Minimum 12 characters",
       "uppercase": "At least one uppercase letter (A-Z)",
       "lowercase": "At least one lowercase letter (a-z)",
       "number": "At least one number (0-9)",
@@ -3383,7 +3384,7 @@
     "accountDeletedText": "Your account has been permanently deleted.",
     "deleteAccountFail": "Error deleting account.",
     "rules": {
-      "min8": "Minimum 8 characters",
+      "min12": "Minimum 12 characters",
       "uppercase": "One uppercase letter",
       "number": "One number",
       "special": "One special character"
