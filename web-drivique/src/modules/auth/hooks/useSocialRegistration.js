@@ -118,12 +118,28 @@ export function useSocialRegistration({ onExito } = {}) {
 
       const googleUser = await userInfoRes.json()
 
+      let rawFirst = (googleUser.given_name || '').trim()
+      let rawLast = (googleUser.family_name || '').trim()
+      const fullName = (googleUser.name || '').trim()
+
+      if (!rawFirst && fullName) {
+        const parts = fullName.split(/\s+/)
+        rawFirst = parts[0]
+        rawLast = parts.length > 1 ? parts[1] : ''
+      } else if (!rawLast && fullName) {
+        const parts = fullName.split(/\s+/)
+        if (parts.length > 1) {
+          rawLast = parts[1]
+        }
+      }
+
       // 3. Enviar al backend / servicio de autenticación
       const payload = {
         provider: 'GOOGLE',
         email: googleUser.email,
-        firstName: googleUser.given_name || googleUser.name || 'Usuario',
-        lastName: googleUser.family_name || '',
+        name: fullName,
+        firstName: rawFirst || (googleUser.email ? googleUser.email.split('@')[0] : 'Usuario'),
+        lastName: rawLast,
         picture: googleUser.picture,
         accessToken: tokenResponse.access_token,
         codeVerifier,

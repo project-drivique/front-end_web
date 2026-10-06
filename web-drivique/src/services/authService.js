@@ -353,12 +353,37 @@ export const authService = {
       prepararUsuariosLocales()
       const provider = (payload?.provider || 'GOOGLE').toUpperCase()
       const email = payload?.email || (provider === 'FACEBOOK' ? 'facebook.user@drivique.com' : 'google.user@drivique.com')
+
+      const capitalizar = (str) =>
+        str ? str.charAt(0).toUpperCase() + str.slice(1).toLowerCase() : ''
+
+      let nombre = (payload?.firstName || '').trim()
+      let apellido = (payload?.lastName || '').trim()
+
+      if (!nombre && payload?.name) {
+        const partes = payload.name.trim().split(/\s+/)
+        nombre = partes[0] || ''
+        apellido = partes.length > 1 ? partes[1] : ''
+      } else if (!apellido && payload?.name) {
+        const partes = payload.name.trim().split(/\s+/)
+        if (partes.length > 1) {
+          apellido = partes[1]
+        }
+      }
+
+      if (apellido) {
+        apellido = apellido.split(/\s+/)[0]
+      }
+
+      nombre = capitalizar(nombre) || (email.split('@')[0] ? capitalizar(email.split('@')[0]) : 'Usuario')
+      apellido = capitalizar(apellido)
+
       let usuario = mockUsersStorage.buscarPorCorreo(email)
       if (!usuario) {
         usuario = {
           correo: email,
-          nombre: payload?.firstName || (provider === 'FACEBOOK' ? 'Usuario' : 'Usuario'),
-          apellido: payload?.lastName || (provider === 'FACEBOOK' ? 'Facebook' : 'Google'),
+          nombre,
+          apellido,
           rol: ROLES.USER,
           activo: true,
           permisos: [],
@@ -369,8 +394,9 @@ export const authService = {
         }
         mockUsersStorage.registrar(usuario)
       } else {
-        if (payload?.firstName) usuario.nombre = payload.firstName
-        if (payload?.lastName) usuario.apellido = payload.lastName
+        usuario.nombre = nombre
+        usuario.apellido = apellido
+        mockUsersStorage.actualizar(usuario.correo, { nombre, apellido })
       }
 
       accessAuditService.record({
