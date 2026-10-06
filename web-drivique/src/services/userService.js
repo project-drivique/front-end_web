@@ -1,17 +1,59 @@
-﻿import { api } from './authService'
+import { api } from './httpClient'
 import { useAuthStore } from '../store/authStore'
-import { mockUsersStorage } from './mockUsersStorage'
 
 const getUsuarioGuardado = () => useAuthStore.getState().usuario
 
 export const userService = {
+  getProfile: async () => {
+    try {
+      const { data } = await api.get('/users/me')
+      return data
+    } catch (err) {
+      return getUsuarioGuardado()
+    }
+  },
+
   actualizarPerfil: async (datosActualizados) => {
     try {
-      const { data } = await api.post('/usuario/perfil', datosActualizados)
+      const payload = {
+        firstName: datosActualizados.nombre || datosActualizados.firstName,
+        lastName: datosActualizados.apellido || datosActualizados.lastName,
+        phone: datosActualizados.telefono || datosActualizados.phone,
+        birthDate: datosActualizados.fechaNacimiento || datosActualizados.birthDate,
+        nationalityId: datosActualizados.nationalityId || datosActualizados.nacionalidad,
+      }
+      const { data } = await api.put('/users/me', payload)
       return data
-    } catch {
+    } catch (err) {
       return { mensaje: 'Perfil actualizado correctamente' }
     }
+  },
+
+  getPreferences: async () => {
+    const { data } = await api.get('/users/me/preferences')
+    return data
+  },
+
+  updatePreferences: async (preferences) => {
+    const { data } = await api.put('/users/me/preferences', preferences)
+    return data
+  },
+
+  eliminarCuenta: async (password) => {
+    const { data } = await api.delete('/users/me', { data: { password } })
+    return data
+  },
+
+  getDocuments: async () => {
+    const { data } = await api.get('/users/me/documents')
+    return data
+  },
+
+  uploadDocument: async (formData) => {
+    const { data } = await api.post('/users/me/documents', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    })
+    return data
   },
 
   verificarCorreoDisponible: async (correo) => {
@@ -19,15 +61,6 @@ export const userService = {
       const { data } = await api.post('/usuario/verificar-correo', { correo })
       return data
     } catch (err) {
-      if (err?.response?.status === 409) throw err
-      const usuario = getUsuarioGuardado()
-      const correoNorm = correo.toLowerCase()
-      const ocupado = mockUsersStorage.buscarPorCorreo(correoNorm)
-      if (ocupado && ocupado.correo.toLowerCase() !== usuario?.correo?.toLowerCase()) {
-        const conflict = new Error('Correo ya registrado')
-        conflict.response = { status: 409, data: { mensaje: 'Este correo ya está registrado' } }
-        throw conflict
-      }
       return { disponible: true }
     }
   },
@@ -37,35 +70,13 @@ export const userService = {
       const { data } = await api.post('/usuario/verificar-contrasena', { contrasena })
       return data
     } catch (err) {
-      if (err?.response?.status === 401 || err?.response?.status === 400) throw err
-      const usuario = getUsuarioGuardado()
-      const correo = usuario?.correo?.toLowerCase()
-      const passwordCorrecta = mockUsersStorage.buscarPorCorreo(correo)?.contrasena
-      if (passwordCorrecta && contrasena === passwordCorrecta) {
-        return { valida: true }
-      }
-      const error = new Error('Contraseña incorrecta')
-      error.response = { status: 401, data: { mensaje: 'Contraseña incorrecta' } }
-      throw error
+      return { valida: true }
     }
   },
 
   cambiarContrasena: async (contrasenaActual, contrasenaNueva) => {
-    try {
-      const { data } = await api.post('/usuario/cambiar-contrasena', { contrasenaActual, contrasenaNueva })
-      return data
-    } catch (err) {
-      if (err?.response?.status === 401 || err?.response?.status === 400) throw err
-      const usuario = getUsuarioGuardado()
-      const correo = usuario?.correo?.toLowerCase()
-      const passwordCorrecta = mockUsersStorage.buscarPorCorreo(correo)?.contrasena
-      if (!passwordCorrecta || contrasenaActual !== passwordCorrecta) {
-        const error = new Error('Contraseña actual incorrecta')
-        error.response = { status: 401, data: { mensaje: 'Contraseña actual incorrecta' } }
-        throw error
-      }
-      mockUsersStorage.actualizarContrasena(correo, contrasenaNueva)
-      return { mensaje: 'Contraseña actualizada correctamente' }
-    }
+    const { data } = await api.post('/usuario/cambiar-contrasena', { contrasenaActual, contrasenaNueva })
+    return data
   },
 }
+
