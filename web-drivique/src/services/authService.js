@@ -125,4 +125,10 @@ export const authService = {
     const { data } = await api.delete(`/auth/social/${provider}`)
     return data
   },
+
+  eliminarCuenta: async (password) => {
+    const { data } = await api.delete('/users/me', { data: { password } })
+    return data
+  },
 }
+
