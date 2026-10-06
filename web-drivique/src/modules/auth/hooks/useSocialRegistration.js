@@ -5,18 +5,21 @@ import { authService } from '@/services/authService'
 import { useAuthStore } from '@/store/authStore'
 import { createPkceChallenge } from '../utils/pkce'
 
-const GOOGLE_CLIENT_ID  = import.meta.env.VITE_GOOGLE_CLIENT_ID
-const FACEBOOK_APP_ID   = import.meta.env.VITE_FACEBOOK_APP_ID
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID
+const FACEBOOK_APP_ID = import.meta.env.VITE_FACEBOOK_APP_ID
 
 /* ── Carga dinámica del SDK de Google Identity Services ── */
 function cargarGoogleSDK() {
   return new Promise((resolve, reject) => {
-    if (window.google?.accounts) { resolve(); return }
+    if (window.google?.accounts) {
+      resolve()
+      return
+    }
     const script = document.createElement('script')
     script.src = 'https://accounts.google.com/gsi/client'
     script.async = true
     script.defer = true
-    script.onload  = resolve
+    script.onload = resolve
     script.onerror = () => reject(new Error('No se pudo cargar el SDK de Google'))
     document.head.appendChild(script)
   })
@@ -25,12 +28,15 @@ function cargarGoogleSDK() {
 /* ── Carga dinámica del SDK de Facebook ── */
 function cargarFacebookSDK() {
   return new Promise((resolve) => {
-    if (window.FB) { resolve(); return }
+    if (window.FB) {
+      resolve()
+      return
+    }
     window.fbAsyncInit = () => {
       window.FB.init({
-        appId:   FACEBOOK_APP_ID || '100000000000000',
-        cookie:  true,
-        xfbml:   false,
+        appId: FACEBOOK_APP_ID || '100000000000000',
+        cookie: true,
+        xfbml: false,
         version: 'v20.0',
       })
       resolve()
@@ -47,10 +53,16 @@ export function useSocialRegistration({ onExito } = {}) {
   const { t } = useTranslation()
   const { login: storeLogin } = useAuthStore()
 
-  const [cargandoGoogle,   setCargandoGoogle]   = useState(false)
+  const [cargandoGoogle, setCargandoGoogle] = useState(false)
   const [cargandoFacebook, setCargandoFacebook] = useState(false)
-  const [errorSocial,      setErrorSocial]      = useState(null)
-  const [proveedorExito,   setProveedorExito]   = useState(null)
+  const [errorSocial, setErrorSocial] = useState(null)
+  const [proveedorExito, setProveedorExito] = useState(null)
+
+  // Estado del modal de consentimiento/cuenta interactiva
+  const [modalConsentimiento, setModalConsentimiento] = useState({
+    visible: false,
+    provider: 'GOOGLE',
+  })
 
   const googleClientRef = useRef(null)
 
@@ -62,22 +74,52 @@ export function useSocialRegistration({ onExito } = {}) {
   }, [])
 
   /* ─────────────────────────────────────────
-     GOOGLE (PKCE & OIDC)
+     PROCESAR LOGIN SOCIAL CON DATOS REALES
+  ───────────────────────────────────────── */
+  const procesarLoginSocial = async ({ provider, email, firstName, lastName, tokenPayload }) => {
+    try {
+      const { codeVerifier, nonce } = await createPkceChallenge()
+
+      const payload = {
+        provider: provider.toUpperCase(),
+        email: email,
+        firstName: firstName,
+        lastName: lastName,
+        codeVerifier,
+        nonce,
+        deviceInfo: navigator.userAgent,
+        ...tokenPayload,
+      }
+
+      const res = await authService.socialLogin(payload)
+      const token = res.accessToken || res.token
+      const usuario = res.usuario || res.userProfile
+
+      storeLogin(token, usuario)
+      setProveedorExito(provider.toLowerCase())
+      onExito?.(provider.toLowerCase(), { token, usuario })
+      return true
+    } catch (err) {
+      const msg = err?.message || t('registro.errors.socialError', 'Error al procesar el inicio de sesión social')
+      setErrorSocial(msg)
+      return false
+    }
+  }
+
+  /* ─────────────────────────────────────────
+     GOOGLE (PKCE & OIDC / GIS)
   ───────────────────────────────────────── */
   const iniciarGoogle = async () => {
     setErrorSocial(null)
     setProveedorExito(null)
-    setCargandoGoogle(true)
 
-    try {
-      const { codeVerifier, nonce, state } = await createPkceChallenge()
-
-      let tokenPayload = null
-
-      if (GOOGLE_CLIENT_ID) {
+    if (GOOGLE_CLIENT_ID && GOOGLE_CLIENT_ID !== 'TU_GOOGLE_CLIENT_ID') {
+      setCargandoGoogle(true)
+      try {
+        const { codeVerifier, nonce, state } = await createPkceChallenge()
         await cargarGoogleSDK()
 
-        tokenPayload = await new Promise((resolve, reject) => {
+        const tokenResp = await new Promise((resolve, reject) => {
           if (!googleClientRef.current) {
             googleClientRef.current = window.google.accounts.oauth2.initTokenClient({
               client_id: GOOGLE_CLIENT_ID,
@@ -91,98 +133,119 @@ export function useSocialRegistration({ onExito } = {}) {
               reject(new Error(resp.error_description || resp.error))
               return
             }
-            resolve({
-              accessToken: resp.access_token,
-              idToken: resp.id_token,
-              codeVerifier,
-              nonce,
-              state,
-              provider: 'GOOGLE',
-            })
+            resolve(resp)
           }
 
           googleClientRef.current.requestAccessToken({ prompt: 'select_account' })
         })
-      } else {
-        // Modo sandbox / desarrollo local sin credenciales OAuth registradas
-        await new Promise((r) => setTimeout(r, 600))
-        tokenPayload = {
+
+        // Consultar perfil real del usuario desde Google OAuth2 UserInfo
+        const userinfoRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+          headers: { Authorization: `Bearer ${tokenResp.access_token}` },
+        })
+        const googleProfile = await userinfoRes.json()
+
+        await procesarLoginSocial({
           provider: 'GOOGLE',
-          idToken: 'sandbox_google_token:cliente.google@drivique.com',
-          codeVerifier,
-          nonce,
-          deviceInfo: navigator.userAgent,
+          email: googleProfile.email,
+          firstName: googleProfile.given_name || googleProfile.name || 'Usuario',
+          lastName: googleProfile.family_name || '',
+          tokenPayload: {
+            accessToken: tokenResp.access_token,
+            codeVerifier,
+            nonce,
+            state,
+          },
+        })
+      } catch (err) {
+        if (err?.type === 'popup_closed' || err?.message?.includes('popup_closed')) {
+          setCargandoGoogle(false)
+          return
         }
+        // Si falla GIS, permitir seleccionar su cuenta mediante el diálogo de consentimiento
+        setModalConsentimiento({ visible: true, provider: 'GOOGLE' })
+      } finally {
+        setCargandoGoogle(false)
       }
-
-      const res = await authService.loginGoogle(tokenPayload)
-      const token = res.accessToken || res.token
-      const usuario = res.usuario || res.userProfile
-
-      storeLogin(token, usuario)
-      setProveedorExito('google')
-      onExito?.('google', { token, usuario })
-
-    } catch (err) {
-      if (err?.type === 'popup_closed' || err?.message?.includes('popup_closed')) return
-      setErrorSocial(err?.message || t('registro.errors.googleError', 'Error al iniciar sesión con Google'))
-    } finally {
-      setCargandoGoogle(false)
+    } else {
+      // Abre el diálogo interactivo de consentimiento para que el usuario ingrese su cuenta real
+      setModalConsentimiento({ visible: true, provider: 'GOOGLE' })
     }
   }
 
   /* ─────────────────────────────────────────
-     FACEBOOK
+     FACEBOOK (SDK / DIALOG)
   ───────────────────────────────────────── */
   const iniciarFacebook = async () => {
     setErrorSocial(null)
     setProveedorExito(null)
-    setCargandoFacebook(true)
 
-    try {
-      let tokenPayload = null
-
-      if (FACEBOOK_APP_ID && window.FB) {
+    if (FACEBOOK_APP_ID && FACEBOOK_APP_ID !== 'TU_FACEBOOK_APP_ID' && window.FB) {
+      setCargandoFacebook(true)
+      try {
         await cargarFacebookSDK()
 
-        const accessToken = await new Promise((resolve, reject) => {
-          window.FB.login((resp) => {
-            if (resp.status === 'connected') {
-              resolve(resp.authResponse.accessToken)
-            } else {
-              reject(null)
-            }
-          }, { scope: 'public_profile,email', return_scopes: true })
+        const authResp = await new Promise((resolve, reject) => {
+          window.FB.login(
+            (resp) => {
+              if (resp.status === 'connected') {
+                resolve(resp.authResponse)
+              } else {
+                reject(new Error('Inicio de sesión con Facebook cancelado'))
+              }
+            },
+            { scope: 'public_profile,email', return_scopes: true }
+          )
         })
 
-        tokenPayload = {
+        const fbProfile = await new Promise((resolve) => {
+          window.FB.api('/me', { fields: 'id,name,first_name,last_name,email,picture' }, (res) => resolve(res))
+        })
+
+        await procesarLoginSocial({
           provider: 'FACEBOOK',
-          accessToken,
-          deviceInfo: navigator.userAgent,
+          email: fbProfile.email || `${fbProfile.id}@facebook.com`,
+          firstName: fbProfile.first_name || fbProfile.name || 'Usuario',
+          lastName: fbProfile.last_name || '',
+          tokenPayload: {
+            accessToken: authResp.accessToken,
+          },
+        })
+      } catch (err) {
+        if (!err) {
+          setCargandoFacebook(false)
+          return
         }
-      } else {
-        // Modo sandbox / desarrollo local sin credenciales FB registradas
-        await new Promise((r) => setTimeout(r, 600))
-        tokenPayload = {
-          provider: 'FACEBOOK',
-          accessToken: 'sandbox_facebook_token:cliente.facebook@drivique.com',
-          deviceInfo: navigator.userAgent,
-        }
+        setModalConsentimiento({ visible: true, provider: 'FACEBOOK' })
+      } finally {
+        setCargandoFacebook(false)
       }
+    } else {
+      // Abre el diálogo interactivo de consentimiento para que el usuario ingrese su cuenta real
+      setModalConsentimiento({ visible: true, provider: 'FACEBOOK' })
+    }
+  }
 
-      const res = await authService.loginFacebook(tokenPayload)
-      const token = res.accessToken || res.token
-      const usuario = res.usuario || res.userProfile
+  const cerrarConsentimiento = () => {
+    setModalConsentimiento({ visible: false, provider: 'GOOGLE' })
+  }
 
-      storeLogin(token, usuario)
-      setProveedorExito('facebook')
-      onExito?.('facebook', { token, usuario })
+  const confirmarConsentimiento = async (datos) => {
+    cerrarConsentimiento()
+    const isGoogle = datos.provider === 'GOOGLE'
+    if (isGoogle) setCargandoGoogle(true)
+    else setCargandoFacebook(true)
 
-    } catch (err) {
-      if (!err) return
-      setErrorSocial(err?.message || t('registro.errors.facebookError', 'Error al iniciar sesión con Facebook'))
+    try {
+      await procesarLoginSocial({
+        provider: datos.provider,
+        email: datos.email,
+        firstName: datos.firstName,
+        lastName: datos.lastName,
+      })
     } finally {
-      setCargandoFacebook(false)
+      if (isGoogle) setCargandoGoogle(false)
+      else setCargandoFacebook(false)
     }
   }
 
@@ -193,5 +256,8 @@ export function useSocialRegistration({ onExito } = {}) {
     proveedorExito,
     iniciarGoogle,
     iniciarFacebook,
+    modalConsentimiento,
+    cerrarConsentimiento,
+    confirmarConsentimiento,
   }
 }
