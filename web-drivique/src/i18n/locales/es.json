@@ -2423,6 +2423,7 @@
       "maxAttemptsReached": "Cuenta bloqueada tras {{max}} intentos fallidos.",
       "temporaryLock": "Cuenta bloqueada temporalmente durante {{minutes}} minutos.",
       "accessDenied": "No tienes permisos para acceder. Contacta al administrador principal."
+      ,"serviceUnavailable": "No se pudo iniciar sesión por un error del servidor. Intenta nuevamente."
     }
   },
   "registro": {
@@ -2431,7 +2432,7 @@
     "email": "Correo electrónico",
     "emailPlaceholder": "ejemplo@correo.com",
     "password": "Contraseña",
-    "passwordPlaceholder": "Mínimo 8 caracteres",
+    "passwordPlaceholder": "Mínimo 12 caracteres",
     "confirmPassword": "Confirmar contraseña",
     "confirmPlaceholder": "Repita su contraseña",
     "privacyPolicy": "política de privacidad",
@@ -2491,7 +2492,7 @@
       "feature4": "Soporte 24/7"
     },
     "checklist": {
-      "min8": "Mínimo 8 caracteres",
+      "min12": "Mínimo 12 caracteres",
       "uppercase": "Al menos una mayúscula (A-Z)",
       "lowercase": "Al menos una minúscula (a-z)",
       "number": "Al menos un número (0-9)",
@@ -3383,7 +3384,7 @@
     "accountDeletedText": "Tu cuenta ha sido eliminada permanentemente.",
     "deleteAccountFail": "Error al eliminar la cuenta.",
     "rules": {
-      "min8": "Mínimo 8 caracteres",
+      "min12": "Mínimo 12 caracteres",
       "uppercase": "Una letra mayúscula",
       "number": "Un número",
       "special": "Un carácter especial"
