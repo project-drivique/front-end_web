@@ -1,3 +1,5 @@
+import { api } from './httpClient'
+
 // src/services/exchangeRateService.js
 //
 // Servicio de tasa de cambio USD -> COP en tiempo real.
@@ -62,6 +64,7 @@ function guardarCache(valor) {
 const cacheInicial = leerCache()
 let tasaActual = cacheInicial?.valor || TASA_RESPALDO
 let ultimaActualizacion = cacheInicial?.ts || 0
+
 let promesaEnCurso = null
 const suscriptores = new Set()
 
@@ -72,6 +75,18 @@ function notificarSuscriptores() {
 }
 
 async function pedirTasaAProveedores() {
+  try {
+    const { data } = await api.get('/exchange-rates/latest')
+    if (Array.isArray(data) && data.length > 0) {
+      const match = data.find(r => (r.sourceCurrency === 'USD' && r.targetCurrency === 'COP') || (r.targetCurrency === 'COP'))
+      if (match?.rate && Number(match.rate) > 0) {
+        return Number(match.rate)
+      }
+    }
+  } catch (backendError) {
+    console.warn('[exchangeRateService] Backend exchange rate not reachable, using providers fallback:', backendError?.message)
+  }
+
   for (const proveedor of PROVEEDORES) {
     try {
       const controlador = new AbortController()
