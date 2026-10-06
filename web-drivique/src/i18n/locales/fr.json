@@ -2431,7 +2431,7 @@
     "email": "Adresse e-mail",
     "emailPlaceholder": "exemple@email.com",
     "password": "Mot de passe",
-    "passwordPlaceholder": "Minimum 8 caractères",
+    "passwordPlaceholder": "Minimum 12 caractères",
     "confirmPassword": "Confirmer le mot de passe",
     "confirmPlaceholder": "Répétez votre mot de passe",
     "termsPrefix": "J'accepte les",
@@ -2461,7 +2461,7 @@
       "feature4": "Support 24h/24"
     },
     "checklist": {
-      "min8": "Minimum 8 caractères",
+      "min12": "Minimum 12 caractères",
       "uppercase": "Au moins une majuscule (A-Z)",
       "lowercase": "Au moins une minuscule (a-z)",
       "number": "Au moins un chiffre (0-9)",
@@ -3373,7 +3373,7 @@
     "accountDeletedText": "Votre compte a été supprimé définitivement.",
     "deleteAccountFail": "Erreur lors de la suppression du compte.",
     "rules": {
-      "min8": "Minimum 8 caractères",
+      "min12": "Minimum 12 caractères",
       "uppercase": "Une lettre majuscule",
       "number": "Un chiffre",
       "special": "Un caractère spécial"

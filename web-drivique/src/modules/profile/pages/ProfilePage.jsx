@@ -51,7 +51,7 @@ export default function PerfilPage() {
       if (result.isConfirmed) {
         localStorage.removeItem('last_path')
         logout()
-        navigate('/', { replace: true })
+        window.location.replace('/')
       }
     })
   }
