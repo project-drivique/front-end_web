@@ -1,12 +1,23 @@
 import accessConfig from '../../../mocks/adminAccessConfig.json'
 
 export const ROLES = Object.freeze({
+  CUSTOMER: 'CUSTOMER',
+  EMPLOYEE: 'EMPLOYEE',
+  BRANCH_ADMIN: 'BRANCH_ADMIN',
+  SUPER_ADMIN: 'SUPER_ADMIN',
+  // Backwards compatibility aliases
   USER: accessConfig.roles.user,
   ADMIN: accessConfig.roles.admin,
   BRANCH_MANAGER: accessConfig.roles.branchManager,
 })
 
-export const ADMIN_ROLES = Object.freeze([ROLES.ADMIN, ROLES.BRANCH_MANAGER])
+export const ADMIN_ROLES = Object.freeze([
+  ROLES.SUPER_ADMIN,
+  ROLES.BRANCH_ADMIN,
+  ROLES.EMPLOYEE,
+  ROLES.ADMIN,
+  ROLES.BRANCH_MANAGER,
+])
 
 export const PERMISSIONS = Object.freeze({
   ADMIN_PANEL: accessConfig.permissions.adminPanel,
@@ -14,17 +25,28 @@ export const PERMISSIONS = Object.freeze({
 })
 
 export function getRoleHome(role) {
-  return accessConfig.destinations[role] || accessConfig.destinations[ROLES.USER]
+  if (!role) return '/home'
+  const normalized = String(role).toUpperCase()
+  if (normalized === 'SUPER_ADMIN' || normalized === 'ADMIN' || role === 'administrador') {
+    return '/admin'
+  }
+  if (
+    normalized === 'BRANCH_ADMIN' ||
+    normalized === 'EMPLOYEE' ||
+    normalized === 'BRANCH_MANAGER' ||
+    role === 'encargado_sucursal' ||
+    role === 'encargado'
+  ) {
+    return '/encargado'
+  }
+  return accessConfig.destinations[role] || '/home'
 }
 
 export function hasValidRoleAccess(user) {
-  if (!user || user.activo === false) return false
-  const permissions = Array.isArray(user.permisos) ? user.permisos : []
-  if (user.rol === ROLES.ADMIN || user.rol === 'administrador' || user.rol === 'admin') {
-    return permissions.length === 0 || permissions.includes(PERMISSIONS.ADMIN_PANEL)
-  }
-  if (user.rol === ROLES.BRANCH_MANAGER || user.rol === 'encargado' || user.rol === 'encargado_sucursal' || user.rol === 'branch_manager') {
-    return true
+  if (!user) return false
+  if (user.activo === false || user.accountStatus === 'BLOCKED' || user.accountStatus === 'INACTIVE') {
+    return false
   }
   return true
 }
+
