@@ -217,13 +217,29 @@ export function useSocialRegistration({ onExito } = {}) {
         )
       })
 
+      let rawFirst = (fbUser.first_name || '').trim()
+      let rawLast = (fbUser.last_name || '').trim()
+      const fullName = (fbUser.name || '').trim()
+
+      if (!rawFirst && fullName) {
+        const parts = fullName.split(/\s+/)
+        rawFirst = parts[0]
+        rawLast = parts.length > 1 ? parts[1] : ''
+      } else if (!rawLast && fullName) {
+        const parts = fullName.split(/\s+/)
+        if (parts.length > 1) {
+          rawLast = parts[1]
+        }
+      }
+
       const { codeVerifier, nonce } = await createPkceChallenge()
 
       const payload = {
         provider: 'FACEBOOK',
         email: fbUser.email || `${fbUser.id}@facebook.com`,
-        firstName: fbUser.first_name || fbUser.name || 'Usuario',
-        lastName: fbUser.last_name || '',
+        name: fullName,
+        firstName: rawFirst || 'Usuario',
+        lastName: rawLast,
         picture: fbUser.picture?.data?.url,
         accessToken: authResp.accessToken,
         codeVerifier,
