@@ -32,6 +32,36 @@ async function getApi() {
   // Devuelve la instancia ya cargada.
 }
 
+function mapVehicle(vehicle) {
+  if (!vehicle || typeof vehicle !== 'object') return vehicle
+  const mainImage = vehicle.mainImageUrl || vehicle.imagen || vehicle.foto || ''
+  return {
+    ...vehicle,
+    nombre: vehicle.nombre || [vehicle.brandName, vehicle.model].filter(Boolean).join(' '),
+    marca: vehicle.marca || vehicle.brandName,
+    modelo: vehicle.modelo || vehicle.model,
+    categoria: vehicle.categoria || vehicle.categoryName,
+    categoriaId: vehicle.categoriaId || vehicle.categoryId,
+    transmision: vehicle.transmision || vehicle.transmissionName || vehicle.transmissionCode,
+    combustible: vehicle.combustible || vehicle.fuelTypeName || vehicle.fuelTypeCode,
+    sucursal: vehicle.sucursal || vehicle.branchName,
+    sucursalId: vehicle.sucursalId || vehicle.branchId,
+    ciudad: vehicle.ciudad || vehicle.cityName,
+    año: vehicle.año || vehicle.year,
+    pasajeros: vehicle.pasajeros || vehicle.passengerCapacity,
+    puertas: vehicle.puertas || vehicle.doorsCount,
+    kilometraje: vehicle.kilometraje ?? vehicle.mileage,
+    precio: Number(vehicle.precio ?? vehicle.dailyRate ?? 0),
+    imagen: mainImage,
+    imagenes: Array.isArray(vehicle.imagenes)
+      ? vehicle.imagenes
+      : (mainImage ? [mainImage] : []),
+    destacado: vehicle.destacado ?? vehicle.isFeatured ?? false,
+    activo: vehicle.activo ?? vehicle.isActive ?? true,
+    disponible: vehicle.disponible ?? vehicle.allowsReservation ?? false,
+  }
+}
+
 function filtrarMock(vehiculos, filtros = {}) {
   // Función para aplicar filtros localmente al catálogo mock.
 
@@ -96,11 +126,12 @@ export const catalogService = {
     const api = await getApi()
     // Si no usa mock, obtiene la instancia de la API real.
 
-    const { data } = await api.get('/vehiculos', { params: filtros })
+    const { data } = await api.get('/vehicles/search', { params: filtros })
     // Hace una petición GET al endpoint /vehiculos
     // enviando los filtros como query params.
 
-    return data.vehiculos ?? data
+    const vehicles = data.content ?? data.vehiculos ?? data
+    return Array.isArray(vehicles) ? vehicles.map(mapVehicle) : []
     // Devuelve data.vehiculos si existe;
     // si no, devuelve data completo.
     // Esto ayuda cuando el backend responde con diferentes formatos.
@@ -124,10 +155,10 @@ export const catalogService = {
     const api = await getApi()
     // Si usa backend real, obtiene la instancia API.
 
-    const { data } = await api.get(`/vehiculos/${id}`)
+    const { data } = await api.get(`/vehicles/${id}`)
     // Pide el vehículo por id al backend.
 
-    return data
+    return mapVehicle(data)
     // Devuelve la respuesta.
   },
 
@@ -140,10 +171,11 @@ export const catalogService = {
     const api = await getApi()
     // Si no usa mock, carga la API real.
 
-    const { data } = await api.get('/vehiculos/destacados')
+    const { data } = await api.get('/vehicles/featured')
     // Hace GET al endpoint de destacados.
 
-    return data.vehiculos ?? data
+    const vehicles = data.content ?? data.vehiculos ?? data
+    return Array.isArray(vehicles) ? vehicles.map(mapVehicle) : []
     // Devuelve la lista según el formato de respuesta.
   },
 
