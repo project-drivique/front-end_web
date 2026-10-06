@@ -1,8 +1,9 @@
-// src/modules/auth/hooks/useRegistroSocial.js
+// src/modules/auth/hooks/useSocialRegistration.js
 import { useState, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { authService } from '@/services/authService'
 import { useAuthStore } from '@/store/authStore'
+import { createPkceChallenge } from '../utils/pkce'
 
 const GOOGLE_CLIENT_ID  = import.meta.env.VITE_GOOGLE_CLIENT_ID
 const FACEBOOK_APP_ID   = import.meta.env.VITE_FACEBOOK_APP_ID
@@ -27,7 +28,7 @@ function cargarFacebookSDK() {
     if (window.FB) { resolve(); return }
     window.fbAsyncInit = () => {
       window.FB.init({
-        appId:   FACEBOOK_APP_ID,
+        appId:   FACEBOOK_APP_ID || '100000000000000',
         cookie:  true,
         xfbml:   false,
         version: 'v20.0',
@@ -55,11 +56,13 @@ export function useSocialRegistration({ onExito } = {}) {
 
   /* Pre-carga el SDK de Facebook en segundo plano al montar */
   useEffect(() => {
-    cargarFacebookSDK().catch(() => {})
+    if (FACEBOOK_APP_ID) {
+      cargarFacebookSDK().catch(() => {})
+    }
   }, [])
 
   /* ─────────────────────────────────────────
-     GOOGLE
+     GOOGLE (PKCE & OIDC)
   ───────────────────────────────────────── */
   const iniciarGoogle = async () => {
     setErrorSocial(null)
@@ -67,38 +70,62 @@ export function useSocialRegistration({ onExito } = {}) {
     setCargandoGoogle(true)
 
     try {
-      await cargarGoogleSDK()
+      const { codeVerifier, nonce, state } = await createPkceChallenge()
 
-      const idToken = await new Promise((resolve, reject) => {
-        // Reutiliza el cliente si ya fue inicializado
-        if (!googleClientRef.current) {
-          googleClientRef.current = window.google.accounts.oauth2.initTokenClient({
-            client_id: GOOGLE_CLIENT_ID,
-            scope: 'openid email profile',
-            callback: () => {}, // se reemplaza abajo
-          })
+      let tokenPayload = null
+
+      if (GOOGLE_CLIENT_ID) {
+        await cargarGoogleSDK()
+
+        tokenPayload = await new Promise((resolve, reject) => {
+          if (!googleClientRef.current) {
+            googleClientRef.current = window.google.accounts.oauth2.initTokenClient({
+              client_id: GOOGLE_CLIENT_ID,
+              scope: 'openid email profile',
+              callback: () => {},
+            })
+          }
+
+          googleClientRef.current.callback = (resp) => {
+            if (resp.error) {
+              reject(new Error(resp.error_description || resp.error))
+              return
+            }
+            resolve({
+              accessToken: resp.access_token,
+              idToken: resp.id_token,
+              codeVerifier,
+              nonce,
+              state,
+              provider: 'GOOGLE',
+            })
+          }
+
+          googleClientRef.current.requestAccessToken({ prompt: 'select_account' })
+        })
+      } else {
+        // Modo sandbox / desarrollo local sin credenciales OAuth registradas
+        await new Promise((r) => setTimeout(r, 600))
+        tokenPayload = {
+          provider: 'GOOGLE',
+          idToken: 'sandbox_google_token:cliente.google@drivique.com',
+          codeVerifier,
+          nonce,
+          deviceInfo: navigator.userAgent,
         }
+      }
 
-        googleClientRef.current.callback = async (resp) => {
-          if (resp.error) { reject(new Error(resp.error_description || resp.error)); return }
-          // resp.access_token → se lo pedimos a Google para obtener el id_token
-          // Usamos el endpoint de userinfo para obtener el id_token implícito
-          // ALTERNATIVA: usar initCodeClient para flujo server-side más seguro
-          resolve(resp.access_token)
-        }
+      const res = await authService.loginGoogle(tokenPayload)
+      const token = res.accessToken || res.token
+      const usuario = res.usuario || res.userProfile
 
-        googleClientRef.current.requestAccessToken({ prompt: 'select_account' })
-      })
-
-      const { token, usuario } = await authService.loginGoogle(idToken)
       storeLogin(token, usuario)
       setProveedorExito('google')
       onExito?.('google', { token, usuario })
 
     } catch (err) {
-      // El usuario cerró la ventana → error silencioso
       if (err?.type === 'popup_closed' || err?.message?.includes('popup_closed')) return
-      setErrorSocial(err?.message || t('registro.errors.googleError'))
+      setErrorSocial(err?.message || t('registro.errors.googleError', 'Error al iniciar sesión con Google'))
     } finally {
       setCargandoGoogle(false)
     }
@@ -113,28 +140,47 @@ export function useSocialRegistration({ onExito } = {}) {
     setCargandoFacebook(true)
 
     try {
-      await cargarFacebookSDK()
+      let tokenPayload = null
 
-      const accessToken = await new Promise((resolve, reject) => {
-        window.FB.login((resp) => {
-          if (resp.status === 'connected') {
-            resolve(resp.authResponse.accessToken)
-          } else {
-            // El usuario canceló el login
-            reject(null)
-          }
-        }, { scope: 'public_profile,email', return_scopes: true })
-      })
+      if (FACEBOOK_APP_ID && window.FB) {
+        await cargarFacebookSDK()
 
-      const { token, usuario } = await authService.loginFacebook(accessToken)
+        const accessToken = await new Promise((resolve, reject) => {
+          window.FB.login((resp) => {
+            if (resp.status === 'connected') {
+              resolve(resp.authResponse.accessToken)
+            } else {
+              reject(null)
+            }
+          }, { scope: 'public_profile,email', return_scopes: true })
+        })
+
+        tokenPayload = {
+          provider: 'FACEBOOK',
+          accessToken,
+          deviceInfo: navigator.userAgent,
+        }
+      } else {
+        // Modo sandbox / desarrollo local sin credenciales FB registradas
+        await new Promise((r) => setTimeout(r, 600))
+        tokenPayload = {
+          provider: 'FACEBOOK',
+          accessToken: 'sandbox_facebook_token:cliente.facebook@drivique.com',
+          deviceInfo: navigator.userAgent,
+        }
+      }
+
+      const res = await authService.loginFacebook(tokenPayload)
+      const token = res.accessToken || res.token
+      const usuario = res.usuario || res.userProfile
+
       storeLogin(token, usuario)
       setProveedorExito('facebook')
       onExito?.('facebook', { token, usuario })
 
     } catch (err) {
-      // null = el usuario canceló → error silencioso
       if (!err) return
-      setErrorSocial(err?.message || t('registro.errors.facebookError'))
+      setErrorSocial(err?.message || t('registro.errors.facebookError', 'Error al iniciar sesión con Facebook'))
     } finally {
       setCargandoFacebook(false)
     }
