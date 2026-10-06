@@ -197,7 +197,7 @@ export function useSocialRegistration({ onExito } = {}) {
                   reject(new Error('popup_closed'))
                 }
               },
-              { scope: 'public_profile,email', return_scopes: true }
+              { scope: 'public_profile', return_scopes: true }
             )
             return
           } catch {
