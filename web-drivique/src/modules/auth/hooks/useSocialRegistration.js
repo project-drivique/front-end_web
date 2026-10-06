@@ -206,14 +206,12 @@ export function useSocialRegistration({ onExito } = {}) {
         }
 
         // Flujo OAuth Dialog popup estándar (soporta http://localhost y https)
-        const redirectUri = window.location.origin + window.location.pathname
+        const redirectUri = window.location.origin + '/'
         const authUrl = `https://www.facebook.com/v20.0/dialog/oauth?client_id=${encodeURIComponent(
           FACEBOOK_APP_ID
         )}&redirect_uri=${encodeURIComponent(
           redirectUri
-        )}&response_type=token&scope=${encodeURIComponent(
-          'public_profile,email'
-        )}&state=${encodeURIComponent(state)}`
+        )}&response_type=token&scope=public_profile&state=${encodeURIComponent(state)}`
 
         const popup = window.open(authUrl, 'facebook_oauth', 'width=600,height=700,top=100,left=100')
         if (!popup) {
