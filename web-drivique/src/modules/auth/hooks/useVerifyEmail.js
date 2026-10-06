@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { authService, DURACION_CODIGO_VERIFICACION_MS } from '../../../services/authService'
 import { useAuthStore } from '../../../store/authStore'
-import { getRoleHome } from '../utils/accessControl'
 import { showAlert } from '../../../utils/swalConfig'
 
 const LARGO_CODIGO = 6
@@ -12,10 +11,11 @@ const SEGUNDOS_EXPIRACION_INICIAL = Math.floor(DURACION_CODIGO_VERIFICACION_MS /
 export function useVerifyEmail() {
   const navigate = useNavigate()
   const verificacionCorreo = useAuthStore((s) => s.verificacionCorreo)
-  const storeLogin = useAuthStore((s) => s.login)
   const cancelarVerificacionCorreo = useAuthStore((s) => s.cancelarVerificacionCorreo)
 
-  const [codigoEnviado, setCodigoEnviado] = useState(false)
+  // El registro ya envía el primer OTP; la pantalla debe permitir ingresarlo
+  // inmediatamente y reservar el endpoint de reenvío para solicitudes posteriores.
+  const [codigoEnviado, setCodigoEnviado] = useState(Boolean(verificacionCorreo?.correo))
   const [enviando, setEnviando] = useState(false)
   const [codigo, setCodigo] = useState('')
   const [cargando, setCargando] = useState(false)
@@ -117,20 +117,7 @@ export function useVerifyEmail() {
         await authService.verificarCodigoRegistro(verificacionCorreo.correo, codigo)
       }
 
-      const token = verificacionCorreo?.datosAcceso?.token || 'mock_token_' + Date.now()
-      const usuario = {
-        correo: verificacionCorreo?.correo || '',
-        nombre: verificacionCorreo?.datosAcceso?.nombre || '',
-        apellido: verificacionCorreo?.datosAcceso?.apellido || '',
-        rol: verificacionCorreo?.datosAcceso?.rol || 'usuario',
-        telefono: verificacionCorreo?.datosAcceso?.telefono || '',
-        cedula: verificacionCorreo?.datosAcceso?.cedula || '',
-        fechaNacimiento: verificacionCorreo?.datosAcceso?.fechaNacimiento || '',
-        emailVerificado: true,
-      }
-
-      storeLogin(token, usuario)
-
+      cancelarVerificacionCorreo()
       setExito(true)
 
       showAlert({
@@ -141,8 +128,7 @@ export function useVerifyEmail() {
         showConfirmButton: false,
       })
 
-      const destino = getRoleHome(verificacionCorreo?.datosAcceso?.rol)
-      navigate(destino, { replace: true })
+      navigate('/login', { replace: true })
     } catch (err) {
       const status = err?.response?.status
       if (status === 410) {
