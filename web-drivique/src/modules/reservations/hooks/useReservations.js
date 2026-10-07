@@ -32,13 +32,19 @@ export function useHistorialReservas() {
           const vehiculo = r.vehiculoId ? await catalogService.getVehiculoById(r.vehiculoId).catch(() => null) : null
           const fechaInicio = r.fechaInicio || r.reservaDetalles?.fechaInicio
           const fechaFin = r.fechaFin || r.reservaDetalles?.fechaFin
+          const estadoFinal = estadoReserva(r)
+          let eligibility = null
+          if (estadoFinal === 'finalizada') {
+             eligibility = await reservationsService.checkReviewEligibility(r.id)
+          }
           return {
             ...r,
             fechaInicio,
             fechaFin,
             vehiculo: vehiculo || r.vehiculo || null,
             estadoRaw: r.estado || null,
-            estado: estadoReserva(r)
+            estado: estadoFinal,
+            eligibility
           }
         })
       )
