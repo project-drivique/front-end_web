@@ -116,8 +116,27 @@ export const reservationsService = {
     }
 
     const api = await getApi()
-    const { data } = await api.put(`/reservas/${id}/valoracion`, valoracion)
-    return data
+    const payload = {
+      reservationId: id,
+      rating: valoracion.estrellas,
+      comment: valoracion.comentario || ''
+    }
+    
+    await api.post(`/reviews/vehicles`, payload)
+    
+    // Devolvemos el mismo objeto local para que el UI se actualice
+    return { estrellas: valoracion.estrellas, comentario: valoracion.comentario, actualizadaEn: new Date().toISOString() }
+  },
+
+  checkReviewEligibility: async (id) => {
+    if (USAR_MOCK) return { canReviewVehicle: true, canReviewBranch: true }
+    try {
+      const api = await getApi()
+      const { data } = await api.get(`/reservations/${id}/review-eligibility`)
+      return data
+    } catch {
+      return { canReviewVehicle: false, canReviewBranch: false }
+    }
   },
 
   getValoracionesLocales: () => {
