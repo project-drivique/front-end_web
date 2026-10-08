@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { FaSpinner, FaCheckCircle, FaExclamationTriangle, FaShieldAlt } from 'react-icons/fa';
-import { reservationService } from '@/services/reservationService';
+import { reservationsService } from '@/services/reservationsService';
 import logo from '@/assets/logo.png';
 import { useBrand } from '@/contexts/BrandContext';
 import { useAuthStore } from '../../../store/authStore';
@@ -34,56 +34,26 @@ export default function RespuestaPagoPage() {
     const refParam = searchParams.get('ref') || searchParams.get('reference');
     const refQuery = refStored || attemptStored || refParam;
 
-    let encontrada = refQuery ? reservationService.obtenerPorReferencia(refQuery) : null;
-    if (!encontrada && transactionId) {
-      const all = reservationService.getReservas();
-      encontrada = all.find(r => r.paymentId === transactionId) || (all.length > 0 ? all[all.length - 1] : null);
-    }
-
-    const procesarPagoYRedirigir = (targetReserva, pType) => {
-      const actualRef = targetReserva.referencia || targetReserva.codigo || targetReserva.id;
-      reservationService.actualizarEstado(actualRef, 'CONFIRMADA', transactionId);
-
-      let metodo = 'Pago Wompi';
-      if (pType) {
-        if (pType === 'NEQUI') metodo = 'Pago Wompi - Nequi';
-        else if (pType === 'DAVIPLATA') metodo = 'Pago Wompi - Daviplata';
-        else if (pType === 'CARD') metodo = 'Pago Wompi - Tarjeta';
-        else if (pType === 'PSE') metodo = 'Pago Wompi - PSE';
-        else if (pType === 'BANCOLOMBIA_COLLECT') metodo = 'Pago Wompi - Efectivo Bancolombia';
-        else if (pType.includes('BANCOLOMBIA')) metodo = 'Pago Wompi - Bancolombia';
-        else metodo = `Pago Wompi - ${pType}`;
-      }
-      reservationService.actualizarMedioPago(actualRef, metodo);
-
-      // Redirección inmediata a la firma de contrato sin pantalla ni retardo intermedio
-      navigate(`/contrato/${encodeURIComponent(actualRef)}`, { replace: true });
-    };
-
     if (transactionId) {
       fetch(`https://sandbox.wompi.co/v1/transactions/${transactionId}`)
         .then(res => res.json())
         .then(data => {
           const status = data?.data?.status;
-          const pType = data?.data?.payment_method_type;
           const wompiRef = data?.data?.reference;
 
-          let targetReserva = encontrada;
-          if (!targetReserva && wompiRef) {
-            targetReserva = reservationService.obtenerPorReferencia(wompiRef);
-          }
-
           if (status === 'APPROVED') {
-            if (targetReserva) {
-              procesarPagoYRedirigir(targetReserva, pType);
+            const holdId = wompiRef || refQuery;
+            if (holdId) {
+              reservationsService.confirmarPago(holdId)
+                .then(() => {
+                  navigate(`/contrato/${encodeURIComponent(holdId)}`, { replace: true });
+                })
+                .catch(err => {
+                  console.error('Error confirming payment:', err);
+                  navigate('/reservas', { replace: true });
+                });
             } else {
-              const all = reservationService.getReservas();
-              const fallbackReserva = all.length > 0 ? all[all.length - 1] : null;
-              if (fallbackReserva) {
-                procesarPagoYRedirigir(fallbackReserva, pType);
-              } else {
-                navigate('/reservas', { replace: true });
-              }
+              navigate('/reservas', { replace: true });
             }
           } else {
             // Redirección inmediata a Mis Reservas sin pantallas intermedias si el pago no fue aprobado o fue cancelado
