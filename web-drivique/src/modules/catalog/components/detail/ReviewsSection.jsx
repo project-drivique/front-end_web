@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { FaStar, FaTimes } from 'react-icons/fa'
 import { api } from '../../../../services/httpClient'
