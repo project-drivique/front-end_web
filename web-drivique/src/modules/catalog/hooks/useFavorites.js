@@ -4,7 +4,9 @@ import { useAuthStore } from '../../../store/authStore'
 
 export function useFavoritos() {
   const [favoritos, setFavoritos] = useState([])
+  const [vehiculosFavoritos, setVehiculosFavoritos] = useState([])
   const [cargado, setCargado] = useState(false)
+  const [error, setError] = useState(null)
   const token = useAuthStore(state => state.token)
   const isAuthenticated = !!token
 
@@ -15,20 +17,27 @@ export function useFavoritos() {
       if (!isAuthenticated) {
         if (mounted) {
           setFavoritos([])
+          setVehiculosFavoritos([])
           setCargado(true)
         }
         return
       }
       try {
+        setError(null)
         const { data } = await api.get('/users/me/favorites')
         if (mounted) {
-          // data es una lista de VehicleCardResponseDTO, guardamos solo los IDs
           if (Array.isArray(data)) {
-            setFavoritos(data.map(v => v.id))
+            setFavoritos(data.map(v => String(v.id)))
+            setVehiculosFavoritos(data)
           }
         }
       } catch (error) {
         console.error('Error fetching favorites:', error)
+        if (mounted) {
+          setError(error)
+          setFavoritos([])
+          setVehiculosFavoritos([])
+        }
       } finally {
         if (mounted) setCargado(true)
       }
@@ -44,25 +53,35 @@ export function useFavoritos() {
   const toggleFavorito = async (id) => {
     if (!isAuthenticated) return
 
-    const isFav = favoritos.includes(id)
+    const normalizedId = String(id)
+    const isFav = favoritos.includes(normalizedId)
 
     // Optimistic update
-    setFavoritos(prev => isFav ? prev.filter(x => x !== id) : [...prev, id])
+    setFavoritos(prev => isFav ? prev.filter(x => x !== normalizedId) : [...prev, normalizedId])
+    if (isFav) {
+      setVehiculosFavoritos(prev => prev.filter(vehicle => String(vehicle.id) !== normalizedId))
+    }
 
     try {
       if (isFav) {
-        await api.delete(`/users/me/favorites/${id}`)
+        await api.delete(`/users/me/favorites/${normalizedId}`)
       } else {
-        await api.post(`/users/me/favorites/${id}`)
+        await api.post(`/users/me/favorites/${normalizedId}`)
+        const { data } = await api.get('/users/me/favorites')
+        const vehicles = Array.isArray(data) ? data : []
+        setFavoritos(vehicles.map(vehicle => String(vehicle.id)))
+        setVehiculosFavoritos(vehicles)
       }
     } catch (error) {
       console.error('Error toggling favorite:', error)
-      // Revertir en caso de error
-      setFavoritos(prev => isFav ? [...prev, id] : prev.filter(x => x !== id))
+      const { data } = await api.get('/users/me/favorites')
+      const vehicles = Array.isArray(data) ? data : []
+      setFavoritos(vehicles.map(vehicle => String(vehicle.id)))
+      setVehiculosFavoritos(vehicles)
     }
   }
 
-  const esFavorito = (id) => favoritos.includes(id)
+  const esFavorito = (id) => favoritos.includes(String(id))
 
-  return { favoritos, setFavoritos, toggleFavorito, esFavorito, cargado }
+  return { favoritos, vehiculosFavoritos, toggleFavorito, esFavorito, cargado, error }
 }
