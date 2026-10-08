@@ -116,15 +116,25 @@ export const reservationsService = {
     }
 
     const api = await getApi()
-    const { data } = await api.put(`/reservas/${id}/valoracion`, valoracion)
-    return data
+    const payload = {
+      reservationId: id,
+      rating: valoracion.estrellas,
+      comment: valoracion.comentario || ''
+    }
+    
+    await api.post(`/reviews/vehicles`, payload)
+    
+    // Devolvemos el mismo objeto local para que el UI se actualice
+    return { estrellas: valoracion.estrellas, comentario: valoracion.comentario, actualizadaEn: new Date().toISOString() }
   },
 
-  getValoracionesLocales: () => {
+  checkReviewEligibility: async (id) => {
     try {
-      return JSON.parse(localStorage.getItem('drivique_valoraciones') || '{}')
+      const api = await getApi()
+      const { data } = await api.get(`/reservations/${id}/review-eligibility`)
+      return data
     } catch {
-      return {}
+      return { canReviewVehicle: false, canReviewBranch: false }
     }
-  },
+  }
 }
