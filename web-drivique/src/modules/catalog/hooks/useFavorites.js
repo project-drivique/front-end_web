@@ -1,39 +1,68 @@
-﻿import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
+import { api } from '../../../services/httpClient'
+import { useAuthStore } from '../../../store/authStore'
 
-const DEFAULT_STORAGE_KEY = 'Drivique_favoritos'
-
-export function useFavoritos(storageKey = DEFAULT_STORAGE_KEY) {
-  const key = useMemo(() => storageKey || DEFAULT_STORAGE_KEY, [storageKey])
+export function useFavoritos() {
   const [favoritos, setFavoritos] = useState([])
   const [cargado, setCargado] = useState(false)
+  const token = useAuthStore(state => state.token)
+  const isAuthenticated = !!token
 
   useEffect(() => {
-    if (typeof window === 'undefined') return
+    let mounted = true
 
-    const raw = localStorage.getItem(key)
-    if (raw) {
+    const fetchFavoritos = async () => {
+      if (!isAuthenticated) {
+        if (mounted) {
+          setFavoritos([])
+          setCargado(true)
+        }
+        return
+      }
       try {
-        const data = JSON.parse(raw)
-        if (Array.isArray(data)) setFavoritos(data)
-      } catch {
-        localStorage.removeItem(key)
+        const { data } = await api.get('/users/me/favorites')
+        if (mounted) {
+          // data es una lista de VehicleCardResponseDTO, guardamos solo los IDs
+          if (Array.isArray(data)) {
+            setFavoritos(data.map(v => v.id))
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching favorites:', error)
+      } finally {
+        if (mounted) setCargado(true)
       }
     }
-    setCargado(true)
-  }, [key])
 
-  useEffect(() => {
-    if (typeof window === 'undefined' || !cargado) return
-    localStorage.setItem(key, JSON.stringify(favoritos))
-  }, [favoritos, key, cargado])
+    fetchFavoritos()
 
-  const toggleFavorito = (id) => {
-    setFavoritos(prev =>
-      prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
-    )
+    return () => {
+      mounted = false
+    }
+  }, [isAuthenticated])
+
+  const toggleFavorito = async (id) => {
+    if (!isAuthenticated) return
+
+    const isFav = favoritos.includes(id)
+
+    // Optimistic update
+    setFavoritos(prev => isFav ? prev.filter(x => x !== id) : [...prev, id])
+
+    try {
+      if (isFav) {
+        await api.delete(`/users/me/favorites/${id}`)
+      } else {
+        await api.post(`/users/me/favorites/${id}`)
+      }
+    } catch (error) {
+      console.error('Error toggling favorite:', error)
+      // Revertir en caso de error
+      setFavoritos(prev => isFav ? [...prev, id] : prev.filter(x => x !== id))
+    }
   }
 
   const esFavorito = (id) => favoritos.includes(id)
 
-  return { favoritos, setFavoritos, toggleFavorito, esFavorito }
+  return { favoritos, setFavoritos, toggleFavorito, esFavorito, cargado }
 }
