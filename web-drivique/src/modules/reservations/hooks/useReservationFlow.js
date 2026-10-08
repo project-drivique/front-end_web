@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/store/authStore'
 import { showAlert } from '@/utils/swalConfig'
-import { reservationService } from '@/services/reservationService'
+import { reservationsService } from '@/services/reservationsService'
 import { documentsService } from '@/services/documentsService'
 import { generarReferenciaUnica, aCentavos } from '@/services/wompiService'
 import { paymentFactory, PaymentContext } from '@/modules/payments/strategies'
@@ -324,7 +324,7 @@ export function useReservationFlow() {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  const handleReservar = () => {
+  const handleReservar = async () => {
     if (!usuario) {
       showAlert({
         icon: 'info',
@@ -405,69 +405,49 @@ export function useReservationFlow() {
     const clienteTelFinal = datosForm.celular || datosForm.telefono || usuario?.telefono || '+57 300 000 0000'
     const clienteDocFinal = datosForm.numDoc || datosForm.documento || datosForm.cedula || usuario?.cedula || '1020304050'
 
-    const reservaGuardada = reservationService.guardarReserva({
-      referencia,
-      vehiculoId: vehiculo.id,
-      vehiculoNombre: vehiculo.nombre,
-      clienteNombre: clienteNombreFinal,
-      clienteCorreo: clienteCorreoFinal,
-      clienteTelefono: clienteTelFinal,
-      clienteDocumento: clienteDocFinal,
-      vehiculo: {
-        id: vehiculo.id,
-        nombre: vehiculo.nombre,
-        marca: vehiculo.marca,
-        modelo: vehiculo.modelo,
-        placa: vehiculo.placa,
-        color: vehiculo.color,
-        año: vehiculo.año || vehiculo.anio || 2024,
-        sucursal: vehiculo.sucursal,
-        precio: vehiculo.precio,
-        precioDiario: vehiculo.precioDiario || vehiculo.precio,
-        seguros: vehiculo.seguros,
-        servicios: vehiculo.servicios,
-        imagenes: vehiculo.imagenes,
-        imagen: vehiculo.imagen || vehiculo.imagenes?.[0]
-      },
-      estado: reserva.metodoPago === 'efectivo' ? 'PENDIENTE_EFECTIVO' : 'PENDIENTE',
-      fechaCreacion: new Date().toISOString(),
-      fechaReserva: new Date().toISOString(),
-      fechaInicio: reserva.fechaInicio,
-      fechaFin: reserva.fechaFin,
-      horaInicio: reserva.horaInicio,
-      horaFin: reserva.horaFin,
-      sucursal: vehiculo.sucursal,
-      sucursalRetiro: reserva.sucursalRetiro,
-      sucursalDevolucion: reserva.sucursalDevolucion,
-      metodoPago: reserva.metodoPago,
-      datosForm: {
-        ...datosForm,
-        nombre: clienteNombreFinal,
-        correo: clienteCorreoFinal,
-        celular: clienteTelFinal,
-        telefono: clienteTelFinal,
-        numDoc: clienteDocFinal,
-        tipoDoc: datosForm.tipoDoc || usuario?.tipoDocumento || 'CC',
-        direccion: datosForm.direccion || usuario?.direccion || '',
-        cedulaPdf: docCedulaFinal,
-        licenciaPdf: docLicenciaFinal,
-      },
-      reservaDetalles: reserva,
-      total: finalTotalCop,
-      totalCOP: finalTotalCop,
-      promocion: appliedPromotion ? { id: appliedPromotion.id, codigo: appliedPromotion.codigo, descuento: discountCop } : null,
-      seguroIdx,
-      serviciosSeleccionados,
-    })
+    try {
+      const datosParaBackend = {
+        vehicleId: vehiculo.id,
+        pickupDate: new Date(`${reserva.fechaInicio}T${reserva.horaInicio}:00Z`).toISOString(),
+        returnDate: new Date(`${reserva.fechaFin}T${reserva.horaFin}:00Z`).toISOString(),
+        insuranceCoverageId: vehiculo.seguros[seguroIdx]?.id || null,
+        mileagePlanId: null, // Asume que el backend lo manejará o se puede enviar dummy
+        additionalServiceIds: (vehiculo.servicios || []).filter(s => serviciosSeleccionados.includes(s.nombre)).map(s => s.id).filter(Boolean),
+        couponCode: appliedPromotion ? appliedPromotion.codigo : null,
+        cashPaymentBranchId: reserva.metodoPago === 'efectivo' ? (vehiculo.sucursalId || null) : null,
+        // Enviar datos extra necesarios por el flujo de Drivique temporalmente
+        customerInfo: {
+          name: clienteNombreFinal,
+          email: clienteCorreoFinal,
+          phone: clienteTelFinal,
+          document: clienteDocFinal,
+          tipoDoc: datosForm.tipoDoc || usuario?.tipoDocumento || 'CC'
+        },
+        metodoPago: reserva.metodoPago,
+        total: finalTotalCop,
+        sucursalRetiro: reserva.sucursalRetiro,
+        sucursalDevolucion: reserva.sucursalDevolucion
+      }
 
-    if (reservaGuardada.fechaLimitePago) setFechaLimitePago(reservaGuardada.fechaLimitePago)
-    sessionStorage.setItem('current_wompi_reference', referencia)
-    setReservaCreada(reservaGuardada)
-    setDatosPago({ referencia, amountInCents: aCentavos(finalTotalCop) })
-    setExito(true)
+      const holdResult = await reservationsService.crearReserva(datosParaBackend)
+      
+      const refFinal = holdResult?.id || holdResult?.holdId || referencia
+      if (holdResult?.fechaLimitePago) setFechaLimitePago(holdResult.fechaLimitePago)
+      
+      sessionStorage.setItem('current_wompi_reference', refFinal)
+      setReservaCreada({ ...holdResult, referencia: refFinal, horasLimitePago: 72, total: finalTotalCop })
+      setDatosPago({ referencia: refFinal, amountInCents: aCentavos(finalTotalCop) })
+      setExito(true)
 
-    // Limpiar sessionStorage al completar reserva exitosamente
-    sessionStorage.removeItem(storageKey)
+      sessionStorage.removeItem(storageKey)
+    } catch (error) {
+      console.error('Error creating reservation hold:', error)
+      showAlert({
+        icon: 'error',
+        title: 'Error',
+        text: 'No se pudo crear la reserva en el servidor. Por favor intenta de nuevo.'
+      })
+    }
   }
 
   const handleContratoFirmado = () => {
