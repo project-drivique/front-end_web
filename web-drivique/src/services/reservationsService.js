@@ -129,7 +129,6 @@ export const reservationsService = {
   },
 
   checkReviewEligibility: async (id) => {
-    if (USAR_MOCK) return { canReviewVehicle: true, canReviewBranch: true }
     try {
       const api = await getApi()
       const { data } = await api.get(`/reservations/${id}/review-eligibility`)
@@ -137,13 +136,5 @@ export const reservationsService = {
     } catch {
       return { canReviewVehicle: false, canReviewBranch: false }
     }
-  },
-
-  getValoracionesLocales: () => {
-    try {
-      return JSON.parse(localStorage.getItem('drivique_valoraciones') || '{}')
-    } catch {
-      return {}
-    }
-  },
+  }
 }

@@ -48,9 +48,7 @@ export function useHistorialReservas() {
           }
         })
       )
-      const valoraciones = reservationsService.getValoracionesLocales ? reservationsService.getValoracionesLocales() : {}
       setReservas(conVehiculo
-        .map(r => ({ ...r, valoracion: valoraciones[r.id] || r.valoracion || null }))
         .sort((a, b) => {
           const timeA = a.fechaInicio ? new Date(a.fechaInicio).getTime() : 0
           const timeB = b.fechaInicio ? new Date(b.fechaInicio).getTime() : 0

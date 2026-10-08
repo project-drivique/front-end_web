@@ -37,13 +37,6 @@ export default function FavoritesPage() {
     const setFavs = new Set()
     favoritos.forEach(id => setFavs.add(String(id)))
 
-    try {
-      const legacy1 = JSON.parse(localStorage.getItem('Drivique_favoritos') || '[]')
-      if (Array.isArray(legacy1)) legacy1.forEach(id => setFavs.add(String(id)))
-      const legacy2 = JSON.parse(localStorage.getItem('favoritosVehiculos') || '[]')
-      if (Array.isArray(legacy2)) legacy2.forEach(id => setFavs.add(String(id)))
-    } catch { /* Se ignoran datos heredados dañados y se usa el estado actual. */ }
-
     return Array.from(setFavs)
   }, [favoritos])
 
@@ -88,15 +81,6 @@ export default function FavoritesPage() {
   const handleEliminar = (id, e) => {
     e.stopPropagation()
     toggleFavorito(id)
-    try {
-      ['Drivique_favoritos', 'favoritosVehiculos'].forEach(key => {
-        const arr = JSON.parse(localStorage.getItem(key) || '[]')
-        if (Array.isArray(arr)) {
-          const filtrado = arr.filter(x => String(x) !== String(id))
-          localStorage.setItem(key, JSON.stringify(filtrado))
-        }
-      })
-    } catch { /* La eliminación principal ya se realizó en el almacén actual. */ }
   }
 
   const c = {
