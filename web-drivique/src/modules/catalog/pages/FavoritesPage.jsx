@@ -1,10 +1,9 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { FaHeart, FaTrashAlt, FaCar, FaArrowRight, FaUsers, FaCog, FaGasPump } from 'react-icons/fa'
 import { useAuthStore } from '@/store/authStore'
 import { useLanding } from '@/modules/landing/LandingContext'
-import { catalogService } from '@/services/catalogService'
 import { useFavoritos } from '../hooks/useFavorites'
 import { formatCurrency } from '@/utils/currencyUtils'
 import CatalogTopHeader from '../components/CatalogTopHeader'
@@ -17,10 +16,6 @@ export default function FavoritesPage() {
   const { moneda, tema } = useLanding()
   const esModoOscuro = tema === 'oscuro'
 
-  const [vehiculos, setVehiculos] = useState([])
-  const [cargando, setCargando] = useState(true)
-  const [error, setError] = useState(null)
-
   const [busqueda, setBusqueda] = useState('')
   const [categoria, setCategoria] = useState('Todos')
 
@@ -30,7 +25,8 @@ export default function FavoritesPage() {
     return `favoritosVehiculos_${usuario.id}`
   }, [usuario?.id])
 
-  const { favoritos, toggleFavorito } = useFavoritos(favoritosKey)
+  const { favoritos, vehiculosFavoritos: vehiculos, toggleFavorito, cargado, error } = useFavoritos(favoritosKey)
+  const cargando = !cargado
 
   // Conjunto único de IDs guardados
   const idsFavoritos = useMemo(() => {
@@ -40,22 +36,6 @@ export default function FavoritesPage() {
     return Array.from(setFavs)
   }, [favoritos])
 
-  // Carga lista de vehículos
-  useEffect(() => {
-    async function cargar() {
-      try {
-        setCargando(true)
-        const datos = await catalogService.getVehiculos()
-        setVehiculos(datos || [])
-      } catch (err) {
-        setError(err?.message || 'Error al cargar los vehículos')
-      } finally {
-        setCargando(false)
-      }
-    }
-    cargar()
-  }, [])
-
   // Filtra vehículos favoritos + búsqueda/categoría
   const vehiculosFavoritos = useMemo(() => {
     return vehiculos.filter((v) => {
@@ -64,14 +44,14 @@ export default function FavoritesPage() {
 
       if (busqueda) {
         const query = busqueda.toLowerCase().trim()
-        const matchNombre = v.nombre?.toLowerCase().includes(query)
-        const matchMarca = v.marca?.toLowerCase().includes(query)
-        const matchCat = v.categoria?.toLowerCase().includes(query)
+        const matchNombre = v.model?.toLowerCase().includes(query)
+        const matchMarca = v.brandName?.toLowerCase().includes(query)
+        const matchCat = v.categoryName?.toLowerCase().includes(query)
         if (!matchNombre && !matchMarca && !matchCat) return false
       }
 
       if (categoria && categoria !== 'Todos') {
-        if (v.categoria?.toLowerCase() !== categoria.toLowerCase()) return false
+        if (v.categoryName?.toLowerCase() !== categoria.toLowerCase()) return false
       }
 
       return true
@@ -120,11 +100,9 @@ export default function FavoritesPage() {
               onChange={(e) => setCategoria(e.target.value)}
             >
               <option value="Todos">{t('favoritos.allCategories', 'Todas las categorías')}</option>
-              <option value="Sedán">Sedán</option>
-              <option value="SUV">SUV</option>
-              <option value="Compacto">Compacto</option>
-              <option value="Económico">Económico</option>
-              <option value="Deportivo">Deportivo</option>
+              {[...new Set(vehiculos.map(vehicle => vehicle.categoryName).filter(Boolean))].map(nombre => (
+                <option key={nombre} value={nombre}>{nombre}</option>
+              ))}
             </select>
           </div>
         )}
@@ -138,7 +116,7 @@ export default function FavoritesPage() {
 
         {!cargando && error && (
           <div className="favoritos-vacio-contenedor">
-            <p style={{ color: '#ef4444' }}>{error}</p>
+            <p style={{ color: '#ef4444' }}>{error?.response?.data?.detail || t('favoritos.loadError', 'No fue posible cargar tus favoritos.')}</p>
           </div>
         )}
 
@@ -183,8 +161,8 @@ export default function FavoritesPage() {
               >
                 {/* Imagen agrandada */}
                 <div className="favorito-card-imagen-wrap">
-                  {v.imagenes?.[0] ? (
-                    <img src={v.imagenes[0]} alt={v.nombre} />
+                  {v.mainImageUrl ? (
+                    <img src={v.mainImageUrl} alt={`${v.brandName} ${v.model}`} />
                   ) : (
                     <FaCar style={{ fontSize: 44, color: '#94a3b8' }} />
                   )}
@@ -195,23 +173,23 @@ export default function FavoritesPage() {
                   <div>
                     <div className="favorito-card-top-header">
                       <div>
-                        <span className="favorito-badge-categoria">{v.categoria || 'Sedán'}</span>
-                        <h3 className="favorito-card-titulo">{v.nombre}</h3>
+                        <span className="favorito-badge-categoria">{v.categoryName}</span>
+                        <h3 className="favorito-card-titulo">{v.brandName} {v.model}</h3>
                       </div>
                       <div className="favorito-card-precio">
-                        {formatCurrency(v.precio, moneda)} <span>/{t('vehiculo.perDay', 'día')}</span>
+                        {formatCurrency(v.dailyRate, moneda)} <span>/{t('vehiculo.perDay', 'día')}</span>
                       </div>
                     </div>
 
                     <div className="favorito-specs-list">
                       <span className="favorito-spec-item">
-                        <FaCog style={{ color: 'var(--brand-text)' }} /> {v.transmision || 'Automática'}
+                        <FaCog style={{ color: 'var(--brand-text)' }} /> {v.transmissionName}
                       </span>
                       <span className="favorito-spec-item">
-                        <FaUsers style={{ color: 'var(--brand-text)' }} /> {v.pasajeros || v.capacidad || 5} {t('vehiculo.seats', 'Plazas')}
+                        <FaUsers style={{ color: 'var(--brand-text)' }} /> {v.passengerCapacity} {t('vehiculo.seats', 'Plazas')}
                       </span>
                       <span className="favorito-spec-item">
-                        <FaGasPump style={{ color: 'var(--brand-text)' }} /> {v.combustible || 'Gasolina'}
+                        <FaGasPump style={{ color: 'var(--brand-text)' }} /> {v.fuelTypeName}
                       </span>
                     </div>
                   </div>

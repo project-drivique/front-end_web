@@ -73,7 +73,9 @@ export function useHistorialReservas() {
 
   const guardarValoracion = async (id, valoracion) => {
     const guardada = await reservationsService.guardarValoracion(id, valoracion)
-    setReservas(prev => prev.map(r => r.id === id ? { ...r, valoracion: guardada } : r))
+    setReservas(prev => prev.map(r => r.id === id
+      ? { ...r, valoracion: guardada, eligibility: { ...(r.eligibility || {}), canReviewVehicle: false } }
+      : r))
     return guardada
   }
 
