@@ -1,1051 +1,979 @@
 [
-  {
-    "id": 1,
-    "nombre": "Toyota Corolla 2024",
-    "categoria": "Sedan",
-    "transmision": "Automática",
-    "combustible": "Gasolina",
-    "precio": 85000,
-    "calificacion": 4.8,
-    "disponible": true,
-    "destacado": true,
-    "puertas": 4,
-    "pasajeros": 5,
-    "maletero": 470,
-    "cilindraje": "1.8L",
-    "color": "Blanco Perla",
-    "año": 2024,
-    "placa": "ABC-123",
-    "sucursal": "Alamo Bogotá - Aeropuerto",
-    "sucursalInfo": {
-      "nombre": "Alamo Bogotá - Aeropuerto",
-      "direccion": "Av. El Dorado # 103-09, Bogotá, Cundinamarca",
-      "horario": "Todos los días, 6:00 am - 10:00 pm"
+    {
+        "id":  1,
+        "nombre":  "Toyota Corolla 2024",
+        "categoria":  "Sedan",
+        "transmision":  "Automática",
+        "combustible":  "Gasolina",
+        "precio":  85000,
+        "disponible":  true,
+        "destacado":  true,
+        "puertas":  4,
+        "pasajeros":  5,
+        "maletero":  470,
+        "cilindraje":  "1.8L",
+        "color":  "Blanco Perla",
+        "año":  2024,
+        "placa":  "ABC-123",
+        "sucursal":  "Alamo Bogotá - Aeropuerto",
+        "sucursalInfo":  {
+                             "nombre":  "Alamo Bogotá - Aeropuerto",
+                             "direccion":  "Av. El Dorado # 103-09, Bogotá, Cundinamarca",
+                             "horario":  "Todos los días, 6:00 am - 10:00 pm"
+                         },
+        "descripcion":  "Sedán confiable y espacioso, ideal para viajes largos o uso diario en la ciudad. Ofrece una excelente relación de consumo de combustible y un maletero generoso para todo tu equipaje. Máxima comodidad.",
+        "caracteristicas":  [
+                                {
+                                    "nombre":  "Aire acondicionado",
+                                    "icono":  "FaSnowflake"
+                                },
+                                {
+                                    "nombre":  "Vidrios eléctricos",
+                                    "icono":  "FaWindowMaximize"
+                                },
+                                {
+                                    "nombre":  "Cierre centralizado",
+                                    "icono":  "FaLock"
+                                },
+                                {
+                                    "nombre":  "Sensores de parqueo",
+                                    "icono":  "FaCarSide"
+                                }
+                            ],
+        "equipamientoTecnologico":  [
+                                        {
+                                            "nombre":  "Bluetooth",
+                                            "icono":  "FaBluetoothB"
+                                        },
+                                        {
+                                            "nombre":  "Puerto USB",
+                                            "icono":  "FaPlug"
+                                        },
+                                        {
+                                            "nombre":  "Pantalla táctil",
+                                            "icono":  "FaMobileAlt"
+                                        },
+                                        {
+                                            "nombre":  "Cámara de reversa",
+                                            "icono":  "FaCamera"
+                                        }
+                                    ],
+        "tarifas":  {
+                        "kmLimitado":  {
+                                           "km":  200,
+                                           "precio":  85000,
+                                           "excedente":  800
+                                       },
+                        "kmIlimitado":  {
+                                            "precio":  105000
+                                        }
+                    },
+        "seguros":  [
+                        {
+                            "nombre":  "Protección Obligatoria",
+                            "precio":  29000
+                        },
+                        {
+                            "nombre":  "Protección Total",
+                            "precio":  67000
+                        }
+                    ],
+        "servicios":  [
+                          {
+                              "nombre":  "GPS Integrado",
+                              "precio":  15000
+                          },
+                          {
+                              "nombre":  "Silla de bebé",
+                              "precio":  20000
+                          },
+                          {
+                              "nombre":  "Lavado de auto post-entrega",
+                              "precio":  25000
+                          },
+                          {
+                              "nombre":  "Devolución con tanque vacío",
+                              "precio":  50000
+                          }
+                      ],
+        "imagenes":  [
+                         "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/a2cb0b378c25efdb1e116246f84149744c2f4081.jpg",
+                         "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/1c6e90229d22ae38444b4c27a5ecedbc3aaa7739.jpg",
+                         "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/5c55d73935760e36ac2c84a6f676e75136c75d1f.jpg"
+                     ],
+        "disponibilidad":  {
+                               "ocupados":  [
+
+                                            ]
+                           }
     },
-    "descripcion": "Sedán confiable y espacioso, ideal para viajes largos o uso diario en la ciudad. Ofrece una excelente relación de consumo de combustible y un maletero generoso para todo tu equipaje. Máxima comodidad.",
-    "caracteristicas": [
-      {
-        "nombre": "Aire acondicionado",
-        "icono": "FaSnowflake"
-      },
-      {
-        "nombre": "Vidrios eléctricos",
-        "icono": "FaWindowMaximize"
-      },
-      {
-        "nombre": "Cierre centralizado",
-        "icono": "FaLock"
-      },
-      {
-        "nombre": "Sensores de parqueo",
-        "icono": "FaCarSide"
-      }
-    ],
-    "equipamientoTecnologico": [
-      {
-        "nombre": "Bluetooth",
-        "icono": "FaBluetoothB"
-      },
-      {
-        "nombre": "Puerto USB",
-        "icono": "FaPlug"
-      },
-      {
-        "nombre": "Pantalla táctil",
-        "icono": "FaMobileAlt"
-      },
-      {
-        "nombre": "Cámara de reversa",
-        "icono": "FaCamera"
-      }
-    ],
-    "tarifas": {
-      "kmLimitado": {
-        "km": 200,
-        "precio": 85000,
-        "excedente": 800
-      },
-      "kmIlimitado": {
-        "precio": 105000
-      }
+    {
+        "id":  2,
+        "nombre":  "Mazda CX-5 2024",
+        "categoria":  "SUV",
+        "transmision":  "Automática",
+        "combustible":  "Gasolina",
+        "precio":  145000,
+        "disponible":  true,
+        "destacado":  true,
+        "puertas":  5,
+        "pasajeros":  5,
+        "maletero":  442,
+        "cilindraje":  "2.5L",
+        "color":  "Soul Red Crystal",
+        "año":  2024,
+        "placa":  "DEF-456",
+        "sucursal":  "Alamo Bogotá - Aeropuerto",
+        "sucursalInfo":  {
+                             "nombre":  "Alamo Bogotá - Aeropuerto",
+                             "direccion":  "Av. El Dorado # 103-09, Bogotá, Cundinamarca",
+                             "horario":  "Todos los días, 6:00 am - 10:00 pm"
+                         },
+        "descripcion":  "SUV premium que destaca por su gran presencia y comodidad para toda la familia. Incluye techo panorámico, acabados de lujo y tecnología de seguridad avanzada para brindarte tranquilidad. Excelente diseño.",
+        "caracteristicas":  [
+                                {
+                                    "nombre":  "Aire acondicionado",
+                                    "icono":  "FaSnowflake"
+                                },
+                                {
+                                    "nombre":  "Vidrios eléctricos",
+                                    "icono":  "FaWindowMaximize"
+                                },
+                                {
+                                    "nombre":  "Cierre centralizado",
+                                    "icono":  "FaLock"
+                                },
+                                {
+                                    "nombre":  "Techo panorámico",
+                                    "icono":  "FaSun"
+                                }
+                            ],
+        "equipamientoTecnologico":  [
+                                        {
+                                            "nombre":  "Bluetooth",
+                                            "icono":  "FaBluetoothB"
+                                        },
+                                        {
+                                            "nombre":  "Puerto USB",
+                                            "icono":  "FaPlug"
+                                        },
+                                        {
+                                            "nombre":  "Pantalla táctil",
+                                            "icono":  "FaMobileAlt"
+                                        },
+                                        {
+                                            "nombre":  "Cámara de reversa",
+                                            "icono":  "FaCamera"
+                                        },
+                                        {
+                                            "nombre":  "Sensores de punto ciego",
+                                            "icono":  "FaEye"
+                                        }
+                                    ],
+        "tarifas":  {
+                        "kmLimitado":  {
+                                           "km":  250,
+                                           "precio":  145000,
+                                           "excedente":  1000
+                                       },
+                        "kmIlimitado":  {
+                                            "precio":  175000
+                                        }
+                    },
+        "seguros":  [
+                        {
+                            "nombre":  "Protección Obligatoria",
+                            "precio":  29000
+                        },
+                        {
+                            "nombre":  "Protección Total",
+                            "precio":  67000
+                        }
+                    ],
+        "servicios":  [
+                          {
+                              "nombre":  "GPS Integrado",
+                              "precio":  15000
+                          },
+                          {
+                              "nombre":  "Silla de bebé",
+                              "precio":  20000
+                          },
+                          {
+                              "nombre":  "Lavado de auto post-entrega",
+                              "precio":  25000
+                          },
+                          {
+                              "nombre":  "Devolución con tanque vacío",
+                              "precio":  50000
+                          }
+                      ],
+        "imagenes":  [
+                         "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/5acb88622cc00284455f7d6c6e19fd2f5b11a6cd.jpg",
+                         "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/3660959c1dc9ad6069d89d42723db9cda29afeba.jpg",
+                         "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/ec7412fd3f8148ee85aeb9d7c9a05577be7409d6.jpg"
+                     ],
+        "disponibilidad":  {
+                               "ocupados":  [
+
+                                            ]
+                           }
     },
-    "seguros": [
-      {
-        "nombre": "Protección Obligatoria",
-        "precio": 29000
-      },
-      {
-        "nombre": "Protección Total",
-        "precio": 67000
-      }
-    ],
-    "servicios": [
-      {
-        "nombre": "GPS Integrado",
-        "precio": 15000
-      },
-      {
-        "nombre": "Silla de bebé",
-        "precio": 20000
-      },
-      {
-        "nombre": "Lavado de auto post-entrega",
-        "precio": 25000
-      },
-      {
-        "nombre": "Devolución con tanque vacío",
-        "precio": 50000
-      }
-    ],
-    "imagenes": [
-      "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/a2cb0b378c25efdb1e116246f84149744c2f4081.jpg",
-      "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/1c6e90229d22ae38444b4c27a5ecedbc3aaa7739.jpg",
-      "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/5c55d73935760e36ac2c84a6f676e75136c75d1f.jpg"
-    ],
-    "disponibilidad": {
-      "ocupados": []
+    {
+        "id":  3,
+        "nombre":  "Chevrolet Spark 2023",
+        "categoria":  "Económico (Compactos)",
+        "transmision":  "Manual",
+        "combustible":  "Gasolina",
+        "precio":  60000,
+        "disponible":  true,
+        "destacado":  true,
+        "puertas":  4,
+        "pasajeros":  4,
+        "maletero":  170,
+        "cilindraje":  "1.0L",
+        "color":  "Rojo Passion",
+        "año":  2023,
+        "placa":  "GHI-789",
+        "sucursal":  "Alamo Bogotá - Aeropuerto",
+        "sucursalInfo":  {
+                             "nombre":  "Alamo Bogotá - Aeropuerto",
+                             "direccion":  "Av. El Dorado # 103-09, Bogotá, Cundinamarca",
+                             "horario":  "Todos los días, 6:00 am - 10:00 pm"
+                         },
+        "descripcion":  "Vehículo compacto, ágil y muy económico, perfecto para moverte rápidamente por la ciudad. Te permite estacionar sin complicaciones y ofrece un rendimiento de combustible insuperable para el día a día. Gran elección.",
+        "caracteristicas":  [
+                                {
+                                    "nombre":  "Aire acondicionado",
+                                    "icono":  "FaSnowflake"
+                                },
+                                {
+                                    "nombre":  "Vidrios eléctricos",
+                                    "icono":  "FaWindowMaximize"
+                                },
+                                {
+                                    "nombre":  "Cierre centralizado",
+                                    "icono":  "FaLock"
+                                }
+                            ],
+        "equipamientoTecnologico":  [
+                                        {
+                                            "nombre":  "Bluetooth",
+                                            "icono":  "FaBluetoothB"
+                                        },
+                                        {
+                                            "nombre":  "Puerto USB",
+                                            "icono":  "FaPlug"
+                                        }
+                                    ],
+        "tarifas":  {
+                        "kmLimitado":  {
+                                           "km":  150,
+                                           "precio":  60000,
+                                           "excedente":  600
+                                       },
+                        "kmIlimitado":  {
+                                            "precio":  75000
+                                        }
+                    },
+        "seguros":  [
+                        {
+                            "nombre":  "Protección Obligatoria",
+                            "precio":  29000
+                        },
+                        {
+                            "nombre":  "Protección Total",
+                            "precio":  67000
+                        }
+                    ],
+        "servicios":  [
+                          {
+                              "nombre":  "GPS Integrado",
+                              "precio":  15000
+                          },
+                          {
+                              "nombre":  "Silla de bebé",
+                              "precio":  20000
+                          },
+                          {
+                              "nombre":  "Lavado de auto post-entrega",
+                              "precio":  25000
+                          },
+                          {
+                              "nombre":  "Devolución con tanque vacío",
+                              "precio":  50000
+                          }
+                      ],
+        "imagenes":  [
+                         "https://th.bing.com/th/id/OIP.fXE8mmnIQyu_3aOZ3jDciAHaE0?w=277\u0026h=180\u0026c=7\u0026r=0\u0026o=7\u0026dpr=1.3\u0026pid=1.7\u0026rm=3",
+                         "https://th.bing.com/th/id/OIP.Ta7fayfrmFJd3HPo8xojKAHaEJ?w=321\u0026h=180\u0026c=7\u0026r=0\u0026o=7\u0026dpr=1.3\u0026pid=1.7\u0026rm=3",
+                         "https://th.bing.com/th/id/OIP.M8Xr6C7QAbptaShiYv_SigHaEi?w=259\u0026h=180\u0026c=7\u0026r=0\u0026o=7\u0026dpr=1.3\u0026pid=1.7\u0026rm=3"
+                     ],
+        "disponibilidad":  {
+                               "ocupados":  [
+
+                                            ]
+                           }
     },
-    "comentarios": [
-      {
-        "autor": "Carlos M.",
-        "calificacion": 5,
-        "texto": "Excelente vehículo, muy cómodo y puntual en la entrega.",
-        "fecha": "2026-04-10"
-      },
-      {
-        "autor": "Laura P.",
-        "calificacion": 4,
-        "texto": "Buen servicio, el carro en perfectas condiciones.",
-        "fecha": "2026-03-22"
-      },
-      {
-        "autor": "Andrés R.",
-        "calificacion": 5,
-        "texto": "Lo recomiendo totalmente, volveré a alquilar.",
-        "fecha": "2026-03-05"
-      }
-    ]
-  },
-  {
-    "id": 2,
-    "nombre": "Mazda CX-5 2024",
-    "categoria": "SUV",
-    "transmision": "Automática",
-    "combustible": "Gasolina",
-    "precio": 145000,
-    "calificacion": 4.9,
-    "disponible": true,
-    "destacado": true,
-    "puertas": 5,
-    "pasajeros": 5,
-    "maletero": 442,
-    "cilindraje": "2.5L",
-    "color": "Soul Red Crystal",
-    "año": 2024,
-    "placa": "DEF-456",
-    "sucursal": "Alamo Bogotá - Aeropuerto",
-    "sucursalInfo": {
-      "nombre": "Alamo Bogotá - Aeropuerto",
-      "direccion": "Av. El Dorado # 103-09, Bogotá, Cundinamarca",
-      "horario": "Todos los días, 6:00 am - 10:00 pm"
+    {
+        "id":  4,
+        "nombre":  "Ford Mustang GT 2023",
+        "categoria":  "Deportivo",
+        "transmision":  "Automática",
+        "combustible":  "Gasolina",
+        "precio":  220000,
+        "disponible":  false,
+        "destacado":  false,
+        "puertas":  2,
+        "pasajeros":  4,
+        "maletero":  382,
+        "cilindraje":  "5.0L V8",
+        "color":  "Race Red",
+        "año":  2023,
+        "placa":  "JKL-012",
+        "sucursal":  "Alamo Cartagena - Aeropuerto",
+        "sucursalInfo":  {
+                             "nombre":  "Alamo Cartagena - Aeropuerto",
+                             "direccion":  "Aeropuerto Rafael Núñez, Cartagena, Bolívar",
+                             "horario":  "Todos los días, 6:00 am - 11:00 pm"
+                         },
+        "descripcion":  "Ícono deportivo inconfundible equipado con un potente motor V8 de alto rendimiento. Pensado exclusivamente para quienes buscan sentir la adrenalina pura y vivir una experiencia de conducción verdaderamente única y emocionante.",
+        "caracteristicas":  [
+                                {
+                                    "nombre":  "Aire acondicionado",
+                                    "icono":  "FaSnowflake"
+                                },
+                                {
+                                    "nombre":  "Vidrios eléctricos",
+                                    "icono":  "FaWindowMaximize"
+                                },
+                                {
+                                    "nombre":  "Cierre centralizado",
+                                    "icono":  "FaLock"
+                                },
+                                {
+                                    "nombre":  "Modo deportivo",
+                                    "icono":  "FaTachometerAlt"
+                                },
+                                {
+                                    "nombre":  "Frenos de alto rendimiento",
+                                    "icono":  "FaShieldAlt"
+                                }
+                            ],
+        "equipamientoTecnologico":  [
+                                        {
+                                            "nombre":  "Bluetooth",
+                                            "icono":  "FaBluetoothB"
+                                        },
+                                        {
+                                            "nombre":  "Puerto USB",
+                                            "icono":  "FaPlug"
+                                        },
+                                        {
+                                            "nombre":  "Pantalla táctil",
+                                            "icono":  "FaMobileAlt"
+                                        },
+                                        {
+                                            "nombre":  "Sistema de sonido premium",
+                                            "icono":  "FaVolumeUp"
+                                        }
+                                    ],
+        "tarifas":  {
+                        "kmLimitado":  {
+                                           "km":  300,
+                                           "precio":  220000,
+                                           "excedente":  1500
+                                       },
+                        "kmIlimitado":  {
+                                            "precio":  260000
+                                        }
+                    },
+        "seguros":  [
+                        {
+                            "nombre":  "Protección Obligatoria",
+                            "precio":  29000
+                        },
+                        {
+                            "nombre":  "Protección Total",
+                            "precio":  67000
+                        }
+                    ],
+        "servicios":  [
+                          {
+                              "nombre":  "GPS Integrado",
+                              "precio":  15000
+                          },
+                          {
+                              "nombre":  "Silla de bebé",
+                              "precio":  20000
+                          },
+                          {
+                              "nombre":  "Lavado de auto post-entrega",
+                              "precio":  25000
+                          },
+                          {
+                              "nombre":  "Devolución con tanque vacío",
+                              "precio":  50000
+                          }
+                      ],
+        "imagenes":  [
+                         "https://th.bing.com/th/id/OIP.1fmggTD9brrhHIbn4PxbFQHaEK?w=294\u0026h=180\u0026c=7\u0026r=0\u0026o=7\u0026dpr=1.3\u0026pid=1.7\u0026rm=3",
+                         "https://th.bing.com/th/id/OIP.YtLn_MV5ghgGtbCAOjl6zwHaE6?w=250\u0026h=180\u0026c=7\u0026r=0\u0026o=7\u0026dpr=1.3\u0026pid=1.7\u0026rm=3",
+                         "https://th.bing.com/th/id/R.2312c5cbb5b968f100d34bdbde5c576a?rik=Mw4jE71kRKyhuA\u0026riu=http%3a%2f%2fimages.gtcarlot.com%2fpictures%2f145962677.jpg\u0026ehk=fs3qI14Aid1CfPQQ%2f23zMMfkFuVyphuDrrOvFIsJMY8%3d\u0026risl=\u0026pid=ImgRaw\u0026r=0"
+                     ],
+        "disponibilidad":  {
+                               "ocupados":  [
+
+                                            ]
+                           }
     },
-    "descripcion": "SUV premium que destaca por su gran presencia y comodidad para toda la familia. Incluye techo panorámico, acabados de lujo y tecnología de seguridad avanzada para brindarte tranquilidad. Excelente diseño.",
-    "caracteristicas": [
-      {
-        "nombre": "Aire acondicionado",
-        "icono": "FaSnowflake"
-      },
-      {
-        "nombre": "Vidrios eléctricos",
-        "icono": "FaWindowMaximize"
-      },
-      {
-        "nombre": "Cierre centralizado",
-        "icono": "FaLock"
-      },
-      {
-        "nombre": "Techo panorámico",
-        "icono": "FaSun"
-      }
-    ],
-    "equipamientoTecnologico": [
-      {
-        "nombre": "Bluetooth",
-        "icono": "FaBluetoothB"
-      },
-      {
-        "nombre": "Puerto USB",
-        "icono": "FaPlug"
-      },
-      {
-        "nombre": "Pantalla táctil",
-        "icono": "FaMobileAlt"
-      },
-      {
-        "nombre": "Cámara de reversa",
-        "icono": "FaCamera"
-      },
-      {
-        "nombre": "Sensores de punto ciego",
-        "icono": "FaEye"
-      }
-    ],
-    "tarifas": {
-      "kmLimitado": {
-        "km": 250,
-        "precio": 145000,
-        "excedente": 1000
-      },
-      "kmIlimitado": {
-        "precio": 175000
-      }
+    {
+        "id":  5,
+        "nombre":  "Toyota Prado 2024",
+        "categoria":  "SUV",
+        "transmision":  "Automática",
+        "combustible":  "Diesel",
+        "precio":  180000,
+        "disponible":  true,
+        "destacado":  false,
+        "puertas":  5,
+        "pasajeros":  8,
+        "maletero":  390,
+        "cilindraje":  "2.8L Diesel",
+        "color":  "Super White",
+        "año":  2024,
+        "placa":  "MNO-345",
+        "sucursal":  "Alamo Cali - Aeropuerto",
+        "sucursalInfo":  {
+                             "nombre":  "Alamo Cali - Aeropuerto",
+                             "direccion":  "Aeropuerto Alfonso Bonilla Aragón, Palmira, Valle del Cauca",
+                             "horario":  "Todos los días, 6:00 am - 10:00 pm"
+                         },
+        "descripcion":  "Imponente SUV de 8 pasajeros equipada con tracción 4x4. Es la opción ideal para realizar viajes familiares largos con total confort o para enfrentarse a terrenos exigentes sin ningún problema. Capacidad extrema.",
+        "caracteristicas":  [
+                                {
+                                    "nombre":  "Aire acondicionado",
+                                    "icono":  "FaSnowflake"
+                                },
+                                {
+                                    "nombre":  "Vidrios eléctricos",
+                                    "icono":  "FaWindowMaximize"
+                                },
+                                {
+                                    "nombre":  "Cierre centralizado",
+                                    "icono":  "FaLock"
+                                },
+                                {
+                                    "nombre":  "Tracción 4x4",
+                                    "icono":  "FaMountain"
+                                },
+                                {
+                                    "nombre":  "Tercera fila de asientos",
+                                    "icono":  "FaChair"
+                                }
+                            ],
+        "equipamientoTecnologico":  [
+                                        {
+                                            "nombre":  "Bluetooth",
+                                            "icono":  "FaBluetoothB"
+                                        },
+                                        {
+                                            "nombre":  "Puerto USB",
+                                            "icono":  "FaPlug"
+                                        },
+                                        {
+                                            "nombre":  "Pantalla táctil",
+                                            "icono":  "FaMobileAlt"
+                                        },
+                                        {
+                                            "nombre":  "Cámara de reversa",
+                                            "icono":  "FaCamera"
+                                        },
+                                        {
+                                            "nombre":  "Sensores de parqueo",
+                                            "icono":  "FaCarSide"
+                                        }
+                                    ],
+        "tarifas":  {
+                        "kmLimitado":  {
+                                           "km":  300,
+                                           "precio":  180000,
+                                           "excedente":  1200
+                                       },
+                        "kmIlimitado":  {
+                                            "precio":  215000
+                                        }
+                    },
+        "seguros":  [
+                        {
+                            "nombre":  "Protección Obligatoria",
+                            "precio":  29000
+                        },
+                        {
+                            "nombre":  "Protección Total",
+                            "precio":  67000
+                        }
+                    ],
+        "servicios":  [
+                          {
+                              "nombre":  "GPS Integrado",
+                              "precio":  15000
+                          },
+                          {
+                              "nombre":  "Silla de bebé",
+                              "precio":  20000
+                          },
+                          {
+                              "nombre":  "Lavado de auto post-entrega",
+                              "precio":  25000
+                          },
+                          {
+                              "nombre":  "Devolución con tanque vacío",
+                              "precio":  50000
+                          }
+                      ],
+        "imagenes":  [
+                         "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/4d34066b6e9e1a29c93d7d0edeb2f415058411d3.jpg",
+                         "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/64be097eae7f8698be22c3646647d73c234e60a0.jpg",
+                         "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/ef353e43a859b12a67c8bd45cb5f5265beddef2a.jpg"
+                     ],
+        "disponibilidad":  {
+                               "ocupados":  [
+
+                                            ]
+                           }
     },
-    "seguros": [
-      {
-        "nombre": "Protección Obligatoria",
-        "precio": 29000
-      },
-      {
-        "nombre": "Protección Total",
-        "precio": 67000
-      }
-    ],
-    "servicios": [
-      {
-        "nombre": "GPS Integrado",
-        "precio": 15000
-      },
-      {
-        "nombre": "Silla de bebé",
-        "precio": 20000
-      },
-      {
-        "nombre": "Lavado de auto post-entrega",
-        "precio": 25000
-      },
-      {
-        "nombre": "Devolución con tanque vacío",
-        "precio": 50000
-      }
-    ],
-    "imagenes": [
-      "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/5acb88622cc00284455f7d6c6e19fd2f5b11a6cd.jpg",
-      "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/3660959c1dc9ad6069d89d42723db9cda29afeba.jpg",
-      "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/ec7412fd3f8148ee85aeb9d7c9a05577be7409d6.jpg"
-    ],
-    "disponibilidad": {
-      "ocupados": []
+    {
+        "id":  6,
+        "nombre":  "Renault Sandero 2023",
+        "categoria":  "Económico",
+        "transmision":  "Manual",
+        "combustible":  "Gasolina",
+        "precio":  55000,
+        "disponible":  true,
+        "destacado":  false,
+        "puertas":  5,
+        "pasajeros":  5,
+        "maletero":  320,
+        "cilindraje":  "1.6L",
+        "color":  "Gris Highland",
+        "año":  2023,
+        "placa":  "PQR-678",
+        "sucursal":  "Alquiler Neiva - Centro",
+        "sucursalInfo":  {
+                             "nombre":  "Alquiler Neiva - Centro",
+                             "direccion":  "Cra 5 # 12-34, Neiva, Huila",
+                             "horario":  "Lun a sáb, 7:00 am - 7:00 pm"
+                         },
+        "descripcion":  "Vehículo compacto ideal para la ciudad, con un habitáculo súper cómodo para 5 pasajeros. Cuenta con un excelente rendimiento de combustible que cuida tu bolsillo durante todos tus desplazamientos diarios. Gran vehículo.",
+        "caracteristicas":  [
+                                {
+                                    "nombre":  "Aire acondicionado",
+                                    "icono":  "FaSnowflake"
+                                },
+                                {
+                                    "nombre":  "Vidrios eléctricos",
+                                    "icono":  "FaWindowMaximize"
+                                },
+                                {
+                                    "nombre":  "Cierre centralizado",
+                                    "icono":  "FaLock"
+                                }
+                            ],
+        "equipamientoTecnologico":  [
+                                        {
+                                            "nombre":  "Bluetooth",
+                                            "icono":  "FaBluetoothB"
+                                        },
+                                        {
+                                            "nombre":  "Puerto USB",
+                                            "icono":  "FaPlug"
+                                        },
+                                        {
+                                            "nombre":  "Pantalla táctil",
+                                            "icono":  "FaMobileAlt"
+                                        },
+                                        {
+                                            "nombre":  "Cámara de reversa",
+                                            "icono":  "FaCamera"
+                                        }
+                                    ],
+        "tarifas":  {
+                        "kmLimitado":  {
+                                           "km":  150,
+                                           "precio":  55000,
+                                           "excedente":  550
+                                       },
+                        "kmIlimitado":  {
+                                            "precio":  68000
+                                        }
+                    },
+        "seguros":  [
+                        {
+                            "nombre":  "Protección Obligatoria",
+                            "precio":  29000
+                        },
+                        {
+                            "nombre":  "Protección Total",
+                            "precio":  67000
+                        }
+                    ],
+        "servicios":  [
+                          {
+                              "nombre":  "GPS Integrado",
+                              "precio":  15000
+                          },
+                          {
+                              "nombre":  "Silla de bebé",
+                              "precio":  20000
+                          },
+                          {
+                              "nombre":  "Lavado de auto post-entrega",
+                              "precio":  25000
+                          },
+                          {
+                              "nombre":  "Devolución con tanque vacío",
+                              "precio":  50000
+                          }
+                      ],
+        "imagenes":  [
+                         "https://th.bing.com/th/id/OIP.M8Xr6C7QAbptaShiYv_SigHaEi?w=259\u0026h=180\u0026c=7\u0026r=0\u0026o=7\u0026dpr=1.3\u0026pid=1.7\u0026rm=3",
+                         "https://th.bing.com/th/id/OIP.51EBaowC6BNblc7CVjxDMQHaFL?w=258\u0026h=181\u0026c=7\u0026r=0\u0026o=7\u0026dpr=1.3\u0026pid=1.7\u0026rm=3",
+                         "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/5c55d73935760e36ac2c84a6f676e75136c75d1f.jpg"
+                     ],
+        "disponibilidad":  {
+                               "ocupados":  [
+
+                                            ]
+                           }
     },
-    "comentarios": [
-      {
-        "autor": "Mariana Gómez",
-        "calificacion": 5,
-        "texto": "Excelente SUV, superó mis expectativas.",
-        "fecha": "2026-05-12"
-      },
-      {
-        "autor": "Daniel O.",
-        "calificacion": 5,
-        "texto": "Muy cómoda para el viaje en familia, excelente consumo.",
-        "fecha": "2026-06-22"
-      }
-    ]
-  },
-  {
-    "id": 3,
-    "nombre": "Chevrolet Spark 2023",
-    "categoria": "Económico (Compactos)",
-    "transmision": "Manual",
-    "combustible": "Gasolina",
-    "precio": 60000,
-    "calificacion": 4.5,
-    "disponible": true,
-    "destacado": true,
-    "puertas": 4,
-    "pasajeros": 4,
-    "maletero": 170,
-    "cilindraje": "1.0L",
-    "color": "Rojo Passion",
-    "año": 2023,
-    "placa": "GHI-789",
-    "sucursal": "Alamo Bogotá - Aeropuerto",
-    "sucursalInfo": {
-      "nombre": "Alamo Bogotá - Aeropuerto",
-      "direccion": "Av. El Dorado # 103-09, Bogotá, Cundinamarca",
-      "horario": "Todos los días, 6:00 am - 10:00 pm"
+    {
+        "id":  7,
+        "nombre":  "Hyundai Tucson 2024",
+        "categoria":  "SUV",
+        "transmision":  "Automática",
+        "combustible":  "Híbrido",
+        "precio":  160000,
+        "disponible":  true,
+        "destacado":  false,
+        "puertas":  5,
+        "pasajeros":  5,
+        "maletero":  513,
+        "cilindraje":  "1.6L Híbrido",
+        "color":  "Phantom Black",
+        "año":  2024,
+        "placa":  "STU-901",
+        "sucursal":  "Alamo Bogotá - Aeropuerto",
+        "sucursalInfo":  {
+                             "nombre":  "Alamo Bogotá - Aeropuerto",
+                             "direccion":  "Av. El Dorado # 103-09, Bogotá, Cundinamarca",
+                             "horario":  "Todos los días, 6:00 am - 10:00 pm"
+                         },
+        "descripcion":  "Sofisticada SUV híbrida, reconocida por ser muy eficiente y silenciosa. Cuenta con un amplio espacio de carga y lo último en tecnología de asistencia al conductor para mayor seguridad. Tecnología limpia.",
+        "caracteristicas":  [
+                                {
+                                    "nombre":  "Aire acondicionado",
+                                    "icono":  "FaSnowflake"
+                                },
+                                {
+                                    "nombre":  "Vidrios eléctricos",
+                                    "icono":  "FaWindowMaximize"
+                                },
+                                {
+                                    "nombre":  "Cierre centralizado",
+                                    "icono":  "FaLock"
+                                },
+                                {
+                                    "nombre":  "Techo panorámico",
+                                    "icono":  "FaSun"
+                                }
+                            ],
+        "equipamientoTecnologico":  [
+                                        {
+                                            "nombre":  "Bluetooth",
+                                            "icono":  "FaBluetoothB"
+                                        },
+                                        {
+                                            "nombre":  "Puerto USB",
+                                            "icono":  "FaPlug"
+                                        },
+                                        {
+                                            "nombre":  "Pantalla táctil",
+                                            "icono":  "FaMobileAlt"
+                                        },
+                                        {
+                                            "nombre":  "Cámara de reversa",
+                                            "icono":  "FaCamera"
+                                        },
+                                        {
+                                            "nombre":  "Cargador inalámbrico",
+                                            "icono":  "FaChargingStation"
+                                        }
+                                    ],
+        "tarifas":  {
+                        "kmLimitado":  {
+                                           "km":  250,
+                                           "precio":  160000,
+                                           "excedente":  1100
+                                       },
+                        "kmIlimitado":  {
+                                            "precio":  192000
+                                        }
+                    },
+        "seguros":  [
+                        {
+                            "nombre":  "Protección Obligatoria",
+                            "precio":  29000
+                        },
+                        {
+                            "nombre":  "Protección Total",
+                            "precio":  67000
+                        }
+                    ],
+        "servicios":  [
+                          {
+                              "nombre":  "GPS Integrado",
+                              "precio":  15000
+                          },
+                          {
+                              "nombre":  "Silla de bebé",
+                              "precio":  20000
+                          },
+                          {
+                              "nombre":  "Lavado de auto post-entrega",
+                              "precio":  25000
+                          },
+                          {
+                              "nombre":  "Devolución con tanque vacío",
+                              "precio":  50000
+                          }
+                      ],
+        "imagenes":  [
+                         "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/c86e9f8dd37048853c7c2fce700fb4bb5b1e062c.jpg",
+                         "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/8631ecb31093479ab34a56263b478b44fb2d74f6.jpg",
+                         "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/aa041a9462ecf25c4c543ea284f7af255338df95.jpg"
+                     ],
+        "disponibilidad":  {
+                               "ocupados":  [
+
+                                            ]
+                           }
     },
-    "descripcion": "Vehículo compacto, ágil y muy económico, perfecto para moverte rápidamente por la ciudad. Te permite estacionar sin complicaciones y ofrece un rendimiento de combustible insuperable para el día a día. Gran elección.",
-    "caracteristicas": [
-      {
-        "nombre": "Aire acondicionado",
-        "icono": "FaSnowflake"
-      },
-      {
-        "nombre": "Vidrios eléctricos",
-        "icono": "FaWindowMaximize"
-      },
-      {
-        "nombre": "Cierre centralizado",
-        "icono": "FaLock"
-      }
-    ],
-    "equipamientoTecnologico": [
-      {
-        "nombre": "Bluetooth",
-        "icono": "FaBluetoothB"
-      },
-      {
-        "nombre": "Puerto USB",
-        "icono": "FaPlug"
-      }
-    ],
-    "tarifas": {
-      "kmLimitado": {
-        "km": 150,
-        "precio": 60000,
-        "excedente": 600
-      },
-      "kmIlimitado": {
-        "precio": 75000
-      }
+    {
+        "id":  8,
+        "nombre":  "Nissan Leaf E-Tech 2024",
+        "categoria":  "Eléctricos (Eco-Drive)",
+        "transmision":  "Automática",
+        "combustible":  "Eléctrico",
+        "precio":  95000,
+        "disponible":  false,
+        "estadoFlota":  "mantenimiento",
+        "destacado":  false,
+        "puertas":  4,
+        "pasajeros":  5,
+        "maletero":  435,
+        "cilindraje":  "100% Eléctrico",
+        "color":  "Snow White Pearl",
+        "año":  2024,
+        "placa":  "ELC-902",
+        "sucursal":  "Alamo Bogotá - Aeropuerto",
+        "sucursalInfo":  {
+                             "nombre":  "Alamo Bogotá - Aeropuerto",
+                             "direccion":  "Av. El Dorado # 103-09, Bogotá, Cundinamarca",
+                             "horario":  "Todos los días, 6:00 am - 10:00 pm"
+                         },
+        "descripcion":  "Elegante sedán moderno y confortable, diseñado con un gran maletero y acabados de altísima calidad. Es el compañero perfecto tanto para trayectos diarios como para viajes importantes de negocios. Confort garantizado.",
+        "caracteristicas":  [
+                                {
+                                    "nombre":  "Aire acondicionado",
+                                    "icono":  "FaSnowflake"
+                                },
+                                {
+                                    "nombre":  "Vidrios eléctricos",
+                                    "icono":  "FaWindowMaximize"
+                                },
+                                {
+                                    "nombre":  "Cierre centralizado",
+                                    "icono":  "FaLock"
+                                }
+                            ],
+        "equipamientoTecnologico":  [
+                                        {
+                                            "nombre":  "Bluetooth",
+                                            "icono":  "FaBluetoothB"
+                                        },
+                                        {
+                                            "nombre":  "Puerto USB",
+                                            "icono":  "FaPlug"
+                                        },
+                                        {
+                                            "nombre":  "Pantalla táctil",
+                                            "icono":  "FaMobileAlt"
+                                        },
+                                        {
+                                            "nombre":  "Cámara de reversa",
+                                            "icono":  "FaCamera"
+                                        }
+                                    ],
+        "tarifas":  {
+                        "kmLimitado":  {
+                                           "km":  200,
+                                           "precio":  95000,
+                                           "excedente":  900
+                                       },
+                        "kmIlimitado":  {
+                                            "precio":  115000
+                                        }
+                    },
+        "seguros":  [
+                        {
+                            "nombre":  "Protección Obligatoria",
+                            "precio":  29000
+                        },
+                        {
+                            "nombre":  "Protección Total",
+                            "precio":  67000
+                        }
+                    ],
+        "servicios":  [
+                          {
+                              "nombre":  "GPS Integrado",
+                              "precio":  15000
+                          },
+                          {
+                              "nombre":  "Silla de bebé",
+                              "precio":  20000
+                          },
+                          {
+                              "nombre":  "Lavado de auto post-entrega",
+                              "precio":  25000
+                          },
+                          {
+                              "nombre":  "Devolución con tanque vacío",
+                              "precio":  50000
+                          }
+                      ],
+        "imagenes":  [
+                         "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/7718dbfc25ce3e387cb976f4ded742dc8d8c7582.jpg",
+                         "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/1e686f124bd42a21481a43969615adc261e39251.jpg",
+                         "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/de7fef41a3ee96557b1600b7e91494dd78a5e7b1.jpg"
+                     ],
+        "disponibilidad":  {
+                               "ocupados":  [
+
+                                            ]
+                           }
     },
-    "seguros": [
-      {
-        "nombre": "Protección Obligatoria",
-        "precio": 29000
-      },
-      {
-        "nombre": "Protección Total",
-        "precio": 67000
-      }
-    ],
-    "servicios": [
-      {
-        "nombre": "GPS Integrado",
-        "precio": 15000
-      },
-      {
-        "nombre": "Silla de bebé",
-        "precio": 20000
-      },
-      {
-        "nombre": "Lavado de auto post-entrega",
-        "precio": 25000
-      },
-      {
-        "nombre": "Devolución con tanque vacío",
-        "precio": 50000
-      }
-    ],
-    "imagenes": [
-      "https://th.bing.com/th/id/OIP.fXE8mmnIQyu_3aOZ3jDciAHaE0?w=277&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
-      "https://th.bing.com/th/id/OIP.Ta7fayfrmFJd3HPo8xojKAHaEJ?w=321&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
-      "https://th.bing.com/th/id/OIP.M8Xr6C7QAbptaShiYv_SigHaEi?w=259&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3"
-    ],
-    "disponibilidad": {
-      "ocupados": []
-    },
-    "comentarios": []
-  },
-  {
-    "id": 4,
-    "nombre": "Ford Mustang GT 2023",
-    "categoria": "Deportivo",
-    "transmision": "Automática",
-    "combustible": "Gasolina",
-    "precio": 220000,
-    "calificacion": 4.7,
-    "disponible": false,
-    "destacado": false,
-    "puertas": 2,
-    "pasajeros": 4,
-    "maletero": 382,
-    "cilindraje": "5.0L V8",
-    "color": "Race Red",
-    "año": 2023,
-    "placa": "JKL-012",
-    "sucursal": "Alamo Cartagena - Aeropuerto",
-    "sucursalInfo": {
-      "nombre": "Alamo Cartagena - Aeropuerto",
-      "direccion": "Aeropuerto Rafael Núñez, Cartagena, Bolívar",
-      "horario": "Todos los días, 6:00 am - 11:00 pm"
-    },
-    "descripcion": "Ícono deportivo inconfundible equipado con un potente motor V8 de alto rendimiento. Pensado exclusivamente para quienes buscan sentir la adrenalina pura y vivir una experiencia de conducción verdaderamente única y emocionante.",
-    "caracteristicas": [
-      {
-        "nombre": "Aire acondicionado",
-        "icono": "FaSnowflake"
-      },
-      {
-        "nombre": "Vidrios eléctricos",
-        "icono": "FaWindowMaximize"
-      },
-      {
-        "nombre": "Cierre centralizado",
-        "icono": "FaLock"
-      },
-      {
-        "nombre": "Modo deportivo",
-        "icono": "FaTachometerAlt"
-      },
-      {
-        "nombre": "Frenos de alto rendimiento",
-        "icono": "FaShieldAlt"
-      }
-    ],
-    "equipamientoTecnologico": [
-      {
-        "nombre": "Bluetooth",
-        "icono": "FaBluetoothB"
-      },
-      {
-        "nombre": "Puerto USB",
-        "icono": "FaPlug"
-      },
-      {
-        "nombre": "Pantalla táctil",
-        "icono": "FaMobileAlt"
-      },
-      {
-        "nombre": "Sistema de sonido premium",
-        "icono": "FaVolumeUp"
-      }
-    ],
-    "tarifas": {
-      "kmLimitado": {
-        "km": 300,
-        "precio": 220000,
-        "excedente": 1500
-      },
-      "kmIlimitado": {
-        "precio": 260000
-      }
-    },
-    "seguros": [
-      {
-        "nombre": "Protección Obligatoria",
-        "precio": 29000
-      },
-      {
-        "nombre": "Protección Total",
-        "precio": 67000
-      }
-    ],
-    "servicios": [
-      {
-        "nombre": "GPS Integrado",
-        "precio": 15000
-      },
-      {
-        "nombre": "Silla de bebé",
-        "precio": 20000
-      },
-      {
-        "nombre": "Lavado de auto post-entrega",
-        "precio": 25000
-      },
-      {
-        "nombre": "Devolución con tanque vacío",
-        "precio": 50000
-      }
-    ],
-    "imagenes": [
-      "https://th.bing.com/th/id/OIP.1fmggTD9brrhHIbn4PxbFQHaEK?w=294&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
-      "https://th.bing.com/th/id/OIP.YtLn_MV5ghgGtbCAOjl6zwHaE6?w=250&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
-      "https://th.bing.com/th/id/R.2312c5cbb5b968f100d34bdbde5c576a?rik=Mw4jE71kRKyhuA&riu=http%3a%2f%2fimages.gtcarlot.com%2fpictures%2f145962677.jpg&ehk=fs3qI14Aid1CfPQQ%2f23zMMfkFuVyphuDrrOvFIsJMY8%3d&risl=&pid=ImgRaw&r=0"
-    ],
-    "disponibilidad": {
-      "ocupados": []
-    },
-    "comentarios": [
-      {
-        "autor": "Sebastián T.",
-        "calificacion": 5,
-        "texto": "Una locura de carro, corre muchísimo y está impecable.",
-        "fecha": "2026-01-10"
-      }
-    ]
-  },
-  {
-    "id": 5,
-    "nombre": "Toyota Prado 2024",
-    "categoria": "SUV",
-    "transmision": "Automática",
-    "combustible": "Diesel",
-    "precio": 180000,
-    "calificacion": 4.6,
-    "disponible": true,
-    "destacado": false,
-    "puertas": 5,
-    "pasajeros": 8,
-    "maletero": 390,
-    "cilindraje": "2.8L Diesel",
-    "color": "Super White",
-    "año": 2024,
-    "placa": "MNO-345",
-    "sucursal": "Alamo Cali - Aeropuerto",
-    "sucursalInfo": {
-      "nombre": "Alamo Cali - Aeropuerto",
-      "direccion": "Aeropuerto Alfonso Bonilla Aragón, Palmira, Valle del Cauca",
-      "horario": "Todos los días, 6:00 am - 10:00 pm"
-    },
-    "descripcion": "Imponente SUV de 8 pasajeros equipada con tracción 4x4. Es la opción ideal para realizar viajes familiares largos con total confort o para enfrentarse a terrenos exigentes sin ningún problema. Capacidad extrema.",
-    "caracteristicas": [
-      {
-        "nombre": "Aire acondicionado",
-        "icono": "FaSnowflake"
-      },
-      {
-        "nombre": "Vidrios eléctricos",
-        "icono": "FaWindowMaximize"
-      },
-      {
-        "nombre": "Cierre centralizado",
-        "icono": "FaLock"
-      },
-      {
-        "nombre": "Tracción 4x4",
-        "icono": "FaMountain"
-      },
-      {
-        "nombre": "Tercera fila de asientos",
-        "icono": "FaChair"
-      }
-    ],
-    "equipamientoTecnologico": [
-      {
-        "nombre": "Bluetooth",
-        "icono": "FaBluetoothB"
-      },
-      {
-        "nombre": "Puerto USB",
-        "icono": "FaPlug"
-      },
-      {
-        "nombre": "Pantalla táctil",
-        "icono": "FaMobileAlt"
-      },
-      {
-        "nombre": "Cámara de reversa",
-        "icono": "FaCamera"
-      },
-      {
-        "nombre": "Sensores de parqueo",
-        "icono": "FaCarSide"
-      }
-    ],
-    "tarifas": {
-      "kmLimitado": {
-        "km": 300,
-        "precio": 180000,
-        "excedente": 1200
-      },
-      "kmIlimitado": {
-        "precio": 215000
-      }
-    },
-    "seguros": [
-      {
-        "nombre": "Protección Obligatoria",
-        "precio": 29000
-      },
-      {
-        "nombre": "Protección Total",
-        "precio": 67000
-      }
-    ],
-    "servicios": [
-      {
-        "nombre": "GPS Integrado",
-        "precio": 15000
-      },
-      {
-        "nombre": "Silla de bebé",
-        "precio": 20000
-      },
-      {
-        "nombre": "Lavado de auto post-entrega",
-        "precio": 25000
-      },
-      {
-        "nombre": "Devolución con tanque vacío",
-        "precio": 50000
-      }
-    ],
-    "imagenes": [
-      "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/4d34066b6e9e1a29c93d7d0edeb2f415058411d3.jpg",
-      "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/64be097eae7f8698be22c3646647d73c234e60a0.jpg",
-      "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/ef353e43a859b12a67c8bd45cb5f5265beddef2a.jpg"
-    ],
-    "disponibilidad": {
-      "ocupados": []
-    },
-    "comentarios": [
-      {
-        "autor": "Julio R.",
-        "calificacion": 4,
-        "texto": "Perfecta para ir al campo, muy fuerte.",
-        "fecha": "2026-02-14"
-      },
-      {
-        "autor": "Ana Maria",
-        "calificacion": 5,
-        "texto": "Espacio de sobra para toda la familia. La volveré a alquilar.",
-        "fecha": "2026-03-01"
-      }
-    ]
-  },
-  {
-    "id": 6,
-    "nombre": "Renault Sandero 2023",
-    "categoria": "Económico",
-    "transmision": "Manual",
-    "combustible": "Gasolina",
-    "precio": 55000,
-    "calificacion": 4.3,
-    "disponible": true,
-    "destacado": false,
-    "puertas": 5,
-    "pasajeros": 5,
-    "maletero": 320,
-    "cilindraje": "1.6L",
-    "color": "Gris Highland",
-    "año": 2023,
-    "placa": "PQR-678",
-    "sucursal": "Alquiler Neiva - Centro",
-    "sucursalInfo": {
-      "nombre": "Alquiler Neiva - Centro",
-      "direccion": "Cra 5 # 12-34, Neiva, Huila",
-      "horario": "Lun a sáb, 7:00 am - 7:00 pm"
-    },
-    "descripcion": "Vehículo compacto ideal para la ciudad, con un habitáculo súper cómodo para 5 pasajeros. Cuenta con un excelente rendimiento de combustible que cuida tu bolsillo durante todos tus desplazamientos diarios. Gran vehículo.",
-    "caracteristicas": [
-      {
-        "nombre": "Aire acondicionado",
-        "icono": "FaSnowflake"
-      },
-      {
-        "nombre": "Vidrios eléctricos",
-        "icono": "FaWindowMaximize"
-      },
-      {
-        "nombre": "Cierre centralizado",
-        "icono": "FaLock"
-      }
-    ],
-    "equipamientoTecnologico": [
-      {
-        "nombre": "Bluetooth",
-        "icono": "FaBluetoothB"
-      },
-      {
-        "nombre": "Puerto USB",
-        "icono": "FaPlug"
-      },
-      {
-        "nombre": "Pantalla táctil",
-        "icono": "FaMobileAlt"
-      },
-      {
-        "nombre": "Cámara de reversa",
-        "icono": "FaCamera"
-      }
-    ],
-    "tarifas": {
-      "kmLimitado": {
-        "km": 150,
-        "precio": 55000,
-        "excedente": 550
-      },
-      "kmIlimitado": {
-        "precio": 68000
-      }
-    },
-    "seguros": [
-      {
-        "nombre": "Protección Obligatoria",
-        "precio": 29000
-      },
-      {
-        "nombre": "Protección Total",
-        "precio": 67000
-      }
-    ],
-    "servicios": [
-      {
-        "nombre": "GPS Integrado",
-        "precio": 15000
-      },
-      {
-        "nombre": "Silla de bebé",
-        "precio": 20000
-      },
-      {
-        "nombre": "Lavado de auto post-entrega",
-        "precio": 25000
-      },
-      {
-        "nombre": "Devolución con tanque vacío",
-        "precio": 50000
-      }
-    ],
-    "imagenes": [
-      "https://th.bing.com/th/id/OIP.M8Xr6C7QAbptaShiYv_SigHaEi?w=259&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
-      "https://th.bing.com/th/id/OIP.51EBaowC6BNblc7CVjxDMQHaFL?w=258&h=181&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
-      "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/5c55d73935760e36ac2c84a6f676e75136c75d1f.jpg"
-    ],
-    "disponibilidad": {
-      "ocupados": []
-    },
-    "comentarios": [
-      {
-        "autor": "Camila R.",
-        "calificacion": 5,
-        "texto": "Muy cómodo para viajes cortos, sin problemas mecánicos y el proceso de entrega fue rápido.",
-        "fecha": "2026-06-14"
-      },
-      {
-        "autor": "Juan P.",
-        "calificacion": 4,
-        "texto": "Buen carro y buen precio, aunque el aire tardó un poco en enfriar el primer día.",
-        "fecha": "2026-05-30"
-      }
-    ]
-  },
-  {
-    "id": 7,
-    "nombre": "Hyundai Tucson 2024",
-    "categoria": "SUV",
-    "transmision": "Automática",
-    "combustible": "Híbrido",
-    "precio": 160000,
-    "calificacion": 4.8,
-    "disponible": true,
-    "destacado": false,
-    "puertas": 5,
-    "pasajeros": 5,
-    "maletero": 513,
-    "cilindraje": "1.6L Híbrido",
-    "color": "Phantom Black",
-    "año": 2024,
-    "placa": "STU-901",
-    "sucursal": "Alamo Bogotá - Aeropuerto",
-    "sucursalInfo": {
-      "nombre": "Alamo Bogotá - Aeropuerto",
-      "direccion": "Av. El Dorado # 103-09, Bogotá, Cundinamarca",
-      "horario": "Todos los días, 6:00 am - 10:00 pm"
-    },
-    "descripcion": "Sofisticada SUV híbrida, reconocida por ser muy eficiente y silenciosa. Cuenta con un amplio espacio de carga y lo último en tecnología de asistencia al conductor para mayor seguridad. Tecnología limpia.",
-    "caracteristicas": [
-      {
-        "nombre": "Aire acondicionado",
-        "icono": "FaSnowflake"
-      },
-      {
-        "nombre": "Vidrios eléctricos",
-        "icono": "FaWindowMaximize"
-      },
-      {
-        "nombre": "Cierre centralizado",
-        "icono": "FaLock"
-      },
-      {
-        "nombre": "Techo panorámico",
-        "icono": "FaSun"
-      }
-    ],
-    "equipamientoTecnologico": [
-      {
-        "nombre": "Bluetooth",
-        "icono": "FaBluetoothB"
-      },
-      {
-        "nombre": "Puerto USB",
-        "icono": "FaPlug"
-      },
-      {
-        "nombre": "Pantalla táctil",
-        "icono": "FaMobileAlt"
-      },
-      {
-        "nombre": "Cámara de reversa",
-        "icono": "FaCamera"
-      },
-      {
-        "nombre": "Cargador inalámbrico",
-        "icono": "FaChargingStation"
-      }
-    ],
-    "tarifas": {
-      "kmLimitado": {
-        "km": 250,
-        "precio": 160000,
-        "excedente": 1100
-      },
-      "kmIlimitado": {
-        "precio": 192000
-      }
-    },
-    "seguros": [
-      {
-        "nombre": "Protección Obligatoria",
-        "precio": 29000
-      },
-      {
-        "nombre": "Protección Total",
-        "precio": 67000
-      }
-    ],
-    "servicios": [
-      {
-        "nombre": "GPS Integrado",
-        "precio": 15000
-      },
-      {
-        "nombre": "Silla de bebé",
-        "precio": 20000
-      },
-      {
-        "nombre": "Lavado de auto post-entrega",
-        "precio": 25000
-      },
-      {
-        "nombre": "Devolución con tanque vacío",
-        "precio": 50000
-      }
-    ],
-    "imagenes": [
-      "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/c86e9f8dd37048853c7c2fce700fb4bb5b1e062c.jpg",
-      "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/8631ecb31093479ab34a56263b478b44fb2d74f6.jpg",
-      "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/aa041a9462ecf25c4c543ea284f7af255338df95.jpg"
-    ],
-    "disponibilidad": {
-      "ocupados": []
-    },
-    "comentarios": [
-      {
-        "autor": "Luis C.",
-        "calificacion": 5,
-        "texto": "Muy económica por ser híbrida. Totalmente recomendada.",
-        "fecha": "2026-07-02"
-      }
-    ]
-  },
-  {
-    "id": 8,
-    "nombre": "Nissan Leaf E-Tech 2024",
-    "categoria": "Eléctricos (Eco-Drive)",
-    "transmision": "Automática",
-    "combustible": "Eléctrico",
-    "precio": 95000,
-    "calificacion": 4.4,
-    "disponible": false,
-    "estadoFlota": "mantenimiento",
-    "destacado": false,
-    "puertas": 4,
-    "pasajeros": 5,
-    "maletero": 435,
-    "cilindraje": "100% Eléctrico",
-    "color": "Snow White Pearl",
-    "año": 2024,
-    "placa": "ELC-902",
-    "sucursal": "Alamo Bogotá - Aeropuerto",
-    "sucursalInfo": {
-      "nombre": "Alamo Bogotá - Aeropuerto",
-      "direccion": "Av. El Dorado # 103-09, Bogotá, Cundinamarca",
-      "horario": "Todos los días, 6:00 am - 10:00 pm"
-    },
-    "descripcion": "Elegante sedán moderno y confortable, diseñado con un gran maletero y acabados de altísima calidad. Es el compañero perfecto tanto para trayectos diarios como para viajes importantes de negocios. Confort garantizado.",
-    "caracteristicas": [
-      {
-        "nombre": "Aire acondicionado",
-        "icono": "FaSnowflake"
-      },
-      {
-        "nombre": "Vidrios eléctricos",
-        "icono": "FaWindowMaximize"
-      },
-      {
-        "nombre": "Cierre centralizado",
-        "icono": "FaLock"
-      }
-    ],
-    "equipamientoTecnologico": [
-      {
-        "nombre": "Bluetooth",
-        "icono": "FaBluetoothB"
-      },
-      {
-        "nombre": "Puerto USB",
-        "icono": "FaPlug"
-      },
-      {
-        "nombre": "Pantalla táctil",
-        "icono": "FaMobileAlt"
-      },
-      {
-        "nombre": "Cámara de reversa",
-        "icono": "FaCamera"
-      }
-    ],
-    "tarifas": {
-      "kmLimitado": {
-        "km": 200,
-        "precio": 95000,
-        "excedente": 900
-      },
-      "kmIlimitado": {
-        "precio": 115000
-      }
-    },
-    "seguros": [
-      {
-        "nombre": "Protección Obligatoria",
-        "precio": 29000
-      },
-      {
-        "nombre": "Protección Total",
-        "precio": 67000
-      }
-    ],
-    "servicios": [
-      {
-        "nombre": "GPS Integrado",
-        "precio": 15000
-      },
-      {
-        "nombre": "Silla de bebé",
-        "precio": 20000
-      },
-      {
-        "nombre": "Lavado de auto post-entrega",
-        "precio": 25000
-      },
-      {
-        "nombre": "Devolución con tanque vacío",
-        "precio": 50000
-      }
-    ],
-    "imagenes": [
-      "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/7718dbfc25ce3e387cb976f4ded742dc8d8c7582.jpg",
-      "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/1e686f124bd42a21481a43969615adc261e39251.jpg",
-      "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/de7fef41a3ee96557b1600b7e91494dd78a5e7b1.jpg"
-    ],
-    "disponibilidad": {
-      "ocupados": []
-    },
-    "comentarios": []
-  },
-  {
-    "id": 9,
-    "nombre": "Nissan Qashqai 2024",
-    "categoria": "SUV",
-    "transmision": "Automática",
-    "combustible": "Híbrido",
-    "precio": 140000,
-    "calificacion": 4.9,
-    "disponible": true,
-    "destacado": true,
-    "puertas": 5,
-    "pasajeros": 5,
-    "maletero": 504,
-    "cilindraje": "1.3L Turbo MHEV",
-    "color": "Magnetic Blue",
-    "año": 2024,
-    "placa": "YZA-567",
-    "sucursal": "Localiza Cúcuta Aeropuerto Camilo Daza",
-    "sucursalInfo": {
-      "nombre": "Localiza Cúcuta Aeropuerto Camilo Daza",
-      "direccion": "Aeropuerto Camilo Daza, Cúcuta, Norte de Santander",
-      "horario": "Todos los días, 6:00 am - 9:00 pm"
-    },
-    "descripcion": "SUV híbrida premium que ofrece una gran eficiencia de combustible. Su interior destaca por un hermoso techo panorámico y un espacio muy generoso tanto para pasajeros como para su equipaje. Viajes inolvidables.",
-    "caracteristicas": [
-      {
-        "nombre": "Aire acondicionado",
-        "icono": "FaSnowflake"
-      },
-      {
-        "nombre": "Vidrios eléctricos",
-        "icono": "FaWindowMaximize"
-      },
-      {
-        "nombre": "Cierre centralizado",
-        "icono": "FaLock"
-      },
-      {
-        "nombre": "Techo panorámico",
-        "icono": "FaSun"
-      }
-    ],
-    "equipamientoTecnologico": [
-      {
-        "nombre": "Bluetooth",
-        "icono": "FaBluetoothB"
-      },
-      {
-        "nombre": "Puerto USB",
-        "icono": "FaPlug"
-      },
-      {
-        "nombre": "Pantalla táctil",
-        "icono": "FaMobileAlt"
-      },
-      {
-        "nombre": "Cámara de reversa",
-        "icono": "FaCamera"
-      },
-      {
-        "nombre": "Sensores de punto ciego",
-        "icono": "FaEye"
-      }
-    ],
-    "tarifas": {
-      "kmLimitado": {
-        "km": 250,
-        "precio": 140000,
-        "excedente": 1000
-      },
-      "kmIlimitado": {
-        "precio": 170000
-      }
-    },
-    "seguros": [
-      {
-        "nombre": "Protección Obligatoria",
-        "precio": 29000
-      },
-      {
-        "nombre": "Protección Total",
-        "precio": 67000
-      }
-    ],
-    "servicios": [
-      {
-        "nombre": "GPS Integrado",
-        "precio": 15000
-      },
-      {
-        "nombre": "Silla de bebé",
-        "precio": 20000
-      },
-      {
-        "nombre": "Lavado de auto post-entrega",
-        "precio": 25000
-      },
-      {
-        "nombre": "Devolución con tanque vacío",
-        "precio": 50000
-      }
-    ],
-    "imagenes": [
-      "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/5acb88622cc00284455f7d6c6e19fd2f5b11a6cd.jpg",
-      "https://th.bing.com/th/id/OIP.fXE8mmnIQyu_3aOZ3jDciAHaE0?w=277&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
-      "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/8631ecb31093479ab34a56263b478b44fb2d74f6.jpg"
-    ],
-    "disponibilidad": {
-      "ocupados": []
-    },
-    "comentarios": []
-  }
+    {
+        "id":  9,
+        "nombre":  "Nissan Qashqai 2024",
+        "categoria":  "SUV",
+        "transmision":  "Automática",
+        "combustible":  "Híbrido",
+        "precio":  140000,
+        "disponible":  true,
+        "destacado":  true,
+        "puertas":  5,
+        "pasajeros":  5,
+        "maletero":  504,
+        "cilindraje":  "1.3L Turbo MHEV",
+        "color":  "Magnetic Blue",
+        "año":  2024,
+        "placa":  "YZA-567",
+        "sucursal":  "Localiza Cúcuta Aeropuerto Camilo Daza",
+        "sucursalInfo":  {
+                             "nombre":  "Localiza Cúcuta Aeropuerto Camilo Daza",
+                             "direccion":  "Aeropuerto Camilo Daza, Cúcuta, Norte de Santander",
+                             "horario":  "Todos los días, 6:00 am - 9:00 pm"
+                         },
+        "descripcion":  "SUV híbrida premium que ofrece una gran eficiencia de combustible. Su interior destaca por un hermoso techo panorámico y un espacio muy generoso tanto para pasajeros como para su equipaje. Viajes inolvidables.",
+        "caracteristicas":  [
+                                {
+                                    "nombre":  "Aire acondicionado",
+                                    "icono":  "FaSnowflake"
+                                },
+                                {
+                                    "nombre":  "Vidrios eléctricos",
+                                    "icono":  "FaWindowMaximize"
+                                },
+                                {
+                                    "nombre":  "Cierre centralizado",
+                                    "icono":  "FaLock"
+                                },
+                                {
+                                    "nombre":  "Techo panorámico",
+                                    "icono":  "FaSun"
+                                }
+                            ],
+        "equipamientoTecnologico":  [
+                                        {
+                                            "nombre":  "Bluetooth",
+                                            "icono":  "FaBluetoothB"
+                                        },
+                                        {
+                                            "nombre":  "Puerto USB",
+                                            "icono":  "FaPlug"
+                                        },
+                                        {
+                                            "nombre":  "Pantalla táctil",
+                                            "icono":  "FaMobileAlt"
+                                        },
+                                        {
+                                            "nombre":  "Cámara de reversa",
+                                            "icono":  "FaCamera"
+                                        },
+                                        {
+                                            "nombre":  "Sensores de punto ciego",
+                                            "icono":  "FaEye"
+                                        }
+                                    ],
+        "tarifas":  {
+                        "kmLimitado":  {
+                                           "km":  250,
+                                           "precio":  140000,
+                                           "excedente":  1000
+                                       },
+                        "kmIlimitado":  {
+                                            "precio":  170000
+                                        }
+                    },
+        "seguros":  [
+                        {
+                            "nombre":  "Protección Obligatoria",
+                            "precio":  29000
+                        },
+                        {
+                            "nombre":  "Protección Total",
+                            "precio":  67000
+                        }
+                    ],
+        "servicios":  [
+                          {
+                              "nombre":  "GPS Integrado",
+                              "precio":  15000
+                          },
+                          {
+                              "nombre":  "Silla de bebé",
+                              "precio":  20000
+                          },
+                          {
+                              "nombre":  "Lavado de auto post-entrega",
+                              "precio":  25000
+                          },
+                          {
+                              "nombre":  "Devolución con tanque vacío",
+                              "precio":  50000
+                          }
+                      ],
+        "imagenes":  [
+                         "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/5acb88622cc00284455f7d6c6e19fd2f5b11a6cd.jpg",
+                         "https://th.bing.com/th/id/OIP.fXE8mmnIQyu_3aOZ3jDciAHaE0?w=277\u0026h=180\u0026c=7\u0026r=0\u0026o=7\u0026dpr=1.3\u0026pid=1.7\u0026rm=3",
+                         "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/8631ecb31093479ab34a56263b478b44fb2d74f6.jpg"
+                     ],
+        "disponibilidad":  {
+                               "ocupados":  [
+
+                                            ]
+                           }
+    }
 ]
