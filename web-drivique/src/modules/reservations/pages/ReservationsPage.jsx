@@ -1295,7 +1295,7 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
 
         {esConfirmadaModal && <Contrato reserva={reserva} autoDesbloquear={autoDesbloquear} />}
 
-        {esFinalizadaModal && onValorar && (
+        {esFinalizadaModal && (!reserva.eligibility || reserva.eligibility.canReviewVehicle) && onValorar && (
           <div style={{ marginTop: '20px', textOverflow: 'ellipsis' }}>
             <button
               type="button"
@@ -1399,7 +1399,7 @@ function TarjetaReserva({ reserva, moneda, onValorar, onReportar, onVerDetalle }
           <span>{t('reservas.makeReport', { defaultValue: 'Hacer reporte' })}</span>
         </button>
       )}
-      {esFinalizada && (
+      {esFinalizada && (!reserva.eligibility || reserva.eligibility.canReviewVehicle) && (
         <button className="btn-calificar" onClick={() => onValorar(reserva)}>
           <FaStar color="#f59e0b" size={13} />
           <span>
