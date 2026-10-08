@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useLocation, useSearchParams } from 'react-router-dom'
-import { FaCalendarAlt, FaCar, FaCheckCircle, FaChevronDown, FaDownload, FaEye, FaEyeSlash, FaFileContract, FaFlag, FaKey, FaLock, FaMapMarkerAlt, FaMoneyBillWave, FaRegCalendarCheck, FaScroll, FaShieldAlt, FaStar, FaTimes, FaInfoCircle, FaCreditCard, FaFileSignature, FaPenNib, FaClock, FaTruck, FaUserCheck, FaWhatsapp, FaEnvelope, FaCamera } from 'react-icons/fa'
+import { FaCalendarAlt, FaCar, FaCheckCircle, FaChevronDown, FaDownload, FaEye, FaEyeSlash, FaFileContract, FaFlag, FaKey, FaLock, FaMapMarkerAlt, FaMoneyBillWave, FaRegCalendarCheck, FaScroll, FaShieldAlt, FaStar, FaTimes, FaInfoCircle, FaCreditCard, FaFileSignature, FaPenNib, FaClock, FaTruck, FaUserCheck, FaWhatsapp, FaEnvelope } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/store/authStore'
@@ -120,54 +120,28 @@ function ModalValoracion({ reserva, onClose, onSave }) {
   const { t } = useTranslation()
   const [estrellas, setEstrellas] = useState(reserva.valoracion?.estrellas || 0)
   const [comentario, setComentario] = useState(reserva.valoracion?.comentario || '')
-  const [fotos, setFotos] = useState(reserva.valoracion?.fotos || [])
   const [guardando, setGuardando] = useState(false)
-  const [activeSlotIndex, setActiveSlotIndex] = useState(null)
-  const fileInputRef = useRef(null)
 
   const vehiculoNombre = reserva.vehiculo?.nombre || reserva.vehiculoNombre || 'este vehículo'
-
-  const triggerSlotUpload = (slotIdx) => {
-    setActiveSlotIndex(slotIdx)
-    if (fileInputRef.current) {
-      fileInputRef.current.value = ''
-      fileInputRef.current.click()
-    }
-  }
-
-  const handleFotoFileChange = (e) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-
-    const reader = new FileReader()
-    reader.onload = (event) => {
-      const targetIndex = activeSlotIndex !== null ? activeSlotIndex : fotos.length
-      setFotos((prev) => {
-        const next = [...prev]
-        if (targetIndex < 3) {
-          next[targetIndex] = event.target.result
-        }
-        return next.filter(Boolean).slice(0, 3)
-      })
-    }
-    reader.readAsDataURL(file)
-  }
-
-  const handleEliminarFoto = (idx) => {
-    setFotos((prev) => prev.filter((_, i) => i !== idx))
-  }
 
   const guardar = async () => {
     if (!estrellas) return
     setGuardando(true)
-    await onSave(reserva.id, {
-      estrellas,
-      comentario: comentario.trim(),
-      fotos: fotos.filter(Boolean),
-      actualizadoEn: new Date().toISOString()
-    })
-    setGuardando(false)
-    onClose()
+    try {
+      await onSave(reserva.id, {
+        estrellas,
+        comentario: comentario.trim()
+      })
+      onClose()
+    } catch (error) {
+      showAlert({
+        icon: 'error',
+        title: t('common.error', 'Error'),
+        text: error?.response?.data?.detail || t('reservas.reviewSaveError', 'No fue posible publicar la reseña.')
+      })
+    } finally {
+      setGuardando(false)
+    }
   }
 
   return (
@@ -206,62 +180,10 @@ function ModalValoracion({ reserva, onClose, onSave }) {
           />
         </div>
 
-        {/* 3 Slots de Fotos inmediatos */}
-        <div className="minimal-textarea-group">
-          <div className="minimal-group-head">
-            <label className="minimal-label">
-              Fotos del vehículo <span>({fotos.filter(Boolean).length}/3 opcional)</span>
-            </label>
-          </div>
-
-          <div className="minimal-fotos-grid-3">
-            {[0, 1, 2].map((slotIdx) => {
-              const src = fotos[slotIdx]
-              return (
-                <div key={slotIdx} className="minimal-slot-box">
-                  {src ? (
-                    <div className="minimal-slot-thumb">
-                      <img src={src} alt={`Foto ${slotIdx + 1}`} />
-                      <button
-                        type="button"
-                        onClick={() => handleEliminarFoto(slotIdx)}
-                        className="minimal-slot-del-btn"
-                        title="Eliminar foto"
-                      >
-                        <FaTimes size={11} />
-                      </button>
-                    </div>
-                  ) : (
-                    <button
-                      type="button"
-                      className="minimal-slot-upload-btn"
-                      onClick={() => triggerSlotUpload(slotIdx)}
-                    >
-                      <FaCamera className="slot-cam-icon" />
-                      <span className="slot-num">Foto {slotIdx + 1}</span>
-                      <span className="slot-action">+ Añadir</span>
-                    </button>
-                  )}
-                </div>
-              )
-            })}
-          </div>
-
-          <input
-            type="file"
-            ref={fileInputRef}
-            accept="image/*"
-            style={{ display: 'none' }}
-            onChange={handleFotoFileChange}
-          />
-        </div>
-
         <button className="minimal-submit-btn" disabled={!estrellas || guardando} onClick={guardar}>
           {guardando
             ? t('reservas.saving', { defaultValue: 'Guardando...' })
-            : (reserva.valoracion
-                ? t('reservas.saveChanges', { defaultValue: 'Guardar cambios' })
-                : t('reservas.publishRating', { defaultValue: 'Publicar valoración' }))}
+            : t('reservas.publishRating', { defaultValue: 'Publicar valoración' })}
         </button>
       </section>
     </div>
@@ -515,7 +437,7 @@ function Contrato({ reserva, autoDesbloquear = false, onDesbloquear }) {
 }
 
 
-function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
+function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onValorar }) {
   const { t, i18n } = useTranslation()
   const { brand } = useBrand() || {}
   const usuario = useAuthStore(state => state.usuario)
@@ -1295,7 +1217,7 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose }) {
 
         {esConfirmadaModal && <Contrato reserva={reserva} autoDesbloquear={autoDesbloquear} />}
 
-        {esFinalizadaModal && (!reserva.eligibility || reserva.eligibility.canReviewVehicle) && onValorar && (
+        {esFinalizadaModal && !reserva.valoracion && (!reserva.eligibility || reserva.eligibility.canReviewVehicle) && onValorar && (
           <div style={{ marginTop: '20px', textOverflow: 'ellipsis' }}>
             <button
               type="button"
@@ -1399,7 +1321,7 @@ function TarjetaReserva({ reserva, moneda, onValorar, onReportar, onVerDetalle }
           <span>{t('reservas.makeReport', { defaultValue: 'Hacer reporte' })}</span>
         </button>
       )}
-      {esFinalizada && (!reserva.eligibility || reserva.eligibility.canReviewVehicle) && (
+      {esFinalizada && !reserva.valoracion && (!reserva.eligibility || reserva.eligibility.canReviewVehicle) && (
         <button className="btn-calificar" onClick={() => onValorar(reserva)}>
           <FaStar color="#f59e0b" size={13} />
           <span>
