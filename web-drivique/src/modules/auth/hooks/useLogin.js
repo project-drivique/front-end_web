@@ -13,6 +13,7 @@ export function useLogin() {
   const [searchParams] = useSearchParams()
   const storeLogin = useAuthStore((s) => s.login)
   const iniciar2FA = useAuthStore((s) => s.iniciar2FA)
+  const iniciarVerificacionCorreo = useAuthStore((s) => s.iniciarVerificacionCorreo)
 
   const [correo, setCorreo] = useState('')
   const [contrasena, setContrasena] = useState('')
@@ -104,7 +105,13 @@ export function useLogin() {
       const status = error?.response?.status
       const data = error?.response?.data || {}
 
-      if (status === 403) {
+      if (status === 403 || status === 401) {
+        if (data.errorCode === 'USER_NOT_VERIFIED' || data.detail?.includes('verifi') || data.message?.includes('verifi') || data.message === 'User is not verified' || data.errorCode === 'UNVERIFIED_ACCOUNT') {
+          iniciarVerificacionCorreo(correo, { contrasena })
+          authService.enviarCodigoVerificacion(correo).catch(console.error)
+          navigate('/verificar-correo')
+          return
+        }
         setErrores((prev) => ({ ...prev, general: t('login.errors.accessDenied') }))
         return
       }
