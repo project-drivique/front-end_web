@@ -107,7 +107,7 @@ export function useLogin() {
 
       if (status === 403 || status === 401) {
         if (data.errorCode === 'USER_NOT_VERIFIED' || data.detail?.includes('verifi') || data.message?.includes('verifi') || data.message === 'User is not verified' || data.errorCode === 'UNVERIFIED_ACCOUNT') {
-          iniciarVerificacionCorreo(correo)
+          iniciarVerificacionCorreo(correo, { contrasena })
           authService.enviarCodigoVerificacion(correo).catch(console.error)
           navigate('/verificar-correo')
           return
