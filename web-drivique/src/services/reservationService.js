@@ -1,6 +1,6 @@
-﻿/**
- * Servicio temporal para simular el almacenamiento de reservas.
- * Esto debería migrarse a un backend.
+/**
+ * Servicio de reservas y checkout persistente para HU-INT-11.
+ * Conecta las reservas, retenciones temporales y confirmación de pago.
  */
 
 const STORAGE_KEY = 'drivique_reservas';
