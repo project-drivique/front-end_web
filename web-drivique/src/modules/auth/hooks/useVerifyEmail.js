@@ -12,6 +12,7 @@ export function useVerifyEmail() {
   const navigate = useNavigate()
   const verificacionCorreo = useAuthStore((s) => s.verificacionCorreo)
   const cancelarVerificacionCorreo = useAuthStore((s) => s.cancelarVerificacionCorreo)
+  const storeLogin = useAuthStore((s) => s.login)
 
   // El registro ya envía el primer OTP; la pantalla debe permitir ingresarlo
   // inmediatamente y reservar el endpoint de reenvío para solicitudes posteriores.
@@ -113,8 +114,34 @@ export function useVerifyEmail() {
     setError('')
 
     try {
+      let loggedIn = false
       if (verificacionCorreo?.correo) {
         await authService.verificarCodigoRegistro(verificacionCorreo.correo, codigo)
+        
+        // Auto-login si tenemos la contraseña
+        if (verificacionCorreo.datosAcceso?.contrasena) {
+          try {
+            const loginData = await authService.login({ 
+              correo: verificacionCorreo.correo, 
+              contrasena: verificacionCorreo.datosAcceso.contrasena 
+            })
+            storeLogin(loginData.token, {
+              correo: loginData.correo || verificacionCorreo.correo,
+              nombre: loginData.nombre,
+              apellido: loginData.apellido,
+              rol: loginData.rol,
+              telefono: loginData.telefono,
+              cedula: loginData.cedula,
+              fechaNacimiento: loginData.fechaNacimiento,
+              activo: loginData.activo,
+              permisos: loginData.permisos,
+              sucursalId: loginData.sucursalId,
+            })
+            loggedIn = true
+          } catch (loginErr) {
+            console.error('Error auto-login tras verificar:', loginErr)
+          }
+        }
       }
 
       cancelarVerificacionCorreo()
@@ -128,7 +155,11 @@ export function useVerifyEmail() {
         showConfirmButton: false,
       })
 
-      navigate('/login', { replace: true })
+      if (loggedIn) {
+        navigate('/catalogo', { replace: true })
+      } else {
+        navigate('/login', { replace: true })
+      }
     } catch (err) {
       const status = err?.response?.status
       if (status === 410) {
