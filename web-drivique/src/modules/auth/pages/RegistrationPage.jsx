@@ -415,8 +415,8 @@ export default function RegistroPage() {
     }
     setErrores({})
 
-    const datosAcceso = await registrar({ correo, contrasena: password })
-    if (!datosAcceso) {
+    const respuestaRegistro = await registrar({ correo, contrasena: password })
+    if (!respuestaRegistro) {
       if (error) {
         showAlert({
           icon: 'error',
@@ -427,7 +427,7 @@ export default function RegistroPage() {
       return
     }
 
-    iniciarVerificacionCorreo(correo, datosAcceso)
+    iniciarVerificacionCorreo(correo, { contrasena: password })
 
     showAlert({
       icon: 'success',

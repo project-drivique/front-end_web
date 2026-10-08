@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   FaStar,
@@ -36,7 +36,7 @@ export default function BranchReviewsPage({ branchOnly = false }) {
   const isBranchManager = branchOnly || user?.rol === 'encargado' || user?.rol === 'branch_manager' || user?.rol === 'encargado_sucursal'
   const sucursalAsignada = user?.sucursalAsignada || user?.sucursalId || user?.sucursal || 'Alamo Bogotá - Aeropuerto'
 
-  const [reviews, setReviews] = useState(() => branchReviewManagementService.list(user))
+  const [reviews, setReviews] = useState([])
   const [search, setSearch] = useState('')
   const [activeTab, setActiveTab] = useState('todos')
 
@@ -45,7 +45,15 @@ export default function BranchReviewsPage({ branchOnly = false }) {
   const [respuestaTexto, setRespuestaTexto] = useState('')
   const [zoomMedia, setZoomMedia] = useState(null)
 
-  const refresh = () => setReviews(branchReviewManagementService.list(user))
+  const refresh = async () => {
+    const data = await branchReviewManagementService.list(user)
+    setReviews(data)
+  }
+
+  useEffect(() => {
+    refresh()
+  }, [user])
+
 
   // KPI Calculations
   const promedioRating = useMemo(() => {
@@ -107,13 +115,16 @@ export default function BranchReviewsPage({ branchOnly = false }) {
       showAlert({ icon: 'warning', title: 'Campo requerido', text: 'Escribe un mensaje de respuesta para el cliente.' })
       return
     }
+    try {
+      await branchReviewManagementService.responderResena(modalReview.id, respuestaTexto)
+      await refresh()
+      setModalReview(null)
+      setRespuestaTexto('')
 
-    branchReviewManagementService.responderResena(modalReview.id, respuestaTexto)
-    refresh()
-    setModalReview(null)
-    setRespuestaTexto('')
-
-    showAlert({ icon: 'success', title: 'Respuesta publicada', text: 'La respuesta a la reseña ha sido guardada exitosamente.' })
+      showAlert({ icon: 'success', title: 'Respuesta publicada', text: 'La respuesta a la reseña ha sido guardada exitosamente.' })
+    } catch (error) {
+      showAlert({ icon: 'error', title: 'Error', text: 'No se pudo publicar la respuesta.' })
+    }
   }
 
   const backdropStyle = { display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(15,23,42,0.65)', padding: 16 }
