@@ -1,114 +1,50 @@
-/**
- * Servicio temporal para simular la generación y firma del contrato de
- * reserva y alquiler. Igual que reservaService/documentosService, esto
- * debería migrarse a un backend real, pero mientras no exista, se simula
- * con localStorage guardando el contrato (código, firma en base64, ciudad,
- * fecha) asociado a la referencia de la reserva.
- */
+import { api } from './httpClient'
 
-const STORAGE_KEY = 'drivique_contratos';
+const normalize = (contract) => contract ? ({
+  ...contract,
+  codigo: contract.contractNumber,
+  referenciaReserva: contract.reservationCode,
+  estado: contract.statusCode,
+  firmadoEn: contract.signedAt,
+  firmaUsuarioDataUrl: contract.signatureUrl ? 'protected' : null,
+}) : null
 
-function leerTodos() {
+async function getOrGenerate(reservationId) {
+  if (!reservationId) return null
+  if (!/^[0-9a-f-]{36}$/i.test(String(reservationId))) {
+    return normalize((await api.post(`/contracts/generate/reservation-code/${encodeURIComponent(reservationId)}`)).data)
+  }
   try {
-    const data = localStorage.getItem(STORAGE_KEY);
-    return data ? JSON.parse(data) : {};
+    return normalize((await api.get(`/contracts/reservation/${reservationId}`)).data)
   } catch (error) {
-    console.error('Error leyendo contratos guardados', error);
-    return {};
+    if (error?.response?.status !== 404) throw error
+    return normalize((await api.post('/contracts/generate', { reservationId })).data)
   }
 }
 
-function guardarTodos(data) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-}
-
-/**
- * Genera un código de contrato legible y único, siguiendo el mismo patrón
- * que generarReferenciaUnica() de wompiService (prefijo + timestamp + azar).
- */
-function generarCodigoContrato() {
-  return 'CTR-' + Date.now() + '-' + Math.random().toString(36).substring(2, 7).toUpperCase();
+function dataUrlToBlob(dataUrl) {
+  const [header, encoded] = dataUrl.split(',')
+  const mime = header.match(/data:(.*?);/)?.[1] || 'image/png'
+  const bytes = atob(encoded)
+  const buffer = new Uint8Array(bytes.length)
+  for (let index = 0; index < bytes.length; index += 1) buffer[index] = bytes.charCodeAt(index)
+  return new Blob([buffer], { type: mime })
 }
 
 export const contractService = {
-  /**
-   * Devuelve el contrato ya firmado para una reserva (por su referencia),
-   * o null si esa reserva todavía no tiene contrato firmado.
-   */
-  obtenerPorReserva: (referenciaReserva) => {
-    if (!referenciaReserva) return null;
-    const todos = leerTodos();
-    const refStr = String(referenciaReserva).trim();
-    if (todos[refStr]) return todos[refStr];
-    const refClean = refStr.includes('_') ? refStr.split('_')[0] : refStr;
-    if (todos[refClean]) return todos[refClean];
-    const matchKey = Object.keys(todos).find(k => 
-      k === refClean || 
-      k.split('_')[0] === refClean || 
-      k.toLowerCase() === refClean.toLowerCase() ||
-      String(todos[k]?.codigo || '').toLowerCase() === refClean.toLowerCase() ||
-      String(todos[k]?.referenciaReserva || '').toLowerCase() === refClean.toLowerCase()
-    );
-    return matchKey ? todos[matchKey] : null;
+  obtenerPorReserva: getOrGenerate,
+  obtenerOCrearCodigo: async (reservationId) => (await getOrGenerate(reservationId))?.contractNumber || '',
+  completarContratoOriginal: async (reservationId) => getOrGenerate(reservationId),
+  guardarFirma: async (reservationId, { firmaUsuarioDataUrl, firmaTrazos = '[]', signedCityId, documentVersion = 'v1.0' }) => {
+    const contract = await getOrGenerate(reservationId)
+    if (!contract) throw new Error('No se pudo generar el contrato para la reserva.')
+    const form = new FormData()
+    form.append('signature', dataUrlToBlob(firmaUsuarioDataUrl), 'signature.png')
+    form.append('signatureStrokeData', firmaTrazos)
+    form.append('signedCityId', signedCityId || contract.pickupCityId)
+    form.append('consentAccepted', 'true')
+    form.append('documentVersion', documentVersion)
+    return normalize((await api.post(`/contracts/${contract.id}/sign`, form, { headers: { 'Content-Type': 'multipart/form-data' } })).data)
   },
-
-  /**
-   * Crea (si no existe) el código de contrato para una reserva, sin
-   * marcarlo todavía como firmado. Útil para mostrar el código en pantalla
-   * antes de que el usuario firme.
-   */
-  obtenerOCrearCodigo: (referenciaReserva) => {
-    if (!referenciaReserva) return generarCodigoContrato();
-    const todos = leerTodos();
-    const refStr = String(referenciaReserva).trim();
-    const refClean = refStr.includes('_') ? refStr.split('_')[0] : refStr;
-    if (todos[refStr]?.codigo) return todos[refStr].codigo;
-    if (todos[refClean]?.codigo) return todos[refClean].codigo;
-    return generarCodigoContrato();
-  },
-
-  completarContratoOriginal: (referenciaReserva, contratoOriginal) => {
-    if (!referenciaReserva || !contratoOriginal) return null;
-    const todos = leerTodos();
-    const refStr = String(referenciaReserva).trim();
-    const refClean = refStr.includes('_') ? refStr.split('_')[0] : refStr;
-    const key = todos[refStr] ? refStr : (todos[refClean] ? refClean : refClean);
-    if (!todos[key]) return null;
-    todos[key] = { ...todos[key], contratoOriginal };
-    guardarTodos(todos);
-    return todos[key];
-  },
-
-  /**
-   * Guarda la firma del usuario y deja el contrato en estado FIRMADO,
-   * asociado a la referencia de la reserva.
-   */
-  guardarFirma: (referenciaReserva, { codigo, firmaUsuarioDataUrl, ciudad, fecha, contratoOriginal }) => {
-    if (!referenciaReserva) return null;
-    const todos = leerTodos();
-    const refStr = String(referenciaReserva).trim();
-    const refClean = refStr.includes('_') ? refStr.split('_')[0] : refStr;
-
-    const contrato = {
-      codigo: codigo || generarCodigoContrato(),
-      referenciaReserva: refClean,
-      firmaUsuarioDataUrl,
-      ciudad: ciudad || '',
-      fecha: fecha || new Date().toISOString(),
-      contratoOriginal: contratoOriginal || null,
-      estado: 'FIRMADO',
-      firmadoEn: new Date().toISOString(),
-    };
-
-    todos[refClean] = contrato;
-    todos[refStr] = contrato;
-    if (contratoOriginal?.reserva) {
-      const res = contratoOriginal.reserva;
-      if (res.id) todos[String(res.id)] = contrato;
-      if (res.referencia) todos[String(res.referencia)] = contrato;
-      if (res.codigo) todos[String(res.codigo)] = contrato;
-    }
-    guardarTodos(todos);
-    return contrato;
-  },
-};
+  descargarPdf: async (contractId) => (await api.get(`/contracts/${contractId}/pdf`, { responseType: 'blob' })).data,
+}
