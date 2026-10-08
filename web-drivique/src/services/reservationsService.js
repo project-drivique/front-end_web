@@ -1,131 +1,62 @@
-import { reservationService } from './reservationService'
 import { useAuthStore } from '../store/authStore'
-
-const USAR_MOCK =
-  import.meta.env.VITE_USAR_MOCK === 'true'
 
 let apiInstance = null
 
 async function getApi() {
   if (!apiInstance) {
-    const { api } = await import('./authService')
+    const { api } = await import('./httpClient') // use httpClient directly or authService? It was authService, but authService exports api? Wait, authService.js exports `api`? Let's use httpClient.
     apiInstance = api
   }
   return apiInstance
 }
 
-/**
- * Convierte una reserva guardada localmente (creada desde el flujo de
- * reserva, con pago Wompi o en efectivo) al formato que usa el historial de
- * reservas de la app.
- */
-function mapearReservaLocal(r) {
-  const totalVal = r.total || r.totalCOP || r.reservaDetalles?.total || 0
-  return {
-    ...r,
-    id: r.referencia || r.id,
-    referencia: r.referencia || r.id,
-    vehiculoId: r.vehiculoId,
-    vehiculoNombre: r.vehiculoNombre,
-    fechaInicio: r.reservaDetalles?.fechaInicio || r.fechaInicio,
-    fechaFin: r.reservaDetalles?.fechaFin || r.fechaFin,
-    estado: r.estado,
-    total: totalVal,
-    totalCOP: totalVal,
-    fechaLimitePago: r.fechaLimitePago || null,
-    horasLimitePago: r.horasLimitePago || null,
-    metodoPago: r.reservaDetalles?.metodoPago || r.metodoPago || null,
-    datosForm: r.datosForm || null,
-    reservaDetalles: r.reservaDetalles || null,
-    esLocal: true,
-  }
-}
-
 export const reservationsService = {
   getReservas: async () => {
-    if (USAR_MOCK) {
-      const usuario = useAuthStore.getState().usuario
-      const correo = usuario?.correo?.trim().toLowerCase()
-      const documento = String(usuario?.cedula || '').replace(/\D/g, '')
-      const allReservas = reservationService.getReservas()
-      const filtered = allReservas.filter((reserva) => {
-        const correoReserva = reserva.datosForm?.correo?.trim().toLowerCase()
-        const documentoReserva = String(reserva.datosForm?.numDoc || '').replace(/\D/g, '')
-        return (correo && correoReserva === correo) || (documento && documentoReserva === documento) || correoReserva === 'cliente@drivique.com'
-      })
-      const listToMap = filtered.length > 0 ? filtered : allReservas
-      return listToMap.map(mapearReservaLocal)
-    }
-
     const api = await getApi()
-    const { data } = await api.get('/reservas')
+    const { data } = await api.get('/reservations/me')
     return data
   },
 
   getReservasPorVehiculo: async (vehiculoId) => {
-    if (USAR_MOCK) {
-      return reservationService.getReservas().filter(r => r.vehiculoId === Number(vehiculoId))
-    }
-
     const api = await getApi()
-    const { data } = await api.get('/reservas', { params: { vehiculoId } })
+    const { data } = await api.get('/reservations', { params: { vehicleId: vehiculoId } })
     return data
   },
 
   getReservaById: async (id) => {
-    if (USAR_MOCK) {
-      const reserva = reservationService.obtenerPorReferencia(id)
-      if (!reserva) throw new Error('Reserva no encontrada')
-      return reserva
-    }
-
     const api = await getApi()
-    const { data } = await api.get(`/reservas/${id}`)
+    const { data } = await api.get(`/reservations/${id}`)
     return data
   },
 
   crearReserva: async (datosReserva) => {
-    if (USAR_MOCK) return { id: Date.now(), ...datosReserva }
-
     const api = await getApi()
-    const { data } = await api.post('/reservas', datosReserva)
+    // Initiate checkout (creates a hold)
+    const { data } = await api.post('/reservations/checkout/initiate', datosReserva)
+    return data
+  },
+  
+  confirmarPago: async (holdId) => {
+    const api = await getApi()
+    const { data } = await api.post(`/reservations/checkout/confirm/${holdId}`)
     return data
   },
 
   cancelarReserva: async (id) => {
-    if (USAR_MOCK) {
-      // Las reservas locales tienen como id su referencia (string), a
-      // diferencia de las del mock que usan un id numérico.
-      if (typeof id === 'string') {
-        reservationService.actualizarEstado(id, 'CANCELADA')
-      }
-      return { id, cancelada: true }
-    }
-
     const api = await getApi()
-    const { data } = await api.patch(`/reservas/${id}/cancelar`)
+    const { data } = await api.patch(`/reservations/${id}/cancel`)
     return data
   },
 
   guardarValoracion: async (id, valoracion) => {
-    if (USAR_MOCK) {
-      const guardadas = JSON.parse(localStorage.getItem('drivique_valoraciones') || '{}')
-      guardadas[id] = { ...valoracion, actualizadaEn: new Date().toISOString() }
-      localStorage.setItem('drivique_valoraciones', JSON.stringify(guardadas))
-      return guardadas[id]
-    }
-
     const api = await getApi()
     const payload = {
       reservationId: id,
       rating: valoracion.estrellas,
       comment: valoracion.comentario || ''
     }
-    
-    await api.post(`/reviews/vehicles`, payload)
-    
-    // Devolvemos el mismo objeto local para que el UI se actualice
-    return { estrellas: valoracion.estrellas, comentario: valoracion.comentario, actualizadaEn: new Date().toISOString() }
+    const { data } = await api.post(`/reviews/vehicles`, payload)
+    return data
   },
 
   checkReviewEligibility: async (id) => {
@@ -138,3 +69,4 @@ export const reservationsService = {
     }
   }
 }
+
