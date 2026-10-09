@@ -285,18 +285,19 @@ export default function DatosPersonales({
   const tarifas = vehiculo.tarifas || {};
   const kmLimit = tarifas.kmLimitado || { precio: 0, km: 0 };
   const kmIlimit = tarifas.kmIlimitado || { precio: 0 };
-  const precio = reserva.tipoKm === 'ilimitado'
-    ? kmIlimit.precio
-    : (reserva.tipoKm === 'limitado' ? kmLimit.precio : (vehiculo.precio || kmLimit.precio || 0));
+  const tarifaDiaria = Number(vehiculo.precio ?? vehiculo.dailyRate ?? vehiculo.tarifaDiaria ?? 0);
+  const precio = tarifaDiaria + (reserva.tipoKm === 'ilimitado'
+    ? Number(kmIlimit.precio || 0)
+    : (reserva.tipoKm === 'limitado' ? Number(kmLimit.precio || 0) : 0));
 
   const dias = reserva.fechaInicio && reserva.fechaFin
-    ? (reserva.fechaInicio === reserva.fechaFin ? 1 : Math.max(1, Math.ceil((new Date(reserva.fechaFin) - new Date(reserva.fechaInicio)) / 86400000) + 1))
+    ? Math.max(1, Math.ceil((new Date(reserva.fechaFin) - new Date(reserva.fechaInicio)) / 86400000))
     : 1;
 
-  const precioSeg = seguroIdx !== null ? (vehiculo.seguros[seguroIdx]?.precio ?? 0) : 0;
+  const precioSeg = seguroIdx !== null ? Number(vehiculo.seguros[seguroIdx]?.precio ?? vehiculo.seguros[seguroIdx]?.dailyRate ?? vehiculo.seguros[seguroIdx]?.price ?? 0) : 0;
   const precioServicios = (vehiculo.servicios || [])
     .filter(s => serviciosSeleccionados.includes(s.nombre))
-    .reduce((suma, s) => suma + s.precio, 0);
+    .reduce((suma, s) => suma + Number(s?.precio ?? s?.dailyRate ?? s?.price ?? 0), 0);
 
   const subtotal = precio * dias;
   const subtotalSeg = precioSeg * dias;

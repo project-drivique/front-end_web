@@ -7,21 +7,21 @@ export default function TipoKilometraje({ vehiculo, tipoKm, onSeleccionar, c, di
   const { t } = useTranslation()
   const { moneda } = useLanding()
 
-  const kmLimit = vehiculo.tarifas?.kmLimitado || { precio: 0, km: 150, excedente: 550 };
-  const kmIlimit = vehiculo.tarifas?.kmIlimitado || { precio: 0 };
+  const kmLimit = vehiculo.tarifas?.kmLimitado || { precio: 0, km: 200, excedente: 850 };
+  const kmIlimit = vehiculo.tarifas?.kmIlimitado || { precio: 35000 };
 
   const opciones = [
     {
       val: 'limitado',
       titulo: t('vehiculo.kmLimitedTitle', 'Kilometraje limitado'),
       descripcion: t('vehiculo.kmLimitedDesc', 'Incluye {{km}} km por día dentro del valor de la tarifa. Si te pasas del límite, se cobra {{excedente}} por cada km adicional.', { km: kmLimit.km, excedente: formatCurrency(kmLimit.excedente, moneda) }),
-      precio: kmLimit.precio,
+      precio: Number(kmLimit.precio || 0),
     },
     {
       val: 'ilimitado',
       titulo: t('vehiculo.kmUnlimitedTitle', 'Kilometraje ilimitado'),
       descripcion: t('vehiculo.kmUnlimitedDesc', 'Sin restricción de distancia dentro del territorio nacional. No aplica cobro adicional por exceso de kilómetros.'),
-      precio: kmIlimit.precio,
+      precio: Number(kmIlimit.precio || 0),
     },
   ]
 

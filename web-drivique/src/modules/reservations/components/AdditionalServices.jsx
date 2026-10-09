@@ -3,6 +3,8 @@ import { FaCheck, FaWifi, FaBaby, FaRoad, FaPlane, FaPlusCircle, FaGasPump, FaSh
 import { formatCurrency } from '@/utils/currencyUtils'
 import { useLanding } from '../../landing/LandingContext'
 
+const getServicePrice = (service) => Number(service?.precio ?? service?.dailyRate ?? service?.price ?? 0)
+
 const getIconForService = (name) => {
   const n = name.toLowerCase();
   if (n.includes('gps')) return <FaWifi size={14} />;
@@ -27,7 +29,7 @@ export default function ServiciosAdicionales({ servicios = [], seleccionados = [
   // Calcular total de servicios adicionales
   const totalDiario = seleccionados.reduce((acc, nombreServicio) => {
     const s = serviciosDisponibles.find(s => s.nombre === nombreServicio);
-    return acc + (s ? s.precio : 0);
+    return acc + getServicePrice(s);
   }, 0);
   const total = totalDiario * dias;
 
@@ -96,7 +98,7 @@ export default function ServiciosAdicionales({ servicios = [], seleccionados = [
                 </span>
 
                 <span style={{ marginLeft: 'auto', fontSize: 11, fontWeight: 600, color: activo ? (c?.accentText || 'var(--brand-primary)') : (c?.textSecondary || '#64748b') }}>
-                  {formatCurrency(servicio.precio, moneda)} / {t('catalogo.day', 'día')}
+                  {formatCurrency(getServicePrice(servicio), moneda)} / {t('catalogo.day', 'día')}
                 </span>
               </button>
             )

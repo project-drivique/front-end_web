@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   FaIdCard,
@@ -31,12 +31,20 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
   const { t } = useTranslation()
   const { tema } = useLanding()
   const user = useAuthStore((state) => state.usuario)
-  const sucursalAsignada = user?.sucursalAsignada || user?.sucursalId || user?.sucursal || 'Alamo Bogotá - Aeropuerto'
+  const sucursalAsignada = user?.sucursalAsignada || user?.sucursalId || user?.sucursal || (user?.correo === 'encargado.neiva@drivique.com' ? 'Drivique Neiva Centro' : '')
 
   const [verifications, setVerifications] = useState(() => documentVerificationService.list(user))
   const [search, setSearch] = useState('')
   const [activeTab, setActiveTab] = useState('todos') // 'todos' | 'pendientes' | 'aprobados' | 'rechazados'
   const [notice, setNotice] = useState('')
+
+  useEffect(() => {
+    let activo = true
+    documentVerificationService.listarPendientesBackend()
+      .then((items) => { if (activo && items.length) setVerifications(items) })
+      .catch(() => {})
+    return () => { activo = false }
+  }, [])
   // Modal de Validación de Expediente
   const [modalItem, setModalItem] = useState(null)
   const [observaciones, setObservaciones] = useState('')
@@ -291,14 +299,15 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
       return
     }
 
-    documentVerificationService.actualizarEstado(
-      modalItem.id,
-      'aprobado',
-      observaciones || t('admin.documents.defaultApproveObs', 'Documentos validados y aprobados correctamente por la sucursal.'),
-      user?.nombre || 'Encargado de Sucursal',
-      modalChecklist
-    )
-    setVerifications(documentVerificationService.list(user))
+    const nota = observaciones || t('admin.documents.defaultApproveObs', 'Documentos validados y aprobados correctamente por la sucursal.')
+    try {
+      if (modalItem.backend) await documentVerificationService.revisarDocumentoBackend(modalItem.id, 'aprobado', nota)
+      else documentVerificationService.actualizarEstado(modalItem.id, 'aprobado', nota, user?.nombre || 'Encargado de Sucursal', modalChecklist)
+      setVerifications((items) => items.map((item) => item.id === modalItem.id ? { ...item, estado: 'aprobado', observaciones: nota } : item))
+    } catch (error) {
+      setErrorMessage(error?.response?.data?.detail || 'No fue posible aprobar el documento.')
+      return
+    }
     setModalItem(null)
     setNotice(`✅ ${t('admin.documents.alerts.approvedNotice', 'Los documentos de {{name}} ({{code}}) fueron aprobados.', { name: modalItem.clienteNombre, code: modalItem.reservaCodigo })}`)
 
@@ -317,14 +326,14 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
       return
     }
 
-    documentVerificationService.actualizarEstado(
-      modalItem.id,
-      'rechazado',
-      observaciones.trim(),
-      user?.nombre || 'Encargado de Sucursal',
-      modalChecklist
-    )
-    setVerifications(documentVerificationService.list(user))
+    try {
+      if (modalItem.backend) await documentVerificationService.revisarDocumentoBackend(modalItem.id, 'rechazado', observaciones.trim())
+      else documentVerificationService.actualizarEstado(modalItem.id, 'rechazado', observaciones.trim(), user?.nombre || 'Encargado de Sucursal', modalChecklist)
+      setVerifications((items) => items.map((item) => item.id === modalItem.id ? { ...item, estado: 'rechazado', observaciones: observaciones.trim() } : item))
+    } catch (error) {
+      setErrorMessage(error?.response?.data?.detail || 'No fue posible rechazar el documento.')
+      return
+    }
     setModalItem(null)
     setNotice(`❌ ${t('admin.documents.alerts.rejectedNotice', 'Se registró el rechazo de documentos para la reserva {{code}}.', { code: modalItem.reservaCodigo })}`)
 
