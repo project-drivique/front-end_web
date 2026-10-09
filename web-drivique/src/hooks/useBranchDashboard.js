@@ -291,7 +291,7 @@ export function useBranchDashboard(user) {
     const isBranchManager =
       user?.rol === 'encargado' || user?.rol === 'branch_manager' || user?.rol === 'encargado_sucursal'
     const branchName =
-      user?.sucursalAsignada || user?.sucursalId || user?.sucursal || 'Alamo Bogotá - Aeropuerto'
+      user?.sucursalAsignada || user?.sucursalId || user?.sucursal || (user?.correo === 'encargado.neiva@drivique.com' ? 'Drivique Neiva Centro' : '')
 
     const allVehicles = vehicleManagementService.list() || []
     const branchVehicles = isBranchManager

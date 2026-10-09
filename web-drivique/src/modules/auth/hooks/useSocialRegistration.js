@@ -5,10 +5,8 @@ import { authService } from '@/services/authService'
 import { useAuthStore } from '@/store/authStore'
 import { createPkceChallenge } from '../utils/pkce'
 
-const GOOGLE_CLIENT_ID =
-  import.meta.env.VITE_GOOGLE_CLIENT_ID ||
-  '15258745812-cg3pq0pmq7c78seov68c5c3n5vmoa6gr.apps.googleusercontent.com'
-const FACEBOOK_APP_ID = import.meta.env.VITE_FACEBOOK_APP_ID || '100000000000000'
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID?.trim()
+const FACEBOOK_APP_ID = import.meta.env.VITE_FACEBOOK_APP_ID?.trim()
 
 /* ── Carga dinámica del SDK de Google Identity Services (GIS) ── */
 function cargarGoogleSDK() {
@@ -64,8 +62,8 @@ export function useSocialRegistration({ onExito } = {}) {
 
   /* Pre-carga los SDKs oficiales de Google y Facebook */
   useEffect(() => {
-    cargarGoogleSDK().catch(() => {})
-    cargarFacebookSDK().catch(() => {})
+    if (GOOGLE_CLIENT_ID) cargarGoogleSDK().catch(() => {})
+    if (FACEBOOK_APP_ID) cargarFacebookSDK().catch(() => {})
   }, [])
 
   /* ─────────────────────────────────────────
@@ -77,6 +75,24 @@ export function useSocialRegistration({ onExito } = {}) {
     setCargandoGoogle(true)
 
     try {
+      if (!GOOGLE_CLIENT_ID) {
+        if (!import.meta.env.DEV) throw new Error('El inicio con Google no está configurado en este ambiente.')
+        const res = await authService.loginGoogle({
+          provider: 'GOOGLE',
+          idToken: 'sandbox_google_token:google.sandbox@drivique.local',
+          accessToken: null,
+          email: 'google.sandbox@drivique.local',
+          firstName: 'Google',
+          lastName: 'Sandbox',
+          deviceInfo: navigator.userAgent,
+        })
+        const token = res.accessToken || res.token
+        const usuario = res.usuario || res.userProfile
+        storeLogin(token, usuario)
+        setProveedorExito('google')
+        onExito?.('google', { token, usuario })
+        return
+      }
       await cargarGoogleSDK()
       const { codeVerifier, nonce, state } = await createPkceChallenge()
 
@@ -181,6 +197,24 @@ export function useSocialRegistration({ onExito } = {}) {
     setCargandoFacebook(true)
 
     try {
+      if (!FACEBOOK_APP_ID) {
+        if (!import.meta.env.DEV) throw new Error('El inicio con Facebook no está configurado en este ambiente.')
+        const res = await authService.loginFacebook({
+          provider: 'FACEBOOK',
+          idToken: null,
+          accessToken: 'sandbox_facebook_token:facebook.sandbox@drivique.local',
+          email: 'facebook.sandbox@drivique.local',
+          firstName: 'Facebook',
+          lastName: 'Sandbox',
+          deviceInfo: navigator.userAgent,
+        })
+        const token = res.accessToken || res.token
+        const usuario = res.usuario || res.userProfile
+        storeLogin(token, usuario)
+        setProveedorExito('facebook')
+        onExito?.('facebook', { token, usuario })
+        return
+      }
       await cargarFacebookSDK()
 
       // 1. Abrir diálogo de inicio de sesión de Facebook (OAuth Dialog o JS SDK)
@@ -266,11 +300,7 @@ export function useSocialRegistration({ onExito } = {}) {
 
       // 100% Dinámico: Si Facebook entrega el correo real del usuario autenticado, se usa directamente.
       // Si la cuenta de FB fue creada solo con celular y no tiene correo público en Graph API, se genera con su nombre real.
-      let emailCalculado = fbUser.email
-      if (!emailCalculado || emailCalculado.includes('@facebook.com')) {
-        const userSlug = [rawFirst, rawLast].filter(Boolean).join('.').toLowerCase().replace(/[^a-z0-9.]/g, '')
-        emailCalculado = userSlug ? `${userSlug}@gmail.com` : `usuario.${String(fbUser.id).slice(-4)}@gmail.com`
-      }
+      const emailCalculado = fbUser.email || ''
 
       const payload = {
         provider: 'FACEBOOK',
