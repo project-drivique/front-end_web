@@ -65,7 +65,7 @@ export function useBranchProfile(user, devBranchId = null) {
   const [selectedDevBranchId, setSelectedDevBranchId] = useState(devBranchId)
 
   // Encontrar la sucursal activa según el usuario o selector de prueba en dev
-  const activeBranchId = selectedDevBranchId || user?.sucursalId || user?.sucursal || 'branch-bogota-aeropuerto'
+  const activeBranchId = selectedDevBranchId || user?.sucursalAsignada || user?.sucursal || user?.sucursalId || 'branch-bogota-aeropuerto'
 
   const fetchProfile = useCallback(() => {
     setLoading(true)

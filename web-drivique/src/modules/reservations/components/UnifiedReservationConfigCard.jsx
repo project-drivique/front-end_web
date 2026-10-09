@@ -9,7 +9,7 @@ import { branchManagementService } from '../../../services/branchManagementServi
 import { verificarYCambiarSiSucursalCerradaHoy, generarHorasDisponibles } from '@/utils/branchScheduleUtils'
 
 function getHorarioSucursal(nombreSucursal) {
-  if (!nombreSucursal) return { apertura: '08:00', cierre: '18:00' }
+  if (!nombreSucursal) return { apertura: '00:00', cierre: '23:30' }
   const nombreLower = String(nombreSucursal).toLowerCase()
   if (nombreLower.includes('aeropuerto') || nombreLower.includes('terminal') || nombreLower.includes('el dorado')) {
     return { apertura: '00:00', cierre: '23:30' }
@@ -17,7 +17,7 @@ function getHorarioSucursal(nombreSucursal) {
   if (nombreLower.includes('domicilio') || nombreLower.includes('hotel') || nombreLower.includes('airbnb')) {
     return { apertura: '07:00', cierre: '19:00' }
   }
-  return { apertura: '08:00', cierre: '18:00' }
+  return { apertura: '00:00', cierre: '23:30' }
 }
 
 function generarHoras(lugar, minHora, maxHora) {
@@ -207,7 +207,7 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
     const startDate = new Date(`${fInicioStr}T00:00:00`)
     const endDate = new Date(`${fFinStr}T00:00:00`)
     const diffTime = endDate - startDate
-    diasReserva = Math.max(1, Math.round(diffTime / 86400000) + 1)
+    diasReserva = Math.max(1, Math.round(diffTime / 86400000))
     if (fInicioStr === fFinStr) diasReserva = 1
 
     if (reserva?.horaInicio && reserva?.horaFin) {
