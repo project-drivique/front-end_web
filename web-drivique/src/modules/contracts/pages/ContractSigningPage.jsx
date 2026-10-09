@@ -30,6 +30,7 @@ export default function ContractSigningPage() {
   const [cargando, setCargando] = useState(true)
   const [reserva, setReserva] = useState(() => location.state?.reserva || null)
   const [vehiculo, setVehiculo] = useState(() => location.state?.vehiculo || location.state?.reserva?.vehiculo || null)
+  const [contratoFirmado, setContratoFirmado] = useState(null)
 
   useEffect(() => {
     let activo = true
@@ -43,7 +44,7 @@ export default function ContractSigningPage() {
       setCargando(true)
       try {
         // 1. Buscar en contractService o reservationService
-        const contratoFirmado = contractService.obtenerPorReserva(id)
+        const contratoFirmado = /^[0-9a-f-]{36}$/i.test(id || '') ? await contractService.obtenerPorReserva(id).catch(() => null) : null
         let resData = contratoFirmado?.contratoOriginal?.reserva || reservationService.obtenerPorReferencia(id)
 
         if (!resData) {
@@ -106,7 +107,7 @@ export default function ContractSigningPage() {
       ...reserva,
       referencia: ref,
       codigo: ref,
-      id: ref,
+      id: reserva.id,
       total: reserva.total || reserva.totalCOP || 0,
       seguroIdx: reserva.seguroIdx ?? 0,
       serviciosSeleccionados: reserva.serviciosSeleccionados || [],
@@ -159,20 +160,25 @@ export default function ContractSigningPage() {
   const contratoVisualRef = useRef(null)
   const targetId = reserva?.referencia || reserva?.codigo || reserva?.id || (id ? id.split('_')[0] : id)
 
-  const contratoFirmado = useMemo(() => {
-    return contractService.obtenerPorReserva(targetId) ||
-           contractService.obtenerPorReserva(id) ||
-           (reserva?.referencia ? contractService.obtenerPorReserva(reserva.referencia) : null) ||
-           (reserva?.id ? contractService.obtenerPorReserva(reserva.id) : null)
-  }, [targetId, id, reserva])
+  useEffect(() => {
+    if (!reserva?.id) return;
+    contractService.obtenerPorReserva(reserva.id).then(setContratoFirmado).catch(() => setContratoFirmado(null));
+  }, [reserva?.id]);
 
   const esSoloLectura = Boolean(contratoFirmado?.firmaUsuarioDataUrl) || Boolean(location.state?.soloLectura)
 
   const handleDescargar = async () => {
     try {
+      if (contratoFirmado?.id) {
+        const blob = await contractService.descargarPdf(contratoFirmado.id)
+        const url = URL.createObjectURL(blob)
+        const link = document.createElement('a'); link.href = url; link.download = `${contratoFirmado.contractNumber || 'contrato'}.pdf`; link.click()
+        URL.revokeObjectURL(url)
+        return
+      }
       let contratoDescarga = contratoFirmado
       if (!contratoDescarga?.contratoOriginal) {
-        contratoDescarga = contractService.completarContratoOriginal(targetId, {
+        contratoDescarga = await contractService.completarContratoOriginal(reserva?.id, {
           reserva: JSON.parse(JSON.stringify(reservaParaContrato)),
           vehiculo: JSON.parse(JSON.stringify(vehiculoParaContrato)),
           idioma: i18n.resolvedLanguage || i18n.language || 'es',

@@ -14,19 +14,17 @@ export const userService = {
   },
 
   actualizarPerfil: async (datosActualizados) => {
-    try {
-      const payload = {
-        firstName: datosActualizados.nombre || datosActualizados.firstName,
-        lastName: datosActualizados.apellido || datosActualizados.lastName,
-        phone: datosActualizados.telefono || datosActualizados.phone,
-        birthDate: datosActualizados.fechaNacimiento || datosActualizados.birthDate,
-        nationalityId: datosActualizados.nationalityId || datosActualizados.nacionalidad,
-      }
-      const { data } = await api.put('/users/me', payload)
-      return data
-    } catch (err) {
-      return { mensaje: 'Perfil actualizado correctamente' }
+    const payload = {
+      firstName: datosActualizados.nombre || datosActualizados.firstName,
+      lastName: datosActualizados.apellido || datosActualizados.lastName,
+      phone: datosActualizados.telefono || datosActualizados.phone,
+      birthDate: datosActualizados.fechaNacimiento || datosActualizados.birthDate,
+      nationalityId: /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(datosActualizados.nationalityId || datosActualizados.nacionalidad || '')
+        ? (datosActualizados.nationalityId || datosActualizados.nacionalidad)
+        : null,
     }
+    const { data } = await api.put('/users/me', payload)
+    return data
   },
 
   getPreferences: async () => {
@@ -54,6 +52,16 @@ export const userService = {
       headers: { 'Content-Type': 'multipart/form-data' },
     })
     return data
+  },
+
+  uploadTypedDocument: async ({ documentTypeId, documentNumber, branchId, frontFile, backFile }) => {
+    const formData = new FormData()
+    formData.append('documentTypeId', documentTypeId)
+    if (documentNumber) formData.append('documentNumber', documentNumber)
+    formData.append('branchId', branchId)
+    formData.append('frontFile', frontFile)
+    if (backFile) formData.append('backFile', backFile)
+    return userService.uploadDocument(formData)
   },
 
   verificarCorreoDisponible: async (correo) => {

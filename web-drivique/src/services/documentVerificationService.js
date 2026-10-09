@@ -1,4 +1,5 @@
-// Servicio mock para Validación e Inspección de Documentos (Licencia de Conducir y Cédula/DNI)
+import { api } from './httpClient'
+// Servicio para Validación e Inspección de Documentos (Licencia de Conducir y Cédula/DNI)
 const MOCK_DOCUMENT_VERIFICATIONS = [
   {
     id: 1,
@@ -223,6 +224,32 @@ function notificarCliente(item, nuevoEstado, observaciones) {
 }
 
 export const documentVerificationService = {
+  async listarPendientesBackend() {
+    const { data } = await api.get('/kyc/documents', { params: { status: 'PENDING' } })
+    return (Array.isArray(data) ? data : (data?.documents || [])).map((doc) => ({
+      id: doc.id,
+      clienteNombre: doc.userName || 'Cliente',
+      documentoIdentidad: doc.documentNumber || '—',
+      tipoDocumento: doc.documentType?.name || 'Documento',
+      numeroLicencia: doc.documentNumber || '—',
+      pdfCedulaUrl: /cedula|identidad|dni/i.test(`${doc.documentType?.code} ${doc.documentType?.name}`) ? doc.frontUrl : '',
+      pdfLicenciaUrl: /licencia/i.test(`${doc.documentType?.code} ${doc.documentType?.name}`) ? doc.frontUrl : '',
+      sucursal: doc.branchName || 'Sucursal sin asignar',
+      branchId: doc.branchId,
+      estado: String(doc.statusCode || 'PENDING').toLowerCase() === 'pending' ? 'pendiente' : String(doc.statusCode).toLowerCase(),
+      observaciones: doc.reviewNotes || '',
+      fechaSubida: doc.createdAt ? new Date(doc.createdAt).toLocaleString('es-CO') : '',
+      backend: true,
+    }))
+  },
+
+  async revisarDocumentoBackend(id, nuevoEstado, observaciones = '') {
+    const { data } = await api.patch(`/kyc/documents/${id}/review`, {
+      status: nuevoEstado === 'aprobado' ? 'APPROVED' : 'REJECTED',
+      reviewNotes: observaciones || null,
+    })
+    return data
+  },
   list(user = null) {
     const all = getStoredVerifications()
     if (!user) return all

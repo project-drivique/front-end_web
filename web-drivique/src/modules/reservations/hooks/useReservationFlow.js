@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/store/authStore'
 import { showAlert } from '@/utils/swalConfig'
 import { reservationsService } from '@/services/reservationsService'
-import { documentsService } from '@/services/documentsService'
+import { userService } from '@/services/userService'
 import { generarReferenciaUnica, aCentavos } from '@/services/wompiService'
 import { paymentFactory, PaymentContext } from '@/modules/payments/strategies'
 import { RECARGOS_LOGISTICOS, SUCURSALES, CIUDADES } from '../../catalog/constants'
@@ -12,8 +12,16 @@ import { branchManagementService } from '../../../services/branchManagementServi
 import { promotionManagementService } from '../../../services/promotionManagementService'
 import { vehicleManagementService } from '../../../services/vehicleManagementService'
 import VEHICULOS_MOCK from '@/mocks/vehicles.json'
+import { getPlanesKilometraje, getCoberturasSeguro, getServiciosAdicionales } from '@/services/pricingService'
 
 export const TOTAL_PASOS = 3
+
+const DEFAULT_PROTECTION_PLANS = [
+  { nombre: 'Protección Obligatoria', precio: 29000 },
+  { nombre: 'Protección Total', precio: 67000 },
+]
+
+const getItemPrice = (item) => Number(item?.precio ?? item?.dailyRate ?? item?.price ?? 0)
 
 export const HORAS = Array.from({ length: 24 }, (_, i) => {
   const h = i.toString().padStart(2, '0')
@@ -25,14 +33,53 @@ export function useReservationFlow() {
   const { id } = useParams()
   const navigate = useNavigate()
   const { usuario, actualizarUsuario } = useAuthStore()
+  const [mileagePlans, setMileagePlans] = useState([])
+  const [insuranceCoverages, setInsuranceCoverages] = useState([])
+  const [additionalServices, setAdditionalServices] = useState([])
 
-  const baseVehiculo = vehicleManagementService.getById(id) || VEHICULOS_MOCK.find(v => Number(v.id) === Number(id))
+  useEffect(() => {
+    Promise.all([getPlanesKilometraje(), getCoberturasSeguro(), getServiciosAdicionales()])
+      .then(([plans, coverages, services]) => {
+        setMileagePlans(plans)
+        setInsuranceCoverages(coverages)
+        setAdditionalServices(services)
+      })
+      .catch(() => {
+        setMileagePlans([])
+        setInsuranceCoverages([])
+        setAdditionalServices([])
+      })
+  }, [])
+
+  let selectedVehicle = null
+  try { selectedVehicle = JSON.parse(sessionStorage.getItem('drivique_selected_vehicle') || 'null') } catch { selectedVehicle = null }
+  const baseVehiculo = vehicleManagementService.getById(id) || VEHICULOS_MOCK.find(v => Number(v.id) === Number(id)) || (String(selectedVehicle?.id) === String(id) ? selectedVehicle : null)
+  const limitedMileagePlan = mileagePlans.find((plan) => plan.includedKm != null) || null
+  const unlimitedMileagePlan = mileagePlans.find((plan) => plan.includedKm == null || /unlimited|ilimitado/i.test(plan.name || '')) || null
   const vehiculo = baseVehiculo ? {
     ...baseVehiculo,
     caracteristicas: baseVehiculo.caracteristicas || [],
     equipamientoTecnologico: baseVehiculo.equipamientoTecnologico || [],
-    seguros: baseVehiculo.seguros || [{ nombre: 'Protección Básica Estándar', precio: 0, descripcion: 'Cobertura estándar' }],
-    servicios: baseVehiculo.servicios || [],
+    seguros: insuranceCoverages.length
+      ? insuranceCoverages
+        .filter((seguro) => getItemPrice(seguro) > 0)
+        .sort((a, b) => getItemPrice(a) - getItemPrice(b))
+        .slice(0, 2)
+        .map((seguro) => ({ ...seguro, nombre: seguro.name, precio: getItemPrice(seguro), descripcion: seguro.description }))
+      : Array.isArray(baseVehiculo.seguros) && baseVehiculo.seguros.length
+      ? baseVehiculo.seguros.map((seguro) => ({ ...seguro, precio: getItemPrice(seguro) }))
+      : DEFAULT_PROTECTION_PLANS,
+    servicios: (additionalServices.length ? additionalServices : (baseVehiculo.servicios || []))
+      .map((servicio) => ({ ...servicio, nombre: servicio.nombre || servicio.name, precio: getItemPrice(servicio) })),
+    tarifas: {
+      ...(baseVehiculo.tarifas || {}),
+      kmLimitado: limitedMileagePlan
+        ? { id: limitedMileagePlan.id, km: limitedMileagePlan.includedKm, precio: getItemPrice(limitedMileagePlan), excedente: Number(limitedMileagePlan.extraKmRate || 0) }
+        : (baseVehiculo.tarifas?.kmLimitado || { km: 200, precio: 0, excedente: 850 }),
+      kmIlimitado: unlimitedMileagePlan
+        ? { id: unlimitedMileagePlan.id, precio: getItemPrice(unlimitedMileagePlan) }
+        : (baseVehiculo.tarifas?.kmIlimitado || { precio: 35000 }),
+    },
     imagenes: baseVehiculo.imagenes || (baseVehiculo.imagen ? [baseVehiculo.imagen] : []),
     sucursalInfo: baseVehiculo.sucursalInfo || {
       nombre: baseVehiculo.sucursal || '',
@@ -40,8 +87,9 @@ export function useReservationFlow() {
       horario: 'Lun a dom, 6:00 am - 10:00 pm'
     }
   } : null
+  const tarifaDiariaVehiculo = Number(vehiculo?.precio ?? vehiculo?.dailyRate ?? vehiculo?.tarifaDiaria ?? 0)
 
-  const storageKey = `drivique_reservation_state_${id}`
+  const storageKey = `drivique_reservation_state_v2_${id}`
 
   const getInitialState = () => {
     try {
@@ -119,7 +167,7 @@ export function useReservationFlow() {
       }
     }
   }, [vehiculo, usuario, appliedPromotion])
-  const [reserva, setReserva] = useState(savedState?.reserva || {
+  const [reserva, setReserva] = useState(savedState?.reserva ? { ...savedState.reserva, tipoKm: savedState.reserva.tipoKm || '' } : {
     fechaInicio: '', fechaFin: '',
     horaInicio: '', horaFin: '',
     sucursalRetiro: '',
@@ -248,9 +296,28 @@ export function useReservationFlow() {
   const [hoverWompi, setHoverWompi] = useState(false)
   const [hoverEfectivo, setHoverEfectivo] = useState(false)
   const [fechaLimitePago, setFechaLimitePago] = useState(null)
+  const [docsVerificados, setDocsVerificados] = useState(false)
 
   const idUsuarioDocs = usuario?.id || usuario?.correo || null
-  const docsVerificados = documentsService.tieneDocumentos(idUsuarioDocs)
+
+  useEffect(() => {
+    if (!idUsuarioDocs) {
+      setDocsVerificados(false)
+      return
+    }
+    let activo = true
+    userService.getDocuments()
+      .then((respuesta) => {
+        if (!activo) return
+        const documentos = Array.isArray(respuesta) ? respuesta : (respuesta?.documents || [])
+        const aprobados = documentos.filter((doc) => String(doc.statusCode || '').toUpperCase() === 'APPROVED')
+        const tieneIdentidad = aprobados.some((doc) => String(doc.documentType?.code || '').toUpperCase() !== 'DRIVER_LICENSE')
+        const tieneLicencia = aprobados.some((doc) => String(doc.documentType?.code || '').toUpperCase() === 'DRIVER_LICENSE')
+        setDocsVerificados(tieneIdentidad && tieneLicencia)
+      })
+      .catch(() => activo && setDocsVerificados(false))
+    return () => { activo = false }
+  }, [idUsuarioDocs])
 
   // Sincronizar estado con sessionStorage solo si se ha avanzado más allá del paso 1
   useEffect(() => {
@@ -337,6 +404,25 @@ export function useReservationFlow() {
       return
     }
 
+    try {
+      const documentos = await userService.getDocuments()
+      const listaDocumentos = Array.isArray(documentos) ? documentos : (documentos?.documents || [])
+      const hayDocumentosNuevos = datosForm.cedulaPdf instanceof File || datosForm.licenciaPdf instanceof File
+      if (!hayDocumentosNuevos && listaDocumentos.length > 0 && listaDocumentos.some((documento) => String(documento.statusCode || documento.status || documento.estado).toUpperCase() !== 'APPROVED')) {
+        const rechazado = listaDocumentos.find((documento) => String(documento.statusCode || documento.status || documento.estado).toUpperCase() === 'REJECTED')
+        showAlert({
+          icon: 'warning',
+          title: 'Documentos pendientes de aprobación',
+          text: rechazado?.reviewNotes || rechazado?.observaciones || 'El encargado debe aprobar tus documentos antes de crear la reserva.',
+          confirmButtonText: 'Entendido',
+        })
+        return
+      }
+    } catch (error) {
+      showAlert({ icon: 'error', title: 'No se pudo validar tu documentación', text: 'Intenta nuevamente cuando el encargado haya revisado los documentos.' })
+      return
+    }
+
     const e = {}
     if (!datosForm.nombre.trim()) e.nombre = t('vehiculo.errors.nameRequired', 'El nombre es obligatorio.')
     if (!datosForm.nacionalidad?.trim()) e.nacionalidad = t('vehiculo.errors.nationalityRequired', 'Debes seleccionar tu nacionalidad.')
@@ -352,15 +438,15 @@ export function useReservationFlow() {
 
     const tarifas = vehiculo.tarifas || {}
     const precioKm = reserva.tipoKm === 'ilimitado'
-      ? (tarifas.kmIlimitado?.precio || 0)
-      : (reserva.tipoKm === 'limitado' ? (tarifas.kmLimitado?.precio || 0) : 0)
+      ? Number(tarifas.kmIlimitado?.precio || 0)
+      : (reserva.tipoKm === 'limitado' ? Number(tarifas.kmLimitado?.precio || 0) : 0)
     const dias = (reserva.fechaInicio && reserva.fechaFin)
-      ? (reserva.fechaInicio === reserva.fechaFin ? 1 : Math.max(1, Math.ceil((new Date(reserva.fechaFin) - new Date(reserva.fechaInicio)) / 86400000) + 1))
+      ? Math.max(1, Math.ceil((new Date(reserva.fechaFin) - new Date(reserva.fechaInicio)) / 86400000))
       : 1
-    const precioSeguro = seguroIdx !== null ? (vehiculo.seguros[seguroIdx]?.precio ?? 0) : 0
+    const precioSeguro = seguroIdx !== null ? getItemPrice(vehiculo.seguros[seguroIdx]) : 0
     const serviciosElegidos = (vehiculo.servicios || []).filter(s => serviciosSeleccionados.includes(s.nombre))
-    const precioServicios = serviciosElegidos.reduce((suma, s) => suma + s.precio, 0)
-    const subtotal = (precioKm + precioSeguro + precioServicios) * dias
+    const precioServicios = serviciosElegidos.reduce((suma, s) => suma + getItemPrice(s), 0)
+    const subtotal = (tarifaDiariaVehiculo + precioKm + precioSeguro + precioServicios) * dias
     const cargosAdmin = Math.round(subtotal * 0.10)
     const recargoRetiro = RECARGOS_LOGISTICOS[reserva.sucursalRetiro] || 0
     const recargoDevolucion = RECARGOS_LOGISTICOS[reserva.sucursalDevolucion] || 0
@@ -379,26 +465,45 @@ export function useReservationFlow() {
       const partesNombre = (datosForm.nombre || '').trim().split(' ')
       const primerNombre = partesNombre.length > 1 ? partesNombre.slice(0, -1).join(' ') : partesNombre[0] || ''
       const primerApellido = partesNombre.length > 1 ? partesNombre[partesNombre.length - 1] : ''
-      actualizarUsuario({
-        nombre: usuario.nombre || primerNombre || datosForm.nombre,
-        apellido: usuario.apellido || primerApellido || '',
+      const datosPerfil = {
+        nombre: primerNombre || datosForm.nombre || usuario.nombre,
+        apellido: primerApellido || datosForm.apellido || usuario.apellido || '',
         cedula: usuario.cedula || datosForm.numDoc,
         telefono: usuario.telefono || datosForm.celular,
         nacionalidad: usuario.nacionalidad || datosForm.nacionalidad,
         tipoDocumento: usuario.tipoDocumento || datosForm.tipoDoc,
-      })
+      }
+      await userService.actualizarPerfil(datosPerfil)
+      actualizarUsuario(datosPerfil)
     }
 
     if (idUsuarioDocs && (datosForm.cedulaPdf || datosForm.licenciaPdf || !docsVerificados)) {
-      documentsService.guardarDocumentos(idUsuarioDocs, {
-        cedulaPdf: datosForm.cedulaPdf,
-        licenciaPdf: datosForm.licenciaPdf,
+      if (datosForm.cedulaPdf instanceof File || datosForm.licenciaPdf instanceof File) {
+        const { data: tipos } = await import('@/services/httpClient').then(({ api }) => api.get('/kyc/document-types'))
+        const lista = Array.isArray(tipos) ? tipos : (tipos?.documentTypes || [])
+        // Los códigos vienen del catálogo real del backend (CC, CE, PASSPORT,
+        // DRIVER_LICENSE). No se deben inferir desde textos traducidos.
+        const codigoIdentidad = String(datosForm.tipoDoc || 'CC').trim().toUpperCase()
+        const tipoCedula = lista.find((t) => String(t.code || '').toUpperCase() === codigoIdentidad)
+        const tipoLicencia = lista.find((t) => String(t.code || '').toUpperCase() === 'DRIVER_LICENSE')
+        if (!vehiculo.sucursalId) throw new Error('El vehículo no tiene una sucursal asignada.')
+        if (datosForm.cedulaPdf instanceof File && !tipoCedula?.id) throw new Error(`No existe el tipo de documento ${codigoIdentidad} en el catálogo.`)
+        if (datosForm.licenciaPdf instanceof File && !tipoLicencia?.id) throw new Error('No existe el tipo de documento de licencia de conducción en el catálogo.')
+        if (datosForm.cedulaPdf instanceof File) await userService.uploadTypedDocument({ documentTypeId: tipoCedula.id, documentNumber: datosForm.numDoc, branchId: vehiculo.sucursalId, frontFile: datosForm.cedulaPdf })
+        if (datosForm.licenciaPdf instanceof File) await userService.uploadTypedDocument({ documentTypeId: tipoLicencia.id, documentNumber: datosForm.numDoc, branchId: vehiculo.sucursalId, frontFile: datosForm.licenciaPdf })
+      }
+      setDocsVerificados(false)
+      showAlert({
+        icon: 'info',
+        title: 'Documentos enviados a revisión',
+        text: `La sucursal ${vehiculo.sucursal || vehiculo.sucursalInfo?.nombre || ''} debe aprobarlos antes de crear la reserva.`,
+        confirmButtonText: 'Entendido',
       })
+      return
     }
 
-    const docSaved = idUsuarioDocs ? documentsService.obtenerDocumentos(idUsuarioDocs) : null
-    const docCedulaFinal = datosForm.cedulaPdf?.name || (typeof datosForm.cedulaPdf === 'string' && datosForm.cedulaPdf) || docSaved?.cedula?.nombre || (datosForm.numDoc ? `Cedula-${datosForm.numDoc}.pdf` : 'Cedula-Verificada.pdf')
-    const docLicenciaFinal = datosForm.licenciaPdf?.name || (typeof datosForm.licenciaPdf === 'string' && datosForm.licenciaPdf) || docSaved?.licencia?.nombre || (datosForm.numDoc ? `Licencia-${datosForm.numDoc}.pdf` : 'Licencia-Conduccion-Verificada.pdf')
+    const docCedulaFinal = datosForm.cedulaPdf?.name || (typeof datosForm.cedulaPdf === 'string' && datosForm.cedulaPdf) || (datosForm.numDoc ? `Cedula-${datosForm.numDoc}.pdf` : 'Cedula-Verificada.pdf')
+    const docLicenciaFinal = datosForm.licenciaPdf?.name || (typeof datosForm.licenciaPdf === 'string' && datosForm.licenciaPdf) || (datosForm.numDoc ? `Licencia-${datosForm.numDoc}.pdf` : 'Licencia-Conduccion-Verificada.pdf')
 
     const clienteNombreFinal = datosForm.nombre || [datosForm.nombres, datosForm.apellidos].filter(Boolean).join(' ') || usuario?.nombre || 'Cliente Drivique'
     const clienteCorreoFinal = datosForm.correo || datosForm.email || usuario?.correo || usuario?.email || 'cliente@drivique.com'
@@ -411,7 +516,7 @@ export function useReservationFlow() {
         pickupDate: new Date(`${reserva.fechaInicio}T${reserva.horaInicio}:00Z`).toISOString(),
         returnDate: new Date(`${reserva.fechaFin}T${reserva.horaFin}:00Z`).toISOString(),
         insuranceCoverageId: vehiculo.seguros[seguroIdx]?.id || null,
-        mileagePlanId: null, // Asume que el backend lo manejará o se puede enviar dummy
+        mileagePlanId: reserva.tipoKm === 'ilimitado' ? (tarifas.kmIlimitado?.id || null) : (tarifas.kmLimitado?.id || null),
         additionalServiceIds: (vehiculo.servicios || []).filter(s => serviciosSeleccionados.includes(s.nombre)).map(s => s.id).filter(Boolean),
         couponCode: appliedPromotion ? appliedPromotion.codigo : null,
         cashPaymentBranchId: reserva.metodoPago === 'efectivo' ? (vehiculo.sucursalId || null) : null,
@@ -495,16 +600,16 @@ export function useReservationFlow() {
   // Totales para footer móvil
   const tarifasTotal = vehiculo?.tarifas || {}
   const precioTotal = reserva.tipoKm === 'ilimitado'
-    ? (tarifasTotal.kmIlimitado?.precio || 0)
-    : (reserva.tipoKm === 'limitado' ? (tarifasTotal.kmLimitado?.precio || 0) : 0)
+    ? Number(tarifasTotal.kmIlimitado?.precio || 0)
+    : (reserva.tipoKm === 'limitado' ? Number(tarifasTotal.kmLimitado?.precio || 0) : 0)
   const diasTotal = reserva.fechaInicio && reserva.fechaFin
-    ? (reserva.fechaInicio === reserva.fechaFin ? 1 : Math.max(1, Math.ceil((new Date(reserva.fechaFin) - new Date(reserva.fechaInicio)) / 86400000) + 1))
+    ? Math.max(1, Math.ceil((new Date(reserva.fechaFin) - new Date(reserva.fechaInicio)) / 86400000))
     : 1
-  const precioSeguroTotal = seguroIdx !== null ? (vehiculo?.seguros[seguroIdx]?.precio ?? 0) : 0
+  const precioSeguroTotal = seguroIdx !== null ? getItemPrice(vehiculo?.seguros[seguroIdx]) : 0
   const precioServiciosTotal = (vehiculo?.servicios || [])
     .filter(s => serviciosSeleccionados.includes(s.nombre))
-    .reduce((suma, s) => suma + s.precio, 0)
-  const subtotalD = precioTotal * diasTotal
+    .reduce((suma, s) => suma + getItemPrice(s), 0)
+  const subtotalD = (tarifaDiariaVehiculo + precioTotal) * diasTotal
   const subtotalS = precioSeguroTotal * diasTotal
   const subtotalSv = precioServiciosTotal * diasTotal
   const cargosAdminT = Math.round((subtotalD + subtotalS + subtotalSv) * 0.10)

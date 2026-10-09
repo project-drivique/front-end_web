@@ -34,8 +34,11 @@ const authStorage = {
     } catch {
       usuario = null
     }
-    if (!isValidAuthToken(token)) return null
-    return { state: { token, usuario }, version: 0 }
+    const verificationEmail = localStorage.getItem('renta_verification_email')
+    const recoveryEmail = localStorage.getItem('renta_recovery_email')
+    const recoveryCode = sessionStorage.getItem('renta_recovery_code')
+    if (!isValidAuthToken(token)) return { state: { token: null, usuario: null, verificacionCorreo: verificationEmail ? { correo: verificationEmail } : null, recuperacionCorreo: recoveryEmail ? { correo: recoveryEmail, codigo: recoveryCode } : null }, version: 0 }
+    return { state: { token, usuario, verificacionCorreo: verificationEmail ? { correo: verificationEmail } : null, recuperacionCorreo: recoveryEmail ? { correo: recoveryEmail, codigo: recoveryCode } : null }, version: 0 }
   },
   setItem: (_name, value) => {
     const { token, usuario } = value.state
@@ -49,10 +52,18 @@ const authStorage = {
     } else {
       localStorage.removeItem(AUTH_KEYS.usuario)
     }
+    const verificationEmail = value.state.verificacionCorreo?.correo
+    const recoveryEmail = value.state.recuperacionCorreo?.correo
+    verificationEmail ? localStorage.setItem('renta_verification_email', verificationEmail) : localStorage.removeItem('renta_verification_email')
+    recoveryEmail ? localStorage.setItem('renta_recovery_email', recoveryEmail) : localStorage.removeItem('renta_recovery_email')
+    if (value.state.recuperacionCorreo?.codigo) sessionStorage.setItem('renta_recovery_code', value.state.recuperacionCorreo.codigo)
   },
   removeItem: () => {
     localStorage.removeItem(AUTH_KEYS.token)
     localStorage.removeItem(AUTH_KEYS.usuario)
+    localStorage.removeItem('renta_verification_email')
+    localStorage.removeItem('renta_recovery_email')
+    sessionStorage.removeItem('renta_recovery_code')
   },
 }
 
@@ -77,6 +88,8 @@ const getInitialAuthState = () => {
 }
 
 const initialAuth = getInitialAuthState()
+initialAuth.verificacionCorreo = localStorage.getItem('renta_verification_email') ? { correo: localStorage.getItem('renta_verification_email') } : null
+initialAuth.recuperacionCorreo = localStorage.getItem('renta_recovery_email') ? { correo: localStorage.getItem('renta_recovery_email'), codigo: sessionStorage.getItem('renta_recovery_code') } : null
 
 export const useAuthStore = create(
   persist(
@@ -85,8 +98,8 @@ export const useAuthStore = create(
       usuario: initialAuth.usuario,
       sesion2FA: null,
       requiere2FA: false,
-      verificacionCorreo: null,
-      recuperacionCorreo: null,
+      verificacionCorreo: initialAuth.verificacionCorreo,
+      recuperacionCorreo: initialAuth.recuperacionCorreo,
 
       login: (token, usuario) => {
         set({ token, usuario, sesion2FA: null, requiere2FA: false, verificacionCorreo: null, recuperacionCorreo: null })
@@ -134,6 +147,8 @@ export const useAuthStore = create(
       partialize: (state) => ({
         token: state.token,
         usuario: state.usuario,
+        verificacionCorreo: state.verificacionCorreo ? { correo: state.verificacionCorreo.correo } : null,
+        recuperacionCorreo: state.recuperacionCorreo ? { correo: state.recuperacionCorreo.correo, codigo: state.recuperacionCorreo.codigo } : null,
       }),
     }
   )

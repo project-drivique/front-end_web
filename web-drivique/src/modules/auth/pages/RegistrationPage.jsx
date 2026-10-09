@@ -192,7 +192,7 @@ function ChecklistPassword({ password, c }) {
     { id: 'may', label: t('registro.checklist.uppercase'), ok: /[A-Z]/.test(password) },
     { id: 'min', label: t('registro.checklist.lowercase'), ok: /[a-z]/.test(password) },
     { id: 'num', label: t('registro.checklist.number'),    ok: /\d/.test(password) },
-    { id: 'esp', label: t('registro.checklist.symbol'),    ok: /[^a-zA-Z\d]/.test(password) },
+    { id: 'esp', label: t('registro.checklist.symbol'),    ok: /[^a-zA-Z\d\s]/.test(password) },
   ]
 
   const cumplidas = reglas.filter(r => r.ok).length

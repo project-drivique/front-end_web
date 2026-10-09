@@ -294,22 +294,22 @@ function ContratoVerCard({ reserva, contratoFirmado, reservaParaContrato, vehicu
   )
 }
 
+function useContratoReal(reservationId) {
+  const [contract, setContract] = useState(null)
+  useEffect(() => {
+    if (!reservationId) return
+    contractService.obtenerPorReserva(reservationId).then(setContract).catch(() => setContract(null))
+  }, [reservationId])
+  return contract
+}
+
 function Contrato({ reserva, autoDesbloquear = false, onDesbloquear }) {
   const { t } = useTranslation()
   const { brand } = useBrand() || {}
   const navigate = useNavigate()
   const usuario = useAuthStore(state => state.usuario)
   const refBusqueda = reserva.referencia || reserva.codigo || reserva.id
-  const [contratoLocal, setContratoLocal] = useState(() => contractService.obtenerPorReserva(refBusqueda) || contractService.obtenerPorReserva(reserva.id))
-
-  useEffect(() => {
-    const c = contractService.obtenerPorReserva(refBusqueda) || contractService.obtenerPorReserva(reserva.id)
-    if (c) {
-      setContratoLocal(c)
-    }
-  }, [refBusqueda, reserva.id, autoDesbloquear])
-
-  const contratoFirmado = contratoLocal || contractService.obtenerPorReserva(refBusqueda) || contractService.obtenerPorReserva(reserva.id)
+  const contratoFirmado = useContratoReal(reserva.id)
   const reservaAlmacenada = useMemo(() => reservationService.obtenerPorReferencia(refBusqueda) || reservationService.obtenerPorReferencia(reserva.id), [refBusqueda, reserva.id])
 
   const tieneContratoFirmado = Boolean(contratoFirmado?.firmaUsuarioDataUrl)
@@ -443,7 +443,7 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
   const usuario = useAuthStore(state => state.usuario)
 
   const refBusquedaModal = reserva.referencia || reserva.codigo || reserva.id
-  const contrato = contractService.obtenerPorReserva(refBusquedaModal) || contractService.obtenerPorReserva(reserva.id)
+  const contrato = useContratoReal(reserva.id)
   const reservaOriginal = contrato?.contratoOriginal?.reserva || reservationService.obtenerPorReferencia(refBusquedaModal) || reservationService.obtenerPorReferencia(reserva.id)
   const vehiculoOriginal = contrato?.contratoOriginal?.vehiculo || reserva.vehiculo
 
@@ -1256,7 +1256,7 @@ function TarjetaReserva({ reserva, moneda, onValorar, onReportar, onVerDetalle }
   const reservaAlmacenada = reservationService.obtenerPorReferencia(refBusqueda) || reservationService.obtenerPorReferencia(reserva.id)
   const rawEstado = reservaAlmacenada?.estado || reserva.estado || ''
   const estadoNorm = String(rawEstado).toLowerCase()
-  const contratoFirmado = contractService.obtenerPorReserva(refBusqueda) || contractService.obtenerPorReserva(reserva.id)
+  const contratoFirmado = useContratoReal(reserva.id)
   const tieneContratoFirmado = Boolean(contratoFirmado?.firmaUsuarioDataUrl)
 
   const esPagoConfirmado =

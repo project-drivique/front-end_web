@@ -131,10 +131,7 @@ export default function TarjetaVehiculo({
   const handleReservar = (e) => {
     e.stopPropagation()
     if (!puedeReservar) return
-    if (invitado) {
-      onGuestBlocked()
-      return
-    }
+    sessionStorage.setItem('drivique_selected_vehicle', JSON.stringify(vehiculo))
     sessionStorage.removeItem(`drivique_reservation_state_${vehiculo.id}`)
     navigate(`/reservas/${vehiculo.id}`)
   }
@@ -371,6 +368,7 @@ export default function TarjetaVehiculo({
 
         <div style={{ marginTop: 'auto' }}>
           <button
+            type="button"
             onClick={handleReservar}
             disabled={!puedeReservar}
             style={{
