@@ -1,130 +1,145 @@
-import { useState, useEffect, useMemo, useCallback } from 'react'
-import { NOTIFICACIONES_GENERALES_INITIAL } from '../data/notifications.dummy'
+import { create } from 'zustand'
+import { notificationService } from '../../../services/notificationService'
 import { useAuthStore } from '../../../store/authStore'
 import { promotionManagementService } from '../../../services/promotionManagementService'
 
-const STORAGE_KEY_NOTIFS = 'drivique_user_notifications'
-const SESSION_TIME = Date.now()
+export const useNotificationStore = create((set, get) => ({
+  notificaciones: [],
+  conteoNoLeidas: 0,
+  cargando: false,
+  error: null,
+  filtroLectura: 'todas', // 'todas' | 'no_leidas' | 'leidas'
+  cupones: [],
+  promosVehiculos: [],
 
-function esNotificacionValida(n) {
-  if (!n || typeof n !== 'object') return false
-  const tieneTitulo = Boolean(n.titulo || n.tituloKey || n.tituloFallback || n.title)
-  const tieneMensaje = Boolean(n.mensaje || n.mensajeKey || n.mensajeFallback || n.message)
-  return tieneTitulo || tieneMensaje
-}
+  setFiltroLectura: (filtro) => set({ filtroLectura: filtro }),
 
-function leerStorage(key, inicial) {
-  if (typeof window === 'undefined') return inicial
-  try {
-    const raw = localStorage.getItem(key)
-    if (!raw) return inicial
-    const parsed = JSON.parse(raw)
-    if (!Array.isArray(parsed)) return inicial
-    if (key === STORAGE_KEY_NOTIFS) {
-      const filtradas = parsed.filter(esNotificacionValida)
-      return filtradas.length > 0 ? filtradas : inicial
+  /**
+   * Carga la lista completa de notificaciones reales del backend.
+   */
+  cargarNotificaciones: async (silent = false) => {
+    const token = useAuthStore.getState().token
+    if (!token) {
+      set({ notificaciones: [], conteoNoLeidas: 0, cargando: false })
+      return
     }
-    return parsed
-  } catch {
-    return inicial
-  }
-}
 
-function guardarStorage(key, data) {
-  if (typeof window === 'undefined') return
-  try {
-    localStorage.setItem(key, JSON.stringify(data))
-  } catch {
-    return
-  }
-}
+    if (!silent) set({ cargando: true, error: null })
+    try {
+      const [lista, unreadCount] = await Promise.all([
+        notificationService.listNotifications(),
+        notificationService.getUnreadCount().catch(() => null),
+      ])
 
-export function useNotificationStore() {
-  const usuario = useAuthStore((state) => state.usuario)
-  const [notificaciones, setNotificaciones] = useState(() =>
-    leerStorage(STORAGE_KEY_NOTIFS, NOTIFICACIONES_GENERALES_INITIAL)
-  )
-  const [cupones, setCupones] = useState(() =>
-    promotionManagementService.listPublishedCoupons(usuario)
-  )
-  const [promosVehiculos, setPromosVehiculos] = useState(() =>
-    promotionManagementService.listFeaturedVehiclePromotions(usuario)
-  )
+      const noLeidasCalculadas = lista.filter((n) => !n.leida).length
+      const conteoFinal = typeof unreadCount === 'number' ? unreadCount : noLeidasCalculadas
 
-  // Guarda en localStorage cuando cambie
-  useEffect(() => {
-    guardarStorage(STORAGE_KEY_NOTIFS, notificaciones)
-  }, [notificaciones])
-
-  useEffect(() => {
-    const refresh = () => {
-      setCupones(promotionManagementService.listPublishedCoupons(usuario))
-      setPromosVehiculos(promotionManagementService.listFeaturedVehiclePromotions(usuario))
+      set({
+        notificaciones: lista,
+        conteoNoLeidas: conteoFinal,
+        cargando: false,
+        error: null,
+      })
+    } catch (err) {
+      console.warn('Error cargando notificaciones del backend:', err)
+      set({
+        cargando: false,
+        error: err?.response?.data?.detail || err?.response?.data?.message || 'Error al sincronizar notificaciones',
+      })
     }
-    window.addEventListener(promotionManagementService.eventName, refresh)
-    return () => window.removeEventListener(promotionManagementService.eventName, refresh)
-  }, [usuario])
+  },
 
-  // Filtrado en tiempo real de notificaciones generales no expiradas y válidas
-  const notificacionesVigentes = useMemo(() => {
-    const ahora = SESSION_TIME
-    return notificaciones.filter((n) => {
-      if (!esNotificacionValida(n)) return false
-      if (!n.expiracionMs) return true
-      return n.expiracionMs > ahora
-    })
-  }, [notificaciones])
+  /**
+   * Consulta únicamente el contador de no leídas para optimizar llamadas.
+   */
+  cargarConteoNoLeidas: async () => {
+    const token = useAuthStore.getState().token
+    if (!token) {
+      set({ conteoNoLeidas: 0 })
+      return
+    }
 
-  // Cupones vigentes (no expirados y destacados creados en admin)
-  const cuponesVigentes = useMemo(() => {
-    const ahora = SESSION_TIME
-    return cupones.filter((c) => {
-      if (!c.expiracionMs) return true
-      return c.expiracionMs > ahora
-    })
-  }, [cupones])
+    try {
+      const count = await notificationService.getUnreadCount()
+      set({ conteoNoLeidas: typeof count === 'number' ? count : 0 })
+    } catch (err) {
+      // Si falla endpoint específico, mantener o calcular sobre las que ya estén
+      const fallbackCount = get().notificaciones.filter((n) => !n.leida).length
+      set({ conteoNoLeidas: fallbackCount })
+    }
+  },
 
-  // Promos de vehículos vigentes (destacadas creadas en admin)
-  const promosVigentes = useMemo(() => {
-    const ahora = SESSION_TIME
-    return promosVehiculos.filter((p) => {
-      if (!p.expiracionMs) return true
-      return p.expiracionMs > ahora
-    })
-  }, [promosVehiculos])
+  /**
+   * Marca una notificación como leída en backend y actualiza el estado local de inmediato.
+   */
+  marcarLeida: async (id) => {
+    const notificacionesActuales = get().notificaciones
+    const target = notificacionesActuales.find((n) => n.id === id)
+    if (!target || target.leida) return
 
-  // Conteo de no leídas en tiempo real
-  const conteoNoLeidas = useMemo(() => {
-    const noLeidasGenerales = notificacionesVigentes.filter((n) => !n.leida).length
-    return noLeidasGenerales
-  }, [notificacionesVigentes])
-
-  // Marcar una como leída
-  const marcarLeida = useCallback((id) => {
-    setNotificaciones((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, leida: true } : n))
+    // Optimista local
+    const actualizadas = notificacionesActuales.map((n) =>
+      n.id === id ? { ...n, leida: true, leidaEn: new Date().toISOString() } : n
     )
-  }, [])
+    const nuevoConteo = Math.max(0, get().conteoNoLeidas - 1)
+    set({ notificaciones: actualizadas, conteoNoLeidas: nuevoConteo })
 
-  // Marcar todas las generales como leídas
-  const marcarTodasLeidas = useCallback(() => {
-    setNotificaciones((prev) => prev.map((n) => ({ ...n, leida: true })))
-  }, [])
+    try {
+      await notificationService.markAsRead(id)
+    } catch (err) {
+      console.error('Error al marcar notificación como leída en backend:', err)
+      // Opcional: revertir si es error crítico
+    }
+  },
 
-  // Aplicar cupón
-  const aplicarCupon = useCallback((codigo) => {
-    setCupones((prev) =>
-      prev.map((c) => (c.codigo === codigo ? { ...c, aplicado: true } : c))
-    )
-  }, [])
+  /**
+   * Marca todas las notificaciones como leídas en backend.
+   */
+  marcarTodasLeidas: async () => {
+    const notificacionesActuales = get().notificaciones
+    const actualizadas = notificacionesActuales.map((n) => ({
+      ...n,
+      leida: true,
+      leidaEn: n.leidaEn || new Date().toISOString(),
+    }))
+    set({ notificaciones: actualizadas, conteoNoLeidas: 0 })
 
-  return {
-    notificaciones: notificacionesVigentes,
-    cupones: cuponesVigentes,
-    promosVehiculos: promosVigentes,
-    conteoNoLeidas,
-    marcarLeida,
-    marcarTodasLeidas,
-    aplicarCupon,
-  }
+    try {
+      await notificationService.markAllAsRead()
+    } catch (err) {
+      console.error('Error al marcar todas las notificaciones como leídas en backend:', err)
+    }
+  },
+
+  /**
+   * Carga promociones y cupones vigentes (sin datos dummy).
+   */
+  refrescarPromociones: () => {
+    const usuario = useAuthStore.getState().usuario
+    try {
+      const cupones = promotionManagementService.listPublishedCoupons(usuario) || []
+      const promos = promotionManagementService.listFeaturedVehiclePromotions(usuario) || []
+      set({ cupones, promosVehiculos: promos })
+    } catch {
+      set({ cupones: [], promosVehiculos: [] })
+    }
+  },
+
+  /**
+   * Aplicar cupón promocional.
+   */
+  aplicarCupon: (codigo) => {
+    set((state) => ({
+      cupones: state.cupones.map((c) =>
+        c.codigo === codigo ? { ...c, aplicado: true } : c
+      ),
+    }))
+  },
+}))
+
+// Auto-inicializar escucha de eventos de promociones
+if (typeof window !== 'undefined') {
+  window.addEventListener(promotionManagementService.eventName, () => {
+    useNotificationStore.getState().refrescarPromociones()
+  })
 }

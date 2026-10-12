@@ -16,30 +16,31 @@ export default function PlansSummaryCard({ vehiculo, reserva, seguroIdx, servici
   if (!vehiculo) return null;
 
   const dias = reserva.fechaInicio && reserva.fechaFin
-    ? (reserva.fechaInicio === reserva.fechaFin ? 1 : Math.max(1, Math.round((new Date(`${reserva.fechaFin.split('T')[0]}T00:00:00`) - new Date(`${reserva.fechaInicio.split('T')[0]}T00:00:00`)) / 86400000) + 1))
+    ? Math.max(1, Math.round((new Date(`${reserva.fechaFin.split('T')[0]}T00:00:00`) - new Date(`${reserva.fechaInicio.split('T')[0]}T00:00:00`)) / 86400000))
     : 1;
 
   // Proteccion
   const seguro = seguroIdx !== null ? vehiculo.seguros[seguroIdx] : null;
-  const precioSeguro = seguro ? seguro.precio : 0;
+  const precioSeguro = Number(seguro?.precio ?? seguro?.dailyRate ?? seguro?.price ?? 0);
   const seguroNombre = translateProtection(seguro ? seguro.nombre : null);
 
   // Kilometraje
   const kmLimit = vehiculo.tarifas?.kmLimitado || { precio: 0 };
   const kmIlimit = vehiculo.tarifas?.kmIlimitado || { precio: 0 };
+  const tarifaDiaria = Number(vehiculo.precio ?? vehiculo.dailyRate ?? vehiculo.tarifaDiaria ?? 0);
   const precioKm = reserva.tipoKm === 'ilimitado'
-    ? kmIlimit.precio
-    : (reserva.tipoKm === 'limitado' ? kmLimit.precio : (vehiculo.precio || kmLimit.precio || 0));
+    ? Number(kmIlimit.precio || 0)
+    : (reserva.tipoKm === 'limitado' ? Number(kmLimit.precio || 0) : 0);
   const kmNombre = reserva.tipoKm === 'ilimitado'
     ? t('vehiculo.unlimited', 'Ilimitado')
     : (reserva.tipoKm === 'limitado' ? t('vehiculo.limited', 'Limitado') : t('vehiculo.notSelected', 'No seleccionado'));
 
   // Servicios
   const serviciosElegidos = (vehiculo.servicios || []).filter(s => serviciosSeleccionados.includes(s.nombre));
-  const precioServicios = serviciosElegidos.reduce((suma, s) => suma + s.precio, 0);
+  const precioServicios = serviciosElegidos.reduce((suma, s) => suma + Number(s?.precio ?? s?.dailyRate ?? s?.price ?? 0), 0);
 
   // Totales
-  const totalDiario = precioSeguro + precioKm + precioServicios;
+  const totalDiario = tarifaDiaria + precioSeguro + precioKm + precioServicios;
   const totalMultiplicado = totalDiario * dias;
 
   return (
