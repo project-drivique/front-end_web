@@ -1,7 +1,7 @@
 import { Link, useLocation } from 'react-router-dom'
 import { FaArrowLeft, FaUserCircle, FaBars, FaTimes } from 'react-icons/fa'
 import { useTranslation } from 'react-i18next'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import logo from '@/assets/logocatalog.png'
 import { useBrand } from '@/contexts/BrandContext'
 import MenuConfiguracion from '@/components/MenuConfiguracion'
@@ -32,8 +32,19 @@ export default function CatalogTopHeader({
   const { t } = useTranslation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { usuario } = useAuthStore();
-  const { conteoNoLeidas } = useNotificationStore();
+  const conteoNoLeidas = useNotificationStore((s) => s.conteoNoLeidas);
+  const cargarConteoNoLeidas = useNotificationStore((s) => s.cargarConteoNoLeidas);
   const { brand } = useBrand();
+
+  useEffect(() => {
+    if (usuario) {
+      cargarConteoNoLeidas();
+      const interval = setInterval(() => {
+        cargarConteoNoLeidas();
+      }, 45000);
+      return () => clearInterval(interval);
+    }
+  }, [usuario, cargarConteoNoLeidas]);
 
   const menuOptions = [
     { name: t('catalog.menu.catalog', 'Catálogo'), path: '/home' },
@@ -214,6 +225,7 @@ export default function CatalogTopHeader({
           <nav className="catalogo-mobile-menu-links">
             {menuOptions.map((option) => {
               const isActive = currentPath === option.path;
+              const esNotif = option.path === '/notificaciones';
               return (
                 <Link
                   key={option.name}
@@ -222,11 +234,30 @@ export default function CatalogTopHeader({
                   style={{
                     color: isActive ? 'var(--brand-text)' : c.textPrimary,
                     fontWeight: isActive ? 700 : 500,
-                    borderBottom: `1px solid ${c.navBorder}`
+                    borderBottom: `1px solid ${c.navBorder}`,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
                   }}
                   className="catalogo-mobile-link"
                 >
-                  {option.name}
+                  <span>{option.name}</span>
+                  {esNotif && conteoNoLeidas > 0 && (
+                    <span
+                      style={{
+                        background: '#ef4444',
+                        color: '#ffffff',
+                        fontSize: '11px',
+                        fontWeight: 800,
+                        padding: '2px 8px',
+                        borderRadius: '12px',
+                        minWidth: '20px',
+                        textAlign: 'center',
+                      }}
+                    >
+                      {conteoNoLeidas}
+                    </span>
+                  )}
                 </Link>
               );
             })}

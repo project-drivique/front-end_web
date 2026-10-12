@@ -27,6 +27,10 @@ export const authService = {
       rol: normalizarRol(profile.roles),
       roles: profile.roles || [],
       activo: profile.accountStatus === 'ACTIVE',
+      sucursalId: profile.branchId || null,
+      sucursalAsignada: profile.branchName || '',
+      sucursal: profile.branchName || '',
+      permisos: profile.permissions || [],
     }
   },
 
@@ -70,7 +74,20 @@ export const authService = {
   },
 
   socialLogin: async (payload) => {
-    const reqBody = typeof payload === 'string' ? { idToken: payload, provider: 'GOOGLE' } : payload
+    const source = typeof payload === 'string' ? { idToken: payload, provider: 'GOOGLE' } : payload
+    const reqBody = {
+      provider: String(source.provider || 'GOOGLE').toUpperCase(),
+      idToken: source.idToken || null,
+      accessToken: source.accessToken || null,
+      authCode: source.authCode || null,
+      codeVerifier: source.codeVerifier || null,
+      redirectUri: source.redirectUri || null,
+      nonce: source.nonce || null,
+      deviceInfo: source.deviceInfo || navigator.userAgent,
+      email: source.email || null,
+      firstName: source.firstName || null,
+      lastName: source.lastName || null,
+    }
     const endpoint = reqBody.provider === 'FACEBOOK' ? '/auth/facebook' : (reqBody.provider === 'GOOGLE' ? '/auth/google' : '/auth/social/login')
     const { data } = await api.post(endpoint, reqBody)
     if (data?.accessToken) {
@@ -86,6 +103,9 @@ export const authService = {
       rol: normalizarRol(profile.roles),
       activo: profile.accountStatus === 'ACTIVE' || profile.activo === true,
       permisos: profile.permissions || [],
+      sucursalId: profile.branchId || null,
+      sucursalAsignada: profile.branchName || '',
+      sucursal: profile.branchName || '',
       emailVerificado: true,
     }
     return {

@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { FaMoneyBillWave, FaCreditCard, FaArrowLeft, FaTimes, FaClipboardList, FaArrowRight } from 'react-icons/fa'
@@ -93,12 +92,11 @@ export default function ReservationFlowPage() {
     usuario,
   } = flow
 
-  if (!vehiculo) return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 14 }}>
-      <p style={{ fontSize: 20, fontWeight: 800, color: 'var(--texto-primary)' }}>{t('vehiculo.notFound')}</p>
-      <Link to={usuario ? '/home' : '/catalogo'} style={{ color: 'var(--brand-text)', fontWeight: 700, fontSize: 14 }}>← {t('vehiculo.backToCatalog')}</Link>
-    </div>
-  )
+  useEffect(() => {
+    if (!vehiculo) navigate(usuario ? '/home' : '/catalogo', { replace: true })
+  }, [vehiculo, usuario, navigate])
+
+  if (!vehiculo) return null
 
   // ─── Variables para datos de sucursal de pago en efectivo ─────────────────
   const sucursalPago = reservaCreada?.reservaDetalles?.sucursalPagoEfectivo || reserva.sucursalPagoEfectivo || vehiculo?.sucursal || ''

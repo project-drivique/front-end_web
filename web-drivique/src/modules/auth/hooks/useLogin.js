@@ -90,6 +90,8 @@ export function useLogin() {
         activo: datos.activo,
         permisos: datos.permisos,
         sucursalId: datos.sucursalId,
+        sucursalAsignada: datos.sucursalAsignada,
+        sucursal: datos.sucursal,
       })
 
       setExito(t('login.successRedirecting'))
