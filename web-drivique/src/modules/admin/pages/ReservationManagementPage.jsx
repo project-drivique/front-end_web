@@ -29,6 +29,8 @@ import { reservationManagementService } from '../../../services/reservationManag
 import { branchManagementService } from '../../../services/branchManagementService'
 import { catalogService } from '../../../services/catalogService'
 import { accessAuditService } from '../../../services/accessAuditService'
+import { contractService } from '../../../services/contractService'
+import { inspectionService } from '../../../services/inspectionService'
 import { exportExcel, exportPdf, printTable } from '../../../utils/listExportUtils'
 import { formatCurrency } from '../../../utils/currencyUtils'
 import MenuConfiguracion from '../../../components/MenuConfiguracion'
@@ -38,6 +40,11 @@ import './ReservationManagementPage.css'
 
 const INITIAL_START_DATE = new Date().toISOString().slice(0, 16)
 const INITIAL_END_DATE = new Date(Date.now() + 86400000 * 3).toISOString().slice(0, 16)
+
+const selectEvidencePhoto = () => new Promise((resolve) => {
+  const input = document.createElement('input'); input.type = 'file'; input.accept = 'image/png,image/jpeg'
+  input.onchange = () => resolve(input.files?.[0] || null); input.click()
+})
 
 export default function ReservationManagementPage() {
   const { t } = useTranslation()
@@ -295,25 +302,49 @@ export default function ReservationManagementPage() {
     filename: `reporte-reservas-drivique-${new Date().toISOString().slice(0, 10)}`,
   }
 
-  const handleEntregarAuto = (r) => {
+  const registrarInspeccion = async (r, inspectionType) => {
+    const mileage = Number(window.prompt('Kilometraje actual del vehículo:', String(r.kilometraje || r.vehiculoKilometraje || 0)))
+    const fuelLevelPercent = Number(window.prompt('Nivel de combustible (0 a 100):', '100'))
+    if (!Number.isFinite(mileage) || mileage < 0 || !Number.isFinite(fuelLevelPercent) || fuelLevelPercent < 0 || fuelLevelPercent > 100) throw new Error('Kilometraje o combustible inválido.')
+    const items = await inspectionService.checklist(); const photos = []; const answers = []
+    for (const item of items) {
+      const compliant = window.confirm(`${item.name}: ¿se encuentra conforme?`)
+      let observation = null; let evidencePhotoIndex = null
+      if (!compliant) {
+        observation = window.prompt(`Describe el daño o novedad en ${item.name}:`)?.trim()
+        if (!observation) throw new Error('Toda novedad requiere observación.')
+        const photo = await selectEvidencePhoto(); if (!photo) throw new Error('Toda novedad requiere una fotografía.')
+        evidencePhotoIndex = photos.length; photos.push(photo)
+      }
+      answers.push({ checklistItemId: item.id, compliant, observation, evidencePhotoIndex })
+    }
+    const contract = await contractService.obtenerPorReserva(r.id || r.codigo)
+    return inspectionService.register(contract.id, { inspectionType, mileage, fuelLevelPercent, observations: window.prompt('Observaciones generales (opcional):') || null, answers }, photos)
+  }
+
+  const handleEntregarAuto = async (r) => {
     try {
+      await registrarInspeccion(r, 'CHECK_IN')
       reservationManagementService.update(r.id, { ...r, estado: 'en_curso' }, user)
       setNotice(`Vehículo entregado exitosamente al cliente. Reserva ${r.codigo || r.id} en curso.`)
       setTimeout(() => setNotice(''), 4000)
       cargarYEvaluarReservas()
     } catch (err) {
       console.error('Error al entregar auto:', err)
+      setNotice(err?.response?.data?.message || err.message || 'No fue posible registrar la entrega.')
     }
   }
 
-  const handleRecibirDevolucion = (r) => {
+  const handleRecibirDevolucion = async (r) => {
     try {
+      const inspection = await registrarInspeccion(r, 'CHECK_OUT')
       reservationManagementService.update(r.id, { ...r, estado: 'finalizada' }, user)
-      setNotice(`Vehículo recibido en sucursal. Reserva ${r.codigo || r.id} finalizada exitosamente.`)
+      setNotice(`Vehículo recibido. Cargos adicionales: ${formatCurrency(inspection.totalCharge || 0, moneda || 'COP', tasaUSD)}.`)
       setTimeout(() => setNotice(''), 4000)
       cargarYEvaluarReservas()
     } catch (err) {
       console.error('Error al recibir devolución:', err)
+      setNotice(err?.response?.data?.message || err.message || 'No fue posible registrar la devolución.')
     }
   }
 

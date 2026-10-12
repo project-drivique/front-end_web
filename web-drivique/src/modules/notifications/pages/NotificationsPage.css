@@ -539,3 +539,80 @@
     display: none;
   }
 }
+
+/* ── HU-INT-17: Toolbar de Filtros y Criticidad ── */
+.notif-filtros-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.notif-filtro-chip {
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid var(--borde, #e2e8f0);
+  background: var(--bg-tarjeta, #ffffff);
+  color: var(--texto-second, #64748b);
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 150ms ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.notif-filtro-chip:hover {
+  border-color: var(--brand-primary, #2563eb);
+  color: var(--brand-primary, #2563eb);
+}
+
+.notif-filtro-chip.activo {
+  background: var(--brand-primary, #2563eb);
+  border-color: var(--brand-primary, #2563eb);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+}
+
+.notif-chip-criticidad {
+  font-size: 10.5px;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.notif-chip-criticidad.alta {
+  background: rgba(239, 68, 68, 0.12);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.notif-chip-criticidad.media {
+  background: rgba(245, 158, 11, 0.12);
+  color: #d97706;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.notif-chip-criticidad.baja {
+  background: rgba(100, 116, 139, 0.1);
+  color: #64748b;
+  border: 1px solid rgba(100, 116, 139, 0.25);
+}
+
+.notif-loading-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 30px;
+  color: var(--texto-second, #64748b);
+  font-size: 14px;
+  font-weight: 600;
+}
+

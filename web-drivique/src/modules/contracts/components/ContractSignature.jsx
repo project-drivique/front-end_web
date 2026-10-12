@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FaFileSignature, FaCheckCircle, FaDownload, FaArrowLeft } from 'react-icons/fa';
 import logo from '@/assets/logo.png';
@@ -76,7 +76,11 @@ export default function FirmaContrato({
     ? `${reservaDetalles.domicilioDireccion || ''}, ${reservaDetalles.domicilioBarrio || ''}, ${reservaDetalles.domicilioCiudad || ''} (Ref: ${reservaDetalles.domicilioReferencias || ''})`
     : t('contratoFirma.notProvided');
 
-  const codigoContrato = contratoFirmado?.codigo || useMemo(() => contractService.obtenerOCrearCodigo(referencia), [referencia]);
+  const [codigoContrato, setCodigoContrato] = useState(contratoFirmado?.codigo || '');
+  useEffect(() => {
+    if (soloLectura || !reservaGuardada?.id) return;
+    contractService.obtenerOCrearCodigo(reservaGuardada.id).then(setCodigoContrato).catch(() => setCodigoContrato(''));
+  }, [reservaGuardada?.id, soloLectura]);
   const localeFecha = LOCALES_FECHA[i18n.language] || 'es-CO';
   const { marca, modelo } = separarMarcaModelo(vehiculo?.nombre);
   const sucursalRetiroNombre = reservaDetalles.sucursalRetiro === 'domicilio'
@@ -116,9 +120,10 @@ export default function FirmaContrato({
     const ahoraIso = new Date().toISOString();
 
     try {
-      const contrato = contractService.guardarFirma(referencia, {
+      const contrato = await contractService.guardarFirma(reservaGuardada?.id, {
         codigo: codigoContrato,
         firmaUsuarioDataUrl,
+        firmaTrazos: '[]',
         ciudad: ciudadSucursal,
         fecha: ahoraIso,
         contratoOriginal: {

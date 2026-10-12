@@ -136,6 +136,8 @@ export function useVerifyEmail() {
               activo: loginData.activo,
               permisos: loginData.permisos,
               sucursalId: loginData.sucursalId,
+              sucursalAsignada: loginData.sucursalAsignada,
+              sucursal: loginData.sucursal,
             })
             loggedIn = true
           } catch (loginErr) {
