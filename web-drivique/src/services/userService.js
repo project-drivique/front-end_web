@@ -28,13 +28,29 @@ export const userService = {
   },
 
   getPreferences: async () => {
-    const { data } = await api.get('/users/me/preferences')
-    return data
+    try {
+      const { data } = await api.get('/user/preferences')
+      return data
+    } catch (err) {
+      if (err.response?.status === 404) {
+        const { data } = await api.get('/users/me/preferences')
+        return data
+      }
+      throw err
+    }
   },
 
   updatePreferences: async (preferences) => {
-    const { data } = await api.put('/users/me/preferences', preferences)
-    return data
+    try {
+      const { data } = await api.put('/user/preferences', preferences)
+      return data
+    } catch (err) {
+      if (err.response?.status === 404) {
+        const { data } = await api.put('/users/me/preferences', preferences)
+        return data
+      }
+      throw err
+    }
   },
 
   eliminarCuenta: async (password) => {
