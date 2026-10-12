@@ -3,11 +3,11 @@ import { showAlert } from './swalConfig'
 export function getHorarioInfo(nombreSucursal) {
   if (!nombreSucursal) {
     return {
-      apertura: '08:00',
-      cierre: '18:00',
-      dias: 'lunes a sábado',
-      aperturaTexto: '8:00 a.m.',
-      cierreTexto: '6:00 p.m.'
+      apertura: '00:00',
+      cierre: '23:30',
+      dias: 'lunes a domingo',
+      aperturaTexto: '12:00 a.m.',
+      cierreTexto: '11:30 p.m.'
     }
   }
 
@@ -32,11 +32,11 @@ export function getHorarioInfo(nombreSucursal) {
   }
 
   return {
-    apertura: '08:00',
-    cierre: '18:00',
-    dias: 'lunes a sábado',
-    aperturaTexto: '8:00 a.m.',
-    cierreTexto: '6:00 p.m.'
+    apertura: '00:00',
+    cierre: '23:30',
+    dias: 'lunes a domingo',
+    aperturaTexto: '12:00 a.m.',
+    cierreTexto: '11:30 p.m.'
   }
 }
 
