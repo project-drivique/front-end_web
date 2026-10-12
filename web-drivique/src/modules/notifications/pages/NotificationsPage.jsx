@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import {
@@ -14,6 +14,12 @@ import {
   FaCheckDouble,
   FaTicketAlt,
   FaInbox,
+  FaCog,
+  FaSlidersH,
+  FaSyncAlt,
+  FaFilter,
+  FaFileContract,
+  FaShieldAlt,
 } from 'react-icons/fa'
 import { useLanding } from '@/modules/landing/LandingContext'
 import { formatCurrency } from '@/utils/currencyUtils'
@@ -22,6 +28,8 @@ import CatalogTopHeader from '@/modules/catalog/components/CatalogTopHeader'
 import { useNotificationStore } from '../store/useNotificationStore'
 import CouponModal from '../components/CouponModal'
 import ConditionsModal from '../components/ConditionsModal'
+import NotificationDetailModal from '../components/NotificationDetailModal'
+import DeliveryPreferencesForm from '../components/DeliveryPreferencesForm'
 import './NotificationsPage.css'
 
 export default function NotificationsPage({ defaultTab }) {
@@ -33,21 +41,39 @@ export default function NotificationsPage({ defaultTab }) {
 
   const searchParams = new URLSearchParams(location.search)
   const tabFromQuery = searchParams.get('tab')
-  const initialTab = defaultTab || tabFromQuery || (location.pathname.includes('cupon') || location.pathname.includes('promo') ? 'promociones' : 'generales')
+  const initialTab = defaultTab || tabFromQuery || (
+    location.pathname.includes('cupon') || location.pathname.includes('promo')
+      ? 'promociones'
+      : (location.pathname.includes('pref') ? 'preferencias' : 'generales')
+  )
 
-  const [pestanaActiva, setPestanaActiva] = useState(initialTab) // 'generales' | 'promociones'
+  const [pestanaActiva, setPestanaActiva] = useState(initialTab) // 'generales' | 'preferencias' | 'promociones'
+  const [filtroLectura, setFiltroLectura] = useState('todas') // 'todas' | 'no_leidas' | 'leidas'
+  const [notificacionModal, setNotificacionModal] = useState(null)
   const [cuponSeleccionadoModal, setCuponSeleccionadoModal] = useState(null)
   const [condicionesCuponModal, setCondicionesCuponModal] = useState(null)
 
   const {
     notificaciones,
-    cupones,
-    promosVehiculos,
+    conteoNoLeidas,
+    cargando,
+    error,
+    cargarNotificaciones,
     marcarLeida,
     marcarTodasLeidas,
+    cupones,
+    promosVehiculos,
+    refrescarPromociones,
     aplicarCupon,
   } = useNotificationStore()
+
   const [renderTime] = useState(() => Date.now())
+
+  // Cargar notificaciones reales y promociones al montar
+  useEffect(() => {
+    cargarNotificaciones()
+    refrescarPromociones()
+  }, [cargarNotificaciones, refrescarPromociones])
 
   // Notificaciones válidas con contenido de texto
   const notificacionesVisibles = useMemo(() => {
@@ -59,33 +85,64 @@ export default function NotificationsPage({ defaultTab }) {
     })
   }, [notificaciones, t])
 
-  // Conteo no leídas pestaña generales
+  // Filtradas por estado de lectura
+  const notificacionesFiltradas = useMemo(() => {
+    if (filtroLectura === 'no_leidas') {
+      return notificacionesVisibles.filter((n) => !n.leida)
+    }
+    if (filtroLectura === 'leidas') {
+      return notificacionesVisibles.filter((n) => n.leida)
+    }
+    return notificacionesVisibles
+  }, [notificacionesVisibles, filtroLectura])
+
+  // Conteo no leídas
   const noLeidasGeneralesCount = useMemo(() => {
     return notificacionesVisibles.filter((n) => !n.leida).length
   }, [notificacionesVisibles])
 
-  // Conteo cupones sin aplicar pestaña promociones
+  // Conteo cupones sin aplicar
   const sinAplicarCuponesCount = useMemo(() => {
-    return cupones.filter((c) => !c.aplicado).length
+    return (cupones || []).filter((c) => !c.aplicado).length
   }, [cupones])
 
   // Helper para iconos según el tipo de evento general
-  const renderIconoNotif = (tipo) => {
-    switch (tipo) {
-      case 'reserva_confirmada':
-        return <FaCheckCircle style={{ color: 'var(--brand-text)' }} />
-      case 'pago_validado':
-        return <FaCreditCard style={{ color: '#10b981' }} />
-      case 'documentos_verificados':
-        return <FaFileAlt style={{ color: '#059669' }} />
-      case 'soporte_respuesta':
-        return <FaComments style={{ color: '#0284c7' }} />
-      case 'alquiler_finalizado':
-        return <FaCar style={{ color: 'var(--brand-text)' }} />
-      case 'politica_actualizacion':
-      default:
-        return <FaExclamationCircle style={{ color: '#f59e0b' }} />
+  const renderIconoNotif = (tipo = '') => {
+    const raw = String(tipo).toLowerCase()
+    if (raw.includes('reserva') || raw.includes('booking')) {
+      return <FaCheckCircle style={{ color: 'var(--brand-text)' }} />
     }
+    if (raw.includes('pago') || raw.includes('payment') || raw.includes('wompi')) {
+      return <FaCreditCard style={{ color: '#10b981' }} />
+    }
+    if (raw.includes('contrato') || raw.includes('contract')) {
+      return <FaFileContract style={{ color: '#8b5cf6' }} />
+    }
+    if (raw.includes('documento') || raw.includes('kyc') || raw.includes('licencia')) {
+      return <FaFileAlt style={{ color: '#059669' }} />
+    }
+    if (raw.includes('soporte') || raw.includes('incidencia') || raw.includes('support')) {
+      return <FaComments style={{ color: '#0284c7' }} />
+    }
+    if (raw.includes('entrega') || raw.includes('devolucion') || raw.includes('alquiler') || raw.includes('vehiculo')) {
+      return <FaCar style={{ color: 'var(--brand-text)' }} />
+    }
+    if (raw.includes('registro') || raw.includes('bienvenida') || raw.includes('seguridad')) {
+      return <FaShieldAlt style={{ color: '#6366f1' }} />
+    }
+    return <FaExclamationCircle style={{ color: '#f59e0b' }} />
+  }
+
+  // Chip de criticidad si aplica
+  const renderChipCriticidad = (criticidad = 'MEDIUM') => {
+    const c = String(criticidad).toUpperCase()
+    if (c === 'HIGH' || c === 'CRITICAL' || c === 'ALTA' || c === 'URGENTE') {
+      return <span className="notif-chip-criticidad alta">Alta</span>
+    }
+    if (c === 'LOW' || c === 'BAJA') {
+      return <span className="notif-chip-criticidad baja">Info</span>
+    }
+    return null
   }
 
   // Formato de fecha legible dd MMM aaaa, HH:mm
@@ -130,6 +187,13 @@ export default function NotificationsPage({ defaultTab }) {
     )
   }
 
+  const handleCardClick = (n) => {
+    setNotificacionModal(n)
+    if (!n.leida && n.id) {
+      marcarLeida(n.id)
+    }
+  }
+
   const cHeader = {
     navBg: esModoOscuro ? '#0f172a' : '#ffffff',
     navBorder: esModoOscuro ? '#334155' : '#e2e8f0',
@@ -146,7 +210,7 @@ export default function NotificationsPage({ defaultTab }) {
         {/* Encabezado */}
         <div className="notificaciones-header-title">
           <h1>{t('notificaciones.title', 'Notificaciones')}</h1>
-          <p>{t('notificaciones.subtitle', 'Consulta tus alertas importantes y promociones exclusivas')}</p>
+          <p>{t('notificaciones.subtitle', 'Consulta tus alertas importantes, eventos de reservas y preferencias de entrega')}</p>
         </div>
 
         {/* Pestañas (Tabs Bar) */}
@@ -155,10 +219,17 @@ export default function NotificationsPage({ defaultTab }) {
             className={`notificacion-tab-btn ${pestanaActiva === 'generales' ? 'activa' : ''}`}
             onClick={() => setPestanaActiva('generales')}
           >
-            <FaBell /> {t('notificaciones.tabGenerales', 'Generales')}
+            <FaBell /> {t('notificaciones.tabGenerales', 'Bandeja de Entrada')}
             {noLeidasGeneralesCount > 0 && (
               <span className="notificacion-tab-badge">{noLeidasGeneralesCount}</span>
             )}
+          </button>
+
+          <button
+            className={`notificacion-tab-btn ${pestanaActiva === 'preferencias' ? 'activa' : ''}`}
+            onClick={() => setPestanaActiva('preferencias')}
+          >
+            <FaSlidersH /> {t('notificaciones.tabPreferencias', 'Preferencias de Entrega')}
           </button>
 
           <button
@@ -172,46 +243,100 @@ export default function NotificationsPage({ defaultTab }) {
           </button>
         </div>
 
-        {/* ── PESTAÑA 1: GENERALES ── */}
+        {/* ── PESTAÑA 1: BANDEJA DE ENTRADA (NOTIFICACIONES REALES) ── */}
         {pestanaActiva === 'generales' && (
           <div>
-            {/* Header de la pestaña: botón marcar todas leídas */}
-            {notificacionesVisibles.length > 0 && noLeidasGeneralesCount > 0 && (
-              <div className="notif-generales-header-row">
-                <span></span>
+            {/* Toolbar de filtros y marcar leídas */}
+            <div className="notif-generales-header-row">
+              <div className="notif-filtros-bar">
+                <button
+                  type="button"
+                  className={`notif-filtro-chip ${filtroLectura === 'todas' ? 'activo' : ''}`}
+                  onClick={() => setFiltroLectura('todas')}
+                >
+                  {t('notificaciones.filtroTodas', 'Todas')} ({notificacionesVisibles.length})
+                </button>
+
+                <button
+                  type="button"
+                  className={`notif-filtro-chip ${filtroLectura === 'no_leidas' ? 'activo' : ''}`}
+                  onClick={() => setFiltroLectura('no_leidas')}
+                >
+                  {t('notificaciones.filtroNoLeidas', 'No leídas')} ({noLeidasGeneralesCount})
+                </button>
+
+                <button
+                  type="button"
+                  className={`notif-filtro-chip ${filtroLectura === 'leidas' ? 'activo' : ''}`}
+                  onClick={() => setFiltroLectura('leidas')}
+                >
+                  {t('notificaciones.filtroLeidas', 'Leídas')} ({notificacionesVisibles.length - noLeidasGeneralesCount})
+                </button>
+
+                <button
+                  type="button"
+                  className="notif-filtro-chip"
+                  title="Sincronizar notificaciones"
+                  onClick={() => cargarNotificaciones()}
+                >
+                  <FaSyncAlt /> {t('comun.actualizar', 'Actualizar')}
+                </button>
+              </div>
+
+              {notificacionesVisibles.length > 0 && noLeidasGeneralesCount > 0 && (
                 <button className="btn-marcar-todas-leidas" onClick={marcarTodasLeidas}>
                   <FaCheckDouble /> {t('notificaciones.marcarTodasLeidas', 'Marcar todas como leídas')}
                 </button>
-              </div>
-            )}
+              )}
+            </div>
 
-            {/* Sin notificaciones */}
-            {notificacionesVisibles.length === 0 ? (
+            {/* Spinner de carga */}
+            {cargando && notificacionesVisibles.length === 0 ? (
+              <div className="notif-loading-banner">
+                <FaSyncAlt className="pref-spinner" />
+                <span>Cargando notificaciones del servidor...</span>
+              </div>
+            ) : notificacionesFiltradas.length === 0 ? (
+              /* Sin notificaciones */
               <div className="notificaciones-vacio">
                 <FaInbox className="notificaciones-vacio-icon" />
-                <h3>{t('notificaciones.sinNotificacionesTitle', 'Sin notificaciones generales')}</h3>
-                <p>{t('notificaciones.sinNotificacionesMsg', 'Actualmente no tienes mensajes ni alertas pendientes en tu cuenta.')}</p>
+                <h3>
+                  {filtroLectura === 'no_leidas'
+                    ? t('notificaciones.sinNoLeidasTitle', '¡Estás al día!')
+                    : t('notificaciones.sinNotificacionesTitle', 'Sin notificaciones')}
+                </h3>
+                <p>
+                  {filtroLectura === 'no_leidas'
+                    ? t('notificaciones.sinNoLeidasMsg', 'No tienes mensajes pendientes por leer.')
+                    : t('notificaciones.sinNotificacionesMsg', 'Actualmente no tienes mensajes ni alertas pendientes en tu cuenta.')}
+                </p>
               </div>
             ) : (
+              /* Lista de Notificaciones */
               <div className="notificaciones-lista">
-                {notificacionesVisibles.map((n) => {
+                {notificacionesFiltradas.map((n) => {
                   const chipVencimiento = calcularChipVencimiento(n.expiracionMs)
                   const titulo = (n.tituloKey ? t(n.tituloKey, n.tituloFallback || n.titulo || n.title || '') : (n.titulo || n.tituloFallback || n.title || '')).trim()
                   const mensaje = (n.mensajeKey ? t(n.mensajeKey, n.mensajeFallback || n.mensaje || n.message || '') : (n.mensaje || n.mensajeFallback || n.message || '')).trim()
+                  const chipCrit = renderChipCriticidad(n.criticidad)
 
                   return (
                     <div
                       key={n.id || Math.random()}
                       className={`notificacion-card-item ${!n.leida ? 'no-leida' : ''}`}
-                      onClick={() => n.id && marcarLeida(n.id)}
+                      onClick={() => handleCardClick(n)}
+                      style={{ cursor: 'pointer' }}
                     >
                       <div className="notif-icono-wrap">{renderIconoNotif(n.tipo)}</div>
 
                       <div className="notif-contenido">
                         <div className="notif-top-row">
-                          <h3 className="notif-titulo">
-                            {titulo || t('notificaciones.title', 'Notificación')}
-                          </h3>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                            <h3 className="notif-titulo">
+                              {titulo || t('notificaciones.title', 'Notificación')}
+                            </h3>
+                            {chipCrit}
+                          </div>
                           {!n.leida && <span className="notif-punto-no-leida" />}
                         </div>
 
@@ -233,7 +358,14 @@ export default function NotificationsPage({ defaultTab }) {
           </div>
         )}
 
-        {/* ── PESTAÑA 2: PROMOCIONES ── */}
+        {/* ── PESTAÑA 2: PREFERENCIAS DE ENTREGA Y CANALES ── */}
+        {pestanaActiva === 'preferencias' && (
+          <div>
+            <DeliveryPreferencesForm />
+          </div>
+        )}
+
+        {/* ── PESTAÑA 3: PROMOCIONES Y CUPONES ── */}
         {pestanaActiva === 'promociones' && (
           <div>
             {/* SUBSECCIÓN 1: CUPONES DE RECOMPENSA */}
@@ -241,7 +373,7 @@ export default function NotificationsPage({ defaultTab }) {
               {t('notificaciones.seccionCupones', 'Más cupones geniales')}
             </h2>
 
-            {cupones.length === 0 ? (
+            {(cupones || []).length === 0 ? (
               <div className="notificaciones-vacio" style={{ marginBottom: 32 }}>
                 <FaTicketAlt className="notificaciones-vacio-icon" />
                 <h3>{t('notificaciones.sinCuponesTitle', 'No tienes cupones vigentes')}</h3>
@@ -249,7 +381,7 @@ export default function NotificationsPage({ defaultTab }) {
               </div>
             ) : (
               <div className="cupones-lista">
-                {cupones.map((cup) => (
+                {(cupones || []).map((cup) => (
                   <div key={cup.id} className="cupon-ticket-card">
                     {/* 4 Muescas (2 externas + 2 internas) */}
                     <div className="cupon-notch-left" />
@@ -338,14 +470,14 @@ export default function NotificationsPage({ defaultTab }) {
               {t('notificaciones.seccionPromosDestacadas', 'Promociones destacadas')}
             </h2>
 
-            {promosVehiculos.length === 0 ? (
+            {(promosVehiculos || []).length === 0 ? (
               <div className="notificaciones-vacio">
                 <FaCar className="notificaciones-vacio-icon" />
                 <h3>{t('notificaciones.sinPromosTitle', 'No hay ofertas de vehículos en este momento')}</h3>
               </div>
             ) : (
               <div className="promos-vehiculos-grid">
-                {promosVehiculos.map((promo) => {
+                {(promosVehiculos || []).map((promo) => {
                   const vehiculo = VEHICULOS_MOCK.find((v) => Number(v.id) === Number(promo.vehiculoId))
                   const chipVencimiento = calcularChipVencimiento(promo.expiracionMs)
                   const precioBase = promo.precioBase || vehiculo?.precio || 80000
@@ -449,6 +581,16 @@ export default function NotificationsPage({ defaultTab }) {
           </div>
         )}
       </main>
+
+      {/* Modal Detalle de Notificación (HU-INT-17) */}
+      {notificacionModal && (
+        <NotificationDetailModal
+          notificacionId={notificacionModal.id}
+          notificacionPrevia={notificacionModal}
+          onClose={() => setNotificacionModal(null)}
+          onMarkAsRead={(id) => marcarLeida(id)}
+        />
+      )}
 
       {/* Modal Código de Cupón */}
       <CouponModal
