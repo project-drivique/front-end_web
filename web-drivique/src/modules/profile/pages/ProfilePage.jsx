@@ -9,8 +9,9 @@ import PasswordVerificationModal from '../components/PasswordVerificationModal'
 import ChangePassword from '../components/ChangePassword'
 import DeleteAccountModal from '../components/DeleteAccountModal'
 import CompleteProfileModal from '../components/CompleteProfileModal'
+import DeliveryPreferencesForm from '@/modules/notifications/components/DeliveryPreferencesForm'
 import MenuConfiguracion from '@/components/MenuConfiguracion'
-import { FaEdit, FaUser, FaEnvelope, FaPhone, FaArrowLeft, FaSignOutAlt, FaIdCard, FaGlobe, FaCalendarAlt, FaHashtag, FaTrashAlt } from 'react-icons/fa'
+import { FaEdit, FaUser, FaEnvelope, FaPhone, FaArrowLeft, FaSignOutAlt, FaIdCard, FaGlobe, FaCalendarAlt, FaHashtag, FaTrashAlt, FaBell, FaSlidersH } from 'react-icons/fa'
 import { getNombreTipoDoc } from '@/utils/documentUtils'
 import paisesMock from '@/mocks/nationalities.json'
 import '@/modules/catalog/pages/CatalogPage.css'
@@ -36,6 +37,7 @@ export default function PerfilPage() {
   const navigate = useNavigate()
   const { usuario, logout } = useAuthStore()
   const [modalEliminarAbierto, setModalEliminarAbierto] = useState(false)
+  const [modalPreferenciasAbierto, setModalPreferenciasAbierto] = useState(false)
 
   const handleCerrarSesion = () => {
     showAlert({
@@ -480,11 +482,66 @@ export default function PerfilPage() {
 
           </div>
 
-          {/* 3. Fila inferior de 3 tarjetas: Seguridad y Contraseña + Cerrar Sesión + Eliminar Cuenta */}
+          {/* 3. Fila inferior de tarjetas: Seguridad y Contraseña + Preferencias de Entrega + Cerrar Sesión + Eliminar Cuenta */}
           <div className="perfil-cards-grid" style={{ marginTop: '24px' }}>
             
             {/* Tarjeta 4: Seguridad y Contraseña */}
             <ChangePassword c={c} esModoOscuro={esModoOscuro} />
+
+            {/* Tarjeta 5: Preferencias de Entrega y Canales (HU-INT-17) */}
+            <div
+              style={{
+                background: c.innerCardBg,
+                borderRadius: '14px',
+                border: `1px solid ${c.innerCardBorder}`,
+                boxShadow: c.innerCardShadow,
+                padding: '22px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '16px',
+                flex: 1,
+                justifyContent: 'space-between',
+              }}
+            >
+              <div>
+                <div style={{ paddingBottom: '12px', borderBottom: `1px solid ${esModoOscuro ? 'rgba(255, 255, 255, 0.08)' : 'rgba(226, 232, 240, 0.8)'}` }}>
+                  <h2 style={{ fontSize: '15px', fontWeight: 700, color: esModoOscuro ? 'var(--brand-text-dark)' : 'var(--brand-secondary)', margin: 0, letterSpacing: '-0.01em', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <FaBell style={{ fontSize: '14px', color: 'var(--brand-primary, #2563eb)' }} />
+                    {t('perfil.deliveryPreferences', 'Preferencias de Entrega')}
+                  </h2>
+                </div>
+
+                <p style={{ fontSize: '13px', color: c.textMuted, margin: '14px 0 0', lineHeight: '1.45' }}>
+                  {t('perfil.deliveryPreferencesHint', 'Administra tus canales de notificación (Correo, SMS, Push móvil, Web) y consentimiento comercial.')}
+                </p>
+              </div>
+
+              <div style={{ display: 'flex', gap: '8px', flexDirection: 'column' }}>
+                <button
+                  type="button"
+                  onClick={() => setModalPreferenciasAbierto(true)}
+                  style={{
+                    width: '100%',
+                    padding: '11px',
+                    borderRadius: '10px',
+                    background: 'var(--brand-gradient, var(--brand-primary, #2563eb))',
+                    border: 'none',
+                    color: 'var(--brand-on-primary, #ffffff)',
+                    fontWeight: 700,
+                    fontSize: '13px',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px',
+                    transition: 'all 150ms ease',
+                    boxShadow: '0 4px 12px rgba(37, 99, 235, 0.2)',
+                  }}
+                >
+                  <FaSlidersH style={{ fontSize: '12px' }} /> {t('perfil.configPreferencesBtn', 'Configurar canales')}
+                </button>
+              </div>
+            </div>
 
             {/* Tarjeta 5: Cerrar Sesión */}
             <div
@@ -615,6 +672,59 @@ export default function PerfilPage() {
             c={c}
             esModoOscuro={esModoOscuro}
           />
+
+          {/* Modal de Preferencias de Entrega (HU-INT-17) */}
+          {modalPreferenciasAbierto && (
+            <div
+              style={{
+                position: 'fixed',
+                inset: 0,
+                background: 'rgba(15, 23, 42, 0.65)',
+                backdropFilter: 'blur(4px)',
+                zIndex: 9999,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '16px',
+              }}
+              onClick={() => setModalPreferenciasAbierto(false)}
+            >
+              <div
+                style={{
+                  maxWidth: '620px',
+                  width: '100%',
+                  maxHeight: '90vh',
+                  overflowY: 'auto',
+                  position: 'relative',
+                }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div style={{ position: 'relative' }}>
+                  <button
+                    type="button"
+                    onClick={() => setModalPreferenciasAbierto(false)}
+                    style={{
+                      position: 'absolute',
+                      top: '16px',
+                      right: '16px',
+                      zIndex: 10,
+                      background: 'rgba(0,0,0,0.06)',
+                      border: 'none',
+                      borderRadius: '50%',
+                      width: '32px',
+                      height: '32px',
+                      cursor: 'pointer',
+                      fontSize: '16px',
+                      color: 'var(--texto-second, #64748b)',
+                    }}
+                  >
+                    ✕
+                  </button>
+                  <DeliveryPreferencesForm onGuardadoExitoso={() => {}} />
+                </div>
+              </div>
+            </div>
+          )}
 
         </div>
 

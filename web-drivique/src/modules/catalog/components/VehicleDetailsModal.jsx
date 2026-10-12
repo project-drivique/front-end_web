@@ -122,10 +122,6 @@ export default function VehicleDetailsModal({
   }
 
   const handleReservar = () => {
-    if (!esAutenticado) {
-      setBannerVisible(true)
-      return
-    }
     sessionStorage.removeItem(`drivique_reservation_state_${vehiculo.id}`)
     const q = promo ? (promo.codigo ? `?promo=${promo.codigo}` : promo.valorDescuento ? `?descuento=${promo.valorDescuento}` : '') : ''
     onClose?.()
