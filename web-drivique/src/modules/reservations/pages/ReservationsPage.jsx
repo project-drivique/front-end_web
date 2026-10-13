@@ -477,10 +477,21 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
   const nombreAuto = reserva.vehiculo?.nombre || vehiculoOriginal?.nombre || (reserva.vehiculo?.marca ? `${reserva.vehiculo.marca} ${reserva.vehiculo.modelo || ''}` : 'Vehículo')
   const imagenAuto = reserva.vehiculo?.imagenes?.[0] || vehiculoOriginal?.imagenes?.[0] || reserva.vehiculo?.imagen || vehiculoOriginal?.imagen
   const seguroIdx = reservaOriginal?.seguroIdx
-  const proteccion = seguroIdx != null ? vehiculoOriginal?.seguros?.[seguroIdx]?.nombre : t('reservas.unspecified')
+  const esDocumentosRechazados = !esConfirmadaModal && (
+    reserva.estado === 'DOCUMENTOS_RECHAZADOS' ||
+    reservaOriginal?.estado === 'DOCUMENTOS_RECHAZADOS' ||
+    reserva.estadoDocumentos === 'RECHAZADO' ||
+    reservaOriginal?.estadoDocumentos === 'RECHAZADO'
+  )
+  const esPendienteValidacion = !esConfirmadaModal && !esDocumentosRechazados && (
+    reserva.estado === 'PENDIENTE_VALIDACION' ||
+    reservaOriginal?.estado === 'PENDIENTE_VALIDACION' ||
+    reserva.estadoDocumentos === 'PENDIENTE' ||
+    reservaOriginal?.estadoDocumentos === 'PENDIENTE'
+  )
 
-  const esPendienteEfectivo = !esConfirmadaModal && (reserva.estado === 'PENDIENTE_EFECTIVO' || reservaOriginal?.estado === 'PENDIENTE_EFECTIVO' || (esEfectivo && (estadoNormModal === 'pendiente' || !reserva.estado)))
-  const esPendienteWompi = !esEfectivo && !esConfirmadaModal && (estadoNormModal === 'pendiente')
+  const esPendienteEfectivo = !esConfirmadaModal && !esPendienteValidacion && !esDocumentosRechazados && (reserva.estado === 'PENDIENTE_EFECTIVO' || reservaOriginal?.estado === 'PENDIENTE_EFECTIVO' || (esEfectivo && (estadoNormModal === 'pendiente' || !reserva.estado)))
+  const esPendienteWompi = !esEfectivo && !esConfirmadaModal && !esPendienteValidacion && !esDocumentosRechazados && (estadoNormModal === 'pendiente')
   const esWompiAprobado = !esEfectivo && esConfirmadaModal
 
   const sucursalPago = reservaOriginal?.reservaDetalles?.sucursalPagoEfectivo || reserva.vehiculo?.sucursal || ''
@@ -1211,6 +1222,57 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
                 </p>
               </div>
 
+            </div>
+          </div>
+        )}
+
+        {/* Tarjeta de Documentación en Proceso de Validación */}
+        {esPendienteValidacion && (
+          <div className="modal-wompi-card" style={{ borderColor: 'rgba(59, 130, 246, 0.4)', background: 'linear-gradient(180deg, rgba(239, 246, 255, 0.7) 0%, rgba(255, 255, 255, 1) 100%)' }}>
+            <div className="modal-wompi-subcard">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+                <FaShieldAlt style={{ fontSize: '24px', color: '#2563eb' }} />
+                <h3 className="modal-wompi-titulo" style={{ margin: 0, color: '#1d4ed8' }}>
+                  Documentación en Proceso de Validación
+                </h3>
+              </div>
+              <p className="modal-wompi-desc" style={{ color: '#1e3a8a' }}>
+                Tus documentos de identidad y licencia de conducción están siendo revisados por el encargado de la sucursal <strong>{reserva.sucursal || sucursalPago}</strong>. En cuanto los documentos sean aprobados, tu reserva se confirmará automáticamente y se habilitará la firma digital del contrato.
+              </p>
+              <div style={{ padding: '10px 14px', background: '#dbeafe', borderRadius: '10px', fontSize: '13px', color: '#1e40af', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600 }}>
+                <FaClock /> Estado: En revisión por encargado de sucursal
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Tarjeta de Documentación Rechazada */}
+        {esDocumentosRechazados && (
+          <div className="modal-wompi-card" style={{ borderColor: 'rgba(239, 68, 68, 0.4)', background: 'linear-gradient(180deg, rgba(254, 242, 242, 0.7) 0%, rgba(255, 255, 255, 1) 100%)' }}>
+            <div className="modal-wompi-subcard">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+                <FaTimes style={{ fontSize: '24px', color: '#dc2626' }} />
+                <h3 className="modal-wompi-titulo" style={{ margin: 0, color: '#b91c1c' }}>
+                  Documentación Requiere Corrección
+                </h3>
+              </div>
+              <p className="modal-wompi-desc" style={{ color: '#7f1d1d' }}>
+                La sucursal <strong>{reserva.sucursal || sucursalPago}</strong> revisó tus documentos e indicó que requieren corrección antes de continuar con la entrega del vehículo.
+                {reserva.motivoRechazoDocumentos && (
+                  <span style={{ display: 'block', marginTop: '8px', padding: '8px 12px', background: '#fee2e2', borderRadius: '8px', color: '#991b1b', fontWeight: 600 }}>
+                    Observación del encargado: {reserva.motivoRechazoDocumentos}
+                  </span>
+                )}
+              </p>
+              <button
+                type="button"
+                onClick={() => navigate('/perfil?tab=documentos')}
+                className="modal-wompi-btn"
+                style={{ background: '#dc2626', marginTop: '12px' }}
+              >
+                <FaShieldAlt size={16} />
+                <span>Actualizar Documentos en Mi Perfil</span>
+              </button>
             </div>
           </div>
         )}

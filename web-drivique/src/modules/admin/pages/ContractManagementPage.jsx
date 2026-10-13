@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import {
   FaFileContract,
@@ -209,7 +209,12 @@ export default function ContractManagementPage() {
                   </div>
                   <div className="branch-user-info-text">
                     <strong className="branch-user-name">
-                      {[user?.nombre, user?.apellido].filter(Boolean).join(' ') || user?.correo || 'Usuario'}
+                      {(() => {
+                        const nom = (user?.nombre || '').trim()
+                        const ape = (user?.apellido || '').trim()
+                        if (nom && ape && !nom.toLowerCase().includes(ape.toLowerCase())) return `${nom} ${ape}`
+                        return nom || ape || user?.correo || 'Usuario'
+                      })()}
                     </strong>
                     <span className="branch-user-role">{user?.rol || 'encargado_sucursal'}</span>
                   </div>
@@ -466,15 +471,24 @@ export default function ContractManagementPage() {
                   reservaGuardada={{
                     clienteNombre: modalDetalle.clienteNombre,
                     clienteDocumento: modalDetalle.clienteDocumento,
+                    clienteTipoDocumento: modalDetalle.clienteTipoDocumento || 'CC',
                     clienteCorreo: modalDetalle.clienteCorreo,
                     clienteTelefono: modalDetalle.clienteTelefono,
                     total: modalDetalle.totalCOP,
                     referencia: modalDetalle.reservaCodigo,
+                    datosForm: {
+                      nombre: modalDetalle.clienteNombre,
+                      tipoDoc: modalDetalle.clienteTipoDocumento || 'CC',
+                      numDoc: modalDetalle.clienteDocumento,
+                    },
                     reservaDetalles: { sucursalRetiro: modalDetalle.sucursal, fechaInicio: modalDetalle.fechaInicio, fechaFin: modalDetalle.fechaFin }
                   }}
                   contratoFirmado={{
                     codigo: modalDetalle.contratoNumero || `CTR-${modalDetalle.reservaCodigo}`,
-                    firmaUsuarioDataUrl: modalDetalle.firmaUsuarioDataUrl || 'mock',
+                    firmaUsuarioDataUrl: modalDetalle.firmaUsuarioDataUrl || '',
+                    clienteNombre: modalDetalle.clienteNombre,
+                    clienteDocumento: modalDetalle.clienteDocumento,
+                    tipoDoc: modalDetalle.clienteTipoDocumento || 'CC',
                   }}
                 />
               </div>

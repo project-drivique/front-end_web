@@ -4,7 +4,6 @@ import paisesMock from '@/mocks/nationalities.json'
 
 const TIPOS_DOC = [
   { value: 'CC', sigla: 'CC', label: 'Cédula de ciudadanía (CC)' },
-  { value: 'TI', sigla: 'TI', label: 'Tarjeta de identidad (TI)' },
   { value: 'CE', sigla: 'CE', label: 'Documento extranjero (CE)' },
   { value: 'PAS', sigla: 'PAS', label: 'Pasaporte (PAS)' },
 ]
