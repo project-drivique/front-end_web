@@ -281,11 +281,30 @@ export default function FirmaContrato({
                     height: 160, borderRadius: 14, background: 'var(--bg-tarjeta)', border: '1px solid var(--borde)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 6, marginBottom: 12, padding: 8
                   }}>
-                    {contratoFirmado?.firmaUsuarioDataUrl ? (
-                      <img src={contratoFirmado.firmaUsuarioDataUrl} alt="Firma del Arrendatario" style={{ maxHeight: 110, maxWidth: '85%', objectFit: 'contain' }} />
-                    ) : (
+                    {contratoFirmado?.firmaUsuarioDataUrl && !['mock', 'protected', 'null', 'undefined'].includes(String(contratoFirmado.firmaUsuarioDataUrl).toLowerCase()) ? (
+                      <img
+                        src={contratoFirmado.firmaUsuarioDataUrl}
+                        alt="Firma del Arrendatario"
+                        style={{ maxHeight: 110, maxWidth: '85%', objectFit: 'contain' }}
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none'
+                          const fb = e.currentTarget.parentElement?.querySelector('.doc-sig-fallback')
+                          if (fb) fb.style.display = 'flex'
+                        }}
+                      />
+                    ) : null}
+                    <div
+                      className="doc-sig-fallback"
+                      style={{
+                        display: (!contratoFirmado?.firmaUsuarioDataUrl || ['mock', 'protected', 'null', 'undefined'].includes(String(contratoFirmado.firmaUsuarioDataUrl).toLowerCase())) ? 'flex' : 'none',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: 6,
+                      }}
+                    >
+                      <FaCheckCircle color="#16a34a" size={26} />
                       <span style={{ fontSize: 13, color: '#16a34a', fontWeight: 700 }}>✓ Firma Digital Registrada</span>
-                    )}
+                    </div>
                     <span style={{ fontSize: 11, color: 'var(--brand-text)', fontWeight: 700 }}>Firmado por el arrendatario</span>
                   </div>
                 ) : (
@@ -295,8 +314,8 @@ export default function FirmaContrato({
                   </>
                 )}
                 <div style={{ marginTop: 12 }}>
-                  <p style={{ margin: '4px 0', fontSize: 13, color: 'var(--texto-primary)' }}><strong>{t('contratoFirma.fullName')}:</strong> {datosForm.nombre}</p>
-                  <p style={{ margin: '4px 0', fontSize: 13, color: 'var(--texto-primary)' }}><strong>{t('contratoFirma.document')}:</strong> {`${getNombreTipoDoc(datosForm.tipoDoc)}: ${datosForm.numDoc || ''}`.trim()}</p>
+                  <p style={{ margin: '4px 0', fontSize: 13, color: 'var(--texto-primary)' }}><strong>{t('contratoFirma.fullName')}:</strong> {clienteNombre}</p>
+                  <p style={{ margin: '4px 0', fontSize: 13, color: 'var(--texto-primary)' }}><strong>{t('contratoFirma.document')}:</strong> {[getNombreTipoDoc(clienteTipoDoc), clienteNumDoc].filter(Boolean).join(': ') || '—'}</p>
                 </div>
               </div>
 

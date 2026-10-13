@@ -71,7 +71,7 @@ function RutaLanding() {
   if (!hydrated) return null
   const esValido = isValidAuthToken(token)
   if (esValido) {
-    return <Navigate to={getRoleHome(usuario?.rol)} replace />
+    return <Navigate to={getRoleHome(usuario)} replace />
   }
   return <LandingPage />
 }
@@ -83,7 +83,7 @@ function RutaCatalogo() {
   if (!hydrated) return null
   const esValido = isValidAuthToken(token)
   if (esValido) {
-    return <Navigate to={getRoleHome(usuario?.rol)} replace />
+    return <Navigate to={getRoleHome(usuario)} replace />
   }
   return <CatalogPage />
 }
@@ -97,9 +97,13 @@ function RutaPublicaAuth({ children }) {
   const esValido = isValidAuthToken(token)
   if (esValido) {
     const redirect = new URLSearchParams(location.search).get('redirect')
-    const destino = redirect?.startsWith('/') && !redirect.startsWith('//')
-      ? redirect
-      : getRoleHome(usuario?.rol)
+    const isManagement = usuario?.rol === 'encargado_sucursal' ||
+      usuario?.rol === 'administrador' ||
+      usuario?.roles?.includes('BRANCH_ADMIN') ||
+      usuario?.roles?.includes('SUPER_ADMIN')
+    const destino = (isManagement && (!redirect || (!redirect.startsWith('/admin') && !redirect.startsWith('/encargado'))))
+      ? getRoleHome(usuario)
+      : (redirect?.startsWith('/') && !redirect.startsWith('//') ? redirect : getRoleHome(usuario))
     return <Navigate to={destino} replace />
   }
   return children
@@ -162,7 +166,7 @@ function Ruta2FA({ children }) {
   const hydrated  = useHydration()
   if (!hydrated) return null
   if (isValidAuthToken(token)) {
-    return <Navigate to={getRoleHome(usuario?.rol)} replace />
+    return <Navigate to={getRoleHome(usuario)} replace />
   }
   return sesion2FA ? children : <Navigate to="/login" replace />
 }
@@ -174,7 +178,7 @@ function RutaVerificacionCorreo({ children }) {
   const hydrated           = useHydration()
   if (!hydrated) return null
   if (isValidAuthToken(token)) {
-    return <Navigate to={getRoleHome(usuario?.rol)} replace />
+    return <Navigate to={getRoleHome(usuario)} replace />
   }
   return verificacionCorreo ? children : <Navigate to="/login" replace />
 }
@@ -186,7 +190,7 @@ function RutaRecuperacionCorreo({ children }) {
   const hydrated           = useHydration()
   if (!hydrated) return null
   if (isValidAuthToken(token)) {
-    return <Navigate to={getRoleHome(usuario?.rol)} replace />
+    return <Navigate to={getRoleHome(usuario)} replace />
   }
   return recuperacionCorreo ? children : <Navigate to="/login" replace />
 }

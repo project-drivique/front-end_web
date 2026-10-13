@@ -46,7 +46,23 @@ export default function CatalogTopHeader({
     }
   }, [usuario, cargarConteoNoLeidas]);
 
+  const isBranchAdmin = usuario?.rol === 'encargado_sucursal' ||
+    usuario?.rol === 'encargado' ||
+    usuario?.rol === 'branch_manager' ||
+    (Array.isArray(usuario?.roles) && usuario.roles.includes('BRANCH_ADMIN'));
+
+  const isSuperAdmin = usuario?.rol === 'administrador' ||
+    usuario?.rol === 'admin' ||
+    (Array.isArray(usuario?.roles) && (usuario.roles.includes('SUPER_ADMIN') || usuario.roles.includes('ADMIN')));
+
+  const isManagement = isBranchAdmin || isSuperAdmin;
+  const managementPath = isBranchAdmin ? '/encargado' : '/admin';
+  const managementLabel = isBranchAdmin
+    ? t('catalog.menu.branchPanel', '🏢 Panel de Sucursal')
+    : t('catalog.menu.adminPanel', '🛡️ Panel Administrador');
+
   const menuOptions = [
+    ...(isManagement ? [{ name: managementLabel, path: managementPath, isSpecial: true }] : []),
     { name: t('catalog.menu.catalog', 'Catálogo'), path: '/home' },
     { name: t('catalog.menu.reservations', 'Mis reservas'), path: '/reservas' },
     { name: t('catalog.menu.favorites', 'Mis favoritos'), path: '/favoritos' },
@@ -68,7 +84,7 @@ export default function CatalogTopHeader({
         
         {/* LEFT: Logo */}
         <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-start' }}>
-          <Link to={modoRegistrado ? '/home' : '/catalogo'} className="catalogo-logo-link">
+          <Link to={isManagement ? managementPath : (modoRegistrado ? '/home' : '/catalogo')} className="catalogo-logo-link">
             <img src={brand.logoDataUrl || logo} alt={brand.name} className="catalogo-logo" />
             <span className="catalogo-logo-title" style={{ color: 'var(--brand-secondary)' }}>{brand.name}</span>
           </Link>
@@ -87,8 +103,8 @@ export default function CatalogTopHeader({
                   key={option.name}
                   to={option.path}
                   style={{
-                    color: isActive ? 'var(--brand-primary)' : 'var(--texto-nav)',
-                    fontWeight: 600,
+                    color: option.isSpecial ? 'var(--brand-primary)' : (isActive ? 'var(--brand-primary)' : 'var(--texto-nav)'),
+                    fontWeight: option.isSpecial ? 800 : 600,
                     fontSize: 13,
                     textDecoration: 'none',
                     position: 'relative',
@@ -148,6 +164,27 @@ export default function CatalogTopHeader({
         {/* RIGHT: Profile & Settings */}
         <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', zIndex: 10 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            {isManagement && (
+              <Link
+                to={managementPath}
+                className="catalogo-header-mgmt-btn"
+                style={{
+                  background: 'var(--brand-primary)',
+                  color: '#ffffff',
+                  padding: '6px 14px',
+                  borderRadius: '10px',
+                  fontSize: '12px',
+                  fontWeight: 800,
+                  textDecoration: 'none',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  boxShadow: '0 2px 8px rgba(37,99,235,0.25)',
+                }}
+              >
+                {managementLabel}
+              </Link>
+            )}
             <MenuConfiguracion />
 
             {mostrarVolverInicio && (
