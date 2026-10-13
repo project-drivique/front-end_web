@@ -98,9 +98,9 @@
       }
     ],
     "imagenes": [
-      "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/a2cb0b378c25efdb1e116246f84149744c2f4081.jpg",
-      "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/1c6e90229d22ae38444b4c27a5ecedbc3aaa7739.jpg",
-      "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/5c55d73935760e36ac2c84a6f676e75136c75d1f.jpg"
+      "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7",
+      "https://images.unsplash.com/photo-1549399542-7e3f8b79c341",
+      "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf"
     ],
     "disponibilidad": {
       "ocupados": []
@@ -124,7 +124,8 @@
         "texto": "Lo recomiendo totalmente, volveré a alquilar.",
         "fecha": "2026-03-05"
       }
-    ]
+    ],
+    "imagen": "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7"
   },
   {
     "id": 2,
@@ -229,9 +230,9 @@
       }
     ],
     "imagenes": [
-      "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/5acb88622cc00284455f7d6c6e19fd2f5b11a6cd.jpg",
-      "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/3660959c1dc9ad6069d89d42723db9cda29afeba.jpg",
-      "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/ec7412fd3f8148ee85aeb9d7c9a05577be7409d6.jpg"
+      "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf",
+      "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7",
+      "https://images.unsplash.com/photo-1549399542-7e3f8b79c341"
     ],
     "disponibilidad": {
       "ocupados": []
@@ -249,7 +250,8 @@
         "texto": "Muy cómoda para el viaje en familia, excelente consumo.",
         "fecha": "2026-06-22"
       }
-    ]
+    ],
+    "imagen": "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf"
   },
   {
     "id": 3,
@@ -338,14 +340,15 @@
       }
     ],
     "imagenes": [
-      "https://th.bing.com/th/id/OIP.fXE8mmnIQyu_3aOZ3jDciAHaE0?w=277&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
-      "https://th.bing.com/th/id/OIP.Ta7fayfrmFJd3HPo8xojKAHaEJ?w=321&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
-      "https://th.bing.com/th/id/OIP.M8Xr6C7QAbptaShiYv_SigHaEi?w=259&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3"
+      "https://images.unsplash.com/photo-1552519507-da3b142c6e3d",
+      "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d",
+      "https://images.unsplash.com/photo-1503376780353-7e6692767b70"
     ],
     "disponibilidad": {
       "ocupados": []
     },
-    "comentarios": []
+    "comentarios": [],
+    "imagen": "https://images.unsplash.com/photo-1552519507-da3b142c6e3d"
   },
   {
     "id": 4,
@@ -450,9 +453,9 @@
       }
     ],
     "imagenes": [
-      "https://th.bing.com/th/id/OIP.1fmggTD9brrhHIbn4PxbFQHaEK?w=294&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
-      "https://th.bing.com/th/id/OIP.YtLn_MV5ghgGtbCAOjl6zwHaE6?w=250&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
-      "https://th.bing.com/th/id/R.2312c5cbb5b968f100d34bdbde5c576a?rik=Mw4jE71kRKyhuA&riu=http%3a%2f%2fimages.gtcarlot.com%2fpictures%2f145962677.jpg&ehk=fs3qI14Aid1CfPQQ%2f23zMMfkFuVyphuDrrOvFIsJMY8%3d&risl=&pid=ImgRaw&r=0"
+      "https://images.unsplash.com/photo-1555215695-3004980ad54e",
+      "https://images.unsplash.com/photo-1503376780353-7e6692767b70",
+      "https://images.unsplash.com/photo-1617788138017-80ad40651399"
     ],
     "disponibilidad": {
       "ocupados": []
@@ -464,7 +467,8 @@
         "texto": "Una locura de carro, corre muchísimo y está impecable.",
         "fecha": "2026-01-10"
       }
-    ]
+    ],
+    "imagen": "https://images.unsplash.com/photo-1555215695-3004980ad54e"
   },
   {
     "id": 5,
@@ -573,9 +577,9 @@
       }
     ],
     "imagenes": [
-      "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/4d34066b6e9e1a29c93d7d0edeb2f415058411d3.jpg",
-      "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/64be097eae7f8698be22c3646647d73c234e60a0.jpg",
-      "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/ef353e43a859b12a67c8bd45cb5f5265beddef2a.jpg"
+      "https://images.unsplash.com/photo-1559416523-140ddc3d238c",
+      "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7",
+      "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf"
     ],
     "disponibilidad": {
       "ocupados": []
@@ -593,7 +597,8 @@
         "texto": "Espacio de sobra para toda la familia. La volveré a alquilar.",
         "fecha": "2026-03-01"
       }
-    ]
+    ],
+    "imagen": "https://images.unsplash.com/photo-1559416523-140ddc3d238c"
   },
   {
     "id": 6,
@@ -690,9 +695,9 @@
       }
     ],
     "imagenes": [
-      "https://th.bing.com/th/id/OIP.M8Xr6C7QAbptaShiYv_SigHaEi?w=259&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
-      "https://th.bing.com/th/id/OIP.51EBaowC6BNblc7CVjxDMQHaFL?w=258&h=181&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
-      "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/5c55d73935760e36ac2c84a6f676e75136c75d1f.jpg"
+      "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d",
+      "https://images.unsplash.com/photo-1552519507-da3b142c6e3d",
+      "https://images.unsplash.com/photo-1503376780353-7e6692767b70"
     ],
     "disponibilidad": {
       "ocupados": []
@@ -710,7 +715,8 @@
         "texto": "Buen carro y buen precio, aunque el aire tardó un poco en enfriar el primer día.",
         "fecha": "2026-05-30"
       }
-    ]
+    ],
+    "imagen": "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d"
   },
   {
     "id": 7,
@@ -815,9 +821,9 @@
       }
     ],
     "imagenes": [
-      "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/c86e9f8dd37048853c7c2fce700fb4bb5b1e062c.jpg",
-      "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/8631ecb31093479ab34a56263b478b44fb2d74f6.jpg",
-      "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/aa041a9462ecf25c4c543ea284f7af255338df95.jpg"
+      "https://images.unsplash.com/photo-1549399542-7e3f8b79c341",
+      "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7",
+      "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf"
     ],
     "disponibilidad": {
       "ocupados": []
@@ -829,7 +835,8 @@
         "texto": "Muy económica por ser híbrida. Totalmente recomendada.",
         "fecha": "2026-07-02"
       }
-    ]
+    ],
+    "imagen": "https://images.unsplash.com/photo-1549399542-7e3f8b79c341"
   },
   {
     "id": 8,
@@ -927,14 +934,15 @@
       }
     ],
     "imagenes": [
-      "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/7718dbfc25ce3e387cb976f4ded742dc8d8c7582.jpg",
-      "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/1e686f124bd42a21481a43969615adc261e39251.jpg",
-      "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/de7fef41a3ee96557b1600b7e91494dd78a5e7b1.jpg"
+      "https://images.unsplash.com/photo-1503376780353-7e6692767b70",
+      "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d",
+      "https://images.unsplash.com/photo-1552519507-da3b142c6e3d"
     ],
     "disponibilidad": {
       "ocupados": []
     },
-    "comentarios": []
+    "comentarios": [],
+    "imagen": "https://images.unsplash.com/photo-1503376780353-7e6692767b70"
   },
   {
     "id": 9,
@@ -1039,13 +1047,14 @@
       }
     ],
     "imagenes": [
-      "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/5acb88622cc00284455f7d6c6e19fd2f5b11a6cd.jpg",
-      "https://th.bing.com/th/id/OIP.fXE8mmnIQyu_3aOZ3jDciAHaE0?w=277&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
-      "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/8631ecb31093479ab34a56263b478b44fb2d74f6.jpg"
+      "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf",
+      "https://images.unsplash.com/photo-1549399542-7e3f8b79c341",
+      "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7"
     ],
     "disponibilidad": {
       "ocupados": []
     },
-    "comentarios": []
+    "comentarios": [],
+    "imagen": "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf"
   }
 ]
