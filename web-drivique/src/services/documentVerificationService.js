@@ -1,5 +1,6 @@
 import { api } from './httpClient'
-// Servicio para Validación e Inspección de Documentos (Licencia de Conducir y Cédula/DNI)
+import { reservationService } from './reservationService'
+import { hasMatchingBranch } from './accessAuditService'
 const MOCK_DOCUMENT_VERIFICATIONS = [
   {
     id: 1,
@@ -232,8 +233,11 @@ export const documentVerificationService = {
       documentoIdentidad: doc.documentNumber || '—',
       tipoDocumento: doc.documentType?.name || 'Documento',
       numeroLicencia: doc.documentNumber || '—',
-      pdfCedulaUrl: /cedula|identidad|dni/i.test(`${doc.documentType?.code} ${doc.documentType?.name}`) ? doc.frontUrl : '',
-      pdfLicenciaUrl: /licencia/i.test(`${doc.documentType?.code} ${doc.documentType?.name}`) ? doc.frontUrl : '',
+      pdfCedulaUrl: /cedula|identidad|dni|cc|ce|passport/i.test(`${doc.documentType?.code || ''} ${doc.documentType?.name || ''}`) ? doc.frontUrl : '',
+      fotoCedulaFrente: /cedula|identidad|dni|cc|ce|passport/i.test(`${doc.documentType?.code || ''} ${doc.documentType?.name || ''}`) ? doc.frontUrl : '',
+      pdfLicenciaUrl: /licencia|driver/i.test(`${doc.documentType?.code || ''} ${doc.documentType?.name || ''}`) ? doc.frontUrl : '',
+      fotoLicenciaFrente: /licencia|driver/i.test(`${doc.documentType?.code || ''} ${doc.documentType?.name || ''}`) ? doc.frontUrl : '',
+      frontUrl: doc.frontUrl,
       sucursal: doc.branchName || 'Sucursal sin asignar',
       branchId: doc.branchId,
       estado: String(doc.statusCode || 'PENDING').toLowerCase() === 'pending' ? 'pendiente' : String(doc.statusCode).toLowerCase(),
@@ -250,6 +254,7 @@ export const documentVerificationService = {
     })
     return data
   },
+
   list(user = null) {
     const all = getStoredVerifications()
     if (!user) return all
@@ -258,14 +263,62 @@ export const documentVerificationService = {
     const sucursalAsignada = user.sucursalAsignada || user.sucursalId || user.sucursal || ''
 
     if (isBranchManager && sucursalAsignada) {
-      const nomNorm = String(sucursalAsignada).toLowerCase().trim()
-      return all.filter((item) => {
-        const itemSuc = String(item.sucursal || '').toLowerCase().trim()
-        return itemSuc.includes(nomNorm) || nomNorm.includes(itemSuc)
-      })
+      return all.filter((item) => hasMatchingBranch(item.sucursal, sucursalAsignada))
     }
 
     return all
+  },
+
+  actualizarReservaAsociada(item, nuevoEstado, observaciones = '', verificadoPor = 'Encargado de Sucursal') {
+    if (!item || !item.reservaCodigo) return
+    try {
+      const todasReservas = reservationService.getReservas()
+      const targetCode = String(item.reservaCodigo).trim().toLowerCase()
+      const resIdx = todasReservas.findIndex(
+        (r) =>
+          String(r.id || '').trim().toLowerCase() === targetCode ||
+          String(r.codigo || '').trim().toLowerCase() === targetCode ||
+          String(r.referencia || '').trim().toLowerCase() === targetCode
+      )
+      if (resIdx !== -1) {
+        const res = { ...todasReservas[resIdx] }
+        const esAprobado = nuevoEstado === 'aprobado'
+        res.estadoDocumentos = esAprobado ? 'APROBADO' : 'RECHAZADO'
+        res.motivoRechazoDocumentos = esAprobado ? null : observaciones
+
+        if (esAprobado) {
+          if (
+            res.estado === 'PENDIENTE_VALIDACION' ||
+            res.estado === 'pendiente' ||
+            !res.estado
+          ) {
+            if (res.pagoEstado === 'aprobado' || (res.metodoPago !== 'efectivo' && res.metodoPagoConfirmado)) {
+              res.estado = 'confirmada'
+            } else if (res.metodoPago === 'efectivo' || res.pasarela === 'efectivo') {
+              res.estado = 'PENDIENTE_EFECTIVO'
+            } else {
+              res.estado = 'confirmada'
+            }
+          }
+        } else {
+          res.estado = 'DOCUMENTOS_RECHAZADOS'
+        }
+
+        res.historialAcciones = [
+          ...(res.historialAcciones || []),
+          {
+            fecha: new Date().toISOString(),
+            accion: esAprobado
+              ? `Aprobación de documentos por ${verificadoPor || 'Encargado de Sucursal'}`
+              : `Rechazo de documentos: ${observaciones || 'Requiere corrección'}`,
+            usuario: verificadoPor || 'Encargado de Sucursal',
+          },
+        ]
+        reservationService.guardarReserva(res)
+      }
+    } catch (err) {
+      console.warn('Error actualizando reserva asociada a verificación documental:', err)
+    }
   },
 
   actualizarEstado(id, nuevoEstado, observaciones = '', verificadoPor = 'Encargado de Sucursal', checklist = null) {
@@ -281,6 +334,7 @@ export const documentVerificationService = {
       }
       saveStoredVerifications(list)
       notificarCliente(list[index], nuevoEstado, observaciones)
+      this.actualizarReservaAsociada(list[index], nuevoEstado, observaciones, verificadoPor)
       return list[index]
     }
     return null

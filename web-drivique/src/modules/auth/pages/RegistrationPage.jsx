@@ -115,8 +115,16 @@ const fieldWrap = { display: 'flex', flexDirection: 'column', gap: '5px' }
 
 function ModalTerminos({ onCerrar, onAceptar, c }) {
   const { t } = useTranslation()
+  const [haLlegadoAlFinal, setHaLlegadoAlFinal] = useState(false)
   const clausulasObtenidas = t('registro.modal.clausulas', { returnObjects: true })
   const clausulas = Array.isArray(clausulasObtenidas) ? clausulasObtenidas : []
+
+  const handleScroll = (e) => {
+    const { scrollTop, clientHeight, scrollHeight } = e.currentTarget
+    if (scrollTop + clientHeight >= scrollHeight - 25) {
+      setHaLlegadoAlFinal(true)
+    }
+  }
 
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 999, background: c.modalOverlay, backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}>
@@ -131,7 +139,7 @@ function ModalTerminos({ onCerrar, onAceptar, c }) {
           </button>
         </div>
 
-        <div style={{ overflowY: 'auto', padding: '28px', flex: 1, background: c.modalBodyBg }}>
+        <div onScroll={handleScroll} style={{ overflowY: 'auto', padding: '28px', flex: 1, background: c.modalBodyBg }}>
           {clausulas.map(({ num, titulo, texto }) => (
             <div key={num} style={{ marginBottom: '20px', paddingBottom: '20px', borderBottom: `1px solid ${c.modalDivider}` }}>
               <p style={{ fontSize: '11px', fontWeight: 700, color: c.accent, textTransform: 'uppercase', letterSpacing: '0.06em', margin: '0 0 4px' }}>{num}. {titulo}</p>
@@ -142,9 +150,25 @@ function ModalTerminos({ onCerrar, onAceptar, c }) {
           <p style={{ fontSize: '12px', color: c.modalLegal, lineHeight: 1.6, margin: 0 }}>
             {t('registro.modal.legalNote')}
           </p>
+
+          <div style={{
+            marginTop: '20px',
+            padding: '12px 16px',
+            borderRadius: '10px',
+            background: haLlegadoAlFinal ? 'rgba(34,197,94,0.12)' : 'rgba(245,158,11,0.12)',
+            border: `1px solid ${haLlegadoAlFinal ? '#22c55e' : '#f59e0b'}`,
+            color: haLlegadoAlFinal ? '#16a34a' : '#d97706',
+            fontSize: '12px',
+            fontWeight: 600,
+            textAlign: 'center'
+          }}>
+            {haLlegadoAlFinal
+              ? '✓ Has leído la totalidad de los términos y condiciones. Ya puedes aceptar.'
+              : '↓ Desplázate hasta el final para habilitar el botón de aceptar.'}
+          </div>
         </div>
 
-        <div style={{ padding: '16px 28px', borderTop: `1px solid ${c.modalDivider}`, display: 'flex', gap: '12px', justifyContent: 'flex-end', background: c.modalFooterBg }}>
+        <div style={{ padding: '16px 28px', borderTop: `1px solid ${c.modalDivider}`, display: 'flex', gap: '12px', justifyContent: 'flex-end', background: c.modalFooterBg, alignItems: 'center' }}>
           <button
             onClick={onCerrar}
             style={{
@@ -162,20 +186,25 @@ function ModalTerminos({ onCerrar, onAceptar, c }) {
           </button>
 
           <button
-            onClick={onAceptar}
+            onClick={haLlegadoAlFinal ? onAceptar : undefined}
+            disabled={!haLlegadoAlFinal}
             style={{
               padding: '10px 24px',
               borderRadius: '10px',
-              background: 'linear-gradient(90deg,var(--brand-secondary),var(--brand-primary))',
+              background: haLlegadoAlFinal
+                ? 'linear-gradient(90deg,var(--brand-secondary),var(--brand-primary))'
+                : '#94a3b8',
               color: '#fff',
               fontWeight: 700,
               fontSize: '13px',
               border: 'none',
-              cursor: 'pointer',
-              boxShadow: '0 4px 12px rgba(var(--brand-secondary-rgb),0.25)'
+              cursor: haLlegadoAlFinal ? 'pointer' : 'not-allowed',
+              opacity: haLlegadoAlFinal ? 1 : 0.6,
+              boxShadow: haLlegadoAlFinal ? '0 4px 12px rgba(var(--brand-secondary-rgb),0.25)' : 'none',
+              transition: 'all 200ms ease'
             }}
           >
-            {t('registro.modal.accept')}
+            {haLlegadoAlFinal ? t('registro.modal.accept') : 'Desplázate al final para aceptar'}
           </button>
         </div>
       </div>
@@ -354,6 +383,7 @@ export default function RegistroPage() {
   const [password, setPassword] = useState('')
   const [confirmar, setConfirmar] = useState('')
   const [terminos, setTerminos] = useState(false)
+  const [terminosLeidos, setTerminosLeidos] = useState(false)
   const [verPass, setVerPass] = useState(false)
   const [verConfirmar, setVerConfirmar] = useState(false)
   const [modalAbierto, setModalAbierto] = useState(false)
@@ -429,17 +459,19 @@ export default function RegistroPage() {
 
     iniciarVerificacionCorreo(correo, { contrasena: password })
 
+    const mensajeExito = respuestaRegistro?.message || t('registro.checkEmail')
+
     showAlert({
       icon: 'success',
       title: t('registro.successTitle'),
-      text: t('registro.checkEmail'),
-      timer: 1400,
-      showConfirmButton: false,
+      text: mensajeExito,
+      timer: 3500,
+      showConfirmButton: true,
     })
 
     setTimeout(() => {
       navigate('/verificar-correo')
-    }, 1400)
+    }, 2200)
   }
 
   return (
@@ -449,6 +481,7 @@ export default function RegistroPage() {
           c={c}
           onCerrar={() => setModalAbierto(false)}
           onAceptar={() => {
+            setTerminosLeidos(true)
             setTerminos(true)
             setModalAbierto(false)
             setErrores(prev => ({ ...prev, terminos: '' }))
@@ -685,7 +718,14 @@ export default function RegistroPage() {
                     type="checkbox"
                     id="terminos"
                     checked={terminos}
-                    onChange={e => { setTerminos(e.target.checked); setErrores(p => ({ ...p, terminos: '' })) }}
+                    onChange={e => {
+                      if (!terminosLeidos) {
+                        setModalAbierto(true)
+                        return
+                      }
+                      setTerminos(e.target.checked)
+                      setErrores(p => ({ ...p, terminos: '' }))
+                    }}
                     style={{ width: '15px', height: '15px', marginTop: '3px', cursor: 'pointer', accentColor: c.checkboxAccent, flexShrink: 0 }}
                   />
                   <div style={{ flex: 1 }}>
@@ -698,7 +738,12 @@ export default function RegistroPage() {
                         {t('registro.termsLink')}
                       </span>
                       {' '}{t('registro.termsSuffix')}{' '}
-                      <span style={{ fontWeight: 700, color: c.accent }}>{t('registro.termsLaw')}</span>.
+                      <span
+                        onClick={e => { e.preventDefault(); setModalAbierto(true) }}
+                        style={{ fontWeight: 700, color: c.accent, textDecoration: 'underline', cursor: 'pointer' }}
+                      >
+                        {t('registro.termsLaw')}
+                      </span>.
                     </label>
                     {errores.terminos && <p style={errorStyle(c)}>{errores.terminos}</p>}
                   </div>

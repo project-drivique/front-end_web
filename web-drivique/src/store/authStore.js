@@ -37,7 +37,38 @@ const authStorage = {
     const verificationEmail = localStorage.getItem('renta_verification_email')
     const recoveryEmail = localStorage.getItem('renta_recovery_email')
     const recoveryCode = sessionStorage.getItem('renta_recovery_code')
-    if (!isValidAuthToken(token)) return { state: { token: null, usuario: null, verificacionCorreo: verificationEmail ? { correo: verificationEmail } : null, recuperacionCorreo: recoveryEmail ? { correo: recoveryEmail, codigo: recoveryCode } : null }, version: 0 }
+    if (!isValidAuthToken(token)) {
+      return { state: { token: null, usuario: null, verificacionCorreo: verificationEmail ? { correo: verificationEmail } : null, recuperacionCorreo: recoveryEmail ? { correo: recoveryEmail, codigo: recoveryCode } : null }, version: 0 }
+    }
+
+    try {
+      const [, payload] = token.split('.')
+      if (payload) {
+        const normalized = payload.replace(/-/g, '+').replace(/_/g, '/')
+        const padded = normalized.padEnd(Math.ceil(normalized.length / 4) * 4, '=')
+        const decoded = JSON.parse(atob(padded))
+        if (decoded && Array.isArray(decoded.roles)) {
+          const isBranchAdmin = decoded.roles.includes('BRANCH_ADMIN') || decoded.roles.includes('BRANCH_MANAGER')
+          const isSuperAdmin = decoded.roles.includes('SUPER_ADMIN') || decoded.roles.includes('ADMIN')
+          if (isBranchAdmin || isSuperAdmin) {
+            usuario = {
+              ...(usuario || {}),
+              roles: decoded.roles,
+              rol: isSuperAdmin ? 'administrador' : 'encargado_sucursal',
+              sucursalId: decoded.branchId || usuario?.sucursalId || null,
+              branchId: decoded.branchId || usuario?.branchId || null,
+              sucursalAsignada: decoded.branchName || usuario?.sucursalAsignada || '',
+              branchName: decoded.branchName || usuario?.branchName || '',
+              correo: decoded.email || usuario?.correo || '',
+              nombre: decoded.name || usuario?.nombre || '',
+            }
+          }
+        }
+      }
+    } catch {
+      // ignore token decode error and keep existing usuario
+    }
+
     return { state: { token, usuario, verificacionCorreo: verificationEmail ? { correo: verificationEmail } : null, recuperacionCorreo: recoveryEmail ? { correo: recoveryEmail, codigo: recoveryCode } : null }, version: 0 }
   },
   setItem: (_name, value) => {

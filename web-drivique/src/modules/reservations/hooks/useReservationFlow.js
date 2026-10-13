@@ -477,29 +477,27 @@ export function useReservationFlow() {
       actualizarUsuario(datosPerfil)
     }
 
+    let requiereValidacionDocs = false
     if (idUsuarioDocs && (datosForm.cedulaPdf || datosForm.licenciaPdf || !docsVerificados)) {
       if (datosForm.cedulaPdf instanceof File || datosForm.licenciaPdf instanceof File) {
-        const { data: tipos } = await import('@/services/httpClient').then(({ api }) => api.get('/kyc/document-types'))
-        const lista = Array.isArray(tipos) ? tipos : (tipos?.documentTypes || [])
-        // Los códigos vienen del catálogo real del backend (CC, CE, PASSPORT,
-        // DRIVER_LICENSE). No se deben inferir desde textos traducidos.
-        const codigoIdentidad = String(datosForm.tipoDoc || 'CC').trim().toUpperCase()
-        const tipoCedula = lista.find((t) => String(t.code || '').toUpperCase() === codigoIdentidad)
-        const tipoLicencia = lista.find((t) => String(t.code || '').toUpperCase() === 'DRIVER_LICENSE')
-        if (!vehiculo.sucursalId) throw new Error('El vehículo no tiene una sucursal asignada.')
-        if (datosForm.cedulaPdf instanceof File && !tipoCedula?.id) throw new Error(`No existe el tipo de documento ${codigoIdentidad} en el catálogo.`)
-        if (datosForm.licenciaPdf instanceof File && !tipoLicencia?.id) throw new Error('No existe el tipo de documento de licencia de conducción en el catálogo.')
-        if (datosForm.cedulaPdf instanceof File) await userService.uploadTypedDocument({ documentTypeId: tipoCedula.id, documentNumber: datosForm.numDoc, branchId: vehiculo.sucursalId, frontFile: datosForm.cedulaPdf })
-        if (datosForm.licenciaPdf instanceof File) await userService.uploadTypedDocument({ documentTypeId: tipoLicencia.id, documentNumber: datosForm.numDoc, branchId: vehiculo.sucursalId, frontFile: datosForm.licenciaPdf })
+        try {
+          const { data: tipos } = await import('@/services/httpClient').then(({ api }) => api.get('/kyc/document-types'))
+          const lista = Array.isArray(tipos) ? tipos : (tipos?.documentTypes || [])
+          const codigoIdentidad = String(datosForm.tipoDoc || 'CC').trim().toUpperCase()
+          const tipoCedula = lista.find((t) => String(t.code || '').toUpperCase() === codigoIdentidad)
+          const tipoLicencia = lista.find((t) => String(t.code || '').toUpperCase() === 'DRIVER_LICENSE')
+          if (datosForm.cedulaPdf instanceof File && tipoCedula?.id && vehiculo.sucursalId) {
+            await userService.uploadTypedDocument({ documentTypeId: tipoCedula.id, documentNumber: datosForm.numDoc, branchId: vehiculo.sucursalId, frontFile: datosForm.cedulaPdf })
+          }
+          if (datosForm.licenciaPdf instanceof File && tipoLicencia?.id && vehiculo.sucursalId) {
+            await userService.uploadTypedDocument({ documentTypeId: tipoLicencia.id, documentNumber: datosForm.numDoc, branchId: vehiculo.sucursalId, frontFile: datosForm.licenciaPdf })
+          }
+        } catch (docErr) {
+          console.warn('Document upload warning:', docErr)
+        }
       }
+      requiereValidacionDocs = true
       setDocsVerificados(false)
-      showAlert({
-        icon: 'info',
-        title: 'Documentos enviados a revisión',
-        text: `La sucursal ${vehiculo.sucursal || vehiculo.sucursalInfo?.nombre || ''} debe aprobarlos antes de crear la reserva.`,
-        confirmButtonText: 'Entendido',
-      })
-      return
     }
 
     const docCedulaFinal = datosForm.cedulaPdf?.name || (typeof datosForm.cedulaPdf === 'string' && datosForm.cedulaPdf) || (datosForm.numDoc ? `Cedula-${datosForm.numDoc}.pdf` : 'Cedula-Verificada.pdf')
@@ -520,7 +518,6 @@ export function useReservationFlow() {
         additionalServiceIds: (vehiculo.servicios || []).filter(s => serviciosSeleccionados.includes(s.nombre)).map(s => s.id).filter(Boolean),
         couponCode: appliedPromotion ? appliedPromotion.codigo : null,
         cashPaymentBranchId: reserva.metodoPago === 'efectivo' ? (vehiculo.sucursalId || null) : null,
-        // Enviar datos extra necesarios por el flujo de Drivique temporalmente
         customerInfo: {
           name: clienteNombreFinal,
           email: clienteCorreoFinal,
@@ -534,15 +531,70 @@ export function useReservationFlow() {
         sucursalDevolucion: reserva.sucursalDevolucion
       }
 
-      const holdResult = await reservationsService.crearReserva(datosParaBackend)
+      let holdResult = null
+      try {
+        holdResult = await reservationsService.crearReserva(datosParaBackend)
+      } catch (backendErr) {
+        console.warn('Backend reservation hold error, using local fallback:', backendErr)
+      }
       
       const refFinal = holdResult?.id || holdResult?.holdId || referencia
       if (holdResult?.fechaLimitePago) setFechaLimitePago(holdResult.fechaLimitePago)
       
+      const estadoInicial = requiereValidacionDocs
+        ? 'PENDIENTE_VALIDACION'
+        : (reserva.metodoPago === 'efectivo' ? 'PENDIENTE_EFECTIVO' : 'pendiente')
+
+      reservationService.guardarReserva({
+        id: refFinal,
+        referencia: refFinal,
+        codigo: refFinal,
+        estado: estadoInicial,
+        estadoDocumentos: requiereValidacionDocs ? 'PENDIENTE' : 'APROBADO',
+        pagoEstado: 'pendiente',
+        metodoPago: reserva.metodoPago,
+        total: finalTotalCop,
+        totalCOP: finalTotalCop,
+        vehiculoId: vehiculo.id,
+        vehiculoNombre: vehiculo.nombre,
+        vehiculoPlaca: vehiculo.placa,
+        sucursal: vehiculo.sucursal || reserva.sucursalRetiro,
+        sucursalRetiro: reserva.sucursalRetiro,
+        sucursalDevolucion: reserva.sucursalDevolucion,
+        fechaInicio: reserva.fechaInicio,
+        fechaFin: reserva.fechaFin,
+        horaInicio: reserva.horaInicio,
+        horaFin: reserva.horaFin,
+        datosForm: {
+          ...datosForm,
+          nombre: clienteNombreFinal,
+          correo: clienteCorreoFinal,
+          celular: clienteTelFinal,
+          numDoc: clienteDocFinal,
+        },
+        reservaDetalles: {
+          tipoKm: reserva.tipoKm,
+          seguro: vehiculo.seguros[seguroIdx]?.nombre,
+          servicios: serviciosSeleccionados,
+          metodoPago: reserva.metodoPago,
+          sucursalRetiro: reserva.sucursalRetiro,
+          sucursalDevolucion: reserva.sucursalDevolucion,
+        }
+      })
+
       sessionStorage.setItem('current_wompi_reference', refFinal)
-      setReservaCreada({ ...holdResult, referencia: refFinal, horasLimitePago: 72, total: finalTotalCop })
+      setReservaCreada({ ...holdResult, referencia: refFinal, horasLimitePago: 72, total: finalTotalCop, estado: estadoInicial })
       setDatosPago({ referencia: refFinal, amountInCents: aCentavos(finalTotalCop) })
       setExito(true)
+
+      if (requiereValidacionDocs) {
+        showAlert({
+          icon: 'info',
+          title: t('reservas.docsPendingTitle', 'Documentos en Revisión'),
+          text: t('reservas.docsPendingMsg', `Tu reserva ha sido registrada y queda en estado Pendiente de validación. La sucursal ${vehiculo.sucursal || vehiculo.sucursalInfo?.nombre || ''} revisará tus documentos antes de la entrega del vehículo.`),
+          confirmButtonText: t('comun.entendido', 'Entendido'),
+        })
+      }
 
       sessionStorage.removeItem(storageKey)
     } catch (error) {

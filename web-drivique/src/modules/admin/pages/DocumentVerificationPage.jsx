@@ -252,8 +252,17 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
     if (errorMessage) setErrorMessage('')
   }
 
+  const getSafeDocUrl = (url) => {
+    if (!url) return ''
+    if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('blob:') || url.startsWith('data:')) {
+      return url
+    }
+    return url.startsWith('/') ? url : `/${url}`
+  }
+
   const renderDocPreview = (url, titleLabel) => {
-    if (!url) {
+    const safeUrl = getSafeDocUrl(url)
+    if (!safeUrl) {
       return (
         <div className="doc-preview-empty">
           <FaFilePdf style={{ fontSize: 32, opacity: 0.4 }} />
@@ -262,12 +271,12 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
       )
     }
 
-    const isPdf = url.toLowerCase().includes('.pdf')
+    const isPdf = safeUrl.toLowerCase().includes('.pdf')
 
     if (!isPdf) {
       return (
-        <div className="doc-preview-container" onClick={() => setZoomPdf({ url, title: titleLabel })} title={t('admin.documents.modal.clickToZoom', 'Clic para ampliar documento')}>
-          <img src={url} alt={titleLabel} className="doc-preview-img" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        <div className="doc-preview-container" onClick={() => setZoomPdf({ url: safeUrl, title: titleLabel })} title={t('admin.documents.modal.clickToZoom', 'Clic para ampliar documento')}>
+          <img src={safeUrl} alt={titleLabel} className="doc-preview-img" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           <div className="doc-preview-hover-overlay">
             <FaEye /> {t('admin.documents.modal.zoomLabel', 'Ampliar')}
           </div>
@@ -276,14 +285,21 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
     }
 
     return (
-      <div className="doc-preview-container" onClick={() => setZoomPdf({ url, title: titleLabel })} title={t('admin.documents.modal.clickToZoom', 'Clic para ampliar documento')}>
-        <iframe
-          src={`${url}#toolbar=0&navpanes=0&scrollbar=0`}
-          title={titleLabel}
+      <div className="doc-preview-container" onClick={() => setZoomPdf({ url: safeUrl, title: titleLabel })} title={t('admin.documents.modal.clickToZoom', 'Clic para ampliar documento')}>
+        <object
+          data={`${safeUrl}#toolbar=0&navpanes=0&scrollbar=0`}
+          type="application/pdf"
           className="doc-preview-iframe"
-          scrolling="no"
-          style={{ width: '100%', height: '100%', border: 'none' }}
-        />
+          style={{ width: '100%', height: '100%', border: 'none', pointerEvents: 'none' }}
+        >
+          <iframe
+            src={`${safeUrl}#toolbar=0&navpanes=0&scrollbar=0`}
+            title={titleLabel}
+            className="doc-preview-iframe"
+            scrolling="no"
+            style={{ width: '100%', height: '100%', border: 'none' }}
+          />
+        </object>
         <div className="doc-preview-hover-overlay">
           <FaEye /> {t('admin.documents.modal.zoomPdfLabel', 'Ampliar PDF')}
         </div>
@@ -301,8 +317,12 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
 
     const nota = observaciones || t('admin.documents.defaultApproveObs', 'Documentos validados y aprobados correctamente por la sucursal.')
     try {
-      if (modalItem.backend) await documentVerificationService.revisarDocumentoBackend(modalItem.id, 'aprobado', nota)
-      else documentVerificationService.actualizarEstado(modalItem.id, 'aprobado', nota, user?.nombre || 'Encargado de Sucursal', modalChecklist)
+      if (modalItem.backend) {
+        await documentVerificationService.revisarDocumentoBackend(modalItem.id, 'aprobado', nota)
+        documentVerificationService.actualizarReservaAsociada(modalItem, 'aprobado', nota, user?.nombre || 'Encargado de Sucursal')
+      } else {
+        documentVerificationService.actualizarEstado(modalItem.id, 'aprobado', nota, user?.nombre || 'Encargado de Sucursal', modalChecklist)
+      }
       setVerifications((items) => items.map((item) => item.id === modalItem.id ? { ...item, estado: 'aprobado', observaciones: nota } : item))
     } catch (error) {
       setErrorMessage(error?.response?.data?.detail || 'No fue posible aprobar el documento.')
@@ -327,8 +347,12 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
     }
 
     try {
-      if (modalItem.backend) await documentVerificationService.revisarDocumentoBackend(modalItem.id, 'rechazado', observaciones.trim())
-      else documentVerificationService.actualizarEstado(modalItem.id, 'rechazado', observaciones.trim(), user?.nombre || 'Encargado de Sucursal', modalChecklist)
+      if (modalItem.backend) {
+        await documentVerificationService.revisarDocumentoBackend(modalItem.id, 'rechazado', observaciones.trim())
+        documentVerificationService.actualizarReservaAsociada(modalItem, 'rechazado', observaciones.trim(), user?.nombre || 'Encargado de Sucursal')
+      } else {
+        documentVerificationService.actualizarEstado(modalItem.id, 'rechazado', observaciones.trim(), user?.nombre || 'Encargado de Sucursal', modalChecklist)
+      }
       setVerifications((items) => items.map((item) => item.id === modalItem.id ? { ...item, estado: 'rechazado', observaciones: observaciones.trim() } : item))
     } catch (error) {
       setErrorMessage(error?.response?.data?.detail || 'No fue posible rechazar el documento.')
@@ -413,7 +437,14 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
                   {user?.nombre ? user.nombre.charAt(0).toUpperCase() : 'A'}
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  <span className="doc-topbar-profile-name" style={{ fontSize: '13px', fontWeight: '700', color: 'var(--city-text, #0f172a)', lineHeight: '1.2' }}>{user?.nombre || 'Administrador'}</span>
+                  <span className="doc-topbar-profile-name" style={{ fontSize: '13px', fontWeight: '700', color: 'var(--city-text, #0f172a)', lineHeight: '1.2' }}>
+                    {(() => {
+                      const nom = (user?.nombre || '').trim()
+                      const ape = (user?.apellido || '').trim()
+                      if (nom && ape && !nom.toLowerCase().includes(ape.toLowerCase())) return `${nom} ${ape}`
+                      return nom || ape || user?.correo || 'Usuario'
+                    })()}
+                  </span>
                   <span className="doc-topbar-profile-role" style={{ fontSize: '11px', color: 'var(--city-muted, #64748b)', lineHeight: '1.2' }}>{user?.rol || 'encargado'}</span>
                 </div>
               </div>
@@ -616,8 +647,8 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
                       {filtered.map((item, index) => {
                         const docIdFile = item.documentoIdentidadPdf || `Cedula-${item.documentoIdentidad}.pdf`
                         const licFile = item.licenciaConduccionPdf || `Licencia-${item.documentoIdentidad}.pdf`
-                        const docIdUrl = item.fotoCedulaFrente || item.pdfCedulaUrl || 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
-                        const licUrl = item.fotoLicenciaFrente || item.pdfLicenciaUrl || 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
+                        const docIdUrl = getSafeDocUrl(item.fotoCedulaFrente || item.pdfCedulaUrl || item.frontUrl) || 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
+                        const licUrl = getSafeDocUrl(item.fotoLicenciaFrente || item.pdfLicenciaUrl || item.frontUrl) || 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
                         const { fecha, hora } = getUploadDateTime(item.fechaSubida)
                         const resState = reservationMap[item.reservaCodigo] || item.reservaEstado || 'confirmada'
 
@@ -720,8 +751,8 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
                   {filtered.map((item, index) => {
                     const docIdFile = item.documentoIdentidadPdf || `Cedula-${item.documentoIdentidad}.pdf`
                     const licFile = item.licenciaConduccionPdf || `Licencia-${item.documentoIdentidad}.pdf`
-                    const docIdUrl = item.fotoCedulaFrente || item.pdfCedulaUrl || 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
-                    const licUrl = item.fotoLicenciaFrente || item.pdfLicenciaUrl || 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
+                    const docIdUrl = getSafeDocUrl(item.fotoCedulaFrente || item.pdfCedulaUrl || item.frontUrl) || 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
+                    const licUrl = getSafeDocUrl(item.fotoLicenciaFrente || item.pdfLicenciaUrl || item.frontUrl) || 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
                     const { fecha, hora } = getUploadDateTime(item.fechaSubida)
                     const resState = reservationMap[item.reservaCodigo] || item.reservaEstado || 'confirmada'
 
@@ -1459,22 +1490,34 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
               <div className="doc-zoom-preview-box">
                 {!zoomPdf.url?.toLowerCase().includes('.pdf') ? (
                   <img
-                    src={zoomPdf.url}
+                    src={getSafeDocUrl(zoomPdf.url)}
                     alt={zoomPdf.title}
                     className="doc-zoom-img"
                   />
                 ) : (
-                  <iframe
-                    src={zoomPdf.url}
-                    title={zoomPdf.title}
+                  <object
+                    data={`${getSafeDocUrl(zoomPdf.url)}#toolbar=1&navpanes=0`}
+                    type="application/pdf"
                     style={{
                       width: '100%',
                       height: '100%',
-                      minHeight: '65vh',
+                      minHeight: '68vh',
                       border: 'none',
                       borderRadius: 8,
                     }}
-                  />
+                  >
+                    <iframe
+                      src={`${getSafeDocUrl(zoomPdf.url)}#toolbar=1&navpanes=0`}
+                      title={zoomPdf.title}
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        minHeight: '68vh',
+                        border: 'none',
+                        borderRadius: 8,
+                      }}
+                    />
+                  </object>
                 )}
               </div>
             </div>

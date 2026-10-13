@@ -256,6 +256,22 @@ export default function VerificarCorreoPage() {
                     : t('verificarCorreo.expiresIn', { time: formatearTiempo(segundosExpiracion) })}
                 </p>
 
+                {import.meta.env.DEV && (
+                  <div style={{
+                    marginBottom: '16px',
+                    padding: '10px 14px',
+                    borderRadius: '12px',
+                    background: esModoOscuro ? 'rgba(59,130,246,0.1)' : 'rgba(59,130,246,0.06)',
+                    border: '1px solid rgba(59,130,246,0.25)',
+                    color: esModoOscuro ? '#93c5fd' : '#1d4ed8',
+                    fontSize: '12px',
+                    lineHeight: 1.5,
+                    textAlign: 'center'
+                  }}>
+                    ℹ️ <strong>Modo local:</strong> Si tu servidor no tiene configurado un correo SMTP en <code>.env</code>, revisa la terminal del backend donde se imprime el código OTP generado.
+                  </div>
+                )}
+
                 <button
                   type="submit"
                   disabled={cargando || expirado || codigo.length < LARGO_CODIGO}
