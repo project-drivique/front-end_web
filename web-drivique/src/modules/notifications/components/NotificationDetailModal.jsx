@@ -204,6 +204,10 @@ export default function NotificationDetailModal({
     ? notif.metadata
     : null
 
+  const metaActionPath = notif.metadata?.actionPath || (notif.metadata?.actionUrl && notif.metadata.actionUrl.startsWith('/') ? notif.metadata.actionUrl : (notif.metadata?.reservationId ? `/reservas?detalle=${notif.metadata.reservationId}` : null))
+  const metaActionLabel = notif.metadata?.actionLabel || (metaActionPath ? 'Continuar con mi reserva' : null)
+  const accionFinal = metaActionPath ? { texto: metaActionLabel, ruta: metaActionPath } : infoEvento.accion
+
   return (
     <div className="notif-detail-backdrop" onClick={onClose}>
       <div className="notif-detail-modal" onClick={(e) => e.stopPropagation()}>
@@ -300,16 +304,16 @@ export default function NotificationDetailModal({
 
         {/* Footer del Modal con acciones */}
         <div className="notif-detail-footer">
-          {infoEvento.accion && (
+          {accionFinal && (
             <button
               type="button"
               className="notif-detail-action-btn primary"
               onClick={() => {
                 onClose()
-                navigate(infoEvento.accion.ruta)
+                navigate(accionFinal.ruta)
               }}
             >
-              <span>{infoEvento.accion.texto}</span>
+              <span>{accionFinal.texto}</span>
               <FaArrowRight size={12} />
             </button>
           )}

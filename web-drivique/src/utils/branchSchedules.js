@@ -33,6 +33,18 @@ export function getPlaceSchedule(place) {
     return SCHEDULE_RULES.HOME_DELIVERY
   }
 
+  // If place has real backend openingTime and closingTime:
+  if (place.openingTime && place.closingTime) {
+    const open = String(place.openingTime).slice(0, 5)
+    const close = String(place.closingTime).slice(0, 5)
+    const is24Hours = (open === '00:00' && (close === '23:59' || close === '24:00')) || open === close
+    return {
+      is24Hours,
+      open,
+      close,
+    }
+  }
+
   const type = String(
     place.branchType || place.tipo || place.tipoSucursal || 'STANDARD'
   ).toUpperCase()
