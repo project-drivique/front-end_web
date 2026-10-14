@@ -318,7 +318,10 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
     const nota = observaciones || t('admin.documents.defaultApproveObs', 'Documentos validados y aprobados correctamente por la sucursal.')
     try {
       if (modalItem.backend) {
-        await documentVerificationService.revisarDocumentoBackend(modalItem.id, 'aprobado', nota)
+        const idsToReview = modalItem.allDocIds && modalItem.allDocIds.length > 0 ? modalItem.allDocIds : [modalItem.id]
+        for (const docId of idsToReview) {
+          await documentVerificationService.revisarDocumentoBackend(docId, 'aprobado', nota)
+        }
         documentVerificationService.actualizarReservaAsociada(modalItem, 'aprobado', nota, user?.nombre || 'Encargado de Sucursal')
       } else {
         documentVerificationService.actualizarEstado(modalItem.id, 'aprobado', nota, user?.nombre || 'Encargado de Sucursal', modalChecklist)
@@ -348,7 +351,10 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
 
     try {
       if (modalItem.backend) {
-        await documentVerificationService.revisarDocumentoBackend(modalItem.id, 'rechazado', observaciones.trim())
+        const idsToReview = modalItem.allDocIds && modalItem.allDocIds.length > 0 ? modalItem.allDocIds : [modalItem.id]
+        for (const docId of idsToReview) {
+          await documentVerificationService.revisarDocumentoBackend(docId, 'rechazado', observaciones.trim())
+        }
         documentVerificationService.actualizarReservaAsociada(modalItem, 'rechazado', observaciones.trim(), user?.nombre || 'Encargado de Sucursal')
       } else {
         documentVerificationService.actualizarEstado(modalItem.id, 'rechazado', observaciones.trim(), user?.nombre || 'Encargado de Sucursal', modalChecklist)
