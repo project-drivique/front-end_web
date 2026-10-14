@@ -284,55 +284,96 @@ export default function NotificationDetailModal({
                 const esPago = String(notif.tipo || '').toLowerCase().includes('pago') ||
                   String(notif.tipo || '').toLowerCase().includes('payment') ||
                   String(notif.titulo || '').toLowerCase().includes('pago') ||
-                  String(notif.titulo || '').toLowerCase().includes('comprobante');
+                  String(notif.titulo || '').toLowerCase().includes('comprobante') ||
+                  String(notif.mensaje || '').toLowerCase().includes('pago');
                 if (!esPago) return null;
                 const statusRaw = String(metadata?.status || '').toUpperCase();
-                const esRechazado = statusRaw === 'DECLINED' || statusRaw === 'REJECTED' || statusRaw === 'ERROR' || String(notif.titulo || '').toLowerCase().includes('fallo') || String(notif.titulo || '').toLowerCase().includes('problema');
-                const monto = metadata?.amount ? Number(metadata.amount).toLocaleString('es-CO') : null;
-                const moneda = metadata?.currency || 'COP';
-                const bookingCode = metadata?.bookingCode || notif.referenceId || null;
+                const esRechazado = statusRaw === 'DECLINED' || statusRaw === 'REJECTED' || statusRaw === 'ERROR' || String(notif.titulo || '').toLowerCase().includes('fallo') || String(notif.titulo || '').toLowerCase().includes('problema') || String(notif.titulo || '').toLowerCase().includes('rechazado');
+                
+                let monto = metadata?.amount ? Number(metadata.amount).toLocaleString('es-CO') : null;
+                let moneda = metadata?.currency || 'COP';
+                let bookingCode = metadata?.bookingCode || notif.referenceId || null;
+
+                if (!monto && notif.mensaje) {
+                  const mMatch = notif.mensaje.match(/(?:pago(?:\\s+de)?|transacci[oó]n(?:\\s+de)?)\\s+([\\d.,]+)\\s*([A-Z]{3})?/i);
+                  if (mMatch) {
+                    monto = Number(mMatch[1].replace(/,/g, '')).toLocaleString('es-CO');
+                    if (mMatch[2]) moneda = mMatch[2];
+                  }
+                }
+                if (!bookingCode && (notif.mensaje || notif.titulo)) {
+                  const cMatch = (notif.mensaje + ' ' + notif.titulo).match(/RES-\\d{4}-\\d+/i);
+                  if (cMatch) {
+                    bookingCode = cMatch[0].toUpperCase();
+                  }
+                }
 
                 return (
                   <div
                     style={{
                       marginTop: '16px',
-                      padding: '16px',
+                      padding: '18px',
                       borderRadius: '12px',
                       background: esRechazado ? 'rgba(239, 68, 68, 0.05)' : 'rgba(16, 185, 129, 0.05)',
-                      border: `1px solid ${esRechazado ? 'rgba(239, 68, 68, 0.2)' : 'rgba(16, 185, 129, 0.2)'}`,
+                      border: `1px solid ${esRechazado ? 'rgba(239, 68, 68, 0.25)' : 'rgba(16, 185, 129, 0.25)'}`,
                     }}
                   >
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px', flexWrap: 'wrap', gap: '8px' }}>
                       <span style={{ fontSize: '13px', fontWeight: 800, color: 'var(--texto-primary, #0f172a)' }}>
-                        Comprobante de Pago Oficial
+                        Comprobante de Transacción Oficial
                       </span>
                       <span
                         style={{
                           fontSize: '11px',
-                          fontWeight: 700,
-                          padding: '3px 8px',
-                          borderRadius: '6px',
+                          fontWeight: 800,
+                          padding: '4px 10px',
+                          borderRadius: '9999px',
                           background: esRechazado ? 'rgba(239, 68, 68, 0.15)' : 'rgba(16, 185, 129, 0.15)',
                           color: esRechazado ? '#b91c1c' : '#047857',
+                          border: `1px solid ${esRechazado ? 'rgba(239, 68, 68, 0.3)' : 'rgba(16, 185, 129, 0.3)'}`,
+                          letterSpacing: '0.3px',
                         }}
                       >
-                        {esRechazado ? 'Pago Rechazado' : 'Pago Exitoso (APROBADO)'}
+                        {esRechazado ? '✕ TRANSACCIÓN DECLINADA' : '✓ PAGO EXITOSO · APROBADO'}
                       </span>
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', fontSize: '12px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '12px', fontSize: '12px' }}>
                       {monto && (
                         <div>
-                          <span style={{ color: 'var(--texto-muted, #64748b)', display: 'block', fontSize: '11px' }}>Monto Pagado</span>
-                          <span style={{ fontWeight: 800, color: 'var(--texto-primary, #0f172a)' }}>$ {monto} {moneda}</span>
+                          <span style={{ color: 'var(--texto-muted, #64748b)', display: 'block', fontSize: '11px' }}>Monto de Transacción</span>
+                          <span style={{ fontWeight: 800, fontSize: '15px', color: 'var(--texto-primary, #0f172a)' }}>$ {monto} {moneda}</span>
                         </div>
                       )}
                       {bookingCode && (
                         <div>
                           <span style={{ color: 'var(--texto-muted, #64748b)', display: 'block', fontSize: '11px' }}>Código de Reserva</span>
-                          <span style={{ fontWeight: 800, color: 'var(--texto-primary, #0f172a)' }}>{bookingCode}</span>
+                          <span style={{ fontWeight: 800, fontSize: '13px', color: 'var(--texto-primary, #0f172a)' }}>{bookingCode}</span>
                         </div>
                       )}
+                      <div>
+                        <span style={{ color: 'var(--texto-muted, #64748b)', display: 'block', fontSize: '11px' }}>Pasarela de Pago</span>
+                        <span style={{ fontWeight: 600, color: 'var(--texto-primary, #0f172a)' }}>Wompi Colombia (Segura)</span>
+                      </div>
+                      <div>
+                        <span style={{ color: 'var(--texto-muted, #64748b)', display: 'block', fontSize: '11px' }}>Comercio</span>
+                        <span style={{ fontWeight: 600, color: 'var(--texto-primary, #0f172a)' }}>Drivique S.A.S.</span>
+                      </div>
+                    </div>
+
+                    <div
+                      style={{
+                        marginTop: '12px',
+                        paddingTop: '10px',
+                        borderTop: '1px dashed rgba(100, 116, 139, 0.2)',
+                        fontSize: '11.5px',
+                        color: 'var(--texto-muted, #475569)',
+                        lineHeight: 1.5,
+                      }}
+                    >
+                      {esRechazado
+                        ? 'Tu banco no autorizó la operación. No se realizó ningún cargo a tu cuenta. Puedes intentar de nuevo con otra tarjeta o PSE para asegurar tu vehículo.'
+                        : 'El pago ha sido acreditado exitosamente. Ya puedes continuar con la revisión y firma digital de tu contrato de alquiler para la entrega.'}
                     </div>
                   </div>
                 );
