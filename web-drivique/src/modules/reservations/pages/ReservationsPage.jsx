@@ -213,9 +213,50 @@ function ContratoVerCard({ reserva, contratoFirmado, reservaParaContrato, vehicu
   const tieneContratoFirmado = Boolean(contratoFirmado?.firmaUsuarioDataUrl)
   const [error, setError] = useState('')
   const usuario = useAuthStore(state => state.usuario)
+  const targetId = reserva.referencia || reserva.codigo || reserva.id
+
+  const irAContrato = (soloLectura = false) => {
+    navigate(`/contrato/${encodeURIComponent(targetId)}`, {
+      state: {
+        reserva: reservaParaContrato || reserva,
+        vehiculo: vehiculoParaContrato || reserva.vehiculo,
+        soloLectura
+      }
+    })
+  }
+
+  // Si el contrato aún NO ha sido firmado, mostrar directamente la acción para firmarlo
+  if (!tieneContratoFirmado) {
+    return (
+      <div className="contrato-card desbloqueada" style={{ border: '1.5px solid #3b82f6', background: 'linear-gradient(180deg, #eff6ff 0%, #ffffff 100%)', borderRadius: '16px', padding: '18px 20px', marginTop: '16px' }}>
+        <div className="contrato-subcard" style={{ textAlign: 'center' }}>
+          <div className="contrato-icon-wrap" style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#dbeafe', color: '#1d4ed8', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
+            <FaFileSignature size={22} />
+          </div>
+
+          <h3 className="contrato-card-titulo" style={{ fontSize: '16px', fontWeight: 800, color: '#1e3a8a', margin: '0 0 6px' }}>
+            {t('reservas.readyToSign', { defaultValue: 'Firma de Contrato Digital Pendiente' })}
+          </h3>
+
+          <p className="contrato-card-desc" style={{ fontSize: '13px', color: '#334155', margin: '0 0 16px', lineHeight: 1.5 }}>
+            {t('reservas.readyToSignDesc', { defaultValue: 'Tu pago ha sido confirmado con éxito. Procede a firmar digitalmente tu contrato para completar la reserva y acceder al documento protegido.' })}
+          </p>
+
+          <button
+            type="button"
+            onClick={() => irAContrato(false)}
+            className="contrato-action-btn activo"
+            style={{ width: '100%', padding: '12px 20px', background: 'linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%)', color: '#ffffff', borderRadius: '10px', fontWeight: 800, fontSize: '14px', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', boxShadow: '0 4px 12px rgba(37,99,235,0.25)' }}
+          >
+            <FaFileSignature size={15} />
+            <span>{t('reservas.signContractNow', { defaultValue: 'Proceder a Firmar Contrato' })}</span>
+          </button>
+        </div>
+      </div>
+    )
+  }
 
   const validar = () => {
-    if (!tieneContratoFirmado) return
     if (!clave || !clave.trim()) {
       setError(t('reservas.noIdentification', { defaultValue: 'Por favor ingresa tu número de identificación o clave.' }))
       return
@@ -239,34 +280,25 @@ function ContratoVerCard({ reserva, contratoFirmado, reservaParaContrato, vehicu
 
     if (coincideDoc || coincideUsuario || coincideRef || coincideContrato || esDuenio || clave.trim().length >= 3) {
       setError('')
-      const targetId = reserva.referencia || reserva.codigo || reserva.id
-      navigate(`/contrato/${encodeURIComponent(targetId)}`, {
-        state: {
-          reserva: reservaParaContrato || reserva,
-          vehiculo: vehiculoParaContrato || reserva.vehiculo,
-          soloLectura: true
-        }
-      })
+      irAContrato(true)
     } else {
       setError(t('reservas.wrongIdentification', { defaultValue: 'La clave ingresada no coincide.' }))
     }
   }
 
   return (
-    <div className={`contrato-card ${tieneContratoFirmado ? 'desbloqueada' : 'bloqueada'}`}>
+    <div className="contrato-card desbloqueada">
       <div className="contrato-subcard">
         <div className="contrato-icon-wrap">
           <FaLock size={22} />
         </div>
 
         <h3 className="contrato-card-titulo">
-          {t('reservas.contractProtected', { defaultValue: 'Contrato protegido' })}
+          {t('reservas.contractProtected', { defaultValue: 'Contrato firmado y protegido' })}
         </h3>
 
         <p className="contrato-card-desc">
-          {tieneContratoFirmado
-            ? t('reservas.enterIdToViewContract', { defaultValue: 'Ingresa tu clave para ver o descargar tu contrato en PDF.' })
-            : t('reservas.contractLockedExplanation', { defaultValue: 'Para desbloquear el contrato con tu clave, primero se debe confirmar el pago y completar la firma digital del contrato.' })}
+          {t('reservas.enterIdToViewContract', { defaultValue: 'Ingresa tu número de documento o clave para ver y descargar tu contrato oficial.' })}
         </p>
 
         <div className="contrato-card-form">
@@ -275,16 +307,14 @@ function ContratoVerCard({ reserva, contratoFirmado, reservaParaContrato, vehicu
               id="input-clave-contrato"
               type={mostrarClave ? 'text' : 'password'}
               value={clave}
-              disabled={!tieneContratoFirmado}
               onChange={(e) => { setClave(e.target.value); setError('') }}
               onKeyDown={(e) => e.key === 'Enter' && validar()}
-              placeholder={t('reservas.enterPasswordPlaceholder', { defaultValue: 'Ingrese su clave' })}
-              aria-label={t('reservas.enterPasswordPlaceholder', { defaultValue: 'Ingrese su clave' })}
+              placeholder={t('reservas.enterPasswordPlaceholder', { defaultValue: 'Ingrese su clave o documento' })}
+              aria-label={t('reservas.enterPasswordPlaceholder', { defaultValue: 'Ingrese su clave o documento' })}
               className="contrato-card-input"
             />
             <button
               type="button"
-              disabled={!tieneContratoFirmado}
               onClick={() => setMostrarClave(v => !v)}
               aria-label={mostrarClave ? t('reservas.hidePassword', { defaultValue: 'Ocultar clave' }) : t('reservas.showPassword', { defaultValue: 'Mostrar clave' })}
               className="contrato-eye-btn"
@@ -298,10 +328,9 @@ function ContratoVerCard({ reserva, contratoFirmado, reservaParaContrato, vehicu
           <button
             type="button"
             onClick={validar}
-            disabled={!tieneContratoFirmado}
-            className={`contrato-action-btn ${tieneContratoFirmado ? 'activo' : 'bloqueado'}`}
+            className="contrato-action-btn activo"
           >
-            <span>{t('reservas.viewContract', { defaultValue: 'Ver contrato' })}</span>
+            <span>{t('reservas.viewContract', { defaultValue: 'Ver y Descargar Contrato' })}</span>
           </button>
         </div>
       </div>
@@ -328,15 +357,22 @@ function Contrato({ reserva, autoDesbloquear = false, onDesbloquear }) {
   const reservaAlmacenada = useMemo(() => reservationService.obtenerPorReferencia(refBusqueda) || reservationService.obtenerPorReferencia(reserva.id), [refBusqueda, reserva.id])
 
   const tieneContratoFirmado = Boolean(contratoFirmado?.firmaUsuarioDataUrl)
+  const backendStatus = String(reserva.status || reserva.estadoRaw || '').toUpperCase()
   const rawEstado = reservaAlmacenada?.estado || reserva.estado || ''
   const estadoNorm = String(rawEstado).toLowerCase()
   const esConfirmada =
+    backendStatus === 'CONFIRMED' ||
+    backendStatus === 'ACTIVE' ||
+    backendStatus === 'COMPLETED' ||
     estadoNorm === 'confirmada' ||
+    estadoNorm === 'confirmed' ||
     estadoNorm === 'activa' ||
+    estadoNorm === 'active' ||
     estadoNorm === 'en_curso' ||
     estadoNorm === 'en curso' ||
     estadoNorm === 'finalizada' ||
     estadoNorm === 'completada' ||
+    estadoNorm === 'completed' ||
     estadoNorm === 'pagada' ||
     estadoNorm === 'pago_confirmado' ||
     reserva.pagoEstado === 'aprobado' ||
@@ -411,43 +447,13 @@ function Contrato({ reserva, autoDesbloquear = false, onDesbloquear }) {
   }, [reservaParaContrato, reserva, usuario])
 
   return (
-    <>
-      {esConfirmada && !tieneContratoFirmado && (
-        <div className="contrato-firmar-padre" style={{ marginBottom: '20px' }}>
-          <div className="contrato-firmar-subtarjeta">
-            <div className="contrato-firmar-icon-wrap">
-              <img
-                src={brand?.logoDataUrl || logo}
-                alt={brand?.name || 'Drivique'}
-                style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-              />
-            </div>
-            <h3 className="contrato-firmar-titulo">
-              {t('reservas.readyToSign', { defaultValue: 'Listo para firmar contrato' })}
-            </h3>
-            <p className="contrato-firmar-desc">
-              {t('reservas.readyToSignDesc', { defaultValue: 'Tu pago ha sido confirmado con éxito. Completa la firma digital de tu contrato para acceder al documento protegido.' })}
-            </p>
-            <button
-              type="button"
-              onClick={() => navigate(`/contrato/${encodeURIComponent(refBusqueda)}`, { state: { reserva: reservaParaContrato || reserva, vehiculo: vehiculoParaContrato || reserva.vehiculo } })}
-              className="contrato-firmar-btn"
-            >
-              <FaFileSignature size={15} />
-              <span>{t('reservas.signContractNow', { defaultValue: 'Firmar contrato' })}</span>
-            </button>
-          </div>
-        </div>
-      )}
-
-      <ContratoVerCard
-        reserva={reserva}
-        contratoFirmado={contratoFirmado}
-        reservaParaContrato={reservaParaContrato}
-        vehiculoParaContrato={vehiculoParaContrato}
-        identificacion={identificacion}
-      />
-    </>
+    <ContratoVerCard
+      reserva={reserva}
+      contratoFirmado={contratoFirmado}
+      reservaParaContrato={reservaParaContrato}
+      vehiculoParaContrato={vehiculoParaContrato}
+      identificacion={identificacion}
+    />
   )
 }
 
