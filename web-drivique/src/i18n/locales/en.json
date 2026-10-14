@@ -3224,6 +3224,12 @@
     },
     "statuses": {
       "pendiente": "Pending",
+      "pendiente_documentos": "Pending document review",
+      "pendiente_horario": "Awaiting branch opening",
+      "pendiente_efectivo": "Pending cash payment",
+      "PENDING_DOCUMENT_REVIEW": "Pending document review",
+      "PENDING_SCHEDULE": "Awaiting branch opening",
+      "PENDING_PAYMENT": "Pending payment",
       "confirmada": "Confirmed",
       "en_curso": "In progress",
       "finalizada": "Completed",

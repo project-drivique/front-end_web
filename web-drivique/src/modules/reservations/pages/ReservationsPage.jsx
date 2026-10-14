@@ -21,7 +21,20 @@ import { useBrand } from '@/contexts/BrandContext'
 import { showAlert } from '@/utils/swalConfig'
 import './ReservationsPage.css'
 
-const CLASES_ESTADO = Object.fromEntries(filtrosReservas.estados.map(({ valor, clase }) => [valor, clase]))
+const CLASES_ESTADO = {
+  ...Object.fromEntries(filtrosReservas.estados.map(({ valor, clase }) => [valor, clase])),
+  pendiente_documentos: 'estado-pendiente',
+  pendiente_horario: 'estado-pendiente',
+  pendiente_efectivo: 'estado-pendiente',
+  PENDING_DOCUMENT_REVIEW: 'estado-pendiente',
+  PENDING_SCHEDULE: 'estado-pendiente',
+  PENDING_PAYMENT: 'estado-pendiente',
+  CONFIRMED: 'estado-confirmada',
+  ACTIVE: 'estado-en-curso',
+  COMPLETED: 'estado-finalizada',
+  CANCELLED: 'estado-cancelada',
+  CANCELLED_TIMEOUT: 'estado-cancelada',
+}
 
 const coloresTema = (oscuro) => ({
   navBg: oscuro ? 'rgba(15,23,42,0.92)' : 'rgba(255,255,255,0.98)',
@@ -483,15 +496,27 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
     reserva.estadoDocumentos === 'RECHAZADO' ||
     reservaOriginal?.estadoDocumentos === 'RECHAZADO'
   )
-  const esPendienteValidacion = !esConfirmadaModal && !esDocumentosRechazados && (
+  const esPendienteHorario = !esConfirmadaModal && (
+    reserva.estado === 'PENDING_SCHEDULE' ||
+    reservaOriginal?.estado === 'PENDING_SCHEDULE' ||
+    reserva.estado === 'PENDIENTE_HORARIO' ||
+    reservaOriginal?.estado === 'PENDIENTE_HORARIO' ||
+    reserva.estado === 'pendiente_horario' ||
+    reservaOriginal?.estado === 'pendiente_horario'
+  )
+  const esPendienteValidacion = !esConfirmadaModal && !esPendienteHorario && !esDocumentosRechazados && (
     reserva.estado === 'PENDIENTE_VALIDACION' ||
     reservaOriginal?.estado === 'PENDIENTE_VALIDACION' ||
+    reserva.estado === 'PENDING_DOCUMENT_REVIEW' ||
+    reservaOriginal?.estado === 'PENDING_DOCUMENT_REVIEW' ||
+    reserva.estado === 'pendiente_documentos' ||
+    reservaOriginal?.estado === 'pendiente_documentos' ||
     reserva.estadoDocumentos === 'PENDIENTE' ||
     reservaOriginal?.estadoDocumentos === 'PENDIENTE'
   )
 
-  const esPendienteEfectivo = !esConfirmadaModal && !esPendienteValidacion && !esDocumentosRechazados && (reserva.estado === 'PENDIENTE_EFECTIVO' || reservaOriginal?.estado === 'PENDIENTE_EFECTIVO' || (esEfectivo && (estadoNormModal === 'pendiente' || !reserva.estado)))
-  const esPendienteWompi = !esEfectivo && !esConfirmadaModal && !esPendienteValidacion && !esDocumentosRechazados && (estadoNormModal === 'pendiente')
+  const esPendienteEfectivo = !esConfirmadaModal && !esPendienteValidacion && !esPendienteHorario && !esDocumentosRechazados && (reserva.estado === 'PENDIENTE_EFECTIVO' || reservaOriginal?.estado === 'PENDIENTE_EFECTIVO' || (esEfectivo && (estadoNormModal === 'pendiente' || !reserva.estado)))
+  const esPendienteWompi = !esEfectivo && !esConfirmadaModal && !esPendienteValidacion && !esPendienteHorario && !esDocumentosRechazados && (estadoNormModal === 'pendiente' || reserva.estado === 'PENDING_PAYMENT')
   const esWompiAprobado = !esEfectivo && esConfirmadaModal
 
   const sucursalPago = reservaOriginal?.reservaDetalles?.sucursalPagoEfectivo || reserva.vehiculo?.sucursal || ''
@@ -1222,6 +1247,26 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
                 </p>
               </div>
 
+            </div>
+          </div>
+        )}
+
+        {/* Tarjeta de Reserva en Espera de Horario de Atención */}
+        {esPendienteHorario && (
+          <div className="modal-wompi-card" style={{ borderColor: 'rgba(59, 130, 246, 0.4)', background: 'linear-gradient(180deg, rgba(239, 246, 255, 0.7) 0%, rgba(255, 255, 255, 1) 100%)' }}>
+            <div className="modal-wompi-subcard">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+                <FaClock style={{ fontSize: '24px', color: '#2563eb' }} />
+                <h3 className="modal-wompi-titulo" style={{ margin: 0, color: '#1d4ed8' }}>
+                  En Espera de Apertura de Sucursal
+                </h3>
+              </div>
+              <p className="modal-wompi-desc" style={{ color: '#1e3a8a' }}>
+                Tu reserva fue registrada fuera del horario de atención de la sucursal <strong>{reserva.sucursal || sucursalPago}</strong>. En cuanto la sede inicie su jornada de atención, recibirás una notificación automática por correo, web y push para proceder con el pago y confirmación de tu reserva.
+              </p>
+              <div style={{ padding: '10px 14px', background: '#dbeafe', borderRadius: '10px', fontSize: '13px', color: '#1e40af', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600 }}>
+                <FaClock /> Estado: Esperando apertura de sucursal
+              </div>
             </div>
           </div>
         )}

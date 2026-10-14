@@ -20,6 +20,7 @@ import {
   FaFilter,
   FaFileContract,
   FaShieldAlt,
+  FaArrowRight,
 } from 'react-icons/fa'
 import { useLanding } from '@/modules/landing/LandingContext'
 import { formatCurrency } from '@/utils/currencyUtils'
@@ -347,6 +348,43 @@ export default function NotificationsPage({ defaultTab }) {
                         )}
 
                         {mensaje && <p className="notif-mensaje">{mensaje}</p>}
+
+                        {n.metadata && (n.metadata.actionPath || n.metadata.actionUrl) && (
+                          <div style={{ marginTop: '10px' }}>
+                            <button
+                              type="button"
+                              className="btn-primario"
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                if (!n.leida && n.id) {
+                                  marcarLeida(n.id)
+                                }
+                                const targetUrl = n.metadata.actionPath || n.metadata.actionUrl
+                                if (targetUrl.startsWith('http')) {
+                                  window.location.href = targetUrl
+                                } else {
+                                  navigate(targetUrl)
+                                }
+                              }}
+                              style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '6px',
+                                padding: '6px 14px',
+                                fontSize: '12px',
+                                fontWeight: 700,
+                                borderRadius: '8px',
+                                background: 'var(--brand-primary, #2563eb)',
+                                color: '#ffffff',
+                                border: 'none',
+                                cursor: 'pointer',
+                              }}
+                            >
+                              <span>{n.metadata.actionLabel || 'Continuar con mi reserva'}</span>
+                              <FaArrowRight size={11} />
+                            </button>
+                          </div>
+                        )}
 
                         {chipVencimiento}
                       </div>
