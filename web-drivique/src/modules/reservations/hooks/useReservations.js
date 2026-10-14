@@ -5,14 +5,16 @@ import { catalogService } from '../../../services/catalogService'
 import { obtenerEstadoVisible } from '../utils/reservationStatus'
 
 const estadoReserva = (r) => {
-  if (r.estado) {
-    return obtenerEstadoVisible(r.estado)
+  const raw = r.status || r.estado || r.rawEstado
+  if (raw) {
+    const visible = obtenerEstadoVisible(raw)
+    if (visible) return visible
   }
   const hoy = new Date().toISOString().split('T')[0]
-  const inicio = r.fechaInicio || r.reservaDetalles?.fechaInicio
-  const fin = r.fechaFin || r.reservaDetalles?.fechaFin
-  if (fin < hoy) return 'finalizada'
-  if (inicio <= hoy && hoy <= fin) return 'en_curso'
+  const inicio = (r.pickupDate || r.fechaInicio || r.reservaDetalles?.fechaInicio || '').slice(0, 10)
+  const fin = (r.returnDate || r.fechaFin || r.reservaDetalles?.fechaFin || '').slice(0, 10)
+  if (fin && fin < hoy) return 'finalizada'
+  if (inicio && fin && inicio <= hoy && hoy <= fin) return 'en_curso'
   return 'confirmada'
 }
 
@@ -29,20 +31,43 @@ export function useHistorialReservas() {
       const data = await reservationsService.getReservas()
       const conVehiculo = await Promise.all(
         (data || []).map(async (r) => {
-          const vehiculo = r.vehiculoId ? await catalogService.getVehiculoById(r.vehiculoId).catch(() => null) : null
-          const fechaInicio = r.fechaInicio || r.reservaDetalles?.fechaInicio
-          const fechaFin = r.fechaFin || r.reservaDetalles?.fechaFin
-          const estadoFinal = estadoReserva(r)
+          const vehiculoId = r.vehicleId || r.vehiculoId
+          const vehiculoCatalog = vehiculoId ? await catalogService.getVehiculoById(vehiculoId).catch(() => null) : null
+          const fechaInicio = r.pickupDate || r.fechaInicio || r.reservaDetalles?.fechaInicio
+          const fechaFin = r.returnDate || r.fechaFin || r.reservaDetalles?.fechaFin
+          const rawStatus = r.status || r.estado
+          const estadoFinal = estadoReserva({ ...r, estado: rawStatus, fechaInicio, fechaFin })
+          const totalVal = r.totalEstimated != null ? Number(r.totalEstimated) : (r.total != null ? Number(r.total) : (r.totalCOP != null ? Number(r.totalCOP) : 0))
+          const refCode = r.code || r.codigo || r.referencia || r.id
+
           let eligibility = null
           if (estadoFinal === 'finalizada') {
              eligibility = await reservationsService.checkReviewEligibility(r.id)
           }
+
+          const vehiculoFinal = vehiculoCatalog || r.vehiculo || (r.vehicleModel ? {
+            id: vehiculoId,
+            nombre: r.vehicleModel,
+            marca: r.vehicleModel,
+            placa: r.vehiclePlate,
+            sucursal: r.sucursal || '',
+          } : null)
+
           return {
             ...r,
+            id: r.id,
+            codigo: refCode,
+            referencia: refCode,
+            total: totalVal,
+            totalCOP: totalVal,
+            totalEstimated: totalVal,
             fechaInicio,
             fechaFin,
-            vehiculo: vehiculo || r.vehiculo || null,
-            estadoRaw: r.estado || null,
+            horaInicio: fechaInicio && fechaInicio.includes('T') ? fechaInicio.split('T')[1].slice(0, 5) : (r.horaInicio || '08:00'),
+            horaFin: fechaFin && fechaFin.includes('T') ? fechaFin.split('T')[1].slice(0, 5) : (r.horaFin || '18:00'),
+            vehiculo: vehiculoFinal,
+            estadoRaw: rawStatus || null,
+            status: rawStatus,
             estado: estadoFinal,
             eligibility
           }

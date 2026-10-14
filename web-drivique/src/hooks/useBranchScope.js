@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { useAuthStore } from '../store/authStore'
+import { hasMatchingBranch } from '../services/accessAuditService'
 
 /**
  * Custom Hook: useBranchScope (Patrón Custom Hook)
@@ -21,7 +22,7 @@ export function useBranchScope() {
 
   const assignedBranch = useMemo(() => {
     if (!user) return ''
-    return user.sucursalId || user.sucursal || user.sucursalAsignada || ''
+    return user.sucursalAsignada || user.branchName || user.sucursal || user.sucursalId || ''
   }, [user])
 
   const branchKey = useMemo(() => {
@@ -34,13 +35,13 @@ export function useBranchScope() {
    * @param {Function} getBranchFromItem Función extractora del identificador/nombre de sucursal
    */
   const filterByBranchScope = (items, getBranchFromItem) => {
-    if (!isBranchManager || !branchKey || !Array.isArray(items)) return items
+    if (!isBranchManager || !assignedBranch || !Array.isArray(items)) return items
     return items.filter((item) => {
       const itemBranch = getBranchFromItem
         ? getBranchFromItem(item)
         : item.sucursalId || item.sucursal || item.sucursalNombre || ''
       if (!itemBranch) return false
-      return String(itemBranch).trim().toLowerCase() === branchKey
+      return hasMatchingBranch(itemBranch, assignedBranch) || String(itemBranch).trim().toLowerCase() === branchKey
     })
   }
 

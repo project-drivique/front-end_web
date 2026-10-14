@@ -292,13 +292,8 @@ export const reservationService = {
     try {
       const data = localStorage.getItem(STORAGE_KEY);
       let reservas = data ? JSON.parse(data) : [];
-      // Force exactly 5 reservations if we have more
-      if (reservas.length > 5) {
-        reservas = INITIAL_RESERVATIONS_SEED;
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(reservas));
-      }
       if (!Array.isArray(reservas) || reservas.length === 0) {
-        reservas = INITIAL_RESERVATIONS_SEED;
+        reservas = [...INITIAL_RESERVATIONS_SEED];
         localStorage.setItem(STORAGE_KEY, JSON.stringify(reservas));
       } else {
         // Asegurar que las reservas clave estén presentes
@@ -343,12 +338,16 @@ export const reservationService = {
     const reservas = reservationService.getReservas();
     const ahoraIso = new Date().toISOString();
 
-    const esEfectivo = reserva.reservaDetalles?.metodoPago === 'efectivo';
+    const esEfectivo = reserva.reservaDetalles?.metodoPago === 'efectivo' || reserva.metodoPago === 'efectivo';
     let pagoProps = {};
+    if (reserva.estado) {
+      pagoProps.estado = reserva.estado;
+    }
     if (esEfectivo) {
        const limite = calcularFechaLimitePago(reserva.fechaInicio, reserva.horaInicio);
        pagoProps = {
-         estado: 'PENDIENTE_EFECTIVO',
+         ...pagoProps,
+         estado: reserva.estado || 'PENDIENTE_EFECTIVO',
          fechaLimitePago: limite.fechaLimite,
          horasLimitePago: limite.horasLimite
        };
@@ -361,7 +360,12 @@ export const reservationService = {
       ...pagoProps
     };
 
-    reservas.push(reservaFinal);
+    const idx = reservas.findIndex(r => (reservaFinal.id && r.id === reservaFinal.id) || (reservaFinal.referencia && r.referencia === reservaFinal.referencia));
+    if (idx >= 0) {
+      reservas[idx] = reservaFinal;
+    } else {
+      reservas.push(reservaFinal);
+    }
     localStorage.setItem(STORAGE_KEY, JSON.stringify(reservas));
     return reservaFinal;
   },

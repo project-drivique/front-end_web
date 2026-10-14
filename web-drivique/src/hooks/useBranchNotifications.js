@@ -15,10 +15,40 @@ import {
 const NotificationFactory = {
   createDeliveryNotifications(deliveries = [], t) {
     return deliveries.map((item, idx) => {
+      const isDocReview = String(item.estado || '').toUpperCase().includes('DOCUMENT')
+      const isPendingSchedule = String(item.estado || '').toUpperCase().includes('SCHEDULE')
       const isDone = ['CONFIRMADA', 'COMPLETADA', 'ENTREGADA', 'completada'].includes(
         String(item.estado || '').toUpperCase()
       )
       const resCode = item.codigo || item.id || `RES-${8820 + idx}`
+
+      if (isDocReview || isPendingSchedule) {
+        return {
+          id: `deliv-${resCode}`,
+          type: 'pendingDocument',
+          category: 'attention',
+          categoryLabel: isDocReview ? t('notifications.docReview', 'Revisión de Documentos') : t('notifications.pendingSchedule', 'Reserva Registrada'),
+          icon: FaIdCard,
+          iconColor: '#d97706',
+          iconBg: '#fffbeb',
+          accentBorder: '#d97706',
+          badgeBg: 'rgba(217, 119, 6, 0.1)',
+          badgeColor: '#b45309',
+          codigo: resCode,
+          text: `Nueva Reserva #${resCode}: ${item.clienteNombre}`,
+          detail: `Vehículo ${item.vehiculoNombre} (${t('notifications.plate', 'Placa')}: ${item.vehiculoPlaca || 'Asignada'}). Requiere validación de documentos por el encargado.`,
+          time: `${t('notifications.today', 'Hoy')} · ${item.hora || 'Prioritario'}`,
+          isRead: false,
+          route: '/encargado/documents',
+          navigationState: {
+            search: resCode,
+            openCodigo: resCode,
+            autoOpen: true,
+          },
+          actionLabel: t('notifications.validateDocs', 'Validar documentos'),
+        }
+      }
+
       return {
         id: `deliv-${resCode}`,
         type: 'delivery',
@@ -82,8 +112,34 @@ const NotificationFactory = {
   createAttentionAlerts(attentionNeeded = {}, t) {
     const alerts = []
 
-    // 1. Validación de Documentos
-    if (attentionNeeded.pendingDocuments > 0) {
+    // 1. Expedientes individuales de documentos si existen
+    if (Array.isArray(attentionNeeded.pendingDocsList) && attentionNeeded.pendingDocsList.length > 0) {
+      attentionNeeded.pendingDocsList.forEach((docItem) => {
+        const code = docItem.reservaCodigo || docItem.id
+        alerts.push({
+          id: `doc-alert-${code}-${docItem.id}`,
+          type: 'pendingDocument',
+          category: 'attention',
+          categoryLabel: t('notifications.validationRequired', 'Validación Requerida'),
+          icon: FaIdCard,
+          iconColor: '#d97706',
+          iconBg: '#fffbeb',
+          accentBorder: '#d97706',
+          badgeBg: 'rgba(217, 119, 6, 0.1)',
+          badgeColor: '#b45309',
+          codigo: code,
+          text: `Validar Documentos: ${docItem.clienteNombre} (${code})`,
+          detail: `Vehículo: ${docItem.vehiculoNombre}. Cédula y Licencia en espera de verificación para entrega.`,
+          time: t('notifications.priority', 'Prioritario'),
+          isRead: false,
+          route: '/encargado/documents',
+          navigationState: {
+            search: code,
+          },
+          actionLabel: t('notifications.validateDocs', 'Validar documentos'),
+        })
+      })
+    } else if (attentionNeeded.pendingDocuments > 0) {
       alerts.push({
         id: 'doc-verification-alert',
         type: 'pendingDocument',

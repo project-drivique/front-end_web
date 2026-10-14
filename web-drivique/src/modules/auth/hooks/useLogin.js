@@ -84,6 +84,7 @@ export function useLogin() {
         nombre: datos.nombre,
         apellido: datos.apellido,
         rol: datos.rol,
+        roles: datos.roles || [],
         telefono: datos.telefono,
         cedula: datos.cedula,
         fechaNacimiento: datos.fechaNacimiento,
@@ -98,9 +99,15 @@ export function useLogin() {
 
       setTimeout(() => {
         const redirect = searchParams.get('redirect')
-        const destino = redirect?.startsWith('/') && !redirect.startsWith('//')
-          ? redirect
-          : getRoleHome(datos.rol)
+        const isManagement = datos.rol === 'encargado_sucursal' ||
+          datos.rol === 'administrador' ||
+          datos.rol === 'admin' ||
+          datos.rol === 'branch_manager' ||
+          (Array.isArray(datos.roles) && (datos.roles.includes('BRANCH_ADMIN') || datos.roles.includes('SUPER_ADMIN') || datos.roles.includes('ADMIN')))
+
+        const destino = isManagement
+          ? (redirect?.startsWith('/admin') || redirect?.startsWith('/encargado') ? redirect : getRoleHome(datos.rol))
+          : (redirect?.startsWith('/') && !redirect.startsWith('//') ? redirect : getRoleHome(datos.rol))
         navigate(destino, { replace: true })
       }, 1000)
     } catch (error) {

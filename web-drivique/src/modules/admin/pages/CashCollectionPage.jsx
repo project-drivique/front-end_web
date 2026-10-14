@@ -1,4 +1,4 @@
-﻿import { useState, useMemo, useEffect, useCallback } from 'react'
+import { useState, useMemo, useEffect, useCallback } from 'react'
 import html2canvas from 'html2canvas'
 import { useTranslation } from 'react-i18next'
 import {
@@ -446,7 +446,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
       } else if (newStatus === 'pendiente' && currentState) {
         reservationManagementService.update(id, { pagoEstado: 'pendiente', metodoPagoConfirmado: false, fechaPagoConfirmado: null }, user)
       }
-      setTodasLasReservas(reservationManagementService.list())
+      setTodasLasReservas(reservationManagementService.list(user))
       showAlert({ icon: 'success', title: 'Estado actualizado', text: `Estado de pago cambiado a ${newStatus}.` })
     } catch (e) {
       console.error(e)
@@ -529,7 +529,12 @@ export default function CashCollectionPage({ branchOnly = false }) {
                   </div>
                   <div className="branch-user-info-text">
                     <strong className="branch-user-name">
-                      {[user?.nombre, user?.apellido].filter(Boolean).join(' ') || user?.correo || 'Usuario'}
+                      {(() => {
+                        const nom = (user?.nombre || '').trim()
+                        const ape = (user?.apellido || '').trim()
+                        if (nom && ape && !nom.toLowerCase().includes(ape.toLowerCase())) return `${nom} ${ape}`
+                        return nom || ape || user?.correo || 'Usuario'
+                      })()}
                     </strong>
                     <span className="branch-user-role">
                       {user?.rol || 'encargado_sucursal'}
@@ -586,7 +591,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
           <section className="cities-card">
             <div className="cash-toolbar-container">
               {/* FILA 1: Buscador, Filtro Estado y Selector Sucursal */}
-              <div className="cash-toolbar-row1" style={{ flexWrap: 'nowrap', gap: '8px', alignItems: 'center', width: '100%' }}>
+              <div className="cash-toolbar-row1" style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center', width: '100%', boxSizing: 'border-box' }}>
 
                 {/* Input referencia */}
                 <div style={{ display: 'flex', alignItems: 'center', background: 'var(--city-card, #fff)', border: '1px solid var(--city-border, #e2e8f0)', borderRadius: '8px', padding: '0 8px', height: '36px', minWidth: '160px' }}>
@@ -664,8 +669,8 @@ export default function CashCollectionPage({ branchOnly = false }) {
                   style={{ height: '36px', padding: '0 8px', border: '1px solid #e2e8f0', borderRadius: '8px', fontSize: '13px', background: '#fff', color: '#374151', width: '140px', flexShrink: 0 }}
                 />
 
-                {/* Botones exportación â†’ empujados al extremo derecho */}
-                <div style={{ marginLeft: 'auto', display: 'flex', gap: '8px', flexShrink: 0 }}>
+                {/* Botones exportación */}
+                <div style={{ marginLeft: 'auto', display: 'flex', gap: '8px', flexWrap: 'wrap', flexShrink: 0 }}>
                   <button
                     type="button"
                     className="cash-exp-btn excel"
