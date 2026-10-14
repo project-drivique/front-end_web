@@ -24,21 +24,43 @@ export const PERMISSIONS = Object.freeze({
   BRANCH_PANEL: accessConfig.permissions.branchPanel,
 })
 
-export function getRoleHome(role) {
-  if (!role) return '/home'
-  const normalized = String(role).toUpperCase()
-  if (normalized === 'SUPER_ADMIN' || normalized === 'ADMIN' || role === 'administrador') {
+export function getRoleHome(roleOrUser) {
+  if (!roleOrUser) return '/home'
+
+  let role = roleOrUser
+  let roles = []
+
+  if (typeof roleOrUser === 'object') {
+    roles = Array.isArray(roleOrUser.roles) ? roleOrUser.roles : []
+    role = roleOrUser.rol || roles[0] || ''
+  }
+
+  const normalized = String(role || '').toUpperCase()
+  const normalizedRoles = roles.map((r) => String(r).toUpperCase())
+
+  if (
+    normalized === 'SUPER_ADMIN' ||
+    normalized === 'ADMIN' ||
+    role === 'administrador' ||
+    normalizedRoles.includes('SUPER_ADMIN') ||
+    normalizedRoles.includes('ADMIN')
+  ) {
     return '/admin'
   }
+
   if (
     normalized === 'BRANCH_ADMIN' ||
     normalized === 'EMPLOYEE' ||
     normalized === 'BRANCH_MANAGER' ||
     role === 'encargado_sucursal' ||
-    role === 'encargado'
+    role === 'encargado' ||
+    normalizedRoles.includes('BRANCH_ADMIN') ||
+    normalizedRoles.includes('BRANCH_MANAGER') ||
+    normalizedRoles.includes('EMPLOYEE')
   ) {
     return '/encargado'
   }
+
   return accessConfig.destinations[role] || '/home'
 }
 

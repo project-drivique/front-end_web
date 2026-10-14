@@ -327,13 +327,13 @@ export function useBranchDashboard(user) {
     const occupancyRate = Math.round((rentedVehicles / totalVehicles) * 100)
 
     const docs = documentVerificationService.list(user) || []
-    const pendingDocs = docs.filter((d) => d.estado === 'pendiente').length || 2
+    const pendingDocs = docs.filter((d) => d.estado === 'pendiente').length
 
     const incidents = incidentManagementService.listForUser(user) || []
     const openIncidents =
       incidents.filter((i) =>
         ['recibido', 'en_revision', 'en_reparacion'].includes(String(i.estado || '').toLowerCase())
-      ).length || 1
+      ).length
 
     const reservations = reservationManagementService.list(user) || []
     const pendingPayments = reservations.filter(
@@ -344,9 +344,41 @@ export function useBranchDashboard(user) {
     ).length
 
     const summary = adminDashboardService.getSummary(user) || {}
-    const todaySched = MOCK_SCHEDULE_BY_DATE['2026-09-25']
-    const todayDeliveriesList = todaySched.deliveries
-    const todayReturnsList = todaySched.returns
+
+    // Derivar entregas y devoluciones de las reservas reales de la sucursal
+    const realDeliveries = reservations
+      .filter((r) => !['cancelada', 'cancelada_por_tiempo'].includes(String(r.estado || '').toLowerCase()))
+      .map((r) => ({
+        id: r.id || r.codigo,
+        codigo: r.codigo || r.referencia || r.id,
+        hora: r.horaInicio || '10:00 AM',
+        clienteNombre: r.clienteNombre || r.datosForm?.nombre || 'Cliente',
+        clienteTelefono: r.clienteTelefono || r.datosForm?.celular || '+57 300 000 0000',
+        vehiculoNombre: r.vehiculoNombre || r.vehiculo?.nombre || 'Vehículo',
+        vehiculoPlaca: r.vehiculoPlaca || r.vehiculo?.placa || 'Asignada',
+        vehiculoCategoria: r.vehiculo?.categoria || 'Sedán',
+        estado: (r.estado || 'CONFIRMADA').toUpperCase(),
+        sucursal: r.sucursal || branchName,
+      }))
+
+    const realReturns = reservations
+      .filter((r) => ['en_curso', 'activa', 'confirmada'].includes(String(r.estado || '').toLowerCase()))
+      .map((r) => ({
+        id: `ret-${r.id || r.codigo}`,
+        codigo: r.codigo || r.referencia || r.id,
+        hora: r.horaFin || '18:00 PM',
+        clienteNombre: r.clienteNombre || r.datosForm?.nombre || 'Cliente',
+        clienteTelefono: r.clienteTelefono || r.datosForm?.celular || '+57 300 000 0000',
+        vehiculoNombre: r.vehiculoNombre || r.vehiculo?.nombre || 'Vehículo',
+        vehiculoPlaca: r.vehiculoPlaca || r.vehiculo?.placa || 'Asignada',
+        vehiculoCategoria: r.vehiculo?.categoria || 'Sedán',
+        estado: 'PENDIENTE',
+        sucursal: r.sucursal || branchName,
+      }))
+
+    const fallbackSched = MOCK_SCHEDULE_BY_DATE['2026-09-25'] || { deliveries: [], returns: [] }
+    const todayDeliveriesList = realDeliveries.length > 0 ? realDeliveries : (fallbackSched.deliveries || [])
+    const todayReturnsList = realReturns.length > 0 ? realReturns : (fallbackSched.returns || [])
 
     const deliveriesCompleted = todayDeliveriesList.filter((d) =>
       ['CONFIRMADA', 'COMPLETADA', 'ENTREGADA', 'completada', 'confirmada'].includes(
@@ -363,7 +395,7 @@ export function useBranchDashboard(user) {
     const returnsPending = Math.max(0, todayReturnsList.length - returnsReceived)
 
     const weeklyActivity = adminDashboardService.getWeeklyActivity(user) || []
-    const expiringVehicleDocs = 1
+    const expiringVehicleDocs = 0
 
     setData({
       branchName,
@@ -396,6 +428,25 @@ export function useBranchDashboard(user) {
           expiringVehicleDocs === 0,
       },
     })
+
+    // Sincronizar documentos pendientes reales del backend en segundo plano
+    documentVerificationService.listarPendientesBackend().then((backendDocs) => {
+      if (Array.isArray(backendDocs) && backendDocs.length > 0) {
+        setData((prev) => {
+          if (!prev) return prev
+          return {
+            ...prev,
+            attentionNeeded: {
+              ...prev.attentionNeeded,
+              pendingDocuments: backendDocs.length,
+              pendingDocsList: backendDocs,
+              allClear: false,
+            },
+          }
+        })
+      }
+    }).catch(() => {})
+
     setLastSync(new Date())
     setLoading(false)
   }, [user])

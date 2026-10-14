@@ -24,6 +24,7 @@ import { useAuthStore } from "../../../store/authStore";
 import { ROLES } from "../../auth/utils/accessControl";
 import { branchManagementService } from "../../../services/branchManagementService";
 import { branchCategoryService } from "../../../services/branchCategoryService";
+import { hasMatchingBranch } from "../../../services/accessAuditService";
 import {
   getPicoYPlacaInfo,
   VEHICLE_STATES,
@@ -96,7 +97,7 @@ export default function VehicleManagementPage() {
 
   // Sucursal asignada para el encargado
   const sucursalAsignada =
-    user?.sucursal || user?.sucursalId || user?.sucursalAsignada || "Alamo Bogotá - Aeropuerto";
+    user?.sucursalAsignada || user?.branchName || user?.sucursal || user?.sucursalId || "";
   const assignedBranchKey = normalizeBranch(sucursalAsignada);
 
   // Pestañas activas: Encargado inicia en 'vehiculos' (o 'flotas'); Admin en 'sede_central'
@@ -135,7 +136,7 @@ export default function VehicleManagementPage() {
     const term = search.trim().toLocaleLowerCase();
     return vehicles
       .filter((vehicle) => {
-        if (esEncargado && normalizeBranch(vehicle.sucursal) !== assignedBranchKey) return false;
+        if (esEncargado && (!sucursalAsignada || !hasMatchingBranch(vehicle.sucursal, sucursalAsignada))) return false;
 
         const matchBranchFilter =
           esEncargado || branchFilter === "all" || vehicle.sucursal === branchFilter;
@@ -355,7 +356,7 @@ export default function VehicleManagementPage() {
   };
 
   const openEdit = (vehicle) => {
-    if (esEncargado && normalizeBranch(vehicle.sucursal) !== assignedBranchKey) return;
+    if (esEncargado && (!sucursalAsignada || !hasMatchingBranch(vehicle.sucursal, sucursalAsignada))) return;
     setForm({
       ...vehicle,
       estadoFlota: vehicle.estadoFlota,
@@ -595,17 +596,22 @@ export default function VehicleManagementPage() {
 
             <div className="branch-topbar-actions">
               <MenuConfiguracion />
-              {esEncargado && (
+              {user && (
                 <div className="branch-user-profile-chip">
                   <div className="branch-user-avatar">
                     {(user?.nombre || user?.correo || "A").charAt(0).toUpperCase()}
                   </div>
                   <div className="branch-user-info-text">
                     <strong className="branch-user-name">
-                      {user?.nombre || "Andrés Felipe Castro"}
+                      {(() => {
+                        const nom = (user?.nombre || '').trim()
+                        const ape = (user?.apellido || '').trim()
+                        if (nom && ape && !nom.toLowerCase().includes(ape.toLowerCase())) return `${nom} ${ape}`
+                        return nom || ape || user?.correo || 'Usuario'
+                      })()}
                     </strong>
                     <span className="branch-user-role">
-                      {user?.rol || "encargado_sucursal"}
+                      {user?.rol || "administrador"}
                     </span>
                   </div>
                 </div>

@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState, useRef, useLayoutEffect } from 'react'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '../../../store/authStore'
 import { useLanding } from '../../landing/LandingContext'
+import { getRoleHome } from '../../auth/utils/accessControl'
 import { useCatalogo } from '../hooks/useCatalog'
 import { useFavoritos } from '../hooks/useFavorites'
 import { FaSlidersH, FaCalendarAlt } from 'react-icons/fa'
@@ -72,8 +73,21 @@ const coloresTema = (esModoOscuro) => ({
 })
 
 export default function CatalogoUsuarioPage() {
+  const navigate = useNavigate()
   const { t } = useTranslation()
   const { usuario } = useAuthStore()
+
+  useEffect(() => {
+    const isMgmt = usuario?.rol === 'encargado_sucursal' ||
+      usuario?.rol === 'administrador' ||
+      usuario?.rol === 'admin' ||
+      usuario?.rol === 'branch_manager' ||
+      (Array.isArray(usuario?.roles) && (usuario.roles.includes('BRANCH_ADMIN') || usuario.roles.includes('SUPER_ADMIN') || usuario.roles.includes('ADMIN')))
+    if (isMgmt || (usuario?.rol && usuario?.rol !== 'usuario' && usuario?.rol !== 'cliente')) {
+      navigate(getRoleHome(usuario), { replace: true })
+    }
+  }, [usuario, navigate])
+
   const { tema } = useLanding()
   const esModoOscuro = tema === 'oscuro'
   const c = coloresTema(esModoOscuro)

@@ -14,10 +14,12 @@ export function useRegistration() {
       setExito(true)
       return respuesta
     } catch (err) {
-      const msg = err?.response?.data?.mensaje
+      const msg = err?.response?.data?.detail
+        || err?.response?.data?.mensaje
         || err?.response?.data?.message
-        || err?.message
-        || 'No se pudo completar el registro. Intente nuevamente.'
+        || (err?.response?.status === 409
+            ? 'El correo ya se encuentra registrado. Inicia sesión o recupera tu contraseña.'
+            : (err?.message || 'No se pudo completar el registro. Intente nuevamente.'))
       setError(msg)
       return null
     } finally {
