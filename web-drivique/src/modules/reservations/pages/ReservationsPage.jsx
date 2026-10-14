@@ -21,7 +21,22 @@ import { useBrand } from '@/contexts/BrandContext'
 import { showAlert } from '@/utils/swalConfig'
 import './ReservationsPage.css'
 
-const CLASES_ESTADO = Object.fromEntries(filtrosReservas.estados.map(({ valor, clase }) => [valor, clase]))
+const CLASES_ESTADO = {
+  ...Object.fromEntries(filtrosReservas.estados.map(({ valor, clase }) => [valor, clase])),
+  pendiente_pago: 'estado-pendiente-pago',
+  pending_payment: 'estado-pendiente-pago',
+  PENDING_PAYMENT: 'estado-pendiente-pago',
+  pendiente_documentos: 'estado-pendiente',
+  pendiente_horario: 'estado-pendiente',
+  pendiente_efectivo: 'estado-pendiente',
+  PENDING_DOCUMENT_REVIEW: 'estado-pendiente',
+  PENDING_SCHEDULE: 'estado-pendiente',
+  CONFIRMED: 'estado-confirmada',
+  ACTIVE: 'estado-en-curso',
+  COMPLETED: 'estado-finalizada',
+  CANCELLED: 'estado-cancelada',
+  CANCELLED_TIMEOUT: 'estado-cancelada',
+}
 
 const coloresTema = (oscuro) => ({
   navBg: oscuro ? 'rgba(15,23,42,0.92)' : 'rgba(255,255,255,0.98)',
@@ -198,9 +213,50 @@ function ContratoVerCard({ reserva, contratoFirmado, reservaParaContrato, vehicu
   const tieneContratoFirmado = Boolean(contratoFirmado?.firmaUsuarioDataUrl)
   const [error, setError] = useState('')
   const usuario = useAuthStore(state => state.usuario)
+  const targetId = reserva.referencia || reserva.codigo || reserva.id
+
+  const irAContrato = (soloLectura = false) => {
+    navigate(`/contrato/${encodeURIComponent(targetId)}`, {
+      state: {
+        reserva: reservaParaContrato || reserva,
+        vehiculo: vehiculoParaContrato || reserva.vehiculo,
+        soloLectura
+      }
+    })
+  }
+
+  // Si el contrato aún NO ha sido firmado, mostrar directamente la acción para firmarlo
+  if (!tieneContratoFirmado) {
+    return (
+      <div className="contrato-card desbloqueada" style={{ border: '1.5px solid #3b82f6', background: 'linear-gradient(180deg, #eff6ff 0%, #ffffff 100%)', borderRadius: '16px', padding: '18px 20px', marginTop: '16px' }}>
+        <div className="contrato-subcard" style={{ textAlign: 'center' }}>
+          <div className="contrato-icon-wrap" style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#dbeafe', color: '#1d4ed8', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
+            <FaFileSignature size={22} />
+          </div>
+
+          <h3 className="contrato-card-titulo" style={{ fontSize: '16px', fontWeight: 800, color: '#1e3a8a', margin: '0 0 6px' }}>
+            {t('reservas.readyToSign', { defaultValue: 'Firma de Contrato Digital Pendiente' })}
+          </h3>
+
+          <p className="contrato-card-desc" style={{ fontSize: '13px', color: '#334155', margin: '0 0 16px', lineHeight: 1.5 }}>
+            {t('reservas.readyToSignDesc', { defaultValue: 'Tu pago ha sido confirmado con éxito. Procede a firmar digitalmente tu contrato para completar la reserva y acceder al documento protegido.' })}
+          </p>
+
+          <button
+            type="button"
+            onClick={() => irAContrato(false)}
+            className="contrato-action-btn activo"
+            style={{ width: '100%', padding: '12px 20px', background: 'linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%)', color: '#ffffff', borderRadius: '10px', fontWeight: 800, fontSize: '14px', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', boxShadow: '0 4px 12px rgba(37,99,235,0.25)' }}
+          >
+            <FaFileSignature size={15} />
+            <span>{t('reservas.signContractNow', { defaultValue: 'Proceder a Firmar Contrato' })}</span>
+          </button>
+        </div>
+      </div>
+    )
+  }
 
   const validar = () => {
-    if (!tieneContratoFirmado) return
     if (!clave || !clave.trim()) {
       setError(t('reservas.noIdentification', { defaultValue: 'Por favor ingresa tu número de identificación o clave.' }))
       return
@@ -224,34 +280,25 @@ function ContratoVerCard({ reserva, contratoFirmado, reservaParaContrato, vehicu
 
     if (coincideDoc || coincideUsuario || coincideRef || coincideContrato || esDuenio || clave.trim().length >= 3) {
       setError('')
-      const targetId = reserva.referencia || reserva.codigo || reserva.id
-      navigate(`/contrato/${encodeURIComponent(targetId)}`, {
-        state: {
-          reserva: reservaParaContrato || reserva,
-          vehiculo: vehiculoParaContrato || reserva.vehiculo,
-          soloLectura: true
-        }
-      })
+      irAContrato(true)
     } else {
       setError(t('reservas.wrongIdentification', { defaultValue: 'La clave ingresada no coincide.' }))
     }
   }
 
   return (
-    <div className={`contrato-card ${tieneContratoFirmado ? 'desbloqueada' : 'bloqueada'}`}>
+    <div className="contrato-card desbloqueada">
       <div className="contrato-subcard">
         <div className="contrato-icon-wrap">
           <FaLock size={22} />
         </div>
 
         <h3 className="contrato-card-titulo">
-          {t('reservas.contractProtected', { defaultValue: 'Contrato protegido' })}
+          {t('reservas.contractProtected', { defaultValue: 'Contrato firmado y protegido' })}
         </h3>
 
         <p className="contrato-card-desc">
-          {tieneContratoFirmado
-            ? t('reservas.enterIdToViewContract', { defaultValue: 'Ingresa tu clave para ver o descargar tu contrato en PDF.' })
-            : t('reservas.contractLockedExplanation', { defaultValue: 'Para desbloquear el contrato con tu clave, primero se debe confirmar el pago y completar la firma digital del contrato.' })}
+          {t('reservas.enterIdToViewContract', { defaultValue: 'Ingresa tu número de documento o clave para ver y descargar tu contrato oficial.' })}
         </p>
 
         <div className="contrato-card-form">
@@ -260,16 +307,14 @@ function ContratoVerCard({ reserva, contratoFirmado, reservaParaContrato, vehicu
               id="input-clave-contrato"
               type={mostrarClave ? 'text' : 'password'}
               value={clave}
-              disabled={!tieneContratoFirmado}
               onChange={(e) => { setClave(e.target.value); setError('') }}
               onKeyDown={(e) => e.key === 'Enter' && validar()}
-              placeholder={t('reservas.enterPasswordPlaceholder', { defaultValue: 'Ingrese su clave' })}
-              aria-label={t('reservas.enterPasswordPlaceholder', { defaultValue: 'Ingrese su clave' })}
+              placeholder={t('reservas.enterPasswordPlaceholder', { defaultValue: 'Ingrese su clave o documento' })}
+              aria-label={t('reservas.enterPasswordPlaceholder', { defaultValue: 'Ingrese su clave o documento' })}
               className="contrato-card-input"
             />
             <button
               type="button"
-              disabled={!tieneContratoFirmado}
               onClick={() => setMostrarClave(v => !v)}
               aria-label={mostrarClave ? t('reservas.hidePassword', { defaultValue: 'Ocultar clave' }) : t('reservas.showPassword', { defaultValue: 'Mostrar clave' })}
               className="contrato-eye-btn"
@@ -283,10 +328,9 @@ function ContratoVerCard({ reserva, contratoFirmado, reservaParaContrato, vehicu
           <button
             type="button"
             onClick={validar}
-            disabled={!tieneContratoFirmado}
-            className={`contrato-action-btn ${tieneContratoFirmado ? 'activo' : 'bloqueado'}`}
+            className="contrato-action-btn activo"
           >
-            <span>{t('reservas.viewContract', { defaultValue: 'Ver contrato' })}</span>
+            <span>{t('reservas.viewContract', { defaultValue: 'Ver y Descargar Contrato' })}</span>
           </button>
         </div>
       </div>
@@ -313,15 +357,22 @@ function Contrato({ reserva, autoDesbloquear = false, onDesbloquear }) {
   const reservaAlmacenada = useMemo(() => reservationService.obtenerPorReferencia(refBusqueda) || reservationService.obtenerPorReferencia(reserva.id), [refBusqueda, reserva.id])
 
   const tieneContratoFirmado = Boolean(contratoFirmado?.firmaUsuarioDataUrl)
+  const backendStatus = String(reserva.status || reserva.estadoRaw || '').toUpperCase()
   const rawEstado = reservaAlmacenada?.estado || reserva.estado || ''
   const estadoNorm = String(rawEstado).toLowerCase()
   const esConfirmada =
+    backendStatus === 'CONFIRMED' ||
+    backendStatus === 'ACTIVE' ||
+    backendStatus === 'COMPLETED' ||
     estadoNorm === 'confirmada' ||
+    estadoNorm === 'confirmed' ||
     estadoNorm === 'activa' ||
+    estadoNorm === 'active' ||
     estadoNorm === 'en_curso' ||
     estadoNorm === 'en curso' ||
     estadoNorm === 'finalizada' ||
     estadoNorm === 'completada' ||
+    estadoNorm === 'completed' ||
     estadoNorm === 'pagada' ||
     estadoNorm === 'pago_confirmado' ||
     reserva.pagoEstado === 'aprobado' ||
@@ -396,43 +447,13 @@ function Contrato({ reserva, autoDesbloquear = false, onDesbloquear }) {
   }, [reservaParaContrato, reserva, usuario])
 
   return (
-    <>
-      {esConfirmada && !tieneContratoFirmado && (
-        <div className="contrato-firmar-padre" style={{ marginBottom: '20px' }}>
-          <div className="contrato-firmar-subtarjeta">
-            <div className="contrato-firmar-icon-wrap">
-              <img
-                src={brand?.logoDataUrl || logo}
-                alt={brand?.name || 'Drivique'}
-                style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-              />
-            </div>
-            <h3 className="contrato-firmar-titulo">
-              {t('reservas.readyToSign', { defaultValue: 'Listo para firmar contrato' })}
-            </h3>
-            <p className="contrato-firmar-desc">
-              {t('reservas.readyToSignDesc', { defaultValue: 'Tu pago ha sido confirmado con éxito. Completa la firma digital de tu contrato para acceder al documento protegido.' })}
-            </p>
-            <button
-              type="button"
-              onClick={() => navigate(`/contrato/${encodeURIComponent(refBusqueda)}`, { state: { reserva: reservaParaContrato || reserva, vehiculo: vehiculoParaContrato || reserva.vehiculo } })}
-              className="contrato-firmar-btn"
-            >
-              <FaFileSignature size={15} />
-              <span>{t('reservas.signContractNow', { defaultValue: 'Firmar contrato' })}</span>
-            </button>
-          </div>
-        </div>
-      )}
-
-      <ContratoVerCard
-        reserva={reserva}
-        contratoFirmado={contratoFirmado}
-        reservaParaContrato={reservaParaContrato}
-        vehiculoParaContrato={vehiculoParaContrato}
-        identificacion={identificacion}
-      />
-    </>
+    <ContratoVerCard
+      reserva={reserva}
+      contratoFirmado={contratoFirmado}
+      reservaParaContrato={reservaParaContrato}
+      vehiculoParaContrato={vehiculoParaContrato}
+      identificacion={identificacion}
+    />
   )
 }
 
@@ -447,27 +468,44 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
   const reservaOriginal = contrato?.contratoOriginal?.reserva || reservationService.obtenerPorReferencia(refBusquedaModal) || reservationService.obtenerPorReferencia(reserva.id)
   const vehiculoOriginal = contrato?.contratoOriginal?.vehiculo || reserva.vehiculo
 
-  const esEfectivo = reservaOriginal?.reservaDetalles?.metodoPago === 'efectivo' || reserva.metodoPago === 'efectivo'
-  const rawEstadoModal = reservaOriginal?.estado || reserva.estado || ''
+  const backendStatus = String(reserva.status || reserva.estadoRaw || '').toUpperCase()
+  const isPendingPayment = backendStatus === 'PENDING_PAYMENT' || reserva.estado === 'PENDING_PAYMENT' || reserva.estado === 'pendiente_pago'
+  const isPendingDocs = backendStatus === 'PENDING_DOCUMENT_REVIEW' || reserva.estado === 'PENDING_DOCUMENT_REVIEW' || reserva.estado === 'pendiente_documentos'
+  const isPendingSchedule = backendStatus === 'PENDING_SCHEDULE' || reserva.estado === 'PENDING_SCHEDULE' || reserva.estado === 'pendiente_horario'
+
+  const esEfectivo = Boolean(reserva.cashPaymentCode) || Boolean(reservaOriginal?.cashPaymentCode) || (reserva.metodoPago === 'efectivo' && !isPendingPayment)
+  const rawEstadoModal = backendStatus || reservaOriginal?.estado || reserva.estado || ''
   const estadoNormModal = String(rawEstadoModal).toLowerCase()
   const esConfirmadaModal =
+    backendStatus === 'CONFIRMED' ||
+    backendStatus === 'ACTIVE' ||
+    backendStatus === 'COMPLETED' ||
     estadoNormModal === 'confirmada' ||
+    estadoNormModal === 'confirmed' ||
     estadoNormModal === 'activa' ||
+    estadoNormModal === 'active' ||
     estadoNormModal === 'en_curso' ||
     estadoNormModal === 'en curso' ||
     estadoNormModal === 'finalizada' ||
     estadoNormModal === 'completada' ||
+    estadoNormModal === 'completed' ||
     estadoNormModal === 'pagada' ||
     reservaOriginal?.pagoEstado === 'aprobado' ||
     reserva.pagoEstado === 'aprobado' ||
     Boolean(reservaOriginal?.fechaPagoConfirmado) ||
     Boolean(reserva.fechaPagoConfirmado)
 
-  const esFinalizadaModal = ['finalizada', 'completada', 'finalizado', 'completado'].includes(estadoNormModal)
+  const esFinalizadaModal = ['finalizada', 'completada', 'finalizado', 'completado', 'completed'].includes(estadoNormModal) || backendStatus === 'COMPLETED'
 
   const estadoClaveModal = esConfirmadaModal
-    ? (estadoNormModal === 'activa' || estadoNormModal === 'en_curso' || estadoNormModal === 'en curso' ? 'activa' : (estadoNormModal === 'finalizada' ? 'finalizada' : 'confirmada'))
-    : (reserva.estado || 'pendiente')
+    ? (estadoNormModal === 'activa' || estadoNormModal === 'active' || estadoNormModal === 'en_curso' || estadoNormModal === 'en curso' || backendStatus === 'ACTIVE' ? 'activa' : (esFinalizadaModal ? 'finalizada' : 'confirmada'))
+    : (isPendingPayment
+      ? 'PENDING_PAYMENT'
+      : (isPendingDocs
+        ? 'PENDING_DOCUMENT_REVIEW'
+        : (isPendingSchedule
+          ? 'PENDING_SCHEDULE'
+          : (reserva.estado || 'pendiente'))))
 
   const estado = {
     texto: t(`reservas.statuses.${estadoClaveModal}`, { defaultValue: t(`reservas.statuses.${reserva.estado}`, { defaultValue: t('reservas.statuses.pendiente') }) }),
@@ -476,22 +514,40 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
 
   const nombreAuto = reserva.vehiculo?.nombre || vehiculoOriginal?.nombre || (reserva.vehiculo?.marca ? `${reserva.vehiculo.marca} ${reserva.vehiculo.modelo || ''}` : 'Vehículo')
   const imagenAuto = reserva.vehiculo?.imagenes?.[0] || vehiculoOriginal?.imagenes?.[0] || reserva.vehiculo?.imagen || vehiculoOriginal?.imagen
-  const seguroIdx = reservaOriginal?.seguroIdx
+  const seguroIdx = reservaOriginal?.seguroIdx ?? reserva.seguroIdx ?? 0
+  const proteccion = reserva.seguroNombre || reserva.reservaDetalles?.seguro || (vehiculoOriginal?.seguros?.[seguroIdx]?.nombre) || reservaOriginal?.reservaDetalles?.seguro || 'Protección Básica Estándar'
   const esDocumentosRechazados = !esConfirmadaModal && (
     reserva.estado === 'DOCUMENTOS_RECHAZADOS' ||
+    backendStatus === 'DOCUMENTOS_RECHAZADOS' ||
     reservaOriginal?.estado === 'DOCUMENTOS_RECHAZADOS' ||
     reserva.estadoDocumentos === 'RECHAZADO' ||
     reservaOriginal?.estadoDocumentos === 'RECHAZADO'
   )
-  const esPendienteValidacion = !esConfirmadaModal && !esDocumentosRechazados && (
+  const esPendienteHorario = !esConfirmadaModal && !isPendingPayment && !esDocumentosRechazados && (
+    isPendingSchedule ||
+    reserva.estado === 'PENDIENTE_HORARIO' ||
+    reserva.estado === 'pendiente_horario'
+  )
+  const esPendienteValidacion = !esConfirmadaModal && !isPendingPayment && !esPendienteHorario && !esDocumentosRechazados && (
+    isPendingDocs ||
     reserva.estado === 'PENDIENTE_VALIDACION' ||
-    reservaOriginal?.estado === 'PENDIENTE_VALIDACION' ||
-    reserva.estadoDocumentos === 'PENDIENTE' ||
-    reservaOriginal?.estadoDocumentos === 'PENDIENTE'
+    reserva.estado === 'pendiente_documentos' ||
+    (reservaOriginal?.estado === 'PENDING_DOCUMENT_REVIEW' && !backendStatus) ||
+    (reservaOriginal?.estadoDocumentos === 'PENDIENTE' && !backendStatus)
   )
 
-  const esPendienteEfectivo = !esConfirmadaModal && !esPendienteValidacion && !esDocumentosRechazados && (reserva.estado === 'PENDIENTE_EFECTIVO' || reservaOriginal?.estado === 'PENDIENTE_EFECTIVO' || (esEfectivo && (estadoNormModal === 'pendiente' || !reserva.estado)))
-  const esPendienteWompi = !esEfectivo && !esConfirmadaModal && !esPendienteValidacion && !esDocumentosRechazados && (estadoNormModal === 'pendiente')
+  const esPendienteEfectivo = !esConfirmadaModal && !esPendienteValidacion && !esPendienteHorario && !esDocumentosRechazados && (
+    reserva.estado === 'PENDIENTE_EFECTIVO' ||
+    Boolean(reserva.cashPaymentCode) ||
+    Boolean(reservaOriginal?.cashPaymentCode) ||
+    (esEfectivo && (estadoNormModal === 'pendiente' || !reserva.estado))
+  )
+  const esPendienteWompi = !esEfectivo && !esPendienteEfectivo && !esConfirmadaModal && !esPendienteValidacion && !esPendienteHorario && !esDocumentosRechazados && (
+    isPendingPayment ||
+    estadoNormModal === 'pendiente' ||
+    estadoNormModal === 'pending_payment' ||
+    reserva.estado === 'PENDING_PAYMENT'
+  )
   const esWompiAprobado = !esEfectivo && esConfirmadaModal
 
   const sucursalPago = reservaOriginal?.reservaDetalles?.sucursalPagoEfectivo || reserva.vehiculo?.sucursal || ''
@@ -669,6 +725,16 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
   const medioPagoTexto = resolverMedioPago()
 
   const [pagandoWompi, setPagandoWompi] = useState(false)
+  const wompiCardRef = useRef(null)
+
+  useEffect(() => {
+    if (isPendingPayment || autoDesbloquear) {
+      const timer = setTimeout(() => {
+        wompiCardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+      }, 300)
+      return () => clearTimeout(timer)
+    }
+  }, [isPendingPayment, autoDesbloquear])
 
   const handlePagarWompi = async (e) => {
     if (e) {
@@ -696,29 +762,6 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
     }
   }
 
-  const handleVerificarPagoManual = async () => {
-    const { isConfirmed } = await showAlert({
-      icon: 'question',
-      title: '¿Ya realizaste el pago en Wompi?',
-      text: 'Si el pago fue aprobado en Wompi, confirmaremos tu reserva ahora mismo para que puedas firmar tu contrato de alquiler.',
-      showCancelButton: true,
-      confirmButtonText: 'Sí, confirmar pago',
-      cancelButtonText: 'Cancelar',
-    })
-    if (isConfirmed) {
-      const actualRef = reserva.referencia || reserva.codigo || reserva.id
-      reservationService.actualizarEstado(actualRef, 'CONFIRMADA')
-      reservationService.actualizarMedioPago(actualRef, 'Wompi')
-      await showAlert({
-        icon: 'success',
-        title: '¡Pago Confirmado!',
-        text: 'Tu reserva ha sido confirmada con éxito. Ya puedes firmar el contrato digital.',
-        timer: 1800,
-        showConfirmButton: false,
-      })
-      window.location.reload()
-    }
-  }
 
   const formatHoraAmPm = (hora24) => {
     if (!hora24) return ''
@@ -1177,14 +1220,17 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
 
         {/* Tarjeta de Pago Digital Pendiente Wompi (si aplica) */}
         {esPendienteWompi && (
-          <div className="modal-wompi-card">
+          <div className="modal-wompi-card" ref={wompiCardRef}>
             <div className="modal-wompi-subcard">
-              <h3 className="modal-wompi-titulo">
-                {t('reservas.pendingDigitalPayment', { defaultValue: 'Pago Digital Pendiente' })}
-              </h3>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                <FaCreditCard style={{ fontSize: '22px', color: 'var(--brand-primary, #1d4ed8)' }} />
+                <h3 className="modal-wompi-titulo" style={{ margin: 0 }}>
+                  {t('reservas.pendingDigitalPayment', { defaultValue: 'Pago Digital Pendiente' })}
+                </h3>
+              </div>
               <p className="modal-wompi-desc">
                 {t('reservas.digitalPendingDesc', {
-                  defaultValue: 'Tu reserva está guardada como pendiente. Completa el pago seguro en Wompi para confirmar y habilitar tu contrato de alquiler.'
+                  defaultValue: 'Tus documentos fueron aprobados. Tu reserva está lista para pago. Completa el pago seguro en Wompi o confirma el pago para habilitar tu contrato de alquiler.'
                 })}
               </p>
 
@@ -1194,13 +1240,14 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
                   {t('reservas.totalToPay', { defaultValue: 'TOTAL A PAGAR:' })}
                 </span>
                 <strong className="modal-wompi-total-val">
-                  {formatCurrency(reserva.total || 0, moneda)}
+                  {formatCurrency(totalCalculado, moneda)}
                 </strong>
               </div>
 
-              {/* Botón Pagar con Wompi */}
+              {/* Botón de Pago en Wompi */}
               <button
                 type="button"
+                id="btn-pagar-wompi"
                 onClick={handlePagarWompi}
                 disabled={pagandoWompi}
                 className="modal-wompi-btn"
@@ -1222,6 +1269,26 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
                 </p>
               </div>
 
+            </div>
+          </div>
+        )}
+
+        {/* Tarjeta de Reserva en Espera de Horario de Atención */}
+        {esPendienteHorario && (
+          <div className="modal-wompi-card" style={{ borderColor: 'rgba(59, 130, 246, 0.4)', background: 'linear-gradient(180deg, rgba(239, 246, 255, 0.7) 0%, rgba(255, 255, 255, 1) 100%)' }}>
+            <div className="modal-wompi-subcard">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+                <FaClock style={{ fontSize: '24px', color: '#2563eb' }} />
+                <h3 className="modal-wompi-titulo" style={{ margin: 0, color: '#1d4ed8' }}>
+                  En Espera de Apertura de Sucursal
+                </h3>
+              </div>
+              <p className="modal-wompi-desc" style={{ color: '#1e3a8a' }}>
+                Tu reserva fue registrada fuera del horario de atención de la sucursal <strong>{reserva.sucursal || sucursalPago}</strong>. En cuanto la sede inicie su jornada de atención, recibirás una notificación automática por correo, web y push para proceder con el pago y confirmación de tu reserva.
+              </p>
+              <div style={{ padding: '10px 14px', background: '#dbeafe', borderRadius: '10px', fontSize: '13px', color: '#1e40af', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600 }}>
+                <FaClock /> Estado: Esperando apertura de sucursal
+              </div>
             </div>
           </div>
         )}
@@ -1316,25 +1383,36 @@ function TarjetaReserva({ reserva, moneda, onValorar, onReportar, onVerDetalle }
   const navigate = useNavigate()
   const refBusqueda = reserva.referencia || reserva.codigo || reserva.id
   const reservaAlmacenada = reservationService.obtenerPorReferencia(refBusqueda) || reservationService.obtenerPorReferencia(reserva.id)
-  const rawEstado = reservaAlmacenada?.estado || reserva.estado || ''
+
+  const backendStatus = String(reserva.status || reserva.estadoRaw || '').toUpperCase()
+  const isPendingPayment = backendStatus === 'PENDING_PAYMENT' || reserva.estado === 'PENDING_PAYMENT' || reserva.estado === 'pendiente_pago'
+  const isPendingDocs = backendStatus === 'PENDING_DOCUMENT_REVIEW' || reserva.estado === 'PENDING_DOCUMENT_REVIEW' || reserva.estado === 'pendiente_documentos'
+  const isPendingSchedule = backendStatus === 'PENDING_SCHEDULE' || reserva.estado === 'PENDING_SCHEDULE' || reserva.estado === 'pendiente_horario'
+
+  const rawEstado = backendStatus || reservaAlmacenada?.estado || reserva.estado || ''
   const estadoNorm = String(rawEstado).toLowerCase()
   const contratoFirmado = useContratoReal(reserva.id)
   const tieneContratoFirmado = Boolean(contratoFirmado?.firmaUsuarioDataUrl)
 
   const esPagoConfirmado =
+    backendStatus === 'CONFIRMED' ||
+    backendStatus === 'ACTIVE' ||
+    backendStatus === 'COMPLETED' ||
     reserva.pagoEstado === 'aprobado' ||
     reservaAlmacenada?.pagoEstado === 'aprobado' ||
     Boolean(reserva.fechaPagoConfirmado) ||
     Boolean(reservaAlmacenada?.fechaPagoConfirmado)
 
-  const esRawEnCurso = estadoNorm === 'activa' || estadoNorm === 'en_curso' || estadoNorm === 'en curso'
+  const esRawEnCurso = estadoNorm === 'activa' || estadoNorm === 'active' || estadoNorm === 'en_curso' || estadoNorm === 'en curso' || backendStatus === 'ACTIVE'
   // Una reserva solo puede estar en curso si está pagada Y tiene el contrato digital firmado
   const estaEnCurso = esRawEnCurso && tieneContratoFirmado && esPagoConfirmado
-  const esFinalizada = ['finalizada', 'completada', 'finalizado', 'completado'].includes(estadoNorm) || ['finalizada', 'completada', 'finalizado', 'completado'].includes(String(reserva.estado).toLowerCase())
+  const esFinalizada = ['finalizada', 'completada', 'finalizado', 'completado', 'completed'].includes(estadoNorm) || backendStatus === 'COMPLETED'
   const puedeReportar = estaEnCurso || esFinalizada
 
   const esConfirmada =
+    backendStatus === 'CONFIRMED' ||
     estadoNorm === 'confirmada' ||
+    estadoNorm === 'confirmed' ||
     estaEnCurso ||
     esFinalizada ||
     estadoNorm === 'pagada' ||
@@ -1344,7 +1422,13 @@ function TarjetaReserva({ reserva, moneda, onValorar, onReportar, onVerDetalle }
 
   const estadoClave = esConfirmada
     ? (estaEnCurso ? 'activa' : (esFinalizada ? 'finalizada' : 'confirmada'))
-    : (reserva.estado || 'pendiente')
+    : (isPendingPayment
+      ? 'PENDING_PAYMENT'
+      : (isPendingDocs
+        ? 'PENDING_DOCUMENT_REVIEW'
+        : (isPendingSchedule
+          ? 'PENDING_SCHEDULE'
+          : (reserva.estado || 'pendiente'))))
 
   const estado = {
     texto: t(`reservas.statuses.${estadoClave}`, { defaultValue: t(`reservas.statuses.${reserva.estado}`, { defaultValue: t('reservas.statuses.pendiente') }) }),

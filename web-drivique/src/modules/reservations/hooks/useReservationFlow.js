@@ -4,6 +4,8 @@ import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/store/authStore'
 import { showAlert } from '@/utils/swalConfig'
 import { reservationsService } from '@/services/reservationsService'
+import { reservationService } from '@/services/reservationService'
+import { catalogService } from '@/services/catalogService'
 import { userService } from '@/services/userService'
 import { generarReferenciaUnica, aCentavos } from '@/services/wompiService'
 import { paymentFactory, PaymentContext } from '@/modules/payments/strategies'
@@ -36,6 +38,13 @@ export function useReservationFlow() {
   const [mileagePlans, setMileagePlans] = useState([])
   const [insuranceCoverages, setInsuranceCoverages] = useState([])
   const [additionalServices, setAdditionalServices] = useState([])
+  const [sedesCatalog, setSedesCatalog] = useState([])
+
+  useEffect(() => {
+    catalogService.getSedes()
+      .then((sedes) => setSedesCatalog(Array.isArray(sedes) ? sedes : []))
+      .catch(() => setSedesCatalog([]))
+  }, [])
 
   useEffect(() => {
     Promise.all([getPlanesKilometraje(), getCoberturasSeguro(), getServiciosAdicionales()])
@@ -404,37 +413,124 @@ export function useReservationFlow() {
       return
     }
 
+    // ─── 1. Validación de Datos Personales y Documentación Obligatoria ─────────
+    const e = {}
+
+    if (!datosForm.nombre?.trim()) e.nombre = t('vehiculo.errors.nameRequired', 'El nombre es obligatorio.')
+    if (!datosForm.nacionalidad?.trim()) e.nacionalidad = t('vehiculo.errors.nationalityRequired', 'Debes seleccionar tu nacionalidad.')
+    if (!datosForm.tipoDoc?.trim()) e.tipoDoc = t('vehiculo.errors.docTypeRequired', 'Debes seleccionar el tipo de documento.')
+    if (!datosForm.numDoc?.trim()) e.numDoc = t('vehiculo.errors.docRequired', 'El número de documento es obligatorio.')
+    if (!datosForm.correo?.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(datosForm.correo)) e.correo = t('vehiculo.errors.emailInvalid', 'El correo electrónico no es válido.')
+    if (!datosForm.celular?.trim() || datosForm.celular.trim().length < 10) e.celular = t('vehiculo.errors.phoneInvalid', 'El número celular debe tener al menos 10 dígitos.')
+    if (!docsVerificados && !datosForm.cedulaPdf) e.cedulaPdf = t('vehiculo.errors.cedulaPdfRequired', 'Debes subir tu documento de identidad en formato PDF.')
+    if (!docsVerificados && !datosForm.licenciaPdf) e.licenciaPdf = t('vehiculo.errors.licenciaPdfRequired', 'Debes subir tu licencia de conducción en formato PDF.')
+    if (!datosForm.terminos) e.terminos = t('vehiculo.errors.termsRequired', 'Debes aceptar los términos y condiciones.')
+
+    setErrores(e)
+
+    if (Object.keys(e).length > 0) {
+      showAlert({
+        icon: 'warning',
+        title: 'Información incompleta',
+        text: 'Por favor completa todos los campos obligatorios y adjunta los documentos requeridos para confirmar tu reserva.',
+        confirmButtonText: 'Entendido',
+        confirmButtonColor: '#2563eb',
+      })
+      return
+    }
+
+    // ─── 2. Validación de Documentación KYC Rechazada / Observaciones ────────
     try {
       const documentos = await userService.getDocuments()
       const listaDocumentos = Array.isArray(documentos) ? documentos : (documentos?.documents || [])
       const hayDocumentosNuevos = datosForm.cedulaPdf instanceof File || datosForm.licenciaPdf instanceof File
-      if (!hayDocumentosNuevos && listaDocumentos.length > 0 && listaDocumentos.some((documento) => String(documento.statusCode || documento.status || documento.estado).toUpperCase() !== 'APPROVED')) {
-        const rechazado = listaDocumentos.find((documento) => String(documento.statusCode || documento.status || documento.estado).toUpperCase() === 'REJECTED')
-        showAlert({
+      const rechazado = listaDocumentos.find((documento) => String(documento.statusCode || documento.status || documento.estado).toUpperCase() === 'REJECTED')
+      if (!hayDocumentosNuevos && rechazado) {
+        const confirmRechazado = await showAlert({
           icon: 'warning',
-          title: 'Documentos pendientes de aprobación',
-          text: rechazado?.reviewNotes || rechazado?.observaciones || 'El encargado debe aprobar tus documentos antes de crear la reserva.',
-          confirmButtonText: 'Entendido',
+          title: 'Documentación con observaciones',
+          text: rechazado?.reviewNotes || rechazado?.observaciones || 'Uno o más de tus documentos requiere corrección. Te recomendamos subir la versión corregida.',
+          showCancelButton: true,
+          confirmButtonText: 'Continuar de todos modos',
+          cancelButtonText: 'Corregir documentos',
         })
-        return
+        if (!confirmRechazado.isConfirmed) {
+          return
+        }
       }
-    } catch (error) {
-      showAlert({ icon: 'error', title: 'No se pudo validar tu documentación', text: 'Intenta nuevamente cuando el encargado haya revisado los documentos.' })
-      return
+    } catch {
+      // Ignorar error al leer documentos para no bloquear el flujo
     }
 
-    const e = {}
-    if (!datosForm.nombre.trim()) e.nombre = t('vehiculo.errors.nameRequired', 'El nombre es obligatorio.')
-    if (!datosForm.nacionalidad?.trim()) e.nacionalidad = t('vehiculo.errors.nationalityRequired', 'Debes seleccionar tu nacionalidad.')
-    if (!datosForm.tipoDoc?.trim()) e.tipoDoc = t('vehiculo.errors.docTypeRequired', 'Debes seleccionar el tipo de documento.')
-    if (!datosForm.numDoc.trim()) e.numDoc = t('vehiculo.errors.docRequired', 'El número de documento es obligatorio.')
-    if (!datosForm.correo.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(datosForm.correo)) e.correo = t('vehiculo.errors.emailInvalid', 'El correo electrónico no es válido.')
-    if (!datosForm.celular.trim() || datosForm.celular.length < 10) e.celular = t('vehiculo.errors.phoneInvalid', 'El número celular debe tener al menos 10 dígitos.')
-    if (!docsVerificados && !datosForm.cedulaPdf) e.cedulaPdf = t('vehiculo.errors.cedulaPdfRequired', 'Debes subir tu cédula en formato PDF.')
-    if (!docsVerificados && !datosForm.licenciaPdf) e.licenciaPdf = t('vehiculo.errors.licenciaPdfRequired', 'Debes subir tu licencia de conducción en formato PDF.')
-    if (!datosForm.terminos) e.terminos = t('vehiculo.errors.termsRequired', 'Debes aceptar los términos y condiciones.')
-    setErrores(e)
-    if (Object.keys(e).length > 0) return
+    // ─── 3. Validación de Horario de Atención de la Sucursal ─────────────────
+    const branchName = reserva.sucursalRetiro || vehiculo?.sucursal || vehiculo?.sucursalInfo?.nombre || ''
+    const currentBranch = sedesCatalog.find(
+      (s) => s.id === vehiculo?.sucursalId || s.name === branchName || s.nombre === branchName
+    )
+
+    let isOutsideSchedule = false
+    let openingTimeStr = '08:00'
+    let closingTimeStr = '18:00'
+
+    if (currentBranch && currentBranch.openingTime && currentBranch.closingTime) {
+      const openRaw = String(currentBranch.openingTime).slice(0, 5)
+      const closeRaw = String(currentBranch.closingTime).slice(0, 5)
+      openingTimeStr = openRaw
+      closingTimeStr = closeRaw
+
+      const is24Hours =
+        (openRaw === '00:00' && (closeRaw === '23:59' || closeRaw === '24:00')) ||
+        openRaw === closeRaw
+
+      if (!is24Hours) {
+        // Evaluar hora actual en zona horaria de Colombia (America/Bogota - UTC-5)
+        const nowBogota = new Intl.DateTimeFormat('en-GB', {
+          timeZone: 'America/Bogota',
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false,
+        }).format(new Date())
+
+        if (openRaw < closeRaw) {
+          isOutsideSchedule = nowBogota < openRaw || nowBogota > closeRaw
+        } else {
+          isOutsideSchedule = nowBogota < openRaw && nowBogota > closeRaw
+        }
+      }
+    }
+
+    let outsideScheduleAccepted = false
+    if (isOutsideSchedule) {
+      const branchDisplay = currentBranch?.name || currentBranch?.nombre || branchName || 'la sucursal'
+      const alertResult = await showAlert({
+        icon: 'info',
+        title: 'Sucursal fuera de horario de atención',
+        html: `
+          <div style="text-align: left; font-size: 14px; line-height: 1.6; color: var(--texto-primary, #1e293b);">
+            <p style="margin-bottom: 12px;">
+              La sucursal <strong>${branchDisplay}</strong> tiene un horario de atención de <strong>${openingTimeStr}</strong> a <strong>${closingTimeStr}</strong>.
+            </p>
+            <p style="margin-bottom: 12px; color: #b45309; background: #fef3c7; padding: 10px 14px; border-radius: 8px; border: 1px solid #fde68a;">
+              ⏱️ En este momento se encuentra cerrada, pero puedes registrar tu reserva ahora y quedará en estado <strong>PENDIENTE</strong>.
+            </p>
+            <p style="margin: 0; color: var(--texto-second, #64748b); font-size: 13px;">
+              Mañana a las <strong>${openingTimeStr}</strong> te notificaremos por correo electrónico, notificación web y push para que puedas continuar con tu reserva.
+            </p>
+          </div>
+        `,
+        showCancelButton: true,
+        confirmButtonText: 'Registrar como pendiente',
+        cancelButtonText: 'Regresar',
+        confirmButtonColor: '#2563eb',
+        cancelButtonColor: '#64748b',
+        width: 480,
+      })
+
+      if (!alertResult.isConfirmed) {
+        return
+      }
+      outsideScheduleAccepted = true
+    }
 
     const tarifas = vehiculo.tarifas || {}
     const precioKm = reserva.tipoKm === 'ilimitado'
@@ -500,9 +596,6 @@ export function useReservationFlow() {
       setDocsVerificados(false)
     }
 
-    const docCedulaFinal = datosForm.cedulaPdf?.name || (typeof datosForm.cedulaPdf === 'string' && datosForm.cedulaPdf) || (datosForm.numDoc ? `Cedula-${datosForm.numDoc}.pdf` : 'Cedula-Verificada.pdf')
-    const docLicenciaFinal = datosForm.licenciaPdf?.name || (typeof datosForm.licenciaPdf === 'string' && datosForm.licenciaPdf) || (datosForm.numDoc ? `Licencia-${datosForm.numDoc}.pdf` : 'Licencia-Conduccion-Verificada.pdf')
-
     const clienteNombreFinal = datosForm.nombre || [datosForm.nombres, datosForm.apellidos].filter(Boolean).join(' ') || usuario?.nombre || 'Cliente Drivique'
     const clienteCorreoFinal = datosForm.correo || datosForm.email || usuario?.correo || usuario?.email || 'cliente@drivique.com'
     const clienteTelFinal = datosForm.celular || datosForm.telefono || usuario?.telefono || '+57 300 000 0000'
@@ -518,6 +611,7 @@ export function useReservationFlow() {
         additionalServiceIds: (vehiculo.servicios || []).filter(s => serviciosSeleccionados.includes(s.nombre)).map(s => s.id).filter(Boolean),
         couponCode: appliedPromotion ? appliedPromotion.codigo : null,
         cashPaymentBranchId: reserva.metodoPago === 'efectivo' ? (vehiculo.sucursalId || null) : null,
+        outsideScheduleAccepted: Boolean(outsideScheduleAccepted),
         customerInfo: {
           name: clienteNombreFinal,
           email: clienteCorreoFinal,
@@ -531,25 +625,26 @@ export function useReservationFlow() {
         sucursalDevolucion: reserva.sucursalDevolucion
       }
 
-      let holdResult = null
-      try {
-        holdResult = await reservationsService.crearReserva(datosParaBackend)
-      } catch (backendErr) {
-        console.warn('Backend reservation hold error, using local fallback:', backendErr)
+      // ─── 3. Creación en Backend (Sin fallback silencioso) ─────────────────
+      const holdResult = await reservationsService.crearReserva(datosParaBackend)
+      
+      const refFinal = holdResult?.code || holdResult?.id || holdResult?.holdId || referencia
+      if (holdResult?.cashPaymentExpiresAt) {
+        setFechaLimitePago(holdResult.cashPaymentExpiresAt)
+      } else if (holdResult?.fechaLimitePago) {
+        setFechaLimitePago(holdResult.fechaLimitePago)
       }
       
-      const refFinal = holdResult?.id || holdResult?.holdId || referencia
-      if (holdResult?.fechaLimitePago) setFechaLimitePago(holdResult.fechaLimitePago)
-      
-      const estadoInicial = requiereValidacionDocs
-        ? 'PENDIENTE_VALIDACION'
-        : (reserva.metodoPago === 'efectivo' ? 'PENDIENTE_EFECTIVO' : 'pendiente')
+      const estadoInicial = holdResult?.status || (outsideScheduleAccepted
+        ? 'PENDING_SCHEDULE'
+        : (requiereValidacionDocs ? 'PENDING_DOCUMENT_REVIEW' : (reserva.metodoPago === 'efectivo' ? 'PENDIENTE_EFECTIVO' : 'pendiente')))
 
       reservationService.guardarReserva({
-        id: refFinal,
+        id: holdResult?.id || refFinal,
         referencia: refFinal,
         codigo: refFinal,
         estado: estadoInicial,
+        status: estadoInicial,
         estadoDocumentos: requiereValidacionDocs ? 'PENDIENTE' : 'APROBADO',
         pagoEstado: 'pendiente',
         metodoPago: reserva.metodoPago,
@@ -583,26 +678,27 @@ export function useReservationFlow() {
       })
 
       sessionStorage.setItem('current_wompi_reference', refFinal)
-      setReservaCreada({ ...holdResult, referencia: refFinal, horasLimitePago: 72, total: finalTotalCop, estado: estadoInicial })
+      setReservaCreada({
+        ...holdResult,
+        id: holdResult?.id || refFinal,
+        referencia: refFinal,
+        codigo: refFinal,
+        horasLimitePago: 72,
+        total: finalTotalCop,
+        estado: estadoInicial,
+        status: estadoInicial
+      })
       setDatosPago({ referencia: refFinal, amountInCents: aCentavos(finalTotalCop) })
       setExito(true)
-
-      if (requiereValidacionDocs) {
-        showAlert({
-          icon: 'info',
-          title: t('reservas.docsPendingTitle', 'Documentos en Revisión'),
-          text: t('reservas.docsPendingMsg', `Tu reserva ha sido registrada y queda en estado Pendiente de validación. La sucursal ${vehiculo.sucursal || vehiculo.sucursalInfo?.nombre || ''} revisará tus documentos antes de la entrega del vehículo.`),
-          confirmButtonText: t('comun.entendido', 'Entendido'),
-        })
-      }
 
       sessionStorage.removeItem(storageKey)
     } catch (error) {
       console.error('Error creating reservation hold:', error)
+      const errorMsg = error?.response?.data?.message || error?.message || 'No se pudo crear la reserva en el servidor. Por favor intenta de nuevo.'
       showAlert({
         icon: 'error',
-        title: 'Error',
-        text: 'No se pudo crear la reserva en el servidor. Por favor intenta de nuevo.'
+        title: 'Error al registrar reserva',
+        text: errorMsg
       })
     }
   }

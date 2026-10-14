@@ -32,7 +32,9 @@ export const useNotificationStore = create((set, get) => ({
       ])
 
       const noLeidasCalculadas = lista.filter((n) => !n.leida).length
-      const conteoFinal = typeof unreadCount === 'number' ? unreadCount : noLeidasCalculadas
+      const conteoFinal = typeof unreadCount === 'number'
+        ? (unreadCount === 0 || noLeidasCalculadas === 0 ? 0 : Math.min(unreadCount, noLeidasCalculadas))
+        : noLeidasCalculadas
 
       set({
         notificaciones: lista,
@@ -81,7 +83,7 @@ export const useNotificationStore = create((set, get) => ({
     const actualizadas = notificacionesActuales.map((n) =>
       n.id === id ? { ...n, leida: true, leidaEn: new Date().toISOString() } : n
     )
-    const nuevoConteo = Math.max(0, get().conteoNoLeidas - 1)
+    const nuevoConteo = Math.max(0, actualizadas.filter((n) => !n.leida).length)
     set({ notificaciones: actualizadas, conteoNoLeidas: nuevoConteo })
 
     try {

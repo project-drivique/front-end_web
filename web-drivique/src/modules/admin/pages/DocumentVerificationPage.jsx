@@ -290,7 +290,7 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
           data={`${safeUrl}#toolbar=0&navpanes=0&scrollbar=0`}
           type="application/pdf"
           className="doc-preview-iframe"
-          style={{ width: '100%', height: '100%', border: 'none', pointerEvents: 'none' }}
+          style={{ width: '100%', height: '100%', border: 'none' }}
         >
           <iframe
             src={`${safeUrl}#toolbar=0&navpanes=0&scrollbar=0`}
@@ -318,7 +318,10 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
     const nota = observaciones || t('admin.documents.defaultApproveObs', 'Documentos validados y aprobados correctamente por la sucursal.')
     try {
       if (modalItem.backend) {
-        await documentVerificationService.revisarDocumentoBackend(modalItem.id, 'aprobado', nota)
+        const idsToReview = modalItem.allDocIds && modalItem.allDocIds.length > 0 ? modalItem.allDocIds : [modalItem.id]
+        for (const docId of idsToReview) {
+          await documentVerificationService.revisarDocumentoBackend(docId, 'aprobado', nota)
+        }
         documentVerificationService.actualizarReservaAsociada(modalItem, 'aprobado', nota, user?.nombre || 'Encargado de Sucursal')
       } else {
         documentVerificationService.actualizarEstado(modalItem.id, 'aprobado', nota, user?.nombre || 'Encargado de Sucursal', modalChecklist)
@@ -348,7 +351,10 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
 
     try {
       if (modalItem.backend) {
-        await documentVerificationService.revisarDocumentoBackend(modalItem.id, 'rechazado', observaciones.trim())
+        const idsToReview = modalItem.allDocIds && modalItem.allDocIds.length > 0 ? modalItem.allDocIds : [modalItem.id]
+        for (const docId of idsToReview) {
+          await documentVerificationService.revisarDocumentoBackend(docId, 'rechazado', observaciones.trim())
+        }
         documentVerificationService.actualizarReservaAsociada(modalItem, 'rechazado', observaciones.trim(), user?.nombre || 'Encargado de Sucursal')
       } else {
         documentVerificationService.actualizarEstado(modalItem.id, 'rechazado', observaciones.trim(), user?.nombre || 'Encargado de Sucursal', modalChecklist)
@@ -949,6 +955,18 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
                         >
                           Reverso
                         </button>
+                        {(modalItem.pdfCedulaUrl || modalItem.fotoCedulaFrente) && (
+                          <a
+                            href={getSafeDocUrl(modalItem.pdfCedulaUrl || modalItem.fotoCedulaFrente)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="doc-page-btn"
+                            style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px', color: '#2563eb' }}
+                            title="Abrir PDF en pestaña nueva"
+                          >
+                            <FaEye /> Abrir PDF
+                          </a>
+                        )}
                       </div>
                       <p className="doc-page-info-text">
                         PDF · {modalItem.documentoIdentidadPdf || `Cedula-${modalItem.documentoIdentidad}.pdf`} · página {identidadPage} de 2
@@ -981,6 +999,18 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
                         >
                           Reverso
                         </button>
+                        {(modalItem.pdfLicenciaUrl || modalItem.fotoLicenciaFrente) && (
+                          <a
+                            href={getSafeDocUrl(modalItem.pdfLicenciaUrl || modalItem.fotoLicenciaFrente)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="doc-page-btn"
+                            style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px', color: '#2563eb' }}
+                            title="Abrir PDF en pestaña nueva"
+                          >
+                            <FaEye /> Abrir PDF
+                          </a>
+                        )}
                       </div>
                       <p className="doc-page-info-text">
                         PDF · {modalItem.licenciaConduccionPdf || `Licencia-${modalItem.documentoIdentidad}.pdf`} · página {licenciaPage} de 2
