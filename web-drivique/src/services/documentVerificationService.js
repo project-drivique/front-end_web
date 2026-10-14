@@ -227,24 +227,79 @@ function notificarCliente(item, nuevoEstado, observaciones) {
 export const documentVerificationService = {
   async listarPendientesBackend() {
     const { data } = await api.get('/kyc/documents', { params: { status: 'PENDING' } })
-    return (Array.isArray(data) ? data : (data?.documents || [])).map((doc) => ({
-      id: doc.id,
-      clienteNombre: doc.userName || 'Cliente',
-      documentoIdentidad: doc.documentNumber || '—',
-      tipoDocumento: doc.documentType?.name || 'Documento',
-      numeroLicencia: doc.documentNumber || '—',
-      pdfCedulaUrl: /cedula|identidad|dni|cc|ce|passport/i.test(`${doc.documentType?.code || ''} ${doc.documentType?.name || ''}`) ? doc.frontUrl : '',
-      fotoCedulaFrente: /cedula|identidad|dni|cc|ce|passport/i.test(`${doc.documentType?.code || ''} ${doc.documentType?.name || ''}`) ? doc.frontUrl : '',
-      pdfLicenciaUrl: /licencia|driver/i.test(`${doc.documentType?.code || ''} ${doc.documentType?.name || ''}`) ? doc.frontUrl : '',
-      fotoLicenciaFrente: /licencia|driver/i.test(`${doc.documentType?.code || ''} ${doc.documentType?.name || ''}`) ? doc.frontUrl : '',
-      frontUrl: doc.frontUrl,
-      sucursal: doc.branchName || 'Sucursal sin asignar',
-      branchId: doc.branchId,
-      estado: String(doc.statusCode || 'PENDING').toLowerCase() === 'pending' ? 'pendiente' : String(doc.statusCode).toLowerCase(),
-      observaciones: doc.reviewNotes || '',
-      fechaSubida: doc.createdAt ? new Date(doc.createdAt).toLocaleString('es-CO') : '',
-      backend: true,
-    }))
+    const docs = Array.isArray(data) ? data : (data?.documents || [])
+    const todasReservas = reservationService.getReservas() || []
+
+    const expedientesByUser = new Map()
+    for (const doc of docs) {
+      const uKey = String(doc.userId || doc.userName || doc.documentNumber || doc.id)
+      if (!expedientesByUser.has(uKey)) {
+        expedientesByUser.set(uKey, [])
+      }
+      expedientesByUser.get(uKey).push(doc)
+    }
+
+    const result = []
+    for (const [, userDocs] of expedientesByUser.entries()) {
+      const idDoc = userDocs.find((d) =>
+        /cedula|identidad|dni|cc|ce|passport/i.test(`${d.documentType?.code || ''} ${d.documentType?.name || ''}`)
+      ) || userDocs[0]
+
+      const licDoc = userDocs.find((d) =>
+        /licencia|driver/i.test(`${d.documentType?.code || ''} ${d.documentType?.name || ''}`)
+      ) || (userDocs.length > 1 ? userDocs[1] : null)
+
+      const docPrincipal = idDoc || userDocs[0]
+
+      // Buscar reserva asociada local o backend
+      const matchedRes = todasReservas.find((r) => {
+        const docNum = String(docPrincipal.documentNumber || '').trim()
+        const rDocNum = String(r.datosForm?.numDoc || r.datosForm?.documento || r.clienteDocumento || '').trim()
+        if (docNum && rDocNum && docNum === rDocNum) return true
+
+        const cName = String(docPrincipal.userName || '').toLowerCase().trim()
+        const rName = String(r.datosForm?.nombre || r.clienteNombre || '').toLowerCase().trim()
+        if (cName && rName && (cName.includes(rName) || rName.includes(cName))) return true
+
+        return false
+      }) || todasReservas.find((r) => {
+        const st = String(r.estado || r.status || '').toUpperCase()
+        return st.includes('DOCUMENT') || st.includes('SCHEDULE')
+      })
+
+      const reservaCodigo = docPrincipal.reservationCode || matchedRes?.codigo || matchedRes?.referencia || matchedRes?.id || ''
+      const vehiculoNombre = docPrincipal.vehicleName || matchedRes?.vehiculoNombre || matchedRes?.vehiculo?.nombre || 'Chevrolet Onix RS'
+      const reservaEstado = matchedRes?.estado || matchedRes?.status || 'PENDING_DOCUMENT_REVIEW'
+
+      result.push({
+        id: docPrincipal.id,
+        allDocIds: userDocs.map((d) => d.id),
+        identityDocId: idDoc?.id,
+        licenseDocId: licDoc?.id,
+        reservaCodigo,
+        reservaId: docPrincipal.reservationId || matchedRes?.id,
+        vehiculoNombre,
+        reservaEstado,
+        clienteNombre: docPrincipal.userName || matchedRes?.clienteNombre || 'Cliente',
+        conductorNombre: docPrincipal.userName || matchedRes?.clienteNombre || 'Cliente',
+        documentoIdentidad: docPrincipal.documentNumber || matchedRes?.clienteDocumento || '—',
+        tipoDocumento: idDoc?.documentType?.name || 'Cédula de Ciudadanía',
+        numeroLicencia: licDoc?.documentNumber || docPrincipal.documentNumber || '—',
+        pdfCedulaUrl: idDoc?.frontUrl || '',
+        fotoCedulaFrente: idDoc?.frontUrl || '',
+        pdfLicenciaUrl: licDoc?.frontUrl || '',
+        fotoLicenciaFrente: licDoc?.frontUrl || '',
+        frontUrl: docPrincipal.frontUrl,
+        sucursal: docPrincipal.branchName || matchedRes?.sucursal || 'Sucursal sin asignar',
+        branchId: docPrincipal.branchId,
+        estado: 'pendiente',
+        observaciones: docPrincipal.reviewNotes || '',
+        fechaSubida: docPrincipal.createdAt ? new Date(docPrincipal.createdAt).toLocaleString('es-CO') : '',
+        backend: true,
+      })
+    }
+
+    return result
   },
 
   async revisarDocumentoBackend(id, nuevoEstado, observaciones = '') {
@@ -290,6 +345,8 @@ export const documentVerificationService = {
           if (
             res.estado === 'PENDIENTE_VALIDACION' ||
             res.estado === 'pendiente' ||
+            res.estado === 'PENDING_DOCUMENT_REVIEW' ||
+            res.estado === 'PENDING_SCHEDULE' ||
             !res.estado
           ) {
             if (res.pagoEstado === 'aprobado' || (res.metodoPago !== 'efectivo' && res.metodoPagoConfirmado)) {
@@ -297,7 +354,7 @@ export const documentVerificationService = {
             } else if (res.metodoPago === 'efectivo' || res.pasarela === 'efectivo') {
               res.estado = 'PENDIENTE_EFECTIVO'
             } else {
-              res.estado = 'confirmada'
+              res.estado = 'PENDING_PAYMENT'
             }
           }
         } else {
