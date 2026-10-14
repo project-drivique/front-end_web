@@ -489,7 +489,8 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
 
   const nombreAuto = reserva.vehiculo?.nombre || vehiculoOriginal?.nombre || (reserva.vehiculo?.marca ? `${reserva.vehiculo.marca} ${reserva.vehiculo.modelo || ''}` : 'Vehículo')
   const imagenAuto = reserva.vehiculo?.imagenes?.[0] || vehiculoOriginal?.imagenes?.[0] || reserva.vehiculo?.imagen || vehiculoOriginal?.imagen
-  const seguroIdx = reservaOriginal?.seguroIdx
+  const seguroIdx = reservaOriginal?.seguroIdx ?? reserva.seguroIdx ?? 0
+  const proteccion = reserva.seguroNombre || reserva.reservaDetalles?.seguro || (vehiculoOriginal?.seguros?.[seguroIdx]?.nombre) || reservaOriginal?.reservaDetalles?.seguro || 'Protección Básica Estándar'
   const esDocumentosRechazados = !esConfirmadaModal && (
     reserva.estado === 'DOCUMENTOS_RECHAZADOS' ||
     reservaOriginal?.estado === 'DOCUMENTOS_RECHAZADOS' ||
