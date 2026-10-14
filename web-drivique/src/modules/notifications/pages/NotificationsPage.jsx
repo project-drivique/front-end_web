@@ -20,6 +20,7 @@ import {
   FaFilter,
   FaFileContract,
   FaShieldAlt,
+  FaArrowRight,
 } from 'react-icons/fa'
 import { useLanding } from '@/modules/landing/LandingContext'
 import { formatCurrency } from '@/utils/currencyUtils'
@@ -77,12 +78,26 @@ export default function NotificationsPage({ defaultTab }) {
 
   // Notificaciones válidas con contenido de texto
   const notificacionesVisibles = useMemo(() => {
-    return (notificaciones || []).filter((n) => {
+    const list = (notificaciones || []).filter((n) => {
       if (!n || typeof n !== 'object') return false
-      const tit = n.tituloKey ? t(n.tituloKey, n.tituloFallback || n.titulo || n.title || '') : (n.titulo || n.tituloFallback || n.title || '')
+      const tit = n.tituloKey ? t(n.tituloKey, n.tituloFallback || n.titulo || n.subject || n.title || '') : (n.titulo || n.tituloFallback || n.subject || n.title || '')
       const msg = n.mensajeKey ? t(n.mensajeKey, n.mensajeFallback || n.mensaje || n.message || '') : (n.mensaje || n.mensajeFallback || n.message || '')
       return Boolean((tit && tit.trim()) || (msg && msg.trim()))
     })
+
+    const deduplicadas = []
+    const clavesVistas = new Set()
+    for (const item of list) {
+      const tit = (item.titulo || item.subject || '').trim().toLowerCase()
+      const msg = (item.mensaje || item.message || '').trim().toLowerCase()
+      const ref = item.metadata?.reservationId || item.metadata?.bookingCode || item.referenceId || ''
+      const key = `${tit}|${msg}|${ref}`
+      if (!clavesVistas.has(key)) {
+        clavesVistas.add(key)
+        deduplicadas.push(item)
+      }
+    }
+    return deduplicadas
   }, [notificaciones, t])
 
   // Filtradas por estado de lectura
@@ -109,6 +124,9 @@ export default function NotificationsPage({ defaultTab }) {
   // Helper para iconos según el tipo de evento general
   const renderIconoNotif = (tipo = '') => {
     const raw = String(tipo).toLowerCase()
+    if (raw.includes('cancel') || raw.includes('vencim') || raw.includes('expir')) {
+      return <FaExclamationCircle style={{ color: '#dc2626' }} />
+    }
     if (raw.includes('reserva') || raw.includes('booking')) {
       return <FaCheckCircle style={{ color: 'var(--brand-text)' }} />
     }
@@ -336,6 +354,33 @@ export default function NotificationsPage({ defaultTab }) {
                               {titulo || t('notificaciones.title', 'Notificación')}
                             </h3>
                             {chipCrit}
+                            {(() => {
+                              const esPago = String(n.tipo || '').toLowerCase().includes('pago') ||
+                                String(n.tipo || '').toLowerCase().includes('payment') ||
+                                String(titulo || '').toLowerCase().includes('pago') ||
+                                String(titulo || '').toLowerCase().includes('comprobante');
+                              if (!esPago) return null;
+                              const statusRaw = String(n.metadata?.status || '').toUpperCase();
+                              const esRechazado = statusRaw === 'DECLINED' || statusRaw === 'REJECTED' || statusRaw === 'ERROR' || String(titulo || '').toLowerCase().includes('fallo') || String(titulo || '').toLowerCase().includes('problema');
+                              return (
+                                <span
+                                  style={{
+                                    fontSize: '11px',
+                                    fontWeight: 700,
+                                    padding: '2px 8px',
+                                    borderRadius: '6px',
+                                    background: esRechazado ? 'rgba(239, 68, 68, 0.12)' : 'rgba(16, 185, 129, 0.12)',
+                                    color: esRechazado ? '#dc2626' : '#059669',
+                                    border: `1px solid ${esRechazado ? 'rgba(239, 68, 68, 0.25)' : 'rgba(16, 185, 129, 0.25)'}`,
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '4px',
+                                  }}
+                                >
+                                  {esRechazado ? '✕ Pago Rechazado' : '✓ Pago Exitoso'}
+                                </span>
+                              );
+                            })()}
                           </div>
                           {!n.leida && <span className="notif-punto-no-leida" />}
                         </div>
@@ -347,6 +392,43 @@ export default function NotificationsPage({ defaultTab }) {
                         )}
 
                         {mensaje && <p className="notif-mensaje">{mensaje}</p>}
+
+                        {n.metadata && (n.metadata.actionPath || n.metadata.actionUrl) && (
+                          <div style={{ marginTop: '10px' }}>
+                            <button
+                              type="button"
+                              className="btn-primario"
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                if (!n.leida && n.id) {
+                                  marcarLeida(n.id)
+                                }
+                                const targetUrl = n.metadata.actionPath || n.metadata.actionUrl
+                                if (targetUrl.startsWith('http')) {
+                                  window.location.href = targetUrl
+                                } else {
+                                  navigate(targetUrl)
+                                }
+                              }}
+                              style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '6px',
+                                padding: '6px 14px',
+                                fontSize: '12px',
+                                fontWeight: 700,
+                                borderRadius: '8px',
+                                background: 'var(--brand-primary, #2563eb)',
+                                color: '#ffffff',
+                                border: 'none',
+                                cursor: 'pointer',
+                              }}
+                            >
+                              <span>{n.metadata.actionLabel || 'Continuar con mi reserva'}</span>
+                              <FaArrowRight size={11} />
+                            </button>
+                          </div>
+                        )}
 
                         {chipVencimiento}
                       </div>
