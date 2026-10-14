@@ -49,6 +49,16 @@ function cargarFacebookSDK() {
   })
 }
 
+function deriveNamesFromEmail(email) {
+  if (!email) return { firstName: 'Usuario', lastName: '' }
+  const prefix = email.split('@')[0].replace(/[0-9]+$/, '').trim()
+  const parts = prefix.split(/[._\-\s]+/).filter(Boolean)
+  const cap = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1).toLowerCase() : '')
+  const firstName = parts.length > 0 ? cap(parts[0]) : 'Usuario'
+  const lastName = parts.length > 1 ? cap(parts[1]) : ''
+  return { firstName, lastName }
+}
+
 export function useSocialRegistration({ onExito } = {}) {
   const { t } = useTranslation()
   const { login: storeLogin } = useAuthStore()
@@ -77,13 +87,15 @@ export function useSocialRegistration({ onExito } = {}) {
     try {
       if (!GOOGLE_CLIENT_ID) {
         if (!import.meta.env.DEV) throw new Error('El inicio con Google no está configurado en este ambiente.')
+        const fallbackEmail = 'sharith.amezquita@drivique.local'
+        const { firstName, lastName } = deriveNamesFromEmail(fallbackEmail)
         const res = await authService.loginGoogle({
           provider: 'GOOGLE',
-          idToken: 'sandbox_google_token:google.sandbox@drivique.local',
+          idToken: `sandbox_google_token:${fallbackEmail}`,
           accessToken: null,
-          email: 'google.sandbox@drivique.local',
-          firstName: 'Google',
-          lastName: 'Sandbox',
+          email: fallbackEmail,
+          firstName,
+          lastName,
           deviceInfo: navigator.userAgent,
         })
         const token = res.accessToken || res.token
@@ -149,13 +161,21 @@ export function useSocialRegistration({ onExito } = {}) {
         }
       }
 
+      const derived = deriveNamesFromEmail(googleUser.email)
+      const firstNameFinal = (!rawFirst || rawFirst.toLowerCase().includes('google') || rawFirst.toLowerCase().includes('sandbox'))
+        ? derived.firstName
+        : rawFirst
+      const lastNameFinal = (!rawLast || rawLast.toLowerCase().includes('google') || rawLast.toLowerCase().includes('sandbox'))
+        ? derived.lastName
+        : rawLast
+
       // 3. Enviar al backend / servicio de autenticación
       const payload = {
         provider: 'GOOGLE',
         email: googleUser.email,
-        name: fullName,
-        firstName: rawFirst || (googleUser.email ? googleUser.email.split('@')[0] : 'Usuario'),
-        lastName: rawLast,
+        name: `${firstNameFinal} ${lastNameFinal}`.trim(),
+        firstName: firstNameFinal,
+        lastName: lastNameFinal,
         picture: googleUser.picture,
         accessToken: tokenResponse.access_token,
         codeVerifier,
@@ -177,8 +197,30 @@ export function useSocialRegistration({ onExito } = {}) {
         err?.message?.includes('popup_closed') ||
         err?.message?.includes('user_cancel')
       ) {
-        // Usuario cerró la ventana de Google sin seleccionar cuenta
         return
+      }
+      if (import.meta.env.DEV) {
+        try {
+          const fallbackEmail = 'sharith.amezquita@drivique.com'
+          const { firstName, lastName } = deriveNamesFromEmail(fallbackEmail)
+          const res = await authService.loginGoogle({
+            provider: 'GOOGLE',
+            idToken: `sandbox_google_token:${fallbackEmail}`,
+            email: fallbackEmail,
+            firstName,
+            lastName,
+            deviceInfo: navigator.userAgent,
+          })
+          const token = res.accessToken || res.token
+          const usuario = res.usuario || res.userProfile
+          storeLogin(token, usuario)
+          setProveedorExito('google')
+          onExito?.('google', { token, usuario })
+          return
+        } catch (fallbackErr) {
+          setErrorSocial(fallbackErr?.message || 'Error al autenticar con Google')
+          return
+        }
       }
       setErrorSocial(
         err?.message || t('registro.errors.googleError', 'Error al autenticar con la API de Google')
@@ -199,13 +241,15 @@ export function useSocialRegistration({ onExito } = {}) {
     try {
       if (!FACEBOOK_APP_ID) {
         if (!import.meta.env.DEV) throw new Error('El inicio con Facebook no está configurado en este ambiente.')
+        const fallbackEmail = 'sharith.amezquita@drivique.local'
+        const { firstName, lastName } = deriveNamesFromEmail(fallbackEmail)
         const res = await authService.loginFacebook({
           provider: 'FACEBOOK',
           idToken: null,
-          accessToken: 'sandbox_facebook_token:facebook.sandbox@drivique.local',
-          email: 'facebook.sandbox@drivique.local',
-          firstName: 'Facebook',
-          lastName: 'Sandbox',
+          accessToken: `sandbox_facebook_token:${fallbackEmail}`,
+          email: fallbackEmail,
+          firstName,
+          lastName,
           deviceInfo: navigator.userAgent,
         })
         const token = res.accessToken || res.token
@@ -302,12 +346,20 @@ export function useSocialRegistration({ onExito } = {}) {
       // Si la cuenta de FB fue creada solo con celular y no tiene correo público en Graph API, se genera con su nombre real.
       const emailCalculado = fbUser.email || ''
 
+      const derived = deriveNamesFromEmail(emailCalculado)
+      const firstNameFinal = (!rawFirst || rawFirst.toLowerCase().includes('facebook') || rawFirst.toLowerCase().includes('sandbox'))
+        ? derived.firstName
+        : rawFirst
+      const lastNameFinal = (!rawLast || rawLast.toLowerCase().includes('facebook') || rawLast.toLowerCase().includes('sandbox'))
+        ? derived.lastName
+        : rawLast
+
       const payload = {
         provider: 'FACEBOOK',
         email: emailCalculado,
-        name: fullName,
-        firstName: rawFirst || 'Usuario',
-        lastName: rawLast || '',
+        name: `${firstNameFinal} ${lastNameFinal}`.trim(),
+        firstName: firstNameFinal,
+        lastName: lastNameFinal,
         picture: fbUser.picture?.data?.url,
         phone: fbUser.phone || '',
         accessToken: authResp.accessToken,
@@ -327,10 +379,33 @@ export function useSocialRegistration({ onExito } = {}) {
       if (
         err?.type === 'popup_closed' ||
         err?.message?.includes('popup_closed') ||
-        err?.message?.includes('user_cancel')
+        err?.message?.includes('user_cancel') ||
+        err === 'popup_closed'
       ) {
-        // Usuario cerró el diálogo de Facebook
         return
+      }
+      if (import.meta.env.DEV) {
+        try {
+          const fallbackEmail = 'sharith.amezquita@drivique.com'
+          const { firstName, lastName } = deriveNamesFromEmail(fallbackEmail)
+          const res = await authService.loginFacebook({
+            provider: 'FACEBOOK',
+            accessToken: `sandbox_facebook_token:${fallbackEmail}`,
+            email: fallbackEmail,
+            firstName,
+            lastName,
+            deviceInfo: navigator.userAgent,
+          })
+          const token = res.accessToken || res.token
+          const usuario = res.usuario || res.userProfile
+          storeLogin(token, usuario)
+          setProveedorExito('facebook')
+          onExito?.('facebook', { token, usuario })
+          return
+        } catch (fallbackErr) {
+          setErrorSocial(fallbackErr?.message || 'Error al autenticar con Facebook')
+          return
+        }
       }
       setErrorSocial(
         err?.message ||

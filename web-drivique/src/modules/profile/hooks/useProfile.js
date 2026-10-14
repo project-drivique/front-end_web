@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '../../../store/authStore'
 import { userService } from '../../../services/userService'
@@ -24,6 +24,25 @@ export function usePerfil() {
     nacionalidad: usuario?.nacionalidad || '',
     tipoDocumento: usuario?.tipoDocumento || '',
   })
+
+  useEffect(() => {
+    userService.getProfile().then((data) => {
+      if (data) {
+        const mapped = {
+          nombre: data.firstName || usuario?.nombre || '',
+          apellido: data.lastName || usuario?.apellido || '',
+          telefono: data.phone || usuario?.telefono || '',
+          correo: data.email || usuario?.correo || '',
+          cedula: data.documentNumber || usuario?.cedula || '',
+          fechaNacimiento: data.birthDate ? String(data.birthDate).slice(0, 10) : (usuario?.fechaNacimiento || ''),
+          nacionalidad: data.nationalityId || usuario?.nacionalidad || '',
+          tipoDocumento: data.documentTypeId || usuario?.tipoDocumento || '',
+        }
+        setFormData(prev => ({ ...prev, ...mapped }))
+        actualizarUsuario(mapped)
+      }
+    }).catch(console.error)
+  }, [])
 
   const [errores, setErrores] = useState({})
   const [correoAnterior, setCorreoAnterior] = useState(usuario?.correo || '')

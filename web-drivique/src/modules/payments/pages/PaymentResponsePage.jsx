@@ -1,12 +1,8 @@
-import { useEffect, useState, useRef } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { useEffect, useRef } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { FaSpinner, FaCheckCircle, FaExclamationTriangle, FaShieldAlt } from 'react-icons/fa';
+import { FaSpinner } from 'react-icons/fa';
 import { reservationsService } from '@/services/reservationsService';
-import logo from '@/assets/logo.png';
-import { useBrand } from '@/contexts/BrandContext';
-import { useAuthStore } from '../../../store/authStore';
-import MenuConfiguracion from '@/components/MenuConfiguracion';
 
 export default function RespuestaPagoPage() {
   if (typeof window !== 'undefined' && (window.location.hostname === 'localtest.me' || window.location.hostname === 'lvh.me')) {
@@ -15,14 +11,10 @@ export default function RespuestaPagoPage() {
     return null;
   }
 
-  const { brand } = useBrand();
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { usuario } = useAuthStore();
   const [searchParams] = useSearchParams();
-  const transactionId = searchParams.get('id'); // Wompi retorna ?id=XXX
-  const [estadoProceso, setEstadoProceso] = useState('procesando'); // 'procesando', 'exito', 'error'
-  const [mensajeEstado, setMensajeEstado] = useState('Confirmando tu transacción con Wompi...');
+  const transactionId = searchParams.get('id');
   const procesadoRef = useRef(false);
 
   useEffect(() => {
@@ -40,9 +32,10 @@ export default function RespuestaPagoPage() {
         .then(data => {
           const status = data?.data?.status;
           const wompiRef = data?.data?.reference;
+          const rawHold = wompiRef || refQuery || '';
+          const holdId = rawHold.includes('_') ? rawHold.split('_')[0] : rawHold;
 
           if (status === 'APPROVED') {
-            const holdId = wompiRef || refQuery;
             if (holdId) {
               reservationsService.confirmarPago(holdId)
                 .then(() => {
@@ -50,13 +43,15 @@ export default function RespuestaPagoPage() {
                 })
                 .catch(err => {
                   console.error('Error confirming payment:', err);
-                  navigate('/reservas', { replace: true });
+                  navigate(`/contrato/${encodeURIComponent(holdId)}`, { replace: true });
                 });
             } else {
               navigate('/reservas', { replace: true });
             }
           } else {
-            // Redirección inmediata a Mis Reservas sin pantallas intermedias si el pago no fue aprobado o fue cancelado
+            if (holdId) {
+              reservationsService.reportarPagoFallido(holdId).catch(() => {});
+            }
             navigate('/reservas', { replace: true });
           }
         })
@@ -69,13 +64,27 @@ export default function RespuestaPagoPage() {
   }, [transactionId, searchParams, navigate]);
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg-page, #f8fafc)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
-        <FaSpinner style={{ animation: 'spin 1s linear infinite', fontSize: 36, color: 'var(--brand-primary, #1D4ED8)' }} />
-        <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--texto-primary, #0f172a)' }}>
-          {t('pago.verifyingTitle', 'Procesando...')}
-        </span>
-      </div>
+    <div
+      style={{
+        minHeight: '100vh',
+        background: 'var(--bg-page, #f8fafc)',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 16,
+      }}
+    >
+      <FaSpinner
+        style={{
+          animation: 'spin 1s linear infinite',
+          fontSize: 40,
+          color: 'var(--brand-primary, #1D4ED8)',
+        }}
+      />
+      <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--texto-primary, #0f172a)' }}>
+        {t('pago.verifyingTitle', 'Procesando tu pago...')}
+      </span>
       <style>{`
         @keyframes spin {
           from { transform: rotate(0deg); }
@@ -85,3 +94,4 @@ export default function RespuestaPagoPage() {
     </div>
   );
 }
+
