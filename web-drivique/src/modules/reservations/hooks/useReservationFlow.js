@@ -691,22 +691,6 @@ export function useReservationFlow() {
       setDatosPago({ referencia: refFinal, amountInCents: aCentavos(finalTotalCop) })
       setExito(true)
 
-      if (estadoInicial === 'PENDING_SCHEDULE') {
-        showAlert({
-          icon: 'info',
-          title: 'Reserva registrada fuera de horario',
-          text: `Tu reserva ha sido registrada en espera de horario. Te notificaremos a las ${openingTimeStr} al iniciar la atención para que continúes con tu proceso.`,
-          confirmButtonText: 'Entendido'
-        })
-      } else if (estadoInicial === 'PENDING_DOCUMENT_REVIEW' || requiereValidacionDocs) {
-        showAlert({
-          icon: 'info',
-          title: t('reservas.docsPendingTitle', 'Documentos en Revisión'),
-          text: t('reservas.docsPendingMsg', `Tu reserva ha sido registrada y queda en estado Pendiente de validación. La sucursal ${vehiculo.sucursal || vehiculo.sucursalInfo?.nombre || ''} revisará tus documentos antes de la entrega del vehículo.`),
-          confirmButtonText: t('comun.entendido', 'Entendido'),
-        })
-      }
-
       sessionStorage.removeItem(storageKey)
     } catch (error) {
       console.error('Error creating reservation hold:', error)
