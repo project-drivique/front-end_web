@@ -73,6 +73,15 @@ export default function NotificationDetailModal({
   // Mapeo amigable de tipo de evento y su icono
   const resolverTipoEvento = (tipo = '') => {
     const raw = String(tipo).toLowerCase()
+    if (raw.includes('cancel') || raw.includes('vencim') || raw.includes('expir')) {
+      return {
+        etiqueta: 'Cancelación / Vencimiento',
+        icono: <FaCalendarAlt />,
+        color: '#dc2626',
+        bg: 'rgba(220, 38, 38, 0.12)',
+        accion: { texto: 'Explorar catálogo', ruta: '/catalogo' },
+      }
+    }
     if (raw.includes('reserva') || raw.includes('booking')) {
       return {
         etiqueta: 'Reserva de Vehículo',

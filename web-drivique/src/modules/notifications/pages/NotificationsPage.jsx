@@ -124,6 +124,9 @@ export default function NotificationsPage({ defaultTab }) {
   // Helper para iconos según el tipo de evento general
   const renderIconoNotif = (tipo = '') => {
     const raw = String(tipo).toLowerCase()
+    if (raw.includes('cancel') || raw.includes('vencim') || raw.includes('expir')) {
+      return <FaExclamationCircle style={{ color: '#dc2626' }} />
+    }
     if (raw.includes('reserva') || raw.includes('booking')) {
       return <FaCheckCircle style={{ color: 'var(--brand-text)' }} />
     }
