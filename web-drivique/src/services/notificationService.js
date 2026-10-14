@@ -8,7 +8,7 @@ export function normalizarNotificacion(raw) {
   if (!raw || typeof raw !== 'object') return null
 
   const id = raw.id || raw.notificationId || raw.uuid || String(Math.random())
-  const titulo = raw.title || raw.titulo || raw.tituloKey || 'Notificación Drivique'
+  const titulo = raw.subject || raw.title || raw.titulo || raw.tituloKey || 'Notificación Drivique'
   const mensaje = raw.message || raw.mensaje || raw.content || raw.body || ''
   const tipo = (raw.eventType || raw.tipo || raw.type || 'GENERAL').toLowerCase()
   const criticidad = (raw.criticality || raw.criticidad || raw.priority || 'MEDIUM').toUpperCase()
@@ -58,7 +58,19 @@ export const notificationService = {
     const lista = Array.isArray(data)
       ? data
       : (Array.isArray(data?.content) ? data.content : (Array.isArray(data?.notifications) ? data.notifications : []))
-    return lista.map(normalizarNotificacion).filter(Boolean)
+    const normalizadas = lista.map(normalizarNotificacion).filter(Boolean)
+
+    const deduplicadas = []
+    const clavesVistas = new Set()
+    for (const notif of normalizadas) {
+      const ref = notif.metadata?.reservationId || notif.metadata?.bookingCode || notif.referenceId || ''
+      const clave = `${(notif.titulo || '').trim().toLowerCase()}|${(notif.mensaje || '').trim().toLowerCase()}|${ref}`
+      if (!clavesVistas.has(clave)) {
+        clavesVistas.add(clave)
+        deduplicadas.push(notif)
+      }
+    }
+    return deduplicadas
   },
 
   /**
