@@ -643,7 +643,11 @@ export default function ReservationFlowPage() {
                   margin: '0 0 12px',
                   letterSpacing: '-0.02em'
                 }}>
-                  {t('vehiculo.reservationRegisteredTitle', 'Reserva Registrada')}
+                  {reservaCreada.estado === 'PENDING_SCHEDULE'
+                    ? 'Reserva Registrada Fuera de Horario'
+                    : (reservaCreada.estado === 'PENDING_DOCUMENT_REVIEW' || reservaCreada.estado === 'PENDIENTE_VALIDACION'
+                      ? 'Documentos en Revisión'
+                      : t('vehiculo.reservationRegisteredTitle', 'Reserva Registrada'))}
                 </h2>
 
                 {/* Subtitulo */}
@@ -655,61 +659,122 @@ export default function ReservationFlowPage() {
                   padding: '0 8px',
                   fontWeight: 500
                 }}>
-                  Tu reserva quedó guardada como pendiente. Para confirmarla, completa el pago digital seguro con Wompi (Pruebas).
+                  {reservaCreada.estado === 'PENDING_SCHEDULE'
+                    ? 'Tu reserva quedó guardada en espera de la apertura de la sucursal. Te notificaremos por correo, web y push al iniciar la jornada de atención para que continúes con tu pago.'
+                    : (reservaCreada.estado === 'PENDING_DOCUMENT_REVIEW' || reservaCreada.estado === 'PENDIENTE_VALIDACION'
+                      ? 'Tu reserva quedó guardada con éxito. La sucursal está revisando tus documentos. Te notificaremos en cuanto sean aprobados para que puedas realizar el pago seguro.'
+                      : 'Tu reserva quedó guardada como pendiente. Para confirmarla, completa el pago digital seguro con Wompi (Pruebas).')}
                 </p>
 
                 {/* Botones de Accion */}
                 <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 12 }}>
-                  <button
-                    type="button"
-                    onClick={handlePagarConWompi}
-                    disabled={redirigiendoPago}
-                    style={{
-                      width: '100%',
-                      height: 50,
-                      borderRadius: 16,
-                      background: redirigiendoPago ? '#94a3b8' : 'var(--brand-primary, #2563eb)',
-                      color: '#ffffff',
-                      border: 'none',
-                      fontWeight: 800,
-                      fontSize: 15,
-                      cursor: redirigiendoPago ? 'default' : 'pointer',
-                      boxShadow: '0 6px 20px rgba(37, 99, 235, 0.3)',
-                      transition: 'all 0.2s',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: 10
-                    }}
-                  >
-                    <FaCreditCard size={18} />
-                    <span>{redirigiendoPago ? t('vehiculo.redirecting', 'Redirigiendo…') : 'Pagar con Wompi'}</span>
-                  </button>
+                  {reservaCreada.estado !== 'PENDING_SCHEDULE' && reservaCreada.estado !== 'PENDING_DOCUMENT_REVIEW' && reservaCreada.estado !== 'PENDIENTE_VALIDACION' ? (
+                    <>
+                      <button
+                        type="button"
+                        onClick={handlePagarConWompi}
+                        disabled={redirigiendoPago}
+                        style={{
+                          width: '100%',
+                          height: 50,
+                          borderRadius: 16,
+                          background: redirigiendoPago ? '#94a3b8' : 'var(--brand-primary, #2563eb)',
+                          color: '#ffffff',
+                          border: 'none',
+                          fontWeight: 800,
+                          fontSize: 15,
+                          cursor: redirigiendoPago ? 'default' : 'pointer',
+                          boxShadow: '0 6px 20px rgba(37, 99, 235, 0.3)',
+                          transition: 'all 0.2s',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: 10
+                        }}
+                      >
+                        <FaCreditCard size={18} />
+                        <span>{redirigiendoPago ? t('vehiculo.redirecting', 'Redirigiendo…') : 'Pagar con Wompi'}</span>
+                      </button>
 
-                  <button
-                    type="button"
-                    onClick={() => {
-                      sessionStorage.removeItem(`drivique_reservation_state_${vehiculo.id}`)
-                      navigate('/reservas')
-                    }}
-                    style={{
-                      width: '100%',
-                      height: 48,
-                      borderRadius: 16,
-                      background: c.cardBg || '#ffffff',
-                      color: c.textPrimary || '#334155',
-                      border: `1.5px solid ${c.cardBorder || '#e2e8f0'}`,
-                      fontWeight: 700,
-                      fontSize: 14.5,
-                      cursor: 'pointer',
-                      transition: 'all 0.2s',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }}
-                  >
-                    Pagar más tarde
-                  </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          sessionStorage.removeItem(`drivique_reservation_state_${vehiculo.id}`)
+                          navigate('/reservas')
+                        }}
+                        style={{
+                          width: '100%',
+                          height: 48,
+                          borderRadius: 16,
+                          background: c.cardBg || '#ffffff',
+                          color: c.textPrimary || '#334155',
+                          border: `1.5px solid ${c.cardBorder || '#e2e8f0'}`,
+                          fontWeight: 700,
+                          fontSize: 14.5,
+                          cursor: 'pointer',
+                          transition: 'all 0.2s',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center'
+                        }}
+                      >
+                        Pagar más tarde
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          sessionStorage.removeItem(`drivique_reservation_state_${vehiculo.id}`)
+                          navigate('/reservas')
+                        }}
+                        style={{
+                          width: '100%',
+                          height: 50,
+                          borderRadius: 16,
+                          background: 'var(--brand-primary, #2563eb)',
+                          color: '#ffffff',
+                          border: 'none',
+                          fontWeight: 800,
+                          fontSize: 15,
+                          cursor: 'pointer',
+                          boxShadow: '0 6px 20px rgba(37, 99, 235, 0.3)',
+                          transition: 'all 0.2s',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center'
+                        }}
+                      >
+                        Ir a Mis Reservas
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          sessionStorage.removeItem(`drivique_reservation_state_${vehiculo.id}`)
+                          navigate('/home')
+                        }}
+                        style={{
+                          width: '100%',
+                          height: 48,
+                          borderRadius: 16,
+                          background: c.cardBg || '#ffffff',
+                          color: c.textPrimary || '#334155',
+                          border: `1.5px solid ${c.cardBorder || '#e2e8f0'}`,
+                          fontWeight: 700,
+                          fontSize: 14.5,
+                          cursor: 'pointer',
+                          transition: 'all 0.2s',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center'
+                        }}
+                      >
+                        Volver al Inicio
+                      </button>
+                    </>
+                  )}
                 </div>
                 {errorPago && (
                   <p style={{ color: '#dc2626', fontSize: 13, fontWeight: 700, marginTop: 14 }}>

@@ -2,6 +2,7 @@ import initialVehicles from '../mocks/vehicles.json'
 import { branchManagementService } from './branchManagementService'
 import { cityManagementService } from './cityManagementService'
 import { reservationService } from './reservationService'
+import { hasMatchingBranch } from './accessAuditService'
 
 const STORAGE_KEY = 'drivique_admin_vehicles'
 const AUDIT_KEY = 'drivique_management_audit'
@@ -49,8 +50,8 @@ const normalizeBranch = (value) => String(value || '').trim().toLocaleLowerCase(
 function assertBranchScope(user, ...branchNames) {
   const managerRoles = new Set(['encargado', 'encargado_sucursal', 'branch_manager'])
   if (!managerRoles.has(user?.rol)) return
-  const assignedBranch = user?.sucursalId || user?.sucursal || user?.sucursalAsignada
-  if (!assignedBranch || branchNames.some((branch) => normalizeBranch(branch) !== normalizeBranch(assignedBranch))) {
+  const assignedBranch = user?.sucursalAsignada || user?.branchName || user?.sucursal || user?.sucursalId || ''
+  if (!assignedBranch || branchNames.some((branch) => !hasMatchingBranch(branch, assignedBranch))) {
     throw new Error('invalidBranch')
   }
 }

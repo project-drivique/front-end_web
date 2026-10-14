@@ -20,6 +20,7 @@ import {
 import { useLanding } from '../../landing/LandingContext'
 import { useAuthStore } from '../../../store/authStore'
 import { branchReviewManagementService } from '../../../services/branchReviewManagementService'
+import { hasMatchingBranch } from '../../../services/accessAuditService'
 import { exportExcel, exportPdf, printTable } from '../../../utils/listExportUtils'
 import { showAlert } from '../../../utils/swalConfig'
 import MenuConfiguracion from '../../../components/MenuConfiguracion'
@@ -34,7 +35,7 @@ export default function BranchReviewsPage({ branchOnly = false }) {
   const { tema } = useLanding()
   const user = useAuthStore((state) => state.usuario)
   const isBranchManager = branchOnly || user?.rol === 'encargado' || user?.rol === 'branch_manager' || user?.rol === 'encargado_sucursal'
-  const sucursalAsignada = user?.sucursalAsignada || user?.sucursalId || user?.sucursal || 'Alamo Bogotá - Aeropuerto'
+  const sucursalAsignada = user?.sucursalAsignada || user?.branchName || user?.sucursal || user?.sucursalId || ''
 
   const [reviews, setReviews] = useState([])
   const [search, setSearch] = useState('')
@@ -73,6 +74,12 @@ export default function BranchReviewsPage({ branchOnly = false }) {
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase()
     return reviews.filter((item) => {
+      // Branch scope for branch managers
+      if (isBranchManager && sucursalAsignada) {
+        const itemBranch = item.sucursal || item.branchName || item.sucursalNombre || ''
+        if (itemBranch && !hasMatchingBranch(itemBranch, sucursalAsignada)) return false
+      }
+
       // Tab filtering
       if (activeTab === 'pendientes' && (item.estado === 'publicada' && Boolean(item.respuestaEncargado))) return false
       if (activeTab === 'respondidas' && (!item.respuestaEncargado || item.estado !== 'publicada')) return false
@@ -88,7 +95,7 @@ export default function BranchReviewsPage({ branchOnly = false }) {
 
       return true
     })
-  }, [reviews, search, activeTab])
+  }, [reviews, search, activeTab, isBranchManager, sucursalAsignada])
 
   const exportData = useMemo(() => {
     return filtered.map((r, i) => [
@@ -150,7 +157,14 @@ export default function BranchReviewsPage({ branchOnly = false }) {
                 <div className="branch-user-profile-chip">
                   <div className="branch-user-avatar">{(user?.nombre || user?.correo || 'A').charAt(0).toUpperCase()}</div>
                   <div className="branch-user-info-text">
-                    <strong className="branch-user-name">{[user?.nombre, user?.apellido].filter(Boolean).join(' ') || user?.correo || 'Usuario'}</strong>
+                    <strong className="branch-user-name">
+                      {(() => {
+                        const nom = (user?.nombre || '').trim()
+                        const ape = (user?.apellido || '').trim()
+                        if (nom && ape && !nom.toLowerCase().includes(ape.toLowerCase())) return `${nom} ${ape}`
+                        return nom || ape || user?.correo || 'Usuario'
+                      })()}
+                    </strong>
                     <span className="branch-user-role">{user?.rol || 'encargado_sucursal'}</span>
                   </div>
                 </div>

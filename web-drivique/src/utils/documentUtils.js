@@ -1,6 +1,5 @@
 export const TIPOS_DOCUMENTO = [
   { value: 'CC', sigla: 'CC', label: 'Cédula de Ciudadanía', labelConSigla: 'Cédula de Ciudadanía (CC)' },
-  { value: 'TI', sigla: 'TI', label: 'Tarjeta de Identidad', labelConSigla: 'Tarjeta de Identidad (TI)' },
   { value: 'CE', sigla: 'CE', label: 'Cédula de Extranjería', labelConSigla: 'Cédula de Extranjería (CE)' },
   { value: 'PASAPORTE', sigla: 'PAS', label: 'Pasaporte', labelConSigla: 'Pasaporte (PAS)' },
   { value: 'DNI', sigla: 'DNI', label: 'Documento Nacional de Identidad', labelConSigla: 'Documento Nacional de Identidad (DNI)' },

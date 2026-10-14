@@ -1,5 +1,5 @@
 import { reservationManagementService } from './reservationManagementService'
-import { accessAuditService } from './accessAuditService'
+import { accessAuditService, hasMatchingBranch } from './accessAuditService'
 
 const STORAGE_KEY_CONTRATOS = 'drivique_contratos'
 
@@ -76,10 +76,9 @@ export const contractManagementService = {
 
     // 4. El encargado solo ve los contratos de su sucursal
     if (user?.rol === 'encargado' || user?.rol === 'encargado_sucursal' || user?.rol === 'branch_manager') {
-      const sucursalAsignada = user?.sucursal || user?.sucursalId || user?.sucursalAsignada
+      const sucursalAsignada = user?.sucursalAsignada || user?.branchName || user?.sucursal || user?.sucursalId || ''
       if (!sucursalAsignada) return []
-      const assignedKey = String(sucursalAsignada).trim().toLocaleLowerCase()
-      contracts = contracts.filter((c) => String(c.sucursal || '').trim().toLocaleLowerCase() === assignedKey)
+      contracts = contracts.filter((c) => hasMatchingBranch(c.sucursal, sucursalAsignada))
     }
 
     return contracts
