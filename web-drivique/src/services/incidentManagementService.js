@@ -1,5 +1,5 @@
 // src/services/incidentManagementService.js
-import { accessAuditService } from './accessAuditService'
+import { accessAuditService, hasMatchingBranch } from './accessAuditService'
 import { vehicleManagementService } from './vehicleManagementService'
 import { INITIAL_REPORTS } from '../modules/support/data/support.dummy'
 
@@ -11,11 +11,12 @@ const LEGACY_INCIDENT_IDS = new Set(['REP-9102', 'REP-8401', 'REP-7730', 'REP-65
 
 const normalizeBranch = (value) => String(value || '').trim().toLocaleLowerCase()
 const isBranchManager = (user) => ['encargado', 'encargado_sucursal', 'branch_manager'].includes(user?.rol)
-const assignedBranch = (user) => user?.sucursalId || user?.sucursal || user?.sucursalAsignada || 'Alamo Bogotá - Aeropuerto'
+const assignedBranch = (user) => user?.sucursalAsignada || user?.branchName || user?.sucursal || user?.sucursalId || ''
 
 function assertIncidentScope(user, branch) {
   if (!isBranchManager(user)) return
-  if (!assignedBranch(user) || normalizeBranch(branch) !== normalizeBranch(assignedBranch(user))) {
+  const branchUser = assignedBranch(user)
+  if (!branchUser || !hasMatchingBranch(branch, branchUser)) {
     throw new Error('invalidBranch')
   }
 }
@@ -114,10 +115,10 @@ export const incidentManagementService = {
     const all = readIncidents()
     if (!isBranchManager(currentUser)) return all
 
-    const userBranch = normalizeBranch(assignedBranch(currentUser))
+    const userBranch = assignedBranch(currentUser)
     if (!userBranch) return []
 
-    return all.filter((r) => normalizeBranch(r.sucursal) === userBranch)
+    return all.filter((r) => hasMatchingBranch(r.sucursal, userBranch))
   },
 
   getById(id) {
