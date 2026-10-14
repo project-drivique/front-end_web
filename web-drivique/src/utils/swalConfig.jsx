@@ -59,6 +59,7 @@ export const showAlert = (options) => {
         usePortal={false}
         width={options.width}
         maxWidth={options.maxWidth || (options.width ? (typeof options.width === 'number' ? `${options.width}px` : options.width) : undefined)}
+        cardStyle={options.cardStyle}
       />
     )
   })

@@ -28,7 +28,7 @@ import { useAuthStore } from '../../../store/authStore'
 import { reservationManagementService } from '../../../services/reservationManagementService'
 import { branchManagementService } from '../../../services/branchManagementService'
 import { catalogService } from '../../../services/catalogService'
-import { accessAuditService } from '../../../services/accessAuditService'
+import { accessAuditService, hasMatchingBranch } from '../../../services/accessAuditService'
 import { contractService } from '../../../services/contractService'
 import { inspectionService } from '../../../services/inspectionService'
 import { exportExcel, exportPdf, printTable } from '../../../utils/listExportUtils'
@@ -119,11 +119,11 @@ export default function ReservationManagementPage() {
   const [catalogoVehiculos, setCatalogoVehiculos] = useState([])
   const sucursales = useMemo(() => branchManagementService.list(), [])
   const sucursalesVisibles = useMemo(() => esEncargado
-    ? sucursales.filter((branch) => String(branch.nombre || '').trim().toLocaleLowerCase() === String(sucursalEncargado).trim().toLocaleLowerCase())
+    ? sucursales.filter((branch) => hasMatchingBranch(branch.nombre, sucursalEncargado))
     : sucursales, [esEncargado, sucursalEncargado, sucursales])
   const vehiculosDisponibles = useMemo(() => catalogoVehiculos.filter((vehicle) => !esEncargado || (
     Boolean(sucursalEncargado) &&
-    String(vehicle.sucursal || '').trim().toLocaleLowerCase() === String(sucursalEncargado).trim().toLocaleLowerCase()
+    hasMatchingBranch(vehicle.sucursal, sucursalEncargado)
   )), [catalogoVehiculos, esEncargado, sucursalEncargado])
 
   // Carga inicial y evaluación automática periódica
@@ -460,17 +460,22 @@ export default function ReservationManagementPage() {
 
           <div className="branch-topbar-actions">
             <MenuConfiguracion />
-            {esEncargado && (
+            {user && (
               <div className="branch-user-profile-chip">
                 <div className="branch-user-avatar">
                   {(user?.nombre || user?.correo || 'A').charAt(0).toUpperCase()}
                 </div>
                 <div className="branch-user-info-text">
                   <strong className="branch-user-name">
-                    {user?.nombre || 'Andrés Felipe Castro'}
+                    {(() => {
+                      const nom = (user?.nombre || '').trim()
+                      const ape = (user?.apellido || '').trim()
+                      if (nom && ape && !nom.toLowerCase().includes(ape.toLowerCase())) return `${nom} ${ape}`
+                      return nom || ape || user?.correo || 'Usuario'
+                    })()}
                   </strong>
                   <span className="branch-user-role">
-                    {user?.rol || 'encargado_sucursal'}
+                    {user?.rol || 'administrador'}
                   </span>
                 </div>
               </div>

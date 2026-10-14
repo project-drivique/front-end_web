@@ -100,6 +100,7 @@ export default function AlertModal({
   usePortal = true,
   maxWidth,
   width,
+  cardStyle = {},
 }) {
   const landing = useLanding()
   const temaGuardado = typeof sessionStorage !== 'undefined' ? sessionStorage.getItem('rm_tema') : null
@@ -141,6 +142,7 @@ export default function AlertModal({
           maxWidth: maxWidth || (width ? (typeof width === 'number' ? `${width}px` : width) : '280px'),
           background: t.cardBg,
           border: `1px solid ${t.cardBorder}`,
+          ...cardStyle,
         }}
       >
         {showCloseButton && (

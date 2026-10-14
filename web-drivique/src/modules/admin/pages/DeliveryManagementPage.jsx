@@ -356,7 +356,14 @@ export default function DeliveryManagementPage() {
                 <div className="branch-user-profile-chip">
                   <div className="branch-user-avatar">{(user?.nombre || user?.correo || 'A').charAt(0).toUpperCase()}</div>
                   <div className="branch-user-info-text">
-                    <strong className="branch-user-name">{[user?.nombre, user?.apellido].filter(Boolean).join(' ') || user?.correo || 'Usuario'}</strong>
+                    <strong className="branch-user-name">
+                      {(() => {
+                        const nom = (user?.nombre || '').trim()
+                        const ape = (user?.apellido || '').trim()
+                        if (nom && ape && !nom.toLowerCase().includes(ape.toLowerCase())) return `${nom} ${ape}`
+                        return nom || ape || user?.correo || 'Usuario'
+                      })()}
+                    </strong>
                     <span className="branch-user-role">{user?.rol || 'encargado_sucursal'}</span>
                   </div>
                 </div>
