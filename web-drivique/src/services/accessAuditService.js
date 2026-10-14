@@ -22,7 +22,7 @@ export function hasMatchingBranch(branchA, branchB) {
   if (a === b) return true
   if (a.includes(b) || b.includes(a)) return true
 
-  const STOP_WORDS = new Set(['de', 'la', 'el', 'los', 'las', 'en', 'y', 'del', 'alamo', 'national', 'localiza', 'alquiler'])
+  const STOP_WORDS = new Set(['de', 'la', 'el', 'los', 'las', 'en', 'y', 'del', 'alamo', 'national', 'localiza', 'alquiler', 'drivique'])
   const wordsA = a.split(' ').filter(w => w.length > 2 && !STOP_WORDS.has(w))
   const wordsB = b.split(' ').filter(w => w.length > 2 && !STOP_WORDS.has(w))
 

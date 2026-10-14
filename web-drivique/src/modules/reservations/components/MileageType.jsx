@@ -73,8 +73,14 @@ export default function TipoKilometraje({ vehiculo, tipoKm, onSeleccionar, c, di
               </p>
               
               <div style={{ width: '100%', marginTop: 'auto' }}>
-                <p style={{ fontSize: '18px', fontWeight: 900, color: 'var(--brand-text)', margin: '0 0 16px', letterSpacing: '-0.03em' }}>
-                  {formatCurrency(op.precio, moneda)} <span style={{ fontSize: '10px', fontWeight: 600, color: c?.textSecondary || 'var(--texto-second)' }}>/ {t('catalogo.day', 'día')}</span>
+                <p style={{ fontSize: op.precio === 0 ? '14px' : '18px', fontWeight: 900, color: 'var(--brand-text)', margin: '0 0 16px', letterSpacing: '-0.02em' }}>
+                  {op.precio === 0 ? (
+                    <span style={{ color: '#10b981', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                      {t('vehiculo.includedInBaseRate', 'Incluido en la tarifa')} <span style={{ fontSize: '11px', fontWeight: 700 }}>(+$0)</span>
+                    </span>
+                  ) : (
+                    <span>+{formatCurrency(op.precio, moneda)} <span style={{ fontSize: '10px', fontWeight: 600, color: c?.textSecondary || 'var(--texto-second)' }}>/ {t('catalogo.day', 'día')}</span></span>
+                  )}
                 </p>
                 <div style={{
                   width: '100%',

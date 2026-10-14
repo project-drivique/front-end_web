@@ -116,17 +116,6 @@ export default function DeliveryPreferencesForm({ onGuardadoExitoso }) {
       bgIcono: 'rgba(37, 99, 235, 0.1)',
     },
     {
-      id: 'smsNotifications',
-      titulo: t('notificaciones.canales.smsTitulo', 'Mensajes SMS'),
-      descripcion: t(
-        'notificaciones.canales.smsDesc',
-        'Notificaciones de texto urgentes sobre entrega, devolución e incidencias en ruta.'
-      ),
-      icono: <FaMobileAlt />,
-      colorIcono: '#10b981',
-      bgIcono: 'rgba(16, 185, 129, 0.1)',
-    },
-    {
       id: 'pushNotifications',
       titulo: t('notificaciones.canales.pushTitulo', 'Notificaciones Push Móviles'),
       descripcion: t(
