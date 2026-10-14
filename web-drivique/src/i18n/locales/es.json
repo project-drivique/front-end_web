@@ -3230,6 +3230,8 @@
       "PENDING_DOCUMENT_REVIEW": "Pendiente de revisión",
       "PENDING_SCHEDULE": "Esperando apertura de sucursal",
       "PENDING_PAYMENT": "Pendiente de pago",
+      "pending_payment": "Pendiente de pago",
+      "pendiente_pago": "Pendiente de pago",
       "confirmada": "Confirmada",
       "en_curso": "En curso",
       "finalizada": "Finalizada",

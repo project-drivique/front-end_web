@@ -42,7 +42,8 @@ export default function RespuestaPagoPage() {
           const wompiRef = data?.data?.reference;
 
           if (status === 'APPROVED') {
-            const holdId = wompiRef || refQuery;
+            const rawHold = wompiRef || refQuery || '';
+            const holdId = rawHold.includes('_') ? rawHold.split('_')[0] : rawHold;
             if (holdId) {
               reservationsService.confirmarPago(holdId)
                 .then(() => {
