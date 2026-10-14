@@ -719,7 +719,6 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
   const medioPagoTexto = resolverMedioPago()
 
   const [pagandoWompi, setPagandoWompi] = useState(false)
-  const [confirmandoPago, setConfirmandoPago] = useState(false)
   const wompiCardRef = useRef(null)
 
   useEffect(() => {
@@ -757,46 +756,6 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
     }
   }
 
-  const handleVerificarPagoManual = async () => {
-    const { isConfirmed } = await showAlert({
-      icon: 'question',
-      title: '¿Confirmar Pago de la Reserva?',
-      text: 'Se registrará la confirmación del pago en el sistema. La reserva cambiará a Confirmada (CONFIRMED) y se emitirán automáticamente las notificaciones a tu correo y a la campana web.',
-      showCancelButton: true,
-      confirmButtonText: 'Sí, confirmar pago',
-      cancelButtonText: 'Cancelar',
-    })
-    if (isConfirmed) {
-      setConfirmandoPago(true)
-      try {
-        const actualRef = reserva.id || reserva.referencia || reserva.codigo
-        await reservationsService.confirmarPago(actualRef)
-
-        try {
-          reservationService.actualizarEstado(actualRef, 'CONFIRMADA')
-          reservationService.actualizarMedioPago(actualRef, 'Wompi')
-        } catch (_) {}
-
-        await showAlert({
-          icon: 'success',
-          title: '¡Pago Confirmado!',
-          text: 'Tu reserva ha sido confirmada con éxito. Ya puedes firmar el contrato digital.',
-          timer: 2000,
-          showConfirmButton: false,
-        })
-        window.location.reload()
-      } catch (err) {
-        console.error('Error al confirmar pago de reserva:', err)
-        showAlert({
-          icon: 'error',
-          title: 'Error al confirmar pago',
-          text: err.response?.data?.message || err.message || 'No se pudo confirmar el pago de la reserva. Intenta nuevamente.',
-        })
-      } finally {
-        setConfirmandoPago(false)
-      }
-    }
-  }
 
   const formatHoraAmPm = (hora24) => {
     if (!hora24) return ''
@@ -1279,34 +1238,17 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
                 </strong>
               </div>
 
-              {/* Botones de Pago / Confirmación */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%', maxWidth: '440px' }}>
-                <button
-                  type="button"
-                  id="btn-pagar-wompi"
-                  onClick={handlePagarWompi}
-                  disabled={pagandoWompi || confirmandoPago}
-                  className="modal-wompi-btn"
-                >
-                  <FaCreditCard size={16} />
-                  <span>{pagandoWompi ? t('reservas.redirectingToWompi', { defaultValue: 'Redirigiendo a Wompi…' }) : t('reservas.payWithWompi', { defaultValue: 'Pagar con Wompi' })}</span>
-                </button>
-
-                <button
-                  type="button"
-                  id="btn-confirmar-pago-manual"
-                  onClick={handleVerificarPagoManual}
-                  disabled={pagandoWompi || confirmandoPago}
-                  className="modal-wompi-btn"
-                  style={{
-                    background: '#10b981',
-                    boxShadow: '0 4px 14px rgba(16, 185, 129, 0.28)'
-                  }}
-                >
-                  <FaCheckCircle size={16} />
-                  <span>{confirmandoPago ? 'Confirmando pago en backend…' : 'Confirmar Pago Aprobado'}</span>
-                </button>
-              </div>
+              {/* Botón de Pago en Wompi */}
+              <button
+                type="button"
+                id="btn-pagar-wompi"
+                onClick={handlePagarWompi}
+                disabled={pagandoWompi}
+                className="modal-wompi-btn"
+              >
+                <FaCreditCard size={16} />
+                <span>{pagandoWompi ? t('reservas.redirectingToWompi', { defaultValue: 'Redirigiendo a Wompi…' }) : t('reservas.payWithWompi', { defaultValue: 'Pagar con Wompi' })}</span>
+              </button>
 
               {/* Plazo para pagar en Wompi */}
               <div className="modal-cash-deadline-box" style={{ marginTop: '16px', width: '100%' }}>
