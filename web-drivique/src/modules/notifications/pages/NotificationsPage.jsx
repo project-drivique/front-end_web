@@ -78,12 +78,26 @@ export default function NotificationsPage({ defaultTab }) {
 
   // Notificaciones válidas con contenido de texto
   const notificacionesVisibles = useMemo(() => {
-    return (notificaciones || []).filter((n) => {
+    const list = (notificaciones || []).filter((n) => {
       if (!n || typeof n !== 'object') return false
-      const tit = n.tituloKey ? t(n.tituloKey, n.tituloFallback || n.titulo || n.title || '') : (n.titulo || n.tituloFallback || n.title || '')
+      const tit = n.tituloKey ? t(n.tituloKey, n.tituloFallback || n.titulo || n.subject || n.title || '') : (n.titulo || n.tituloFallback || n.subject || n.title || '')
       const msg = n.mensajeKey ? t(n.mensajeKey, n.mensajeFallback || n.mensaje || n.message || '') : (n.mensaje || n.mensajeFallback || n.message || '')
       return Boolean((tit && tit.trim()) || (msg && msg.trim()))
     })
+
+    const deduplicadas = []
+    const clavesVistas = new Set()
+    for (const item of list) {
+      const tit = (item.titulo || item.subject || '').trim().toLowerCase()
+      const msg = (item.mensaje || item.message || '').trim().toLowerCase()
+      const ref = item.metadata?.reservationId || item.metadata?.bookingCode || item.referenceId || ''
+      const key = `${tit}|${msg}|${ref}`
+      if (!clavesVistas.has(key)) {
+        clavesVistas.add(key)
+        deduplicadas.push(item)
+      }
+    }
+    return deduplicadas
   }, [notificaciones, t])
 
   // Filtradas por estado de lectura
