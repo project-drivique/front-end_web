@@ -351,6 +351,33 @@ export default function NotificationsPage({ defaultTab }) {
                               {titulo || t('notificaciones.title', 'Notificación')}
                             </h3>
                             {chipCrit}
+                            {(() => {
+                              const esPago = String(n.tipo || '').toLowerCase().includes('pago') ||
+                                String(n.tipo || '').toLowerCase().includes('payment') ||
+                                String(titulo || '').toLowerCase().includes('pago') ||
+                                String(titulo || '').toLowerCase().includes('comprobante');
+                              if (!esPago) return null;
+                              const statusRaw = String(n.metadata?.status || '').toUpperCase();
+                              const esRechazado = statusRaw === 'DECLINED' || statusRaw === 'REJECTED' || statusRaw === 'ERROR' || String(titulo || '').toLowerCase().includes('fallo') || String(titulo || '').toLowerCase().includes('problema');
+                              return (
+                                <span
+                                  style={{
+                                    fontSize: '11px',
+                                    fontWeight: 700,
+                                    padding: '2px 8px',
+                                    borderRadius: '6px',
+                                    background: esRechazado ? 'rgba(239, 68, 68, 0.12)' : 'rgba(16, 185, 129, 0.12)',
+                                    color: esRechazado ? '#dc2626' : '#059669',
+                                    border: `1px solid ${esRechazado ? 'rgba(239, 68, 68, 0.25)' : 'rgba(16, 185, 129, 0.25)'}`,
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '4px',
+                                  }}
+                                >
+                                  {esRechazado ? '✕ Pago Rechazado' : '✓ Pago Exitoso'}
+                                </span>
+                              );
+                            })()}
                           </div>
                           {!n.leida && <span className="notif-punto-no-leida" />}
                         </div>

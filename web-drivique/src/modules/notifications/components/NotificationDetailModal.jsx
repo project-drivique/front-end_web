@@ -279,6 +279,65 @@ export default function NotificationDetailModal({
                 <p>{notif.mensaje}</p>
               </div>
 
+              {/* Comprobante de Transacción si es notificación de pago */}
+              {(() => {
+                const esPago = String(notif.tipo || '').toLowerCase().includes('pago') ||
+                  String(notif.tipo || '').toLowerCase().includes('payment') ||
+                  String(notif.titulo || '').toLowerCase().includes('pago') ||
+                  String(notif.titulo || '').toLowerCase().includes('comprobante');
+                if (!esPago) return null;
+                const statusRaw = String(metadata?.status || '').toUpperCase();
+                const esRechazado = statusRaw === 'DECLINED' || statusRaw === 'REJECTED' || statusRaw === 'ERROR' || String(notif.titulo || '').toLowerCase().includes('fallo') || String(notif.titulo || '').toLowerCase().includes('problema');
+                const monto = metadata?.amount ? Number(metadata.amount).toLocaleString('es-CO') : null;
+                const moneda = metadata?.currency || 'COP';
+                const bookingCode = metadata?.bookingCode || notif.referenceId || null;
+
+                return (
+                  <div
+                    style={{
+                      marginTop: '16px',
+                      padding: '16px',
+                      borderRadius: '12px',
+                      background: esRechazado ? 'rgba(239, 68, 68, 0.05)' : 'rgba(16, 185, 129, 0.05)',
+                      border: `1px solid ${esRechazado ? 'rgba(239, 68, 68, 0.2)' : 'rgba(16, 185, 129, 0.2)'}`,
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+                      <span style={{ fontSize: '13px', fontWeight: 800, color: 'var(--texto-primary, #0f172a)' }}>
+                        Comprobante de Pago Oficial
+                      </span>
+                      <span
+                        style={{
+                          fontSize: '11px',
+                          fontWeight: 700,
+                          padding: '3px 8px',
+                          borderRadius: '6px',
+                          background: esRechazado ? 'rgba(239, 68, 68, 0.15)' : 'rgba(16, 185, 129, 0.15)',
+                          color: esRechazado ? '#b91c1c' : '#047857',
+                        }}
+                      >
+                        {esRechazado ? 'Pago Rechazado' : 'Pago Exitoso (APROBADO)'}
+                      </span>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', fontSize: '12px' }}>
+                      {monto && (
+                        <div>
+                          <span style={{ color: 'var(--texto-muted, #64748b)', display: 'block', fontSize: '11px' }}>Monto Pagado</span>
+                          <span style={{ fontWeight: 800, color: 'var(--texto-primary, #0f172a)' }}>$ {monto} {moneda}</span>
+                        </div>
+                      )}
+                      {bookingCode && (
+                        <div>
+                          <span style={{ color: 'var(--texto-muted, #64748b)', display: 'block', fontSize: '11px' }}>Código de Reserva</span>
+                          <span style={{ fontWeight: 800, color: 'var(--texto-primary, #0f172a)' }}>{bookingCode}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })()}
+
               {/* Metadatos asociados */}
               {metadata && (
                 <div className="notif-detail-metadata-section">
