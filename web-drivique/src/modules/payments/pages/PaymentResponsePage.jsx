@@ -57,7 +57,11 @@ export default function RespuestaPagoPage() {
               navigate('/reservas', { replace: true });
             }
           } else {
-            // Redirección inmediata a Mis Reservas sin pantallas intermedias si el pago no fue aprobado o fue cancelado
+            const rawHold = wompiRef || refQuery || '';
+            const holdId = rawHold.includes('_') ? rawHold.split('_')[0] : rawHold;
+            if (holdId) {
+              reservationsService.reportarPagoFallido(holdId).catch(() => {});
+            }
             navigate('/reservas', { replace: true });
           }
         })
