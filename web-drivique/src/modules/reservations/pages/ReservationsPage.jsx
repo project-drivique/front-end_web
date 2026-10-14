@@ -23,12 +23,14 @@ import './ReservationsPage.css'
 
 const CLASES_ESTADO = {
   ...Object.fromEntries(filtrosReservas.estados.map(({ valor, clase }) => [valor, clase])),
+  pendiente_pago: 'estado-pendiente-pago',
+  pending_payment: 'estado-pendiente-pago',
+  PENDING_PAYMENT: 'estado-pendiente-pago',
   pendiente_documentos: 'estado-pendiente',
   pendiente_horario: 'estado-pendiente',
   pendiente_efectivo: 'estado-pendiente',
   PENDING_DOCUMENT_REVIEW: 'estado-pendiente',
   PENDING_SCHEDULE: 'estado-pendiente',
-  PENDING_PAYMENT: 'estado-pendiente',
   CONFIRMED: 'estado-confirmada',
   ACTIVE: 'estado-en-curso',
   COMPLETED: 'estado-finalizada',
@@ -460,27 +462,44 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
   const reservaOriginal = contrato?.contratoOriginal?.reserva || reservationService.obtenerPorReferencia(refBusquedaModal) || reservationService.obtenerPorReferencia(reserva.id)
   const vehiculoOriginal = contrato?.contratoOriginal?.vehiculo || reserva.vehiculo
 
-  const esEfectivo = reservaOriginal?.reservaDetalles?.metodoPago === 'efectivo' || reserva.metodoPago === 'efectivo'
-  const rawEstadoModal = reservaOriginal?.estado || reserva.estado || ''
+  const backendStatus = String(reserva.status || reserva.estadoRaw || '').toUpperCase()
+  const isPendingPayment = backendStatus === 'PENDING_PAYMENT' || reserva.estado === 'PENDING_PAYMENT' || reserva.estado === 'pendiente_pago'
+  const isPendingDocs = backendStatus === 'PENDING_DOCUMENT_REVIEW' || reserva.estado === 'PENDING_DOCUMENT_REVIEW' || reserva.estado === 'pendiente_documentos'
+  const isPendingSchedule = backendStatus === 'PENDING_SCHEDULE' || reserva.estado === 'PENDING_SCHEDULE' || reserva.estado === 'pendiente_horario'
+
+  const esEfectivo = Boolean(reserva.cashPaymentCode) || Boolean(reservaOriginal?.cashPaymentCode) || (reserva.metodoPago === 'efectivo' && !isPendingPayment)
+  const rawEstadoModal = backendStatus || reservaOriginal?.estado || reserva.estado || ''
   const estadoNormModal = String(rawEstadoModal).toLowerCase()
   const esConfirmadaModal =
+    backendStatus === 'CONFIRMED' ||
+    backendStatus === 'ACTIVE' ||
+    backendStatus === 'COMPLETED' ||
     estadoNormModal === 'confirmada' ||
+    estadoNormModal === 'confirmed' ||
     estadoNormModal === 'activa' ||
+    estadoNormModal === 'active' ||
     estadoNormModal === 'en_curso' ||
     estadoNormModal === 'en curso' ||
     estadoNormModal === 'finalizada' ||
     estadoNormModal === 'completada' ||
+    estadoNormModal === 'completed' ||
     estadoNormModal === 'pagada' ||
     reservaOriginal?.pagoEstado === 'aprobado' ||
     reserva.pagoEstado === 'aprobado' ||
     Boolean(reservaOriginal?.fechaPagoConfirmado) ||
     Boolean(reserva.fechaPagoConfirmado)
 
-  const esFinalizadaModal = ['finalizada', 'completada', 'finalizado', 'completado'].includes(estadoNormModal)
+  const esFinalizadaModal = ['finalizada', 'completada', 'finalizado', 'completado', 'completed'].includes(estadoNormModal) || backendStatus === 'COMPLETED'
 
   const estadoClaveModal = esConfirmadaModal
-    ? (estadoNormModal === 'activa' || estadoNormModal === 'en_curso' || estadoNormModal === 'en curso' ? 'activa' : (estadoNormModal === 'finalizada' ? 'finalizada' : 'confirmada'))
-    : (reserva.estado || 'pendiente')
+    ? (estadoNormModal === 'activa' || estadoNormModal === 'active' || estadoNormModal === 'en_curso' || estadoNormModal === 'en curso' || backendStatus === 'ACTIVE' ? 'activa' : (esFinalizadaModal ? 'finalizada' : 'confirmada'))
+    : (isPendingPayment
+      ? 'PENDING_PAYMENT'
+      : (isPendingDocs
+        ? 'PENDING_DOCUMENT_REVIEW'
+        : (isPendingSchedule
+          ? 'PENDING_SCHEDULE'
+          : (reserva.estado || 'pendiente'))))
 
   const estado = {
     texto: t(`reservas.statuses.${estadoClaveModal}`, { defaultValue: t(`reservas.statuses.${reserva.estado}`, { defaultValue: t('reservas.statuses.pendiente') }) }),
@@ -493,31 +512,36 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
   const proteccion = reserva.seguroNombre || reserva.reservaDetalles?.seguro || (vehiculoOriginal?.seguros?.[seguroIdx]?.nombre) || reservaOriginal?.reservaDetalles?.seguro || 'Protección Básica Estándar'
   const esDocumentosRechazados = !esConfirmadaModal && (
     reserva.estado === 'DOCUMENTOS_RECHAZADOS' ||
+    backendStatus === 'DOCUMENTOS_RECHAZADOS' ||
     reservaOriginal?.estado === 'DOCUMENTOS_RECHAZADOS' ||
     reserva.estadoDocumentos === 'RECHAZADO' ||
     reservaOriginal?.estadoDocumentos === 'RECHAZADO'
   )
-  const esPendienteHorario = !esConfirmadaModal && (
-    reserva.estado === 'PENDING_SCHEDULE' ||
-    reservaOriginal?.estado === 'PENDING_SCHEDULE' ||
+  const esPendienteHorario = !esConfirmadaModal && !isPendingPayment && !esDocumentosRechazados && (
+    isPendingSchedule ||
     reserva.estado === 'PENDIENTE_HORARIO' ||
-    reservaOriginal?.estado === 'PENDIENTE_HORARIO' ||
-    reserva.estado === 'pendiente_horario' ||
-    reservaOriginal?.estado === 'pendiente_horario'
+    reserva.estado === 'pendiente_horario'
   )
-  const esPendienteValidacion = !esConfirmadaModal && !esPendienteHorario && !esDocumentosRechazados && (
+  const esPendienteValidacion = !esConfirmadaModal && !isPendingPayment && !esPendienteHorario && !esDocumentosRechazados && (
+    isPendingDocs ||
     reserva.estado === 'PENDIENTE_VALIDACION' ||
-    reservaOriginal?.estado === 'PENDIENTE_VALIDACION' ||
-    reserva.estado === 'PENDING_DOCUMENT_REVIEW' ||
-    reservaOriginal?.estado === 'PENDING_DOCUMENT_REVIEW' ||
     reserva.estado === 'pendiente_documentos' ||
-    reservaOriginal?.estado === 'pendiente_documentos' ||
-    reserva.estadoDocumentos === 'PENDIENTE' ||
-    reservaOriginal?.estadoDocumentos === 'PENDIENTE'
+    (reservaOriginal?.estado === 'PENDING_DOCUMENT_REVIEW' && !backendStatus) ||
+    (reservaOriginal?.estadoDocumentos === 'PENDIENTE' && !backendStatus)
   )
 
-  const esPendienteEfectivo = !esConfirmadaModal && !esPendienteValidacion && !esPendienteHorario && !esDocumentosRechazados && (reserva.estado === 'PENDIENTE_EFECTIVO' || reservaOriginal?.estado === 'PENDIENTE_EFECTIVO' || (esEfectivo && (estadoNormModal === 'pendiente' || !reserva.estado)))
-  const esPendienteWompi = !esEfectivo && !esConfirmadaModal && !esPendienteValidacion && !esPendienteHorario && !esDocumentosRechazados && (estadoNormModal === 'pendiente' || reserva.estado === 'PENDING_PAYMENT')
+  const esPendienteEfectivo = !esConfirmadaModal && !esPendienteValidacion && !esPendienteHorario && !esDocumentosRechazados && (
+    reserva.estado === 'PENDIENTE_EFECTIVO' ||
+    Boolean(reserva.cashPaymentCode) ||
+    Boolean(reservaOriginal?.cashPaymentCode) ||
+    (esEfectivo && (estadoNormModal === 'pendiente' || !reserva.estado))
+  )
+  const esPendienteWompi = !esEfectivo && !esPendienteEfectivo && !esConfirmadaModal && !esPendienteValidacion && !esPendienteHorario && !esDocumentosRechazados && (
+    isPendingPayment ||
+    estadoNormModal === 'pendiente' ||
+    estadoNormModal === 'pending_payment' ||
+    reserva.estado === 'PENDING_PAYMENT'
+  )
   const esWompiAprobado = !esEfectivo && esConfirmadaModal
 
   const sucursalPago = reservaOriginal?.reservaDetalles?.sucursalPagoEfectivo || reserva.vehiculo?.sucursal || ''
@@ -695,6 +719,17 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
   const medioPagoTexto = resolverMedioPago()
 
   const [pagandoWompi, setPagandoWompi] = useState(false)
+  const [confirmandoPago, setConfirmandoPago] = useState(false)
+  const wompiCardRef = useRef(null)
+
+  useEffect(() => {
+    if (isPendingPayment || autoDesbloquear) {
+      const timer = setTimeout(() => {
+        wompiCardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+      }, 300)
+      return () => clearTimeout(timer)
+    }
+  }, [isPendingPayment, autoDesbloquear])
 
   const handlePagarWompi = async (e) => {
     if (e) {
@@ -725,24 +760,41 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
   const handleVerificarPagoManual = async () => {
     const { isConfirmed } = await showAlert({
       icon: 'question',
-      title: '¿Ya realizaste el pago en Wompi?',
-      text: 'Si el pago fue aprobado en Wompi, confirmaremos tu reserva ahora mismo para que puedas firmar tu contrato de alquiler.',
+      title: '¿Confirmar Pago de la Reserva?',
+      text: 'Se registrará la confirmación del pago en el sistema. La reserva cambiará a Confirmada (CONFIRMED) y se emitirán automáticamente las notificaciones a tu correo y a la campana web.',
       showCancelButton: true,
       confirmButtonText: 'Sí, confirmar pago',
       cancelButtonText: 'Cancelar',
     })
     if (isConfirmed) {
-      const actualRef = reserva.referencia || reserva.codigo || reserva.id
-      reservationService.actualizarEstado(actualRef, 'CONFIRMADA')
-      reservationService.actualizarMedioPago(actualRef, 'Wompi')
-      await showAlert({
-        icon: 'success',
-        title: '¡Pago Confirmado!',
-        text: 'Tu reserva ha sido confirmada con éxito. Ya puedes firmar el contrato digital.',
-        timer: 1800,
-        showConfirmButton: false,
-      })
-      window.location.reload()
+      setConfirmandoPago(true)
+      try {
+        const actualRef = reserva.id || reserva.referencia || reserva.codigo
+        await reservationsService.confirmarPago(actualRef)
+
+        try {
+          reservationService.actualizarEstado(actualRef, 'CONFIRMADA')
+          reservationService.actualizarMedioPago(actualRef, 'Wompi')
+        } catch (_) {}
+
+        await showAlert({
+          icon: 'success',
+          title: '¡Pago Confirmado!',
+          text: 'Tu reserva ha sido confirmada con éxito. Ya puedes firmar el contrato digital.',
+          timer: 2000,
+          showConfirmButton: false,
+        })
+        window.location.reload()
+      } catch (err) {
+        console.error('Error al confirmar pago de reserva:', err)
+        showAlert({
+          icon: 'error',
+          title: 'Error al confirmar pago',
+          text: err.response?.data?.message || err.message || 'No se pudo confirmar el pago de la reserva. Intenta nuevamente.',
+        })
+      } finally {
+        setConfirmandoPago(false)
+      }
     }
   }
 
@@ -1203,14 +1255,17 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
 
         {/* Tarjeta de Pago Digital Pendiente Wompi (si aplica) */}
         {esPendienteWompi && (
-          <div className="modal-wompi-card">
+          <div className="modal-wompi-card" ref={wompiCardRef}>
             <div className="modal-wompi-subcard">
-              <h3 className="modal-wompi-titulo">
-                {t('reservas.pendingDigitalPayment', { defaultValue: 'Pago Digital Pendiente' })}
-              </h3>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                <FaCreditCard style={{ fontSize: '22px', color: 'var(--brand-primary, #1d4ed8)' }} />
+                <h3 className="modal-wompi-titulo" style={{ margin: 0 }}>
+                  {t('reservas.pendingDigitalPayment', { defaultValue: 'Pago Digital Pendiente' })}
+                </h3>
+              </div>
               <p className="modal-wompi-desc">
                 {t('reservas.digitalPendingDesc', {
-                  defaultValue: 'Tu reserva está guardada como pendiente. Completa el pago seguro en Wompi para confirmar y habilitar tu contrato de alquiler.'
+                  defaultValue: 'Tus documentos fueron aprobados. Tu reserva está lista para pago. Completa el pago seguro en Wompi o confirma el pago para habilitar tu contrato de alquiler.'
                 })}
               </p>
 
@@ -1220,20 +1275,38 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
                   {t('reservas.totalToPay', { defaultValue: 'TOTAL A PAGAR:' })}
                 </span>
                 <strong className="modal-wompi-total-val">
-                  {formatCurrency(reserva.total || 0, moneda)}
+                  {formatCurrency(totalCalculado, moneda)}
                 </strong>
               </div>
 
-              {/* Botón Pagar con Wompi */}
-              <button
-                type="button"
-                onClick={handlePagarWompi}
-                disabled={pagandoWompi}
-                className="modal-wompi-btn"
-              >
-                <FaCreditCard size={16} />
-                <span>{pagandoWompi ? t('reservas.redirectingToWompi', { defaultValue: 'Redirigiendo a Wompi…' }) : t('reservas.payWithWompi', { defaultValue: 'Pagar con Wompi' })}</span>
-              </button>
+              {/* Botones de Pago / Confirmación */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%', maxWidth: '440px' }}>
+                <button
+                  type="button"
+                  id="btn-pagar-wompi"
+                  onClick={handlePagarWompi}
+                  disabled={pagandoWompi || confirmandoPago}
+                  className="modal-wompi-btn"
+                >
+                  <FaCreditCard size={16} />
+                  <span>{pagandoWompi ? t('reservas.redirectingToWompi', { defaultValue: 'Redirigiendo a Wompi…' }) : t('reservas.payWithWompi', { defaultValue: 'Pagar con Wompi' })}</span>
+                </button>
+
+                <button
+                  type="button"
+                  id="btn-confirmar-pago-manual"
+                  onClick={handleVerificarPagoManual}
+                  disabled={pagandoWompi || confirmandoPago}
+                  className="modal-wompi-btn"
+                  style={{
+                    background: '#10b981',
+                    boxShadow: '0 4px 14px rgba(16, 185, 129, 0.28)'
+                  }}
+                >
+                  <FaCheckCircle size={16} />
+                  <span>{confirmandoPago ? 'Confirmando pago en backend…' : 'Confirmar Pago Aprobado'}</span>
+                </button>
+              </div>
 
               {/* Plazo para pagar en Wompi */}
               <div className="modal-cash-deadline-box" style={{ marginTop: '16px', width: '100%' }}>
@@ -1362,25 +1435,36 @@ function TarjetaReserva({ reserva, moneda, onValorar, onReportar, onVerDetalle }
   const navigate = useNavigate()
   const refBusqueda = reserva.referencia || reserva.codigo || reserva.id
   const reservaAlmacenada = reservationService.obtenerPorReferencia(refBusqueda) || reservationService.obtenerPorReferencia(reserva.id)
-  const rawEstado = reservaAlmacenada?.estado || reserva.estado || ''
+
+  const backendStatus = String(reserva.status || reserva.estadoRaw || '').toUpperCase()
+  const isPendingPayment = backendStatus === 'PENDING_PAYMENT' || reserva.estado === 'PENDING_PAYMENT' || reserva.estado === 'pendiente_pago'
+  const isPendingDocs = backendStatus === 'PENDING_DOCUMENT_REVIEW' || reserva.estado === 'PENDING_DOCUMENT_REVIEW' || reserva.estado === 'pendiente_documentos'
+  const isPendingSchedule = backendStatus === 'PENDING_SCHEDULE' || reserva.estado === 'PENDING_SCHEDULE' || reserva.estado === 'pendiente_horario'
+
+  const rawEstado = backendStatus || reservaAlmacenada?.estado || reserva.estado || ''
   const estadoNorm = String(rawEstado).toLowerCase()
   const contratoFirmado = useContratoReal(reserva.id)
   const tieneContratoFirmado = Boolean(contratoFirmado?.firmaUsuarioDataUrl)
 
   const esPagoConfirmado =
+    backendStatus === 'CONFIRMED' ||
+    backendStatus === 'ACTIVE' ||
+    backendStatus === 'COMPLETED' ||
     reserva.pagoEstado === 'aprobado' ||
     reservaAlmacenada?.pagoEstado === 'aprobado' ||
     Boolean(reserva.fechaPagoConfirmado) ||
     Boolean(reservaAlmacenada?.fechaPagoConfirmado)
 
-  const esRawEnCurso = estadoNorm === 'activa' || estadoNorm === 'en_curso' || estadoNorm === 'en curso'
+  const esRawEnCurso = estadoNorm === 'activa' || estadoNorm === 'active' || estadoNorm === 'en_curso' || estadoNorm === 'en curso' || backendStatus === 'ACTIVE'
   // Una reserva solo puede estar en curso si está pagada Y tiene el contrato digital firmado
   const estaEnCurso = esRawEnCurso && tieneContratoFirmado && esPagoConfirmado
-  const esFinalizada = ['finalizada', 'completada', 'finalizado', 'completado'].includes(estadoNorm) || ['finalizada', 'completada', 'finalizado', 'completado'].includes(String(reserva.estado).toLowerCase())
+  const esFinalizada = ['finalizada', 'completada', 'finalizado', 'completado', 'completed'].includes(estadoNorm) || backendStatus === 'COMPLETED'
   const puedeReportar = estaEnCurso || esFinalizada
 
   const esConfirmada =
+    backendStatus === 'CONFIRMED' ||
     estadoNorm === 'confirmada' ||
+    estadoNorm === 'confirmed' ||
     estaEnCurso ||
     esFinalizada ||
     estadoNorm === 'pagada' ||
@@ -1390,7 +1474,13 @@ function TarjetaReserva({ reserva, moneda, onValorar, onReportar, onVerDetalle }
 
   const estadoClave = esConfirmada
     ? (estaEnCurso ? 'activa' : (esFinalizada ? 'finalizada' : 'confirmada'))
-    : (reserva.estado || 'pendiente')
+    : (isPendingPayment
+      ? 'PENDING_PAYMENT'
+      : (isPendingDocs
+        ? 'PENDING_DOCUMENT_REVIEW'
+        : (isPendingSchedule
+          ? 'PENDING_SCHEDULE'
+          : (reserva.estado || 'pendiente'))))
 
   const estado = {
     texto: t(`reservas.statuses.${estadoClave}`, { defaultValue: t(`reservas.statuses.${reserva.estado}`, { defaultValue: t('reservas.statuses.pendiente') }) }),

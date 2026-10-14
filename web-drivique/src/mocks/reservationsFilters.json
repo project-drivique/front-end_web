@@ -1,6 +1,8 @@
 {
   "estados": [
     { "valor": "pendiente", "clase": "estado-pendiente" },
+    { "valor": "PENDING_PAYMENT", "clase": "estado-pendiente-pago" },
+    { "valor": "pendiente_pago", "clase": "estado-pendiente-pago" },
     { "valor": "pendiente_documentos", "clase": "estado-pendiente" },
     { "valor": "pendiente_horario", "clase": "estado-pendiente" },
     { "valor": "confirmada", "clase": "estado-confirmada" },
