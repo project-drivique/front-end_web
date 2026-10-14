@@ -42,6 +42,12 @@ export const reservationsService = {
     return data
   },
 
+  reportarPagoFallido: async (holdId) => {
+    const api = await getApi()
+    const { data } = await api.post(`/reservations/checkout/payment-failed/${holdId}`)
+    return data
+  },
+
   cancelarReserva: async (id) => {
     const api = await getApi()
     const { data } = await api.patch(`/reservations/${id}/cancel`)
