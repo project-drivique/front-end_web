@@ -35,6 +35,8 @@ import {
 import { useLanding } from '../../landing/LandingContext'
 import { useAuthStore } from '../../../store/authStore'
 import { useBranchDashboard, getScheduleForRange } from '../../../hooks/useBranchDashboard'
+import { reservationManagementService } from '../../../services/reservationManagementService'
+import { vehicleManagementService } from '../../../services/vehicleManagementService'
 import { useBranchNotifications } from '../../../hooks/useBranchNotifications'
 import ManagementSidebar from './ManagementSidebar'
 import MenuConfiguracion from '../../../components/MenuConfiguracion'
@@ -43,9 +45,14 @@ import KpiDetailModal from './KpiDetailModal'
 import BranchNotificationModal from './BranchNotificationModal'
 import './BranchDashboard.css'
 
-const TODAY_STR = '2026-09-25'
-const YESTERDAY_STR = '2026-09-24'
-const TOMORROW_STR = '2026-09-26'
+const diaLocal = (offset) => {
+  const fecha = new Date()
+  fecha.setDate(fecha.getDate() + offset)
+  return fecha.toLocaleDateString('en-CA')
+}
+const TODAY_STR = diaLocal(0)
+const YESTERDAY_STR = diaLocal(-1)
+const TOMORROW_STR = diaLocal(1)
 
 const getVehicleImage = (item) => {
   const name = (item?.vehiculoNombre || item?.vehiculo || '').toLowerCase()
@@ -554,130 +561,89 @@ export default function BranchDashboard({ branchOnly = true }) {
   }
 
   const getKpiDataForExport = (metricKey) => {
-    const branchName = dashboardData?.branchName || 'Alamo Bogotá - Aeropuerto'
+    const branchName = dashboardData?.branchName || ''
+    const reservas = reservationManagementService.list()
+    const ahora = new Date()
+    const money = (value) => `$ ${Number(value || 0).toLocaleString('es-CO')} COP`
+    const estadoTexto = (estado) => String(estado || '').replace('_', ' ').toUpperCase()
 
     if (metricKey === 'ingresos') {
+      const delMes = reservas.filter((r) => r.pagoEstado === 'aprobado'
+        && new Date(r.fechaPagoConfirmado || r.fechaCreacion).getMonth() === ahora.getMonth()
+        && new Date(r.fechaPagoConfirmado || r.fechaCreacion).getFullYear() === ahora.getFullYear())
       return {
         title: t('dashboard.export.incomeTitle', 'Ingresos del Mes'),
         filename: 'reporte_ingresos_mes',
         headers: [
-          t('dashboard.export.incomeCode', 'Código Reserva'), 
-          t('dashboard.export.incomeClient', 'Cliente'), 
-          t('dashboard.export.incomeVehicle', 'Vehículo'), 
-          t('dashboard.export.incomeStart', 'Fecha Inicio'), 
-          t('dashboard.export.incomeEnd', 'Fecha Fin'), 
-          t('dashboard.export.incomeAmount', 'Monto Total'), 
-          t('dashboard.export.incomeStatus', 'Estado')
+          t('dashboard.export.incomeCode', 'Código Reserva'),
+          t('dashboard.export.incomeClient', 'Cliente'),
+          t('dashboard.export.incomeVehicle', 'Vehículo'),
+          t('dashboard.export.incomeStart', 'Fecha Inicio'),
+          t('dashboard.export.incomeEnd', 'Fecha Fin'),
+          t('dashboard.export.incomeAmount', 'Monto Total'),
+          t('dashboard.export.incomeStatus', 'Estado'),
         ],
-        rows: [
-          ['RES-8920', 'Carlos Restrepo', 'Toyota Corolla (ABC-123)', '2026-09-20', '2026-09-25', '$ 1.250.000 COP', 'FINALIZADA'],
-          ['RES-8918', 'Ana María Gómez', 'Chevrolet Tracker (MXP-492)', '2026-09-22', '2026-09-27', '$ 1.800.000 COP', 'EN CURSO'],
-          ['RES-8915', 'Felipe Mendoza', 'Mazda CX-5 (KLS-849)', '2026-09-24', '2026-09-26', '$ 950.000 COP', 'CONFIRMADA'],
-          ['RES-8910', 'Laura Sofía Ruiz', 'Renault Duster (JHK-201)', '2026-09-15', '2026-09-21', '$ 1.400.000 COP', 'FINALIZADA'],
-          ['RES-8904', 'Diego Alexander Marín', 'Nissan Kicks (WER-902)', '2026-09-10', '2026-09-14', '$ 1.100.000 COP', 'FINALIZADA'],
-        ],
+        rows: delMes.map((r) => [r.codigo, r.clienteNombre, `${r.vehiculoNombre} (${r.vehiculoPlaca})`, r.fechaInicio, r.fechaFin, money(r.totalCOP), estadoTexto(r.estado)]),
         kpis: [
-          { label: t('dashboard.export.totalIncome', 'Total Ingresos Mes'), value: '$ 45.200.000 COP' },
-          { label: t('dashboard.export.growth', 'Crecimiento vs. Mes Anterior'), value: '+8.5%' },
+          { label: t('dashboard.export.totalIncome', 'Total Ingresos Mes'), value: money(dashboardData?.monthlyRevenue) },
           { label: t('dashboard.export.branch', 'Sucursal'), value: branchName },
         ],
       }
     }
 
-    if (metricKey === 'entregas') {
-      const rows = (deliveriesForRange || []).map((item) => [
-        item.codigo || item.id || 'RES-8920',
-        item.hora || '08:30 AM',
-        item.clienteNombre || 'Cliente Registrado',
-        item.clienteTelefono || item.telefono || '+57 310 456 7890',
-        item.vehiculoNombre || 'Toyota Corolla',
-        item.vehiculoPlaca || 'ABC-123',
-        item.estado || 'COMPLETADA',
-      ])
+    if (metricKey === 'entregas' || metricKey === 'devoluciones') {
+      const esEntrega = metricKey === 'entregas'
+      const lista = (esEntrega ? deliveriesForRange : returnsForRange) || []
       return {
-        title: t('dashboard.export.deliveriesTitle', 'Entregas de Hoy'),
-        filename: 'reporte_entregas_hoy',
+        title: esEntrega ? t('dashboard.export.deliveriesTitle', 'Entregas de Hoy') : t('dashboard.export.returnsTitle', 'Devoluciones de Hoy'),
+        filename: esEntrega ? 'reporte_entregas_hoy' : 'reporte_devoluciones_hoy',
         headers: [
-          t('dashboard.export.resId', 'Código Reserva'), 
-          t('dashboard.export.time', 'Hora Programada'), 
-          t('dashboard.export.client', 'Cliente'), 
-          t('dashboard.export.phone', 'Teléfono'), 
-          t('dashboard.export.vehicle', 'Nombre Vehículo'), 
-          t('dashboard.export.plate', 'Placa'), 
-          t('dashboard.export.deliveryStatus', 'Estado Entrega')
+          t('dashboard.export.resId', 'Código Reserva'),
+          t('dashboard.export.time', 'Hora Programada'),
+          t('dashboard.export.client', 'Cliente'),
+          t('dashboard.export.phone', 'Teléfono'),
+          t('dashboard.export.vehicle', 'Nombre Vehículo'),
+          t('dashboard.export.plate', 'Placa'),
+          esEntrega ? t('dashboard.export.deliveryStatus', 'Estado Entrega') : t('dashboard.export.returnStatus', 'Estado Devolución'),
         ],
-        rows: rows.length > 0 ? rows : [
-          ['RES-8920', '08:30 AM', 'Carlos Restrepo', '+57 310 456 7890', 'Toyota Corolla', 'ABC-123', 'COMPLETADA'],
-          ['RES-8922', '10:00 AM', 'Juan David Pérez', '+57 300 123 4567', 'Mazda CX-5', 'KLS-849', 'COMPLETADA'],
-          ['RES-8925', '02:00 PM', 'Santiago Castro', '+57 315 789 0123', 'Renault Duster', 'JHK-201', 'PENDIENTE'],
-        ],
-        kpis: [
-          { label: t('dashboard.export.totalScheduled', 'Total Programadas'), value: String(dashboardData?.todayDeliveriesCount ?? 3) },
-          { label: t('dashboard.export.completedDeliveries', 'Entregadas/Completadas'), value: String(dashboardData?.todayDeliveriesCompleted ?? 2) },
-          { label: t('dashboard.export.pending', 'Pendientes'), value: String(dashboardData?.todayDeliveriesPending ?? 1) },
-        ],
-      }
-    }
-
-    if (metricKey === 'devoluciones') {
-      const rows = (returnsForRange || []).map((item) => [
-        item.codigo || item.id || 'RES-8914',
-        item.hora || '04:30 PM',
-        item.clienteNombre || 'Cliente Registrado',
-        item.clienteTelefono || item.telefono || '+57 320 987 6543',
-        item.vehiculoNombre || 'Chevrolet Tracker',
-        item.vehiculoPlaca || 'MXP-492',
-        item.estado || 'RECIBIDA',
-      ])
-      return {
-        title: t('dashboard.export.returnsTitle', 'Devoluciones de Hoy'),
-        filename: 'reporte_devoluciones_hoy',
-        headers: [
-          t('dashboard.export.resId', 'Código Reserva'), 
-          t('dashboard.export.time', 'Hora Programada'), 
-          t('dashboard.export.client', 'Cliente'), 
-          t('dashboard.export.phone', 'Teléfono'), 
-          t('dashboard.export.vehicle', 'Nombre Vehículo'), 
-          t('dashboard.export.plate', 'Placa'), 
-          t('dashboard.export.returnStatus', 'Estado Devolución')
-        ],
-        rows: rows.length > 0 ? rows : [
-          ['RES-8914', '01:30 PM', 'Ana María Gómez', '+57 320 987 6543', 'Chevrolet Tracker', 'MXP-492', 'RECIBIDA'],
-          ['RES-8916', '04:30 PM', 'Felipe Mendoza', '+57 311 234 5678', 'Nissan Kicks', 'WER-902', 'RECIBIDA'],
-        ],
-        kpis: [
-          { label: t('dashboard.export.totalScheduled', 'Total Programadas'), value: String(dashboardData?.todayReturnsCount ?? 2) },
-          { label: t('dashboard.export.received', 'Recibidas'), value: String(dashboardData?.todayReturnsReceived ?? 2) },
-          { label: t('dashboard.export.pending', 'Pendientes'), value: String(dashboardData?.todayReturnsPending ?? 0) },
-        ],
+        rows: lista.map((item) => [item.codigo, item.hora, item.clienteNombre, item.clienteTelefono, item.vehiculoNombre, item.vehiculoPlaca, estadoTexto(item.estado)]),
+        kpis: esEntrega
+          ? [
+              { label: t('dashboard.export.totalScheduled', 'Total Programadas'), value: String(dashboardData?.todayDeliveriesCount ?? 0) },
+              { label: t('dashboard.export.completedDeliveries', 'Entregadas/Completadas'), value: String(dashboardData?.todayDeliveriesCompleted ?? 0) },
+              { label: t('dashboard.export.pending', 'Pendientes'), value: String(dashboardData?.todayDeliveriesPending ?? 0) },
+            ]
+          : [
+              { label: t('dashboard.export.totalScheduled', 'Total Programadas'), value: String(dashboardData?.todayReturnsCount ?? 0) },
+              { label: t('dashboard.export.received', 'Recibidas'), value: String(dashboardData?.todayReturnsReceived ?? 0) },
+              { label: t('dashboard.export.pending', 'Pendientes'), value: String(dashboardData?.todayReturnsPending ?? 0) },
+            ],
       }
     }
 
     if (metricKey === 'ocupacion') {
       const f = dashboardData?.fleet || {}
+      const vehiculos = vehicleManagementService.list()
       return {
         title: t('dashboard.export.fleetOccupancy', 'Ocupación de Flota'),
         filename: 'reporte_ocupacion_flota',
         headers: [
-          t('dashboard.export.plate', 'Placa'), 
-          t('dashboard.export.vehicle', 'Nombre Vehículo'), 
-          t('dashboard.export.category', 'Categoría'), 
-          t('dashboard.export.branch', 'Sucursal'), 
-          t('dashboard.export.opStatus', 'Estado Operativo'), 
-          t('dashboard.export.assignedRes', 'Código Reserva Asignada')
+          t('dashboard.export.plate', 'Placa'),
+          t('dashboard.export.vehicle', 'Nombre Vehículo'),
+          t('dashboard.export.category', 'Categoría'),
+          t('dashboard.export.branch', 'Sucursal'),
+          t('dashboard.export.opStatus', 'Estado Operativo'),
+          t('dashboard.export.assignedRes', 'Código Reserva Asignada'),
         ],
-        rows: [
-          ['ABC-123', 'Toyota Corolla', 'Sedán Élite', branchName, 'OCUPADO', 'RES-8920'],
-          ['MXP-492', 'Chevrolet Tracker', 'SUV Compacto', branchName, 'OCUPADO', 'RES-8918'],
-          ['KLS-849', 'Mazda CX-5', 'SUV Confort', branchName, 'DISPONIBLE', 'Sin reserva'],
-          ['JHK-201', 'Renault Duster', 'SUV 4x4', branchName, 'RESERVADO', 'RES-8924'],
-          ['WER-902', 'Nissan Kicks', 'Crossover', branchName, 'EN MANTENIMIENTO', 'Mantenimiento preventivo'],
-        ],
+        rows: vehiculos.map((v) => {
+          const activa = reservas.find((r) => String(r.vehiculoId) === String(v.id) && r.estado !== 'cancelada' && r.estado !== 'finalizada')
+          return [v.placa, v.nombre, v.categoria, v.sucursal, estadoTexto(v.estadoEfectivo), activa ? activa.codigo : 'Sin reserva']
+        }),
         kpis: [
-          { label: t('dashboard.export.occupancyRate', 'Tasa de Ocupación'), value: `${f.occupancyRate || 40}%` },
-          { label: t('dashboard.export.occupied', 'Ocupados'), value: `${f.rentedVehicles || 2} de ${f.totalVehicles || 5}` },
-          { label: t('dashboard.export.available', 'Disponibles'), value: String(f.availableVehicles || 2) },
-          { label: t('dashboard.export.maintenance', 'En Mantenimiento'), value: String(f.maintenanceVehicles || 1) },
+          { label: t('dashboard.export.occupancyRate', 'Tasa de Ocupación'), value: `${f.occupancyRate ?? 0}%` },
+          { label: t('dashboard.export.occupied', 'Ocupados'), value: `${f.rentedVehicles ?? 0} de ${f.totalVehicles ?? 0}` },
+          { label: t('dashboard.export.available', 'Disponibles'), value: String(f.availableVehicles ?? 0) },
+          { label: t('dashboard.export.maintenance', 'En Mantenimiento'), value: String(f.maintenanceVehicles ?? 0) },
         ],
       }
     }
@@ -708,7 +674,7 @@ export default function BranchDashboard({ branchOnly = true }) {
     const data = getKpiDataForExport(metricKey)
     exportPdf({
       title: `Reporte Oficial — ${data.title}`,
-      subtitle: `Sucursal: ${dashboardData?.branchName || 'Alamo Bogotá - Aeropuerto'}`,
+      subtitle: `Sucursal: ${dashboardData?.branchName || ''}`,
       headers: data.headers,
       rows: data.rows,
       kpis: data.kpis,
@@ -749,7 +715,7 @@ export default function BranchDashboard({ branchOnly = true }) {
 
   const scheduleForRange = useMemo(() => {
     return getScheduleForRange(startDateStr, endDateStr)
-  }, [startDateStr, endDateStr])
+  }, [startDateStr, endDateStr, dashboardData])
 
   const deliveriesForRange = scheduleForRange.deliveries || []
   const returnsForRange = scheduleForRange.returns || []
@@ -866,7 +832,7 @@ export default function BranchDashboard({ branchOnly = true }) {
   }
 
   const { fleet, attentionNeeded } = dashboardData
-  const totalF = fleet.totalVehicles || 5
+  const totalF = fleet.totalVehicles || 0
   const availPct = Math.round((fleet.availableVehicles / totalF) * 100)
   const rentedPct = Math.round((fleet.rentedVehicles / totalF) * 100)
   const maintPct = Math.max(0, 100 - availPct - rentedPct)
@@ -941,7 +907,7 @@ export default function BranchDashboard({ branchOnly = true }) {
               </div>
               <div className="branch-user-info-text">
                 <strong className="branch-user-name">
-                  {usuario?.nombre || 'Andrés Felipe Castro'}
+                  {usuario?.nombre || usuario?.correo}
                 </strong>
                 <span className="branch-user-role">
                   {usuario?.rol || 'encargado_sucursal'}
@@ -959,7 +925,7 @@ export default function BranchDashboard({ branchOnly = true }) {
               <span>{t('dashboard.hero.realtime', 'En tiempo real')}</span>
             </div>
             <h1 className="branch-gradient-hero-title">
-              {dashboardData.branchName || 'Alamo Bogotá - Aeropuerto'}
+              {dashboardData.branchName}
             </h1>
             <p className="branch-gradient-hero-subtitle">
               {t('dashboard.hero.subtitle', 'Resumen general del rendimiento operativo de la sucursal')}
@@ -1047,20 +1013,24 @@ export default function BranchDashboard({ branchOnly = true }) {
             <div className="branch-kpi-card-body">
               <div className="branch-kpi-value-row">
                 <strong className="branch-kpi-value">
-                  {formatCOP(dashboardData.monthlyRevenue || 45200000)}
+                  {formatCOP(dashboardData.monthlyRevenue || 0)}
                 </strong>
               </div>
 
               <div className="branch-kpi-progress-track">
                 <div
                   className="branch-kpi-progress-bar branch-kpi-progress-bar--brand"
-                  style={{ width: '85%' }}
+                  style={{ width: `${dashboardData.previousMonthRevenue > 0 ? Math.min(100, Math.round((dashboardData.monthlyRevenue / dashboardData.previousMonthRevenue) * 100)) : (dashboardData.monthlyRevenue > 0 ? 100 : 0)}%` }}
                 />
               </div>
             </div>
 
             <div className="branch-kpi-card-footer">
-              <span className="branch-kpi-trend-text">+8,5% vs. mes anterior</span>
+              <span className="branch-kpi-trend-text">
+                {dashboardData.monthlyRevenueChange === null || dashboardData.monthlyRevenueChange === undefined
+                  ? t('dashboard.kpi.noPreviousMonth', 'Sin ingresos el mes anterior para comparar')
+                  : `${dashboardData.monthlyRevenueChange > 0 ? '+' : ''}${String(dashboardData.monthlyRevenueChange).replace('.', ',')}% ${t('dashboard.kpi.vsLastMonth', 'vs. mes anterior')}`}
+              </span>
             </div>
           </article>
 
@@ -1124,8 +1094,8 @@ export default function BranchDashboard({ branchOnly = true }) {
                   className="branch-kpi-progress-bar branch-kpi-progress-bar--brand"
                   style={{
                     width: `${Math.round(
-                      ((dashboardData.todayDeliveriesCompleted || 2) /
-                        (dashboardData.todayDeliveriesCount || 3)) *
+                      ((dashboardData.todayDeliveriesCompleted || 0) /
+                        (dashboardData.todayDeliveriesCount || 1)) *
                         100
                     )}%`,
                   }}
@@ -1201,7 +1171,7 @@ export default function BranchDashboard({ branchOnly = true }) {
                   style={{
                     width: `${Math.round(
                       ((dashboardData.todayReturnsReceived || 0) /
-                        (dashboardData.todayReturnsCount || 2)) *
+                        (dashboardData.todayReturnsCount || 1)) *
                         100
                     )}%`,
                   }}
@@ -1384,12 +1354,12 @@ export default function BranchDashboard({ branchOnly = true }) {
                         const itemUniqueId = item.id || `item-${idx}`
                         const itemSeqId = idx + 1
                         const resCodigo = item.codigo || item.id || `RES-88${20 + idx}`
-                        const cliente = item.clienteNombre || 'Carlos Restrepo'
-                        const vehiculo = item.vehiculoNombre || 'Toyota Corolla'
-                        const placa = item.vehiculoPlaca || 'ABC-123'
+                        const cliente = item.clienteNombre || ''
+                        const vehiculo = item.vehiculoNombre || ''
+                        const placa = item.vehiculoPlaca || ''
                         
                         const displayDate = formatDateLabel(item.fecha || TODAY_STR)
-                        const displayTime = item.hora || '08:30 AM'
+                        const displayTime = item.hora || ''
 
                         return (
                           <tr key={itemUniqueId} className="branch-table-row">
@@ -1619,7 +1589,7 @@ export default function BranchDashboard({ branchOnly = true }) {
                   <div className="branch-attention-left">
                     <span className="branch-dot branch-dot--amber" />
                     <span className="branch-attention-text">
-                      {attentionNeeded.pendingDocuments || 2} {t('dashboard.attention.docsToValidate', 'documentos por validar')}
+                      {attentionNeeded.pendingDocuments} {t('dashboard.attention.docsToValidate', 'documentos por validar')}
                     </span>
                   </div>
                   <span className="branch-attention-arrow">&gt;</span>
@@ -1633,7 +1603,7 @@ export default function BranchDashboard({ branchOnly = true }) {
                   <div className="branch-attention-left">
                     <span className="branch-dot branch-dot--red" />
                     <span className="branch-attention-text">
-                      {attentionNeeded.openIncidents || 1} {t('dashboard.attention.openIncidents', 'incidencia abierta')}
+                      {attentionNeeded.openIncidents} {t('dashboard.attention.openIncidents', 'incidencia abierta')}
                     </span>
                   </div>
                   <span className="branch-attention-arrow">&gt;</span>
@@ -1647,7 +1617,7 @@ export default function BranchDashboard({ branchOnly = true }) {
                   <div className="branch-attention-left">
                     <span className="branch-dot branch-dot--blue" />
                     <span className="branch-attention-text">
-                      {attentionNeeded.expiringVehicleDocs || 1} {t('dashboard.attention.expiringDocs', 'documento de vehículo por vencer')}
+                      {attentionNeeded.expiringVehicleDocs} {t('dashboard.attention.expiringDocs', 'documento de vehículo por vencer')}
                     </span>
                   </div>
                   <span className="branch-attention-arrow">&gt;</span>
@@ -1655,149 +1625,98 @@ export default function BranchDashboard({ branchOnly = true }) {
               </div>
             </article>
 
-            {/* TARJETA 3: ESTADO DE LA FLOTA — DETALLE OPERATIVO Y DISPONIBILIDAD */}
-            <article className="branch-card branch-fleet-card">
-              <div className="branch-card-header-row">
-                <div className="branch-card-title-group">
-                  <h3 className="branch-card-title">
-                    <FaCar className="branch-card-title-icon" aria-hidden="true" />
-                    {t('dashboard.fleet.title', 'Estado de la flota')}
-                  </h3>
-                </div>
-                <span className="branch-fleet-total-pill">{totalF} {t('dashboard.fleet.vehiclesInBranch', 'vehículos en sucursal')}</span>
-              </div>
+            {/* TARJETA 3: ESTADO DE LA FLOTA (datos reales de la sucursal) */}
+            {(() => {
+              const vehiculos = vehicleManagementService.list()
+              const reservas = reservationManagementService.list()
+              const enCurso = new Set(reservas.filter((r) => r.estado === 'en_curso').map((r) => String(r.vehiculoId)))
+              const conReserva = new Set(reservas.filter((r) => r.estado === 'confirmada' || r.estado === 'creada').map((r) => String(r.vehiculoId)))
+              const clasificar = (v) => {
+                if (v.estadoFlota === 'mantenimiento') return 'amber'
+                if (enCurso.has(String(v.id))) return 'blue'
+                if (conReserva.has(String(v.id))) return 'cyan'
+                return 'green'
+              }
+              const total = vehiculos.length
+              const conteo = { green: 0, blue: 0, cyan: 0, amber: 0 }
+              vehiculos.forEach((v) => { conteo[clasificar(v)] += 1 })
+              const pct = (n) => (total ? Math.round((n / total) * 100) : 0)
+              const etiqueta = {
+                green: t('dashboard.fleet.available', 'Disponible'),
+                blue: t('dashboard.fleet.occupied', 'Ocupado'),
+                cyan: t('dashboard.fleet.reserved', 'Reservado'),
+                amber: t('dashboard.fleet.maintenance', 'En mantenimiento'),
+              }
+              const tarjetas = [
+                { color: 'green', titulo: t('dashboard.fleet.available', 'Disponibles'), desc: t('dashboard.fleet.readyForDelivery', 'Listos para entrega') },
+                { color: 'blue', titulo: t('dashboard.fleet.occupied', 'Ocupados'), desc: t('dashboard.fleet.activeContract', 'En contrato activo') },
+                { color: 'cyan', titulo: t('dashboard.fleet.reserved', 'Reservados'), desc: t('dashboard.fleet.forDeliveryToday', 'Con reserva próxima') },
+                { color: 'amber', titulo: t('dashboard.fleet.maintenance', 'En mantenimiento'), desc: t('dashboard.fleet.technicalReview', 'Revisión técnica') },
+              ]
+              return (
+                <article className="branch-card branch-fleet-card">
+                  <div className="branch-card-header-row">
+                    <div className="branch-card-title-group">
+                      <h3 className="branch-card-title">
+                        <FaCar className="branch-card-title-icon" aria-hidden="true" />
+                        {t('dashboard.fleet.title', 'Estado de la flota')}
+                      </h3>
+                    </div>
+                    <span className="branch-fleet-total-pill">{total} {t('dashboard.fleet.vehiclesInBranch', 'vehículos en sucursal')}</span>
+                  </div>
 
-              {/* 4 TARJETAS RESUMEN DE ESTADO */}
-              <div className="branch-fleet-stats-grid">
-                <div className="branch-fleet-stat-box branch-fleet-stat-box--green">
-                  <div className="branch-fleet-stat-head">
-                    <span className="branch-dot branch-dot--green" />
-                    <span className="branch-fleet-stat-lbl">{t('dashboard.fleet.available', 'Disponibles')}</span>
+                  <div className="branch-fleet-stats-grid">
+                    {tarjetas.map((card) => (
+                      <div key={card.color} className={`branch-fleet-stat-box branch-fleet-stat-box--${card.color}`}>
+                        <div className="branch-fleet-stat-head">
+                          <span className={`branch-dot branch-dot--${card.color}`} />
+                          <span className="branch-fleet-stat-lbl">{card.titulo}</span>
+                        </div>
+                        <div className="branch-fleet-stat-num">
+                          {conteo[card.color]} <small>({pct(conteo[card.color])}%)</small>
+                        </div>
+                        <span className="branch-fleet-stat-desc">{card.desc}</span>
+                      </div>
+                    ))}
                   </div>
-                  <div className="branch-fleet-stat-num">
-                    2 <small>(40%)</small>
-                  </div>
-                  <span className="branch-fleet-stat-desc">{t('dashboard.fleet.readyForDelivery', 'Listos para entrega')}</span>
-                </div>
 
-                <div className="branch-fleet-stat-box branch-fleet-stat-box--blue">
-                  <div className="branch-fleet-stat-head">
-                    <span className="branch-dot branch-dot--blue" />
-                    <span className="branch-fleet-stat-lbl">{t('dashboard.fleet.occupied', 'Ocupados')}</span>
+                  <div className="branch-fleet-bar-wrapper">
+                    <div className="branch-fleet-bar-labels">
+                      <span>{t('dashboard.fleet.distAvailability', 'Distribución de disponibilidad')}</span>
+                      <strong>{pct(total - conteo.amber)}% {t('dashboard.fleet.operative', 'operativa')}</strong>
+                    </div>
+                    <div className="branch-fleet-multi-bar">
+                      {tarjetas.map((card) => (
+                        <div key={card.color} className={`branch-fleet-bar-seg branch-fleet-bar-seg--${card.color}`}
+                          style={{ width: `${pct(conteo[card.color])}%` }} title={`${card.titulo}: ${pct(conteo[card.color])}%`} />
+                      ))}
+                    </div>
                   </div>
-                  <div className="branch-fleet-stat-num">
-                    1 <small>(20%)</small>
-                  </div>
-                  <span className="branch-fleet-stat-desc">{t('dashboard.fleet.activeContract', 'En contrato activo')}</span>
-                </div>
 
-                <div className="branch-fleet-stat-box branch-fleet-stat-box--cyan">
-                  <div className="branch-fleet-stat-head">
-                    <span className="branch-dot branch-dot--cyan" />
-                    <span className="branch-fleet-stat-lbl">{t('dashboard.fleet.reserved', 'Reservados')}</span>
+                  <div className="branch-fleet-units-list">
+                    <span className="branch-fleet-units-title">{t('dashboard.fleet.branchUnits', 'Unidades de la sucursal')}</span>
+                    {vehiculos.map((v) => {
+                      const color = clasificar(v)
+                      return (
+                        <div key={v.id} className="branch-fleet-unit-item">
+                          <div className="branch-fleet-unit-meta">
+                            <span className="branch-fleet-unit-name">{v.nombre}</span>
+                            <span className="branch-fleet-unit-plate">{v.placa} · {v.categoria}</span>
+                          </div>
+                          <span className={`branch-status-badge branch-status-badge--${color}`}>{etiqueta[color]}</span>
+                        </div>
+                      )
+                    })}
                   </div>
-                  <div className="branch-fleet-stat-num">
-                    1 <small>(20%)</small>
-                  </div>
-                  <span className="branch-fleet-stat-desc">{t('dashboard.fleet.forDeliveryToday', 'Para entrega hoy')}</span>
-                </div>
 
-                <div className="branch-fleet-stat-box branch-fleet-stat-box--amber">
-                  <div className="branch-fleet-stat-head">
-                    <span className="branch-dot branch-dot--amber" />
-                    <span className="branch-fleet-stat-lbl">{t('dashboard.fleet.maintenance', 'En mantenimiento')}</span>
+                  <div className="branch-fleet-footer">
+                    <button type="button" className="branch-link-btn" onClick={() => navigate(vehiclesRoute)}>
+                      <span>{t('dashboard.fleet.viewFleet', 'Ver flota')} &gt;</span>
+                    </button>
                   </div>
-                  <div className="branch-fleet-stat-num">
-                    1 <small>(20%)</small>
-                  </div>
-                  <span className="branch-fleet-stat-desc">{t('dashboard.fleet.technicalReview', 'Revisión técnica')}</span>
-                </div>
-              </div>
-
-              {/* BARRA SEGMENTADA DE DISTRIBUCIÓN */}
-              <div className="branch-fleet-bar-wrapper">
-                <div className="branch-fleet-bar-labels">
-                  <span>{t('dashboard.fleet.distAvailability', 'Distribución de disponibilidad')}</span>
-                  <strong>80% {t('dashboard.fleet.operative', 'operativa')}</strong>
-                </div>
-                <div className="branch-fleet-multi-bar">
-                  <div
-                    className="branch-fleet-bar-seg branch-fleet-bar-seg--green"
-                    style={{ width: '40%' }}
-                    title="Disponibles: 40%"
-                  />
-                  <div
-                    className="branch-fleet-bar-seg branch-fleet-bar-seg--blue"
-                    style={{ width: '20%' }}
-                    title="Ocupados: 20%"
-                  />
-                  <div
-                    className="branch-fleet-bar-seg branch-fleet-bar-seg--cyan"
-                    style={{ width: '20%' }}
-                    title="Reservados: 20%"
-                  />
-                  <div
-                    className="branch-fleet-bar-seg branch-fleet-bar-seg--amber"
-                    style={{ width: '20%' }}
-                    title="En mantenimiento: 20%"
-                  />
-                </div>
-              </div>
-
-              {/* LISTA RÁPIDA DE VEHÍCULOS ASIGNADOS */}
-              <div className="branch-fleet-units-list">
-                <span className="branch-fleet-units-title">{t('dashboard.fleet.branchUnits', 'Unidades de la sucursal')}</span>
-                <div className="branch-fleet-unit-item">
-                  <div className="branch-fleet-unit-meta">
-                    <span className="branch-fleet-unit-name">Toyota Corolla</span>
-                    <span className="branch-fleet-unit-plate">ABC-123 · Sedán</span>
-                  </div>
-                  <span className="branch-status-badge branch-status-badge--blue">{t('dashboard.fleet.occupied', 'Ocupado')}</span>
-                </div>
-
-                <div className="branch-fleet-unit-item">
-                  <div className="branch-fleet-unit-meta">
-                    <span className="branch-fleet-unit-name">Chevrolet Tracker</span>
-                    <span className="branch-fleet-unit-plate">MXP-492 · SUV</span>
-                  </div>
-                  <span className="branch-status-badge branch-status-badge--green">{t('dashboard.fleet.available', 'Disponible')}</span>
-                </div>
-
-                <div className="branch-fleet-unit-item">
-                  <div className="branch-fleet-unit-meta">
-                    <span className="branch-fleet-unit-name">Mazda CX-5</span>
-                    <span className="branch-fleet-unit-plate">KLS-849 · SUV</span>
-                  </div>
-                  <span className="branch-status-badge branch-status-badge--green">{t('dashboard.fleet.available', 'Disponible')}</span>
-                </div>
-
-                <div className="branch-fleet-unit-item">
-                  <div className="branch-fleet-unit-meta">
-                    <span className="branch-fleet-unit-name">Renault Duster</span>
-                    <span className="branch-fleet-unit-plate">JHK-201 · 4x4</span>
-                  </div>
-                  <span className="branch-status-badge branch-status-badge--cyan">{t('dashboard.fleet.reserved', 'Reservado')}</span>
-                </div>
-
-                <div className="branch-fleet-unit-item">
-                  <div className="branch-fleet-unit-meta">
-                    <span className="branch-fleet-unit-name">Nissan Kicks</span>
-                    <span className="branch-fleet-unit-plate">WER-902 · Crossover</span>
-                  </div>
-                  <span className="branch-status-badge branch-status-badge--amber">{t('dashboard.fleet.maintenance', 'En mantenimiento')}</span>
-                </div>
-              </div>
-
-              <div className="branch-fleet-footer">
-                <button
-                  type="button"
-                  className="branch-link-btn"
-                  onClick={() => navigate(vehiclesRoute)}
-                >
-                  <span>{t('dashboard.fleet.viewFleet', 'Ver flota')} &gt;</span>
-                </button>
-              </div>
-            </article>
+                </article>
+              )
+            })()}
           </div>
         </section>
       </main>
@@ -1865,7 +1784,7 @@ export default function BranchDashboard({ branchOnly = true }) {
                   </div>
                   <div className="branch-drawer-client-details">
                     <span className="branch-drawer-val-primary">
-                      {selectedScheduleItem.clienteNombre || 'Carlos Restrepo Jaramillo'}
+                      {selectedScheduleItem.clienteNombre}
                     </span>
                     <span className="branch-drawer-val-sub">
                       {t('dashboard.drawer.document', 'Documento')}: CC 1.020.340.589 (Bogotá)
@@ -1875,19 +1794,16 @@ export default function BranchDashboard({ branchOnly = true }) {
                 <div className="branch-drawer-grid-2" style={{ marginTop: '10px' }}>
                   <div className="branch-drawer-item-box">
                     <span className="branch-drawer-item-lbl">{t('dashboard.drawer.phone', 'Teléfono / Móvil')}</span>
-                    <span className="branch-drawer-item-val">{selectedScheduleItem.clienteTelefono || '+57 310 456 7890'}</span>
+                    <span className="branch-drawer-item-val">{selectedScheduleItem.clienteTelefono}</span>
                   </div>
                   <div className="branch-drawer-item-box">
                     <span className="branch-drawer-item-lbl">{t('dashboard.drawer.email', 'Correo electrónico')}</span>
-                    <span className="branch-drawer-item-val">carlos.restrepo@gmail.com</span>
+                    <span className="branch-drawer-item-val">{selectedScheduleItem.clienteCorreo}</span>
                   </div>
-                  <div className="branch-drawer-item-box">
-                    <span className="branch-drawer-item-lbl">{t('dashboard.drawer.license', 'Licencia de Conducción')}</span>
-                    <span className="branch-drawer-item-val">LIC-B1-4920194 (Vence 2028)</span>
-                  </div>
+                  
                   <div className="branch-drawer-item-box">
                     <span className="branch-drawer-item-lbl">{t('dashboard.drawer.mobile', 'Teléfono Móvil')}</span>
-                    <span className="branch-drawer-item-val">+57 312 456 7890</span>
+                    <span className="branch-drawer-item-val">{selectedScheduleItem.clienteTelefono}</span>
                   </div>
                 </div>
               </div>
@@ -1903,23 +1819,23 @@ export default function BranchDashboard({ branchOnly = true }) {
                     className="branch-drawer-vehicle-img"
                   />
                   <div className="branch-drawer-vehicle-banner-overlay">
-                    <strong>{selectedScheduleItem.vehiculoNombre || selectedScheduleItem.vehiculo || 'Toyota Corolla 2.0 Hybrid'}</strong>
-                    <span>{t('dashboard.drawer.plate', 'Placa')}: {selectedScheduleItem.vehiculoPlaca || selectedScheduleItem.placa || 'ABC-123'}</span>
+                    <strong>{selectedScheduleItem.vehiculoNombre || selectedScheduleItem.vehiculo}</strong>
+                    <span>{t('dashboard.drawer.plate', 'Placa')}: {selectedScheduleItem.vehiculoPlaca || selectedScheduleItem.placa}</span>
                   </div>
                 </div>
 
                 <div className="branch-drawer-grid-2" style={{ marginTop: '12px' }}>
                   <div className="branch-drawer-item-box">
                     <span className="branch-drawer-item-lbl">{t('dashboard.drawer.model', 'Modelo y Motor')}</span>
-                    <span className="branch-drawer-item-val">{selectedScheduleItem.vehiculoNombre || 'Toyota Corolla 2.0 Hybrid'}</span>
+                    <span className="branch-drawer-item-val">{selectedScheduleItem.vehiculoNombre}</span>
                   </div>
                   <div className="branch-drawer-item-box">
                     <span className="branch-drawer-item-lbl">{t('dashboard.drawer.assignedPlate', 'Placa Asignada')}</span>
-                    <span className="branch-drawer-item-val">{selectedScheduleItem.vehiculoPlaca || selectedScheduleItem.placa || 'ABC-123'}</span>
+                    <span className="branch-drawer-item-val">{selectedScheduleItem.vehiculoPlaca || selectedScheduleItem.placa}</span>
                   </div>
                   <div className="branch-drawer-item-box">
                     <span className="branch-drawer-item-lbl">{t('dashboard.drawer.category', 'Categoría')}</span>
-                    <span className="branch-drawer-item-val">{selectedScheduleItem.vehiculoCategoria || 'Sedán Ejecutivo'}</span>
+                    <span className="branch-drawer-item-val">{selectedScheduleItem.vehiculoCategoria}</span>
                   </div>
                   <div className="branch-drawer-item-box">
                     <span className="branch-drawer-item-lbl">{t('dashboard.drawer.transmission', 'Transmisión / Combustible')}</span>
@@ -1944,11 +1860,11 @@ export default function BranchDashboard({ branchOnly = true }) {
                   </div>
                   <div className="branch-drawer-item-box">
                     <span className="branch-drawer-item-lbl">{t('dashboard.drawer.pickupBranch', 'Sucursal de Retiro')}</span>
-                    <span className="branch-drawer-item-val">{dashboardData?.branchName || 'Alamo Bogotá - Aeropuerto'}</span>
+                    <span className="branch-drawer-item-val">{dashboardData?.branchName || ''}</span>
                   </div>
                   <div className="branch-drawer-item-box">
                     <span className="branch-drawer-item-lbl">{t('dashboard.drawer.returnBranch', 'Sucursal de Retorno')}</span>
-                    <span className="branch-drawer-item-val">{dashboardData?.branchName || 'Alamo Bogotá - Aeropuerto'}</span>
+                    <span className="branch-drawer-item-val">{dashboardData?.branchName || ''}</span>
                   </div>
                 </div>
               </div>
