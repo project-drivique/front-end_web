@@ -1,6 +1,6 @@
 import { api } from './httpClient'
 import { useAuthStore } from '../store/authStore'
-import paisesMock from '../mocks/nationalities.json'
+import paisesMock from '../config/datos/nationalities.json'
 
 const getUsuarioGuardado = () => useAuthStore.getState().usuario
 
