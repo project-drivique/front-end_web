@@ -168,7 +168,7 @@ export default function DeliveryManagementPage() {
       showAlert({
         icon: 'success',
         title: t('admin.delivery.modal.assignSuccess', 'Conductor asignado'),
-        text: `Conductor: ${nombreConductor}. El cliente recibe el PIN para confirmar la entrega.`
+        text: `Conductor: ${nombreConductor}. El cliente y el conductor reciben el PIN por correo; el conductor confirma o rechaza desde su correo.`
       })
       loadReservations()
     } catch (err) {
@@ -210,7 +210,7 @@ export default function DeliveryManagementPage() {
       const conductorObj = conductores.find(c => c.nombre === conductorSeleccionado)
       await deliveryService.assign(modalAsignar.id, modalAsignar.puntoTipo, conductorObj.id)
       await reservationManagementService.refresh()
-      showAlert({ icon: 'success', title: t('admin.delivery.modal.assignSuccess', 'Conductor asignado'), text: 'El cliente recibe el PIN para confirmar la entrega.' })
+      showAlert({ icon: 'success', title: t('admin.delivery.modal.assignSuccess', 'Conductor asignado'), text: 'El cliente y el conductor reciben el PIN por correo; el conductor confirma o rechaza desde su correo.' })
       setModalAsignar(null)
       loadReservations()
     } catch (err) { showAlert({ icon: 'error', title: 'Error', text: err.message }) }
