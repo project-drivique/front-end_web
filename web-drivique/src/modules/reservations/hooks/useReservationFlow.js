@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/store/authStore'
 import { showAlert } from '@/utils/swalConfig'
 import { reservationsService } from '@/services/reservationsService'
-import { reservationService } from '@/services/reservationService'
 import { catalogService } from '@/services/catalogService'
 import { userService } from '@/services/userService'
 import { generarReferenciaUnica, aCentavos } from '@/services/wompiService'
@@ -324,6 +323,32 @@ export function useReservationFlow() {
     }))
   }, [usuario])
 
+  // Datos personales guardados en el perfil del servidor: completan solo los campos que siguen vacíos
+  useEffect(() => {
+    if (!usuario) return undefined
+    let activo = true
+    userService.getProfile()
+      .then(async (perfil) => {
+        if (!activo || !perfil) return
+        const nacionalidad = perfil.nationalityId ? await userService.nacionalidadNombreDesdeId(perfil.nationalityId).catch(() => '') : ''
+        const tel = String(perfil.phone || '').replace(/\D/g, '')
+        const celular = tel.startsWith('57') && tel.length > 10 ? tel.slice(2) : tel
+        const tipoDoc = perfil.documentTypeCode === 'PASSPORT' ? 'PASAPORTE' : (perfil.documentTypeCode || '')
+        const nombre = [perfil.firstName, perfil.lastName].filter(Boolean).join(' ')
+        setDatosForm((prev) => ({
+          ...prev,
+          nombre: prev.nombre || nombre,
+          correo: prev.correo || perfil.email || '',
+          celular: prev.celular || celular,
+          nacionalidad: prev.nacionalidad || nacionalidad,
+          tipoDoc: prev.tipoDoc || tipoDoc,
+          numDoc: prev.numDoc || perfil.documentNumber || '',
+        }))
+      })
+      .catch(() => {})
+    return () => { activo = false }
+  }, [usuario?.correo])
+
   const irSiguiente = () => {
     const mostrarAlerta = () => {
       showAlert({
@@ -544,9 +569,9 @@ export function useReservationFlow() {
     }
 
     const clienteNombreFinal = datosForm.nombre || [datosForm.nombres, datosForm.apellidos].filter(Boolean).join(' ') || usuario?.nombre || 'Cliente Drivique'
-    const clienteCorreoFinal = datosForm.correo || datosForm.email || usuario?.correo || usuario?.email || 'cliente@drivique.com'
-    const clienteTelFinal = datosForm.celular || datosForm.telefono || usuario?.telefono || '+57 300 000 0000'
-    const clienteDocFinal = datosForm.numDoc || datosForm.documento || datosForm.cedula || usuario?.cedula || '1020304050'
+    const clienteCorreoFinal = datosForm.correo || datosForm.email || usuario?.correo || usuario?.email || ''
+    const clienteTelFinal = datosForm.celular || datosForm.telefono || usuario?.telefono || ''
+    const clienteDocFinal = datosForm.numDoc || datosForm.documento || datosForm.cedula || usuario?.cedula || ''
 
     try {
       const datosParaBackend = {
@@ -586,45 +611,6 @@ export function useReservationFlow() {
       const estadoInicial = holdResult?.status || (outsideScheduleAccepted
         ? 'PENDING_SCHEDULE'
         : (requiereValidacionDocs ? 'PENDING_DOCUMENT_REVIEW' : (reserva.metodoPago === 'efectivo' ? 'PENDIENTE_EFECTIVO' : 'pendiente')))
-
-      reservationService.guardarReserva({
-        id: holdResult?.id || refFinal,
-        referencia: refFinal,
-        codigo: refFinal,
-        codigoPagoEfectivo: holdResult?.cashPaymentCode || null,
-        estado: estadoInicial,
-        status: estadoInicial,
-        estadoDocumentos: requiereValidacionDocs ? 'PENDIENTE' : 'APROBADO',
-        pagoEstado: 'pendiente',
-        metodoPago: reserva.metodoPago,
-        total: totalServidor,
-        totalCOP: totalServidor,
-        vehiculoId: vehiculo.id,
-        vehiculoNombre: vehiculo.nombre,
-        vehiculoPlaca: vehiculo.placa,
-        sucursal: vehiculo.sucursal || reserva.sucursalRetiro,
-        sucursalRetiro: reserva.sucursalRetiro,
-        sucursalDevolucion: reserva.sucursalDevolucion,
-        fechaInicio: reserva.fechaInicio,
-        fechaFin: reserva.fechaFin,
-        horaInicio: reserva.horaInicio,
-        horaFin: reserva.horaFin,
-        datosForm: {
-          ...datosForm,
-          nombre: clienteNombreFinal,
-          correo: clienteCorreoFinal,
-          celular: clienteTelFinal,
-          numDoc: clienteDocFinal,
-        },
-        reservaDetalles: {
-          tipoKm: reserva.tipoKm,
-          seguro: vehiculo.seguros[seguroIdx]?.nombre,
-          servicios: serviciosSeleccionados,
-          metodoPago: reserva.metodoPago,
-          sucursalRetiro: reserva.sucursalRetiro,
-          sucursalDevolucion: reserva.sucursalDevolucion,
-        }
-      })
 
       sessionStorage.setItem('current_wompi_reference', refFinal)
       setReservaCreada({
