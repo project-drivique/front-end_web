@@ -4,7 +4,7 @@ import { FaArrowLeft } from 'react-icons/fa'
 import { useAuthStore } from '../../../store/authStore'
 import { useLanding } from '../../landing/LandingContext'
 import { getRoleHome } from '../../auth/utils/accessControl'
-import accessConfig from '../../../mocks/adminAccessConfig.json'
+import accessConfig from '../../../config/datos/adminAccessConfig.json'
 
 export default function ManagementModulePage() {
   const { moduleKey } = useParams()
