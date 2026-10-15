@@ -26,18 +26,11 @@ import ManagementSidebar from '../components/ManagementSidebar'
 import { useAuthStore } from '@/store/authStore'
 import { reservationManagementService } from '@/services/reservationManagementService'
 import { showAlert } from '@/utils/swalConfig'
+import { deliveryService } from '@/services/deliveryService'
 import { exportExcel, exportPdf, printTable } from '@/utils/listExportUtils'
 import './CityManagementPage.css'
 import './CashCollectionPage.css'
 import './DocumentVerificationPage.css'
-
-const DEFAULT_CONDUCTORES = [
-  { id: 'COND-1', nombre: 'Carlos Eduardo Ramírez', tipoDoc: 'CC', numDoc: '1018432910', licencia: 'C1-84920412', categoriaLic: 'C1', vencimientoLic: '2028-11-15', telefono: '+57 310 492 8102', email: 'carlos.ramirez@drivique.com', vehiculo: 'Moto Yamaha NMAX 155 (ABC-12D)', estado: 'disponible' },
-  { id: 'COND-2', nombre: 'Jhon Alejandro Gómez', tipoDoc: 'CC', numDoc: '1020491823', licencia: 'C2-94812039', categoriaLic: 'C2', vencimientoLic: '2027-06-30', telefono: '+57 315 829 1049', email: 'jhon.gomez@drivique.com', vehiculo: 'Renault Kangoo (EFG-456)', estado: 'en_servicio' },
-  { id: 'COND-3', nombre: 'María Camila Mendoza', tipoDoc: 'CC', numDoc: '1032481920', licencia: 'B1-74839201', categoriaLic: 'B1', vencimientoLic: '2029-03-20', telefono: '+57 320 918 2736', email: 'camila.mendoza@drivique.com', vehiculo: 'Chevrolet Spark GT (HJK-789)', estado: 'disponible' },
-  { id: 'COND-4', nombre: 'Andrés Felipe Castro', tipoDoc: 'CC', numDoc: '1098234120', licencia: 'B2-89210492', categoriaLic: 'B2', vencimientoLic: '2028-08-10', telefono: '+57 300 123 4567', email: 'andres.castro@drivique.com', vehiculo: 'Chevrolet N300 (WXY-123)', estado: 'disponible' },
-  { id: 'COND-5', nombre: 'Laura Sofía Morales', tipoDoc: 'CE', numDoc: '94810293', licencia: 'C1-78192034', categoriaLic: 'C1', vencimientoLic: '2026-12-05', telefono: '+57 318 765 4321', email: 'laura.morales@drivique.com', vehiculo: 'Suzuki Swift (QWE-987)', estado: 'en_servicio' }
-]
 
 const INITIAL_CONDUCTOR = {
   nombre: '',
@@ -71,76 +64,58 @@ export default function DeliveryManagementPage() {
   const [conductorSeleccionado, setConductorSeleccionado] = useState('')
   const [pinIngresado, setPinIngresado] = useState('')
 
-    const [conductores, setConductores] = useState(() => {
-    try {
-      const stored = localStorage.getItem('drivique_conductores')
-      if (stored) {
-        const parsed = JSON.parse(stored)
-        if (Array.isArray(parsed) && parsed.length >= 5) return parsed
-      }
-      localStorage.setItem('drivique_conductores', JSON.stringify(DEFAULT_CONDUCTORES))
-      return DEFAULT_CONDUCTORES
-    } catch {
-      return DEFAULT_CONDUCTORES
-    }
-  })
+  const [conductores, setConductores] = useState(() => deliveryService.list())
 
   const [nuevoConductor, setNuevoConductor] = useState(INITIAL_CONDUCTOR)
 
+  const ESTADO_DOMICILIO = { PENDING: 'PENDIENTE', ASSIGNED: 'ASIGNADO', COMPLETED: 'COMPLETADO' }
+
   const loadReservations = () => {
     const all = reservationManagementService.list(user)
-    const deliveries = all.filter(r => {
-      if (r.estado === 'cancelada') return false
-      const hasE = r.domicilioDireccion || r.serviciosSeleccionados?.some(s => s.id === 'srv-entrega-domicilio' || s.nombre?.toLowerCase().includes('entrega'))
-      const hasD = r.domicilioDevolucionDireccion || r.serviciosSeleccionados?.some(s => s.id === 'srv-devolucion-domicilio' || s.nombre?.toLowerCase().includes('devolucion'))
-      return hasE || hasD
-    }).map((r) => {
-      const hasE = r.domicilioDireccion || r.serviciosSeleccionados?.some(s => s.id === 'srv-entrega-domicilio' || s.nombre?.toLowerCase().includes('entrega'))
-      const hasD = r.domicilioDevolucionDireccion || r.serviciosSeleccionados?.some(s => s.id === 'srv-devolucion-domicilio' || s.nombre?.toLowerCase().includes('devolucion'))
-      let tipoServicio = t('admin.delivery.serviceTypes.delivery', 'Entrega a Domicilio')
-      let direccion = r.domicilioDireccion || 'No registrada'
-      let fecha = r.fechaInicio
-      if (hasE && hasD) {
-        tipoServicio = t('admin.delivery.serviceTypes.both', 'Entrega y Devolucion')
-        direccion = `Ent: ${r.domicilioDireccion || 'N/R'} | Dev: ${r.domicilioDevolucionDireccion || 'N/R'}`
-      } else if (hasD && !hasE) {
-        tipoServicio = t('admin.delivery.serviceTypes.return', 'Devolucion a Domicilio')
-        direccion = r.domicilioDevolucionDireccion || 'No registrada'
-        fecha = r.fechaFin
-      }
-      const pinCalculado = r.domicilioPin || String(Math.abs(Array.from(String(r.codigo || r.id)).reduce((acc, char) => (acc * 31 + char.charCodeAt(0)) | 0, 0)) % 9000 + 1000)
-      return {
-        ...r,
-        tipoServicio,
-        direccionInfo: direccion,
-        fechaEvento: fecha,
-        domicilioPin: pinCalculado,
-        domicilioCodigo: `DOM-${pinCalculado}`,
-        estadoDomicilio: r.domicilioEstado || (r.domicilioConductor ? 'ASIGNADO' : 'PENDIENTE')
-      }
+    const filas = []
+    all.filter((r) => r.estado !== 'cancelada').forEach((r) => {
+      ;(r.domicilioPuntos || []).forEach((p) => {
+        const esEntrega = p.tipo === 'PICKUP'
+        filas.push({
+          ...r,
+          rowId: `${r.id}:${p.tipo}`,
+          puntoTipo: p.tipo,
+          tipoServicio: esEntrega
+            ? t('admin.delivery.serviceTypes.delivery', 'Entrega a Domicilio')
+            : t('admin.delivery.serviceTypes.return', 'Devolucion a Domicilio'),
+          direccionInfo: p.direccion || 'No registrada',
+          fechaEvento: esEntrega ? r.fechaInicio : r.fechaFin,
+          domicilioCodigo: `DOM-${String(p.id).slice(0, 6).toUpperCase()}`,
+          domicilioConductor: p.conductor,
+          domicilioConductorId: p.conductorId,
+          estadoDomicilio: ESTADO_DOMICILIO[p.estado] || 'PENDIENTE',
+        })
+      })
     })
-    setReservations(deliveries)
+    setReservations(filas)
   }
 
-  useEffect(() => { loadReservations() }, [user])
+  const cargarConductores = () => deliveryService.refresh().then(setConductores).catch(() => setConductores([]))
 
-  const saveConductores = (lista) => {
-    setConductores(lista)
-    localStorage.setItem('drivique_conductores', JSON.stringify(lista))
-  }
+  useEffect(() => {
+    reservationManagementService.refresh().then(loadReservations).catch(() => setReservations([]))
+    cargarConductores()
+  }, [user])
 
-  const handleCrearConductor = (e) => {
+  const handleCrearConductor = async (e) => {
     e.preventDefault()
     if (!nuevoConductor.nombre) return showAlert({ icon: 'warning', title: t('admin.delivery.modal.nameRequired', 'El nombre es obligatorio') })
-    
-    if (editingConductor) {
-      const actualizados = conductores.map(c => c.id === editingConductor.id ? { ...nuevoConductor, id: editingConductor.id } : c)
-      saveConductores(actualizados)
-      showAlert({ icon: 'success', title: t('admin.delivery.modal.updateSuccess', 'Conductor actualizado exitosamente.') })
-    } else {
-      const creado = { ...nuevoConductor, id: 'COND-' + Date.now() }
-      saveConductores([...conductores, creado])
-      showAlert({ icon: 'success', title: t('admin.delivery.modal.createSuccess', 'Conductor creado exitosamente.') })
+
+    try {
+      if (editingConductor) {
+        setConductores(await deliveryService.update(editingConductor.id, nuevoConductor))
+        showAlert({ icon: 'success', title: t('admin.delivery.modal.updateSuccess', 'Conductor actualizado exitosamente.') })
+      } else {
+        setConductores(await deliveryService.create(nuevoConductor))
+        showAlert({ icon: 'success', title: t('admin.delivery.modal.createSuccess', 'Conductor creado exitosamente.') })
+      }
+    } catch (err) {
+      return showAlert({ icon: 'error', title: 'Error', text: err.message })
     }
 
     setNuevoConductor(INITIAL_CONDUCTOR)
@@ -175,26 +150,25 @@ export default function DeliveryManagementPage() {
       icon: 'warning'
     })
     if (result?.isConfirmed) {
-      saveConductores(conductores.filter(c => c.id !== id))
-      showAlert({ icon: 'success', title: t('admin.delivery.deleteSuccess', 'Conductor eliminado') })
+      try {
+        setConductores(await deliveryService.remove(id))
+        showAlert({ icon: 'success', title: t('admin.delivery.deleteSuccess', 'Conductor eliminado') })
+      } catch (err) {
+        showAlert({ icon: 'error', title: 'Error', text: err.message })
+      }
     }
   }
 
-  const handleDirectSelectConductor = (reserva, nombreConductor) => {
+  const handleDirectSelectConductor = async (reserva, nombreConductor) => {
     if (!nombreConductor) return
     try {
       const conductorObj = conductores.find(c => c.nombre === nombreConductor)
-      const pin = reserva.domicilioPin || String(Math.floor(1000 + Math.random() * 9000))
-      reservationManagementService.updateReservation(reserva.id, {
-        domicilioConductor: nombreConductor,
-        domicilioTelefonoConductor: conductorObj?.telefono || '',
-        domicilioEstado: 'ASIGNADO',
-        domicilioPin: pin
-      }, user)
+      await deliveryService.assign(reserva.id, reserva.puntoTipo, conductorObj.id)
+      await reservationManagementService.refresh()
       showAlert({
         icon: 'success',
         title: t('admin.delivery.modal.assignSuccess', 'Conductor asignado'),
-        text: `Conductor: ${nombreConductor} | Código Domicilio (PIN): ${pin}`
+        text: `Conductor: ${nombreConductor}. El cliente recibe el PIN para confirmar la entrega.`
       })
       loadReservations()
     } catch (err) {
@@ -229,30 +203,29 @@ export default function DeliveryManagementPage() {
     )
   }, [conductores, search])
 
-  const handleAsignar = (e) => {
+  const handleAsignar = async (e) => {
     e.preventDefault()
     if (!conductorSeleccionado) return showAlert({ icon: 'warning', title: t('admin.delivery.modal.selectDriverWarning', 'Selecciona un conductor') })
     try {
-      const pin = String(Math.floor(1000 + Math.random() * 9000))
-      reservationManagementService.updateReservation(modalAsignar.id, { domicilioConductor: conductorSeleccionado, domicilioEstado: 'ASIGNADO', domicilioPin: pin }, user)
-      showAlert({ icon: 'success', title: t('admin.delivery.modal.assignSuccess', 'Conductor asignado'), text: `PIN: ${pin}` })
+      const conductorObj = conductores.find(c => c.nombre === conductorSeleccionado)
+      await deliveryService.assign(modalAsignar.id, modalAsignar.puntoTipo, conductorObj.id)
+      await reservationManagementService.refresh()
+      showAlert({ icon: 'success', title: t('admin.delivery.modal.assignSuccess', 'Conductor asignado'), text: 'El cliente recibe el PIN para confirmar la entrega.' })
       setModalAsignar(null)
       loadReservations()
     } catch (err) { showAlert({ icon: 'error', title: 'Error', text: err.message }) }
   }
 
-  const handleVerificar = (e) => {
+  const handleVerificar = async (e) => {
     e.preventDefault()
     if (!pinIngresado) return
-    if (pinIngresado === modalVerificar.domicilioPin) {
-      try {
-        const isEntrega = modalVerificar.tipoServicio.includes('Entrega')
-        reservationManagementService.updateReservation(modalVerificar.id, { domicilioEstado: 'COMPLETADO', estado: isEntrega ? 'en_curso' : 'finalizada' }, user)
-        showAlert({ icon: 'success', title: t('admin.delivery.modal.pinSuccess', 'PIN verificado correctamente.') })
-        setModalVerificar(null); setPinIngresado(''); loadReservations()
-      } catch (err) { showAlert({ icon: 'error', title: 'Error', text: err.message }) }
-    } else {
-      showAlert({ icon: 'error', title: t('admin.delivery.modal.pinError', 'PIN incorrecto.'), text: t('admin.delivery.modal.pinErrorText', 'Verifica el codigo con el cliente.') })
+    try {
+      await deliveryService.complete(modalVerificar.id, modalVerificar.puntoTipo, pinIngresado)
+      await reservationManagementService.refresh()
+      showAlert({ icon: 'success', title: t('admin.delivery.modal.pinSuccess', 'PIN verificado correctamente.') })
+      setModalVerificar(null); setPinIngresado(''); loadReservations()
+    } catch (err) {
+      showAlert({ icon: 'error', title: t('admin.delivery.modal.pinError', 'PIN incorrecto.'), text: err.message })
     }
   }
 
@@ -328,7 +301,7 @@ export default function DeliveryManagementPage() {
     return filtrados.map((r, i) => [
       i + 1,
       r.codigo,
-      r.domicilioCodigo || `DOM-${r.domicilioPin || '1862'}`,
+      r.domicilioCodigo,
       r.clienteNombre,
       r.vehiculoNombre || r.vehiculo?.nombre || '-',
       r.tipoServicio,
@@ -480,7 +453,7 @@ export default function DeliveryManagementPage() {
 
               <div className="doc-branch-badge">
                 <FaBuilding style={{ color: 'var(--city-muted, #64748b)' }} />
-                <span>{user?.sucursalAsignada || user?.sucursalId || user?.sucursal || 'Alamo Bogotá - Aeropuerto'}</span>
+                <span>{user?.sucursalAsignada || user?.sucursalId || user?.sucursal || 'Todas las sucursales'}</span>
               </div>
 
               <div className="export-pills-group" style={{ marginLeft: 'auto', display: 'flex', gap: '8px' }}>
@@ -648,11 +621,11 @@ export default function DeliveryManagementPage() {
                         </thead>
                         <tbody>
                           {filtrados.map((r, i) => (
-                            <tr key={r.id}>
+                            <tr key={r.rowId || r.id}>
                               <td style={{ fontWeight: 400, color: 'var(--city-text, #0f172a)', width: '35px' }}>{i + 1}</td>
                               <td style={{ fontWeight: 500, color: 'var(--city-text, #0f172a)' }}>{r.codigo}</td>
                               <td style={{ fontWeight: 500, color: 'var(--brand-primary, #2563eb)' }}>
-                                {r.domicilioCodigo || `DOM-${r.domicilioPin || '1862'}`}
+                                {r.domicilioCodigo}
                               </td>
                               <td style={{ fontWeight: 400, color: 'var(--city-text, #0f172a)' }}>{r.clienteNombre}</td>
                               <td style={{ fontWeight: 400, color: 'var(--city-text, #0f172a)' }}>{r.vehiculoNombre || r.vehiculo?.nombre || '-'}</td>
@@ -751,7 +724,7 @@ export default function DeliveryManagementPage() {
                     {/* 2. Vista de Tarjetas Adaptativas para Pantallas Móviles */}
                     <div className="doc-mobile-cards">
                       {filtrados.map((r, i) => (
-                        <div key={r.id} className="doc-mobile-card">
+                        <div key={r.rowId || r.id} className="doc-mobile-card">
                           <div className="doc-mobile-card-header">
                             <div className="doc-mobile-card-title">
                               <span style={{ fontWeight: 400, color: 'var(--brand-primary, #2563eb)', fontSize: 13 }}>ID {i + 1}</span>
@@ -769,7 +742,7 @@ export default function DeliveryManagementPage() {
                             <div className="doc-mobile-data-item doc-mobile-data-item--full">
                               <span className="doc-mobile-data-label">{t('admin.delivery.table.deliveryCode', 'Código Domicilio (PIN)')}</span>
                               <span className="doc-mobile-data-value" style={{ color: 'var(--brand-primary, #2563eb)', fontWeight: 500 }}>
-                                {r.domicilioCodigo || `DOM-${r.domicilioPin || '1862'}`}
+                                {r.domicilioCodigo}
                               </span>
                             </div>
 
