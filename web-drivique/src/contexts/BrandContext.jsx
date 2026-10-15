@@ -19,15 +19,8 @@ export function BrandProvider({ children }) {
 
   useEffect(() => {
     const update = (event) => setBrand(event.detail || brandService.getActive())
-    const syncBrowserTab = (event) => {
-      if (event.key === brandService.activeKey) setBrand(brandService.getActive())
-    }
     window.addEventListener(brandService.eventName, update)
-    window.addEventListener('storage', syncBrowserTab)
-    return () => {
-      window.removeEventListener(brandService.eventName, update)
-      window.removeEventListener('storage', syncBrowserTab)
-    }
+    return () => window.removeEventListener(brandService.eventName, update)
   }, [])
 
   return <BrandContext.Provider value={{ brand }}>{children}</BrandContext.Provider>
