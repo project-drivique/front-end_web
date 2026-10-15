@@ -1855,7 +1855,8 @@
       "messages": {
         "saved": "A nova marca foi aplicada.",
         "previous": "A configuração anterior foi restaurada.",
-        "original": "A marca original foi restaurada."
+        "original": "A marca original foi restaurada.",
+        "colorSaved": "Cor da marca atualizada e aplicada com sucesso."
       },
       "errors": {
         "invalidName": "O nome deve ter entre 2 e 40 caracteres.",
@@ -1864,7 +1865,8 @@
         "logoType": "Selecione um logotipo PNG, JPG, WebP ou SVG.",
         "logoSize": "O logotipo não pode exceder 1 MB.",
         "logoRead": "Não foi possível ler o arquivo.",
-        "noPrevious": "Ainda não existe configuração anterior."
+        "noPrevious": "Ainda não existe configuração anterior.",
+        "saveFailed": "Não foi possível guardar a marca. Tente novamente."
       }
     },
     "branchProfile": {
@@ -2330,7 +2332,26 @@
       "defaultAction": "Ir ao módulo",
       "filters": "Filtros de notificações"
     },
-    "branchManagement": "GESTáO OPERACIONAL"
+    "branchManagement": "GESTáO OPERACIONAL",
+    "settings": {
+      "title": "Parâmetros globais de segurança",
+      "subtitle": "Cada alteração é validada, auditada e a última pode ser revertida.",
+      "enabled": "Ativado",
+      "disabled": "Desativado",
+      "reason": "Motivo da alteração (opcional)",
+      "save": "Guardar",
+      "saved": "Parâmetro atualizado com sucesso.",
+      "reverted": "A última alteração foi revertida.",
+      "revert": "Reverter para {{value}}",
+      "lastChange": "Última alteração: {{name}}",
+      "keys": {
+        "MAX_LOGIN_ATTEMPTS": "Tentativas de início de sessão falhadas antes do bloqueio",
+        "ACCOUNT_LOCKOUT_MINUTES": "Minutos de bloqueio da conta",
+        "SESSION_IDLE_TIMEOUT_MINUTES": "Minutos de inatividade antes de fechar a sessão",
+        "PASSWORD_RESET_TOKEN_EXPIRATION_MINUTES": "Minutos de validade do link de recuperação da palavra-passe",
+        "MFA_REQUIRED_FOR_ADMINS": "Verificação em dois passos obrigatória para administradores"
+      }
+    }
   },
   "common": {
     "backToHome": "Voltar ao início",
@@ -3535,6 +3556,10 @@
     "copyright": "Drivique © 2026"
   },
   "contratoFirma": {
+    "sendByEmail": "Enviar para o e-mail",
+    "sendingEmail": "A enviar…",
+    "emailSent": "Enviámos o contrato assinado para o seu e-mail. Abra-o com a sua identificação registada.",
+    "emailNotSent": "Não foi possível enviar o e-mail. Tente novamente.",
     "badgeLabel": "Documento digital",
     "title": "Contrato de reserva e aluguer",
     "subtitle": "Drivique · Plataforma académica de aluguer de veículos",

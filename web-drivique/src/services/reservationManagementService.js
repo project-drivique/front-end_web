@@ -101,6 +101,23 @@ function mapear(item) {
         conductorTelefono: p.driverPhone || '',
         estado: p.deliveryStatus,
       })),
+    // Desglose del valor calculado por el servidor
+    detalle: {
+      dias: r.rentalDays,
+      tarifaDiaria: Number(r.vehicleDailyRate) || 0,
+      subtotalVehiculo: Number(r.vehicleSubtotal) || 0,
+      seguro: { nombre: r.insuranceCoverageName || '', subtotal: Number(r.breakdown?.insuranceSubtotal) || 0 },
+      kilometraje: { nombre: r.mileagePlanName || '', subtotal: Number(r.breakdown?.mileageSubtotal) || 0 },
+      servicios: (r.additionalServices || []).map((s) => ({ nombre: s.name, total: Number(s.subtotal) || 0 })),
+      cupon: r.promotion?.code || '',
+      descuento: Number(r.breakdown?.discount) || 0,
+      subtotal: Number(r.breakdown?.subtotal) || 0,
+      cargoAdmin: r.breakdown?.adminFee == null ? null : Number(r.breakdown.adminFee),
+      tasaCargoAdmin: r.breakdown?.adminFeeRate == null ? null : Number(r.breakdown.adminFeeRate),
+      iva: r.breakdown?.vat == null ? null : Number(r.breakdown.vat),
+      tasaIva: r.breakdown?.vatRate == null ? null : Number(r.breakdown.vatRate),
+      total: Number(r.totalEstimated) || 0,
+    },
     serviciosSeleccionados: (r.additionalServices || []).map((s) => s.name),
     historialAcciones: [{ fecha: r.createdAt, accion: 'Registro de reserva', usuario: r.customerEmail }],
   }

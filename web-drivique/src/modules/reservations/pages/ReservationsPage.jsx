@@ -11,8 +11,6 @@ import filtrosReservas from '@/mocks/reservationsFilters.json'
 import CatalogTopHeader from '@/modules/catalog/components/CatalogTopHeader'
 import FirmaContrato from '@/modules/contracts/components/ContractSignature'
 import { descargarContratoOriginal, prepararVistaContrato } from '@/modules/contracts/utils/downloadSignedContract'
-import { reservationService } from '@/services/reservationService'
-import { documentsService } from '@/services/documentsService'
 import { SUCURSALES } from '@/modules/catalog/constants'
 import { construirUrlCheckout, aCentavos } from '@/services/wompiService'
 import logo from '@/assets/logo.png'
@@ -262,23 +260,18 @@ function ContratoVerCard({ reserva, contratoFirmado, reservaParaContrato, vehicu
       return
     }
 
-    const c = String(clave || '').trim().toUpperCase().replace(/[^a-zA-Z0-9]/g, '')
-    const idDoc = String(identificacion || '').trim().toUpperCase().replace(/[^a-zA-Z0-9]/g, '')
-    const userCedula = String(usuario?.cedula || usuario?.numDoc || '').trim().toUpperCase().replace(/[^a-zA-Z0-9]/g, '')
-    const refReserva = String(reserva.id || reserva.referencia || reserva.codigo || '').trim().toUpperCase().replace(/[^a-zA-Z0-9]/g, '')
-    const codContrato = String(contratoFirmado?.codigo || '').trim().toUpperCase().replace(/[^a-zA-Z0-9]/g, '')
+    // Solo se abre con la cédula o identificación registrada en la reserva; ninguna otra clave sirve
+    const normalizar = (v) => String(v || '').trim().toUpperCase().replace(/[^A-Z0-9]/g, '')
+    const c = normalizar(clave)
+    const registradas = [
+      identificacion,
+      reservaParaContrato?.datosForm?.numDoc,
+      reserva.clienteDocumento,
+      contratoFirmado?.contratoOriginal?.reserva?.datosForm?.numDoc,
+      usuario?.cedula,
+    ].map(normalizar).filter(Boolean)
 
-    const coincideDoc = idDoc && c === idDoc
-    const coincideUsuario = userCedula && c === userCedula
-    const coincideRef = refReserva && c === refReserva
-    const coincideContrato = codContrato && c === codContrato
-    const esDuenio = Boolean(usuario) && (
-      usuario.correo === (reserva.clienteCorreo || reserva.datosForm?.correo) ||
-      usuario.id === reserva.usuarioId ||
-      usuario.cedula === idDoc
-    )
-
-    if (coincideDoc || coincideUsuario || coincideRef || coincideContrato || esDuenio || clave.trim().length >= 3) {
+    if (c && registradas.includes(c)) {
       setError('')
       irAContrato(true)
     } else {
@@ -354,7 +347,7 @@ function Contrato({ reserva, autoDesbloquear = false, onDesbloquear }) {
   const usuario = useAuthStore(state => state.usuario)
   const refBusqueda = reserva.referencia || reserva.codigo || reserva.id
   const contratoFirmado = useContratoReal(reserva.id)
-  const reservaAlmacenada = useMemo(() => reservationService.obtenerPorReferencia(refBusqueda) || reservationService.obtenerPorReferencia(reserva.id), [refBusqueda, reserva.id])
+  const reservaAlmacenada = null
 
   const tieneContratoFirmado = Boolean(contratoFirmado?.firmaUsuarioDataUrl)
   const backendStatus = String(reserva.status || reserva.estadoRaw || '').toUpperCase()
@@ -385,14 +378,13 @@ function Contrato({ reserva, autoDesbloquear = false, onDesbloquear }) {
     const df = base.datosForm || {}
     const rd = base.reservaDetalles || {}
     const nombreCliente = df.nombre || [df.nombres, df.apellidos].filter(Boolean).join(' ').trim() || base.clienteNombre || usuario?.nombre || 'Cliente Drivique'
-    const correoCliente = df.correo || base.clienteCorreo || usuario?.correo || usuario?.email || 'cliente@drivique.com'
-    const telCliente = df.celular || df.telefono || base.clienteTelefono || usuario?.telefono || '+57 300 000 0000'
-    const docCliente = df.numDoc || df.documento || base.clienteDocumento || usuario?.cedula || '1020304050'
+    const correoCliente = df.correo || base.clienteCorreo || usuario?.correo || usuario?.email || ''
+    const telCliente = df.celular || df.telefono || base.clienteTelefono || usuario?.telefono || ''
+    const docCliente = df.numDoc || df.documento || base.clienteDocumento || usuario?.cedula || ''
     const ref = base.referencia || base.codigo || base.id || reserva.id
 
-    const userDocs = documentsService.obtenerDocumentos(usuario?.id || usuario?.correo || correoCliente)
-    const licName = df.licenciaPdf?.name || (typeof df.licenciaPdf === 'string' && df.licenciaPdf) || userDocs?.licencia?.nombre || (docCliente ? `Licencia-${docCliente}.pdf` : 'Licencia-Conduccion-Verificada.pdf')
-    const cedName = df.cedulaPdf?.name || (typeof df.cedulaPdf === 'string' && df.cedulaPdf) || userDocs?.cedula?.nombre || (docCliente ? `Cedula-${docCliente}.pdf` : 'Cedula-Verificada.pdf')
+    const licName = df.licenciaPdf?.name || (typeof df.licenciaPdf === 'string' && df.licenciaPdf) 
+    const cedName = df.cedulaPdf?.name || (typeof df.cedulaPdf === 'string' && df.cedulaPdf) 
 
     return {
       ...base,
@@ -466,7 +458,7 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
 
   const refBusquedaModal = reserva.referencia || reserva.codigo || reserva.id
   const contrato = useContratoReal(reserva.id)
-  const reservaOriginal = contrato?.contratoOriginal?.reserva || reservationService.obtenerPorReferencia(refBusquedaModal) || reservationService.obtenerPorReferencia(reserva.id)
+  const reservaOriginal = contrato?.contratoOriginal?.reserva
   const vehiculoOriginal = contrato?.contratoOriginal?.vehiculo || reserva.vehiculo
 
   const backendStatus = String(reserva.status || reserva.estadoRaw || '').toUpperCase()
@@ -562,14 +554,13 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
     const df = base.datosForm || {}
     const rd = base.reservaDetalles || {}
     const nombreCliente = df.nombre || [df.nombres, df.apellidos].filter(Boolean).join(' ').trim() || base.clienteNombre || usuario?.nombre || 'Cliente Drivique'
-    const correoCliente = df.correo || base.clienteCorreo || usuario?.correo || usuario?.email || 'cliente@drivique.com'
-    const telCliente = df.celular || df.telefono || base.clienteTelefono || usuario?.telefono || '+57 300 000 0000'
-    const docCliente = df.numDoc || df.documento || base.clienteDocumento || usuario?.cedula || '1020304050'
+    const correoCliente = df.correo || base.clienteCorreo || usuario?.correo || usuario?.email || ''
+    const telCliente = df.celular || df.telefono || base.clienteTelefono || usuario?.telefono || ''
+    const docCliente = df.numDoc || df.documento || base.clienteDocumento || usuario?.cedula || ''
     const ref = base.referencia || base.codigo || base.id || reserva.id
 
-    const userDocs = documentsService.obtenerDocumentos(usuario?.id || usuario?.correo || correoCliente)
-    const licName = df.licenciaPdf?.name || (typeof df.licenciaPdf === 'string' && df.licenciaPdf) || userDocs?.licencia?.nombre || (docCliente ? `Licencia-${docCliente}.pdf` : 'Licencia-Conduccion-Verificada.pdf')
-    const cedName = df.cedulaPdf?.name || (typeof df.cedulaPdf === 'string' && df.cedulaPdf) || userDocs?.cedula?.nombre || (docCliente ? `Cedula-${docCliente}.pdf` : 'Cedula-Verificada.pdf')
+    const licName = df.licenciaPdf?.name || (typeof df.licenciaPdf === 'string' && df.licenciaPdf) 
+    const cedName = df.cedulaPdf?.name || (typeof df.cedulaPdf === 'string' && df.cedulaPdf) 
 
     return {
       ...base,
@@ -1391,7 +1382,7 @@ function TarjetaReserva({ reserva, moneda, onValorar, onReportar, onVerDetalle }
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
   const refBusqueda = reserva.referencia || reserva.codigo || reserva.id
-  const reservaAlmacenada = reservationService.obtenerPorReferencia(refBusqueda) || reservationService.obtenerPorReferencia(reserva.id)
+  const reservaAlmacenada = null
 
   const backendStatus = String(reserva.status || reserva.estadoRaw || '').toUpperCase()
   const isPendingPayment = backendStatus === 'PENDING_PAYMENT' || reserva.estado === 'PENDING_PAYMENT' || reserva.estado === 'pendiente_pago'
@@ -1449,7 +1440,7 @@ function TarjetaReserva({ reserva, moneda, onValorar, onReportar, onVerDetalle }
     const rawTotal = Number(reserva.total || reserva.totalCOP || 0)
     if (rawTotal > 0) return rawTotal
 
-    const rawStored = reservaAlmacenada || reservationService.obtenerPorReferencia(reserva.id || reserva.referencia || reserva.codigo)
+    const rawStored = reservaAlmacenada
     if (rawStored?.total) return Number(rawStored.total)
     if (rawStored?.totalCOP) return Number(rawStored.totalCOP)
 
