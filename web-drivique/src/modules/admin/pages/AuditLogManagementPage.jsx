@@ -93,7 +93,8 @@ export default function AuditLogManagementPage({ branchOnly = false }) {
   }
 
   useEffect(() => {
-    loadData()
+    accessAuditService.refresh().catch(() => setLogs([]))
+    branchManagementService.refresh().then(loadData).catch(() => {})
     const handleUpdate = () => loadData()
     window.addEventListener(accessAuditService.eventName, handleUpdate)
     window.addEventListener('storage', handleUpdate)

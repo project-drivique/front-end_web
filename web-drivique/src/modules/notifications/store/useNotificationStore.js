@@ -3,6 +3,8 @@ import { notificationService } from '../../../services/notificationService'
 import { useAuthStore } from '../../../store/authStore'
 import { promotionManagementService } from '../../../services/promotionManagementService'
 
+let publicacionSolicitada = false
+
 export const useNotificationStore = create((set, get) => ({
   notificaciones: [],
   conteoNoLeidas: 0,
@@ -118,6 +120,11 @@ export const useNotificationStore = create((set, get) => ({
    */
   refrescarPromociones: () => {
     const usuario = useAuthStore.getState().usuario
+    // El evento de publicación vuelve a llamar a esta función cuando llegan los datos del servidor
+    if (!publicacionSolicitada) {
+      publicacionSolicitada = true
+      promotionManagementService.refresh().catch(() => {}).finally(() => { publicacionSolicitada = false })
+    }
     try {
       const cupones = promotionManagementService.listPublishedCoupons(usuario) || []
       const promos = promotionManagementService.listFeaturedVehiclePromotions(usuario) || []

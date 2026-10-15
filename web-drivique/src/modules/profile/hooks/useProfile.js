@@ -23,11 +23,13 @@ export function usePerfil() {
     fechaNacimiento: usuario?.fechaNacimiento || '',
     nacionalidad: usuario?.nacionalidad || '',
     tipoDocumento: usuario?.tipoDocumento || '',
+    direccion: usuario?.direccion || '',
   })
 
   useEffect(() => {
-    userService.getProfile().then((data) => {
+    userService.getProfile().then(async (data) => {
       if (data) {
+        const nombrePais = await userService.nacionalidadNombreDesdeId(data.nationalityId).catch(() => '')
         const mapped = {
           nombre: data.firstName || usuario?.nombre || '',
           apellido: data.lastName || usuario?.apellido || '',
@@ -35,8 +37,9 @@ export function usePerfil() {
           correo: data.email || usuario?.correo || '',
           cedula: data.documentNumber || usuario?.cedula || '',
           fechaNacimiento: data.birthDate ? String(data.birthDate).slice(0, 10) : (usuario?.fechaNacimiento || ''),
-          nacionalidad: data.nationalityId || usuario?.nacionalidad || '',
-          tipoDocumento: data.documentTypeId || usuario?.tipoDocumento || '',
+          nacionalidad: nombrePais || usuario?.nacionalidad || '',
+          tipoDocumento: data.documentTypeCode || usuario?.tipoDocumento || '',
+          direccion: data.address || usuario?.direccion || '',
         }
         setFormData(prev => ({ ...prev, ...mapped }))
         actualizarUsuario(mapped)
@@ -157,6 +160,7 @@ export function usePerfil() {
         nacionalidad: formData.nacionalidad,
         tipoDocumento: formData.tipoDocumento,
         fechaNacimiento: formData.fechaNacimiento,
+        direccion: formData.direccion.trim(),
         ...(correoNuevo !== correoAnterior.toLowerCase() && { correo: correoNuevo }),
       }
 
@@ -215,6 +219,7 @@ export function usePerfil() {
       fechaNacimiento: usuario?.fechaNacimiento || '',
       nacionalidad: usuario?.nacionalidad || '',
       tipoDocumento: usuario?.tipoDocumento || '',
+      direccion: usuario?.direccion || '',
     })
     setErrores({})
     setError('')

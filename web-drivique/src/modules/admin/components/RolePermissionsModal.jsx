@@ -7,7 +7,7 @@ export default function RolePermissionsModal({
   isEditing,
   form,
   setForm,
-  moduleKeys,
+  permissionList = [],
   onTogglePermiso,
   errorModal,
   roleItem,
@@ -63,41 +63,32 @@ export default function RolePermissionsModal({
             />
           </label>
 
-          {/* MATRIZ DE PERMISOS POR MÓDULO */}
+          {/* PERMISOS DEL SISTEMA (los que existen realmente en el servidor) */}
           <div className="permission-matrix-wrap">
             <table className="permission-matrix-table">
               <thead>
                 <tr>
-                  <th>{t('admin.rolesPage.moduleResource', 'Módulo / Recurso')}</th>
-                  <th>{t('admin.rolesPage.permView', 'Ver')}</th>
-                  <th>{t('admin.rolesPage.permCreate', 'Crear')}</th>
-                  <th>{t('admin.rolesPage.permEdit', 'Editar')}</th>
-                  <th>{t('admin.rolesPage.permDelete', 'Eliminar')}</th>
+                  <th>{t('admin.rolesPage.permissionColumn', 'Permiso')}</th>
+                  <th>{t('admin.rolesPage.permissionGranted', 'Concedido')}</th>
                 </tr>
               </thead>
               <tbody>
-                {moduleKeys.map((mod) => {
-                  const mPerms = form.permisos?.[mod.key] || {
-                    ver: false,
-                    crear: false,
-                    editar: false,
-                    eliminar: false,
-                  }
-                  return (
-                    <tr key={mod.key}>
-                      <td>{mod.label}</td>
-                      {['ver', 'crear', 'editar', 'eliminar'].map((action) => (
-                        <td key={action}>
-                          <input
-                            type="checkbox"
-                            checked={Boolean(mPerms[action])}
-                            onChange={() => onTogglePermiso(mod.key, action)}
-                          />
-                        </td>
-                      ))}
-                    </tr>
-                  )
-                })}
+                {permissionList.map((permiso) => (
+                  <tr key={permiso.codigo}>
+                    <td>
+                      <strong>{permiso.nombre}</strong>
+                      <br />
+                      <small>{permiso.codigo}</small>
+                    </td>
+                    <td>
+                      <input
+                        type="checkbox"
+                        checked={Boolean(form.permisos?.[permiso.codigo])}
+                        onChange={() => onTogglePermiso(permiso.codigo)}
+                      />
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>

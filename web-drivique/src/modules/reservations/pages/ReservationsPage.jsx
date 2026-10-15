@@ -459,6 +459,7 @@ function Contrato({ reserva, autoDesbloquear = false, onDesbloquear }) {
 
 
 function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onValorar }) {
+  const navigate = useNavigate()
   const { t, i18n } = useTranslation()
   const { brand } = useBrand() || {}
   const usuario = useAuthStore(state => state.usuario)
@@ -660,19 +661,27 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
   const esDomicilioDevolucion = lugarDevolucionRaw === 'domicilio' || Boolean(domicilioDevolucion)
   const esDomicilio = esDomicilioRetiro || esDomicilioDevolucion
 
-  const domicilioEstado = reserva.domicilioEstado || reservaOriginal?.domicilioEstado || reservaOriginal?.reservaDetalles?.domicilioEstado || 'EN_PREPARACION'
-  const domicilioConductor = reserva.domicilioConductor || reservaOriginal?.domicilioConductor || reservaOriginal?.reservaDetalles?.domicilioConductor || ''
-  const domicilioTelefonoConductor = reserva.domicilioTelefonoConductor || reservaOriginal?.domicilioTelefonoConductor || reservaOriginal?.reservaDetalles?.domicilioTelefonoConductor || ''
-  const domicilioPin = reserva.domicilioPin || reservaOriginal?.domicilioPin || reservaOriginal?.reservaDetalles?.domicilioPin || String(Math.abs(Array.from(String(reserva.id || reserva.codigo || '1234')).reduce((acc, char) => (acc * 31 + char.charCodeAt(0)) | 0, 0)) % 9000 + 1000)
+  // Logística del domicilio según el servidor: conductor, estado y PIN (el PIN solo lo recibe el dueño de la reserva)
+  const puntosDomicilio = (reserva.deliveryPoints || reservaOriginal?.deliveryPoints || []).filter((p) => p.modality === 'HOME_DELIVERY')
+  const puntoActivo = puntosDomicilio.find((p) => p.deliveryStatus !== 'COMPLETED') || puntosDomicilio[puntosDomicilio.length - 1] || null
+  const domicilioEstado = !puntoActivo || puntoActivo.deliveryStatus === 'PENDING'
+    ? 'EN_PREPARACION'
+    : puntoActivo.deliveryStatus === 'ASSIGNED'
+      ? 'EN_CAMINO'
+      : (puntoActivo.pointType === 'PICKUP' ? 'ENTREGADO' : 'RECOGIDO')
+  const domicilioConductor = puntoActivo?.driverName || ''
+  const domicilioTelefonoConductor = puntoActivo?.driverPhone || ''
+  const domicilioPin = puntoActivo?.deliveryPin || ''
 
   const [revelarPin, setRevelarPin] = useState(false)
   const [verMasDomicilio, setVerMasDomicilio] = useState(false)
   const handleEnviarCorreoPin = async () => {
-    const destinoCorreo = reserva.clienteCorreo || reserva.datosForm?.correo || usuario?.correo || 'tu correo registrado'
     await showAlert({
-      icon: 'success',
-      title: '¡Código de Seguridad Enviado!',
-      text: `Hemos enviado el código PIN de entrega (${domicilioPin}) al correo ${destinoCorreo}. Úsalo para validar tu identidad con el conductor al recibir el vehículo.`,
+      icon: 'info',
+      title: 'Código de seguridad de entrega',
+      text: domicilioPin
+        ? `Tu PIN de entrega es ${domicilioPin}. Dáselo al conductor al recibir el vehículo para validar tu identidad.`
+        : 'El PIN se genera cuando la sucursal asigna un conductor a tu domicilio.',
       confirmButtonText: 'Entendido',
     })
   }
@@ -971,7 +980,7 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
               <div className="modal-wompi-total-box" style={{ width: '100%', padding: '16px 18px', marginBottom: '16px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   <div className="nequi-pin-boxes">
-                    {String(domicilioPin || '4829').padStart(4, '0').slice(0, 4).split('').map((char, i) => (
+                    {String(domicilioPin || '----').slice(0, 4).split('').map((char, i) => (
                       <div key={i} className="nequi-pin-box">
                         {revelarPin ? char : '•'}
                       </div>

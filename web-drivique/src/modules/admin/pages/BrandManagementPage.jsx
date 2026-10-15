@@ -1,7 +1,6 @@
-import { useMemo, useState, useEffect } from 'react'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { FaCheck, FaImage, FaPalette, FaSave, FaUndo } from 'react-icons/fa'
-import { useAuthStore } from '../../../store/authStore'
 import { useBrand } from '../../../contexts/BrandContext'
 import { useLanding } from '../../landing/LandingContext'
 import { brandService } from '../../../services/brandService'
@@ -23,7 +22,6 @@ const PALETTE_PRESETS = [
 
 export default function BrandManagementPage() {
   const { t } = useTranslation()
-  const user = useAuthStore((state) => state.usuario)
   const { brand } = useBrand()
   const { tema } = useLanding()
   const [draft, setDraft] = useState(brand)
@@ -36,10 +34,9 @@ export default function BrandManagementPage() {
     setDraft(updated)
     if (/^#[0-9a-f]{6}$/i.test(value)) {
       applyBrand(updated)
-      try {
-        brandService.save(updated, user)
-        setNotice('Color de marca actualizado y aplicado automáticamente.')
-      } catch {}
+      brandService.save(updated)
+        .then(() => setNotice('Color de marca actualizado y aplicado automáticamente.'))
+        .catch(() => {})
     }
   }
 
@@ -48,10 +45,9 @@ export default function BrandManagementPage() {
     setDraft(updated)
     applyBrand(updated)
     setError('')
-    try {
-      brandService.save(updated, user)
-      setNotice('Color de marca actualizado y aplicado automáticamente.')
-    } catch {}
+    brandService.save(updated)
+      .then(() => setNotice('Color de marca actualizado y aplicado automáticamente.'))
+      .catch(() => {})
   }
 
   const loadLogo = (event) => {
@@ -65,10 +61,10 @@ export default function BrandManagementPage() {
     reader.readAsDataURL(file)
   }
 
-  const run = (action, successKey) => {
+  const run = async (action, successKey) => {
     try {
       setError('')
-      const updated = action()
+      const updated = await action()
       setDraft(updated)
       applyBrand(updated)
       setNotice(t(successKey))
@@ -114,9 +110,9 @@ export default function BrandManagementPage() {
             </div>
 
             <div className="brand-actions">
-              <button type="button" className="brand-secondary" onClick={() => run(() => brandService.restorePrevious(user), 'admin.brand.messages.previous')}><FaUndo /> {t('admin.brand.restorePrevious')}</button>
-              <button type="button" className="brand-secondary" onClick={() => run(() => brandService.restoreDefault(user), 'admin.brand.messages.original')}><FaUndo /> {t('admin.brand.restoreOriginal')}</button>
-              <button type="button" className="brand-primary" onClick={() => run(() => brandService.save(draft, user), 'admin.brand.messages.saved')}><FaSave /> {t('admin.brand.apply')}</button>
+              <button type="button" className="brand-secondary" onClick={() => run(() => brandService.restorePrevious(), 'admin.brand.messages.previous')}><FaUndo /> {t('admin.brand.restorePrevious')}</button>
+              <button type="button" className="brand-secondary" onClick={() => run(() => brandService.restoreDefault(), 'admin.brand.messages.original')}><FaUndo /> {t('admin.brand.restoreOriginal')}</button>
+              <button type="button" className="brand-primary" onClick={() => run(() => brandService.save(draft), 'admin.brand.messages.saved')}><FaSave /> {t('admin.brand.apply')}</button>
             </div>
           </section>
 
