@@ -34,9 +34,10 @@ const EMPTY = {
   nombre: '',
   ciudad: '',
   direccion: '',
-  telefono: '+57 601 555 1234',
-  horario: 'Lun-Vie 08:00 - 18:00 | Sáb 08:00 - 13:00',
-  capacidadVehiculos: 25,
+  telefono: '',
+  apertura: '08:00',
+  cierre: '18:00',
+  capacidadVehiculos: 20,
   estado: 'activa',
   encargadoId: '',
   autorizadoPagoEfectivo: true,
@@ -74,19 +75,9 @@ export default function BranchManagementPage() {
 
   useEffect(() => {
     let active = true
-    api.get('/branches')
-      .then(({ data }) => {
-        if (!active) return
-        setBranches(data.map((branch) => ({
-          id: branch.id, nombre: branch.name, ciudad: branch.cityName,
-          direccion: branch.address, telefono: branch.phone,
-          horario: `${branch.openingTime} - ${branch.closingTime}`,
-          autorizadoPagoEfectivo: branch.allowsCashPayment,
-          estado: branch.isActive ? 'activa' : 'inactiva',
-          capacidadVehiculos: 0, encargadoId: '',
-        })))
-      })
-      .catch(() => active && setError('No fue posible cargar las sucursales reales.'))
+    branchManagementService.refresh()
+      .then((list) => active && setBranches(list))
+      .catch(() => active && setError('No fue posible cargar las sucursales.'))
       .finally(() => active && setLoadingBranches(false))
     return () => { active = false }
   }, [])
@@ -127,9 +118,9 @@ export default function BranchManagementPage() {
       branch.nombre,
       branch.ciudad,
       `${branch.direccion} (Tel: ${branch.telefono || 'N/A'})`,
-      branch.horario || '08:00 - 18:00',
+      branch.horario,
       branchManagementService.managerName(branch) || 'Sin asignar',
-      `${linked.vehicles} / ${branch.capacidadVehiculos || 20} autos`,
+      `${linked.vehicles} / ${branch.capacidadVehiculos} autos`,
       branch.autorizadoPagoEfectivo ? 'Autorizado' : 'No autorizado',
       (branch.estado || 'activa') === 'activa' ? 'Activa' : 'Inactiva',
     ]
@@ -162,9 +153,10 @@ export default function BranchManagementPage() {
       nombre: branch.nombre || '',
       ciudad: branch.ciudad || '',
       direccion: branch.direccion || '',
-      telefono: branch.telefono || '+57 601 555 1234',
-      horario: branch.horario || 'Lun-Vie 08:00 - 18:00 | Sáb 08:00 - 13:00',
-      capacidadVehiculos: branch.capacidadVehiculos || 25,
+      telefono: branch.telefono || '',
+      apertura: branch.apertura || '08:00',
+      cierre: branch.cierre || '18:00',
+      capacidadVehiculos: branch.capacidadVehiculos || 20,
       estado: branch.estado || 'activa',
       encargadoId: branch.encargadoId || '',
       autorizadoPagoEfectivo: Boolean(branch.autorizadoPagoEfectivo),
@@ -173,13 +165,13 @@ export default function BranchManagementPage() {
     setModal({ type: 'form', branch })
   }
 
-  const save = (event) => {
+  const save = async (event) => {
     event.preventDefault()
     try {
       if (modal.branch) {
-        branchManagementService.update(modal.branch.id, form, user)
+        await branchManagementService.update(modal.branch.id, form, user)
       } else {
-        branchManagementService.create(form, user)
+        await branchManagementService.create(form, user)
       }
       setBranches(branchManagementService.list())
       setNotice(modal.branch ? 'Sucursal actualizada exitosamente.' : 'Nueva sucursal creada con éxito.')
@@ -189,19 +181,15 @@ export default function BranchManagementPage() {
     }
   }
 
-  const remove = () => {
+  const remove = async () => {
     try {
-      branchManagementService.remove(modal.branch.id, user)
+      await branchManagementService.remove(modal.branch.id, user)
       setBranches(branchManagementService.list())
       setNotice('Sucursal eliminada exitosamente.')
       close()
     } catch (caught) {
       setModal(null)
-      setNotice(
-        `No se puede eliminar la sucursal porque tiene ${caught.linked?.vehicles || 0} vehículos y ${
-          caught.linked?.reservations || 0
-        } reservas vinculadas.`
-      )
+      setNotice(caught.message)
     }
   }
 
@@ -346,7 +334,7 @@ export default function BranchManagementPage() {
                           <td>
                             <span style={{ fontSize: 12, color: 'var(--city-text, #0f172a)', display: 'inline-flex', alignItems: 'center', gap: 5 }}>
                               <FaClock style={{ color: 'var(--city-muted, #64748b)', fontSize: 11 }} />
-                              {branch.horario || 'Lun-Vie 08:00 - 18:00'}
+                              {branch.horario}
                             </span>
                           </td>
 
@@ -369,7 +357,7 @@ export default function BranchManagementPage() {
                                 <FaCar /> {linked.vehicles} vehículos
                               </span>
                               <small style={{ color: 'var(--city-muted, #64748b)', fontSize: 11 }}>
-                                Máx. capacidad: {branch.capacidadVehiculos || 20}
+                                Máx. capacidad: {branch.capacidadVehiculos}
                               </small>
                             </div>
                           </td>
@@ -442,7 +430,7 @@ export default function BranchManagementPage() {
                         required
                         value={form.nombre}
                         onChange={(e) => setForm({ ...form, nombre: e.target.value })}
-                        placeholder="Ej: Alamo Bogotá - Calle 100"
+                        placeholder="Ej: Drivique Bogotá Norte"
                       />
                     </label>
 
@@ -505,11 +493,10 @@ export default function BranchManagementPage() {
                     <div className="branches-form-grid">
                       <label>
                         Horario de Atención
-                        <input
-                          value={form.horario}
-                          onChange={(e) => setForm({ ...form, horario: e.target.value })}
-                          placeholder="Ej: Lun-Vie 08:00 - 18:00 | Sáb 08:00 - 13:00"
-                        />
+                        <span style={{ display: 'flex', gap: 8 }}>
+                          <input type="time" required value={form.apertura} onChange={(e) => setForm({ ...form, apertura: e.target.value })} />
+                          <input type="time" required value={form.cierre} onChange={(e) => setForm({ ...form, cierre: e.target.value })} />
+                        </span>
                       </label>
 
                       <label>

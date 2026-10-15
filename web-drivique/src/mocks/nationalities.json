@@ -1,22 +1,101 @@
 [
-  { "nombre": "Colombia", "prefijo": "+57" },
-  { "nombre": "Estados Unidos", "prefijo": "+1" },
-  { "nombre": "Alemania", "prefijo": "+49" },
-  { "nombre": "Francia", "prefijo": "+33" },
-  { "nombre": "España", "prefijo": "+34" },
-  { "nombre": "Italia", "prefijo": "+39" },
-  { "nombre": "Reino Unido", "prefijo": "+44" },
-  { "nombre": "Canadá", "prefijo": "+1" },
-  { "nombre": "Brasil", "prefijo": "+55" },
-  { "nombre": "Argentina", "prefijo": "+54" },
-  { "nombre": "México", "prefijo": "+52" },
-  { "nombre": "Venezuela", "prefijo": "+58" },
-  { "nombre": "Ecuador", "prefijo": "+593" },
-  { "nombre": "Perú", "prefijo": "+51" },
-  { "nombre": "Chile", "prefijo": "+56" },
-  { "nombre": "Australia", "prefijo": "+61" },
-  { "nombre": "Japón", "prefijo": "+81" },
-  { "nombre": "China", "prefijo": "+86" },
-  { "nombre": "India", "prefijo": "+91" },
-  { "nombre": "Otro", "prefijo": "" }
+  {
+    "nombre": "Colombia",
+    "prefijo": "+57",
+    "iso": "CO"
+  },
+  {
+    "nombre": "Estados Unidos",
+    "prefijo": "+1",
+    "iso": "US"
+  },
+  {
+    "nombre": "Alemania",
+    "prefijo": "+49",
+    "iso": "DE"
+  },
+  {
+    "nombre": "Francia",
+    "prefijo": "+33",
+    "iso": "FR"
+  },
+  {
+    "nombre": "España",
+    "prefijo": "+34",
+    "iso": "ES"
+  },
+  {
+    "nombre": "Italia",
+    "prefijo": "+39",
+    "iso": "IT"
+  },
+  {
+    "nombre": "Reino Unido",
+    "prefijo": "+44",
+    "iso": "GB"
+  },
+  {
+    "nombre": "Canadá",
+    "prefijo": "+1",
+    "iso": "CA"
+  },
+  {
+    "nombre": "Brasil",
+    "prefijo": "+55",
+    "iso": "BR"
+  },
+  {
+    "nombre": "Argentina",
+    "prefijo": "+54",
+    "iso": "AR"
+  },
+  {
+    "nombre": "México",
+    "prefijo": "+52",
+    "iso": "MX"
+  },
+  {
+    "nombre": "Venezuela",
+    "prefijo": "+58",
+    "iso": "VE"
+  },
+  {
+    "nombre": "Ecuador",
+    "prefijo": "+593",
+    "iso": "EC"
+  },
+  {
+    "nombre": "Perú",
+    "prefijo": "+51",
+    "iso": "PE"
+  },
+  {
+    "nombre": "Chile",
+    "prefijo": "+56",
+    "iso": "CL"
+  },
+  {
+    "nombre": "Australia",
+    "prefijo": "+61",
+    "iso": "AU"
+  },
+  {
+    "nombre": "Japón",
+    "prefijo": "+81",
+    "iso": "JP"
+  },
+  {
+    "nombre": "China",
+    "prefijo": "+86",
+    "iso": "CN"
+  },
+  {
+    "nombre": "India",
+    "prefijo": "+91",
+    "iso": "IN"
+  },
+  {
+    "nombre": "Otro",
+    "prefijo": ""
+  }
 ]

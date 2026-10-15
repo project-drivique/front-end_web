@@ -6,14 +6,21 @@ export const AUTH_KEYS = {
   usuario: 'renta_user',
 }
 
+// Decodifica el cuerpo de un JWT respetando UTF-8 (acentos en nombres de sucursal, etc.)
+const decodeJwtPayload = (payload) => {
+  const normalized = payload.replace(/-/g, '+').replace(/_/g, '/')
+  const padded = normalized.padEnd(Math.ceil(normalized.length / 4) * 4, '=')
+  const binary = atob(padded)
+  const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0))
+  return JSON.parse(new TextDecoder('utf-8').decode(bytes))
+}
+
 export const isValidAuthToken = (token) => {
   if (!token || token === 'null' || token === 'undefined') return false
   try {
     const [, payload] = token.split('.')
     if (!payload) return false
-    const normalized = payload.replace(/-/g, '+').replace(/_/g, '/')
-    const padded = normalized.padEnd(Math.ceil(normalized.length / 4) * 4, '=')
-    const decoded = JSON.parse(atob(padded))
+    const decoded = decodeJwtPayload(payload)
     return typeof decoded.exp === 'number' && decoded.exp * 1000 > Date.now()
   } catch {
     return false
@@ -44,9 +51,7 @@ const authStorage = {
     try {
       const [, payload] = token.split('.')
       if (payload) {
-        const normalized = payload.replace(/-/g, '+').replace(/_/g, '/')
-        const padded = normalized.padEnd(Math.ceil(normalized.length / 4) * 4, '=')
-        const decoded = JSON.parse(atob(padded))
+        const decoded = decodeJwtPayload(payload)
         if (decoded && Array.isArray(decoded.roles)) {
           const isBranchAdmin = decoded.roles.includes('BRANCH_ADMIN') || decoded.roles.includes('BRANCH_MANAGER')
           const isSuperAdmin = decoded.roles.includes('SUPER_ADMIN') || decoded.roles.includes('ADMIN')

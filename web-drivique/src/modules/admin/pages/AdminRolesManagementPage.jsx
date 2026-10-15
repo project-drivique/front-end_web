@@ -17,7 +17,6 @@ import {
   FaPhone,
 } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
-import { useAuthStore } from '../../../store/authStore'
 import { useBrand } from '../../../contexts/BrandContext'
 import { roleManagementService } from '../../../services/roleManagementService'
 import { branchManagementService } from '../../../services/branchManagementService'
@@ -33,23 +32,14 @@ import './AdminRolesManagementPage.css'
 export default function AdminRolesManagementPage() {
   const { t } = useTranslation()
 
-  const MODULE_KEYS = [
-    { key: 'vehicles', label: t('admin.rolesPage.modVehicles', 'Flota y Vehículos') },
-    { key: 'reservations', label: t('admin.rolesPage.modReservations', 'Gestión de Reservas') },
-    { key: 'users', label: t('admin.rolesPage.modUsers', 'Usuarios y Clientes') },
-    { key: 'contracts', label: t('admin.rolesPage.modContracts', 'Contratos Digitales') },
-    { key: 'cities', label: t('admin.rolesPage.modCities', 'Ciudades y Tarifas') },
-    { key: 'branches', label: t('admin.rolesPage.modBranches', 'Sedes y Sucursales') },
-    { key: 'audit', label: t('admin.rolesPage.modAudit', 'Auditoría y Registros') },
-  ]
   const { tema } = useLanding()
-  const user = useAuthStore((state) => state.usuario)
   const { brand } = useBrand()
   const esModoOscuro = tema === 'oscuro'
 
   const [activeTab, setActiveTab] = useState('accounts') // 'accounts' | 'roles'
   const [accountsList, setAccountsList] = useState([])
   const [rolesList, setRolesList] = useState([])
+  const [permissionList, setPermissionList] = useState([])
   const [search, setSearch] = useState('')
 
   // Filtros Cuentas
@@ -75,37 +65,33 @@ export default function AdminRolesManagementPage() {
     nombre: '',
     correo: '',
     telefono: '',
-    rolId: 'role-admin',
-    sucursal: 'Neiva',
+    rolId: '',
+    sucursal: '',
   })
 
   // Formularios Roles
   const [formRol, setFormRol] = useState({
     nombre: '',
     descripcion: '',
-    permisos: {
-      vehicles: { ver: true, crear: false, editar: false, eliminar: false },
-      reservations: { ver: true, crear: false, editar: false, eliminar: false },
-      users: { ver: false, crear: false, editar: false, eliminar: false },
-      contracts: { ver: false, crear: false, editar: false, eliminar: false },
-      cities: { ver: false, crear: false, editar: false, eliminar: false },
-      branches: { ver: false, crear: false, editar: false, eliminar: false },
-      audit: { ver: false, crear: false, editar: false, eliminar: false },
-    },
+    permisos: {},
   })
 
-  const sucursales = useMemo(
-    () => branchManagementService.list().sort((a, b) => a.nombre.localeCompare(b.nombre)),
-    []
-  )
+  const [sucursales, setSucursales] = useState([])
 
   const cargarDatos = () => {
     setAccountsList(roleManagementService.listAccounts())
     setRolesList(roleManagementService.listRoles())
+    setPermissionList(roleManagementService.listPermissions())
   }
 
   useEffect(() => {
-    cargarDatos()
+    roleManagementService.refresh().then(cargarDatos).catch(() => {
+      setAccountsList([])
+      setRolesList([])
+    })
+    branchManagementService.refresh()
+      .then(() => setSucursales(branchManagementService.list().sort((a, b) => a.nombre.localeCompare(b.nombre))))
+      .catch(() => setSucursales([]))
   }, [])
 
   // Filtrado de Cuentas
@@ -141,28 +127,22 @@ export default function AdminRolesManagementPage() {
   }, [rolesList, search])
 
   // --- Handlers Cuentas ---
-  const handleCrearCuenta = (e) => {
+  const handleCrearCuenta = async (e) => {
     e.preventDefault()
     try {
       setErrorModal('')
-      roleManagementService.createAccount(formCuenta, user)
+      await roleManagementService.createAccount(formCuenta)
       setNotice(
         t(
           'admin.roles.accountCreated',
-          `Cuenta de ${formCuenta.nombre} creada exitosamente. Notificación con credenciales enviada.`
+          `Cuenta de ${formCuenta.nombre} creada exitosamente. Recibirá un código por correo para definir su contraseña.`
         )
       )
       setModalCrearCuenta(false)
-      setFormCuenta({ nombre: '', correo: '', telefono: '', rolId: 'role-admin', sucursal: 'Neiva' })
+      setFormCuenta({ nombre: '', correo: '', telefono: '', rolId: '', sucursal: '' })
       cargarDatos()
     } catch (err) {
-      if (err.message === 'mailAlreadyExists') {
-        setErrorModal('El correo ya está asignado a otra cuenta administrativa.')
-      } else if (err.message === 'branchRequiredForManager') {
-        setErrorModal('Debes asignar una sucursal obligatoria al Encargado.')
-      } else {
-        setErrorModal('Error al crear la cuenta administrativa.')
-      }
+      setErrorModal(err.message || 'Error al crear la cuenta administrativa.')
     }
   }
 
@@ -174,30 +154,31 @@ export default function AdminRolesManagementPage() {
       correo: acc.correo,
       telefono: acc.telefono,
       rolId: acc.rolId,
-      sucursal: acc.sucursal || 'Neiva',
+      sucursal: acc.sucursal || '',
     })
     setModalEditarCuenta(acc)
   }
 
-  const handleEditarCuenta = (e) => {
+  const handleEditarCuenta = async (e) => {
     e.preventDefault()
     try {
       setErrorModal('')
-      roleManagementService.updateAccount(formCuenta.id, formCuenta, user)
+      await roleManagementService.updateAccount(formCuenta.id, formCuenta)
       setNotice(t('admin.roles.accountUpdated', `Cuenta de ${formCuenta.nombre} actualizada.`))
       setModalEditarCuenta(null)
       cargarDatos()
     } catch (err) {
-      if (err.message === 'branchRequiredForManager') {
-        setErrorModal('Debes asignar una sucursal obligatoria al Encargado.')
-      } else {
-        setErrorModal('Error al actualizar la cuenta.')
-      }
+      setErrorModal(err.message || 'Error al actualizar la cuenta.')
     }
   }
 
-  const handleToggleActivoCuenta = (acc) => {
-    roleManagementService.toggleActiveAccount(acc.id, user)
+  const handleToggleActivoCuenta = async (acc) => {
+    try {
+      await roleManagementService.toggleActiveAccount(acc.id)
+    } catch (err) {
+      setNotice(err.message)
+      return
+    }
     setNotice(
       t(
         acc.activo ? 'admin.roles.accountDeactivated' : 'admin.roles.accountActivated',
@@ -207,28 +188,29 @@ export default function AdminRolesManagementPage() {
     cargarDatos()
   }
 
-  const handleEliminarCuenta = (acc) => {
-    roleManagementService.removeAccount(acc.id, user)
+  const handleEliminarCuenta = async (acc) => {
+    try {
+      await roleManagementService.removeAccount(acc.id)
+    } catch (err) {
+      setErrorModal(err.message)
+      return
+    }
     setNotice(t('admin.roles.accountDeleted', `Cuenta de ${acc.nombre} eliminada.`))
     setModalEliminarCuenta(null)
     cargarDatos()
   }
 
   // --- Handlers Roles ---
-  const handleCrearRol = (e) => {
+  const handleCrearRol = async (e) => {
     e.preventDefault()
     try {
       setErrorModal('')
-      roleManagementService.createRole(formRol, user)
+      await roleManagementService.createRole(formRol)
       setNotice(t('admin.roles.roleCreated', `Rol ${formRol.nombre} creado exitosamente.`))
       setModalCrearRol(false)
       cargarDatos()
     } catch (err) {
-      if (err.message === 'roleAlreadyExists') {
-        setErrorModal('Ya existe un rol registrado con este nombre.')
-      } else {
-        setErrorModal('Error al crear el rol.')
-      }
+      setErrorModal(err.message || 'Error al crear el rol.')
     }
   }
 
@@ -243,56 +225,36 @@ export default function AdminRolesManagementPage() {
     setModalEditarRol(r)
   }
 
-  const handleEditarRol = (e) => {
+  const handleEditarRol = async (e) => {
     e.preventDefault()
     try {
       setErrorModal('')
-      roleManagementService.updateRole(formRol.id, formRol, user)
+      await roleManagementService.updateRole(formRol.id, formRol)
       setNotice(t('admin.roles.roleUpdated', `Permisos del rol ${formRol.nombre} actualizados.`))
       setModalEditarRol(null)
       cargarDatos()
-    } catch {
-      setErrorModal('Error al actualizar el rol.')
+    } catch (err) {
+      setErrorModal(err.message || 'Error al actualizar el rol.')
     }
   }
 
-  const handleEliminarRol = (r) => {
+  const handleEliminarRol = async (r) => {
     try {
       setErrorModal('')
-      roleManagementService.removeRole(r.id, user)
+      await roleManagementService.removeRole(r.id)
       setNotice(t('admin.roles.roleDeleted', `Rol ${r.nombre} eliminado.`))
       setModalEliminarRol(null)
       cargarDatos()
     } catch (err) {
-      if (err.message === 'roleHasAssignedAccounts') {
-        setErrorModal(
-          t(
-            'admin.roles.hasAssignedAccounts',
-            'No se puede eliminar un rol que tiene cuentas asignadas. Reasigna las cuentas primero.'
-          )
-        )
-      } else if (err.message === 'systemRoleCannotBeDeleted') {
-        setErrorModal('Los roles base del sistema no pueden ser eliminados.')
-      } else {
-        setErrorModal('Error al eliminar el rol.')
-      }
+      setErrorModal(err.message || 'Error al eliminar el rol.')
     }
   }
 
-  const handleTogglePermiso = (moduleKey, actionKey) => {
-    setFormRol((prev) => {
-      const currentModule = prev.permisos[moduleKey] || { ver: false, crear: false, editar: false, eliminar: false }
-      return {
-        ...prev,
-        permisos: {
-          ...prev.permisos,
-          [moduleKey]: {
-            ...currentModule,
-            [actionKey]: !currentModule[actionKey],
-          },
-        },
-      }
-    })
+  const handleTogglePermiso = (codigo) => {
+    setFormRol((prev) => ({
+      ...prev,
+      permisos: { ...prev.permisos, [codigo]: !prev.permisos?.[codigo] },
+    }))
   }
 
   // --- Exportación ---
@@ -344,8 +306,8 @@ export default function AdminRolesManagementPage() {
                       nombre: '',
                       correo: '',
                       telefono: '',
-                      rolId: rolesList[0]?.id || 'role-admin',
-                      sucursal: 'Neiva',
+                      rolId: rolesList[0]?.id || '',
+                      sucursal: '',
                     })
                     setModalCrearCuenta(true)
                   }}
@@ -659,7 +621,7 @@ export default function AdminRolesManagementPage() {
           isEditing={Boolean(modalEditarRol)}
           form={formRol}
           setForm={setFormRol}
-          moduleKeys={MODULE_KEYS}
+          permissionList={permissionList}
           onTogglePermiso={handleTogglePermiso}
           errorModal={errorModal}
           roleItem={modalEditarRol}
