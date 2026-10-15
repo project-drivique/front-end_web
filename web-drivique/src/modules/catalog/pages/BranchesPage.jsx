@@ -5,6 +5,9 @@ import { useLanding } from '../../landing/LandingContext'
 import { useAuthStore } from '../../../store/authStore'
 import { formatCurrency } from '@/utils/currencyUtils'
 import { useCatalogo } from '../hooks/useCatalog'
+import { useFavoritos } from '../hooks/useFavorites'
+import { SUCURSALES } from '../constants'
+import { catalogService } from '../../../services/catalogService'
 import VehicleGrid from '../components/VehicleGrid'
 import LoadingState from '../components/LoadingState'
 import ErrorState from '../components/ErrorState'
@@ -96,504 +99,29 @@ function BrandLogo({ marca }) {
   return <span style={{ fontWeight: 800, fontSize: 18 }}>{marca}</span>
 }
 
-const SUCURSALES_GRID = [
-  {
-    id: 'alamo-bogota',
-    alias: 'Alamo Bogotá - Aeropuerto',
-    nombre: 'Alamo Bogotá - Aeropuerto',
-    marca: 'Alamo',
-    tag: 'Aeropuerto',
-    direccion: 'Aeropuerto Internacional El Dorado, Terminal 1, Piso 1, Bogotá',
-    horario: 'Lun-Dom 24 Horas',
-    flota: 'Toyota Corolla, etc.',
-    precioCOP: 108280,
-    porQue: 'Servicio 24/7 directo en la terminal de llegadas internacionales.',
-    porQueKey: '247',
-    nombreKeys: {
-      es: 'Alamo Bogotá - Aeropuerto',
-      en: 'Alamo Bogotá - Airport',
-      fr: 'Alamo Bogotá - Aéroport',
-      pt: 'Alamo Bogotá - Aeroporto'
-    },
-    direccionKeys: {
-      es: 'Aeropuerto Internacional El Dorado, Terminal 1, Piso 1, Bogotá',
-      en: 'El Dorado International Airport, Terminal 1, Floor 1, Bogotá',
-      fr: 'Aéroport International El Dorado, Terminal 1, Étage 1, Bogotá',
-      pt: 'Aeroporto Internacional El Dorado, Terminal 1, 1º Andar, Bogotá'
-    },
-    flotaKeys: {
-      es: 'Toyota Corolla, entre otros',
-      en: 'Toyota Corolla, and more',
-      fr: 'Toyota Corolla, entre autres',
-      pt: 'Toyota Corolla, entre outros'
-    }
-  },
-  {
-    id: 'alamo-medellin',
-    alias: 'Alamo Medellín Poblado',
-    nombre: 'Alamo Medellín Poblado',
-    marca: 'Alamo',
-    tag: 'Poblado',
-    direccion: 'Calle 10 # 43C-28, El Poblado, Medellín',
-    horario: 'Lun-Sáb 7:00 - 22:00',
-    flota: 'Mazda CX-5, etc.',
-    precioCOP: 184680,
-    porQue: 'Excelente ubicación estratégica en la zona hotelera de El Poblado.',
-    porQueKey: 'poblado',
-    nombreKeys: {
-      es: 'Alamo Medellín - Poblado',
-      en: 'Alamo Medellín - Poblado Area',
-      fr: 'Alamo Medellín - Quartier Poblado',
-      pt: 'Alamo Medellín - Bairro Poblado'
-    },
-    direccionKeys: {
-      es: 'Calle 10 # 43C-28, El Poblado, Medellín',
-      en: '10th Street # 43C-28, El Poblado, Medellín',
-      fr: 'Rue 10 # 43C-28, El Poblado, Medellín',
-      pt: 'Rua 10 # 43C-28, El Poblado, Medellín'
-    },
-    flotaKeys: {
-      es: 'Mazda CX-5, entre otros',
-      en: 'Mazda CX-5, and more',
-      fr: 'Mazda CX-5, entre autres',
-      pt: 'Mazda CX-5, entre outros'
-    }
-  },
-  {
-    id: 'national-barranquilla',
-    alias: 'National Downtown Barranquilla',
-    nombre: 'National Downtown Barranquilla',
-    marca: 'TuRoll',
-    tag: 'Centro',
-    direccion: 'Carrera 53 # 74-86, Barrio Prado, Barranquilla',
-    horario: 'Lun-Vie 8:00 - 18:00',
-    flota: 'Chevrolet Spark, etc.',
-    precioCOP: 76440,
-    porQue: 'La opción ideal para desplazamientos ejecutivos en el sector financiero.',
-    porQueKey: 'executive',
-    nombreKeys: {
-      es: 'National Barranquilla - Centro',
-      en: 'National Barranquilla - Downtown',
-      fr: 'National Barranquilla - Centre-ville',
-      pt: 'National Barranquilla - Centro'
-    },
-    direccionKeys: {
-      es: 'Carrera 53 # 74-86, Barrio Prado, Barranquilla',
-      en: 'Carrera 53 # 74-86, Prado Neighborhood, Barranquilla',
-      fr: 'Carrera 53 # 74-86, Quartier Prado, Barranquilla',
-      pt: 'Carrera 53 # 74-86, Bairro Prado, Barranquilla'
-    },
-    flotaKeys: {
-      es: 'Chevrolet Spark, entre otros',
-      en: 'Chevrolet Spark, and more',
-      fr: 'Chevrolet Spark, entre autres',
-      pt: 'Chevrolet Spark, entre outros'
-    }
-  },
-  {
-    id: 'alamo-cartagena',
-    alias: 'Alamo Cartagena - Aeropuerto',
-    nombre: 'Alamo Cartagena - Aeropuerto',
-    marca: 'Alamo',
-    tag: 'Aeropuerto',
-    direccion: 'Aeropuerto Internacional Rafael Núñez, Local 01-08, Cartagena',
-    horario: 'Lun-Dom 7:00 - 22:00',
-    flota: 'Ford Mustang GT, etc.',
-    precioCOP: 280240,
-    porQue: 'Entrega ágil a la salida del aeropuerto con flota convertible disponible.',
-    porQueKey: 'convertible',
-    nombreKeys: {
-      es: 'Alamo Cartagena - Aeropuerto',
-      en: 'Alamo Cartagena - Airport',
-      fr: 'Alamo Cartagena - Aéroport',
-      pt: 'Alamo Cartagena - Aeroporto'
-    },
-    direccionKeys: {
-      es: 'Aeropuerto Internacional Rafael Núñez, Local 01-08, Cartagena',
-      en: 'Rafael Núñez International Airport, Gate 01-08, Cartagena',
-      fr: 'Aéroport International Rafael Núñez, Local 01-08, Cartagena',
-      pt: 'Aeroporto Internacional Rafael Núñez, Loja 01-08, Cartagena'
-    },
-    flotaKeys: {
-      es: 'Ford Mustang GT, entre otros',
-      en: 'Ford Mustang GT, and more',
-      fr: 'Ford Mustang GT, entre autres',
-      pt: 'Ford Mustang GT, entre outros'
-    }
-  },
-  {
-    id: 'enterprise-bogota',
-    alias: 'Enterprise Bogotá - El Dorado',
-    nombre: 'Enterprise Bogotá - El Dorado',
-    marca: 'Enterprise',
-    tag: 'Aeropuerto',
-    direccion: 'Aeropuerto Internacional El Dorado, Terminal 1, Piso 1, Bogotá',
-    horario: 'Lun-Dom 24 Horas',
-    flota: 'Chevrolet Onix, etc.',
-    precioCOP: 103600,
-    porQue: 'Servicio prémium con atención prioritaria y entrega rápida.',
-    porQueKey: 'premium',
-    nombreKeys: {
-      es: 'Enterprise Bogotá - El Dorado',
-      en: 'Enterprise Bogotá - El Dorado Airport',
-      fr: 'Enterprise Bogotá - Aéroport El Dorado',
-      pt: 'Enterprise Bogotá - Aeroporto El Dorado'
-    },
-    direccionKeys: {
-      es: 'Aeropuerto Internacional El Dorado, Terminal 1, Piso 1, Bogotá',
-      en: 'El Dorado International Airport, Terminal 1, Floor 1, Bogotá',
-      fr: 'Aéroport International El Dorado, Terminal 1, Étage 1, Bogotá',
-      pt: 'Aeroporto Internacional El Dorado, Terminal 1, 1º Andar, Bogotá'
-    },
-    flotaKeys: {
-      es: 'Chevrolet Onix, entre otros',
-      en: 'Chevrolet Onix, and more',
-      fr: 'Chevrolet Onix, entre autres',
-      pt: 'Chevrolet Onix, entre outros'
-    }
-  },
-  {
-    id: 'localiza-medellin',
-    alias: 'Localiza Medellín - Poblado',
-    nombre: 'Localiza Medellín - Poblado',
-    marca: 'Localiza',
-    tag: 'Poblado',
-    direccion: 'Calle 10 # 43C-28, El Poblado, Medellín',
-    horario: 'Lun-Sáb 7:00 - 22:00',
-    flota: 'Nissan Kicks, etc.',
-    precioCOP: 178000,
-    porQue: 'Variedad de SUVs y sedanes modernos con condiciones flexibles.',
-    porQueKey: 'flexible',
-    nombreKeys: {
-      es: 'Localiza Medellín - Poblado',
-      en: 'Localiza Medellín - Poblado Area',
-      fr: 'Localiza Medellín - Quartier Poblado',
-      pt: 'Localiza Medellín - Bairro Poblado'
-    },
-    direccionKeys: {
-      es: 'Calle 10 # 43C-28, El Poblado, Medellín',
-      en: '10th Street # 43C-28, El Poblado, Medellín',
-      fr: 'Rue 10 # 43C-28, El Poblado, Medellín',
-      pt: 'Rua 10 # 43C-28, El Poblado, Medellín'
-    },
-    flotaKeys: {
-      es: 'Nissan Kicks, entre otros',
-      en: 'Nissan Kicks, and more',
-      fr: 'Nissan Kicks, entre autres',
-      pt: 'Nissan Kicks, entre outros'
-    }
-  },
-  {
-    id: 'hertz-barranquilla',
-    alias: 'Hertz Barranquilla - Centro',
-    nombre: 'Hertz Barranquilla - Centro',
-    marca: 'Hertz',
-    tag: 'Centro',
-    direccion: 'Carrera 51B # 80-58, Alto Prado, Barranquilla',
-    horario: 'Lun-Vie 8:00 - 18:00',
-    flota: 'Kia Picanto, etc.',
-    precioCOP: 85200,
-    porQue: 'Garantía internacional de alquiler y excelente eficiencia de combustible.',
-    porQueKey: 'efficiency',
-    nombreKeys: {
-      es: 'Hertz Barranquilla - Centro',
-      en: 'Hertz Barranquilla - Downtown',
-      fr: 'Hertz Barranquilla - Centre-ville',
-      pt: 'Hertz Barranquilla - Centro'
-    },
-    direccionKeys: {
-      es: 'Carrera 51B # 80-58, Alto Prado, Barranquilla',
-      en: 'Carrera 51B # 80-58, Alto Prado, Barranquilla',
-      fr: 'Carrera 51B # 80-58, Alto Prado, Barranquilla',
-      pt: 'Carrera 51B # 80-58, Alto Prado, Barranquilla'
-    },
-    flotaKeys: {
-      es: 'Kia Picanto, entre otros',
-      en: 'Kia Picanto, and more',
-      fr: 'Kia Picanto, entre autres',
-      pt: 'Kia Picanto, entre outros'
-    }
-  },
-  {
-    id: 'budget-cali',
-    alias: 'Budget Cali - Aeropuerto',
-    nombre: 'Budget Cali - Aeropuerto',
-    marca: 'Budget',
-    tag: 'Aeropuerto',
-    direccion: 'Aeropuerto Internacional Alfonso Bonilla Aragón, Local 12, Cali',
-    horario: 'Lun-Dom 7:00 - 22:00',
-    flota: 'Renault Duster, etc.',
-    precioCOP: 273600,
-    porQue: 'Reserva rápida directamente en la terminal aérea del Valle.',
-    porQueKey: 'valle',
-    nombreKeys: {
-      es: 'Budget Cali - Aeropuerto',
-      en: 'Budget Cali - Airport',
-      fr: 'Budget Cali - Aéroport',
-      pt: 'Budget Cali - Aeroporto'
-    },
-    direccionKeys: {
-      es: 'Aeropuerto Internacional Alfonso Bonilla Aragón, Local 12, Cali',
-      en: 'Alfonso Bonilla Aragón International Airport, Gate 12, Cali',
-      fr: 'Aéroport International Alfonso Bonilla Aragón, Local 12, Cali',
-      pt: 'Aeroporto Internacional Alfonso Bonilla Aragón, Loja 12, Cali'
-    },
-    flotaKeys: {
-      es: 'Renault Duster, entre otros',
-      en: 'Renault Duster, and more',
-      fr: 'Renault Duster, entre autres',
-      pt: 'Renault Duster, entre outros'
-    }
-  },
-  {
-    id: 'alamo-cali',
-    alias: 'Alamo Cali - Aeropuerto',
-    nombre: 'Alamo Cali - Aeropuerto',
-    marca: 'Alamo',
-    tag: 'Aeropuerto',
-    direccion: 'Aeropuerto Internacional Alfonso Bonilla Aragón (CLO), Palmira, Valle',
-    horario: 'Lun-Dom 6:00 - 23:00',
-    flota: 'Toyota Prado, etc.',
-    precioCOP: 220000,
-    porQue: 'Servicio eficiente y entrega directa en el aeropuerto internacional de Cali.',
-    porQueKey: '247',
-    nombreKeys: {
-      es: 'Alamo Cali - Aeropuerto',
-      en: 'Alamo Cali - Airport',
-      fr: 'Alamo Cali - Aéroport',
-      pt: 'Alamo Cali - Aeroporto'
-    },
-    direccionKeys: {
-      es: 'Aeropuerto Internacional Alfonso Bonilla Aragón (CLO), Palmira, Valle',
-      en: 'Alfonso Bonilla Aragón International Airport (CLO), Palmira, Valle',
-      fr: 'Aéroport International Alfonso Bonilla Aragón (CLO), Palmira, Valle',
-      pt: 'Aeroporto Internacional Alfonso Bonilla Aragón (CLO), Palmira, Valle'
-    },
-    flotaKeys: {
-      es: 'Toyota Prado, entre otros',
-      en: 'Toyota Prado, and more',
-      fr: 'Toyota Prado, entre autres',
-      pt: 'Toyota Prado, entre outros'
-    }
-  },
-  {
-    id: 'national-bogota',
-    alias: 'National Bogota El Dorado Intl. Airport',
-    nombre: 'National Bogotá - Aeropuerto',
-    marca: 'TuRoll',
-    tag: 'Aeropuerto',
-    direccion: 'Aeropuerto Internacional El Dorado (BOG), Puerta 4, Bogotá D.C.',
-    horario: 'Lun-Dom 24 Horas',
-    flota: 'Hyundai Tucson, etc.',
-    precioCOP: 190000,
-    porQue: 'Atención personalizada para viajeros corporativos e internacionales.',
-    porQueKey: 'executive',
-    nombreKeys: {
-      es: 'National Bogotá - Aeropuerto',
-      en: 'National Bogotá - Airport',
-      fr: 'National Bogotá - Aéroport',
-      pt: 'National Bogotá - Aeroporto'
-    },
-    direccionKeys: {
-      es: 'Aeropuerto Internacional El Dorado (BOG), Puerta 4, Bogotá D.C.',
-      en: 'El Dorado International Airport (BOG), Gate 4, Bogotá D.C.',
-      fr: 'Aéroport International El Dorado (BOG), Porte 4, Bogotá D.C.',
-      pt: 'Aeroporto Internacional El Dorado (BOG), Portão 4, Bogotá D.C.'
-    },
-    flotaKeys: {
-      es: 'Hyundai Tucson, entre otros',
-      en: 'Hyundai Tucson, and more',
-      fr: 'Hyundai Tucson, entre autres',
-      pt: 'Hyundai Tucson, entre outros'
-    }
-  },
-  {
-    id: 'national-rionegro',
-    alias: 'National Medellin Rionegro Jose Maria Cordova Intl. Airport',
-    nombre: 'National Rionegro - Aeropuerto',
-    marca: 'TuRoll',
-    tag: 'Aeropuerto',
-    direccion: 'Aeropuerto José María Córdova (MDE), Terminal de arriendo, Rionegro',
-    horario: 'Lun-Dom 6:00 - 22:00',
-    flota: 'Nissan Qashqai, etc.',
-    precioCOP: 210000,
-    porQue: 'Ubicación directa a la llegada de vuelos nacionales e internacionales.',
-    porQueKey: 'poblado',
-    nombreKeys: {
-      es: 'National Rionegro - Aeropuerto',
-      en: 'National Rionegro - Airport',
-      fr: 'National Rionegro - Aéroport',
-      pt: 'National Rionegro - Aeroporto'
-    },
-    direccionKeys: {
-      es: 'Aeropuerto José María Córdova (MDE), Terminal de arriendo, Rionegro',
-      en: 'José María Córdova Airport (MDE), Rental Terminal, Rionegro',
-      fr: 'Aéroport José María Córdova (MDE), Terminal de location, Rionegro',
-      pt: 'Aeroporto José María Córdova (MDE), Terminal de aluguel, Rionegro'
-    },
-    flotaKeys: {
-      es: 'Nissan Qashqai, entre otros',
-      en: 'Nissan Qashqai, and more',
-      fr: 'Nissan Qashqai, entre autres',
-      pt: 'Nissan Qashqai, entre outros'
-    }
-  },
-  {
-    id: 'localiza-cucuta',
-    alias: 'Localiza Cúcuta Aeropuerto Camilo Daza',
-    nombre: 'Localiza Cúcuta - Aeropuerto',
-    marca: 'Localiza',
-    tag: 'Aeropuerto',
-    direccion: 'Aeropuerto Internacional Camilo Daza (CUC), Cúcuta',
-    horario: 'Lun-Dom 8:00 - 20:00',
-    flota: 'Nissan Kicks, etc.',
-    precioCOP: 165000,
-    porQue: 'Facilidad de alquiler y flotilla moderna en la zona fronteriza.',
-    porQueKey: 'flexible',
-    nombreKeys: {
-      es: 'Localiza Cúcuta - Aeropuerto',
-      en: 'Localiza Cúcuta - Airport',
-      fr: 'Localiza Cúcuta - Aéroport',
-      pt: 'Localiza Cúcuta - Aeroporto'
-    },
-    direccionKeys: {
-      es: 'Aeropuerto Internacional Camilo Daza (CUC), Cúcuta',
-      en: 'Camilo Daza International Airport (CUC), Cúcuta',
-      fr: 'Aéroport International Camilo Daza (CUC), Cúcuta',
-      pt: 'Aeroporto Internacional Camilo Daza (CUC), Cúcuta'
-    },
-    flotaKeys: {
-      es: 'Nissan Kicks, entre otros',
-      en: 'Nissan Kicks, and more',
-      fr: 'Nissan Kicks, entre autres',
-      pt: 'Nissan Kicks, entre outros'
-    }
-  },
-  {
-    id: 'alamo-bucaramanga',
-    alias: 'Alamo Bucaramanga - Aeropuerto',
-    nombre: 'Alamo Bucaramanga - Aeropuerto',
-    marca: 'Alamo',
-    tag: 'Aeropuerto',
-    direccion: 'Aeropuerto Internacional Palonegro (BGA), Lebrija, Santander',
-    horario: 'Lun-Dom 8:00 - 21:00',
-    flota: 'Kia Sportage, etc.',
-    precioCOP: 175000,
-    porQue: 'La mejor opción para ejecutivos y turismo en Santander.',
-    porQueKey: 'executive',
-    nombreKeys: {
-      es: 'Alamo Bucaramanga - Aeropuerto',
-      en: 'Alamo Bucaramanga - Airport',
-      fr: 'Alamo Bucaramanga - Aéroport',
-      pt: 'Alamo Bucaramanga - Aeroporto'
-    },
-    direccionKeys: {
-      es: 'Aeropuerto Internacional Palonegro (BGA), Lebrija, Santander',
-      en: 'Palonegro International Airport (BGA), Lebrija, Santander',
-      fr: 'Aéroport International Palonegro (BGA), Lebrija, Santander',
-      pt: 'Aeroporto Internacional Palonegro (BGA), Lebrija, Santander'
-    },
-    flotaKeys: {
-      es: 'Kia Sportage, entre otros',
-      en: 'Kia Sportage, and more',
-      fr: 'Kia Sportage, entre autres',
-      pt: 'Kia Sportage, entre outros'
-    }
-  },
-  {
-    id: 'alamo-pereira',
-    alias: 'Alamo Pereira - Aeropuerto',
-    nombre: 'Alamo Pereira - Aeropuerto',
-    marca: 'Alamo',
-    tag: 'Aeropuerto',
-    direccion: 'Aeropuerto Internacional Matecaña (PEI), Pereira',
-    horario: 'Lun-Dom 7:00 - 22:00',
-    flota: 'Kia Cerato, etc.',
-    precioCOP: 155000,
-    porQue: 'Ubicación clave en el Eje Cafetero para explorar la región.',
-    porQueKey: 'convertible',
-    nombreKeys: {
-      es: 'Alamo Pereira - Aeropuerto',
-      en: 'Alamo Pereira - Airport',
-      fr: 'Alamo Pereira - Aéroport',
-      pt: 'Alamo Pereira - Aeroporto'
-    },
-    direccionKeys: {
-      es: 'Aeropuerto Internacional Matecaña (PEI), Pereira',
-      en: 'Matecaña International Airport (PEI), Pereira',
-      fr: 'Aéroport International Matecaña (PEI), Pereira',
-      pt: 'Aeroporto Internacional Matecaña (PEI), Pereira'
-    },
-    flotaKeys: {
-      es: 'Kia Cerato, entre otros',
-      en: 'Kia Cerato, and more',
-      fr: 'Kia Cerato, entre autres',
-      pt: 'Kia Cerato, entre outros'
-    }
-  },
-  {
-    id: 'hertz-bucaramanga',
-    alias: 'Hertz Bucaramanga - Centro',
-    nombre: 'Hertz Bucaramanga - Centro',
-    marca: 'Hertz',
-    tag: 'Centro',
-    direccion: 'Carrera 27 # 36-14, Barrio Cañaveral, Bucaramanga',
-    horario: 'Lun-Vie 8:00 - 18:00',
-    flota: 'Chevrolet Tracker, etc.',
-    precioCOP: 140000,
-    porQue: 'Tarifas competitivas de alquiler corporativo en zona céntrica.',
-    porQueKey: 'efficiency',
-    nombreKeys: {
-      es: 'Hertz Bucaramanga - Centro',
-      en: 'Hertz Bucaramanga - Downtown',
-      fr: 'Hertz Bucaramanga - Centre-ville',
-      pt: 'Hertz Bucaramanga - Centro'
-    },
-    direccionKeys: {
-      es: 'Carrera 27 # 36-14, Barrio Cañaveral, Bucaramanga',
-      en: 'Carrera 27 # 36-14, Cañaveral Neighborhood, Bucaramanga',
-      fr: 'Carrera 27 # 36-14, Quartier Cañaveral, Bucaramanga',
-      pt: 'Carrera 27 # 36-14, Bairro Cañaveral, Bucaramanga'
-    },
-    flotaKeys: {
-      es: 'Chevrolet Tracker, entre otros',
-      en: 'Chevrolet Tracker, and more',
-      fr: 'Chevrolet Tracker, entre autres',
-      pt: 'Chevrolet Tracker, entre outros'
-    }
-  },
-  {
-    id: 'budget-cartagena',
-    alias: 'Budget Cartagena - Bocagrande',
-    nombre: 'Budget Cartagena - Bocagrande',
-    marca: 'Budget',
-    tag: 'Centro',
-    direccion: 'Av. San Martín # 6-45, Barrio Bocagrande, Cartagena',
-    horario: 'Lun-Sáb 8:00 - 20:00',
-    flota: 'Renault Stepway, etc.',
-    precioCOP: 160000,
-    porQue: 'Alquiler flexible en la zona hotelera de Bocagrande.',
-    porQueKey: 'valle',
-    nombreKeys: {
-      es: 'Budget Cartagena - Bocagrande',
-      en: 'Budget Cartagena - Bocagrande Area',
-      fr: 'Budget Cartagena - Quartier Bocagrande',
-      pt: 'Budget Cartagena - Bairro Bocagrande'
-    },
-    direccionKeys: {
-      es: 'Av. San Martín # 6-45, Barrio Bocagrande, Cartagena',
-      en: 'San Martín Ave # 6-45, Bocagrande Neighborhood, Cartagena',
-      fr: 'Avenue San Martín # 6-45, Quartier Bocagrande, Cartagena',
-      pt: 'Av. San Martín # 6-45, Bairro Bocagrande, Cartagena'
-    },
-    flotaKeys: {
-      es: 'Renault Stepway, entre otros',
-      en: 'Renault Stepway, and more',
-      fr: 'Renault Stepway, entre autres',
-      pt: 'Renault Stepway, entre outros'
-    }
-  }
-]
+// Las sedes salen de la base de datos (cargadas al iniciar) y la flota y el precio, del catálogo real
+function construirSucursales(sucursales, vehiculos) {
+  return sucursales
+    .filter((sede) => sede.estado !== 'inactiva')
+    .map((sede) => {
+      const propios = vehiculos.filter((v) => (v.sucursal || v.sucursalInfo?.nombre || '') === sede.nombre)
+      const precios = propios.map((v) => Number(v.precio)).filter((precio) => precio > 0)
+      const modelos = [...new Set(propios.map((v) => v.nombre).filter(Boolean))].slice(0, 2)
+      return {
+        id: sede.id,
+        alias: sede.nombre,
+        nombre: sede.nombre,
+        marca: 'Drivique',
+        tag: sede.ciudad,
+        direccion: sede.direccion,
+        horario: sede.horario,
+        flota: modelos.join(', '),
+        precioCOP: precios.length ? Math.min(...precios) : 0,
+        porQue: sede.telefono ? `Tel. ${sede.telefono}` : '',
+      }
+    })
+}
+
 
 export default function SucursalesPage() {
   const { t, i18n } = useTranslation()
@@ -609,10 +137,20 @@ export default function SucursalesPage() {
   const [reservaModalAbierto, setReservaModalAbierto] = useState(false)
   const [favoritoModalAbierto, setFavoritoModalAbierto] = useState(false)
   const SUCURSALES_POR_PAGINA = 8
-  const totalPaginas = Math.ceil(SUCURSALES_GRID.length / SUCURSALES_POR_PAGINA)
 
   const resultadosRef = useRef(null)
   const { vehiculos, cargando, error, reintentar } = useCatalogo()
+  const { esFavorito, toggleFavorito } = useFavoritos()
+  // Flota real de cada sede: el catálogo completo del servidor, independiente de la búsqueda
+  const [flotaCompleta, setFlotaCompleta] = useState([])
+  useEffect(() => {
+    catalogService.getVehiculos().then((lista) => setFlotaCompleta(Array.isArray(lista) ? lista : [])).catch(() => {})
+  }, [])
+  const SUCURSALES_GRID = useMemo(
+    () => construirSucursales(SUCURSALES, flotaCompleta.length ? flotaCompleta : vehiculos),
+    [flotaCompleta, vehiculos]
+  )
+  const totalPaginas = Math.ceil(SUCURSALES_GRID.length / SUCURSALES_POR_PAGINA)
 
   const lang = (i18n.language || 'es').substring(0, 2)
 
@@ -1006,6 +544,8 @@ export default function SucursalesPage() {
                 <VehicleGrid
                   vehiculosPagina={flotaFiltrada}
                   vehiculos={flotaFiltrada}
+                  esFavorito={esFavorito}
+                  toggleFavorito={toggleFavorito}
                   c={c}
                   invitado={!usuario}
                   onGuestBlocked={() => setReservaModalAbierto(true)}

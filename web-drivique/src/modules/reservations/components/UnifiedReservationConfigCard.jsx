@@ -317,18 +317,19 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
           <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 700, color: titleColor }}>
             <FaMapMarkerAlt color={accent} size={14} /> {t('vehiculo.cashPaymentBranchLabel', 'Punto autorizado para pago en efectivo')}
           </span>
-          <div style={{
-            padding: '12px 16px',
-            borderRadius: 12,
-            border: `1px solid ${border}`,
-            background: 'transparent',
-            display: 'flex',
-            alignItems: 'center',
-            fontSize: 14,
-            fontWeight: 500,
-            color: textPrimary,
-          }}>
-            <span>{vehiculo?.sucursal ? `${vehiculo.sucursal}${branchObj?.ciudad ? ` · ${branchObj.ciudad}` : ''}` : ''}</span>
+          <div style={{ padding: '12px 16px', borderRadius: 12, border: `1px solid ${border}`, background: 'transparent' }}>
+            <select
+              value={reserva?.sucursalPagoEfectivo || ''}
+              onChange={e => onCambio('sucursalPagoEfectivo', e.target.value)}
+              style={selectStyle}
+            >
+              <option value="">{t('vehiculo.selectLocation', 'Seleccionar')}</option>
+              {cashBranches.map(branch => (
+                <option key={branch.id || branch.nombre} value={branch.nombre}>
+                  {branch.ciudad ? `${branch.nombre} · ${branch.ciudad}` : branch.nombre}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
       )}
