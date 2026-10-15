@@ -2,7 +2,8 @@ import { useTranslation } from 'react-i18next';
 import { FaShieldAlt, FaRegHeart, FaCheckCircle } from "react-icons/fa";
 import { formatCurrency } from '@/utils/currencyUtils';
 import { useLanding } from '../../landing/LandingContext';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { getCoberturasSeguro } from '@/services/pricingService';
 
 const IcoCheck = ({ color = '#16a34a', sz = 15 }) => (
   <svg width={sz} height={sz} fill="none" stroke={color} strokeWidth="2.8" viewBox="0 0 24 24">
@@ -30,11 +31,16 @@ export default function PlanesProteccion({ seguroIdx, onSeleccionar, c, dias = 1
   const { t } = useTranslation()
   const { moneda } = useLanding();
   const [hoveredIdx, setHoveredIdx] = useState(null);
+  const [coberturas, setCoberturas] = useState([]);
 
-  const planes = [
+  useEffect(() => {
+    getCoberturasSeguro()
+      .then((lista) => setCoberturas([...lista].sort((a, b) => Number(a.dailyRate) - Number(b.dailyRate))))
+      .catch(() => setCoberturas([]));
+  }, []);
+
+  const plantillas = [
     {
-      nombre: t('catalogo.basicProtection', 'Protección Obligatoria'),
-      precio: 29000,
       shields: [true, false, false],
       items: [
         { tipo: 'check', texto: t('vehiculo.plan1Item1', 'Responsabilidad civil extracontractual (hasta $840 millones)') },
@@ -45,8 +51,6 @@ export default function PlanesProteccion({ seguroIdx, onSeleccionar, c, dias = 1
       ],
     },
     {
-      nombre: t('catalogo.fullProtection', 'Protección Total'),
-      precio: 67000,
       shields: [true, true, true],
       items: [
         { tipo: 'check', texto: t('vehiculo.plan2Item1', 'Cobertura total contra todo riesgo (Colisión y Hurto)') },
@@ -59,7 +63,13 @@ export default function PlanesProteccion({ seguroIdx, onSeleccionar, c, dias = 1
     },
   ];
 
-  const precioDiario = seguroIdx !== null ? planes[seguroIdx].precio : 0;
+  const planes = plantillas
+    .map((plantilla, idx) => (coberturas[idx]
+      ? { ...plantilla, nombre: coberturas[idx].name, precio: Number(coberturas[idx].dailyRate) }
+      : null))
+    .filter(Boolean);
+
+  const precioDiario = seguroIdx !== null && planes[seguroIdx] ? planes[seguroIdx].precio : 0;
   const total = precioDiario * dias;
 
   return (
@@ -169,7 +179,7 @@ export default function PlanesProteccion({ seguroIdx, onSeleccionar, c, dias = 1
           justifyContent: 'space-between'
         }}>
           <span style={{ fontSize: 12, fontWeight: 600, color: c?.textPrimary || '#0f172a' }}>
-            {seguroIdx !== null 
+            {seguroIdx !== null && planes[seguroIdx] 
               ? t('vehiculo.totalDynamic', `Total ${planes[seguroIdx].nombre} ({{diasText}})`, { name: planes[seguroIdx].nombre, diasText: `${dias} ${dias === 1 ? t('vehiculo.dayStr', 'día') : t('vehiculo.daysStr', 'días')}` })
               : t('vehiculo.totalProtectionPlan', `Total plan de protección ({{diasText}})`, { diasText: `${dias} ${dias === 1 ? t('vehiculo.dayStr', 'día') : t('vehiculo.daysStr', 'días')}` })
             }

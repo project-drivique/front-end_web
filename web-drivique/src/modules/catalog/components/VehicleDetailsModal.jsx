@@ -7,7 +7,6 @@ import { useLanding } from '../../landing/LandingContext'
 import { promotionManagementService } from '../../../services/promotionManagementService'
 import { formatCurrency } from '@/utils/currencyUtils'
 import { vehicleManagementService } from '../../../services/vehicleManagementService'
-import VEHICULOS_MOCK from '@/mocks/vehicles.json'
 
 import ImageGallery from './detail/ImageGallery'
 import VehicleCharacteristics from './detail/VehicleCharacteristics'
@@ -29,7 +28,6 @@ export default function VehicleDetailsModal({
   onClose,
   vehiculoId,
   vehiculo: vehiculoProp,
-  descuentoParam,
   promoCode,
 }) {
   const { t } = useTranslation()
@@ -41,6 +39,13 @@ export default function VehicleDetailsModal({
   const esModoOscuro = tema === 'oscuro'
 
   const [bannerVisible, setBannerVisible] = useState(false)
+  const [promoVersion, setPromoVersion] = useState(0)
+
+  useEffect(() => {
+    const alActualizar = () => setPromoVersion((n) => n + 1)
+    window.addEventListener(promotionManagementService.eventName, alActualizar)
+    return () => window.removeEventListener(promotionManagementService.eventName, alActualizar)
+  }, [])
 
   // Manejo de tecla ESC para cerrar el modal
   useEffect(() => {
@@ -59,7 +64,7 @@ export default function VehicleDetailsModal({
   const baseVehiculo = useMemo(() => {
     if (vehiculoProp) return vehiculoProp
     if (!targetId) return null
-    return vehicleManagementService.getById(targetId) || VEHICULOS_MOCK.find((v) => Number(v.id) === Number(targetId))
+    return vehicleManagementService.getById(targetId)
   }, [targetId, vehiculoProp])
 
   const vehiculo = useMemo(() => {
@@ -87,16 +92,8 @@ export default function VehicleDetailsModal({
       )
       if (found) return found
     }
-    const descNum = descuentoParam ? Number(descuentoParam) : null
-    if (descNum && descNum > 0) {
-      return {
-        tipoDescuento: 'porcentaje',
-        valorDescuento: descNum,
-        nombre: `Descuento ${descNum}%`,
-      }
-    }
     return promotionManagementService.getPromotionForVehicle(vehiculo, usuario)
-  }, [vehiculo, descuentoParam, promoCode, usuario])
+  }, [vehiculo, promoCode, usuario, promoVersion])
 
   const precioFinal = promo
     ? promo.tipoDescuento === 'porcentaje'
@@ -123,7 +120,7 @@ export default function VehicleDetailsModal({
 
   const handleReservar = () => {
     sessionStorage.removeItem(`drivique_reservation_state_${vehiculo.id}`)
-    const q = promo ? (promo.codigo ? `?promo=${promo.codigo}` : promo.valorDescuento ? `?descuento=${promo.valorDescuento}` : '') : ''
+    const q = promo?.codigo ? `?promo=${promo.codigo}` : ''
     onClose?.()
     navigate(`/reservas/${vehiculo.id}${q}`)
   }
