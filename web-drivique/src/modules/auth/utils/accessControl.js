@@ -1,4 +1,4 @@
-import accessConfig from '../../../mocks/adminAccessConfig.json'
+import accessConfig from '../../../config/datos/adminAccessConfig.json'
 
 export const ROLES = Object.freeze({
   CUSTOMER: 'CUSTOMER',

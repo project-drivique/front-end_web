@@ -1,6 +1,6 @@
 import { FaUser, FaEnvelope, FaPhone, FaIdCard, FaGlobe, FaCalendarAlt, FaHashtag, FaTimes, FaSave } from 'react-icons/fa'
 import { useTranslation } from 'react-i18next'
-import paisesMock from '@/mocks/nationalities.json'
+import paisesMock from '@/config/datos/nationalities.json'
 
 const TIPOS_DOC = [
   { value: 'CC', sigla: 'CC', label: 'Cédula de ciudadanía (CC)' },
