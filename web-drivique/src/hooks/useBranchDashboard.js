@@ -7,6 +7,7 @@ import { vehicleManagementService } from '../services/vehicleManagementService'
 
 const toAgendaItem = (reserva, tipo, fecha, hora) => ({
   id: tipo === 'devolucion' ? `ret-${reserva.id}` : reserva.id,
+  reservaId: reserva.id,
   codigo: reserva.codigo,
   fecha,
   hora,

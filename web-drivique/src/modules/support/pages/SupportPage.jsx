@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import {
@@ -12,114 +12,189 @@ import {
   FaChevronUp,
   FaInfoCircle,
   FaWrench,
+  FaCar,
+  FaBolt,
+  FaLifeRing,
+  FaMagic,
+  FaFileAlt,
+  FaQuestionCircle,
   FaClock,
   FaCamera,
+  FaUser,
   FaPaperPlane,
   FaFolderOpen,
 } from 'react-icons/fa'
 import { useLanding } from '@/modules/landing/LandingContext'
+import { useAuthStore } from '@/store/authStore'
+import { useHistorialReservas } from '@/modules/reservations/hooks/useReservations'
 import CatalogTopHeader from '@/modules/catalog/components/CatalogTopHeader'
-import { reservationsService } from '@/services/reservationsService'
-import { incidentService } from '@/services/incidentService'
-import { api } from '@/services/httpClient'
-import { CANALES_ATENCION, FAQS_INITIAL } from '../constants/supportContent'
-import IncidentDetailModal from '../components/IncidentDetailModal'
-import {
-  CATEGORIES, PRIORITY, STATUS, categoryLabel, formatDateTime, formatSize, validateFiles,
-} from '../lib/incidentLabels'
+import { useSupportStore } from '../store/useSupportStore'
+import { CANALES_ATENCION, TIPOS_INCIDENCIA, FAQS_INITIAL } from '../data/supportCatalog'
+import ReportDetailModal from '../components/ReportDetailModal'
 import './SupportPage.css'
-
-const EMPTY_FORM = { category: 'VEHICLE', reservationId: '', branchId: '', subject: '', description: '' }
 
 export default function SupportPage() {
   const { t } = useTranslation()
   const location = useLocation()
+  const { usuario } = useAuthStore()
   const { tema } = useLanding()
   const esModoOscuro = tema === 'oscuro'
 
+  // Carga historial real de reservas
+  const { reservas } = useHistorialReservas()
+
+  // Filtrado de vehículos: solo reservas confirmadas / en curso / finalizadas (excluye estrictamente pendientes y canceladas)
+  const vehiculosElegibles = useMemo(() => {
+    const validas = reservas.filter(
+      (r) => r.estado === 'confirmada' || r.estado === 'en_curso' || r.estado === 'finalizada'
+    )
+    return validas.map((r) => ({
+      id: String(r.id),
+      reservaId: r.id,
+      vehiculoId: r.vehiculo?.id || r.vehicleId || null,
+      nombre: r.vehiculo?.nombre || `Reserva #${r.id}`,
+      placa: r.vehiculo?.placa || '',
+      estado: r.estado,
+    }))
+  }, [reservas])
+
+  // Leer parámetros de URL o location state si viene de "Hacer reporte" en Mis Reservas
   const searchParams = new URLSearchParams(location.search)
-  const reservaParam = searchParams.get('reserva') || location.state?.reserva || ''
-  const incidenciaParam = searchParams.get('incidencia') || ''
+  const vehiculoParam = searchParams.get('vehiculo') || location.state?.vehiculo || ''
+  const placaParam = searchParams.get('placa') || location.state?.placa || ''
 
-  const [pestanaActiva, setPestanaActiva] = useState(incidenciaParam ? 'informes' : reservaParam ? 'reportar' : 'canales')
-  const [faqAbiertaId, setFaqAbiertaId] = useState(null)
+  const [pestanaActiva, setPestanaActiva] = useState(
+    vehiculoParam ? 'reportar' : 'canales'
+  ) // 'canales' | 'reportar' | 'informes'
 
-  const [reservas, setReservas] = useState([])
-  const [sedes, setSedes] = useState([])
-  const [incidencias, setIncidencias] = useState([])
-  const [cargando, setCargando] = useState(true)
-  const [errorCarga, setErrorCarga] = useState('')
-  const [detalleId, setDetalleId] = useState(incidenciaParam || null)
-
-  const [form, setForm] = useState({ ...EMPTY_FORM, reservationId: reservaParam })
+  const { reportes, conteoReportesActivos, crearReporte, abrirDetalle } = useSupportStore()
+  const inputEvidenciasRef = useRef(null)
   const [archivos, setArchivos] = useState([])
   const [enviando, setEnviando] = useState(false)
-  const [errorForm, setErrorForm] = useState('')
-  const [creada, setCreada] = useState(null)
-  const inputArchivos = useRef(null)
+  const [reporteSeleccionadoModal, setReporteSeleccionadoModal] = useState(null)
 
-  const cargar = useCallback(async () => {
-    try {
-      setErrorCarga('')
-      const [misReservas, misIncidencias, listaSedes] = await Promise.all([reservationsService.getReservas(), incidentService.mine(), api.get('/branches')])
-      setReservas(Array.isArray(misReservas) ? misReservas : [])
-      setSedes(listaSedes.data || [])
-      setIncidencias(misIncidencias)
-    } catch (error) {
-      setErrorCarga(error.message || 'No se pudieron cargar tus reportes.')
-    } finally {
-      setCargando(false)
+  // FAQs desplegables
+  const [faqAbiertaId, setFaqAbiertaId] = useState(null)
+
+  // Estado del Formulario
+  const [formData, setFormData] = useState({
+    vehiculo: vehiculoParam || (vehiculosElegibles[0] ? vehiculosElegibles[0].nombre : ''),
+    placa: placaParam || (vehiculosElegibles[0] ? vehiculosElegibles[0].placa : ''),
+    tipoIncidenciaId: 'averia_mecanica',
+    descripcion: '',
+    evidenciasCount: 0,
+    contactoNombre: usuario?.nombre ? `${usuario.nombre} ${usuario.apellido || ''}`.trim() : '',
+    contactoTelefono: usuario?.telefono || '',
+    contactoEmail: usuario?.correo || usuario?.email || '',
+  })
+
+  // Sincroniza vehículo y placa cuando cargan las reservas o llegan parámetros
+  useEffect(() => {
+    if (vehiculoParam || placaParam) {
+      setFormData((prev) => ({
+        ...prev,
+        vehiculo: vehiculoParam || prev.vehiculo,
+        placa: placaParam || prev.placa,
+      }))
+      setPestanaActiva('reportar')
+    } else if (vehiculosElegibles.length > 0 && !formData.vehiculo) {
+      setFormData((prev) => ({
+        ...prev,
+        vehiculo: vehiculosElegibles[0].nombre,
+        placa: vehiculosElegibles[0].placa,
+      }))
     }
-  }, [])
+  }, [vehiculoParam, placaParam, vehiculosElegibles])
 
-  useEffect(() => { cargar() }, [cargar])
+  // Al seleccionar un vehículo del dropdown, actualiza el vehículo y su placa correspondiente
+  const handleSelectVehiculoChange = (e) => {
+    const nombreVeh = e.target.value
+    const vehEncontrado = vehiculosElegibles.find((v) => v.nombre === nombreVeh)
 
-  const conteoActivos = useMemo(() => incidencias.filter((i) => i.status === 'OPEN' || i.status === 'IN_REVIEW').length, [incidencias])
-  const reservaSeleccionada = reservas.find((r) => String(r.id) === String(form.reservationId))
-  const requiereReserva = form.category === 'RESERVATION' || form.category === 'VEHICLE'
-
-  const adjuntar = (event) => {
-    const resultado = validateFiles(archivos, [...event.target.files])
-    event.target.value = ''
-    if (resultado.error) setErrorForm(resultado.error)
-    else { setErrorForm(''); setArchivos(resultado.files) }
+    setFormData((prev) => ({
+      ...prev,
+      vehiculo: nombreVeh,
+      placa: vehEncontrado ? vehEncontrado.placa : prev.placa,
+    }))
   }
 
-  const enviar = async (event) => {
-    event.preventDefault()
-    setErrorForm('')
-    if (requiereReserva && !form.reservationId) {
-      setErrorForm('Selecciona la reserva a la que se refiere la incidencia.')
+  // Obtiene objeto del tipo de incidencia seleccionado
+  const tipoSeleccionadoObj = TIPOS_INCIDENCIA.find((t) => t.id === formData.tipoIncidenciaId) || TIPOS_INCIDENCIA[0]
+
+  const handleTipoChipClick = (id) => {
+    setFormData((prev) => ({ ...prev, tipoIncidenciaId: id }))
+  }
+
+  const handleAdjuntarEvidencia = () => {
+    if (archivos.length >= 3) {
+      alert(t('soporte.maxEvidencias', 'Máximo 3 fotos o evidencias permitidas.'))
       return
     }
-    if (!form.reservationId && !form.branchId) {
-      setErrorForm('Selecciona la sede a la que va dirigida la incidencia.')
+    inputEvidenciasRef.current?.click()
+  }
+
+  const handleArchivosElegidos = (e) => {
+    const elegidos = Array.from(e.target.files || [])
+    e.target.value = ''
+    const siguientes = [...archivos, ...elegidos].slice(0, 3)
+    setArchivos(siguientes)
+    setFormData((prev) => ({ ...prev, evidenciasCount: siguientes.length }))
+  }
+
+  const handleEnviarReporte = async (e) => {
+    e.preventDefault()
+
+    if (vehiculosElegibles.length === 0 && !formData.vehiculo) {
+      alert(
+        t(
+          'soporte.sinReservasConfirmadasErr',
+          'No tienes ninguna reserva confirmada o en curso activa para realizar un reporte de incidencia.'
+        )
+      )
       return
     }
-    if (!form.subject.trim() || !form.description.trim()) {
-      setErrorForm('Completa el asunto y la descripción del problema.')
+
+    if (!formData.descripcion.trim()) {
+      alert(t('soporte.errorDescripcion', 'Por favor describe el problema sucedido.'))
       return
     }
-    setEnviando(true)
+
+    if (!formData.contactoNombre.trim() || !formData.contactoTelefono.trim()) {
+      alert(t('soporte.errorContacto', 'Por favor ingresa tus datos de contacto para seguimiento.'))
+      return
+    }
+
+    const elegida = vehiculosElegibles.find((v) => v.nombre === formData.vehiculo)
+    let reporteCreado
     try {
-      let incidencia = await incidentService.create({
-        category: form.category,
-        reservationId: form.reservationId || null,
-        branchId: form.reservationId ? null : form.branchId,
-        subject: form.subject.trim(),
-        description: form.description.trim(),
-      })
-      if (archivos.length) incidencia = await incidentService.uploadAttachments(incidencia.id, archivos).then(() => incidencia)
-      setCreada(incidencia)
-      setForm({ ...EMPTY_FORM, reservationId: reservaParam })
-      setArchivos([])
-      await cargar()
-      setPestanaActiva('informes')
+      setEnviando(true)
+      reporteCreado = await crearReporte(
+        { ...formData, reservaId: elegida?.reservaId || null, vehiculoId: elegida?.vehiculoId || null },
+        archivos
+      )
     } catch (error) {
-      setErrorForm(error.message)
+      alert(error.message || t('soporte.errorEnviar', 'No fue posible registrar el reporte. Inténtalo de nuevo.'))
+      return
     } finally {
       setEnviando(false)
     }
+
+    alert(
+      t(
+        'soporte.reporteCreadoExito',
+        `¡Reporte ${reporteCreado.codigo} registrado exitosamente!\nTiempo estimado de atención: ${reporteCreado.tiempoEstimado}. Recibirás las actualizaciones por correo y en la aplicación.`
+      )
+    )
+
+    // Resetea formulario y pasa a pestaña Informes erróneos
+    setFormData((prev) => ({
+      ...prev,
+      descripcion: '',
+      evidenciasCount: 0,
+    }))
+    setArchivos([])
+
+    setPestanaActiva('informes')
   }
 
   const cHeader = {
@@ -129,74 +204,140 @@ export default function SupportPage() {
     accentText: 'var(--brand-text)',
   }
 
-  const pillStyle = (palette) => ({
-    display: 'inline-flex', alignItems: 'center', gap: 6, background: palette.bg, color: palette.color,
-    padding: '4px 10px', borderRadius: 14, fontSize: 11, fontWeight: 800,
-  })
+  // Renderizado de iconos para chips de incidencia
+  const renderIconoChip = (iconoNombre) => {
+    switch (iconoNombre) {
+      case 'FaCar':
+        return <FaCar />
+      case 'FaBolt':
+        return <FaBolt />
+      case 'FaLifeRing':
+        return <FaLifeRing />
+      case 'FaSparkles':
+        return <FaMagic />
+      case 'FaFileAlt':
+        return <FaFileAlt />
+      case 'FaQuestionCircle':
+      default:
+        return <FaQuestionCircle />
+    }
+  }
 
   return (
     <div className="soporte-pagina">
+      {/* Header Superior Limpio */}
       <CatalogTopHeader c={cHeader} mostrarPerfil modoRegistrado />
 
       <main className="soporte-main">
+        {/* Encabezado */}
         <div className="soporte-header-title">
           <h1>{t('soporte.title', 'Soporte')}</h1>
           <p>{t('soporte.subtitle', 'Asistencia técnica en carretera y atención personalizada 24/7')}</p>
         </div>
 
+        {/* Pestañas (Tabs Bar) */}
         <div className="soporte-tabs-container">
-          <button className={`soporte-tab-btn ${pestanaActiva === 'canales' ? 'activa' : ''}`} onClick={() => setPestanaActiva('canales')}>
+          <button
+            className={`soporte-tab-btn ${pestanaActiva === 'canales' ? 'activa' : ''}`}
+            onClick={() => setPestanaActiva('canales')}
+          >
             <FaHeadphones /> {t('soporte.tabCanales', 'Canales de atención')}
           </button>
-          <button className={`soporte-tab-btn ${pestanaActiva === 'reportar' ? 'activa' : ''}`} onClick={() => setPestanaActiva('reportar')}>
+
+          <button
+            className={`soporte-tab-btn ${pestanaActiva === 'reportar' ? 'activa' : ''}`}
+            onClick={() => setPestanaActiva('reportar')}
+          >
             <FaWrench /> {t('soporte.tabReportar', 'Reportar incidencia')}
           </button>
-          <button className={`soporte-tab-btn ${pestanaActiva === 'informes' ? 'activa' : ''}`} onClick={() => setPestanaActiva('informes')}>
+
+          <button
+            className={`soporte-tab-btn ${pestanaActiva === 'informes' ? 'activa' : ''}`}
+            onClick={() => setPestanaActiva('informes')}
+          >
             <FaFolderOpen /> {t('soporte.tabInformes', 'Mis reportes')}
-            {conteoActivos > 0 && <span className="soporte-tab-badge">{conteoActivos}</span>}
+            {conteoReportesActivos > 0 && (
+              <span className="soporte-tab-badge">{conteoReportesActivos}</span>
+            )}
           </button>
         </div>
 
+        {/* ── PESTAÑA 1: CANALES DE ATENCIÓN ── */}
         {pestanaActiva === 'canales' && (
           <div>
+            {/* Card Hero Centro de Atención */}
             <div className="centro-atencion-card">
-              <div className="centro-atencion-icon-wrap"><FaHeadphones /></div>
+              <div className="centro-atencion-icon-wrap">
+                <FaHeadphones />
+              </div>
               <h2>{t('soporte.centroTitle', 'Centro de Atención al Usuario')}</h2>
-              <p>{t('soporte.centroSub', 'Asistencia personalizada para tus alquileres de vehículos en Drivique.')}</p>
-              <button className="btn-reportar-incidencia-hero" onClick={() => setPestanaActiva('reportar')}>
+              <p>
+                {t(
+                  'soporte.centroSub',
+                  'Asistencia personalizada para tus alquileres de vehículos en Drivique.'
+                )}
+              </p>
+              <button
+                className="btn-reportar-incidencia-hero"
+                onClick={() => setPestanaActiva('reportar')}
+              >
                 <FaExclamationTriangle /> {t('soporte.btnReportarHero', 'Reportar Incidencia')}
               </button>
             </div>
 
-            <h3 className="seccion-subtitulo-soporte">{t('soporte.canalesHeader', 'Canales de atención')}</h3>
+            {/* Lista de Canales de Atención */}
+            <h3 className="seccion-subtitulo-soporte">
+              {t('soporte.canalesHeader', 'Canales de atención')}
+            </h3>
+
             <div className="canales-lista">
               {CANALES_ATENCION.map((canal) => (
-                <a key={canal.id} href={canal.link} target="_blank" rel="noopener noreferrer" className="canal-card-item">
+                <a
+                  key={canal.id}
+                  href={canal.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="canal-card-item"
+                >
                   <div className={`canal-icon-wrap ${canal.tipo}`}>
                     {canal.tipo === 'whatsapp' && <FaWhatsapp />}
                     {canal.tipo === 'telefono' && <FaPhoneAlt />}
                     {canal.tipo === 'correo' && <FaEnvelope />}
                   </div>
+
                   <div className="canal-info">
                     <h4 className="canal-titulo">{t(canal.tituloKey, canal.tituloFallback)}</h4>
                     <p className="canal-subtitulo">{t(canal.subtituloKey, canal.subtituloFallback)}</p>
                   </div>
+
                   <FaChevronRight className="canal-flecha" />
                 </a>
               ))}
             </div>
 
-            <h3 className="seccion-subtitulo-soporte" style={{ marginTop: 36 }}>{t('soporte.faqsHeader', 'Preguntas frecuentes')}</h3>
+            {/* Sección Preguntas Frecuentes (FAQs) */}
+            <h3 className="seccion-subtitulo-soporte" style={{ marginTop: 36 }}>
+              {t('soporte.faqsHeader', 'Preguntas frecuentes')}
+            </h3>
+
             <div className="faqs-lista">
               {FAQS_INITIAL.map((faq) => {
-                const abierta = faqAbiertaId === faq.id
+                const isOpen = faqAbiertaId === faq.id
                 return (
                   <div key={faq.id} className="faq-item">
-                    <button className="faq-pregunta-btn" onClick={() => setFaqAbiertaId(abierta ? null : faq.id)}>
+                    <button
+                      className="faq-pregunta-btn"
+                      onClick={() => setFaqAbiertaId(isOpen ? null : faq.id)}
+                    >
                       <span>{t(faq.preguntaKey, faq.preguntaFallback)}</span>
-                      {abierta ? <FaChevronUp /> : <FaChevronDown />}
+                      {isOpen ? <FaChevronUp /> : <FaChevronDown />}
                     </button>
-                    {abierta && <div className="faq-respuesta">{t(faq.respuestaKey, faq.respuestaFallback)}</div>}
+
+                    {isOpen && (
+                      <div className="faq-respuesta">
+                        {t(faq.respuestaKey, faq.respuestaFallback)}
+                      </div>
+                    )}
                   </div>
                 )
               })}
@@ -204,114 +345,247 @@ export default function SupportPage() {
           </div>
         )}
 
+        {/* ── PESTAÑA 2: REPORTAR INCIDENCIA (FORMULARIO) ── */}
         {pestanaActiva === 'reportar' && (
           <div>
+            {/* Banner de Información */}
             <div className="form-info-banner">
               <FaInfoCircle style={{ fontSize: 20, color: 'var(--brand-text)', flexShrink: 0 }} />
-              <span>{t('soporte.formBanner', 'Cuéntanos qué pasó. La prioridad y el tiempo de atención se calculan automáticamente según el tipo de problema.')}</span>
+              <span>
+                {t(
+                  'soporte.formBanner',
+                  'Complete el formulario para reportar cualquier problema técnico o mecánico durante su reserva.'
+                )}
+              </span>
             </div>
 
-            <form className="formulario-incidencia-card" onSubmit={enviar}>
+            {/* Aviso si no hay reservas confirmadas activas */}
+            {vehiculosElegibles.length === 0 && !formData.vehiculo && (
+              <div
+                style={{
+                  background: '#fef2f2',
+                  border: '1px solid #fecaca',
+                  color: '#991b1b',
+                  borderRadius: 16,
+                  padding: '16px 20px',
+                  marginBottom: 24,
+                  fontSize: 13,
+                  fontWeight: 700,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 12,
+                }}
+              >
+                <FaExclamationTriangle style={{ fontSize: 20, flexShrink: 0 }} />
+                <span>
+                  No cuentas con reservas confirmadas o en curso en este momento. Para reportar una incidencia debes tener una reserva confirmada activa.
+                </span>
+              </div>
+            )}
+
+            {/* Card del Formulario */}
+            <form className="formulario-incidencia-card" onSubmit={handleEnviarReporte}>
               <div className="form-header-row">
                 <FaWrench style={{ color: 'var(--brand-text)', fontSize: 22 }} />
                 <h3>{t('soporte.formTitle', 'Formulario de Incidencia')}</h3>
               </div>
 
+              {/* Vehículo (Select de Reservas en curso) / Placa asociada */}
               <div className="form-grupo">
-                <label className="form-label">{t('soporte.tipoIncidenciaLabel', 'Tipo de Incidencia')} <span>*</span></label>
-                <div className="tipos-incidencia-grid">
-                  {CATEGORIES.map((categoria) => (
-                    <button key={categoria.id} type="button" title={categoria.hint}
-                      className={`tipo-chip-btn ${form.category === categoria.id ? 'seleccionado' : ''}`}
-                      onClick={() => setForm({ ...form, category: categoria.id })}>
-                      <span>{categoria.label}</span>
-                    </button>
-                  ))}
+                <label className="form-label">
+                  {t('soporte.vehiculoLabel', 'Vehículo / Reserva asociada')}
+                </label>
+                <div className="form-grid-2col">
+                  {/* Select desplegable con vehículos en reserva confirmada/en curso/finalizada */}
+                  <select
+                    className="form-input-text"
+                    value={formData.vehiculo}
+                    onChange={handleSelectVehiculoChange}
+                    disabled={enviando || (vehiculosElegibles.length === 0 && !formData.vehiculo)}
+                  >
+                    {vehiculosElegibles.length === 0 ? (
+                      <option value="">No tienes reservas confirmadas para reportar</option>
+                    ) : (
+                      vehiculosElegibles.map((item) => (
+                        <option key={item.id} value={item.nombre}>
+                          {item.nombre}
+                        </option>
+                      ))
+                    )}
+                    {formData.vehiculo &&
+                      !vehiculosElegibles.some((v) => v.nombre === formData.vehiculo) && (
+                        <option value={formData.vehiculo}>{formData.vehiculo}</option>
+                      )}
+                  </select>
+
+                  {/* Input de Placa */}
+                  <input
+                    type="text"
+                    className="form-input-text"
+                    placeholder="Placa (ej: KLS-849)"
+                    value={formData.placa}
+                    onChange={(e) => setFormData({ ...formData, placa: e.target.value })}
+                  />
                 </div>
+              </div>
+
+              {/* Tipo de Incidencia */}
+              <div className="form-grupo">
+                <label className="form-label">
+                  {t('soporte.tipoIncidenciaLabel', 'Tipo de Incidencia')} <span>*</span>
+                </label>
+                <div className="tipos-incidencia-grid">
+                  {TIPOS_INCIDENCIA.map((tipo) => {
+                    const isSelected = formData.tipoIncidenciaId === tipo.id
+                    return (
+                      <button
+                        key={tipo.id}
+                        type="button"
+                        className={`tipo-chip-btn ${isSelected ? 'seleccionado' : ''}`}
+                        onClick={() => handleTipoChipClick(tipo.id)}
+                      >
+                        {renderIconoChip(tipo.icono)}
+                        <span>{tipo.nombre}</span>
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+
+              {/* Banner de Tiempo Estimado Dinámico */}
+              <div className="tiempo-estimado-banner">
+                <FaClock style={{ fontSize: 24, flexShrink: 0 }} />
+                <div>
+                  <span className="tiempo-estimado-text">
+                    {t('soporte.tiempoEstLabel', 'Tiempo estimado de atención técnica:')}
+                  </span>
+                  <span className="tiempo-estimado-val">{tipoSeleccionadoObj.tiempoEstimado}</span>
+                </div>
+              </div>
+
+              {/* Descripción del problema */}
+              <div className="form-grupo">
+                <label className="form-label">
+                  {t('soporte.descripcionLabel', 'Descripción del problema')} <span>*</span>
+                </label>
+                <textarea
+                  rows={4}
+                  className="form-textarea"
+                  placeholder={t(
+                    'soporte.descripcionPlaceholder',
+                    'Describe lo sucedido, ruidos, testigos en tablero o ubicación actual...'
+                  )}
+                  value={formData.descripcion}
+                  onChange={(e) => setFormData({ ...formData, descripcion: e.target.value })}
+                />
+              </div>
+
+              {/* Evidencias (Imágenes / Videos opcionales) */}
+              <div className="form-grupo">
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                  <label className="form-label" style={{ margin: 0 }}>
+                    {t('soporte.evidenciasLabel', 'Evidencias (Imágenes / Videos opcionales)')}
+                  </label>
+                  <span style={{ fontSize: 11, color: 'var(--texto-second, #94a3b8)' }}>
+                    Máx 3 fotos ({formData.evidenciasCount}/3)
+                  </span>
+                </div>
+
+                <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+                  <div className="evidencias-upload-box" onClick={handleAdjuntarEvidencia}>
+                    <FaCamera style={{ fontSize: 22 }} />
+                    <span>+ Adjunto</span>
+                  </div>
+                  <input
+                    ref={inputEvidenciasRef}
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp,video/mp4"
+                    multiple
+                    hidden
+                    onChange={handleArchivosElegidos}
+                  />
+
+                  {formData.evidenciasCount > 0 && (
+                    <div style={{ fontSize: 13, color: '#16a34a', fontWeight: 800 }}>
+                      ✓ {formData.evidenciasCount} evidencia(s) adjuntada(s)
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Datos de contacto para seguimiento */}
+              <div className="contacto-seccion-header">
+                <h4>
+                  <FaUser style={{ color: 'var(--brand-text)' }} />
+                  {t('soporte.contactoHeader', 'Datos de contacto para seguimiento')}
+                </h4>
+                <p>
+                  {t(
+                    'soporte.contactoSub',
+                    'Precargados automáticamente desde tu perfil registrado (puedes editarlos si lo requieres).'
+                  )}
+                </p>
               </div>
 
               <div className="form-grupo">
                 <label className="form-label">
-                  {t('soporte.vehiculoLabel', 'Reserva asociada')} {requiereReserva && <span>*</span>}
+                  {t('soporte.nombreLabel', 'Nombre completo')} <span>*</span>
                 </label>
-                <select className="form-input-text" value={form.reservationId} onChange={(e) => setForm({ ...form, reservationId: e.target.value })}>
-                  <option value="">{requiereReserva ? 'Selecciona una reserva' : 'Sin reserva asociada'}</option>
-                  {reservas.map((reserva) => (
-                    <option key={reserva.id} value={reserva.id}>
-                      {reserva.code} · {reserva.vehicleModel} ({reserva.vehiclePlate})
-                    </option>
-                  ))}
-                </select>
-                {reservaSeleccionada && (
-                  <small style={{ opacity: 0.7 }}>{reservaSeleccionada.vehicleModel} · {reservaSeleccionada.vehiclePlate}</small>
-                )}
-              </div>
-
-              {!form.reservationId && (
-                <div className="form-grupo">
-                  <label className="form-label">Sede de atención <span>*</span></label>
-                  <select className="form-input-text" value={form.branchId} onChange={(e) => setForm({ ...form, branchId: e.target.value })}>
-                    <option value="">Selecciona una sede</option>
-                    {sedes.map((sede) => <option key={sede.id} value={sede.id}>{sede.name} - {sede.cityName}</option>)}
-                  </select>
-                </div>
-              )}
-
-              <div className="form-grupo">
-                <label className="form-label">Asunto <span>*</span></label>
-                <input className="form-input-text" maxLength={150} value={form.subject}
-                  onChange={(e) => setForm({ ...form, subject: e.target.value })} placeholder="Resume el problema en una frase" />
+                <input
+                  type="text"
+                  className="form-input-text"
+                  value={formData.contactoNombre}
+                  onChange={(e) => setFormData({ ...formData, contactoNombre: e.target.value })}
+                />
               </div>
 
               <div className="form-grupo">
-                <label className="form-label">{t('soporte.descripcionLabel', 'Descripción del problema')} <span>*</span></label>
-                <textarea rows={4} className="form-textarea" maxLength={5000} value={form.description}
-                  onChange={(e) => setForm({ ...form, description: e.target.value })}
-                  placeholder={t('soporte.descripcionPlaceholder', 'Describe lo sucedido, ruidos, testigos en tablero o ubicación actual...')} />
-              </div>
-
-              <div className="form-grupo">
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-                  <label className="form-label" style={{ margin: 0 }}>{t('soporte.evidenciasLabel', 'Evidencias (opcional)')}</label>
-                  <span style={{ fontSize: 11, opacity: 0.7 }}>JPG, PNG o PDF · máx. 5 MB · hasta 5 archivos ({archivos.length}/5)</span>
-                </div>
-                <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
-                  <div className="evidencias-upload-box" onClick={() => inputArchivos.current?.click()}>
-                    <FaCamera style={{ fontSize: 22 }} />
-                    <span>+ Adjunto</span>
+                <div className="form-grid-2col">
+                  <div>
+                    <label className="form-label">
+                      {t('soporte.telefonoLabel', 'Teléfono')} <span>*</span>
+                    </label>
+                    <input
+                      type="text"
+                      className="form-input-text"
+                      value={formData.contactoTelefono}
+                      onChange={(e) => setFormData({ ...formData, contactoTelefono: e.target.value })}
+                    />
                   </div>
-                  <input ref={inputArchivos} type="file" accept="image/jpeg,image/png,application/pdf" multiple hidden onChange={adjuntar} />
-                  {archivos.map((archivo, indice) => (
-                    <span key={indice} style={{ fontSize: 12, border: '1px solid var(--borde, #e2e8f0)', borderRadius: 8, padding: '4px 8px' }}>
-                      {archivo.name} ({formatSize(archivo.size)}){' '}
-                      <button type="button" onClick={() => setArchivos(archivos.filter((_, j) => j !== indice))}
-                        style={{ border: 'none', background: 'none', color: '#b91c1c', cursor: 'pointer' }}>×</button>
-                    </span>
-                  ))}
+
+                  <div>
+                    <label className="form-label">
+                      {t('soporte.emailLabel', 'Correo electrónico')} <span>*</span>
+                    </label>
+                    <input
+                      type="email"
+                      className="form-input-text"
+                      value={formData.contactoEmail}
+                      onChange={(e) => setFormData({ ...formData, contactoEmail: e.target.value })}
+                    />
+                  </div>
                 </div>
               </div>
 
-              {errorForm && <p style={{ color: '#b91c1c', fontSize: 13, fontWeight: 700 }}>{errorForm}</p>}
-
-              <button type="submit" className="btn-enviar-reporte" disabled={enviando} style={{ opacity: enviando ? 0.6 : 1 }}>
-                <FaPaperPlane /> {enviando ? 'Enviando...' : t('soporte.btnEnviarReporte', 'Enviar Reporte de Incidencia')}
+              <button
+                type="submit"
+                className="btn-enviar-reporte"
+                disabled={vehiculosElegibles.length === 0 && !formData.vehiculo}
+                style={{
+                  opacity: vehiculosElegibles.length === 0 && !formData.vehiculo ? 0.6 : 1,
+                  cursor: vehiculosElegibles.length === 0 && !formData.vehiculo ? 'not-allowed' : 'pointer',
+                }}
+              >
+                <FaPaperPlane /> {t('soporte.btnEnviarReporte', 'Enviar Reporte de Incidencia')}
               </button>
             </form>
           </div>
         )}
 
+        {/* ── PESTAÑA 3: INFORMES ERRÓNEOS (MIS REPORTES) ── */}
         {pestanaActiva === 'informes' && (
           <div>
-            {creada && (
-              <div className="form-info-banner" style={{ marginBottom: 16 }}>
-                <FaInfoCircle style={{ fontSize: 20, color: 'var(--brand-text)', flexShrink: 0 }} />
-                <span>
-                  Reporte {creada.code} registrado. Prioridad {PRIORITY[creada.priority]?.label.toLowerCase()}; atención estimada antes de {formatDateTime(creada.slaDueAt)}. Te avisaremos por notificación y correo.
-                </span>
-              </div>
-            )}
-            {errorCarga && <p style={{ color: '#b91c1c', fontWeight: 700 }}>{errorCarga}</p>}
-            {!cargando && incidencias.length === 0 ? (
+            {reportes.length === 0 ? (
               <div className="notificaciones-vacio" style={{ background: 'var(--bg-tarjeta, #ffffff)' }}>
                 <FaFolderOpen className="notificaciones-vacio-icon" />
                 <h3>{t('soporte.sinReportesTitle', 'No tienes informes o reportes activos')}</h3>
@@ -319,39 +593,78 @@ export default function SupportPage() {
               </div>
             ) : (
               <div className="reportes-lista">
-                {incidencias.map((incidencia) => (
-                  <div key={incidencia.id} className="reporte-card-item">
-                    <div className="reporte-top-row">
-                      <span className="reporte-codigo">{incidencia.code}</span>
-                      <span style={pillStyle(STATUS[incidencia.status])}>{STATUS[incidencia.status]?.label}</span>
+                {reportes.map((rep) => {
+                  const getEstadoPill = (estado) => {
+                    switch (estado) {
+                      case 'resuelto':
+                        return { text: 'Resuelto', bg: '#dcfce7', color: '#15803d', dot: '#16a34a' }
+                      case 'en_atencion':
+                        return { text: 'En atención', bg: '#e0f2fe', color: '#0369a1', dot: '#0284c7' }
+                      case 'en_revision':
+                        return { text: 'En revisión', bg: '#fef3c7', color: '#b45309', dot: '#d97706' }
+                      case 'recibido':
+                      default:
+                        return { text: 'Recibido', bg: 'var(--brand-soft-strong-light)', color: 'var(--brand-text-light)', dot: 'var(--brand-primary)' }
+                    }
+                  }
+
+                  const pill = getEstadoPill(rep.estado)
+
+                  return (
+                    <div key={rep.id} className="reporte-card-item">
+                      <div className="reporte-top-row">
+                        <span className="reporte-codigo">{rep.codigo}</span>
+                        <span
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 6,
+                            background: pill.bg,
+                            color: pill.color,
+                            padding: '4px 10px',
+                            borderRadius: 14,
+                            fontSize: 11,
+                            fontWeight: 800,
+                          }}
+                        >
+                          <span style={{ width: 6, height: 6, borderRadius: '50%', background: pill.dot }} />
+                          {pill.text}
+                        </span>
+                      </div>
+
+                      <div className="reporte-tipo-vehiculo">{rep.tipoIncidenciaNombre}</div>
+                      <div className="reporte-vehiculo-sub">
+                        {rep.vehiculo} {rep.placa && `(Placa: ${rep.placa})`}
+                      </div>
+
+                      <p className="reporte-desc-snippet">{rep.descripcion}</p>
+
+                      <div className="reporte-footer-row">
+                        <span className="reporte-tiempo-est">
+                          Tiempo est: {rep.tiempoEstimado}
+                        </span>
+
+                        <button
+                          className="btn-ver-detalle-reporte"
+                          onClick={async () => setReporteSeleccionadoModal(await abrirDetalle(rep.id).catch(() => rep))}
+                        >
+                          Ver detalle →
+                        </button>
+                      </div>
                     </div>
-                    <div className="reporte-tipo-vehiculo">{incidencia.subject}</div>
-                    <div className="reporte-vehiculo-sub">
-                      {categoryLabel(incidencia.category)}
-                      {incidencia.vehicleModel && ` · ${incidencia.vehicleModel} (Placa: ${incidencia.vehiclePlate})`}
-                      {' · '}
-                      <span style={pillStyle(PRIORITY[incidencia.priority])}>Prioridad {PRIORITY[incidencia.priority]?.label}</span>
-                    </div>
-                    <p className="reporte-desc-snippet">{incidencia.description}</p>
-                    <div className="reporte-footer-row">
-                      <span className="reporte-tiempo-est" style={{ color: incidencia.slaBreached ? '#b91c1c' : undefined }}>
-                        <FaClock /> {incidencia.status === 'RESOLVED' || incidencia.status === 'CLOSED'
-                          ? `Actualizada ${formatDateTime(incidencia.updatedAt)}`
-                          : `${incidencia.slaBreached ? 'Vencida desde' : 'Atención estimada antes de'} ${formatDateTime(incidencia.slaDueAt)}`}
-                      </span>
-                      <button className="btn-ver-detalle-reporte" onClick={() => setDetalleId(incidencia.id)}>Ver detalle →</button>
-                    </div>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
             )}
           </div>
         )}
       </main>
 
-      {detalleId && (
-        <IncidentDetailModal incidentId={detalleId} mode="customer" onClose={() => setDetalleId(null)} onChanged={cargar} />
-      )}
+      {/* Modal de Detalle de Reporte */}
+      <ReportDetailModal
+        reporte={reporteSeleccionadoModal}
+        onClose={() => setReporteSeleccionadoModal(null)}
+      />
     </div>
   )
 }

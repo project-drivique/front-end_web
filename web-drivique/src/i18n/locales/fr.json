@@ -1855,7 +1855,8 @@
       "messages": {
         "saved": "La nouvelle marque a été appliquée.",
         "previous": "La configuration précédente a été restaurée.",
-        "original": "La marque originale a été restaurée."
+        "original": "La marque originale a été restaurée.",
+        "colorSaved": "Couleur de la marque mise à jour et appliquée avec succès."
       },
       "errors": {
         "invalidName": "Le nom doit contenir entre 2 et 40 caractères.",
@@ -1864,7 +1865,8 @@
         "logoType": "Sélectionnez un logo PNG, JPG, WebP ou SVG.",
         "logoSize": "Le logo ne peut pas dépasser 1 Mo.",
         "logoRead": "Impossible de lire le fichier.",
-        "noPrevious": "Aucune configuration précédente à restaurer."
+        "noPrevious": "Aucune configuration précédente à restaurer.",
+        "saveFailed": "Impossible d'enregistrer la marque. Réessayez."
       }
     },
     "branchProfile": {
@@ -2330,7 +2332,26 @@
       "defaultAction": "Aller au module",
       "filters": "Filtres de notifications"
     },
-    "branchManagement": "GESTION OPÉRATIONNELLE"
+    "branchManagement": "GESTION OPÉRATIONNELLE",
+    "settings": {
+      "title": "Paramètres globaux de sécurité",
+      "subtitle": "Chaque modification est validée, auditée et la dernière peut être annulée.",
+      "enabled": "Activé",
+      "disabled": "Désactivé",
+      "reason": "Motif de la modification (facultatif)",
+      "save": "Enregistrer",
+      "saved": "Paramètre mis à jour avec succès.",
+      "reverted": "La dernière modification a été annulée.",
+      "revert": "Revenir à {{value}}",
+      "lastChange": "Dernière modification : {{name}}",
+      "keys": {
+        "MAX_LOGIN_ATTEMPTS": "Échecs de connexion avant le blocage",
+        "ACCOUNT_LOCKOUT_MINUTES": "Minutes de blocage du compte",
+        "SESSION_IDLE_TIMEOUT_MINUTES": "Minutes d'inactivité avant la fermeture de la session",
+        "PASSWORD_RESET_TOKEN_EXPIRATION_MINUTES": "Minutes de validité du lien de réinitialisation du mot de passe",
+        "MFA_REQUIRED_FOR_ADMINS": "Vérification en deux étapes obligatoire pour les administrateurs"
+      }
+    }
   },
   "common": {
     "backToHome": "Retour à l'accueil",
@@ -3535,6 +3556,10 @@
     "copyright": "Drivique © 2026"
   },
   "contratoFirma": {
+    "sendByEmail": "Envoyer par e-mail",
+    "sendingEmail": "Envoi…",
+    "emailSent": "Nous avons envoyé le contrat signé à votre e-mail. Ouvrez-le avec votre pièce d'identité enregistrée.",
+    "emailNotSent": "L'e-mail n'a pas pu être envoyé. Réessayez.",
     "badgeLabel": "Document numérique",
     "title": "Contrat de réservation et de location",
     "subtitle": "Drivique · Plateforme académique de location de véhicules",
