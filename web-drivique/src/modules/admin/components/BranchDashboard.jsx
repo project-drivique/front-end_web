@@ -144,7 +144,7 @@ const getReservationStatusInfo = (rawStatus, t) => {
 }
 
 const parseISOToDate = (str) => {
-  if (!str) return new Date(2026, 8, 25)
+  if (!str) return new Date()
   const [y, m, d] = str.split('-').map(Number)
   return new Date(y, m - 1, d)
 }
@@ -158,7 +158,7 @@ const formatDateToISO = (d) => {
 }
 
 const formatDateLabel = (dateStr) => {
-  if (!dateStr) return '25/09/2026'
+  if (!dateStr) return ''
   const parts = dateStr.split('-').map(Number)
   if (parts.length !== 3) return dateStr
   const [y, m, d] = parts
@@ -170,7 +170,10 @@ const formatDateLabel = (dateStr) => {
 /* COMPONENTE NATIVO: CALENDARIO INLINE CON SELECCIÓN DE RANGO DE FECHAS */
 function OperationalDateRangeCalendar({ startDateStr, endDateStr, onSelectRange }) {
   const { t } = useTranslation()
-  const [currentMonthDate, setCurrentMonthDate] = useState(() => new Date(2026, 8, 1))
+  const [currentMonthDate, setCurrentMonthDate] = useState(() => {
+    const base = startDateStr ? parseISOToDate(startDateStr) : new Date()
+    return new Date(base.getFullYear(), base.getMonth(), 1)
+  })
 
   const monthYearLabel = useMemo(() => {
     const monthNames = [
@@ -507,6 +510,11 @@ export default function BranchDashboard({ branchOnly = true }) {
   const { data: dashboardData, loading } = useBranchDashboard(usuario)
   const [activeTab, setActiveTab] = useState('entregas') // 'entregas' | 'devoluciones'
   const [selectedScheduleItem, setSelectedScheduleItem] = useState(null)
+  // Reserva completa (la agenda solo trae un resumen) y su vehículo, ambos desde el servidor
+  const reservaDrawer = selectedScheduleItem
+    ? reservationManagementService.list().find((r) => String(r.id) === String(selectedScheduleItem.reservaId))
+    : null
+  const vehiculoDrawer = reservaDrawer ? vehicleManagementService.getById(reservaDrawer.vehiculoId) : null
   const [searchQuery, setSearchQuery] = useState('')
 
   // Rango de Fechas con objetos Date para el DatePicker Visibilidad Permanente (Inline)
@@ -1839,7 +1847,7 @@ export default function BranchDashboard({ branchOnly = true }) {
                   </div>
                   <div className="branch-drawer-item-box">
                     <span className="branch-drawer-item-lbl">{t('dashboard.drawer.transmission', 'Transmisión / Combustible')}</span>
-                    <span className="branch-drawer-item-val">Automática · Híbrido (Tanque lleno)</span>
+                    <span className="branch-drawer-item-val">{[vehiculoDrawer?.transmision, vehiculoDrawer?.combustible].filter(Boolean).join(' · ') || '—'}</span>
                   </div>
                 </div>
               </div>
@@ -1851,20 +1859,20 @@ export default function BranchDashboard({ branchOnly = true }) {
                   <div className="branch-drawer-item-box">
                     <span className="branch-drawer-item-lbl">{t('dashboard.drawer.pickupDate', 'Fecha / Hora Recogida')}</span>
                     <span className="branch-drawer-item-val">
-                      {selectedScheduleItem.fecha ? `${formatDateLabel(selectedScheduleItem.fecha)} · ${selectedScheduleItem.hora}` : selectedScheduleItem.hora || '08:30 AM'}
+                      {reservaDrawer ? `${formatDateLabel(reservaDrawer.fechaInicio)} · ${reservaDrawer.horaInicio}` : '—'}
                     </span>
                   </div>
                   <div className="branch-drawer-item-box">
                     <span className="branch-drawer-item-lbl">{t('dashboard.drawer.returnDate', 'Fecha / Hora Devolución')}</span>
-                    <span className="branch-drawer-item-val">28 sep 2026 · 08:30 AM</span>
+                    <span className="branch-drawer-item-val">{reservaDrawer ? `${formatDateLabel(reservaDrawer.fechaFin)} · ${reservaDrawer.horaFin}` : '—'}</span>
                   </div>
                   <div className="branch-drawer-item-box">
                     <span className="branch-drawer-item-lbl">{t('dashboard.drawer.pickupBranch', 'Sucursal de Retiro')}</span>
-                    <span className="branch-drawer-item-val">{dashboardData?.branchName || ''}</span>
+                    <span className="branch-drawer-item-val">{reservaDrawer?.sucursalRetiro === 'domicilio' ? t('dashboard.drawer.homeDelivery', 'Entrega a domicilio') : (reservaDrawer?.sucursalRetiro || dashboardData?.branchName || '')}</span>
                   </div>
                   <div className="branch-drawer-item-box">
                     <span className="branch-drawer-item-lbl">{t('dashboard.drawer.returnBranch', 'Sucursal de Retorno')}</span>
-                    <span className="branch-drawer-item-val">{dashboardData?.branchName || ''}</span>
+                    <span className="branch-drawer-item-val">{reservaDrawer?.sucursalDevolucion === 'domicilio' ? t('dashboard.drawer.homePickup', 'Recogida a domicilio') : (reservaDrawer?.sucursalDevolucion || dashboardData?.branchName || '')}</span>
                   </div>
                 </div>
               </div>
@@ -1875,54 +1883,84 @@ export default function BranchDashboard({ branchOnly = true }) {
                 <div className="branch-drawer-grid-2">
                   <div className="branch-drawer-item-box">
                     <span className="branch-drawer-item-lbl">{t('dashboard.drawer.insurance', 'Seguro Contratado')}</span>
-                    <span className="branch-drawer-item-val">Protección Total CDW + TP ($0 Deducible)</span>
+                    <span className="branch-drawer-item-val">{reservaDrawer?.detalle?.seguro?.nombre || '—'}</span>
                   </div>
                   <div className="branch-drawer-item-box">
-                    <span className="branch-drawer-item-lbl">{t('dashboard.drawer.babyEquipment', 'Equipamiento Bebé')}</span>
-                    <span className="branch-drawer-item-val">1 Silla infantil instalada</span>
+                    <span className="branch-drawer-item-lbl">{t('dashboard.drawer.mileagePlan', 'Plan de kilometraje')}</span>
+                    <span className="branch-drawer-item-val">{reservaDrawer?.detalle?.kilometraje?.nombre || '—'}</span>
                   </div>
                   <div className="branch-drawer-item-box">
-                    <span className="branch-drawer-item-lbl">{t('dashboard.drawer.roadAssistance', 'Asistencia en Ruta')}</span>
-                    <span className="branch-drawer-item-val">Servicio Grúa 24/7 Incluido</span>
+                    <span className="branch-drawer-item-lbl">{t('dashboard.drawer.additionalServices', 'Servicios adicionales')}</span>
+                    <span className="branch-drawer-item-val">{(reservaDrawer?.detalle?.servicios || []).map((sv) => sv.nombre).join(', ') || t('dashboard.drawer.noServices', 'Ninguno')}</span>
                   </div>
-                  <div className="branch-drawer-item-box">
-                    <span className="branch-drawer-item-lbl">{t('dashboard.drawer.fuelPolicy', 'Política de Combustible')}</span>
-                    <span className="branch-drawer-item-val">Lleno a Lleno</span>
-                  </div>
+                  {reservaDrawer?.detalle?.cupon && (
+                    <div className="branch-drawer-item-box">
+                      <span className="branch-drawer-item-lbl">{t('dashboard.drawer.coupon', 'Cupón aplicado')}</span>
+                      <span className="branch-drawer-item-val">{reservaDrawer.detalle.cupon}</span>
+                    </div>
+                  )}
                 </div>
               </div>
 
               {/* Sección 5: Desglose Financiero Detallado (COP) */}
               <div className="branch-drawer-section">
                 <span className="branch-drawer-sec-title">{t('dashboard.drawer.financeTitle', 'Desglose Financiero Completo (COP)')}</span>
-                <div className="branch-drawer-price-row">
-                  <span>{t('dashboard.drawer.baseRental', 'Alquiler Base (3 días x $120.000 COP)')}</span>
-                  <strong>$ 360.000 COP</strong>
-                </div>
-                <div className="branch-drawer-price-row">
-                  <span>{t('dashboard.drawer.totalCoverage', 'Seguro Cobertura Total CDW')}</span>
-                  <strong>$ 45.000 COP</strong>
-                </div>
-                <div className="branch-drawer-price-row">
-                  <span>{t('dashboard.drawer.babySeatAddon', 'Silla Bebé Adicional')}</span>
-                  <strong>$ 15.000 COP</strong>
-                </div>
-                <div className="branch-drawer-price-row">
-                  <span>{t('dashboard.drawer.taxes', 'Impuestos de Ley (IVA 19%)')}</span>
-                  <strong>$ 79.800 COP</strong>
-                </div>
-                <div className="branch-drawer-price-row branch-drawer-price-total">
-                  <span>{t('dashboard.drawer.grandTotal', 'Total General de la Reserva')}</span>
-                  <span>$ 499.800 COP</span>
-                </div>
+                {reservaDrawer?.detalle && (() => {
+                  const d = reservaDrawer.detalle
+                  const pct = (rate) => `${Math.round(Number(rate) * 100)}%`
+                  return (
+                    <>
+                      <div className="branch-drawer-price-row">
+                        <span>{t('dashboard.drawer.baseRental', 'Alquiler base')} ({d.dias} {t('dashboard.drawer.daysUnit', 'días')} × {formatCOP(d.tarifaDiaria)})</span>
+                        <strong>{formatCOP(d.subtotalVehiculo)}</strong>
+                      </div>
+                      <div className="branch-drawer-price-row">
+                        <span>{d.seguro.nombre || t('dashboard.drawer.insurance', 'Seguro Contratado')}</span>
+                        <strong>{formatCOP(d.seguro.subtotal)}</strong>
+                      </div>
+                      <div className="branch-drawer-price-row">
+                        <span>{d.kilometraje.nombre || t('dashboard.drawer.mileagePlan', 'Plan de kilometraje')}</span>
+                        <strong>{formatCOP(d.kilometraje.subtotal)}</strong>
+                      </div>
+                      {d.servicios.map((sv) => (
+                        <div className="branch-drawer-price-row" key={sv.nombre}>
+                          <span>{sv.nombre}</span>
+                          <strong>{formatCOP(sv.total)}</strong>
+                        </div>
+                      ))}
+                      {d.cargoAdmin != null && (
+                        <div className="branch-drawer-price-row">
+                          <span>{t('dashboard.drawer.adminFee', 'Cargos administrativos')} ({pct(d.tasaCargoAdmin)})</span>
+                          <strong>{formatCOP(d.cargoAdmin)}</strong>
+                        </div>
+                      )}
+                      {d.iva != null && (
+                        <div className="branch-drawer-price-row">
+                          <span>{t('dashboard.drawer.taxes', 'IVA')} ({pct(d.tasaIva)})</span>
+                          <strong>{formatCOP(d.iva)}</strong>
+                        </div>
+                      )}
+                      {d.descuento > 0 && (
+                        <div className="branch-drawer-price-row">
+                          <span>{t('dashboard.drawer.discount', 'Descuento')}{d.cupon ? ` (${d.cupon})` : ''}</span>
+                          <strong>-{formatCOP(d.descuento)}</strong>
+                        </div>
+                      )}
+                      <div className="branch-drawer-price-row branch-drawer-price-total">
+                        <span>{t('dashboard.drawer.grandTotal', 'Total General de la Reserva')}</span>
+                        <span>{formatCOP(d.total)}</span>
+                      </div>
+                    </>
+                  )
+                })()}
                 <div className="branch-drawer-grid-2" style={{ marginTop: '8px', paddingTop: '8px', borderTop: '1px solid #e2e8f0' }}>
                   <div className="branch-drawer-item-box">
                     <span className="branch-drawer-item-lbl">{t('dashboard.drawer.paymentMethod', 'Método de Pago')}</span>
-                    <span className="branch-drawer-item-val">Tarjeta de Crédito (Wompi)</span>
+                    <span className="branch-drawer-item-val">{reservaDrawer?.metodoPago === 'efectivo' ? t('dashboard.drawer.payCash', 'Efectivo en sucursal') : reservaDrawer ? 'Wompi' : '—'}</span>
                   </div>
                   <div className="branch-drawer-item-box">
-                    <span className="branch-drawer-item-lbl">{t('dashboard.drawer.deposit', 'Depósito en Garantía')}</span>
-                    <span className="branch-drawer-item-val">$ 500.000 COP (Pre-autorizado)</span>
+                    <span className="branch-drawer-item-lbl">{t('dashboard.drawer.paymentStatus', 'Estado del pago')}</span>
+                    <span className="branch-drawer-item-val">{reservaDrawer?.pagoEstado === 'aprobado' ? t('dashboard.drawer.paid', 'Pagado') : t('dashboard.drawer.unpaid', 'Pendiente')}</span>
                   </div>
                 </div>
               </div>
@@ -1939,7 +1977,7 @@ export default function BranchDashboard({ branchOnly = true }) {
                     </div>
                     <div className="branch-stepper-info">
                       <strong>{t('dashboard.drawer.step1Title', '1. Reserva Creada & Registrada')}</strong>
-                      <span>{t('dashboard.drawer.step1Desc', 'Registrada con código')} {selectedScheduleItem.codigo || 'RES-8821'}</span>
+                      <span>{t('dashboard.drawer.step1Desc', 'Registrada con código')} {selectedScheduleItem.codigo}</span>
                     </div>
                   </div>
 
@@ -1969,13 +2007,15 @@ export default function BranchDashboard({ branchOnly = true }) {
                   </div>
 
                   {/* Paso 3: Pago Registrado */}
-                  <div className="branch-stepper-step branch-stepper-step--completed">
+                  <div className={`branch-stepper-step ${reservaDrawer?.pagoEstado === 'aprobado' ? 'branch-stepper-step--completed' : 'branch-stepper-step--warning'}`}>
                     <div className="branch-stepper-circle">
-                      <FaCheckCircle aria-hidden="true" />
+                      {reservaDrawer?.pagoEstado === 'aprobado' ? <FaCheckCircle aria-hidden="true" /> : <FaClock aria-hidden="true" />}
                     </div>
                     <div className="branch-stepper-info">
                       <strong>{t('dashboard.drawer.step3Title', '3. Pago de la Reserva')}</strong>
-                      <span>{t('dashboard.drawer.step3Desc', 'Completado: $ 499.800 COP cobrados y confirmados')}</span>
+                      <span>{reservaDrawer?.pagoEstado === 'aprobado'
+                        ? t('dashboard.drawer.step3Done', 'Completado: {{amount}} cobrados y confirmados', { amount: formatCOP(reservaDrawer.detalle?.total || 0) })
+                        : t('dashboard.drawer.step3Pending', 'Pendiente de pago')}</span>
                     </div>
                   </div>
 
@@ -1994,7 +2034,7 @@ export default function BranchDashboard({ branchOnly = true }) {
                       <strong>{t('dashboard.drawer.step4Title', '4. Entrega de Vehículo en Sucursal')}</strong>
                       <span>
                         {activeTab === 'entregas'
-                          ? `${t('dashboard.drawer.step4Scheduled', 'Programada para hoy a las')} ${selectedScheduleItem.hora || '08:30 AM'}`
+                          ? `${t('dashboard.drawer.step4Scheduled', 'Programada para hoy a las')} ${selectedScheduleItem.hora || ''}`
                           : t('dashboard.drawer.step4Done', 'Vehículo entregado con éxito al cliente')}
                       </span>
                     </div>

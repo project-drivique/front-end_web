@@ -103,8 +103,8 @@ export default function VehicleManagementPage() {
     user?.sucursalAsignada || user?.branchName || user?.sucursal || user?.sucursalId || "";
   const assignedBranchKey = normalizeBranch(sucursalAsignada);
 
-  // Pestañas activas: Encargado inicia en 'vehiculos' (o 'flotas'); Admin en 'sede_central'
-  const [activeTab, setActiveTab] = useState(() => (esEncargado ? "vehiculos" : "sede_central"));
+  // Pestañas activas: Encargado inicia en 'vehiculos' (o 'flotas'); Admin en 'sucursales'
+  const [activeTab, setActiveTab] = useState(() => (esEncargado ? "vehiculos" : "sucursales"));
 
   const [vehicles, setVehicles] = useState(() => vehicleManagementService.list());
   const [categories, setCategories] = useState(() => branchCategoryService.listCategories());
@@ -201,41 +201,6 @@ export default function VehicleManagementPage() {
         normalize(v.categoria).includes(norm) || norm.includes(normalize(v.categoria))
     ).length;
   };
-
-  // Mock de Sede Central (solo visible para Administrador General)
-  const mockSedeCentral = useMemo(
-    () => [
-      {
-        id: 1,
-        nombre: "Sede Central Principal Drivique",
-        nit: "901.458.920-3",
-        razonSocial: "Drivique Colombia S.A.S.",
-        direccion: "Cl. 100 #19-61, Edificio Capital Tower, Bogotá D.C.",
-        telefono: "+57 (601) 745-0000",
-        correo: "contacto@drivique.com.co",
-        director: "Carlos Eduardo Restrepo",
-        estado: "Activa",
-        descripcion:
-          "Drivique es la empresa líder en soluciones de movilidad y alquiler de vehículos, ofreciendo un servicio premium con presencia a nivel nacional.",
-        mision:
-          "Brindar a nuestros clientes la mejor experiencia de alquiler de vehículos con un servicio ágil, seguro y de alta calidad.",
-        vision:
-          "Ser reconocidos para el 2030 como la principal empresa de movilidad y renta de autos en América Latina, destacando por nuestra innovación.",
-      },
-    ],
-    []
-  );
-
-  const filteredSedeCentral = useMemo(() => {
-    const term = search.trim().toLowerCase();
-    return mockSedeCentral.filter(
-      (sc) =>
-        !term ||
-        `${sc.id} ${sc.nombre} ${sc.nit} ${sc.razonSocial} ${sc.direccion} ${sc.director}`
-          .toLowerCase()
-          .includes(term)
-    );
-  }, [search, mockSedeCentral]);
 
   const filteredSucursales = useMemo(() => {
     const term = search.trim().toLowerCase();
@@ -658,15 +623,6 @@ export default function VehicleManagementPage() {
               {!esEncargado && (
                 <button
                   type="button"
-                  onClick={() => setActiveTab("sede_central")}
-                  className={`fleet-tab-btn ${activeTab === "sede_central" ? "is-active" : ""}`}
-                >
-                  {t("fleetVehicles.tabHeadquarters", "Sede Central")}
-                </button>
-              )}
-              {!esEncargado && (
-                <button
-                  type="button"
                   onClick={() => setActiveTab("sucursales")}
                   className={`fleet-tab-btn ${activeTab === "sucursales" ? "is-active" : ""}`}
                 >
@@ -695,9 +651,7 @@ export default function VehicleManagementPage() {
                   className="cities-primary fleet-btn-create-tab"
                   type="button"
                   onClick={() => {
-                    if (activeTab === "sede_central") {
-                      setNotice("Editando parámetros corporativos de Drivique Colombia.");
-                    } else if (activeTab === "sucursales") {
+                    if (activeTab === "sucursales") {
                       setNotice("Para registrar nuevas sedes, dirígete al módulo de Sucursales.");
                     } else if (activeTab === "flotas") {
                       openCreateCategory();
@@ -707,7 +661,6 @@ export default function VehicleManagementPage() {
                   }}
                   disabled={esEncargado && activeTab === "vehiculos" && !sucursalAsignada}
                 >
-                  {activeTab === "sede_central" && "Editar Matriz"}
                   {activeTab === "sucursales" && "+ Crear Sucursal"}
                   {activeTab === "flotas" && t("fleetVehicles.createCategory", "+ Crear Categoría")}
                   {activeTab === "vehiculos" && t("fleetVehicles.createVehicle", "+ Crear Vehículo")}
@@ -715,191 +668,6 @@ export default function VehicleManagementPage() {
               )}
             </div>
           </div>
-
-          {/* TAB 1: SEDE CENTRAL (SOLO ADMIN GENERAL) */}
-          {activeTab === "sede_central" && !esEncargado && (
-            <section className="cities-card attached-to-tabs">
-              <div
-                style={{
-                  padding: "24px",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "24px",
-                }}
-              >
-                {filteredSedeCentral.map((sc) => (
-                  <div
-                    key={sc.id}
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: "32px",
-                      background: "var(--card-bg, #fff)",
-                      padding: "40px",
-                      borderRadius: "20px",
-                      border: "1px solid var(--city-border)",
-                      boxShadow: "0 4px 20px rgba(0,0,0,0.03)",
-                    }}
-                  >
-                    <div
-                      style={{
-                        display: "flex",
-                        flexWrap: "wrap",
-                        gap: "32px",
-                        alignItems: "flex-start",
-                        paddingBottom: "32px",
-                        borderBottom: "1px solid var(--city-border)",
-                      }}
-                    >
-                      <div style={{ flex: 1, minWidth: "300px" }}>
-                        <div
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "12px",
-                            marginBottom: "8px",
-                          }}
-                        >
-                          <h2
-                            style={{
-                              margin: 0,
-                              fontSize: "28px",
-                              color: "var(--adm-text)",
-                              fontWeight: 800,
-                              letterSpacing: "-0.5px",
-                            }}
-                          >
-                            {sc.razonSocial}
-                          </h2>
-                          <span
-                            style={{
-                              background: "#e0e7ff",
-                              color: "var(--brand-primary)",
-                              padding: "4px 12px",
-                              borderRadius: "20px",
-                              fontSize: "12px",
-                              fontWeight: 700,
-                              letterSpacing: "0.5px",
-                            }}
-                          >
-                            MATRIZ
-                          </span>
-                        </div>
-                        <p
-                          style={{
-                            margin: 0,
-                            fontSize: "16px",
-                            color: "var(--brand-text)",
-                            lineHeight: 1.6,
-                            maxWidth: "800px",
-                          }}
-                        >
-                          {sc.descripcion}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div
-                      style={{
-                        display: "grid",
-                        gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
-                        gap: "32px",
-                      }}
-                    >
-                      <div
-                        style={{
-                          padding: "32px",
-                          borderRadius: "16px",
-                          border: "1px solid #e2e8f0",
-                          background:
-                            "linear-gradient(145deg, #ffffff 0%, #f8fafc 100%)",
-                          position: "relative",
-                          overflow: "hidden",
-                        }}
-                      >
-                        <div
-                          style={{
-                            position: "absolute",
-                            top: 0,
-                            left: 0,
-                            width: "4px",
-                            height: "100%",
-                            background: "var(--brand-primary)",
-                          }}
-                        />
-                        <h3
-                          style={{
-                            margin: "0 0 16px 0",
-                            fontSize: "13px",
-                            color: "var(--brand-text)",
-                            textTransform: "uppercase",
-                            letterSpacing: "1.5px",
-                            fontWeight: 700,
-                          }}
-                        >
-                          Nuestra Misión
-                        </h3>
-                        <p
-                          style={{
-                            margin: 0,
-                            fontSize: "15px",
-                            color: "var(--adm-text)",
-                            lineHeight: 1.7,
-                          }}
-                        >
-                          {sc.mision}
-                        </p>
-                      </div>
-                      <div
-                        style={{
-                          padding: "32px",
-                          borderRadius: "16px",
-                          border: "1px solid #e2e8f0",
-                          background:
-                            "linear-gradient(145deg, #ffffff 0%, #f8fafc 100%)",
-                          position: "relative",
-                          overflow: "hidden",
-                        }}
-                      >
-                        <div
-                          style={{
-                            position: "absolute",
-                            top: 0,
-                            left: 0,
-                            width: "4px",
-                            height: "100%",
-                            background: "var(--brand-accent, #6366f1)",
-                          }}
-                        />
-                        <h3
-                          style={{
-                            margin: "0 0 16px 0",
-                            fontSize: "13px",
-                            color: "var(--brand-text)",
-                            textTransform: "uppercase",
-                            letterSpacing: "1.5px",
-                            fontWeight: 700,
-                          }}
-                        >
-                          Nuestra Visión
-                        </h3>
-                        <p
-                          style={{
-                            margin: 0,
-                            fontSize: "15px",
-                            color: "var(--adm-text)",
-                            lineHeight: 1.7,
-                          }}
-                        >
-                          {sc.vision}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </section>
-          )}
 
           {/* TAB 2: SUCURSALES (SOLO ADMIN GENERAL) */}
           {activeTab === "sucursales" && !esEncargado && (
@@ -1294,12 +1062,12 @@ export default function VehicleManagementPage() {
                             </td>
                             <td>
                               {gf.tarifaBaseSugerida
-                                ? formatCurrency(gf.tarifaBaseSugerida, divisa, tasaUSD)
+                                ? formatCurrency(gf.tarifaBaseSugerida, moneda, tasaUSD)
                                 : "—"}
                             </td>
                             <td>
                               {gf.depositoGarantiaSugerido
-                                ? formatCurrency(gf.depositoGarantiaSugerido, divisa, tasaUSD)
+                                ? formatCurrency(gf.depositoGarantiaSugerido, moneda, tasaUSD)
                                 : "—"}
                             </td>
                             <td style={{ textAlign: "center" }}>
