@@ -1,4 +1,4 @@
-import config from '../mocks/config.json';
+import config from '../config/datos/config.json';
 
 // Configuración de Sandbox (pub_test_/test_integrity_). Se reexporta para
 // evitar que otros módulos dupliquen el import del JSON.

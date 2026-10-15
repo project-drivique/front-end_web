@@ -6,7 +6,7 @@ import { useLanding } from '../../landing/LandingContext';
 import { formatCurrency } from '@/utils/currencyUtils';
 import { getNombreTipoDoc, getSiglaDoc } from '@/utils/documentUtils';
 import { FaUser, FaIdCard, FaTimes, FaCheckCircle, FaCloudUploadAlt, FaTrashAlt } from 'react-icons/fa';
-import paisesMock from '@/mocks/nationalities.json';
+import paisesMock from '@/config/datos/nationalities.json';
 
 const getPrefijoPais = (nacionalidad) => {
   if (!nacionalidad) return '';

@@ -86,24 +86,7 @@ export function useSocialRegistration({ onExito } = {}) {
 
     try {
       if (!GOOGLE_CLIENT_ID) {
-        if (!import.meta.env.DEV) throw new Error('El inicio con Google no está configurado en este ambiente.')
-        const fallbackEmail = 'sharith.amezquita@drivique.local'
-        const { firstName, lastName } = deriveNamesFromEmail(fallbackEmail)
-        const res = await authService.loginGoogle({
-          provider: 'GOOGLE',
-          idToken: `sandbox_google_token:${fallbackEmail}`,
-          accessToken: null,
-          email: fallbackEmail,
-          firstName,
-          lastName,
-          deviceInfo: navigator.userAgent,
-        })
-        const token = res.accessToken || res.token
-        const usuario = res.usuario || res.userProfile
-        storeLogin(token, usuario)
-        setProveedorExito('google')
-        onExito?.('google', { token, usuario })
-        return
+        throw new Error('El inicio con Google no está configurado en este ambiente.')
       }
       await cargarGoogleSDK()
       const { codeVerifier, nonce, state } = await createPkceChallenge()
@@ -199,29 +182,6 @@ export function useSocialRegistration({ onExito } = {}) {
       ) {
         return
       }
-      if (import.meta.env.DEV) {
-        try {
-          const fallbackEmail = 'sharith.amezquita@drivique.com'
-          const { firstName, lastName } = deriveNamesFromEmail(fallbackEmail)
-          const res = await authService.loginGoogle({
-            provider: 'GOOGLE',
-            idToken: `sandbox_google_token:${fallbackEmail}`,
-            email: fallbackEmail,
-            firstName,
-            lastName,
-            deviceInfo: navigator.userAgent,
-          })
-          const token = res.accessToken || res.token
-          const usuario = res.usuario || res.userProfile
-          storeLogin(token, usuario)
-          setProveedorExito('google')
-          onExito?.('google', { token, usuario })
-          return
-        } catch (fallbackErr) {
-          setErrorSocial(fallbackErr?.message || 'Error al autenticar con Google')
-          return
-        }
-      }
       setErrorSocial(
         err?.message || t('registro.errors.googleError', 'Error al autenticar con la API de Google')
       )
@@ -240,24 +200,7 @@ export function useSocialRegistration({ onExito } = {}) {
 
     try {
       if (!FACEBOOK_APP_ID) {
-        if (!import.meta.env.DEV) throw new Error('El inicio con Facebook no está configurado en este ambiente.')
-        const fallbackEmail = 'sharith.amezquita@drivique.local'
-        const { firstName, lastName } = deriveNamesFromEmail(fallbackEmail)
-        const res = await authService.loginFacebook({
-          provider: 'FACEBOOK',
-          idToken: null,
-          accessToken: `sandbox_facebook_token:${fallbackEmail}`,
-          email: fallbackEmail,
-          firstName,
-          lastName,
-          deviceInfo: navigator.userAgent,
-        })
-        const token = res.accessToken || res.token
-        const usuario = res.usuario || res.userProfile
-        storeLogin(token, usuario)
-        setProveedorExito('facebook')
-        onExito?.('facebook', { token, usuario })
-        return
+        throw new Error('El inicio con Facebook no está configurado en este ambiente.')
       }
       await cargarFacebookSDK()
 
@@ -383,29 +326,6 @@ export function useSocialRegistration({ onExito } = {}) {
         err === 'popup_closed'
       ) {
         return
-      }
-      if (import.meta.env.DEV) {
-        try {
-          const fallbackEmail = 'sharith.amezquita@drivique.com'
-          const { firstName, lastName } = deriveNamesFromEmail(fallbackEmail)
-          const res = await authService.loginFacebook({
-            provider: 'FACEBOOK',
-            accessToken: `sandbox_facebook_token:${fallbackEmail}`,
-            email: fallbackEmail,
-            firstName,
-            lastName,
-            deviceInfo: navigator.userAgent,
-          })
-          const token = res.accessToken || res.token
-          const usuario = res.usuario || res.userProfile
-          storeLogin(token, usuario)
-          setProveedorExito('facebook')
-          onExito?.('facebook', { token, usuario })
-          return
-        } catch (fallbackErr) {
-          setErrorSocial(fallbackErr?.message || 'Error al autenticar con Facebook')
-          return
-        }
       }
       setErrorSocial(
         err?.message ||
