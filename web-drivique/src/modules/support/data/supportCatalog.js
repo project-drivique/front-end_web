@@ -1,4 +1,4 @@
-// Canales de atención y preguntas frecuentes (contenido informativo de la plataforma)
+// ─── CANALES DE ATENCIÓN ──────────────────────────────────────────────────────
 export const CANALES_ATENCION = [
   {
     id: 'whatsapp',
@@ -29,6 +29,61 @@ export const CANALES_ATENCION = [
   },
 ]
 
+// ─── TIPOS DE INCIDENCIA ──────────────────────────────────────────────────────
+export const TIPOS_INCIDENCIA = [
+  {
+    id: 'choque',
+    nombre: 'Choque',
+    icono: 'FaExclamationTriangle',
+    tiempoEstimado: '2 a 4 horas',
+  },
+  {
+    id: 'averia_mecanica',
+    nombre: 'Avería Mecánica',
+    icono: 'FaCar',
+    tiempoEstimado: '2 a 4 horas',
+  },
+  {
+    id: 'pinchazo',
+    nombre: 'Pinchazo',
+    icono: 'FaLifeRing',
+    tiempoEstimado: '1 a 2 horas',
+  },
+  {
+    id: 'bateria_descargada',
+    nombre: 'Batería Descargada',
+    icono: 'FaBolt',
+    tiempoEstimado: '1 a 2 horas',
+  },
+  {
+    id: 'falla_electrica',
+    nombre: 'Falla Eléctrica',
+    icono: 'FaBolt',
+    tiempoEstimado: '1 a 2 horas',
+  },
+  {
+    id: 'robo',
+    nombre: 'Robo',
+    icono: 'FaExclamationCircle',
+    tiempoEstimado: 'Por definir',
+  },
+  {
+    id: 'asistencia_general',
+    nombre: 'Asistencia General',
+    icono: 'FaExclamationCircle',
+    tiempoEstimado: '1 hora',
+  },
+  {
+    id: 'otro_problema',
+    nombre: 'Otro',
+    icono: 'FaQuestionCircle',
+    tiempoEstimado: 'Por definir',
+  },
+]
+
+// ─── INITIAL DUMMY REPORTS ────────────────────────────────────────────────────
+
+// ─── PREGUNTAS FRECUENTES ───
 export const FAQS_INITIAL = [
   {
     id: 'faq-1',
