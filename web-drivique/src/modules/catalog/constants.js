@@ -1,5 +1,5 @@
 import { api } from '../../services/httpClient'
-import ciudadesMetadata from '../../mocks/cities.json'
+import ciudadesMetadata from '../../config/datos/cities.json'
 
 export const COLOR_MARCA = '#2f4ea2'
 

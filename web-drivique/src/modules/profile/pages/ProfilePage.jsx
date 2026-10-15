@@ -13,7 +13,7 @@ import DeliveryPreferencesForm from '@/modules/notifications/components/Delivery
 import MenuConfiguracion from '@/components/MenuConfiguracion'
 import { FaEdit, FaUser, FaEnvelope, FaPhone, FaArrowLeft, FaSignOutAlt, FaIdCard, FaGlobe, FaCalendarAlt, FaHashtag, FaTrashAlt, FaBell, FaSlidersH } from 'react-icons/fa'
 import { getNombreTipoDoc } from '@/utils/documentUtils'
-import paisesMock from '@/mocks/nationalities.json'
+import paisesMock from '@/config/datos/nationalities.json'
 import '@/modules/catalog/pages/CatalogPage.css'
 import '@/modules/catalog/pages/VehicleDetailsPage.css'
 import './ProfilePage.css'

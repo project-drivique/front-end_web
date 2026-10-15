@@ -1,4 +1,4 @@
-import defaultBrand from '../mocks/brandConfig.json'
+import defaultBrand from '../config/datos/brandConfig.json'
 import { api } from './httpClient'
 import { applyBrand } from '../utils/brandThemeUtils'
 
