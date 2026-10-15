@@ -25,7 +25,6 @@ import {
   printTable,
 } from "../../../utils/listExportUtils";
 import { formatCurrency } from "../../../utils/currencyUtils";
-import VEHICULOS_MOCK from "../../../mocks/vehicles.json";
 import MenuConfiguracion from "../../../components/MenuConfiguracion";
 import FirmaContrato from '@/modules/contracts/components/ContractSignature';
 import ManagementSidebar from "../components/ManagementSidebar";
@@ -53,23 +52,10 @@ export default function ContractManagementPage() {
   const [modalDetalle, setModalDetalle] = useState(null);
   const [notice, setNotice] = useState("");
 
-  const getVehiculoImagen = (c) => {
-    if (!c) return "";
-    if (c.vehiculoImagen) return c.vehiculoImagen;
-    const vBrand = (c.vehiculoNombre || "").split(" ")[0].toLowerCase();
-    const match = VEHICULOS_MOCK.find(
-      (v) =>
-        (v.id && c.vehiculoId && String(v.id) === String(c.vehiculoId)) ||
-        (v.placa && c.vehiculoPlaca && v.placa.replace(/\s|-/g, "").toLowerCase() === c.vehiculoPlaca.replace(/\s|-/g, "").toLowerCase()) ||
-        (v.nombre && c.vehiculoNombre && v.nombre.toLowerCase().includes(c.vehiculoNombre.toLowerCase())) ||
-        (c.vehiculoNombre && v.nombre && c.vehiculoNombre.toLowerCase().includes(v.nombre.toLowerCase())) ||
-        (vBrand && v.nombre && v.nombre.toLowerCase().includes(vBrand))
-    );
-    return match?.imagenes?.[0] || match?.imagen || VEHICULOS_MOCK[0]?.imagenes?.[0] || "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/a2cb0b378c25efdb1e116246f84149744c2f4081.jpg";
-  };
+  const getVehiculoImagen = (c) => c?.vehiculoImagen || "";
 
   useEffect(() => {
-    setContratos(contractManagementService.list(user));
+    contractManagementService.refresh().then(setContratos).catch((error) => console.error('No se pudieron cargar los contratos:', error));
   }, [user]);
 
   const filtrados = useMemo(() => {
@@ -128,33 +114,17 @@ export default function ContractManagementPage() {
 
   const handleExportExcel = () => {
     exportExcel(exportData);
-    contractManagementService.logAudit(
-      t("admin.contractsPage.audit.exportExcel"),
-      { id: "ALL", contratoNumero: t("admin.contractsPage.listLabel") },
-      user,
-    );
   };
 
   const handleExportPdf = () => {
     exportPdf(exportData);
-    contractManagementService.logAudit(
-      t("admin.contractsPage.audit.exportPdf"),
-      { id: "ALL", contratoNumero: t("admin.contractsPage.listLabel") },
-      user,
-    );
   };
 
   const handlePrint = () => {
     printTable(exportData);
-    contractManagementService.logAudit(
-      t("admin.contractsPage.audit.print"),
-      { id: "ALL", contratoNumero: t("admin.contractsPage.listLabel") },
-      user,
-    );
   };
 
   const handleDownloadSinglePdf = (contrato) => {
-    contractManagementService.logAudit(t("admin.contractsPage.audit.download"), contrato, user);
     const singleData = {
       title: `${t("admin.contractsPage.detailsTitle", "Detalle de Contrato")} - ${contrato.contratoNumero}`,
       headers: headersExport,
@@ -180,11 +150,6 @@ export default function ContractManagementPage() {
   };
 
   const openDetalle = (contrato) => {
-    contractManagementService.logAudit(
-      t("admin.contractsPage.audit.view"),
-      contrato,
-      user,
-    );
     setModalDetalle(contrato);
   };
 
@@ -303,15 +268,7 @@ export default function ContractManagementPage() {
               <tbody>
                 {filtrados.length > 0 ? (
                   filtrados.map((c, index) => {
-                    let finalName = c.clienteNombre || 'Cliente Registrado';
-                    const cod = c.reservaCodigo || c.id || '';
-                    if (finalName === 'Cliente Registrado' || finalName === 'Cliente Drivique') {
-                      const rawCod = String(cod).replace('CTR-', '');
-                      const hash = rawCod.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-                      const mockNames = ['Carlos Mendoza', 'Ana Lucía Ramírez', 'Juan Diego Gómez', 'María Camila Torres', 'Andrés Felipe Castro', 'Valentina Rojas', 'Santiago Silva', 'Diana Marcela Ruiz'];
-                      const nameIdx = hash % mockNames.length;
-                      finalName = mockNames[nameIdx];
-                    }
+                    const finalName = c.clienteNombre;
                     return (
                     <tr key={c.id}>
                       <td style={{ fontWeight: "normal", color: "#374151" }}>

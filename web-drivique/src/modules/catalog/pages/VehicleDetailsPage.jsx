@@ -34,7 +34,6 @@ export default function VehicleDetailsPage() {
     }
   }
 
-  const descuentoParam = searchParams.get('descuento')
   const promoCode = searchParams.get('promo')
 
   return (
@@ -46,7 +45,6 @@ export default function VehicleDetailsPage() {
       <VehicleDetailsModal
         isOpen={true}
         vehiculoId={id}
-        descuentoParam={descuentoParam}
         promoCode={promoCode}
         onClose={handleCerrarModal}
       />

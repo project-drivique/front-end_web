@@ -9,7 +9,6 @@ import { formatCurrency } from '@/utils/currencyUtils';
 import { getNombreTipoDoc } from '@/utils/documentUtils';
 import { contractService } from '@/services/contractService';
 import { useAuthStore } from '@/store/authStore';
-import SUCURSALES_MOCK from '@/mocks/branches.json';
 import SignatureCanvas from './SignatureCanvas';
 
 const LOCALES_FECHA = { es: 'es-CO', en: 'en-US', fr: 'fr-FR', pt: 'pt-PT', br: 'pt-BR' };
@@ -18,11 +17,6 @@ const LOCALES_FECHA = { es: 'es-CO', en: 'en-US', fr: 'fr-FR', pt: 'pt-PT', br: 
 function separarMarcaModelo(nombre = '') {
   const partes = nombre.trim().split(' ');
   return { marca: partes[0] || '', modelo: partes.slice(1).join(' ') || '' };
-}
-
-function ciudadDeSucursal(nombreSucursal) {
-  const encontrada = SUCURSALES_MOCK.find((s) => s.nombre === nombreSucursal);
-  return encontrada?.ciudad || '';
 }
 
 const Campo = ({ label, value }) => (
@@ -56,21 +50,38 @@ export default function FirmaContrato({
   const [errorFirma, setErrorFirma] = useState('');
   const [firmando, setFirmando] = useState(false);
 
-  const { datosForm = {}, reservaDetalles = {}, total = 0, referencia, seguroIdx, serviciosSeleccionados = [] } = reservaGuardada || {};
+  const { datosForm = {}, reservaDetalles = {}, referencia, seguroIdx, serviciosSeleccionados = [] } = reservaGuardada || {};
+  const [contratoApi, setContratoApi] = useState(contratoFirmado?.contractNumber ? contratoFirmado : null);
+  const [firmaImagen, setFirmaImagen] = useState('');
+  const contratoIdFirmado = contratoFirmado?.id || (contratoApi?.signedAt ? contratoApi.id : null);
+  useEffect(() => {
+    if (!contratoIdFirmado) return undefined;
+    let url = '';
+    let activo = true;
+    contractService.obtenerFirmaUrl(contratoIdFirmado)
+      .then((objectUrl) => { url = objectUrl; if (activo) setFirmaImagen(objectUrl); })
+      .catch(() => {});
+    return () => { activo = false; if (url) URL.revokeObjectURL(url); };
+  }, [contratoIdFirmado]);
+  useEffect(() => {
+    if (contratoFirmado?.contractNumber) setContratoApi(contratoFirmado);
+  }, [contratoFirmado]);
+  const total = contratoApi?.finalAmount ?? contratoApi?.baseAmount ?? reservaGuardada?.total ?? 0;
 
   // Normalización exhaustiva de los datos del cliente
-  const clienteNombre = datosForm.nombre || [datosForm.nombres, datosForm.apellidos].filter(Boolean).join(' ') || reservaGuardada?.clienteNombre || usuarioStore?.nombre || 'Cliente Drivique';
+  const clienteNombre = datosForm.nombre || [datosForm.nombres, datosForm.apellidos].filter(Boolean).join(' ') || reservaGuardada?.clienteNombre || usuarioStore?.nombre || contratoApi?.customerFullName || '';
   const clienteTipoDoc = datosForm.tipoDoc || datosForm.tipoDocumento || usuarioStore?.tipoDocumento || 'CC';
-  const clienteNumDoc = datosForm.numDoc || datosForm.documento || datosForm.cedula || reservaGuardada?.clienteDocumento || usuarioStore?.cedula || '1020304050';
-  const clienteCorreo = datosForm.correo || datosForm.email || reservaGuardada?.clienteCorreo || usuarioStore?.correo || usuarioStore?.email || 'cliente@drivique.com';
-  const clienteTelefono = datosForm.celular || datosForm.telefono || reservaGuardada?.clienteTelefono || usuarioStore?.telefono || '+57 300 000 0000';
-  const clienteDireccion = datosForm.direccion || reservaGuardada?.clienteDireccion || usuarioStore?.direccion || '';
-  const clienteLicencia = datosForm.licenciaPdf?.name || (typeof datosForm.licenciaPdf === 'string' ? datosForm.licenciaPdf : (clienteNumDoc ? `Licencia-${clienteNumDoc}.pdf` : 'Licencia-Conduccion-Verificada.pdf'));
+  const clienteNumDoc = datosForm.numDoc || datosForm.documento || datosForm.cedula || contratoApi?.customerDocumentNumber || reservaGuardada?.clienteDocumento || usuarioStore?.cedula || '';
+  const clienteCorreo = datosForm.correo || datosForm.email || reservaGuardada?.clienteCorreo || usuarioStore?.correo || usuarioStore?.email || contratoApi?.customerEmail || '';
+  const clienteTelefono = contratoApi?.customerPhone || datosForm.celular || datosForm.telefono || reservaGuardada?.clienteTelefono || usuarioStore?.telefono || '';
+  const clienteDireccion = contratoApi?.customerAddress || datosForm.direccion || reservaGuardada?.clienteDireccion || usuarioStore?.direccion || '';
+  const ESTADO_LICENCIA = { APPROVED: 'Vigente (validada por la sucursal)', PENDING: 'Pendiente de validación', REJECTED: 'Rechazada' };
+  const clienteLicencia = ESTADO_LICENCIA[contratoApi?.driverLicenseStatus] || '';
 
   // Normalización exhaustiva de datos del vehículo
-  const vehiculoPlaca = vehiculo?.placa || 'KLS-849';
-  const vehiculoColor = vehiculo?.color || 'Plata';
-  const vehiculoAnio = vehiculo?.año || vehiculo?.anio || 2024;
+  const vehiculoPlaca = contratoApi?.vehiclePlate || '';
+  const vehiculoColor = contratoApi?.vehicleColor || '';
+  const vehiculoAnio = contratoApi?.vehicleYear || '';
 
   const direccionCompleta = reservaDetalles.sucursalRetiro === 'domicilio'
     ? `${reservaDetalles.domicilioDireccion || ''}, ${reservaDetalles.domicilioBarrio || ''}, ${reservaDetalles.domicilioCiudad || ''} (Ref: ${reservaDetalles.domicilioReferencias || ''})`
@@ -79,25 +90,27 @@ export default function FirmaContrato({
   const [codigoContrato, setCodigoContrato] = useState(contratoFirmado?.codigo || '');
   useEffect(() => {
     if (soloLectura || !reservaGuardada?.id) return;
-    contractService.obtenerOCrearCodigo(reservaGuardada.id).then(setCodigoContrato).catch(() => setCodigoContrato(''));
+    contractService.obtenerPorReserva(reservaGuardada.id)
+      .then((c) => { setContratoApi(c); setCodigoContrato(c?.contractNumber || ''); })
+      .catch(() => setCodigoContrato(''));
   }, [reservaGuardada?.id, soloLectura]);
   const localeFecha = LOCALES_FECHA[i18n.language] || 'es-CO';
-  const { marca, modelo } = separarMarcaModelo(vehiculo?.nombre);
-  const sucursalRetiroNombre = reservaDetalles.sucursalRetiro === 'domicilio'
-    ? vehiculo?.sucursal
-    : reservaDetalles.sucursalRetiro;
-  const ciudadSucursal = ciudadDeSucursal(sucursalRetiroNombre) || 'Neiva';
-  const direccionSucursal = (SUCURSALES_MOCK.find((s) => s.nombre === sucursalRetiroNombre) || {}).direccion || 'Calle 9 # 8-25, Centro';
+  const marca = contratoApi?.vehicleBrandName || '';
+  const modelo = contratoApi?.vehicleModel || '';
+  const sucursalRetiroNombre = contratoApi?.pickupBranchName
+    || (reservaDetalles.sucursalRetiro === 'domicilio' ? vehiculo?.sucursal : reservaDetalles.sucursalRetiro);
+  const ciudadSucursal = contratoApi?.pickupCityName || '';
+  const direccionSucursal = contratoApi?.pickupBranchAddress || '';
   const fechaGeneracion = new Date().toLocaleDateString(localeFecha, { day: '2-digit', month: 'long', year: 'numeric' });
 
-  const serviciosTexto = useMemo(() => {
-    const nombres = (vehiculo?.servicios || [])
-      .filter((s) => serviciosSeleccionados.includes(s.nombre))
-      .map((s) => s.nombre);
-    return nombres.length ? nombres.join(', ') : t('contratoFirma.noneAdded');
-  }, [vehiculo, serviciosSeleccionados, t]);
+  const serviciosTexto = (contratoApi?.additionalServiceNames || []).length
+    ? contratoApi.additionalServiceNames.join(', ')
+    : t('contratoFirma.noneAdded');
 
-  const metodoPagoTexto = reservaDetalles.metodoPago === 'efectivo'
+  const pagoEnEfectivo = contratoApi?.paymentMethodCode
+    ? contratoApi.paymentMethodCode === 'CASH'
+    : reservaDetalles.metodoPago === 'efectivo';
+  const metodoPagoTexto = pagoEnEfectivo
     ? t('contratoFirma.paymentMethodCash')
     : t('contratoFirma.paymentMethodWompi');
 
@@ -171,8 +184,8 @@ export default function FirmaContrato({
             <span style={{ display: 'inline-block', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--brand-text)', background: 'var(--brand-soft)', borderRadius: 999, padding: '5px 10px', marginBottom: 10, fontWeight: 700 }}>
               {t('contratoFirma.badgeLabel')}
             </span>
-            <p style={{ margin: '6px 0', fontSize: 13, color: 'var(--texto-primary)' }}><strong>{t('contratoFirma.contractCode')}:</strong> {codigoContrato}</p>
-            <p style={{ margin: '6px 0', fontSize: 13, color: 'var(--texto-primary)' }}><strong>{t('contratoFirma.status')}:</strong> {t('contratoFirma.statusPending')}</p>
+            <p style={{ margin: '6px 0', fontSize: 13, color: 'var(--texto-primary)' }}><strong>{t('contratoFirma.contractCode')}:</strong> {contratoApi?.contractNumber || codigoContrato}</p>
+            <p style={{ margin: '6px 0', fontSize: 13, color: 'var(--texto-primary)' }}><strong>{t('contratoFirma.status')}:</strong> {contratoApi?.signedAt || soloLectura ? t('contratoFirma.statusSigned') : t('contratoFirma.statusPending')}</p>
             <p style={{ margin: '6px 0', fontSize: 13, color: 'var(--texto-primary)' }}><strong>{t('contratoFirma.generationDate')}:</strong> {fechaGeneracion}</p>
             <p style={{ margin: '6px 0', fontSize: 13, color: 'var(--texto-primary)' }}><strong>{t('contratoFirma.reservationCode')}:</strong> {referencia}</p>
           </aside>
@@ -194,7 +207,7 @@ export default function FirmaContrato({
               <Campo label={t('contratoFirma.document')} value={`${getNombreTipoDoc(clienteTipoDoc)}: ${clienteNumDoc}`.trim()} />
               <Campo label={t('contratoFirma.email')} value={clienteCorreo} />
               <Campo label={t('contratoFirma.phone')} value={clienteTelefono} />
-              <Campo label={t('contratoFirma.address')} value={direccionCompleta !== t('contratoFirma.notProvided') && direccionCompleta ? direccionCompleta : (clienteDireccion || direccionSucursal || ciudadSucursal || 'Recogida en Sucursal')} />
+              <Campo label={t('contratoFirma.address')} value={direccionCompleta !== t('contratoFirma.notProvided') && direccionCompleta ? direccionCompleta : clienteDireccion} />
               <Campo label={t('contratoFirma.license')} value={clienteLicencia} />
             </div>
           </section>
@@ -206,18 +219,18 @@ export default function FirmaContrato({
               <Campo label={t('contratoFirma.plate')} value={vehiculoPlaca} />
               <Campo label={t('contratoFirma.color')} value={vehiculoColor} />
               <Campo label={t('contratoFirma.year')} value={vehiculoAnio} />
-              <Campo label={t('contratoFirma.branch')} value={reservaDetalles.sucursalRetiro === 'domicilio' ? 'Entrega a Domicilio' : (reservaDetalles.sucursalRetiro || '')} />
+              <Campo label={t('contratoFirma.branch')} value={reservaDetalles.sucursalRetiro === 'domicilio' ? 'Entrega a Domicilio' : (sucursalRetiroNombre || '')} />
               <Campo label={t('contratoFirma.branchCity')} value={reservaDetalles.sucursalRetiro === 'domicilio' ? (reservaDetalles.domicilioCiudad || ciudadSucursal) : ciudadSucursal} />
               {reservaDetalles.sucursalRetiro !== 'domicilio' && (
                 <Campo label={t('contratoFirma.branchAddress')} value={direccionSucursal} />
               )}
-              <Campo label={t('contratoFirma.startDate')} value={formatearFecha(reservaDetalles.fechaInicio)} />
-              <Campo label={t('contratoFirma.endDate')} value={formatearFecha(reservaDetalles.fechaFin)} />
+              <Campo label={t('contratoFirma.startDate')} value={formatearFecha(contratoApi?.scheduledStartAt || reservaDetalles.fechaInicio)} />
+              <Campo label={t('contratoFirma.endDate')} value={formatearFecha(contratoApi?.scheduledEndAt || reservaDetalles.fechaFin)} />
               <Campo label={t('contratoFirma.paymentMethod')} value={metodoPagoTexto} />
-              {reservaDetalles.metodoPago === 'efectivo' && <Campo label={t('contratoFirma.cashPaymentBranch')} value={reservaDetalles.sucursalPagoEfectivo} />}
+              {pagoEnEfectivo && <Campo label={t('contratoFirma.cashPaymentBranch')} value={contratoApi?.cashPaymentBranchName || reservaDetalles.sucursalPagoEfectivo} />}
               <Campo label={t('contratoFirma.totalValue')} value={formatCurrency(total, moneda)} />
               <Campo label={t('contratoFirma.additionalServices')} value={serviciosTexto} />
-              <Campo label={t('contratoFirma.protectionPlan')} value={seguroIdx != null ? (vehiculo?.seguros?.[seguroIdx]?.nombre || 'Protección Básica Estándar') : (vehiculo?.seguros?.[0]?.nombre || 'Protección Básica Estándar')} />
+              <Campo label={t('contratoFirma.protectionPlan')} value={contratoApi?.insuranceCoverageName || ''} />
               {reservaDetalles.sucursalRetiro === 'domicilio' && (
                 <>
                   <Campo label={t('contratoFirma.deliveryAddress', 'Dirección de Entrega')} value={reservaDetalles.domicilioDireccion} />
@@ -237,9 +250,9 @@ export default function FirmaContrato({
               <p style={{ margin: '0 0 12px', fontSize: 14, color: 'var(--texto-primary)', lineHeight: 1.65 }}>
                 <strong>{t('contratoFirma.clause1Title')}</strong>{' '}
                 {t('contratoFirma.clause1Text', {
-                  marca, modelo, placa: vehiculo?.placa,
-                  inicio: formatearFecha(reservaDetalles.fechaInicio),
-                  fin: formatearFecha(reservaDetalles.fechaFin),
+                  marca, modelo, placa: vehiculoPlaca,
+                  inicio: formatearFecha(contratoApi?.scheduledStartAt || reservaDetalles.fechaInicio),
+                  fin: formatearFecha(contratoApi?.scheduledEndAt || reservaDetalles.fechaFin),
                 })}
               </p>
               <p style={{ margin: '0 0 12px', fontSize: 14, color: 'var(--texto-primary)', lineHeight: 1.65 }}>
@@ -281,9 +294,9 @@ export default function FirmaContrato({
                     height: 160, borderRadius: 14, background: 'var(--bg-tarjeta)', border: '1px solid var(--borde)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 6, marginBottom: 12, padding: 8
                   }}>
-                    {contratoFirmado?.firmaUsuarioDataUrl && !['mock', 'protected', 'null', 'undefined'].includes(String(contratoFirmado.firmaUsuarioDataUrl).toLowerCase()) ? (
+                    {firmaImagen ? (
                       <img
-                        src={contratoFirmado.firmaUsuarioDataUrl}
+                        src={firmaImagen}
                         alt="Firma del Arrendatario"
                         style={{ maxHeight: 110, maxWidth: '85%', objectFit: 'contain' }}
                         onError={(e) => {
@@ -296,7 +309,7 @@ export default function FirmaContrato({
                     <div
                       className="doc-sig-fallback"
                       style={{
-                        display: (!contratoFirmado?.firmaUsuarioDataUrl || ['mock', 'protected', 'null', 'undefined'].includes(String(contratoFirmado.firmaUsuarioDataUrl).toLowerCase())) ? 'flex' : 'none',
+                        display: firmaImagen ? 'none' : 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
                         gap: 6,

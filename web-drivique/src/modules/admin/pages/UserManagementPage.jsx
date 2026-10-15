@@ -20,7 +20,6 @@ import {
   FaEnvelope,
 } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
-import { useAuthStore } from '../../../store/authStore'
 import { useBrand } from '../../../contexts/BrandContext'
 import { userManagementService } from '../../../services/userManagementService'
 import { branchManagementService } from '../../../services/branchManagementService'
@@ -33,7 +32,6 @@ import './UserManagementPage.css'
 export default function UserManagementPage() {
   const { t } = useTranslation()
   const { tema } = useLanding()
-  const user = useAuthStore((state) => state.usuario)
   const { brand } = useBrand()
   const esModoOscuro = tema === 'oscuro'
 
@@ -57,24 +55,24 @@ export default function UserManagementPage() {
     telefono: '',
     cedula: '',
     rol: 'cliente',
-    sucursal: 'Neiva',
+    sucursal: '',
   })
 
   const [formEditar, setFormEditar] = useState({})
   const [observacionDoc, setObservacionDoc] = useState('')
   const [errorModal, setErrorModal] = useState('')
 
-  const sucursales = useMemo(
-    () => branchManagementService.list().sort((a, b) => a.nombre.localeCompare(b.nombre)),
-    []
-  )
+  const [sucursales, setSucursales] = useState([])
 
   const cargarUsuarios = () => {
     setUsersList(userManagementService.list())
   }
 
   useEffect(() => {
-    cargarUsuarios()
+    userManagementService.refresh().then(setUsersList).catch(() => setUsersList([]))
+    branchManagementService.refresh()
+      .then(() => setSucursales(branchManagementService.list().sort((a, b) => a.nombre.localeCompare(b.nombre))))
+      .catch(() => setSucursales([]))
   }, [])
 
   // Filtrado dinámico
@@ -98,21 +96,17 @@ export default function UserManagementPage() {
   }, [usersList, search, roleFilter, statusFilter, docFilter])
 
   // --- Handlers CRUD ---
-  const handleCrearUsuario = (e) => {
+  const handleCrearUsuario = async (e) => {
     e.preventDefault()
     try {
       setErrorModal('')
-      userManagementService.create(formCrear, user)
+      await userManagementService.create(formCrear)
       setNotice(t('admin.users.createdSuccess', `Usuario ${formCrear.nombre} creado con éxito.`))
       setModalCrear(false)
-      setFormCrear({ nombre: '', correo: '', telefono: '', cedula: '', rol: 'cliente', sucursal: 'Neiva' })
+      setFormCrear({ nombre: '', correo: '', telefono: '', cedula: '', rol: 'cliente', sucursal: '' })
       cargarUsuarios()
     } catch (err) {
-      if (err.message === 'mailAlreadyExists') {
-        setErrorModal(t('admin.users.mailExists', 'El correo electrónico ya está registrado.'))
-      } else {
-        setErrorModal(t('admin.users.createError', 'Error al crear el usuario.'))
-      }
+      setErrorModal(err.message || t('admin.users.createError', 'Error al crear el usuario.'))
     }
   }
 
@@ -125,26 +119,31 @@ export default function UserManagementPage() {
       telefono: u.telefono,
       cedula: u.cedula,
       rol: u.rol,
-      sucursal: u.sucursal || 'Neiva',
+      sucursal: u.sucursal || '',
     })
     setModalEditar(u)
   }
 
-  const handleEditarUsuario = (e) => {
+  const handleEditarUsuario = async (e) => {
     e.preventDefault()
     try {
       setErrorModal('')
-      userManagementService.update(formEditar.id, formEditar, user)
+      await userManagementService.update(formEditar.id, formEditar)
       setNotice(t('admin.users.updatedSuccess', `Datos de ${formEditar.nombre} actualizados.`))
       setModalEditar(null)
       cargarUsuarios()
-    } catch {
-      setErrorModal(t('admin.users.updateError', 'Error al actualizar usuario.'))
+    } catch (err) {
+      setErrorModal(err.message || t('admin.users.updateError', 'Error al actualizar usuario.'))
     }
   }
 
-  const handleToggleActivo = (u) => {
-    userManagementService.toggleActive(u.id, user)
+  const handleToggleActivo = async (u) => {
+    try {
+      await userManagementService.toggleActive(u.id)
+    } catch (err) {
+      setNotice(err.message)
+      return
+    }
     setNotice(
       t(
         u.activo ? 'admin.users.deactivatedSuccess' : 'admin.users.activatedSuccess',
@@ -159,13 +158,17 @@ export default function UserManagementPage() {
     setModalDocumentos(u)
   }
 
-  const handleVerificarDocumentos = (nuevoEstado) => {
+  const handleVerificarDocumentos = async (nuevoEstado) => {
     if (!modalDocumentos) return
-    userManagementService.verifyDocuments(
-      modalDocumentos.id,
-      { documentosEstado: nuevoEstado, observacionDocumentos: observacionDoc },
-      user
-    )
+    try {
+      await userManagementService.verifyDocuments(
+        modalDocumentos.id,
+        { documentosEstado: nuevoEstado, observacionDocumentos: observacionDoc }
+      )
+    } catch (err) {
+      setNotice(err.message)
+      return
+    }
     setNotice(
       t(
         'admin.users.docVerifiedSuccess',
@@ -176,23 +179,14 @@ export default function UserManagementPage() {
     cargarUsuarios()
   }
 
-  const handleEliminarUsuario = (u) => {
+  const handleEliminarUsuario = async (u) => {
     try {
-      userManagementService.remove(u.id, user)
+      await userManagementService.remove(u.id)
       setNotice(t('admin.users.deletedSuccess', `Usuario ${u.nombre} eliminado.`))
       setModalEliminar(null)
       cargarUsuarios()
     } catch (err) {
-      if (err.message === 'hasActiveReservations') {
-        setErrorModal(
-          t(
-            'admin.users.hasReservationsError',
-            'No se puede eliminar el usuario porque tiene reservas activas (en curso o confirmadas).'
-          )
-        )
-      } else {
-        setErrorModal(t('admin.users.deleteError', 'Error al eliminar usuario.'))
-      }
+      setErrorModal(err.message || t('admin.users.deleteError', 'Error al eliminar usuario.'))
     }
   }
 
@@ -206,7 +200,7 @@ export default function UserManagementPage() {
     u.rol,
     u.sucursal || 'N/A',
     u.activo ? 'Activo' : 'Inactivo',
-    u.documentosEstado,
+    u.documentosEstado || '—',
     u.reservasActivas,
   ])
 
@@ -399,12 +393,14 @@ export default function UserManagementPage() {
                         </td>
 
                         <td>
-                          <span className={`doc-status-badge ${u.documentosEstado}`}>
-                            {u.documentosEstado === 'aprobado' && <FaCheckCircle />}
-                            {u.documentosEstado === 'pendiente' && <FaExclamationTriangle />}
-                            {u.documentosEstado === 'rechazado' && <FaTimesCircle />}
-                            {u.documentosEstado}
-                          </span>
+                          {u.documentosEstado ? (
+                            <span className={`doc-status-badge ${u.documentosEstado}`}>
+                              {u.documentosEstado === 'aprobado' && <FaCheckCircle />}
+                              {u.documentosEstado === 'pendiente' && <FaExclamationTriangle />}
+                              {u.documentosEstado === 'rechazado' && <FaTimesCircle />}
+                              {u.documentosEstado}
+                            </span>
+                          ) : '—'}
                         </td>
 
                         <td>
