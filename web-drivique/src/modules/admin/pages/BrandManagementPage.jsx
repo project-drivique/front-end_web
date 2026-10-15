@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { FaCheck, FaImage, FaPalette, FaSave, FaUndo } from 'react-icons/fa'
 import { useBrand } from '../../../contexts/BrandContext'
 import { useLanding } from '../../landing/LandingContext'
+import { showAlert } from '../../../utils/swalConfig'
 import { brandService } from '../../../services/brandService'
 import { createBrandTokens, applyBrand } from '../../../utils/brandThemeUtils'
 import ManagementSidebar from '../components/ManagementSidebar'
@@ -25,23 +26,15 @@ export default function BrandManagementPage() {
   const { brand } = useBrand()
   const { tema } = useLanding()
   const [draft, setDraft] = useState(brand)
-  const [error, setError] = useState('')
-  const [notice, setNotice] = useState('')
   const previewTokens = useMemo(() => createBrandTokens(draft.colors), [draft.colors])
 
-  // Resultado visible de cada acción: aplicado correctamente o el motivo del error
+  // Resultado de cada acción en una alerta centrada, igual que el resto del panel
   const showError = (caught) => {
     const key = `admin.brand.errors.${caught?.message}`
     const text = t(key)
-    setNotice('')
-    setError(text === key ? t('admin.brand.errors.saveFailed') : text)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+    return showAlert({ icon: 'error', title: text === key ? t('admin.brand.errors.saveFailed') : text, confirmButtonText: t('common.accept', 'Aceptar') })
   }
-  const showSuccess = (text) => {
-    setError('')
-    setNotice(text)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
+  const showSuccess = (text) => showAlert({ icon: 'success', title: text, timer: 2200, showConfirmButton: false })
 
   const updateColor = (key, value) => {
     const updated = { ...draft, colors: { ...draft.colors, [key]: value } }
@@ -58,7 +51,6 @@ export default function BrandManagementPage() {
     const updated = { ...draft, colors: { ...colors } }
     setDraft(updated)
     applyBrand(updated)
-    setError('')
     brandService.save(updated)
       .then(() => showSuccess(t('admin.brand.messages.colorSaved')))
       .catch(showError)
@@ -67,17 +59,16 @@ export default function BrandManagementPage() {
   const loadLogo = (event) => {
     const file = event.target.files?.[0]
     if (!file) return
-    if (!ACCEPTED_TYPES.has(file.type)) return setError(t('admin.brand.errors.logoType'))
-    if (file.size > 1024 * 1024) return setError(t('admin.brand.errors.logoSize'))
+    if (!ACCEPTED_TYPES.has(file.type)) return showError({ message: 'logoType' })
+    if (file.size > 1024 * 1024) return showError({ message: 'logoSize' })
     const reader = new FileReader()
-    reader.onload = () => { setDraft((current) => ({ ...current, logoDataUrl: String(reader.result || '') })); setError('') }
-    reader.onerror = () => setError(t('admin.brand.errors.logoRead'))
+    reader.onload = () => { setDraft((current) => ({ ...current, logoDataUrl: String(reader.result || '') })) }
+    reader.onerror = () => showError({ message: 'logoRead' })
     reader.readAsDataURL(file)
   }
 
   const run = async (action, successKey) => {
     try {
-      setError('')
       const updated = await action()
       setDraft(updated)
       applyBrand(updated)
@@ -96,8 +87,6 @@ export default function BrandManagementPage() {
           <MenuConfiguracion />
         </header>
 
-        {notice && <div className="cities-notice" role="status"><span><FaCheck /> {notice}</span><button type="button" aria-label={t('common.close', 'Cerrar')} onClick={() => setNotice('')}>á—</button></div>}
-        {error && <div className="brand-error" role="alert">{error}</div>}
 
         <div className="brand-layout">
           <section className="brand-editor">
