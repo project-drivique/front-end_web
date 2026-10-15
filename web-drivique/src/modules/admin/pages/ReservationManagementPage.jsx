@@ -28,7 +28,7 @@ import { useAuthStore } from '../../../store/authStore'
 import { reservationManagementService } from '../../../services/reservationManagementService'
 import { branchManagementService } from '../../../services/branchManagementService'
 import { catalogService } from '../../../services/catalogService'
-import { accessAuditService, hasMatchingBranch } from '../../../services/accessAuditService'
+import { hasMatchingBranch } from '../../../services/accessAuditService'
 import { contractService } from '../../../services/contractService'
 import { inspectionService } from '../../../services/inspectionService'
 import { exportExcel, exportPdf, printTable } from '../../../utils/listExportUtils'
@@ -82,39 +82,6 @@ export default function ReservationManagementPage() {
   // Mensaje de notificación
   const [notice, setNotice] = useState('')
 
-  // Estado para gestión de Domicilio (Encargado de Sucursal)
-  const [domicilioFormState, setDomicilioFormState] = useState({
-    domicilioEstado: 'EN_PREPARACION',
-    domicilioConductor: '',
-    domicilioTelefonoConductor: '',
-  })
-
-  useEffect(() => {
-    if (modalDetalle) {
-      setDomicilioFormState({
-        domicilioEstado: modalDetalle.domicilioEstado || 'EN_PREPARACION',
-        domicilioConductor: modalDetalle.domicilioConductor || '',
-        domicilioTelefonoConductor: modalDetalle.domicilioTelefonoConductor || '',
-      })
-    }
-  }, [modalDetalle])
-
-  const handleGuardarLogisticaDomicilio = (e) => {
-    e.preventDefault()
-    if (!modalDetalle) return
-    try {
-      reservationManagementService.updateDeliveryLogistics(modalDetalle.id, domicilioFormState, user)
-      setNotice('Logística a domicilio actualizada con éxito para el cliente.')
-      setTimeout(() => setNotice(''), 4000)
-      const lista = reservationManagementService.list(user)
-      setReservas(lista)
-      const actualizada = lista.find(r => String(r.id) === String(modalDetalle.id) || String(r.codigo) === String(modalDetalle.codigo))
-      if (actualizada) setModalDetalle(actualizada)
-    } catch (err) {
-      console.error('Error al actualizar logística a domicilio:', err)
-    }
-  }
-
   // Datos para selector en formularios
   const [catalogoVehiculos, setCatalogoVehiculos] = useState([])
   const sucursales = useMemo(() => branchManagementService.list(), [])
@@ -127,10 +94,14 @@ export default function ReservationManagementPage() {
   )), [catalogoVehiculos, esEncargado, sucursalEncargado])
 
   // Carga inicial y evaluación automática periódica
-  const cargarYEvaluarReservas = useCallback(() => {
-    const lista = reservationManagementService.list(user)
-    setReservas(lista)
-  }, [user])
+  const cargarYEvaluarReservas = useCallback(async () => {
+    try {
+      const lista = await reservationManagementService.refresh()
+      setReservas(lista)
+    } catch (err) {
+      console.error('No se pudieron cargar las reservas:', err)
+    }
+  }, [])
 
   useEffect(() => {
     cargarYEvaluarReservas()
@@ -325,10 +296,9 @@ export default function ReservationManagementPage() {
   const handleEntregarAuto = async (r) => {
     try {
       await registrarInspeccion(r, 'CHECK_IN')
-      reservationManagementService.update(r.id, { ...r, estado: 'en_curso' }, user)
       setNotice(`Vehículo entregado exitosamente al cliente. Reserva ${r.codigo || r.id} en curso.`)
       setTimeout(() => setNotice(''), 4000)
-      cargarYEvaluarReservas()
+      await cargarYEvaluarReservas()
     } catch (err) {
       console.error('Error al entregar auto:', err)
       setNotice(err?.response?.data?.message || err.message || 'No fue posible registrar la entrega.')
@@ -338,7 +308,6 @@ export default function ReservationManagementPage() {
   const handleRecibirDevolucion = async (r) => {
     try {
       const inspection = await registrarInspeccion(r, 'CHECK_OUT')
-      reservationManagementService.update(r.id, { ...r, estado: 'finalizada' }, user)
       setNotice(`Vehículo recibido. Cargos adicionales: ${formatCurrency(inspection.totalCharge || 0, moneda || 'COP', tasaUSD)}.`)
       setTimeout(() => setNotice(''), 4000)
       cargarYEvaluarReservas()
@@ -350,32 +319,14 @@ export default function ReservationManagementPage() {
 
   const handleExportExcel = () => {
     exportExcel(exportData)
-    accessAuditService.record({
-      correo: user?.correo || 'admin@drivique.com',
-      rol: user?.rol || 'administrador',
-      resultado: 'EXITO',
-      motivo: t('admin.reservationsManagement.audit.exportExcel'),
-    })
   }
 
   const handleExportPdf = () => {
     exportPdf(exportData)
-    accessAuditService.record({
-      correo: user?.correo || 'admin@drivique.com',
-      rol: user?.rol || 'administrador',
-      resultado: 'EXITO',
-      motivo: t('admin.reservationsManagement.audit.exportPdf'),
-    })
   }
 
   const handlePrint = () => {
     printTable(exportData)
-    accessAuditService.record({
-      correo: user?.correo || 'admin@drivique.com',
-      rol: user?.rol || 'administrador',
-      resultado: 'EXITO',
-      motivo: t('admin.reservationsManagement.audit.print'),
-    })
   }
 
   // --- Manejo de Crear Reserva Manual ---
@@ -399,12 +350,23 @@ export default function ReservationManagementPage() {
     setModalCrear(true)
   }
 
-  const submitCrearManual = (e) => {
+  const submitCrearManual = async (e) => {
     e.preventDefault()
-    reservationManagementService.createManual(formCrear, user)
-    setNotice(t('admin.reservationsModal.createdSuccess', 'Reserva manual registrada exitosamente.'))
-    setModalCrear(false)
-    cargarYEvaluarReservas()
+    const vehiculo = catalogoVehiculos.find((v) => v.placa === formCrear.vehiculoPlaca)
+    try {
+      const [fechaInicio, horaInicio] = String(formCrear.fechaInicio).split('T')
+      const [fechaFin, horaFin] = String(formCrear.fechaFin).split('T')
+      await reservationManagementService.createManual({
+        clienteCorreo: formCrear.clienteCorreo,
+        vehiculoId: vehiculo?.id,
+        fechaInicio, horaInicio, fechaFin, horaFin,
+      })
+      setNotice(t('admin.reservationsModal.createdSuccess', 'Reserva manual registrada exitosamente.'))
+      setModalCrear(false)
+      await cargarYEvaluarReservas()
+    } catch (err) {
+      setNotice(err.message)
+    }
   }
 
   // --- Manejo de Editar Reserva ---
@@ -413,37 +375,40 @@ export default function ReservationManagementPage() {
   const openEditarModal = (res) => {
     setFormEditar({
       id: res.id,
-      clienteNombre: res.clienteNombre,
-      clienteCorreo: res.clienteCorreo,
-      clienteTelefono: res.clienteTelefono,
-      sucursal: res.sucursal,
-      fechaInicio: res.fechaInicio,
-      fechaFin: res.fechaFin,
-      estado: res.estado,
-      totalCOP: res.totalCOP,
-      notas: res.notas || '',
+      fechaInicio: `${res.fechaInicio}T${res.horaInicio || '08:00'}`,
+      fechaFin: `${res.fechaFin}T${res.horaFin || '18:00'}`,
     })
     setModalEditar(res)
   }
 
-  const submitEditarReserva = (e) => {
+  const submitEditarReserva = async (e) => {
     e.preventDefault()
-    reservationManagementService.update(formEditar.id, formEditar, user)
-    setNotice(t('admin.reservationsModal.updatedSuccess', 'Reserva actualizada correctamente.'))
-    setModalEditar(null)
-    cargarYEvaluarReservas()
+    try {
+      const [fechaInicio, horaInicio] = String(formEditar.fechaInicio).split('T')
+      const [fechaFin, horaFin] = String(formEditar.fechaFin).split('T')
+      await reservationManagementService.updateDates(formEditar.id, { fechaInicio, horaInicio, fechaFin, horaFin })
+      setNotice(t('admin.reservationsModal.updatedSuccess', 'Reserva actualizada correctamente.'))
+      setModalEditar(null)
+      await cargarYEvaluarReservas()
+    } catch (err) {
+      setNotice(err.message)
+    }
   }
 
   // --- Manejo de Cancelar Reserva ---
   const [motivoCancelar, setMotivoCancelar] = useState('')
 
-  const submitCancelarReserva = (e) => {
+  const submitCancelarReserva = async (e) => {
     e.preventDefault()
-    reservationManagementService.cancel(modalCancelar.id, motivoCancelar, user)
-    setNotice(t('admin.reservationsModal.cancelledSuccess', `Reserva ${modalCancelar.codigo} cancelada.`))
-    setModalCancelar(null)
-    setMotivoCancelar('')
-    cargarYEvaluarReservas()
+    try {
+      await reservationManagementService.cancel(modalCancelar.id, motivoCancelar)
+      setNotice(t('admin.reservationsModal.cancelledSuccess', `Reserva ${modalCancelar.codigo} cancelada.`))
+      setModalCancelar(null)
+      setMotivoCancelar('')
+      await cargarYEvaluarReservas()
+    } catch (err) {
+      setNotice(err.message)
+    }
   }
 
   return (
@@ -1321,64 +1286,23 @@ export default function ReservationManagementPage() {
                       <strong>{modalDetalle.domicilioDevolucionDireccion}</strong>
                     </div>
                   )}
-                  <div className="reserva-detail-field" style={{ background: 'var(--city-soft, #eff6ff)', padding: '8px 12px', borderRadius: 8, border: '1px solid #bfdbfe', gridColumn: 'span 2' }}>
-                    <small style={{ color: 'var(--brand-primary, #1d4ed8)', fontWeight: 800 }}>PIN DE SEGURIDAD PARA VALIDAR ENTREGA:</small>
-                    <strong style={{ fontSize: 16, color: '#1e40af', letterSpacing: '0.12em' }}>
-                      {modalDetalle.domicilioPin || '4829'}
-                    </strong>
-                  </div>
+                  {(modalDetalle.domicilioPuntos || []).map((p) => (
+                    <div key={p.id} className="reserva-detail-field">
+                      <small>{p.tipo === 'PICKUP' ? 'Conductor de la entrega:' : 'Conductor de la devolución:'}</small>
+                      <strong>
+                        {p.conductor
+                          ? `${p.conductor}${p.conductorTelefono ? ` · ${p.conductorTelefono}` : ''}`
+                          : 'Sin conductor asignado'}
+                      </strong>
+                      <small style={{ color: 'var(--city-muted)' }}>
+                        Estado: {p.estado === 'COMPLETED' ? 'Completado' : p.estado === 'ASSIGNED' ? 'Asignado' : 'Pendiente'}
+                      </small>
+                    </div>
+                  ))}
+                  <small style={{ color: 'var(--city-muted)' }}>
+                    El conductor se asigna y la entrega se confirma con el PIN del cliente en el módulo de Domicilios.
+                  </small>
                 </div>
-
-                <form onSubmit={handleGuardarLogisticaDomicilio} style={{ display: 'flex', flexDirection: 'column', gap: 12, background: 'var(--bg-tarjeta, var(--bg-tarjeta, #ffffff))', padding: 14, borderRadius: 12, border: '1px solid var(--borde, var(--borde, #e2e8f0))' }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-                    <div>
-                      <label style={{ display: 'block', fontSize: 11, fontWeight: 700, marginBottom: 4, color: 'var(--city-text)' }}>
-                        Estado de Logística:
-                      </label>
-                      <select
-                        style={{ width: '100%', padding: '8px 10px', borderRadius: 8, border: '1px solid var(--borde, #cbd5e1)', fontSize: 12, fontWeight: 700 }}
-                        value={domicilioFormState.domicilioEstado}
-                        onChange={(e) => setDomicilioFormState({ ...domicilioFormState, domicilioEstado: e.target.value })}
-                      >
-                        <option value="EN_PREPARACION">1. En preparación (Sucursal)</option>
-                        <option value="EN_CAMINO">2. Agente en camino a entrega</option>
-                        <option value="ENTREGADO">3. Vehículo entregado al cliente</option>
-                        <option value="RECOGIDO">4. Vehículo recogido y retornado</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label style={{ display: 'block', fontSize: 11, fontWeight: 700, marginBottom: 4, color: 'var(--city-text)' }}>
-                        Nombre del Agente / Conductor:
-                      </label>
-                      <input
-                        style={{ width: '100%', padding: '8px 10px', borderRadius: 8, border: '1px solid var(--borde, #cbd5e1)', fontSize: 12 }}
-                        placeholder="ej. Carlos Restrepo (Logística Drivique)"
-                        value={domicilioFormState.domicilioConductor}
-                        onChange={(e) => setDomicilioFormState({ ...domicilioFormState, domicilioConductor: e.target.value })}
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, marginBottom: 4, color: 'var(--city-text)' }}>
-                      Teléfono / WhatsApp del Conductor:
-                    </label>
-                    <input
-                      style={{ width: '100%', padding: '8px 10px', borderRadius: 8, border: '1px solid var(--borde, #cbd5e1)', fontSize: 12 }}
-                      placeholder="ej. +57 312 456 7890"
-                      value={domicilioFormState.domicilioTelefonoConductor}
-                      onChange={(e) => setDomicilioFormState({ ...domicilioFormState, domicilioTelefonoConductor: e.target.value })}
-                    />
-                  </div>
-
-                  <button
-                    type="submit"
-                    style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '10px 16px', borderRadius: 10, background: 'var(--brand-primary, #2563eb)', color: 'var(--bg-tarjeta, #ffffff)', border: 'none', fontWeight: 800, fontSize: 12, cursor: 'pointer', marginTop: 4 }}
-                  >
-                    <FaSave /> Actualizar Logística a Domicilio
-                  </button>
-                </form>
               </div>
             )}
 
@@ -1434,16 +1358,6 @@ export default function ReservationManagementPage() {
             </div>
 
             <form onSubmit={submitCrearManual}>
-              <label>
-                {t('admin.reservationsModal.clientName')}
-                <input
-                  required
-                  value={formCrear.clienteNombre}
-                  onChange={(e) => setFormCrear({ ...formCrear, clienteNombre: e.target.value })}
-                  placeholder={t('admin.reservationsModal.clientNamePlaceholder')}
-                />
-              </label>
-
               <div className="branches-form-grid">
                 <label>
                   {t('admin.reservationsModal.clientEmail')}
@@ -1453,15 +1367,6 @@ export default function ReservationManagementPage() {
                     value={formCrear.clienteCorreo}
                     onChange={(e) => setFormCrear({ ...formCrear, clienteCorreo: e.target.value })}
                     placeholder={t('admin.reservationsModal.clientEmailPlaceholder')}
-                  />
-                </label>
-                <label>
-                  {t('admin.reservationsModal.clientPhone')}
-                  <input
-                    required
-                    value={formCrear.clienteTelefono}
-                    onChange={(e) => setFormCrear({ ...formCrear, clienteTelefono: e.target.value })}
-                    placeholder={t('admin.reservationsModal.clientPhonePlaceholder')}
                   />
                 </label>
               </div>
@@ -1527,30 +1432,9 @@ export default function ReservationManagementPage() {
                 </label>
               </div>
 
-              <div className="branches-form-grid">
-                <label>
-                  {t('admin.reservationsModal.initialStatus')}
-                  <select
-                    value={formCrear.estado}
-                    onChange={(e) => setFormCrear({ ...formCrear, estado: e.target.value })}
-                  >
-                    <option value="confirmada">{t('admin.reservationsModal.statusConfirmed')}</option>
-                    <option value="en_curso">{t('admin.reservationsModal.statusInProgress')}</option>
-                    <option value="pendiente">{t('admin.reservationsModal.statusPending')}</option>
-                  </select>
-                </label>
-
-                <label>
-                  {t('admin.reservationsModal.totalAmountCOP')}
-                  <input
-                    type="number"
-                    required
-                    value={formCrear.totalCOP}
-                    onChange={(e) => setFormCrear({ ...formCrear, totalCOP: e.target.value })}
-                  />
-                </label>
-              </div>
-
+              <p style={{ fontSize: 13, opacity: 0.8 }}>
+                El estado inicial y el valor total los calcula el sistema según el vehículo, las fechas y la tarifa vigente.
+              </p>
               <label>
                 {t('admin.reservationsModal.notes')}
                 <input
@@ -1590,45 +1474,6 @@ export default function ReservationManagementPage() {
             </div>
 
             <form onSubmit={submitEditarReserva}>
-              <label>
-                {t('admin.reservationsManagement.editModal.clientName')}
-                <input
-                  value={formEditar.clienteNombre}
-                  onChange={(e) => setFormEditar({ ...formEditar, clienteNombre: e.target.value })}
-                />
-              </label>
-
-              <div className="branches-form-grid">
-                <label>
-                  {t('admin.reservationsManagement.editModal.branch')}
-                  <select
-                    value={formEditar.sucursal}
-                    disabled={esEncargado}
-                    onChange={(e) => setFormEditar({ ...formEditar, sucursal: e.target.value })}
-                  >
-                    {sucursales.map((s) => (
-                      <option key={s.id} value={s.nombre}>
-                        {s.nombre}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-
-                <label>
-                  {t('admin.reservationsManagement.editModal.state')}
-                  <select
-                    value={formEditar.estado}
-                    onChange={(e) => setFormEditar({ ...formEditar, estado: e.target.value })}
-                  >
-                    <option value="confirmada">{t('admin.reservationsManagement.editModal.stateConfirmed')}</option>
-                    <option value="en_curso">{t('admin.reservationsManagement.editModal.stateOngoing')}</option>
-                    <option value="finalizada">{t('admin.reservationsManagement.editModal.stateFinished')}</option>
-                    <option value="pendiente">{t('admin.reservationsManagement.editModal.statePending')}</option>
-                    <option value="cancelada">{t('admin.reservationsManagement.editModal.stateCancelled')}</option>
-                  </select>
-                </label>
-              </div>
-
               <div className="branches-form-grid">
                 <label>
                   {t('admin.reservationsManagement.editModal.pickupDate')}
@@ -1647,23 +1492,6 @@ export default function ReservationManagementPage() {
                   />
                 </label>
               </div>
-
-              <label>
-                {t('admin.reservationsManagement.editModal.total', { currency: moneda })}
-                <input
-                  type="number"
-                  value={formEditar.totalCOP}
-                  onChange={(e) => setFormEditar({ ...formEditar, totalCOP: e.target.value })}
-                />
-              </label>
-
-              <label>
-                {t('admin.reservationsManagement.editModal.notes')}
-                <input
-                  value={formEditar.notas}
-                  onChange={(e) => setFormEditar({ ...formEditar, notas: e.target.value })}
-                />
-              </label>
 
               <div className="cities-modal__actions">
                 <button type="button" onClick={() => setModalEditar(null)}>

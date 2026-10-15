@@ -369,6 +369,32 @@ export default function CompleteProfileModal({
                 </div>
                 {errores.telefono && <p style={{ color: c.errorText, fontSize: '11px', margin: '4px 0 0' }}>{errores.telefono}</p>}
               </div>
+
+              {/* Dirección */}
+              <div>
+                <label style={labelStyle}>
+                  {t('perfil.address', 'Dirección')}
+                </label>
+                <input
+                  type="text"
+                  value={formData.direccion || ''}
+                  onChange={e => actualizarCampo('direccion', e.target.value)}
+                  maxLength={255}
+                  placeholder={t('perfil.addressPlaceholder', 'Calle 10 # 20-30, Medellín')}
+                  style={{
+                    width: '100%',
+                    height: '42px',
+                    borderRadius: '10px',
+                    border: `1.5px solid ${c.inputBorder}`,
+                    background: c.inputBg,
+                    padding: '0 12px',
+                    fontSize: '13.5px',
+                    color: c.inputText,
+                    outline: 'none',
+                    boxSizing: 'border-box',
+                  }}
+                />
+              </div>
             </div>
 
             {/* Sección 3: Documento de Identidad */}

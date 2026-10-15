@@ -36,7 +36,6 @@ import {
 import { useLanding } from '../../landing/LandingContext'
 import { useAuthStore } from '../../../store/authStore'
 import { reservationManagementService } from '../../../services/reservationManagementService'
-import { reservationService } from '../../../services/reservationService'
 import { branchManagementService } from '../../../services/branchManagementService'
 import { hasMatchingBranch } from '../../../services/accessAuditService'
 import { formatCurrency } from '../../../utils/currencyUtils'
@@ -238,10 +237,13 @@ export default function CashCollectionPage({ branchOnly = false }) {
   const [searchRefValue, setSearchRefValue] = useState('')
 
   // Cargar lista de reservas
-  const cargarReservas = useCallback(() => {
-    const list = reservationManagementService.list(user)
-    setTodasLasReservas(list)
-  }, [user])
+  const cargarReservas = useCallback(async () => {
+    try {
+      setTodasLasReservas(await reservationManagementService.refresh())
+    } catch (e) {
+      console.error('No se pudieron cargar los cobros desde el servidor:', e)
+    }
+  }, [])
 
   useEffect(() => {
     cargarReservas()
@@ -279,8 +281,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
 
   const pendientesEfectivo = useMemo(() => {
     return todosLosPagos.filter((r) => {
-      const raw = reservationService.obtenerPorReferencia(r.codigo || r.id || r.referencia) || r
-      const metodo = raw?.reservaDetalles?.metodoPago || r.pasarela || r.metodoPagoConfirmado
+      const metodo = r.reservaDetalles?.metodoPago || r.pasarela || r.metodoPagoConfirmado
       const estadoNorm = String(r.estado || '').toLowerCase()
       const esEfectivo = metodo === 'efectivo' || estadoNorm.includes('efectivo')
       const yaCobrado = esCobradoEnSucursal(r)
@@ -439,20 +440,6 @@ export default function CashCollectionPage({ branchOnly = false }) {
     }
   }, [reservasSucursal])
 
-  const handleQuickStatusChange = (id, newStatus, currentState) => {
-    try {
-      if (newStatus === 'aprobado' && !currentState) {
-        reservationManagementService.update(id, { pagoEstado: 'aprobado', metodoPagoConfirmado: true, fechaPagoConfirmado: new Date().toISOString() }, user)
-      } else if (newStatus === 'pendiente' && currentState) {
-        reservationManagementService.update(id, { pagoEstado: 'pendiente', metodoPagoConfirmado: false, fechaPagoConfirmado: null }, user)
-      }
-      setTodasLasReservas(reservationManagementService.list(user))
-      showAlert({ icon: 'success', title: 'Estado actualizado', text: `Estado de pago cambiado a ${newStatus}.` })
-    } catch (e) {
-      console.error(e)
-    }
-  }
-
   // Abrir Modal de Cobro / Detalle
   const openModalCobro = (reserva) => {
     setModalReserva(reserva)
@@ -468,18 +455,15 @@ export default function CashCollectionPage({ branchOnly = false }) {
 
     setProcesandoPago(true)
     try {
-      reservationManagementService.confirmCashPayment(ref, user, observacionesCaja)
-      reservationService.actualizarEstado(ref, 'CONFIRMADA')
-      cargarReservas()
+      await reservationManagementService.confirmCashPayment(ref)
+      await cargarReservas()
 
-      const actualizada = reservationService.obtenerPorReferencia(ref) || modalReserva
       setModalReserva((prev) => ({
         ...prev,
-        estado: 'CONFIRMADA',
+        estado: 'confirmada',
         fechaPagoConfirmado: new Date().toISOString(),
         cajeroConfirmacion: user?.nombre || user?.correo || 'Encargado de Sucursal',
         observacionesCaja,
-        snapshot: actualizada,
       }))
 
       // El modal cambia automáticamente al estado de recibo al actualizarse el estado
@@ -488,7 +472,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
       showAlert({
         icon: 'error',
         title: 'Error al registrar cobro',
-        text: 'No se pudo actualizar el estado de la reserva. Intenta nuevamente.',
+        text: err?.message || 'No se pudo actualizar el estado de la reserva. Intenta nuevamente.',
         confirmButtonText: 'Cerrar',
       })
     } finally {
