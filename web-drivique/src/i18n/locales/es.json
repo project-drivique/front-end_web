@@ -2332,6 +2332,25 @@
       "filterUnread": "No leídas",
       "defaultAction": "Ir al módulo",
       "filters": "Filtros de notificaciones"
+    },
+    "settings": {
+      "title": "Parámetros globales de seguridad",
+      "subtitle": "Cada cambio se valida, queda auditado y el último puede revertirse.",
+      "enabled": "Activado",
+      "disabled": "Desactivado",
+      "reason": "Motivo del cambio (opcional)",
+      "save": "Guardar",
+      "saved": "Parámetro actualizado correctamente.",
+      "reverted": "Se revirtió el último cambio.",
+      "revert": "Revertir a {{value}}",
+      "lastChange": "Último cambio: {{name}}",
+      "keys": {
+        "MAX_LOGIN_ATTEMPTS": "Intentos de inicio de sesión fallidos antes del bloqueo",
+        "ACCOUNT_LOCKOUT_MINUTES": "Minutos de bloqueo de la cuenta",
+        "SESSION_IDLE_TIMEOUT_MINUTES": "Minutos de inactividad antes de cerrar la sesión",
+        "PASSWORD_RESET_TOKEN_EXPIRATION_MINUTES": "Minutos de vigencia del enlace para restablecer la contraseña",
+        "MFA_REQUIRED_FOR_ADMINS": "Verificación en dos pasos obligatoria para administradores"
+      }
     }
   },
   "common": {
