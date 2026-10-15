@@ -3535,6 +3535,10 @@
     "copyright": "Drivique © 2026"
   },
   "contratoFirma": {
+    "sendByEmail": "Envoyer par e-mail",
+    "sendingEmail": "Envoi…",
+    "emailSent": "Nous avons envoyé le contrat signé à votre e-mail. Ouvrez-le avec votre pièce d'identité enregistrée.",
+    "emailNotSent": "L'e-mail n'a pas pu être envoyé. Réessayez.",
     "badgeLabel": "Document numérique",
     "title": "Contrat de réservation et de location",
     "subtitle": "Drivique · Plateforme académique de location de véhicules",
