@@ -248,7 +248,7 @@ export default function ReservationManagementPage() {
         cod,
         r.clienteNombre || 'Cliente Registrado',
         r.clienteTelefono || '300 000 0000',
-        r.clienteCorreo || 'cliente@drivique.com',
+        r.clienteCorreo || '',
         r.vehiculoNombre || 'Renault Sandero 2023',
         r.vehiculoPlaca || 'KLS-849',
         lugarRetiroText,
@@ -823,8 +823,8 @@ export default function ReservationManagementPage() {
                           const nameIdx = hash % mockNames.length;
                           cliNom = mockNames[nameIdx];
                         }
-                        const cliDoc = r.clienteDocumento || '1020304050'
-                        const cliMail = r.clienteCorreo || 'cliente@drivique.com'
+                        const cliDoc = r.clienteDocumento || ''
+                        const cliMail = r.clienteCorreo || ''
                         let cliTel = String(r.reservaDetalles?.datosForm?.celular || r.clienteTelefono || '300 000 0000')
                         if (!cliTel.startsWith('+')) cliTel = `+57 ${cliTel.trim()}`
                         const formatDoc = (val) => {
@@ -1195,7 +1195,7 @@ export default function ReservationManagementPage() {
                   </div>
                   <div className="reserva-detail-field">
                     <small>{t('admin.reservationsManagement.detailModal.documentId', 'Cédula / Documento Identidad:')}</small>
-                    <strong>{modalDetalle.clienteDocumento || '1020304050'}</strong>
+                    <strong>{modalDetalle.clienteDocumento || ''}</strong>
                   </div>
                   <div className="reserva-detail-field">
                     <small>{t('admin.reservationsManagement.detailModal.email', 'Correo Electrónico:')}</small>
