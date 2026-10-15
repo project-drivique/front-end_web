@@ -3,9 +3,11 @@ import { useTranslation } from 'react-i18next'
 import { FaCheck, FaImage, FaPalette, FaSave, FaUndo } from 'react-icons/fa'
 import { useBrand } from '../../../contexts/BrandContext'
 import { useLanding } from '../../landing/LandingContext'
+import { showAlert } from '../../../utils/swalConfig'
 import { brandService } from '../../../services/brandService'
 import { createBrandTokens, applyBrand } from '../../../utils/brandThemeUtils'
 import ManagementSidebar from '../components/ManagementSidebar'
+import GlobalSettingsPanel from '../components/GlobalSettingsPanel'
 import MenuConfiguracion from '../../../components/MenuConfiguracion'
 import defaultLogo from '../../../assets/logocatalog.png'
 import './BrandManagementPage.css'
@@ -25,9 +27,15 @@ export default function BrandManagementPage() {
   const { brand } = useBrand()
   const { tema } = useLanding()
   const [draft, setDraft] = useState(brand)
-  const [error, setError] = useState('')
-  const [notice, setNotice] = useState('')
   const previewTokens = useMemo(() => createBrandTokens(draft.colors), [draft.colors])
+
+  // Resultado de cada acción en una alerta centrada, igual que el resto del panel
+  const showError = (caught) => {
+    const key = `admin.brand.errors.${caught?.message}`
+    const text = t(key)
+    return showAlert({ icon: 'error', title: text === key ? t('admin.brand.errors.saveFailed') : text, confirmButtonText: t('common.accept', 'Aceptar') })
+  }
+  const showSuccess = (text) => showAlert({ icon: 'success', title: text, timer: 2200, showConfirmButton: false })
 
   const updateColor = (key, value) => {
     const updated = { ...draft, colors: { ...draft.colors, [key]: value } }
@@ -35,8 +43,8 @@ export default function BrandManagementPage() {
     if (/^#[0-9a-f]{6}$/i.test(value)) {
       applyBrand(updated)
       brandService.save(updated)
-        .then(() => setNotice('Color de marca actualizado y aplicado automáticamente.'))
-        .catch(() => {})
+        .then(() => showSuccess(t('admin.brand.messages.colorSaved')))
+        .catch(showError)
     }
   }
 
@@ -44,32 +52,30 @@ export default function BrandManagementPage() {
     const updated = { ...draft, colors: { ...colors } }
     setDraft(updated)
     applyBrand(updated)
-    setError('')
     brandService.save(updated)
-      .then(() => setNotice('Color de marca actualizado y aplicado automáticamente.'))
-      .catch(() => {})
+      .then(() => showSuccess(t('admin.brand.messages.colorSaved')))
+      .catch(showError)
   }
 
   const loadLogo = (event) => {
     const file = event.target.files?.[0]
     if (!file) return
-    if (!ACCEPTED_TYPES.has(file.type)) return setError(t('admin.brand.errors.logoType'))
-    if (file.size > 1024 * 1024) return setError(t('admin.brand.errors.logoSize'))
+    if (!ACCEPTED_TYPES.has(file.type)) return showError({ message: 'logoType' })
+    if (file.size > 1024 * 1024) return showError({ message: 'logoSize' })
     const reader = new FileReader()
-    reader.onload = () => { setDraft((current) => ({ ...current, logoDataUrl: String(reader.result || '') })); setError('') }
-    reader.onerror = () => setError(t('admin.brand.errors.logoRead'))
+    reader.onload = () => { setDraft((current) => ({ ...current, logoDataUrl: String(reader.result || '') })) }
+    reader.onerror = () => showError({ message: 'logoRead' })
     reader.readAsDataURL(file)
   }
 
   const run = async (action, successKey) => {
     try {
-      setError('')
       const updated = await action()
       setDraft(updated)
       applyBrand(updated)
-      setNotice(t(successKey))
+      showSuccess(t(successKey))
     } catch (caught) {
-      setError(t(`admin.brand.errors.${caught.message}`))
+      showError(caught)
     }
   }
 
@@ -82,8 +88,6 @@ export default function BrandManagementPage() {
           <MenuConfiguracion />
         </header>
 
-        {notice && <div className="cities-notice" role="status"><span><FaCheck /> {notice}</span><button type="button" aria-label={t('common.close', 'Cerrar')} onClick={() => setNotice('')}>á—</button></div>}
-        {error && <div className="brand-error" role="alert">{error}</div>}
 
         <div className="brand-layout">
           <section className="brand-editor">
@@ -122,6 +126,7 @@ export default function BrandManagementPage() {
             <div className="brand-preview__body"><small>{t('admin.brand.previewEyebrow')}</small><h2>{t('admin.brand.previewTitle')}</h2><p>{t('admin.brand.previewText')}</p><div className="brand-preview__swatches"><i /><i /><i /></div><button type="button">{t('admin.brand.previewButton')}</button></div>
           </aside>
         </div>
+        <GlobalSettingsPanel />
       </main>
     </div>
   )

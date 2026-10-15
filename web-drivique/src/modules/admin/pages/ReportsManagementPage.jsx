@@ -60,6 +60,7 @@ const ICONS_MAP = {
   FaExclamationTriangle,
   FaUsers,
   FaTags,
+  FaBuilding,
 }
 
 const HEADER_KEY_MAP = {
@@ -343,38 +344,36 @@ export default function ReportsManagementPage({ branchOnly = false }) {
     return reportManagementService.getReportTypeById(selectedTypeId) || reportTypes[0]
   }, [reportTypes, selectedTypeId])
 
-  // Generar vista previa en vivo
-  const livePreviewData = useMemo(() => {
-    const filters = {
-      fechaInicio: filterStartDate,
-      fechaFin: filterEndDate,
-      sucursal: filterBranch,
-      estado: filterState,
-      categoria: filterCategory,
-      gravedad: filterSeverity,
-      search: filterSearch,
-      moneda: moneda || 'COP',
-      tasaUSD: tasaUSD || 4000,
-    }
-    return reportManagementService.buildReportData({
-      typeId: selectedTypeId,
-      filters,
-      user,
-    })
-  }, [
-    selectedTypeId,
-    filterStartDate,
-    filterEndDate,
-    filterBranch,
-    filterState,
-    filterCategory,
-    filterSeverity,
-    filterSearch,
-    moneda,
-    tasaUSD,
-    user,
-    dataVersion,
-  ])
+  // Vista previa en vivo: la calcula el servidor con los filtros elegidos
+  const [livePreviewData, setLivePreviewData] = useState({ reportTitle: '', headers: [], rows: [], kpis: [], totalRegistros: 0 })
+  const [previewError, setPreviewError] = useState('')
+  useEffect(() => {
+    let vigente = true
+    setPreviewError('')
+    const temporizador = setTimeout(() => {
+      reportManagementService.previewReport({
+        typeId: selectedTypeId,
+        filters: {
+          fechaInicio: filterStartDate,
+          fechaFin: filterEndDate,
+          sucursal: filterBranch,
+          estado: filterState,
+          categoria: filterCategory,
+          gravedad: filterSeverity,
+          search: filterSearch,
+          moneda: moneda || 'COP',
+          tasaUSD: tasaUSD || 4000,
+        },
+      })
+        .then((datos) => { if (vigente) setLivePreviewData(datos) })
+        .catch((error) => {
+          if (!vigente) return
+          setLivePreviewData({ reportTitle: '', headers: [], rows: [], kpis: [], totalRegistros: 0 })
+          setPreviewError(error.message)
+        })
+    }, 300)
+    return () => { vigente = false; clearTimeout(temporizador) }
+  }, [selectedTypeId, filterStartDate, filterEndDate, filterBranch, filterState, filterCategory, filterSeverity, filterSearch, moneda, tasaUSD, user, dataVersion])
 
   // Generar y descargar reporte
   const handleGenerateReport = async () => {
@@ -1622,6 +1621,11 @@ export default function ReportsManagementPage({ branchOnly = false }) {
 
               <div className="modal-dialog-body">
                 {/* KPIS DE RESUMEN */}
+                {previewError && (
+                  <div role="alert" style={{ margin: '12px 0', padding: '10px 14px', borderRadius: 10, background: '#fef2f2', color: '#b91c1c', fontWeight: 600 }}>
+                    {previewError}
+                  </div>
+                )}
                 {livePreviewData.kpis && livePreviewData.kpis.length > 0 && (
                   <div className="preview-summary-pills">
                     {livePreviewData.kpis.map((kpi, idx) => (
