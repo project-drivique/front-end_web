@@ -1,10 +1,10 @@
+import { diasDeAlquiler } from '../utils/pricing';
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useLanding } from '../../landing/LandingContext';
 import { formatCurrency } from '@/utils/currencyUtils';
 import { getNombreTipoDoc, getSiglaDoc } from '@/utils/documentUtils';
-import { RECARGOS_LOGISTICOS } from '../../catalog/constants';
 import { FaUser, FaIdCard, FaTimes, FaCheckCircle, FaCloudUploadAlt, FaTrashAlt } from 'react-icons/fa';
 import paisesMock from '@/mocks/nationalities.json';
 
@@ -168,6 +168,7 @@ export default function DatosPersonales({
   errores,
   docsVerificados,
   appliedPromotion,
+  cotizacion,
   onApplyPromotion,
   onRemovePromotion,
   c
@@ -290,9 +291,7 @@ export default function DatosPersonales({
     ? Number(kmIlimit.precio || 0)
     : (reserva.tipoKm === 'limitado' ? Number(kmLimit.precio || 0) : 0));
 
-  const dias = reserva.fechaInicio && reserva.fechaFin
-    ? Math.max(1, Math.ceil((new Date(reserva.fechaFin) - new Date(reserva.fechaInicio)) / 86400000))
-    : 1;
+  const dias = diasDeAlquiler(reserva);
 
   const precioSeg = seguroIdx !== null ? Number(vehiculo.seguros[seguroIdx]?.precio ?? vehiculo.seguros[seguroIdx]?.dailyRate ?? vehiculo.seguros[seguroIdx]?.price ?? 0) : 0;
   const precioServicios = (vehiculo.servicios || [])
@@ -302,19 +301,8 @@ export default function DatosPersonales({
   const subtotal = precio * dias;
   const subtotalSeg = precioSeg * dias;
   const subtotalServicios = precioServicios * dias;
-  const cargos = Math.round((subtotal + subtotalSeg + subtotalServicios) * 0.10);
-
-  const recargoRetiro = RECARGOS_LOGISTICOS[reserva.sucursalRetiro] || 0;
-  const recargoDevolucion = RECARGOS_LOGISTICOS[reserva.sucursalDevolucion] || 0;
-  const recargoLogistico = recargoRetiro + recargoDevolucion;
-
-  const subtotalPreIva = subtotal + subtotalSeg + subtotalServicios + cargos + recargoLogistico;
-  const iva = Math.round(subtotalPreIva * 0.19);
-  const totalSinDesc = subtotalPreIva + iva;
-  const discount = appliedPromotion
-    ? Math.min(totalSinDesc, appliedPromotion.tipoDescuento === 'porcentaje' ? Math.round(totalSinDesc * appliedPromotion.valorDescuento / 100) : appliedPromotion.valorDescuento)
-    : 0;
-  const total = totalSinDesc - discount;
+  // El total (cargo administrativo, IVA y descuento incluidos) lo calcula el servidor
+  const total = cotizacion ? Number(cotizacion.estimatedTotal) : subtotal + subtotalSeg + subtotalServicios;
 
   const inputStyle = () => ({
     width: '100%',
@@ -813,13 +801,7 @@ export default function DatosPersonales({
             {formatCurrency(total, moneda)}
           </span>
 
-          <span style={{
-            fontSize: 11.5,
-            fontWeight: 500,
-            color: 'rgba(255, 255, 255, 0.85)'
-          }}>
-            *Incluye impuestos y cargos administrativos
-          </span>
+          
         </div>
 
         {/* Right Column: Action Buttons */}
