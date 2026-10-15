@@ -2332,7 +2332,26 @@
       "defaultAction": "Ir ao módulo",
       "filters": "Filtros de notificações"
     },
-    "branchManagement": "GESTáO OPERACIONAL"
+    "branchManagement": "GESTáO OPERACIONAL",
+    "settings": {
+      "title": "Parâmetros globais de segurança",
+      "subtitle": "Cada alteração é validada, auditada e a última pode ser revertida.",
+      "enabled": "Ativado",
+      "disabled": "Desativado",
+      "reason": "Motivo da alteração (opcional)",
+      "save": "Salvar",
+      "saved": "Parâmetro atualizado com sucesso.",
+      "reverted": "A última alteração foi revertida.",
+      "revert": "Reverter para {{value}}",
+      "lastChange": "Última alteração: {{name}}",
+      "keys": {
+        "MAX_LOGIN_ATTEMPTS": "Tentativas de login falhas antes do bloqueio",
+        "ACCOUNT_LOCKOUT_MINUTES": "Minutos de bloqueio da conta",
+        "SESSION_IDLE_TIMEOUT_MINUTES": "Minutos de inatividade antes de encerrar a sessão",
+        "PASSWORD_RESET_TOKEN_EXPIRATION_MINUTES": "Minutos de validade do link de redefinição de senha",
+        "MFA_REQUIRED_FOR_ADMINS": "Verificação em duas etapas obrigatória para administradores"
+      }
+    }
   },
   "common": {
     "backToHome": "Voltar ao início",

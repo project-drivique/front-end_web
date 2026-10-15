@@ -2332,7 +2332,26 @@
       "defaultAction": "Aller au module",
       "filters": "Filtres de notifications"
     },
-    "branchManagement": "GESTION OPÉRATIONNELLE"
+    "branchManagement": "GESTION OPÉRATIONNELLE",
+    "settings": {
+      "title": "Paramètres globaux de sécurité",
+      "subtitle": "Chaque modification est validée, auditée et la dernière peut être annulée.",
+      "enabled": "Activé",
+      "disabled": "Désactivé",
+      "reason": "Motif de la modification (facultatif)",
+      "save": "Enregistrer",
+      "saved": "Paramètre mis à jour avec succès.",
+      "reverted": "La dernière modification a été annulée.",
+      "revert": "Revenir à {{value}}",
+      "lastChange": "Dernière modification : {{name}}",
+      "keys": {
+        "MAX_LOGIN_ATTEMPTS": "Échecs de connexion avant le blocage",
+        "ACCOUNT_LOCKOUT_MINUTES": "Minutes de blocage du compte",
+        "SESSION_IDLE_TIMEOUT_MINUTES": "Minutes d'inactivité avant la fermeture de la session",
+        "PASSWORD_RESET_TOKEN_EXPIRATION_MINUTES": "Minutes de validité du lien de réinitialisation du mot de passe",
+        "MFA_REQUIRED_FOR_ADMINS": "Vérification en deux étapes obligatoire pour les administrateurs"
+      }
+    }
   },
   "common": {
     "backToHome": "Retour à l'accueil",

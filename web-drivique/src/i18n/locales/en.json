@@ -2332,7 +2332,26 @@
       "defaultAction": "Go to module",
       "filters": "Notification filters"
     },
-    "branchManagement": "OPERATIONAL MANAGEMENT"
+    "branchManagement": "OPERATIONAL MANAGEMENT",
+    "settings": {
+      "title": "Global security settings",
+      "subtitle": "Every change is validated, audited and the last one can be reverted.",
+      "enabled": "Enabled",
+      "disabled": "Disabled",
+      "reason": "Reason for the change (optional)",
+      "save": "Save",
+      "saved": "Setting updated successfully.",
+      "reverted": "The last change was reverted.",
+      "revert": "Revert to {{value}}",
+      "lastChange": "Last change: {{name}}",
+      "keys": {
+        "MAX_LOGIN_ATTEMPTS": "Failed sign-in attempts before lockout",
+        "ACCOUNT_LOCKOUT_MINUTES": "Account lockout minutes",
+        "SESSION_IDLE_TIMEOUT_MINUTES": "Idle minutes before the session closes",
+        "PASSWORD_RESET_TOKEN_EXPIRATION_MINUTES": "Minutes the password reset link stays valid",
+        "MFA_REQUIRED_FOR_ADMINS": "Two-step verification required for administrators"
+      }
+    }
   },
   "common": {
     "backToHome": "Back to home",

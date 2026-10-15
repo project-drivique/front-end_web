@@ -7,6 +7,7 @@ import { showAlert } from '../../../utils/swalConfig'
 import { brandService } from '../../../services/brandService'
 import { createBrandTokens, applyBrand } from '../../../utils/brandThemeUtils'
 import ManagementSidebar from '../components/ManagementSidebar'
+import GlobalSettingsPanel from '../components/GlobalSettingsPanel'
 import MenuConfiguracion from '../../../components/MenuConfiguracion'
 import defaultLogo from '../../../assets/logocatalog.png'
 import './BrandManagementPage.css'
@@ -125,6 +126,7 @@ export default function BrandManagementPage() {
             <div className="brand-preview__body"><small>{t('admin.brand.previewEyebrow')}</small><h2>{t('admin.brand.previewTitle')}</h2><p>{t('admin.brand.previewText')}</p><div className="brand-preview__swatches"><i /><i /><i /></div><button type="button">{t('admin.brand.previewButton')}</button></div>
           </aside>
         </div>
+        <GlobalSettingsPanel />
       </main>
     </div>
   )
