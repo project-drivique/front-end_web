@@ -1,96 +1,49 @@
-import { reservationManagementService } from './reservationManagementService'
-import { accessAuditService, hasMatchingBranch } from './accessAuditService'
+import { api } from './httpClient'
 
-const STORAGE_KEY_CONTRATOS = 'drivique_contratos'
+let cache = []
 
-function readContratos() {
-  try {
-    const data = localStorage.getItem(STORAGE_KEY_CONTRATOS)
-    return data ? JSON.parse(data) : {}
-  } catch {
-    return {}
+const estadoVisible = (statusCode, signed) => {
+  if (statusCode === 'ACTIVE' || statusCode === 'IN_PROGRESS') return 'vigente'
+  if (statusCode === 'COMPLETED' || statusCode === 'CLOSED') return 'cerrado'
+  return signed ? 'firmado' : 'pendiente'
+}
+
+const mapear = (c) => {
+  const firmado = Boolean(c.signedAt)
+  return {
+    id: c.id,
+    contratoNumero: c.contractNumber,
+    reservaCodigo: c.reservationCode,
+    reservaId: c.reservationId,
+    clienteNombre: c.customerFullName,
+    clienteCorreo: c.customerEmail,
+    clienteTelefono: c.customerPhone || '',
+    clienteDocumento: c.customerDocumentNumber || '',
+    vehiculoId: c.vehicleId,
+    vehiculoPlaca: c.vehiclePlate,
+    vehiculoNombre: c.vehicleModel,
+    vehiculoImagen: c.vehicleImageUrl || '',
+    sucursal: c.pickupBranchName,
+    ciudad: c.pickupCityName,
+    fechaInicio: c.scheduledStartAt,
+    fechaFin: c.scheduledEndAt,
+    totalCOP: Number(c.finalAmount ?? c.baseAmount) || 0,
+    estado: estadoVisible(c.statusCode, firmado),
+    fechaFirma: c.signedAt || null,
+    firmaUsuarioDataUrl: c.signatureUrl ? 'protected' : null,
+    isSigned: firmado,
   }
 }
 
 export const contractManagementService = {
-  list: (user) => {
-    // 1. Obtener todas las reservas base
-    const reservations = reservationManagementService.list(user)
-    // 2. Obtener contratos reales firmados/generados por los clientes
-    const contratosAlmacenados = readContratos()
-
-    // 3. Cruzar reservas con contratos reales
-    let contracts = reservations
-      .map((r) => {
-        const contratoReal = contratosAlmacenados[r.id]
-        
-        // Si existe un contrato real firmado en BD
-        if (contratoReal) {
-          return {
-            id: contratoReal.codigo || `CTR-${r.codigo || r.id}`,
-            contratoNumero: contratoReal.codigo || `CTR-${r.codigo || r.id}`,
-            reservaCodigo: r.codigo || r.id,
-            clienteNombre: r.clienteNombre || 'Cliente Drivique',
-            clienteCorreo: r.clienteCorreo || 'cliente@drivique.com',
-            clienteTelefono: r.clienteTelefono || '+57 300 000 0000',
-            clienteDocumento: r.clienteDocumento || '1030507090',
-            vehiculoId: r.vehiculoId || '',
-            vehiculoPlaca: r.vehiculoPlaca || 'KLS-849',
-            vehiculoNombre: r.vehiculoNombre || 'Vehículo Drivique',
-            vehiculoImagen: r.vehiculoImagen || '',
-            sucursal: r.sucursal || 'Bogotá - Calle 100',
-            fechaInicio: r.fechaInicio || new Date().toISOString().slice(0, 16),
-            fechaFin: r.fechaFin || new Date(Date.now() + 86400000 * 3).toISOString().slice(0, 16),
-            totalCOP: r.totalCOP || 0,
-            // Estado del contrato en base a la firma y la reserva
-            estado: r.estado === 'en_curso' ? 'vigente' : r.estado === 'finalizada' ? 'cerrado' : 'firmado',
-            fechaFirma: contratoReal.firmadoEn || contratoReal.fecha || r.fechaCreacion,
-            firmaUsuarioDataUrl: contratoReal.firmaUsuarioDataUrl || null,
-            isSigned: true
-          }
-        }
-
-        // Si NO existe contrato real (aún no lo firma el usuario, pero la reserva está confirmada)
-        return {
-          id: `CTR-${r.codigo || r.id}`,
-          contratoNumero: `CTR-${r.codigo || r.id}`,
-          reservaCodigo: r.codigo || r.id,
-          clienteNombre: r.clienteNombre || 'Cliente Drivique',
-          clienteCorreo: r.clienteCorreo || 'cliente@drivique.com',
-          clienteTelefono: r.clienteTelefono || '+57 300 000 0000',
-          clienteDocumento: r.clienteDocumento || '1030507090',
-          vehiculoId: r.vehiculoId || '',
-          vehiculoPlaca: r.vehiculoPlaca || 'KLS-849',
-          vehiculoNombre: r.vehiculoNombre || 'Vehículo Drivique',
-          vehiculoImagen: r.vehiculoImagen || '',
-          sucursal: r.sucursal || 'Bogotá - Calle 100',
-          fechaInicio: r.fechaInicio || new Date().toISOString().slice(0, 16),
-          fechaFin: r.fechaFin || new Date(Date.now() + 86400000 * 3).toISOString().slice(0, 16),
-          totalCOP: r.totalCOP || 0,
-          estado: r.estado === 'en_curso' ? 'vigente' : 'firmado',
-          fechaFirma: r.fechaCreacion || new Date().toISOString(),
-          firmaUsuarioDataUrl: null,
-          isSigned: (r.codigo || r.id) !== 'RES-1789487778959-Q13NZMD'
-        }
-      })
-
-    // 4. El encargado solo ve los contratos de su sucursal
-    if (user?.rol === 'encargado' || user?.rol === 'encargado_sucursal' || user?.rol === 'branch_manager') {
-      const sucursalAsignada = user?.sucursalAsignada || user?.branchName || user?.sucursal || user?.sucursalId || ''
-      if (!sucursalAsignada) return []
-      contracts = contracts.filter((c) => hasMatchingBranch(c.sucursal, sucursalAsignada))
-    }
-
-    return contracts
+  async refresh() {
+    const { data } = await api.get('/contracts/admin')
+    cache = (Array.isArray(data) ? data : []).map(mapear)
+    return this.list()
   },
 
-  logAudit: (action, contract, user) => {
-    accessAuditService.logAccess(
-      user?.id || 'UNK',
-      user?.nombre || 'Unknown',
-      action,
-      'Éxito',
-      contract?.contratoNumero || 'ALL'
-    );
-  }
+  list() {
+    return cache.map((contract) => ({ ...contract }))
+  },
+
 }
