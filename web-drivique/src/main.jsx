@@ -1,4 +1,6 @@
 // src/main.jsx
+import './config/verificarConfiguracion.js'
+// Debe ir primero: si falta la URL del backend muestra el aviso en vez de una página en blanco.
 import { StrictMode } from 'react'
 // Importa StrictMode de React.
 // Sirve para activar verificaciones adicionales en desarrollo.

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FaFileSignature, FaCheckCircle, FaDownload, FaArrowLeft } from 'react-icons/fa';
+import { FaFileSignature, FaCheckCircle, FaDownload, FaArrowLeft, FaEnvelope } from 'react-icons/fa';
 import logo from '@/assets/logo.png';
 import { useBrand } from '@/contexts/BrandContext';
 import firmaDrivique from '@/assets/drivique-signature.png';
@@ -40,6 +40,8 @@ export default function FirmaContrato({
   soloLectura = false,
   contratoFirmado = null,
   onDescargar = null,
+  onEnviarCorreo = null,
+  enviandoCorreo = false,
   onVolver = null,
 }) {
   const { brand } = useBrand();
@@ -377,6 +379,21 @@ export default function FirmaContrato({
                 >
                   <FaDownload size={16} />
                   <span>Descargar contrato (PDF)</span>
+                </button>
+              )}
+              {onEnviarCorreo && (
+                <button
+                  type="button"
+                  onClick={onEnviarCorreo}
+                  disabled={enviandoCorreo}
+                  style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 10, padding: '14px 32px', borderRadius: 14,
+                    background: 'var(--bg-tarjeta)', color: 'var(--texto-primary)', border: '1px solid var(--borde)',
+                    fontWeight: 800, fontSize: 14, cursor: enviandoCorreo ? 'default' : 'pointer', opacity: enviandoCorreo ? 0.7 : 1
+                  }}
+                >
+                  <FaEnvelope size={15} />
+                  <span>{enviandoCorreo ? t('contratoFirma.sendingEmail') : t('contratoFirma.sendByEmail')}</span>
                 </button>
               )}
             </div>
