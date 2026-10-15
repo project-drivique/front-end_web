@@ -5,10 +5,8 @@ import { FaArrowLeft, FaFileSignature, FaShieldAlt, FaCar, FaCheckCircle } from 
 import { useAuthStore } from '@/store/authStore'
 import { useLanding } from '@/modules/landing/LandingContext'
 import { contractService } from '@/services/contractService'
-import { reservationService } from '@/services/reservationService'
 import { reservationsService } from '@/services/reservationsService'
 import { catalogService } from '@/services/catalogService'
-import { documentsService } from '@/services/documentsService'
 import ContractSignature from '../components/ContractSignature'
 import { descargarContratoOriginal } from '@/modules/contracts/utils/downloadSignedContract'
 import { showAlert } from '@/utils/swalConfig'
@@ -42,9 +40,9 @@ export default function ContractSigningPage() {
 
       setCargando(true)
       try {
-        // 1. Buscar en contractService o reservationService
+        // 1. Buscar en el contrato del servidor
         const contratoFirmado = /^[0-9a-f-]{36}$/i.test(id || '') ? await contractService.obtenerPorReserva(id).catch(() => null) : null
-        let resData = contratoFirmado?.contratoOriginal?.reserva || reservationService.obtenerPorReferencia(id)
+        let resData = contratoFirmado?.contratoOriginal?.reserva
 
         if (!resData) {
           const list = await reservationsService.getReservas()
@@ -86,9 +84,8 @@ export default function ContractSigningPage() {
     const tipoDocCliente = df.tipoDoc || usuario?.tipoDocumento || 'CC'
     const ref = reserva.referencia || reserva.codigo || reserva.id || id
 
-    const userDocs = documentsService.obtenerDocumentos(usuario?.id || usuario?.correo || correoCliente)
-    const licName = df.licenciaPdf?.name || (typeof df.licenciaPdf === 'string' && df.licenciaPdf) || userDocs?.licencia?.nombre || ''
-    const cedName = df.cedulaPdf?.name || (typeof df.cedulaPdf === 'string' && df.cedulaPdf) || userDocs?.cedula?.nombre || ''
+    const licName = df.licenciaPdf?.name || (typeof df.licenciaPdf === 'string' && df.licenciaPdf)  || ''
+    const cedName = df.cedulaPdf?.name || (typeof df.cedulaPdf === 'string' && df.cedulaPdf)  || ''
 
     const fInicio = rd.fechaInicio || reserva.fechaInicio || new Date().toISOString().slice(0, 10)
     const fFin = rd.fechaFin || reserva.fechaFin || new Date(Date.now() + 86400000 * 3).toISOString().slice(0, 10)
@@ -189,12 +186,23 @@ export default function ContractSigningPage() {
     }
   }
 
-  const handleFirmado = async (contrato) => {
-    // Si la reserva está PENDIENTE o PENDIENTE_EFECTIVO, la pasamos a CONFIRMADA tras firmar.
-    if (reserva?.estado === 'PENDIENTE_EFECTIVO' || reserva?.estado === 'PENDIENTE') {
-      reservationService.actualizarEstado(targetId, 'CONFIRMADA')
+  const [enviandoCorreo, setEnviandoCorreo] = useState(false)
+  const handleEnviarCorreo = async () => {
+    if (!contratoFirmado?.id || enviandoCorreo) return
+    setEnviandoCorreo(true)
+    try {
+      const res = await contractService.enviarPorCorreo(contratoFirmado.id)
+      await showAlert(res?.sent
+        ? { icon: 'success', title: t('contratoFirma.emailSent') }
+        : { icon: 'error', title: t('contratoFirma.emailNotSent') })
+    } catch {
+      await showAlert({ icon: 'error', title: t('contratoFirma.emailNotSent') })
+    } finally {
+      setEnviandoCorreo(false)
     }
+  }
 
+  const handleFirmado = async (contrato) => {
     await showAlert({
       icon: 'success',
       title: '¡Contrato Firmado con Éxito!',
@@ -362,6 +370,8 @@ export default function ContractSigningPage() {
             soloLectura={esSoloLectura}
             contratoFirmado={contratoFirmado}
             onDescargar={handleDescargar}
+            onEnviarCorreo={contratoFirmado?.id ? handleEnviarCorreo : null}
+            enviandoCorreo={enviandoCorreo}
             onVolver={() => navigate(`/reservas?detalle=${encodeURIComponent(targetId)}`)}
           />
         </div>
