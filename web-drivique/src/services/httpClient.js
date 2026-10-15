@@ -1,12 +1,7 @@
 import axios from 'axios'
 import { useAuthStore } from '../store/authStore'
 
-const configuredApiUrl = (import.meta.env.VITE_API_URL?.trim().replace(/\/$/, '') || (import.meta.env.DEV ? 'http://localhost:8080/api/v1' : ''))
-const mockMode = import.meta.env.VITE_USAR_MOCK === 'true'
-
-if (!configuredApiUrl && !mockMode) {
-  throw new Error('VITE_API_URL es obligatoria cuando VITE_USAR_MOCK no está habilitado.')
-}
+import { configuredApiUrl } from '../config/apiConfig'
 
 const REFRESH_TOKEN_KEY = 'drivique_refresh_token'
 let refreshRequest = null
