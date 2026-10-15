@@ -1855,7 +1855,8 @@
       "messages": {
         "saved": "A nova marca foi aplicada.",
         "previous": "A configuração anterior foi restaurada.",
-        "original": "A marca original foi restaurada."
+        "original": "A marca original foi restaurada.",
+        "colorSaved": "Cor da marca atualizada e aplicada com sucesso."
       },
       "errors": {
         "invalidName": "O nome deve ter entre 2 e 40 caracteres.",
@@ -1864,7 +1865,8 @@
         "logoType": "Selecione um logotipo PNG, JPG, WebP ou SVG.",
         "logoSize": "O logotipo não pode exceder 1 MB.",
         "logoRead": "Não foi possível ler o arquivo.",
-        "noPrevious": "Ainda não existe configuração anterior."
+        "noPrevious": "Ainda não existe configuração anterior.",
+        "saveFailed": "Não foi possível guardar a marca. Tente novamente."
       }
     },
     "branchProfile": {

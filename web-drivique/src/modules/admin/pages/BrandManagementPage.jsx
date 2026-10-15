@@ -29,14 +29,28 @@ export default function BrandManagementPage() {
   const [notice, setNotice] = useState('')
   const previewTokens = useMemo(() => createBrandTokens(draft.colors), [draft.colors])
 
+  // Resultado visible de cada acción: aplicado correctamente o el motivo del error
+  const showError = (caught) => {
+    const key = `admin.brand.errors.${caught?.message}`
+    const text = t(key)
+    setNotice('')
+    setError(text === key ? t('admin.brand.errors.saveFailed') : text)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+  const showSuccess = (text) => {
+    setError('')
+    setNotice(text)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
   const updateColor = (key, value) => {
     const updated = { ...draft, colors: { ...draft.colors, [key]: value } }
     setDraft(updated)
     if (/^#[0-9a-f]{6}$/i.test(value)) {
       applyBrand(updated)
       brandService.save(updated)
-        .then(() => setNotice('Color de marca actualizado y aplicado automáticamente.'))
-        .catch(() => {})
+        .then(() => showSuccess(t('admin.brand.messages.colorSaved')))
+        .catch(showError)
     }
   }
 
@@ -46,8 +60,8 @@ export default function BrandManagementPage() {
     applyBrand(updated)
     setError('')
     brandService.save(updated)
-      .then(() => setNotice('Color de marca actualizado y aplicado automáticamente.'))
-      .catch(() => {})
+      .then(() => showSuccess(t('admin.brand.messages.colorSaved')))
+      .catch(showError)
   }
 
   const loadLogo = (event) => {
@@ -67,9 +81,9 @@ export default function BrandManagementPage() {
       const updated = await action()
       setDraft(updated)
       applyBrand(updated)
-      setNotice(t(successKey))
+      showSuccess(t(successKey))
     } catch (caught) {
-      setError(t(`admin.brand.errors.${caught.message}`))
+      showError(caught)
     }
   }
 
