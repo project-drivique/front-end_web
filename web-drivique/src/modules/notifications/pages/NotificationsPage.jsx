@@ -24,7 +24,6 @@ import {
 } from 'react-icons/fa'
 import { useLanding } from '@/modules/landing/LandingContext'
 import { formatCurrency } from '@/utils/currencyUtils'
-import VEHICULOS_MOCK from '@/mocks/vehicles.json'
 import CatalogTopHeader from '@/modules/catalog/components/CatalogTopHeader'
 import { useNotificationStore } from '../store/useNotificationStore'
 import CouponModal from '../components/CouponModal'
@@ -560,15 +559,14 @@ export default function NotificationsPage({ defaultTab }) {
             ) : (
               <div className="promos-vehiculos-grid">
                 {(promosVehiculos || []).map((promo) => {
-                  const vehiculo = VEHICULOS_MOCK.find((v) => Number(v.id) === Number(promo.vehiculoId))
                   const chipVencimiento = calcularChipVencimiento(promo.expiracionMs)
-                  const precioBase = promo.precioBase || vehiculo?.precio || 80000
+                  const precioBase = Number(promo.precioBase || 0)
                   const isPct = promo.tipoDescuento === 'porcentaje' || Boolean(promo.descuentoPorcentaje)
-                  const discountVal = promo.valorDescuento || promo.descuentoPorcentaje || 10
+                  const discountVal = Number(promo.valorDescuento || promo.descuentoPorcentaje || 0)
                   const precioRebajado = isPct
                     ? Math.round(precioBase * (1 - discountVal / 100))
                     : Math.max(0, precioBase - discountVal)
-                  const targetQuery = promo.codigo ? `?promo=${promo.codigo}` : `?descuento=${discountVal}`
+                  const targetQuery = promo.codigo ? `?promo=${promo.codigo}` : ''
                   const targetUrl = `/catalogo/${promo.vehiculoId}${targetQuery}`
 
                   return (
@@ -578,8 +576,8 @@ export default function NotificationsPage({ defaultTab }) {
                       onClick={() => navigate(targetUrl)}
                     >
                       <div className="promo-vehiculo-img-wrap" style={{ position: 'relative' }}>
-                        {vehiculo?.imagenes?.[0] || promo.vehiculoImagen ? (
-                          <img src={vehiculo?.imagenes?.[0] || promo.vehiculoImagen} alt={promo.titulo} />
+                        {promo.vehiculoImagen ? (
+                          <img src={promo.vehiculoImagen} alt={promo.titulo} />
                         ) : (
                           <FaCar style={{ fontSize: 40, color: '#94a3b8' }} />
                         )}
@@ -606,7 +604,7 @@ export default function NotificationsPage({ defaultTab }) {
                       <div className="promo-vehiculo-content">
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', marginBottom: '6px' }}>
                           <span style={{ fontSize: '10px', fontWeight: 800, color: '#059669', background: '#ecfdf5', padding: '2px 8px', borderRadius: '20px', border: '1px solid #c8efd9' }}>
-                            {promo.categoriaVehiculo || vehiculo?.categoria || 'Destacado'}
+                            {promo.categoriaVehiculo || 'Destacado'}
                           </span>
                         </div>
 

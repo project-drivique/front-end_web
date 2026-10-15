@@ -9,19 +9,14 @@ import { catalogService } from '@/services/catalogService'
 import { userService } from '@/services/userService'
 import { generarReferenciaUnica, aCentavos } from '@/services/wompiService'
 import { paymentFactory, PaymentContext } from '@/modules/payments/strategies'
-import { RECARGOS_LOGISTICOS, SUCURSALES, CIUDADES } from '../../catalog/constants'
+import { SUCURSALES, CIUDADES } from '../../catalog/constants'
 import { branchManagementService } from '../../../services/branchManagementService'
 import { promotionManagementService } from '../../../services/promotionManagementService'
+import { diasDeAlquiler } from '../utils/pricing'
 import { vehicleManagementService } from '../../../services/vehicleManagementService'
-import VEHICULOS_MOCK from '@/mocks/vehicles.json'
-import { getPlanesKilometraje, getCoberturasSeguro, getServiciosAdicionales } from '@/services/pricingService'
+import { getPlanesKilometraje, getCoberturasSeguro, getServiciosAdicionales, cotizarPrecio } from '@/services/pricingService'
 
 export const TOTAL_PASOS = 3
-
-const DEFAULT_PROTECTION_PLANS = [
-  { nombre: 'Protección Obligatoria', precio: 29000 },
-  { nombre: 'Protección Total', precio: 67000 },
-]
 
 const getItemPrice = (item) => Number(item?.precio ?? item?.dailyRate ?? item?.price ?? 0)
 
@@ -62,22 +57,16 @@ export function useReservationFlow() {
 
   let selectedVehicle = null
   try { selectedVehicle = JSON.parse(sessionStorage.getItem('drivique_selected_vehicle') || 'null') } catch { selectedVehicle = null }
-  const baseVehiculo = vehicleManagementService.getById(id) || VEHICULOS_MOCK.find(v => Number(v.id) === Number(id)) || (String(selectedVehicle?.id) === String(id) ? selectedVehicle : null)
+  const baseVehiculo = vehicleManagementService.getById(id) || (String(selectedVehicle?.id) === String(id) ? selectedVehicle : null)
   const limitedMileagePlan = mileagePlans.find((plan) => plan.includedKm != null) || null
   const unlimitedMileagePlan = mileagePlans.find((plan) => plan.includedKm == null || /unlimited|ilimitado/i.test(plan.name || '')) || null
   const vehiculo = baseVehiculo ? {
     ...baseVehiculo,
     caracteristicas: baseVehiculo.caracteristicas || [],
     equipamientoTecnologico: baseVehiculo.equipamientoTecnologico || [],
-    seguros: insuranceCoverages.length
-      ? insuranceCoverages
-        .filter((seguro) => getItemPrice(seguro) > 0)
-        .sort((a, b) => getItemPrice(a) - getItemPrice(b))
-        .slice(0, 2)
-        .map((seguro) => ({ ...seguro, nombre: seguro.name, precio: getItemPrice(seguro), descripcion: seguro.description }))
-      : Array.isArray(baseVehiculo.seguros) && baseVehiculo.seguros.length
-      ? baseVehiculo.seguros.map((seguro) => ({ ...seguro, precio: getItemPrice(seguro) }))
-      : DEFAULT_PROTECTION_PLANS,
+    seguros: [...insuranceCoverages]
+      .sort((a, b) => getItemPrice(a) - getItemPrice(b))
+      .map((seguro) => ({ ...seguro, nombre: seguro.name, precio: getItemPrice(seguro), descripcion: seguro.description })),
     servicios: (additionalServices.length ? additionalServices : (baseVehiculo.servicios || []))
       .map((servicio) => ({ ...servicio, nombre: servicio.nombre || servicio.name, precio: getItemPrice(servicio) })),
     tarifas: {
@@ -112,24 +101,13 @@ export function useReservationFlow() {
 
   const savedState = getInitialState()
 
+  const [cotizacion, setCotizacion] = useState(null)
   const [pantalla, setPantalla] = useState(savedState?.pantalla || 1)
   const [seguroIdx, setSeguroIdx] = useState(savedState?.seguroIdx !== undefined ? savedState.seguroIdx : null)
   const [serviciosSeleccionados, setServiciosSeleccionados] = useState(savedState?.serviciosSeleccionados || [])
   const [appliedPromotion, setAppliedPromotion] = useState(() => {
     try {
       const params = new URLSearchParams(window.location.search)
-      const desc = Number(params.get('descuento'))
-      if (desc && desc > 0 && desc <= 100) {
-        return {
-          id: `PROMO-AUTO-${desc}`,
-          codigo: `PROMO-${desc}%`,
-          nombre: `Descuento ${desc}%`,
-          tipoDescuento: 'porcentaje',
-          valorDescuento: desc,
-          reservaMinima: 0,
-          activa: true,
-        }
-      }
       const codeFromUrl = params.get('promo') || params.get('cupon')
       if (codeFromUrl) {
         const found = promotionManagementService.list().find(
@@ -146,33 +124,14 @@ export function useReservationFlow() {
   useEffect(() => {
     if (!appliedPromotion && vehiculo) {
       const params = new URLSearchParams(window.location.search)
-      const desc = Number(params.get('descuento'))
-      if (desc && desc > 0 && desc <= 100) {
-        setAppliedPromotion({
-          id: `PROMO-AUTO-${desc}`,
-          codigo: `PROMO-${desc}%`,
-          nombre: `Descuento ${desc}%`,
-          tipoDescuento: 'porcentaje',
-          valorDescuento: desc,
-          reservaMinima: 0,
-          activa: true,
-        })
-        return
-      }
       const codeFromUrl = params.get('promo') || params.get('cupon')
       if (codeFromUrl) {
-        try {
-          const res = promotionManagementService.validateCode(codeFromUrl, {
-            total: 1000000,
-            category: vehiculo.categoria,
-            vehicleId: vehiculo.id,
-            vehicleName: vehiculo.nombre,
-            user: usuario,
+        promotionManagementService.refresh()
+          .then(() => {
+            const res = promotionManagementService.validateCode(codeFromUrl)
+            if (res.promotion) setAppliedPromotion(res.promotion)
           })
-          if (res.promotion) setAppliedPromotion(res.promotion)
-        } catch (e) {
-          console.warn('Could not auto-apply URL promo', e)
-        }
+          .catch((e) => console.warn('Could not auto-apply URL promo', e))
       }
     }
   }, [vehiculo, usuario, appliedPromotion])
@@ -536,24 +495,12 @@ export function useReservationFlow() {
     const precioKm = reserva.tipoKm === 'ilimitado'
       ? Number(tarifas.kmIlimitado?.precio || 0)
       : (reserva.tipoKm === 'limitado' ? Number(tarifas.kmLimitado?.precio || 0) : 0)
-    const dias = (reserva.fechaInicio && reserva.fechaFin)
-      ? Math.max(1, Math.ceil((new Date(reserva.fechaFin) - new Date(reserva.fechaInicio)) / 86400000))
-      : 1
+    const dias = diasDeAlquiler(reserva)
     const precioSeguro = seguroIdx !== null ? getItemPrice(vehiculo.seguros[seguroIdx]) : 0
     const serviciosElegidos = (vehiculo.servicios || []).filter(s => serviciosSeleccionados.includes(s.nombre))
     const precioServicios = serviciosElegidos.reduce((suma, s) => suma + getItemPrice(s), 0)
     const subtotal = (tarifaDiariaVehiculo + precioKm + precioSeguro + precioServicios) * dias
-    const cargosAdmin = Math.round(subtotal * 0.10)
-    const recargoRetiro = RECARGOS_LOGISTICOS[reserva.sucursalRetiro] || 0
-    const recargoDevolucion = RECARGOS_LOGISTICOS[reserva.sucursalDevolucion] || 0
-    const recargoLogistico = recargoRetiro + recargoDevolucion
-    const subtotalPreIva = subtotal + cargosAdmin + recargoLogistico
-    const ivaCop = Math.round(subtotalPreIva * 0.19)
-    const totalCop = subtotalPreIva + ivaCop
-    const discountCop = appliedPromotion
-      ? Math.min(totalCop, appliedPromotion.tipoDescuento === 'porcentaje' ? Math.round(totalCop * appliedPromotion.valorDescuento / 100) : appliedPromotion.valorDescuento)
-      : 0
-    const finalTotalCop = totalCop - discountCop
+    const finalTotalCop = cotizacion ? Number(cotizacion.estimatedTotal) : subtotal
 
     const referencia = generarReferenciaUnica()
 
@@ -604,8 +551,8 @@ export function useReservationFlow() {
     try {
       const datosParaBackend = {
         vehicleId: vehiculo.id,
-        pickupDate: new Date(`${reserva.fechaInicio}T${reserva.horaInicio}:00Z`).toISOString(),
-        returnDate: new Date(`${reserva.fechaFin}T${reserva.horaFin}:00Z`).toISOString(),
+        pickupDate: new Date(`${reserva.fechaInicio}T${reserva.horaInicio}:00`).toISOString(),
+        returnDate: new Date(`${reserva.fechaFin}T${reserva.horaFin}:00`).toISOString(),
         insuranceCoverageId: vehiculo.seguros[seguroIdx]?.id || null,
         mileagePlanId: reserva.tipoKm === 'ilimitado' ? (tarifas.kmIlimitado?.id || null) : (tarifas.kmLimitado?.id || null),
         additionalServiceIds: (vehiculo.servicios || []).filter(s => serviciosSeleccionados.includes(s.nombre)).map(s => s.id).filter(Boolean),
@@ -627,6 +574,7 @@ export function useReservationFlow() {
 
       // ─── 3. Creación en Backend (Sin fallback silencioso) ─────────────────
       const holdResult = await reservationsService.crearReserva(datosParaBackend)
+      const totalServidor = Number(holdResult?.totalEstimated) || finalTotalCop
       
       const refFinal = holdResult?.code || holdResult?.id || holdResult?.holdId || referencia
       if (holdResult?.cashPaymentExpiresAt) {
@@ -643,13 +591,14 @@ export function useReservationFlow() {
         id: holdResult?.id || refFinal,
         referencia: refFinal,
         codigo: refFinal,
+        codigoPagoEfectivo: holdResult?.cashPaymentCode || null,
         estado: estadoInicial,
         status: estadoInicial,
         estadoDocumentos: requiereValidacionDocs ? 'PENDIENTE' : 'APROBADO',
         pagoEstado: 'pendiente',
         metodoPago: reserva.metodoPago,
-        total: finalTotalCop,
-        totalCOP: finalTotalCop,
+        total: totalServidor,
+        totalCOP: totalServidor,
         vehiculoId: vehiculo.id,
         vehiculoNombre: vehiculo.nombre,
         vehiculoPlaca: vehiculo.placa,
@@ -684,17 +633,17 @@ export function useReservationFlow() {
         referencia: refFinal,
         codigo: refFinal,
         horasLimitePago: 72,
-        total: finalTotalCop,
+        total: totalServidor,
         estado: estadoInicial,
         status: estadoInicial
       })
-      setDatosPago({ referencia: refFinal, amountInCents: aCentavos(finalTotalCop) })
+      setDatosPago({ referencia: refFinal, amountInCents: aCentavos(totalServidor) })
       setExito(true)
 
       sessionStorage.removeItem(storageKey)
     } catch (error) {
       console.error('Error creating reservation hold:', error)
-      const errorMsg = error?.response?.data?.message || error?.message || 'No se pudo crear la reserva en el servidor. Por favor intenta de nuevo.'
+      const errorMsg = error?.response?.data?.detail || error?.response?.data?.message || error?.message || 'No se pudo crear la reserva en el servidor. Por favor intenta de nuevo.'
       showAlert({
         icon: 'error',
         title: 'Error al registrar reserva',
@@ -750,9 +699,7 @@ export function useReservationFlow() {
   const precioTotal = reserva.tipoKm === 'ilimitado'
     ? Number(tarifasTotal.kmIlimitado?.precio || 0)
     : (reserva.tipoKm === 'limitado' ? Number(tarifasTotal.kmLimitado?.precio || 0) : 0)
-  const diasTotal = reserva.fechaInicio && reserva.fechaFin
-    ? Math.max(1, Math.ceil((new Date(reserva.fechaFin) - new Date(reserva.fechaInicio)) / 86400000))
-    : 1
+  const diasTotal = diasDeAlquiler(reserva)
   const precioSeguroTotal = seguroIdx !== null ? getItemPrice(vehiculo?.seguros[seguroIdx]) : 0
   const precioServiciosTotal = (vehiculo?.servicios || [])
     .filter(s => serviciosSeleccionados.includes(s.nombre))
@@ -760,18 +707,48 @@ export function useReservationFlow() {
   const subtotalD = (tarifaDiariaVehiculo + precioTotal) * diasTotal
   const subtotalS = precioSeguroTotal * diasTotal
   const subtotalSv = precioServiciosTotal * diasTotal
-  const cargosAdminT = Math.round((subtotalD + subtotalS + subtotalSv) * 0.10)
-  const recargoLogT = (RECARGOS_LOGISTICOS[reserva.sucursalRetiro] || 0) + (RECARGOS_LOGISTICOS[reserva.sucursalDevolucion] || 0)
-  const subtotalPreIvaT = subtotalD + subtotalS + subtotalSv + cargosAdminT + recargoLogT
-  const ivaT = Math.round(subtotalPreIvaT * 0.19)
-  const totalReservaBase = subtotalPreIvaT + ivaT
-  const descuentoPromocion = appliedPromotion
-    ? Math.min(totalReservaBase, appliedPromotion.tipoDescuento === 'porcentaje' ? Math.round(totalReservaBase * appliedPromotion.valorDescuento / 100) : appliedPromotion.valorDescuento)
-    : 0
+  const baseReservaT = subtotalD + subtotalS + subtotalSv
+  const descuentoPromocion = cotizacion ? Number(cotizacion.discountAmount || 0) : 0
+  const totalReservaBase = cotizacion ? Number(cotizacion.estimatedTotal) + descuentoPromocion : baseReservaT
   const totalReserva = totalReservaBase - descuentoPromocion
 
+  // Cotización oficial del servidor (cargo administrativo, IVA, descuento y total)
+  const seguroSel = seguroIdx !== null ? vehiculo?.seguros?.[seguroIdx] : null
+  const planKmId = reserva.tipoKm === 'ilimitado' ? tarifasTotal.kmIlimitado?.id : tarifasTotal.kmLimitado?.id
+  const serviciosIds = (vehiculo?.servicios || []).filter(s => serviciosSeleccionados.includes(s.nombre)).map(s => s.id).filter(Boolean)
+  const claveCotizacion = JSON.stringify([vehiculo?.id, reserva.fechaInicio, reserva.horaInicio, reserva.fechaFin, reserva.horaFin, seguroSel?.id, planKmId, serviciosIds, appliedPromotion?.codigo])
+  useEffect(() => {
+    if (!vehiculo?.id || !seguroSel?.id || !planKmId || !reserva.fechaInicio || !reserva.fechaFin) {
+      setCotizacion(null)
+      return undefined
+    }
+    let activo = true
+    const payload = {
+      vehicleId: vehiculo.id,
+      pickupDate: new Date(`${reserva.fechaInicio}T${reserva.horaInicio || '00:00'}:00`).toISOString(),
+      returnDate: new Date(`${reserva.fechaFin}T${reserva.horaFin || '00:00'}:00`).toISOString(),
+      insuranceId: seguroSel.id,
+      mileagePlanId: planKmId,
+      additionalServiceIds: serviciosIds,
+    }
+    cotizarPrecio({ ...payload, couponCode: appliedPromotion?.codigo })
+      .catch((error) => {
+        if (!appliedPromotion?.codigo) throw error
+        // El servidor rechazó el cupón (vigencia, alcance, mínimo, audiencia o usos): se quita y se cotiza sin él
+        if (activo) {
+          setAppliedPromotion(null)
+          showAlert({ icon: 'warning', title: error?.response?.data?.detail || t('promotions.couponRejected', 'El cupón no se pudo aplicar a esta reserva.') })
+        }
+        return cotizarPrecio(payload)
+      })
+      .then((resultado) => { if (activo) setCotizacion(resultado) })
+      .catch(() => { if (activo) setCotizacion(null) })
+    return () => { activo = false }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [claveCotizacion])
+
   const aplicarPromocion = (codigo) => {
-    const result = promotionManagementService.validateCode(codigo, { total: totalReservaBase, category: vehiculo?.categoria, user: usuario })
+    const result = promotionManagementService.validateCode(codigo)
     setAppliedPromotion(result.promotion)
     return result
   }
@@ -798,6 +775,7 @@ export function useReservationFlow() {
     handlePagarConWompi, handlePagoEfectivo,
     totalReserva, totalReservaBase, descuentoPromocion, diasTotal, TOTAL_PASOS,
     appliedPromotion, aplicarPromocion, quitarPromocion,
+    cotizacion,
     usuario,
   }
 }

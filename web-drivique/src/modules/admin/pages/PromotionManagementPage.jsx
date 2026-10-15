@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   FaSearch,
@@ -27,7 +27,7 @@ import { promotionManagementService } from '../../../services/promotionManagemen
 import { exportExcel, exportPdf, printTable } from '../../../utils/listExportUtils'
 import { formatCurrency } from '../../../utils/currencyUtils'
 import { showAlert } from '../../../utils/swalConfig'
-import VEHICULOS_MOCK from '../../../mocks/vehicles.json'
+import { vehicleManagementService } from '../../../services/vehicleManagementService'
 import MenuConfiguracion from '../../../components/MenuConfiguracion'
 import ManagementSidebar from '../components/ManagementSidebar'
 import './CityManagementPage.css'
@@ -64,6 +64,8 @@ export default function PromotionManagementPage() {
     user?.rol === 'branch_manager'
 
   const [promotions, setPromotions] = useState(() => promotionManagementService.list())
+  const [vehiculos, setVehiculos] = useState(() => vehicleManagementService.list())
+  const [categorias, setCategorias] = useState([])
   const [search, setSearch] = useState('')
   const [activeTab, setActiveTab] = useState('todos')
   const [discountTypeFilter, setDiscountTypeFilter] = useState('all')
@@ -74,6 +76,12 @@ export default function PromotionManagementPage() {
   const [error, setError] = useState('')
 
   const refresh = () => setPromotions(promotionManagementService.list())
+
+  useEffect(() => {
+    promotionManagementService.refresh({ admin: true }).then(setPromotions).catch(() => setPromotions([]))
+    vehicleManagementService.refresh().then(setVehiculos).catch(() => setVehiculos([]))
+    vehicleManagementService.categories().then(setCategorias).catch(() => setCategorias([]))
+  }, [])
 
   const totalPromociones = useMemo(() => promotions.length, [promotions])
   const totalActivas = useMemo(() => promotions.filter(p => p.activa).length, [promotions])
@@ -154,14 +162,14 @@ export default function PromotionManagementPage() {
     setModal({ type: 'form', promotion })
   }
 
-  const save = (event) => {
+  const save = async (event) => {
     event.preventDefault()
     try {
       if (modal.promotion) {
-        promotionManagementService.update(modal.promotion.id, form, user)
+        await promotionManagementService.update(modal.promotion.id, form)
         showAlert({ icon: 'success', title: t('admin.promotions.messages.updated', 'Oferta actualizada exitosamente.') })
       } else {
-        promotionManagementService.create(form, user)
+        await promotionManagementService.create(form)
         showAlert({ icon: 'success', title: t('admin.promotions.messages.created', 'Oferta creada exitosamente.') })
       }
       refresh()
@@ -171,8 +179,13 @@ export default function PromotionManagementPage() {
     }
   }
 
-  const toggleActive = (promotion) => {
-    promotionManagementService.toggle(promotion.id, user)
+  const toggleActive = async (promotion) => {
+    try {
+      await promotionManagementService.toggle(promotion.id)
+    } catch (caught) {
+      showAlert({ icon: 'error', title: caught.message })
+      return
+    }
     refresh()
     showAlert({
       icon: 'success',
@@ -182,8 +195,13 @@ export default function PromotionManagementPage() {
     })
   }
 
-  const toggleFeatured = (promotion) => {
-    promotionManagementService.toggleFeatured(promotion.id, user)
+  const toggleFeatured = async (promotion) => {
+    try {
+      await promotionManagementService.toggleFeatured(promotion.id)
+    } catch (caught) {
+      showAlert({ icon: 'error', title: caught.message })
+      return
+    }
     refresh()
     showAlert({
       icon: 'info',
@@ -201,16 +219,21 @@ export default function PromotionManagementPage() {
       icon: 'warning'
     })
     if (result?.isConfirmed) {
-      promotionManagementService.remove(promotion.id, user)
+      try {
+        await promotionManagementService.remove(promotion.id)
+      } catch (caught) {
+        showAlert({ icon: 'error', title: caught.message })
+        return
+      }
       refresh()
       showAlert({ icon: 'success', title: t('admin.promotions.messages.deleted', 'Oferta eliminada.') })
     }
   }
 
   const vehiculosFiltrados = useMemo(() => {
-    if (!form.categoriaVehiculo || form.categoriaVehiculo === 'Todos') return VEHICULOS_MOCK
-    return VEHICULOS_MOCK.filter((v) => v.categoria?.toLowerCase() === form.categoriaVehiculo.toLowerCase())
-  }, [form.categoriaVehiculo])
+    if (!form.categoriaVehiculo || form.categoriaVehiculo === 'Todos') return vehiculos
+    return vehiculos.filter((v) => v.categoria?.toLowerCase() === form.categoriaVehiculo.toLowerCase())
+  }, [form.categoriaVehiculo, vehiculos])
 
   const backdropStyle = { display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(15,23,42,0.65)', padding: 16 }
   const modalHeadStyle = { padding: '20px 24px', borderBottom: '1px solid var(--city-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }
@@ -372,7 +395,7 @@ export default function PromotionManagementPage() {
 
               <div className="doc-branch-badge">
                 <FaBuilding style={{ color: 'var(--city-muted, #64748b)' }} />
-                <span>{user?.sucursalAsignada || user?.sucursalId || user?.sucursal || 'Alamo Bogotá - Aeropuerto'}</span>
+                <span>{user?.sucursalAsignada || user?.sucursalId || user?.sucursal || 'Todas las sucursales'}</span>
               </div>
 
               <div className="export-pills-group" style={{ marginLeft: 'auto', display: 'flex', gap: '8px' }}>
@@ -941,7 +964,7 @@ export default function PromotionManagementPage() {
                     }}
                     style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1.5px solid var(--city-border)', background: 'var(--city-bg)', color: 'var(--city-text)', fontSize: 13, outline: 'none' }}
                   >
-                    {['Todos', 'SUV', 'Sedan', 'Compacto', 'Camioneta', 'Deportivo', 'Económico'].map((cat) => (
+                    {['Todos', ...categorias.map((c) => c.name)].map((cat) => (
                       <option key={cat} value={cat}>{cat}</option>
                     ))}
                   </select>
@@ -956,10 +979,10 @@ export default function PromotionManagementPage() {
                     value={form.vehiculoId || ''}
                     onChange={(e) => {
                       const vId = e.target.value
-                      const selectedVeh = VEHICULOS_MOCK.find((v) => String(v.id) === String(vId))
+                      const selectedVeh = vehiculos.find((v) => String(v.id) === String(vId))
                       setForm({
                         ...form,
-                        vehiculoId: vId ? Number(vId) : '',
+                        vehiculoId: vId || '',
                         vehiculoNombre: selectedVeh ? selectedVeh.nombre : '',
                         categoriaVehiculo: selectedVeh ? selectedVeh.categoria : form.categoriaVehiculo,
                       })
