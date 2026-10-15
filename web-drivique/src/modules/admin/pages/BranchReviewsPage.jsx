@@ -58,8 +58,8 @@ export default function BranchReviewsPage({ branchOnly = false }) {
 
   // KPI Calculations
   const promedioRating = useMemo(() => {
-    if (!reviews || reviews.length === 0) return '5.0'
-    const suma = reviews.reduce((acc, curr) => acc + (curr.calificacion || 5), 0)
+    if (!reviews || reviews.length === 0) return '—'
+    const suma = reviews.reduce((acc, curr) => acc + (curr.calificacion || 0), 0)
     return (suma / reviews.length).toFixed(1)
   }, [reviews])
 
@@ -130,7 +130,7 @@ export default function BranchReviewsPage({ branchOnly = false }) {
 
       showAlert({ icon: 'success', title: 'Respuesta publicada', text: 'La respuesta a la reseña ha sido guardada exitosamente.' })
     } catch (error) {
-      showAlert({ icon: 'error', title: 'Error', text: 'No se pudo publicar la respuesta.' })
+      showAlert({ icon: 'error', title: 'Error', text: error.message || 'No se pudo publicar la respuesta.' })
     }
   }
 

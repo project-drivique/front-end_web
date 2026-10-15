@@ -1,22 +1,14 @@
 import defaultBrand from '../mocks/brandConfig.json'
-import { accessAuditService } from './accessAuditService'
+import { api } from './httpClient'
 import { applyBrand } from '../utils/brandThemeUtils'
 
-const ACTIVE_KEY = 'drivique_brand_active'
-const PREVIOUS_KEY = 'drivique_brand_previous'
 const EVENT_NAME = 'drivique:brand-change'
 const HEX_COLOR = /^#[0-9a-f]{6}$/i
 
 const clone = (value) => JSON.parse(JSON.stringify(value))
 
-function read(key, fallback) {
-  try {
-    const value = JSON.parse(localStorage.getItem(key) || 'null')
-    return value && typeof value === 'object' ? value : clone(fallback)
-  } catch {
-    return clone(fallback)
-  }
-}
+// Marca vigente tal como la entrega el servidor; mientras no responde se usa la marca base de arranque
+let active = { ...clone(defaultBrand), faviconUrl: null, theme: 'SYSTEM', hasPrevious: false }
 
 function validate(config) {
   const name = String(config?.name || '').trim()
@@ -39,83 +31,83 @@ function validate(config) {
   }
 }
 
-function announce(config) {
-  window.dispatchEvent(new CustomEvent(EVENT_NAME, { detail: clone(config) }))
+const fromApi = (b) => ({
+  name: b.companyName,
+  logoDataUrl: b.logoUrl || '',
+  faviconUrl: b.faviconUrl || null,
+  theme: b.defaultTheme,
+  hasPrevious: Boolean(b.hasPrevious),
+  colors: { primary: b.primaryColor, secondary: b.secondaryColor, accent: b.accentColor },
+})
+
+const errorDe = (error) => {
+  const detail = error?.response?.data?.detail
+  return new Error(error?.response?.status === 409 ? 'noPrevious' : (detail || 'saveFailed'))
 }
 
-function auditSnapshot(config) {
-  return {
-    name: config?.name || '',
-    colors: clone(config?.colors || {}),
-    logoConfigured: Boolean(config?.logoDataUrl),
-    logoSize: String(config?.logoDataUrl || '').length,
-  }
-}
-
-function audit(user, action, before, after) {
-  accessAuditService.record({
-    tipo: 'SISTEMA_CONFIGURACION',
-    modulo: 'Personalización de Marca',
-    accion: `Actualización de configuración de marca (${action === 'aplicar' ? 'Aplicó cambios de paleta' : action})`,
-    actor: user?.nombre || user?.correo || 'Administrador Drivique',
-    correo: user?.correo || '',
-    rol: user?.rol || 'administrador',
-    sucursal: 'Global / Sistema',
-    resultado: 'EXITO',
-    motivo: `Cambio de marca registrado por ${user?.correo || 'administrador'}`,
-    detalles: {
-      modulo: 'marca',
-      accion: action,
-      anterior: auditSnapshot(before),
-      nueva: auditSnapshot(after),
-    },
-  })
+function adopt(brand) {
+  active = brand
+  applyBrand(active)
+  if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent(EVENT_NAME, { detail: clone(active) }))
+  return clone(active)
 }
 
 export const brandService = {
+  /** Marca base de Drivique (solo como arranque si el servidor no responde). */
   defaults() { return clone(defaultBrand) },
-  getActive() { return validate(read(ACTIVE_KEY, defaultBrand)) },
-  getPrevious() {
-    const previous = read(PREVIOUS_KEY, null)
-    return previous ? validate(previous) : null
+
+  /** Carga la marca vigente desde el servidor. */
+  async load() {
+    const { data } = await api.get('/brand-configurations/active')
+    return adopt(fromApi(data))
   },
-  save(config, user) {
-    const before = this.getActive()
+
+  getActive() { return clone(active) },
+
+  hasPrevious() { return active.hasPrevious },
+
+  async save(config) {
     const next = validate(config)
-    localStorage.setItem(PREVIOUS_KEY, JSON.stringify(before))
-    localStorage.setItem(ACTIVE_KEY, JSON.stringify(next))
-    applyBrand(next)
-    audit(user, 'aplicar', before, next)
-    announce(next)
-    return next
+    try {
+      const { data } = await api.put('/brand-configurations', {
+        companyName: next.name,
+        logoUrl: next.logoDataUrl || null,
+        faviconUrl: active.faviconUrl,
+        primaryColor: next.colors.primary,
+        secondaryColor: next.colors.secondary,
+        accentColor: next.colors.accent,
+        defaultTheme: active.theme,
+      })
+      return adopt(fromApi(data))
+    } catch (error) {
+      throw errorDe(error)
+    }
   },
-  restorePrevious(user) {
-    const current = this.getActive()
-    const previous = this.getPrevious()
-    if (!previous) throw new Error('noPrevious')
-    localStorage.setItem(ACTIVE_KEY, JSON.stringify(previous))
-    localStorage.setItem(PREVIOUS_KEY, JSON.stringify(current))
-    applyBrand(previous)
-    audit(user, 'restaurar_anterior', current, previous)
-    announce(previous)
-    return previous
+
+  async restorePrevious() {
+    try {
+      const { data } = await api.post('/brand-configurations/restore-previous')
+      return adopt(fromApi(data))
+    } catch (error) {
+      throw errorDe(error)
+    }
   },
-  restoreDefault(user) {
-    const current = this.getActive()
-    const defaults = validate(defaultBrand)
-    localStorage.setItem(PREVIOUS_KEY, JSON.stringify(current))
-    localStorage.setItem(ACTIVE_KEY, JSON.stringify(defaults))
-    applyBrand(defaults)
-    audit(user, 'restaurar_original', current, defaults)
-    announce(defaults)
-    return defaults
+
+  async restoreDefault() {
+    try {
+      const { data } = await api.post('/brand-configurations/restore-default')
+      return adopt(fromApi(data))
+    } catch (error) {
+      throw errorDe(error)
+    }
   },
+
   eventName: EVENT_NAME,
-  activeKey: ACTIVE_KEY,
 }
 
-// Inicialización inmediata al importar para que no haya retraso de renderizado
+// Aplica la marca base de inmediato para evitar un parpadeo mientras llega la del servidor
 try {
-  applyBrand(brandService.getActive())
-} catch {}
-
+  applyBrand(active)
+} catch {
+  // el tema es solo visual
+}

@@ -1,9 +1,43 @@
 import { api } from './httpClient'
 import { useAuthStore } from '../store/authStore'
+import paisesMock from '../mocks/nationalities.json'
 
 const getUsuarioGuardado = () => useAuthStore.getState().usuario
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+let nacionalidadesCache = null
+
+const getNacionalidades = async () => {
+  if (!nacionalidadesCache) {
+    const { data } = await api.get('/nationalities')
+    nacionalidadesCache = Array.isArray(data) ? data : []
+  }
+  return nacionalidadesCache
+}
+
+const nombreDesdeIso = (iso) => paisesMock.find((p) => p.iso === iso)?.nombre || ''
+
+// Nombre visible del país (ej. "Colombia") -> id guardado en el servidor
+const nacionalidadIdDesdeNombre = async (nombre) => {
+  if (!nombre) return undefined
+  if (UUID_RE.test(nombre)) return nombre
+  const iso = paisesMock.find((p) => p.nombre.toLowerCase() === String(nombre).toLowerCase())?.iso
+  if (!iso) return undefined
+  const lista = await getNacionalidades()
+  return lista.find((n) => n.isoCode === iso)?.id
+}
+
+// Id guardado en el servidor -> nombre visible del país
+const nacionalidadNombreDesdeId = async (id) => {
+  if (!id) return ''
+  const lista = await getNacionalidades()
+  const iso = lista.find((n) => n.id === id)?.isoCode
+  return nombreDesdeIso(iso)
+}
+
 export const userService = {
+  nacionalidadNombreDesdeId,
+
   getProfile: async () => {
     try {
       const { data } = await api.get('/users/me')
@@ -18,10 +52,9 @@ export const userService = {
       firstName: datosActualizados.nombre || datosActualizados.firstName,
       lastName: datosActualizados.apellido || datosActualizados.lastName,
       phone: datosActualizados.telefono || datosActualizados.phone,
-      birthDate: datosActualizados.fechaNacimiento || datosActualizados.birthDate,
-      nationalityId: /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(datosActualizados.nationalityId || datosActualizados.nacionalidad || '')
-        ? (datosActualizados.nationalityId || datosActualizados.nacionalidad)
-        : null,
+      birthDate: datosActualizados.fechaNacimiento || datosActualizados.birthDate || undefined,
+      address: datosActualizados.direccion ?? datosActualizados.address,
+      nationalityId: await nacionalidadIdDesdeNombre(datosActualizados.nationalityId || datosActualizados.nacionalidad).catch(() => undefined),
     }
     const { data } = await api.put('/users/me', payload)
     return data

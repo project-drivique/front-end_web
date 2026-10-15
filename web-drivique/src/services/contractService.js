@@ -46,5 +46,7 @@ export const contractService = {
     form.append('documentVersion', documentVersion)
     return normalize((await api.post(`/contracts/${contract.id}/sign`, form, { headers: { 'Content-Type': 'multipart/form-data' } })).data)
   },
+  obtenerFirmaUrl: async (contractId) => URL.createObjectURL((await api.get(`/contracts/${contractId}/signature`, { responseType: 'blob' })).data),
+  enviarPorCorreo: async (contractId) => (await api.post(`/contracts/${contractId}/email`)).data,
   descargarPdf: async (contractId) => (await api.get(`/contracts/${contractId}/pdf`, { responseType: 'blob' })).data,
 }

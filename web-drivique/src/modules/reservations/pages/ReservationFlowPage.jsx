@@ -88,7 +88,7 @@ export default function ReservationFlowPage() {
     docsVerificados,
     irSiguiente, irAtras, handleReservar, handleContratoFirmado,
     handlePagarConWompi,
-    totalReserva, appliedPromotion, aplicarPromocion, quitarPromocion,
+    totalReserva, cotizacion, appliedPromotion, aplicarPromocion, quitarPromocion,
     usuario,
   } = flow
 
@@ -185,6 +185,7 @@ export default function ReservationFlowPage() {
                   pantalla={pantalla}
                   onContinuar={irSiguiente}
                   appliedPromotion={appliedPromotion}
+                  cotizacion={cotizacion}
                   onApplyPromotion={aplicarPromocion}
                   onRemovePromotion={quitarPromocion}
                 />
@@ -217,6 +218,7 @@ export default function ReservationFlowPage() {
                   errores={errores}
                   docsVerificados={docsVerificados}
                   appliedPromotion={appliedPromotion}
+                  cotizacion={cotizacion}
                   onApplyPromotion={aplicarPromocion}
                   onRemovePromotion={quitarPromocion}
                   c={c}
@@ -246,6 +248,7 @@ export default function ReservationFlowPage() {
                   pantalla={pantalla}
                   onContinuar={pantalla < 3 ? irSiguiente : null}
                   appliedPromotion={appliedPromotion}
+                  cotizacion={cotizacion}
                   onApplyPromotion={aplicarPromocion}
                   onRemovePromotion={quitarPromocion}
                   c={c}
@@ -339,6 +342,7 @@ export default function ReservationFlowPage() {
                     pantalla={pantalla}
                     onContinuar={null}
                     appliedPromotion={appliedPromotion}
+                  cotizacion={cotizacion}
                     onApplyPromotion={aplicarPromocion}
                     onRemovePromotion={quitarPromocion}
                     c={c}

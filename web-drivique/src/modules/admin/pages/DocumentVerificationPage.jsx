@@ -33,19 +33,21 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
   const user = useAuthStore((state) => state.usuario)
   const sucursalAsignada = user?.sucursalAsignada || user?.sucursalId || user?.sucursal || (user?.correo === 'encargado.neiva@drivique.com' ? 'Drivique Neiva Centro' : '')
 
-  const [verifications, setVerifications] = useState(() => documentVerificationService.list(user))
+  const [verifications, setVerifications] = useState([])
+  const recargar = () => documentVerificationService.listar().then(setVerifications).catch(() => {})
   const [search, setSearch] = useState('')
   const [activeTab, setActiveTab] = useState('todos') // 'todos' | 'pendientes' | 'aprobados' | 'rechazados'
   const [notice, setNotice] = useState('')
 
   useEffect(() => {
     let activo = true
-    documentVerificationService.listarPendientesBackend()
-      .then((items) => { if (activo && items.length) setVerifications(items) })
+    documentVerificationService.listar()
+      .then((items) => { if (activo) setVerifications(items) })
       .catch(() => {})
     return () => { activo = false }
   }, [])
-  // Modal de Validación de Expediente
+
+  // Modal de Validación de Expediente
   const [modalItem, setModalItem] = useState(null)
   const [observaciones, setObservaciones] = useState('')
   const [zoomPdf, setZoomPdf] = useState(null)
@@ -132,12 +134,9 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
   const totalPoints = 27
 
   // Obtener estado en tiempo real de las reservas asociadas
-  const liveReservations = useMemo(() => {
-    try {
-      return reservationManagementService.list(user) || []
-    } catch {
-      return []
-    }
+  const [liveReservations, setLiveReservations] = useState([])
+  useEffect(() => {
+    reservationManagementService.refresh().then(setLiveReservations).catch(() => {})
   }, [user])
 
   const reservationMap = useMemo(() => {
@@ -317,16 +316,11 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
 
     const nota = observaciones || t('admin.documents.defaultApproveObs', 'Documentos validados y aprobados correctamente por la sucursal.')
     try {
-      if (modalItem.backend) {
-        const idsToReview = modalItem.allDocIds && modalItem.allDocIds.length > 0 ? modalItem.allDocIds : [modalItem.id]
-        for (const docId of idsToReview) {
-          await documentVerificationService.revisarDocumentoBackend(docId, 'aprobado', nota)
-        }
-        documentVerificationService.actualizarReservaAsociada(modalItem, 'aprobado', nota, user?.nombre || 'Encargado de Sucursal')
-      } else {
-        documentVerificationService.actualizarEstado(modalItem.id, 'aprobado', nota, user?.nombre || 'Encargado de Sucursal', modalChecklist)
+      const idsToReview = modalItem.allDocIds && modalItem.allDocIds.length > 0 ? modalItem.allDocIds : [modalItem.id]
+      for (const docId of idsToReview) {
+        await documentVerificationService.revisarDocumentoBackend(docId, 'aprobado', nota)
       }
-      setVerifications((items) => items.map((item) => item.id === modalItem.id ? { ...item, estado: 'aprobado', observaciones: nota } : item))
+      await recargar()
     } catch (error) {
       setErrorMessage(error?.response?.data?.detail || 'No fue posible aprobar el documento.')
       return
@@ -350,16 +344,11 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
     }
 
     try {
-      if (modalItem.backend) {
-        const idsToReview = modalItem.allDocIds && modalItem.allDocIds.length > 0 ? modalItem.allDocIds : [modalItem.id]
-        for (const docId of idsToReview) {
-          await documentVerificationService.revisarDocumentoBackend(docId, 'rechazado', observaciones.trim())
-        }
-        documentVerificationService.actualizarReservaAsociada(modalItem, 'rechazado', observaciones.trim(), user?.nombre || 'Encargado de Sucursal')
-      } else {
-        documentVerificationService.actualizarEstado(modalItem.id, 'rechazado', observaciones.trim(), user?.nombre || 'Encargado de Sucursal', modalChecklist)
+      const idsToReview = modalItem.allDocIds && modalItem.allDocIds.length > 0 ? modalItem.allDocIds : [modalItem.id]
+      for (const docId of idsToReview) {
+        await documentVerificationService.revisarDocumentoBackend(docId, 'rechazado', observaciones.trim())
       }
-      setVerifications((items) => items.map((item) => item.id === modalItem.id ? { ...item, estado: 'rechazado', observaciones: observaciones.trim() } : item))
+      await recargar()
     } catch (error) {
       setErrorMessage(error?.response?.data?.detail || 'No fue posible rechazar el documento.')
       return
