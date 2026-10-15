@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { showAlert } from '../../../utils/swalConfig'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { authService } from '../../../services/authService'
@@ -113,6 +114,16 @@ export function useLogin() {
     } catch (error) {
       const status = error?.response?.status
       const data = error?.response?.data || {}
+
+      if (status === 404) {
+        showAlert({
+          icon: 'error',
+          title: t('login.errors.accountNotFoundTitle', 'Cuenta no encontrada'),
+          text: data.detail || t('login.errors.accountNotFound', 'No existe una cuenta registrada con ese correo.'),
+          confirmButtonText: t('common.accept', 'Aceptar'),
+        })
+        return
+      }
 
       if (status === 403 || status === 401) {
         if (data.errorCode === 'USER_NOT_VERIFIED' || data.detail?.includes('verifi') || data.message?.includes('verifi') || data.message === 'User is not verified' || data.errorCode === 'UNVERIFIED_ACCOUNT') {
