@@ -1,18 +1,16 @@
-import { reservationService } from './reservationService'
+import { api } from './httpClient'
+import { reservationManagementService } from './reservationManagementService'
 import { vehicleManagementService } from './vehicleManagementService'
 import { contractManagementService } from './contractManagementService'
 import { incidentManagementService } from './incidentManagementService'
 import { userManagementService } from './userManagementService'
 import { branchManagementService } from './branchManagementService'
 import { promotionManagementService } from './promotionManagementService'
-import { accessAuditService } from './accessAuditService'
 import { exportExcel, exportPdf, exportWord } from '../utils/listExportUtils'
 import { formatCurrency } from '../utils/currencyUtils'
+import { diasDeAlquiler } from '../modules/reservations/utils/pricing'
 import { ROLES } from '../modules/auth/utils/accessControl'
-import { ESTADOS_RESERVA } from '../modules/reservations/utils/reservationStatus'
 
-const HISTORY_KEY = 'drivique_admin_reports_history'
-const MAX_HISTORY = 150
 
 export const REPORT_CATEGORIES = {
   GENERAL: 'general',
@@ -121,24 +119,33 @@ export const REPORT_TYPES_CONFIG = [
   },
 ]
 
-function readHistory() {
-  try {
-    const raw = localStorage.getItem(HISTORY_KEY)
-    if (!raw) return []
-    const parsed = JSON.parse(raw)
-    return Array.isArray(parsed) ? parsed : []
-  } catch {
-    return []
+// Historial persistido en el servidor (la lista no trae los datos del reporte; se piden al abrirlo)
+let historyCache = []
+
+const CATEGORIA_POR_TIPO = Object.fromEntries(REPORT_TYPES_CONFIG.map((t) => [t.id, t.categoria]))
+
+function fromApi(h) {
+  const tipoId = String(h.typeCode || '').toLowerCase()
+  return {
+    id: h.id,
+    codigo: h.code,
+    titulo: h.title,
+    tipoId,
+    tipoCategoria: CATEGORIA_POR_TIPO[tipoId] || REPORT_CATEGORIES.GENERAL,
+    formato: h.format,
+    filtrosAplicados: h.filters?.applied || {},
+    filtersSummary: h.filters?.summary || [],
+    totalRegistros: h.totalRecords,
+    fechaGeneracion: h.generatedAt,
+    generadoPorNombre: h.generatedByName,
+    generadoPorCorreo: h.generatedByEmail,
+    generadoPorRol: h.generatedByRole,
+    tamanoEstimado: h.filters?.size || '',
+    snapshot: h.snapshot || null,
   }
 }
 
-function writeHistory(records) {
-  try {
-    localStorage.setItem(HISTORY_KEY, JSON.stringify(records.slice(0, MAX_HISTORY)))
-  } catch (error) {
-    console.error('Error saving reports history:', error)
-  }
-}
+const errorDe = (error) => new Error(error?.response?.data?.detail || error?.message || 'No fue posible completar la operación')
 
 function parseDate(val) {
   if (!val) return null
@@ -180,7 +187,7 @@ export const reportManagementService = {
   },
 
   getHistory({ search = '', categoria = 'all', formato = 'all', dateFilter = 'all' } = {}) {
-    const all = readHistory()
+    const all = historyCache
     const term = search.trim().toLowerCase()
     const now = new Date()
 
@@ -235,7 +242,7 @@ export const reportManagementService = {
     const effectiveBranch = isBranchManager ? assignedBranch : filters.sucursal || 'all'
 
     // Obtener datos maestros de forma segura
-    const rawReservations = typeof reservationService?.getReservas === 'function' ? reservationService.getReservas() : []
+    const rawReservations = reservationManagementService.list()
     const rawVehicles = typeof vehicleManagementService?.list === 'function' ? vehicleManagementService.list() : []
     const rawContracts = typeof contractManagementService?.list === 'function' ? contractManagementService.list(user) : []
     const rawIncidents = typeof incidentManagementService?.list === 'function' ? incidentManagementService.list(user) : []
@@ -295,13 +302,13 @@ export const reportManagementService = {
 
         // Filtrar reservas por fecha y sucursal
         const filteredRes = rawReservations.filter((r) => {
-          const matchDate = isDateInRange(r.fechaReserva || r.reservaDetalles?.fechaInicio, filters.fechaInicio, filters.fechaFin)
+          const matchDate = isDateInRange(r.fechaCreacion || r.reservaDetalles?.fechaInicio, filters.fechaInicio, filters.fechaFin)
           const matchBranch = effectiveBranch === 'all' || normalize(r.reservaDetalles?.sucursalRetiro) === normalize(effectiveBranch)
           return matchDate && matchBranch
         })
 
         const totalIngresos = filteredRes
-          .filter((r) => [ESTADOS_RESERVA.CONFIRMADA, ESTADOS_RESERVA.ACTIVA, ESTADOS_RESERVA.COMPLETADA].includes(String(r.estado).toUpperCase()))
+          .filter((r) => ['confirmada', 'en_curso', 'finalizada'].includes(r.estado))
           .reduce((sum, r) => sum + (Number(r.total) || 0), 0)
 
         const totalVehiculos = rawVehicles.filter((v) => effectiveBranch === 'all' || normalize(v.sucursal) === normalize(effectiveBranch)).length
@@ -332,7 +339,7 @@ export const reportManagementService = {
 
         rows = [
           ['Ingresos Brutos Estimados', formatMoney(totalIngresos), 'Consolidado facturación', 'Incluye reservas confirmadas y completadas'],
-          ['Total Reservas Procesadas', filteredRes.length, `${filteredRes.filter((r) => r.estado === 'confirmada' || r.estado === 'activa').length} Activas`, 'Volumen en el período seleccionado'],
+          ['Total Reservas Procesadas', filteredRes.length, `${filteredRes.filter((r) => r.estado === 'confirmada' || r.estado === 'en_curso').length} Activas`, 'Volumen en el período seleccionado'],
           ['Flota Vehicular Total', `${totalVehiculos} unidades`, `${vehiculosDisponibles} disponibles / ${vehiculosAlquilados} ocupadas`, 'Unidades asignadas en la red'],
           ['Tasa de Ocupación de Flota', `${tasaOcupacion}%`, vehiculosAlquilados > 0 ? 'Alta demanda' : 'Normal', 'Vehículos actualmente en renta'],
           ['Contratos Registrados', `${totalContratos} acuerdos`, 'Contratos formalizados', 'Firmados y en custodia legal'],
@@ -349,7 +356,7 @@ export const reportManagementService = {
         headers = ['Sucursal / Centro de Operación', 'Reservas Facturadas', targetCurrency === 'USD' ? 'Ingresos Netos USD' : 'Ingresos Netos COP', 'Ticket Promedio', 'Participación']
 
         const filteredRes = rawReservations.filter((r) => {
-          const matchDate = isDateInRange(r.fechaReserva || r.reservaDetalles?.fechaInicio, filters.fechaInicio, filters.fechaFin)
+          const matchDate = isDateInRange(r.fechaCreacion || r.reservaDetalles?.fechaInicio, filters.fechaInicio, filters.fechaFin)
           const matchBranch = effectiveBranch === 'all' || normalize(r.reservaDetalles?.sucursalRetiro) === normalize(effectiveBranch)
           return matchDate && matchBranch
         })
@@ -501,10 +508,10 @@ export const reportManagementService = {
         headers = ['Código Reserva', 'Cliente', 'Nombre Vehículo', 'Sucursal Retiro', 'Fecha Inicio', 'Fecha Fin', 'Estado', targetCurrency === 'USD' ? 'Total USD' : 'Total COP']
 
         const filtered = rawReservations.filter((r) => {
-          const matchDate = isDateInRange(r.fechaReserva || r.reservaDetalles?.fechaInicio, filters.fechaInicio, filters.fechaFin)
+          const matchDate = isDateInRange(r.fechaCreacion || r.reservaDetalles?.fechaInicio, filters.fechaInicio, filters.fechaFin)
           const matchBranch = effectiveBranch === 'all' || normalize(r.reservaDetalles?.sucursalRetiro) === normalize(effectiveBranch)
           const matchState = !filters.estado || filters.estado === 'all' || normalize(r.estado) === normalize(filters.estado)
-          const matchTerm = !filters.search || `${r.codigo || r.id} ${r.usuarioNombre || ''} ${r.vehiculoNombre || ''}`.toLowerCase().includes(filters.search.toLowerCase())
+          const matchTerm = !filters.search || `${r.codigo || r.id} ${r.clienteNombre || ''} ${r.vehiculoNombre || ''}`.toLowerCase().includes(filters.search.toLowerCase())
           return matchDate && matchBranch && matchState && matchTerm
         })
 
@@ -512,7 +519,7 @@ export const reportManagementService = {
 
         rows = filtered.map((r) => [
           r.codigo || `RES-${r.id}`,
-          r.usuarioNombre || r.conductorPrincipal?.nombre || 'Cliente General',
+          r.clienteNombre || 'Cliente General',
           r.vehiculoNombre || `Vehículo #${r.vehiculoId}`,
           r.reservaDetalles?.sucursalRetiro || 'Sucursal Principal',
           r.reservaDetalles?.fechaInicio ? String(r.reservaDetalles.fechaInicio).slice(0, 10) : '',
@@ -712,7 +719,150 @@ export const reportManagementService = {
   /**
    * GENERAR, DESCARGAR Y GUARDAR EN HISTORIAL
    */
-  generateReport({ typeId, filters = {}, format = REPORT_FORMATS.PDF, user = null, customTitle = '' }) {
+  /**
+   * Indicadores del tablero: todo sale de las reservas, vehículos, incidencias y reseñas que entrega el servidor
+   * (que ya limita lo que ve cada usuario a su alcance).
+   */
+  async getDashboard(user = null) {
+    const esEncargado = ['encargado', 'encargado_sucursal', 'branch_manager'].includes(user?.rol)
+    const sucursalAsignada = user?.sucursalAsignada || user?.sucursalId || user?.sucursal || ''
+    const enAlcance = (nombre) => !esEncargado || !sucursalAsignada || normalize(nombre) === normalize(sucursalAsignada)
+
+    const reservas = reservationManagementService.list().filter((r) => enAlcance(r.sucursal))
+    const vehiculos = vehicleManagementService.list().filter((v) => enAlcance(v.sucursal))
+    const incidencias = incidentManagementService.list(user)
+    const sucursales = branchManagementService.list().filter((b) => enAlcance(b.nombre))
+
+    const resenas = await Promise.all(
+      sucursales.map((b) =>
+        api.get(`/branches/${b.id}/reviews`)
+          .then(({ data }) => ({ id: b.id, promedio: Number(data.averageRating) || 0, total: Number(data.totalReviews) || 0 }))
+          .catch(() => ({ id: b.id, promedio: 0, total: 0 }))
+      )
+    )
+    const resenaDe = (id) => resenas.find((r) => r.id === id) || { promedio: 0, total: 0 }
+
+    const facturadas = reservas.filter((r) => r.pagoEstado === 'aprobado' && r.estado !== 'cancelada')
+    const fechaDe = (r) => new Date(r.fechaPagoConfirmado || r.fechaCreacion)
+    const suma = (lista) => lista.reduce((acc, r) => acc + (Number(r.totalCOP) || 0), 0)
+
+    const ahora = new Date()
+    const delMes = (lista, offset) => lista.filter((r) => {
+      const f = fechaDe(r)
+      const ref = new Date(ahora.getFullYear(), ahora.getMonth() - offset, 1)
+      return f.getFullYear() === ref.getFullYear() && f.getMonth() === ref.getMonth()
+    })
+    const actual = suma(delMes(facturadas, 0))
+    const anterior = suma(delMes(facturadas, 1))
+
+    const nombresMes = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
+    const porMes = nombresMes.slice(0, ahora.getMonth() + 1).map((label, i) => ({
+      label,
+      valor: suma(facturadas.filter((r) => {
+        const f = fechaDe(r)
+        return f.getFullYear() === ahora.getFullYear() && f.getMonth() === i
+      })),
+    }))
+    const maximo = Math.max(1, ...porMes.map((m) => m.valor))
+    const meses = porMes.map((m) => ({ ...m, altura: Math.round((m.valor / maximo) * 100) }))
+
+    const alquilados = vehiculos.filter((v) => v.estadoEfectivo === 'reservado').length
+    const mantenimiento = vehiculos.filter((v) => v.estadoEfectivo === 'mantenimiento').length
+    const disponibles = vehiculos.filter((v) => v.estadoEfectivo === 'disponible').length
+    const totalFlota = vehiculos.length
+    const pct = (n, total) => (total > 0 ? Math.round((n / total) * 100) : 0)
+    let acumulado = 0
+    const segmentosFlota = [
+      { clave: 'alquilados', color: '#2563eb', valor: alquilados },
+      { clave: 'disponibles', color: '#10b981', valor: disponibles },
+      { clave: 'mantenimiento', color: '#f59e0b', valor: mantenimiento },
+    ].map((seg) => {
+      const porcentaje = totalFlota > 0 ? (seg.valor / totalFlota) * 100 : 0
+      const offset = (((25 - acumulado) % 100) + 100) % 100
+      acumulado += porcentaje
+      return { clave: seg.clave, color: seg.color, pct: Number(porcentaje.toFixed(2)), offset }
+    })
+
+    const vigentes = reservas.filter((r) => r.estado !== 'cancelada')
+    const conWompi = vigentes.filter((r) => r.metodoPago === 'wompi').length
+    const conEfectivo = vigentes.filter((r) => r.metodoPago === 'efectivo').length
+
+    const totalResenas = resenas.reduce((acc, r) => acc + r.total, 0)
+    const calificacion = totalResenas > 0 ? resenas.reduce((acc, r) => acc + r.promedio * r.total, 0) / totalResenas : 0
+
+    const filas = sucursales.map((b) => {
+      const propias = reservas.filter((r) => normalize(r.sucursal) === normalize(b.nombre))
+      const facturadasSede = propias.filter((r) => r.pagoEstado === 'aprobado' && r.estado !== 'cancelada')
+      const vehiculosSede = vehiculos.filter((v) => normalize(v.sucursal) === normalize(b.nombre))
+      const conteo = {}
+      propias.forEach((r) => { conteo[r.vehiculoNombre] = (conteo[r.vehiculoNombre] || 0) + 1 })
+      const top = Object.entries(conteo).sort((a, c) => c[1] - a[1])[0]
+      const resena = resenaDe(b.id)
+      return {
+        id: b.id,
+        sucursal: b.nombre,
+        ciudad: b.ciudad,
+        vehiculoTop: top ? top[0] : '',
+        reservas: propias.length,
+        dias: propias.filter((r) => r.estado !== 'cancelada').reduce((acc, r) => acc + diasDeAlquiler(r), 0),
+        ingresos: suma(facturadasSede),
+        ocupacion: pct(vehiculosSede.filter((v) => v.estadoEfectivo === 'reservado').length, vehiculosSede.length),
+        incidencias: incidencias.filter((i) => normalize(i.sucursal) === normalize(b.nombre)).length,
+        calificacion: resena.promedio,
+        totalResenas: resena.total,
+      }
+    })
+
+    return {
+      anio: ahora.getFullYear(),
+      ingresos: suma(facturadas),
+      variacionMes: anterior > 0 ? Math.round(((actual - anterior) / anterior) * 100) : null,
+      reservasFacturadas: facturadas.length,
+      tasaCompletadas: pct(facturadas.filter((r) => r.estado === 'finalizada').length, facturadas.length),
+      ocupacion: pct(alquilados, totalFlota),
+      calificacion,
+      totalResenas,
+      meses,
+      flota: {
+        total: totalFlota,
+        alquilados,
+        disponibles,
+        mantenimiento,
+        pctAlquilados: pct(alquilados, totalFlota),
+        pctDisponibles: pct(disponibles, totalFlota),
+        pctMantenimiento: pct(mantenimiento, totalFlota),
+      },
+      segmentosFlota,
+      pagos: {
+        total: conWompi + conEfectivo,
+        pctWompi: pct(conWompi, conWompi + conEfectivo),
+        pctEfectivo: pct(conEfectivo, conWompi + conEfectivo),
+      },
+      sucursales: filas,
+    }
+  },
+
+  /** Recarga todo lo que alimenta los reportes desde el servidor (ya filtrado por el alcance del usuario). */
+  async prepararDatos() {
+    await Promise.all([
+      reservationManagementService.refresh(),
+      vehicleManagementService.refresh(),
+      contractManagementService.refresh(),
+      incidentManagementService.refresh(),
+      branchManagementService.refresh(),
+      promotionManagementService.refresh({ admin: true }).catch(() => []),
+      userManagementService.refresh().catch(() => []),
+      this.refreshHistory(),
+    ])
+  },
+
+  async refreshHistory() {
+    const { data } = await api.get('/admin/reports/history')
+    historyCache = (Array.isArray(data) ? data : []).map(fromApi)
+    return historyCache
+  },
+
+  async generateReport({ typeId, filters = {}, format = REPORT_FORMATS.PDF, user = null, customTitle = '' }) {
     const config = this.getReportTypeById(typeId) || {
       id: typeId,
       titulo: customTitle || 'Reporte Administrativo',
@@ -721,18 +871,10 @@ export const reportManagementService = {
 
     const reportData = this.buildReportData({ typeId, filters, user })
     const finalTitle = customTitle || reportData.reportTitle || config.titulo
-    const now = new Date()
-    const dateStamp = now.toISOString().slice(0, 10)
-    const timeStamp = now.getTime().toString().slice(-4)
-    const code = `REP-${dateStamp.replace(/-/g, '')}-${timeStamp}`
-    const filename = `${config.id}-${dateStamp}-${timeStamp}`
+    const dateStamp = new Date().toISOString().slice(0, 10)
+    const filename = `${config.id}-${dateStamp}-${Date.now().toString().slice(-4)}`
 
-    const userEmail = user?.correo || user?.email || 'admin@drivique.com'
-    const userName = user?.nombre || user?.name || 'Administrador'
-    const userRole = user?.rol || ROLES.ADMIN
-
-    // 1. Ejecutar descarga física según el formato
-    const exportPayload = {
+    const snapshot = {
       title: finalTitle,
       subtitle: reportData.reportSubtitle,
       headers: reportData.headers,
@@ -740,102 +882,69 @@ export const reportManagementService = {
       kpis: reportData.kpis,
       filtersSummary: reportData.filtersSummary,
       filename,
-      user,
     }
 
+    const roughBytes = JSON.stringify(snapshot).length * 1.8 + 2048
+    const size = roughBytes > 1024 * 1024
+      ? `${(roughBytes / (1024 * 1024)).toFixed(2)} MB`
+      : `${Math.max(12, Math.round(roughBytes / 1024))} KB`
+
+    // 1. Se guarda en el servidor (historial + auditoría); si falla, no se descarga nada
+    let saved
+    try {
+      const { data } = await api.post('/admin/reports/history', {
+        typeCode: String(config.id).toUpperCase(),
+        typeName: config.titulo,
+        title: finalTitle,
+        format,
+        totalRecords: reportData.totalRegistros,
+        filters: { applied: { ...filters }, summary: reportData.filtersSummary, size },
+        snapshot,
+      })
+      saved = data
+    } catch (error) {
+      throw errorDe(error)
+    }
+
+    // 2. Descarga física según el formato
+    const exportPayload = { ...snapshot, user }
     if (format === REPORT_FORMATS.EXCEL) {
       exportExcel(exportPayload)
     } else if (format === REPORT_FORMATS.WORD) {
       exportWord(exportPayload)
     } else {
-      // PDF
       exportPdf(exportPayload)
     }
 
-    // 2. Estimar tamaño de archivo
-    const roughBytes = JSON.stringify(exportPayload).length * 1.8 + 2048
-    const estimatedSize = roughBytes > 1024 * 1024
-      ? `${(roughBytes / (1024 * 1024)).toFixed(2)} MB`
-      : `${Math.max(12, Math.round(roughBytes / 1024))} KB`
+    await this.refreshHistory()
+    return { ...fromApi(saved), snapshot }
+  },
 
-    // 3. Crear registro para historial con snapshot de datos
-    const historyEntry = {
-      id: `rep_${now.getTime()}_${Math.random().toString(36).slice(2, 6)}`,
-      codigo: code,
-      titulo: finalTitle,
-      tipoId: config.id,
-      tipoCategoria: config.categoria,
-      formato: format,
-      filtrosAplicados: { ...filters },
-      filtersSummary: reportData.filtersSummary,
-      totalRegistros: reportData.totalRegistros,
-      fechaGeneracion: now.toISOString(),
-      generadoPorNombre: userName,
-      generadoPorCorreo: userEmail,
-      generadoPorRol: userRole,
-      tamanoEstimado: estimatedSize,
-      snapshot: {
-        title: finalTitle,
-        subtitle: reportData.reportSubtitle,
-        headers: reportData.headers,
-        rows: reportData.rows,
-        kpis: reportData.kpis,
-        filtersSummary: reportData.filtersSummary,
-        filename,
-      },
+  /** Detalle de un reporte del historial (incluye los datos guardados). */
+  async getHistoryDetail(reportId) {
+    try {
+      const { data } = await api.get(`/admin/reports/history/${reportId}`)
+      return fromApi(data)
+    } catch (error) {
+      throw errorDe(error)
     }
-
-    // 4. Guardar en historial persistente
-    const history = readHistory()
-    writeHistory([historyEntry, ...history])
-
-    // 5. Registrar en Auditoría
-    const filtrosDesc = reportData.filtersSummary.map((f) => `${f.label}: ${f.value}`).join(', ') || 'Sin filtros específicos'
-    accessAuditService.record({
-      correo: userEmail,
-      rol: userRole,
-      resultado: 'exitoso',
-      motivo: `Generó reporte administrativo [${finalTitle}] (${code}) en formato ${format}. Filtros: [${filtrosDesc}]. Total registros: ${reportData.totalRegistros}.`,
-    })
-
-    return historyEntry
   },
 
   /**
    * RE-DESCARGA DESDE HISTORIAL (SIN REGENERAR NI ALTERAR DATOS)
    */
-  downloadFromHistory(reportId, user = null) {
-    const history = readHistory()
-    const entry = history.find((h) => h.id === reportId)
-    if (!entry || !entry.snapshot) {
-      throw new Error('Reporte no encontrado en el historial')
-    }
+  async downloadFromHistory(reportId, user = null) {
+    const entry = await this.getHistoryDetail(reportId)
+    if (!entry.snapshot) throw new Error('Reporte no encontrado en el historial')
 
-    const { snapshot, formato, codigo, titulo } = entry
-    const exportPayload = {
-      ...snapshot,
-      user,
-    }
-
-    if (formato === REPORT_FORMATS.EXCEL) {
+    const exportPayload = { ...entry.snapshot, user }
+    if (entry.formato === REPORT_FORMATS.EXCEL) {
       exportExcel(exportPayload)
-    } else if (formato === REPORT_FORMATS.WORD) {
+    } else if (entry.formato === REPORT_FORMATS.WORD) {
       exportWord(exportPayload)
     } else {
       exportPdf(exportPayload)
     }
-
-    const userEmail = user?.correo || user?.email || 'admin@drivique.com'
-    const userRole = user?.rol || ROLES.ADMIN
-
-    // Registrar en auditoría la re-descarga
-    accessAuditService.record({
-      correo: userEmail,
-      rol: userRole,
-      resultado: 'exitoso',
-      motivo: `Descargó desde el historial el reporte [${titulo}] (${codigo}) en formato ${formato}.`,
-    })
-
     return entry
   },
 
@@ -855,53 +964,29 @@ export const reportManagementService = {
     }
 
     exportPdf(exportPayload)
-
-    const userEmail = user?.correo || user?.email || 'admin@drivique.com'
-    const userRole = user?.rol || ROLES.ADMIN
-
-    accessAuditService.record({
-      correo: userEmail,
-      rol: userRole,
-      resultado: 'exitoso',
-      motivo: `Imprimió reporte administrativo [${exportPayload.title}].`,
-    })
   },
 
   /**
    * ELIMINAR REPORTE DEL HISTORIAL
    */
-  deleteReportFromHistory(reportId, user = null) {
-    const history = readHistory()
-    const entry = history.find((h) => h.id === reportId)
-    const updated = history.filter((h) => h.id !== reportId)
-    writeHistory(updated)
-
-    if (entry) {
-      const userEmail = user?.correo || user?.email || 'admin@drivique.com'
-      const userRole = user?.rol || ROLES.ADMIN
-      accessAuditService.record({
-        correo: userEmail,
-        rol: userRole,
-        resultado: 'exitoso',
-        motivo: `Eliminó del historial el reporte [${entry.titulo}] (${entry.codigo}).`,
-      })
+  async deleteReportFromHistory(reportId) {
+    try {
+      await api.delete(`/admin/reports/history/${reportId}`)
+    } catch (error) {
+      throw errorDe(error)
     }
-    return updated
+    return this.refreshHistory()
   },
 
   /**
    * LIMPIAR TODO EL HISTORIAL
    */
-  clearHistory(user = null) {
-    writeHistory([])
-    const userEmail = user?.correo || user?.email || 'admin@drivique.com'
-    const userRole = user?.rol || ROLES.ADMIN
-    accessAuditService.record({
-      correo: userEmail,
-      rol: userRole,
-      resultado: 'exitoso',
-      motivo: `Vació por completo el historial de reportes administrativos generados.`,
-    })
-    return []
+  async clearHistory() {
+    try {
+      await api.delete('/admin/reports/history')
+    } catch (error) {
+      throw errorDe(error)
+    }
+    return this.refreshHistory()
   },
 }
