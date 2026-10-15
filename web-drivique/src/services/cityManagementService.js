@@ -1,6 +1,6 @@
 import { api } from './httpClient'
 import { CIUDADES, cargarUbicaciones } from '../modules/catalog/constants'
-import ciudadesMetadata from '../mocks/cities.json'
+import ciudadesMetadata from '../config/datos/cities.json'
 
 const normalize = (value) => String(value || '').trim().toLocaleLowerCase('es')
 
