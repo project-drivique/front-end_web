@@ -1,74 +1,18 @@
-import initialVehicles from '../mocks/vehicles.json'
+import { api } from './httpClient'
 import { branchManagementService } from './branchManagementService'
 import { cityManagementService } from './cityManagementService'
-import { reservationService } from './reservationService'
-import { hasMatchingBranch } from './accessAuditService'
+import { reservationManagementService } from './reservationManagementService'
 
-const STORAGE_KEY = 'drivique_admin_vehicles'
-const AUDIT_KEY = 'drivique_management_audit'
-const ACTIVE_RESERVATION_STATES = new Set(['PENDIENTE', 'PENDIENTE_EFECTIVO', 'PENDIENTE_VALIDACION', 'CONFIRMADA', 'ACTIVA', 'EN_CURSO'])
 export const VEHICLE_STATES = Object.freeze({ AVAILABLE: 'disponible', RESERVED: 'reservado', MAINTENANCE: 'mantenimiento' })
 
-function readArray(key, fallback = []) {
-  try {
-    const raw = localStorage.getItem(key)
-    if (!raw) return fallback
-    const value = JSON.parse(raw)
-    if (!Array.isArray(value)) return fallback
-    if (key === STORAGE_KEY) {
-      const configured = configuredVehicles()
-      let updated = value.map((v) => {
-        const match = configured.find((cv) => Number(cv.id) === Number(v.id))
-        return match ? { ...match, ...v, sucursal: v.sucursal || match.sucursal } : v
-      })
-      const missing = configured.filter((cv) => !updated.some((v) => Number(v.id) === Number(cv.id)))
-      if (missing.length > 0) updated = [...updated, ...missing]
+const ESTADO_POR_CODIGO = { AVAILABLE: 'disponible', RENTED: 'reservado', MAINTENANCE: 'mantenimiento', INACTIVE: 'inactivo' }
+const CODIGO_POR_ESTADO = { disponible: 'AVAILABLE', reservado: 'RENTED', mantenimiento: 'MAINTENANCE', inactivo: 'INACTIVE' }
+const ESTADOS_RESERVA_FINAL = new Set(['cancelada', 'finalizada'])
 
-      const bogotaVehicles = updated.filter((v) => (v.sucursal || '').toLowerCase().includes('aeropuerto') && (v.sucursal || '').toLowerCase().includes('bogot'))
-      if (bogotaVehicles.length < 5) {
-        const bogotaConfigured = configured.filter((cv) => (cv.sucursal || '').toLowerCase().includes('aeropuerto') && (cv.sucursal || '').toLowerCase().includes('bogot'))
-        bogotaConfigured.forEach((bcv) => {
-          const idx = updated.findIndex((u) => Number(u.id) === Number(bcv.id))
-          if (idx >= 0) {
-            updated[idx] = { ...updated[idx], sucursal: bcv.sucursal, categoria: bcv.categoria, estadoFlota: bcv.estadoFlota, disponible: bcv.disponible }
-          } else {
-            updated.push(bcv)
-          }
-        })
-        localStorage.setItem(key, JSON.stringify(updated))
-      }
-      return updated
-    }
-    return value
-  } catch {
-    return fallback
-  }
-}
+let cache = []
+let lookups = { brands: [], transmissions: [], fuels: [], statuses: [], categories: [] }
+
 const normalizePlate = (value) => String(value || '').trim().toUpperCase().replace(/\s+/g, '')
-const normalizeBranch = (value) => String(value || '').trim().toLocaleLowerCase()
-
-function assertBranchScope(user, ...branchNames) {
-  const managerRoles = new Set(['encargado', 'encargado_sucursal', 'branch_manager'])
-  if (!managerRoles.has(user?.rol)) return
-  const assignedBranch = user?.sucursalAsignada || user?.branchName || user?.sucursal || user?.sucursalId || ''
-  if (!assignedBranch || branchNames.some((branch) => !hasMatchingBranch(branch, assignedBranch))) {
-    throw new Error('invalidBranch')
-  }
-}
-
-function configuredVehicles() {
-  return initialVehicles.map((vehicle) => ({ ...vehicle, estadoFlota: vehicle.estadoFlota || (vehicle.disponible === false ? VEHICLE_STATES.MAINTENANCE : VEHICLE_STATES.AVAILABLE) }))
-}
-
-function recordAudit(action, vehicle, user) {
-  const records = readArray(AUDIT_KEY)
-  const entry = { id: `CRUD-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`, fecha: new Date().toISOString(), modulo: 'vehiculos', accion: action, entidadId: vehicle.id, entidadNombre: vehicle.nombre, usuario: user?.correo || user?.nombre || 'administrador' }
-  localStorage.setItem(AUDIT_KEY, JSON.stringify([entry, ...records].slice(0, 200)))
-}
-
-function activeReservations(vehicleId) {
-  return reservationService.getReservas().filter((reservation) => Number(reservation.vehiculoId) === Number(vehicleId) && ACTIVE_RESERVATION_STATES.has(String(reservation.estado || '').toUpperCase()))
-}
 
 export function calculatePicoYPlaca(plate) {
   const match = normalizePlate(plate).match(/\d(?=[^\d]*$)/)
@@ -87,49 +31,161 @@ export function getPicoYPlacaInfo(plate, branchName) {
   return { ...calculated, ciudad: city.nombre, estado: calculated.dia ? 'orientativo' : 'consulta', enlaceOficial: configuration.notaLink || '', horario: configuration.horario || '' }
 }
 
-function validate(data, vehicles, editingId) {
-  const clean = {
-    nombre: String(data.nombre || '').trim(), placa: normalizePlate(data.placa), categoria: String(data.categoria || '').trim(), transmision: String(data.transmision || '').trim(), combustible: String(data.combustible || '').trim(), color: String(data.color || '').trim(), año: Number(data.año), sucursal: String(data.sucursal || '').trim(), descripcion: String(data.descripcion || '').trim(), estadoFlota: data.estadoFlota || VEHICLE_STATES.AVAILABLE,
-    puertas: Number(data.puertas), pasajeros: Number(data.pasajeros), maletero: Number(data.maletero), cilindraje: String(data.cilindraje || '').trim(), destacado: Boolean(data.destacado),
+const reservasActivas = (vehicleId) => reservationManagementService.list()
+  .filter((r) => String(r.vehiculoId) === String(vehicleId) && !ESTADOS_RESERVA_FINAL.has(r.estado)).length
+
+function mapear(v) {
+  const estadoFlota = v.isActive ? (ESTADO_POR_CODIGO[v.statusCode] || 'disponible') : 'inactivo'
+  const activas = reservasActivas(v.id)
+  const estadoEfectivo = activas ? VEHICLE_STATES.RESERVED : estadoFlota
+  return {
+    id: v.id,
+    nombre: `${v.brandName} ${v.model}`.trim(),
+    marca: v.brandName,
+    modelo: v.model,
+    placa: v.plate,
+    vin: v.vin,
+    categoria: v.categoryName,
+    transmision: v.transmissionTypeName,
+    combustible: v.fuelTypeName,
+    color: v.color || '',
+    ano: v.year,
+    año: v.year,
+    sucursal: v.currentBranchName,
+    ciudad: v.currentCityName,
+    kilometraje: v.mileage,
+    puertas: v.doorsCount,
+    pasajeros: v.passengerCapacity,
+    maletero: v.trunkCapacityLiters,
+    destacado: v.isFeatured,
+    precio: Number(v.dailyRate),
+    precioLimitado: Number(v.dailyRate),
+    tarifas: { kmLimitado: { precio: Number(v.dailyRate) }, kmIlimitado: { precio: Number(v.dailyRate) } },
+    imagenes: v.mainImageUrl ? [v.mainImageUrl] : [],
+    seguros: [],
+    caracteristicas: [],
+    activo: v.isActive,
+    estadoFlota,
+    estadoEfectivo,
+    disponible: estadoEfectivo === VEHICLE_STATES.AVAILABLE,
+    reservasActivas: activas,
+    picoYPlaca: getPicoYPlacaInfo(v.plate, v.currentBranchName),
   }
-  if (!clean.nombre || !clean.placa || !clean.categoria || !clean.transmision || !clean.combustible || !clean.color || !clean.año || !clean.sucursal || !clean.puertas || !clean.pasajeros) throw new Error('required')
-  if (!/^[A-Z]{3}-?\d{3}$/.test(clean.placa)) throw new Error('invalidPlate')
-  if (vehicles.some((vehicle) => vehicle.id !== editingId && normalizePlate(vehicle.placa) === clean.placa)) throw new Error('duplicatePlate')
-  if (!branchManagementService.list().some((branch) => branch.nombre === clean.sucursal)) throw new Error('invalidBranch')
-  if (!Object.values(VEHICLE_STATES).includes(clean.estadoFlota)) throw new Error('invalidState')
-  return clean
 }
 
-function enrich(vehicle) {
-  const active = activeReservations(vehicle.id).length
-  const effectiveState = active ? VEHICLE_STATES.RESERVED : vehicle.estadoFlota
-  return { ...vehicle, estadoEfectivo: effectiveState, disponible: effectiveState === VEHICLE_STATES.AVAILABLE, reservasActivas: active, picoYPlaca: getPicoYPlacaInfo(vehicle.placa, vehicle.sucursal) }
+function toError(error) {
+  const result = new Error(error?.response?.data?.detail || error?.message || 'No fue posible completar la operación.')
+  result.status = error?.response?.status
+  const errors = error?.response?.data?.errors
+  if (Array.isArray(errors) && errors.length) result.message = errors.map((e) => e.message || e.field).join(' · ')
+  return result
+}
+
+const porNombre = (lista, nombre) => lista.find((item) => String(item.name).toLowerCase() === String(nombre || '').toLowerCase())
+
+function payload(data) {
+  const brand = porNombre(lookups.brands, data.marca)
+  const category = porNombre(lookups.categories, data.categoria)
+  const transmission = porNombre(lookups.transmissions, data.transmision)
+  const fuel = porNombre(lookups.fuels, data.combustible)
+  const branch = branchManagementService.list().find((b) => b.nombre === data.sucursal)
+  if (!brand || !category || !transmission || !fuel || !branch) throw new Error('Completa marca, categoría, transmisión, combustible y sucursal.')
+  const status = lookups.statuses.find((s) => s.code === CODIGO_POR_ESTADO[data.estadoEfectivo || 'disponible'])
+  return {
+    plate: normalizePlate(data.placa),
+    vin: String(data.vin || '').trim().toUpperCase(),
+    brandId: brand.id,
+    categoryId: category.id,
+    transmissionTypeId: transmission.id,
+    fuelTypeId: fuel.id,
+    statusId: status?.id,
+    currentBranchId: branch.id,
+    model: String(data.modelo || '').trim(),
+    year: Number(data.ano),
+    color: String(data.color || '').trim(),
+    passengerCapacity: Number(data.pasajeros) || 5,
+    doorsCount: Number(data.puertas) || 4,
+    trunkCapacityLiters: data.maletero === '' || data.maletero == null ? null : Number(data.maletero),
+    mileage: Number(data.kilometraje) || 0,
+    dailyRate: Number(data.precioLimitado),
+    mainImageUrl: data.imagenes?.[0] || null,
+    isFeatured: Boolean(data.destacado),
+  }
 }
 
 export const vehicleManagementService = {
-  list() { return readArray(STORAGE_KEY, configuredVehicles()).map(enrich) },
-  getById(id) { return this.list().find((vehicle) => Number(vehicle.id) === Number(id)) || null },
-  activeReservationCount(id) { return activeReservations(id).length },
-  create(data, user) {
-    const vehicles = readArray(STORAGE_KEY, configuredVehicles())
-    assertBranchScope(user, data.sucursal)
-    const clean = validate(data, vehicles)
-    const id = vehicles.reduce((max, vehicle) => Math.max(max, Number(vehicle.id) || 0), 0) + 1
-    const branch = branchManagementService.list().find((item) => item.nombre === clean.sucursal)
-    const vehicle = { id, ...clean, precio: Number(data.precioLimitado), calificacion: 0, disponible: clean.estadoFlota === VEHICLE_STATES.AVAILABLE, caracteristicas: data.caracteristicas || [], equipamientoTecnologico: data.equipamientoTecnologico || [], tarifas: { kmLimitado: { km: Number(data.kmLimitado), precio: Number(data.precioLimitado), excedente: Number(data.precioExcedente) }, kmIlimitado: { precio: Number(data.precioIlimitado) } }, seguros: data.seguros || [], servicios: [], imagenes: data.imagenes || [], disponibilidad: { ocupados: [] }, comentarios: [], sucursalInfo: { nombre: branch.nombre, direccion: branch.direccion, horario: '' } }
-    localStorage.setItem(STORAGE_KEY, JSON.stringify([...vehicles, vehicle])); recordAudit('crear', vehicle, user); return enrich(vehicle)
+  async refresh() {
+    const [vehicles, brands, transmissions, fuels, statuses, categories] = await Promise.all([
+      api.get('/admin/vehicles', { params: { size: 500 } }),
+      api.get('/vehicle-brands'),
+      api.get('/transmission-types'),
+      api.get('/fuel-types'),
+      api.get('/vehicle-statuses'),
+      api.get('/vehicle-categories'),
+    ])
+    lookups = {
+      brands: brands.data, transmissions: transmissions.data, fuels: fuels.data,
+      statuses: statuses.data, categories: categories.data,
+    }
+    cache = (vehicles.data?.content || []).map(mapear)
+    return this.list()
   },
-  update(id, data, user) {
-    const vehicles = readArray(STORAGE_KEY, configuredVehicles()); const current = vehicles.find((vehicle) => Number(vehicle.id) === Number(id)); if (!current) throw new Error('notFound')
-    assertBranchScope(user, current.sucursal, data.sucursal)
-    const clean = validate(data, vehicles, current.id); const branch = branchManagementService.list().find((item) => item.nombre === clean.sucursal)
-    const updated = { ...current, ...clean, precio: Number(data.precioLimitado), caracteristicas: data.caracteristicas || [], equipamientoTecnologico: data.equipamientoTecnologico || [], tarifas: { kmLimitado: { km: Number(data.kmLimitado), precio: Number(data.precioLimitado), excedente: Number(data.precioExcedente) }, kmIlimitado: { precio: Number(data.precioIlimitado) } }, seguros: data.seguros || [], imagenes: data.imagenes || [], sucursalInfo: { ...current.sucursalInfo, nombre: branch.nombre, direccion: branch.direccion } }
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(vehicles.map((vehicle) => vehicle.id === current.id ? updated : vehicle))); recordAudit('editar', updated, user); return enrich(updated)
+
+  list() { return cache.map((vehicle) => ({ ...vehicle })) },
+
+  lookups() {
+    return {
+      brands: lookups.brands.map((b) => b.name),
+      transmissions: lookups.transmissions.map((t) => t.name),
+      fuels: lookups.fuels.map((f) => f.name),
+    }
   },
-  remove(id, user) {
-    const vehicles = readArray(STORAGE_KEY, configuredVehicles()); const vehicle = vehicles.find((item) => Number(item.id) === Number(id)); if (!vehicle) throw new Error('notFound')
-    assertBranchScope(user, vehicle.sucursal)
-    const count = activeReservations(id).length; if (count) { const error = new Error('hasActiveReservations'); error.count = count; throw error }
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(vehicles.filter((item) => Number(item.id) !== Number(id)))); recordAudit('eliminar', vehicle, user)
+
+  async categories() {
+    if (!lookups.categories.length) {
+      const { data } = await api.get('/vehicle-categories')
+      lookups = { ...lookups, categories: data }
+    }
+    return lookups.categories.map((c) => ({ id: c.id, name: c.name }))
+  },
+
+  getById(id) { return this.list().find((vehicle) => String(vehicle.id) === String(id)) || null },
+
+  activeReservationCount(id) { return reservasActivas(id) },
+
+  async create(data) {
+    try {
+      await api.post('/admin/vehicles', payload(data))
+    } catch (error) {
+      throw error?.response ? toError(error) : error
+    }
+    return this.refresh()
+  },
+
+  async update(id, data) {
+    try {
+      await api.put(`/admin/vehicles/${id}`, payload(data))
+    } catch (error) {
+      throw error?.response ? toError(error) : error
+    }
+    return this.refresh()
+  },
+
+  async changeState(id, estado) {
+    try {
+      await api.patch(`/admin/vehicles/${id}/status`, { statusCode: CODIGO_POR_ESTADO[estado] })
+    } catch (error) {
+      throw toError(error)
+    }
+    return this.refresh()
+  },
+
+  async remove(id) {
+    try {
+      await api.delete(`/admin/vehicles/${id}`)
+    } catch (error) {
+      throw toError(error)
+    }
+    return this.refresh()
   },
 }
