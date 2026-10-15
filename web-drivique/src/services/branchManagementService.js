@@ -1,130 +1,137 @@
-import initialBranches from '../mocks/branches.json'
-import vehicles from '../mocks/vehicles.json'
+import { api } from './httpClient'
+import { SUCURSALES, cargarUbicaciones } from '../modules/catalog/constants'
 import { cityManagementService } from './cityManagementService'
-import { reservationService } from './reservationService'
-import { mockUsersStorage } from './mockUsersStorage'
-import accessConfig from '../mocks/adminAccessConfig.json'
 
-const STORAGE_KEY = 'drivique_admin_branches'
-const AUDIT_KEY = 'drivique_management_audit'
-const normalize = (value) => String(value || '').trim().toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-const slugify = (value) => normalize(value).replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '')
-const compact = (value) => normalize(value).replace(/[^a-z0-9]/g, '')
+const hhmm = (time) => String(time || '').slice(0, 5)
 
-function readArray(key, fallback = []) {
-  try {
-    const value = JSON.parse(localStorage.getItem(key) || 'null')
-    return Array.isArray(value) ? value : fallback
-  } catch { return fallback }
+let branches = []
+let managers = []
+
+const mapBranch = (b, encargadoId = '') => ({
+  id: b.id,
+  nombre: b.name,
+  ciudad: b.cityName,
+  cityId: b.cityId,
+  direccion: b.address,
+  telefono: b.phone,
+  apertura: hhmm(b.openingTime),
+  cierre: hhmm(b.closingTime),
+  horario: `${hhmm(b.openingTime)} - ${hhmm(b.closingTime)}`,
+  autorizadoPagoEfectivo: b.allowsCashPayment,
+  estado: b.isActive ? 'activa' : 'inactiva',
+  capacidadVehiculos: b.vehicleCapacity,
+  vehiculos: b.vehicleCount ?? 0,
+  encargadoId,
+})
+
+function toError(error) {
+  const result = new Error(error?.response?.data?.detail || error?.response?.data?.title || 'No fue posible guardar los cambios.')
+  result.status = error?.response?.status
+  return result
 }
 
-function configuredBranches() {
-  const managers = mockUsersStorage.listar().filter((user) => user.rol === accessConfig.roles.branchManager)
-  return initialBranches.map((branch) => {
-    const assigned = managers.find((manager) => {
-      const managerBranch = compact(manager.sucursalId)
-      const branchName = compact(branch.nombre)
-      return managerBranch && (branchName.includes(managerBranch) || managerBranch.includes(branchName))
-    })
-    return {
-      id: branch.id || slugify(branch.nombre),
-      ...branch,
-      encargadoId: branch.encargadoId || assigned?.correo || '',
-      autorizadoPagoEfectivo: branch.autorizadoPagoEfectivo ?? true,
-      telefono: branch.telefono || '+57 601 555 1234',
-      horario: branch.horario || 'Lun-Vie 08:00 - 18:00 | Sáb 08:00 - 13:00',
-      capacidadVehiculos: branch.capacidadVehiculos || 25,
-      estado: branch.estado || 'activa',
-    }
-  })
-}
-
-function recordAudit(action, branch, user) {
-  const records = readArray(AUDIT_KEY)
-  const entry = { id: `CRUD-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`, fecha: new Date().toISOString(), modulo: 'sucursales', accion: action, entidadId: branch.id, entidadNombre: branch.nombre, usuario: user?.correo || user?.nombre || 'administrador' }
-  localStorage.setItem(AUDIT_KEY, JSON.stringify([entry, ...records].slice(0, 200)))
-}
-
-function validate(data, branches, editingId) {
-  const clean = {
-    nombre: String(data.nombre || '').trim(),
-    ciudad: String(data.ciudad || '').trim(),
-    direccion: String(data.direccion || '').trim(),
-    encargadoId: String(data.encargadoId || '').trim(),
-    autorizadoPagoEfectivo: Boolean(data.autorizadoPagoEfectivo),
-    telefono: String(data.telefono || '').trim() || '+57 601 555 1234',
-    horario: String(data.horario || '').trim() || 'Lun-Vie 08:00 - 18:00 | Sáb 08:00 - 13:00',
-    capacidadVehiculos: Number(data.capacidadVehiculos || 20),
-    estado: String(data.estado || 'activa').trim().toLowerCase(),
+function payload(data) {
+  const city = cityManagementService.list().find((c) => c.nombre === data.ciudad)
+  if (!String(data.nombre || '').trim() || !city || !String(data.direccion || '').trim()) {
+    throw new Error('Completa nombre, ciudad y dirección.')
   }
-  if (!clean.nombre || !clean.ciudad || !clean.direccion || !clean.encargadoId) throw new Error('required')
-  if (!cityManagementService.list().some((city) => city.nombre === clean.ciudad)) throw new Error('invalidCity')
-  if (!mockUsersStorage.listar().some((user) => user.correo === clean.encargadoId && user.rol === accessConfig.roles.branchManager)) throw new Error('invalidManager')
-  if (branches.some((branch) => branch.id !== editingId && normalize(branch.nombre) === normalize(clean.nombre))) throw new Error('duplicate')
-  return clean
+  if (!data.apertura || !data.cierre || data.cierre <= data.apertura) {
+    throw new Error('El horario de cierre debe ser posterior al de apertura.')
+  }
+  return {
+    name: String(data.nombre).trim(),
+    address: String(data.direccion).trim(),
+    cityId: city.id,
+    phone: String(data.telefono || '').trim(),
+    openingTime: data.apertura,
+    closingTime: data.cierre,
+    allowsCashPayment: Boolean(data.autorizadoPagoEfectivo),
+    vehicleCapacity: Number(data.capacidadVehiculos) || undefined,
+  }
 }
 
-function relatedNames(branch) {
-  const original = configuredBranches().find((item) => item.id === branch.id)
-  return new Set([normalize(branch.nombre), normalize(original?.nombre)].filter(Boolean))
-}
-
-function associations(branch) {
-  const names = relatedNames(branch)
-  const managedVehicles = readArray('drivique_admin_vehicles', vehicles)
-  const associatedVehicles = managedVehicles.filter((vehicle) => names.has(normalize(vehicle.sucursal)))
-  const vehicleIds = new Set(associatedVehicles.map((vehicle) => Number(vehicle.id)))
-  const associatedReservations = reservationService.getReservas().filter((reservation) => {
-    const detail = reservation.reservaDetalles || {}
-    return vehicleIds.has(Number(reservation.vehiculoId)) || [detail.sucursalRetiro, detail.sucursalDevolucion, detail.sucursalPagoEfectivo].some((name) => names.has(normalize(name)))
-  })
-  return { vehicles: associatedVehicles.length, reservations: associatedReservations.length }
+async function assignManager(branchId, previousEmail, nextEmail) {
+  if (previousEmail === nextEmail) return
+  const previous = managers.find((m) => m.correo === previousEmail)
+  const next = managers.find((m) => m.correo === nextEmail)
+  if (previous) await api.delete(`/branches/${branchId}/staff/${previous.id}`).catch(() => {})
+  if (next) {
+    await api.post(`/branches/${branchId}/staff/${next.id}`).catch((error) => {
+      if (error?.response?.status !== 409) throw error
+    })
+  }
 }
 
 export const branchManagementService = {
+  async refresh() {
+    await cityManagementService.refresh()
+    try {
+      const [{ data: list }, { data: managerList }] = await Promise.all([
+        api.get('/branches/admin'),
+        api.get('/branches/managers'),
+      ])
+      const staff = await Promise.all(
+        list.map((b) => api.get(`/branches/${b.id}/staff`).then((r) => r.data).catch(() => []))
+      )
+      managers = managerList.map((m) => ({ id: m.userId, correo: m.email, nombre: m.fullName, apellido: '', activo: true }))
+      branches = list.map((b, index) => mapBranch(b, staff[index].find((s) => s.roleCodes?.includes('BRANCH_ADMIN'))?.email || ''))
+    } catch {
+      branches = []
+    }
+    return this.list()
+  },
+
   list() {
-    const managers = mockUsersStorage.listar().filter((user) => user.rol === accessConfig.roles.branchManager)
-    return readArray(STORAGE_KEY, configuredBranches()).map((branch) => {
-      const currentManagerExists = managers.some((manager) => manager.correo === branch.encargadoId)
-      if (currentManagerExists) return { ...branch }
-      const assigned = managers.find((manager) => compact(manager.sucursalId || manager.sucursal) === compact(branch.nombre))
-      return { ...branch, encargadoId: assigned?.correo || '' }
-    })
+    return (branches.length ? branches : SUCURSALES).map((branch) => ({ ...branch }))
   },
-  managers() { return mockUsersStorage.listar().filter((user) => user.rol === accessConfig.roles.branchManager && user.activo !== false) },
-  getCashAuthorized() { return this.list().filter((branch) => branch.autorizadoPagoEfectivo) },
-  associations,
+
+  managers() { return managers },
+
+  getCashAuthorized() {
+    return this.list().filter((branch) => branch.autorizadoPagoEfectivo && branch.estado !== 'inactiva')
+  },
+
+  associations(branch) { return { vehicles: branch.vehiculos || 0, reservations: 0 } },
+
   managerName(branch) {
-    const manager = this.managers().find((user) => user.correo === branch.encargadoId)
-    return manager ? `${manager.nombre || ''} ${manager.apellido || ''}`.trim() || manager.correo : ''
+    const manager = managers.find((user) => user.correo === branch.encargadoId)
+    return manager ? manager.nombre || manager.correo : ''
   },
-  create(data, user) {
-    const branches = this.list()
-    const clean = validate(data, branches)
-    const base = slugify(clean.nombre) || `sucursal_${Date.now()}`
-    let id = base; let suffix = 2
-    while (branches.some((branch) => branch.id === id)) id = `${base}_${suffix++}`
-    const branch = { id, ...clean }
-    localStorage.setItem(STORAGE_KEY, JSON.stringify([...branches, branch]))
-    recordAudit('crear', branch, user)
-    return branch
+
+  async create(data) {
+    const body = payload(data)
+    try {
+      const { data: created } = await api.post('/branches', body)
+      await assignManager(created.id, '', data.encargadoId)
+      if (data.estado === 'inactiva') await api.patch(`/branches/${created.id}/toggle-status`)
+    } catch (error) {
+      throw toError(error)
+    }
+    await this.refresh()
+    await cargarUbicaciones()
   },
-  update(id, data, user) {
-    const branches = this.list()
+
+  async update(id, data) {
     const current = branches.find((branch) => branch.id === id)
-    if (!current) throw new Error('notFound')
-    const updated = { ...current, ...validate(data, branches, id) }
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(branches.map((branch) => branch.id === id ? updated : branch)))
-    recordAudit('editar', updated, user)
-    return updated
+    const body = payload(data)
+    try {
+      await api.put(`/branches/${id}`, body)
+      await assignManager(id, current?.encargadoId || '', data.encargadoId)
+      if (current && current.estado !== data.estado) await api.patch(`/branches/${id}/toggle-status`)
+    } catch (error) {
+      throw toError(error)
+    }
+    await this.refresh()
+    await cargarUbicaciones()
   },
-  remove(id, user) {
-    const branches = this.list()
-    const branch = branches.find((item) => item.id === id)
-    if (!branch) throw new Error('notFound')
-    const linked = associations(branch)
-    if (linked.vehicles || linked.reservations) { const error = new Error('hasAssociations'); error.linked = linked; throw error }
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(branches.filter((item) => item.id !== id)))
-    recordAudit('eliminar', branch, user)
+
+  async remove(id) {
+    try {
+      await api.delete(`/branches/${id}`)
+    } catch (error) {
+      throw toError(error)
+    }
+    await this.refresh()
+    await cargarUbicaciones()
   },
 }

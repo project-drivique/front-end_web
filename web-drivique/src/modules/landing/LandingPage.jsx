@@ -34,7 +34,7 @@ import { useLanding } from './LandingContext'
 import translations, { IDIOMAS, CAT_MAP, LANDING_UI } from './translations'
 import { catalogService } from '../../services/catalogService'
 import { formatCurrency } from '@/utils/currencyUtils'
-import { CANALES_ATENCION, FAQS_INITIAL } from '@/modules/support/data/support.dummy'
+import { CANALES_ATENCION, FAQS_INITIAL } from '@/modules/support/constants/supportContent'
 import './LandingPage.css'
 
 const coloresTema = (esModoOscuro, brandColors) => ({

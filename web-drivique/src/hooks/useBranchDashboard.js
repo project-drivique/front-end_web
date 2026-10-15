@@ -5,281 +5,34 @@ import { incidentManagementService } from '../services/incidentManagementService
 import { reservationManagementService } from '../services/reservationManagementService'
 import { vehicleManagementService } from '../services/vehicleManagementService'
 
-export const MOCK_SCHEDULE_BY_DATE = {
-  '2026-09-25': {
-    deliveries: [
-      {
-        id: 'RES-8821',
-        codigo: 'RES-8821',
-        hora: '08:30 AM',
-        tipo: 'entrega',
-        clienteNombre: 'Carlos Restrepo',
-        clienteTelefono: '+57 310 456 7890',
-        vehiculoNombre: 'Toyota Corolla',
-        vehiculoPlaca: 'ABC-123',
-        vehiculoCategoria: 'Sedán',
-        estado: 'CONFIRMADA',
-      },
-      {
-        id: 'RES-8824',
-        codigo: 'RES-8824',
-        hora: '10:15 AM',
-        tipo: 'entrega',
-        clienteNombre: 'Camila Montoya',
-        clienteTelefono: '+57 315 890 1234',
-        vehiculoNombre: 'Mazda CX-5',
-        vehiculoPlaca: 'KLS-849',
-        vehiculoCategoria: 'SUV',
-        estado: 'PENDIENTE_VALIDACION',
-      },
-      {
-        id: 'RES-8830',
-        codigo: 'RES-8830',
-        hora: '02:00 PM',
-        tipo: 'entrega',
-        clienteNombre: 'Alejandro Morales',
-        clienteTelefono: '+57 300 567 8901',
-        vehiculoNombre: 'Chevrolet Tracker',
-        vehiculoPlaca: 'MXP-492',
-        vehiculoCategoria: 'SUV',
-        estado: 'CONFIRMADA',
-      },
-    ],
-    returns: [
-      {
-        id: 'RES-8799',
-        codigo: 'RES-8799',
-        hora: '11:00 AM',
-        tipo: 'devolucion',
-        clienteNombre: 'Juan Manuel Gómez',
-        clienteTelefono: '+57 312 345 6789',
-        vehiculoNombre: 'Nissan Kicks',
-        vehiculoPlaca: 'ZTR-771',
-        vehiculoCategoria: 'SUV Compacto',
-        estado: 'ACTIVA',
-      },
-      {
-        id: 'RES-8802',
-        codigo: 'RES-8802',
-        hora: '04:30 PM',
-        tipo: 'devolucion',
-        clienteNombre: 'Laura Sofía Silva',
-        clienteTelefono: '+57 318 901 2345',
-        vehiculoNombre: 'Kia Cerato',
-        vehiculoPlaca: 'BOG-992',
-        vehiculoCategoria: 'Sedán',
-        estado: 'ACTIVA',
-      },
-    ],
-  },
-  '2026-09-24': {
-    deliveries: [
-      {
-        id: 'RES-8780',
-        codigo: 'RES-8780',
-        hora: '09:00 AM',
-        tipo: 'entrega',
-        clienteNombre: 'Fernando Vargas',
-        clienteTelefono: '+57 311 222 3344',
-        vehiculoNombre: 'Renault Duster',
-        vehiculoPlaca: 'HJK-342',
-        vehiculoCategoria: 'SUV',
-        estado: 'COMPLETADA',
-      },
-      {
-        id: 'RES-8785',
-        codigo: 'RES-8785',
-        hora: '03:30 PM',
-        tipo: 'entrega',
-        clienteNombre: 'Mariana Ríos',
-        clienteTelefono: '+57 301 999 8877',
-        vehiculoNombre: 'Nissan Sentra',
-        vehiculoPlaca: 'LKP-881',
-        vehiculoCategoria: 'Sedán',
-        estado: 'COMPLETADA',
-      },
-    ],
-    returns: [
-      {
-        id: 'RES-8772',
-        codigo: 'RES-8772',
-        hora: '10:00 AM',
-        tipo: 'devolucion',
-        clienteNombre: 'Mateo Jaramillo',
-        clienteTelefono: '+57 320 555 4433',
-        vehiculoNombre: 'Hyundai Tucson',
-        vehiculoPlaca: 'HJT-449',
-        vehiculoCategoria: 'SUV',
-        estado: 'COMPLETADA',
-      },
-      {
-        id: 'RES-8775',
-        codigo: 'RES-8775',
-        hora: '01:15 PM',
-        tipo: 'devolucion',
-        clienteNombre: 'Andrea Cepeda',
-        clienteTelefono: '+57 314 666 7788',
-        vehiculoNombre: 'Chevrolet Onix',
-        vehiculoPlaca: 'QWE-102',
-        vehiculoCategoria: 'Hatchback',
-        estado: 'COMPLETADA',
-      },
-      {
-        id: 'RES-8779',
-        codigo: 'RES-8779',
-        hora: '05:00 PM',
-        tipo: 'devolucion',
-        clienteNombre: 'Daniel Ospina',
-        clienteTelefono: '+57 302 111 2233',
-        vehiculoNombre: 'Toyota Fortuner',
-        vehiculoPlaca: 'RTY-994',
-        vehiculoCategoria: '4x4',
-        estado: 'COMPLETADA',
-      },
-    ],
-  },
-  '2026-09-26': {
-    deliveries: [
-      {
-        id: 'RES-8840',
-        codigo: 'RES-8840',
-        hora: '08:00 AM',
-        tipo: 'entrega',
-        clienteNombre: 'Sofía Vergara',
-        clienteTelefono: '+57 310 777 8899',
-        vehiculoNombre: 'Mazda 3',
-        vehiculoPlaca: 'MZD-112',
-        vehiculoCategoria: 'Sedán',
-        estado: 'CONFIRMADA',
-      },
-      {
-        id: 'RES-8842',
-        codigo: 'RES-8842',
-        hora: '11:30 AM',
-        tipo: 'entrega',
-        clienteNombre: 'Santiago Castro',
-        clienteTelefono: '+57 316 444 5566',
-        vehiculoNombre: 'Chevrolet Tracker',
-        vehiculoPlaca: 'MXP-492',
-        vehiculoCategoria: 'SUV',
-        estado: 'CONFIRMADA',
-      },
-      {
-        id: 'RES-8845',
-        codigo: 'RES-8845',
-        hora: '01:00 PM',
-        tipo: 'entrega',
-        clienteNombre: 'Paula Restrepo',
-        clienteTelefono: '+57 305 333 2211',
-        vehiculoNombre: 'Kia Sportage',
-        vehiculoPlaca: 'KSP-554',
-        vehiculoCategoria: 'SUV',
-        estado: 'DOCUMENTO_PENDIENTE',
-      },
-      {
-        id: 'RES-8850',
-        codigo: 'RES-8850',
-        hora: '04:00 PM',
-        tipo: 'entrega',
-        clienteNombre: 'Gabriel Beltrán',
-        clienteTelefono: '+57 318 888 9900',
-        vehiculoNombre: 'Volkswagen Jetta',
-        vehiculoPlaca: 'VWJ-789',
-        vehiculoCategoria: 'Sedán',
-        estado: 'CONFIRMADA',
-      },
-    ],
-    returns: [
-      {
-        id: 'RES-8835',
-        codigo: 'RES-8835',
-        hora: '02:30 PM',
-        tipo: 'devolucion',
-        clienteNombre: 'Carlos Restrepo',
-        clienteTelefono: '+57 310 456 7890',
-        vehiculoNombre: 'Toyota Corolla',
-        vehiculoPlaca: 'ABC-123',
-        vehiculoCategoria: 'Sedán',
-        estado: 'CONFIRMADA',
-      },
-    ],
-  },
-  '2026-09-27': {
-    deliveries: [
-      {
-        id: 'RES-8860',
-        codigo: 'RES-8860',
-        hora: '10:00 AM',
-        tipo: 'entrega',
-        clienteNombre: 'Valeria Osorio',
-        clienteTelefono: '+57 312 999 0011',
-        vehiculoNombre: 'Renault Logan',
-        vehiculoPlaca: 'RLG-301',
-        vehiculoCategoria: 'Sedán',
-        estado: 'CONFIRMADA',
-      },
-    ],
-    returns: [
-      {
-        id: 'RES-8855',
-        codigo: 'RES-8855',
-        hora: '09:00 AM',
-        tipo: 'devolucion',
-        clienteNombre: 'Alejandro Morales',
-        clienteTelefono: '+57 300 567 8901',
-        vehiculoNombre: 'Chevrolet Tracker',
-        vehiculoPlaca: 'MXP-492',
-        vehiculoCategoria: 'SUV',
-        estado: 'CONFIRMADA',
-      },
-      {
-        id: 'RES-8858',
-        codigo: 'RES-8858',
-        hora: '03:00 PM',
-        tipo: 'devolucion',
-        clienteNombre: 'Camila Montoya',
-        clienteTelefono: '+57 315 890 1234',
-        vehiculoNombre: 'Mazda CX-5',
-        vehiculoPlaca: 'KLS-849',
-        vehiculoCategoria: 'SUV',
-        estado: 'CONFIRMADA',
-      },
-    ],
-  },
+const toAgendaItem = (reserva, tipo, fecha, hora) => ({
+  id: tipo === 'devolucion' ? `ret-${reserva.id}` : reserva.id,
+  codigo: reserva.codigo,
+  fecha,
+  hora,
+  tipo,
+  clienteNombre: reserva.clienteNombre,
+  clienteTelefono: reserva.clienteTelefono,
+  clienteCorreo: reserva.clienteCorreo,
+  vehiculoNombre: reserva.vehiculoNombre,
+  vehiculoPlaca: reserva.vehiculoPlaca,
+  vehiculoCategoria: vehicleManagementService.getById(reserva.vehiculoId)?.categoria || '',
+  estado: String(reserva.estado || '').toUpperCase(),
+  sucursal: reserva.sucursal,
+})
+
+/** Programación de entregas y devoluciones tomada de las reservas reales (el servidor ya filtra por sucursal). */
+export function getScheduleForRange(startStr, endStr) {
+  const reservas = reservationManagementService.list().filter((r) => r.estado !== 'cancelada')
+  const enRango = (fecha) => fecha >= startStr && fecha <= endStr
+  return {
+    deliveries: reservas.filter((r) => enRango(r.fechaInicio)).map((r) => toAgendaItem(r, 'entrega', r.fechaInicio, r.horaInicio)),
+    returns: reservas.filter((r) => enRango(r.fechaFin)).map((r) => toAgendaItem(r, 'devolucion', r.fechaFin, r.horaFin)),
+  }
 }
 
 export function getScheduleForDate(dateStr) {
-  if (MOCK_SCHEDULE_BY_DATE[dateStr]) {
-    return MOCK_SCHEDULE_BY_DATE[dateStr]
-  }
-  return { deliveries: [], returns: [] }
-}
-
-export function getScheduleForRange(startStr, endStr) {
-  const allDates = Object.keys(MOCK_SCHEDULE_BY_DATE).filter(
-    (d) => d >= startStr && d <= endStr
-  )
-
-  let deliveries = []
-  let returns = []
-
-  allDates.forEach((dStr) => {
-    const dayData = MOCK_SCHEDULE_BY_DATE[dStr]
-    if (dayData) {
-      if (dayData.deliveries) {
-        deliveries = deliveries.concat(
-          dayData.deliveries.map((item) => ({ ...item, fecha: dStr }))
-        )
-      }
-      if (dayData.returns) {
-        returns = returns.concat(
-          dayData.returns.map((item) => ({ ...item, fecha: dStr }))
-        )
-      }
-    }
-  })
-
-  return { deliveries, returns }
+  return getScheduleForRange(dateStr, dateStr)
 }
 
 export function useBranchDashboard(user) {
@@ -287,179 +40,74 @@ export function useBranchDashboard(user) {
   const [loading, setLoading] = useState(true)
   const [lastSync, setLastSync] = useState(new Date())
 
-  const refresh = useCallback(() => {
-    const isBranchManager =
-      user?.rol === 'encargado' || user?.rol === 'branch_manager' || user?.rol === 'encargado_sucursal'
-    const branchName =
-      user?.sucursalAsignada || user?.sucursalId || user?.sucursal || (user?.correo === 'encargado.neiva@drivique.com' ? 'Drivique Neiva Centro' : '')
+  const refresh = useCallback(async () => {
+    try {
+      const [, , , expedientes] = await Promise.all([
+        adminDashboardService.refresh(),
+        incidentManagementService.refresh(),
+        Promise.resolve(),
+        documentVerificationService.listar(),
+      ])
 
-    const allVehicles = vehicleManagementService.list() || []
-    const branchVehicles = isBranchManager
-      ? allVehicles.filter(
-          (v) =>
-            (v.sucursal || '').toLowerCase().includes(branchName.toLowerCase()) ||
-            (branchName || '').toLowerCase().includes((v.sucursal || '').toLowerCase())
-        )
-      : allVehicles
+      const summary = adminDashboardService.getSummary(user)
+      const vehicles = vehicleManagementService.list()
+      const mantenimiento = vehicles.filter((v) => v.estadoFlota === 'mantenimiento').length
+      const reservations = reservationManagementService.list()
+      const hoy = new Date().toLocaleDateString('en-CA')
+      const agenda = getScheduleForRange(hoy, hoy)
 
-    const totalVehicles = branchVehicles.length >= 5 ? branchVehicles.length : 5
-    const availableVehicles =
-      branchVehicles.length >= 5
-        ? branchVehicles.filter(
-            (v) =>
-              v.disponible !== false &&
-              v.estadoFlota !== 'EN_MANTENIMIENTO' &&
-              v.estadoFlota !== 'mantenimiento' &&
-              !v.reservasActivas
-          ).length
-        : 2
-    const rentedVehicles =
-      branchVehicles.length >= 5
-        ? branchVehicles.filter((v) => v.reservasActivas > 0 || v.disponible === false).length
-        : 2
-    const maintenanceVehicles =
-      branchVehicles.length >= 5
-        ? branchVehicles.filter(
-            (v) => v.estadoFlota === 'EN_MANTENIMIENTO' || v.estadoFlota === 'mantenimiento'
-          ).length
-        : 1
+      const entregasCompletadas = agenda.deliveries.filter((d) => ['EN_CURSO', 'FINALIZADA'].includes(d.estado)).length
+      const devolucionesRecibidas = agenda.returns.filter((d) => d.estado === 'FINALIZADA').length
 
-    const occupancyRate = Math.round((rentedVehicles / totalVehicles) * 100)
+      const documentosPendientes = expedientes.filter((e) => e.estado === 'pendiente')
+      const incidenciasAbiertas = incidentManagementService.list().filter((i) => ['OPEN', 'IN_REVIEW'].includes(i.estadoCodigo)).length
+      const pagosPendientes = reservations.filter((r) => r.pagoEstado !== 'aprobado' && r.estado !== 'cancelada' && r.metodoPago === 'efectivo').length
 
-    const docs = documentVerificationService.list(user) || []
-    const pendingDocs = docs.filter((d) => d.estado === 'pendiente').length
-
-    const incidents = incidentManagementService.listForUser(user) || []
-    const openIncidents =
-      incidents.filter((i) =>
-        ['recibido', 'en_revision', 'en_reparacion'].includes(String(i.estado || '').toLowerCase())
-      ).length
-
-    const reservations = reservationManagementService.list(user) || []
-    const pendingPayments = reservations.filter(
-      (r) =>
-        r.pagoEstado !== 'aprobado' &&
-        !['cancelada', 'cancelada_por_tiempo'].includes(String(r.estado || '').toLowerCase()) &&
-        String(r.pasarela || r.metodoPago || '').toLowerCase().includes('efectivo')
-    ).length
-
-    const summary = adminDashboardService.getSummary(user) || {}
-
-    // Derivar entregas y devoluciones de las reservas reales de la sucursal
-    const realDeliveries = reservations
-      .filter((r) => !['cancelada', 'cancelada_por_tiempo'].includes(String(r.estado || '').toLowerCase()))
-      .map((r) => ({
-        id: r.id || r.codigo,
-        codigo: r.codigo || r.referencia || r.id,
-        hora: r.horaInicio || '10:00 AM',
-        clienteNombre: r.clienteNombre || r.datosForm?.nombre || 'Cliente',
-        clienteTelefono: r.clienteTelefono || r.datosForm?.celular || '+57 300 000 0000',
-        vehiculoNombre: r.vehiculoNombre || r.vehiculo?.nombre || 'Vehículo',
-        vehiculoPlaca: r.vehiculoPlaca || r.vehiculo?.placa || 'Asignada',
-        vehiculoCategoria: r.vehiculo?.categoria || 'Sedán',
-        estado: (r.estado || 'CONFIRMADA').toUpperCase(),
-        sucursal: r.sucursal || branchName,
-      }))
-
-    const realReturns = reservations
-      .filter((r) => ['en_curso', 'activa', 'confirmada'].includes(String(r.estado || '').toLowerCase()))
-      .map((r) => ({
-        id: `ret-${r.id || r.codigo}`,
-        codigo: r.codigo || r.referencia || r.id,
-        hora: r.horaFin || '18:00 PM',
-        clienteNombre: r.clienteNombre || r.datosForm?.nombre || 'Cliente',
-        clienteTelefono: r.clienteTelefono || r.datosForm?.celular || '+57 300 000 0000',
-        vehiculoNombre: r.vehiculoNombre || r.vehiculo?.nombre || 'Vehículo',
-        vehiculoPlaca: r.vehiculoPlaca || r.vehiculo?.placa || 'Asignada',
-        vehiculoCategoria: r.vehiculo?.categoria || 'Sedán',
-        estado: 'PENDIENTE',
-        sucursal: r.sucursal || branchName,
-      }))
-
-    const fallbackSched = MOCK_SCHEDULE_BY_DATE['2026-09-25'] || { deliveries: [], returns: [] }
-    const todayDeliveriesList = realDeliveries.length > 0 ? realDeliveries : (fallbackSched.deliveries || [])
-    const todayReturnsList = realReturns.length > 0 ? realReturns : (fallbackSched.returns || [])
-
-    const deliveriesCompleted = todayDeliveriesList.filter((d) =>
-      ['CONFIRMADA', 'COMPLETADA', 'ENTREGADA', 'completada', 'confirmada'].includes(
-        String(d.estado || '').toUpperCase()
-      )
-    ).length
-    const deliveriesPending = Math.max(0, todayDeliveriesList.length - deliveriesCompleted)
-
-    const returnsReceived = todayReturnsList.filter((r) =>
-      ['RECIBIDO', 'RECIBIDA', 'COMPLETADA', 'FINALIZADA', 'recibida', 'completada'].includes(
-        String(r.estado || '').toUpperCase()
-      )
-    ).length
-    const returnsPending = Math.max(0, todayReturnsList.length - returnsReceived)
-
-    const weeklyActivity = adminDashboardService.getWeeklyActivity(user) || []
-    const expiringVehicleDocs = 0
-
-    setData({
-      branchName,
-      monthlyRevenue: summary.monthlyRevenue || 45200000,
-      todayDeliveriesCount: todayDeliveriesList.length,
-      todayDeliveriesCompleted: deliveriesCompleted,
-      todayDeliveriesPending: deliveriesPending,
-      todayReturnsCount: todayReturnsList.length,
-      todayReturnsReceived: returnsReceived,
-      todayReturnsPending: returnsPending,
-      todayDeliveriesList,
-      todayReturnsList,
-      weeklyActivity,
-      fleet: {
-        totalVehicles,
-        availableVehicles,
-        rentedVehicles,
-        maintenanceVehicles,
-        occupancyRate,
-      },
-      attentionNeeded: {
-        pendingDocuments: pendingDocs,
-        openIncidents: openIncidents,
-        pendingPayments: pendingPayments,
-        expiringVehicleDocs: expiringVehicleDocs,
-        allClear:
-          pendingDocs === 0 &&
-          openIncidents === 0 &&
-          pendingPayments === 0 &&
-          expiringVehicleDocs === 0,
-      },
-    })
-
-    // Sincronizar documentos pendientes reales del backend en segundo plano
-    documentVerificationService.listarPendientesBackend().then((backendDocs) => {
-      if (Array.isArray(backendDocs) && backendDocs.length > 0) {
-        setData((prev) => {
-          if (!prev) return prev
-          return {
-            ...prev,
-            attentionNeeded: {
-              ...prev.attentionNeeded,
-              pendingDocuments: backendDocs.length,
-              pendingDocsList: backendDocs,
-              allClear: false,
-            },
-          }
-        })
-      }
-    }).catch(() => {})
-
-    setLastSync(new Date())
-    setLoading(false)
+      setData({
+        branchName: user?.sucursalAsignada || user?.branchName || '',
+        monthlyRevenue: summary.monthlyRevenue,
+        monthlyRevenueChange: summary.monthlyRevenueChange,
+        previousMonthRevenue: summary.previousMonthRevenue,
+        todayDeliveriesCount: agenda.deliveries.length,
+        todayDeliveriesCompleted: entregasCompletadas,
+        todayDeliveriesPending: agenda.deliveries.length - entregasCompletadas,
+        todayReturnsCount: agenda.returns.length,
+        todayReturnsReceived: devolucionesRecibidas,
+        todayReturnsPending: agenda.returns.length - devolucionesRecibidas,
+        todayDeliveriesList: agenda.deliveries,
+        todayReturnsList: agenda.returns,
+        weeklyActivity: adminDashboardService.getWeeklyActivity(user),
+        fleet: {
+          totalVehicles: vehicles.length,
+          availableVehicles: summary.availableVehicles,
+          rentedVehicles: summary.rentedVehicles,
+          maintenanceVehicles: mantenimiento,
+          occupancyRate: summary.occupancyRate,
+        },
+        attentionNeeded: {
+          pendingDocuments: documentosPendientes.length,
+          pendingDocsList: documentosPendientes,
+          openIncidents: incidenciasAbiertas,
+          pendingPayments: pagosPendientes,
+          expiringVehicleDocs: 0,
+          allClear: documentosPendientes.length === 0 && incidenciasAbiertas === 0 && pagosPendientes === 0,
+        },
+      })
+      setLastSync(new Date())
+    } catch (error) {
+      console.error('No se pudo cargar el tablero:', error)
+    } finally {
+      setLoading(false)
+    }
   }, [user])
 
   useEffect(() => {
     refresh()
-    const timer = setInterval(refresh, 3000)
+    const timer = setInterval(refresh, 30000)
     window.addEventListener('focus', refresh)
-    window.addEventListener('storage', refresh)
     return () => {
       clearInterval(timer)
       window.removeEventListener('focus', refresh)
-      window.removeEventListener('storage', refresh)
     }
   }, [refresh])
 

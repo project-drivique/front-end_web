@@ -1,8 +1,8 @@
+import { diasDeAlquiler } from '../utils/pricing';
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLanding } from '../../landing/LandingContext'
 import { formatCurrency } from '@/utils/currencyUtils'
-import { RECARGOS_LOGISTICOS } from '../../catalog/constants'
 import { FaTicketAlt, FaTrashAlt } from 'react-icons/fa'
 import { promotionManagementService } from '@/services/promotionManagementService'
 
@@ -35,7 +35,8 @@ export default function ResumenLateral({
   c,
   appliedPromotion,
   onApplyPromotion,
-  onRemovePromotion
+  onRemovePromotion,
+  cotizacion
 }) {
   const { t, i18n } = useTranslation()
   const { moneda } = useLanding();
@@ -99,9 +100,7 @@ export default function ResumenLateral({
     ? Number(kmIlimit.precio || 0)
     : (reserva.tipoKm === 'limitado' ? Number(kmLimit.precio || 0) : 0));
 
-  const dias = reserva.fechaInicio && reserva.fechaFin
-    ? Math.max(1, Math.round((new Date(`${reserva.fechaFin.split('T')[0]}T00:00:00`) - new Date(`${reserva.fechaInicio.split('T')[0]}T00:00:00`)) / 86400000))
-    : 1;
+  const dias = diasDeAlquiler(reserva);
 
   const precioSeguro = seguroIdx !== null ? Number(vehiculo.seguros[seguroIdx]?.precio ?? vehiculo.seguros[seguroIdx]?.dailyRate ?? vehiculo.seguros[seguroIdx]?.price ?? 0) : 0;
   const serviciosElegidos = (vehiculo.servicios || []).filter(s => serviciosSeleccionados.includes(s.nombre));
@@ -110,19 +109,11 @@ export default function ResumenLateral({
   const subtotalDiario = precio * dias;
   const subtotalSeguro = precioSeguro * dias;
   const subtotalServicios = precioServicios * dias;
-  const cargosAdmin = Math.round((subtotalDiario + subtotalSeguro + subtotalServicios) * 0.10);
-
-  const recargoRetiro = RECARGOS_LOGISTICOS[reserva.sucursalRetiro] || 0;
-  const recargoDevolucion = RECARGOS_LOGISTICOS[reserva.sucursalDevolucion] || 0;
-  const recargoLogistico = recargoRetiro + recargoDevolucion;
-
-  const subtotalReserva = subtotalDiario + subtotalSeguro + subtotalServicios + cargosAdmin;
-  const subtotalPreIva = subtotalReserva + recargoLogistico;
-  const iva = Math.round(subtotalPreIva * 0.19);
-  const total = subtotalPreIva + iva;
-  const discount = appliedPromotion
-    ? Math.min(total, appliedPromotion.tipoDescuento === 'porcentaje' ? Math.round(total * appliedPromotion.valorDescuento / 100) : appliedPromotion.valorDescuento)
-    : 0
+  // Cargo administrativo, IVA, descuento y total los calcula el servidor
+  const cargosAdmin = Number(cotizacion?.adminFee || 0);
+  const iva = Number(cotizacion?.vat || 0);
+  const total = cotizacion ? Number(cotizacion.estimatedTotal) + Number(cotizacion.discountAmount || 0) : subtotalDiario + subtotalSeguro + subtotalServicios;
+  const discount = cotizacion ? Number(cotizacion.discountAmount || 0) : 0
   const finalTotal = total - discount
 
   const getErrorMessage = (err) => {
@@ -624,6 +615,7 @@ export default function ResumenLateral({
               </span>
             </div>
             
+            {cotizacion && (<>
             <div style={{
               display: 'flex',
               justifyContent: 'space-between',
@@ -632,14 +624,15 @@ export default function ResumenLateral({
               paddingBottom: 14,
               borderBottom: `1px solid ${c?.cardBorder || '#e2e8f0'}`
             }}>
-              <span>{t('vehiculo.adminCharges', 'Cargos Administrativos (10%)')}</span>
+              <span>{t('vehiculo.adminChargesLabel', 'Cargos Administrativos').replace(/\s*\(\d+%\)/, '')} ({Math.round(Number(cotizacion?.adminFeeRate || 0) * 100)}%)</span>
               <span style={{ fontWeight: 800, color: c?.textPrimary || '#0f172a' }}>{formatCurrency(cargosAdmin, moneda)}</span>
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: c?.textSecondary || '#64748b' }}>
-              <span>{t('vehiculo.vat', 'IVA (19%)')}</span>
+              <span>{t('vehiculo.vatLabel', 'IVA')} ({Math.round(Number(cotizacion?.vatRate || 0) * 100)}%)</span>
               <span style={{ fontWeight: 800, color: c?.textPrimary || '#0f172a' }}>{formatCurrency(iva, moneda)}</span>
             </div>
+            </>)}
 
             {discount > 0 && (
               <div style={{
@@ -685,13 +678,6 @@ export default function ResumenLateral({
               margin: '0 0 6px'
             }}>
               {formatCurrency(finalTotal, moneda)}
-            </p>
-            <p style={{
-              fontSize: 11.5,
-              color: c?.textSecondary || '#94a3b8',
-              margin: 0
-            }}>
-              {t('vehiculo.totalIncludesVat', 'El total final incluye IVA y cargos adicionales')}
             </p>
           </div>
           

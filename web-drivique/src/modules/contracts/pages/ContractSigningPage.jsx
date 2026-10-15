@@ -9,7 +9,6 @@ import { reservationService } from '@/services/reservationService'
 import { reservationsService } from '@/services/reservationsService'
 import { catalogService } from '@/services/catalogService'
 import { documentsService } from '@/services/documentsService'
-import VEHICULOS_MOCK from '@/mocks/vehicles.json'
 import ContractSignature from '../components/ContractSignature'
 import { descargarContratoOriginal } from '@/modules/contracts/utils/downloadSignedContract'
 import { showAlert } from '@/utils/swalConfig'
@@ -58,13 +57,10 @@ export default function ContractSigningPage() {
           vehData = await catalogService.getVehiculoById(resData.vehiculoId).catch(() => null)
         }
 
-        if (!vehData && resData?.vehiculoId) {
-          vehData = VEHICULOS_MOCK.find(v => String(v.id) === String(resData.vehiculoId))
-        }
 
         if (activo) {
           setReserva(resData || null)
-          setVehiculo(vehData || VEHICULOS_MOCK[0] || null)
+          setVehiculo(vehData || null)
         }
       } catch (err) {
         console.error('Error cargando reserva para firmar contrato:', err)
@@ -83,16 +79,16 @@ export default function ContractSigningPage() {
     const df = reserva.datosForm || {}
     const rd = reserva.reservaDetalles || {}
 
-    const nombreCliente = df.nombre || [df.nombres, df.apellidos].filter(Boolean).join(' ').trim() || reserva.clienteNombre || usuario?.nombre || 'Cliente Drivique'
-    const correoCliente = df.correo || reserva.clienteCorreo || usuario?.correo || usuario?.email || 'cliente@drivique.com'
-    const telCliente = df.celular || df.telefono || reserva.clienteTelefono || usuario?.telefono || '+57 300 000 0000'
-    const docCliente = df.numDoc || df.documento || reserva.clienteDocumento || usuario?.cedula || '1020304050'
+    const nombreCliente = df.nombre || [df.nombres, df.apellidos].filter(Boolean).join(' ').trim() || reserva.clienteNombre || usuario?.nombre || ''
+    const correoCliente = df.correo || reserva.clienteCorreo || usuario?.correo || usuario?.email || ''
+    const telCliente = df.celular || df.telefono || reserva.clienteTelefono || usuario?.telefono || ''
+    const docCliente = df.numDoc || df.documento || reserva.clienteDocumento || usuario?.cedula || ''
     const tipoDocCliente = df.tipoDoc || usuario?.tipoDocumento || 'CC'
     const ref = reserva.referencia || reserva.codigo || reserva.id || id
 
     const userDocs = documentsService.obtenerDocumentos(usuario?.id || usuario?.correo || correoCliente)
-    const licName = df.licenciaPdf?.name || (typeof df.licenciaPdf === 'string' && df.licenciaPdf) || userDocs?.licencia?.nombre || (docCliente ? `Licencia-${docCliente}.pdf` : 'Licencia-Conduccion-Verificada.pdf')
-    const cedName = df.cedulaPdf?.name || (typeof df.cedulaPdf === 'string' && df.cedulaPdf) || userDocs?.cedula?.nombre || (docCliente ? `Cedula-${docCliente}.pdf` : 'Cedula-Verificada.pdf')
+    const licName = df.licenciaPdf?.name || (typeof df.licenciaPdf === 'string' && df.licenciaPdf) || userDocs?.licencia?.nombre || ''
+    const cedName = df.cedulaPdf?.name || (typeof df.cedulaPdf === 'string' && df.cedulaPdf) || userDocs?.cedula?.nombre || ''
 
     const fInicio = rd.fechaInicio || reserva.fechaInicio || new Date().toISOString().slice(0, 10)
     const fFin = rd.fechaFin || reserva.fechaFin || new Date(Date.now() + 86400000 * 3).toISOString().slice(0, 10)
@@ -142,18 +138,16 @@ export default function ContractSigningPage() {
   }, [reserva, vehiculo, usuario, id])
 
   const vehiculoParaContrato = useMemo(() => {
-    const vMock = VEHICULOS_MOCK.find(v => String(v.id) === String(reserva?.vehiculoId || reserva?.vehiculo?.id || vehiculo?.id)) || VEHICULOS_MOCK[0]
-    const base = vehiculo || reserva?.vehiculo || vMock || {}
+    const base = vehiculo || reserva?.vehiculo || {}
     return {
-      ...vMock,
       ...base,
-      nombre: base.nombre || vMock.nombre || (base.marca ? `${base.marca} ${base.modelo || ''}` : 'Vehículo Drivique'),
-      placa: base.placa || vMock.placa || 'ABC-123',
-      color: base.color || vMock.color || 'Plata',
-      año: base.año || base.anio || vMock.año || 2024,
-      sucursal: base.sucursal || reserva?.sucursal || reserva?.reservaDetalles?.sucursalRetiro || vMock.sucursal || '',
-      servicios: base.servicios || vMock.servicios || [],
-      seguros: base.seguros || vMock.seguros || [{ nombre: 'Protección Básica Estándar' }]
+      nombre: base.nombre || (base.marca ? `${base.marca} ${base.modelo || ''}` : (reserva?.vehiculoNombre || '')),
+      placa: base.placa || reserva?.vehiculoPlaca || '',
+      color: base.color || '',
+      año: base.año || base.anio || '',
+      sucursal: base.sucursal || reserva?.sucursal || reserva?.reservaDetalles?.sucursalRetiro || '',
+      servicios: base.servicios || [],
+      seguros: base.seguros || []
     }
   }, [vehiculo, reserva])
 
