@@ -2,6 +2,7 @@ import { useState, useMemo, useRef, useEffect } from 'react'
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useLanding } from '../../landing/LandingContext'
+import { useBrand } from '../../../contexts/BrandContext'
 import { useAuthStore } from '../../../store/authStore'
 import { formatCurrency } from '@/utils/currencyUtils'
 import { useCatalogo } from '../hooks/useCatalog'
@@ -96,7 +97,19 @@ function BrandLogo({ marca }) {
       </div>
     )
   }
-  return <span style={{ fontWeight: 800, fontSize: 18 }}>{marca}</span>
+  // El nombre y el logo siguen la marca configurada por el administrador
+  return <MarcaPropia marca={marca} />
+}
+
+function MarcaPropia({ marca }) {
+  const { brand } = useBrand()
+  const esPropia = marca === 'Drivique'
+  return (
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontWeight: 800, fontSize: 18, color: 'var(--brand-text)' }}>
+      {esPropia && brand.logoDataUrl ? <img src={brand.logoDataUrl} alt="" style={{ height: 34, maxWidth: 90, objectFit: 'contain' }} /> : null}
+      {esPropia ? brand.name : marca}
+    </span>
+  )
 }
 
 // Las sedes salen de la base de datos (cargadas al iniciar) y la flota y el precio, del catálogo real
@@ -281,7 +294,7 @@ export default function SucursalesPage() {
 
   const volverInicio = () => {
     sessionStorage.removeItem('drivique_sucursal_activa')
-    navigate('/')
+    navigate('/inicio')
   }
 
   return (
@@ -383,9 +396,9 @@ export default function SucursalesPage() {
                     {/* Brand Logo Box */}
                     <div style={{
                       height: 72,
-                      background: c.itemBg,
+                      background: c.accentBgSoft,
                       borderRadius: '14px',
-                      border: `1px solid ${c.panelBorder}`,
+                      border: '1px solid rgba(var(--brand-primary-rgb), 0.22)',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
