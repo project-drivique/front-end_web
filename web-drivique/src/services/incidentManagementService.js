@@ -1,259 +1,40 @@
-// src/services/incidentManagementService.js
-import { accessAuditService, hasMatchingBranch } from './accessAuditService'
-import { vehicleManagementService } from './vehicleManagementService'
-import { INITIAL_REPORTS } from '../modules/support/data/support.dummy'
+import { incidentService } from './incidentService'
 
-const STORAGE_KEY = 'drivique_user_reports_v7'
-const NOTIFS_KEY = 'drivique_user_notifications'
-const STORAGE_SCHEMA_KEY = 'drivique_user_reports_schema'
-const STORAGE_SCHEMA = '3'
-const LEGACY_INCIDENT_IDS = new Set(['REP-9102', 'REP-8401', 'REP-7730', 'REP-6521'])
+let cache = []
 
-const normalizeBranch = (value) => String(value || '').trim().toLocaleLowerCase()
-const isBranchManager = (user) => ['encargado', 'encargado_sucursal', 'branch_manager'].includes(user?.rol)
-const assignedBranch = (user) => user?.sucursalAsignada || user?.branchName || user?.sucursal || user?.sucursalId || ''
+const ESTADO = { OPEN: 'recibido', IN_REVIEW: 'en_revision', RESOLVED: 'resuelto', CLOSED: 'cerrado' }
+const GRAVEDAD = { CRITICAL: 'alta', HIGH: 'alta', MEDIUM: 'media', LOW: 'baja' }
 
-function assertIncidentScope(user, branch) {
-  if (!isBranchManager(user)) return
-  const branchUser = assignedBranch(user)
-  if (!branchUser || !hasMatchingBranch(branch, branchUser)) {
-    throw new Error('invalidBranch')
-  }
-}
+const mapear = (i) => ({
+  id: i.id,
+  codigo: i.code,
+  titulo: i.subject,
+  descripcion: i.description,
+  estado: ESTADO[i.status] || i.status,
+  estadoCodigo: i.status,
+  gravedad: GRAVEDAD[i.priority] || 'media',
+  prioridad: i.priority,
+  categoria: i.category,
+  sucursal: i.branchName || '',
+  vehiculoPlaca: i.vehiclePlate || '',
+  vehiculoModelo: i.vehicleModel || '',
+  reservaCodigo: i.reservationCode || '',
+  fechaCreacion: i.createdAt,
+  slaVencido: i.slaBreached,
+})
 
-function readIncidents() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_REPORTS))
-      localStorage.setItem(STORAGE_SCHEMA_KEY, STORAGE_SCHEMA)
-    }
-    const rawData = raw ? JSON.parse(raw) : INITIAL_REPORTS
-    let list = Array.isArray(rawData) && rawData.length > 0 ? rawData : INITIAL_REPORTS
-
-    const vehiclesList = vehicleManagementService.list()
-    return list.map(r => {
-      const vBrand = (r.vehiculo || '').split(' ')[0].toLowerCase()
-      const matchingVehicle = vehiclesList.find(
-          v => (v.id && r.vehiculoId && String(v.id) === String(r.vehiculoId)) ||
-               (v.placa && r.placa && v.placa.replace(/\s|-/g, '').toLowerCase() === r.placa.replace(/\s|-/g, '').toLowerCase()) || 
-               (v.nombre && r.vehiculo && v.nombre.toLowerCase().includes(r.vehiculo.toLowerCase())) ||
-               (r.vehiculo && v.nombre && r.vehiculo.toLowerCase().includes(v.nombre.toLowerCase())) ||
-               (vBrand && v.nombre && v.nombre.toLowerCase().includes(vBrand))
-        )
-      const fallbackImg = vehiclesList[0]?.imagenes?.[0] || 'https://pplx-res.cloudinary.com/image/upload/pplx_search_images/a2cb0b378c25efdb1e116246f84149744c2f4081.jpg'
-      
-      const code = r.codigo || r.id || 'INC'
-
-      return {
-        ...r,
-        sucursal: r.sucursal || matchingVehicle?.sucursal || 'Alamo Bogotá - Aeropuerto',
-        vehiculoImagen: r.vehiculoImagen || matchingVehicle?.imagenes?.[0] || matchingVehicle?.imagen || fallbackImg,
-        
-        // Evidencias Fotos (Obligatorias - Nunca null)
-        evidenciaFoto1: r.evidenciaFoto1 || `Evidencia-Foto-1-${code}.jpg`,
-        evidenciaFoto1Url: r.evidenciaFoto1Url || r.adjuntos?.[0] || 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=800&q=80',
-        
-        evidenciaFoto2: r.evidenciaFoto2 || `Evidencia-Foto-2-${code}.jpg`,
-        evidenciaFoto2Url: r.evidenciaFoto2Url || r.adjuntos?.[1] || 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=800&q=80',
-        
-        evidenciaFoto3: r.evidenciaFoto3 || `Evidencia-Foto-3-${code}.jpg`,
-        evidenciaFoto3Url: r.evidenciaFoto3Url || r.adjuntos?.[2] || 'https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=800&q=80',
-        
-        // Evidencia Video (Opcional - Puede ser null)
-        evidenciaVideo: r.evidenciaVideo !== undefined ? r.evidenciaVideo : (code === 'REP-9102' ? 'Evidencia-Video-REP-9102.mp4' : null),
-        evidenciaVideoUrl: r.evidenciaVideoUrl !== undefined ? r.evidenciaVideoUrl : (code === 'REP-9102' ? 'https://www.w3schools.com/html/mov_bbb.mp4' : null),
-      }
-    });
-  } catch {
-    return []
-  }
-}
-
-const INCIDENT_EVENT = 'drivique:incidents-updated'
-
-function writeIncidents(data) {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
-    if (typeof window !== 'undefined') {
-      window.dispatchEvent(new CustomEvent(INCIDENT_EVENT, { detail: data }))
-    }
-  } catch (err) {
-    console.error('Error guardando reportes de incidencias:', err)
-  }
-}
-
-function addSystemNotification(titulo, mensaje) {
-  try {
-    const rawNotifs = localStorage.getItem(NOTIFS_KEY)
-    const existing = rawNotifs ? JSON.parse(rawNotifs) : []
-    const newNotif = {
-      id: `notif-${Date.now()}`,
-      tipo: 'sistema',
-      titulo,
-      mensaje,
-      fecha: new Date().toISOString(),
-      leida: false,
-    }
-    if (Array.isArray(existing)) {
-      existing.unshift(newNotif)
-      localStorage.setItem(NOTIFS_KEY, JSON.stringify(existing))
-    }
-  } catch (e) {
-    console.error('Error guardando notificación:', e)
-  }
-}
-
+// Lectura de incidencias para el tablero y los reportes; la gestión se hace en incidentService.
 export const incidentManagementService = {
-  eventName: INCIDENT_EVENT,
+  async refresh() {
+    cache = (await incidentService.forStaff()).map(mapear)
+    return this.list()
+  },
 
   list() {
-    return readIncidents()
+    return cache.map((incident) => ({ ...incident }))
   },
 
-  listForUser(currentUser) {
-    const all = readIncidents()
-    if (!isBranchManager(currentUser)) return all
-
-    const userBranch = assignedBranch(currentUser)
-    if (!userBranch) return []
-
-    return all.filter((r) => hasMatchingBranch(r.sucursal, userBranch))
-  },
-
-  getById(id) {
-    return readIncidents().find((r) => r.id === id || r.codigo === id) || null
-  },
-
-  createIncident(data, adminUser) {
-    const numRandom = Math.floor(1000 + Math.random() * 9000)
-    const newCode = `REP-${numRandom}`
-
-    // Obtener información del vehículo seleccionado si aplica
-    let vehicleObj = null
-    if (data.vehiculoId) {
-      vehicleObj = vehicleManagementService.getById(data.vehiculoId)
-    }
-    const reportBranch = vehicleObj?.sucursal || data.sucursal || assignedBranch(adminUser)
-    assertIncidentScope(adminUser, reportBranch)
-
-    const newReport = {
-      id: newCode,
-      codigo: newCode,
-      tipoIncidenciaId: data.tipoIncidenciaId || 'mantenimiento_general',
-      tipoIncidenciaNombre: data.tipoIncidenciaNombre || 'Incidencia de Flota',
-      vehiculoId: data.vehiculoId || null,
-      vehiculo: vehicleObj?.nombre || data.vehiculo || '',
-      placa: vehicleObj?.placa || data.placa || '',
-      sucursal: reportBranch,
-      vehiculoImagen: vehicleObj?.imagenes?.[0] || '',
-      descripcion: data.descripcion || '',
-      contactoNombre: adminUser?.nombre || '',
-      contactoTelefono: adminUser?.telefono || '',
-      contactoEmail: adminUser?.correo || '',
-      origen: 'administrador',
-      prioridad: data.prioridad || 'urgente',
-      tiempoEstimado: data.tiempoEstimado || '2 a 6 horas',
-      estado: 'recibido',
-      fechaIso: new Date().toISOString(),
-      evidenciasCount: data.evidenciasCount || 0,
-      historial: [
-        {
-          estadoKey: 'recibido',
-          titulo: 'Reporte Interno Creado',
-          descripcion: data.descripcion || 'Reporte generado directamente por el administrador/encargado.',
-          autor: adminUser?.nombre || 'Administrador',
-          hora: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          fecha: new Date().toISOString(),
-          color: 'var(--brand-primary)',
-        },
-      ],
-    }
-
-    const incidents = readIncidents()
-    incidents.unshift(newReport)
-    writeIncidents(incidents)
-
-    accessAuditService.record({
-      correo: adminUser?.correo || 'admin@drivique.com',
-      rol: adminUser?.rol || 'administrador',
-      resultado: 'EXITO',
-      motivo: `Creó el reporte interno de incidencia ${newReport.codigo} para el vehículo ${newReport.vehiculo} (${newReport.placa})`,
-    })
-
-    return newReport
-  },
-
-  updateStatusAndRespond(id, { nuevoEstado, respuestaTexto, nuevaPrioridad }, adminUser) {
-    const incidents = readIncidents()
-    const index = incidents.findIndex((r) => r.id === id || r.codigo === id)
-    if (index < 0) throw new Error('reportNotFound')
-
-    const current = incidents[index]
-    assertIncidentScope(adminUser, current.sucursal)
-    const updatedState = nuevoEstado || current.estado
-    const updatedPriority = nuevaPrioridad || current.prioridad
-
-    const responseEntry = {
-      estadoKey: updatedState,
-      titulo: `Actualización de Estado: ${updatedState.toUpperCase()}`,
-      descripcion: respuestaTexto || `Estado del reporte actualizado a "${updatedState}".`,
-      autor: adminUser?.nombre || 'Administrador Drivique',
-      hora: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      fecha: new Date().toISOString(),
-      color: updatedState === 'resuelto' ? '#16a34a' : updatedState === 'en_reparacion' ? '#0284c7' : '#d97706',
-    }
-
-    incidents[index] = {
-      ...current,
-      estado: updatedState,
-      prioridad: updatedPriority,
-      historial: [...(current.historial || []), responseEntry],
-    }
-
-    writeIncidents(incidents)
-
-    // Enviar notificación interna en el sistema
-    addSystemNotification(
-      `🔔 Respuesta al Reporte ${current.codigo}`,
-      `Estimado(a) ${current.contactoNombre}: Tu reporte sobre el vehículo ${current.vehiculo} (${current.placa}) cambió a estado "${updatedState.toUpperCase()}". Mensaje: "${respuestaTexto || 'Se está dando atención a tu caso.'}"`
-    )
-
-    accessAuditService.record({
-      correo: adminUser?.correo || 'admin@drivique.com',
-      rol: adminUser?.rol || 'administrador',
-      resultado: 'EXITO',
-      motivo: `Respondió y actualizó el estado del reporte ${current.codigo} a ${updatedState}`,
-    })
-
-    return incidents[index]
-  },
-
-  removeIncident(id, adminUser) {
-    const incident = this.getById(id)
-    if (!incident) throw new Error('reportNotFound')
-    assertIncidentScope(adminUser, incident.sucursal)
-
-    // VALIDACIÓN 1: Reportes de clientes NO se eliminan
-    if (incident.origen === 'cliente') {
-      throw new Error('clientReportCannotBeDeleted')
-    }
-
-    // VALIDACIÓN 2: Reportes propios solo se eliminan si están en estado "recibido"
-    if (incident.origen === 'administrador' && incident.estado !== 'recibido') {
-      throw new Error('onlyReceivedOwnReportsCanBeDeleted')
-    }
-
-    const filtered = readIncidents().filter((r) => r.id !== id && r.codigo !== id)
-    writeIncidents(filtered)
-
-    accessAuditService.record({
-      correo: adminUser?.correo || 'admin@drivique.com',
-      rol: adminUser?.rol || 'administrador',
-      resultado: 'EXITO',
-      motivo: `Eliminó el reporte propio de incidencia ${incident.codigo} (${incident.vehiculo})`,
-    })
-
-    return true
+  listForUser() {
+    return this.list()
   },
 }

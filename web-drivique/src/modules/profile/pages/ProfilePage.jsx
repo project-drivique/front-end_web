@@ -443,6 +443,18 @@ export default function PerfilPage() {
                   </span>
                 </div>
               </div>
+
+              {/* Dirección */}
+              <div>
+                <label style={{ ...labelStyle, display: 'flex', alignItems: 'center' }}>
+                  {t('perfil.address', 'Dirección')}
+                </label>
+                <div style={{ ...readonlyStyle, padding: '0 14px' }}>
+                  <span style={{ color: formData.direccion ? c.readonlyText : '#94a3b8', fontStyle: formData.direccion ? 'normal' : 'italic' }}>
+                    {formData.direccion || t('perfil.incomplete', 'Incompleto')}
+                  </span>
+                </div>
+              </div>
             </div>
 
             {/* Tarjeta 3: Documento de Identidad */}

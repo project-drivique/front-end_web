@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   FaCamera,
@@ -42,7 +42,10 @@ import "./CityManagementPage.css";
 import "./VehicleManagementPage.css";
 
 const EMPTY = {
-  nombre: "",
+  marca: "",
+  modelo: "",
+  vin: "",
+  kilometraje: 0,
   placa: "",
   categoria: "",
   transmision: "",
@@ -122,14 +125,31 @@ export default function VehicleManagementPage() {
   // Agregar un estado local para la actualización rápida
   const [updatingVehicleId, setUpdatingVehicleId] = useState(null);
 
+  const [dataVersion, setDataVersion] = useState(0);
+  useEffect(() => {
+    Promise.all([
+      branchManagementService.refresh(),
+      vehicleManagementService.refresh(),
+      branchCategoryService.refresh(),
+    ])
+      .then(([, vehiclesList, categoriesList]) => {
+        setVehicles(vehiclesList);
+        setCategories(categoriesList);
+        setBranchCategoriesMap(branchCategoryService.getBranchCategoriesMap());
+        setDataVersion((v) => v + 1);
+      })
+      .catch((caught) => console.error("No se pudo cargar la flota:", caught));
+  }, []);
+
   const branches = useMemo(
     () =>
       branchManagementService
         .list()
         .filter((b) => b.estado !== "inactiva")
         .sort((a, b) => a.nombre.localeCompare(b.nombre)),
-    []
+    [dataVersion]
   );
+  const fleetLookups = useMemo(() => vehicleManagementService.lookups(), [dataVersion]);
 
   // Mapeo / Filtro de vehículos
   const filteredVehicles = useMemo(() => {
@@ -324,9 +344,14 @@ export default function VehicleManagementPage() {
   };
 
   // Toggle de categoría para la sucursal del encargado
-  const handleToggleCategory = (catName, currentEnabled) => {
+  const handleToggleCategory = async (catName, currentEnabled) => {
     const nextState = !currentEnabled;
-    branchCategoryService.toggleBranchCategory(sucursalAsignada, catName, nextState);
+    try {
+      await branchCategoryService.toggleBranchCategory(sucursalAsignada, catName, nextState);
+    } catch (caught) {
+      setNotice(caught.message);
+      return;
+    }
     setBranchCategoriesMap(branchCategoryService.getBranchCategoriesMap());
     setNotice(
       nextState
@@ -385,31 +410,24 @@ export default function VehicleManagementPage() {
     setError("");
   };
 
-  const handleQuickStatusChange = (vehicleId, newState) => {
+  const handleQuickStatusChange = async (vehicleId, newState) => {
     try {
       setUpdatingVehicleId(vehicleId);
-      const vehicleToUpdate = vehicles.find((v) => Number(v.id) === Number(vehicleId));
-      if (!vehicleToUpdate) throw new Error("Vehículo no encontrado");
-
       if (vehicleManagementService.activeReservationCount(vehicleId) > 0 && newState !== "reservado") {
-         alert("No puedes cambiar el estado manualmente porque este vehículo tiene una reserva activa.");
-         return;
+        alert("No puedes cambiar el estado manualmente porque este vehículo tiene una reserva activa.");
+        return;
       }
-
-      const updatedData = { ...vehicleToUpdate, estadoFlota: newState };
-      vehicleManagementService.update(vehicleId, updatedData, user);
-      
-      setVehicles(vehicleManagementService.list());
+      setVehicles(await vehicleManagementService.changeState(vehicleId, newState));
       setNotice(`Estado del vehículo actualizado a ${newState === "disponible" ? "Disponible" : "Mantenimiento"}.`);
-    } catch (error) {
-      console.error("Error updating status:", error);
-      alert("No se pudo cambiar el estado.");
+    } catch (caught) {
+      console.error("Error updating status:", caught);
+      alert(caught.message || "No se pudo cambiar el estado.");
     } finally {
       setUpdatingVehicleId(null);
     }
   };
 
-  const saveCategory = (e) => {
+  const saveCategory = async (e) => {
     e.preventDefault();
     const payload = {
       ...categoryForm,
@@ -420,37 +438,44 @@ export default function VehicleManagementPage() {
         ? Number(categoryForm.depositoGarantiaSugerido)
         : null,
     };
-    const updated = branchCategoryService.saveCategory(payload);
-    setCategories(updated);
-    setNotice(
-      categoryForm.id
-        ? t("categoriesManagement.updatedNotice", "Categoría actualizada correctamente")
-        : t("categoriesManagement.createdNotice", "Categoría creada correctamente")
-    );
-    close();
+    try {
+      const updated = await branchCategoryService.saveCategory(payload);
+      setCategories(updated);
+      setBranchCategoriesMap(branchCategoryService.getBranchCategoriesMap());
+      setNotice(
+        categoryForm.id
+          ? t("categoriesManagement.updatedNotice", "Categoría actualizada correctamente")
+          : t("categoriesManagement.createdNotice", "Categoría creada correctamente")
+      );
+      close();
+    } catch (caught) {
+      setError(caught.message);
+    }
   };
 
-  const removeCategory = () => {
+  const removeCategory = async () => {
     if (!modal?.category?.id) return;
-    const updated = branchCategoryService.deleteCategory(modal.category.id);
-    setCategories(updated);
-    setBranchCategoriesMap(branchCategoryService.getBranchCategoriesMap());
-    setNotice(t("categoriesManagement.deletedNotice", "Categoría eliminada correctamente"));
-    close();
+    try {
+      const updated = await branchCategoryService.deleteCategory(modal.category.id);
+      setCategories(updated);
+      setBranchCategoriesMap(branchCategoryService.getBranchCategoriesMap());
+      setNotice(t("categoriesManagement.deletedNotice", "Categoría eliminada correctamente"));
+      close();
+    } catch (caught) {
+      setError(caught.message);
+    }
   };
 
-  const save = (event) => {
+  const save = async (event) => {
     event.preventDefault();
     const payload = {
       ...form,
       sucursal: esEncargado ? sucursalAsignada : form.sucursal,
-      caracteristicas: textToList(form.caracteristicasTexto),
     };
     try {
       if (modal.vehicle)
-        vehicleManagementService.update(modal.vehicle.id, payload, user);
-      else vehicleManagementService.create(payload, user);
-      setVehicles(vehicleManagementService.list());
+        setVehicles(await vehicleManagementService.update(modal.vehicle.id, payload));
+      else setVehicles(await vehicleManagementService.create(payload));
       setNotice(
         t(
           modal.vehicle
@@ -470,22 +495,17 @@ export default function VehicleManagementPage() {
     }
   };
 
-  const remove = () => {
+  const remove = async () => {
     if (esEncargado && normalizeBranch(modal.vehicle.sucursal) !== assignedBranchKey) return;
     try {
-      vehicleManagementService.remove(modal.vehicle.id, user);
-      setVehicles(vehicleManagementService.list());
+      setVehicles(await vehicleManagementService.remove(modal.vehicle.id));
       setNotice(
         t("admin.vehiclesManagement.messages.deleted", "Vehículo eliminado correctamente")
       );
       close();
     } catch (caught) {
       setModal(null);
-      setNotice(
-        t(`admin.vehiclesManagement.errors.${caught.message}`, {
-          count: caught.count,
-        })
-      );
+      setNotice(caught.message);
     }
   };
 
@@ -1633,31 +1653,35 @@ export default function VehicleManagementPage() {
                         
                         {/* IMAGEN */}
                         <div style={{ gridColumn: '1 / -1', marginBottom: '8px' }}>
-                          <label style={{ display: 'block', fontSize: '11px', color: 'var(--texto-second, #64748b)', marginBottom: '6px', fontWeight: 600 }}>{t("admin.vehiclesManagement.modal.images", "Imágenes del Vehículo (Máx. 3)")}</label>
-                          <div style={{ display: 'flex', gap: '16px', width: '100%' }}>
-                            {[0, 1, 2].map((idx) => {
-                              const img = form.imagenes && form.imagenes[idx];
-                              return img ? (
-                                <div key={idx} style={{ position: 'relative', borderRadius: '12px', overflow: 'hidden', border: '1px solid var(--borde, #e2e8f0)', flex: 1, height: '130px' }}>
-                                  <img src={img} alt={`preview ${idx}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                  <button type="button" onClick={() => setForm({ ...form, imagenes: form.imagenes.filter((_, i) => i !== idx) })} style={{ position: 'absolute', top: 6, right: 6, background: '#ef4444', color: 'white', border: 'none', borderRadius: '50%', width: 24, height: 24, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }}><FaTimes size={12} /></button>
-                                </div>
-                              ) : (
-                                <label key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1, height: '130px', background: 'var(--bg-seccion1, #f8fafc)', border: '2px dashed var(--brand-primary, #3b82f6)', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.2s', textAlign: 'center', padding: '8px' }} onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--bg-seccion1, #eff6ff)'; e.currentTarget.style.borderColor = 'var(--brand-primary, #2563eb)'; }} onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--bg-seccion1, #f8fafc)'; e.currentTarget.style.borderColor = 'var(--brand-primary, #3b82f6)'; }}>
-                                  <FaPlus size={20} style={{ color: 'var(--brand-primary, #3b82f6)', marginBottom: '8px' }} />
-                                  <div style={{ fontSize: '12px', color: 'var(--texto-primary, #475569)', fontWeight: 600 }}>{idx === 0 ? t("admin.vehiclesManagement.modal.mainImage", "Imagen Principal") : `${t("admin.vehiclesManagement.modal.image", "Imagen")} ${idx + 1}`}</div>
-                                  <div style={{ fontSize: '10px', color: 'var(--texto-second, #94a3b8)', marginTop: '4px' }}>{t("admin.vehiclesManagement.modal.clickToUpload", "(Clic para subir)")}</div>
-                                  <input type="file" accept="image/*" onChange={loadImages} style={{ display: "none" }} />
-                                </label>
-                              );
-                            })}
-                          </div>
+                          <label style={{ display: 'block', fontSize: '11px', color: 'var(--texto-second, #64748b)', marginBottom: '6px', fontWeight: 600 }}>URL de la imagen principal</label>
+                          <input type="url" style={{ width: '100%', padding: '10px 14px', background: 'var(--bg-seccion1, #f8fafc)', border: 'none', borderRadius: '6px', fontSize: '13px', color: 'var(--texto-primary, #334155)', outline: 'none' }} placeholder="https://..." value={form.imagenes?.[0] || ""} onChange={(e) => setForm({ ...form, imagenes: e.target.value ? [e.target.value] : [] })} />
+                          {form.imagenes?.[0] && (
+                            <img src={form.imagenes[0]} alt="Vista previa" style={{ marginTop: 10, width: '100%', maxHeight: 160, objectFit: 'cover', borderRadius: 12 }} />
+                          )}
                         </div>
 
                         {/* INPUTS ESTILO REFERENCIA */}
                         <div>
-                          <label style={{ display: 'block', fontSize: '11px', color: 'var(--texto-second, #64748b)', marginBottom: '6px', fontWeight: 600 }}>{t("admin.vehiclesManagement.modal.vehicleName", "Nombre Vehículo *")}</label>
-                          <input style={{ width: '100%', padding: '10px 14px', background: 'var(--bg-seccion1, #f8fafc)', border: 'none', borderRadius: '6px', fontSize: '13px', color: 'var(--texto-primary, #334155)', outline: 'none' }} value={form.nombre} onChange={(e) => setForm({ ...form, nombre: e.target.value })} placeholder={t("admin.vehiclesManagement.modal.placeholderName", "Ej: Toyota Corolla 2024")} required />
+                          <label style={{ display: 'block', fontSize: '11px', color: 'var(--texto-second, #64748b)', marginBottom: '6px', fontWeight: 600 }}>Marca *</label>
+                          <select disabled={Boolean(modal.vehicle)} required style={{ ...{ width: '100%', padding: '10px 14px', background: 'var(--bg-seccion1, #f8fafc)', border: 'none', borderRadius: '6px', fontSize: '13px', color: 'var(--texto-primary, #334155)', outline: 'none' }, cursor: 'pointer' }} value={form.marca || ""} onChange={(e) => setForm({ ...form, marca: e.target.value })}>
+                            <option value="" disabled>{t("admin.vehiclesManagement.modal.select", "Seleccionar")}</option>
+                            {fleetLookups.brands.map((b) => <option key={b} value={b}>{b}</option>)}
+                          </select>
+                        </div>
+
+                        <div>
+                          <label style={{ display: 'block', fontSize: '11px', color: 'var(--texto-second, #64748b)', marginBottom: '6px', fontWeight: 600 }}>Modelo *</label>
+                          <input disabled={Boolean(modal.vehicle)} required style={{ width: '100%', padding: '10px 14px', background: 'var(--bg-seccion1, #f8fafc)', border: 'none', borderRadius: '6px', fontSize: '13px', color: 'var(--texto-primary, #334155)', outline: 'none' }} value={form.modelo || ""} onChange={(e) => setForm({ ...form, modelo: e.target.value })} />
+                        </div>
+
+                        <div>
+                          <label style={{ display: 'block', fontSize: '11px', color: 'var(--texto-second, #64748b)', marginBottom: '6px', fontWeight: 600 }}>VIN (17 caracteres) *</label>
+                          <input disabled={Boolean(modal.vehicle)} required minLength={17} maxLength={17} style={{ width: '100%', padding: '10px 14px', background: 'var(--bg-seccion1, #f8fafc)', border: 'none', borderRadius: '6px', fontSize: '13px', color: 'var(--texto-primary, #334155)', outline: 'none' }} value={form.vin || ""} onChange={(e) => setForm({ ...form, vin: e.target.value.toUpperCase() })} />
+                        </div>
+
+                        <div>
+                          <label style={{ display: 'block', fontSize: '11px', color: 'var(--texto-second, #64748b)', marginBottom: '6px', fontWeight: 600 }}>Kilometraje *</label>
+                          <input type="number" min="0" required style={{ width: '100%', padding: '10px 14px', background: 'var(--bg-seccion1, #f8fafc)', border: 'none', borderRadius: '6px', fontSize: '13px', color: 'var(--texto-primary, #334155)', outline: 'none' }} value={form.kilometraje ?? 0} onChange={(e) => setForm({ ...form, kilometraje: e.target.value })} />
                         </div>
 
                         <div>
@@ -1705,8 +1729,7 @@ export default function VehicleManagementPage() {
                           <label style={{ display: 'block', fontSize: '11px', color: 'var(--texto-second, #64748b)', marginBottom: '6px', fontWeight: 600 }}>{t("admin.vehiclesManagement.modal.transmission", "Transmisión *")}</label>
                           <select style={{ width: '100%', padding: '10px 14px', background: 'var(--bg-seccion1, #f8fafc)', border: 'none', borderRadius: '6px', fontSize: '13px', color: 'var(--texto-primary, #334155)', outline: 'none', cursor: 'pointer' }} value={form.transmision} onChange={(e) => setForm({ ...form, transmision: e.target.value })} required>
                             <option value="" disabled>{t("admin.vehiclesManagement.modal.select", "Seleccionar")}</option>
-                            <option value="Automática">{t("admin.vehiclesManagement.transmission.auto", "Automática")}</option>
-                            <option value="Manual">{t("admin.vehiclesManagement.transmission.manual", "Manual")}</option>
+                            {fleetLookups.transmissions.map((name) => <option key={name} value={name}>{name}</option>)}
                           </select>
                         </div>
 
@@ -1714,16 +1737,15 @@ export default function VehicleManagementPage() {
                           <label style={{ display: 'block', fontSize: '11px', color: 'var(--texto-second, #64748b)', marginBottom: '6px', fontWeight: 600 }}>{t("admin.vehiclesManagement.modal.fuel", "Combustible *")}</label>
                           <select style={{ width: '100%', padding: '10px 14px', background: 'var(--bg-seccion1, #f8fafc)', border: 'none', borderRadius: '6px', fontSize: '13px', color: 'var(--texto-primary, #334155)', outline: 'none', cursor: 'pointer' }} value={form.combustible} onChange={(e) => setForm({ ...form, combustible: e.target.value })} required>
                             <option value="" disabled>{t("admin.vehiclesManagement.modal.select", "Seleccionar")}</option>
-                            <option value="Gasolina">{t("admin.vehiclesManagement.fuel.gasoline", "Gasolina")}</option>
-                            <option value="Diésel">{t("admin.vehiclesManagement.fuel.diesel", "Diésel")}</option>
-                            <option value="Híbrido">{t("admin.vehiclesManagement.fuel.hybrid", "Híbrido")}</option>
-                            <option value="Eléctrico">{t("admin.vehiclesManagement.fuel.electric", "Eléctrico")}</option>
+                            {fleetLookups.fuels.map((name) => <option key={name} value={name}>{name}</option>)}
                           </select>
                         </div>
 
+                        
+
                         <div>
                           <label style={{ display: 'block', fontSize: '11px', color: 'var(--texto-second, #64748b)', marginBottom: '6px', fontWeight: 600 }}>{t("admin.vehiclesManagement.modal.restriction", "Pico y Placa *")}</label>
-                          <select style={{ width: '100%', padding: '10px 14px', background: 'var(--bg-seccion1, #f8fafc)', border: 'none', borderRadius: '6px', fontSize: '13px', color: 'var(--texto-primary, #334155)', outline: 'none', cursor: 'pointer' }} value={form.aplicaPicoYPlaca} onChange={(e) => setForm({ ...form, aplicaPicoYPlaca: e.target.value })} required>
+                          <select style={{ width: '100%', padding: '10px 14px', background: 'var(--bg-seccion1, #f8fafc)', border: 'none', borderRadius: '6px', fontSize: '13px', color: 'var(--texto-primary, #334155)', outline: 'none', cursor: 'pointer' }} value={form.aplicaPicoYPlaca || ""} onChange={(e) => setForm({ ...form, aplicaPicoYPlaca: e.target.value })}>
                             <option value="" disabled>{t("admin.vehiclesManagement.modal.select", "Seleccionar")}</option>
                             <option value="Si">{t("admin.vehiclesManagement.restriction.yes", "Sí aplica")}</option>
                             <option value="No">{t("admin.vehiclesManagement.restriction.no", "No aplica")}</option>
@@ -1745,7 +1767,7 @@ export default function VehicleManagementPage() {
                           >
                             <option value="disponible">{t("admin.vehiclesManagement.states.disponible", "Disponible")}</option>
                             <option value="reservado">{t("admin.vehiclesManagement.states.reservado", "Reservado")}</option>
-                            <option value="en mantenimiento">{t("admin.vehiclesManagement.states.en mantenimiento", "En Mantenimiento")}</option>
+                            <option value="mantenimiento">{t("admin.vehiclesManagement.states.en mantenimiento", "En Mantenimiento")}</option>
                           </select>
                         </div>
 

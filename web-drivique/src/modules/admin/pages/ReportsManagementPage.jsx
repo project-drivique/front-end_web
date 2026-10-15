@@ -42,6 +42,8 @@ import {
 } from '../../../services/reportManagementService'
 import { branchManagementService } from '../../../services/branchManagementService'
 import { showAlert } from '../../../utils/swalConfig'
+import { exportExcel, exportPdf } from '../../../utils/listExportUtils'
+import { formatCurrency } from '../../../utils/currencyUtils'
 import MenuConfiguracion from '../../../components/MenuConfiguracion'
 import ManagementSidebar from '../components/ManagementSidebar'
 import './CityManagementPage.css'
@@ -242,14 +244,58 @@ export default function ReportsManagementPage({ branchOnly = false }) {
   const [modalReport, setModalReport] = useState(null)
 
   // Cargar sucursales e historial inicial
-  useEffect(() => {
-    setSucursales(branchManagementService.list())
-    loadHistory()
-  }, [])
+  const [dataVersion, setDataVersion] = useState(0)
+  const [dashboard, setDashboard] = useState(null)
 
   const loadHistory = () => {
     const list = reportManagementService.getHistory()
     setHistory(list)
+  }
+
+  useEffect(() => {
+    reportManagementService.prepararDatos()
+      .catch((error) => console.error('No se pudieron cargar los datos de reportes:', error))
+      .finally(() => {
+        setSucursales(branchManagementService.list())
+        loadHistory()
+        setDataVersion((n) => n + 1)
+        reportManagementService.getDashboard(user).then(setDashboard).catch(() => setDashboard(null))
+      })
+  }, [])
+
+  // Exporta (o imprime) la tabla de desempeño por sucursal con los mismos datos que se ven en pantalla
+  const datosTablaDesempeno = () => ({
+    title: 'Desempeño Operativo y Financiero por Sucursal',
+    subtitle: 'Sistema Operativo de Gestión e Inspección de Alquiler de Vehículos',
+    headers: ['Sucursal', 'Ciudad', 'Vehículo más demandado', 'Reservas', 'Días alquilados', 'Ingresos netos (COP)', 'Ocupación (%)', 'Incidencias', 'Calificación'],
+    rows: (dashboard?.sucursales || []).map((f) => [
+      f.sucursal, f.ciudad, f.vehiculoTop || '—', f.reservas, f.dias, formatCurrency(f.ingresos, 'COP'),
+      `${f.ocupacion}%`, f.incidencias, f.totalResenas > 0 ? f.calificacion.toFixed(1) : '—',
+    ]),
+    kpis: dashboard ? [
+      { label: 'Ingresos totales netos', value: formatCurrency(dashboard.ingresos, 'COP') },
+      { label: 'Reservas facturadas', value: String(dashboard.reservasFacturadas) },
+      { label: 'Ocupación de flota', value: `${dashboard.ocupacion}%` },
+    ] : [],
+    filtersSummary: [],
+    filename: `desempeno-sucursales-${new Date().toISOString().slice(0, 10)}`,
+    user,
+  })
+
+  const handleDownloadDirect = (format) => {
+    const payload = datosTablaDesempeno()
+    if (format === 'excel') exportExcel(payload)
+    else exportPdf(payload)
+  }
+
+  const handlePrintReport = () => exportPdf(datosTablaDesempeno())
+
+  const openHistoryReport = async (report) => {
+    try {
+      setModalReport(await reportManagementService.getHistoryDetail(report.id))
+    } catch (error) {
+      showAlert({ icon: 'error', title: t('admin.reports.errorDownload', 'Error de descarga'), text: error.message })
+    }
   }
 
   // Manejador de fechas predefinidas
@@ -327,6 +373,7 @@ export default function ReportsManagementPage({ branchOnly = false }) {
     moneda,
     tasaUSD,
     user,
+    dataVersion,
   ])
 
   // Generar y descargar reporte
@@ -345,7 +392,7 @@ export default function ReportsManagementPage({ branchOnly = false }) {
         tasaUSD: tasaUSD || 4000,
       }
 
-      const generated = reportManagementService.generateReport({
+      const generated = await reportManagementService.generateReport({
         typeId: selectedTypeId,
         filters,
         format: selectedFormat,
@@ -392,9 +439,9 @@ export default function ReportsManagementPage({ branchOnly = false }) {
   }
 
   // Re-descargar desde el historial
-  const handleDownloadFromHistory = (reportId) => {
+  const handleDownloadFromHistory = async (reportId) => {
     try {
-      reportManagementService.downloadFromHistory(reportId, user)
+      await reportManagementService.downloadFromHistory(reportId, user)
     } catch (error) {
       console.error('Error descargando reporte de historial:', error)
       showAlert({
@@ -406,10 +453,10 @@ export default function ReportsManagementPage({ branchOnly = false }) {
   }
 
   // Imprimir reporte desde el historial
-  const handlePrintFromHistory = (report) => {
-    if (!report.snapshot) return
+  const handlePrintFromHistory = async (report) => {
     try {
-      reportManagementService.printReport(report.snapshot, user)
+      const detail = report.snapshot ? report : await reportManagementService.getHistoryDetail(report.id)
+      reportManagementService.printReport(detail.snapshot, user)
     } catch (error) {
       console.error('Error imprimiendo desde historial:', error)
       showAlert({
@@ -436,7 +483,12 @@ export default function ReportsManagementPage({ branchOnly = false }) {
     })
 
     if (res.isConfirmed) {
-      reportManagementService.deleteReportFromHistory(report.id, user)
+      try {
+        await reportManagementService.deleteReportFromHistory(report.id)
+      } catch (error) {
+        showAlert({ icon: 'error', title: error.message })
+        return
+      }
       loadHistory()
       if (modalReport?.id === report.id) setModalReport(null)
     }
@@ -455,7 +507,12 @@ export default function ReportsManagementPage({ branchOnly = false }) {
     })
 
     if (res.isConfirmed) {
-      reportManagementService.clearHistory(user)
+      try {
+        await reportManagementService.clearHistory()
+      } catch (error) {
+        showAlert({ icon: 'error', title: error.message })
+        return
+      }
       loadHistory()
     }
   }
@@ -544,21 +601,29 @@ export default function ReportsManagementPage({ branchOnly = false }) {
         {/* =========================================================
             PESTAÑA DASHBOARD: DASHBOARD ANALÍTICO DE INTELIGENCIA
            ========================================================= */}
-        {activeTab === 'dashboard' && (
+        {activeTab === 'dashboard' && !dashboard && (
           <div className="reports-dashboard-view">
-            {/* 4 TARJETAS KPI EJECUTIVAS */}
+            <p style={{ padding: 24, color: '#64748b' }}>{t('admin.reports.loadingDashboard', 'Cargando indicadores...')}</p>
+          </div>
+        )}
+
+        {activeTab === 'dashboard' && dashboard && (
+          <div className="reports-dashboard-view">
+            {/* 4 TARJETAS KPI EJECUTIVAS (datos del servidor) */}
             <div className="cash-kpi-bar">
               <div className="cash-kpi-item-light">
                 <div className="cash-kpi-header-light" style={{ color: '#10b981' }}>
                   <FaMoneyBillWave />
                   <span>{t('admin.reports.kpi.totalRevenue', 'INGRESOS TOTALES NETOS')}</span>
                 </div>
-                <strong className="cash-kpi-val-light">$ 248.500.000 COP</strong>
+                <strong className="cash-kpi-val-light">{formatCurrency(dashboard.ingresos, 'COP')} COP</strong>
                 <div className="cash-kpi-progress-bg">
-                  <div className="cash-kpi-progress-fill" style={{ width: '85%', background: '#10b981' }}></div>
+                  <div className="cash-kpi-progress-fill" style={{ width: `${Math.min(100, Math.max(0, dashboard.variacionMes ?? 0))}%`, background: '#10b981' }}></div>
                 </div>
-                <span className="cash-kpi-subtitle-light" style={{ color: '#10b981', fontWeight: 700 }}>
-                  <FaArrowUp style={{ fontSize: 11 }} /> +14.2% {t('admin.reports.kpi.vsLastMonth', 'vs mes anterior')}
+                <span className="cash-kpi-subtitle-light" style={{ color: dashboard.variacionMes >= 0 ? '#10b981' : '#ef4444', fontWeight: 700 }}>
+                  {dashboard.variacionMes === null
+                    ? t('admin.reports.kpi.noPreviousMonth', 'Sin ingresos el mes anterior para comparar')
+                    : <><FaArrowUp style={{ fontSize: 11 }} /> {dashboard.variacionMes > 0 ? '+' : ''}{dashboard.variacionMes}% {t('admin.reports.kpi.vsLastMonth', 'vs mes anterior')}</>}
                 </span>
               </div>
 
@@ -567,11 +632,11 @@ export default function ReportsManagementPage({ branchOnly = false }) {
                   <FaClipboardList />
                   <span>{t('admin.reports.kpi.totalReservations', 'RESERVAS FACTURADAS')}</span>
                 </div>
-                <strong className="cash-kpi-val-light">1,420 reservas</strong>
+                <strong className="cash-kpi-val-light">{dashboard.reservasFacturadas} {t('admin.reports.kpi.reservationsUnit', 'reservas')}</strong>
                 <div className="cash-kpi-progress-bg">
-                  <div className="cash-kpi-progress-fill" style={{ width: '88%', background: '#2563eb' }}></div>
+                  <div className="cash-kpi-progress-fill" style={{ width: `${dashboard.tasaCompletadas}%`, background: '#2563eb' }}></div>
                 </div>
-                <span className="cash-kpi-subtitle-light">{t('admin.reports.kpi.completedRate', '88% completadas sin novedad')}</span>
+                <span className="cash-kpi-subtitle-light">{dashboard.tasaCompletadas}% {t('admin.reports.kpi.completedRateShort', 'completadas')}</span>
               </div>
 
               <div className="cash-kpi-item-light">
@@ -579,11 +644,11 @@ export default function ReportsManagementPage({ branchOnly = false }) {
                   <FaCar />
                   <span>{t('admin.reports.kpi.fleetOccupancy', 'TASA OCUPACIÓN FLOTA')}</span>
                 </div>
-                <strong className="cash-kpi-val-light">82.5% activa</strong>
+                <strong className="cash-kpi-val-light">{dashboard.ocupacion}%</strong>
                 <div className="cash-kpi-progress-bg">
-                  <div className="cash-kpi-progress-fill" style={{ width: '82.5%', background: '#f59e0b' }}></div>
+                  <div className="cash-kpi-progress-fill" style={{ width: `${dashboard.ocupacion}%`, background: '#f59e0b' }}></div>
                 </div>
-                <span className="cash-kpi-subtitle-light">{t('admin.reports.kpi.rentedUnits', '165 de 200 vehículos alquilados')}</span>
+                <span className="cash-kpi-subtitle-light">{dashboard.flota.alquilados} {t('admin.reports.kpi.of', 'de')} {dashboard.flota.total} {t('admin.reports.kpi.vehiclesRented', 'vehículos alquilados')}</span>
               </div>
 
               <div className="cash-kpi-item-light">
@@ -591,43 +656,36 @@ export default function ReportsManagementPage({ branchOnly = false }) {
                   <FaStar />
                   <span>{t('admin.reports.kpi.avgRating', 'CALIFICACIÓN PROMEDIO')}</span>
                 </div>
-                <strong className="cash-kpi-val-light">4.8 / 5.0 ★</strong>
+                <strong className="cash-kpi-val-light">{dashboard.totalResenas > 0 ? `${dashboard.calificacion.toFixed(1)} / 5.0 ★` : '—'}</strong>
                 <div className="cash-kpi-progress-bg">
-                  <div className="cash-kpi-progress-fill" style={{ width: '96%', background: '#8b5cf6' }}></div>
+                  <div className="cash-kpi-progress-fill" style={{ width: `${(dashboard.calificacion / 5) * 100}%`, background: '#8b5cf6' }}></div>
                 </div>
-                <span className="cash-kpi-subtitle-light">{t('admin.reports.kpi.basedOnReviews', 'Basado en 320 valoraciones de sedes')}</span>
+                <span className="cash-kpi-subtitle-light">
+                  {dashboard.totalResenas > 0
+                    ? `${t('admin.reports.kpi.basedOn', 'Basado en')} ${dashboard.totalResenas} ${t('admin.reports.kpi.reviews', 'valoraciones de sedes')}`
+                    : t('admin.reports.kpi.noReviews', 'Aún no hay valoraciones')}
+                </span>
               </div>
             </div>
 
-            {/* SECCIÓN DE GRÁFICAS VISUALES INTERACTIVAS */}
+            {/* GRÁFICAS */}
             <div className="reports-charts-grid">
-              {/* Gráfica 1: Facturación Mensual */}
+              {/* Gráfica 1: Facturación mensual */}
               <div className="reports-chart-card">
                 <div className="reports-chart-header">
                   <h3 className="reports-chart-title">
                     <FaMoneyBillWave style={{ color: '#10b981' }} />
                     {t('admin.reports.chart.revenueTitle', 'Facturación Mensual Acumulada')}
                   </h3>
-                  <span className="reports-chart-badge">{t('admin.reports.chart.year2026', 'Año 2026')}</span>
+                  <span className="reports-chart-badge">{dashboard.anio}</span>
                 </div>
                 <div className="reports-bars-container">
-                  {[
-                    { label: 'Ene', height: '60%', val: '$18M' },
-                    { label: 'Feb', height: '70%', val: '$21M' },
-                    { label: 'Mar', height: '65%', val: '$19.5M' },
-                    { label: 'Abr', height: '80%', val: '$24M' },
-                    { label: 'May', height: '75%', val: '$22.5M' },
-                    { label: 'Jun', height: '90%', val: '$27M' },
-                    { label: 'Jul', height: '85%', val: '$25.5M' },
-                    { label: 'Ago', height: '95%', val: '$28.5M' },
-                    { label: 'Sep', height: '70%', val: '$21M' },
-                    { label: 'Oct', height: '100%', val: '$30M' },
-                  ].map((bar, idx) => (
-                    <div key={idx} className="reports-bar-item" title={`${bar.label}: ${bar.val}`}>
+                  {dashboard.meses.map((bar, idx) => (
+                    <div key={bar.label} className="reports-bar-item" title={`${bar.label}: ${formatCurrency(bar.valor, 'COP')}`}>
                       <div className="reports-bar-fill-wrap">
                         <div
                           className="reports-bar-fill"
-                          style={{ height: bar.height, background: idx === 9 ? '#2563eb' : '#3b82f6' }}
+                          style={{ height: `${bar.altura}%`, background: idx === dashboard.meses.length - 1 ? '#2563eb' : '#3b82f6' }}
                         />
                       </div>
                       <span className="reports-bar-label">{bar.label}</span>
@@ -636,75 +694,73 @@ export default function ReportsManagementPage({ branchOnly = false }) {
                 </div>
               </div>
 
-              {/* Gráfica 2: Estado de la Flota (Donut SVG) */}
+              {/* Gráfica 2: Estado de la flota */}
               <div className="reports-chart-card">
                 <div className="reports-chart-header">
                   <h3 className="reports-chart-title">
                     <FaCar style={{ color: '#2563eb' }} />
                     {t('admin.reports.chart.fleetTitle', 'Estado Actual de la Flota')}
                   </h3>
-                  <span className="reports-chart-badge">200 Vehículos</span>
+                  <span className="reports-chart-badge">{dashboard.flota.total} {t('admin.reports.chart.vehicles', 'Vehículos')}</span>
                 </div>
                 <div className="reports-donut-wrap">
                   <svg width="140" height="140" viewBox="0 0 42 42" className="reports-donut-svg">
                     <circle cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#e2e8f0" strokeWidth="5" />
-                    {/* Alquilados 65% */}
-                    <circle cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#2563eb" strokeWidth="5" strokeDasharray="65 35" strokeDashoffset="25" />
-                    {/* Disponibles 25% */}
-                    <circle cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#10b981" strokeWidth="5" strokeDasharray="25 75" strokeDashoffset="60" />
-                    {/* Mantenimiento 10% */}
-                    <circle cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#f59e0b" strokeWidth="5" strokeDasharray="10 90" strokeDashoffset="35" />
+                    {dashboard.segmentosFlota.map((seg) => (
+                      <circle key={seg.clave} cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke={seg.color} strokeWidth="5"
+                        strokeDasharray={`${seg.pct} ${100 - seg.pct}`} strokeDashoffset={seg.offset} />
+                    ))}
                   </svg>
                   <div className="reports-donut-legend">
                     <div className="reports-legend-item">
                       <div className="reports-legend-dot" style={{ background: '#2563eb' }} />
-                      <span>{t('admin.reports.chart.rented', 'En Alquiler (65%)')}</span>
+                      <span>{t('admin.reports.chart.rentedLabel', 'En Alquiler')} ({dashboard.flota.alquilados} · {dashboard.flota.pctAlquilados}%)</span>
                     </div>
                     <div className="reports-legend-item">
                       <div className="reports-legend-dot" style={{ background: '#10b981' }} />
-                      <span>{t('admin.reports.chart.available', 'Disponibles (25%)')}</span>
+                      <span>{t('admin.reports.chart.availableLabel', 'Disponibles')} ({dashboard.flota.disponibles} · {dashboard.flota.pctDisponibles}%)</span>
                     </div>
                     <div className="reports-legend-item">
                       <div className="reports-legend-dot" style={{ background: '#f59e0b' }} />
-                      <span>{t('admin.reports.chart.maintenance', 'En Taller (10%)')}</span>
+                      <span>{t('admin.reports.chart.maintenanceLabel', 'En Taller')} ({dashboard.flota.mantenimiento} · {dashboard.flota.pctMantenimiento}%)</span>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Gráfica 3: Métodos de Pago */}
+              {/* Gráfica 3: Métodos de pago */}
               <div className="reports-chart-card">
                 <div className="reports-chart-header">
                   <h3 className="reports-chart-title">
                     <FaCreditCard style={{ color: '#8b5cf6' }} />
                     {t('admin.reports.chart.paymentsTitle', 'Métodos de Pago Preferidos')}
                   </h3>
-                  <span className="reports-chart-badge">Total Transacciones</span>
+                  <span className="reports-chart-badge">{dashboard.pagos.total} {t('admin.reports.chart.transactions', 'transacciones')}</span>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 14, paddingTop: 8 }}>
                   <div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, fontWeight: 700, marginBottom: 4 }}>
                       <span>💳 Wompi / Tarjetas de Crédito / PSE</span>
-                      <span style={{ color: '#2563eb' }}>62%</span>
+                      <span style={{ color: '#2563eb' }}>{dashboard.pagos.pctWompi}%</span>
                     </div>
                     <div className="cash-kpi-progress-bg">
-                      <div className="cash-kpi-progress-fill" style={{ width: '62%', background: '#2563eb' }} />
+                      <div className="cash-kpi-progress-fill" style={{ width: `${dashboard.pagos.pctWompi}%`, background: '#2563eb' }} />
                     </div>
                   </div>
                   <div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, fontWeight: 700, marginBottom: 4 }}>
                       <span>💵 Pago en Caja (Efectivo en Sucursal)</span>
-                      <span style={{ color: '#10b981' }}>38%</span>
+                      <span style={{ color: '#10b981' }}>{dashboard.pagos.pctEfectivo}%</span>
                     </div>
                     <div className="cash-kpi-progress-bg">
-                      <div className="cash-kpi-progress-fill" style={{ width: '38%', background: '#10b981' }} />
+                      <div className="cash-kpi-progress-fill" style={{ width: `${dashboard.pagos.pctEfectivo}%`, background: '#10b981' }} />
                     </div>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* SECCIÓN DE TABLA CON RESPONSABILIDAD ÚNICA POR COLUMNA */}
+            {/* TABLA DE DESEMPEÑO POR SUCURSAL */}
             <section className="cities-card">
               <div className="cash-toolbar-container">
                 <div className="cash-toolbar-row1" style={{ width: '100%', justifyContent: 'space-between' }}>
@@ -715,25 +771,13 @@ export default function ReportsManagementPage({ branchOnly = false }) {
                     </h3>
                   </div>
                   <div className="cash-export-pills" style={{ display: 'flex', gap: 8 }}>
-                    <button
-                      type="button"
-                      className="cash-btn-pill-export cash-btn-excel"
-                      onClick={() => handleDownloadDirect('excel')}
-                    >
+                    <button type="button" className="cash-btn-pill-export cash-btn-excel" onClick={() => handleDownloadDirect('excel')}>
                       <FaFileExcel /> <span>Excel</span>
                     </button>
-                    <button
-                      type="button"
-                      className="cash-btn-pill-export cash-btn-pdf"
-                      onClick={() => handleDownloadDirect('pdf')}
-                    >
+                    <button type="button" className="cash-btn-pill-export cash-btn-pdf" onClick={() => handleDownloadDirect('pdf')}>
                       <FaFilePdf /> <span>PDF</span>
                     </button>
-                    <button
-                      type="button"
-                      className="cash-btn-pill-export cash-btn-print"
-                      onClick={handlePrintReport}
-                    >
+                    <button type="button" className="cash-btn-pill-export cash-btn-print" onClick={handlePrintReport}>
                       <FaPrint /> <span>Imprimir</span>
                     </button>
                   </div>
@@ -744,7 +788,7 @@ export default function ReportsManagementPage({ branchOnly = false }) {
                 <table className="incidents-table-v2" style={{ whiteSpace: 'nowrap', width: 'max-content', borderCollapse: 'collapse' }}>
                   <thead>
                     <tr>
-                      <th style={{ width: '40px' }}>ID</th>
+                      <th style={{ width: '40px' }}>#</th>
                       <th>{t('admin.reports.table.branch', 'SUCURSAL / SEDE')}</th>
                       <th>{t('admin.reports.table.city', 'CIUDAD')}</th>
                       <th>{t('admin.reports.table.topVehicle', 'VEHÍCULO MÁS DEMANDADO')}</th>
@@ -754,43 +798,30 @@ export default function ReportsManagementPage({ branchOnly = false }) {
                       <th>{t('admin.reports.table.occupancyRate', 'TASA OCUPACIÓN (%)')}</th>
                       <th>{t('admin.reports.table.incidentsCount', 'INCIDENCIAS REPORTADAS')}</th>
                       <th>{t('admin.reports.table.rating', 'CALIFICACIÓN PROMEDIO')}</th>
-                      <th style={{ textAlign: 'center' }}>{t('admin.reports.table.actions', 'ACCIONES')}</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {[
-                      { id: 1, sucursal: 'El Poblado Main Branch', ciudad: 'Medellín', vehiculoTop: 'Toyota Fortuner TXL', reservas: 340, dias: 1250, ingresos: '$ 68,000,000', ocupacion: '88.5%', incidencias: 2, calificacion: '4.9 ★' },
-                      { id: 2, sucursal: 'Calle 100 Financial Hub', ciudad: 'Bogotá', vehiculoTop: 'BMW X5 xDrive40i', reservas: 290, dias: 1100, ingresos: '$ 59,500,000', ocupacion: '84.0%', incidencias: 1, calificacion: '4.8 ★' },
-                      { id: 3, sucursal: 'Granada Premium Hub', ciudad: 'Cali', vehiculoTop: 'Chevrolet Tracker Turbo', reservas: 210, dias: 780, ingresos: '$ 38,200,000', ocupacion: '79.2%', incidencias: 0, calificacion: '4.7 ★' },
-                      { id: 4, sucursal: 'Bocagrande Executive Desk', ciudad: 'Cartagena', vehiculoTop: 'Jeep Wrangler Rubicon', reservas: 310, dias: 1180, ingresos: '$ 52,800,000', ocupacion: '86.0%', incidencias: 3, calificacion: '4.9 ★' },
-                      { id: 5, sucursal: 'Alto Prado Office', ciudad: 'Barranquilla', vehiculoTop: 'Renault Duster 4x4', reservas: 270, dias: 960, ingresos: '$ 30,000,000', ocupacion: '75.8%', incidencias: 1, calificacion: '4.6 ★' },
-                    ].map((row) => (
+                    {dashboard.sucursales.length === 0 && (
+                      <tr><td colSpan={10} style={{ textAlign: 'center', color: '#64748b', padding: 20 }}>{t('admin.reports.table.empty', 'No hay sucursales para mostrar.')}</td></tr>
+                    )}
+                    {dashboard.sucursales.map((row, idx) => (
                       <tr key={row.id}>
-                        <td style={{ fontWeight: 600, color: 'var(--adm-text)' }}>{row.id}</td>
+                        <td style={{ fontWeight: 600, color: 'var(--adm-text)' }}>{idx + 1}</td>
                         <td style={{ fontWeight: 700, color: '#0f172a' }}>{row.sucursal}</td>
                         <td style={{ color: '#475569' }}>{row.ciudad}</td>
-                        <td style={{ color: '#2563eb', fontWeight: 600 }}>{row.vehiculoTop}</td>
+                        <td style={{ color: '#2563eb', fontWeight: 600 }}>{row.vehiculoTop || '—'}</td>
                         <td style={{ fontWeight: 600 }}>{row.reservas}</td>
-                        <td style={{ color: '#64748b' }}>{row.dias} días</td>
-                        <td style={{ fontWeight: 800, color: '#10b981' }}>{row.ingresos}</td>
+                        <td style={{ color: '#64748b' }}>{row.dias} {t('admin.reports.table.days', 'días')}</td>
+                        <td style={{ fontWeight: 800, color: '#10b981' }}>{formatCurrency(row.ingresos, 'COP')}</td>
                         <td>
                           <span style={{ padding: '3px 10px', borderRadius: 999, background: '#dbeafe', color: '#1e40af', fontWeight: 700, fontSize: 12 }}>
-                            {row.ocupacion}
+                            {row.ocupacion}%
                           </span>
                         </td>
                         <td style={{ color: row.incidencias > 0 ? '#ef4444' : '#10b981', fontWeight: 700 }}>
-                          {row.incidencias} casos
+                          {row.incidencias} {t('admin.reports.table.cases', 'casos')}
                         </td>
-                        <td style={{ color: '#8b5cf6', fontWeight: 800 }}>{row.calificacion}</td>
-                        <td style={{ textAlign: 'center' }}>
-                          <button
-                            type="button"
-                            className="incident-btn-reply"
-                            onClick={() => handleDownloadDirect('pdf')}
-                          >
-                            <FaDownload /> PDF
-                          </button>
-                        </td>
+                        <td style={{ color: '#8b5cf6', fontWeight: 800 }}>{row.totalResenas > 0 ? row.calificacion.toFixed(1) : '—'}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -1430,7 +1461,7 @@ export default function ReportsManagementPage({ branchOnly = false }) {
                                   type="button"
                                   className="btn-history-action details"
                                   title={t('admin.reports.viewDetails', 'Ver detalle y snapshot')}
-                                  onClick={() => setModalReport(report)}
+                                  onClick={() => openHistoryReport(report)}
                                 >
                                   <FaEye />
                                 </button>
@@ -1545,7 +1576,7 @@ export default function ReportsManagementPage({ branchOnly = false }) {
                         type="button"
                         className="hm-btn-action details"
                         title={t('admin.reports.viewDetails', 'Ver detalle')}
-                        onClick={() => setModalReport(report)}
+                        onClick={() => openHistoryReport(report)}
                       >
                         <FaEye />
                       </button>

@@ -1,4 +1,4 @@
-﻿import { useMemo, useState } from 'react'
+﻿import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { FaBuilding, FaCity, FaEdit, FaFileExcel, FaFilePdf, FaPlus, FaPrint, FaSearch, FaTrash } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
@@ -16,6 +16,7 @@ export default function CityManagementPage() {
   const { tema } = useLanding()
   const user = useAuthStore((state) => state.usuario)
   const [cities, setCities] = useState(() => cityManagementService.list())
+  useEffect(() => { cityManagementService.refresh().then(setCities).catch(console.error) }, [])
   const [search, setSearch] = useState('')
   const [department, setDepartment] = useState('all')
   const [modal, setModal] = useState(null)
@@ -39,28 +40,28 @@ export default function CityManagementPage() {
   const openEdit = (city) => { setForm({ nombre: city.nombre, departamento: city.departamento, tieneAeropuerto: city.tieneAeropuerto, tieneTerminal: city.tieneTerminal }); setError(''); setModal({ type: 'form', city }) }
   const closeModal = () => { setModal(null); setError('') }
 
-  const save = (event) => {
+  const save = async (event) => {
     event.preventDefault()
     try {
-      if (modal.city) cityManagementService.update(modal.city.id, form, user)
-      else cityManagementService.create(form, user)
+      if (modal.city) await cityManagementService.update(modal.city.id, form, user)
+      else await cityManagementService.create(form, user)
       setCities(cityManagementService.list())
       setNotice(t(modal.city ? 'admin.cities.messages.updated' : 'admin.cities.messages.created'))
       closeModal()
     } catch (caught) {
-      setError(t(`admin.cities.errors.${caught.message}`))
+      setError(t(`admin.cities.errors.${caught.message}`, { defaultValue: caught.serverMessage || caught.message }))
     }
   }
 
-  const remove = () => {
+  const remove = async () => {
     try {
-      cityManagementService.remove(modal.city.id, user)
+      await cityManagementService.remove(modal.city.id, user)
       setCities(cityManagementService.list())
       setNotice(t('admin.cities.messages.deleted'))
       closeModal()
     } catch (caught) {
       setModal(null)
-      setNotice(t(`admin.cities.errors.${caught.message}`, { count: caught.branchCount }))
+      setNotice(t(`admin.cities.errors.${caught.message}`, { count: caught.branchCount, defaultValue: caught.serverMessage || caught.message }))
     }
   }
 
@@ -96,7 +97,7 @@ export default function CityManagementPage() {
       </div>
 
       {modal && <div className="cities-modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && closeModal()}><section className="cities-modal" role="dialog" aria-modal="true" aria-labelledby="cities-modal-title">
-        {modal.type === 'form' ? <><div className="cities-modal__head"><div><p className="cities-eyebrow">{t('admin.cities.formLabel')}</p><h2 id="cities-modal-title">{t(modal.city ? 'admin.cities.editTitle' : 'admin.cities.createTitle')}</h2></div><button type="button" onClick={closeModal} aria-label={t('common.close')}>á—</button></div><form onSubmit={save}><label>{t('admin.cities.fields.name')}<input autoFocus value={form.nombre} onChange={(event) => setForm({ ...form, nombre: event.target.value })} /></label><label>{t('admin.cities.fields.department')}<input value={form.departamento} onChange={(event) => setForm({ ...form, departamento: event.target.value })} /></label><div className="cities-checks"><label><input type="checkbox" checked={form.tieneAeropuerto} onChange={(event) => setForm({ ...form, tieneAeropuerto: event.target.checked })} /> {t('admin.cities.hasAirport')}</label><label><input type="checkbox" checked={form.tieneTerminal} onChange={(event) => setForm({ ...form, tieneTerminal: event.target.checked })} /> {t('admin.cities.hasTerminal')}</label></div>{error && <p className="cities-error">{error}</p>}<div className="cities-modal__actions"><button type="button" onClick={closeModal}>{t('common.cancel')}</button><button className="cities-primary" type="submit">{t('common.save')}</button></div></form></> : <><div className="cities-delete-icon"><FaTrash /></div><h2 id="cities-modal-title">{t('admin.cities.deleteTitle')}</h2><p>{t('admin.cities.deleteText', { city: modal.city.nombre })}</p><div className="cities-modal__actions"><button type="button" onClick={closeModal}>{t('common.cancel')}</button><button className="cities-danger" type="button" onClick={remove}>{t('common.delete')}</button></div></>}
+        {modal.type === 'form' ? <><div className="cities-modal__head"><div><p className="cities-eyebrow">{t('admin.cities.formLabel')}</p><h2 id="cities-modal-title">{t(modal.city ? 'admin.cities.editTitle' : 'admin.cities.createTitle')}</h2></div><button type="button" onClick={closeModal} aria-label={t('common.close')}>á—</button></div><form onSubmit={save}><label>{t('admin.cities.fields.name')}<input autoFocus value={form.nombre} onChange={(event) => setForm({ ...form, nombre: event.target.value })} /></label><label>{t('admin.cities.fields.department')}<select value={form.departamento} onChange={(event) => setForm({ ...form, departamento: event.target.value })}><option value="">-</option>{cityManagementService.departments().map((d) => <option key={d.id} value={d.nombre}>{d.nombre}</option>)}</select></label><div className="cities-checks"><label><input type="checkbox" checked={form.tieneAeropuerto} onChange={(event) => setForm({ ...form, tieneAeropuerto: event.target.checked })} /> {t('admin.cities.hasAirport')}</label><label><input type="checkbox" checked={form.tieneTerminal} onChange={(event) => setForm({ ...form, tieneTerminal: event.target.checked })} /> {t('admin.cities.hasTerminal')}</label></div>{error && <p className="cities-error">{error}</p>}<div className="cities-modal__actions"><button type="button" onClick={closeModal}>{t('common.cancel')}</button><button className="cities-primary" type="submit">{t('common.save')}</button></div></form></> : <><div className="cities-delete-icon"><FaTrash /></div><h2 id="cities-modal-title">{t('admin.cities.deleteTitle')}</h2><p>{t('admin.cities.deleteText', { city: modal.city.nombre })}</p><div className="cities-modal__actions"><button type="button" onClick={closeModal}>{t('common.cancel')}</button><button className="cities-danger" type="button" onClick={remove}>{t('common.delete')}</button></div></>}
       </section></div>}
     </main>
     </div>
