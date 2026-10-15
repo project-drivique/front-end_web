@@ -47,6 +47,7 @@ import './CashCollectionPage.css'
 
 // â”€â”€ COMPONENTE DE UN SOLO CALENDARIO REUTILIZABLE PARA SELECCIÓN DE RANGO DE FECHAS â”€â”€
 function SingleCalendarRangePicker({ dateRange, onChange }) {
+  const { t } = useTranslation()
   const [isOpen, setIsOpen] = useState(false)
   const [currentMonth, setCurrentMonth] = useState(new Date())
 
@@ -714,9 +715,8 @@ export default function CashCollectionPage({ branchOnly = false }) {
                       const cod = r.codigo || r.referencia || dbId
                       const total = Number(r.totalCOP || r.total || 0)
                       
-                      const isRes8824 = (String(cod) === 'RES-8824' || String(dbId) === 'RES-8824' || String(r.referencia) === 'RES-8824')
-                      const rawMetodo = String(r.metodoPago || r.reservaDetalles?.metodoPago || r.pasarela || r.metodoPagoConfirmado || (isRes8824 ? 'efectivo' : 'Wompi')).toLowerCase()
-                      const esEfectivo = isRes8824 || rawMetodo.includes('efectivo') || rawMetodo.includes('sucursal') || String(r.estado).toLowerCase().includes('efectivo')
+                      const rawMetodo = String(r.metodoPago || r.reservaDetalles?.metodoPago || r.pasarela || r.metodoPagoConfirmado || 'Wompi').toLowerCase()
+                      const esEfectivo = rawMetodo.includes('efectivo') || rawMetodo.includes('sucursal') || String(r.estado).toLowerCase().includes('efectivo')
                       const esPagadaEnEfectivo = esEfectivo && esCobradoEnSucursal(r)
                       const esPagadaDigital = !esEfectivo && (r.pagoEstado === 'aprobado' || r.estadoPago === 'aprobado' || r.estado === 'confirmada' || r.estado === 'en_curso' || r.estado === 'finalizada')
                       
@@ -739,22 +739,10 @@ export default function CashCollectionPage({ branchOnly = false }) {
                           // Capitalizar primera letra si viene algo específico de Wompi
                           const capitalize = s => s.charAt(0).toUpperCase() + s.slice(1)
                           medioDisplay = `Wompi (${capitalize(rawMetodo)})`
-                        } else {
-                          // Si no especifica (mock data), darle variedad visual
-                          const wompiOptions = ['Wompi (Nequi)', 'Wompi (Tarjeta)', 'Wompi (PSE)', 'Wompi (DaviPlata)']
-                          const idx = cod.charCodeAt(cod.length - 1) % wompiOptions.length
-                          medioDisplay = wompiOptions[idx]
                         }
                       }
 
-                      let finalName = r.clienteNombre || 'Sin Nombre'
-                      if (finalName === 'Cliente Registrado' || finalName === 'Cliente Drivique') {
-                        const rawCod = String(cod).replace('CTR-', '');
-                        const hash = rawCod.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-                        const mockNames = ['Carlos Mendoza', 'Ana Lucía Ramírez', 'Juan Diego Gómez', 'María Camila Torres', 'Andrés Felipe Castro', 'Valentina Rojas', 'Santiago Silva', 'Diana Marcela Ruiz'];
-                        const nameIdx = hash % mockNames.length;
-                        finalName = mockNames[nameIdx];
-                      }
+                      const finalName = r.clienteNombre || 'Sin Nombre'
 
                       return (
                         <tr
@@ -1120,7 +1108,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
               <p style={{ margin: 0, fontSize: '13px', fontWeight: 500 }}>
                 Hemos registrado tu pago.<br/>
                 Guarda estos datos por si necesitas consultar tu compra.<br/>
-                También te enviamos un comprobante a <strong>{comprobanteDigital.clienteEmail || 'cliente@drivique.com'}</strong>
+                También te enviamos un comprobante a <strong>{comprobanteDigital.clienteCorreo || comprobanteDigital.clienteEmail || '—'}</strong>
               </p>
             </div>
 
@@ -1129,42 +1117,15 @@ export default function CashCollectionPage({ branchOnly = false }) {
                 {t('admin.cash.modal.transactionInfo', 'Información de la transacción')}
               </h4>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', marginBottom: '12px' }}>
-                <span style={{ color: '#4b5563' }}>Transacción #</span>
-                <span style={{ color: '#111827', fontWeight: 500 }}>{Math.floor(Math.random() * 90000000) + 10000000}-{Date.now()}-{Math.floor(Math.random() * 90000) + 10000}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', marginBottom: '12px' }}>
                 <span style={{ color: '#4b5563' }}>Referencia</span>
                 <span style={{ color: '#111827', fontWeight: 500, textAlign: 'right', wordBreak: 'break-all', maxWidth: '60%' }}>
                   {comprobanteDigital.codigo || comprobanteDigital.referencia || comprobanteDigital.id}
                 </span>
               </div>
-              {/* Solo mostrar número de aprobación para DaviPlata (y opcionalmente Tarjeta) como en el original */}
-              {(() => {
-                const met = String(comprobanteDigital?.reservaDetalles?.metodoPago || comprobanteDigital?.pasarela || comprobanteDigital?.metodoPagoConfirmado || comprobanteDigital?.medioPago || 'Wompi').toLowerCase()
-                if (met.includes('daviplata')) {
-                  return (
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', marginBottom: '12px' }}>
-                      <span style={{ color: '#4b5563' }}>Número de aprobación</span>
-                      <span style={{ color: '#111827', fontWeight: 500 }}>
-                        {Math.floor(Math.random() * 900000) + 100000}
-                      </span>
-                    </div>
-                  )
-                }
-                return null
-              })()}
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', marginBottom: '12px' }}>
                 <span style={{ color: '#4b5563' }}>Método de pago</span>
                 <span style={{ color: '#111827', fontWeight: 600 }}>
-                  {(() => {
-                    const met = String(comprobanteDigital?.reservaDetalles?.metodoPago || comprobanteDigital?.pasarela || comprobanteDigital?.metodoPagoConfirmado || comprobanteDigital?.medioPago || 'Wompi').toLowerCase()
-                    if (met.includes('nequi')) return 'Nequi ****1111'
-                    if (met.includes('daviplata')) return 'DaviPlata ****1111'
-                    if (met.includes('qr') || met.includes('transferencia') || met.includes('transfer')) return 'QR Interoperable'
-                    if (met.includes('pse')) return 'PSE (Cta Ahorros)'
-                    if (met.includes('bancolombia')) return 'Bancolombia ****1111'
-                    return 'Tarjeta ****1111'
-                  })()}
+                  {t('admin.cash.modal.onlinePayment', 'Pago en línea (Wompi)')}
                 </span>
               </div>
             </div>
@@ -1176,30 +1137,18 @@ export default function CashCollectionPage({ branchOnly = false }) {
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', marginBottom: '12px' }}>
                 <span style={{ color: '#4b5563' }}>Nombre</span>
                 <span style={{ color: '#111827', fontWeight: 500 }}>
-                  {(() => {
-                    let finalName = comprobanteDigital.clienteNombre || 'Laura vanessa perez perdomo'
-                    if (finalName === 'Cliente Registrado') {
-                      const mockNames = ['Carlos Mendoza', 'Ana Lucía Ramírez', 'Juan Diego Gómez', 'María Camila Torres', 'Andrés Felipe Castro', 'Valentina Rojas', 'Santiago Silva', 'Diana Marcela Ruiz']
-                      const cod = comprobanteDigital.codigo || comprobanteDigital.referencia || comprobanteDigital.id || 'A'
-                      const nameIdx = cod.charCodeAt(cod.length - 1) % mockNames.length
-                      finalName = mockNames[nameIdx]
-                    }
-                    return finalName
-                  })()}
+                  {comprobanteDigital.clienteNombre || '—'}
                 </span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', marginBottom: '12px' }}>
                 <span style={{ color: '#4b5563' }}>Teléfono</span>
                 <span style={{ color: '#111827', fontWeight: 500 }}>
-                  {(() => {
-                    const tel = String(comprobanteDigital.clienteTelefono || '+573991111111').trim()
-                    return tel.startsWith('+') ? tel : `+57 ${tel}`
-                  })()}
+                  {comprobanteDigital.clienteTelefono || '—'}
                 </span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', marginBottom: '12px' }}>
                 <span style={{ color: '#4b5563' }}>Email</span>
-                <span style={{ color: '#111827', fontWeight: 500 }}>{comprobanteDigital.clienteEmail || 'cliente@drivique.com'}</span>
+                <span style={{ color: '#111827', fontWeight: 500 }}>{comprobanteDigital.clienteCorreo || comprobanteDigital.clienteEmail || '—'}</span>
               </div>
             </div>
 
