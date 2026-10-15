@@ -2422,8 +2422,8 @@
       "invalidCredentials": "Invalid credentials. Remaining attempts: {{remaining}}",
       "maxAttemptsReached": "Account locked after {{max}} failed attempts.",
       "temporaryLock": "Account temporarily locked for {{minutes}} minutes.",
-      "accessDenied": "You do not have permission to access. Contact the main administrator."
-      ,"serviceUnavailable": "The server could not start your session. Please try again."
+      "accessDenied": "You do not have permission to access. Contact the main administrator.",
+      "serviceUnavailable": "The server could not start your session. Please try again."
     }
   },
   "registro": {
@@ -3554,6 +3554,10 @@
     "copyright": "Drivique © 2026"
   },
   "contratoFirma": {
+    "sendByEmail": "Send to my email",
+    "sendingEmail": "Sending…",
+    "emailSent": "We sent the signed contract to your email. Open it with your registered ID number.",
+    "emailNotSent": "The email could not be sent. Please try again.",
     "badgeLabel": "Digital document",
     "title": "Reservation and rental agreement",
     "subtitle": "Drivique · Academic vehicle rental platform",
@@ -4322,13 +4326,9 @@
       "pickupDate": "Pickup Date / Time",
       "pickupBranch": "Pickup Branch",
       "step3Title": "3. Reservation Payment",
-      "roadAssistance": "Road Assistance",
       "email": "Email",
       "taxes": "Legal Taxes (19% VAT)",
-      "deposit": "Security Deposit",
       "title": "Registered Reservation Inquiry",
-      "babyEquipment": "Baby Equipment",
-      "fuelPolicy": "Fuel Policy",
       "transmission": "Transmission / Fuel",
       "financeTitle": "Complete Financial Breakdown (COP)",
       "step4Scheduled": "Scheduled for today at",
@@ -4340,12 +4340,10 @@
       "paymentMethod": "Payment Method",
       "closeInquiry": "Close Inquiry",
       "step5PendingBranch": "Pending receipt at branch",
-      "totalCoverage": "Total CDW Coverage",
       "phone": "Phone / Mobile",
       "model": "Model and Engine",
       "workflowTitle": "Operational Flow (Current Progress)",
       "clientTitle": "Reservation Holder",
-      "step3Desc": "Completed: $ 499,800 COP collected and confirmed",
       "step1Desc": "Registered with code",
       "step2Pending": "Pending: ID / License to be verified",
       "registrationDate": "Registration Date",
@@ -4360,9 +4358,23 @@
       "itineraryTitle": "Itinerary and Branch",
       "license": "Driver's License",
       "plate": "Plate",
-      "babySeatAddon": "Additional Baby Seat",
       "returnBranch": "Return Branch",
-      "baseRental": "Base Rental (3 days x $120,000 COP)"
+      "baseRental": "Base Rental (3 days x $120,000 COP)",
+      "mileagePlan": "Mileage plan",
+      "additionalServices": "Additional services",
+      "noServices": "None",
+      "coupon": "Coupon applied",
+      "daysUnit": "days",
+      "adminFee": "Administrative fees",
+      "discount": "Discount",
+      "payCash": "Cash at branch",
+      "paymentStatus": "Payment status",
+      "paid": "Paid",
+      "unpaid": "Pending",
+      "step3Done": "Completed: {{amount}} collected and confirmed",
+      "step3Pending": "Awaiting payment",
+      "homeDelivery": "Home delivery",
+      "homePickup": "Home pickup"
     }
   },
   "categoriesManagement": {
