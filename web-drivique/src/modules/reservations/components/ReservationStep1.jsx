@@ -12,6 +12,7 @@ export default function ReservationStep1({
   pantalla,
   onContinuar,
   appliedPromotion,
+  cotizacion,
   onApplyPromotion,
   onRemovePromotion
 }) {
@@ -40,6 +41,7 @@ export default function ReservationStep1({
             onContinuar={onContinuar}
             pantalla={pantalla}
             appliedPromotion={appliedPromotion}
+            cotizacion={cotizacion}
             onApplyPromotion={onApplyPromotion}
             onRemovePromotion={onRemovePromotion}
             c={c}

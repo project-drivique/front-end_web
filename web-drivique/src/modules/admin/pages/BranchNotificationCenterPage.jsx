@@ -90,7 +90,7 @@ export default function BranchNotificationCenterPage({ branchOnly = true }) {
     }
   }
 
-  const branchTitle = dashboardData?.branchName || 'Alamo Bogotá - Aeropuerto'
+  const branchTitle = dashboardData?.branchName || ''
 
   return (
     <div className={`management-shell ${tema === 'oscuro' ? 'management-shell--dark' : ''}`}>
