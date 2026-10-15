@@ -36,6 +36,8 @@ export const incidentService = {
 
   changeStatus: (id, status, note) => call(() => api.patch(`/incidents/${id}/status`, { status, note: note || null })),
 
+  remove: (id) => call(() => api.delete(`/incidents/${id}`)),
+
   assign: (id, assigneeUserId) => call(() => api.patch(`/incidents/${id}/assign`, assigneeUserId ? { assigneeUserId } : {})),
 
   // Los adjuntos son privados: se descargan con la sesión y se muestran desde un blob local.
