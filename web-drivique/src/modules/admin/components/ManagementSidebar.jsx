@@ -26,7 +26,7 @@ import {
   FaTruck,
 } from 'react-icons/fa'
 import { useAuthStore } from '../../../store/authStore'
-import accessConfig from '../../../mocks/adminAccessConfig.json'
+import accessConfig from '../../../config/datos/adminAccessConfig.json'
 import { ROLES } from '../../auth/utils/accessControl'
 import logo from '../../../assets/logocatalog.png'
 import { useBrand } from '../../../contexts/BrandContext'
