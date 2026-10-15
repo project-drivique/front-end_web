@@ -1855,7 +1855,8 @@
       "messages": {
         "saved": "The new brand was applied successfully.",
         "previous": "The previous settings were restored.",
-        "original": "The original brand was restored."
+        "original": "The original brand was restored.",
+        "colorSaved": "Brand color updated and applied successfully."
       },
       "errors": {
         "invalidName": "The name must contain 2 to 40 characters.",
@@ -1864,7 +1865,8 @@
         "logoType": "Select a PNG, JPG, WebP or SVG logo.",
         "logoSize": "The logo cannot exceed 1 MB.",
         "logoRead": "The selected file could not be read.",
-        "noPrevious": "There is no previous configuration to restore yet."
+        "noPrevious": "There is no previous configuration to restore yet.",
+        "saveFailed": "The brand could not be saved. Please try again."
       }
     },
     "branchProfile": {
