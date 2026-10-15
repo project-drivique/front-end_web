@@ -23,7 +23,6 @@ import './i18n/index.js'
 // Importa la configuración de internacionalización.
 // Solo con importarlo ya se inicializa i18n en la app.
 
-import App from './App.jsx'
 import './styles/admin-system.css'
 import './styles/brand-system.css'
 // Importa el componente principal de la aplicación.
@@ -43,6 +42,21 @@ const queryClient = new QueryClient({
 // - retry: 1 → si una consulta falla, la reintenta solo una vez.
 // - staleTime: 1000 * 60 * 5 → los datos se consideran "frescos"
 //   durante 5 minutos antes de quedar stale.
+
+// Las ciudades y sucursales vienen de la base de datos: se cargan antes de montar la app
+const { cargarUbicaciones } = await import('./modules/catalog/constants.js')
+await cargarUbicaciones()
+// La marca (nombre, logo y colores) también viene del servidor
+const { brandService } = await import('./services/brandService.js')
+await brandService.load().catch(() => {})
+// Promociones y cupones vigentes (se recargan al iniciar o cerrar sesión, porque dependen del usuario)
+const { promotionManagementService } = await import('./services/promotionManagementService.js')
+const { useAuthStore } = await import('./store/authStore.js')
+promotionManagementService.refresh().catch(() => {})
+useAuthStore.subscribe((state, previous) => {
+  if (state.token !== previous.token) promotionManagementService.refresh().catch(() => {})
+})
+const { default: App } = await import('./App.jsx')
 
 createRoot(document.getElementById('root')).render(
   // Busca el elemento con id="root" en el HTML

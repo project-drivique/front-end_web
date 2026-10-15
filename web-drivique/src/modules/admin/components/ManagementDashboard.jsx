@@ -191,13 +191,15 @@ export default function ManagementDashboard({ branchOnly = false }) {
   // Sincronización en tiempo real (Polling cada 2.5s)
   useEffect(() => {
     const refreshData = () => {
-      setSummary(adminDashboardService.getSummary(usuario) || {})
-      setWeeklyData(adminDashboardService.getWeeklyActivity(usuario) || [])
-      setLastSync(new Date())
+      adminDashboardService.refresh().then(() => {
+        setSummary(adminDashboardService.getSummary(usuario) || {})
+        setWeeklyData(adminDashboardService.getWeeklyActivity(usuario) || [])
+        setLastSync(new Date())
+      }).catch((error) => console.error('No se pudo actualizar el tablero:', error))
     }
 
     refreshData()
-    const timer = setInterval(refreshData, 2500)
+    const timer = setInterval(refreshData, 30000)
     window.addEventListener('focus', refreshData)
     window.addEventListener('storage', refreshData)
 
@@ -266,7 +268,7 @@ export default function ManagementDashboard({ branchOnly = false }) {
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '6px 16px', background: 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)', border: '1px solid #bfdbfe', borderRadius: 24, marginBottom: 10, boxShadow: '0 1px 3px rgba(37,99,235,0.08)' }}>
               <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#10b981', boxShadow: '0 0 8px #10b981' }} />
               <strong style={{ fontSize: 13, fontWeight: 700, color: '#1e40af', letterSpacing: '-0.01em' }}>
-                {isBranchManager ? `Sucursal: ${summary?.branch || 'Alamo Bogotá - Aeropuerto'}` : 'Administración Central Drivique'}
+                {isBranchManager ? `Sucursal: ${summary?.branch || ''}` : 'Administración Central Drivique'}
               </strong>
               <span style={{ fontSize: 11, color: '#64748b', display: 'inline-flex', alignItems: 'center', gap: 4, marginLeft: 6, borderLeft: '1px solid #cbd5e1', paddingLeft: 10 }}>
                 <FaSync style={{ fontSize: 10, color: '#10b981' }} /> En Tiempo Real ({(lastSync instanceof Date ? lastSync : new Date()).toLocaleTimeString().slice(0, 5)})

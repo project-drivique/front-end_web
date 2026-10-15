@@ -85,8 +85,7 @@ export default function AccountFormModal({
             </select>
           </label>
 
-          {(form.rolId === 'role-encargado' ||
-            rolesList.find((r) => r.id === form.rolId)?.codigo === 'encargado_sucursal') && (
+          {['BRANCH_ADMIN', 'EMPLOYEE'].includes(rolesList.find((r) => r.id === form.rolId)?.codigo) && (
             <label>
               {t('admin.rolesPage.assignedBranch', 'Sucursal Asignada (Obligatoria)')}:
               <select

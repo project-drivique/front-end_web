@@ -49,7 +49,7 @@ export default function BranchNotificationModal({
   onMarkRead,
   onMarkAllRead,
   onSelectNotification,
-  branchName = 'Alamo Bogotá - Aeropuerto',
+  branchName = '',
 }) {
   const { t } = useTranslation()
   const navigate = useNavigate()
