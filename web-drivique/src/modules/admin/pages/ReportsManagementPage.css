@@ -2239,4 +2239,137 @@
 }
 
 
+
+
+/* ── Tarjetas de indicadores del dashboard (propias de esta pantalla: no dependen de la de Caja) ── */
+/* Barra KPI limpia y clara */
+.cash-kpi-bar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.cash-kpi-item-light {
+  background: var(--city-surface, #ffffff);
+  border: 1px solid var(--city-border, #e2e8f0);
+  border-radius: 12px;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+html.dark .cash-kpi-item-light {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+.cash-kpi-item-light:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.cash-kpi-header-light {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.cash-kpi-val-light {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--city-text, #0f172a);
+  line-height: 1;
+}
+
+html.dark .cash-kpi-val-light {
+  color: #f8fafc;
+}
+
+.cash-kpi-progress-bg {
+  width: 100%;
+  height: 4px;
+  background: #e2e8f0;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+html.dark .cash-kpi-progress-bg {
+  background: #334155;
+}
+
+.cash-kpi-progress-fill {
+  height: 100%;
+  border-radius: 4px;
+}
+
+.cash-kpi-subtitle-light {
+  font-size: 12px;
+  color: #64748b;
+}
+
+/* Modo oscuro y móvil de las tarjetas de indicadores */
+.management-shell--dark .cash-kpi-item-light {
+  background: var(--adm-card, #1e293b) !important;
+  border-color: var(--adm-border, #334155) !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2) !important;
+}
+.management-shell--dark .cash-kpi-val-light { color: #f8fafc !important; }
+.management-shell--dark .cash-kpi-subtitle-light { color: #94a3b8 !important; }
+.management-shell--dark .cash-kpi-progress-bg { background: #334155 !important; }
+
+@media (max-width: 768px) {
+  .cash-kpi-item-light { padding: 14px 16px !important; }
+  .cash-kpi-val-light { font-size: 22px !important; }
+}
+
+
+/* ── Barra superior y tabla del dashboard (copiadas para que no dependan de otras pantallas) ── */
+/* ── TOOLBAR DE 2 FILAS SEGÚN DISEÑO EXACTO SOLICITADO ── */
+.cash-toolbar-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+/* FILA 1: Buscador + Dropdown Estados + Dropdown Sucursales */
+.cash-toolbar-row1 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.cash-toolbar-row1 input,
+.cash-toolbar-row1 select,
+.cash-toolbar-row1 button {
+  height: 36px !important;
+  min-height: 36px;
+  box-sizing: border-box;
+}
+
+.management-shell--dark .incidents-table-v2 th {
+  background: #0f172a !important;
+  color: #94a3b8 !important;
+  border-color: #334155 !important;
+}
+
+.management-shell--dark .incidents-table-v2 td {
+  border-color: #334155 !important;
+  color: #f1f5f9 !important;
+  background: transparent !important;
+}
+
+.management-shell--dark .incidents-table-v2 tbody tr:hover td {
+  background: rgba(255, 255, 255, 0.03) !important;
+}
 
