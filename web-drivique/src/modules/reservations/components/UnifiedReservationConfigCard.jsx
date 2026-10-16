@@ -87,7 +87,6 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
 
   // Payment Options
   const metodoPago = reserva?.metodoPago
-  const cashBranches = branchManagementService.getCashAuthorized()
   const paymentOptions = [
     {
       value: 'wompi',
@@ -318,19 +317,16 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
             <FaMapMarkerAlt color={accent} size={14} /> {t('vehiculo.cashPaymentBranchLabel', 'Punto autorizado para pago en efectivo')}
           </span>
           <div style={{ padding: '12px 16px', borderRadius: 12, border: `1px solid ${border}`, background: 'transparent' }}>
-            <select
-              value={reserva?.sucursalPagoEfectivo || ''}
-              onChange={e => onCambio('sucursalPagoEfectivo', e.target.value)}
-              style={selectStyle}
-            >
-              <option value="">{t('vehiculo.selectLocation', 'Seleccionar')}</option>
-              {cashBranches.map(branch => (
-                <option key={branch.id || branch.nombre} value={branch.nombre}>
-                  {branch.ciudad ? `${branch.nombre} · ${branch.ciudad}` : branch.nombre}
-                </option>
-              ))}
-            </select>
+            <input
+              type="text"
+              readOnly
+              value={branchObj?.ciudad ? `${carBranch || reserva?.sucursalPagoEfectivo} · ${branchObj.ciudad}` : (carBranch || reserva?.sucursalPagoEfectivo || '')}
+              style={{ ...selectStyle, cursor: 'default', background: 'transparent', outline: 'none', border: 'none', padding: 0 }}
+            />
           </div>
+          <p style={{ margin: '2px 0 0', fontSize: 12.5, color: 'var(--texto-second, #64748b)', display: 'flex', alignItems: 'center', gap: 6 }}>
+            <span>ℹ️</span> {t('vehiculo.cashOnlyBranchNote', 'El pago solo está autorizado para la sucursal donde se encuentra el vehículo.')}
+          </p>
         </div>
       )}
 
