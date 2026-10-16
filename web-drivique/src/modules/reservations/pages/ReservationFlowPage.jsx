@@ -96,6 +96,17 @@ export default function ReservationFlowPage() {
     if (!vehiculo) navigate(usuario ? '/home' : '/catalogo', { replace: true })
   }, [vehiculo, usuario, navigate])
 
+  // Redirección rápida automática a Mis Reservas cuando es fuera de horario (PENDING_SCHEDULE)
+  useEffect(() => {
+    if (reservaCreada?.estado === 'PENDING_SCHEDULE') {
+      const timer = setTimeout(() => {
+        sessionStorage.removeItem(`drivique_reservation_state_${vehiculo?.id}`)
+        navigate('/reservas')
+      }, 1200)
+      return () => clearTimeout(timer)
+    }
+  }, [reservaCreada?.estado, vehiculo?.id, navigate])
+
   if (!vehiculo) return null
 
   // ─── Variables para datos de sucursal de pago en efectivo ─────────────────
@@ -664,7 +675,7 @@ export default function ReservationFlowPage() {
                   fontWeight: 500
                 }}>
                   {reservaCreada.estado === 'PENDING_SCHEDULE'
-                    ? 'Tu reserva quedó guardada en espera de la apertura de la sucursal. Te notificaremos por correo, web y push al iniciar la jornada de atención para que continúes con tu pago.'
+                    ? 'Tu reserva quedó guardada en espera de la apertura de la sucursal. Te notificaremos al iniciar la jornada. Redirigiendo de una a Mis Reservas...'
                     : (reservaCreada.estado === 'PENDING_DOCUMENT_REVIEW' || reservaCreada.estado === 'PENDIENTE_VALIDACION'
                       ? 'Tu reserva quedó guardada con éxito. La sucursal está revisando tus documentos. Te notificaremos en cuanto sean aprobados para que puedas realizar el pago seguro.'
                       : 'Tu reserva quedó guardada como pendiente. Para confirmarla, completa el pago digital seguro con Wompi (Pruebas).')}
@@ -747,10 +758,12 @@ export default function ReservationFlowPage() {
                           transition: 'all 0.2s',
                           display: 'flex',
                           alignItems: 'center',
-                          justifyContent: 'center'
+                          justifyContent: 'center',
+                          gap: 8
                         }}
                       >
-                        Ir a Mis Reservas
+                        <span>{reservaCreada.estado === 'PENDING_SCHEDULE' ? 'Ir a Mis Reservas ahora' : 'Ir a Mis Reservas'}</span>
+                        <FaArrowRight size={14} />
                       </button>
 
                       <button

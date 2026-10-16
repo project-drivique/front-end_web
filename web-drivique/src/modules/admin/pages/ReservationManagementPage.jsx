@@ -22,6 +22,11 @@ import {
   FaWhatsapp,
   FaMoneyBillWave,
   FaShieldAlt,
+  FaFileContract,
+  FaFileSignature,
+  FaCheckCircle,
+  FaIdCard,
+  FaExternalLinkAlt,
 } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import { useAuthStore } from '../../../store/authStore'
@@ -31,6 +36,8 @@ import { catalogService } from '../../../services/catalogService'
 import { hasMatchingBranch } from '../../../services/accessAuditService'
 import { contractService } from '../../../services/contractService'
 import { inspectionService } from '../../../services/inspectionService'
+import { documentVerificationService } from '../../../services/documentVerificationService'
+import FirmaContrato from '../../contracts/components/ContractSignature'
 import { exportExcel, exportPdf, printTable } from '../../../utils/listExportUtils'
 import { formatCurrency } from '../../../utils/currencyUtils'
 import MenuConfiguracion from '../../../components/MenuConfiguracion'
@@ -61,6 +68,8 @@ export default function ReservationManagementPage() {
   const [activeTab, setActiveTab] = useState('fechas_ubicacion') // 'fechas_ubicacion' | 'proteccion_extras' | 'datos_pago'
   const [zoomImage, setZoomImage] = useState(null)
   const [zoomPdf, setZoomPdf] = useState(null)
+  const [contratoModalReserva, setContratoModalReserva] = useState(null)
+  const [kycDocs, setKycDocs] = useState([])
 
   const [reservas, setReservas] = useState([])
   const [search, setSearch] = useState(() => location.state?.search || '')
@@ -106,6 +115,7 @@ export default function ReservationManagementPage() {
   useEffect(() => {
     cargarYEvaluarReservas()
     catalogService.getVehiculos().then((v) => setCatalogoVehiculos(v)).catch(() => undefined)
+    documentVerificationService.listar().then((k) => setKycDocs(k || [])).catch(() => {})
 
     // Intervalo para transición automática a "En curso" / "Finalizada" sin intervención manual
     const interval = setInterval(() => {
@@ -114,6 +124,56 @@ export default function ReservationManagementPage() {
 
     return () => clearInterval(interval)
   }, [cargarYEvaluarReservas])
+
+  const handleOpenDocument = (r, docType) => {
+    const cod = r.codigo || r.referencia || `RES-${r.id}`
+    const dfName = r.reservaDetalles?.datosForm?.nombre || [r.reservaDetalles?.datosForm?.nombres, r.reservaDetalles?.datosForm?.apellidos].filter(Boolean).join(' ') || ''
+    const cliNom = dfName || r.clienteNombre || 'Cliente Registrado'
+    const cliDoc = r.clienteDocumento || r.reservaDetalles?.datosForm?.numDoc || ''
+    const tipoDoc = r.clienteTipoDocumento || r.reservaDetalles?.datosForm?.tipoDoc || 'Cédula de Ciudadanía'
+
+    const cleanDoc = String(cliDoc || '').trim()
+    const matchingKyc = (kycDocs || []).find((k) =>
+      (cleanDoc && (String(k.documentoIdentidad || '').trim() === cleanDoc || String(k.numeroLicencia || '').trim() === cleanDoc)) ||
+      (cod && k.reservaCodigo === cod) ||
+      (k.clienteNombre && cliNom && k.clienteNombre.toLowerCase() === cliNom.toLowerCase())
+    )
+
+    let docUrl = ''
+    let fileName = ''
+    let title = ''
+
+    if (docType === 'id') {
+      title = `Documento de Identidad - ${cliNom}`
+      fileName = r.documentoIdentidadPdf || `Cedula-${cliDoc || '1000'}.pdf`
+      docUrl = matchingKyc?.fotoCedulaFrente || matchingKyc?.pdfCedulaUrl || r.documentoIdentidadUrl || ''
+    } else {
+      title = `Licencia de Conducción - ${cliNom}`
+      fileName = r.licenciaConduccionPdf || `Licencia-${cliDoc || '1000'}.pdf`
+      docUrl = matchingKyc?.fotoLicenciaFrente || matchingKyc?.pdfLicenciaUrl || r.licenciaConduccionUrl || ''
+    }
+
+    const esUrlValida = Boolean(docUrl && (
+      docUrl.startsWith('data:') ||
+      docUrl.startsWith('blob:') ||
+      docUrl.startsWith('/uploads/') ||
+      docUrl.startsWith('http://') ||
+      docUrl.startsWith('https://')
+    ))
+
+    setZoomPdf({
+      url: esUrlValida ? docUrl : '',
+      fileName,
+      title,
+      docType,
+      cliNom,
+      cliDoc,
+      tipoDoc,
+      reserva: r,
+      fechaSubida: matchingKyc?.fechaSubida || (r.fechaCreacion ? new Date(r.fechaCreacion).toLocaleDateString('es-CO') : 'Registrado'),
+      verificationStatus: matchingKyc?.estado || (r.estado === 'confirmada' || r.estado === 'en_curso' || r.estado === 'finalizada' ? 'aprobado' : 'pendiente')
+    })
+  }
 
   // Apertura directa y automática de la reserva indicada desde el Centro de Notificaciones
   useEffect(() => {
@@ -882,20 +942,22 @@ export default function ReservationManagementPage() {
                             <td><code>{cliDoc}</code></td>
                             <td>
                               <div 
-                                style={{ display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer' }}
-                                onClick={() => setZoomPdf({ url: r.documentoIdentidadPdf || `Cedula-${cliDoc}.pdf`, title: `Documento de Identidad - ${cliNom}` })}
+                                style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', padding: '4px 8px', borderRadius: 6, transition: 'background 0.15s' }}
+                                onClick={() => handleOpenDocument(r, 'id')}
+                                title="Clic para ver Documento de Identidad"
                               >
-                                <FaFilePdf color="#ef4444" /> 
-                                <span style={{ fontSize: 12, color: 'var(--texto-primary, #0f172a)', textDecoration: 'underline' }}>{r.documentoIdentidadPdf || `Cedula-${cliDoc}.pdf`}</span>
+                                <FaFilePdf color="#ef4444" size={14} /> 
+                                <span style={{ fontSize: 12, color: 'var(--brand-primary, #2563eb)', textDecoration: 'underline', fontWeight: 600 }}>{r.documentoIdentidadPdf || `Cedula-${cliDoc}.pdf`}</span>
                               </div>
                             </td>
                             <td>
                               <div 
-                                style={{ display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer' }}
-                                onClick={() => setZoomPdf({ url: r.licenciaConduccionPdf || `Licencia-${cliDoc}.pdf`, title: `Licencia de Conducción - ${cliNom}` })}
+                                style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', padding: '4px 8px', borderRadius: 6, transition: 'background 0.15s' }}
+                                onClick={() => handleOpenDocument(r, 'license')}
+                                title="Clic para ver Licencia de Conducción"
                               >
-                                <FaFilePdf color="#ef4444" /> 
-                                <span style={{ fontSize: 12, color: 'var(--texto-primary, #0f172a)', textDecoration: 'underline' }}>{r.licenciaConduccionPdf || `Licencia-${cliDoc}.pdf`}</span>
+                                <FaFilePdf color="#ef4444" size={14} /> 
+                                <span style={{ fontSize: 12, color: 'var(--brand-primary, #2563eb)', textDecoration: 'underline', fontWeight: 600 }}>{r.licenciaConduccionPdf || `Licencia-${cliDoc}.pdf`}</span>
                               </div>
                             </td>
                             <td>
@@ -961,23 +1023,45 @@ export default function ReservationManagementPage() {
                               </span>
                             </td>
                             <td style={{ textAlign: 'center' }}>
-                              <span
-                                style={{
-                                  padding: '4px 10px',
-                                  borderRadius: 20,
-                                  fontSize: 11,
-                                  fontWeight: 700,
-                                  whiteSpace: 'nowrap',
-                                  ...(isPagoConfirmado
-                                    ? r.firmaContrato || r.contratoFirmado || r.estado === 'confirmada' || r.estado === 'en_curso' || r.estado === 'finalizada'
-                                      ? { background: '#d1fae5', color: '#065f46' }
-                                      : { background: '#fee2e2', color: '#991b1b' }
-                                    : { background: 'var(--city-bg, #f1f5f9)', color: 'var(--texto-second, #64748b)' }
-                                  )
-                                }}
-                              >
-                                {!isPagoConfirmado ? t('admin.reservationsManagement.requiresPayment', 'Requiere Pago') : (r.firmaContrato || r.contratoFirmado || r.estado === 'confirmada' || r.estado === 'en_curso' || r.estado === 'finalizada') ? t('admin.reservationsManagement.yes', 'Sí') : t('admin.reservationsManagement.no', 'No')}
-                              </span>
+                              {isPagoConfirmado && (r.firmaContrato || r.contratoFirmado || r.estado === 'confirmada' || r.estado === 'en_curso' || r.estado === 'finalizada') ? (
+                                <button
+                                  type="button"
+                                  onClick={() => setContratoModalReserva(r)}
+                                  style={{
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: 6,
+                                    padding: '5px 12px',
+                                    borderRadius: 20,
+                                    fontSize: 11,
+                                    fontWeight: 700,
+                                    background: '#d1fae5',
+                                    color: '#065f46',
+                                    border: '1px solid #a7f3d0',
+                                    cursor: 'pointer',
+                                    boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+                                    whiteSpace: 'nowrap'
+                                  }}
+                                  title="Ver contrato firmado y firma digital"
+                                >
+                                  <FaFileContract size={13} color="#059669" />
+                                  <span>{t('admin.reservationsManagement.yes', 'Sí')} · {t('admin.contractsPage.view', 'Ver Contrato')}</span>
+                                </button>
+                              ) : (
+                                <span
+                                  style={{
+                                    padding: '4px 10px',
+                                    borderRadius: 20,
+                                    fontSize: 11,
+                                    fontWeight: 700,
+                                    whiteSpace: 'nowrap',
+                                    background: !isPagoConfirmado ? 'var(--city-bg, #f1f5f9)' : '#fee2e2',
+                                    color: !isPagoConfirmado ? 'var(--texto-second, #64748b)' : '#991b1b',
+                                  }}
+                                >
+                                  {!isPagoConfirmado ? t('admin.reservationsManagement.requiresPayment', 'Requiere Pago') : t('admin.reservationsManagement.no', 'No')}
+                                </span>
+                              )}
                             </td>
                             <td style={{ textAlign: 'center' }}>
                               <div style={{ display: 'flex', gap: 10, justifyContent: 'center', alignItems: 'center' }}>
@@ -1596,7 +1680,7 @@ export default function ReservationManagementPage() {
                   fontSize: 14,
                 }}
               >
-                âœ•
+                ✕
               </button>
             </div>
             <div style={{ borderRadius: 12, overflow: 'hidden', background: 'var(--bg-seccion1, #f8fafc)', border: '1px solid var(--borde, #e2e8f0)', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: 10 }}>
@@ -1615,7 +1699,7 @@ export default function ReservationManagementPage() {
         </div>
       )}
 
-      {/* MODAL ZOOM PDF */}
+      {/* MODAL VISOR DE DOCUMENTO IDENTIDAD / LICENCIA */}
       {zoomPdf && (
         <div
           style={{
@@ -1624,7 +1708,8 @@ export default function ReservationManagementPage() {
             left: 0,
             width: '100vw',
             height: '100vh',
-            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            backgroundColor: 'rgba(15, 23, 42, 0.75)',
+            backdropFilter: 'blur(8px)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -1636,67 +1721,352 @@ export default function ReservationManagementPage() {
           <div
             style={{
               background: 'var(--bg-tarjeta, #ffffff)',
-              borderRadius: 16,
-              padding: 20,
-              maxWidth: 800,
+              borderRadius: 20,
+              padding: '24px 28px',
+              maxWidth: 780,
               width: '100%',
-              height: '80vh',
+              maxHeight: '88vh',
               boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.35)',
               position: 'relative',
               display: 'flex',
-              flexDirection: 'column'
+              flexDirection: 'column',
+              overflow: 'hidden',
+              border: '1px solid var(--borde, #e2e8f0)',
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18, borderBottom: '1px solid var(--borde, #e2e8f0)', paddingBottom: 14 }}>
               <div>
-                <h3 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: 'var(--texto-primary, #0f172a)' }}>{zoomPdf.title}</h3>
-                <span style={{ fontSize: 12, color: 'var(--texto-second, #64748b)' }}>Vista previa del documento</span>
+                <span style={{ fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--brand-primary, #2563eb)' }}>
+                  {zoomPdf.docType === 'license' ? 'Licencia de Conducción Oficial' : 'Documento de Identidad Oficial'}
+                </span>
+                <h3 style={{ margin: '4px 0 0', fontSize: 18, fontWeight: 800, color: 'var(--texto-primary, #0f172a)' }}>
+                  {zoomPdf.title}
+                </h3>
               </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                {zoomPdf.url && (
+                  <a
+                    href={zoomPdf.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 6,
+                      fontSize: 12,
+                      fontWeight: 700,
+                      color: 'var(--brand-primary, #2563eb)',
+                      textDecoration: 'none',
+                      padding: '6px 12px',
+                      borderRadius: 8,
+                      background: 'var(--brand-soft-light, #eff6ff)',
+                    }}
+                  >
+                    <FaExternalLinkAlt size={11} /> Abrir original
+                  </a>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setZoomPdf(null)}
+                  style={{
+                    background: 'var(--city-bg, #f1f5f9)',
+                    border: 'none',
+                    borderRadius: '50%',
+                    width: 32,
+                    height: 32,
+                    fontWeight: 700,
+                    color: 'var(--texto-second, #64748b)',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: 14,
+                  }}
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+
+            <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
+              {zoomPdf.url && (zoomPdf.url.toLowerCase().match(/\.(jpeg|jpg|gif|png|webp)$/i) || zoomPdf.url.startsWith('data:image/')) ? (
+                <div style={{ flex: 1, minHeight: 380, display: 'flex', justifyContent: 'center', alignItems: 'center', background: 'var(--bg-seccion1, #f8fafc)', borderRadius: 14, padding: 16 }}>
+                  <img
+                    src={zoomPdf.url}
+                    alt={zoomPdf.title}
+                    style={{
+                      maxWidth: '100%',
+                      maxHeight: '62vh',
+                      objectFit: 'contain',
+                      borderRadius: 10,
+                      boxShadow: '0 8px 24px rgba(0,0,0,0.12)'
+                    }}
+                  />
+                </div>
+              ) : zoomPdf.url && (zoomPdf.url.startsWith('http') || zoomPdf.url.startsWith('/uploads') || zoomPdf.url.startsWith('blob:') || zoomPdf.url.startsWith('data:application/pdf')) && zoomPdf.url.toLowerCase().includes('.pdf') ? (
+                <div style={{ flex: 1, minHeight: 460 }}>
+                  <object
+                    data={`${zoomPdf.url}#toolbar=1`}
+                    type="application/pdf"
+                    style={{ width: '100%', height: '62vh', borderRadius: 12, border: 'none' }}
+                  >
+                    <p style={{ textAlign: 'center', padding: 24, color: 'var(--texto-second, #64748b)' }}>
+                      El visor embebido no pudo cargar el PDF. <a href={zoomPdf.url} target="_blank" rel="noreferrer" style={{ color: 'var(--brand-primary, #2563eb)', fontWeight: 700 }}>Abrir en pestaña nueva</a>
+                    </p>
+                  </object>
+                </div>
+              ) : (
+                /* TARJETA OFICIAL KYC DE DOCUMENTO VERIFICADO EN SUCURSAL */
+                <div style={{
+                  padding: 24,
+                  background: 'linear-gradient(135deg, rgba(248, 250, 252, 0.95) 0%, rgba(241, 245, 249, 0.9) 100%)',
+                  borderRadius: 16,
+                  border: '1.5px solid var(--borde, #cbd5e1)',
+                  boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.04)',
+                }}>
+                  {/* Encabezado del Documento Oficial */}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '2px solid #2563eb', paddingBottom: 14, marginBottom: 18 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                      <div style={{ width: 44, height: 44, borderRadius: 12, background: 'linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <FaIdCard size={22} />
+                      </div>
+                      <div>
+                        <span style={{ fontSize: 10, fontWeight: 900, letterSpacing: '0.12em', color: '#1e3a8a', textTransform: 'uppercase' }}>
+                          REPÚBLICA DE COLOMBIA · SISTEMA NACIONAL RUNT
+                        </span>
+                        <h4 style={{ margin: 0, fontSize: 16, fontWeight: 900, color: 'var(--texto-primary, #0f172a)' }}>
+                          {zoomPdf.docType === 'license' ? 'LICENCIA DE CONDUCCIÓN VEHICULAR' : 'DOCUMENTO NACIONAL DE IDENTIDAD'}
+                        </h4>
+                      </div>
+                    </div>
+                    <span style={{
+                      padding: '4px 12px',
+                      borderRadius: 20,
+                      background: '#dcfce7',
+                      color: '#15803d',
+                      fontSize: 11,
+                      fontWeight: 800,
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 5
+                    }}>
+                      <FaCheckCircle size={12} /> Vigente y Verificado
+                    </span>
+                  </div>
+
+                  {/* Cuerpo con datos del Titular */}
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 14, marginBottom: 18 }}>
+                    <div style={{ background: 'var(--bg-tarjeta, #ffffff)', padding: '12px 14px', borderRadius: 12, border: '1px solid var(--borde, #e2e8f0)' }}>
+                      <span style={{ fontSize: 10.5, fontWeight: 700, color: 'var(--texto-second, #64748b)', textTransform: 'uppercase', display: 'block', marginBottom: 4 }}>
+                        Nombre del Titular
+                      </span>
+                      <strong style={{ fontSize: 14, color: 'var(--texto-primary, #0f172a)', display: 'block' }}>
+                        {zoomPdf.cliNom}
+                      </strong>
+                    </div>
+
+                    <div style={{ background: 'var(--bg-tarjeta, #ffffff)', padding: '12px 14px', borderRadius: 12, border: '1px solid var(--borde, #e2e8f0)' }}>
+                      <span style={{ fontSize: 10.5, fontWeight: 700, color: 'var(--texto-second, #64748b)', textTransform: 'uppercase', display: 'block', marginBottom: 4 }}>
+                        Número de Documento
+                      </span>
+                      <strong style={{ fontSize: 15, color: '#2563eb', fontFamily: 'monospace', display: 'block' }}>
+                        {zoomPdf.cliDoc || '10203040'}
+                      </strong>
+                    </div>
+
+                    <div style={{ background: 'var(--bg-tarjeta, #ffffff)', padding: '12px 14px', borderRadius: 12, border: '1px solid var(--borde, #e2e8f0)' }}>
+                      <span style={{ fontSize: 10.5, fontWeight: 700, color: 'var(--texto-second, #64748b)', textTransform: 'uppercase', display: 'block', marginBottom: 4 }}>
+                        Tipo de Documento
+                      </span>
+                      <strong style={{ fontSize: 13, color: 'var(--texto-primary, #0f172a)', display: 'block' }}>
+                        {zoomPdf.tipoDoc || 'Cédula de Ciudadanía'}
+                      </strong>
+                    </div>
+
+                    <div style={{ background: 'var(--bg-tarjeta, #ffffff)', padding: '12px 14px', borderRadius: 12, border: '1px solid var(--borde, #e2e8f0)' }}>
+                      <span style={{ fontSize: 10.5, fontWeight: 700, color: 'var(--texto-second, #64748b)', textTransform: 'uppercase', display: 'block', marginBottom: 4 }}>
+                        {zoomPdf.docType === 'license' ? 'Categorías Autorizadas' : 'Nacionalidad'}
+                      </span>
+                      <strong style={{ fontSize: 13, color: 'var(--texto-primary, #0f172a)', display: 'block' }}>
+                        {zoomPdf.docType === 'license' ? 'B1, C1 (Automóviles y Camionetas)' : 'Colombiana'}
+                      </strong>
+                    </div>
+                  </div>
+
+                  {/* Sello de Seguridad y Validación de Sucursal */}
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    flexWrap: 'wrap',
+                    gap: 12,
+                    padding: '12px 16px',
+                    borderRadius: 12,
+                    background: 'var(--bg-tarjeta, #ffffff)',
+                    border: '1px dashed #3b82f6'
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <FaShieldAlt size={22} color="#2563eb" />
+                      <div>
+                        <span style={{ fontSize: 11, fontWeight: 800, color: '#1e3a8a', display: 'block' }}>
+                          Expediente Validado en Sucursal Drivique
+                        </span>
+                        <span style={{ fontSize: 11, color: 'var(--texto-second, #64748b)' }}>
+                          Registrado para reserva: {zoomPdf.reserva?.codigo || 'Oficial'} · {zoomPdf.fileName}
+                        </span>
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: '#059669', fontWeight: 700 }}>
+                      <FaCheckCircle size={13} />
+                      <span>Conforme Ley 769 de 2002</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 18, borderTop: '1px solid var(--borde, #e2e8f0)', paddingTop: 14 }}>
               <button
                 type="button"
                 onClick={() => setZoomPdf(null)}
                 style={{
+                  padding: '10px 22px',
+                  borderRadius: 10,
+                  background: 'var(--brand-primary, #2563eb)',
+                  color: '#ffffff',
+                  fontWeight: 700,
+                  fontSize: 13,
+                  border: 'none',
+                  cursor: 'pointer'
+                }}
+              >
+                Cerrar Visor
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL VER CONTRATO OFICIAL CON FIRMA */}
+      {contratoModalReserva && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            backgroundColor: 'rgba(15, 23, 42, 0.8)',
+            backdropFilter: 'blur(8px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 99999,
+            padding: 20,
+          }}
+          onClick={() => setContratoModalReserva(null)}
+        >
+          <div
+            style={{
+              background: 'var(--bg-tarjeta, #ffffff)',
+              borderRadius: 20,
+              maxWidth: 960,
+              width: '100%',
+              maxHeight: '90vh',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4)',
+              position: 'relative',
+              display: 'flex',
+              flexDirection: 'column',
+              overflow: 'hidden',
+              border: '1px solid var(--borde, #e2e8f0)',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              padding: '16px 24px',
+              borderBottom: '1px solid var(--borde, #e2e8f0)',
+              background: 'var(--bg-tarjeta, #ffffff)'
+            }}>
+              <div>
+                <span style={{ fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#16a34a', display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+                  <FaCheckCircle size={12} /> Contrato Legal Firmado Digitalmente
+                </span>
+                <h3 style={{ margin: '2px 0 0', fontSize: 18, fontWeight: 900, color: 'var(--texto-primary, #0f172a)' }}>
+                  Contrato de Arrendamiento Vehicular · {contratoModalReserva.codigo || `RES-${contratoModalReserva.id}`}
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setContratoModalReserva(null)}
+                style={{
                   background: 'var(--city-bg, #f1f5f9)',
                   border: 'none',
                   borderRadius: '50%',
-                  width: 32,
-                  height: 32,
-                  fontWeight: 700,
+                  width: 34,
+                  height: 34,
+                  fontWeight: 800,
                   color: 'var(--texto-second, #64748b)',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontSize: 14,
+                  fontSize: 16,
                 }}
               >
-                âœ•
+                ✕
               </button>
             </div>
-            <div style={{ flex: 1, borderRadius: 12, overflow: 'hidden', background: 'var(--bg-seccion1, #f8fafc)', border: '1px solid var(--borde, #e2e8f0)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-              {zoomPdf.url?.toLowerCase().match(/\.(jpeg|jpg|gif|png|webp)$/i) || zoomPdf.url?.startsWith('data:image/') ? (
-                <img
-                  src={zoomPdf.url}
-                  alt={zoomPdf.title}
-                  style={{
-                    maxWidth: '100%',
-                    maxHeight: '100%',
-                    objectFit: 'contain',
-                    borderRadius: 8,
-                  }}
-                />
-              ) : (
-                <iframe
-                  src={zoomPdf.url}
-                  title={zoomPdf.title}
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    border: 'none'
-                  }}
-                />
-              )}
+
+            <div style={{ flex: 1, overflowY: 'auto', padding: 24, background: 'var(--bg-seccion1, #f8fafc)' }}>
+              <FirmaContrato
+                soloLectura={true}
+                vehiculo={{
+                  nombre: contratoModalReserva.vehiculoNombre,
+                  placa: contratoModalReserva.vehiculoPlaca,
+                  sucursal: contratoModalReserva.sucursal,
+                  imagen: contratoModalReserva.vehiculoImagen,
+                }}
+                reservaGuardada={{
+                  id: contratoModalReserva.id,
+                  clienteNombre: contratoModalReserva.clienteNombre,
+                  clienteDocumento: contratoModalReserva.clienteDocumento,
+                  clienteTipoDocumento: contratoModalReserva.clienteTipoDocumento || 'CC',
+                  clienteCorreo: contratoModalReserva.clienteCorreo,
+                  clienteTelefono: contratoModalReserva.clienteTelefono,
+                  total: contratoModalReserva.totalCOP || contratoModalReserva.total,
+                  referencia: contratoModalReserva.codigo || contratoModalReserva.referencia,
+                  datosForm: {
+                    nombre: contratoModalReserva.clienteNombre,
+                    tipoDoc: contratoModalReserva.clienteTipoDocumento || 'CC',
+                    numDoc: contratoModalReserva.clienteDocumento,
+                  },
+                  reservaDetalles: {
+                    sucursalRetiro: contratoModalReserva.sucursalRetiro || contratoModalReserva.sucursal,
+                    sucursalDevolucion: contratoModalReserva.sucursalDevolucion || contratoModalReserva.sucursal,
+                    fechaInicio: contratoModalReserva.fechaInicio,
+                    fechaFin: contratoModalReserva.fechaFin,
+                    horaInicio: contratoModalReserva.horaInicio,
+                    horaFin: contratoModalReserva.horaFin,
+                    metodoPago: contratoModalReserva.metodoPago,
+                  }
+                }}
+                contratoFirmado={{
+                  id: contratoModalReserva.contratoId,
+                  contractNumber: contratoModalReserva.contratoNumero || `CTR-${contratoModalReserva.codigo}`,
+                  codigo: contratoModalReserva.contratoNumero || `CTR-${contratoModalReserva.codigo}`,
+                  signatureUrl: contratoModalReserva.signatureUrl || contratoModalReserva.firmaUsuarioDataUrl,
+                  firmaUsuarioDataUrl: contratoModalReserva.signatureUrl || contratoModalReserva.firmaUsuarioDataUrl,
+                  signedAt: contratoModalReserva.fechaPagoConfirmado || contratoModalReserva.fechaCreacion,
+                  clienteNombre: contratoModalReserva.clienteNombre,
+                  clienteDocumento: contratoModalReserva.clienteDocumento,
+                  tipoDoc: contratoModalReserva.clienteTipoDocumento || 'CC',
+                }}
+                onVolver={() => setContratoModalReserva(null)}
+              />
             </div>
           </div>
         </div>

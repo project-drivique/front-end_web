@@ -7,6 +7,7 @@ import { useLanding } from '../../landing/LandingContext'
 import { promotionManagementService } from '../../../services/promotionManagementService'
 import { formatCurrency } from '@/utils/currencyUtils'
 import { vehicleManagementService } from '../../../services/vehicleManagementService'
+import { catalogService } from '../../../services/catalogService'
 
 import ImageGallery from './detail/ImageGallery'
 import VehicleCharacteristics from './detail/VehicleCharacteristics'
@@ -60,12 +61,25 @@ export default function VehicleDetailsModal({
   }, [isOpen, onClose])
 
   const targetId = vehiculoId || vehiculoProp?.id
+  const [vehiculoCargado, setVehiculoCargado] = useState(null)
+
+  useEffect(() => {
+    if (!isOpen || vehiculoProp) return
+    if (targetId) {
+      catalogService.getVehiculoById(targetId)
+        .then((data) => {
+          if (data) setVehiculoCargado(data)
+        })
+        .catch(() => {})
+    }
+  }, [isOpen, targetId, vehiculoProp])
 
   const baseVehiculo = useMemo(() => {
     if (vehiculoProp) return vehiculoProp
+    if (vehiculoCargado) return vehiculoCargado
     if (!targetId) return null
     return vehicleManagementService.getById(targetId)
-  }, [targetId, vehiculoProp])
+  }, [targetId, vehiculoProp, vehiculoCargado])
 
   const vehiculo = useMemo(() => {
     if (!baseVehiculo) return null

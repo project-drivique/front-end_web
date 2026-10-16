@@ -6,7 +6,8 @@ const normalize = (contract) => contract ? ({
   referenciaReserva: contract.reservationCode,
   estado: contract.statusCode,
   firmadoEn: contract.signedAt,
-  firmaUsuarioDataUrl: contract.signatureUrl ? 'protected' : null,
+  signatureUrl: contract.signatureUrl || null,
+  firmaUsuarioDataUrl: contract.signatureUrl || null,
 }) : null
 
 async function getOrGenerate(reservationId) {

@@ -30,7 +30,8 @@ const mapear = (c) => {
     totalCOP: Number(c.finalAmount ?? c.baseAmount) || 0,
     estado: estadoVisible(c.statusCode, firmado),
     fechaFirma: c.signedAt || null,
-    firmaUsuarioDataUrl: c.signatureUrl ? 'protected' : null,
+    signatureUrl: c.signatureUrl || null,
+    firmaUsuarioDataUrl: c.signatureUrl || null,
     isSigned: firmado,
   }
 }

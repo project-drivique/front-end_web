@@ -9,7 +9,6 @@ import {
   FaClock,
   FaMoneyBillWave,
   FaPlus,
-  FaTools,
   FaSearch,
   FaChartLine,
   FaSync,
@@ -23,7 +22,7 @@ import MenuConfiguracion from '../../../components/MenuConfiguracion'
 import ManagementSidebar from './ManagementSidebar'
 import './ManagementDashboard.css'
 
-function WeeklyGroupedBarChart({ data = [] }) {
+function WeeklyGroupedBarChart({ data = [], isDark = false }) {
   const chartData = Array.isArray(data) && data.length > 0 ? data : [
     { day: 'Lun', entregas: 0, devoluciones: 0 },
     { day: 'Mar', entregas: 0, devoluciones: 0 },
@@ -69,14 +68,14 @@ function WeeklyGroupedBarChart({ data = [] }) {
                 y1={yPos}
                 x2={svgWidth - marginRight}
                 y2={yPos}
-                stroke={tick === 0 ? '#94a3b8' : '#f1f5f9'}
+                stroke={tick === 0 ? (isDark ? '#475569' : '#94a3b8') : (isDark ? 'rgba(255,255,255,0.08)' : '#f1f5f9')}
                 strokeWidth={tick === 0 ? '1.5' : '1'}
                 strokeDasharray={tick === 0 ? 'none' : '4 4'}
               />
               <text
                 x={marginLeft - 8}
                 y={yPos + 4}
-                fill="#64748b"
+                fill={isDark ? '#94a3b8' : '#64748b'}
                 fontSize="11"
                 fontWeight="600"
                 textAnchor="end"
@@ -159,7 +158,7 @@ function WeeklyGroupedBarChart({ data = [] }) {
               <text
                 x={groupCenterX}
                 y={svgHeight - 10}
-                fill="#475569"
+                fill={isDark ? '#cbd5e1' : '#475569'}
                 fontSize="12"
                 fontWeight="700"
                 textAnchor="middle"
@@ -218,7 +217,6 @@ export default function ManagementDashboard({ branchOnly = false }) {
 
   const cashRoute = isBranchManager ? '/encargado/cobro-sucursal' : '/admin/cobro-sucursal'
   const reservationsRoute = isBranchManager ? '/encargado/reservations' : '/admin/reservations'
-  const incidentsRoute = isBranchManager ? '/encargado/incidents' : '/admin/incidents'
 
   // Listas de entregas y devoluciones operativas
   const { dateDeliveriesList, dateReturnsList } = useMemo(() => {
@@ -257,42 +255,78 @@ export default function ManagementDashboard({ branchOnly = false }) {
 
   const occupancy = summary.occupancyRate || rentedPct
 
+  const isDark = tema === 'oscuro'
+  const c = {
+    bg: isDark ? '#07111f' : '#f8fafc',
+    card: isDark ? '#0f1b2d' : '#ffffff',
+    cardBorder: isDark ? '#26354d' : '#e2e8f0',
+    cardShadow: isDark ? '0 4px 12px rgba(0,0,0,0.35)' : '0 1px 3px rgba(0,0,0,0.03)',
+    text: isDark ? '#f8fafc' : '#0f172a',
+    textSecondary: isDark ? '#cbd5e1' : '#334155',
+    textMuted: isDark ? '#94a3b8' : '#64748b',
+    headerBadgeBg: isDark ? 'rgba(30, 58, 138, 0.45)' : 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)',
+    headerBadgeBorder: isDark ? '#1e3a8a' : '#bfdbfe',
+    headerBadgeText: isDark ? '#93c5fd' : '#1e40af',
+    userChipBg: isDark ? '#0f1b2d' : '#ffffff',
+    userChipBorder: isDark ? '#26354d' : '#e2e8f0',
+    buttonReportBg: isDark ? '#14243b' : '#ffffff',
+    buttonReportBorder: isDark ? '#334155' : '#cbd5e1',
+    buttonReportText: isDark ? '#e2e8f0' : '#334155',
+    tagBg: isDark ? 'rgba(37, 99, 235, 0.25)' : '#eff6ff',
+    tagText: isDark ? '#60a5fa' : 'var(--brand-primary, #2563eb)',
+    trackBg: isDark ? '#1e293b' : '#f1f5f9',
+    tableTheadBg: isDark ? '#14243b' : '#f8fafc',
+    tableBorder: isDark ? '#26354d' : '#e2e8f0',
+    tableRowBorder: isDark ? '#1e293b' : '#f1f5f9',
+    tableRowHover: isDark ? '#162338' : '#f8fafc',
+    searchInputBg: isDark ? '#14243b' : '#f8fafc',
+    searchInputBorder: isDark ? '#334155' : '#cbd5e1',
+    tabContainerBg: isDark ? '#14243b' : '#f1f5f9',
+    tabActiveBg: isDark ? '#2563eb' : '#ffffff',
+    tabActiveText: isDark ? '#ffffff' : '#0f172a',
+    tabInactiveText: isDark ? '#94a3b8' : '#64748b',
+    emptyBoxBg: isDark ? '#14243b' : '#f8fafc',
+    emptyBoxBorder: isDark ? '#334155' : '#cbd5e1',
+    zoomModalBg: isDark ? '#0f1b2d' : '#ffffff',
+    zoomCloseBtnBg: isDark ? '#1e293b' : '#f1f5f9',
+  }
+
   return (
-    <div className={`management-shell ${tema === 'oscuro' ? 'management-shell--dark' : ''}`}>
+    <div className={`management-shell ${isDark ? 'management-shell--dark' : ''}`}>
       <ManagementSidebar branchOnly={branchOnly} />
 
-      <main className="management-main" style={{ padding: '28px 36px', background: 'var(--adm-bg, #f8fafc)', minHeight: '100vh' }}>
+      <main className="management-main" style={{ padding: '28px 36px', background: c.bg, minHeight: '100vh', transition: 'background 0.2s ease' }}>
         {/* Cabecera Limpia con Indicador de Tiempo Real */}
         <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24, gap: 20 }}>
           <div>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '6px 16px', background: 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)', border: '1px solid #bfdbfe', borderRadius: 24, marginBottom: 10, boxShadow: '0 1px 3px rgba(37,99,235,0.08)' }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '6px 16px', background: c.headerBadgeBg, border: `1px solid ${c.headerBadgeBorder}`, borderRadius: 24, marginBottom: 10, boxShadow: '0 1px 3px rgba(37,99,235,0.08)' }}>
               <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#10b981', boxShadow: '0 0 8px #10b981' }} />
-              <strong style={{ fontSize: 13, fontWeight: 700, color: '#1e40af', letterSpacing: '-0.01em' }}>
+              <strong style={{ fontSize: 13, fontWeight: 700, color: c.headerBadgeText, letterSpacing: '-0.01em' }}>
                 {isBranchManager ? `Sucursal: ${summary?.branch || ''}` : 'Administración Central Drivique'}
               </strong>
-              <span style={{ fontSize: 11, color: '#64748b', display: 'inline-flex', alignItems: 'center', gap: 4, marginLeft: 6, borderLeft: '1px solid #cbd5e1', paddingLeft: 10 }}>
+              <span style={{ fontSize: 11, color: c.textMuted, display: 'inline-flex', alignItems: 'center', gap: 4, marginLeft: 6, borderLeft: `1px solid ${c.cardBorder}`, paddingLeft: 10 }}>
                 <FaSync style={{ fontSize: 10, color: '#10b981' }} /> En Tiempo Real ({(lastSync instanceof Date ? lastSync : new Date()).toLocaleTimeString().slice(0, 5)})
               </span>
             </div>
-            <h1 style={{ fontSize: 24, fontWeight: 800, color: '#0f172a', margin: '2px 0 4px', letterSpacing: '-0.01em' }}>
+            <h1 style={{ fontSize: 24, fontWeight: 800, color: c.text, margin: '2px 0 4px', letterSpacing: '-0.01em' }}>
               Dashboard Operativo
             </h1>
-            <p style={{ fontSize: 13, color: '#64748b', margin: 0 }}>
+            <p style={{ fontSize: 13, color: c.textMuted, margin: 0 }}>
               Resumen en tiempo real de entregas, devoluciones y estado de la flota local.
             </p>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
             <MenuConfiguracion />
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, background: '#ffffff', padding: '6px 14px', borderRadius: 30, border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, background: c.userChipBg, padding: '6px 14px', borderRadius: 30, border: `1px solid ${c.userChipBorder}`, boxShadow: c.cardShadow }}>
               <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'var(--brand-primary, #2563eb)', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 14 }}>
                 {(usuario?.nombre || usuario?.correo || 'U').charAt(0).toUpperCase()}
               </div>
               <div>
-                <strong style={{ fontSize: 13, fontWeight: 700, color: '#0f172a', display: 'block', lineHeight: 1.1 }}>
+                <strong style={{ fontSize: 13, fontWeight: 700, color: c.text, display: 'block', lineHeight: 1.1 }}>
                   {usuario?.nombre || 'Encargado de Sucursal'}
                 </strong>
-                <small style={{ fontSize: 11, color: '#64748b' }}>
+                <small style={{ fontSize: 11, color: c.textMuted }}>
                   {isBranchManager ? 'Administrador de Sucursal' : 'Admin Principal'}
                 </small>
               </div>
@@ -345,83 +379,64 @@ export default function ManagementDashboard({ branchOnly = false }) {
             <FaPlus /> Crear Reserva Manual
           </button>
 
-          <button
-            type="button"
-            onClick={() => navigate(incidentsRoute)}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 8,
-              padding: '10px 18px',
-              background: '#ffffff',
-              border: '1px solid #cbd5e1',
-              borderRadius: 10,
-              color: '#334155',
-              fontWeight: 600,
-              fontSize: 13,
-              cursor: 'pointer',
-            }}
-          >
-            <FaTools style={{ color: '#d97706' }} /> Reportar Incidencia / Taller
-          </button>
         </div>
 
         {/* Tarjetas KPI Limpias (4 Métricas Clave) — ICONO AL LADO DEL TÍTULO CON MISMO TAMAÑO */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16, marginBottom: 24 }}>
           {/* KPI 1: Ingresos del Mes */}
-          <div style={{ background: '#ffffff', padding: 18, borderRadius: 14, border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
+          <div style={{ background: c.card, padding: 18, borderRadius: 14, border: `1px solid ${c.cardBorder}`, boxShadow: c.cardShadow }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
                 <FaDollarSign style={{ fontSize: 13, color: 'var(--brand-primary, #2563eb)' }} aria-hidden="true" />
-                <span style={{ fontSize: 13, fontWeight: 600, color: '#64748b' }}>Ingresos del Mes</span>
+                <span style={{ fontSize: 13, fontWeight: 600, color: c.textMuted }}>Ingresos del Mes</span>
               </div>
             </div>
-            <strong style={{ fontSize: 22, fontWeight: 800, color: '#0f172a', display: 'block' }}>
+            <strong style={{ fontSize: 22, fontWeight: 800, color: c.text, display: 'block' }}>
               {formatCurrency(summary.monthlyRevenue || 0, moneda, tasaUSD)}
             </strong>
-            <span style={{ fontSize: 11, color: '#94a3b8', marginTop: 4, display: 'block' }}>Facturación acumulada en la sucursal</span>
+            <span style={{ fontSize: 11, color: c.textMuted, marginTop: 4, display: 'block' }}>Facturación acumulada en la sucursal</span>
           </div>
 
           {/* KPI 2: Tasa de Ocupación */}
-          <div style={{ background: '#ffffff', padding: 18, borderRadius: 14, border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
+          <div style={{ background: c.card, padding: 18, borderRadius: 14, border: `1px solid ${c.cardBorder}`, boxShadow: c.cardShadow }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
                 <FaChartLine style={{ fontSize: 13, color: 'var(--brand-primary, #2563eb)' }} aria-hidden="true" />
-                <span style={{ fontSize: 13, fontWeight: 600, color: '#64748b' }}>Tasa de Ocupación</span>
+                <span style={{ fontSize: 13, fontWeight: 600, color: c.textMuted }}>Tasa de Ocupación</span>
               </div>
             </div>
-            <strong style={{ fontSize: 22, fontWeight: 800, color: '#0f172a', display: 'block' }}>
+            <strong style={{ fontSize: 22, fontWeight: 800, color: c.text, display: 'block' }}>
               {occupancy}%
             </strong>
-            <span style={{ fontSize: 11, color: '#94a3b8', marginTop: 4, display: 'block' }}>{rentedVehicles} de {totalVehicles} vehículo{totalVehicles === 1 ? '' : 's'} alquilado{rentedVehicles === 1 ? '' : 's'}</span>
+            <span style={{ fontSize: 11, color: c.textMuted, marginTop: 4, display: 'block' }}>{rentedVehicles} de {totalVehicles} vehículo{totalVehicles === 1 ? '' : 's'} alquilado{rentedVehicles === 1 ? '' : 's'}</span>
           </div>
 
           {/* KPI 3: Entregas de Hoy */}
-          <div style={{ background: '#ffffff', padding: 18, borderRadius: 14, border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
+          <div style={{ background: c.card, padding: 18, borderRadius: 14, border: `1px solid ${c.cardBorder}`, boxShadow: c.cardShadow }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-                <FaCalendarCheck style={{ fontSize: 13, color: '#16a34a' }} aria-hidden="true" />
-                <span style={{ fontSize: 13, fontWeight: 600, color: '#64748b' }}>Entregas de Hoy</span>
+                <FaCalendarCheck style={{ fontSize: 13, color: '#10b981' }} aria-hidden="true" />
+                <span style={{ fontSize: 13, fontWeight: 600, color: c.textMuted }}>Entregas de Hoy</span>
               </div>
             </div>
-            <strong style={{ fontSize: 22, fontWeight: 800, color: '#0f172a', display: 'block' }}>
+            <strong style={{ fontSize: 22, fontWeight: 800, color: c.text, display: 'block' }}>
               {summary.todayDeliveries} recogidas
             </strong>
-            <span style={{ fontSize: 11, color: '#94a3b8', marginTop: 4, display: 'block' }}>Clientes en mostrador</span>
+            <span style={{ fontSize: 11, color: c.textMuted, marginTop: 4, display: 'block' }}>Clientes en mostrador</span>
           </div>
 
           {/* KPI 4: Devoluciones de Hoy */}
-          <div style={{ background: '#ffffff', padding: 18, borderRadius: 14, border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
+          <div style={{ background: c.card, padding: 18, borderRadius: 14, border: `1px solid ${c.cardBorder}`, boxShadow: c.cardShadow }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-                <FaCheckCircle style={{ fontSize: 13, color: '#d97706' }} aria-hidden="true" />
-                <span style={{ fontSize: 13, fontWeight: 600, color: '#64748b' }}>Devoluciones de Hoy</span>
+                <FaCheckCircle style={{ fontSize: 13, color: '#f59e0b' }} aria-hidden="true" />
+                <span style={{ fontSize: 13, fontWeight: 600, color: c.textMuted }}>Devoluciones de Hoy</span>
               </div>
             </div>
-            <strong style={{ fontSize: 22, fontWeight: 800, color: '#0f172a', display: 'block' }}>
+            <strong style={{ fontSize: 22, fontWeight: 800, color: c.text, display: 'block' }}>
               {summary.todayReturns} retornos
             </strong>
-            <span style={{ fontSize: 11, color: '#94a3b8', marginTop: 4, display: 'block' }}>Vehículos retornando a la sucursal</span>
+            <span style={{ fontSize: 11, color: c.textMuted, marginTop: 4, display: 'block' }}>Vehículos retornando a la sucursal</span>
           </div>
         </div>
 
@@ -429,21 +444,21 @@ export default function ManagementDashboard({ branchOnly = false }) {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 20, marginBottom: 28 }}>
           
           {/* Gráfica 1: Ocupación y Estado de la Flota */}
-          <div style={{ background: '#ffffff', padding: 22, borderRadius: 16, border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
+          <div style={{ background: c.card, padding: 22, borderRadius: 16, border: `1px solid ${c.cardBorder}`, boxShadow: c.cardShadow }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
               <div>
-                <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: '#0f172a' }}>
+                <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: c.text }}>
                   Estado de la Flota
                 </h3>
-                <span style={{ fontSize: 12, color: '#64748b' }}>Distribución de los {totalVehicles} vehículos de la sucursal</span>
+                <span style={{ fontSize: 12, color: c.textMuted }}>Distribución de los {totalVehicles} vehículos de la sucursal</span>
               </div>
-              <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--brand-primary, #2563eb)', background: '#eff6ff', padding: '4px 10px', borderRadius: 20 }}>
+              <span style={{ fontSize: 12, fontWeight: 700, color: c.tagText, background: c.tagBg, padding: '4px 10px', borderRadius: 20 }}>
                 {totalVehicles} Vehículo{totalVehicles === 1 ? '' : 's'}
               </span>
             </div>
 
             {/* Barra de progreso combinada visual */}
-            <div style={{ height: 12, borderRadius: 6, background: '#f1f5f9', overflow: 'hidden', display: 'flex', marginBottom: 20 }}>
+            <div style={{ height: 12, borderRadius: 6, background: c.trackBg, overflow: 'hidden', display: 'flex', marginBottom: 20 }}>
               <div style={{ width: `${availPct}%`, background: '#10b981', transition: 'width 0.4s' }} title={`Disponibles: ${availPct}%`} />
               <div style={{ width: `${rentedPct}%`, background: 'var(--brand-primary, #2563eb)', transition: 'width 0.4s' }} title={`En Alquiler: ${rentedPct}%`} />
               <div style={{ width: `${maintPct}%`, background: '#f59e0b', transition: 'width 0.4s' }} title={`En Taller: ${maintPct}%`} />
@@ -454,46 +469,46 @@ export default function ManagementDashboard({ branchOnly = false }) {
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#10b981' }} />
-                  <span style={{ fontSize: 13, fontWeight: 600, color: '#334155' }}>Disponibles</span>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: c.textSecondary }}>Disponibles</span>
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                  <strong style={{ fontSize: 13, fontWeight: 700, color: '#0f172a' }}>{availableVehicles} autos</strong>
-                  <span style={{ fontSize: 11, color: '#64748b', marginLeft: 6 }}>({availPct}%)</span>
+                  <strong style={{ fontSize: 13, fontWeight: 700, color: c.text }}>{availableVehicles} autos</strong>
+                  <span style={{ fontSize: 11, color: c.textMuted, marginLeft: 6 }}>({availPct}%)</span>
                 </div>
               </div>
 
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <span style={{ width: 10, height: 10, borderRadius: '50%', background: 'var(--brand-primary, #2563eb)' }} />
-                  <span style={{ fontSize: 13, fontWeight: 600, color: '#334155' }}>En Alquiler</span>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: c.textSecondary }}>En Alquiler</span>
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                  <strong style={{ fontSize: 13, fontWeight: 700, color: '#0f172a' }}>{rentedVehicles} autos</strong>
-                  <span style={{ fontSize: 11, color: '#64748b', marginLeft: 6 }}>({rentedPct}%)</span>
+                  <strong style={{ fontSize: 13, fontWeight: 700, color: c.text }}>{rentedVehicles} autos</strong>
+                  <span style={{ fontSize: 11, color: c.textMuted, marginLeft: 6 }}>({rentedPct}%)</span>
                 </div>
               </div>
 
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#f59e0b' }} />
-                  <span style={{ fontSize: 13, fontWeight: 600, color: '#334155' }}>En Taller / Mantenimiento</span>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: c.textSecondary }}>En Taller / Mantenimiento</span>
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                  <strong style={{ fontSize: 13, fontWeight: 700, color: '#0f172a' }}>{maintenanceVehicles} autos</strong>
-                  <span style={{ fontSize: 11, color: '#64748b', marginLeft: 6 }}>({maintPct}%)</span>
+                  <strong style={{ fontSize: 13, fontWeight: 700, color: c.text }}>{maintenanceVehicles} autos</strong>
+                  <span style={{ fontSize: 11, color: c.textMuted, marginLeft: 6 }}>({maintPct}%)</span>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Gráfica 2: Diagrama de Barras Agrupadas Estándar */}
-          <div style={{ background: '#ffffff', padding: 22, borderRadius: 16, border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
+          <div style={{ background: c.card, padding: 22, borderRadius: 16, border: `1px solid ${c.cardBorder}`, boxShadow: c.cardShadow }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
               <div>
-                <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: '#0f172a' }}>
+                <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: c.text }}>
                   Actividad Semanal
                 </h3>
-                <span style={{ fontSize: 12, color: '#64748b' }}>Entregas vs. Devoluciones de la semana</span>
+                <span style={{ fontSize: 12, color: c.textMuted }}>Entregas vs. Devoluciones de la semana</span>
               </div>
               <div style={{ display: 'flex', gap: 10 }}>
                 <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--brand-primary, #2563eb)', display: 'flex', alignItems: 'center', gap: 4 }}>
@@ -506,19 +521,19 @@ export default function ManagementDashboard({ branchOnly = false }) {
             </div>
 
             {/* SVG Grouped Bar Chart */}
-            <WeeklyGroupedBarChart data={weeklyData} />
+            <WeeklyGroupedBarChart data={weeklyData} isDark={isDark} />
           </div>
 
         </div>
 
         {/* TABLA OPERATIVA CON BUSCADOR Y PESTAÑAS */}
-        <section style={{ background: '#ffffff', padding: 22, borderRadius: 16, border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
+        <section style={{ background: c.card, padding: 22, borderRadius: 16, border: `1px solid ${c.cardBorder}`, boxShadow: c.cardShadow }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18, flexWrap: 'wrap', gap: 14 }}>
             <div>
-              <h2 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: '#0f172a' }}>
+              <h2 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: c.text }}>
                 Programación Operativa de Sucursal
               </h2>
-              <span style={{ fontSize: 12, color: '#64748b' }}>
+              <span style={{ fontSize: 12, color: c.textMuted }}>
                 Atención presencial de entregas y devoluciones de la sede
               </span>
             </div>
@@ -527,7 +542,7 @@ export default function ManagementDashboard({ branchOnly = false }) {
 
               {/* Buscador en Vivo */}
               <div style={{ position: 'relative', minWidth: 200 }}>
-                <FaSearch style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', fontSize: 12 }} />
+                <FaSearch style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: c.textMuted, fontSize: 12 }} />
                 <input
                   type="text"
                   placeholder="Buscar cliente, auto o placa..."
@@ -537,10 +552,10 @@ export default function ManagementDashboard({ branchOnly = false }) {
                     width: '100%',
                     padding: '7px 10px 7px 30px',
                     borderRadius: 8,
-                    border: '1px solid #cbd5e1',
-                    background: '#f8fafc',
+                    border: `1px solid ${c.searchInputBorder}`,
+                    background: c.searchInputBg,
                     fontSize: 12,
-                    color: '#0f172a',
+                    color: c.text,
                     outline: 'none',
                     boxSizing: 'border-box',
                   }}
@@ -548,7 +563,7 @@ export default function ManagementDashboard({ branchOnly = false }) {
               </div>
 
               {/* Botones de Pestaña */}
-              <div style={{ display: 'flex', background: '#f1f5f9', padding: 3, borderRadius: 8 }}>
+              <div style={{ display: 'flex', background: c.tabContainerBg, padding: 3, borderRadius: 8 }}>
                 <button
                   type="button"
                   onClick={() => setActiveTab('entregas')}
@@ -558,10 +573,11 @@ export default function ManagementDashboard({ branchOnly = false }) {
                     fontWeight: 600,
                     fontSize: 12,
                     border: 'none',
-                    background: activeTab === 'entregas' ? '#ffffff' : 'transparent',
-                    color: activeTab === 'entregas' ? '#0f172a' : '#64748b',
-                    boxShadow: activeTab === 'entregas' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
+                    background: activeTab === 'entregas' ? c.tabActiveBg : 'transparent',
+                    color: activeTab === 'entregas' ? c.tabActiveText : c.tabInactiveText,
+                    boxShadow: activeTab === 'entregas' ? (isDark ? '0 1px 4px rgba(0,0,0,0.4)' : '0 1px 3px rgba(0,0,0,0.08)') : 'none',
                     cursor: 'pointer',
+                    transition: 'all 0.15s ease',
                   }}
                 >
                   Entregas ({dateDeliveriesList.length})
@@ -575,10 +591,11 @@ export default function ManagementDashboard({ branchOnly = false }) {
                     fontWeight: 600,
                     fontSize: 12,
                     border: 'none',
-                    background: activeTab === 'devoluciones' ? '#ffffff' : 'transparent',
-                    color: activeTab === 'devoluciones' ? '#0f172a' : '#64748b',
-                    boxShadow: activeTab === 'devoluciones' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
+                    background: activeTab === 'devoluciones' ? c.tabActiveBg : 'transparent',
+                    color: activeTab === 'devoluciones' ? c.tabActiveText : c.tabInactiveText,
+                    boxShadow: activeTab === 'devoluciones' ? (isDark ? '0 1px 4px rgba(0,0,0,0.4)' : '0 1px 3px rgba(0,0,0,0.08)') : 'none',
                     cursor: 'pointer',
+                    transition: 'all 0.15s ease',
                   }}
                 >
                   Devoluciones ({dateReturnsList.length})
@@ -588,31 +605,31 @@ export default function ManagementDashboard({ branchOnly = false }) {
           </div>
 
           {filteredList.length === 0 ? (
-            <div style={{ padding: '44px 20px', textAlign: 'center', background: '#f8fafc', borderRadius: 12, border: '1px dashed #cbd5e1' }}>
-              <FaCalendarCheck style={{ fontSize: 32, color: '#94a3b8', marginBottom: 10 }} />
-              <h3 style={{ margin: '0 0 4px', fontSize: 15, fontWeight: 700, color: '#1e293b' }}>
+            <div style={{ padding: '44px 20px', textAlign: 'center', background: c.emptyBoxBg, borderRadius: 12, border: `1px dashed ${c.emptyBoxBorder}` }}>
+              <FaCalendarCheck style={{ fontSize: 32, color: c.textMuted, marginBottom: 10 }} />
+              <h3 style={{ margin: '0 0 4px', fontSize: 15, fontWeight: 700, color: c.text }}>
                 No hay {activeTab === 'entregas' ? 'entregas' : 'devoluciones'} registradas
               </h3>
-              <p style={{ margin: 0, fontSize: 13, color: '#64748b' }}>
+              <p style={{ margin: 0, fontSize: 13, color: c.textMuted }}>
                 {searchTerm ? 'No se encontraron resultados para tu búsqueda.' : 'No existen actividades pendientes en esta sección.'}
               </p>
             </div>
           ) : (
-            <div style={{ overflowX: 'auto', borderRadius: 12, border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}>
+            <div style={{ overflowX: 'auto', borderRadius: 12, border: `1px solid ${c.tableBorder}`, boxShadow: c.cardShadow }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: 980 }}>
                 <thead>
-                  <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0' }}>
-                    <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px', textAlign: 'center', width: 50 }}>ID</th>
-                    <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' }}>CÓDIGO RESERVA</th>
-                    <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' }}>IMAGEN</th>
-                    <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' }}>NOMBRE VEHÍCULO</th>
-                    <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' }}>PLACA</th>
-                    <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' }}>NOMBRE COMPLETO</th>
-                    <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' }}>FECHA</th>
-                    <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' }}>HORA</th>
-                    <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' }}>MEDIO DE PAGO</th>
-                    <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' }}>ESTADO</th>
-                    <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px', textAlign: 'center' }}>ACCIÓN</th>
+                  <tr style={{ background: c.tableTheadBg, borderBottom: `2px solid ${c.tableBorder}` }}>
+                    <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: c.textMuted, textTransform: 'uppercase', letterSpacing: '0.5px', textAlign: 'center', width: 50 }}>ID</th>
+                    <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: c.textMuted, textTransform: 'uppercase', letterSpacing: '0.5px' }}>CÓDIGO RESERVA</th>
+                    <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: c.textMuted, textTransform: 'uppercase', letterSpacing: '0.5px' }}>IMAGEN</th>
+                    <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: c.textMuted, textTransform: 'uppercase', letterSpacing: '0.5px' }}>NOMBRE VEHÍCULO</th>
+                    <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: c.textMuted, textTransform: 'uppercase', letterSpacing: '0.5px' }}>PLACA</th>
+                    <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: c.textMuted, textTransform: 'uppercase', letterSpacing: '0.5px' }}>NOMBRE COMPLETO</th>
+                    <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: c.textMuted, textTransform: 'uppercase', letterSpacing: '0.5px' }}>FECHA</th>
+                    <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: c.textMuted, textTransform: 'uppercase', letterSpacing: '0.5px' }}>HORA</th>
+                    <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: c.textMuted, textTransform: 'uppercase', letterSpacing: '0.5px' }}>MEDIO DE PAGO</th>
+                    <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: c.textMuted, textTransform: 'uppercase', letterSpacing: '0.5px' }}>ESTADO</th>
+                    <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: c.textMuted, textTransform: 'uppercase', letterSpacing: '0.5px', textAlign: 'center' }}>ACCIÓN</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -635,19 +652,19 @@ export default function ManagementDashboard({ branchOnly = false }) {
                       <tr
                         key={r.id || rawCod || index}
                         style={{
-                          borderBottom: '1px solid #f1f5f9',
+                          borderBottom: `1px solid ${c.tableRowBorder}`,
                           transition: 'background 0.15s ease',
                         }}
-                        onMouseEnter={(e) => (e.currentTarget.style.background = '#f8fafc')}
+                        onMouseEnter={(e) => (e.currentTarget.style.background = c.tableRowHover)}
                         onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
                       >
                         {/* ID */}
-                        <td style={{ padding: '12px 14px', fontSize: 13, fontWeight: 400, color: '#64748b', textAlign: 'center', whiteSpace: 'nowrap' }}>
+                        <td style={{ padding: '12px 14px', fontSize: 13, fontWeight: 400, color: c.textMuted, textAlign: 'center', whiteSpace: 'nowrap' }}>
                           {index + 1}
                         </td>
 
                         {/* CÓDIGO */}
-                        <td style={{ padding: '12px 14px', fontSize: 13, fontWeight: 400, color: '#0f172a', whiteSpace: 'nowrap' }}>
+                        <td style={{ padding: '12px 14px', fontSize: 13, fontWeight: 600, color: c.text, whiteSpace: 'nowrap' }}>
                           {rawCod}
                         </td>
 
@@ -664,14 +681,14 @@ export default function ManagementDashboard({ branchOnly = false }) {
                                 height: 30,
                                 borderRadius: 6,
                                 objectFit: 'cover',
-                                border: '1px solid #cbd5e1',
+                                border: `1px solid ${c.cardBorder}`,
                                 display: 'block',
                                 cursor: 'zoom-in',
                                 transition: 'transform 0.2s ease, box-shadow 0.2s ease',
                               }}
                               onMouseEnter={(e) => {
                                 e.currentTarget.style.transform = 'scale(1.15)'
-                                e.currentTarget.style.boxShadow = '0 4px 10px rgba(0,0,0,0.18)'
+                                e.currentTarget.style.boxShadow = '0 4px 10px rgba(0,0,0,0.25)'
                               }}
                               onMouseLeave={(e) => {
                                 e.currentTarget.style.transform = 'scale(1)'
@@ -679,43 +696,51 @@ export default function ManagementDashboard({ branchOnly = false }) {
                               }}
                             />
                           ) : (
-                            <span style={{ fontSize: 12, color: '#94a3b8' }}>—</span>
+                            <span style={{ fontSize: 12, color: c.textMuted }}>—</span>
                           )}
                         </td>
 
                         {/* VEHÍCULO */}
-                        <td style={{ padding: '12px 14px', fontSize: 13, fontWeight: 400, color: '#0f172a', whiteSpace: 'nowrap' }}>
+                        <td style={{ padding: '12px 14px', fontSize: 13, fontWeight: 600, color: c.text, whiteSpace: 'nowrap' }}>
                           {r.vehiculoNombre || 'Mazda CX-5'}
                         </td>
 
                         {/* PLACA */}
-                        <td style={{ padding: '12px 14px', fontSize: 13, fontWeight: 400, color: '#0f172a', whiteSpace: 'nowrap' }}>
+                        <td style={{ padding: '12px 14px', fontSize: 13, fontWeight: 500, color: c.text, whiteSpace: 'nowrap' }}>
                           {r.vehiculoPlaca || 'KLS-849'}
                         </td>
 
                         {/* NOMBRE COMPLETO */}
-                        <td style={{ padding: '12px 14px', fontSize: 13, fontWeight: 400, color: '#334155', whiteSpace: 'nowrap' }}>
+                        <td style={{ padding: '12px 14px', fontSize: 13, fontWeight: 400, color: c.textSecondary, whiteSpace: 'nowrap' }}>
                           {clienteNombre}
                         </td>
 
                         {/* FECHA */}
-                        <td style={{ padding: '12px 14px', fontSize: 13, fontWeight: 400, color: '#334155', whiteSpace: 'nowrap' }}>
+                        <td style={{ padding: '12px 14px', fontSize: 13, fontWeight: 400, color: c.textSecondary, whiteSpace: 'nowrap' }}>
                           {fechaSolo}
                         </td>
 
                         {/* HORA */}
-                        <td style={{ padding: '12px 14px', fontSize: 13, fontWeight: 400, color: '#334155', whiteSpace: 'nowrap' }}>
+                        <td style={{ padding: '12px 14px', fontSize: 13, fontWeight: 400, color: c.textSecondary, whiteSpace: 'nowrap' }}>
                           {horaSolo}
                         </td>
 
                         {/* MEDIO DE PAGO */}
-                        <td style={{ padding: '12px 14px', fontSize: 13, fontWeight: 400, color: '#334155', whiteSpace: 'nowrap' }}>
+                        <td style={{ padding: '12px 14px', fontSize: 13, fontWeight: 400, color: c.textSecondary, whiteSpace: 'nowrap' }}>
                           {textoMedio}
                         </td>
 
                         {/* ESTADO */}
                         <td style={{ padding: '12px 14px', whiteSpace: 'nowrap' }}>
-                          <span style={{ padding: '3px 10px', borderRadius: 20, fontSize: 11, fontWeight: 700, background: estaPagado ? '#ecfdf5' : '#fffbe1', color: estaPagado ? '#047857' : '#b45309', border: `1px solid ${estaPagado ? '#a7f3d0' : '#fde68a'}` }}>
+                          <span style={{
+                            padding: '3px 10px',
+                            borderRadius: 20,
+                            fontSize: 11,
+                            fontWeight: 700,
+                            background: estaPagado ? (isDark ? 'rgba(16, 185, 129, 0.2)' : '#ecfdf5') : (isDark ? 'rgba(245, 158, 11, 0.2)' : '#fffbe1'),
+                            color: estaPagado ? (isDark ? '#34d399' : '#047857') : (isDark ? '#fbbf24' : '#b45309'),
+                            border: `1px solid ${estaPagado ? (isDark ? '#059669' : '#a7f3d0') : (isDark ? '#d97706' : '#fde68a')}`,
+                          }}>
                             {estaPagado ? 'Recibido' : 'No Recibido'}
                           </span>
                         </td>
@@ -762,8 +787,8 @@ export default function ManagementDashboard({ branchOnly = false }) {
               left: 0,
               width: '100vw',
               height: '100vh',
-              background: 'rgba(15, 23, 42, 0.75)',
-              backdropFilter: 'blur(4px)',
+              background: 'rgba(15, 23, 42, 0.8)',
+              backdropFilter: 'blur(5px)',
               zIndex: 9999,
               display: 'flex',
               alignItems: 'center',
@@ -775,28 +800,29 @@ export default function ManagementDashboard({ branchOnly = false }) {
             <div
               style={{
                 position: 'relative',
-                background: '#ffffff',
+                background: c.zoomModalBg,
+                border: `1px solid ${c.cardBorder}`,
                 borderRadius: 16,
                 padding: 20,
                 maxWidth: 580,
                 width: '100%',
-                boxShadow: '0 20px 25px -5px rgba(0,0,0,0.3)',
+                boxShadow: '0 20px 25px -5px rgba(0,0,0,0.5)',
               }}
               onClick={(e) => e.stopPropagation()}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-                <h3 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: '#0f172a' }}>{zoomImage.title}</h3>
+                <h3 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: c.text }}>{zoomImage.title}</h3>
                 <button
                   type="button"
                   onClick={() => setZoomImage(null)}
                   style={{
-                    background: '#f1f5f9',
+                    background: c.zoomCloseBtnBg,
                     border: 'none',
                     borderRadius: '50%',
                     width: 30,
                     height: 30,
                     fontWeight: 700,
-                    color: '#64748b',
+                    color: c.textMuted,
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
@@ -814,7 +840,7 @@ export default function ManagementDashboard({ branchOnly = false }) {
                   maxHeight: 380,
                   objectFit: 'contain',
                   borderRadius: 10,
-                  background: '#f8fafc',
+                  background: c.bg,
                 }}
               />
             </div>

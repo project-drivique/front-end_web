@@ -252,11 +252,13 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
   }
 
   const getSafeDocUrl = (url) => {
-    if (!url) return ''
+    if (!url || typeof url !== 'string') return ''
+    if (url.includes('dummy.pdf')) return ''
     if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('blob:') || url.startsWith('data:')) {
       return url
     }
-    return url.startsWith('/') ? url : `/${url}`
+    if (url.startsWith('/uploads/')) return url
+    return ''
   }
 
   const renderDocPreview = (url, titleLabel) => {
@@ -1507,13 +1509,13 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
               </div>
 
               <div className="doc-zoom-preview-box">
-                {!zoomPdf.url?.toLowerCase().includes('.pdf') ? (
+                {getSafeDocUrl(zoomPdf.url) && !zoomPdf.url?.toLowerCase().includes('.pdf') ? (
                   <img
                     src={getSafeDocUrl(zoomPdf.url)}
                     alt={zoomPdf.title}
                     className="doc-zoom-img"
                   />
-                ) : (
+                ) : getSafeDocUrl(zoomPdf.url) ? (
                   <object
                     data={`${getSafeDocUrl(zoomPdf.url)}#toolbar=1&navpanes=0`}
                     type="application/pdf"
@@ -1537,6 +1539,38 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
                       }}
                     />
                   </object>
+                ) : (
+                  <div style={{
+                    padding: '36px 24px',
+                    textAlign: 'center',
+                    background: 'var(--city-bg, #f8fafc)',
+                    borderRadius: 14,
+                    border: '1px solid var(--borde, #e2e8f0)',
+                    width: '100%',
+                    maxWidth: 580,
+                    margin: '20px auto',
+                  }}>
+                    <FaIdCard size={48} color="#2563eb" style={{ marginBottom: 14 }} />
+                    <h4 style={{ margin: '0 0 6px', fontSize: 16, fontWeight: 800, color: 'var(--city-text, #0f172a)' }}>
+                      {zoomPdf.title}
+                    </h4>
+                    <span style={{ fontSize: 12, color: 'var(--city-muted, #64748b)', display: 'block', marginBottom: 18 }}>
+                      Documento oficial digitalizado registrado en el expediente del cliente
+                    </span>
+                    <span style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 6,
+                      padding: '6px 16px',
+                      borderRadius: 20,
+                      background: '#dcfce7',
+                      color: '#15803d',
+                      fontSize: 12,
+                      fontWeight: 800,
+                    }}>
+                      <FaCheckCircle size={14} /> Validación de Identidad Registrada en Sucursal
+                    </span>
+                  </div>
                 )}
               </div>
             </div>
