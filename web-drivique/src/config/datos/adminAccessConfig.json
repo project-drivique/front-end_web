@@ -21,7 +21,7 @@
     "maxRecords": 100
   },
   "dashboardModules": {
-    "administrador": ["vehicles", "users", "roles", "reservations", "cashCollection", "contracts", "incidents", "documents", "deliveries", "reviews", "cities", "branches", "promotions", "brand", "reports", "audit"],
+    "administrador": ["vehicles", "users", "roles", "reservations", "cashCollection", "contracts", "documents", "deliveries", "reviews", "cities", "branches", "promotions", "brand", "reports", "audit"],
     "encargado_sucursal": ["vehicles", "reservations", "cashCollection", "contracts", "incidents", "documents", "deliveries", "promotions", "reviews", "reports", "audit"]
   },
   "dashboardNavigation": {
@@ -31,7 +31,6 @@
       { "key": "reservations", "route": "/admin/reservations", "section": "GESTIÓN OPERATIVA" },
       { "key": "cashCollection", "route": "/admin/cobro-sucursal", "section": "GESTIÓN OPERATIVA" },
       { "key": "contracts", "route": "/admin/contracts", "section": "GESTIÓN OPERATIVA" },
-      { "key": "incidents", "route": "/admin/incidents", "section": "GESTIÓN OPERATIVA" },
       { "key": "documents", "route": "/admin/documents", "section": "GESTIÓN OPERATIVA" },
       { "key": "deliveries", "route": "/admin/deliveries", "section": "GESTIÓN OPERATIVA" },
       { "key": "reviews", "route": "/admin/reviews", "section": "CONSULTA Y AUDITORÍA" },

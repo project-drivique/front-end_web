@@ -426,6 +426,7 @@ export default function ContractManagementPage() {
                     sucursal: modalDetalle.sucursal 
                   }}
                   reservaGuardada={{
+                    id: modalDetalle.reservaId,
                     clienteNombre: modalDetalle.clienteNombre,
                     clienteDocumento: modalDetalle.clienteDocumento,
                     clienteTipoDocumento: modalDetalle.clienteTipoDocumento || 'CC',
@@ -441,8 +442,12 @@ export default function ContractManagementPage() {
                     reservaDetalles: { sucursalRetiro: modalDetalle.sucursal, fechaInicio: modalDetalle.fechaInicio, fechaFin: modalDetalle.fechaFin }
                   }}
                   contratoFirmado={{
+                    id: modalDetalle.id,
+                    contractNumber: modalDetalle.contratoNumero || `CTR-${modalDetalle.reservaCodigo}`,
                     codigo: modalDetalle.contratoNumero || `CTR-${modalDetalle.reservaCodigo}`,
-                    firmaUsuarioDataUrl: modalDetalle.firmaUsuarioDataUrl || '',
+                    signatureUrl: modalDetalle.signatureUrl || modalDetalle.firmaUsuarioDataUrl || '',
+                    firmaUsuarioDataUrl: modalDetalle.signatureUrl || modalDetalle.firmaUsuarioDataUrl || '',
+                    signedAt: modalDetalle.fechaFirma,
                     clienteNombre: modalDetalle.clienteNombre,
                     clienteDocumento: modalDetalle.clienteDocumento,
                     tipoDoc: modalDetalle.clienteTipoDocumento || 'CC',

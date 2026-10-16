@@ -7,6 +7,8 @@ import { useLanding } from '@/modules/landing/LandingContext'
 import { useFavoritos } from '../hooks/useFavorites'
 import { formatCurrency } from '@/utils/currencyUtils'
 import CatalogTopHeader from '../components/CatalogTopHeader'
+import VehicleDetailsModal from '../components/VehicleDetailsModal'
+import { catalogService } from '@/services/catalogService'
 import './FavoritesPage.css'
 
 export default function FavoritesPage() {
@@ -57,6 +59,38 @@ export default function FavoritesPage() {
       return true
     })
   }, [vehiculos, idsFavoritos, busqueda, categoria])
+
+  const [vehiculoDetalle, setVehiculoDetalle] = useState(null)
+
+  const handleVerDetalles = async (v, e) => {
+    if (e) e.stopPropagation()
+    const inicial = {
+      ...v,
+      id: v.id,
+      nombre: `${v.brandName} ${v.model}`.trim(),
+      marca: v.brandName,
+      modelo: v.model,
+      categoria: v.categoryName,
+      transmision: v.transmissionName,
+      combustible: v.fuelTypeName,
+      sucursal: v.branchName,
+      ciudad: v.cityName,
+      año: v.year,
+      pasajeros: v.passengerCapacity,
+      puertas: v.doorsCount,
+      kilometraje: v.mileage,
+      precio: Number(v.dailyRate || 0),
+      imagen: v.mainImageUrl || '',
+      imagenes: v.mainImageUrl ? [v.mainImageUrl] : [],
+    }
+    setVehiculoDetalle(inicial)
+    try {
+      const completo = await catalogService.getVehiculoById(v.id)
+      if (completo) setVehiculoDetalle(completo)
+    } catch {
+      // mantiene datos iniciales si no carga el completo
+    }
+  }
 
   const handleEliminar = (id, e) => {
     e.stopPropagation()
@@ -157,7 +191,8 @@ export default function FavoritesPage() {
               <div
                 key={v.id}
                 className="favorito-card-agrandada"
-                onClick={() => navigate(`/catalogo/${v.id}`)}
+                onClick={() => handleVerDetalles(v)}
+                style={{ cursor: 'pointer' }}
               >
                 {/* Imagen agrandada */}
                 <div className="favorito-card-imagen-wrap">
@@ -197,13 +232,18 @@ export default function FavoritesPage() {
                   {/* Acciones */}
                   <div className="favorito-card-acciones">
                     <button
+                      type="button"
                       className="btn-eliminar-favorito-card"
                       onClick={(e) => handleEliminar(v.id, e)}
                     >
                       <FaTrashAlt /> {t('favoritos.delete', 'Eliminar')}
                     </button>
 
-                    <button className="btn-ver-detalles-card">
+                    <button
+                      type="button"
+                      className="btn-ver-detalles-card"
+                      onClick={(e) => handleVerDetalles(v, e)}
+                    >
                       {t('favoritos.viewDetailsAndReserve', 'Ver detalles y reservar')} <FaArrowRight />
                     </button>
                   </div>
@@ -213,6 +253,14 @@ export default function FavoritesPage() {
           </div>
         )}
       </main>
+
+      {/* Modal de detalles exclusivo para favoritos: no te saca de la pantalla */}
+      <VehicleDetailsModal
+        isOpen={Boolean(vehiculoDetalle)}
+        vehiculo={vehiculoDetalle}
+        vehiculoId={vehiculoDetalle?.id}
+        onClose={() => setVehiculoDetalle(null)}
+      />
     </div>
   )
 }

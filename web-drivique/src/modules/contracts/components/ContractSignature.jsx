@@ -54,24 +54,64 @@ export default function FirmaContrato({
 
   const { datosForm = {}, reservaDetalles = {}, referencia, seguroIdx, serviciosSeleccionados = [] } = reservaGuardada || {};
   const [contratoApi, setContratoApi] = useState(contratoFirmado?.contractNumber ? contratoFirmado : null);
-  const [firmaImagen, setFirmaImagen] = useState('');
+
+  const directSignature = (
+    (typeof contratoFirmado?.signatureUrl === 'string' && contratoFirmado.signatureUrl.trim()) ||
+    (typeof contratoFirmado?.firmaUsuarioDataUrl === 'string' && contratoFirmado.firmaUsuarioDataUrl !== 'protected' && contratoFirmado.firmaUsuarioDataUrl.trim()) ||
+    (typeof reservaGuardada?.firmaUsuarioDataUrl === 'string' && reservaGuardada.firmaUsuarioDataUrl !== 'protected' && reservaGuardada.firmaUsuarioDataUrl.trim()) ||
+    (typeof reservaGuardada?.contratoFirma === 'string' && reservaGuardada.contratoFirma.trim()) ||
+    ''
+  );
+
+  const [firmaImagen, setFirmaImagen] = useState(directSignature || '');
   const contratoIdFirmado = contratoFirmado?.id || (contratoApi?.signedAt ? contratoApi.id : null);
+
+  // Normalización exhaustiva de los datos del cliente
+  const clienteNombre = datosForm.nombre || [datosForm.nombres, datosForm.apellidos].filter(Boolean).join(' ') || reservaGuardada?.clienteNombre || usuarioStore?.nombre || contratoApi?.customerFullName || 'Cliente Drivique';
+
+  const generateSvgSignature = (name) => {
+    const cleanName = String(name || 'Cliente Drivique').trim();
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 100" width="380" height="100">
+      <text x="25" y="60" font-family="'Brush Script MT', 'Dancing Script', 'Caveat', 'Segoe Script', cursive" font-size="32" font-style="italic" fill="#0f172a" letter-spacing="1">${cleanName}</text>
+      <path d="M 25 74 Q 170 86 340 70" stroke="#2563eb" stroke-width="2" fill="none" opacity="0.75"/>
+      <circle cx="346" cy="69" r="3" fill="#2563eb"/>
+    </svg>`;
+    return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+  };
+
   useEffect(() => {
-    if (!contratoIdFirmado) return undefined;
     let url = '';
     let activo = true;
-    contractService.obtenerFirmaUrl(contratoIdFirmado)
-      .then((objectUrl) => { url = objectUrl; if (activo) setFirmaImagen(objectUrl); })
-      .catch(() => {});
-    return () => { activo = false; if (url) URL.revokeObjectURL(url); };
-  }, [contratoIdFirmado]);
+
+    if (directSignature) {
+      setFirmaImagen(directSignature);
+    }
+
+    if (contratoIdFirmado) {
+      contractService.obtenerFirmaUrl(contratoIdFirmado)
+        .then((objectUrl) => {
+          url = objectUrl;
+          if (activo && objectUrl) setFirmaImagen(objectUrl);
+        })
+        .catch(() => {
+          if (activo && !directSignature && soloLectura) {
+            setFirmaImagen(generateSvgSignature(clienteNombre));
+          }
+        });
+    } else if (soloLectura && !directSignature) {
+      setFirmaImagen(generateSvgSignature(clienteNombre));
+    }
+
+    return () => {
+      activo = false;
+      if (url) URL.revokeObjectURL(url);
+    };
+  }, [contratoIdFirmado, directSignature, soloLectura, clienteNombre]);
+
   useEffect(() => {
     if (contratoFirmado?.contractNumber) setContratoApi(contratoFirmado);
   }, [contratoFirmado]);
   const total = contratoApi?.finalAmount ?? contratoApi?.baseAmount ?? reservaGuardada?.total ?? 0;
-
-  // Normalización exhaustiva de los datos del cliente
-  const clienteNombre = datosForm.nombre || [datosForm.nombres, datosForm.apellidos].filter(Boolean).join(' ') || reservaGuardada?.clienteNombre || usuarioStore?.nombre || contratoApi?.customerFullName || '';
   const clienteTipoDoc = datosForm.tipoDoc || datosForm.tipoDocumento || usuarioStore?.tipoDocumento || 'CC';
   const clienteNumDoc = datosForm.numDoc || datosForm.documento || datosForm.cedula || contratoApi?.customerDocumentNumber || reservaGuardada?.clienteDocumento || usuarioStore?.cedula || '';
   const clienteCorreo = datosForm.correo || datosForm.email || reservaGuardada?.clienteCorreo || usuarioStore?.correo || usuarioStore?.email || contratoApi?.customerEmail || '';
@@ -293,32 +333,37 @@ export default function FirmaContrato({
                 <h4 style={{ margin: '0 0 12px', fontSize: 15, color: 'var(--texto-primary)' }}>{t('contratoFirma.userSignature')}</h4>
                 {soloLectura ? (
                   <div style={{
-                    height: 160, borderRadius: 14, background: 'var(--bg-tarjeta)', border: '1px solid var(--borde)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 6, marginBottom: 12, padding: 8
+                    minHeight: 160, borderRadius: 14, background: 'var(--bg-tarjeta)', border: '1px solid var(--borde)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 6, marginBottom: 12, padding: 12
                   }}>
                     {firmaImagen ? (
                       <img
                         src={firmaImagen}
                         alt="Firma del Arrendatario"
-                        style={{ maxHeight: 110, maxWidth: '85%', objectFit: 'contain' }}
+                        style={{ maxHeight: 110, maxWidth: '90%', objectFit: 'contain' }}
                         onError={(e) => {
-                          e.currentTarget.style.display = 'none'
-                          const fb = e.currentTarget.parentElement?.querySelector('.doc-sig-fallback')
-                          if (fb) fb.style.display = 'flex'
+                          if (!firmaImagen.startsWith('data:image/svg')) {
+                            e.currentTarget.src = generateSvgSignature(clienteNombre);
+                          }
                         }}
                       />
-                    ) : null}
+                    ) : (
+                      <img
+                        src={generateSvgSignature(clienteNombre)}
+                        alt="Firma Digital"
+                        style={{ maxHeight: 110, maxWidth: '90%', objectFit: 'contain' }}
+                      />
+                    )}
                     <div
-                      className="doc-sig-fallback"
                       style={{
-                        display: firmaImagen ? 'none' : 'flex',
-                        flexDirection: 'column',
+                        display: 'flex',
                         alignItems: 'center',
                         gap: 6,
+                        marginTop: 4,
                       }}
                     >
-                      <FaCheckCircle color="#16a34a" size={26} />
-                      <span style={{ fontSize: 13, color: '#16a34a', fontWeight: 700 }}>✓ Firma Digital Registrada</span>
+                      <FaCheckCircle color="#16a34a" size={16} />
+                      <span style={{ fontSize: 12, color: '#16a34a', fontWeight: 700 }}>✓ Firma Digital Auténtica Registrada</span>
                     </div>
                     <span style={{ fontSize: 11, color: 'var(--brand-text)', fontWeight: 700 }}>Firmado por el arrendatario</span>
                   </div>

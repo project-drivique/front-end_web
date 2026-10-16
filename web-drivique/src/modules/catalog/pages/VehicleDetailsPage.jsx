@@ -17,13 +17,20 @@ export default function VehicleDetailsPage() {
   const fromParam = searchParams.get('from')
   const fromState = location.state?.from
 
+  const esDesdeFavoritos =
+    fromParam === 'favoritos' ||
+    fromState === '/favoritos' ||
+    (typeof fromState === 'string' && fromState.includes('/favoritos'))
+
   const esDesdeSucursales =
     fromParam === 'sucursales' ||
     fromState === '/sucursales' ||
     (typeof fromState === 'string' && fromState.includes('/sucursales'))
 
   const handleCerrarModal = () => {
-    if (esDesdeSucursales) {
+    if (esDesdeFavoritos) {
+      navigate('/favoritos')
+    } else if (esDesdeSucursales) {
       const sucursalTarget = searchParams.get('sucursal') || location.state?.sucursal || sessionStorage.getItem('drivique_sucursal_activa')
       const q = sucursalTarget ? `?sucursal=${encodeURIComponent(sucursalTarget)}` : ''
       navigate(`/sucursales${q}`, {
