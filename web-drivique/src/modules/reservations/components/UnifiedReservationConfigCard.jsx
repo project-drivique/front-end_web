@@ -324,9 +324,6 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
               style={{ ...selectStyle, cursor: 'default', background: 'transparent', outline: 'none', border: 'none', padding: 0 }}
             />
           </div>
-          <p style={{ margin: '2px 0 0', fontSize: 12.5, color: 'var(--texto-second, #64748b)', display: 'flex', alignItems: 'center', gap: 6 }}>
-            <span>ℹ️</span> {t('vehiculo.cashOnlyBranchNote', 'El pago solo está autorizado para la sucursal donde se encuentra el vehículo.')}
-          </p>
         </div>
       )}
 
