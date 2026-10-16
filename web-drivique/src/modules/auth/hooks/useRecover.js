@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { showAlert } from '../../../utils/swalConfig'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { authService } from '../../../services/authService'
@@ -33,6 +34,15 @@ export function useRecover() {
       iniciarRecuperacionCorreo(correo)
       navigate('/verificar-recuperacion')
     } catch (errorApi) {
+      if (errorApi?.response?.status === 404) {
+        showAlert({
+          icon: 'error',
+          title: t('login.errors.accountNotFoundTitle', 'Cuenta no encontrada'),
+          text: errorApi.response.data?.detail || t('login.errors.accountNotFound', 'No existe una cuenta registrada con ese correo.'),
+          confirmButtonText: t('common.accept', 'Aceptar'),
+        })
+        return
+      }
       const msg = errorApi?.response?.data?.mensaje || 'Error al solicitar recuperación.'
       setError(msg)
     } finally {

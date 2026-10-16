@@ -229,6 +229,8 @@ export default function AppRouter() {
         <Suspense fallback={<LoadingFallback />}>
           <Routes>
             <Route path="/" element={<RutaLanding />} />
+            {/* Página principal general: se muestra igual con o sin sesión (la usa "Volver al inicio" de Sucursales) */}
+            <Route path="/inicio" element={<LandingPage />} />
 
             <Route path="/login" element={<RutaPublicaAuth><LoginPage /></RutaPublicaAuth>} />
             <Route path="/registro" element={<RutaPublicaAuth><RegistrationPage /></RutaPublicaAuth>} />

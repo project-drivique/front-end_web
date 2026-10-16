@@ -195,7 +195,11 @@ export function useReservationFlow() {
     setReserva(prev => {
       const act = { ...prev, [campo]: valor }
       if (campo === 'metodoPago' && valor === 'efectivo') {
-        act.sucursalPagoEfectivo = vehiculo?.sucursal || ''
+        // Punto de pago: la sede del vehículo si recibe efectivo; si no, el primer punto autorizado
+        const puntosEfectivo = branchManagementService.getCashAuthorized()
+        act.sucursalPagoEfectivo = puntosEfectivo.some(b => b.nombre === vehiculo?.sucursal)
+          ? vehiculo.sucursal
+          : (puntosEfectivo[0]?.nombre || '')
         act.sucursalRetiro = vehiculo?.sucursal || ''
         act.sucursalDevolucion = vehiculo?.sucursal || ''
         act.domicilioCiudad = ''
@@ -582,7 +586,9 @@ export function useReservationFlow() {
         mileagePlanId: reserva.tipoKm === 'ilimitado' ? (tarifas.kmIlimitado?.id || null) : (tarifas.kmLimitado?.id || null),
         additionalServiceIds: (vehiculo.servicios || []).filter(s => serviciosSeleccionados.includes(s.nombre)).map(s => s.id).filter(Boolean),
         couponCode: appliedPromotion ? appliedPromotion.codigo : null,
-        cashPaymentBranchId: reserva.metodoPago === 'efectivo' ? (vehiculo.sucursalId || null) : null,
+        cashPaymentBranchId: reserva.metodoPago === 'efectivo'
+          ? (branchManagementService.getCashAuthorized().find(b => b.nombre === reserva.sucursalPagoEfectivo)?.id || vehiculo.sucursalId || null)
+          : null,
         outsideScheduleAccepted: Boolean(outsideScheduleAccepted),
         customerInfo: {
           name: clienteNombreFinal,
