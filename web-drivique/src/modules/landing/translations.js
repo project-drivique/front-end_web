@@ -1,5 +1,5 @@
 export const IDIOMAS = {
-  es: { label: 'Español',             flag: '🇪🇸' },
+  es: { label: 'Español',             flag: '🇨🇴' },
   en: { label: 'English',             flag: '🇺🇸' },
   fr: { label: 'Français',            flag: '🇫🇷' },
   pt: { label: 'Português',           flag: '🇵🇹' },

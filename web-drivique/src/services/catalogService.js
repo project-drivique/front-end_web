@@ -129,7 +129,7 @@ export const catalogService = {
 
   toggleFavorito: async (vehiculoId) => {
     const api = await getApi()
-    const { data } = await api.post(`/v1/users/me/favorites/${vehiculoId}`)
+    const { data } = await api.post(`/users/me/favorites/${vehiculoId}`)
     return data
   },
 }

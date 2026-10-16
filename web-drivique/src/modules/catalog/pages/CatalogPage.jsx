@@ -6,6 +6,7 @@ import { useLanding } from '../../landing/LandingContext'
 import { useAuthStore } from '../../../store/authStore'
 import { getRoleHome } from '../../auth/utils/accessControl'
 import { useCatalogo } from '../hooks/useCatalog'
+import { useFavoritos } from '../hooks/useFavorites'
 
 import CatalogTopHeader from '../components/CatalogTopHeader'
 import CatalogSearchBar from '../components/CatalogSearchBar'
@@ -74,6 +75,7 @@ export default function CatalogoPage() {
   const token = useAuthStore((s) => s.token)
   const usuario = useAuthStore((s) => s.usuario)
   const esAutenticado = Boolean(token && token !== 'null' && token !== 'undefined' && usuario)
+  const { esFavorito, toggleFavorito } = useFavoritos()
   const { t } = useTranslation()
   const { tema } = useLanding()
 
@@ -347,8 +349,8 @@ export default function CatalogoPage() {
                 <>
                   <VehicleGrid
                     vehiculosPagina={vehiculosPagina}
-                    esFavorito={() => false}
-                    toggleFavorito={() => {}}
+                    esFavorito={esFavorito}
+                    toggleFavorito={toggleFavorito}
                     c={c}
                     invitado={!esAutenticado}
                     onGuestBlocked={() => setReservaModalAbierto(true)}

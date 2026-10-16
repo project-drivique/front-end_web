@@ -4,6 +4,13 @@
   publish = "dist"
   command = "npm run build"
 
+# Variables públicas del build (los IDs de Google/Facebook y la URL del API son visibles en el bundle; no son secretos).
+# Si el panel de Netlify define las mismas claves, el panel tiene prioridad.
+[build.environment]
+  VITE_API_URL = "https://drivique-api.onrender.com/api/v1"
+  VITE_GOOGLE_CLIENT_ID = "18960724578-h53pr526uva5mtb9doup86f5hjei231c.apps.googleusercontent.com"
+  VITE_FACEBOOK_APP_ID = "1072551762252390"
+
 # Redirección SPA para React Router (evita errores 404 al recargar rutas)
 [[redirects]]
   from = "/*"

@@ -19,7 +19,7 @@ export const reservationsService = {
 
   getReservasPorVehiculo: async (vehiculoId) => {
     const api = await getApi()
-    const { data } = await api.get('/reservations', { params: { vehicleId: vehiculoId } })
+    const { data } = await api.get(`/vehicles/${vehiculoId}/occupied-dates`)
     return data
   },
 
