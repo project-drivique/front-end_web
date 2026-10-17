@@ -726,51 +726,24 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
                               <button
                                 type="button"
                                 onClick={() => handleOpenReview(item)}
-                              {esEncargado ? (
-                                <button
-                                  type="button"
-                                  onClick={() => handleOpenReview(item)}
-                                  style={{
-                                    padding: '7px 22px',
-                                    borderRadius: '9999px',
-                                    background: '#2563eb',
-                                    color: 'var(--city-card, #ffffff)',
-                                    border: 'none',
-                                    fontWeight: 800,
-                                    fontSize: '12.5px',
-                                    cursor: 'pointer',
-                                    boxShadow: '0 2px 5px rgba(37, 99, 235, 0.25)',
-                                    transition: 'all 0.2s',
-                                    whiteSpace: 'nowrap',
-                                  }}
-                                  onMouseOver={(e) => { e.currentTarget.style.background = 'var(--brand-primary, #1d4ed8)' }}
-                                  onMouseOut={(e) => { e.currentTarget.style.background = '#2563eb' }}
-                                >
-                                  {t('admin.documents.table.validateBtn', 'Validar')}
-                                </button>
-                              ) : (
-                                <button
-                                  type="button"
-                                  onClick={() => handleOpenReview(item)}
-                                  style={{
-                                    padding: '7px 18px',
-                                    borderRadius: '9999px',
-                                    background: 'var(--brand-soft-light, #eff6ff)',
-                                    color: 'var(--brand-primary, #2563eb)',
-                                    border: '1px solid var(--brand-border-light, #bfdbfe)',
-                                    fontWeight: 800,
-                                    fontSize: '12.5px',
-                                    cursor: 'pointer',
-                                    transition: 'all 0.2s',
-                                    whiteSpace: 'nowrap',
-                                    display: 'inline-flex',
-                                    alignItems: 'center',
-                                    gap: 6,
-                                  }}
-                                >
-                                  <FaEye size={12} /> {t('admin.documents.table.viewDocsBtn', 'Ver Documentos')}
-                                </button>
-                              )}
+                                style={{
+                                  padding: '7px 22px',
+                                  borderRadius: '9999px',
+                                  background: '#2563eb',
+                                  color: 'var(--city-card, #ffffff)',
+                                  border: 'none',
+                                  fontWeight: 800,
+                                  fontSize: '12.5px',
+                                  cursor: 'pointer',
+                                  boxShadow: '0 2px 5px rgba(37, 99, 235, 0.25)',
+                                  transition: 'all 0.2s',
+                                  whiteSpace: 'nowrap',
+                                }}
+                                onMouseOver={(e) => { e.currentTarget.style.background = 'var(--brand-primary, #1d4ed8)' }}
+                                onMouseOut={(e) => { e.currentTarget.style.background = '#2563eb' }}
+                              >
+                                {t('admin.documents.table.validateBtn', 'Validar')}
+                              </button>
                             </td>
                           </tr>
                         )
@@ -868,9 +841,9 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
                               width: '100%',
                               padding: '9px 18px',
                               borderRadius: '12px',
-                              background: esEncargado ? '#2563eb' : 'var(--brand-soft-light, #eff6ff)',
-                              color: esEncargado ? 'var(--city-card, #ffffff)' : 'var(--brand-primary, #2563eb)',
-                              border: esEncargado ? 'none' : '1px solid var(--brand-border-light, #bfdbfe)',
+                              background: '#2563eb',
+                              color: 'var(--city-card, #ffffff)',
+                              border: 'none',
                               fontWeight: 800,
                               fontSize: '13px',
                               cursor: 'pointer',
@@ -881,7 +854,7 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
                               gap: 8,
                             }}
                           >
-                            {esEncargado ? t('admin.documents.table.validateBtn', 'Validar') : (<><FaEye size={13} /> {t('admin.documents.table.viewDocsBtn', 'Ver Documentos')}</>)}
+                            {t('admin.documents.table.validateBtn', 'Validar')}
                           </button>
                         </div>
                       </div>
@@ -1449,19 +1422,17 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
                   {/* CAMPO DE OBSERVACIONES */}
                   <div className="doc-modal-observaciones-box">
                     <label className="doc-obs-label">
-                      Observaciones {esEncargado && <span className="doc-obs-req">(Obligatorio si se rechaza)</span>}
+                      Observaciones <span className="doc-obs-req">(Obligatorio si se rechaza)</span>
                     </label>
                     <textarea
                       rows={3}
                       className="doc-obs-textarea"
                       value={observaciones}
-                      readOnly={!esEncargado}
                       onChange={(e) => {
-                        if (!esEncargado) return
                         setObservaciones(e.target.value)
                         if (errorMessage) setErrorMessage('')
                       }}
-                      placeholder={esEncargado ? "Escribe aquí las observaciones o el motivo de rechazo que se enviará al cliente..." : "Observaciones registradas por la sucursal..."}
+                      placeholder="Escribe aquí las observaciones o el motivo de rechazo que se enviará al cliente..."
                     />
                   </div>
                 </div>
@@ -1479,38 +1450,20 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
                     <strong>{totalChecked} de {totalPoints}</strong> revisados
                   </div>
                   <div className="doc-modal-footer-btns">
-                    {esEncargado ? (
-                      <>
-                        <button
-                          type="button"
-                          className="doc-btn-reject"
-                          onClick={handleRechazarDocumento}
-                        >
-                          Rechazar
-                        </button>
-                        <button
-                          type="button"
-                          className="doc-btn-approve"
-                          onClick={handleAprobarDocumento}
-                        >
-                          Aprobar
-                        </button>
-                      </>
-                    ) : (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-                        <span style={{ fontSize: 12, color: 'var(--city-muted, #64748b)', fontWeight: 600 }}>
-                          Modo Auditoría (Admin General): La aprobación y rechazo es responsabilidad de la sucursal.
-                        </span>
-                        <button
-                          type="button"
-                          className="doc-btn-approve"
-                          onClick={() => setModalItem(null)}
-                          style={{ background: '#2563eb' }}
-                        >
-                          Cerrar Expediente
-                        </button>
-                      </div>
-                    )}
+                    <button
+                      type="button"
+                      className="doc-btn-reject"
+                      onClick={handleRechazarDocumento}
+                    >
+                      Rechazar
+                    </button>
+                    <button
+                      type="button"
+                      className="doc-btn-approve"
+                      onClick={handleAprobarDocumento}
+                    >
+                      Aprobar
+                    </button>
                   </div>
                 </div>
               </footer>
