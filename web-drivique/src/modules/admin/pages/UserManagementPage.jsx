@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   FaCheckCircle,
@@ -621,6 +621,7 @@ export default function UserManagementPage() {
                       value={formCrear.sucursal}
                       onChange={(e) => setFormCrear({ ...formCrear, sucursal: e.target.value })}
                     >
+                      <option value="">{t('admin.usersPage.noBranch', 'Sin asignar (asignar luego)')}</option>
                       {sucursales.map((s) => (
                         <option key={s.id} value={s.nombre}>
                           {s.nombre}
@@ -723,6 +724,7 @@ export default function UserManagementPage() {
                       value={formEditar.sucursal}
                       onChange={(e) => setFormEditar({ ...formEditar, sucursal: e.target.value })}
                     >
+                      <option value="">{t('admin.usersPage.noBranch', 'Sin asignar (asignar luego)')}</option>
                       {sucursales.map((s) => (
                         <option key={s.id} value={s.nombre}>
                           {s.nombre}

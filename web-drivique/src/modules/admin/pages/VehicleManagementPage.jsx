@@ -6,6 +6,7 @@ import {
   FaCheck,
   FaCogs,
   FaEdit,
+  FaEye,
   FaFileExcel,
   FaFilePdf,
   FaImage,
@@ -103,8 +104,8 @@ export default function VehicleManagementPage() {
     user?.sucursalAsignada || user?.branchName || user?.sucursal || user?.sucursalId || "";
   const assignedBranchKey = normalizeBranch(sucursalAsignada);
 
-  // Pestañas activas: Encargado inicia en 'vehiculos' (o 'flotas'); Admin en 'sucursales'
-  const [activeTab, setActiveTab] = useState(() => (esEncargado ? "vehiculos" : "sucursales"));
+  // Pestañas activas: Inicia en 'vehiculos'
+  const [activeTab, setActiveTab] = useState("vehiculos");
 
   const [vehicles, setVehicles] = useState(() => vehicleManagementService.list());
   const [categories, setCategories] = useState(() => branchCategoryService.listCategories());
@@ -156,6 +157,7 @@ export default function VehicleManagementPage() {
     const term = search.trim().toLocaleLowerCase();
     return vehicles
       .filter((vehicle) => {
+        if (vehicle.activo === false || vehicle.isActive === false) return false;
         if (esEncargado && (!sucursalAsignada || !hasMatchingBranch(vehicle.sucursal, sucursalAsignada))) return false;
 
         const matchBranchFilter =
@@ -360,6 +362,23 @@ export default function VehicleManagementPage() {
       imagenes: vehicle.imagenes || [],
     });
     setModal({ type: "form", vehicle });
+    setError("");
+  };
+
+  const openDetail = (vehicle) => {
+    setForm({
+      ...vehicle,
+      estadoFlota: vehicle.estadoFlota,
+      kmLimitado: vehicle.tarifas?.kmLimitado?.km || 0,
+      precioLimitado:
+        vehicle.tarifas?.kmLimitado?.precio || vehicle.precio || 0,
+      precioExcedente: vehicle.tarifas?.kmLimitado?.excedente || 0,
+      precioIlimitado: vehicle.tarifas?.kmIlimitado?.precio || 0,
+      caracteristicasTexto: listToText(vehicle.caracteristicas),
+      seguros: vehicle.seguros || [],
+      imagenes: vehicle.imagenes || [],
+    });
+    setModal({ type: "form", vehicle, readOnly: true });
     setError("");
   };
 
@@ -617,18 +636,9 @@ export default function VehicleManagementPage() {
             </div>
           )}
 
-          {/* Pestañas de Secciones y Botón Crear Vehículo a la derecha */}
+          {/* Pestañas de Secciones y Botón Crear a la derecha */}
           <div className="fleet-attached-tabs">
             <div className="fleet-tabs-nav">
-              {!esEncargado && (
-                <button
-                  type="button"
-                  onClick={() => setActiveTab("sucursales")}
-                  className={`fleet-tab-btn ${activeTab === "sucursales" ? "is-active" : ""}`}
-                >
-                  {t("fleetVehicles.tabBranches", "Sucursales")}
-                </button>
-              )}
               <button
                 type="button"
                 onClick={() => setActiveTab("flotas")}
@@ -646,207 +656,27 @@ export default function VehicleManagementPage() {
             </div>
 
             <div className="fleet-tabs-action">
-              {((!esEncargado) || (esEncargado && activeTab === "vehiculos")) && (
+              {activeTab === "flotas" && !esEncargado && (
                 <button
                   className="cities-primary fleet-btn-create-tab"
                   type="button"
-                  onClick={() => {
-                    if (activeTab === "sucursales") {
-                      setNotice("Para registrar nuevas sedes, dirígete al módulo de Sucursales.");
-                    } else if (activeTab === "flotas") {
-                      openCreateCategory();
-                    } else {
-                      openCreate();
-                    }
-                  }}
-                  disabled={esEncargado && activeTab === "vehiculos" && !sucursalAsignada}
+                  onClick={openCreateCategory}
                 >
-                  {activeTab === "sucursales" && "+ Crear Sucursal"}
-                  {activeTab === "flotas" && t("fleetVehicles.createCategory", "+ Crear Categoría")}
-                  {activeTab === "vehiculos" && t("fleetVehicles.createVehicle", "+ Crear Vehículo")}
+                  {t("fleetVehicles.createCategory", "+ Crear Categoría")}
+                </button>
+              )}
+              {activeTab === "vehiculos" && esEncargado && (
+                <button
+                  className="cities-primary fleet-btn-create-tab"
+                  type="button"
+                  onClick={openCreate}
+                  disabled={!sucursalAsignada}
+                >
+                  {t("fleetVehicles.createVehicle", "+ Crear Vehículo")}
                 </button>
               )}
             </div>
           </div>
-
-          {/* TAB 2: SUCURSALES (SOLO ADMIN GENERAL) */}
-          {activeTab === "sucursales" && !esEncargado && (
-            <section className="cities-card attached-to-tabs">
-              <div className="fleet-datatable-header">
-                <div className="fleet-datatable-search">
-                  <input
-                    type="text"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    placeholder="Buscar sucursal o ciudad..."
-                  />
-                </div>
-                <div className="export-pills-group">
-                  <button
-                    type="button"
-                    className="export-pill export-pill--excel"
-                    onClick={() =>
-                      exportExcel({
-                        title: "Sucursales",
-                        headers: [
-                          "ID",
-                          "Código",
-                          "Sucursal",
-                          "Ciudad",
-                          "Dirección",
-                          "Teléfono",
-                          "Capacidad",
-                          "Horario",
-                          "Estado",
-                        ],
-                        rows: filteredSucursales.map((b, idx) => [
-                          b.id || idx + 1,
-                          `SEC-00${b.id || idx + 1}`,
-                          b.nombre,
-                          b.ciudad || "Colombia",
-                          b.direccion || "",
-                          b.telefono || "",
-                          `${b.capacidadVehiculos || 25} autos`,
-                          b.horario || "",
-                          b.estado,
-                        ]),
-                        filename: "sucursales-drivique",
-                      })
-                    }
-                  >
-                    <FaFileExcel aria-hidden="true" /> {t('admin.vehiclesManagement.export.excel', 'Excel')}
-                  </button>
-                  <button
-                    type="button"
-                    className="export-pill export-pill--pdf"
-                    onClick={() =>
-                      exportPdf({
-                        title: "Sucursales",
-                        headers: [
-                          "ID",
-                          "Código",
-                          "Sucursal",
-                          "Ciudad",
-                          "Dirección",
-                          "Teléfono",
-                          "Capacidad",
-                          "Horario",
-                          "Estado",
-                        ],
-                        rows: filteredSucursales.map((b, idx) => [
-                          b.id || idx + 1,
-                          `SEC-00${b.id || idx + 1}`,
-                          b.nombre,
-                          b.ciudad || "Colombia",
-                          b.direccion || "",
-                          b.telefono || "",
-                          `${b.capacidadVehiculos || 25} autos`,
-                          b.horario || "",
-                          b.estado,
-                        ]),
-                        filename: "sucursales-drivique",
-                      })
-                    }
-                  >
-                    <FaFilePdf aria-hidden="true" /> {t('admin.vehiclesManagement.export.pdf', 'PDF')}
-                  </button>
-                  <button
-                    type="button"
-                    className="export-pill export-pill--print"
-                    onClick={() =>
-                      printTable({
-                        title: "Sucursales",
-                        headers: [
-                          "ID",
-                          "Código",
-                          "Sucursal",
-                          "Ciudad",
-                          "Dirección",
-                          "Teléfono",
-                          "Capacidad",
-                          "Horario",
-                          "Estado",
-                        ],
-                        rows: filteredSucursales.map((b, idx) => [
-                          b.id || idx + 1,
-                          `SEC-00${b.id || idx + 1}`,
-                          b.nombre,
-                          b.ciudad || "Colombia",
-                          b.direccion || "",
-                          b.telefono || "",
-                          `${b.capacidadVehiculos || 25} autos`,
-                          b.horario || "",
-                          b.estado,
-                        ]),
-                      })
-                    }
-                  >
-                    <FaPrint aria-hidden="true" /> {t('admin.vehiclesManagement.export.print', 'Imprimir')}
-                  </button>
-                </div>
-              </div>
-              <div className="cities-table-wrap">
-                <table className="fleet-table">
-                  <thead>
-                    <tr>
-                      <th>ID</th>
-                      <th>CÓDIGO SEDE</th>
-                      <th>NOMBRE SUCURSAL</th>
-                      <th>CIUDAD</th>
-                      <th>DIRECCIÓN FÍSICA</th>
-                      <th>TELÉFONO CONTACTO</th>
-                      <th>CAPACIDAD PARQUEADERO</th>
-                      <th>HORARIO ATENCIÓN</th>
-                      <th>ESTADO</th>
-                      <th style={{ textAlign: "center" }}>ACCIONES</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredSucursales.map((b, idx) => (
-                      <tr key={b.id || b.nombre}>
-                        <td>{b.id || idx + 1}</td>
-                        <td>
-                          <code>SEC-00{b.id || idx + 1}</code>
-                        </td>
-                        <td>{b.nombre}</td>
-                        <td>{b.ciudad || "Colombia"}</td>
-                        <td>{b.direccion || "Dirección comercial de sede"}</td>
-                        <td>{b.telefono || "300 000 0000"}</td>
-                        <td>{b.capacidadVehiculos || 25} autos</td>
-                        <td>{b.horario || "Lun a Sáb 7:00 am - 7:00 pm"}</td>
-                        <td>
-                          <span
-                            className={`status-pill ${b.estado === "inactiva" ? "is-red" : "is-green"}`}
-                            style={{
-                              padding: "4px 10px",
-                              borderRadius: 20,
-                              fontSize: 11,
-                              fontWeight: 700,
-                            }}
-                          >
-                            {b.estado === "inactiva" ? "Inactiva" : "Activa"}
-                          </span>
-                        </td>
-                        <td style={{ textAlign: "center" }}>
-                          <div className="cities-row-actions">
-                            <button
-                              type="button"
-                              className="btn-row-action"
-                              onClick={() =>
-                                setNotice(`Modificando parámetros de la ${b.nombre}.`)
-                              }
-                            >
-                              Editar
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </section>
-          )}
 
           {/* TAB 3: CATEGORÍAS (Diferenciadas estrictamente por rol) */}
           {activeTab === "flotas" && (
@@ -1343,22 +1173,48 @@ export default function VehicleManagementPage() {
                           </td>
                           <td style={{ textAlign: "center" }}>
                             <div className="cities-row-actions">
-                              <button
-                                type="button"
-                                className="btn-row-action"
-                                onClick={() => openEdit(vehicle)}
-                              >
-                                {t("common.edit", "Editar")}
-                              </button>
-                              <button
-                                type="button"
-                                className="btn-row-action is-delete"
-                                onClick={() =>
-                                  setModal({ type: "delete", vehicle })
-                                }
-                              >
-                                {t("common.delete", "Eliminar")}
-                              </button>
+                              {esEncargado ? (
+                                <>
+                                  <button
+                                    type="button"
+                                    className="btn-row-action"
+                                    onClick={() => openEdit(vehicle)}
+                                    disabled={!sucursalAsignada || !hasMatchingBranch(vehicle.sucursal, sucursalAsignada)}
+                                  >
+                                    {t("common.edit", "Editar")}
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className="btn-row-action is-delete"
+                                    onClick={() =>
+                                      setModal({ type: "delete", vehicle })
+                                    }
+                                    disabled={!sucursalAsignada || !hasMatchingBranch(vehicle.sucursal, sucursalAsignada)}
+                                  >
+                                    {t("common.delete", "Eliminar")}
+                                  </button>
+                                </>
+                              ) : (
+                                <button
+                                  type="button"
+                                  className="btn-row-action"
+                                  style={{
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: 6,
+                                    padding: '5px 12px',
+                                    borderRadius: 8,
+                                    background: 'var(--brand-soft-light, #eff6ff)',
+                                    color: 'var(--brand-primary, #2563eb)',
+                                    fontWeight: 700,
+                                    border: '1px solid var(--brand-border-light, #bfdbfe)',
+                                    cursor: 'pointer'
+                                  }}
+                                  onClick={() => openDetail(vehicle)}
+                                >
+                                  <FaEye size={12} /> {t("common.viewDetail", "Ver Detalle")}
+                                </button>
+                              )}
                             </div>
                           </td>
                         </tr>
@@ -1396,8 +1252,8 @@ export default function VehicleManagementPage() {
                   <div className="fleet-modal-header">
                     <div className="fleet-modal-header__info">
                       <span className="fleet-modal-eyebrow">
-                        <FaCar aria-hidden="true" />
-                        {modal.vehicle ? "Modificación de Ficha" : "Registro de Flota"}
+                        {modal.readOnly ? <FaEye aria-hidden="true" /> : <FaCar aria-hidden="true" />}
+                        {modal.readOnly ? "Modo Auditoría (Admin General) - Solo Lectura" : modal.vehicle ? "Modificación de Ficha" : "Registro de Flota"}
                       </span>
                       <h2 className="fleet-modal-title">
                         {modal.vehicle ? (form.nombre || "Editar Vehículo") : "Nuevo Vehículo"}
@@ -1549,13 +1405,21 @@ export default function VehicleManagementPage() {
                     </div>
 
                     <div className="fleet-modal-footer" style={{ borderTop: '1px solid var(--borde, #e2e8f0)', padding: '16px 24px', background: 'var(--bg-seccion1, #f8fafc)', display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
-                      <button type="button" onClick={close} style={{ border: '1px solid var(--borde, #cbd5e1)', background: 'var(--bg-tarjeta, #ffffff)', borderRadius: '6px', padding: '8px 16px', color: 'var(--texto-primary, #475569)', fontSize: '13px', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s' }} onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--bg-seccion1, #f1f5f9)'; e.currentTarget.style.borderColor = 'var(--texto-second, #94a3b8)'; }} onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--bg-tarjeta, #ffffff)'; e.currentTarget.style.borderColor = 'var(--borde, #cbd5e1)'; }}>
-                        {t("common.cancel", "Cancelar")}
-                      </button>
-                      <button className="cities-primary" type="submit">
-                        <FaCheck style={{ marginRight: 6 }} />
-                        {t("admin.vehiclesManagement.modal.save", "Guardar vehículo")}
-                      </button>
+                      {modal.readOnly ? (
+                        <button className="cities-primary" type="button" onClick={close}>
+                          {t("common.close", "Cerrar Detalle")}
+                        </button>
+                      ) : (
+                        <>
+                          <button type="button" onClick={close} style={{ border: '1px solid var(--borde, #cbd5e1)', background: 'var(--bg-tarjeta, #ffffff)', borderRadius: '6px', padding: '8px 16px', color: 'var(--texto-primary, #475569)', fontSize: '13px', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s' }} onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--bg-seccion1, #f1f5f9)'; e.currentTarget.style.borderColor = 'var(--texto-second, #94a3b8)'; }} onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--bg-tarjeta, #ffffff)'; e.currentTarget.style.borderColor = 'var(--borde, #cbd5e1)'; }}>
+                            {t("common.cancel", "Cancelar")}
+                          </button>
+                          <button className="cities-primary" type="submit">
+                            <FaCheck style={{ marginRight: 6 }} />
+                            {t("admin.vehiclesManagement.modal.save", "Guardar vehículo")}
+                          </button>
+                        </>
+                      )}
                     </div>
                   </form>
                 </>

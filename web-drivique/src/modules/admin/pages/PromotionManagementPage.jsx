@@ -20,6 +20,7 @@ import {
   FaCheckCircle,
   FaFileAlt,
   FaExclamationCircle,
+  FaEye,
 } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import { useAuthStore } from '../../../store/authStore'
@@ -61,7 +62,8 @@ export default function PromotionManagementPage() {
   const esEncargado =
     user?.rol === 'encargado' ||
     user?.rol === 'encargado_sucursal' ||
-    user?.rol === 'branch_manager'
+    user?.rol === 'branch_manager' ||
+    (Array.isArray(user?.roles) && (user.roles.includes('BRANCH_ADMIN') || user.roles.includes('BRANCH_MANAGER')))
 
   const [promotions, setPromotions] = useState(() => promotionManagementService.list())
   const [vehiculos, setVehiculos] = useState(() => vehicleManagementService.list())
@@ -83,6 +85,21 @@ export default function PromotionManagementPage() {
     vehicleManagementService.categories().then(setCategorias).catch(() => setCategorias([]))
   }, [])
 
+  const vehiculosFiltrados = useMemo(() => {
+    return vehiculos.filter((v) => {
+      if (esEncargado) {
+        const sucursalUsuario = user?.sucursal || user?.branchName
+        if (sucursalUsuario && v.sucursal && v.sucursal.toLowerCase() !== sucursalUsuario.toLowerCase()) {
+          return false
+        }
+      }
+      if (form.categoriaVehiculo && form.categoriaVehiculo !== 'Todos' && v.categoria !== form.categoriaVehiculo) {
+        return false
+      }
+      return true
+    })
+  }, [vehiculos, esEncargado, user, form.categoriaVehiculo])
+
   const totalPromociones = useMemo(() => promotions.length, [promotions])
   const totalActivas = useMemo(() => promotions.filter(p => p.activa).length, [promotions])
   const totalDestacadas = useMemo(() => promotions.filter(p => p.destacada).length, [promotions])
@@ -91,6 +108,18 @@ export default function PromotionManagementPage() {
   const filtered = useMemo(() => {
     const term = search.trim().toLowerCase()
     return promotions.filter((item) => {
+      // Scoping: If Encargado, ONLY see promotions for their branch or their vehicles!
+      if (esEncargado) {
+        const sucursalUsuario = user?.sucursal || user?.branchName
+        if (sucursalUsuario) {
+          const matchesBranch = item.branchName && item.branchName.toLowerCase() === sucursalUsuario.toLowerCase()
+          const vehicleMatch = item.vehiculoId && vehiculos.some(v => String(v.id) === String(item.vehiculoId) && v.sucursal?.toLowerCase() === sucursalUsuario.toLowerCase())
+          if (!matchesBranch && !vehicleMatch && (item.branchName || item.vehiculoId)) {
+            return false
+          }
+        }
+      }
+
       // Filter by activeTab
       if (activeTab === 'cupones' && item.tipoOferta !== 'cupon') return false
       if (activeTab === 'promociones' && item.tipoOferta !== 'promocion') return false
@@ -109,7 +138,7 @@ export default function PromotionManagementPage() {
 
       return true
     })
-  }, [promotions, search, activeTab, discountTypeFilter])
+  }, [promotions, search, activeTab, discountTypeFilter, esEncargado, user, vehiculos])
 
   const labelDiscount = (item) =>
     item.tipoDescuento === 'porcentaje'
@@ -230,11 +259,6 @@ export default function PromotionManagementPage() {
     }
   }
 
-  const vehiculosFiltrados = useMemo(() => {
-    if (!form.categoriaVehiculo || form.categoriaVehiculo === 'Todos') return vehiculos
-    return vehiculos.filter((v) => v.categoria?.toLowerCase() === form.categoriaVehiculo.toLowerCase())
-  }, [form.categoriaVehiculo, vehiculos])
-
   const backdropStyle = { display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(15,23,42,0.65)', padding: 16 }
   const modalHeadStyle = { padding: '20px 24px', borderBottom: '1px solid var(--city-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }
   const closeBtnStyle = { background: 'transparent', border: 'none', fontSize: 24, cursor: 'pointer', color: 'var(--city-muted)', lineHeight: 1, padding: 0 }
@@ -340,33 +364,56 @@ export default function PromotionManagementPage() {
               </button>
             </div>
 
-            {/* BLUE ACTION BUTTON */}
-            <div className="fleet-tabs-action">
-              <button
-                type="button"
-                className="city-btn city-btn--primary"
-                onClick={openCreate}
-                style={{
-                  background: 'var(--brand-primary, #2563eb)',
-                  color: '#ffffff',
-                  border: 'none',
-                  padding: '9px 18px',
-                  borderRadius: '10px',
-                  fontWeight: 800,
-                  fontSize: '13px',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  cursor: 'pointer',
-                  boxShadow: '0 4px 12px rgba(37, 99, 235, 0.25)',
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                <FaPlus style={{ fontSize: 11 }} />
-                {t('admin.promotions.createBtn', 'Crear Promoción')}
-              </button>
-            </div>
+            {/* BLUE ACTION BUTTON (SOLO PARA ENCARGADO DE SUCURSAL) */}
+            {esEncargado && (
+              <div className="fleet-tabs-action">
+                <button
+                  type="button"
+                  className="city-btn city-btn--primary"
+                  onClick={openCreate}
+                  style={{
+                    background: 'var(--brand-primary, #2563eb)',
+                    color: '#ffffff',
+                    border: 'none',
+                    padding: '9px 18px',
+                    borderRadius: '10px',
+                    fontWeight: 800,
+                    fontSize: '13px',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    cursor: 'pointer',
+                    boxShadow: '0 4px 12px rgba(37, 99, 235, 0.25)',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  <FaPlus style={{ fontSize: 11 }} />
+                  {t('admin.promotions.createBtn', 'Crear Promoción')}
+                </button>
+              </div>
+            )}
           </div>
+
+          {/* MODO SUPERVISIÓN PARA ADMIN GENERAL */}
+          {!esEncargado && (
+            <div style={{
+              margin: '14px 0 0',
+              padding: '14px 18px',
+              borderRadius: 12,
+              background: '#f8fafc',
+              border: '1px solid #cbd5e1',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 14,
+              color: '#334155'
+            }}>
+              <FaBuilding style={{ color: '#2563eb', fontSize: 20, flexShrink: 0 }} />
+              <div style={{ fontSize: 13 }}>
+                <strong style={{ display: 'block', color: '#0f172a', marginBottom: 2 }}>Modo Supervisión Global (Solo Lectura)</strong>
+                Como Administrador General puedes visualizar y auditar las promociones de todas las sucursales. La creación, activación y modificación es gestionada de manera autónoma por el Encargado de cada sede.
+              </div>
+            </div>
+          )}
 
           {/* MAIN CARD ATTACHED TO TABS */}
           <section className="cities-card attached-to-tabs">
@@ -553,25 +600,41 @@ export default function PromotionManagementPage() {
 
                           {/* 12. DESTACADA */}
                           <td style={{ textAlign: 'center', fontWeight: 400 }}>
-                            <button
-                              type="button"
-                              onClick={() => toggleFeatured(item)}
-                              title={item.destacada ? 'Quitar de destacadas' : 'Marcar como destacada'}
-                              style={{
-                                background: 'transparent',
-                                border: 'none',
-                                cursor: 'pointer',
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: 4,
-                                color: item.destacada ? '#f59e0b' : '#94a3b8',
-                                fontWeight: 600,
-                                fontSize: 12
-                              }}
-                            >
-                              {item.destacada ? <FaStar color="#f59e0b" size={14} /> : <FaRegStar color="#94a3b8" size={14} />}
-                              <span>{item.destacada ? t('admin.promotions.featuredBadge.yes', 'Destacada') : t('admin.promotions.featuredBadge.no', 'Normal')}</span>
-                            </button>
+                            {esEncargado ? (
+                              <button
+                                type="button"
+                                onClick={() => toggleFeatured(item)}
+                                title={item.destacada ? 'Quitar de destacadas' : 'Marcar como destacada'}
+                                style={{
+                                  background: 'transparent',
+                                  border: 'none',
+                                  cursor: 'pointer',
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: 4,
+                                  color: item.destacada ? '#f59e0b' : '#94a3b8',
+                                  fontWeight: 600,
+                                  fontSize: 12
+                                }}
+                              >
+                                {item.destacada ? <FaStar color="#f59e0b" size={14} /> : <FaRegStar color="#94a3b8" size={14} />}
+                                <span>{item.destacada ? t('admin.promotions.featuredBadge.yes', 'Destacada') : t('admin.promotions.featuredBadge.no', 'Normal')}</span>
+                              </button>
+                            ) : (
+                              <span
+                                style={{
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: 4,
+                                  color: item.destacada ? '#f59e0b' : '#94a3b8',
+                                  fontWeight: 600,
+                                  fontSize: 12
+                                }}
+                              >
+                                {item.destacada ? <FaStar color="#f59e0b" size={14} /> : <FaRegStar color="#94a3b8" size={14} />}
+                                <span>{item.destacada ? t('admin.promotions.featuredBadge.yes', 'Destacada') : t('admin.promotions.featuredBadge.no', 'Normal')}</span>
+                              </span>
+                            )}
                           </td>
 
                           {/* 13. ESTADO */}
@@ -583,68 +646,93 @@ export default function PromotionManagementPage() {
 
                           {/* 14. ACCIONES */}
                           <td style={{ textAlign: 'center', fontWeight: 400 }}>
-                            <div style={{ display: 'flex', gap: 6, justifyContent: 'center' }}>
-                              <button
-                                type="button"
-                                onClick={() => toggleActive(item)}
-                                title={item.activa ? 'Desactivar' : 'Activar'}
-                                style={{
-                                  padding: '5px 10px',
-                                  borderRadius: '8px',
-                                  background: item.activa ? '#ecfdf5' : '#f1f5f9',
-                                  color: item.activa ? '#047857' : '#64748b',
-                                  border: `1px solid ${item.activa ? '#a7f3d0' : '#cbd5e1'}`,
-                                  cursor: 'pointer',
-                                  fontWeight: 600,
-                                  fontSize: 12,
-                                  display: 'inline-flex',
-                                  alignItems: 'center',
-                                  gap: 4
-                                }}
-                              >
-                                {item.activa ? <FaToggleOn size={14} /> : <FaToggleOff size={14} />}
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => openEdit(item)}
-                                title="Editar"
-                                style={{
-                                  padding: '5px 10px',
-                                  borderRadius: '8px',
-                                  background: 'var(--brand-soft-light, #eff6ff)',
-                                  color: 'var(--brand-primary, #2563eb)',
-                                  border: '1px solid var(--brand-border-light, #bfdbfe)',
-                                  cursor: 'pointer',
-                                  fontWeight: 600,
-                                  fontSize: 12,
-                                  display: 'inline-flex',
-                                  alignItems: 'center',
-                                  gap: 4
-                                }}
-                              >
-                                <FaEdit />
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => handleDelete(item)}
-                                title="Eliminar"
-                                style={{
-                                  padding: '5px 10px',
-                                  borderRadius: '8px',
-                                  background: '#fef2f2',
-                                  color: '#dc2626',
-                                  border: '1px solid #fecaca',
-                                  cursor: 'pointer',
-                                  fontWeight: 600,
-                                  fontSize: 12,
-                                  display: 'inline-flex',
-                                  alignItems: 'center',
-                                  gap: 4
-                                }}
-                              >
-                                <FaTrash />
-                              </button>
-                            </div>
+                            {esEncargado ? (
+                              <div style={{ display: 'flex', gap: 6, justifyContent: 'center' }}>
+                                <button
+                                  type="button"
+                                  onClick={() => toggleActive(item)}
+                                  title={item.activa ? 'Desactivar' : 'Activar'}
+                                  style={{
+                                    padding: '5px 10px',
+                                    borderRadius: '8px',
+                                    background: item.activa ? '#ecfdf5' : '#f1f5f9',
+                                    color: item.activa ? '#047857' : '#64748b',
+                                    border: `1px solid ${item.activa ? '#a7f3d0' : '#cbd5e1'}`,
+                                    cursor: 'pointer',
+                                    fontWeight: 600,
+                                    fontSize: 12,
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: 4
+                                  }}
+                                >
+                                  {item.activa ? <FaToggleOn size={14} /> : <FaToggleOff size={14} />}
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => openEdit(item)}
+                                  title="Editar"
+                                  style={{
+                                    padding: '5px 10px',
+                                    borderRadius: '8px',
+                                    background: 'var(--brand-soft-light, #eff6ff)',
+                                    color: 'var(--brand-primary, #2563eb)',
+                                    border: '1px solid var(--brand-border-light, #bfdbfe)',
+                                    cursor: 'pointer',
+                                    fontWeight: 600,
+                                    fontSize: 12,
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: 4
+                                  }}
+                                >
+                                  <FaEdit />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => handleDelete(item)}
+                                  title="Eliminar"
+                                  style={{
+                                    padding: '5px 10px',
+                                    borderRadius: '8px',
+                                    background: '#fef2f2',
+                                    color: '#dc2626',
+                                    border: '1px solid #fecaca',
+                                    cursor: 'pointer',
+                                    fontWeight: 600,
+                                    fontSize: 12,
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: 4
+                                  }}
+                                >
+                                  <FaTrash />
+                                </button>
+                              </div>
+                            ) : (
+                              <div style={{ display: 'flex', gap: 6, justifyContent: 'center' }}>
+                                <button
+                                  type="button"
+                                  onClick={() => setConditionsModal(item)}
+                                  title="Ver Detalle"
+                                  style={{
+                                    padding: '5px 12px',
+                                    borderRadius: '8px',
+                                    background: 'var(--brand-soft-light, #eff6ff)',
+                                    color: 'var(--brand-primary, #2563eb)',
+                                    border: '1px solid var(--brand-border-light, #bfdbfe)',
+                                    cursor: 'pointer',
+                                    fontWeight: 600,
+                                    fontSize: 12,
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: 6
+                                  }}
+                                >
+                                  <FaEye size={12} /> Ver Detalle
+                                </button>
+                              </div>
+                            )}
                           </td>
                         </tr>
                       ))}
@@ -699,38 +787,63 @@ export default function PromotionManagementPage() {
                       </div>
 
                       <div className="doc-mobile-card-actions" style={{ display: 'flex', gap: 8 }}>
-                        <button
-                          type="button"
-                          onClick={() => toggleActive(item)}
-                          style={{
-                            flex: 1,
-                            padding: '8px',
-                            borderRadius: '8px',
-                            background: item.activa ? '#ecfdf5' : '#f1f5f9',
-                            color: item.activa ? '#047857' : '#64748b',
-                            border: 'none',
-                            fontWeight: 600,
-                            fontSize: 12
-                          }}
-                        >
-                          {item.activa ? 'Desactivar' : 'Activar'}
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => openEdit(item)}
-                          style={{
-                            flex: 1,
-                            padding: '8px',
-                            borderRadius: '8px',
-                            background: 'var(--brand-soft-light, #eff6ff)',
-                            color: 'var(--brand-primary, #2563eb)',
-                            border: 'none',
-                            fontWeight: 600,
-                            fontSize: 12
-                          }}
-                        >
-                          Editar
-                        </button>
+                        {esEncargado ? (
+                          <>
+                            <button
+                              type="button"
+                              onClick={() => toggleActive(item)}
+                              style={{
+                                flex: 1,
+                                padding: '8px',
+                                borderRadius: '8px',
+                                background: item.activa ? '#ecfdf5' : '#f1f5f9',
+                                color: item.activa ? '#047857' : '#64748b',
+                                border: 'none',
+                                fontWeight: 600,
+                                fontSize: 12
+                              }}
+                            >
+                              {item.activa ? 'Desactivar' : 'Activar'}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => openEdit(item)}
+                              style={{
+                                flex: 1,
+                                padding: '8px',
+                                borderRadius: '8px',
+                                background: 'var(--brand-soft-light, #eff6ff)',
+                                color: 'var(--brand-primary, #2563eb)',
+                                border: 'none',
+                                fontWeight: 600,
+                                fontSize: 12
+                              }}
+                            >
+                              Editar
+                            </button>
+                          </>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => setConditionsModal(item)}
+                            style={{
+                              flex: 1,
+                              padding: '8px',
+                              borderRadius: '8px',
+                              background: 'var(--brand-soft-light, #eff6ff)',
+                              color: 'var(--brand-primary, #2563eb)',
+                              border: '1px solid var(--brand-border-light, #bfdbfe)',
+                              fontWeight: 600,
+                              fontSize: 12,
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              gap: 6
+                            }}
+                          >
+                            <FaEye size={12} /> Ver Detalle
+                          </button>
+                        )}
                       </div>
                     </div>
                   ))}
@@ -792,6 +905,12 @@ export default function PromotionManagementPage() {
                   <span style={{ color: 'var(--city-muted, #64748b)', display: 'block' }}>Clasificación:</span>
                   <strong style={{ color: 'var(--city-text)' }}>{conditionsModal.tipoOferta === 'promocion' ? 'Promoción' : 'Cupón'} {conditionsModal.destacada ? '• Destacada' : ''}</strong>
                 </div>
+                {conditionsModal.branchName && (
+                  <div style={{ padding: 10, borderRadius: 8, background: 'var(--city-bg, #f8fafc)', border: '1px solid var(--city-border, #cbd5e1)', gridColumn: 'span 2' }}>
+                    <span style={{ color: 'var(--city-muted, #64748b)', display: 'block' }}>Sucursal Asignada:</span>
+                    <strong style={{ color: 'var(--brand-primary, #2563eb)' }}>{conditionsModal.branchName}</strong>
+                  </div>
+                )}
               </div>
             </div>
             <div style={{ padding: '14px 24px', borderTop: '1px solid var(--city-border)', display: 'flex', justifyContent: 'flex-end', gap: 10 }}>

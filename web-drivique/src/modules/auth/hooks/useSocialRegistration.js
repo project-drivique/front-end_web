@@ -183,7 +183,11 @@ export function useSocialRegistration({ onExito } = {}) {
         return
       }
       setErrorSocial(
-        err?.message || t('registro.errors.googleError', 'Error al autenticar con la API de Google')
+        err?.response?.data?.message ||
+        err?.response?.data?.detail ||
+        err?.response?.data?.error ||
+        err?.message ||
+        t('registro.errors.googleError', 'Error al autenticar con la API de Google')
       )
     } finally {
       setCargandoGoogle(false)
@@ -328,8 +332,11 @@ export function useSocialRegistration({ onExito } = {}) {
         return
       }
       setErrorSocial(
+        err?.response?.data?.message ||
+        err?.response?.data?.detail ||
+        err?.response?.data?.error ||
         err?.message ||
-          t('registro.errors.facebookError', 'Error al autenticar con la API de Facebook')
+        t('registro.errors.facebookError', 'Error al autenticar con la API de Facebook')
       )
     } finally {
       setCargandoFacebook(false)

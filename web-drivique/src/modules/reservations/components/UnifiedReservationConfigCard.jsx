@@ -136,15 +136,6 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
   const hasDomicilioData = reserva?.domicilioBarrio && reserva?.domicilioDireccion
   
   const getMinHoraRetiro = () => {
-    if (!reserva?.fechaInicio) return null;
-    const fInicioStr = reserva.fechaInicio.split('T')[0];
-    const [y, m, d] = fInicioStr.split('-').map(Number);
-    const selectedDate = new Date(y, m - 1, d);
-    const today = new Date();
-    
-    if (selectedDate.toDateString() === today.toDateString()) {
-      return `${String(today.getHours()).padStart(2, '0')}:${String(today.getMinutes()).padStart(2, '0')}`;
-    }
     return null;
   }
 
@@ -157,20 +148,22 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
     if (fInicioStr && fFinStr && fInicioStr === fFinStr && reserva?.horaInicio) {
       return reserva.horaInicio;
     }
-
-    // Si la fecha de devolución es hoy, filtrar horas pasadas
-    const [y, m, d] = fFinStr.split('-').map(Number);
-    const selectedDate = new Date(y, m - 1, d);
-    const today = new Date();
-    if (selectedDate.toDateString() === today.toDateString()) {
-      return `${String(today.getHours()).padStart(2, '0')}:${String(today.getMinutes()).padStart(2, '0')}`;
-    }
-
     return null;
   }
 
   const horasRetiro = generarHoras(reserva?.sucursalRetiro, getMinHoraRetiro())
   const horasDevolucion = generarHoras(reserva?.sucursalDevolucion, null, reserva?.horaInicio)
+
+  // Pre-seleccionar automáticamente horaInicio y horaFin si están vacías y hay opciones disponibles
+  useEffect(() => {
+    if (reserva?.fechaInicio && !reserva?.horaInicio && horasRetiro?.length > 0) {
+      const defaultHora = horasRetiro.includes('10:00') ? '10:00' : horasRetiro[0];
+      onCambio('horaInicio', defaultHora);
+      if (!reserva?.horaFin) {
+        onCambio('horaFin', defaultHora);
+      }
+    }
+  }, [reserva?.fechaInicio, horasRetiro]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleLugarChange = (campo, valor) => {
     // Mostrar alerta cuando ambos campos quedarían en 'domicilio'

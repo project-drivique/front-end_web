@@ -19,6 +19,7 @@ import { useLanding } from "../../landing/LandingContext";
 import { useAuthStore } from "../../../store/authStore";
 import { useBrand } from "../../../contexts/BrandContext";
 import { contractManagementService } from "../../../services/contractManagementService";
+import { contractService } from "../../../services/contractService";
 import {
   exportExcel,
   exportPdf,
@@ -124,7 +125,25 @@ export default function ContractManagementPage() {
     printTable(exportData);
   };
 
-  const handleDownloadSinglePdf = (contrato) => {
+  const handleDownloadSinglePdf = async (contrato) => {
+    try {
+      if (contrato?.id) {
+        const blob = await contractService.descargarPdf(contrato.id);
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `Contrato-${contrato.contratoNumero || contrato.id}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        setNotice(t("admin.contractsPage.downloadSuccess", { contract: contrato.contratoNumero, defaultValue: `Contrato ${contrato.contratoNumero} descargado.` }));
+        return;
+      }
+    } catch (err) {
+      console.warn("Fallo al descargar PDF de backend, usando fallback:", err);
+    }
+
     const singleData = {
       title: `${t("admin.contractsPage.detailsTitle", "Detalle de Contrato")} - ${contrato.contratoNumero}`,
       headers: headersExport,

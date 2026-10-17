@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next'
 import {
   FaBuilding,
   FaCar,
+  FaCheckCircle,
+  FaClipboardList,
   FaClock,
   FaExclamationCircle,
   FaExclamationTriangle,
@@ -16,6 +18,8 @@ import {
   FaPlus,
   FaPrint,
   FaSearch,
+  FaShieldAlt,
+  FaTimesCircle,
   FaTrash,
   FaUser,
   FaUserShield,
@@ -66,6 +70,21 @@ export default function IncidentManagementPage() {
 
   // Patrón Custom Hook: useManagementExport
   const { handleExportExcel, handleExportPdf, handlePrint } = useManagementExport(setNotice)
+
+  // Estados de listado, filtros y pestañas
+  const [incidents, setIncidents] = useState(() => incidentManagementService.listForUser(user))
+  const [search, setSearch] = useState('')
+  const [stateFilter, setStateFilter] = useState('all')
+  const [branchFilter, setBranchFilter] = useState('all')
+  const [activeTab, setActiveTab] = useState('clientes') // 'clientes' | 'internos'
+
+  // Checklist interactivo de validación técnica para el encargado de sucursal
+  const [validationChecklist, setValidationChecklist] = useState({
+    evidenciasCoinciden: false,
+    polizaVigente: false,
+    placaKilometrajeVerificado: false,
+    responsabilidadDictaminada: false,
+  })
 
   // Formularios
   const [formCrear, setFormCrear] = useState({
@@ -206,6 +225,30 @@ export default function IncidentManagementPage() {
     )
   }
 
+  // Métricas para tarjetas KPI superiores
+  const metrics = useMemo(() => {
+    const list = incidents.filter((r) => {
+      if (esEncargado && branchKey) {
+        const rSucursal = String(r.sucursal || '').trim().toLowerCase()
+        if (!rSucursal.includes(branchKey) && !branchKey.includes(rSucursal)) return false
+      } else if (!esEncargado && branchFilter !== 'all') {
+        if (r.sucursal !== branchFilter) return false
+      }
+      const isInternal = r.origen === 'admin' || r.origen === 'sucursal' || r.origen === 'interno'
+      if (activeTab === 'clientes' && isInternal) return false
+      if (activeTab === 'internos' && !isInternal) return false
+      return true
+    })
+
+    return {
+      total: list.length,
+      recibido: list.filter((r) => r.estado === 'recibido').length,
+      atendiendo: list.filter((r) => r.estado === 'atendiendo' || r.estado === 'en_revision' || r.estado === 'en_reparacion').length,
+      resuelto: list.filter((r) => r.estado === 'resuelto').length,
+      rechazado: list.filter((r) => r.estado === 'rechazado' || r.estado === 'cerrado').length,
+    }
+  }, [incidents, esEncargado, branchKey, branchFilter, activeTab])
+
   // Filtrado dinámico
   const filtrados = useMemo(() => {
     const term = search.trim().toLowerCase()
@@ -215,20 +258,38 @@ export default function IncidentManagementPage() {
       if (activeTab === 'clientes' && isInternal) return false
       if (activeTab === 'internos' && !isInternal) return false
 
-      const matchState = stateFilter === 'all' || r.estado === stateFilter
-      const matchBranch = branchFilter === 'all' || r.sucursal === branchFilter
+      // Branch filter (Encargado vs Admin General)
+      if (esEncargado && branchKey) {
+        const rSucursal = String(r.sucursal || '').trim().toLowerCase()
+        if (!rSucursal.includes(branchKey) && !branchKey.includes(rSucursal)) {
+          return false
+        }
+      } else if (!esEncargado && branchFilter !== 'all') {
+        if (r.sucursal !== branchFilter) return false
+      }
+
+      // Estado filter normalizado
+      const normState = ['resuelto', 'atendiendo', 'rechazado', 'recibido'].includes(r.estado)
+        ? r.estado
+        : (r.estado === 'en_revision' || r.estado === 'en_reparacion' ? 'atendiendo' : 'recibido')
+
+      if (stateFilter !== 'all' && normState !== stateFilter) return false
 
       const matchSearch =
         !term ||
         r.codigo?.toLowerCase().includes(term) ||
+        r.codigoReserva?.toLowerCase().includes(term) ||
         r.vehiculo?.toLowerCase().includes(term) ||
         r.placa?.toLowerCase().includes(term) ||
+        r.sucursal?.toLowerCase().includes(term) ||
         r.contactoNombre?.toLowerCase().includes(term) ||
+        r.contactoEmail?.toLowerCase().includes(term) ||
+        r.contactoTelefono?.toLowerCase().includes(term) ||
         r.descripcion?.toLowerCase().includes(term)
 
-      return matchState && matchBranch && matchSearch
+      return matchSearch
     })
-  }, [incidents, search, stateFilter, branchFilter, activeTab])
+  }, [incidents, search, stateFilter, branchFilter, activeTab, esEncargado, branchKey])
 
   // --- Handlers ---
   const handleCrearIncidencia = async (e) => {
@@ -272,8 +333,13 @@ export default function IncidentManagementPage() {
     setRespuestaTexto('')
     setNuevoEstadoModal(r.estado)
     setNuevaPrioridadModal(r.prioridad || 'media')
+    setValidationChecklist({
+      evidenciasCoinciden: r.estado !== 'recibido',
+      polizaVigente: r.estado !== 'recibido',
+      placaKilometrajeVerificado: r.estado !== 'recibido',
+      responsabilidadDictaminada: r.estado === 'resuelto',
+    })
     setModalDetalle(r)
-    // El listado no trae la conversación: se pide el detalle al servidor
     try {
       setModalDetalle(await incidentManagementService.loadDetail(r.id))
     } catch {
@@ -284,6 +350,10 @@ export default function IncidentManagementPage() {
   const handleResponderYActualizar = async (e) => {
     e.preventDefault()
     if (!modalResponder) return
+    if (!esEncargado) {
+      setErrorModal('El Administrador General solo tiene permisos de supervisión global (solo lectura).')
+      return
+    }
     try {
       setErrorModal('')
       setGuardando(true)
@@ -308,6 +378,7 @@ export default function IncidentManagementPage() {
   }
 
   const openResponderModal = (r) => {
+    if (!esEncargado) return
     setErrorModal('')
     setRespuestaTexto('')
     setNuevoEstadoModal(r.estado)
@@ -316,13 +387,27 @@ export default function IncidentManagementPage() {
   }
 
   const handleQuickStatusChange = async (incidentId, newStatus) => {
+    if (!esEncargado) {
+      setNotice('El Administrador General solo tiene permisos de supervisión global.')
+      return
+    }
     try {
-      await incidentManagementService.updateStatusAndRespond(
+      const notaTecnica =
+        newStatus === 'resuelto'
+          ? 'Incidencia validada y dictamen resuelto conforme por la sucursal.'
+          : newStatus === 'rechazado'
+          ? 'Reporte de incidente desestimado tras peritaje técnico en sede.'
+          : 'Validación técnica en curso. Vehículo ingresado a peritaje/taller de asistencia.'
+
+      const actualizado = await incidentManagementService.updateStatusAndRespond(
         incidentId,
-        { nuevoEstado: newStatus, respuestaTexto: `El estado ha sido actualizado a ${newStatus}.` },
+        { nuevoEstado: newStatus, respuestaTexto: notaTecnica },
         user
       )
-      setNotice(`Estado actualizado a ${newStatus} correctamente.`)
+      setNotice(`Estado del reporte actualizado a ${newStatus.toUpperCase()} correctamente.`)
+      if (modalDetalle && modalDetalle.id === incidentId) {
+        setModalDetalle(actualizado)
+      }
       cargarIncidencias()
     } catch (error) {
       setNotice(error.message || 'No se pudo cambiar el estado del reporte.')
@@ -390,8 +475,12 @@ export default function IncidentManagementPage() {
           {/* Header Superior */}
           <header className="cities-topbar reservations-management-header">
             <div className="branch-topbar-brand-title">
-              <span className="branch-topbar-badge">{t('admin.branchManagement', 'GESTIÓN DE SUCURSAL')}</span>
-              <h1 className="branch-topbar-heading">{t('admin.incidents.title', 'Gestión de Incidentes')}</h1>
+              <span className="branch-topbar-badge">
+                {esEncargado ? 'VALIDACIÓN OPERATIVA DE SUCURSAL' : 'SUPERVISIÓN Y AUDITORÍA GLOBAL'}
+              </span>
+              <h1 className="branch-topbar-heading">
+                {esEncargado ? 'Validación y Atención de Incidentes' : 'Supervisión Global de Incidentes'}
+              </h1>
             </div>
 
             <div className="cities-topbar__actions" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
@@ -402,7 +491,7 @@ export default function IncidentManagementPage() {
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
                   <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--city-text, #0f172a)', lineHeight: '1.2' }}>{user?.nombre || 'Administrador'}</span>
-                  <span style={{ fontSize: '11px', color: 'var(--city-muted, #64748b)', lineHeight: '1.2' }}>{user?.rol || 'encargado'}</span>
+                  <span style={{ fontSize: '11px', color: 'var(--city-muted, #64748b)', lineHeight: '1.2' }}>{user?.rol || (esEncargado ? 'encargado_sucursal' : 'administrador')}</span>
                 </div>
               </div>
             </div>
@@ -413,10 +502,132 @@ export default function IncidentManagementPage() {
             <div className="cities-notice" role="status">
               <span>{notice}</span>
               <button type="button" onClick={() => setNotice('')}>
-                á—
+                &times;
               </button>
             </div>
           )}
+
+          {/* Banner de Contexto de Rol */}
+          {esEncargado ? (
+            <div style={{
+              margin: '0 0 16px',
+              padding: '14px 18px',
+              borderRadius: 12,
+              background: '#eff6ff',
+              border: '1.5px solid #bfdbfe',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 14,
+              color: '#1e40af'
+            }}>
+              <FaBuilding style={{ color: '#2563eb', fontSize: 24, flexShrink: 0 }} />
+              <div style={{ fontSize: 13 }}>
+                <strong style={{ display: 'block', color: '#1e3a8a', marginBottom: 2 }}>
+                  Sede Operativa Asignada: {sucursalEncargado || 'Tu Sucursal'}
+                </strong>
+                Como Encargado de Sucursal tienes la potestad exclusiva de validar los siniestros y averías reportados por los clientes en esta sede, inspeccionar las evidencias fotográficas, dictaminar el peritaje técnico y responder formalmente al usuario.
+              </div>
+            </div>
+          ) : (
+            <div style={{
+              margin: '0 0 16px',
+              padding: '14px 18px',
+              borderRadius: 12,
+              background: '#f8fafc',
+              border: '1.5px solid #cbd5e1',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 14,
+              color: '#334155'
+            }}>
+              <FaUserShield style={{ color: '#2563eb', fontSize: 24, flexShrink: 0 }} />
+              <div style={{ fontSize: 13 }}>
+                <strong style={{ display: 'block', color: '#0f172a', marginBottom: 2 }}>
+                  Modo Supervisión y Auditoría Global (Solo Lectura)
+                </strong>
+                Como Administrador General puedes consultar, filtrar y supervisar los reportes de incidentes de todas las sedes, revisar las evidencias y la trazabilidad técnica. La validación operativa y resolución de siniestros es responsabilidad exclusiva del Encargado de cada sucursal.
+              </div>
+            </div>
+          )}
+
+          {/* Tarjetas de Métricas KPI Superiores */}
+          <div className="incident-kpis-grid">
+            <div 
+              className={`incident-kpi-card ${stateFilter === 'all' ? 'is-active' : ''}`}
+              onClick={() => setStateFilter('all')}
+              style={{ cursor: 'pointer' }}
+              title="Ver todos los reportes"
+            >
+              <div className="incident-kpi-icon incident-kpi-icon--total">
+                <FaClipboardList />
+              </div>
+              <div className="incident-kpi-content">
+                <span className="incident-kpi-label">TOTAL REPORTES</span>
+                <span className="incident-kpi-value">{metrics.total}</span>
+              </div>
+            </div>
+
+            <div 
+              className={`incident-kpi-card ${stateFilter === 'recibido' ? 'is-active' : ''}`}
+              onClick={() => setStateFilter(stateFilter === 'recibido' ? 'all' : 'recibido')}
+              style={{ cursor: 'pointer' }}
+              title="Filtrar por reportes pendientes de validación"
+            >
+              <div className="incident-kpi-icon incident-kpi-icon--recibido">
+                <FaClock />
+              </div>
+              <div className="incident-kpi-content">
+                <span className="incident-kpi-label">POR VALIDAR</span>
+                <span className="incident-kpi-value">{metrics.recibido}</span>
+              </div>
+              {metrics.recibido > 0 && <span className="incident-kpi-badge incident-kpi-badge--alert">Pendiente</span>}
+            </div>
+
+            <div 
+              className={`incident-kpi-card ${stateFilter === 'atendiendo' ? 'is-active' : ''}`}
+              onClick={() => setStateFilter(stateFilter === 'atendiendo' ? 'all' : 'atendiendo')}
+              style={{ cursor: 'pointer' }}
+              title="Filtrar por reportes en validación o taller"
+            >
+              <div className="incident-kpi-icon incident-kpi-icon--atendiendo">
+                <FaWrench />
+              </div>
+              <div className="incident-kpi-content">
+                <span className="incident-kpi-label">EN ATENCIÓN / TALLER</span>
+                <span className="incident-kpi-value">{metrics.atendiendo}</span>
+              </div>
+            </div>
+
+            <div 
+              className={`incident-kpi-card ${stateFilter === 'resuelto' ? 'is-active' : ''}`}
+              onClick={() => setStateFilter(stateFilter === 'resuelto' ? 'all' : 'resuelto')}
+              style={{ cursor: 'pointer' }}
+              title="Filtrar por reportes validados y resueltos"
+            >
+              <div className="incident-kpi-icon incident-kpi-icon--resuelto">
+                <FaCheckCircle />
+              </div>
+              <div className="incident-kpi-content">
+                <span className="incident-kpi-label">VALIDADOS Y RESUELTOS</span>
+                <span className="incident-kpi-value">{metrics.resuelto}</span>
+              </div>
+            </div>
+
+            <div 
+              className={`incident-kpi-card ${stateFilter === 'rechazado' ? 'is-active' : ''}`}
+              onClick={() => setStateFilter(stateFilter === 'rechazado' ? 'all' : 'rechazado')}
+              style={{ cursor: 'pointer' }}
+              title="Filtrar por reportes desestimados o cerrados"
+            >
+              <div className="incident-kpi-icon incident-kpi-icon--rechazado">
+                <FaTimesCircle />
+              </div>
+              <div className="incident-kpi-content">
+                <span className="incident-kpi-label">DESESTIMADOS</span>
+                <span className="incident-kpi-value">{metrics.rechazado}</span>
+              </div>
+            </div>
+          </div>
 
           {/* Pestañas de Secciones Idénticas a Reservas */}
           <div className="fleet-attached-tabs">
@@ -478,41 +689,43 @@ export default function IncidentManagementPage() {
                 </div>
               )}
 
-              {/* Botón Nuevo Reporte */}
-              <button
-                type="button"
-                onClick={() => {
-                  setErrorModal('')
-                  setModalCrear(true)
-                }}
-                style={{
-                  padding: '8px 20px',
-                  background: '#2563eb',
-                  color: 'var(--city-card, #ffffff)',
-                  borderRadius: '9999px',
-                  fontWeight: '800',
-                  fontSize: '13px',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '7px',
-                  border: 'none',
-                  cursor: 'pointer',
-                  boxShadow: '0 2px 6px rgba(37, 99, 235, 0.25)',
-                  transition: 'all 0.2s',
-                  whiteSpace: 'nowrap'
-                }}
-                onMouseOver={(e) => { e.currentTarget.style.background = 'var(--brand-primary, #1d4ed8)' }}
-                onMouseOut={(e) => { e.currentTarget.style.background = '#2563eb' }}
-              >
-                <FaPlus /> {t('admin.incidents.newReport', 'Nuevo Reporte de Incidencia')}
-              </button>
+              {/* Botón Nuevo Reporte (Solo Encargado) */}
+              {esEncargado && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setErrorModal('')
+                    setModalCrear(true)
+                  }}
+                  style={{
+                    padding: '8px 20px',
+                    background: '#2563eb',
+                    color: 'var(--city-card, #ffffff)',
+                    borderRadius: '9999px',
+                    fontWeight: '800',
+                    fontSize: '13px',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '7px',
+                    border: 'none',
+                    cursor: 'pointer',
+                    boxShadow: '0 2px 6px rgba(37, 99, 235, 0.25)',
+                    transition: 'all 0.2s',
+                    whiteSpace: 'nowrap'
+                  }}
+                  onMouseOver={(e) => { e.currentTarget.style.background = 'var(--brand-primary, #1d4ed8)' }}
+                  onMouseOut={(e) => { e.currentTarget.style.background = '#2563eb' }}
+                >
+                  <FaPlus /> {t('admin.incidents.newReport', 'Nuevo Reporte de Incidencia')}
+                </button>
+              )}
 
               {/* Botones de Exportación */}
               <div className="export-pills-group" style={{ marginLeft: 'auto', display: 'flex', gap: '8px' }}>
                 <button
                   type="button"
                   className="export-pill export-pill--excel"
-                  onClick={() => exportExcel(exportData)}
+                  onClick={() => handleExportExcel(exportData)}
                   title={t('admin.exportExcel', 'Excel')}
                 >
                   <FaFileExcel aria-hidden="true" /> {t('admin.exportExcel', 'Excel')}
@@ -520,7 +733,7 @@ export default function IncidentManagementPage() {
                 <button
                   type="button"
                   className="export-pill export-pill--pdf"
-                  onClick={() => exportPdf(exportData)}
+                  onClick={() => handleExportPdf(exportData)}
                   title={t('admin.exportPdf', 'PDF')}
                 >
                   <FaFilePdf aria-hidden="true" /> {t('admin.exportPdf', 'PDF')}
@@ -528,7 +741,7 @@ export default function IncidentManagementPage() {
                 <button
                   type="button"
                   className="export-pill export-pill--print"
-                  onClick={() => printTable(exportData)}
+                  onClick={() => handlePrint(exportData)}
                   title={t('admin.incidents.print', 'Imprimir')}
                 >
                   <FaPrint aria-hidden="true" /> {t('admin.incidents.print', 'Imprimir')}
@@ -554,12 +767,13 @@ export default function IncidentManagementPage() {
                 <table className="incidents-table-v2" style={{ whiteSpace: 'nowrap', width: 'max-content', borderCollapse: 'collapse' }}>
                   <thead>
                     <tr>
-                      <th style={{ width: '40px' }}>ID</th>
+                      <th style={{ width: '40px' }}>#</th>
                       <th>{t('admin.incidents.table.reservationCode', 'CÓDIGO RESERVA')}</th>
                       <th>{t('admin.incidents.table.fullName', 'NOMBRE COMPLETO')}</th>
                       <th>{t('admin.incidents.table.vehicleName', 'NOMBRE VEHÍCULO')}</th>
                       <th>{t('admin.incidents.table.image', 'IMAGEN')}</th>
                       <th>{t('admin.incidents.table.plate', 'PLACA')}</th>
+                      <th>SEDE / SUCURSAL</th>
                       <th>{t('admin.incidents.table.incidentType', 'TIPO DE INCIDENTE')}</th>
                       <th>{t('admin.incidents.table.problemDesc', 'DESCRIPCIÓN PROBLEMA')}</th>
                       <th>{t('admin.incidents.table.reportDate', 'FECHA DE REPORTE')}</th>
@@ -578,13 +792,22 @@ export default function IncidentManagementPage() {
                     {filtrados.map((r, index) => (
                       <tr key={r.id}>
                         <td style={{ fontWeight: 600, color: 'var(--city-text)', width: '40px' }}>{index + 1}</td>
-                        <td style={{ fontWeight: 500, color: 'var(--city-text, #0f172a)' }}>{r.codigoReserva || `RES-${r.id.split('-')[1] || Math.floor(Math.random() * 10000)}`}</td>
-                        <td style={{ color: 'var(--city-text, #0f172a)' }}>{r.contactoNombre}</td>
+                        <td style={{ fontWeight: 700, color: 'var(--brand-primary, #2563eb)' }}>
+                          <span style={{ background: '#eff6ff', border: '1px solid #bfdbfe', padding: '3px 8px', borderRadius: '6px', fontSize: '12px', fontFamily: 'monospace' }}>
+                            {r.codigoReserva || r.reservaCodigo || `RES-${r.id.split('-')[1] || 'S/R'}`}
+                          </span>
+                        </td>
+                        <td style={{ color: 'var(--city-text, #0f172a)', fontWeight: 600 }}>{r.contactoNombre}</td>
                         <td style={{ color: 'var(--city-text)' }}>{r.vehiculo}</td>
                         <td>
-                            <img src={getVehiculoImagen(r)} alt={r.vehiculo} style={{ width: 44, height: 28, borderRadius: 6, objectFit: 'cover', border: '1px solid #cbd5e1' }} onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = 'https://pplx-res.cloudinary.com/image/upload/pplx_search_images/a2cb0b378c25efdb1e116246f84149744c2f4081.jpg' }} />
+                          <img src={getVehiculoImagen(r)} alt={r.vehiculo} style={{ width: 44, height: 28, borderRadius: 6, objectFit: 'cover', border: '1px solid #cbd5e1' }} onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = 'https://pplx-res.cloudinary.com/image/upload/pplx_search_images/a2cb0b378c25efdb1e116246f84149744c2f4081.jpg' }} />
                         </td>
-                        <td style={{ color: 'var(--city-muted, #64748b)' }}>{r.placa}</td>
+                        <td style={{ color: 'var(--city-muted, #64748b)', fontWeight: 700 }}>{r.placa}</td>
+                        <td style={{ color: 'var(--city-text, #334155)', fontWeight: 600 }}>
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+                            <FaBuilding size={11} style={{ color: '#64748b' }} /> {r.sucursal}
+                          </span>
+                        </td>
                         
                         <td style={{ color: 'var(--city-text, #334155)', fontWeight: 500 }}>{t(`admin.incidents.types.${r.tipoIncidenciaId || 'averia_mecanica'}`, r.tipoIncidenciaNombre || 'Avería Mecánica')}</td>
                         <td style={{ color: 'var(--city-muted, #64748b)', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis' }}>{translateDescription(r.descripcion)}</td>
@@ -659,24 +882,75 @@ export default function IncidentManagementPage() {
                         
                         <td style={{ textAlign: 'center' }}>
                           <div className="incident-row-actions" style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
-                            <button
-                              type="button"
-                              className="incident-btn-reply"
-                              onClick={() => openResponderModal(r)}
-                            >
-                              {t('admin.incidents.replyBtn', 'Responder')}
-                            </button>
-
-                            {!esEncargado && (
+                            {esEncargado ? (
+                              <>
+                                <button
+                                  type="button"
+                                  onClick={() => openDetalleModal(r)}
+                                  style={{
+                                    padding: '6px 14px',
+                                    borderRadius: '9999px',
+                                    background: '#2563eb',
+                                    color: '#ffffff',
+                                    border: 'none',
+                                    cursor: 'pointer',
+                                    fontWeight: 800,
+                                    fontSize: '12px',
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: 6,
+                                    boxShadow: '0 2px 5px rgba(37, 99, 235, 0.25)',
+                                    transition: 'all 0.2s',
+                                  }}
+                                  onMouseOver={(e) => { e.currentTarget.style.background = '#1d4ed8' }}
+                                  onMouseOut={(e) => { e.currentTarget.style.background = '#2563eb' }}
+                                >
+                                  <FaShieldAlt size={12} /> Validar Reporte
+                                </button>
+                                <button
+                                  type="button"
+                                  className="incident-btn-reply"
+                                  onClick={() => openResponderModal(r)}
+                                >
+                                  <FaPaperPlane size={11} style={{ marginRight: 4 }} />
+                                  {t('admin.incidents.replyBtn', 'Responder')}
+                                </button>
+                                {r.origen !== 'cliente' && r.estado === 'recibido' && (
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setErrorModal('')
+                                      setModalEliminar(r)
+                                    }}
+                                    style={{ padding: '6px 8px', fontSize: '12px', background: 'transparent', color: '#dc2626', border: 'none', cursor: 'pointer', fontWeight: 600 }}
+                                    title="Eliminar reporte interno"
+                                  >
+                                    <FaTrash size={12} />
+                                  </button>
+                                )}
+                              </>
+                            ) : (
                               <button
                                 type="button"
-                                onClick={() => {
-                                  setErrorModal('')
-                                  setModalEliminar(r)
+                                onClick={() => openDetalleModal(r)}
+                                style={{
+                                  padding: '6px 14px',
+                                  borderRadius: '9999px',
+                                  background: 'var(--brand-soft-light, #eff6ff)',
+                                  color: 'var(--brand-primary, #2563eb)',
+                                  border: '1px solid var(--brand-border-light, #bfdbfe)',
+                                  cursor: 'pointer',
+                                  fontWeight: 800,
+                                  fontSize: '12px',
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: 6,
+                                  transition: 'all 0.2s',
                                 }}
-                                style={{ padding: '6px 12px', fontSize: '13px', background: 'transparent', color: '#dc2626', border: 'none', cursor: 'pointer', fontWeight: '600', textDecoration: 'underline' }}
+                                onMouseOver={(e) => { e.currentTarget.style.background = '#dbeafe' }}
+                                onMouseOut={(e) => { e.currentTarget.style.background = 'var(--brand-soft-light, #eff6ff)' }}
                               >
-                                {t('admin.incidents.deleteBtn', 'Eliminar')}
+                                <FaEye size={13} /> Ver Detalle y Evidencias
                               </button>
                             )}
                           </div>
@@ -690,115 +964,424 @@ export default function IncidentManagementPage() {
           </section>
         </div>
 
-        {/* MODAL DETALLE Y RESPUESTA AL USUARIO */}
-        {modalDetalle && (
-          <div
-            className="cities-modal-backdrop"
-            onMouseDown={(e) => e.target === e.currentTarget && setModalDetalle(null)}
-          >
-            <section className="cities-modal" style={{ maxWidth: 680 }}>
-              <div className="cities-modal__head">
-                <div>
-                  <p className="cities-eyebrow">{t('admin.incidents.detailTitle', 'Gestión de Incidencia')} {modalDetalle.codigo}</p>
-                  <h2>{modalDetalle.vehiculo} ({modalDetalle.placa})</h2>
-                </div>
-                <button type="button" onClick={() => setModalDetalle(null)}>
-                  á—
-                </button>
-              </div>
+        {/* MODAL DETALLE Y PROCESO DE VALIDACIÓN DE INCIDENCIA */}
+        {modalDetalle && (() => {
+          const isRechazado = modalDetalle.estado === 'rechazado' || modalDetalle.estado === 'cerrado'
+          const isResuelto = modalDetalle.estado === 'resuelto'
+          const isAtendiendo = modalDetalle.estado === 'atendiendo' || modalDetalle.estado === 'en_revision' || modalDetalle.estado === 'en_reparacion'
+          const isRecibido = modalDetalle.estado === 'recibido'
 
-              {/* Banner de Vehículo con Imagen */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 14, margin: '14px 0', padding: '12px 16px', background: 'var(--city-soft)', borderRadius: 14, border: '1px solid var(--city-border)' }}>
-                <img
-                  src={getVehiculoImagen(modalDetalle)}
-                  alt={modalDetalle.vehiculo}
-                  style={{ width: 76, height: 50, objectFit: 'cover', borderRadius: 10, border: '1px solid #cbd5e1', flexShrink: 0, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}
-                  onError={(e) => {
-                    e.currentTarget.onerror = null
-                    e.currentTarget.src = 'https://pplx-res.cloudinary.com/image/upload/pplx_search_images/a2cb0b378c25efdb1e116246f84149744c2f4081.jpg'
-                  }}
-                />
-                <div style={{ flex: 1 }}>
-                  <h3 style={{ margin: '0 0 3px', fontSize: 16, fontWeight: 800, color: 'var(--city-text)' }}>{modalDetalle.vehiculo}</h3>
-                  <span style={{ fontSize: 13, color: 'var(--city-muted, #64748b)', fontWeight: 600 }}>{t('admin.incidents.table.plate', 'Placa')}: <strong style={{ color: 'var(--brand-text)' }}>{modalDetalle.placa}</strong> ⬢ {modalDetalle.sucursal}</span>
+          return (
+            <div
+              className="cities-modal-backdrop"
+              onMouseDown={(e) => e.target === e.currentTarget && setModalDetalle(null)}
+            >
+              <section className="cities-modal" style={{ maxWidth: 720, width: '100%', maxHeight: 'calc(100vh - 48px)', overflowY: 'auto' }}>
+                <div className="cities-modal__head">
+                  <div>
+                    <p className="cities-eyebrow">{t('admin.incidents.detailTitle', 'Gestión de Incidencia')} {modalDetalle.codigo}</p>
+                    <h2>{modalDetalle.vehiculo} ({modalDetalle.placa})</h2>
+                  </div>
+                  <button type="button" onClick={() => setModalDetalle(null)} style={{ background: 'transparent', border: 'none', fontSize: 24, cursor: 'pointer', color: 'var(--city-muted, #64748b)' }}>
+                    &times;
+                  </button>
                 </div>
-                {modalDetalle.codigoReserva && (
-                  <div style={{ textAlign: 'right', background: 'var(--city-card, #ffffff)', padding: '8px 12px', borderRadius: '8px', border: '1px dashed #cbd5e1' }}>
-                    <span style={{ fontSize: 11, color: 'var(--city-muted, #64748b)', fontWeight: 700, display: 'block', textTransform: 'uppercase' }}>{t('admin.incidents.associatedRes', 'Reserva Asociada')}</span>
-                    <strong style={{ fontSize: 14, color: 'var(--brand-primary)' }}>{modalDetalle.codigoReserva}</strong>
+
+                {/* Banner de Vehículo con Imagen */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 14, margin: '14px 0', padding: '12px 16px', background: 'var(--city-soft)', borderRadius: 14, border: '1px solid var(--city-border)' }}>
+                  <img
+                    src={getVehiculoImagen(modalDetalle)}
+                    alt={modalDetalle.vehiculo}
+                    style={{ width: 76, height: 50, objectFit: 'cover', borderRadius: 10, border: '1px solid #cbd5e1', flexShrink: 0, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}
+                    onError={(e) => {
+                      e.currentTarget.onerror = null
+                      e.currentTarget.src = 'https://pplx-res.cloudinary.com/image/upload/pplx_search_images/a2cb0b378c25efdb1e116246f84149744c2f4081.jpg'
+                    }}
+                  />
+                  <div style={{ flex: 1 }}>
+                    <h3 style={{ margin: '0 0 3px', fontSize: 16, fontWeight: 800, color: 'var(--city-text)' }}>{modalDetalle.vehiculo}</h3>
+                    <span style={{ fontSize: 13, color: 'var(--city-muted, #64748b)', fontWeight: 600 }}>{t('admin.incidents.table.plate', 'Placa')}: <strong style={{ color: 'var(--brand-text)' }}>{modalDetalle.placa}</strong> ⬢ {modalDetalle.sucursal}</span>
+                  </div>
+                  {modalDetalle.codigoReserva && (
+                    <div style={{ textAlign: 'right', background: 'var(--city-card, #ffffff)', padding: '8px 12px', borderRadius: '8px', border: '1px dashed #cbd5e1' }}>
+                      <span style={{ fontSize: 11, color: 'var(--city-muted, #64748b)', fontWeight: 700, display: 'block', textTransform: 'uppercase' }}>{t('admin.incidents.associatedRes', 'Reserva Asociada')}</span>
+                      <strong style={{ fontSize: 14, color: 'var(--brand-primary)' }}>{modalDetalle.codigoReserva}</strong>
+                    </div>
+                  )}
+                </div>
+
+                {/* ─── STEPPER: PROCESO DE VALIDACIÓN DEL REPORTE ─── */}
+                <div style={{ margin: '18px 0 14px', padding: '16px 20px', background: 'var(--city-bg, #f8fafc)', borderRadius: 14, border: '1px solid var(--city-border, #cbd5e1)' }}>
+                  <span style={{ fontSize: 11.5, fontWeight: 800, color: 'var(--city-muted, #64748b)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 14 }}>
+                    PROCESO DE VALIDACIÓN Y RESOLUCIÓN DEL REPORTE
+                  </span>
+                  
+                  <div className="incident-stepper">
+                    <div className="incident-stepper-line">
+                      <div
+                        className="incident-stepper-progress"
+                        style={{
+                          width: isRechazado ? '100%' : isResuelto ? '100%' : isAtendiendo ? '50%' : '10%',
+                          background: isRechazado ? '#ef4444' : '#10b981'
+                        }}
+                      />
+                    </div>
+
+                    {/* Paso 1: Reportado */}
+                    <div className={`incident-step ${isRecibido ? 'is-active' : 'is-completed'}`}>
+                      <div className="incident-step-circle">
+                        {isRecibido ? '1' : <FaCheckCircle size={14} />}
+                      </div>
+                      <span className="incident-step-label">1. Reportado</span>
+                      <span className="incident-step-desc">Registrado por cliente</span>
+                    </div>
+
+                    {/* Paso 2: En Validación */}
+                    <div className={`incident-step ${isAtendiendo ? 'is-active' : (isResuelto || isRechazado ? 'is-completed' : '')}`}>
+                      <div className="incident-step-circle">
+                        {isResuelto || isRechazado ? <FaCheckCircle size={14} /> : '2'}
+                      </div>
+                      <span className="incident-step-label">2. En Validación</span>
+                      <span className="incident-step-desc">Inspección de sede</span>
+                    </div>
+
+                    {/* Paso 3: En Reparación / Solución */}
+                    <div className={`incident-step ${isAtendiendo ? 'is-active' : (isResuelto ? 'is-completed' : '')}`}>
+                      <div className="incident-step-circle">
+                        {isResuelto ? <FaCheckCircle size={14} /> : '3'}
+                      </div>
+                      <span className="incident-step-label">3. En Solución</span>
+                      <span className="incident-step-desc">Atención técnica</span>
+                    </div>
+
+                    {/* Paso 4: Resuelto o Rechazado */}
+                    <div className={`incident-step ${isRechazado ? 'is-rejected' : isResuelto ? 'is-completed' : ''}`}>
+                      <div className="incident-step-circle">
+                        {isRechazado ? <FaTimesCircle size={14} /> : isResuelto ? <FaCheckCircle size={14} /> : '4'}
+                      </div>
+                      <span className="incident-step-label">{isRechazado ? '4. Rechazado' : '4. Resuelto'}</span>
+                      <span className="incident-step-desc">{isRechazado ? 'Reporte desestimado' : 'Caso finalizado'}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* ─── ACCIONES DE VALIDACIÓN (ENCARGADO) vs MODO SUPERVISIÓN (ADMIN) ─── */}
+                {esEncargado ? (
+                  <div className="incident-validation-box">
+                    <div className="incident-validation-title">
+                      <FaWrench style={{ color: '#2563eb' }} />
+                      <span>Panel de Validación Operativa y Peritaje (Sede {sucursalEncargado || modalDetalle.sucursal})</span>
+                      <span style={{ fontSize: 11, fontWeight: 700, color: '#2563eb', marginLeft: 'auto', background: '#eff6ff', padding: '3px 10px', borderRadius: '9999px', border: '1px solid #bfdbfe' }}>
+                        Acción Operativa Requerida
+                      </span>
+                    </div>
+
+                    {/* Checklist Técnico de Sede */}
+                    <div className="incident-checklist">
+                      <span style={{ fontSize: 11.5, fontWeight: 800, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'block', marginBottom: 6 }}>
+                        CHECKLIST DE VALIDACIÓN TÉCNICA (PERITAJE OPERATIVO)
+                      </span>
+                      <label className="incident-checklist-item">
+                        <input
+                          type="checkbox"
+                          checked={validationChecklist.evidenciasCoinciden}
+                          onChange={(e) => setValidationChecklist(c => ({ ...c, evidenciasCoinciden: e.target.checked }))}
+                        />
+                        <span>Evidencias fotográficas y audiovisuales corresponden al siniestro declarado por el cliente.</span>
+                      </label>
+                      <label className="incident-checklist-item">
+                        <input
+                          type="checkbox"
+                          checked={validationChecklist.polizaVigente}
+                          onChange={(e) => setValidationChecklist(c => ({ ...c, polizaVigente: e.target.checked }))}
+                        />
+                        <span>Póliza de seguro y contrato de alquiler vigentes para esta reserva.</span>
+                      </label>
+                      <label className="incident-checklist-item">
+                        <input
+                          type="checkbox"
+                          checked={validationChecklist.placaKilometrajeVerificado}
+                          onChange={(e) => setValidationChecklist(c => ({ ...c, placaKilometrajeVerificado: e.target.checked }))}
+                        />
+                        <span>Placa ({modalDetalle.placa}) y kilometraje verificados con la entrega inicial del vehículo.</span>
+                      </label>
+                      <label className="incident-checklist-item">
+                        <input
+                          type="checkbox"
+                          checked={validationChecklist.responsabilidadDictaminada}
+                          onChange={(e) => setValidationChecklist(c => ({ ...c, responsabilidadDictaminada: e.target.checked }))}
+                        />
+                        <span>Dictamen técnico: ¿Aplica deducible o asistencia en ruta sin costo adicional para el cliente?</span>
+                      </label>
+                    </div>
+
+                    {isRecibido && (
+                      <div>
+                        <p style={{ fontSize: 13, color: '#475569', margin: '0 0 10px' }}>
+                          Reporte nuevo recibido. Revisa las evidencias fotográficas abajo e inicia la validación técnica con el taller o asistencia.
+                        </p>
+                        <div className="incident-validation-actions">
+                          <button
+                            type="button"
+                            onClick={() => handleQuickStatusChange(modalDetalle.id, 'atendiendo')}
+                            style={{ padding: '9px 18px', borderRadius: '9999px', background: '#2563eb', color: '#fff', border: 'none', fontWeight: 800, fontSize: 13, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6, boxShadow: '0 2px 6px rgba(37, 99, 235, 0.25)' }}
+                          >
+                            <FaCheckCircle /> Iniciar Validación Técnica y Taller
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleQuickStatusChange(modalDetalle.id, 'rechazado')}
+                            style={{ padding: '9px 18px', borderRadius: '9999px', background: '#fee2e2', color: '#dc2626', border: '1.5px solid #fecaca', fontWeight: 800, fontSize: 13, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6 }}
+                          >
+                            <FaTimesCircle /> Desestimar / Rechazar Reporte
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => { setModalDetalle(null); openResponderModal(modalDetalle); }}
+                            style={{ padding: '9px 18px', borderRadius: '9999px', background: '#eff6ff', color: '#2563eb', border: '1.5px solid #bfdbfe', fontWeight: 800, fontSize: 13, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6, marginLeft: 'auto' }}
+                          >
+                            <FaPaperPlane /> Responder y Notificar al Cliente
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {isAtendiendo && (
+                      <div>
+                        <p style={{ fontSize: 13, color: '#0369a1', margin: '0 0 10px', fontWeight: 600 }}>
+                          Reporte en validación técnica y solución activa. Al concluir la reparación, peritaje o asistencia, dictamínalo como resuelto.
+                        </p>
+                        <div className="incident-validation-actions">
+                          <button
+                            type="button"
+                            onClick={() => handleQuickStatusChange(modalDetalle.id, 'resuelto')}
+                            style={{ padding: '9px 18px', borderRadius: '9999px', background: '#16a34a', color: '#fff', border: 'none', fontWeight: 800, fontSize: 13, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6, boxShadow: '0 2px 6px rgba(22, 163, 74, 0.25)' }}
+                          >
+                            <FaCheckCircle /> Validar y Marcar como Resuelto
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleQuickStatusChange(modalDetalle.id, 'rechazado')}
+                            style={{ padding: '9px 18px', borderRadius: '9999px', background: '#fee2e2', color: '#dc2626', border: '1.5px solid #fecaca', fontWeight: 800, fontSize: 13, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6 }}
+                          >
+                            <FaTimesCircle /> Rechazar / Cerrar
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => { setModalDetalle(null); openResponderModal(modalDetalle); }}
+                            style={{ padding: '9px 18px', borderRadius: '9999px', background: '#eff6ff', color: '#2563eb', border: '1.5px solid #bfdbfe', fontWeight: 800, fontSize: 13, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6, marginLeft: 'auto' }}
+                          >
+                            <FaPaperPlane /> Enviar Novedad al Cliente
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {isResuelto && (
+                      <div>
+                        <div style={{ background: '#dcfce7', border: '1.5px solid #bbf7d0', borderRadius: 10, padding: '12px 16px', color: '#15803d', fontWeight: 700, fontSize: 13, display: 'flex', alignItems: 'center', gap: 8 }}>
+                          <FaCheckCircle size={16} />
+                          <span>Incidente validado, reparado y cerrado satisfactoriamente por la sucursal.</span>
+                        </div>
+                        <div className="incident-validation-actions">
+                          <button
+                            type="button"
+                            onClick={() => { setModalDetalle(null); openResponderModal(modalDetalle); }}
+                            style={{ padding: '8px 18px', borderRadius: '9999px', background: '#f8fafc', color: '#166534', border: '1.5px solid #bbf7d0', fontWeight: 800, fontSize: 12.5, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6 }}
+                          >
+                            <FaPaperPlane /> Enviar Mensaje Adicional al Cliente
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {isRechazado && (
+                      <div style={{ background: '#fee2e2', border: '1.5px solid #fecaca', borderRadius: 10, padding: '12px 16px', color: '#991b1b', fontWeight: 700, fontSize: 13, display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <FaTimesCircle size={16} />
+                        <span>Este reporte fue desestimado o cerrado por la sucursal tras peritaje técnico.</span>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div style={{
+                    margin: '14px 0',
+                    padding: '14px 18px',
+                    background: '#f8fafc',
+                    border: '1.5px solid #cbd5e1',
+                    borderRadius: 14,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 14,
+                    fontSize: 13,
+                    color: '#334155'
+                  }}>
+                    <FaUserShield style={{ color: '#2563eb', fontSize: 26, flexShrink: 0 }} />
+                    <div>
+                      <strong style={{ display: 'block', color: '#0f172a', marginBottom: 2 }}>Supervisión de Auditoría Global (Solo Lectura)</strong>
+                      Este reporte de incidente es validado y resuelto operativamente por el Encargado de la sede <strong>{modalDetalle.sucursal}</strong>. El Administrador General cuenta con acceso de consulta integral y auditoría de evidencias sin intervención en las transiciones operativas ni alteración del peritaje.
+                    </div>
                   </div>
                 )}
-              </div>
 
-              <div className="incident-grid-2" style={{ margin: '18px 0' }}>
-                <div className="incident-info-card">
-                  <span className="incident-info-card__label">{t('admin.incidents.sender', 'Remitente')}</span>
-                  <p>{modalDetalle.contactoNombre}</p>
-                  <small>{modalDetalle.contactoEmail}</small>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '6px' }}>
-                    <small>{modalDetalle.contactoTelefono}</small>
-                    <a 
-                      href={`tel:${modalDetalle.contactoTelefono}`}
-                      style={{ padding: '4px 8px', borderRadius: '4px', background: '#ecfeff', color: '#0891b2', border: '1px solid #cffafe', textDecoration: 'none', fontSize: '11px', display: 'inline-flex', alignItems: 'center', gap: '4px', fontWeight: 'bold' }}
-                    >
-                      <FaPhone /> {t('admin.incidents.call', 'Llamar')}
-                    </a>
+                {/* Datos de Contacto y Ubicación */}
+                <div className="incident-grid-2" style={{ margin: '14px 0' }}>
+                  <div className="incident-info-card">
+                    <span className="incident-info-card__label">{t('admin.incidents.sender', 'Remitente')}</span>
+                    <p>{modalDetalle.contactoNombre}</p>
+                    <small>{modalDetalle.contactoEmail}</small>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '6px' }}>
+                      <small>{modalDetalle.contactoTelefono || '+57 300 0000000'}</small>
+                      <a 
+                        href={`tel:${modalDetalle.contactoTelefono || '3000000000'}`}
+                        style={{ padding: '4px 8px', borderRadius: '4px', background: '#ecfeff', color: '#0891b2', border: '1px solid #cffafe', textDecoration: 'none', fontSize: '11px', display: 'inline-flex', alignItems: 'center', gap: '4px', fontWeight: 'bold' }}
+                      >
+                        <FaPhone /> {t('admin.incidents.call', 'Llamar')}
+                      </a>
+                    </div>
+                  </div>
+
+                  <div className="incident-info-card">
+                    <span className="incident-info-card__label">{t('admin.incidents.locationPriority', 'Ubicación y Prioridad')}</span>
+                    <p>{modalDetalle.sucursal}</p>
+                    <span className={`priority-badge ${modalDetalle.prioridad}`} style={{ marginTop: 6 }}>
+                      <FaClock /> {t('admin.incidents.estimatedTime', 'Tiempo estimado:')} {modalDetalle.tiempoEstimado}
+                    </span>
                   </div>
                 </div>
 
-                <div className="incident-info-card">
-                  <span className="incident-info-card__label">{t('admin.incidents.locationPriority', 'Ubicación y Prioridad')}</span>
-                  <p>{modalDetalle.sucursal}</p>
-                  <span className={`priority-badge ${modalDetalle.prioridad}`} style={{ marginTop: 6 }}>
-                    <FaClock /> {t('admin.incidents.estimatedTime', 'Tiempo estimado:')} {modalDetalle.tiempoEstimado}
-                  </span>
-                </div>
-              </div>
-
-
-              <div className="incident-field" style={{ margin: '4px 0 12px' }}>
-                <span className="incident-field-label">{t('admin.incidents.problemDescription', 'Descripción del problema')}</span>
-                <p style={{ background: 'var(--city-soft)', border: '1.5px solid var(--city-border)', padding: '12px 16px', borderRadius: 12, fontSize: 13, margin: 0 }}>
-                  {translateDescription(modalDetalle.descripcion)}
-                </p>
-              </div>
-
-              {/* TIMELINE */}
-              <span className="incident-field-label" style={{ display: 'block', marginBottom: 8 }}>{t('admin.incidents.historyTitle', 'Historial de respuestas')}</span>
-              <div className="incident-timeline">
-                {(modalDetalle.historial || []).map((h, i) => (
-                  <div key={i} className="incident-timeline-item" style={{ borderLeftColor: h.color || 'var(--brand-primary)' }}>
-                    <strong>{translateTimelineTitle(h.titulo)} — {h.autor}</strong>
-                    <p style={{ margin: '4px 0', fontSize: 12 }}>{translateTimelineDesc(h.descripcion)}</p>
-                    <small>{h.hora} ({new Date(h.fecha).toLocaleDateString()})</small>
+                {/* ─── EVIDENCIAS ADJUNTADAS POR EL USUARIO (GALERÍA VISUAL) ─── */}
+                <div style={{ margin: '14px 0', padding: '16px 18px', background: 'var(--city-bg, #f8fafc)', borderRadius: 14, border: '1px solid var(--city-border, #cbd5e1)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, flexWrap: 'wrap', gap: 6 }}>
+                    <span style={{ fontSize: 12, fontWeight: 800, color: 'var(--city-muted, #64748b)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                      EVIDENCIAS ADJUNTADAS POR EL CLIENTE ({modalDetalle.evidenciasCount || [modalDetalle.evidenciaFoto1, modalDetalle.evidenciaFoto2, modalDetalle.evidenciaFoto3, modalDetalle.evidenciaVideo].filter(Boolean).length || 0})
+                    </span>
+                    <span style={{ fontSize: 11, color: '#64748b', fontWeight: 600 }}>
+                      Haz clic en cualquier archivo para inspeccionar a alta resolución
+                    </span>
                   </div>
-                ))}
-              </div>
 
-              <div className="cities-modal__actions" style={{ marginTop: '16px', display: 'flex', justifyContent: 'flex-end' }}>
-                <button 
-                  type="button" 
-                  onClick={() => setModalDetalle(null)} 
-                  style={{ 
-                    background: 'var(--city-bg, #f1f5f9)', 
-                    color: 'var(--city-muted, #475569)', 
-                    border: '1.5px solid #cbd5e1', 
-                    padding: '8px 22px', 
-                    borderRadius: '9999px', 
-                    fontWeight: 700, 
-                    fontSize: '13px', 
-                    cursor: 'pointer',
-                    transition: 'all 0.2s'
-                  }}
-                  onMouseOver={(e) => { e.currentTarget.style.background = '#e2e8f0' }}
-                  onMouseOut={(e) => { e.currentTarget.style.background = 'var(--city-bg, #f1f5f9)' }}
-                >
-                  {t('admin.incidents.close', 'Cerrar')}
-                </button>
-              </div>
-            </section>
-          </div>
-        )}
+                  {(modalDetalle.evidenciaFoto1 || modalDetalle.evidenciaFoto2 || modalDetalle.evidenciaFoto3 || modalDetalle.evidenciaVideo) ? (
+                    <div className="incident-gallery-grid">
+                      {modalDetalle.evidenciaFoto1 && (
+                        <div
+                          className="incident-gallery-card"
+                          onClick={() => setZoomMedia({ url: modalDetalle.evidenciaFoto1Url, title: `Evidencia Foto 1: ${modalDetalle.evidenciaFoto1}`, isVideo: false })}
+                        >
+                          <img
+                            src={modalDetalle.evidenciaFoto1Url || 'https://images.unsplash.com/photo-1590362891991-f776e747a588?auto=format&fit=crop&w=400&q=80'}
+                            alt="Evidencia 1"
+                            className="incident-gallery-preview"
+                          />
+                          <div className="incident-gallery-meta">
+                            <span className="incident-gallery-title">{modalDetalle.evidenciaFoto1}</span>
+                            <span className="incident-gallery-btn"><FaFileImage size={11} /> Ampliar Foto</span>
+                          </div>
+                        </div>
+                      )}
+
+                      {modalDetalle.evidenciaFoto2 && (
+                        <div
+                          className="incident-gallery-card"
+                          onClick={() => setZoomMedia({ url: modalDetalle.evidenciaFoto2Url, title: `Evidencia Foto 2: ${modalDetalle.evidenciaFoto2}`, isVideo: false })}
+                        >
+                          <img
+                            src={modalDetalle.evidenciaFoto2Url || 'https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=400&q=80'}
+                            alt="Evidencia 2"
+                            className="incident-gallery-preview"
+                          />
+                          <div className="incident-gallery-meta">
+                            <span className="incident-gallery-title">{modalDetalle.evidenciaFoto2}</span>
+                            <span className="incident-gallery-btn"><FaFileImage size={11} /> Ampliar Foto</span>
+                          </div>
+                        </div>
+                      )}
+
+                      {modalDetalle.evidenciaFoto3 && (
+                        <div
+                          className="incident-gallery-card"
+                          onClick={() => setZoomMedia({ url: modalDetalle.evidenciaFoto3Url, title: `Evidencia Foto 3: ${modalDetalle.evidenciaFoto3}`, isVideo: false })}
+                        >
+                          <img
+                            src={modalDetalle.evidenciaFoto3Url || 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=400&q=80'}
+                            alt="Evidencia 3"
+                            className="incident-gallery-preview"
+                          />
+                          <div className="incident-gallery-meta">
+                            <span className="incident-gallery-title">{modalDetalle.evidenciaFoto3}</span>
+                            <span className="incident-gallery-btn"><FaFileImage size={11} /> Ampliar Foto</span>
+                          </div>
+                        </div>
+                      )}
+
+                      {modalDetalle.evidenciaVideo && (
+                        <div
+                          className="incident-gallery-card"
+                          onClick={() => setZoomMedia({ url: modalDetalle.evidenciaVideoUrl || 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4', title: `Video: ${modalDetalle.evidenciaVideo}`, isVideo: true })}
+                        >
+                          <div className="incident-gallery-preview" style={{ background: '#0f172a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <div style={{ width: 44, height: 44, borderRadius: '50%', background: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 18, boxShadow: '0 2px 8px rgba(0,0,0,0.3)' }}>
+                              <FaVideo />
+                            </div>
+                          </div>
+                          <div className="incident-gallery-meta">
+                            <span className="incident-gallery-title">{modalDetalle.evidenciaVideo}</span>
+                            <span className="incident-gallery-btn" style={{ color: '#8b5cf6' }}><FaVideo size={11} /> Reproducir Video</span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <p style={{ margin: 0, fontSize: 13, color: 'var(--city-muted, #64748b)', fontStyle: 'italic' }}>
+                      El cliente no adjuntó archivos multimedia al registrar este reporte; la atención se fundamenta en la declaración técnica del siniestro.
+                    </p>
+                  )}
+                </div>
+
+                {/* Descripción del problema */}
+                <div className="incident-field" style={{ margin: '4px 0 12px' }}>
+                  <span className="incident-field-label">{t('admin.incidents.problemDescription', 'Descripción del problema')}</span>
+                  <p style={{ background: 'var(--city-soft)', border: '1.5px solid var(--city-border)', padding: '12px 16px', borderRadius: 12, fontSize: 13, margin: 0, lineHeight: 1.5 }}>
+                    {translateDescription(modalDetalle.descripcion)}
+                  </p>
+                </div>
+
+                {/* TIMELINE */}
+                <span className="incident-field-label" style={{ display: 'block', marginBottom: 8 }}>{t('admin.incidents.historyTitle', 'Historial de respuestas y novedades')}</span>
+                <div className="incident-timeline">
+                  {(modalDetalle.historial || []).map((h, i) => (
+                    <div key={i} className="incident-timeline-item" style={{ borderLeftColor: h.color || 'var(--brand-primary)' }}>
+                      <strong>{translateTimelineTitle(h.titulo)} — {h.autor}</strong>
+                      <p style={{ margin: '4px 0', fontSize: 12 }}>{translateTimelineDesc(h.descripcion)}</p>
+                      <small>{h.hora} ({new Date(h.fecha).toLocaleDateString()})</small>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="cities-modal__actions" style={{ marginTop: '16px', display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
+                  <button 
+                    type="button" 
+                    onClick={() => setModalDetalle(null)} 
+                    style={{ 
+                      background: 'var(--city-bg, #f1f5f9)', 
+                      color: 'var(--city-muted, #475569)', 
+                      border: '1.5px solid #cbd5e1', 
+                      padding: '8px 22px', 
+                      borderRadius: '9999px', 
+                      fontWeight: 700, 
+                      fontSize: '13px', 
+                      cursor: 'pointer',
+                      transition: 'all 0.2s'
+                    }}
+                    onMouseOver={(e) => { e.currentTarget.style.background = '#e2e8f0' }}
+                    onMouseOut={(e) => { e.currentTarget.style.background = 'var(--city-bg, #f1f5f9)' }}
+                  >
+                    {t('admin.incidents.close', 'Cerrar')}
+                  </button>
+                </div>
+              </section>
+            </div>
+          )
+        })()}
 
         {/* MODAL CREAR INCIDENCIA PROPIA */}
         {modalCrear && (
@@ -812,7 +1395,7 @@ export default function IncidentManagementPage() {
                   {t('admin.incidents.createTitle', 'Formulario de Incidencia')}
                 </h2>
                 <button type="button" onClick={() => setModalCrear(false)} style={{ background: 'transparent', border: 'none', fontSize: 24, cursor: 'pointer', color: 'var(--city-muted, #64748b)' }}>
-                  á—
+                  &times;
                 </button>
               </div>
 
@@ -1101,7 +1684,7 @@ export default function IncidentManagementPage() {
                   {t('admin.incidents.replyBtn', 'Responder al Cliente')}
                 </h2>
                 <button type="button" onClick={() => setModalResponder(null)} style={{ background: 'transparent', border: 'none', fontSize: 24, cursor: 'pointer', color: 'var(--city-muted, #64748b)' }}>
-                  á—
+                  &times;
                 </button>
               </div>
               <div className="cities-modal__body" style={{ padding: '20px 24px' }}>

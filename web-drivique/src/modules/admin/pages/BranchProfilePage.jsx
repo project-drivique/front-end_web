@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useRef, useMemo } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import {
@@ -21,6 +21,7 @@ import {
   FaPlane,
   FaBus,
   FaHome,
+  FaExternalLinkAlt,
 } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import { useAuthStore } from '../../../store/authStore'
@@ -31,6 +32,14 @@ import { CIUDADES } from '../../catalog/constants'
 import ManagementSidebar from '../components/ManagementSidebar'
 import MenuConfiguracion from '../../../components/MenuConfiguracion'
 import './BranchProfilePage.css'
+
+const CITY_COORDINATES = {
+  bogota: { lat: 4.6558, lng: -74.0573 },
+  medellin: { lat: 6.2088, lng: -75.5683 },
+  barranquilla: { lat: 11.0069, lng: -74.8194 },
+  cali: { lat: 3.4682, lng: -76.5298 },
+  cartagena: { lat: 10.4072, lng: -75.5562 },
+}
 
 /**
  * Componente: BranchProfilePage
@@ -92,12 +101,21 @@ export default function BranchProfilePage() {
   // Sincronizar el formulario cuando el perfil cargue
   useEffect(() => {
     if (profile) {
+      const cityKey = String(profile.ciudad || '').trim().toLowerCase()
+      const fallbackCoord = CITY_COORDINATES[cityKey] || { lat: 4.6558, lng: -74.0573 }
+      const latVal = profile.latitud != null && String(profile.latitud).trim() !== ''
+        ? String(profile.latitud)
+        : String(fallbackCoord.lat)
+      const lngVal = profile.longitud != null && String(profile.longitud).trim() !== ''
+        ? String(profile.longitud)
+        : String(fallbackCoord.lng)
+
       const initial = {
         direccion: profile.direccion || '',
         telefono: profile.telefono || '',
         indicacionesRecogida: profile.indicacionesRecogida || '',
-        latitud: String(profile.latitud || ''),
-        longitud: String(profile.longitud || ''),
+        latitud: latVal,
+        longitud: lngVal,
       }
       setForm(initial)
       setOriginalForm(initial)
@@ -238,7 +256,7 @@ export default function BranchProfilePage() {
       })
   }
 
-  // Mapa iframe URL dinámica
+  // Mapa iframe URL dinámica (OpenStreetMap interactivo con marcador satelital)
   const isValidMapCoord =
     !isNaN(parseFloat(form.latitud)) &&
     !isNaN(parseFloat(form.longitud)) &&
@@ -247,17 +265,15 @@ export default function BranchProfilePage() {
     parseFloat(form.longitud) >= -180 &&
     parseFloat(form.longitud) <= 180
 
-  const mapIframeUrl = isValidMapCoord
-    ? `https://maps.google.com/maps?q=${encodeURIComponent(
-        form.latitud
-      )},${encodeURIComponent(form.longitud)}&z=16&output=embed`
-    : null
+  const cityKeyForMap = String(profile?.ciudad || '').trim().toLowerCase()
+  const fallbackCoordForMap = CITY_COORDINATES[cityKeyForMap] || { lat: 4.6558, lng: -74.0573 }
 
-  const googleMapsExternalUrl = isValidMapCoord
-    ? `https://www.google.com/maps?q=${encodeURIComponent(form.latitud)},${encodeURIComponent(
-        form.longitud
-      )}`
-    : null
+  const curLat = isValidMapCoord ? parseFloat(form.latitud) : fallbackCoordForMap.lat
+  const curLng = isValidMapCoord ? parseFloat(form.longitud) : fallbackCoordForMap.lng
+
+  const mapIframeUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${(curLng - 0.008).toFixed(5)}%2C${(curLat - 0.008).toFixed(5)}%2C${(curLng + 0.008).toFixed(5)}%2C${(curLat + 0.008).toFixed(5)}&layer=mapnik&marker=${curLat}%2C${curLng}`
+
+  const googleMapsExternalUrl = `https://www.google.com/maps?q=${curLat},${curLng}`
 
   // Ciudad e infraestructura
   const cityObj = useMemo(() => {
@@ -540,14 +556,15 @@ export default function BranchProfilePage() {
               </div>
 
               <div className="branch-profile-card-body branch-profile-card-body--stretched">
-                {/* Visor interactivo de Google Maps */}
-                <div className="branch-profile-map-wrap">
+                {/* Visor interactivo de Mapa Satelital */}
+                <div className="branch-profile-map-wrap" style={{ position: 'relative', overflow: 'hidden', borderRadius: 14 }}>
                   {mapIframeUrl ? (
                     <iframe
                       title={t('branchProfile.location.title', 'Ubicación')}
                       src={mapIframeUrl}
                       className="branch-profile-map-iframe"
                       loading="lazy"
+                      style={{ border: 'none', width: '100%', height: '100%', minHeight: 220 }}
                     />
                   ) : (
                     <div className="branch-profile-map-fallback">
@@ -555,6 +572,24 @@ export default function BranchProfilePage() {
                       <span>{t('branchProfile.location.mapUnavailable', 'Mapa no disponible')}</span>
                     </div>
                   )}
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 6, marginBottom: 4 }}>
+                  <a
+                    href={googleMapsExternalUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 6,
+                      fontSize: 12,
+                      fontWeight: 700,
+                      color: 'var(--brand-primary, #2563eb)',
+                      textDecoration: 'none',
+                    }}
+                  >
+                    <FaExternalLinkAlt size={11} /> {t('branchProfile.location.openInMaps', 'Abrir en Google Maps')}
+                  </a>
                 </div>
 
                 {/* Coordenadas Latitud / Longitud */}

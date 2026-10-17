@@ -42,6 +42,7 @@ import { formatCurrency } from '../../../utils/currencyUtils'
 import { showAlert } from '../../../utils/swalConfig'
 import MenuConfiguracion from '../../../components/MenuConfiguracion'
 import ManagementSidebar from '../components/ManagementSidebar'
+import { exportExcel, exportPdf, printTable } from '../../../utils/listExportUtils'
 import './CityManagementPage.css'
 import './CashCollectionPage.css'
 
@@ -425,6 +426,61 @@ export default function CashCollectionPage({ branchOnly = false }) {
     })
   }, [reservasSucursal, pendientesEfectivo, cobradasHoy, filterTab, selectedBranch, selectedMonth, selectedYear, dateRange, search, sortBy])
 
+  // Configuración de exportación unificada (Excel, PDF, Imprimir)
+  const exportHeaders = [
+    'ID',
+    'CÓDIGO RESERVA',
+    'CLIENTE',
+    'TELÉFONO',
+    'MEDIO DE PAGO',
+    'MONTO TOTAL',
+    'ESTADO PAGO',
+  ]
+
+  const exportRows = useMemo(() => {
+    return listFiltrada.map((r, index) => {
+      const rawMetodo = String(r.metodoPago || r.reservaDetalles?.metodoPago || r.pasarela || r.metodoPagoConfirmado || 'Wompi').toLowerCase()
+      const esEfectivo = rawMetodo.includes('efectivo') || rawMetodo.includes('sucursal') || String(r.estado).toLowerCase().includes('efectivo')
+      const esPagadaEnEfectivo = esEfectivo && esCobradoEnSucursal(r)
+      const esPagadaDigital = !esEfectivo && (r.pagoEstado === 'aprobado' || r.estadoPago === 'aprobado' || r.estado === 'confirmada' || r.estado === 'en_curso' || r.estado === 'finalizada')
+      const pagoConfirmado = esPagadaEnEfectivo || esPagadaDigital
+
+      let tel = String(r.clienteTelefono || 'Sin teléfono').trim()
+      if (tel !== 'Sin teléfono' && !tel.startsWith('+')) {
+        tel = `+57 ${tel}`
+      }
+
+      let medioDisplay = esEfectivo ? t('admin.cash.paymentMethodBranch', 'Pago en Sucursal') : 'Wompi (Tarjeta)'
+      if (!esEfectivo) {
+        if (rawMetodo.includes('nequi')) medioDisplay = 'Wompi (Nequi)'
+        else if (rawMetodo.includes('pse')) medioDisplay = 'Wompi (PSE)'
+        else if (rawMetodo.includes('daviplata')) medioDisplay = 'Wompi (DaviPlata)'
+        else if (rawMetodo.includes('bancolombia')) medioDisplay = 'Wompi (Bancolombia)'
+        else if (rawMetodo !== 'wompi' && rawMetodo !== 'wompi (digital)') {
+          medioDisplay = `Wompi (${rawMetodo.charAt(0).toUpperCase() + rawMetodo.slice(1)})`
+        }
+      }
+
+      return [
+        index + 1,
+        r.codigo || r.referencia || r.id || 'N/A',
+        r.clienteNombre || 'Sin Nombre',
+        tel,
+        medioDisplay,
+        formatCurrency(Number(r.totalCOP || r.total || 0), moneda || 'COP', tasaUSD),
+        pagoConfirmado ? t('admin.cash.statusPaid', 'Cobrado / Aprobado') : t('admin.cash.statusPending', 'Pendiente de Cobro'),
+      ]
+    })
+  }, [listFiltrada, esCobradoEnSucursal, t, moneda, tasaUSD])
+
+  const exportData = useMemo(() => ({
+    title: t('admin.cash.exportTitle', 'Control de Caja y Cobro en Mostrador — Drivique'),
+    headers: exportHeaders,
+    rows: exportRows,
+    items: listFiltrada,
+    filename: `cobros-caja-drivique-${new Date().toISOString().slice(0, 10)}`,
+  }), [exportHeaders, exportRows, listFiltrada, t])
+
   // Detectar ?ref=... en la URL
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
@@ -659,20 +715,25 @@ export default function CashCollectionPage({ branchOnly = false }) {
                   <button
                     type="button"
                     className="cash-exp-btn excel"
-                    onClick={() => {
-                      const csv = 'data:text/csv;charset=utf-8,Codigo,Cliente,Monto,Estado\n' + listFiltrada.map(r => `${r.codigo||r.id},${r.clienteNombre||''},${r.totalCOP||r.total||0},${esCobradoEnSucursal(r)?'Cobrado':'Pendiente'}`).join('\n')
-                      const link = document.createElement('a')
-                      link.href = encodeURI(csv)
-                      link.download = `cobros_caja_${new Date().toISOString().slice(0,10)}.csv`
-                      link.click()
-                    }}
+                    onClick={() => exportExcel(exportData)}
+                    title={t('admin.cash.exportExcel', 'Excel')}
                   >
                     <FaFileExcel /> {t('admin.cash.exportExcel', 'Excel')}
                   </button>
-                  <button type="button" className="cash-exp-btn pdf" onClick={() => window.print()}>
+                  <button
+                    type="button"
+                    className="cash-exp-btn pdf"
+                    onClick={() => exportPdf(exportData)}
+                    title={t('admin.cash.exportPdf', 'PDF')}
+                  >
                     <FaFilePdf /> {t('admin.cash.exportPdf', 'PDF')}
                   </button>
-                  <button type="button" className="cash-exp-btn print" onClick={() => window.print()}>
+                  <button
+                    type="button"
+                    className="cash-exp-btn print"
+                    onClick={() => printTable(exportData)}
+                    title={t('admin.reservationsManagement.print', 'Imprimir')}
+                  >
                     <FaPrint /> {t('admin.reservationsManagement.print', 'Imprimir')}
                   </button>
                 </div>
@@ -865,10 +926,10 @@ export default function CashCollectionPage({ branchOnly = false }) {
                                 if (!pagoConfirmado) return
                                 // Crear un div temporal con el comprobante
                                 const div = document.createElement('div')
-                                div.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:480px;padding:32px;background:#fff;font-family:Arial,sans-serif;color:#111827;border-radius:12px;'
+                                div.style.cssText = 'position:fixed;top:0;left:0;width:480px;padding:32px;background:#ffffff;font-family:Arial,sans-serif;color:#111827;border-radius:12px;z-index:-1000;opacity:0;pointer-events:none;'
                                 div.innerHTML = `
                                   <div style="text-align:center;margin-bottom:20px">
-                                    <div style="display:inline-flex;align-items:center;justify-content:center;width:52px;height:52px;border-radius:50%;background:#d1fae5;color:#10b981;font-size:26px;margin-bottom:12px">âœ“</div>
+                                    <div style="display:inline-flex;align-items:center;justify-content:center;width:52px;height:52px;border-radius:50%;background:#d1fae5;color:#10b981;font-size:26px;margin-bottom:12px">✓</div>
                                     <h2 style="margin:0 0 4px;font-size:20px;color:#111827">Comprobante de Pago</h2>
                                     <p style="margin:0;font-size:13px;color:#6b7280">Drivique — ${new Date().toLocaleDateString('es-CO')}</p>
                                   </div>
@@ -878,18 +939,26 @@ export default function CashCollectionPage({ branchOnly = false }) {
                                     <tr><td style="padding:10px 6px;font-size:14px;border-bottom:1px solid #e5e7eb;color:#6b7280">Vehículo</td><td style="padding:10px 6px;font-size:14px;border-bottom:1px solid #e5e7eb;text-align:right;font-weight:600">${r.vehiculoNombre || 'Vehículo Reservado'}</td></tr>
                                     <tr><td style="padding:10px 6px;font-size:14px;border-bottom:1px solid #e5e7eb;color:#6b7280">Método de pago</td><td style="padding:10px 6px;font-size:14px;border-bottom:1px solid #e5e7eb;text-align:right;font-weight:600">${esEfectivo ? 'Efectivo en Sucursal' : 'Pasarela Digital'}</td></tr>
                                     <tr><td style="padding:10px 6px;font-size:14px;border-bottom:1px solid #e5e7eb;color:#6b7280">Fecha de pago</td><td style="padding:10px 6px;font-size:14px;border-bottom:1px solid #e5e7eb;text-align:right;font-weight:600">${r.fechaPagoConfirmado ? new Date(r.fechaPagoConfirmado).toLocaleString('es-CO') : new Date().toLocaleString('es-CO')}</td></tr>
-                                    <tr><td style="padding:14px 6px;font-size:17px;font-weight:800;color:#10b981;border-top:2px solid #d1fae5">TOTAL PAGADO</td><td style="padding:14px 6px;font-size:17px;font-weight:800;color:#10b981;border-top:2px solid #d1fae5;text-align:right">${formatCurrency(total, moneda, tasaUSD)}</td></tr>
+                                    <tr style="border-top:2px solid #d1fae5"><td style="padding:14px 6px;font-size:17px;font-weight:800;color:#10b981">TOTAL PAGADO</td><td style="padding:14px 6px;font-size:17px;font-weight:800;color:#10b981;text-align:right">${formatCurrency(total, moneda, tasaUSD)}</td></tr>
                                   </table>
                                 `
                                 document.body.appendChild(div)
                                 try {
-                                  const canvas = await html2canvas(div, { scale: 2, backgroundColor: 'var(--city-card, #ffffff)' })
+                                  const canvas = await html2canvas(div, { scale: 2, backgroundColor: '#ffffff' })
                                   const link = document.createElement('a')
                                   link.download = `Comprobante-${cod}.png`
                                   link.href = canvas.toDataURL('image/png')
                                   link.click()
+                                } catch (err) {
+                                  console.error("Error al generar comprobante canvas:", err)
+                                  const win = window.open('', '_blank', 'width=600,height=700')
+                                  if (win) {
+                                    win.document.open()
+                                    win.document.write(`<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Comprobante-${cod}</title><style>body{font-family:Arial,sans-serif;max-width:480px;margin:40px auto;padding:24px;color:#111827;}h2{text-align:center;color:#10b981;margin-bottom:8px;}p.sub{text-align:center;color:#6b7280;font-size:13px;}table{width:100%;border-collapse:collapse;margin-top:20px;}td{padding:10px 6px;font-size:14px;border-bottom:1px solid #e5e7eb;}td:last-child{text-align:right;font-weight:600;}.total-row td{border-top:2px solid #d1fae5;font-size:17px;color:#10b981;font-weight:800;padding-top:14px;}</style></head><body><h2>Comprobante de Pago</h2><p class="sub">Drivique &mdash; ${new Date().toLocaleDateString('es-CO')}</p><table><tr><td>Referencia</td><td>${cod}</td></tr><tr><td>Cliente</td><td>${r.clienteNombre || 'Cliente'}</td></tr><tr><td>Veh&iacute;culo</td><td>${r.vehiculoNombre || 'Veh&iacute;culo Reservado'}</td></tr><tr><td>M&eacute;todo de pago</td><td>${esEfectivo ? 'Efectivo en Sucursal' : 'Pasarela Digital'}</td></tr><tr><td>Fecha de pago</td><td>${r.fechaPagoConfirmado ? new Date(r.fechaPagoConfirmado).toLocaleString('es-CO') : new Date().toLocaleString('es-CO')}</td></tr><tr class="total-row"><td>TOTAL PAGADO</td><td>${formatCurrency(total, moneda, tasaUSD)}</td></tr></table><script>window.onload = function() { window.print(); }<\/script></body></html>`)
+                                    win.document.close()
+                                  }
                                 } finally {
-                                  document.body.removeChild(div)
+                                  if (div.parentNode) document.body.removeChild(div)
                                 }
                               }}
                             >

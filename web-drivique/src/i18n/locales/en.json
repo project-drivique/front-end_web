@@ -1822,6 +1822,7 @@
       "ocean": "Ocean blue",
       "forest": "Forest green",
       "sunset": "Sunset",
+      "navy": "Navy blue",
       "violet": "Violet",
       "rose": "Rose",
       "graphite": "Graphite"
@@ -3253,6 +3254,9 @@
       "PENDING_PAYMENT": "Pending payment",
       "pending_payment": "Pending payment",
       "pendiente_pago": "Pending payment",
+      "PENDING_SIGNATURE": "Pending contract signature",
+      "pending_signature": "Pending contract signature",
+      "pendiente_firma": "Pending contract signature",
       "confirmada": "Confirmed",
       "en_curso": "In progress",
       "finalizada": "Completed",

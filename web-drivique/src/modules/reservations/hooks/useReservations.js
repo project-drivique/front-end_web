@@ -24,8 +24,8 @@ export function useHistorialReservas() {
   const [cargando, setCargando] = useState(true)
   const [error, setError] = useState(null)
 
-  const cargarReservas = useCallback(async () => {
-    setCargando(true)
+  const cargarReservas = useCallback(async (silencioso = false) => {
+    if (!silencioso) setCargando(true)
     setError(null)
     try {
       const data = await reservationsService.getReservas()
@@ -83,13 +83,28 @@ export function useHistorialReservas() {
       console.error('[useHistorialReservas] Error:', err)
       setError(t('reservas.error', 'No se pudieron cargar las reservas'))
     } finally {
-      setCargando(false)
+      if (!silencioso) setCargando(false)
     }
   }, [t])
 
   useEffect(() => {
     cargarReservas()
   }, [cargarReservas])
+
+  // Polling automático cada 4 segundos cuando hay reservas pendientes de validación de documentos o de pago
+  useEffect(() => {
+    const tienePendientes = reservas.some(r => {
+      const st = String(r.status || r.estado || r.estadoRaw || '').toUpperCase()
+      return st.includes('PENDING') || st.includes('PENDIENTE')
+    })
+    if (!tienePendientes) return
+
+    const interval = setInterval(() => {
+      cargarReservas(true)
+    }, 4000)
+
+    return () => clearInterval(interval)
+  }, [reservas, cargarReservas])
 
   const cancelarReserva = async (id) => {
     await reservationsService.cancelarReserva(id)
