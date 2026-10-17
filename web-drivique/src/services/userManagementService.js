@@ -6,7 +6,7 @@ import { documentVerificationService } from './documentVerificationService'
 // Último resultado del servidor (list() es síncrono para los componentes)
 let cache = []
 
-const ROL_UI = { CUSTOMER: 'cliente', EMPLOYEE: 'encargado', BRANCH_ADMIN: 'encargado', SUPER_ADMIN: 'administrador' }
+const ROL_UI = { CUSTOMER: 'cliente', BRANCH_ADMIN: 'encargado', SUPER_ADMIN: 'administrador' }
 
 const errorDe = (error) => {
   const detail = error?.response?.data?.detail
@@ -36,16 +36,16 @@ function mapear(u, expediente) {
   }
 }
 
-// Código de rol que espera el servidor; un encargado conserva el rol operativo que ya tenía
-function codigoDeRol(rolUi, actual) {
+// Código de rol que espera el servidor
+function codigoDeRol(rolUi) {
   if (rolUi === 'administrador') return 'SUPER_ADMIN'
-  if (rolUi === 'encargado') return ['EMPLOYEE', 'BRANCH_ADMIN'].includes(actual?.rolCodigo) ? actual.rolCodigo : 'BRANCH_ADMIN'
+  if (rolUi === 'encargado') return 'BRANCH_ADMIN'
   return 'CUSTOMER'
 }
 
 function cuerpo(data, actual) {
   const rolCodigo = codigoDeRol(data.rol, actual)
-  const sucursal = ['EMPLOYEE', 'BRANCH_ADMIN'].includes(rolCodigo)
+  const sucursal = rolCodigo === 'BRANCH_ADMIN'
     ? branchManagementService.list().find((b) => b.nombre === data.sucursal)
     : null
   return {

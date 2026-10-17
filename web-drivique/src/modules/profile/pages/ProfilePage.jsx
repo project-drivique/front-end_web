@@ -486,7 +486,7 @@ export default function PerfilPage() {
                 </label>
                 <div style={readonlyStyle}>
                   <span style={{ color: formData.cedula ? c.readonlyText : '#94a3b8', fontStyle: formData.cedula ? 'normal' : 'italic' }}>
-                    {formData.cedula ? `${getNombreTipoDoc(formData.tipoDocumento)}: ${formData.cedula}` : t('perfil.incomplete', 'Incompleto')}
+                    {formData.cedula ? formData.cedula : t('perfil.incomplete', 'Incompleto')}
                   </span>
                 </div>
               </div>

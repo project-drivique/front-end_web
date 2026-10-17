@@ -142,7 +142,7 @@ export default function BranchManagementPage() {
     setForm({
       ...EMPTY,
       ciudad: cities[0]?.nombre || '',
-      encargadoId: managers[0]?.correo || '',
+      encargadoId: '',
     })
     setError('')
     setModal({ type: 'form' })
@@ -449,6 +449,7 @@ export default function BranchManagementPage() {
                       <label>
                         Encargado Asignado
                         <select value={form.encargadoId} onChange={(e) => setForm({ ...form, encargadoId: e.target.value })}>
+                          <option value="">Sin encargado asignado (asignar luego)</option>
                           {managers.map((manager) => (
                             <option key={manager.correo} value={manager.correo}>
                               {`${manager.nombre || ''} ${manager.apellido || ''}`.trim() || manager.correo}
@@ -520,16 +521,13 @@ export default function BranchManagementPage() {
                       </span>
                     </label>
 
-                    {managers.length === 0 && (
-                      <p className="cities-error">No hay usuarios con el rol 'encargado_sucursal' registrados.</p>
-                    )}
                     {error && <p className="cities-error">{error}</p>}
 
                     <div className="cities-modal__actions">
                       <button type="button" onClick={close}>
                         Cancelar
                       </button>
-                      <button className="cities-primary" type="submit" disabled={!managers.length}>
+                      <button className="cities-primary" type="submit">
                         Guardar Sucursal
                       </button>
                     </div>

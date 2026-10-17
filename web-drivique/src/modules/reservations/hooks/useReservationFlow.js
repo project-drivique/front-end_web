@@ -152,6 +152,16 @@ export function useReservationFlow() {
   const branchObj = SUCURSALES.find(s => s.nombre === carBranch)
   const cityObj = branchObj ? CIUDADES.find(c => c.nombre === branchObj.ciudad) : null
 
+  useEffect(() => {
+    if (carBranch) {
+      setReserva((prev) => ({
+        ...prev,
+        sucursalRetiro: prev.sucursalRetiro || carBranch,
+        sucursalDevolucion: prev.sucursalDevolucion || carBranch,
+      }))
+    }
+  }, [carBranch])
+
   const opcionesEntrega = vehiculo ? [
     { value: carBranch, label: t('vehiculo.pickupAtBranch', { sucursal: carBranch }) }
   ] : []
@@ -310,24 +320,33 @@ export function useReservationFlow() {
     }
   }, [pantalla, seguroIdx, serviciosSeleccionados, reserva, datosForm, storageKey])
 
+  const limpiarTipoDocIdentidad = (tipo) => {
+    if (!tipo) return ''
+    const up = String(tipo).trim().toUpperCase()
+    if (up === 'DRIVER_LICENSE' || up === 'LICENCIA' || up === 'DRIVER LICENSE' || up === 'LICENCIA_CONDUCCION') return ''
+    if (up === 'PASSPORT') return 'PASAPORTE'
+    return tipo
+  }
+
   useEffect(() => {
-    if (!usuario || prellenado.current) return
-    prellenado.current = true
+    if (!usuario) return
     const tel = (usuario.telefono || '').replace(/\D/g, '')
     const celular = tel.startsWith('57') && tel.length > 10 ? tel.slice(2) : tel
     const nombreCompleto = [usuario.nombre, usuario.apellido].filter(Boolean).join(' ')
+    const docLimpio = limpiarTipoDocIdentidad(usuario.tipoDocumento)
+
     setDatosForm(prev => ({
       ...prev,
-      nombre: nombreCompleto || prev.nombre,
-      correo: usuario.correo || prev.correo,
-      celular: celular || prev.celular,
-      numDoc: usuario.cedula || prev.numDoc,
-      nacionalidad: usuario.nacionalidad || prev.nacionalidad || '',
-      tipoDoc: usuario.tipoDocumento || prev.tipoDoc || '',
+      nombre: prev.nombre || nombreCompleto,
+      correo: prev.correo || usuario.correo || '',
+      celular: prev.celular || celular,
+      numDoc: prev.numDoc || usuario.cedula || '',
+      nacionalidad: prev.nacionalidad || usuario.nacionalidad || '',
+      tipoDoc: prev.tipoDoc || docLimpio || '',
     }))
   }, [usuario])
 
-  // Datos personales guardados en el perfil del servidor: completan solo los campos que siguen vacíos
+  // Datos personales guardados en el perfil del servidor: completan los campos que sigan vacíos
   useEffect(() => {
     if (!usuario) return undefined
     let activo = true
@@ -337,45 +356,69 @@ export function useReservationFlow() {
         const nacionalidad = perfil.nationalityId ? await userService.nacionalidadNombreDesdeId(perfil.nationalityId).catch(() => '') : ''
         const tel = String(perfil.phone || '').replace(/\D/g, '')
         const celular = tel.startsWith('57') && tel.length > 10 ? tel.slice(2) : tel
-        const tipoDoc = perfil.documentTypeCode === 'PASSPORT' ? 'PASAPORTE' : (perfil.documentTypeCode || '')
+        const tipoDoc = limpiarTipoDocIdentidad(perfil.documentTypeCode || '')
         const nombre = [perfil.firstName, perfil.lastName].filter(Boolean).join(' ')
+
         setDatosForm((prev) => ({
           ...prev,
-          nombre: prev.nombre || nombre,
-          correo: prev.correo || perfil.email || '',
-          celular: prev.celular || celular,
-          nacionalidad: prev.nacionalidad || nacionalidad,
-          tipoDoc: prev.tipoDoc || tipoDoc,
-          numDoc: prev.numDoc || perfil.documentNumber || '',
+          nombre: nombre || prev.nombre,
+          correo: perfil.email || prev.correo || '',
+          celular: celular || prev.celular,
+          nacionalidad: nacionalidad || prev.nacionalidad,
+          tipoDoc: tipoDoc || prev.tipoDoc,
+          numDoc: perfil.documentNumber || prev.numDoc,
         }))
       })
       .catch(() => {})
     return () => { activo = false }
-  }, [usuario?.correo])
+  }, [usuario?.correo, usuario?.id])
 
   const irSiguiente = () => {
-    const mostrarAlerta = () => {
+    const mostrarAlerta = (mensajePersonalizado) => {
       showAlert({
         icon: 'info',
         title: t('vehiculo.missingDataTitle', 'Faltan datos por completar'),
-        text: t('vehiculo.missingDataText', 'Completa la información requerida para continuar con tu reserva.'),
+        text: mensajePersonalizado || t('vehiculo.missingDataText', 'Completa la información requerida para continuar con tu reserva.'),
         confirmButtonText: t('common.close', 'Cerrar')
       })
     }
 
     if (pantalla === 1) {
-      if (!reserva.metodoPago) { mostrarAlerta(); return }
-      if (!reserva.sucursalRetiro || !reserva.sucursalDevolucion) { mostrarAlerta(); return }
-      if (!reserva.fechaInicio || !reserva.fechaFin) { mostrarAlerta(); return }
-      if (!reserva.horaInicio || !reserva.horaFin) { mostrarAlerta(); return }
-      if (reserva.sucursalRetiro === 'domicilio') {
-        if (!reserva.domicilioBarrio?.trim() || !reserva.domicilioDireccion?.trim() || !reserva.domicilioReferencias?.trim()) {
-          mostrarAlerta(); return
+      if (!reserva.metodoPago) {
+        mostrarAlerta(t('reservas.errorMetodoPago', 'Debes seleccionar un método de pago.'));
+        return;
+      }
+      if (!reserva.sucursalRetiro || !reserva.sucursalDevolucion) {
+        mostrarAlerta(t('reservas.errorSucursales', 'Debes seleccionar el lugar de retiro y devolución.'));
+        return;
+      }
+      if (!reserva.fechaInicio || !reserva.fechaFin) {
+        mostrarAlerta(t('reservas.errorFechas', 'Debes seleccionar las fechas de inicio y devolución en el calendario.'));
+        return;
+      }
+      if (!reserva.horaInicio) {
+        mostrarAlerta(t('reservas.errorHoraRetiro', 'Por favor selecciona la hora de retiro del vehículo.'));
+        return;
+      }
+      if (!reserva.horaFin) {
+        mostrarAlerta(t('reservas.errorHoraDevolucion', 'Por favor selecciona la hora de devolución del vehículo.'));
+        return;
+      }
+      if (reserva.sucursalRetiro === 'domicilio' || reserva.sucursalDevolucion === 'domicilio') {
+        if (!reserva.domicilioBarrio?.trim() || !reserva.domicilioDireccion?.trim()) {
+          mostrarAlerta(t('reservas.errorDomicilio', 'Para el servicio a domicilio, debes ingresar el barrio y la dirección de entrega/devolución.'));
+          return;
         }
       }
     } else if (pantalla === 2) {
-      if (seguroIdx === null) { mostrarAlerta(); return }
-      if (!reserva.tipoKm) { mostrarAlerta(); return }
+      if (seguroIdx === null) {
+        mostrarAlerta(t('reservas.errorSeguro', 'Debes seleccionar una opción de protección/seguro.'));
+        return;
+      }
+      if (!reserva.tipoKm) {
+        mostrarAlerta(t('reservas.errorPlanKm', 'Debes seleccionar un plan de kilometraje.'));
+        return;
+      }
     }
     setErrorPaso1('')
     setPantalla(p => Math.min(TOTAL_PASOS, p + 1))
@@ -540,10 +583,10 @@ export function useReservationFlow() {
       const datosPerfil = {
         nombre: primerNombre || datosForm.nombre || usuario.nombre,
         apellido: primerApellido || datosForm.apellido || usuario.apellido || '',
-        cedula: usuario.cedula || datosForm.numDoc,
-        telefono: usuario.telefono || datosForm.celular,
-        nacionalidad: usuario.nacionalidad || datosForm.nacionalidad,
-        tipoDocumento: usuario.tipoDocumento || datosForm.tipoDoc,
+        cedula: datosForm.numDoc || usuario.cedula,
+        telefono: datosForm.celular || usuario.telefono,
+        nacionalidad: datosForm.nacionalidad || usuario.nacionalidad,
+        tipoDocumento: datosForm.tipoDoc || usuario.tipoDocumento,
       }
       await userService.actualizarPerfil(datosPerfil)
       actualizarUsuario(datosPerfil)
@@ -578,10 +621,25 @@ export function useReservationFlow() {
     const clienteDocFinal = datosForm.numDoc || datosForm.documento || datosForm.cedula || usuario?.cedula || ''
 
     try {
+      let dRetiro = new Date(`${reserva.fechaInicio}T${reserva.horaInicio || '10:00'}:00`)
+      let dDevolucion = new Date(`${reserva.fechaFin}T${reserva.horaFin || '10:00'}:00`)
+      const ahora = Date.now()
+      if (dRetiro.getTime() < ahora) {
+        const hoyLocal = new Date()
+        const fInicioStr = reserva.fechaInicio ? String(reserva.fechaInicio).split('T')[0] : ''
+        const hoyStr = `${hoyLocal.getFullYear()}-${String(hoyLocal.getMonth() + 1).padStart(2, '0')}-${String(hoyLocal.getDate()).padStart(2, '0')}`
+        if (fInicioStr === hoyStr) {
+          dRetiro = new Date(ahora + 2 * 60 * 1000)
+          if (dDevolucion.getTime() <= dRetiro.getTime()) {
+            dDevolucion = new Date(dRetiro.getTime() + 24 * 60 * 60 * 1000)
+          }
+        }
+      }
+
       const datosParaBackend = {
         vehicleId: vehiculo.id,
-        pickupDate: new Date(`${reserva.fechaInicio}T${reserva.horaInicio}:00`).toISOString(),
-        returnDate: new Date(`${reserva.fechaFin}T${reserva.horaFin}:00`).toISOString(),
+        pickupDate: dRetiro.toISOString(),
+        returnDate: dDevolucion.toISOString(),
         insuranceCoverageId: vehiculo.seguros[seguroIdx]?.id || null,
         mileagePlanId: reserva.tipoKm === 'ilimitado' ? (tarifas.kmIlimitado?.id || null) : (tarifas.kmLimitado?.id || null),
         additionalServiceIds: (vehiculo.servicios || []).filter(s => serviciosSeleccionados.includes(s.nombre)).map(s => s.id).filter(Boolean),
@@ -649,16 +707,64 @@ export function useReservationFlow() {
     setExito(true)
   }
 
+  useEffect(() => {
+    if (!reservaCreada?.id) return
+    const esPendienteKyc =
+      reservaCreada.estado === 'PENDING_DOCUMENT_REVIEW' ||
+      reservaCreada.estado === 'PENDIENTE_VALIDACION' ||
+      reservaCreada.status === 'PENDING_DOCUMENT_REVIEW'
+    if (!esPendienteKyc) return
+
+    const interval = setInterval(async () => {
+      try {
+        const updated = await reservationsService.getReservaById(reservaCreada.id)
+        if (updated && updated.status && updated.status !== reservaCreada.status) {
+          setReservaCreada(prev => ({
+            ...prev,
+            ...updated,
+            estado: updated.status,
+            status: updated.status,
+            total: updated.totalEstimated != null ? Number(updated.totalEstimated) : prev.total,
+          }))
+          if (updated.status === 'PENDING_PAYMENT') {
+            const tot = updated.totalEstimated != null ? Number(updated.totalEstimated) : reservaCreada.total
+            setDatosPago({
+              referencia: updated.code || reservaCreada.referencia || reservaCreada.id,
+              amountInCents: aCentavos(tot)
+            })
+          }
+        }
+      } catch (e) {
+        // Ignorar errores de sondeo
+      }
+    }, 4000)
+
+    return () => clearInterval(interval)
+  }, [reservaCreada?.id, reservaCreada?.estado, reservaCreada?.status])
+
   const handlePagarConWompi = async () => {
-    if (!datosPago) return
+    const infoPago = datosPago || (reservaCreada ? {
+      referencia: reservaCreada.codigo || reservaCreada.id || reservaCreada.referencia,
+      amountInCents: aCentavos(reservaCreada.total || 0)
+    } : null)
+
+    if (!infoPago || !infoPago.referencia) {
+      showAlert({
+        icon: 'warning',
+        title: 'Información de pago incompleta',
+        text: 'No se pudo recuperar la referencia de la reserva para iniciar Wompi. Por favor intenta nuevamente.'
+      })
+      return
+    }
+
     setErrorPago('')
     setRedirigiendoPago(true)
     try {
       const wompiStrategy = paymentFactory.getStrategy('wompi')
       const context = new PaymentContext(wompiStrategy)
       const result = await context.execute({
-        reference: datosPago.referencia,
-        amountInCents: datosPago.amountInCents,
+        reference: infoPago.referencia,
+        amountInCents: infoPago.amountInCents,
         redirectUrl: `${window.location.origin}/respuesta`,
       })
       if (result?.redirectUrl) {
@@ -666,8 +772,14 @@ export function useReservationFlow() {
       }
     } catch (err) {
       console.error('[Payment Strategy: Wompi] Error:', err)
-      setErrorPago('No se pudo iniciar el pago. Intenta de nuevo.')
+      const msg = err?.message || 'No se pudo conectar con la pasarela de Wompi. Intenta de nuevo.'
+      setErrorPago(msg)
       setRedirigiendoPago(false)
+      showAlert({
+        icon: 'error',
+        title: 'Error al iniciar pago en Wompi',
+        text: msg
+      })
     }
   }
 

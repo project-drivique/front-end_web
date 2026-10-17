@@ -13,10 +13,11 @@ export function getNombreTipoDoc(tipo) {
   if (t === 'CC') return 'Cédula de Ciudadanía'
   if (t === 'TI') return 'Tarjeta de Identidad'
   if (t === 'CE') return 'Cédula de Extranjería'
-  if (t === 'PAS' || t === 'PA' || t === 'PASAPORTE') return 'Pasaporte'
+  if (t === 'PAS' || t === 'PA' || t === 'PASAPORTE' || t === 'PASSPORT') return 'Pasaporte'
   if (t === 'DNI') return 'Documento Nacional de Identidad (DNI)'
   if (t === 'PPT') return 'Permiso por Protección Temporal (PPT)'
   if (t === 'PEP') return 'Permiso Especial de Permanencia (PEP)'
+  if (t === 'DRIVER_LICENSE' || t === 'DRIVER LICENSE' || t === 'LICENCIA' || t === 'LICENCIA_CONDUCCION') return 'Licencia de Conducción'
 
   const encontrado = TIPOS_DOCUMENTO.find(item => item.value === t || item.sigla === t)
   if (encontrado) return encontrado.label
@@ -26,7 +27,8 @@ export function getNombreTipoDoc(tipo) {
 export function getSiglaDoc(tipo) {
   if (!tipo) return ''
   const t = String(tipo).trim().toUpperCase()
-  if (t === 'PA' || t === 'PASAPORTE') return 'PAS'
+  if (t === 'PA' || t === 'PASAPORTE' || t === 'PASSPORT') return 'PAS'
+  if (t === 'DRIVER_LICENSE' || t === 'DRIVER LICENSE' || t === 'LICENCIA') return 'LIC'
   const encontrado = TIPOS_DOCUMENTO.find(item => item.value === t || item.sigla === t)
   return encontrado?.sigla || t
 }

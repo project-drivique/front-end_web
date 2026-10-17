@@ -41,8 +41,11 @@ export const contractService = {
     if (!contract) throw new Error('No se pudo generar el contrato para la reserva.')
     const form = new FormData()
     form.append('signature', dataUrlToBlob(firmaUsuarioDataUrl), 'signature.png')
-    form.append('signatureStrokeData', firmaTrazos)
-    form.append('signedCityId', signedCityId || contract.pickupCityId)
+    form.append('signatureStrokeData', firmaTrazos || '[]')
+    const cityIdToUse = signedCityId || contract.pickupCityId || contract.cityId || contract.pickupBranch?.city?.id
+    if (cityIdToUse && cityIdToUse !== 'undefined') {
+      form.append('signedCityId', String(cityIdToUse))
+    }
     form.append('consentAccepted', 'true')
     form.append('documentVersion', documentVersion)
     return normalize((await api.post(`/contracts/${contract.id}/sign`, form, { headers: { 'Content-Type': 'multipart/form-data' } })).data)

@@ -677,7 +677,7 @@ export default function ReservationFlowPage() {
                   {reservaCreada.estado === 'PENDING_SCHEDULE'
                     ? 'Tu reserva quedó guardada en espera de la apertura de la sucursal. Te notificaremos al iniciar la jornada. Redirigiendo de una a Mis Reservas...'
                     : (reservaCreada.estado === 'PENDING_DOCUMENT_REVIEW' || reservaCreada.estado === 'PENDIENTE_VALIDACION'
-                      ? 'Tu reserva quedó guardada con éxito. La sucursal está revisando tus documentos. Te notificaremos en cuanto sean aprobados para que puedas realizar el pago seguro.'
+                      ? 'Tu reserva quedó registrada con éxito. El encargado de la sucursal está validando tus documentos de identidad y licencia de conducción. Te notificaremos en cuanto sean aprobados para continuar con tu proceso.'
                       : 'Tu reserva quedó guardada como pendiente. Para confirmarla, completa el pago digital seguro con Wompi (Pruebas).')}
                 </p>
 

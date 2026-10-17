@@ -51,10 +51,13 @@ export const userService = {
     const payload = {
       firstName: datosActualizados.nombre || datosActualizados.firstName,
       lastName: datosActualizados.apellido || datosActualizados.lastName,
-      phone: datosActualizados.telefono || datosActualizados.phone,
+      phone: datosActualizados.telefono || datosActualizados.phone || datosActualizados.celular,
       birthDate: datosActualizados.fechaNacimiento || datosActualizados.birthDate || undefined,
       address: datosActualizados.direccion ?? datosActualizados.address,
       nationalityId: await nacionalidadIdDesdeNombre(datosActualizados.nationalityId || datosActualizados.nacionalidad).catch(() => undefined),
+      documentNumber: datosActualizados.documentNumber || datosActualizados.numDoc || datosActualizados.cedula || undefined,
+      documentTypeCode: datosActualizados.documentTypeCode || datosActualizados.tipoDoc || datosActualizados.tipoDocumento || undefined,
+      documentTypeId: datosActualizados.documentTypeId || undefined,
     }
     const { data } = await api.put('/users/me', payload)
     return data

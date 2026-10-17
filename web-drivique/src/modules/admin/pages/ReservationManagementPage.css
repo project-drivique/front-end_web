@@ -121,6 +121,8 @@
 /* Modal Detalle de Reserva */
 .reserva-detail-modal {
   max-width: 640px !important;
+  max-height: calc(100vh - 40px) !important;
+  overflow-y: auto !important;
 }
 
 .reserva-detail-grid {

@@ -4,7 +4,7 @@ import { branchManagementService } from './branchManagementService'
 import { userManagementService } from './userManagementService'
 
 // Roles del sistema: no se eliminan y su código no cambia
-const ROLES_SISTEMA = new Set(['SUPER_ADMIN', 'BRANCH_ADMIN', 'EMPLOYEE', 'CUSTOMER'])
+const ROLES_SISTEMA = new Set(['SUPER_ADMIN', 'BRANCH_ADMIN', 'CUSTOMER'])
 
 // Último resultado del servidor (los métodos de lectura son síncronos para la pantalla)
 let rolesCache = []
@@ -63,7 +63,7 @@ export const roleManagementService = {
 
   // --- Roles y permisos ---
   listPermissions() { return permisosCache.map((p) => ({ ...p })) },
-  listRoles() { return rolesCache.filter((r) => r.codigo !== 'CUSTOMER').map((r) => ({ ...r })) },
+  listRoles() { return rolesCache.filter((r) => r.codigo !== 'CUSTOMER' && r.codigo !== 'EMPLOYEE').map((r) => ({ ...r })) },
 
   async createRole(roleData) {
     try {
@@ -97,7 +97,7 @@ export const roleManagementService = {
 
   cuerpoCuenta(data, actual) {
     const rol = rolesCache.find((r) => r.id === data.rolId)
-    const sucursal = ['EMPLOYEE', 'BRANCH_ADMIN'].includes(rol?.codigo)
+    const sucursal = rol?.codigo === 'BRANCH_ADMIN'
       ? branchManagementService.list().find((b) => b.nombre === data.sucursal)
       : null
     return {

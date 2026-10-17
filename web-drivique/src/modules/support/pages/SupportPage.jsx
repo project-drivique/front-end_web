@@ -43,10 +43,10 @@ export default function SupportPage() {
   // Carga historial real de reservas
   const { reservas } = useHistorialReservas()
 
-  // Filtrado de vehículos: solo reservas confirmadas / en curso / finalizadas (excluye estrictamente pendientes y canceladas)
+  // Filtrado de vehículos: solo reservas estrictamente en curso
   const vehiculosElegibles = useMemo(() => {
     const validas = reservas.filter(
-      (r) => r.estado === 'confirmada' || r.estado === 'en_curso' || r.estado === 'finalizada'
+      (r) => r.estado === 'en_curso' || r.estado === 'activa' || r.estado === 'ACTIVE'
     )
     return validas.map((r) => ({
       id: String(r.id),

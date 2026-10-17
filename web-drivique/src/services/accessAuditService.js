@@ -63,7 +63,7 @@ const MODULO_POR_DOMINIO = {
   SYSTEM: 'Sistema',
 }
 
-const ROL_UI = { SUPER_ADMIN: 'administrador', ADMIN: 'administrador', BRANCH_ADMIN: 'encargado_sucursal', EMPLOYEE: 'encargado_sucursal', CUSTOMER: 'usuario' }
+const ROL_UI = { SUPER_ADMIN: 'administrador', ADMIN: 'administrador', BRANCH_ADMIN: 'encargado_sucursal', CUSTOMER: 'usuario' }
 
 const parseJson = (value) => {
   if (!value) return null
