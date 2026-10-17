@@ -660,9 +660,7 @@ export default function ReservationFlowPage() {
                 }}>
                   {reservaCreada.estado === 'PENDING_SCHEDULE'
                     ? 'Reserva Registrada Fuera de Horario'
-                    : (reservaCreada.estado === 'PENDING_DOCUMENT_REVIEW' || reservaCreada.estado === 'PENDIENTE_VALIDACION'
-                      ? 'Documentos en Revisión'
-                      : t('vehiculo.reservationRegisteredTitle', 'Reserva Registrada'))}
+                    : t('vehiculo.reservationRegisteredTitle', 'Reserva Registrada')}
                 </h2>
 
                 {/* Subtitulo */}
@@ -676,14 +674,12 @@ export default function ReservationFlowPage() {
                 }}>
                   {reservaCreada.estado === 'PENDING_SCHEDULE'
                     ? 'Tu reserva quedó guardada en espera de la apertura de la sucursal. Te notificaremos al iniciar la jornada. Redirigiendo de una a Mis Reservas...'
-                    : (reservaCreada.estado === 'PENDING_DOCUMENT_REVIEW' || reservaCreada.estado === 'PENDIENTE_VALIDACION'
-                      ? 'Tu reserva quedó registrada con éxito. El encargado de la sucursal está validando tus documentos de identidad y licencia de conducción. Te notificaremos en cuanto sean aprobados para continuar con tu proceso.'
-                      : 'Tu reserva quedó guardada como pendiente. Para confirmarla, completa el pago digital seguro con Wompi (Pruebas).')}
+                    : 'Tu reserva quedó guardada como pendiente. Para confirmarla, completa el pago digital seguro con Wompi (Pruebas) y firma tu contrato para asegurar tu vehículo.'}
                 </p>
 
                 {/* Botones de Accion */}
                 <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 12 }}>
-                  {reservaCreada.estado !== 'PENDING_SCHEDULE' && reservaCreada.estado !== 'PENDING_DOCUMENT_REVIEW' && reservaCreada.estado !== 'PENDIENTE_VALIDACION' ? (
+                  {reservaCreada.estado !== 'PENDING_SCHEDULE' ? (
                     <>
                       <button
                         type="button"

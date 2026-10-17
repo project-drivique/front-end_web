@@ -685,7 +685,7 @@ export default function IncidentManagementPage() {
               ) : (
                 <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '10px 14px', borderRadius: '12px', border: '1.5px solid var(--city-border, #e2e8f0)', background: 'var(--city-bg, #f8fafc)', fontSize: '13px', color: 'var(--city-text, #334155)', fontWeight: 600 }}>
                   <FaBuilding style={{ color: 'var(--city-muted, #64748b)' }} />
-                  <span>{sucursalEncargado || 'Alamo Bogotá - Aeropuerto'}</span>
+                  <span>{sucursalEncargado || t('common.unassigned', 'Sin asignar')}</span>
                 </div>
               )}
 
