@@ -41,12 +41,12 @@ export default function ContractSigningPage() {
       setCargando(true)
       try {
         // 1. Buscar en el contrato del servidor
-        const contratoFirmado = /^[0-9a-f-]{36}$/i.test(id || '') ? await contractService.obtenerPorReserva(id).catch(() => null) : null
+        const contratoFirmado = id ? await contractService.obtenerPorReserva(id).catch(() => null) : null
         let resData = contratoFirmado?.contratoOriginal?.reserva
 
         if (!resData) {
           const list = await reservationsService.getReservas()
-          resData = (list || []).find(r => String(r.id) === String(id) || r.codigo === id || r.referencia === id)
+          resData = (list || []).find(r => String(r.id) === String(id) || r.codigo === id || r.referencia === id || (id && (r.codigo?.includes(id) || id.includes(r.codigo || '----'))))
         }
 
         let vehData = contratoFirmado?.contratoOriginal?.vehiculo || resData?.vehiculo
