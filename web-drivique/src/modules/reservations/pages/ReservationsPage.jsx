@@ -458,7 +458,7 @@ function Contrato({ reserva, autoDesbloquear = false, onDesbloquear }) {
 }
 
 
-function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onValorar }) {
+function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onValorar, onReportar }) {
   const navigate = useNavigate()
   const { t, i18n } = useTranslation()
   const { brand } = useBrand() || {}
@@ -511,10 +511,19 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
   const requiereFirmaModal = (backendStatus === 'PENDING_SIGNATURE' || esPagoConfirmadoModal) && !tieneContratoFirmado && !esFinalizadaModal
   const esConfirmadaModal = esPagoConfirmadoModal && (tieneContratoFirmado || esFinalizadaModal) && !requiereFirmaModal
 
+  const esRawEnCursoModal =
+    estadoNormModal === 'activa' ||
+    estadoNormModal === 'active' ||
+    estadoNormModal === 'en_curso' ||
+    estadoNormModal === 'en curso' ||
+    backendStatus === 'ACTIVE' ||
+    backendStatus === 'IN_PROGRESS'
+  const estaEnCursoModal = esRawEnCursoModal || estadoNormModal === 'en_curso' || estadoNormModal === 'activa'
+
   const estadoClaveModal = requiereFirmaModal
     ? 'PENDING_SIGNATURE'
     : (esConfirmadaModal
-      ? (estadoNormModal === 'activa' || estadoNormModal === 'active' || estadoNormModal === 'en_curso' || estadoNormModal === 'en curso' || backendStatus === 'ACTIVE' ? 'activa' : (esFinalizadaModal ? 'finalizada' : 'confirmada'))
+      ? (estaEnCursoModal ? 'activa' : (esFinalizadaModal ? 'finalizada' : 'confirmada'))
       : (isPendingPayment
         ? 'PENDING_PAYMENT'
         : (isPendingDocs
@@ -1374,8 +1383,36 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
 
         {(esConfirmadaModal || requiereFirmaModal) && <Contrato reserva={reserva} autoDesbloquear={autoDesbloquear} />}
 
-        {esFinalizadaModal && !reserva.valoracion && (!reserva.eligibility || reserva.eligibility.canReviewVehicle) && onValorar && (
-          <div style={{ marginTop: '20px', textOverflow: 'ellipsis' }}>
+        {estaEnCursoModal && onReportar && (
+          <div style={{ marginTop: '16px' }}>
+            <button
+              type="button"
+              className="btn-secundario"
+              onClick={() => onReportar(reserva)}
+              style={{
+                width: '100%',
+                padding: '12px 18px',
+                background: '#eff6ff',
+                color: '#1d4ed8',
+                borderColor: '#bfdbfe',
+                fontWeight: 800,
+                borderRadius: '14px',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                fontSize: '13px',
+                cursor: 'pointer'
+              }}
+            >
+              <FaFlag color="#2563eb" size={15} />
+              <span>{t('reservas.reportIncident', { defaultValue: 'Soporte / Reportar Incidencia' })}</span>
+            </button>
+          </div>
+        )}
+
+        {esFinalizadaModal && onValorar && (
+          <div style={{ marginTop: '16px', textOverflow: 'ellipsis' }}>
             <button
               type="button"
               className="btn-secundario"
@@ -1392,11 +1429,12 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: '8px',
-                fontSize: '13px'
+                fontSize: '13px',
+                cursor: 'pointer'
               }}
             >
               <FaStar color="#f59e0b" size={16} />
-              <span>{reserva.valoracion ? t('reservas.editRating', { defaultValue: 'Editar Reseña' }) : t('reservas.rateVehicle', { defaultValue: 'Calificar Vehículo' })}</span>
+              <span>{reserva.valoracion ? t('reservas.editRating', { defaultValue: 'Ver o Editar Reseña' }) : t('reservas.rateVehicle', { defaultValue: 'Hacer Reseña del Servicio' })}</span>
             </button>
           </div>
         )}
@@ -1438,9 +1476,8 @@ function TarjetaReserva({ reserva, moneda, onValorar, onReportar, onVerDetalle }
     Boolean(reservaAlmacenada?.fechaPagoConfirmado)
 
   const esFinalizada = ['finalizada', 'completada', 'finalizado', 'completado', 'completed'].includes(estadoNorm) || backendStatus === 'COMPLETED'
-  const esRawEnCurso = estadoNorm === 'activa' || estadoNorm === 'active' || estadoNorm === 'en_curso' || estadoNorm === 'en curso' || backendStatus === 'ACTIVE'
-  // Una reserva solo puede estar en curso si está pagada Y tiene el contrato digital firmado
-  const estaEnCurso = esRawEnCurso && tieneContratoFirmado && esPagoConfirmado
+  const esRawEnCurso = estadoNorm === 'activa' || estadoNorm === 'active' || estadoNorm === 'en_curso' || estadoNorm === 'en curso' || backendStatus === 'ACTIVE' || backendStatus === 'IN_PROGRESS'
+  const estaEnCurso = esRawEnCurso || estadoNorm === 'en_curso' || estadoNorm === 'activa'
   const puedeReportar = estaEnCurso
 
   // REGLA CRÍTICA: Si no se ha firmado el contrato, la reserva NO debe salir como confirmada
@@ -1517,16 +1554,16 @@ function TarjetaReserva({ reserva, moneda, onValorar, onReportar, onVerDetalle }
       {puedeReportar && (
         <button className="btn-reporte" onClick={() => onReportar(reserva)}>
           <FaFlag size={12} />
-          <span>{t('reservas.makeReport', { defaultValue: 'Hacer reporte' })}</span>
+          <span>{t('reservas.makeReport', { defaultValue: 'Soporte / Reportar' })}</span>
         </button>
       )}
-      {esFinalizada && !reserva.valoracion && (!reserva.eligibility || reserva.eligibility.canReviewVehicle) && (
+      {esFinalizada && (
         <button className="btn-calificar" onClick={() => onValorar(reserva)}>
           <FaStar color="#f59e0b" size={13} />
           <span>
             {reserva.valoracion
-              ? t('reservas.editRating', { defaultValue: 'Editar valoración' })
-              : t('reservas.rateVehicle', { defaultValue: 'Calificar vehículo' })}
+              ? t('reservas.editRating', { defaultValue: 'Ver / Editar reseña' })
+              : t('reservas.rateVehicle', { defaultValue: 'Hacer reseña' })}
           </span>
         </button>
       )}
@@ -1610,7 +1647,7 @@ export default function ReservationsPage() {
     {cargando && <div className="estado-pagina">{t('reservas.loading')}</div>}{!cargando && error && <div className="estado-pagina error">{error}</div>}
   {!cargando && !error && filtradas.length === 0 && <div className="estado-pagina vacio"><div><FaCalendarAlt /></div><h2>{reservas.length ? t('reservas.noFilteredResults') : t('reservas.noReservations')}</h2><p>{reservas.length ? t('reservas.changeFilters') : t('reservas.noReservationsSubtitle')}</p>{reservas.length ? <button className="btn-primario" onClick={() => { setMes('todos'); setEstadoFiltro('todos') }}>{t('reservas.clearFilters')}</button> : <Link className="btn-primario" to="/home">{t('reservas.exploreVehicles')}</Link>}</div>}
     <section className="reservas-lista">{filtradas.map(r => <TarjetaReserva key={r.id} reserva={r} moneda={moneda} onValorar={setValorando} onReportar={reportar} onVerDetalle={handleVerDetalle} />)}</section>
-  </main>{detalle && <ModalDetalle reserva={detalle} moneda={moneda} autoDesbloquear={autoDesbloquear} onClose={handleCerrarDetalle} onValorar={setValorando} />}{valorando && <ModalValoracion reserva={valorando} onClose={() => setValorando(null)} onSave={async (id, val) => {
+  </main>{detalle && <ModalDetalle reserva={detalle} moneda={moneda} autoDesbloquear={autoDesbloquear} onClose={handleCerrarDetalle} onValorar={setValorando} onReportar={reportar} />}{valorando && <ModalValoracion reserva={valorando} onClose={() => setValorando(null)} onSave={async (id, val) => {
     const res = await guardarValoracion(id, val)
     if (detalle && (detalle.id === id || detalle.referencia === id || detalle.codigo === id)) {
       setDetalle(prev => prev ? { ...prev, valoracion: res } : null)
