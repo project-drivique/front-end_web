@@ -111,7 +111,7 @@ function Estrellas({ value, onChange, disabled = false }) {
             onClick={() => onChange?.(n)}
             onMouseEnter={() => !disabled && setHoverIndex(n)}
             className={`minimal-star-btn ${n <= activeRating ? 'activa' : ''}`}
-            aria-label={t('reservas.starsCount', { count: n, defaultValue: `${n} estrellas` })}
+            aria-label={t('reservas.starsCount', { count: n, defaultValue: '{{count}} estrellas' })}
             aria-checked={value === n}
             role="radio"
           >
@@ -132,28 +132,79 @@ function Estrellas({ value, onChange, disabled = false }) {
   )
 }
 
-function ModalValoracion({ reserva, onClose, onSave }) {
+const resenaPendiente = (r) => (!r.valoracion && (!r.eligibility || r.eligibility.canReviewVehicle)) || Boolean(r.eligibility?.canReviewBranch)
+
+/** Reseñas que el cliente ya publicó para la reserva (vehículo y sucursal), tal como las guarda el servidor. */
+function MiResena({ eligibility }) {
+  const { t } = useTranslation()
+  const items = [
+    { clave: 'vehiculo', titulo: t('reservas.myVehicleReview', { defaultValue: 'Tu reseña del vehículo' }), resena: eligibility?.vehicleReview },
+    { clave: 'sucursal', titulo: t('reservas.myBranchReview', { defaultValue: 'Tu reseña de la sucursal' }), resena: eligibility?.branchReview },
+  ].filter((i) => i.resena)
+  if (items.length === 0) return null
+  return (
+    <div style={{ marginTop: 20, display: 'flex', flexDirection: 'column', gap: 12 }}>
+      {items.map(({ clave, titulo, resena }) => (
+        <div key={clave} style={{ background: '#fffbeb', border: '1px solid #fde68a', borderRadius: 14, padding: '14px 16px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, flexWrap: 'wrap' }}>
+            <strong style={{ fontSize: 13, color: '#92400e' }}>{titulo}</strong>
+            <span aria-label={`${resena.rating} de 5 estrellas`} style={{ display: 'inline-flex', gap: 2 }}>
+              {[1, 2, 3, 4, 5].map((n) => <FaStar key={n} size={15} color={n <= Number(resena.rating) ? '#f59e0b' : '#e2e8f0'} />)}
+            </span>
+          </div>
+          <p style={{ margin: '8px 0 0', fontSize: 13, lineHeight: 1.5, color: resena.comment ? '#78350f' : '#a16207', fontStyle: resena.comment ? 'normal' : 'italic' }}>
+            {resena.comment || t('reservas.noCommentLeft', { defaultValue: 'Calificaste sin dejar un comentario.' })}
+          </p>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function ModalValoracion({ reserva, onClose, onSave, onSaveSucursal }) {
   const { t } = useTranslation()
   const [estrellas, setEstrellas] = useState(reserva.valoracion?.estrellas || 0)
   const [comentario, setComentario] = useState(reserva.valoracion?.comentario || '')
   const [guardando, setGuardando] = useState(false)
+  const [estrellasSucursal, setEstrellasSucursal] = useState(0)
+  const [comentarioSucursal, setComentarioSucursal] = useState('')
+  const [vehiculoGuardado, setVehiculoGuardado] = useState(false)
 
-  const vehiculoNombre = reserva.vehiculo?.nombre || reserva.vehiculoNombre || 'este vehículo'
+  const vehiculoNombre = reserva.vehiculo?.nombre || reserva.vehiculoNombre || t('hc2.este_vehiculo', 'este vehículo')
+  const mostrarVehiculo = !vehiculoGuardado && !reserva.valoracion && (!reserva.eligibility || reserva.eligibility.canReviewVehicle)
+  const sucursalId = reserva.eligibility?.canReviewBranch ? reserva.eligibility.branchId : null
+  const sucursalNombre = reserva.eligibility?.branchName || ''
+  const hayAlgoQueEnviar = (mostrarVehiculo && estrellas > 0) || (sucursalId && estrellasSucursal > 0)
 
   const guardar = async () => {
-    if (!estrellas) return
+    if (!hayAlgoQueEnviar) return
     setGuardando(true)
     try {
-      await onSave(reserva.id, {
-        estrellas,
-        comentario: comentario.trim()
+      if (mostrarVehiculo && estrellas > 0) {
+        await onSave(reserva.id, {
+          estrellas,
+          comentario: comentario.trim()
+        })
+        setVehiculoGuardado(true)
+      }
+      if (sucursalId && estrellasSucursal > 0) {
+        await onSaveSucursal(reserva.id, sucursalId, {
+          estrellas: estrellasSucursal,
+          comentario: comentarioSucursal.trim()
+        })
+      }
+      await showAlert({
+        icon: 'success',
+        title: t('reservas.reviewThanksTitle', '¡Gracias por tu reseña!'),
+        text: t('reservas.reviewThanksText', 'Tu opinión quedó registrada con éxito y nos ayuda a mejorar.'),
+        confirmButtonText: t('common.accept', 'Aceptar')
       })
       onClose()
     } catch (error) {
       showAlert({
         icon: 'error',
         title: t('common.error', 'Error'),
-        text: error?.response?.data?.detail || t('reservas.reviewSaveError', 'No fue posible publicar la reseña.')
+        text: error?.response?.data?.detail || error?.response?.data?.message || t('reservas.reviewSaveError', 'No fue posible publicar la reseña.')
       })
     } finally {
       setGuardando(false)
@@ -162,45 +213,91 @@ function ModalValoracion({ reserva, onClose, onSave }) {
 
   return (
     <div className="modal-backdrop minimal-modal-backdrop" onMouseDown={onClose}>
-      <section className="modal-panel minimal-modal-panel" role="dialog" aria-modal="true" aria-labelledby="titulo-valoracion" onMouseDown={e => e.stopPropagation()}>
+      <section className="modal-panel minimal-modal-panel valo-panel" role="dialog" aria-modal="true" aria-labelledby="titulo-valoracion" style={{ maxHeight: '92vh', overflowY: 'auto' }} onMouseDown={e => e.stopPropagation()}>
         <button className="minimal-close-btn" onClick={onClose} aria-label={t('reservas.close', { defaultValue: 'Cerrar' })}>
           <FaTimes />
         </button>
 
-        <h2 id="titulo-valoracion" className="minimal-title">
-          {reserva.valoracion
-            ? t('reservas.editYourRating', { defaultValue: 'Editar reseña' })
-            : t('reservas.howWasTrip', { defaultValue: '¿Cómo estuvo tu viaje?' })}
-        </h2>
-        <p className="minimal-subtitle">
-          {t('reservas.rateExperience', { defaultValue: `Califica tu experiencia con ${vehiculoNombre}.`, vehicle: vehiculoNombre })}
-        </p>
-
-        <Estrellas value={estrellas} onChange={setEstrellas} />
-
-        {/* Sección de Comentario Libre */}
-        <div className="minimal-textarea-group">
-          <div className="minimal-group-head">
-            <label className="minimal-label" htmlFor="comentario">
-              {t('reservas.tellMore', { defaultValue: 'Comentario' })} <span>({t('reservas.optional', { defaultValue: 'opcional' })})</span>
-            </label>
-            <span className="minimal-counter">{comentario.length}/400</span>
-          </div>
-          <textarea
-            id="comentario"
-            maxLength={400}
-            value={comentario}
-            onChange={e => setComentario(e.target.value)}
-            placeholder={t('reservas.commentPlaceholder', { defaultValue: '¿Qué tal estuvo el estado del vehículo, la limpieza o el servicio?' })}
-            className="minimal-textarea"
-          />
+        <div className="valo-hero">
+          <span className="valo-hero-icon"><FaStar /></span>
+          <h2 id="titulo-valoracion" className="minimal-title">
+            {t('reservas.howWasTrip', { defaultValue: '¿Cómo estuvo tu viaje?' })}
+          </h2>
+          <p className="minimal-subtitle">
+            {t('reservas.rateExperience', { defaultValue: `Califica tu experiencia con ${vehiculoNombre}.`, vehicle: vehiculoNombre })}
+          </p>
         </div>
 
-        <button className="minimal-submit-btn" disabled={!estrellas || guardando} onClick={guardar}>
-          {guardando
-            ? t('reservas.saving', { defaultValue: 'Guardando...' })
-            : t('reservas.publishRating', { defaultValue: 'Publicar valoración' })}
-        </button>
+        <div className="valo-body">
+          {mostrarVehiculo && (
+            <div className="valo-card">
+              <div className="valo-card-head">
+                <span className="valo-card-icon"><FaCar /></span>
+                <div>
+                  <strong>{t('reservas.vehicleReviewTitle', { defaultValue: 'Tu experiencia con el vehículo' })}</strong>
+                  <small>{vehiculoNombre}</small>
+                </div>
+              </div>
+
+              <Estrellas value={estrellas} onChange={setEstrellas} />
+
+              {/* Sección de Comentario Libre */}
+              <div className="minimal-textarea-group">
+                <div className="minimal-group-head">
+                  <label className="minimal-label" htmlFor="comentario">
+                    {t('reservas.tellMore', { defaultValue: 'Comentario' })} <span>({t('reservas.optional', { defaultValue: 'opcional' })})</span>
+                  </label>
+                  <span className="minimal-counter">{comentario.length}/400</span>
+                </div>
+                <textarea
+                  id="comentario"
+                  maxLength={400}
+                  value={comentario}
+                  onChange={e => setComentario(e.target.value)}
+                  placeholder={t('reservas.commentPlaceholder', { defaultValue: '¿Qué tal estuvo el estado del vehículo, la limpieza o el servicio?' })}
+                  className="minimal-textarea"
+                />
+              </div>
+            </div>
+          )}
+
+          {sucursalId && (
+            <div className="valo-card">
+              <div className="valo-card-head">
+                <span className="valo-card-icon"><FaMapMarkerAlt /></span>
+                <div>
+                  <strong>{t('reservas.branchReviewTitle', { defaultValue: 'Cuéntanos tu experiencia en la sucursal' })}</strong>
+                  <small>{sucursalNombre}</small>
+                </div>
+              </div>
+
+              <Estrellas value={estrellasSucursal} onChange={setEstrellasSucursal} />
+
+              <div className="minimal-textarea-group">
+                <div className="minimal-group-head">
+                  <label className="minimal-label" htmlFor="comentario-sucursal">
+                    {t('reservas.branchTellMore', { defaultValue: 'Tu reseña' })} <span>({t('reservas.optional', { defaultValue: 'opcional' })})</span>
+                  </label>
+                  <span className="minimal-counter">{comentarioSucursal.length}/400</span>
+                </div>
+                <textarea
+                  id="comentario-sucursal"
+                  maxLength={400}
+                  value={comentarioSucursal}
+                  onChange={e => setComentarioSucursal(e.target.value)}
+                  placeholder={t('reservas.branchCommentPlaceholder', { defaultValue: '¿Cómo fue la atención, la entrega y la devolución del vehículo?' })}
+                  className="minimal-textarea"
+                />
+              </div>
+            </div>
+          )}
+
+          <button className="minimal-submit-btn" disabled={!hayAlgoQueEnviar || guardando} onClick={guardar}>
+            {guardando
+              ? t('reservas.saving', { defaultValue: 'Guardando...' })
+              : t('reservas.publishRating', { defaultValue: 'Publicar valoración' })}
+          </button>
+        </div>
       </section>
     </div>
   )
@@ -234,13 +331,13 @@ function ContratoVerCard({ reserva, contratoFirmado, reservaParaContrato, vehicu
   // Si el contrato aún NO ha sido firmado, mostrar directamente la acción para firmarlo
   if (!tieneContratoFirmado) {
     return (
-      <div className="contrato-card desbloqueada" style={{ border: '1.5px solid #3b82f6', background: 'linear-gradient(180deg, #eff6ff 0%, #ffffff 100%)', borderRadius: '16px', padding: '18px 20px', marginTop: '16px' }}>
+      <div className="contrato-card desbloqueada" style={{ border: '1.5px solid var(--brand-primary)', background: 'linear-gradient(180deg, var(--brand-soft) 0%, #ffffff 100%)', borderRadius: '16px', padding: '18px 20px', marginTop: '16px' }}>
         <div className="contrato-subcard" style={{ textAlign: 'center' }}>
-          <div className="contrato-icon-wrap" style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#dbeafe', color: '#1d4ed8', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
+          <div className="contrato-icon-wrap" style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'var(--brand-soft-strong)', color: 'var(--brand-text)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
             <FaFileSignature size={22} />
           </div>
 
-          <h3 className="contrato-card-titulo" style={{ fontSize: '16px', fontWeight: 800, color: '#1e3a8a', margin: '0 0 6px' }}>
+          <h3 className="contrato-card-titulo" style={{ fontSize: '16px', fontWeight: 800, color: 'var(--brand-text)', margin: '0 0 6px' }}>
             {t('reservas.readyToSign', { defaultValue: 'Firma de Contrato Digital Pendiente' })}
           </h3>
 
@@ -252,7 +349,7 @@ function ContratoVerCard({ reserva, contratoFirmado, reservaParaContrato, vehicu
             type="button"
             onClick={() => irAContrato(false)}
             className="contrato-action-btn activo"
-            style={{ width: '100%', padding: '12px 20px', background: 'linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%)', color: '#ffffff', borderRadius: '10px', fontWeight: 800, fontSize: '14px', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', boxShadow: '0 4px 12px rgba(37,99,235,0.25)' }}
+            style={{ width: '100%', padding: '12px 20px', background: 'linear-gradient(135deg, var(--brand-primary-hover) 0%, var(--brand-primary) 100%)', color: '#ffffff', borderRadius: '10px', fontWeight: 800, fontSize: '14px', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', boxShadow: '0 4px 12px rgba(var(--brand-primary-rgb),0.25)' }}
           >
             <FaFileSignature size={15} />
             <span>{t('reservas.signContractNow', { defaultValue: 'Proceder a Firmar Contrato' })}</span>
@@ -370,6 +467,7 @@ function Contrato({ reserva, autoDesbloquear = false, onDesbloquear }) {
     backendStatus === 'CONFIRMED' ||
     backendStatus === 'ACTIVE' ||
     backendStatus === 'COMPLETED' ||
+    backendStatus === 'IN_PROGRESS' ||
     backendStatus === 'PENDING_SIGNATURE' ||
     estadoNorm === 'pagada' ||
     estadoNorm === 'pago_confirmado' ||
@@ -385,7 +483,7 @@ function Contrato({ reserva, autoDesbloquear = false, onDesbloquear }) {
     const base = contratoFirmado?.contratoOriginal?.reserva || reservaAlmacenada || reserva || {}
     const df = base.datosForm || {}
     const rd = base.reservaDetalles || {}
-    const nombreCliente = df.nombre || [df.nombres, df.apellidos].filter(Boolean).join(' ').trim() || base.clienteNombre || usuario?.nombre || 'Cliente Drivique'
+    const nombreCliente = df.nombre || [df.nombres, df.apellidos].filter(Boolean).join(' ').trim() || base.clienteNombre || usuario?.nombre || t('hc2.cliente_drivique', 'Cliente Drivique')
     const correoCliente = df.correo || base.clienteCorreo || usuario?.correo || usuario?.email || ''
     const telCliente = df.celular || df.telefono || base.clienteTelefono || usuario?.telefono || ''
     const docCliente = df.numDoc || df.documento || base.clienteDocumento || usuario?.cedula || ''
@@ -432,13 +530,13 @@ function Contrato({ reserva, autoDesbloquear = false, onDesbloquear }) {
     const base = contratoFirmado?.contratoOriginal?.vehiculo || reservaAlmacenada?.vehiculo || reserva.vehiculo || {}
     return {
       ...base,
-      nombre: base.nombre || (base.marca ? `${base.marca} ${base.modelo || ''}` : 'Vehículo Drivique'),
+      nombre: base.nombre || (base.marca ? `${base.marca} ${base.modelo || ''}` : t('hc2.vehiculo_drivique', 'Vehículo Drivique')),
       placa: base.placa || 'ABC-123',
       color: base.color || 'Plata',
       año: base.año || base.anio || 2024,
       sucursal: base.sucursal || reserva.sucursal || '',
       servicios: base.servicios || [],
-      seguros: base.seguros || [{ nombre: 'Protección Básica Estándar' }]
+      seguros: base.seguros || [{ nombre: t('hc2.proteccion_basica_estandar', 'Protección Básica Estándar') }]
     }
   }, [reserva, contratoFirmado, reservaAlmacenada])
 
@@ -489,6 +587,7 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
     backendStatus === 'CONFIRMED' ||
     backendStatus === 'ACTIVE' ||
     backendStatus === 'COMPLETED' ||
+    backendStatus === 'IN_PROGRESS' ||
     backendStatus === 'PENDING_SIGNATURE' ||
     estadoNormModal === 'confirmada' ||
     estadoNormModal === 'confirmed' ||
@@ -537,10 +636,10 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
     clase: CLASES_ESTADO[estadoClaveModal] || CLASES_ESTADO[reserva.estado] || CLASES_ESTADO.pendiente
   }
 
-  const nombreAuto = reserva.vehiculo?.nombre || vehiculoOriginal?.nombre || (reserva.vehiculo?.marca ? `${reserva.vehiculo.marca} ${reserva.vehiculo.modelo || ''}` : 'Vehículo')
+  const nombreAuto = reserva.vehiculo?.nombre || vehiculoOriginal?.nombre || (reserva.vehiculo?.marca ? `${reserva.vehiculo.marca} ${reserva.vehiculo.modelo || ''}` : t('hc2.vehiculo', 'Vehículo'))
   const imagenAuto = reserva.vehiculo?.imagenes?.[0] || vehiculoOriginal?.imagenes?.[0] || reserva.vehiculo?.imagen || vehiculoOriginal?.imagen
   const seguroIdx = reservaOriginal?.seguroIdx ?? reserva.seguroIdx ?? 0
-  const proteccion = reserva.seguroNombre || reserva.reservaDetalles?.seguro || (vehiculoOriginal?.seguros?.[seguroIdx]?.nombre) || reservaOriginal?.reservaDetalles?.seguro || 'Protección Básica Estándar'
+  const proteccion = reserva.seguroNombre || reserva.reservaDetalles?.seguro || (vehiculoOriginal?.seguros?.[seguroIdx]?.nombre) || reservaOriginal?.reservaDetalles?.seguro || t('hc2.proteccion_basica_estandar', 'Protección Básica Estándar')
   const esDocumentosRechazados = !esConfirmadaModal && (
     reserva.estado === 'DOCUMENTOS_RECHAZADOS' ||
     backendStatus === 'DOCUMENTOS_RECHAZADOS' ||
@@ -561,13 +660,14 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
     (reservaOriginal?.estadoDocumentos === 'PENDIENTE' && !backendStatus)
   )
 
-  const esPendienteEfectivo = !esConfirmadaModal && !esPendienteValidacion && !esPendienteHorario && !esDocumentosRechazados && (
+  // Si el pago ya se confirmó (aunque falte firmar el contrato) no se muestra nada de "pendiente de pago" ni su plazo
+  const esPendienteEfectivo = !esPagoConfirmadoModal && !esConfirmadaModal && !esPendienteValidacion && !esPendienteHorario && !esDocumentosRechazados && (
     reserva.estado === 'PENDIENTE_EFECTIVO' ||
     Boolean(reserva.cashPaymentCode) ||
     Boolean(reservaOriginal?.cashPaymentCode) ||
     (esEfectivo && (estadoNormModal === 'pendiente' || !reserva.estado))
   )
-  const esPendienteWompi = !esEfectivo && !esPendienteEfectivo && !esConfirmadaModal && !esPendienteValidacion && !esPendienteHorario && !esDocumentosRechazados && (
+  const esPendienteWompi = !esEfectivo && !esPendienteEfectivo && !esPagoConfirmadoModal && !esConfirmadaModal && !esPendienteValidacion && !esPendienteHorario && !esDocumentosRechazados && (
     isPendingPayment ||
     estadoNormModal === 'pendiente' ||
     estadoNormModal === 'pending_payment' ||
@@ -585,7 +685,7 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
     const base = contrato?.contratoOriginal?.reserva || reservaOriginal || reserva || {}
     const df = base.datosForm || {}
     const rd = base.reservaDetalles || {}
-    const nombreCliente = df.nombre || [df.nombres, df.apellidos].filter(Boolean).join(' ').trim() || base.clienteNombre || usuario?.nombre || 'Cliente Drivique'
+    const nombreCliente = df.nombre || [df.nombres, df.apellidos].filter(Boolean).join(' ').trim() || base.clienteNombre || usuario?.nombre || t('hc2.cliente_drivique', 'Cliente Drivique')
     const correoCliente = df.correo || base.clienteCorreo || usuario?.correo || usuario?.email || ''
     const telCliente = df.celular || df.telefono || base.clienteTelefono || usuario?.telefono || ''
     const docCliente = df.numDoc || df.documento || base.clienteDocumento || usuario?.cedula || ''
@@ -650,13 +750,13 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
     const base = contrato?.contratoOriginal?.vehiculo || vehiculoOriginal || reserva.vehiculo || {}
     return {
       ...base,
-      nombre: base.nombre || (base.marca ? `${base.marca} ${base.modelo || ''}` : 'Vehículo Drivique'),
+      nombre: base.nombre || (base.marca ? `${base.marca} ${base.modelo || ''}` : t('hc2.vehiculo_drivique', 'Vehículo Drivique')),
       placa: base.placa || 'ABC-123',
       color: base.color || 'Plata',
       año: base.año || base.anio || 2024,
       sucursal: base.sucursal || reserva.sucursal || '',
       servicios: base.servicios || [],
-      seguros: base.seguros || [{ nombre: 'Protección Básica Estándar' }]
+      seguros: base.seguros || [{ nombre: t('hc2.proteccion_basica_estandar', 'Protección Básica Estándar') }]
     }
   }, [reserva, contrato, vehiculoOriginal])
 
@@ -701,11 +801,11 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
   const handleEnviarCorreoPin = async () => {
     await showAlert({
       icon: 'info',
-      title: 'Código de seguridad de entrega',
+      title: t('hc.codigo_de_seguridad_de_entrega', 'Código de seguridad de entrega'),
       text: domicilioPin
-        ? `Tu PIN de entrega es ${domicilioPin}. Dáselo al conductor al recibir el vehículo para validar tu identidad.`
-        : 'El PIN se genera cuando la sucursal asigna un conductor a tu domicilio.',
-      confirmButtonText: 'Entendido',
+        ? t('hc3.delivery_pin_msg', { defaultValue: 'Tu PIN de entrega es {{pin}}. Dáselo al conductor al recibir el vehículo para validar tu identidad.', pin: domicilioPin })
+        : t('hc2.el_pin_se_genera_cuando_la_sucursal_as', 'El PIN se genera cuando la sucursal asigna un conductor a tu domicilio.'),
+      confirmButtonText: t('hc4.entendido', 'Entendido'),
     })
   }
 
@@ -722,7 +822,7 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
       reserva.pasarela === 'efectivo'
 
     if (rawEfectivo) {
-      return 'Efectivo en sucursal'
+      return t('hc2.efectivo_en_sucursal_245', 'Efectivo en sucursal')
     }
 
     const sub = String(
@@ -740,18 +840,18 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
       ''
     ).toLowerCase().trim()
 
-    if (sub.includes('nequi')) return 'Pago Wompi - Nequi'
-    if (sub.includes('daviplata')) return 'Pago Wompi - Daviplata'
-    if (sub.includes('efectivo') && sub.includes('bancolombia')) return 'Pago Wompi - Efectivo Bancolombia'
-    if (sub.includes('bancolombia')) return 'Pago Wompi - Bancolombia'
-    if (sub.includes('pse')) return 'Pago Wompi - PSE'
-    if (sub.includes('tarjeta') || sub.includes('card') || sub.includes('credito') || sub.includes('debito')) return 'Pago Wompi - Tarjeta'
+    if (sub.includes('nequi')) return t('hc2.pago_wompi_nequi', 'Pago Wompi - Nequi')
+    if (sub.includes('daviplata')) return t('hc2.pago_wompi_daviplata', 'Pago Wompi - Daviplata')
+    if (sub.includes('efectivo') && sub.includes('bancolombia')) return t('hc2.pago_wompi_efectivo_bancolombia', 'Pago Wompi - Efectivo Bancolombia')
+    if (sub.includes('bancolombia')) return t('hc2.pago_wompi_bancolombia', 'Pago Wompi - Bancolombia')
+    if (sub.includes('pse')) return t('hc2.pago_wompi_pse', 'Pago Wompi - PSE')
+    if (sub.includes('tarjeta') || sub.includes('card') || sub.includes('credito') || sub.includes('debito')) return t('hc2.pago_wompi_tarjeta', 'Pago Wompi - Tarjeta')
 
     if (sub && sub !== 'wompi' && sub !== 'digital') {
-      return `Pago Wompi - ${sub.charAt(0).toUpperCase() + sub.slice(1)}`
+      return t('hc3.wompi_method', { defaultValue: 'Pago Wompi - {{metodo}}', metodo: sub.charAt(0).toUpperCase() + sub.slice(1) })
     }
 
-    return 'Pago Wompi'
+    return t('hc2.pago_wompi', 'Pago Wompi')
   }
 
   const medioPagoTexto = resolverMedioPago()
@@ -1018,7 +1118,7 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
                     type="button"
                     onClick={() => setRevelarPin(v => !v)}
                     style={{ border: 'none', background: 'transparent', color: 'var(--texto-second, #64748b)', cursor: 'pointer', padding: '6px', fontSize: '20px', display: 'grid', placeItems: 'center' }}
-                    title={revelarPin ? 'Ocultar Código' : 'Ver Código'}
+                    title={revelarPin ? t('hc2.ocultar_codigo', 'Ocultar Código') : t('hc2.ver_codigo', 'Ver Código')}
                   >
                     {revelarPin ? <FaEyeSlash /> : <FaEye />}
                   </button>
@@ -1064,7 +1164,7 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
                     fontWeight: 700,
                     color: (domicilioEstado === 'ENTREGADO' || domicilioEstado === 'RECOGIDO')
                       ? '#047857'
-                      : (domicilioEstado === 'EN_CAMINO' ? '#1d4ed8' : '#b45309')
+                      : (domicilioEstado === 'EN_CAMINO' ? 'var(--brand-primary-hover)' : '#b45309')
                   }}>
                     {domicilioEstado === 'EN_PREPARACION' && 'En proceso'}
                     {domicilioEstado === 'EN_CAMINO' && 'Agente en camino'}
@@ -1112,7 +1212,7 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
                             Información de Entrega:
                           </span>
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <span style={{ fontSize: '12px', color: 'var(--texto-second)' }}>Dirección Exacta:</span>
+                            <span style={{ fontSize: '12px', color: 'var(--texto-second)' }}>{t('hc.direccion_exacta', 'Dirección Exacta:')}</span>
                             <strong style={{ fontSize: '13px', color: 'var(--texto-primary)' }}>{domicilioRetiro || 'A convenir'}</strong>
                           </div>
                           {(reserva.domicilioBarrio || reservaOriginal?.domicilioBarrio) && (
@@ -1128,7 +1228,7 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
                             </div>
                           )}
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '2px', paddingTop: '4px', borderTop: '1px dashed var(--borde, #cbd5e1)' }}>
-                            <span style={{ fontSize: '12px', color: 'var(--texto-second)' }}>Hora de Entrega (Retiro):</span>
+                            <span style={{ fontSize: '12px', color: 'var(--texto-second)' }}>{t('hc.hora_de_entrega_retiro', 'Hora de Entrega (Retiro):')}</span>
                             <strong style={{ fontSize: '13px', color: 'var(--texto-primary, #0f172a)' }}>{formatHoraAmPm(reserva.horaInicio) || 'N/A'}</strong>
                           </div>
                         </div>
@@ -1143,7 +1243,7 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
                           Información de Recogida:
                         </span>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <span style={{ fontSize: '12px', color: 'var(--texto-second)' }}>Dirección Exacta:</span>
+                          <span style={{ fontSize: '12px', color: 'var(--texto-second)' }}>{t('hc.direccion_exacta', 'Dirección Exacta:')}</span>
                           <strong style={{ fontSize: '13px', color: 'var(--texto-primary)' }}>{domicilioDevolucion || domicilioRetiro || 'A convenir'}</strong>
                         </div>
                         {(reserva.domicilioDevolucionBarrio || reservaOriginal?.domicilioDevolucionBarrio || reserva.domicilioBarrio) && (
@@ -1153,7 +1253,7 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
                           </div>
                         )}
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '2px', paddingTop: '4px', borderTop: '1px dashed var(--borde, #cbd5e1)' }}>
-                          <span style={{ fontSize: '12px', color: 'var(--texto-second)' }}>Hora de Recogida (Devolución):</span>
+                          <span style={{ fontSize: '12px', color: 'var(--texto-second)' }}>{t('hc.hora_de_recogida_devolucion', 'Hora de Recogida (Devolución):')}</span>
                           <strong style={{ fontSize: '13px', color: 'var(--texto-primary, #0f172a)' }}>{formatHoraAmPm(reserva.horaFin) || 'N/A'}</strong>
                         </div>
                       </div>
@@ -1179,7 +1279,7 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
                       padding: '4px 8px'
                     }}
                   >
-                    <span>{verMasDomicilio ? 'Ocultar detalles' : 'Ver más detalles'}</span>
+                    <span>{verMasDomicilio ? 'Ocultar detalles' : t('hc2.ver_mas_detalles', 'Ver más detalles')}</span>
                     <FaChevronDown style={{ transform: verMasDomicilio ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease' }} size={12} />
                   </button>
                 </div>
@@ -1246,8 +1346,8 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
                 </p>
                 <p className="modal-cash-deadline-text">
                   {t('reservas.cashDeadlineNotice', {
-                    horas: reserva.horasLimitePago || 72,
-                    defaultValue: `Tienes aproximadamente ${reserva.horasLimitePago || 72} horas desde ahora para acercarte a la sucursal y realizar el pago. Si no realizas el pago dentro de este plazo, la reserva se cancelará automáticamente.`
+                    horas: reserva.horasLimitePago || 8,
+                    defaultValue: `Tienes aproximadamente ${reserva.horasLimitePago || 8} horas desde ahora para acercarte a la sucursal y realizar el pago. Si no realizas el pago dentro de este plazo, la reserva se cancelará automáticamente.`
                   })}
                 </p>
               </div>
@@ -1300,8 +1400,8 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
                 </p>
                 <p className="modal-cash-deadline-text">
                   {t('reservas.wompiDeadlineNotice', {
-                    horas: reserva.horasLimitePago || 72,
-                    defaultValue: `Tienes aproximadamente ${reserva.horasLimitePago || 72} horas desde ahora para realizar el pago seguro en línea. Si no realizas el pago dentro de este plazo, la reserva se cancelará automáticamente.`
+                    horas: reserva.horasLimitePago || 8,
+                    defaultValue: 'Tienes aproximadamente {{horas}} horas desde ahora para realizar el pago seguro en línea. Si no realizas el pago dentro de este plazo, la reserva se cancelará automáticamente.'
                   })}
                 </p>
               </div>
@@ -1312,18 +1412,18 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
 
         {/* Tarjeta de Reserva en Espera de Horario de Atención */}
         {esPendienteHorario && (
-          <div className="modal-wompi-card" style={{ borderColor: 'rgba(59, 130, 246, 0.4)', background: 'linear-gradient(180deg, rgba(239, 246, 255, 0.7) 0%, rgba(255, 255, 255, 1) 100%)' }}>
+          <div className="modal-wompi-card" style={{ borderColor: 'rgba(var(--brand-primary-rgb), 0.4)', background: 'linear-gradient(180deg, rgba(239, 246, 255, 0.7) 0%, rgba(255, 255, 255, 1) 100%)' }}>
             <div className="modal-wompi-subcard">
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
-                <FaClock style={{ fontSize: '24px', color: '#2563eb' }} />
-                <h3 className="modal-wompi-titulo" style={{ margin: 0, color: '#1d4ed8' }}>
+                <FaClock style={{ fontSize: '24px', color: 'var(--brand-text)' }} />
+                <h3 className="modal-wompi-titulo" style={{ margin: 0, color: 'var(--brand-text)' }}>
                   En Espera de Apertura de Sucursal
                 </h3>
               </div>
-              <p className="modal-wompi-desc" style={{ color: '#1e3a8a' }}>
+              <p className="modal-wompi-desc" style={{ color: 'var(--brand-text)' }}>
                 Tu reserva fue registrada fuera del horario de atención de la sucursal <strong>{reserva.sucursal || sucursalPago}</strong>. En cuanto la sede inicie su jornada de atención, recibirás una notificación automática por correo, web y push para proceder con el pago y confirmación de tu reserva.
               </p>
-              <div style={{ padding: '10px 14px', background: '#dbeafe', borderRadius: '10px', fontSize: '13px', color: '#1e40af', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600 }}>
+              <div style={{ padding: '10px 14px', background: 'var(--brand-soft-strong)', borderRadius: '10px', fontSize: '13px', color: 'var(--brand-text)', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600 }}>
                 <FaClock /> Estado: Esperando apertura de sucursal
               </div>
             </div>
@@ -1332,18 +1432,18 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
 
         {/* Tarjeta de Documentación en Proceso de Validación */}
         {esPendienteValidacion && (
-          <div className="modal-wompi-card" style={{ borderColor: 'rgba(59, 130, 246, 0.4)', background: 'linear-gradient(180deg, rgba(239, 246, 255, 0.7) 0%, rgba(255, 255, 255, 1) 100%)' }}>
+          <div className="modal-wompi-card" style={{ borderColor: 'rgba(var(--brand-primary-rgb), 0.4)', background: 'linear-gradient(180deg, rgba(239, 246, 255, 0.7) 0%, rgba(255, 255, 255, 1) 100%)' }}>
             <div className="modal-wompi-subcard">
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
-                <FaShieldAlt style={{ fontSize: '24px', color: '#2563eb' }} />
-                <h3 className="modal-wompi-titulo" style={{ margin: 0, color: '#1d4ed8' }}>
+                <FaShieldAlt style={{ fontSize: '24px', color: 'var(--brand-text)' }} />
+                <h3 className="modal-wompi-titulo" style={{ margin: 0, color: 'var(--brand-text)' }}>
                   Documentación en Proceso de Validación
                 </h3>
               </div>
-              <p className="modal-wompi-desc" style={{ color: '#1e3a8a' }}>
+              <p className="modal-wompi-desc" style={{ color: 'var(--brand-text)' }}>
                 Tus documentos de identidad y licencia de conducción están siendo revisados por el encargado de la sucursal <strong>{reserva.sucursal || sucursalPago}</strong>. En cuanto los documentos sean aprobados, tu reserva se confirmará automáticamente y se habilitará la firma digital del contrato.
               </p>
-              <div style={{ padding: '10px 14px', background: '#dbeafe', borderRadius: '10px', fontSize: '13px', color: '#1e40af', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600 }}>
+              <div style={{ padding: '10px 14px', background: 'var(--brand-soft-strong)', borderRadius: '10px', fontSize: '13px', color: 'var(--brand-text)', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600 }}>
                 <FaClock /> Estado: En revisión por encargado de sucursal
               </div>
             </div>
@@ -1375,7 +1475,7 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
                 style={{ background: '#dc2626', marginTop: '12px' }}
               >
                 <FaShieldAlt size={16} />
-                <span>Actualizar Documentos en Mi Perfil</span>
+                <span>{t('hc.actualizar_documentos_en_mi_perfil', 'Actualizar Documentos en Mi Perfil')}</span>
               </button>
             </div>
           </div>
@@ -1392,9 +1492,9 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
               style={{
                 width: '100%',
                 padding: '12px 18px',
-                background: '#eff6ff',
-                color: '#1d4ed8',
-                borderColor: '#bfdbfe',
+                background: 'var(--brand-soft)',
+                color: 'var(--brand-text)',
+                borderColor: 'var(--brand-border)',
                 fontWeight: 800,
                 borderRadius: '14px',
                 display: 'inline-flex',
@@ -1405,13 +1505,15 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
                 cursor: 'pointer'
               }}
             >
-              <FaFlag color="#2563eb" size={15} />
+              <FaFlag color="var(--brand-primary)" size={15} />
               <span>{t('reservas.reportIncident', { defaultValue: 'Soporte / Reportar Incidencia' })}</span>
             </button>
           </div>
         )}
 
-        {esFinalizadaModal && onValorar && (
+        {esFinalizadaModal && <MiResena eligibility={reserva.eligibility} />}
+
+        {esFinalizadaModal && onValorar && resenaPendiente(reserva) && (
           <div style={{ marginTop: '16px', textOverflow: 'ellipsis' }}>
             <button
               type="button"
@@ -1434,7 +1536,7 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
               }}
             >
               <FaStar color="#f59e0b" size={16} />
-              <span>{reserva.valoracion ? t('reservas.editRating', { defaultValue: 'Ver o Editar Reseña' }) : t('reservas.rateVehicle', { defaultValue: 'Hacer Reseña del Servicio' })}</span>
+              <span>{t('reservas.rateAndReview', { defaultValue: 'Calificar y reseñar mi experiencia' })}</span>
             </button>
           </div>
         )}
@@ -1446,8 +1548,6 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
 
 function TarjetaReserva({ reserva, moneda, onValorar, onReportar, onVerDetalle }) {
   const { t, i18n } = useTranslation()
-  const navigate = useNavigate()
-  const refBusqueda = reserva.referencia || reserva.codigo || reserva.id
   const reservaAlmacenada = null
 
   const backendStatus = String(reserva.status || reserva.estadoRaw || '').toUpperCase()
@@ -1469,6 +1569,7 @@ function TarjetaReserva({ reserva, moneda, onValorar, onReportar, onVerDetalle }
     backendStatus === 'CONFIRMED' ||
     backendStatus === 'ACTIVE' ||
     backendStatus === 'COMPLETED' ||
+    backendStatus === 'IN_PROGRESS' ||
     backendStatus === 'PENDING_SIGNATURE' ||
     reserva.pagoEstado === 'aprobado' ||
     reservaAlmacenada?.pagoEstado === 'aprobado' ||
@@ -1527,44 +1628,16 @@ function TarjetaReserva({ reserva, moneda, onValorar, onReportar, onVerDetalle }
     <div className="reserva-meta"><div><FaCalendarAlt /><span><small>{t('reservas.pickup')}</small>{fechaBonita(reserva.fechaInicio, i18n.resolvedLanguage)}</span></div><span className="linea-fechas" />
       <div><FaRegCalendarCheck /><span><small>{t('reservas.return')}</small>{fechaBonita(reserva.fechaFin, i18n.resolvedLanguage)}</span></div><div className="meta-sede"><FaMapMarkerAlt /><span><small>{t('reservas.branch')}</small>{sede}</span></div></div>
     <div className="reserva-actions">
-      {requiereFirma && (
-        <button
-          type="button"
-          className="btn-primario"
-          onClick={() => navigate(`/contrato/${encodeURIComponent(refBusqueda)}`)}
-          style={{
-            background: 'linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%)',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '10px',
-            padding: '7px 14px',
-            fontSize: '12px',
-            fontWeight: 800,
-            cursor: 'pointer',
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '6px',
-            boxShadow: '0 2px 8px rgba(37,99,235,0.25)'
-          }}
-        >
-          <FaFileSignature size={13} />
-          <span>{t('reservas.signContractNow', { defaultValue: 'Firmar contrato' })}</span>
-        </button>
-      )}
       {puedeReportar && (
         <button className="btn-reporte" onClick={() => onReportar(reserva)}>
           <FaFlag size={12} />
           <span>{t('reservas.makeReport', { defaultValue: 'Soporte / Reportar' })}</span>
         </button>
       )}
-      {esFinalizada && (
+      {esFinalizada && resenaPendiente(reserva) && (
         <button className="btn-calificar" onClick={() => onValorar(reserva)}>
           <FaStar color="#f59e0b" size={13} />
-          <span>
-            {reserva.valoracion
-              ? t('reservas.editRating', { defaultValue: 'Ver / Editar reseña' })
-              : t('reservas.rateVehicle', { defaultValue: 'Hacer reseña' })}
-          </span>
+          <span>{t('reservas.rateAndReview', { defaultValue: 'Calificar y reseñar' })}</span>
         </button>
       )}
       <button className="btn-detalle" onClick={() => onVerDetalle(reserva)}>
@@ -1579,12 +1652,24 @@ export default function ReservationsPage() {
   const { moneda, tema } = useLanding(), navigate = useNavigate()
   const location = useLocation()
   const [searchParams] = useSearchParams()
-  const { reservas, cargando, error, guardarValoracion } = useHistorialReservas()
+  const { reservas, cargando, error, guardarValoracion, guardarResenaSucursal } = useHistorialReservas()
   const [mes, setMes] = useState('todos'), [estadoFiltro, setEstadoFiltro] = useState('todos'), [valorando, setValorando] = useState(null), [detalle, setDetalle] = useState(null)
 
   const detalleIdUrl = searchParams.get('detalle') || location.state?.detalleId
   const autoDesbloquear = searchParams.get('desbloquear') === 'true' || location.state?.autoDesbloquear === true
   const prevDetalleIdRef = useRef(null)
+
+  // Enlace del correo "Calificar y reseñar mi experiencia": /reservas?calificar=<código de la reserva>
+  const calificarUrl = searchParams.get('calificar')
+  const calificarAbiertoRef = useRef(false)
+  useEffect(() => {
+    if (!calificarUrl || calificarAbiertoRef.current || reservas.length === 0) return
+    const objetivo = reservas.find((r) => String(r.codigo || r.referencia || '').toUpperCase() === calificarUrl.trim().toUpperCase())
+    if (!objetivo) return
+    calificarAbiertoRef.current = true
+    const pendiente = (!objetivo.valoracion && (!objetivo.eligibility || objetivo.eligibility.canReviewVehicle)) || objetivo.eligibility?.canReviewBranch
+    if (objetivo.estado === 'finalizada' && pendiente) setValorando(objetivo)
+  }, [calificarUrl, reservas])
 
   useEffect(() => {
     if (detalleIdUrl && reservas.length > 0) {
@@ -1652,6 +1737,9 @@ export default function ReservationsPage() {
     if (detalle && (detalle.id === id || detalle.referencia === id || detalle.codigo === id)) {
       setDetalle(prev => prev ? { ...prev, valoracion: res } : null)
     }
+  }} onSaveSucursal={async (id, branchId, val) => {
+    await guardarResenaSucursal(id, branchId, val)
+    setValorando((prev) => prev ? { ...prev, eligibility: { ...(prev.eligibility || {}), canReviewBranch: false } } : prev)
   }} />}</div>
 }
 

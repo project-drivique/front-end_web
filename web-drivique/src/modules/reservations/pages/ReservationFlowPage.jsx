@@ -162,7 +162,7 @@ export default function ReservationFlowPage() {
                     {t('reservas.viewSummary', 'Resumen de reserva')}
                   </span>
                   <span className="resumen-movil-toggle-sub">
-                    {vehiculo.nombre} {reserva.fechaInicio ? `· ${reserva.fechaInicio} al ${reserva.fechaFin || ''}` : ''}
+                    {vehiculo.nombre} {reserva.fechaInicio ? `· ${reserva.fechaInicio} ${t('common.to', 'al')} ${reserva.fechaFin || ''}` : ''}
                   </span>
                 </div>
               </div>
@@ -473,7 +473,7 @@ export default function ReservationFlowPage() {
                   </div>
 
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 12.5 }}>
-                    <span style={{ color: c.textPrimary || '#1e293b', fontWeight: 700 }}>Sucursal:</span>
+                    <span style={{ color: c.textPrimary || '#1e293b', fontWeight: 700 }}>{t('hc.sucursal', 'Sucursal:')}</span>
                     <span style={{ fontWeight: 400, color: c.textPrimary || '#0f172a' }}>
                       {sucursalPago}
                     </span>
@@ -529,7 +529,7 @@ export default function ReservationFlowPage() {
                     lineHeight: 1.45,
                     fontWeight: 400
                   }}>
-                    Tienes aproximadamente {reservaCreada?.horasLimitePago || 72} horas desde ahora para acercarte a la sucursal y realizar el pago. Si no realizas el pago dentro de este plazo, la reserva se cancelará automáticamente.
+                    Tienes aproximadamente {reservaCreada?.horasLimitePago || 8} horas desde ahora para acercarte a la sucursal y realizar el pago. Si no realizas el pago dentro de este plazo, la reserva se cancelará automáticamente.
                   </p>
                 </div>
 
@@ -557,7 +557,7 @@ export default function ReservationFlowPage() {
                       fontWeight: 700,
                       fontSize: 14,
                       cursor: 'pointer',
-                      boxShadow: '0 6px 16px var(--brand-shadow, rgba(29, 78, 216, 0.25))',
+                      boxShadow: '0 6px 16px var(--brand-shadow, rgba(var(--brand-primary-rgb), 0.25))',
                       transition: 'all 0.2s',
                       display: 'flex',
                       alignItems: 'center',
@@ -659,7 +659,7 @@ export default function ReservationFlowPage() {
                   letterSpacing: '-0.02em'
                 }}>
                   {reservaCreada.estado === 'PENDING_SCHEDULE'
-                    ? 'Reserva Registrada Fuera de Horario'
+                    ? t('hc2.reserva_registrada_fuera_de_horario', 'Reserva Registrada Fuera de Horario')
                     : t('vehiculo.reservationRegisteredTitle', 'Reserva Registrada')}
                 </h2>
 
@@ -673,8 +673,8 @@ export default function ReservationFlowPage() {
                   fontWeight: 500
                 }}>
                   {reservaCreada.estado === 'PENDING_SCHEDULE'
-                    ? 'Tu reserva quedó guardada en espera de la apertura de la sucursal. Te notificaremos al iniciar la jornada. Redirigiendo de una a Mis Reservas...'
-                    : 'Tu reserva quedó guardada como pendiente. Para confirmarla, completa el pago digital seguro con Wompi (Pruebas) y firma tu contrato para asegurar tu vehículo.'}
+                    ? t('hc2.tu_reserva_quedo_guardada_en_espera_de', 'Tu reserva quedó guardada en espera de la apertura de la sucursal. Te notificaremos al iniciar la jornada. Redirigiendo de una a Mis Reservas...')
+                    : t('hc2.tu_reserva_quedo_guardada_como_pendien', 'Tu reserva quedó guardada como pendiente. Para confirmarla, completa el pago digital seguro con Wompi (Pruebas) y firma tu contrato para asegurar tu vehículo.')}
                 </p>
 
                 {/* Botones de Accion */}
@@ -695,7 +695,7 @@ export default function ReservationFlowPage() {
                           fontWeight: 800,
                           fontSize: 15,
                           cursor: redirigiendoPago ? 'default' : 'pointer',
-                          boxShadow: '0 6px 20px rgba(37, 99, 235, 0.3)',
+                          boxShadow: '0 6px 20px rgba(var(--brand-primary-rgb), 0.3)',
                           transition: 'all 0.2s',
                           display: 'flex',
                           alignItems: 'center',
@@ -704,7 +704,7 @@ export default function ReservationFlowPage() {
                         }}
                       >
                         <FaCreditCard size={18} />
-                        <span>{redirigiendoPago ? t('vehiculo.redirecting', 'Redirigiendo…') : 'Pagar con Wompi'}</span>
+                        <span>{redirigiendoPago ? t('vehiculo.redirecting', 'Redirigiendo…') : t('hc2.pagar_con_wompi', 'Pagar con Wompi')}</span>
                       </button>
 
                       <button
@@ -750,7 +750,7 @@ export default function ReservationFlowPage() {
                           fontWeight: 800,
                           fontSize: 15,
                           cursor: 'pointer',
-                          boxShadow: '0 6px 20px rgba(37, 99, 235, 0.3)',
+                          boxShadow: '0 6px 20px rgba(var(--brand-primary-rgb), 0.3)',
                           transition: 'all 0.2s',
                           display: 'flex',
                           alignItems: 'center',
@@ -758,7 +758,7 @@ export default function ReservationFlowPage() {
                           gap: 8
                         }}
                       >
-                        <span>{reservaCreada.estado === 'PENDING_SCHEDULE' ? 'Ir a Mis Reservas ahora' : 'Ir a Mis Reservas'}</span>
+                        <span>{reservaCreada.estado === 'PENDING_SCHEDULE' ? t('hc2.ir_a_mis_reservas_ahora', 'Ir a Mis Reservas ahora') : t('hc2.ir_a_mis_reservas', 'Ir a Mis Reservas')}</span>
                         <FaArrowRight size={14} />
                       </button>
 

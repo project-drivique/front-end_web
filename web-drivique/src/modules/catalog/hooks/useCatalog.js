@@ -136,7 +136,7 @@ export function useCatalogo({ esFavorito = () => false } = {}) {
   const estaDisponibleEnRango = useCallback((vehiculoId, fechaInicio, fechaFin) => {
     const ocupados = diasOcupadosPorVehiculo.get(Number(vehiculoId))
     if (!ocupados || ocupados.size === 0) return true
-    return !eachDayOfInterval({ start: new Date(fechaInicio), end: new Date(fechaFin) })
+    return !eachDayOfInterval({ start: parseISO(String(fechaInicio).slice(0, 10)), end: parseISO(String(fechaFin).slice(0, 10)) })
       .some(dia => ocupados.has(format(dia, 'yyyy-MM-dd')))
   }, [diasOcupadosPorVehiculo])
 

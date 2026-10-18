@@ -114,10 +114,18 @@ export function useHistorialReservas() {
   const guardarValoracion = async (id, valoracion) => {
     const guardada = await reservationsService.guardarValoracion(id, valoracion)
     setReservas(prev => prev.map(r => r.id === id
-      ? { ...r, valoracion: guardada, eligibility: { ...(r.eligibility || {}), canReviewVehicle: false } }
+      ? { ...r, valoracion: guardada, eligibility: { ...(r.eligibility || {}), canReviewVehicle: false, vehicleReview: { rating: valoracion.estrellas, comment: valoracion.comentario || '' } } }
       : r))
     return guardada
   }
 
-  return { reservas, cargando, error, recargar: cargarReservas, cancelarReserva, guardarValoracion }
+  const guardarResenaSucursal = async (id, branchId, resena) => {
+    const guardada = await reservationsService.guardarResenaSucursal(id, branchId, resena)
+    setReservas(prev => prev.map(r => r.id === id
+      ? { ...r, eligibility: { ...(r.eligibility || {}), canReviewBranch: false, branchReview: { rating: resena.estrellas, comment: resena.comentario || '' } } }
+      : r))
+    return guardada
+  }
+
+  return { reservas, cargando, error, recargar: cargarReservas, cancelarReserva, guardarValoracion, guardarResenaSucursal }
 }
