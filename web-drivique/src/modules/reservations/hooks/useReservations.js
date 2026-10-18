@@ -45,13 +45,15 @@ export function useHistorialReservas() {
              eligibility = await reservationsService.checkReviewEligibility(r.id)
           }
 
-          const vehiculoFinal = vehiculoCatalog || r.vehiculo || (r.vehicleModel ? {
-            id: vehiculoId,
-            nombre: r.vehicleModel,
-            marca: r.vehicleModel,
-            placa: r.vehiclePlate,
-            sucursal: r.sucursal || '',
-          } : null)
+          const rawPlate = r.vehiclePlate || r.plate || r.placa || vehiculoCatalog?.placa || vehiculoCatalog?.plate || r.vehiculo?.placa || r.reservaDetalles?.placa || ''
+          const vehiculoFinal = (vehiculoCatalog || r.vehiculo || r.vehicleModel) ? {
+            ...(vehiculoCatalog || r.vehiculo || {}),
+            id: vehiculoId || vehiculoCatalog?.id || r.vehiculo?.id,
+            nombre: vehiculoCatalog?.nombre || r.vehiculo?.nombre || r.vehicleModel || '',
+            marca: vehiculoCatalog?.marca || r.vehiculo?.marca || r.vehicleModel || '',
+            placa: rawPlate,
+            sucursal: vehiculoCatalog?.sucursal || r.sucursal || r.vehiculo?.sucursal || '',
+          } : null
 
           return {
             ...r,

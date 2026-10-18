@@ -30,6 +30,7 @@ function mapVehicle(vehicle) {
     nombre: vehicle.nombre || [vehicle.brandName, vehicle.model].filter(Boolean).join(' '),
     marca: vehicle.marca || vehicle.brandName,
     modelo: vehicle.modelo || vehicle.model,
+    placa: vehicle.placa || vehicle.plate || vehicle.licensePlate || '',
     categoria: vehicle.categoria || vehicle.categoryName,
     categoriaId: vehicle.categoriaId || vehicle.categoryId,
     transmision: vehicle.transmision || vehicle.transmissionName || vehicle.transmissionCode,

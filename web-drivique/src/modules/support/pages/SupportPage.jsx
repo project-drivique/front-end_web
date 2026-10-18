@@ -44,20 +44,31 @@ export default function SupportPage() {
   // Carga historial real de reservas
   const { reservas } = useHistorialReservas()
 
-  // Filtrado de vehículos: solo reservas estrictamente en curso
+  // Filtrado de vehículos: reservas en curso, activas o confirmadas
   const vehiculosElegibles = useMemo(() => {
+    if (!reservas || reservas.length === 0) return []
     const validas = reservas.filter(
-      (r) => r.estado === 'en_curso' || r.estado === 'activa' || r.estado === 'ACTIVE'
+      (r) =>
+        r.estado === 'en_curso' ||
+        r.estado === 'activa' ||
+        r.estado === 'ACTIVE' ||
+        r.status === 'ACTIVE' ||
+        r.status === 'IN_PROGRESS' ||
+        r.estado === 'confirmada' ||
+        r.status === 'CONFIRMED'
     )
-    return validas.map((r) => ({
-      id: String(r.id),
-      reservaId: r.id,
-      vehiculoId: r.vehiculo?.id || r.vehicleId || null,
-      nombre: r.vehiculo?.nombre || t('hc3.reservation_hash', { defaultValue: 'Reserva #{{id}}', id: r.id }),
-      placa: r.vehiculo?.placa || '',
-      estado: r.estado,
-    }))
-  }, [reservas])
+    return validas.map((r) => {
+      const vPlaca = r.vehiculo?.placa || r.vehiclePlate || r.placa || r.reservaDetalles?.placa || ''
+      return {
+        id: String(r.id),
+        reservaId: r.id,
+        vehiculoId: r.vehiculo?.id || r.vehicleId || null,
+        nombre: r.vehiculo?.nombre || t('hc3.reservation_hash', { defaultValue: 'Reserva #{{id}}', id: r.id }),
+        placa: vPlaca,
+        estado: r.estado,
+      }
+    })
+  }, [reservas, t])
 
   // Leer parámetros de URL o location state si viene de "Hacer reporte" en Mis Reservas
   const searchParams = new URLSearchParams(location.search)
@@ -98,24 +109,24 @@ export default function SupportPage() {
         placa: placaParam || prev.placa,
       }))
       setPestanaActiva('reportar')
-    } else if (vehiculosElegibles.length > 0 && !formData.vehiculo) {
+    } else if (vehiculosElegibles.length > 0 && (!formData.vehiculo || !formData.placa)) {
       setFormData((prev) => ({
         ...prev,
-        vehiculo: vehiculosElegibles[0].nombre,
-        placa: vehiculosElegibles[0].placa,
+        vehiculo: prev.vehiculo || vehiculosElegibles[0].nombre,
+        placa: prev.placa || vehiculosElegibles[0].placa,
       }))
     }
-  }, [vehiculoParam, placaParam, vehiculosElegibles])
+  }, [vehiculoParam, placaParam, vehiculosElegibles, formData.vehiculo, formData.placa])
 
-  // Al seleccionar un vehículo del dropdown, actualiza el vehículo y su placa correspondiente
+  // Al seleccionar un vehículo del dropdown, actualiza el vehículo y su placa correspondiente automáticamente
   const handleSelectVehiculoChange = (e) => {
-    const nombreVeh = e.target.value
-    const vehEncontrado = vehiculosElegibles.find((v) => v.nombre === nombreVeh)
+    const val = e.target.value
+    const vehEncontrado = vehiculosElegibles.find((v) => v.id === val || v.nombre === val)
 
     setFormData((prev) => ({
       ...prev,
-      vehiculo: nombreVeh,
-      placa: vehEncontrado ? vehEncontrado.placa : prev.placa,
+      vehiculo: vehEncontrado ? vehEncontrado.nombre : val,
+      placa: vehEncontrado?.placa || prev.placa,
     }))
   }
 
@@ -143,6 +154,12 @@ export default function SupportPage() {
     const elegidos = Array.from(e.target.files || [])
     e.target.value = ''
     const siguientes = [...archivos, ...elegidos].slice(0, 3)
+    setArchivos(siguientes)
+    setFormData((prev) => ({ ...prev, evidenciasCount: siguientes.length }))
+  }
+
+  const handleEliminarEvidencia = (index) => {
+    const siguientes = archivos.filter((_, i) => i !== index)
     setArchivos(siguientes)
     setFormData((prev) => ({ ...prev, evidenciasCount: siguientes.length }))
   }
@@ -428,7 +445,7 @@ export default function SupportPage() {
                   {/* Select desplegable con vehículos en reserva confirmada/en curso/finalizada */}
                   <select
                     className="form-input-text"
-                    value={formData.vehiculo}
+                    value={vehiculosElegibles.find(v => v.nombre === formData.vehiculo)?.id || formData.vehiculo}
                     onChange={handleSelectVehiculoChange}
                     disabled={enviando || (vehiculosElegibles.length === 0 && !formData.vehiculo)}
                   >
@@ -436,24 +453,32 @@ export default function SupportPage() {
                       <option value="">{t('hc.no_tienes_reservas_confirmadas_para_re', 'No tienes reservas confirmadas para reportar')}</option>
                     ) : (
                       vehiculosElegibles.map((item) => (
-                        <option key={item.id} value={item.nombre}>
-                          {item.nombre}
+                        <option key={item.id} value={item.id}>
+                          {item.nombre} {item.placa ? `— Placa: ${item.placa}` : ''}
                         </option>
                       ))
                     )}
                     {formData.vehiculo &&
-                      !vehiculosElegibles.some((v) => v.nombre === formData.vehiculo) && (
+                      !vehiculosElegibles.some((v) => v.nombre === formData.vehiculo || v.id === formData.vehiculo) && (
                         <option value={formData.vehiculo}>{formData.vehiculo}</option>
                       )}
                   </select>
 
-                  {/* Input de Placa */}
+                  {/* Input de Placa automática del carro */}
                   <input
                     type="text"
                     className="form-input-text"
-                    placeholder={t('hc2.placa_ej_kls_849', 'Placa (ej: KLS-849)')}
+                    placeholder={t('hc2.placa_ej_kls_849', 'Placa del vehículo (ej: KLS-849)')}
                     value={formData.placa}
-                    onChange={(e) => setFormData({ ...formData, placa: e.target.value })}
+                    onChange={(e) => setFormData({ ...formData, placa: e.target.value.toUpperCase() })}
+                    readOnly={Boolean(formData.vehiculo && vehiculosElegibles.some(v => (v.nombre === formData.vehiculo || v.id === formData.vehiculo) && v.placa))}
+                    style={{
+                      fontFamily: 'monospace, sans-serif',
+                      fontWeight: 700,
+                      letterSpacing: '0.06em',
+                      textTransform: 'uppercase',
+                      background: formData.placa ? 'var(--city-bg, #f8fafc)' : undefined,
+                    }}
                   />
                 </div>
               </div>
@@ -520,11 +545,13 @@ export default function SupportPage() {
                   </span>
                 </div>
 
-                <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-                  <div className="evidencias-upload-box" onClick={handleAdjuntarEvidencia}>
-                    <FaCamera style={{ fontSize: 22 }} />
-                    <span>{t('hc4.adjunto', '+ Adjunto')}</span>
-                  </div>
+                <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+                  {archivos.length < 3 && (
+                    <div className="evidencias-upload-box" onClick={handleAdjuntarEvidencia} style={{ flexShrink: 0 }}>
+                      <FaCamera style={{ fontSize: 22 }} />
+                      <span>{t('hc4.adjunto', '+ Adjunto')}</span>
+                    </div>
+                  )}
                   <input
                     ref={inputEvidenciasRef}
                     type="file"
@@ -534,11 +561,64 @@ export default function SupportPage() {
                     onChange={handleArchivosElegidos}
                   />
 
-                  {formData.evidenciasCount > 0 && (
-                    <div style={{ fontSize: 13, color: '#16a34a', fontWeight: 800 }}>
-                      ✓ {formData.evidenciasCount} evidencia(s) adjuntada(s)
-                    </div>
-                  )}
+                  {/* Vista previa de las fotos subidas */}
+                  {archivos.map((archivo, idx) => {
+                    const previewUrl = URL.createObjectURL(archivo)
+                    const isVideo = archivo.type?.startsWith('video/')
+                    return (
+                      <div
+                        key={`${archivo.name}-${idx}`}
+                        style={{
+                          position: 'relative',
+                          width: 100,
+                          height: 90,
+                          borderRadius: 16,
+                          overflow: 'hidden',
+                          border: '1px solid var(--borde, #e2e8f0)',
+                          boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                          background: '#0f172a',
+                          flexShrink: 0
+                        }}
+                      >
+                        {isVideo ? (
+                          <video
+                            src={previewUrl}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                          />
+                        ) : (
+                          <img
+                            src={previewUrl}
+                            alt={`Evidencia ${idx + 1}`}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                          />
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => handleEliminarEvidencia(idx)}
+                          style={{
+                            position: 'absolute',
+                            top: 4,
+                            right: 4,
+                            width: 22,
+                            height: 22,
+                            borderRadius: '50%',
+                            background: 'rgba(0,0,0,0.7)',
+                            color: '#ffffff',
+                            border: 'none',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            cursor: 'pointer',
+                            fontSize: 13,
+                            lineHeight: 1
+                          }}
+                          title={t('common.delete', 'Eliminar')}
+                        >
+                          ×
+                        </button>
+                      </div>
+                    )
+                  })}
                 </div>
               </div>
 

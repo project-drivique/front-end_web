@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { FaCalendarAlt, FaMapMarkerAlt, FaClock, FaCreditCard, FaPencilAlt, FaEye, FaHourglassHalf, FaInfoCircle, FaExclamationTriangle } from 'react-icons/fa'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import ReservationCalendar from './ReservationCalendar'
 import DomicilioModal from './DomicilioModal'
 import AlertModal from '../../catalog/components/AlertModal'
@@ -20,21 +20,46 @@ function getHorarioSucursal(nombreSucursal) {
   return { apertura: '00:00', cierre: '23:30' }
 }
 
-function generarHoras(lugar, minHora, maxHora) {
+function getFechaHoyLocal() {
+  const d = new Date()
+  const year = d.getFullYear()
+  const month = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
+function generarHoras(lugar, minHora, maxHora, fecha) {
   const { apertura, cierre } = getHorarioSucursal(lugar)
   const [hInicio, mInicio] = apertura.split(':').map(Number)
   const [hFin, mFin] = cierre.split(':').map(Number)
-  
-  let minMins = -1;
+
+  const ahora = new Date()
+  const hoyStr = getFechaHoyLocal()
+  const cleanFecha = fecha ? String(fecha).split('T')[0] : null
+  const esHoy = cleanFecha === hoyStr
+  const esPasado = cleanFecha ? cleanFecha < hoyStr : false
+
+  // Minutos transcurridos en el día actual
+  const ahoraMinutos = ahora.getHours() * 60 + ahora.getMinutes()
+
+  let minMins = -1
   if (minHora) {
-    const [mh, mm] = minHora.split(':').map(Number)
-    minMins = mh * 60 + mm
+    const [mh, mm] = String(minHora).split(':').map(Number)
+    if (!isNaN(mh) && !isNaN(mm)) {
+      minMins = mh * 60 + mm
+    }
   }
 
-  let maxMins = Infinity;
+  let maxMins = Infinity
   if (maxHora) {
-    const [mh, mm] = maxHora.split(':').map(Number)
-    maxMins = mh * 60 + mm
+    const [mh, mm] = String(maxHora).split(':').map(Number)
+    if (!isNaN(mh) && !isNaN(mm)) {
+      maxMins = mh * 60 + mm
+    }
+  }
+
+  if (esPasado) {
+    return []
   }
 
   const horas = []
@@ -42,11 +67,17 @@ function generarHoras(lugar, minHora, maxHora) {
     for (const m of [0, 30]) {
       if (h === hInicio && m < mInicio) continue
       if (h === hFin && m > mFin) continue
-      
+
       const totalMins = h * 60 + m
-      if (totalMins <= minMins) continue
-      if (totalMins > maxMins) continue
-      
+
+      // Si la fecha seleccionada es hoy, omitir horas anteriores o iguales a la hora actual
+      if (esHoy && totalMins <= ahoraMinutos) {
+        continue
+      }
+
+      if (minMins >= 0 && totalMins < minMins) continue
+      if (maxMins < Infinity && totalMins > maxMins) continue
+
       horas.push(`${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`)
     }
   }
@@ -78,12 +109,6 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
   const [showOneDayModal, setShowOneDayModal] = useState(false)
   const [conflictAlert, setConflictAlert] = useState(null) // { campo, valor, openDomicilio }
 
-  // Sincronizar horaFin por defecto a la horaInicio cuando cambia horaInicio
-  useEffect(() => {
-    if (reserva?.horaInicio && (!reserva?.horaFin || reserva?.horaFin > reserva?.horaInicio)) {
-      onCambio('horaFin', reserva.horaInicio);
-    }
-  }, [reserva?.horaInicio]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Payment Options
   const metodoPago = reserva?.metodoPago
@@ -135,35 +160,52 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
 
   const hasDomicilioData = reserva?.domicilioBarrio && reserva?.domicilioDireccion
   
-  const getMinHoraRetiro = () => {
-    return null;
-  }
+  const horasRetiro = useMemo(() => {
+    return generarHoras(reserva?.sucursalRetiro, null, null, reserva?.fechaInicio)
+  }, [reserva?.sucursalRetiro, reserva?.fechaInicio])
 
-  const getMinHoraDevolucion = () => {
-    if (!reserva?.fechaFin) return null;
-    const fInicioStr = reserva?.fechaInicio ? reserva.fechaInicio.split('T')[0] : '';
-    const fFinStr = reserva.fechaFin.split('T')[0];
-    
-    // Si la reserva inicia y finaliza el mismo día, la devolución no puede ser anterior a la hora de retiro
-    if (fInicioStr && fFinStr && fInicioStr === fFinStr && reserva?.horaInicio) {
-      return reserva.horaInicio;
-    }
-    return null;
-  }
+  const horasDevolucion = useMemo(() => {
+    const fInicioStr = reserva?.fechaInicio ? String(reserva.fechaInicio).split('T')[0] : ''
+    const fFinStr = reserva?.fechaFin ? String(reserva.fechaFin).split('T')[0] : ''
+    const esMismoDia = Boolean(fInicioStr && fFinStr && fInicioStr === fFinStr)
 
-  const horasRetiro = generarHoras(reserva?.sucursalRetiro, getMinHoraRetiro())
-  const horasDevolucion = generarHoras(reserva?.sucursalDevolucion, null, reserva?.horaInicio)
+    // Si es el mismo día:
+    // minHora = horaInicio (la devolución no puede ser anterior a la hora de retiro)
+    // maxHora = null (puede devolver hasta el cierre de la sucursal)
+    // Si son días diferentes:
+    // minHora = null
+    // maxHora = horaInicio (límite del ciclo de 24h contratado; horas posteriores incurren en nuevo día)
+    const minH = esMismoDia ? (reserva?.horaInicio || null) : null
+    const maxH = !esMismoDia ? (reserva?.horaInicio || null) : null
 
-  // Pre-seleccionar automáticamente horaInicio y horaFin si están vacías y hay opciones disponibles
+    return generarHoras(reserva?.sucursalDevolucion, minH, maxH, reserva?.fechaFin)
+  }, [reserva?.sucursalDevolucion, reserva?.fechaInicio, reserva?.fechaFin, reserva?.horaInicio])
+
+  // Pre-seleccionar o sincronizar horaInicio si está vacía o ya no es válida (por ejemplo, hora en el pasado)
   useEffect(() => {
-    if (reserva?.fechaInicio && !reserva?.horaInicio && horasRetiro?.length > 0) {
-      const defaultHora = horasRetiro.includes('10:00') ? '10:00' : horasRetiro[0];
-      onCambio('horaInicio', defaultHora);
-      if (!reserva?.horaFin) {
-        onCambio('horaFin', defaultHora);
+    if (reserva?.fechaInicio && horasRetiro?.length > 0) {
+      if (!reserva?.horaInicio || !horasRetiro.includes(reserva.horaInicio)) {
+        const defaultHora = horasRetiro.includes('10:00') ? '10:00' : horasRetiro[0]
+        onCambio('horaInicio', defaultHora)
       }
+    } else if (reserva?.fechaInicio && horasRetiro?.length === 0 && reserva?.horaInicio) {
+      onCambio('horaInicio', '')
     }
-  }, [reserva?.fechaInicio, horasRetiro]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [reserva?.fechaInicio, horasRetiro]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Pre-seleccionar o sincronizar horaFin si está vacía o ya no es válida
+  useEffect(() => {
+    if (reserva?.fechaFin && horasDevolucion?.length > 0) {
+      if (!reserva?.horaFin || !horasDevolucion.includes(reserva.horaFin)) {
+        const defaultFin = horasDevolucion.includes(reserva?.horaInicio)
+          ? reserva.horaInicio
+          : horasDevolucion[horasDevolucion.length - 1] || horasDevolucion[0]
+        onCambio('horaFin', defaultFin)
+      }
+    } else if (reserva?.fechaFin && horasDevolucion?.length === 0 && reserva?.horaFin) {
+      onCambio('horaFin', '')
+    }
+  }, [reserva?.fechaFin, reserva?.horaInicio, horasDevolucion]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleLugarChange = (campo, valor) => {
     // Mostrar alerta cuando ambos campos quedarían en 'domicilio'

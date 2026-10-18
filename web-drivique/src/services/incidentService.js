@@ -31,7 +31,7 @@ export const incidentService = {
 
   create: (payload) => call(() => api.post('/incidents', payload)),
 
-  uploadAttachments: (id, files) => call(() => api.post(`/incidents/${id}/attachments`, formWith([], files))),
+  uploadAttachments: (id, files) => call(() => api.post(`/incidents/${id}/attachments`, formWith([], files), { headers: { 'Content-Type': 'multipart/form-data' } })),
 
   respond: (id, message, files) => call(() => api.post(`/incidents/${id}/responses`, formWith([['message', message]], files))),
 

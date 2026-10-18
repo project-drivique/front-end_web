@@ -299,7 +299,12 @@ export default function IncidentManagementPage() {
       setGuardando(true)
       const vehiculo = vehiculos.find((v) => String(v.id) === String(formCrear.vehiculoId))
       await incidentManagementService.createIncident(
-        { ...formCrear, sucursalId: vehiculo?.sucursalId || null },
+        {
+          ...formCrear,
+          placa: vehiculo?.placa || formCrear.placa || '',
+          vehiculo: vehiculo?.nombre || '',
+          sucursalId: vehiculo?.sucursalId || null,
+        },
         user,
         archivosCrear
       )
@@ -308,6 +313,7 @@ export default function IncidentManagementPage() {
       setArchivosCrear([])
       setFormCrear({
         vehiculoId: '',
+        placa: '',
         tipoIncidenciaId: 'choque',
         tipoIncidenciaNombre: t('admin.incidents.types.crash', 'Choque'),
         descripcion: '',
@@ -326,6 +332,10 @@ export default function IncidentManagementPage() {
     const elegidos = Array.from(e.target.files || [])
     e.target.value = ''
     setArchivosCrear((actuales) => [...actuales, ...elegidos].slice(0, 3))
+  }
+
+  const handleEliminarEvidenciaCrear = (index) => {
+    setArchivosCrear((actuales) => actuales.filter((_, i) => i !== index))
   }
 
   const openDetalleModal = async (r) => {
@@ -1409,12 +1419,22 @@ export default function IncidentManagementPage() {
                     <span style={{ fontSize: 13, fontWeight: 700, color: '#1e293b' }}>{t('admin.incidents.selectVehicle', 'Vehículo / Reserva asociada')} <span style={{ color: '#94a3b8', fontWeight: 500, fontSize: 12 }}>({t('common.optional', 'Opcional')})</span></span>
                     <select
                       value={formCrear.vehiculoId}
-                      onChange={(e) => setFormCrear({ ...formCrear, vehiculoId: e.target.value })}
+                      onChange={(e) => {
+                        const vId = e.target.value
+                        const veh = vehiculos.find((v) => String(v.id) === String(vId))
+                        setFormCrear({
+                          ...formCrear,
+                          vehiculoId: vId,
+                          placa: veh?.placa || '',
+                        })
+                      }}
                       style={{ background: 'var(--city-bg, #f8fafc)', border: '1px solid #e2e8f0', padding: '12px', borderRadius: 8, fontSize: 14, color: 'var(--city-text, #334155)' }}
                     >
                       <option value="">{t('admin.incidents.chooseVehicleOptional', 'Sin vehículo / General...')}</option>
                       {vehiculos.map((v) => (
-                        <option key={v.id} value={v.id}>{v.nombre}</option>
+                        <option key={v.id} value={v.id}>
+                          {v.nombre} {v.placa ? `— Placa: ${v.placa}` : ''}
+                        </option>
                       ))}
                     </select>
                   </label>
@@ -1422,9 +1442,20 @@ export default function IncidentManagementPage() {
                     <input 
                       type="text" 
                       readOnly 
-                      value={vehiculos.find(v => v.id === formCrear.vehiculoId)?.placa || ''}
+                      value={vehiculos.find(v => String(v.id) === String(formCrear.vehiculoId))?.placa || formCrear.placa || ''}
                       placeholder={t('admin.incidents.vehiclePlatePlaceholder', 'Placa del vehículo (si aplica)')}
-                      style={{ background: 'var(--city-bg, #f8fafc)', border: '1px solid #e2e8f0', padding: '12px', borderRadius: 8, fontSize: 14, color: 'var(--city-muted, #64748b)' }}
+                      style={{
+                        background: 'var(--city-bg, #f8fafc)',
+                        border: '1px solid #e2e8f0',
+                        padding: '12px',
+                        borderRadius: 8,
+                        fontSize: 14,
+                        color: 'var(--city-text, #0f172a)',
+                        fontFamily: 'monospace, sans-serif',
+                        fontWeight: 700,
+                        letterSpacing: '0.06em',
+                        textTransform: 'uppercase'
+                      }}
                     />
                   </label>
                 </div>
@@ -1495,12 +1526,92 @@ export default function IncidentManagementPage() {
                     <span style={{ fontSize: 13, fontWeight: 700, color: '#1e293b' }}>{t('admin.incidents.evidencesOptional', 'Evidencias (Imágenes / Videos opcionales)')}</span>
                     <span style={{ fontSize: 11, color: '#94a3b8' }}>{t('admin.incidents.maxPhotos', 'Máx 3 fotos')} ({archivosCrear.length}/3)</span>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                    <button type="button" onClick={() => archivosCrear.length < 3 && inputEvidenciasRef.current?.click()} style={{ width: 80, height: 80, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4, background: 'var(--city-bg, #f8fafc)', border: '1.5px dashed var(--brand-primary)', borderRadius: 12, color: 'var(--brand-primary, #3b82f6)', cursor: 'pointer', fontSize: 12, fontWeight: 600 }}>
-                      <FaPlus style={{ fontSize: 16 }} /> {t('admin.incidents.attachment', 'Adjunto')}
-                    </button>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+                    {archivosCrear.length < 3 && (
+                      <button
+                        type="button"
+                        onClick={() => inputEvidenciasRef.current?.click()}
+                        style={{
+                          width: 80,
+                          height: 80,
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: 4,
+                          background: 'var(--city-bg, #f8fafc)',
+                          border: '1.5px dashed var(--brand-primary)',
+                          borderRadius: 12,
+                          color: 'var(--brand-primary, #3b82f6)',
+                          cursor: 'pointer',
+                          fontSize: 12,
+                          fontWeight: 600,
+                          flexShrink: 0
+                        }}
+                      >
+                        <FaPlus style={{ fontSize: 16 }} /> {t('admin.incidents.attachment', 'Adjunto')}
+                      </button>
+                    )}
                     <input ref={inputEvidenciasRef} type="file" accept="image/jpeg,image/png,image/webp,video/mp4" multiple hidden onChange={handleEvidenciasElegidas} />
-                    {archivosCrear.length > 0 && <span style={{ fontSize: 13, color: '#16a34a', fontWeight: 700 }}>✓ {archivosCrear.length} {t('admin.incidents.evidenceAttachedShort', 'evidencia(s) adjuntada(s)')}</span>}
+
+                    {/* Vista previa de las fotos subidas */}
+                    {archivosCrear.map((archivo, idx) => {
+                      const previewUrl = URL.createObjectURL(archivo)
+                      const isVideo = archivo.type?.startsWith('video/')
+                      return (
+                        <div
+                          key={`${archivo.name}-${idx}`}
+                          style={{
+                            position: 'relative',
+                            width: 80,
+                            height: 80,
+                            borderRadius: 12,
+                            overflow: 'hidden',
+                            border: '1px solid #e2e8f0',
+                            boxShadow: '0 2px 6px rgba(0,0,0,0.06)',
+                            background: '#0f172a',
+                            flexShrink: 0
+                          }}
+                        >
+                          {isVideo ? (
+                            <video
+                              src={previewUrl}
+                              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                            />
+                          ) : (
+                            <img
+                              src={previewUrl}
+                              alt={`Evidencia ${idx + 1}`}
+                              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                            />
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => handleEliminarEvidenciaCrear(idx)}
+                            style={{
+                              position: 'absolute',
+                              top: 4,
+                              right: 4,
+                              width: 22,
+                              height: 22,
+                              borderRadius: '50%',
+                              background: 'rgba(0,0,0,0.7)',
+                              color: '#ffffff',
+                              border: 'none',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              cursor: 'pointer',
+                              fontSize: 13,
+                              lineHeight: 1
+                            }}
+                            title={t('common.delete', 'Eliminar')}
+                          >
+                            ×
+                          </button>
+                        </div>
+                      )
+                    })}
                   </div>
                 </div>
 
