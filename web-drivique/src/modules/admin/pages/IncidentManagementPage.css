@@ -56,8 +56,8 @@
 }
 
 .management-shell--dark .fleet-tab-btn.is-active {
-  color: #60a5fa;
-  border-bottom-color: #60a5fa;
+  color: var(--brand-text);
+  border-bottom-color: var(--brand-accent);
 }
 
 .attached-to-tabs {
@@ -90,22 +90,22 @@
 
 .cities-modal__actions .incident-modal-btn-submit,
 .cities-modal__actions button.incident-modal-btn-submit {
-  background: #2563eb !important;
+  background: var(--brand-primary) !important;
   color: #ffffff !important;
-  border: 1px solid #2563eb !important;
+  border: 1px solid var(--brand-primary) !important;
   border-radius: 9999px !important;
   font-weight: 800 !important;
   font-size: 13px !important;
   padding: 8px 24px !important;
   min-height: auto !important;
   cursor: pointer !important;
-  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3) !important;
+  box-shadow: 0 2px 6px rgba(var(--brand-primary-rgb), 0.3) !important;
   transition: all 0.2s ease !important;
 }
 .cities-modal__actions .incident-modal-btn-submit:hover,
 .cities-modal__actions button.incident-modal-btn-submit:hover {
-  background: #1d4ed8 !important;
-  border-color: #1d4ed8 !important;
+  background: var(--brand-primary-hover) !important;
+  border-color: var(--brand-primary-hover) !important;
 }
 
 .incident-modal-btn-create,
@@ -185,7 +185,7 @@ button.incident-modal-btn-create:hover {
 /* ─── DARK MODE BADGES ────────────────────────────────────────────────────── */
 .management-shell--dark .priority-badge.urgente { background: rgba(239,68,68,0.2); color: #fca5a5; }
 .management-shell--dark .priority-badge.alta { background: rgba(239,68,68,0.15); color: #fca5a5; }
-.management-shell--dark .priority-badge.media { background: rgba(59,130,246,0.2); color: var(--brand-text-dark, #93c5fd); }
+.management-shell--dark .priority-badge.media { background: rgba(var(--brand-primary-rgb),0.2); color: var(--brand-text-dark, #93c5fd); }
 .management-shell--dark .priority-badge.baja { background: rgba(34,197,94,0.2); color: #86efac; }
 .management-shell--dark .origin-badge.cliente { background: rgba(14,165,233,0.2); color: #7dd3fc; }
 .management-shell--dark .origin-badge.administrador { background: #1e293b; color: #cbd5e1; }
@@ -297,7 +297,7 @@ button.incident-modal-btn-create:hover {
 .management-shell--dark .incident-field select:focus,
 .management-shell--dark .incident-field textarea:focus {
   border-color: var(--brand-primary) !important;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2) !important;
+  box-shadow: 0 0 0 3px rgba(var(--brand-primary-rgb), 0.2) !important;
 }
 
 /* ─── GRID DE DOS COLUMNAS ───────────────────────────────────────────────── */
@@ -648,7 +648,7 @@ html.dark .incident-card:hover {
 
 .toggle-btn.active {
   background: #ffffff;
-  color: #2563eb;
+  color: var(--brand-text);
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
@@ -658,7 +658,7 @@ html.dark .view-mode-toggle {
 }
 html.dark .toggle-btn.active {
   background: #334155;
-  color: #60a5fa;
+  color: var(--brand-text);
 }
 
 /* --- EXPORT PILLS (SAME AS RESERVATION MANAGEMENT) --------------- */
@@ -742,32 +742,32 @@ html.dark .toggle-btn.active {
 }
 
 .export-pill--print {
-  background: #eff6ff !important;
-  border: 1.5px solid #bfdbfe !important;
-  color: #2563eb !important;
+  background: var(--brand-soft) !important;
+  border: 1.5px solid var(--brand-border) !important;
+  color: var(--brand-text) !important;
 }
 .export-pill--print svg {
-  color: #2563eb !important;
+  color: var(--brand-text) !important;
   font-size: 14px !important;
 }
 .export-pill--print:hover {
-  background: #dbeafe !important;
-  border-color: #93c5fd !important;
+  background: var(--brand-soft-strong) !important;
+  border-color: var(--brand-border) !important;
   transform: translateY(-1px);
 }
 
 .management-shell--dark .export-pill--print {
-  background: rgba(59, 130, 246, 0.16) !important;
-  border-color: rgba(59, 130, 246, 0.4) !important;
-  color: #60a5fa !important;
+  background: rgba(var(--brand-primary-rgb), 0.16) !important;
+  border-color: rgba(var(--brand-primary-rgb), 0.4) !important;
+  color: var(--brand-text) !important;
 }
 .management-shell--dark .export-pill--print svg {
-  color: #60a5fa !important;
+  color: var(--brand-text) !important;
 }
 .management-shell--dark .export-pill--print:hover {
-  background: rgba(59, 130, 246, 0.28) !important;
-  border-color: rgba(59, 130, 246, 0.65) !important;
-  color: #93c5fd !important;
+  background: rgba(var(--brand-primary-rgb), 0.28) !important;
+  border-color: rgba(var(--brand-primary-rgb), 0.65) !important;
+  color: var(--brand-text) !important;
 }
 
 /* ─── BOTÓN RESPONDER (TABLE ACTION) ────────────────────────────── */
@@ -852,10 +852,10 @@ html.dark .toggle-btn.active {
 }
 
 .incident-step.is-active .incident-step-circle {
-  background: #2563eb;
+  background: var(--brand-primary);
   color: #ffffff;
-  border-color: #2563eb;
-  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.2);
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 4px rgba(var(--brand-primary-rgb), 0.2);
 }
 
 .incident-step.is-completed .incident-step-circle {
@@ -878,7 +878,7 @@ html.dark .toggle-btn.active {
 }
 
 .incident-step.is-active .incident-step-label {
-  color: #2563eb;
+  color: var(--brand-text);
 }
 
 .incident-step.is-completed .incident-step-label {
@@ -970,7 +970,7 @@ html.dark .toggle-btn.active {
 .incident-kpi-card.is-active {
   border-color: var(--brand-primary, #2563eb);
   background: var(--city-soft, #f8fafc);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+  box-shadow: 0 0 0 3px rgba(var(--brand-primary-rgb), 0.15);
 }
 
 .incident-kpi-icon {
@@ -985,8 +985,8 @@ html.dark .toggle-btn.active {
 }
 
 .incident-kpi-icon--total {
-  background: #eff6ff;
-  color: #2563eb;
+  background: var(--brand-soft);
+  color: var(--brand-text);
 }
 
 .incident-kpi-icon--recibido {
@@ -996,7 +996,7 @@ html.dark .toggle-btn.active {
 
 .incident-kpi-icon--atendiendo {
   background: #e0f2fe;
-  color: #0284c7;
+  color: var(--brand-text);
 }
 
 .incident-kpi-icon--resuelto {
@@ -1070,7 +1070,7 @@ html.dark .toggle-btn.active {
 }
 
 .incident-gallery-card:hover {
-  border-color: #2563eb;
+  border-color: var(--brand-primary);
   transform: translateY(-2px);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
 }
@@ -1103,7 +1103,7 @@ html.dark .toggle-btn.active {
 .incident-gallery-btn {
   font-size: 10.5px;
   font-weight: 700;
-  color: #2563eb;
+  color: var(--brand-text);
   display: flex;
   align-items: center;
   gap: 4px;
@@ -1133,7 +1133,7 @@ html.dark .toggle-btn.active {
 
 .incident-checklist-item input[type="checkbox"] {
   margin-top: 2px;
-  accent-color: #2563eb;
+  accent-color: var(--brand-primary);
   width: 16px;
   height: 16px;
   cursor: pointer;
@@ -1147,8 +1147,8 @@ html.dark .toggle-btn.active {
 
 .management-shell--dark .incident-kpi-card.is-active {
   background: #1e293b;
-  border-color: #60a5fa;
-  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2);
+  border-color: var(--brand-accent);
+  box-shadow: 0 0 0 3px rgba(var(--brand-accent-rgb), 0.2);
 }
 
 .management-shell--dark .incident-kpi-label {

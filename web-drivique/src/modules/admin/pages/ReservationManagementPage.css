@@ -86,7 +86,7 @@
 }
 
 .reserva-status-badge.en_curso .reserva-status-dot {
-  background: #0284c7;
+  background: var(--brand-primary);
   box-shadow: 0 0 6px rgba(2, 132, 199, 0.5);
 }
 
@@ -741,7 +741,7 @@ html.dark .reservations-subtabs-nav {
   font-weight: 700 !important;
   border-radius: 10px !important;
   white-space: nowrap;
-  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.2);
+  box-shadow: 0 2px 6px rgba(var(--brand-primary-rgb), 0.2);
   transition: all 0.2s ease;
 }
 
@@ -857,17 +857,17 @@ html.dark .reservations-subtabs-nav {
 }
 
 .export-pill--print {
-  background: #eff6ff;
-  border: 1.5px solid #bfdbfe;
-  color: #2563eb;
+  background: var(--brand-soft);
+  border: 1.5px solid var(--brand-border);
+  color: var(--brand-text);
 }
 .export-pill--print svg {
-  color: #2563eb;
+  color: var(--brand-text);
   font-size: 14px;
 }
 .export-pill--print:hover {
-  background: #dbeafe;
-  border-color: #93c5fd;
+  background: var(--brand-soft-strong);
+  border-color: var(--brand-border);
   transform: translateY(-1px);
 }
 
