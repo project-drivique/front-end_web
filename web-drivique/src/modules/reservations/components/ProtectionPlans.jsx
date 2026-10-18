@@ -65,7 +65,7 @@ export default function PlanesProteccion({ seguroIdx, onSeleccionar, c, dias = 1
 
   const planes = plantillas
     .map((plantilla, idx) => (coberturas[idx]
-      ? { ...plantilla, nombre: coberturas[idx].name, precio: Number(coberturas[idx].dailyRate) }
+      ? { ...plantilla, nombre: t('coberturas.' + coberturas[idx].name, coberturas[idx].name), precio: Number(coberturas[idx].dailyRate) }
       : null))
     .filter(Boolean);
 

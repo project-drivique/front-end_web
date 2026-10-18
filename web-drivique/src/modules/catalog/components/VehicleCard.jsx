@@ -268,10 +268,10 @@ export default function TarjetaVehiculo({
 
         {totalImagenes > 1 && (
           <>
-            <button type="button" onClick={irImagenAnterior} aria-label="Imagen anterior" style={botonFlechaStyle('left')}>
+            <button type="button" onClick={irImagenAnterior} aria-label={t('hc4.imagen_anterior', 'Imagen anterior')} style={botonFlechaStyle('left')}>
               <FaChevronLeft size={10} />
             </button>
-            <button type="button" onClick={irImagenSiguiente} aria-label="Imagen siguiente" style={botonFlechaStyle('right')}>
+            <button type="button" onClick={irImagenSiguiente} aria-label={t('hc4.imagen_siguiente', 'Imagen siguiente')} style={botonFlechaStyle('right')}>
               <FaChevronRight size={10} />
             </button>
           </>
@@ -293,7 +293,7 @@ export default function TarjetaVehiculo({
               whiteSpace: 'nowrap',
             }}
           >
-            {CAT_KEYS[vehiculo.categoria] ? t(CAT_KEYS[vehiculo.categoria]) : (vehiculo.categoria || 'Económico')}
+            {CAT_KEYS[vehiculo.categoria] ? t(CAT_KEYS[vehiculo.categoria]) : (vehiculo.categoria || t('hc2.economico', 'Económico'))}
           </span>
 
           <span

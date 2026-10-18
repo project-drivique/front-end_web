@@ -467,16 +467,16 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
           const hAmPm = formatHoraAmPm(reserva.horaInicio)
 
           return (
-            <div style={{ marginTop: 8, padding: 14, borderRadius: 12, backgroundColor: 'rgba(59, 130, 246, 0.08)', border: '1px solid rgba(59, 130, 246, 0.25)', display: 'flex', gap: 12 }}>
-              <div style={{ color: '#2563eb', marginTop: 2, flexShrink: 0 }}>
+            <div style={{ marginTop: 8, padding: 14, borderRadius: 12, backgroundColor: 'rgba(var(--brand-primary-rgb), 0.08)', border: '1px solid rgba(var(--brand-primary-rgb), 0.25)', display: 'flex', gap: 12 }}>
+              <div style={{ color: 'var(--brand-text)', marginTop: 2, flexShrink: 0 }}>
                 <FaInfoCircle size={18} />
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                 <span style={{ fontSize: 13, fontWeight: 700, color: textPrimary }}>
-                  {t('vehiculo.computoReservaTitle', `Cómputo de tus ${diasReserva} ${diasReserva === 1 ? 'día' : 'días'} de alquiler`)}
+                  {t('vehiculo.computoReservaTitle', { count: diasReserva, defaultValue_one: 'Cómputo de tu {{count}} día de alquiler', defaultValue_other: 'Cómputo de tus {{count}} días de alquiler' })}
                 </span>
                 <span style={{ fontSize: 12, color: textSecond, lineHeight: 1.5 }}>
-                  {t('vehiculo.computoReservaDesc', `Tu reserva empieza el ${fInicioFmt} a las ${hAmPm}. Cada día te otorga 24 horas completas: tu ${diasReserva}º día inicia el ${fFinFmt} a las ${hAmPm} y sus 24 horas terminan el ${fNextFmt} a las ${hAmPm}. Entregar antes registra tiempo de devolución anticipada.`)}
+                  {t('vehiculo.computoReservaDesc', { inicio: fInicioFmt, hora: hAmPm, dias: diasReserva, fin: fFinFmt, siguiente: fNextFmt, defaultValue: 'Tu reserva empieza el {{inicio}} a las {{hora}}. Cada día te otorga 24 horas completas: tu {{dias}}º día inicia el {{fin}} a las {{hora}} y sus 24 horas terminan el {{siguiente}} a las {{hora}}. Entregar antes registra tiempo de devolución anticipada.' })}
                 </span>
               </div>
             </div>
@@ -595,9 +595,9 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
           <div style={{ background: c?.bgSecundario || '#ffffff', borderRadius: 20, padding: 24, maxWidth: 320, margin: '0 auto', textAlign: 'center', boxShadow: '0 10px 25px rgba(0,0,0,0.2)' }}>
             <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
-              <div style={{ width: 64, height: 64, borderRadius: 32, backgroundColor: 'rgba(37, 99, 235, 0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <div style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: 'transparent', border: '2px solid #2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <FaInfoCircle size={22} color="#2563eb" />
+              <div style={{ width: 64, height: 64, borderRadius: 32, backgroundColor: 'rgba(var(--brand-primary-rgb), 0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: 'transparent', border: '2px solid var(--brand-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <FaInfoCircle size={22} color="var(--brand-primary)" />
                 </div>
               </div>
             </div>
@@ -609,7 +609,7 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
             </p>
             <button
               onClick={() => setShowOneDayModal(false)}
-              style={{ width: '100%', padding: '12px 16px', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: 8, fontSize: 15, fontWeight: 600, cursor: 'pointer' }}
+              style={{ width: '100%', padding: '12px 16px', backgroundColor: 'var(--brand-primary)', color: 'white', border: 'none', borderRadius: 8, fontSize: 15, fontWeight: 600, cursor: 'pointer' }}
             >
               Aceptar
             </button>

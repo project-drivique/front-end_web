@@ -462,10 +462,10 @@ export function useReservationFlow() {
     if (Object.keys(e).length > 0) {
       showAlert({
         icon: 'warning',
-        title: 'Información incompleta',
-        text: 'Por favor completa todos los campos obligatorios y adjunta los documentos requeridos para confirmar tu reserva.',
-        confirmButtonText: 'Entendido',
-        confirmButtonColor: '#2563eb',
+        title: t('hc.informacion_incompleta', 'Información incompleta'),
+        text: t('hc.por_favor_completa_todos_los_campos_ob', 'Por favor completa todos los campos obligatorios y adjunta los documentos requeridos para confirmar tu reserva.'),
+        confirmButtonText: t('hc4.entendido', 'Entendido'),
+        confirmButtonColor: 'var(--brand-primary)',
       })
       return
     }
@@ -479,11 +479,11 @@ export function useReservationFlow() {
       if (!hayDocumentosNuevos && rechazado) {
         const confirmRechazado = await showAlert({
           icon: 'warning',
-          title: 'Documentación con observaciones',
-          text: rechazado?.reviewNotes || rechazado?.observaciones || 'Uno o más de tus documentos requiere corrección. Te recomendamos subir la versión corregida.',
+          title: t('hc.documentacion_con_observaciones', 'Documentación con observaciones'),
+          text: rechazado?.reviewNotes || rechazado?.observaciones || t('hc2.uno_o_mas_de_tus_documentos_requiere_c', 'Uno o más de tus documentos requiere corrección. Te recomendamos subir la versión corregida.'),
           showCancelButton: true,
-          confirmButtonText: 'Continuar de todos modos',
-          cancelButtonText: 'Corregir documentos',
+          confirmButtonText: t('hc2.continuar_de_todos_modos', 'Continuar de todos modos'),
+          cancelButtonText: t('hc4.corregir_documentos', 'Corregir documentos'),
         })
         if (!confirmRechazado.isConfirmed) {
           return
@@ -532,27 +532,27 @@ export function useReservationFlow() {
 
     let outsideScheduleAccepted = false
     if (isOutsideSchedule) {
-      const branchDisplay = currentBranch?.name || currentBranch?.nombre || branchName || 'la sucursal'
+      const branchDisplay = currentBranch?.name || currentBranch?.nombre || branchName || t('hc5.the_branch', 'la sucursal')
       const alertResult = await showAlert({
         icon: 'info',
-        title: 'Sucursal fuera de horario de atención',
+        title: t('hc.sucursal_fuera_de_horario_de_atencion', 'Sucursal fuera de horario de atención'),
         html: `
           <div style="text-align: left; font-size: 14px; line-height: 1.6; color: var(--texto-primary, #1e293b);">
             <p style="margin-bottom: 12px;">
-              La sucursal <strong>${branchDisplay}</strong> tiene un horario de atención de <strong>${openingTimeStr}</strong> a <strong>${closingTimeStr}</strong>.
+              ${t('hc5.outside_p1', { defaultValue: 'La sucursal <strong>{{sucursal}}</strong> tiene un horario de atención de <strong>{{apertura}}</strong> a <strong>{{cierre}}</strong>.', sucursal: branchDisplay, apertura: openingTimeStr, cierre: closingTimeStr })}
             </p>
             <p style="margin-bottom: 12px; color: #b45309; background: #fef3c7; padding: 10px 14px; border-radius: 8px; border: 1px solid #fde68a;">
-              ⏱️ En este momento se encuentra cerrada, pero puedes registrar tu reserva ahora y quedará en estado <strong>PENDIENTE</strong>.
+              ${t('hc5.outside_p2', '⏱️ En este momento se encuentra cerrada, pero puedes registrar tu reserva ahora y quedará en estado <strong>PENDIENTE</strong>.')}
             </p>
             <p style="margin: 0; color: var(--texto-second, #64748b); font-size: 13px;">
-              Mañana a las <strong>${openingTimeStr}</strong> te notificaremos por correo electrónico, notificación web y push para que puedas continuar con tu reserva.
+              ${t('hc5.outside_p3', { defaultValue: 'Mañana a las <strong>{{apertura}}</strong> te notificaremos por correo electrónico, notificación web y push para que puedas continuar con tu reserva.', apertura: openingTimeStr })}
             </p>
           </div>
         `,
         showCancelButton: true,
-        confirmButtonText: 'Registrar como pendiente',
-        cancelButtonText: 'Regresar',
-        confirmButtonColor: '#2563eb',
+        confirmButtonText: t('hc2.registrar_como_pendiente', 'Registrar como pendiente'),
+        cancelButtonText: t('hc4.regresar', 'Regresar'),
+        confirmButtonColor: 'var(--brand-primary)',
         cancelButtonColor: '#64748b',
         width: 480,
       })
@@ -615,7 +615,7 @@ export function useReservationFlow() {
       setDocsVerificados(false)
     }
 
-    const clienteNombreFinal = datosForm.nombre || [datosForm.nombres, datosForm.apellidos].filter(Boolean).join(' ') || usuario?.nombre || 'Cliente Drivique'
+    const clienteNombreFinal = datosForm.nombre || [datosForm.nombres, datosForm.apellidos].filter(Boolean).join(' ') || usuario?.nombre || t('hc2.cliente_drivique', 'Cliente Drivique')
     const clienteCorreoFinal = datosForm.correo || datosForm.email || usuario?.correo || usuario?.email || ''
     const clienteTelFinal = datosForm.celular || datosForm.telefono || usuario?.telefono || ''
     const clienteDocFinal = datosForm.numDoc || datosForm.documento || datosForm.cedula || usuario?.cedula || ''
@@ -664,6 +664,27 @@ export function useReservationFlow() {
       // ─── 3. Creación en Backend (Sin fallback silencioso) ─────────────────
       const holdResult = await reservationsService.crearReserva(datosParaBackend)
       const totalServidor = Number(holdResult?.totalEstimated) || finalTotalCop
+
+      // Entrega/devolución a domicilio: el servidor las guarda aparte (sin esto el encargado nunca ve el domicilio)
+      if ((reserva.sucursalRetiro === 'domicilio' || reserva.sucursalDevolucion === 'domicilio') && holdResult?.id) {
+        const sedeVehiculo = SUCURSALES.find((b) => b.nombre === vehiculo?.sucursal)
+        const punto = (pointType, esDomicilio) => (esDomicilio
+          ? { pointType, modality: 'HOME_DELIVERY', cityId: sedeVehiculo?.cityId, neighborhood: reserva.domicilioBarrio, address: reserva.domicilioDireccion, referenceDetails: reserva.domicilioReferencias || undefined }
+          : { pointType, modality: 'BRANCH', branchId: sedeVehiculo?.id || vehiculo?.sucursalId })
+        try {
+          await reservationsService.configurarPuntosEntrega(holdResult.id, [
+            punto('PICKUP', reserva.sucursalRetiro === 'domicilio'),
+            punto('RETURN', reserva.sucursalDevolucion === 'domicilio'),
+          ])
+        } catch (errorPuntos) {
+          console.error('No se pudo guardar el domicilio de la reserva', errorPuntos)
+          showAlert({
+            icon: 'warning',
+            title: t('hc6.home_not_saved_title', 'No se pudo guardar el domicilio'),
+            text: errorPuntos?.response?.data?.detail || errorPuntos?.response?.data?.message || t('hc6.home_not_saved', 'La reserva se creó, pero la dirección de entrega no se guardó. Contacta a la sucursal.'),
+          })
+        }
+      }
       
       const refFinal = holdResult?.code || holdResult?.id || holdResult?.holdId || referencia
       if (holdResult?.cashPaymentExpiresAt) {
@@ -682,7 +703,7 @@ export function useReservationFlow() {
         id: holdResult?.id || refFinal,
         referencia: refFinal,
         codigo: refFinal,
-        horasLimitePago: 72,
+        horasLimitePago: 8,
         total: totalServidor,
         estado: estadoInicial,
         status: estadoInicial
@@ -693,10 +714,10 @@ export function useReservationFlow() {
       sessionStorage.removeItem(storageKey)
     } catch (error) {
       console.error('Error creating reservation hold:', error)
-      const errorMsg = error?.response?.data?.detail || error?.response?.data?.message || error?.message || 'No se pudo crear la reserva en el servidor. Por favor intenta de nuevo.'
+      const errorMsg = error?.response?.data?.detail || error?.response?.data?.message || error?.message || t('hc2.no_se_pudo_crear_la_reserva_en_el_serv', 'No se pudo crear la reserva en el servidor. Por favor intenta de nuevo.')
       showAlert({
         icon: 'error',
-        title: 'Error al registrar reserva',
+        title: t('hc.error_al_registrar_reserva', 'Error al registrar reserva'),
         text: errorMsg
       })
     }
@@ -751,8 +772,8 @@ export function useReservationFlow() {
     if (!infoPago || !infoPago.referencia) {
       showAlert({
         icon: 'warning',
-        title: 'Información de pago incompleta',
-        text: 'No se pudo recuperar la referencia de la reserva para iniciar Wompi. Por favor intenta nuevamente.'
+        title: t('hc.informacion_de_pago_incompleta', 'Información de pago incompleta'),
+        text: t('hc.no_se_pudo_recuperar_la_referencia_de_', 'No se pudo recuperar la referencia de la reserva para iniciar Wompi. Por favor intenta nuevamente.')
       })
       return
     }
@@ -772,12 +793,12 @@ export function useReservationFlow() {
       }
     } catch (err) {
       console.error('[Payment Strategy: Wompi] Error:', err)
-      const msg = err?.message || 'No se pudo conectar con la pasarela de Wompi. Intenta de nuevo.'
+      const msg = err?.message || t('hc2.no_se_pudo_conectar_con_la_pasarela_de', 'No se pudo conectar con la pasarela de Wompi. Intenta de nuevo.')
       setErrorPago(msg)
       setRedirigiendoPago(false)
       showAlert({
         icon: 'error',
-        title: 'Error al iniciar pago en Wompi',
+        title: t('hc.error_al_iniciar_pago_en_wompi', 'Error al iniciar pago en Wompi'),
         text: msg
       })
     }

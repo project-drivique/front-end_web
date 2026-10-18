@@ -87,7 +87,7 @@ export default function VehicleDetailsModal({
       ...baseVehiculo,
       caracteristicas: baseVehiculo.caracteristicas || [],
       equipamientoTecnologico: baseVehiculo.equipamientoTecnologico || [],
-      seguros: baseVehiculo.seguros || [{ nombre: 'Protección Básica Estándar', precio: 0, descripcion: 'Cobertura estándar' }],
+      seguros: baseVehiculo.seguros || [{ nombre: t('hc2.proteccion_basica_estandar', 'Protección Básica Estándar'), precio: 0, descripcion: t('hc2.cobertura_estandar', 'Cobertura estándar') }],
       servicios: baseVehiculo.servicios || [],
       imagenes: baseVehiculo.imagenes || (baseVehiculo.imagen ? [baseVehiculo.imagen] : []),
       sucursalInfo: baseVehiculo.sucursalInfo || {
