@@ -43,7 +43,7 @@ export function useRecover() {
         })
         return
       }
-      const msg = errorApi?.response?.data?.mensaje || 'Error al solicitar recuperación.'
+      const msg = errorApi?.response?.data?.mensaje || t('hc2.error_al_solicitar_recuperacion', 'Error al solicitar recuperación.')
       setError(msg)
     } finally {
       setCargando(false)

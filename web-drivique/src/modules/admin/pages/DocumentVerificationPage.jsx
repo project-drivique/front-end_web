@@ -333,7 +333,7 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
       }
       await recargar()
     } catch (error) {
-      setErrorMessage(error?.response?.data?.detail || 'No fue posible aprobar el documento.')
+      setErrorMessage(error?.response?.data?.detail || t('hc2.no_fue_posible_aprobar_el_documento', 'No fue posible aprobar el documento.'))
       return
     }
     setModalItem(null)
@@ -361,7 +361,7 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
       }
       await recargar()
     } catch (error) {
-      setErrorMessage(error?.response?.data?.detail || 'No fue posible rechazar el documento.')
+      setErrorMessage(error?.response?.data?.detail || t('hc2.no_fue_posible_rechazar_el_documento', 'No fue posible rechazar el documento.'))
       return
     }
     setModalItem(null)
@@ -399,7 +399,7 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
         item.clienteNombre,
         item.documentoIdentidad,
         item.numeroLicencia,
-        item.vehiculoNombre || item.vehiculo || 'Vehículo Reservado',
+        item.vehiculoNombre || item.vehiculo || t('hc2.vehiculo_reservado', 'Vehículo Reservado'),
         resState,
         fecha,
         hora,
@@ -439,7 +439,7 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
             <div className="cities-topbar__actions" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
               <MenuConfiguracion />
               <div className="doc-topbar-profile" style={{ display: 'flex', alignItems: 'center', gap: '10px', background: 'var(--city-card, #ffffff)', border: '1.5px solid var(--city-border, #e2e8f0)', borderRadius: '30px', padding: '4px 16px 4px 6px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-                <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#2563eb', color: 'var(--city-card, #ffffff)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '14px' }}>
+                <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'var(--brand-primary)', color: 'var(--city-card, #ffffff)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '14px' }}>
                   {user?.nombre ? user.nombre.charAt(0).toUpperCase() : 'A'}
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -702,7 +702,7 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
 
                             {/* Columna Nombre Vehículo */}
                             <td style={{ color: 'var(--city-text, #0f172a)', fontWeight: 600 }}>
-                              {item.vehiculoNombre || item.vehiculo || 'Vehículo Reservado'}
+                              {item.vehiculoNombre || item.vehiculo || t('hc2.vehiculo_reservado', 'Vehículo Reservado')}
                             </td>
 
                             {/* Columna Estado de Reserva (Actualizado en tiempo real) */}
@@ -729,18 +729,18 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
                                 style={{
                                   padding: '7px 22px',
                                   borderRadius: '9999px',
-                                  background: '#2563eb',
+                                  background: 'var(--brand-primary)',
                                   color: 'var(--city-card, #ffffff)',
                                   border: 'none',
                                   fontWeight: 800,
                                   fontSize: '12.5px',
                                   cursor: 'pointer',
-                                  boxShadow: '0 2px 5px rgba(37, 99, 235, 0.25)',
+                                  boxShadow: '0 2px 5px rgba(var(--brand-primary-rgb), 0.25)',
                                   transition: 'all 0.2s',
                                   whiteSpace: 'nowrap',
                                 }}
                                 onMouseOver={(e) => { e.currentTarget.style.background = 'var(--brand-primary, #1d4ed8)' }}
-                                onMouseOut={(e) => { e.currentTarget.style.background = '#2563eb' }}
+                                onMouseOut={(e) => { e.currentTarget.style.background = 'var(--brand-primary)' }}
                               >
                                 {t('admin.documents.table.validateBtn', 'Validar')}
                               </button>
@@ -792,7 +792,7 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
 
                           <div className="doc-mobile-data-item doc-mobile-data-item--full">
                             <span className="doc-mobile-data-label">{t('admin.documents.table.vehicleName', 'Nombre Vehículo')}</span>
-                            <span className="doc-mobile-data-value">{item.vehiculoNombre || item.vehiculo || 'Vehículo Reservado'}</span>
+                            <span className="doc-mobile-data-value">{item.vehiculoNombre || item.vehiculo || t('hc2.vehiculo_reservado', 'Vehículo Reservado')}</span>
                           </div>
 
                           <div className="doc-mobile-data-item">
@@ -841,13 +841,13 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
                               width: '100%',
                               padding: '9px 18px',
                               borderRadius: '12px',
-                              background: '#2563eb',
+                              background: 'var(--brand-primary)',
                               color: 'var(--city-card, #ffffff)',
                               border: 'none',
                               fontWeight: 800,
                               fontSize: '13px',
                               cursor: 'pointer',
-                              boxShadow: '0 2px 5px rgba(37, 99, 235, 0.25)',
+                              boxShadow: '0 2px 5px rgba(var(--brand-primary-rgb), 0.25)',
                               display: 'flex',
                               alignItems: 'center',
                               justifyContent: 'center',
@@ -874,7 +874,7 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
               {/* ENCABEZADO FIJO */}
               <header className="doc-modal-header-fixed">
                 <div className="doc-modal-header-info">
-                  <h2 className="doc-modal-title">Validar documentos</h2>
+                  <h2 className="doc-modal-title">{t('hc4.validar_documentos', 'Validar documentos')}</h2>
                   <p className="doc-modal-subtitle">
                     Reserva N.º {modalItem.reservaCodigo} · Cliente: {modalItem.clienteNombre}
                   </p>
@@ -883,7 +883,7 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
                   type="button"
                   className="doc-modal-close-x"
                   onClick={() => setModalItem(null)}
-                  title="Cerrar"
+                  title={t('hc4.cerrar', 'Cerrar')}
                 >
                   &times;
                 </button>
@@ -900,7 +900,7 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
                       className={`doc-nav-btn ${activeSection === 'identidad' ? 'is-active' : ''}`}
                       onClick={() => setActiveSection('identidad')}
                     >
-                      <span>Identidad</span>
+                      <span>{t('hc4.identidad', 'Identidad')}</span>
                       <span className="doc-nav-btn-badge">
                         {countIdentidad}/9 {countIdentidad === 9 ? '✔' : ''}
                       </span>
@@ -911,7 +911,7 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
                       className={`doc-nav-btn ${activeSection === 'licencia' ? 'is-active' : ''}`}
                       onClick={() => setActiveSection('licencia')}
                     >
-                      <span>Licencia</span>
+                      <span>{t('hc4.licencia', 'Licencia')}</span>
                       <span className="doc-nav-btn-badge">
                         {countLicencia}/13 {countLicencia === 13 ? '✔' : ''}
                       </span>
@@ -922,7 +922,7 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
                       className={`doc-nav-btn ${activeSection === 'reserva' ? 'is-active' : ''}`}
                       onClick={() => setActiveSection('reserva')}
                     >
-                      <span>Reserva</span>
+                      <span>{t('hc4.reserva', 'Reserva')}</span>
                       <span className="doc-nav-btn-badge">
                         {countReserva}/5 {countReserva === 5 ? '✔' : ''}
                       </span>
@@ -937,7 +937,7 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
                           identidadPage === 1
                             ? (modalItem.fotoCedulaFrente || modalItem.pdfCedulaUrl)
                             : (modalItem.fotoCedulaReverso || modalItem.pdfCedulaUrl),
-                          `Cédula - Página ${identidadPage}`
+                          t('hc3.doc_page_id', { defaultValue: 'Cédula - Página {{pagina}}', pagina: identidadPage })
                         )}
                       </div>
                       <div className="doc-page-switch-buttons">
@@ -961,8 +961,8 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
                             target="_blank"
                             rel="noopener noreferrer"
                             className="doc-page-btn"
-                            style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px', color: '#2563eb' }}
-                            title="Abrir PDF en pestaña nueva"
+                            style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px', color: 'var(--brand-text)' }}
+                            title={t('hc.abrir_pdf_en_pestana_nueva', 'Abrir PDF en pestaña nueva')}
                           >
                             <FaEye /> Abrir PDF
                           </a>
@@ -981,7 +981,7 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
                           licenciaPage === 1
                             ? (modalItem.fotoLicenciaFrente || modalItem.pdfLicenciaUrl)
                             : (modalItem.fotoLicenciaReverso || modalItem.pdfLicenciaUrl),
-                          `Licencia - Página ${licenciaPage}`
+                          t('hc3.doc_page_license', { defaultValue: 'Licencia - Página {{pagina}}', pagina: licenciaPage })
                         )}
                       </div>
                       <div className="doc-page-switch-buttons">
@@ -1005,8 +1005,8 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
                             target="_blank"
                             rel="noopener noreferrer"
                             className="doc-page-btn"
-                            style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px', color: '#2563eb' }}
-                            title="Abrir PDF en pestaña nueva"
+                            style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px', color: 'var(--brand-text)' }}
+                            title={t('hc.abrir_pdf_en_pestana_nueva', 'Abrir PDF en pestaña nueva')}
                           >
                             <FaEye /> Abrir PDF
                           </a>
@@ -1020,30 +1020,30 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
 
                   {activeSection === 'reserva' && (
                     <div className="doc-left-reserva-comparison">
-                      <h4 className="doc-reserva-card-title">Datos de la Reserva para Comparar</h4>
+                      <h4 className="doc-reserva-card-title">{t('hc.datos_de_la_reserva_para_comparar', 'Datos de la Reserva para Comparar')}</h4>
                       <div className="doc-reserva-card-body">
                         <div className="doc-reserva-row">
-                          <span className="label">Cliente / Titular:</span>
+                          <span className="label">{t('hc.cliente_titular', 'Cliente / Titular:')}</span>
                           <span className="value">{modalItem.clienteNombre}</span>
                         </div>
                         <div className="doc-reserva-row">
-                          <span className="label">Número de Documento:</span>
+                          <span className="label">{t('hc.numero_de_documento', 'Número de Documento:')}</span>
                           <span className="value">{modalItem.documentoIdentidad}</span>
                         </div>
                         <div className="doc-reserva-row">
-                          <span className="label">Licencia / Categoría:</span>
+                          <span className="label">{t('hc.licencia_categoria', 'Licencia / Categoría:')}</span>
                           <span className="value">{modalItem.numeroLicencia} ({modalItem.categoriaLicencia || 'B1'})</span>
                         </div>
                         <div className="doc-reserva-row">
-                          <span className="label">Vehículo Reservado:</span>
-                          <span className="value">{modalItem.vehiculoNombre || modalItem.vehiculo || 'Vehículo Reservado'}</span>
+                          <span className="label">{t('hc.vehiculo_reservado', 'Vehículo Reservado:')}</span>
+                          <span className="value">{modalItem.vehiculoNombre || modalItem.vehiculo || t('hc2.vehiculo_reservado', 'Vehículo Reservado')}</span>
                         </div>
                         <div className="doc-reserva-row">
-                          <span className="label">Fecha Inicio Alquiler:</span>
+                          <span className="label">{t('hc2.fecha_inicio_alquiler', 'Fecha Inicio Alquiler:')}</span>
                           <span className="value">{modalItem.fechaInicio || '10 Oct 2026'}</span>
                         </div>
                         <div className="doc-reserva-row">
-                          <span className="label">Fecha Fin Alquiler:</span>
+                          <span className="label">{t('hc2.fecha_fin_alquiler', 'Fecha Fin Alquiler:')}</span>
                           <span className="value">{modalItem.fechaFin || '15 Oct 2026'}</span>
                         </div>
                       </div>
@@ -1056,10 +1056,10 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
                   {/* SECCIÓN IDENTIDAD */}
                   {activeSection === 'identidad' && (
                     <div className="doc-checklist-section">
-                      <h3 className="doc-section-title">Documento de identidad</h3>
+                      <h3 className="doc-section-title">{t('hc.documento_de_identidad', 'Documento de identidad')}</h3>
 
                       <div className="doc-checklist-group">
-                        <h4 className="doc-group-subtitle">El archivo</h4>
+                        <h4 className="doc-group-subtitle">{t('hc.el_archivo', 'El archivo')}</h4>
                         
                         <label className="doc-check-row">
                           <input
@@ -1096,7 +1096,7 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
                       </div>
 
                       <div className="doc-checklist-group">
-                        <h4 className="doc-group-subtitle">Los datos</h4>
+                        <h4 className="doc-group-subtitle">{t('hc.los_datos', 'Los datos')}</h4>
 
                         <label className="doc-check-row">
                           <input
@@ -1144,7 +1144,7 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
                       </div>
 
                       <div className="doc-checklist-group">
-                        <h4 className="doc-group-subtitle">Que sea real</h4>
+                        <h4 className="doc-group-subtitle">{t('hc.que_sea_real', 'Que sea real')}</h4>
 
                         <label className="doc-check-row">
                           <input
@@ -1174,10 +1174,10 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
                   {/* SECCIÓN LICENCIA */}
                   {activeSection === 'licencia' && (
                     <div className="doc-checklist-section">
-                      <h3 className="doc-section-title">Licencia de conducción</h3>
+                      <h3 className="doc-section-title">{t('hc.licencia_de_conduccion', 'Licencia de conducción')}</h3>
 
                       <div className="doc-checklist-group">
-                        <h4 className="doc-group-subtitle">El archivo</h4>
+                        <h4 className="doc-group-subtitle">{t('hc.el_archivo', 'El archivo')}</h4>
 
                         <label className="doc-check-row">
                           <input
@@ -1203,7 +1203,7 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
                       </div>
 
                       <div className="doc-checklist-group">
-                        <h4 className="doc-group-subtitle">Los datos</h4>
+                        <h4 className="doc-group-subtitle">{t('hc.los_datos', 'Los datos')}</h4>
 
                         <label className="doc-check-row">
                           <input
@@ -1223,7 +1223,7 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
                             onChange={() => handleToggleCheck('lic_categoria_apta')}
                           />
                           <span className={`doc-check-text ${modalChecklist.lic_categoria_apta ? 'is-checked' : ''}`}>
-                            La categoría ({modalItem.categoriaLicencia || 'B1'}) sirve para el vehículo reservado ({modalItem.vehiculoNombre || modalItem.vehiculo || 'Vehículo'}).
+                            La categoría ({modalItem.categoriaLicencia || 'B1'}) sirve para el vehículo reservado ({modalItem.vehiculoNombre || modalItem.vehiculo || t('hc2.vehiculo', 'Vehículo')}).
                           </span>
                         </label>
 
@@ -1337,7 +1337,7 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
                       </div>
 
                       <div className="doc-checklist-group">
-                        <h4 className="doc-group-subtitle">Que sea real</h4>
+                        <h4 className="doc-group-subtitle">{t('hc.que_sea_real', 'Que sea real')}</h4>
 
                         <label className="doc-check-row">
                           <input
@@ -1356,10 +1356,10 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
                   {/* SECCIÓN RESERVA */}
                   {activeSection === 'reserva' && (
                     <div className="doc-checklist-section">
-                      <h3 className="doc-section-title">Revisión cruzada de reserva</h3>
+                      <h3 className="doc-section-title">{t('hc.revision_cruzada_de_reserva', 'Revisión cruzada de reserva')}</h3>
 
                       <div className="doc-checklist-group">
-                        <h4 className="doc-group-subtitle">Validación cruzada de coincidencia</h4>
+                        <h4 className="doc-group-subtitle">{t('hc.validacion_cruzada_de_coincidencia', 'Validación cruzada de coincidencia')}</h4>
 
                         <label className="doc-check-row">
                           <input
@@ -1422,7 +1422,7 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
                   {/* CAMPO DE OBSERVACIONES */}
                   <div className="doc-modal-observaciones-box">
                     <label className="doc-obs-label">
-                      Observaciones <span className="doc-obs-req">(Obligatorio si se rechaza)</span>
+                      Observaciones <span className="doc-obs-req">{t('hc.obligatorio_si_se_rechaza', '(Obligatorio si se rechaza)')}</span>
                     </label>
                     <textarea
                       rows={3}
@@ -1432,7 +1432,7 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
                         setObservaciones(e.target.value)
                         if (errorMessage) setErrorMessage('')
                       }}
-                      placeholder="Escribe aquí las observaciones o el motivo de rechazo que se enviará al cliente..."
+                      placeholder={t('hc.escribe_aqui_las_observaciones_o_el_mo', 'Escribe aquí las observaciones o el motivo de rechazo que se enviará al cliente...')}
                     />
                   </div>
                 </div>
@@ -1489,7 +1489,7 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
                 <div className="doc-zoom-title-box">
                   <h3 className="doc-zoom-title">{zoomPdf.title}</h3>
                   <span className="doc-zoom-subtitle">
-                    <FaEye style={{ color: '#2563eb' }} />
+                    <FaEye style={{ color: 'var(--brand-text)' }} />
                     {t('admin.documents.modal.previewTitle', 'Vista previa del documento')}
                   </span>
                 </div>
@@ -1559,7 +1559,7 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
                     maxWidth: 580,
                     margin: '20px auto',
                   }}>
-                    <FaIdCard size={48} color="#2563eb" style={{ marginBottom: 14 }} />
+                    <FaIdCard size={48} color="var(--brand-primary)" style={{ marginBottom: 14 }} />
                     <h4 style={{ margin: '0 0 6px', fontSize: 16, fontWeight: 800, color: 'var(--city-text, #0f172a)' }}>
                       {zoomPdf.title}
                     </h4>

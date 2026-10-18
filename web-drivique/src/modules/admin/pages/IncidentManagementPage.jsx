@@ -351,7 +351,7 @@ export default function IncidentManagementPage() {
     e.preventDefault()
     if (!modalResponder) return
     if (!esEncargado) {
-      setErrorModal('El Administrador General solo tiene permisos de supervisión global (solo lectura).')
+      setErrorModal(t('hc2.el_administrador_general_solo_tiene_pe', 'El Administrador General solo tiene permisos de supervisión global (solo lectura).'))
       return
     }
     try {
@@ -365,13 +365,13 @@ export default function IncidentManagementPage() {
       setNotice(
         t(
           'admin.incidents.updatedSuccess',
-          `Reporte ${modalResponder.codigo} actualizado a ${nuevoEstadoModal.toUpperCase()} y respuesta enviada por correo y notificación.`
+          t('hc3.incident_updated_reply', { defaultValue: 'Reporte {{codigo}} actualizado a {{estado}} y respuesta enviada por correo y notificación.', codigo: modalResponder.codigo, estado: nuevoEstadoModal.toUpperCase() })
         )
       )
       setModalResponder(null)
       cargarIncidencias()
     } catch (error) {
-      setErrorModal(error.message || 'Error al responder o actualizar el estado del incidente.')
+      setErrorModal(error.message || t('hc2.error_al_responder_o_actualizar_el_est', 'Error al responder o actualizar el estado del incidente.'))
     } finally {
       setGuardando(false)
     }
@@ -388,29 +388,29 @@ export default function IncidentManagementPage() {
 
   const handleQuickStatusChange = async (incidentId, newStatus) => {
     if (!esEncargado) {
-      setNotice('El Administrador General solo tiene permisos de supervisión global.')
+      setNotice(t('hc.el_administrador_general_solo_tiene_pe', 'El Administrador General solo tiene permisos de supervisión global.'))
       return
     }
     try {
       const notaTecnica =
         newStatus === 'resuelto'
-          ? 'Incidencia validada y dictamen resuelto conforme por la sucursal.'
+          ? t('hc2.incidencia_validada_y_dictamen_resuelt', 'Incidencia validada y dictamen resuelto conforme por la sucursal.')
           : newStatus === 'rechazado'
-          ? 'Reporte de incidente desestimado tras peritaje técnico en sede.'
-          : 'Validación técnica en curso. Vehículo ingresado a peritaje/taller de asistencia.'
+          ? t('hc2.reporte_de_incidente_desestimado_tras_', 'Reporte de incidente desestimado tras peritaje técnico en sede.')
+          : t('hc2.validacion_tecnica_en_curso_vehiculo_i', 'Validación técnica en curso. Vehículo ingresado a peritaje/taller de asistencia.')
 
       const actualizado = await incidentManagementService.updateStatusAndRespond(
         incidentId,
         { nuevoEstado: newStatus, respuestaTexto: notaTecnica },
         user
       )
-      setNotice(`Estado del reporte actualizado a ${newStatus.toUpperCase()} correctamente.`)
+      setNotice(t('hc3.incident_status_updated', { defaultValue: 'Estado del reporte actualizado a {{estado}} correctamente.', estado: newStatus.toUpperCase() }))
       if (modalDetalle && modalDetalle.id === incidentId) {
         setModalDetalle(actualizado)
       }
       cargarIncidencias()
     } catch (error) {
-      setNotice(error.message || 'No se pudo cambiar el estado del reporte.')
+      setNotice(error.message || t('hc2.no_se_pudo_cambiar_el_estado_del_repor', 'No se pudo cambiar el estado del reporte.'))
     }
   }
 
@@ -426,14 +426,14 @@ export default function IncidentManagementPage() {
         setErrorModal(
           t(
             'admin.incidents.clientReportDeleteError',
-            'Los reportes creados por los clientes no pueden ser eliminados por control de auditoría.'
+            t('hc2.los_reportes_creados_por_los_clientes_', 'Los reportes creados por los clientes no pueden ser eliminados por control de auditoría.')
           )
         )
       } else if (err.message === 'onlyReceivedOwnReportsCanBeDeleted') {
         setErrorModal(
           t(
             'admin.incidents.ownReportStateDeleteError',
-            'No se puede eliminar un reporte propio que ya ha pasado a estado de revisión o reparación.'
+            t('hc2.no_se_puede_eliminar_un_reporte_propio', 'No se puede eliminar un reporte propio que ya ha pasado a estado de revisión o reparación.')
           )
         )
       } else {
@@ -443,24 +443,24 @@ export default function IncidentManagementPage() {
   }
 
   // Exportación
-  const headersExport = ['Código Reserva', 'Remitente', 'Vehículo', 'Placa', 'Tipo Incidencia', 'Evidencia Foto 1', 'Evidencia Foto 2', 'Evidencia Foto 3', 'Evidencia Video', 'Teléfono', 'Correo', 'Estado']
+  const headersExport = [t('hc2.codigo_reserva_87', 'Código Reserva'), 'Remitente', t('hc2.vehiculo', 'Vehículo'), 'Placa', 'Tipo Incidencia', 'Evidencia Foto 1', 'Evidencia Foto 2', 'Evidencia Foto 3', 'Evidencia Video', t('hc2.telefono', 'Teléfono'), 'Correo', 'Estado']
   const rowsExport = filtrados.map((r) => [
     r.codigoReserva || r.codigo,
     r.contactoNombre,
     r.vehiculo,
     r.placa,
-    r.tipoIncidenciaNombre || 'Avería Mecánica',
+    r.tipoIncidenciaNombre || t('hc2.averia_mecanica', 'Avería Mecánica'),
     r.evidenciaFoto1 || '-',
     r.evidenciaFoto2 || '-',
     r.evidenciaFoto3 || '-',
-    r.evidenciaVideo || 'Sin video',
+    r.evidenciaVideo || t('hc2.sin_video', 'Sin video'),
     r.contactoTelefono || '',
     r.contactoEmail || '',
     r.estado,
   ])
 
   const exportData = {
-    title: `Reportes de Incidencias de Vehículos — ${brand?.name || 'Drivique'}`,
+    title: t('hc3.incident_export_title', { defaultValue: 'Reportes de Incidencias de Vehículos — {{marca}}', marca: brand?.name || 'Drivique' }),
     headers: headersExport,
     rows: rowsExport,
     items: filtrados,
@@ -476,17 +476,17 @@ export default function IncidentManagementPage() {
           <header className="cities-topbar reservations-management-header">
             <div className="branch-topbar-brand-title">
               <span className="branch-topbar-badge">
-                {esEncargado ? 'VALIDACIÓN OPERATIVA DE SUCURSAL' : 'SUPERVISIÓN Y AUDITORÍA GLOBAL'}
+                {esEncargado ? t('hc2.validacion_operativa_de_sucursal', 'VALIDACIÓN OPERATIVA DE SUCURSAL') : t('hc2.supervision_y_auditoria_global', 'SUPERVISIÓN Y AUDITORÍA GLOBAL')}
               </span>
               <h1 className="branch-topbar-heading">
-                {esEncargado ? 'Validación y Atención de Incidentes' : 'Supervisión Global de Incidentes'}
+                {esEncargado ? t('hc2.validacion_y_atencion_de_incidentes', 'Validación y Atención de Incidentes') : t('hc2.supervision_global_de_incidentes', 'Supervisión Global de Incidentes')}
               </h1>
             </div>
 
             <div className="cities-topbar__actions" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
               <MenuConfiguracion />
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', background: 'var(--city-card, #ffffff)', border: '1px solid #e2e8f0', borderRadius: '30px', padding: '4px 16px 4px 6px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-                <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#2563eb', color: 'var(--city-card, #ffffff)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '14px' }}>
+                <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'var(--brand-primary)', color: 'var(--city-card, #ffffff)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '14px' }}>
                   {user?.nombre ? user.nombre.charAt(0).toUpperCase() : 'A'}
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -513,17 +513,17 @@ export default function IncidentManagementPage() {
               margin: '0 0 16px',
               padding: '14px 18px',
               borderRadius: 12,
-              background: '#eff6ff',
-              border: '1.5px solid #bfdbfe',
+              background: 'var(--brand-soft)',
+              border: '1.5px solid var(--brand-border)',
               display: 'flex',
               alignItems: 'center',
               gap: 14,
-              color: '#1e40af'
+              color: 'var(--brand-text)'
             }}>
-              <FaBuilding style={{ color: '#2563eb', fontSize: 24, flexShrink: 0 }} />
+              <FaBuilding style={{ color: 'var(--brand-text)', fontSize: 24, flexShrink: 0 }} />
               <div style={{ fontSize: 13 }}>
-                <strong style={{ display: 'block', color: '#1e3a8a', marginBottom: 2 }}>
-                  Sede Operativa Asignada: {sucursalEncargado || 'Tu Sucursal'}
+                <strong style={{ display: 'block', color: 'var(--brand-text)', marginBottom: 2 }}>
+                  Sede Operativa Asignada: {sucursalEncargado || t('hc2.tu_sucursal', 'Tu Sucursal')}
                 </strong>
                 Como Encargado de Sucursal tienes la potestad exclusiva de validar los siniestros y averías reportados por los clientes en esta sede, inspeccionar las evidencias fotográficas, dictaminar el peritaje técnico y responder formalmente al usuario.
               </div>
@@ -540,7 +540,7 @@ export default function IncidentManagementPage() {
               gap: 14,
               color: '#334155'
             }}>
-              <FaUserShield style={{ color: '#2563eb', fontSize: 24, flexShrink: 0 }} />
+              <FaUserShield style={{ color: 'var(--brand-text)', fontSize: 24, flexShrink: 0 }} />
               <div style={{ fontSize: 13 }}>
                 <strong style={{ display: 'block', color: '#0f172a', marginBottom: 2 }}>
                   Modo Supervisión y Auditoría Global (Solo Lectura)
@@ -556,13 +556,13 @@ export default function IncidentManagementPage() {
               className={`incident-kpi-card ${stateFilter === 'all' ? 'is-active' : ''}`}
               onClick={() => setStateFilter('all')}
               style={{ cursor: 'pointer' }}
-              title="Ver todos los reportes"
+              title={t('hc.ver_todos_los_reportes', 'Ver todos los reportes')}
             >
               <div className="incident-kpi-icon incident-kpi-icon--total">
                 <FaClipboardList />
               </div>
               <div className="incident-kpi-content">
-                <span className="incident-kpi-label">TOTAL REPORTES</span>
+                <span className="incident-kpi-label">{t('hc2.total_reportes', 'TOTAL REPORTES')}</span>
                 <span className="incident-kpi-value">{metrics.total}</span>
               </div>
             </div>
@@ -571,29 +571,29 @@ export default function IncidentManagementPage() {
               className={`incident-kpi-card ${stateFilter === 'recibido' ? 'is-active' : ''}`}
               onClick={() => setStateFilter(stateFilter === 'recibido' ? 'all' : 'recibido')}
               style={{ cursor: 'pointer' }}
-              title="Filtrar por reportes pendientes de validación"
+              title={t('hc.filtrar_por_reportes_pendientes_de_val', 'Filtrar por reportes pendientes de validación')}
             >
               <div className="incident-kpi-icon incident-kpi-icon--recibido">
                 <FaClock />
               </div>
               <div className="incident-kpi-content">
-                <span className="incident-kpi-label">POR VALIDAR</span>
+                <span className="incident-kpi-label">{t('hc.por_validar', 'POR VALIDAR')}</span>
                 <span className="incident-kpi-value">{metrics.recibido}</span>
               </div>
-              {metrics.recibido > 0 && <span className="incident-kpi-badge incident-kpi-badge--alert">Pendiente</span>}
+              {metrics.recibido > 0 && <span className="incident-kpi-badge incident-kpi-badge--alert">{t('hc4.pendiente', 'Pendiente')}</span>}
             </div>
 
             <div 
               className={`incident-kpi-card ${stateFilter === 'atendiendo' ? 'is-active' : ''}`}
               onClick={() => setStateFilter(stateFilter === 'atendiendo' ? 'all' : 'atendiendo')}
               style={{ cursor: 'pointer' }}
-              title="Filtrar por reportes en validación o taller"
+              title={t('hc.filtrar_por_reportes_en_validacion_o_t', 'Filtrar por reportes en validación o taller')}
             >
               <div className="incident-kpi-icon incident-kpi-icon--atendiendo">
                 <FaWrench />
               </div>
               <div className="incident-kpi-content">
-                <span className="incident-kpi-label">EN ATENCIÓN / TALLER</span>
+                <span className="incident-kpi-label">{t('hc.en_atencion_taller', 'EN ATENCIÓN / TALLER')}</span>
                 <span className="incident-kpi-value">{metrics.atendiendo}</span>
               </div>
             </div>
@@ -602,13 +602,13 @@ export default function IncidentManagementPage() {
               className={`incident-kpi-card ${stateFilter === 'resuelto' ? 'is-active' : ''}`}
               onClick={() => setStateFilter(stateFilter === 'resuelto' ? 'all' : 'resuelto')}
               style={{ cursor: 'pointer' }}
-              title="Filtrar por reportes validados y resueltos"
+              title={t('hc.filtrar_por_reportes_validados_y_resue', 'Filtrar por reportes validados y resueltos')}
             >
               <div className="incident-kpi-icon incident-kpi-icon--resuelto">
                 <FaCheckCircle />
               </div>
               <div className="incident-kpi-content">
-                <span className="incident-kpi-label">VALIDADOS Y RESUELTOS</span>
+                <span className="incident-kpi-label">{t('hc.validados_y_resueltos', 'VALIDADOS Y RESUELTOS')}</span>
                 <span className="incident-kpi-value">{metrics.resuelto}</span>
               </div>
             </div>
@@ -617,7 +617,7 @@ export default function IncidentManagementPage() {
               className={`incident-kpi-card ${stateFilter === 'rechazado' ? 'is-active' : ''}`}
               onClick={() => setStateFilter(stateFilter === 'rechazado' ? 'all' : 'rechazado')}
               style={{ cursor: 'pointer' }}
-              title="Filtrar por reportes desestimados o cerrados"
+              title={t('hc.filtrar_por_reportes_desestimados_o_ce', 'Filtrar por reportes desestimados o cerrados')}
             >
               <div className="incident-kpi-icon incident-kpi-icon--rechazado">
                 <FaTimesCircle />
@@ -699,7 +699,7 @@ export default function IncidentManagementPage() {
                   }}
                   style={{
                     padding: '8px 20px',
-                    background: '#2563eb',
+                    background: 'var(--brand-primary)',
                     color: 'var(--city-card, #ffffff)',
                     borderRadius: '9999px',
                     fontWeight: '800',
@@ -709,12 +709,12 @@ export default function IncidentManagementPage() {
                     gap: '7px',
                     border: 'none',
                     cursor: 'pointer',
-                    boxShadow: '0 2px 6px rgba(37, 99, 235, 0.25)',
+                    boxShadow: '0 2px 6px rgba(var(--brand-primary-rgb), 0.25)',
                     transition: 'all 0.2s',
                     whiteSpace: 'nowrap'
                   }}
                   onMouseOver={(e) => { e.currentTarget.style.background = 'var(--brand-primary, #1d4ed8)' }}
-                  onMouseOut={(e) => { e.currentTarget.style.background = '#2563eb' }}
+                  onMouseOut={(e) => { e.currentTarget.style.background = 'var(--brand-primary)' }}
                 >
                   <FaPlus /> {t('admin.incidents.newReport', 'Nuevo Reporte de Incidencia')}
                 </button>
@@ -773,7 +773,7 @@ export default function IncidentManagementPage() {
                       <th>{t('admin.incidents.table.vehicleName', 'NOMBRE VEHÍCULO')}</th>
                       <th>{t('admin.incidents.table.image', 'IMAGEN')}</th>
                       <th>{t('admin.incidents.table.plate', 'PLACA')}</th>
-                      <th>SEDE / SUCURSAL</th>
+                      <th>{t('hc.sede_sucursal', 'SEDE / SUCURSAL')}</th>
                       <th>{t('admin.incidents.table.incidentType', 'TIPO DE INCIDENTE')}</th>
                       <th>{t('admin.incidents.table.problemDesc', 'DESCRIPCIÓN PROBLEMA')}</th>
                       <th>{t('admin.incidents.table.reportDate', 'FECHA DE REPORTE')}</th>
@@ -793,7 +793,7 @@ export default function IncidentManagementPage() {
                       <tr key={r.id}>
                         <td style={{ fontWeight: 600, color: 'var(--city-text)', width: '40px' }}>{index + 1}</td>
                         <td style={{ fontWeight: 700, color: 'var(--brand-primary, #2563eb)' }}>
-                          <span style={{ background: '#eff6ff', border: '1px solid #bfdbfe', padding: '3px 8px', borderRadius: '6px', fontSize: '12px', fontFamily: 'monospace' }}>
+                          <span style={{ background: 'var(--brand-soft)', border: '1px solid var(--brand-border)', padding: '3px 8px', borderRadius: '6px', fontSize: '12px', fontFamily: 'monospace' }}>
                             {r.codigoReserva || r.reservaCodigo || `RES-${r.id.split('-')[1] || 'S/R'}`}
                           </span>
                         </td>
@@ -809,7 +809,7 @@ export default function IncidentManagementPage() {
                           </span>
                         </td>
                         
-                        <td style={{ color: 'var(--city-text, #334155)', fontWeight: 500 }}>{t(`admin.incidents.types.${r.tipoIncidenciaId || 'averia_mecanica'}`, r.tipoIncidenciaNombre || 'Avería Mecánica')}</td>
+                        <td style={{ color: 'var(--city-text, #334155)', fontWeight: 500 }}>{t(`admin.incidents.types.${r.tipoIncidenciaId || 'averia_mecanica'}`, r.tipoIncidenciaNombre || t('hc2.averia_mecanica', 'Avería Mecánica'))}</td>
                         <td style={{ color: 'var(--city-muted, #64748b)', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis' }}>{translateDescription(r.descripcion)}</td>
                         <td style={{ color: 'var(--city-text, #0f172a)' }}>{new Date(r.fechaIso || r.fechaRegistro || Date.now()).toLocaleDateString()}</td>
                         <td style={{ color: 'var(--city-text, #0f172a)' }}>{new Date(r.fechaIso || r.fechaRegistro || Date.now()).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</td>
@@ -819,9 +819,9 @@ export default function IncidentManagementPage() {
                             <div
                               className="doc-table-pdf-link"
                               onClick={() => r.evidenciaFoto1Url && setZoomMedia({ url: r.evidenciaFoto1Url, title: `Evidencia Foto 1 — ${r.codigoReserva || r.codigo}`, isVideo: false })}
-                              title="Abrir foto de evidencia 1"
+                              title={t('hc.abrir_foto_de_evidencia_1', 'Abrir foto de evidencia 1')}
                             >
-                              <FaFileImage style={{ color: '#2563eb', fontSize: 13 }} />
+                              <FaFileImage style={{ color: 'var(--brand-text)', fontSize: 13 }} />
                               <span>{r.evidenciaFoto1}</span>
                             </div>
                           ) : (
@@ -833,9 +833,9 @@ export default function IncidentManagementPage() {
                             <div
                               className="doc-table-pdf-link"
                               onClick={() => r.evidenciaFoto2Url && setZoomMedia({ url: r.evidenciaFoto2Url, title: `Evidencia Foto 2 — ${r.codigoReserva || r.codigo}`, isVideo: false })}
-                              title="Abrir foto de evidencia 2"
+                              title={t('hc.abrir_foto_de_evidencia_2', 'Abrir foto de evidencia 2')}
                             >
-                              <FaFileImage style={{ color: '#2563eb', fontSize: 13 }} />
+                              <FaFileImage style={{ color: 'var(--brand-text)', fontSize: 13 }} />
                               <span>{r.evidenciaFoto2}</span>
                             </div>
                           ) : (
@@ -847,9 +847,9 @@ export default function IncidentManagementPage() {
                             <div
                               className="doc-table-pdf-link"
                               onClick={() => r.evidenciaFoto3Url && setZoomMedia({ url: r.evidenciaFoto3Url, title: `Evidencia Foto 3 — ${r.codigoReserva || r.codigo}`, isVideo: false })}
-                              title="Abrir foto de evidencia 3"
+                              title={t('hc.abrir_foto_de_evidencia_3', 'Abrir foto de evidencia 3')}
                             >
-                              <FaFileImage style={{ color: '#2563eb', fontSize: 13 }} />
+                              <FaFileImage style={{ color: 'var(--brand-text)', fontSize: 13 }} />
                               <span>{r.evidenciaFoto3}</span>
                             </div>
                           ) : (
@@ -861,9 +861,9 @@ export default function IncidentManagementPage() {
                             <div
                               className="doc-table-pdf-link"
                               onClick={() => r.evidenciaVideoUrl && setZoomMedia({ url: r.evidenciaVideoUrl, title: `Evidencia Video — ${r.codigoReserva || r.codigo}`, isVideo: true })}
-                              title="Reproducir video de evidencia"
+                              title={t('hc.reproducir_video_de_evidencia', 'Reproducir video de evidencia')}
                             >
-                              <FaVideo style={{ color: '#0284c7', fontSize: 13 }} />
+                              <FaVideo style={{ color: 'var(--brand-text)', fontSize: 13 }} />
                               <span>{r.evidenciaVideo}</span>
                             </div>
                           ) : (
@@ -873,7 +873,7 @@ export default function IncidentManagementPage() {
                           )}
                         </td>
 
-                        <td style={{ color: 'var(--city-muted, #475569)' }}>{r.contactoTelefono || '+57 300 0000000'}</td>
+                        <td style={{ color: 'var(--city-muted, #475569)' }}>{r.contactoTelefono || '—'}</td>
                         <td style={{ color: 'var(--city-muted, #64748b)' }}>{r.contactoEmail}</td>
                         
                         <td style={{ textAlign: 'center' }}>
@@ -890,7 +890,7 @@ export default function IncidentManagementPage() {
                                   style={{
                                     padding: '6px 14px',
                                     borderRadius: '9999px',
-                                    background: '#2563eb',
+                                    background: 'var(--brand-primary)',
                                     color: '#ffffff',
                                     border: 'none',
                                     cursor: 'pointer',
@@ -899,11 +899,11 @@ export default function IncidentManagementPage() {
                                     display: 'inline-flex',
                                     alignItems: 'center',
                                     gap: 6,
-                                    boxShadow: '0 2px 5px rgba(37, 99, 235, 0.25)',
+                                    boxShadow: '0 2px 5px rgba(var(--brand-primary-rgb), 0.25)',
                                     transition: 'all 0.2s',
                                   }}
-                                  onMouseOver={(e) => { e.currentTarget.style.background = '#1d4ed8' }}
-                                  onMouseOut={(e) => { e.currentTarget.style.background = '#2563eb' }}
+                                  onMouseOver={(e) => { e.currentTarget.style.background = 'var(--brand-primary-hover)' }}
+                                  onMouseOut={(e) => { e.currentTarget.style.background = 'var(--brand-primary)' }}
                                 >
                                   <FaShieldAlt size={12} /> Validar Reporte
                                 </button>
@@ -923,7 +923,7 @@ export default function IncidentManagementPage() {
                                       setModalEliminar(r)
                                     }}
                                     style={{ padding: '6px 8px', fontSize: '12px', background: 'transparent', color: '#dc2626', border: 'none', cursor: 'pointer', fontWeight: 600 }}
-                                    title="Eliminar reporte interno"
+                                    title={t('hc.eliminar_reporte_interno', 'Eliminar reporte interno')}
                                   >
                                     <FaTrash size={12} />
                                   </button>
@@ -947,7 +947,7 @@ export default function IncidentManagementPage() {
                                   gap: 6,
                                   transition: 'all 0.2s',
                                 }}
-                                onMouseOver={(e) => { e.currentTarget.style.background = '#dbeafe' }}
+                                onMouseOver={(e) => { e.currentTarget.style.background = 'var(--brand-soft-strong)' }}
                                 onMouseOut={(e) => { e.currentTarget.style.background = 'var(--brand-soft-light, #eff6ff)' }}
                               >
                                 <FaEye size={13} /> Ver Detalle y Evidencias
@@ -1032,8 +1032,8 @@ export default function IncidentManagementPage() {
                       <div className="incident-step-circle">
                         {isRecibido ? '1' : <FaCheckCircle size={14} />}
                       </div>
-                      <span className="incident-step-label">1. Reportado</span>
-                      <span className="incident-step-desc">Registrado por cliente</span>
+                      <span className="incident-step-label">{t('hc4.1_reportado', '1. Reportado')}</span>
+                      <span className="incident-step-desc">{t('hc.registrado_por_cliente', 'Registrado por cliente')}</span>
                     </div>
 
                     {/* Paso 2: En Validación */}
@@ -1041,8 +1041,8 @@ export default function IncidentManagementPage() {
                       <div className="incident-step-circle">
                         {isResuelto || isRechazado ? <FaCheckCircle size={14} /> : '2'}
                       </div>
-                      <span className="incident-step-label">2. En Validación</span>
-                      <span className="incident-step-desc">Inspección de sede</span>
+                      <span className="incident-step-label">{t('hc.2_en_validacion', '2. En Validación')}</span>
+                      <span className="incident-step-desc">{t('hc.inspeccion_de_sede', 'Inspección de sede')}</span>
                     </div>
 
                     {/* Paso 3: En Reparación / Solución */}
@@ -1050,8 +1050,8 @@ export default function IncidentManagementPage() {
                       <div className="incident-step-circle">
                         {isResuelto ? <FaCheckCircle size={14} /> : '3'}
                       </div>
-                      <span className="incident-step-label">3. En Solución</span>
-                      <span className="incident-step-desc">Atención técnica</span>
+                      <span className="incident-step-label">{t('hc.3_en_solucion', '3. En Solución')}</span>
+                      <span className="incident-step-desc">{t('hc.atencion_tecnica', 'Atención técnica')}</span>
                     </div>
 
                     {/* Paso 4: Resuelto o Rechazado */}
@@ -1059,8 +1059,8 @@ export default function IncidentManagementPage() {
                       <div className="incident-step-circle">
                         {isRechazado ? <FaTimesCircle size={14} /> : isResuelto ? <FaCheckCircle size={14} /> : '4'}
                       </div>
-                      <span className="incident-step-label">{isRechazado ? '4. Rechazado' : '4. Resuelto'}</span>
-                      <span className="incident-step-desc">{isRechazado ? 'Reporte desestimado' : 'Caso finalizado'}</span>
+                      <span className="incident-step-label">{isRechazado ? t('hc5.step4_rejected', '4. Rechazado') : t('hc5.step4_resolved', '4. Resuelto')}</span>
+                      <span className="incident-step-desc">{isRechazado ? t('hc5.step4_desc_rejected', 'Reporte desestimado') : t('hc5.step4_desc_done', 'Caso finalizado')}</span>
                     </div>
                   </div>
                 </div>
@@ -1069,9 +1069,9 @@ export default function IncidentManagementPage() {
                 {esEncargado ? (
                   <div className="incident-validation-box">
                     <div className="incident-validation-title">
-                      <FaWrench style={{ color: '#2563eb' }} />
+                      <FaWrench style={{ color: 'var(--brand-text)' }} />
                       <span>Panel de Validación Operativa y Peritaje (Sede {sucursalEncargado || modalDetalle.sucursal})</span>
-                      <span style={{ fontSize: 11, fontWeight: 700, color: '#2563eb', marginLeft: 'auto', background: '#eff6ff', padding: '3px 10px', borderRadius: '9999px', border: '1px solid #bfdbfe' }}>
+                      <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--brand-text)', marginLeft: 'auto', background: 'var(--brand-soft)', padding: '3px 10px', borderRadius: '9999px', border: '1px solid var(--brand-border)' }}>
                         Acción Operativa Requerida
                       </span>
                     </div>
@@ -1087,7 +1087,7 @@ export default function IncidentManagementPage() {
                           checked={validationChecklist.evidenciasCoinciden}
                           onChange={(e) => setValidationChecklist(c => ({ ...c, evidenciasCoinciden: e.target.checked }))}
                         />
-                        <span>Evidencias fotográficas y audiovisuales corresponden al siniestro declarado por el cliente.</span>
+                        <span>{t('hc.evidencias_fotograficas_y_audiovisuale', 'Evidencias fotográficas y audiovisuales corresponden al siniestro declarado por el cliente.')}</span>
                       </label>
                       <label className="incident-checklist-item">
                         <input
@@ -1095,7 +1095,7 @@ export default function IncidentManagementPage() {
                           checked={validationChecklist.polizaVigente}
                           onChange={(e) => setValidationChecklist(c => ({ ...c, polizaVigente: e.target.checked }))}
                         />
-                        <span>Póliza de seguro y contrato de alquiler vigentes para esta reserva.</span>
+                        <span>{t('hc.poliza_de_seguro_y_contrato_de_alquile', 'Póliza de seguro y contrato de alquiler vigentes para esta reserva.')}</span>
                       </label>
                       <label className="incident-checklist-item">
                         <input
@@ -1111,7 +1111,7 @@ export default function IncidentManagementPage() {
                           checked={validationChecklist.responsabilidadDictaminada}
                           onChange={(e) => setValidationChecklist(c => ({ ...c, responsabilidadDictaminada: e.target.checked }))}
                         />
-                        <span>Dictamen técnico: ¿Aplica deducible o asistencia en ruta sin costo adicional para el cliente?</span>
+                        <span>{t('hc.dictamen_tecnico_aplica_deducible_o_as', 'Dictamen técnico: ¿Aplica deducible o asistencia en ruta sin costo adicional para el cliente?')}</span>
                       </label>
                     </div>
 
@@ -1124,7 +1124,7 @@ export default function IncidentManagementPage() {
                           <button
                             type="button"
                             onClick={() => handleQuickStatusChange(modalDetalle.id, 'atendiendo')}
-                            style={{ padding: '9px 18px', borderRadius: '9999px', background: '#2563eb', color: '#fff', border: 'none', fontWeight: 800, fontSize: 13, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6, boxShadow: '0 2px 6px rgba(37, 99, 235, 0.25)' }}
+                            style={{ padding: '9px 18px', borderRadius: '9999px', background: 'var(--brand-primary)', color: '#fff', border: 'none', fontWeight: 800, fontSize: 13, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6, boxShadow: '0 2px 6px rgba(var(--brand-primary-rgb), 0.25)' }}
                           >
                             <FaCheckCircle /> Iniciar Validación Técnica y Taller
                           </button>
@@ -1138,7 +1138,7 @@ export default function IncidentManagementPage() {
                           <button
                             type="button"
                             onClick={() => { setModalDetalle(null); openResponderModal(modalDetalle); }}
-                            style={{ padding: '9px 18px', borderRadius: '9999px', background: '#eff6ff', color: '#2563eb', border: '1.5px solid #bfdbfe', fontWeight: 800, fontSize: 13, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6, marginLeft: 'auto' }}
+                            style={{ padding: '9px 18px', borderRadius: '9999px', background: 'var(--brand-soft)', color: 'var(--brand-text)', border: '1.5px solid var(--brand-border)', fontWeight: 800, fontSize: 13, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6, marginLeft: 'auto' }}
                           >
                             <FaPaperPlane /> Responder y Notificar al Cliente
                           </button>
@@ -1169,7 +1169,7 @@ export default function IncidentManagementPage() {
                           <button
                             type="button"
                             onClick={() => { setModalDetalle(null); openResponderModal(modalDetalle); }}
-                            style={{ padding: '9px 18px', borderRadius: '9999px', background: '#eff6ff', color: '#2563eb', border: '1.5px solid #bfdbfe', fontWeight: 800, fontSize: 13, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6, marginLeft: 'auto' }}
+                            style={{ padding: '9px 18px', borderRadius: '9999px', background: 'var(--brand-soft)', color: 'var(--brand-text)', border: '1.5px solid var(--brand-border)', fontWeight: 800, fontSize: 13, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6, marginLeft: 'auto' }}
                           >
                             <FaPaperPlane /> Enviar Novedad al Cliente
                           </button>
@@ -1181,7 +1181,7 @@ export default function IncidentManagementPage() {
                       <div>
                         <div style={{ background: '#dcfce7', border: '1.5px solid #bbf7d0', borderRadius: 10, padding: '12px 16px', color: '#15803d', fontWeight: 700, fontSize: 13, display: 'flex', alignItems: 'center', gap: 8 }}>
                           <FaCheckCircle size={16} />
-                          <span>Incidente validado, reparado y cerrado satisfactoriamente por la sucursal.</span>
+                          <span>{t('hc.incidente_validado_reparado_y_cerrado_', 'Incidente validado, reparado y cerrado satisfactoriamente por la sucursal.')}</span>
                         </div>
                         <div className="incident-validation-actions">
                           <button
@@ -1198,7 +1198,7 @@ export default function IncidentManagementPage() {
                     {isRechazado && (
                       <div style={{ background: '#fee2e2', border: '1.5px solid #fecaca', borderRadius: 10, padding: '12px 16px', color: '#991b1b', fontWeight: 700, fontSize: 13, display: 'flex', alignItems: 'center', gap: 8 }}>
                         <FaTimesCircle size={16} />
-                        <span>Este reporte fue desestimado o cerrado por la sucursal tras peritaje técnico.</span>
+                        <span>{t('hc.este_reporte_fue_desestimado_o_cerrado', 'Este reporte fue desestimado o cerrado por la sucursal tras peritaje técnico.')}</span>
                       </div>
                     )}
                   </div>
@@ -1215,9 +1215,9 @@ export default function IncidentManagementPage() {
                     fontSize: 13,
                     color: '#334155'
                   }}>
-                    <FaUserShield style={{ color: '#2563eb', fontSize: 26, flexShrink: 0 }} />
+                    <FaUserShield style={{ color: 'var(--brand-text)', fontSize: 26, flexShrink: 0 }} />
                     <div>
-                      <strong style={{ display: 'block', color: '#0f172a', marginBottom: 2 }}>Supervisión de Auditoría Global (Solo Lectura)</strong>
+                      <strong style={{ display: 'block', color: '#0f172a', marginBottom: 2 }}>{t('hc.supervision_de_auditoria_global_solo_l', 'Supervisión de Auditoría Global (Solo Lectura)')}</strong>
                       Este reporte de incidente es validado y resuelto operativamente por el Encargado de la sede <strong>{modalDetalle.sucursal}</strong>. El Administrador General cuenta con acceso de consulta integral y auditoría de evidencias sin intervención en las transiciones operativas ni alteración del peritaje.
                     </div>
                   </div>
@@ -1230,13 +1230,15 @@ export default function IncidentManagementPage() {
                     <p>{modalDetalle.contactoNombre}</p>
                     <small>{modalDetalle.contactoEmail}</small>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '6px' }}>
-                      <small>{modalDetalle.contactoTelefono || '+57 300 0000000'}</small>
+                      <small>{modalDetalle.contactoTelefono || t('admin.incidents.noPhone', 'Sin teléfono registrado')}</small>
+                      {modalDetalle.contactoTelefono && (
                       <a 
-                        href={`tel:${modalDetalle.contactoTelefono || '3000000000'}`}
+                        href={`tel:${modalDetalle.contactoTelefono}`}
                         style={{ padding: '4px 8px', borderRadius: '4px', background: '#ecfeff', color: '#0891b2', border: '1px solid #cffafe', textDecoration: 'none', fontSize: '11px', display: 'inline-flex', alignItems: 'center', gap: '4px', fontWeight: 'bold' }}
                       >
                         <FaPhone /> {t('admin.incidents.call', 'Llamar')}
                       </a>
+                      )}
                     </div>
                   </div>
 
@@ -1269,12 +1271,12 @@ export default function IncidentManagementPage() {
                         >
                           <img
                             src={modalDetalle.evidenciaFoto1Url || 'https://images.unsplash.com/photo-1590362891991-f776e747a588?auto=format&fit=crop&w=400&q=80'}
-                            alt="Evidencia 1"
+                            alt={t('hc4.evidencia_1', 'Evidencia 1')}
                             className="incident-gallery-preview"
                           />
                           <div className="incident-gallery-meta">
                             <span className="incident-gallery-title">{modalDetalle.evidenciaFoto1}</span>
-                            <span className="incident-gallery-btn"><FaFileImage size={11} /> Ampliar Foto</span>
+                            <span className="incident-gallery-btn"><FaFileImage size={11} /> {t('hc4.ampliar_foto', 'Ampliar Foto')}</span>
                           </div>
                         </div>
                       )}
@@ -1286,12 +1288,12 @@ export default function IncidentManagementPage() {
                         >
                           <img
                             src={modalDetalle.evidenciaFoto2Url || 'https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=400&q=80'}
-                            alt="Evidencia 2"
+                            alt={t('hc4.evidencia_2', 'Evidencia 2')}
                             className="incident-gallery-preview"
                           />
                           <div className="incident-gallery-meta">
                             <span className="incident-gallery-title">{modalDetalle.evidenciaFoto2}</span>
-                            <span className="incident-gallery-btn"><FaFileImage size={11} /> Ampliar Foto</span>
+                            <span className="incident-gallery-btn"><FaFileImage size={11} /> {t('hc4.ampliar_foto', 'Ampliar Foto')}</span>
                           </div>
                         </div>
                       )}
@@ -1303,12 +1305,12 @@ export default function IncidentManagementPage() {
                         >
                           <img
                             src={modalDetalle.evidenciaFoto3Url || 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=400&q=80'}
-                            alt="Evidencia 3"
+                            alt={t('hc4.evidencia_3', 'Evidencia 3')}
                             className="incident-gallery-preview"
                           />
                           <div className="incident-gallery-meta">
                             <span className="incident-gallery-title">{modalDetalle.evidenciaFoto3}</span>
-                            <span className="incident-gallery-btn"><FaFileImage size={11} /> Ampliar Foto</span>
+                            <span className="incident-gallery-btn"><FaFileImage size={11} /> {t('hc4.ampliar_foto', 'Ampliar Foto')}</span>
                           </div>
                         </div>
                       )}
@@ -1319,13 +1321,13 @@ export default function IncidentManagementPage() {
                           onClick={() => setZoomMedia({ url: modalDetalle.evidenciaVideoUrl || 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4', title: `Video: ${modalDetalle.evidenciaVideo}`, isVideo: true })}
                         >
                           <div className="incident-gallery-preview" style={{ background: '#0f172a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <div style={{ width: 44, height: 44, borderRadius: '50%', background: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 18, boxShadow: '0 2px 8px rgba(0,0,0,0.3)' }}>
+                            <div style={{ width: 44, height: 44, borderRadius: '50%', background: 'var(--brand-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 18, boxShadow: '0 2px 8px rgba(0,0,0,0.3)' }}>
                               <FaVideo />
                             </div>
                           </div>
                           <div className="incident-gallery-meta">
                             <span className="incident-gallery-title">{modalDetalle.evidenciaVideo}</span>
-                            <span className="incident-gallery-btn" style={{ color: '#8b5cf6' }}><FaVideo size={11} /> Reproducir Video</span>
+                            <span className="incident-gallery-btn" style={{ color: '#8b5cf6' }}><FaVideo size={11} /> {t('hc4.reproducir_video', 'Reproducir Video')}</span>
                           </div>
                         </div>
                       )}
@@ -1453,9 +1455,9 @@ export default function IncidentManagementPage() {
                         }}
                         style={{
                           display: 'flex', alignItems: 'center', gap: 8, padding: '12px 16px', borderRadius: 10,
-                          background: formCrear.tipoIncidenciaId === tipo.id ? '#2563eb' : 'var(--city-bg, #f8fafc)',
+                          background: formCrear.tipoIncidenciaId === tipo.id ? 'var(--brand-primary)' : 'var(--city-bg, #f8fafc)',
                           color: formCrear.tipoIncidenciaId === tipo.id ? 'var(--city-card, #ffffff)' : 'var(--city-text, #0f172a)',
-                          border: formCrear.tipoIncidenciaId === tipo.id ? '1px solid #2563eb' : '1px solid #e2e8f0',
+                          border: formCrear.tipoIncidenciaId === tipo.id ? '1px solid var(--brand-primary)' : '1px solid #e2e8f0',
                           cursor: 'pointer', fontWeight: 600, fontSize: 13, transition: 'all 0.2s', justifyContent: 'center'
                         }}
                       >
@@ -1494,7 +1496,7 @@ export default function IncidentManagementPage() {
                     <span style={{ fontSize: 11, color: '#94a3b8' }}>{t('admin.incidents.maxPhotos', 'Máx 3 fotos')} ({archivosCrear.length}/3)</span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                    <button type="button" onClick={() => archivosCrear.length < 3 && inputEvidenciasRef.current?.click()} style={{ width: 80, height: 80, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4, background: 'var(--city-bg, #f8fafc)', border: '1.5px dashed #3b82f6', borderRadius: 12, color: 'var(--brand-primary, #3b82f6)', cursor: 'pointer', fontSize: 12, fontWeight: 600 }}>
+                    <button type="button" onClick={() => archivosCrear.length < 3 && inputEvidenciasRef.current?.click()} style={{ width: 80, height: 80, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4, background: 'var(--city-bg, #f8fafc)', border: '1.5px dashed var(--brand-primary)', borderRadius: 12, color: 'var(--brand-primary, #3b82f6)', cursor: 'pointer', fontSize: 12, fontWeight: 600 }}>
                       <FaPlus style={{ fontSize: 16 }} /> {t('admin.incidents.attachment', 'Adjunto')}
                     </button>
                     <input ref={inputEvidenciasRef} type="file" accept="image/jpeg,image/png,image/webp,video/mp4" multiple hidden onChange={handleEvidenciasElegidas} />
@@ -1701,7 +1703,7 @@ export default function IncidentManagementPage() {
                     )}
                     <div style={{ flex: 1, background: 'var(--city-bg, #f8fafc)', padding: '12px', borderRadius: 8, border: '1px solid #e2e8f0' }}>
                       <span style={{ fontSize: 11, color: 'var(--city-muted, #64748b)', fontWeight: 700, display: 'block', textTransform: 'uppercase' }}>{t('admin.incidents.clientName', 'Cliente')}</span>
-                      <strong style={{ fontSize: 14, color: 'var(--brand-primary)' }}>{modalResponder.contactoNombre || 'Cliente no registrado'}</strong>
+                      <strong style={{ fontSize: 14, color: 'var(--brand-primary)' }}>{modalResponder.contactoNombre || t('hc2.cliente_no_registrado', 'Cliente no registrado')}</strong>
                     </div>
                   </div>
                   
@@ -1792,7 +1794,7 @@ export default function IncidentManagementPage() {
                       type="submit" 
                       className="cities-primary incident-modal-btn-submit"
                       style={{ 
-                        background: '#2563eb', 
+                        background: 'var(--brand-primary)', 
                         display: 'inline-flex', 
                         alignItems: 'center', 
                         justifyContent: 'center', 
@@ -1803,11 +1805,11 @@ export default function IncidentManagementPage() {
                         fontWeight: 800, 
                         fontSize: '13px', 
                         cursor: 'pointer', 
-                        boxShadow: '0 2px 6px rgba(37, 99, 235, 0.25)',
+                        boxShadow: '0 2px 6px rgba(var(--brand-primary-rgb), 0.25)',
                         transition: 'all 0.2s'
                       }}
                       onMouseOver={(e) => { e.currentTarget.style.background = 'var(--brand-primary, #1d4ed8)' }}
-                      onMouseOut={(e) => { e.currentTarget.style.background = '#2563eb' }}
+                      onMouseOut={(e) => { e.currentTarget.style.background = 'var(--brand-primary)' }}
                     >
                       {t('admin.incidents.saveAndSend', 'Enviar correo y Actualizar')}
                     </button>
@@ -1832,8 +1834,8 @@ export default function IncidentManagementPage() {
                 <div className="doc-zoom-title-box">
                   <h3 className="doc-zoom-title">{zoomMedia.title}</h3>
                   <span className="doc-zoom-subtitle">
-                    <FaEye style={{ color: '#2563eb' }} />
-                    {zoomMedia.isVideo ? 'Reproductor de evidencia en video' : 'Vista previa de evidencia fotográfica'}
+                    <FaEye style={{ color: 'var(--brand-text)' }} />
+                    {zoomMedia.isVideo ? t('hc5.evidence_video_player', 'Reproductor de evidencia en video') : t('hc2.vista_previa_de_evidencia_fotografica', 'Vista previa de evidencia fotográfica')}
                   </span>
                 </div>
                 <div className="doc-zoom-actions">
@@ -1843,17 +1845,17 @@ export default function IncidentManagementPage() {
                       target="_blank"
                       rel="noopener noreferrer"
                       className="doc-zoom-btn-action"
-                      title="Abrir original"
+                      title={t('hc2.abrir_original', 'Abrir original')}
                     >
                       <FaExternalLinkAlt style={{ fontSize: 11 }} />
-                      <span>Abrir original</span>
+                      <span>{t('hc2.abrir_original', 'Abrir original')}</span>
                     </a>
                   )}
                   <button
                     type="button"
                     onClick={() => setZoomMedia(null)}
                     className="doc-modal-close"
-                    title="Cerrar"
+                    title={t('hc4.cerrar', 'Cerrar')}
                   >
                     &times;
                   </button>

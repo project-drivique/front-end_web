@@ -1,6 +1,7 @@
 import React from 'react'
 import { FaExclamationTriangle, FaRedo, FaHome } from 'react-icons/fa'
 import './ErrorBoundary.css'
+import i18n from '@/i18n'
 
 /**
  * Patrón Error Boundary: Capturador global de errores en tiempo de ejecución de React.
@@ -37,14 +38,14 @@ export class ErrorBoundary extends React.Component {
             <div className="eb-icon-wrapper">
               <FaExclamationTriangle className="eb-icon" />
             </div>
-            <h2 className="eb-title">Algo salió mal</h2>
+            <h2 className="eb-title">{i18n.t('hc.algo_salio_mal', 'Algo salió mal')}</h2>
             <p className="eb-description">
               Ocurrió un error inesperado al renderizar este componente. Tus datos están seguros.
             </p>
 
             {import.meta.env.DEV && this.state.error && (
               <details className="eb-details">
-                <summary>Detalles técnicos (modo desarrollo)</summary>
+                <summary>{i18n.t('hc.detalles_tecnicos_modo_desarrollo', 'Detalles técnicos (modo desarrollo)')}</summary>
                 <pre>{this.state.error.toString()}</pre>
                 <pre>{this.state.errorInfo?.componentStack}</pre>
               </details>
@@ -57,7 +58,7 @@ export class ErrorBoundary extends React.Component {
                 onClick={this.handleReload}
               >
                 <FaRedo />
-                <span>Recargar página</span>
+                <span>{i18n.t('hc.recargar_pagina', 'Recargar página')}</span>
               </button>
               <button
                 type="button"
@@ -65,7 +66,7 @@ export class ErrorBoundary extends React.Component {
                 onClick={this.handleGoHome}
               >
                 <FaHome />
-                <span>Ir al inicio</span>
+                <span>{i18n.t('hc.ir_al_inicio', 'Ir al inicio')}</span>
               </button>
             </div>
           </div>

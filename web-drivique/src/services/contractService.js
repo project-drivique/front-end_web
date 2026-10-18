@@ -34,6 +34,8 @@ function dataUrlToBlob(dataUrl) {
 
 export const contractService = {
   obtenerPorReserva: getOrGenerate,
+  // Lectura del contrato completo por su id (no genera nada si no existe)
+  obtenerPorId: async (contractId) => normalize((await api.get(`/contracts/${contractId}`)).data),
   obtenerOCrearCodigo: async (reservationId) => (await getOrGenerate(reservationId))?.contractNumber || '',
   completarContratoOriginal: async (reservationId) => getOrGenerate(reservationId),
   guardarFirma: async (reservationId, { firmaUsuarioDataUrl, firmaTrazos = '[]', signedCityId, documentVersion = 'v1.0' }) => {

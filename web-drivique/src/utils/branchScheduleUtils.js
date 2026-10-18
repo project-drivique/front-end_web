@@ -1,4 +1,5 @@
 import { showAlert } from './swalConfig'
+import i18n from '@/i18n'
 
 export function getHorarioInfo(nombreSucursal) {
   if (!nombreSucursal) {
@@ -90,9 +91,9 @@ export function verificarSiSucursalCerradaHoy(fechaISO, nombreSucursal) {
 
       showAlert({
         icon: 'warning',
-        title: 'Sucursal cerrada por hoy',
-        text: `La sucursal ${nombreFinal} atiende ${info.dias} · ${info.aperturaTexto} – ${info.cierreTexto}. Puedes reservar a partir de mañana.`,
-        confirmButtonText: 'Aceptar',
+        title: i18n.t('hc.sucursal_cerrada_por_hoy', 'Sucursal cerrada por hoy'),
+        text: i18n.t('hc3.branch_closed_today', { defaultValue: 'La sucursal {{sucursal}} atiende {{dias}} · {{apertura}} – {{cierre}}. Puedes reservar a partir de mañana.', sucursal: nombreFinal, dias: info.dias, apertura: info.aperturaTexto, cierre: info.cierreTexto }),
+        confirmButtonText: i18n.t('hc4.aceptar', 'Aceptar'),
       })
       return true
     }

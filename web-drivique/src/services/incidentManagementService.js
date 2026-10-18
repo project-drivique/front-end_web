@@ -4,6 +4,7 @@
 // para Administrador General (Supervisión y Auditoría) y Encargado de Sucursal (Validación Operativa).
 import { incidentService } from './incidentService'
 import { TIPOS_INCIDENCIA } from '../modules/support/data/supportCatalog'
+import i18n from '@/i18n'
 
 const INCIDENT_EVENT = 'drivique:incidents-updated'
 const STORAGE_KEY = 'drivique_incidents_v2'
@@ -13,7 +14,7 @@ const ESTADO = { OPEN: 'recibido', IN_REVIEW: 'atendiendo', RESOLVED: 'resuelto'
 const ESTADO_API = { recibido: 'OPEN', atendiendo: 'IN_REVIEW', en_revision: 'IN_REVIEW', en_reparacion: 'IN_REVIEW', resuelto: 'RESOLVED', rechazado: 'CLOSED' }
 const PRIORIDAD = { LOW: 'baja', MEDIUM: 'media', HIGH: 'alta', CRITICAL: 'urgente' }
 const GRAVEDAD = { CRITICAL: 'alta', HIGH: 'alta', MEDIUM: 'media', LOW: 'baja' }
-const COLOR_ESTADO = { OPEN: '#d97706', IN_REVIEW: '#0284c7', RESOLVED: '#16a34a', CLOSED: '#991b1b' }
+const COLOR_ESTADO = { OPEN: '#d97706', IN_REVIEW: 'var(--brand-primary)', RESOLVED: '#16a34a', CLOSED: '#991b1b' }
 
 // Tipo de incidencia -> categoría del servidor
 const CATEGORIA_DE_TIPO = {
@@ -89,19 +90,19 @@ const historial = (incident) => (incident.timeline || []).map((entry) => {
     return {
       ...base,
       estadoKey: ESTADO[incident.status] || 'recibido',
-      titulo: entry.authorRole === 'STAFF' ? 'Respuesta Enviada al Cliente' : 'Mensaje del cliente',
+      titulo: entry.authorRole === 'STAFF' ? i18n.t('hc2.respuesta_enviada_al_cliente', 'Respuesta Enviada al Cliente') : i18n.t('hc2.mensaje_del_cliente', 'Mensaje del cliente'),
       descripcion: entry.message || '',
-      color: entry.authorRole === 'STAFF' ? '#0284c7' : 'var(--brand-primary)',
+      color: entry.authorRole === 'STAFF' ? 'var(--brand-primary)' : 'var(--brand-primary)',
     }
   }
   if (entry.type === 'ASSIGNMENT') {
-    return { ...base, estadoKey: ESTADO[incident.status] || 'recibido', titulo: 'Cambio de Estado', descripcion: entry.message || `Asignada a ${incident.assignedToName || 'el equipo'}`, color: '#6366f1' }
+    return { ...base, estadoKey: ESTADO[incident.status] || 'recibido', titulo: i18n.t('hc2.cambio_de_estado', 'Cambio de Estado'), descripcion: entry.message || i18n.t('hc3.assigned_to', { defaultValue: 'Asignada a {{equipo}}', equipo: incident.assignedToName || i18n.t('hc3.the_team', 'el equipo') }), color: '#6366f1' }
   }
   if (!entry.fromStatus) {
     return {
       ...base,
       estadoKey: 'recibido',
-      titulo: incident.internal ? 'Reporte Interno Creado' : 'Reporte Creado por el Cliente',
+      titulo: incident.internal ? i18n.t('hc5.internal_report_created', 'Reporte Interno Creado') : i18n.t('hc2.reporte_creado_por_el_cliente', 'Reporte Creado por el Cliente'),
       descripcion: entry.message || '',
       color: 'var(--brand-primary)',
     }
@@ -109,7 +110,7 @@ const historial = (incident) => (incident.timeline || []).map((entry) => {
   return {
     ...base,
     estadoKey: ESTADO[entry.toStatus] || 'recibido',
-    titulo: 'Cambio de Estado',
+    titulo: i18n.t('hc2.cambio_de_estado', 'Cambio de Estado'),
     descripcion: entry.message || '',
     color: COLOR_ESTADO[entry.toStatus] || '#d97706',
   }
@@ -143,7 +144,7 @@ export const mapIncident = (i) => {
     reservaCodigo: i.reservationCode || i.codigoReserva || '',
     contactoNombre: i.reporterName || i.contactoNombre || '',
     contactoEmail: i.reporterEmail || i.contactoEmail || '',
-    contactoTelefono: i.contactoTelefono || '',
+    contactoTelefono: i.reporterPhone || i.contactoTelefono || '',
     origen: i.internal ? 'administrador' : 'cliente',
     estado: ESTADO[i.status] || i.estado || 'recibido',
     estadoCodigo: i.status || ESTADO_API[i.estado] || 'OPEN',
@@ -203,7 +204,7 @@ function reemplazar(lista) {
 const conRaw = (raw) => ({ ...mapIncident(raw), __raw: raw })
 
 const errorDe = (error) => {
-  const mensaje = new Error(error?.message || 'No fue posible completar la operación.')
+  const mensaje = new Error(error?.message || i18n.t('hc2.no_fue_posible_completar_la_operacion', 'No fue posible completar la operación.'))
   mensaje.status = error?.status
   return mensaje
 }
@@ -289,7 +290,7 @@ export const incidentManagementService = {
       return limpio
     } catch {
       if (local) return local
-      throw errorDe({ message: 'No se encontró el reporte solicitado.' })
+      throw errorDe({ message: i18n.t('hc.no_se_encontro_el_reporte_solicitado', 'No se encontró el reporte solicitado.') })
     }
   },
 
@@ -347,24 +348,24 @@ export const incidentManagementService = {
       const horaStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       const statusTitle =
         nuevoEstado === 'resuelto'
-          ? 'Validado y Resuelto por Sucursal'
+          ? i18n.t('hc2.validado_y_resuelto_por_sucursal', 'Validado y Resuelto por Sucursal')
           : nuevoEstado === 'rechazado'
-          ? 'Reporte Desestimado / Cerrado'
+          ? i18n.t('hc5.report_dismissed_closed', 'Reporte Desestimado / Cerrado')
           : nuevoEstado === 'atendiendo'
-          ? 'Validación Técnica y Atención en Curso'
-          : 'Actualización de Estado'
+          ? i18n.t('hc2.validacion_tecnica_y_atencion_en_curso', 'Validación Técnica y Atención en Curso')
+          : i18n.t('hc2.actualizacion_de_estado', 'Actualización de Estado')
 
       const nuevoHistorial = [
         ...(actual.historial || []),
         {
-          autor: user?.nombre ? `${user.nombre} (${actual.sucursal || 'Sede'})` : 'Encargado de Sucursal',
+          autor: user?.nombre ? `${user.nombre} (${actual.sucursal || i18n.t('hc5.branch_word', 'Sede')})` : i18n.t('hc2.encargado_de_sucursal', 'Encargado de Sucursal'),
           hora: horaStr,
           fecha: nowIso,
           titulo: statusTitle,
           descripcion:
             respuestaTexto ||
-            `El estado del reporte ha sido actualizado a ${nuevoEstado.toUpperCase()} tras validación técnica en sede.`,
-          color: nuevoEstado === 'resuelto' ? '#16a34a' : nuevoEstado === 'rechazado' ? '#dc2626' : '#0284c7',
+            i18n.t('hc3.report_status_updated_sede', { defaultValue: 'El estado del reporte ha sido actualizado a {{estado}} tras validación técnica en sede.', estado: nuevoEstado.toUpperCase() }),
+          color: nuevoEstado === 'resuelto' ? '#16a34a' : nuevoEstado === 'rechazado' ? '#dc2626' : 'var(--brand-primary)',
         },
       ]
 

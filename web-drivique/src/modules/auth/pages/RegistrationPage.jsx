@@ -163,8 +163,8 @@ function ModalTerminos({ onCerrar, onAceptar, c }) {
             textAlign: 'center'
           }}>
             {haLlegadoAlFinal
-              ? '✓ Has leído la totalidad de los términos y condiciones. Ya puedes aceptar.'
-              : '↓ Desplázate hasta el final para habilitar el botón de aceptar.'}
+              ? t('hc2.has_leido_la_totalidad_de_los_terminos', '✓ Has leído la totalidad de los términos y condiciones. Ya puedes aceptar.')
+              : t('hc2.desplazate_hasta_el_final_para_habilit', '↓ Desplázate hasta el final para habilitar el botón de aceptar.')}
           </div>
         </div>
 
@@ -204,7 +204,7 @@ function ModalTerminos({ onCerrar, onAceptar, c }) {
               transition: 'all 200ms ease'
             }}
           >
-            {haLlegadoAlFinal ? t('registro.modal.accept') : 'Desplázate al final para aceptar'}
+            {haLlegadoAlFinal ? t('registro.modal.accept') : t('hc2.desplazate_al_final_para_aceptar', 'Desplázate al final para aceptar')}
           </button>
         </div>
       </div>
@@ -648,7 +648,7 @@ export default function RegistroPage() {
                     <p style={{ color: c.successTitle, fontSize: '14px', fontWeight: 700, margin: '0 0 2px' }}>{t('registro.successTitle')}</p>
                     <p style={{ color: c.successText, fontSize: '13px', margin: 0 }}>
                       {proveedorExito
-                        ? `Cuenta vinculada con ${proveedorExito === 'google' ? 'Google' : 'Facebook'} correctamente. Será redirigido en unos segundos.`
+                        ? t('hc3.account_linked', { defaultValue: 'Cuenta vinculada con {{proveedor}} correctamente. Será redirigido en unos segundos.', proveedor: proveedorExito === 'google' ? 'Google' : 'Facebook' })
                         : t('registro.checkEmail')
                       }
                     </p>

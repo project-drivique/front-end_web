@@ -261,7 +261,7 @@ export default function VehicleManagementPage() {
   const vehicleExportData = useMemo(() => {
     return {
       title: esEncargado
-        ? `Flota de Vehículos - ${sucursalAsignada}`
+        ? t('hc3.fleet_title', { defaultValue: 'Flota de Vehículos - {{sucursal}}', sucursal: sucursalAsignada })
         : t("admin.vehiclesManagement.exportTitle", "Gestión de Flota y Vehículos Drivique"),
       headers: vehicleHeaders,
       rows: vehicleRows,
@@ -398,14 +398,14 @@ export default function VehicleManagementPage() {
     try {
       setUpdatingVehicleId(vehicleId);
       if (vehicleManagementService.activeReservationCount(vehicleId) > 0 && newState !== "reservado") {
-        alert("No puedes cambiar el estado manualmente porque este vehículo tiene una reserva activa.");
+        alert(t('hc.no_puedes_cambiar_el_estado_manualment', 'No puedes cambiar el estado manualmente porque este vehículo tiene una reserva activa.'));
         return;
       }
       setVehicles(await vehicleManagementService.changeState(vehicleId, newState));
-      setNotice(`Estado del vehículo actualizado a ${newState === "disponible" ? "Disponible" : "Mantenimiento"}.`);
+      setNotice(t('hc3.vehicle_state_updated', { defaultValue: 'Estado del vehículo actualizado a {{estado}}.', estado: newState === 'disponible' ? t('hc3.state_available', 'Disponible') : t('hc3.state_maintenance', 'Mantenimiento') }));
     } catch (caught) {
       console.error("Error updating status:", caught);
-      alert(caught.message || "No se pudo cambiar el estado.");
+      alert(caught.message || t('hc2.no_se_pudo_cambiar_el_estado', 'No se pudo cambiar el estado.'));
     } finally {
       setUpdatingVehicleId(null);
     }
@@ -465,7 +465,7 @@ export default function VehicleManagementPage() {
           modal.vehicle
             ? "admin.vehiclesManagement.messages.updated"
             : "admin.vehiclesManagement.messages.created",
-          "Vehículo guardado correctamente"
+          t('hc2.vehiculo_guardado_correctamente', 'Vehículo guardado correctamente')
         )
       );
       close();
@@ -473,7 +473,7 @@ export default function VehicleManagementPage() {
       setError(
         t(
           `admin.vehiclesManagement.errors.${caught.message}`,
-          caught.message || "Error al procesar vehículo"
+          caught.message || t('hc2.error_al_procesar_vehiculo', 'Error al procesar vehículo')
         )
       );
     }
@@ -517,7 +517,7 @@ export default function VehicleManagementPage() {
       setError(
         t(
           "admin.vehiclesManagement.errors.imageSize",
-          "Las imágenes no deben superar 1MB"
+          t('hc2.las_imagenes_no_deben_superar_1mb', 'Las imágenes no deben superar 1MB')
         )
       );
       event.target.value = "";
@@ -549,7 +549,7 @@ export default function VehicleManagementPage() {
       setError(
         t(
           "admin.vehiclesManagement.errors.imageSize",
-          "Las imágenes no deben superar 1MB"
+          t('hc2.las_imagenes_no_deben_superar_1mb', 'Las imágenes no deben superar 1MB')
         )
       );
       event.target.value = "";
@@ -568,7 +568,7 @@ export default function VehicleManagementPage() {
       setError("");
     };
     reader.onerror = () => {
-      setError("Error al procesar la imagen seleccionada");
+      setError(t('hc.error_al_procesar_la_imagen_selecciona', 'Error al procesar la imagen seleccionada'));
     };
     reader.readAsDataURL(file);
     event.target.value = "";
@@ -692,7 +692,7 @@ export default function VehicleManagementPage() {
                     onChange={(e) => setSearch(e.target.value)}
                     placeholder={t(
                       "categoriesManagement.searchPlaceholder",
-                      "Buscar categoría por nombre o descripción..."
+                      t('hc2.buscar_categoria_por_nombre_o_descripc', 'Buscar categoría por nombre o descripción...')
                     )}
                   />
                   {!esEncargado && (
@@ -741,7 +741,7 @@ export default function VehicleManagementPage() {
                   <h2>
                     {t(
                       "categoriesManagement.noCategoriesFound",
-                      "No se encontraron categorías"
+                      t('hc2.no_se_encontraron_categorias', 'No se encontraron categorías')
                     )}
                   </h2>
                 </div>
@@ -816,7 +816,7 @@ export default function VehicleManagementPage() {
                                     display: "inline-flex",
                                     padding: "4px 12px",
                                     borderRadius: 12,
-                                    background: vehiclesInBranch > 0 ? "rgba(37, 99, 235, 0.08)" : "var(--city-card-alt, #f1f5f9)",
+                                    background: vehiclesInBranch > 0 ? "rgba(var(--brand-primary-rgb), 0.08)" : "var(--city-card-alt, #f1f5f9)",
                                     color: vehiclesInBranch > 0 ? "var(--brand-primary, #2563eb)" : "var(--city-muted, #64748b)",
                                     fontWeight: 700,
                                     fontSize: 13,
@@ -824,7 +824,7 @@ export default function VehicleManagementPage() {
                                   }}
                                 >
                                   {vehiclesInBranch}{" "}
-                                  {vehiclesInBranch === 1 ? "vehículo" : "vehículos"}
+                                  {vehiclesInBranch === 1 ? t('hc2.vehiculo_155', 'vehículo') : t('hc2.vehiculos', 'vehículos')}
                                 </span>
                               </td>
                               <td style={{ textAlign: "center" }}>
@@ -876,7 +876,7 @@ export default function VehicleManagementPage() {
                                   display: "inline-flex",
                                   padding: "4px 10px",
                                   borderRadius: 12,
-                                  background: "rgba(37, 99, 235, 0.08)",
+                                  background: "rgba(var(--brand-primary-rgb), 0.08)",
                                   color: "var(--brand-primary, #2563eb)",
                                   fontWeight: 700,
                                   fontSize: 12,
@@ -960,11 +960,11 @@ export default function VehicleManagementPage() {
                       esEncargado
                         ? t(
                             "admin.vehiclesManagement.searchManager",
-                            "Buscar por vehículo, placa o categoría..."
+                            t('hc2.buscar_por_vehiculo_placa_o_categoria', 'Buscar por vehículo, placa o categoría...')
                           )
                         : t(
                             "admin.vehiclesManagement.search",
-                            "Buscar por vehículo, placa, categoría o sucursal..."
+                            t('hc2.buscar_por_vehiculo_placa_categoria_o_', 'Buscar por vehículo, placa, categoría o sucursal...')
                           )
                     }
                   />
@@ -1043,7 +1043,7 @@ export default function VehicleManagementPage() {
                   <h2>
                     {t(
                       "admin.vehiclesManagement.emptyTitle",
-                      "No se encontraron vehículos registrados"
+                      t('hc2.no_se_encontraron_vehiculos_registrado', 'No se encontraron vehículos registrados')
                     )}
                   </h2>
                 </div>
@@ -1069,11 +1069,11 @@ export default function VehicleManagementPage() {
                               <img
                                 src={vehicle.imagenes[0]}
                                 alt={vehicle.nombre || "Auto"}
-                                title="Haz clic para ver foto completa"
+                                title={t('hc.haz_clic_para_ver_foto_completa', 'Haz clic para ver foto completa')}
                                 onClick={() =>
                                   setZoomImage({
                                     url: vehicle.imagenes[0],
-                                    title: `${vehicle.nombre || "Vehículo"} (${vehicle.placa || "Placa"})`,
+                                    title: t('hc3.zoom_title', { defaultValue: '{{nombre}} ({{placa}})', nombre: vehicle.nombre || t('hc3.vehicle_word', 'Vehículo'), placa: vehicle.placa || t('hc3.plate_word', 'Placa') }),
                                   })
                                 }
                                 style={{
@@ -1101,7 +1101,7 @@ export default function VehicleManagementPage() {
                           <td>{vehicle.categoria}</td>
                           <td>{vehicle.ano || vehicle.año || "—"}</td>
                           <td>{vehicle.color || "—"}</td>
-                          <td>{vehicle.transmision || "Automática"}</td>
+                          <td>{vehicle.transmision || t('hc2.automatica', 'Automática')}</td>
                           <td>{vehicle.combustible || "Gasolina"}</td>
                           <td>
                             {formatCurrency(
@@ -1158,7 +1158,7 @@ export default function VehicleManagementPage() {
                                     vehicle.estadoEfectivo === "disponible"
                                       ? "#10b981"
                                       : vehicle.estadoEfectivo === "reservado"
-                                      ? "#3b82f6"
+                                      ? "var(--brand-primary)"
                                       : "#ef4444",
                                 }}
                               />
@@ -1253,20 +1253,20 @@ export default function VehicleManagementPage() {
                     <div className="fleet-modal-header__info">
                       <span className="fleet-modal-eyebrow">
                         {modal.readOnly ? <FaEye aria-hidden="true" /> : <FaCar aria-hidden="true" />}
-                        {modal.readOnly ? "Modo Auditoría (Admin General) - Solo Lectura" : modal.vehicle ? "Modificación de Ficha" : "Registro de Flota"}
+                        {modal.readOnly ? t('hc2.modo_auditoria_admin_general_solo_lect', 'Modo Auditoría (Admin General) - Solo Lectura') : modal.vehicle ? t('hc2.modificacion_de_ficha', 'Modificación de Ficha') : "Registro de Flota"}
                       </span>
                       <h2 className="fleet-modal-title">
-                        {modal.vehicle ? (form.nombre || "Editar Vehículo") : "Nuevo Vehículo"}
+                        {modal.vehicle ? (form.nombre || t('hc2.editar_vehiculo', 'Editar Vehículo')) : t('hc2.nuevo_vehiculo', 'Nuevo Vehículo')}
                       </h2>
                       {modal.vehicle && (
                         <div className="fleet-modal-subtags">
-                          <span className="fleet-badge-plate">{form.placa || "SIN PLACA"}</span>
+                          <span className="fleet-badge-plate">{form.placa || t('hc2.sin_placa', 'SIN PLACA')}</span>
                           <span className="fleet-badge-branch">{form.sucursal || sucursalAsignada}</span>
                           {form.categoria && <span className="fleet-badge-cat">{form.categoria}</span>}
                         </div>
                       )}
                     </div>
-                    <button type="button" className="fleet-modal-close-btn" onClick={close} aria-label="Cerrar">
+                    <button type="button" className="fleet-modal-close-btn" onClick={close} aria-label={t('hc4.cerrar', 'Cerrar')}>
                       <FaTimes />
                     </button>
                   </div>
@@ -1277,7 +1277,7 @@ export default function VehicleManagementPage() {
                         
                         {/* IMAGEN */}
                         <div style={{ gridColumn: '1 / -1', marginBottom: '8px' }}>
-                          <label style={{ display: 'block', fontSize: '11px', color: 'var(--texto-second, #64748b)', marginBottom: '6px', fontWeight: 600 }}>URL de la imagen principal</label>
+                          <label style={{ display: 'block', fontSize: '11px', color: 'var(--texto-second, #64748b)', marginBottom: '6px', fontWeight: 600 }}>{t('hc.url_de_la_imagen_principal', 'URL de la imagen principal')}</label>
                           <input type="url" style={{ width: '100%', padding: '10px 14px', background: 'var(--bg-seccion1, #f8fafc)', border: 'none', borderRadius: '6px', fontSize: '13px', color: 'var(--texto-primary, #334155)', outline: 'none' }} placeholder="https://..." value={form.imagenes?.[0] || ""} onChange={(e) => setForm({ ...form, imagenes: e.target.value ? [e.target.value] : [] })} />
                           {form.imagenes?.[0] && (
                             <img src={form.imagenes[0]} alt="Vista previa" style={{ marginTop: 10, width: '100%', maxHeight: 160, objectFit: 'cover', borderRadius: 12 }} />
@@ -1286,7 +1286,7 @@ export default function VehicleManagementPage() {
 
                         {/* INPUTS ESTILO REFERENCIA */}
                         <div>
-                          <label style={{ display: 'block', fontSize: '11px', color: 'var(--texto-second, #64748b)', marginBottom: '6px', fontWeight: 600 }}>Marca *</label>
+                          <label style={{ display: 'block', fontSize: '11px', color: 'var(--texto-second, #64748b)', marginBottom: '6px', fontWeight: 600 }}>{t('hc4.marca', 'Marca *')}</label>
                           <select disabled={Boolean(modal.vehicle)} required style={{ ...{ width: '100%', padding: '10px 14px', background: 'var(--bg-seccion1, #f8fafc)', border: 'none', borderRadius: '6px', fontSize: '13px', color: 'var(--texto-primary, #334155)', outline: 'none' }, cursor: 'pointer' }} value={form.marca || ""} onChange={(e) => setForm({ ...form, marca: e.target.value })}>
                             <option value="" disabled>{t("admin.vehiclesManagement.modal.select", "Seleccionar")}</option>
                             {fleetLookups.brands.map((b) => <option key={b} value={b}>{b}</option>)}
@@ -1294,7 +1294,7 @@ export default function VehicleManagementPage() {
                         </div>
 
                         <div>
-                          <label style={{ display: 'block', fontSize: '11px', color: 'var(--texto-second, #64748b)', marginBottom: '6px', fontWeight: 600 }}>Modelo *</label>
+                          <label style={{ display: 'block', fontSize: '11px', color: 'var(--texto-second, #64748b)', marginBottom: '6px', fontWeight: 600 }}>{t('hc4.modelo', 'Modelo *')}</label>
                           <input disabled={Boolean(modal.vehicle)} required style={{ width: '100%', padding: '10px 14px', background: 'var(--bg-seccion1, #f8fafc)', border: 'none', borderRadius: '6px', fontSize: '13px', color: 'var(--texto-primary, #334155)', outline: 'none' }} value={form.modelo || ""} onChange={(e) => setForm({ ...form, modelo: e.target.value })} />
                         </div>
 
@@ -1304,7 +1304,7 @@ export default function VehicleManagementPage() {
                         </div>
 
                         <div>
-                          <label style={{ display: 'block', fontSize: '11px', color: 'var(--texto-second, #64748b)', marginBottom: '6px', fontWeight: 600 }}>Kilometraje *</label>
+                          <label style={{ display: 'block', fontSize: '11px', color: 'var(--texto-second, #64748b)', marginBottom: '6px', fontWeight: 600 }}>{t('hc4.kilometraje', 'Kilometraje *')}</label>
                           <input type="number" min="0" required style={{ width: '100%', padding: '10px 14px', background: 'var(--bg-seccion1, #f8fafc)', border: 'none', borderRadius: '6px', fontSize: '13px', color: 'var(--texto-primary, #334155)', outline: 'none' }} value={form.kilometraje ?? 0} onChange={(e) => setForm({ ...form, kilometraje: e.target.value })} />
                         </div>
 
@@ -1443,7 +1443,7 @@ export default function VehicleManagementPage() {
                   <p className="fleet-alert-message">
                     {t(
                       "admin.vehiclesManagement.deleteText",
-                      `¿Estás seguro de que deseas eliminar el vehículo ${modal.vehicle.nombre}? Esta acción no se puede deshacer.`,
+                      t('hc3.vehicle_delete_confirm', { defaultValue: '¿Estás seguro de que deseas eliminar el vehículo {{nombre}}? Esta acción no se puede deshacer.', nombre: modal.vehicle.nombre }),
                       { vehicle: modal.vehicle.nombre }
                     )}
                   </p>
@@ -1522,7 +1522,7 @@ export default function VehicleManagementPage() {
                           onChange={(e) =>
                             setCategoryForm({ ...categoryForm, nombre: e.target.value })
                           }
-                          placeholder="Ej: Camionetas SUV, Sedán Ejecutivo..."
+                          placeholder={t('hc.ej_camionetas_suv_sedan_ejecutivo', 'Ej: Camionetas SUV, Sedán Ejecutivo...')}
                           required
                           style={{
                             width: "100%",
@@ -1547,7 +1547,7 @@ export default function VehicleManagementPage() {
                           onChange={(e) =>
                             setCategoryForm({ ...categoryForm, descripcion: e.target.value })
                           }
-                          placeholder="Breve explicación de los tipos de vehículos que comprende esta categoría..."
+                          placeholder={t('hc.breve_explicacion_de_los_tipos_de_vehi', 'Breve explicación de los tipos de vehículos que comprende esta categoría...')}
                           rows={3}
                           style={{
                             width: "100%",
@@ -1625,7 +1625,7 @@ export default function VehicleManagementPage() {
                         <small style={{ color: "var(--city-muted, #64748b)", fontSize: 11 }}>
                           {t(
                             "categoriesManagement.suggestedRateHint",
-                            "Valor de referencia pre-cargado al crear vehículos en esta categoría"
+                            t('hc2.valor_de_referencia_pre_cargado_al_cre', 'Valor de referencia pre-cargado al crear vehículos en esta categoría')
                           )}
                         </small>
                       </div>
@@ -1673,7 +1673,7 @@ export default function VehicleManagementPage() {
                         <small style={{ color: "var(--city-muted, #64748b)", fontSize: 11 }}>
                           {t(
                             "categoriesManagement.suggestedDepositHint",
-                            "Valor sugerido de depósito en garantía"
+                            t('hc2.valor_sugerido_de_deposito_en_garantia', 'Valor sugerido de depósito en garantía')
                           )}
                         </small>
                       </div>
@@ -1753,7 +1753,7 @@ export default function VehicleManagementPage() {
                           color: "white",
                           border: "none",
                           cursor: "pointer",
-                          boxShadow: "0 4px 12px rgba(37,99,235,0.2)",
+                          boxShadow: "0 4px 12px rgba(var(--brand-primary-rgb),0.2)",
                         }}
                       >
                         {t("common.save", "Guardar categoría")}
@@ -1781,8 +1781,7 @@ export default function VehicleManagementPage() {
                   <p className="fleet-alert-message">
                     {t(
                       "categoriesManagement.deleteConfirm",
-                      `¿Estás seguro de que deseas eliminar la categoría "${modal.category.nombre}"? Esta acción no se puede deshacer.`,
-                      { name: modal.category.nombre }
+                      { defaultValue: '¿Estás seguro de que deseas eliminar la categoría "{{name}}"? Esta acción no se puede deshacer.', name: modal.category.nombre }
                     )}
                   </p>
                   <div className="fleet-alert-actions">

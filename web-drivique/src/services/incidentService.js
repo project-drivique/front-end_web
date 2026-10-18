@@ -1,7 +1,8 @@
 import { api } from './httpClient'
+import i18n from '@/i18n'
 
 function toError(error) {
-  const result = new Error(error?.response?.data?.detail || error?.message || 'No fue posible completar la operación.')
+  const result = new Error(error?.response?.data?.detail || error?.message || i18n.t('hc2.no_fue_posible_completar_la_operacion', 'No fue posible completar la operación.'))
   result.status = error?.response?.status
   return result
 }

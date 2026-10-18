@@ -119,7 +119,7 @@ export default function BranchReviewsPage({ branchOnly = false }) {
   const handleEnviarRespuesta = async () => {
     if (!modalReview) return
     if (!respuestaTexto.trim()) {
-      showAlert({ icon: 'warning', title: 'Campo requerido', text: 'Escribe un mensaje de respuesta para el cliente.' })
+      showAlert({ icon: 'warning', title: t('hc4.campo_requerido', 'Campo requerido'), text: t('hc.escribe_un_mensaje_de_respuesta_para_e', 'Escribe un mensaje de respuesta para el cliente.') })
       return
     }
     try {
@@ -128,9 +128,9 @@ export default function BranchReviewsPage({ branchOnly = false }) {
       setModalReview(null)
       setRespuestaTexto('')
 
-      showAlert({ icon: 'success', title: 'Respuesta publicada', text: 'La respuesta a la reseña ha sido guardada exitosamente.' })
+      showAlert({ icon: 'success', title: t('hc4.respuesta_publicada', 'Respuesta publicada'), text: t('hc.la_respuesta_a_la_resena_ha_sido_guard', 'La respuesta a la reseña ha sido guardada exitosamente.') })
     } catch (error) {
-      showAlert({ icon: 'error', title: 'Error', text: error.message || 'No se pudo publicar la respuesta.' })
+      showAlert({ icon: 'error', title: t('hc4.error', 'Error'), text: error.message || t('hc2.no_se_pudo_publicar_la_respuesta', 'No se pudo publicar la respuesta.') })
     }
   }
 
@@ -176,7 +176,7 @@ export default function BranchReviewsPage({ branchOnly = false }) {
           <div className="cash-kpi-bar">
             {[
               { icon: FaStar, color: '#f59e0b', label: t('admin.reviews.kpi.average', 'Promedio Sede'), value: `${promedioRating} / 5.0 ★`, desc: t('admin.reviews.kpi.averageDesc', 'Puntuación acumulada') },
-              { icon: FaCommentDots, color: '#3b82f6', label: t('admin.reviews.kpi.total', 'Total Reseñas'), value: reviews.length, desc: t('admin.reviews.kpi.totalDesc', 'Opiniones recibidas') },
+              { icon: FaCommentDots, color: 'var(--brand-text)', label: t('admin.reviews.kpi.total', 'Total Reseñas'), value: reviews.length, desc: t('admin.reviews.kpi.totalDesc', 'Opiniones recibidas') },
               { icon: FaExclamationCircle, color: '#ef4444', label: t('admin.reviews.kpi.pending', 'Pendientes por Responder'), value: pendientesContador, desc: t('admin.reviews.kpi.pendingDesc', 'Requieren atención del encargado') },
               { icon: FaCheckCircle, color: '#10b981', label: t('admin.reviews.kpi.answered', 'Respuestas Publicadas'), value: respondidasContador, desc: t('admin.reviews.kpi.answeredDesc', 'Atención completada') },
             ].map(({ icon: Icon, color, label, value, desc }) => (
@@ -265,7 +265,7 @@ export default function BranchReviewsPage({ branchOnly = false }) {
                 <button
                   type="button"
                   className="export-pill export-pill--excel"
-                  onClick={() => exportExcel({ title: 'Reseñas - Drivique', headers: ['ID', 'RESERVA', 'CLIENTE', 'VEHÍCULO', 'CALIFICACIÓN', 'COMENTARIO', 'FECHA', 'RESPUESTA SUCURSAL', 'ESTADO'], rows: exportData })}
+                  onClick={() => exportExcel({ title: t('hc.resenas_drivique', 'Reseñas - Drivique'), headers: ['ID', 'RESERVA', 'CLIENTE', t('hc2.vehiculo_52', 'VEHÍCULO'), t('hc2.calificacion', 'CALIFICACIÓN'), 'COMENTARIO', 'FECHA', t('hc2.respuesta_sucursal', 'RESPUESTA SUCURSAL'), 'ESTADO'], rows: exportData })}
                   title="Excel"
                 >
                   <FaFileExcel aria-hidden="true" /> Excel
@@ -273,7 +273,7 @@ export default function BranchReviewsPage({ branchOnly = false }) {
                 <button
                   type="button"
                   className="export-pill export-pill--pdf"
-                  onClick={() => exportPdf({ title: 'Reseñas - Drivique', headers: ['ID', 'RESERVA', 'CLIENTE', 'VEHÍCULO', 'CALIFICACIÓN', 'COMENTARIO', 'FECHA', 'RESPUESTA SUCURSAL', 'ESTADO'], rows: exportData })}
+                  onClick={() => exportPdf({ title: t('hc.resenas_drivique', 'Reseñas - Drivique'), headers: ['ID', 'RESERVA', 'CLIENTE', t('hc2.vehiculo_52', 'VEHÍCULO'), t('hc2.calificacion', 'CALIFICACIÓN'), 'COMENTARIO', 'FECHA', t('hc2.respuesta_sucursal', 'RESPUESTA SUCURSAL'), 'ESTADO'], rows: exportData })}
                   title="PDF"
                 >
                   <FaFilePdf aria-hidden="true" /> PDF
@@ -281,8 +281,8 @@ export default function BranchReviewsPage({ branchOnly = false }) {
                 <button
                   type="button"
                   className="export-pill export-pill--print"
-                  onClick={() => printTable({ title: 'Reseñas - Drivique', headers: ['ID', 'RESERVA', 'CLIENTE', 'VEHÍCULO', 'CALIFICACIÓN', 'COMENTARIO', 'FECHA', 'RESPUESTA SUCURSAL', 'ESTADO'], rows: exportData })}
-                  title="Imprimir"
+                  onClick={() => printTable({ title: t('hc.resenas_drivique', 'Reseñas - Drivique'), headers: ['ID', 'RESERVA', 'CLIENTE', t('hc2.vehiculo_52', 'VEHÍCULO'), t('hc2.calificacion', 'CALIFICACIÓN'), 'COMENTARIO', 'FECHA', t('hc2.respuesta_sucursal', 'RESPUESTA SUCURSAL'), 'ESTADO'], rows: exportData })}
+                  title={t('hc4.imprimir', 'Imprimir')}
                 >
                   <FaPrint aria-hidden="true" /> Imprimir
                 </button>
@@ -313,9 +313,9 @@ export default function BranchReviewsPage({ branchOnly = false }) {
                         <th>{t('admin.reviews.table.clientName', 'NOMBRE COMPLETO')}</th>
                         <th>{t('admin.reviews.table.vehicle', 'NOMBRE VEHÍCULO')}</th>
                         <th>{t('admin.reviews.table.reservationCode', 'CÓDIGO RESERVA')}</th>
-                        <th style={{ textAlign: 'center' }}>EVIDENCIA FOTO 1</th>
-                        <th style={{ textAlign: 'center' }}>EVIDENCIA FOTO 2</th>
-                        <th style={{ textAlign: 'center' }}>EVIDENCIA FOTO 3</th>
+                        <th style={{ textAlign: 'center' }}>{t('hc4.evidencia_foto_1', 'EVIDENCIA FOTO 1')}</th>
+                        <th style={{ textAlign: 'center' }}>{t('hc4.evidencia_foto_2', 'EVIDENCIA FOTO 2')}</th>
+                        <th style={{ textAlign: 'center' }}>{t('hc4.evidencia_foto_3', 'EVIDENCIA FOTO 3')}</th>
                         <th style={{ textAlign: 'center' }}>{t('admin.reviews.table.rating', 'CALIFICACIÓN')}</th>
                         <th>{t('admin.reviews.table.date', 'FECHA DE RESEÑA')}</th>
                         <th>{t('admin.reviews.table.reply', 'RESPUESTA DE SUCURSAL')}</th>
@@ -331,8 +331,8 @@ export default function BranchReviewsPage({ branchOnly = false }) {
                             <td style={{ fontWeight: 600, color: 'var(--city-text, #0f172a)', width: '35px' }}>{i + 1}</td>
 
                             {/* 2. DESCRIPCIÓN OPCIONAL */}
-                            <td style={{ maxWidth: 260, overflow: 'hidden', textOverflow: 'ellipsis', color: 'var(--city-text, #334155)', fontWeight: 400 }} title={item.comentario || 'Sin comentario'}>
-                              {item.comentario ? `"${item.comentario}"` : <span style={{ color: '#94a3b8', fontStyle: 'italic' }}>Sin descripción</span>}
+                            <td style={{ maxWidth: 260, overflow: 'hidden', textOverflow: 'ellipsis', color: 'var(--city-text, #334155)', fontWeight: 400 }} title={item.comentario || t('hc2.sin_comentario', 'Sin comentario')}>
+                              {item.comentario ? `"${item.comentario}"` : <span style={{ color: '#94a3b8', fontStyle: 'italic' }}>{t('hc.sin_descripcion', 'Sin descripción')}</span>}
                             </td>
 
                             {/* 3. NOMBRE COMPLETO */}
@@ -343,13 +343,13 @@ export default function BranchReviewsPage({ branchOnly = false }) {
                             {/* 4. NOMBRE VEHÍCULO */}
                             <td style={{ fontWeight: 600, color: 'var(--city-text, #0f172a)' }}>
                               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
-                                <FaCar style={{ color: '#2563eb', flexShrink: 0 }} />
+                                <FaCar style={{ color: 'var(--brand-text)', flexShrink: 0 }} />
                                 {item.vehiculo}
                               </span>
                             </td>
 
                             {/* 5. CÓDIGO RESERVA */}
-                            <td style={{ fontWeight: 700, color: '#2563eb' }}>
+                            <td style={{ fontWeight: 700, color: 'var(--brand-text)' }}>
                               {item.reservaCodigo || `RES-${item.id}`}
                             </td>
 
@@ -365,9 +365,9 @@ export default function BranchReviewsPage({ branchOnly = false }) {
                                     gap: 4,
                                     padding: '4px 10px',
                                     borderRadius: 9999,
-                                    background: '#eff6ff',
-                                    color: '#2563eb',
-                                    border: '1px solid #bfdbfe',
+                                    background: 'var(--brand-soft)',
+                                    color: 'var(--brand-text)',
+                                    border: '1px solid var(--brand-border)',
                                     fontWeight: 700,
                                     fontSize: 12,
                                     cursor: 'pointer',
@@ -376,7 +376,7 @@ export default function BranchReviewsPage({ branchOnly = false }) {
                                   <FaFileImage /> {item.evidenciaFoto1}
                                 </button>
                               ) : (
-                                <span style={{ color: '#94a3b8', fontSize: 12 }}>Sin foto 1</span>
+                                <span style={{ color: '#94a3b8', fontSize: 12 }}>{t('hc.sin_foto_1', 'Sin foto 1')}</span>
                               )}
                             </td>
 
@@ -392,9 +392,9 @@ export default function BranchReviewsPage({ branchOnly = false }) {
                                     gap: 4,
                                     padding: '4px 10px',
                                     borderRadius: 9999,
-                                    background: '#eff6ff',
-                                    color: '#2563eb',
-                                    border: '1px solid #bfdbfe',
+                                    background: 'var(--brand-soft)',
+                                    color: 'var(--brand-text)',
+                                    border: '1px solid var(--brand-border)',
                                     fontWeight: 700,
                                     fontSize: 12,
                                     cursor: 'pointer',
@@ -403,7 +403,7 @@ export default function BranchReviewsPage({ branchOnly = false }) {
                                   <FaFileImage /> {item.evidenciaFoto2}
                                 </button>
                               ) : (
-                                <span style={{ color: '#94a3b8', fontSize: 12 }}>Sin foto 2</span>
+                                <span style={{ color: '#94a3b8', fontSize: 12 }}>{t('hc.sin_foto_2', 'Sin foto 2')}</span>
                               )}
                             </td>
 
@@ -419,9 +419,9 @@ export default function BranchReviewsPage({ branchOnly = false }) {
                                     gap: 4,
                                     padding: '4px 10px',
                                     borderRadius: 9999,
-                                    background: '#eff6ff',
-                                    color: '#2563eb',
-                                    border: '1px solid #bfdbfe',
+                                    background: 'var(--brand-soft)',
+                                    color: 'var(--brand-text)',
+                                    border: '1px solid var(--brand-border)',
                                     fontWeight: 700,
                                     fontSize: 12,
                                     cursor: 'pointer',
@@ -430,7 +430,7 @@ export default function BranchReviewsPage({ branchOnly = false }) {
                                   <FaFileImage /> {item.evidenciaFoto3}
                                 </button>
                               ) : (
-                                <span style={{ color: '#94a3b8', fontSize: 12 }}>Sin foto 3</span>
+                                <span style={{ color: '#94a3b8', fontSize: 12 }}>{t('hc.sin_foto_3', 'Sin foto 3')}</span>
                               )}
                             </td>
 
@@ -483,7 +483,7 @@ export default function BranchReviewsPage({ branchOnly = false }) {
                                   <button
                                     type="button"
                                     onClick={() => handleOpenResponder(item)}
-                                    title="Responder a la reseña"
+                                    title={t('hc.responder_a_la_resena', 'Responder a la reseña')}
                                     style={{
                                       padding: '7px 20px',
                                       borderRadius: '9999px',
@@ -572,7 +572,7 @@ export default function BranchReviewsPage({ branchOnly = false }) {
                               width: '100%',
                               padding: '9px 14px',
                               borderRadius: '12px',
-                              background: tieneRespuesta ? 'var(--brand-soft-light, #eff6ff)' : '#2563eb',
+                              background: tieneRespuesta ? 'var(--brand-soft-light, #eff6ff)' : 'var(--brand-primary)',
                               color: tieneRespuesta ? 'var(--brand-primary, #2563eb)' : '#ffffff',
                               border: tieneRespuesta ? '1px solid var(--brand-border-light, #bfdbfe)' : 'none',
                               fontWeight: 700,
@@ -668,7 +668,7 @@ export default function BranchReviewsPage({ branchOnly = false }) {
           <section className="cities-modal" style={{ maxWidth: 720, width: '100%', background: '#0f172a', borderRadius: 20, overflow: 'hidden', border: '1px solid #334155', color: '#ffffff' }}>
             <div style={{ padding: '16px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #1e293b' }}>
               <div>
-                <span style={{ fontSize: 11, fontWeight: 700, color: '#38bdf8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>EVIDENCIA DE FOTO ADJUNTADA</span>
+                <span style={{ fontSize: 11, fontWeight: 700, color: '#38bdf8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t('hc.evidencia_de_foto_adjuntada', 'EVIDENCIA DE FOTO ADJUNTADA')}</span>
                 <h3 style={{ margin: 0, fontSize: 16, color: '#ffffff', fontWeight: 700 }}>{zoomMedia.title}</h3>
               </div>
               <button type="button" onClick={() => setZoomMedia(null)} style={{ background: 'transparent', border: 'none', fontSize: 24, color: '#94a3b8', cursor: 'pointer' }}>&times;</button>

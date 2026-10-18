@@ -13,10 +13,10 @@ import './BrandManagementPage.css'
 
 const ACCEPTED_TYPES = new Set(['image/png', 'image/jpeg', 'image/webp', 'image/svg+xml'])
 const PALETTE_PRESETS = [
-  { id: 'ocean', colors: { primary: '#2563EB', secondary: 'var(--city-text, #1e3a8a)', accent: '#60A5FA' } },
+  { id: 'ocean', colors: { primary: 'var(--brand-primary)', secondary: 'var(--city-text, #1e3a8a)', accent: 'var(--brand-accent)' } },
   { id: 'forest', colors: { primary: '#059669', secondary: '#064E3B', accent: '#34D399' } },
   { id: 'sunset', colors: { primary: '#EA580C', secondary: '#9A3412', accent: '#FDBA74' } },
-  { id: 'navy', colors: { primary: '#1E40AF', secondary: 'var(--city-text, #1e3a8a)', accent: '#93C5FD' } },
+  { id: 'navy', colors: { primary: 'var(--brand-primary-active)', secondary: 'var(--city-text, #1e3a8a)', accent: 'var(--brand-border)' } },
   { id: 'rose', colors: { primary: '#E11D48', secondary: '#881337', accent: '#FDA4AF' } },
   { id: 'graphite', colors: { primary: 'var(--city-text, #334155)', secondary: 'var(--city-text, #0f172a)', accent: '#94A3B8' } },
 ]

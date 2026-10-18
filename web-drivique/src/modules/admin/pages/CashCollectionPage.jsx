@@ -429,12 +429,12 @@ export default function CashCollectionPage({ branchOnly = false }) {
   // Configuración de exportación unificada (Excel, PDF, Imprimir)
   const exportHeaders = [
     'ID',
-    'CÓDIGO RESERVA',
+    t('hc2.codigo_reserva', 'CÓDIGO RESERVA'),
     'CLIENTE',
-    'TELÉFONO',
-    'MEDIO DE PAGO',
-    'MONTO TOTAL',
-    'ESTADO PAGO',
+    t('hc2.telefono_57', 'TELÉFONO'),
+    t('hc2.medio_de_pago', 'MEDIO DE PAGO'),
+    t('hc2.monto_total', 'MONTO TOTAL'),
+    t('hc2.estado_pago', 'ESTADO PAGO'),
   ]
 
   const exportRows = useMemo(() => {
@@ -445,7 +445,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
       const esPagadaDigital = !esEfectivo && (r.pagoEstado === 'aprobado' || r.estadoPago === 'aprobado' || r.estado === 'confirmada' || r.estado === 'en_curso' || r.estado === 'finalizada')
       const pagoConfirmado = esPagadaEnEfectivo || esPagadaDigital
 
-      let tel = String(r.clienteTelefono || 'Sin teléfono').trim()
+      let tel = String(r.clienteTelefono || t('hc2.sin_telefono', 'Sin teléfono')).trim()
       if (tel !== 'Sin teléfono' && !tel.startsWith('+')) {
         tel = `+57 ${tel}`
       }
@@ -464,7 +464,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
       return [
         index + 1,
         r.codigo || r.referencia || r.id || 'N/A',
-        r.clienteNombre || 'Sin Nombre',
+        r.clienteNombre || t('hc2.sin_nombre', 'Sin Nombre'),
         tel,
         medioDisplay,
         formatCurrency(Number(r.totalCOP || r.total || 0), moneda || 'COP', tasaUSD),
@@ -519,7 +519,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
         ...prev,
         estado: 'confirmada',
         fechaPagoConfirmado: new Date().toISOString(),
-        cajeroConfirmacion: user?.nombre || user?.correo || 'Encargado de Sucursal',
+        cajeroConfirmacion: user?.nombre || user?.correo || t('hc2.encargado_de_sucursal', 'Encargado de Sucursal'),
         observacionesCaja,
       }))
 
@@ -528,9 +528,9 @@ export default function CashCollectionPage({ branchOnly = false }) {
       console.error(err)
       showAlert({
         icon: 'error',
-        title: 'Error al registrar cobro',
-        text: err?.message || 'No se pudo actualizar el estado de la reserva. Intenta nuevamente.',
-        confirmButtonText: 'Cerrar',
+        title: t('hc.error_al_registrar_cobro', 'Error al registrar cobro'),
+        text: err?.message || t('hc2.no_se_pudo_actualizar_el_estado_de_la_', 'No se pudo actualizar el estado de la reserva. Intenta nuevamente.'),
+        confirmButtonText: t('hc4.cerrar', 'Cerrar'),
       })
     } finally {
       setProcesandoPago(false)
@@ -539,7 +539,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
 
   const handleSearchRef = () => {
     if (!searchRefValue.trim()) {
-      showAlert('Atención', 'Debes ingresar una referencia.', 'warning')
+      showAlert(t('hc.atencion', 'Atención'), t('hc2.debes_ingresar_una_referencia', 'Debes ingresar una referencia.'), 'warning')
       return
     }
     
@@ -696,7 +696,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
                 <input
                   type="date"
                   placeholder={t('admin.cash.dateFrom', 'Desde')}
-                  title="Desde"
+                  title={t('hc4.desde', 'Desde')}
                   value={dateFrom}
                   onChange={(e) => setDateFrom(e.target.value)}
                   style={{ height: '36px', padding: '0 8px', border: '1px solid var(--city-border, #e2e8f0)', borderRadius: '8px', fontSize: '13px', background: 'var(--city-card, #fff)', color: 'var(--city-text, #374151)', width: '140px', flexShrink: 0 }}
@@ -704,7 +704,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
                 <input
                   type="date"
                   placeholder={t('admin.cash.dateTo', 'Hasta')}
-                  title="Hasta"
+                  title={t('hc4.hasta', 'Hasta')}
                   value={dateTo}
                   onChange={(e) => setDateTo(e.target.value)}
                   style={{ height: '36px', padding: '0 8px', border: '1px solid #e2e8f0', borderRadius: '8px', fontSize: '13px', background: '#fff', color: '#374151', width: '140px', flexShrink: 0 }}
@@ -784,7 +784,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
                       const pagoConfirmado = esPagadaEnEfectivo || esPagadaDigital
                       
                       // Lógica de prefijo de país para el teléfono
-                      let tel = String(r.clienteTelefono || 'Sin teléfono').trim()
+                      let tel = String(r.clienteTelefono || t('hc2.sin_telefono', 'Sin teléfono')).trim()
                       if (tel !== 'Sin teléfono' && !tel.startsWith('+')) {
                         tel = `+57 ${tel}`
                       }
@@ -803,7 +803,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
                         }
                       }
 
-                      const finalName = r.clienteNombre || 'Sin Nombre'
+                      const finalName = r.clienteNombre || t('hc2.sin_nombre', 'Sin Nombre')
 
                       return (
                         <tr
@@ -930,16 +930,16 @@ export default function CashCollectionPage({ branchOnly = false }) {
                                 div.innerHTML = `
                                   <div style="text-align:center;margin-bottom:20px">
                                     <div style="display:inline-flex;align-items:center;justify-content:center;width:52px;height:52px;border-radius:50%;background:#d1fae5;color:#10b981;font-size:26px;margin-bottom:12px">✓</div>
-                                    <h2 style="margin:0 0 4px;font-size:20px;color:#111827">Comprobante de Pago</h2>
+                                    <h2 style="margin:0 0 4px;font-size:20px;color:#111827">${t('hc.comprobante_de_pago', 'Comprobante de Pago')}</h2>
                                     <p style="margin:0;font-size:13px;color:#6b7280">Drivique — ${new Date().toLocaleDateString('es-CO')}</p>
                                   </div>
                                   <table style="width:100%;border-collapse:collapse;margin-top:8px">
-                                    <tr><td style="padding:10px 6px;font-size:14px;border-bottom:1px solid #e5e7eb;color:#6b7280">Referencia</td><td style="padding:10px 6px;font-size:14px;border-bottom:1px solid #e5e7eb;text-align:right;font-weight:600">${cod}</td></tr>
-                                    <tr><td style="padding:10px 6px;font-size:14px;border-bottom:1px solid #e5e7eb;color:#6b7280">Cliente</td><td style="padding:10px 6px;font-size:14px;border-bottom:1px solid #e5e7eb;text-align:right;font-weight:600">${r.clienteNombre || 'Cliente'}</td></tr>
-                                    <tr><td style="padding:10px 6px;font-size:14px;border-bottom:1px solid #e5e7eb;color:#6b7280">Vehículo</td><td style="padding:10px 6px;font-size:14px;border-bottom:1px solid #e5e7eb;text-align:right;font-weight:600">${r.vehiculoNombre || 'Vehículo Reservado'}</td></tr>
-                                    <tr><td style="padding:10px 6px;font-size:14px;border-bottom:1px solid #e5e7eb;color:#6b7280">Método de pago</td><td style="padding:10px 6px;font-size:14px;border-bottom:1px solid #e5e7eb;text-align:right;font-weight:600">${esEfectivo ? 'Efectivo en Sucursal' : 'Pasarela Digital'}</td></tr>
-                                    <tr><td style="padding:10px 6px;font-size:14px;border-bottom:1px solid #e5e7eb;color:#6b7280">Fecha de pago</td><td style="padding:10px 6px;font-size:14px;border-bottom:1px solid #e5e7eb;text-align:right;font-weight:600">${r.fechaPagoConfirmado ? new Date(r.fechaPagoConfirmado).toLocaleString('es-CO') : new Date().toLocaleString('es-CO')}</td></tr>
-                                    <tr style="border-top:2px solid #d1fae5"><td style="padding:14px 6px;font-size:17px;font-weight:800;color:#10b981">TOTAL PAGADO</td><td style="padding:14px 6px;font-size:17px;font-weight:800;color:#10b981;text-align:right">${formatCurrency(total, moneda, tasaUSD)}</td></tr>
+                                    <tr><td style="padding:10px 6px;font-size:14px;border-bottom:1px solid #e5e7eb;color:#6b7280">${t('hc4.referencia', 'Referencia')}</td><td style="padding:10px 6px;font-size:14px;border-bottom:1px solid #e5e7eb;text-align:right;font-weight:600">${cod}</td></tr>
+                                    <tr><td style="padding:10px 6px;font-size:14px;border-bottom:1px solid #e5e7eb;color:#6b7280">${t('hc4.cliente', 'Cliente')}</td><td style="padding:10px 6px;font-size:14px;border-bottom:1px solid #e5e7eb;text-align:right;font-weight:600">${r.clienteNombre || 'Cliente'}</td></tr>
+                                    <tr><td style="padding:10px 6px;font-size:14px;border-bottom:1px solid #e5e7eb;color:#6b7280">${t('hc.vehiculo', 'Vehículo')}</td><td style="padding:10px 6px;font-size:14px;border-bottom:1px solid #e5e7eb;text-align:right;font-weight:600">${r.vehiculoNombre || t('hc2.vehiculo_reservado', 'Vehículo Reservado')}</td></tr>
+                                    <tr><td style="padding:10px 6px;font-size:14px;border-bottom:1px solid #e5e7eb;color:#6b7280">${t('hc.metodo_de_pago', 'Método de pago')}</td><td style="padding:10px 6px;font-size:14px;border-bottom:1px solid #e5e7eb;text-align:right;font-weight:600">${esEfectivo ? t('hc2.efectivo_en_sucursal', 'Efectivo en Sucursal') : 'Pasarela Digital'}</td></tr>
+                                    <tr><td style="padding:10px 6px;font-size:14px;border-bottom:1px solid #e5e7eb;color:#6b7280">${t('hc.fecha_de_pago', 'Fecha de pago')}</td><td style="padding:10px 6px;font-size:14px;border-bottom:1px solid #e5e7eb;text-align:right;font-weight:600">${r.fechaPagoConfirmado ? new Date(r.fechaPagoConfirmado).toLocaleString('es-CO') : new Date().toLocaleString('es-CO')}</td></tr>
+                                    <tr style="border-top:2px solid #d1fae5"><td style="padding:14px 6px;font-size:17px;font-weight:800;color:#10b981">${t('hc2.total_pagado', 'TOTAL PAGADO')}</td><td style="padding:14px 6px;font-size:17px;font-weight:800;color:#10b981;text-align:right">${formatCurrency(total, moneda, tasaUSD)}</td></tr>
                                   </table>
                                 `
                                 document.body.appendChild(div)
@@ -954,7 +954,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
                                   const win = window.open('', '_blank', 'width=600,height=700')
                                   if (win) {
                                     win.document.open()
-                                    win.document.write(`<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Comprobante-${cod}</title><style>body{font-family:Arial,sans-serif;max-width:480px;margin:40px auto;padding:24px;color:#111827;}h2{text-align:center;color:#10b981;margin-bottom:8px;}p.sub{text-align:center;color:#6b7280;font-size:13px;}table{width:100%;border-collapse:collapse;margin-top:20px;}td{padding:10px 6px;font-size:14px;border-bottom:1px solid #e5e7eb;}td:last-child{text-align:right;font-weight:600;}.total-row td{border-top:2px solid #d1fae5;font-size:17px;color:#10b981;font-weight:800;padding-top:14px;}</style></head><body><h2>Comprobante de Pago</h2><p class="sub">Drivique &mdash; ${new Date().toLocaleDateString('es-CO')}</p><table><tr><td>Referencia</td><td>${cod}</td></tr><tr><td>Cliente</td><td>${r.clienteNombre || 'Cliente'}</td></tr><tr><td>Veh&iacute;culo</td><td>${r.vehiculoNombre || 'Veh&iacute;culo Reservado'}</td></tr><tr><td>M&eacute;todo de pago</td><td>${esEfectivo ? 'Efectivo en Sucursal' : 'Pasarela Digital'}</td></tr><tr><td>Fecha de pago</td><td>${r.fechaPagoConfirmado ? new Date(r.fechaPagoConfirmado).toLocaleString('es-CO') : new Date().toLocaleString('es-CO')}</td></tr><tr class="total-row"><td>TOTAL PAGADO</td><td>${formatCurrency(total, moneda, tasaUSD)}</td></tr></table><script>window.onload = function() { window.print(); }<\/script></body></html>`)
+                                    win.document.write(`<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Comprobante-${cod}</title><style>body{font-family:Arial,sans-serif;max-width:480px;margin:40px auto;padding:24px;color:#111827;}h2{text-align:center;color:#10b981;margin-bottom:8px;}p.sub{text-align:center;color:#6b7280;font-size:13px;}table{width:100%;border-collapse:collapse;margin-top:20px;}td{padding:10px 6px;font-size:14px;border-bottom:1px solid #e5e7eb;}td:last-child{text-align:right;font-weight:600;}.total-row td{border-top:2px solid #d1fae5;font-size:17px;color:#10b981;font-weight:800;padding-top:14px;}</style></head><body><h2>${t('hc.comprobante_de_pago', 'Comprobante de Pago')}</h2><p class="sub">Drivique &mdash; ${new Date().toLocaleDateString('es-CO')}</p><table><tr><td>${t('hc4.referencia', 'Referencia')}</td><td>${cod}</td></tr><tr><td>${t('hc4.cliente', 'Cliente')}</td><td>${r.clienteNombre || 'Cliente'}</td></tr><tr><td>Veh&iacute;culo</td><td>${r.vehiculoNombre || 'Veh&iacute;culo Reservado'}</td></tr><tr><td>${t('hc2.m_eacute_todo_de_pago', 'M&eacute;todo de pago')}</td><td>${esEfectivo ? 'Efectivo en Sucursal' : 'Pasarela Digital'}</td></tr><tr><td>${t('hc.fecha_de_pago', 'Fecha de pago')}</td><td>${r.fechaPagoConfirmado ? new Date(r.fechaPagoConfirmado).toLocaleString('es-CO') : new Date().toLocaleString('es-CO')}</td></tr><tr class="total-row"><td>${t('hc2.total_pagado', 'TOTAL PAGADO')}</td><td>${formatCurrency(total, moneda, tasaUSD)}</td></tr></table><script>window.onload = function() { window.print(); }<\/script></body></html>`)
                                     win.document.close()
                                   }
                                 } finally {
@@ -972,11 +972,11 @@ export default function CashCollectionPage({ branchOnly = false }) {
                               type="button"
                               className="cash-btn-primary"
                               disabled={!pagoConfirmado}
-                              style={{ width: '90px', padding: '6px 10px', fontSize: '13px', background: pagoConfirmado ? 'var(--city-soft, #eff6ff)' : '#e5e7eb', borderColor: pagoConfirmado ? '#bfdbfe' : '#e5e7eb', color: pagoConfirmado ? '#2563eb' : '#9ca3af', whiteSpace: 'nowrap', textAlign: 'center', cursor: pagoConfirmado ? 'pointer' : 'not-allowed', fontWeight: '500' }}
+                              style={{ width: '90px', padding: '6px 10px', fontSize: '13px', background: pagoConfirmado ? 'var(--city-soft, #eff6ff)' : '#e5e7eb', borderColor: pagoConfirmado ? 'var(--brand-border)' : '#e5e7eb', color: pagoConfirmado ? 'var(--brand-primary)' : '#9ca3af', whiteSpace: 'nowrap', textAlign: 'center', cursor: pagoConfirmado ? 'pointer' : 'not-allowed', fontWeight: '500' }}
                               onClick={(e) => {
                                 e.stopPropagation()
                                 if (!pagoConfirmado) return
-                                const contenido = `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Comprobante-${cod}</title><style>body{font-family:Arial,sans-serif;max-width:480px;margin:40px auto;padding:24px;color:#111827;}h2{text-align:center;color:#10b981;margin-bottom:8px;}p.sub{text-align:center;color:#6b7280;font-size:13px;}table{width:100%;border-collapse:collapse;margin-top:20px;}td{padding:10px 6px;font-size:14px;border-bottom:1px solid #e5e7eb;}td:last-child{text-align:right;font-weight:600;}.total-row td{border-top:2px solid #d1fae5;font-size:17px;color:#10b981;font-weight:800;padding-top:14px;}</style></head><body><h2>Comprobante de Pago</h2><p class="sub">Drivique &mdash; ${new Date().toLocaleDateString('es-CO')}</p><table><tr><td>Referencia</td><td>${cod}</td></tr><tr><td>Nombre Completo</td><td>${r.clienteNombre || 'Cliente'}</td></tr><tr><td>Veh&iacute;culo</td><td>${r.vehiculoNombre || 'Veh&iacute;culo Reservado'}</td></tr><tr><td>M&eacute;todo de pago</td><td>${esEfectivo ? 'Efectivo en Sucursal' : 'Pasarela Digital'}</td></tr><tr><td>Fecha de pago</td><td>${r.fechaPagoConfirmado ? new Date(r.fechaPagoConfirmado).toLocaleString('es-CO') : new Date().toLocaleString('es-CO')}</td></tr><tr class="total-row"><td>TOTAL PAGADO</td><td>${formatCurrency(total, moneda, tasaUSD)}</td></tr></table></body></html>`
+                                const contenido = `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Comprobante-${cod}</title><style>body{font-family:Arial,sans-serif;max-width:480px;margin:40px auto;padding:24px;color:#111827;}h2{text-align:center;color:#10b981;margin-bottom:8px;}p.sub{text-align:center;color:#6b7280;font-size:13px;}table{width:100%;border-collapse:collapse;margin-top:20px;}td{padding:10px 6px;font-size:14px;border-bottom:1px solid #e5e7eb;}td:last-child{text-align:right;font-weight:600;}.total-row td{border-top:2px solid #d1fae5;font-size:17px;color:#10b981;font-weight:800;padding-top:14px;}</style></head><body><h2>${t('hc.comprobante_de_pago', 'Comprobante de Pago')}</h2><p class="sub">Drivique &mdash; ${new Date().toLocaleDateString('es-CO')}</p><table><tr><td>${t('hc4.referencia', 'Referencia')}</td><td>${cod}</td></tr><tr><td>${t('hc2.nombre_completo_69', 'Nombre Completo')}</td><td>${r.clienteNombre || 'Cliente'}</td></tr><tr><td>Veh&iacute;culo</td><td>${r.vehiculoNombre || 'Veh&iacute;culo Reservado'}</td></tr><tr><td>${t('hc2.m_eacute_todo_de_pago', 'M&eacute;todo de pago')}</td><td>${esEfectivo ? 'Efectivo en Sucursal' : 'Pasarela Digital'}</td></tr><tr><td>${t('hc.fecha_de_pago', 'Fecha de pago')}</td><td>${r.fechaPagoConfirmado ? new Date(r.fechaPagoConfirmado).toLocaleString('es-CO') : new Date().toLocaleString('es-CO')}</td></tr><tr class="total-row"><td>${t('hc2.total_pagado', 'TOTAL PAGADO')}</td><td>${formatCurrency(total, moneda, tasaUSD)}</td></tr></table></body></html>`
                                 const win = window.open('', '_blank', 'width=600,height=700')
                                 win.document.open()
                                 win.document.write(contenido)
@@ -1031,11 +1031,11 @@ export default function CashCollectionPage({ branchOnly = false }) {
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '14px' }}>
                       <span style={{ color: '#6b7280' }}>{t('admin.cash.modal.customer', 'Cliente')}</span>
-                      <strong style={{ color: '#111827', textAlign: 'right' }}>{modalReserva.clienteNombre || 'Cliente Registrado'}</strong>
+                      <strong style={{ color: '#111827', textAlign: 'right' }}>{modalReserva.clienteNombre || t('hc2.cliente_registrado', 'Cliente Registrado')}</strong>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px', fontSize: '14px' }}>
                       <span style={{ color: '#6b7280' }}>{t('admin.cash.modal.vehicle', 'Vehículo')}</span>
-                      <strong style={{ color: '#111827', textAlign: 'right' }}>{modalReserva.vehiculoNombre || 'Vehículo Reservado'}</strong>
+                      <strong style={{ color: '#111827', textAlign: 'right' }}>{modalReserva.vehiculoNombre || t('hc2.vehiculo_reservado', 'Vehículo Reservado')}</strong>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '12px', borderTop: '1px solid #e5e7eb', fontSize: '15px', alignItems: 'center' }}>
                       <span style={{ color: '#374151', fontWeight: 600 }}>{t('admin.cash.modal.totalToCollect', 'Total a cobrar')}</span>
@@ -1082,7 +1082,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
                       }}></div>
                       
                       <FaMoneyBillWave style={{ fontSize: 32, color: '#10b981', marginBottom: 12 }} />
-                      <h3>RECIBO DE CAJA</h3>
+                      <h3>{t('hc.recibo_de_caja', 'RECIBO DE CAJA')}</h3>
                       <p className="text-muted" style={{ margin: '0 0 20px 0', fontSize: 13 }}>{t('admin.cash.modal.branchPrefix', 'Sucursal')} {modalReserva.sucursalRetiro || 'Principal'}</p>
                       
                       <div className="ticket-dashed-border" style={{ borderTop: '1px dashed #cbd5e1', borderBottom: '1px dashed #cbd5e1', padding: '16px 0', margin: '0 0 20px 0', textAlign: 'left' }}>
@@ -1096,11 +1096,11 @@ export default function CashCollectionPage({ branchOnly = false }) {
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
                           <span className="text-muted" style={{ fontSize: 13 }}>{t('admin.cash.modal.customer', 'Cliente')}:</span>
-                          <span style={{ fontWeight: 600, fontSize: 13 }}>{modalReserva.clienteNombre || 'Cliente Registrado'}</span>
+                          <span style={{ fontWeight: 600, fontSize: 13 }}>{modalReserva.clienteNombre || t('hc2.cliente_registrado', 'Cliente Registrado')}</span>
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                           <span className="text-muted" style={{ fontSize: 13 }}>{t('admin.cash.modal.cashier', 'Cajero')}:</span>
-                          <span style={{ fontWeight: 600, fontSize: 13 }}>{modalReserva.cajeroConfirmacion || 'Encargado Mostrador'}</span>
+                          <span style={{ fontWeight: 600, fontSize: 13 }}>{modalReserva.cajeroConfirmacion || t('hc5.counter_manager', 'Encargado Mostrador')}</span>
                         </div>
                       </div>
 
@@ -1186,13 +1186,13 @@ export default function CashCollectionPage({ branchOnly = false }) {
                 {t('admin.cash.modal.transactionInfo', 'Información de la transacción')}
               </h4>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', marginBottom: '12px' }}>
-                <span style={{ color: '#4b5563' }}>Referencia</span>
+                <span style={{ color: '#4b5563' }}>{t('hc4.referencia', 'Referencia')}</span>
                 <span style={{ color: '#111827', fontWeight: 500, textAlign: 'right', wordBreak: 'break-all', maxWidth: '60%' }}>
                   {comprobanteDigital.codigo || comprobanteDigital.referencia || comprobanteDigital.id}
                 </span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', marginBottom: '12px' }}>
-                <span style={{ color: '#4b5563' }}>Método de pago</span>
+                <span style={{ color: '#4b5563' }}>{t('hc.metodo_de_pago', 'Método de pago')}</span>
                 <span style={{ color: '#111827', fontWeight: 600 }}>
                   {t('admin.cash.modal.onlinePayment', 'Pago en línea (Wompi)')}
                 </span>
@@ -1204,13 +1204,13 @@ export default function CashCollectionPage({ branchOnly = false }) {
                 {t('admin.cash.modal.payerInfo', 'Información del pagador')}
               </h4>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', marginBottom: '12px' }}>
-                <span style={{ color: '#4b5563' }}>Nombre</span>
+                <span style={{ color: '#4b5563' }}>{t('hc4.nombre', 'Nombre')}</span>
                 <span style={{ color: '#111827', fontWeight: 500 }}>
                   {comprobanteDigital.clienteNombre || '—'}
                 </span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', marginBottom: '12px' }}>
-                <span style={{ color: '#4b5563' }}>Teléfono</span>
+                <span style={{ color: '#4b5563' }}>{t('hc.telefono', 'Teléfono')}</span>
                 <span style={{ color: '#111827', fontWeight: 500 }}>
                   {comprobanteDigital.clienteTelefono || '—'}
                 </span>

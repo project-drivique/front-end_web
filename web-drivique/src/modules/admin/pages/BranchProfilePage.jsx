@@ -150,7 +150,7 @@ export default function BranchProfilePage() {
       if (!validChars || digitsOnly.length < 7 || digitsOnly.length > 13) {
         errs.telefono = t(
           'branchProfile.errors.phoneInvalid',
-          'El teléfono debe contener entre 7 y 13 dígitos.'
+          t('hc2.el_telefono_debe_contener_entre_7_y_13', 'El teléfono debe contener entre 7 y 13 dígitos.')
         )
       }
     }
@@ -176,13 +176,13 @@ export default function BranchProfilePage() {
         if (isNaN(latNum) || latNum < -90 || latNum > 90) {
           errs.latitud = t(
             'branchProfile.errors.latInvalid',
-            'La latitud debe estar entre -90 y 90.'
+            t('hc2.la_latitud_debe_estar_entre_90_y_90', 'La latitud debe estar entre -90 y 90.')
           )
         }
         if (isNaN(lngNum) || lngNum < -180 || lngNum > 180) {
           errs.longitud = t(
             'branchProfile.errors.lngInvalid',
-            'La longitud debe estar entre -180 y 180.'
+            t('hc2.la_longitud_debe_estar_entre_180_y_180', 'La longitud debe estar entre -180 y 180.')
           )
         }
       }
@@ -246,7 +246,7 @@ export default function BranchProfilePage() {
           title: t('branchProfile.saveSuccessTitle', 'Cambios guardados'),
           text: t(
             'branchProfile.saveSuccessMsg',
-            'Los datos de la sucursal han sido actualizados con éxito.'
+            t('hc2.los_datos_de_la_sucursal_han_sido_actu', 'Los datos de la sucursal han sido actualizados con éxito.')
           ),
           confirmButtonText: t('common.accept', 'Aceptar'),
         })
@@ -374,7 +374,7 @@ export default function BranchProfilePage() {
               className="cities-primary"
               onClick={handleSubmit}
               disabled={!hasUnsavedChanges || saving}
-              title="Guardar información editada"
+              title={t('hc.guardar_informacion_editada', 'Guardar información editada')}
               style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 18px', borderRadius: 8, fontWeight: 600 }}
             >
               <FaSave aria-hidden="true" />
@@ -478,7 +478,7 @@ export default function BranchProfilePage() {
                         setForm({ ...form, direccion: e.target.value })
                         if (errors.direccion) setErrors({ ...errors, direccion: null })
                       }}
-                      placeholder="Ej. Av. El Dorado # 103-09, Fontibón"
+                      placeholder={t('hc.ej_av_el_dorado_103_09_fontibon', 'Ej. Av. El Dorado # 103-09, Fontibón')}
                       required
                     />
                     {errors.direccion && (
@@ -530,7 +530,7 @@ export default function BranchProfilePage() {
                     className="branch-profile-textarea"
                     placeholder={t(
                       'branchProfile.placeholders.pickupInstructions',
-                      'Frente a la salida 3 del aeropuerto - hall de entregas.'
+                      t('hc2.frente_a_la_salida_3_del_aeropuerto_ha', 'Frente a la salida 3 del aeropuerto - hall de entregas.')
                     )}
                     value={form.indicacionesRecogida}
                     onChange={(e) =>

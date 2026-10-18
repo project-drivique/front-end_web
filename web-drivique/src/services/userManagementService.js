@@ -2,6 +2,7 @@
 import { api } from './httpClient'
 import { branchManagementService } from './branchManagementService'
 import { documentVerificationService } from './documentVerificationService'
+import i18n from '@/i18n'
 
 // Último resultado del servidor (list() es síncrono para los componentes)
 let cache = []
@@ -10,7 +11,7 @@ const ROL_UI = { CUSTOMER: 'cliente', BRANCH_ADMIN: 'encargado', SUPER_ADMIN: 'a
 
 const errorDe = (error) => {
   const detail = error?.response?.data?.detail
-  return new Error(detail || error?.message || 'No fue posible completar la operación')
+  return new Error(detail || error?.message || i18n.t('hc2.no_fue_posible_completar_la_operacion_279', 'No fue posible completar la operación'))
 }
 
 function mapear(u, expediente) {

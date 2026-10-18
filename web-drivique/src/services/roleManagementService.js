@@ -2,6 +2,7 @@
 import { api } from './httpClient'
 import { branchManagementService } from './branchManagementService'
 import { userManagementService } from './userManagementService'
+import i18n from '@/i18n'
 
 // Roles del sistema: no se eliminan y su código no cambia
 const ROLES_SISTEMA = new Set(['SUPER_ADMIN', 'BRANCH_ADMIN', 'CUSTOMER'])
@@ -11,7 +12,7 @@ let rolesCache = []
 let permisosCache = []
 let cuentasCache = []
 
-const errorDe = (error) => new Error(error?.response?.data?.detail || error?.message || 'No fue posible completar la operación')
+const errorDe = (error) => new Error(error?.response?.data?.detail || error?.message || i18n.t('hc2.no_fue_posible_completar_la_operacion_279', 'No fue posible completar la operación'))
 
 function mapearRol(role, cuentas) {
   return {
