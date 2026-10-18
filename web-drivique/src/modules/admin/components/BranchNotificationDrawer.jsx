@@ -169,7 +169,7 @@ export default function BranchNotificationDrawer({
                   <article
                     key={notif.id}
                     className={`bnd-card ${!notif.isRead ? 'bnd-card--unread' : ''}`}
-                    style={{ borderLeftColor: notif.accentBorder || '#2563eb' }}
+                    style={{ borderLeftColor: notif.accentBorder || 'var(--brand-primary)' }}
                   >
                     <div
                       className="bnd-card-icon"
@@ -183,8 +183,8 @@ export default function BranchNotificationDrawer({
                         <span
                           className="bnd-category-badge"
                           style={{
-                            background: notif.badgeBg || 'rgba(37, 99, 235, 0.08)',
-                            color: notif.badgeColor || '#2563eb',
+                            background: notif.badgeBg || 'rgba(var(--brand-primary-rgb), 0.08)',
+                            color: notif.badgeColor || 'var(--brand-primary)',
                           }}
                         >
                           {t(`admin.notifications.category.${notif.categoryLabel}`, notif.categoryLabel) || t('admin.notifications.defaultCategory', 'Notificación')}

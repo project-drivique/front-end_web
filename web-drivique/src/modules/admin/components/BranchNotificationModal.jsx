@@ -186,7 +186,7 @@ export default function BranchNotificationModal({
                 type="button"
                 className="bnm-clear-search-btn"
                 onClick={() => setSearchTerm('')}
-                aria-label="Limpiar búsqueda"
+                aria-label={t('hc.limpiar_busqueda', 'Limpiar búsqueda')}
               >
                 <FaTimes />
               </button>
@@ -260,7 +260,7 @@ export default function BranchNotificationModal({
                     <div
                       className="bnm-card-icon"
                       style={{
-                        background: notif.iconBg || 'var(--brand-soft, rgba(37, 99, 235, 0.08))',
+                        background: notif.iconBg || 'var(--brand-soft, rgba(var(--brand-primary-rgb), 0.08))',
                         color: notif.iconColor || 'var(--brand-primary, #2563eb)',
                       }}
                     >
@@ -273,17 +273,17 @@ export default function BranchNotificationModal({
                         <span
                           className="bnm-card-badge"
                           style={{
-                            background: notif.badgeBg || 'var(--brand-soft, rgba(37, 99, 235, 0.08))',
+                            background: notif.badgeBg || 'var(--brand-soft, rgba(var(--brand-primary-rgb), 0.08))',
                             color: notif.badgeColor || 'var(--brand-primary, #2563eb)',
                           }}
                         >
-                          {notif.categoryLabel || 'Operación'}
+                          {notif.categoryLabel || t('hc2.operacion', 'Operación')}
                         </span>
                         <span className="bnm-card-time">
                           <FaClock aria-hidden="true" /> {notif.time}
                         </span>
                         {!notif.isRead && (
-                          <span className="bnm-card-unread-dot" title="No leída" />
+                          <span className="bnm-card-unread-dot" title={t('hc.no_leida', 'No leída')} />
                         )}
                       </div>
 
@@ -300,7 +300,7 @@ export default function BranchNotificationModal({
                           type="button"
                           className="bnm-btn-read"
                           onClick={() => onMarkRead?.(notif.id)}
-                          title="Marcar como leída"
+                          title={t('hc.marcar_como_leida', 'Marcar como leída')}
                         >
                           <FaCheck aria-hidden="true" />
                           <span>{t('branchDashboard.notificationsCenter.markRead', 'Marcar leída')}</span>

@@ -86,7 +86,7 @@ export default function BranchNotificationCenterPage({ branchOnly = true }) {
   const handleActionClick = (notif) => {
     markAsRead(notif.id)
     if (notif.route) {
-      navigate(notif.route)
+      navigate(notif.route, { state: notif.navigationState })
     }
   }
 
@@ -275,11 +275,11 @@ export default function BranchNotificationCenterPage({ branchOnly = true }) {
                         <span
                           className="bnc-category-badge"
                           style={{
-                            background: notif.badgeBg || 'var(--brand-soft, rgba(37, 99, 235, 0.08))',
+                            background: notif.badgeBg || 'var(--brand-soft, rgba(var(--brand-primary-rgb), 0.08))',
                             color: notif.badgeColor || 'var(--brand-primary, #2563eb)',
                           }}
                         >
-                          {notif.categoryLabel || 'Notificación'}
+                          {notif.categoryLabel || t('hc2.notificacion', 'Notificación')}
                         </span>
                         <span className="bnc-card-time">
                           <FaClock aria-hidden="true" />
