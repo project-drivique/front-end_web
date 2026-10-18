@@ -547,7 +547,7 @@ export default function PerfilPage() {
                     justifyContent: 'center',
                     gap: '8px',
                     transition: 'all 150ms ease',
-                    boxShadow: '0 4px 12px rgba(37, 99, 235, 0.2)',
+                    boxShadow: '0 4px 12px rgba(var(--brand-primary-rgb), 0.2)',
                   }}
                 >
                   <FaSlidersH style={{ fontSize: '12px' }} /> {t('perfil.configPreferencesBtn', 'Configurar canales')}

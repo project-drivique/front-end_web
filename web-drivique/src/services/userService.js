@@ -35,6 +35,13 @@ const nacionalidadNombreDesdeId = async (id) => {
   return nombreDesdeIso(iso)
 }
 
+// La web usa 'PASAPORTE'; el servidor guarda el código PASSPORT
+const codigoTipoDocumento = (tipo) => {
+  if (!tipo) return undefined
+  const up = String(tipo).trim().toUpperCase()
+  return up === 'PASAPORTE' ? 'PASSPORT' : up
+}
+
 export const userService = {
   nacionalidadNombreDesdeId,
 
@@ -56,7 +63,7 @@ export const userService = {
       address: datosActualizados.direccion ?? datosActualizados.address,
       nationalityId: await nacionalidadIdDesdeNombre(datosActualizados.nationalityId || datosActualizados.nacionalidad).catch(() => undefined),
       documentNumber: datosActualizados.documentNumber || datosActualizados.numDoc || datosActualizados.cedula || undefined,
-      documentTypeCode: datosActualizados.documentTypeCode || datosActualizados.tipoDoc || datosActualizados.tipoDocumento || undefined,
+      documentTypeCode: codigoTipoDocumento(datosActualizados.documentTypeCode || datosActualizados.tipoDoc || datosActualizados.tipoDocumento),
       documentTypeId: datosActualizados.documentTypeId || undefined,
     }
     const { data } = await api.put('/users/me', payload)

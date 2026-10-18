@@ -21,7 +21,7 @@ export default function CambiarContrasena({ c, esModoOscuro }) {
         icon: 'success',
         title: t('perfil.passwordUpdatedTitle', '¡Contraseña actualizada!'),
         text: t('perfil.passwordUpdatedText', 'Tu contraseña se ha actualizado correctamente.'),
-        confirmButtonText: 'Entendido',
+        confirmButtonText: t('hc4.entendido', 'Entendido'),
         confirmButtonColor: 'var(--brand-secondary)',
       })
     }
